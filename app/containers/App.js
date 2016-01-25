@@ -1,7 +1,5 @@
 import React, { Component, PropTypes } from 'react';
 
-console.log(process.memoryUsage());
-
 export default class App extends Component {
   static propTypes = {
     children: PropTypes.element.isRequired
