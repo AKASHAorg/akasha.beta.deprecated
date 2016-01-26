@@ -2,6 +2,7 @@
 'use strict';
 
 const electron = require('electron');
+const api = require('./electron-api');
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 const Menu = electron.Menu;
@@ -25,7 +26,8 @@ app.on('window-all-closed', () => {
 
 
 app.on('ready', () => {
-  mainWindow = new BrowserWindow({ width: 1024, height: 728 });
+  mainWindow = new BrowserWindow({ width: 1280, height: 960, resizable: false });
+  let ipcMain = api(mainWindow);
 
   if (process.env.HOT) {
     mainWindow.loadURL(`file://${__dirname}/app/hot-dev-app.html`);
@@ -35,6 +37,10 @@ app.on('ready', () => {
 
   mainWindow.on('closed', () => {
     mainWindow = null;
+  });
+
+  mainWindow.on('setSize', (width, height) => {
+    mainWindow.setSize(width, height);
   });
 
   if (process.env.NODE_ENV === 'development') {
