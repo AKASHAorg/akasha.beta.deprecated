@@ -4,7 +4,7 @@ import { Link } from 'react-router';
 
 export default class Home extends Component {
   render() {
-    console.log(this);
+    console.dir(this._reactInternalInstance);
     return (
       <div>
         <div>

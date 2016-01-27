@@ -11,7 +11,6 @@ import injectTapEventPlugin from 'react-tap-event-plugin';
 injectTapEventPlugin();
 
 const store = configureStore();
-
 render(
   <Provider store={store}>
     <Router history={hashHistory}>

@@ -8,6 +8,7 @@ const BrowserWindow = electron.BrowserWindow;
 const Menu = electron.Menu;
 const crashReporter = electron.crashReporter;
 const shell = electron.shell;
+
 let menu;
 let template;
 let mainWindow = null;
@@ -28,7 +29,6 @@ app.on('window-all-closed', () => {
 app.on('ready', () => {
   mainWindow = new BrowserWindow({ width: 1280, height: 960, resizable: false });
   let ipcMain = api(mainWindow);
-
   if (process.env.HOT) {
     mainWindow.loadURL(`file://${__dirname}/app/hot-dev-app.html`);
   } else {
