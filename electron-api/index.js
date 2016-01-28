@@ -1,4 +1,8 @@
+/* eslint strict: 0 */
+'use strict';
+
 const ipcMain = require('electron').ipcMain;
+
 
 const apiWrapper = function (mainWindow) {
   ipcMain.on('set-window-size', function (event, width, height) {
