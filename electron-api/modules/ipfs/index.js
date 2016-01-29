@@ -1,16 +1,16 @@
 /* eslint strict: 0 */
 'use strict';
 
-const winston      = require('winston');
-const ipfsBin      = require('go-ipfs');
-const ipfsAPI      = require('ipfs-api');
-const Promise      = require("bluebird");
-const path         = require('path');
+const winston = require('winston');
+const ipfsBin = require('go-ipfs');
+const ipfsAPI = require('ipfs-api');
+const Promise = require('bluebird');
+const path = require('path');
 const childProcess = require('child_process');
-const check        = require('check-types');
+const check = require('check-types');
 
 const symbolEnforcer = Symbol();
-const symbol         = Symbol();
+const symbol = Symbol();
 
 const env = process.env.NODE_ENV || 'development';
 
@@ -48,9 +48,9 @@ class IpfsConnector {
       throw new Error('Cannot construct singleton');
     }
     this.ipfsProcess = null;
-    this._api        = null;
-    this._sock       = '/ip4/127.0.0.1/tcp/5001';
-    this._retry      = true;
+    this._api = null;
+    this._sock = '/ip4/127.0.0.1/tcp/5001';
+    this._retry = true;
   }
 
   /**
@@ -80,18 +80,18 @@ class IpfsConnector {
       }
     };
     this._spawnIPFS(options).then(
-      (data)=> {
+      (data) => {
         logger.info(`ipfs:start: ${data}`);
       }
     ).catch(
-      (err)=> {
+      (err) => {
         if (this._retry) {
           return this._initIpfs().then(
-            (data)=> {
+            (data) => {
               this.start();
             }
           ).catch(
-            (errInit)=> {
+            (errInit) => {
               logger.warn(`ipfs:${errInit}`);
             }
           );
@@ -104,7 +104,7 @@ class IpfsConnector {
   }
 
   stop () {
-    this._kill("SIGINT");
+    this._kill('SIGINT');
     this.ipfsProcess = null;
   }
 
@@ -130,9 +130,9 @@ class IpfsConnector {
   }
 
   _spawnIPFS (options) {
-    return new Promise((resolve, reject)=> {
+    return new Promise((resolve, reject) => {
       this.ipfsProcess = childProcess.spawn(options.command, options.args, options.extra);
-      this.ipfsProcess.once('exit', (code, signal)=> {
+      this.ipfsProcess.once('exit', (code, signal) => {
         if (code !== 0 && !signal) {
           return reject('could not start ipfs');
         }
@@ -149,11 +149,11 @@ class IpfsConnector {
    * @private
    */
   _logEvents () {
-    this.ipfsProcess.stdout.on('data', (data)=> {
+    this.ipfsProcess.stdout.on('data', (data) => {
       logger.info(`ipfs:stdout: ${data}`);
     });
 
-    this.ipfsProcess.stderr.on('data', (data)=> {
+    this.ipfsProcess.stderr.on('data', (data) => {
       logger.info(`ipfs:stderr: ${data}`);
     });
 
@@ -165,17 +165,17 @@ class IpfsConnector {
    * @private
    */
   _initIpfs () {
-    return new Promise((resolve, reject)=> {
+    return new Promise((resolve, reject) => {
       let q = childProcess.exec(ipfsBin + ' init');
 
-      q.once('exit', (code, signal)=> {
+      q.once('exit', (code, signal) => {
         if (code !== 0 && !signal) {
           return reject('already init');
         }
         return resolve(q);
       });
 
-      this._retry      = false;
+      this._retry = false;
       this.ipfsProcess = null;
     });
   }

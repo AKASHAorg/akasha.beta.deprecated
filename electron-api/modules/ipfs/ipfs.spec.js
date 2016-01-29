@@ -1,7 +1,7 @@
 /* eslint strict: 0 */
 'use strict';
 const ipfsConnector = require('./index');
-const expect        = require('chai').expect;
+const expect = require('chai').expect;
 
 describe('ipfsConnector', function () {
   let ipfs;
@@ -13,28 +13,28 @@ describe('ipfsConnector', function () {
     ipfs.stop();
   });
 
-  it("should prevent from creating objects", function () {
+  it('should prevent from creating objects', function () {
     expect(function () {
       new ipfsConnector();
     }).to.throw(Error);
   });
 
-  it("should provide singleton object", function () {
+  it('should provide singleton object', function () {
     expect(ipfs).to.be.an('object');
   });
 
-  describe("#start()", function () {
+  describe('#start()', function () {
     this.timeout(10000);
-    it("should wait start ipfs daemon process", function (done) {
+    it('should wait start ipfs daemon process', function (done) {
       expect(function () {
         ipfs.start();
-         done();
+        done();
       }).not.to.throw(Error);
     });
 
-    it("should connect to api server", function (done) {
+    it('should connect to api server', function (done) {
       expect(ipfs.api).to.be.an('object');
       done();
     });
-  })
+  });
 });

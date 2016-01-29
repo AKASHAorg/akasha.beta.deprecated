@@ -133,7 +133,6 @@
     "bluebird": "^3.1.5",
     "check-types": "^6.0.0",
     "electron-debug": "^0.5.1",
-    "fibers": "^1.0.8",
     "go-ipfs": "^0.3.11",
     "history": "^2.0.0-rc2",
     "immutable": "3.7.6",
