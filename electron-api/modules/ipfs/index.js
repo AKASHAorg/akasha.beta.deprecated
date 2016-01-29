@@ -4,9 +4,10 @@
 const winston      = require('winston');
 const ipfsBin      = require('go-ipfs');
 const ipfsAPI      = require('ipfs-api');
-const Future       = require('fibers/future');
+const Promise      = require("bluebird");
 const path         = require('path');
 const childProcess = require('child_process');
+const check        = require('check-types');
 
 const symbolEnforcer = Symbol();
 const symbol         = Symbol();
@@ -69,33 +70,37 @@ class IpfsConnector {
    * @returns {bool}
    */
   start () {
-    if (!this.ipfsProcess) {
-      const future = new Future();
-      let options  = {
-        command: ipfsBin,
-        args:    ['daemon'],
-        extra:   {
-          env: process.env
-        }
-      };
 
-      this.ipfsProcess = childProcess.spawn(options.command, options.args, options.extra);
-
-      if (this.ipfsProcess && this._connectToAPI()) {
-        this._logEvents();
-        return future.return(true);
-
-      } else if (this._retry && this._initIpfs()) {
-        return this.start();
-
-      } else {
-        future.throw(true);
-
+    let options = {
+      command: ipfsBin,
+      args:    ['daemon'],
+      extra:   {
+        env:      process.env,
+        detached: true
       }
+    };
+    this._spawnIPFS(options).then(
+      (data)=> {
+        logger.info(`ipfs:start: ${data}`);
+      }
+    ).catch(
+      (err)=> {
+        if (this._retry) {
+          return this._initIpfs().then(
+            (data)=> {
+              this.start();
+            }
+          ).catch(
+            (errInit)=> {
+              logger.warn(`ipfs:${errInit}`);
+            }
+          );
+        }
+        return logger.warn(err);
+      }
+    );
 
-      return future.wait();
-    }
-    return true;
+    this._connectToAPI();
   }
 
   stop () {
@@ -124,6 +129,19 @@ class IpfsConnector {
     return false;
   }
 
+  _spawnIPFS (options) {
+    return new Promise((resolve, reject)=> {
+      this.ipfsProcess = childProcess.spawn(options.command, options.args, options.extra);
+      this.ipfsProcess.once('exit', (code, signal)=> {
+        if (code !== 0 && !signal) {
+          return reject('could not start ipfs');
+        }
+        return resolve(this.ipfsProcess);
+      });
+      this._logEvents();
+    });
+  }
+
 
   /**
    * Send process stream to logger
@@ -147,20 +165,19 @@ class IpfsConnector {
    * @private
    */
   _initIpfs () {
+    return new Promise((resolve, reject)=> {
+      let q = childProcess.exec(ipfsBin + ' init');
 
-    let future = new Future();
+      q.once('exit', (code, signal)=> {
+        if (code !== 0 && !signal) {
+          return reject('already init');
+        }
+        return resolve(q);
+      });
 
-    let q = childProcess.execFuture(ipfsBin + ' init');
-
-    q.on('exit', ()=> {
-      future.return(true);
+      this._retry      = false;
+      this.ipfsProcess = null;
     });
-
-    q.on('error', (err)=> {
-      future.throw(err);
-    });
-    this._retry = false;
-    return future.wait();
   }
 
   /**
@@ -168,7 +185,10 @@ class IpfsConnector {
    * @private
    */
   _kill (signal) {
-    this.ipfsProcess.kill(signal);
+    check.nonEmptyString(signal);
+    if (this.ipfsProcess) {
+      this.ipfsProcess.kill(signal);
+    }
     this._api = null;
   }
 
