@@ -1,7 +1,7 @@
 /* eslint strict: 0 */
 'use strict';
 const ipfsConnector = require('./index');
-const expect = require('chai').expect;
+const expect        = require('chai').expect;
 
 describe('ipfsConnector', function () {
   let ipfs;
@@ -35,6 +35,21 @@ describe('ipfsConnector', function () {
     it('should connect to api server', function (done) {
       expect(ipfs.api).to.be.an('object');
       done();
+    });
+  });
+  describe('#setSchema()', function () {
+    before(function () {
+      ipfs.stop();
+    });
+    it('should set rpc schema', function () {
+      ipfs.setSchema();
+      expect(ipfs._conn).to.be.an('object');
+    });
+    it('should connect with http protocol', function (done) {
+      expect(function () {
+        ipfs.start();
+        done();
+      }).not.to.throw(Error);
     });
   });
 });

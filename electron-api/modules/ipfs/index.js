@@ -51,7 +51,7 @@ class IpfsConnector {
     }
     this.ipfsProcess = null;
     this._api        = null;
-    this._sock       = '/ip4/127.0.0.1/tcp/5001';
+    this._conn       = '/ip4/127.0.0.1/tcp/5001';
     this._retry      = true;
   }
 
@@ -71,7 +71,7 @@ class IpfsConnector {
    * start ipfs
    * @returns {bool}
    */
-  start () {
+  start ({daemon=true, unixSock=true}={}) {
 
     let options = {
       command: ipfsBin,
@@ -81,28 +81,46 @@ class IpfsConnector {
         detached: true
       }
     };
-    this._spawnIPFS(options).then(
-      (data) => {
-        logger.info(`ipfs:start: ${data}`);
-      }
-    ).catch(
-      (err) => {
-        if (this._retry) {
-          return this._initIpfs().then(
-            (data) => {
-              this.start();
-            }
-          ).catch(
-            (errInit) => {
-              logger.warn(`ipfs:${errInit}`);
-            }
-          );
+    if (daemon) {
+      this._spawnIPFS(options).then(
+        (data) => {
+          logger.info(`ipfs:start: ${data}`);
         }
-        return logger.warn(err);
-      }
-    );
+      ).catch(
+        (err) => {
+          if (this._retry) {
+            return this._initIpfs().then(
+              (data) => {
+                this.start();
+              }
+            ).catch(
+              (errInit) => {
+                logger.warn(`ipfs:${errInit}`);
+              }
+            );
+          }
+          return logger.warn(err);
+        }
+      );
+    }
 
     this._connectToAPI();
+  }
+
+  /**
+   * Set connection to api server
+   * Must be done before start()
+   * @param socket
+   * @param rpc
+   * @returns {IpfsConnector}
+   */
+  setSchema ({socket, rpc={host: 'localhost', port: '5001', procotol: 'http'}}={}) {
+    if (socket) {
+      this._conn = socket;
+    } else {
+      this._conn = rpc;
+    }
+    return this;
   }
 
   stop () {
@@ -124,13 +142,15 @@ class IpfsConnector {
    * @private
    */
   _connectToAPI () {
-    if (this.ipfsProcess) {
-      this._api = ipfsAPI(this._sock);
-      return true;
-    }
-    return false;
+    this._api = ipfsAPI(this._conn);
   }
 
+  /**
+   * Spawn daemon process
+   * @param options
+   * @returns {bluebird|exports|module.exports}
+   * @private
+   */
   _spawnIPFS (options) {
     return new Promise((resolve, reject) => {
       this.ipfsProcess = childProcess.spawn(options.command, options.args, options.extra);
