@@ -1,16 +1,16 @@
 /* eslint strict: 0 */
 'use strict';
 
-const winston = require('winston');
-const ipfsBin = require('go-ipfs');
-const ipfsAPI = require('ipfs-api');
-const Promise = require('bluebird');
-const path = require('path');
+const winston      = require('winston');
+const ipfsBin      = require('go-ipfs');
+const ipfsAPI      = require('ipfs-api');
+const Promise      = require('bluebird');
+const path         = require('path');
 const childProcess = require('child_process');
-const check = require('check-types');
+const check        = require('check-types');
 
 const symbolEnforcer = Symbol();
-const symbol = Symbol();
+const symbol         = Symbol();
 
 const env = process.env.NODE_ENV || 'development';
 
@@ -34,8 +34,10 @@ const logger = new (winston.Logger)({
 
 /**
  * Quick usage:
- *    const ipfs = IpfsConnector.getInstance().start();
+ *    const ipfs = IpfsConnector.getInstance();
+ *    ipfs.start();
  *    ipfs.api.cat('ipfsHash', ....)
+ *    ipfs.stop(); //must be explicit @Todo: bind ipfs.stop() to main process exit
  */
 class IpfsConnector {
 
@@ -48,9 +50,9 @@ class IpfsConnector {
       throw new Error('Cannot construct singleton');
     }
     this.ipfsProcess = null;
-    this._api = null;
-    this._sock = '/ip4/127.0.0.1/tcp/5001';
-    this._retry = true;
+    this._api        = null;
+    this._sock       = '/ip4/127.0.0.1/tcp/5001';
+    this._retry      = true;
   }
 
   /**
@@ -175,7 +177,7 @@ class IpfsConnector {
         return resolve(q);
       });
 
-      this._retry = false;
+      this._retry      = false;
       this.ipfsProcess = null;
     });
   }
