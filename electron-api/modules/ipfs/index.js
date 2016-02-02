@@ -5,7 +5,6 @@ const winston      = require('winston');
 const ipfsBin      = require('go-ipfs');
 const ipfsAPI      = require('ipfs-api');
 const Promise      = require('bluebird');
-const path         = require('path');
 const childProcess = require('child_process');
 const check        = require('check-types');
 
@@ -71,7 +70,7 @@ class IpfsConnector {
    * start ipfs
    * @returns {bool}
    */
-  start ({daemon=true, unixSock=true}={}) {
+  start ({daemon = true, unixSock = true} = {}) {
 
     let options = {
       command: ipfsBin,
@@ -114,7 +113,7 @@ class IpfsConnector {
    * @param rpc
    * @returns {IpfsConnector}
    */
-  setSchema ({socket, rpc={host: 'localhost', port: '5001', procotol: 'http'}}={}) {
+  setSchema ({socket, rpc = {host: 'localhost', port: '5001', procotol: 'http'}} = {}) {
     if (socket) {
       this._conn = socket;
     } else {
