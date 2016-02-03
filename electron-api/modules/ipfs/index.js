@@ -70,7 +70,7 @@ class IpfsConnector {
    * start ipfs
    * @returns {bool}
    */
-  start ({daemon = true, unixSock = true} = {}) {
+  start (daemon = true) {
 
     let options = {
       command: ipfsBin,

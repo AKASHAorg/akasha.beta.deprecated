@@ -6,7 +6,7 @@ const Promise      = require('bluebird');
 const path         = require('path');
 const childProcess = require('child_process');
 const check        = require('check-types');
-const geth         = require('./geth');
+//const geth         = require('./geth');
 const net          = require('net');
 
 const symbolEnforcer = Symbol();
@@ -32,7 +32,8 @@ const logger = new (winston.Logger)({
   ]
 });
 
-GethConnector = class GethConnector {
+
+class GethConnector {
 
   /**
    *
@@ -44,14 +45,14 @@ GethConnector = class GethConnector {
     }
 
     this.socket     = new net.Socket();
-    this.executable = geth.path();
+    this.executable = '/usr/bin/geth'; //geth.path(); stubbed for now
 
     this.ethConnector     = null;
     this.lastChunk        = null;
     this.lastChunkTimeout = null;
 
     this.ipcCallbacks = {};
-    this.config       = {};
+    this.options      = [];
 
     this._setSocketEvents();
   }
@@ -62,6 +63,33 @@ GethConnector = class GethConnector {
     }
     return this[symbol];
   }
+
+  start (options = {}) {
+    this._setOptions(options);
+    this._spawnGeth({detached: true});
+  }
+
+  /**
+   *
+   * @param dataDir
+   * @param protocol
+   * @param cors
+   * @param extra
+   * @returns {Array}
+   * @private
+   */
+  _setOptions ({dataDir, protocol=['--shh', '--rpc'], cors=['--rpccorsdomain', 'localhost'], extra=[]}={}) {
+    if (!check.array(protocol) || !check.array(cors) || !check.array(extra)) {
+      throw new Error('protocol, cors and extra options must be array type');
+    }
+    if (dataDir) {
+      this.options.push(`--datadir ${dataDir}`);
+    }
+
+    this.options.push(protocol.join(' '), cors.join(' '), extra.join(' '));
+    return this.options;
+  }
+
 
   ipcCall (name, params, callback) {
     if (!this.ethConnector) {
@@ -164,4 +192,24 @@ GethConnector = class GethConnector {
       logger.warn(error);
     });
   }
-};
+
+  _spawnGeth (extra) {
+    return new Promise((resolve, reject) => {
+      this.gethProcess = childProcess.spawn(this.executable, this.options, extra);
+      this.gethProcess.on('exit', (code, signal) => {
+        console.log('exit:', code, signal);
+      });
+      this.gethProcess.on('close', (code, signal) => {
+        console.log('close:', code, signal);
+      });
+      this.gethProcess.on('error', (code) => {
+        console.log('error:', code);
+      });
+
+      resolve('');//stubbed
+    });
+  }
+}
+;
+
+module.exports = GethConnector;

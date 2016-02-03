@@ -1,17 +1,24 @@
 /* eslint strict: 0 */
 'use strict';
 const expect = require('chai').expect;
-const geth   = require('./geth');
+const geth   = require('./index');
+let connector;
 
 describe('gethConnector', function () {
+  before(function () {
+    connector = geth.getInstance();
+  });
+
   it('should provide executable for geth', function () {
     expect(geth).to.be.an('object');
-    const executable = geth.path();
+    const executable = connector.executable;
     expect(executable).to.exist;
   });
 
   it('should start geth process', function () {
-    expect(true).to.be.false;
+    expect(function () {
+      connector.start();
+    }).not.to.throw(Error);
   });
 
   it('should connect to IPC', function () {
