@@ -55,6 +55,7 @@ class GethConnector {
     this.lastChunk        = null;
     this.lastChunkTimeout = null;
     this.dataDir          = null;
+    this.ipcPath          = null;
 
     this.ipcCallbacks = {};
     this.options      = [];
@@ -88,12 +89,13 @@ class GethConnector {
   /**
    *
    * @param dataDir
+   * @param ipcPath
    * @param protocol
    * @param extra
-   * @returns {Array}
+   * @returns {Array|Array.<T>|*}
    * @private
    */
-  _setOptions ({dataDir, protocol=['--shh', '--rpc'], extra=[]}={}) {
+  _setOptions ({dataDir, ipcPath, protocol=['--shh', '--rpc'], extra=[]}={}) {
     this.options = [];
     if (!check.array(protocol) || !check.array(extra)) {
       throw new Error('protocol, cors and extra options must be array type');
@@ -115,6 +117,11 @@ class GethConnector {
       }
     }
     this.dataDir = dataDir;
+
+    if (!ipcPath) {
+      ipcPath = (platform == 'Windows_NT') ? '\\\\.\\pipe\\geth.ipc' : path.join(this.dataDir, 'geth.ipc');
+    }
+    this.ipcPath = ipcPath;
 
     this.options.push('--datadir', `${this.dataDir}`);
 
@@ -195,7 +202,7 @@ class GethConnector {
 
   _connectToIPC () {
     if (!this.socket.writable) {
-      this.socket.connect({path: path.join(this.dataDir, 'geth.ipc')});
+      this.socket.connect({path: this.ipcPath});
     }
   }
 
