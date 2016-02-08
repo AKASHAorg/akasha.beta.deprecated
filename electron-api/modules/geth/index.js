@@ -6,13 +6,17 @@ const Promise      = require('bluebird');
 const path         = require('path');
 const childProcess = require('child_process');
 const check        = require('check-types');
-//const geth         = require('./geth');
+const geth         = require('./geth');
 const net          = require('net');
+const os           = require('os');
+
+const platform = os.type();
 
 const symbolEnforcer = Symbol();
 const symbol         = Symbol();
 
-const env = process.env.NODE_ENV || 'development';
+const env   = process.env.NODE_ENV || 'development';
+let idCount = 1;
 
 const logger = new (winston.Logger)({
   transports: [
@@ -24,7 +28,7 @@ const logger = new (winston.Logger)({
       {
         filename: 'logs/geth.log',
         level:    'info',
-        maxsize:  10 * 1024, //1MB
+        maxsize:  10 * 1024 * 2, //2MB
         maxFiles: 1,
         name:     'log-geth'
       }
@@ -45,11 +49,12 @@ class GethConnector {
     }
 
     this.socket     = new net.Socket();
-    this.executable = '/usr/bin/geth'; //geth.path(); stubbed for now
+    this.executable = null;
 
-    this.ethConnector     = null;
+    this.gethProcess      = null;
     this.lastChunk        = null;
     this.lastChunkTimeout = null;
+    this.dataDir          = null;
 
     this.ipcCallbacks = {};
     this.options      = [];
@@ -66,33 +71,60 @@ class GethConnector {
 
   start (options = {}) {
     this._setOptions(options);
-    this._spawnGeth({detached: true});
+
+    this._checkGeth().then((binary)=> {
+      this.executable = binary;
+      return this._spawnGeth({detached: true}).then(function (data) {
+        return data;
+      }).catch(function (err) {
+        throw new Error(`Could not start geth ${err}`);
+      });
+    }).catch((err)=> {
+      logger.warn(`geth:binary:${err}`);
+      throw new Error(`Could not download geth ${err}`);
+    });
   }
 
   /**
    *
    * @param dataDir
    * @param protocol
-   * @param cors
    * @param extra
    * @returns {Array}
    * @private
    */
-  _setOptions ({dataDir, protocol=['--shh', '--rpc'], cors=['--rpccorsdomain', 'localhost'], extra=[]}={}) {
-    if (!check.array(protocol) || !check.array(cors) || !check.array(extra)) {
+  _setOptions ({dataDir, protocol=['--shh', '--rpc'], extra=[]}={}) {
+    this.options = [];
+    if (!check.array(protocol) || !check.array(extra)) {
       throw new Error('protocol, cors and extra options must be array type');
     }
-    if (dataDir) {
-      this.options.push(`--datadir ${dataDir}`);
+    if (!dataDir) {
+      switch (platform) {
+        case 'Linux':
+          dataDir = path.join(os.homedir(), '.ethereum');
+          break;
+        case 'Darwin':
+          dataDir = path.join(os.homedir(), 'Library', 'Ethereum');
+          break;
+        case 'Windows_NT':
+          dataDir = '%APPDATA%/Ethereum';
+          break;
+        default:
+          logger.warn('geth:platform not supported');
+          throw new Error('Platform not supported');
+      }
     }
+    this.dataDir = dataDir;
 
-    this.options.push(protocol.join(' '), cors.join(' '), extra.join(' '));
+    this.options.push('--datadir', `${this.dataDir}`);
+
+    this.options = this.options.concat(protocol, extra);
     return this.options;
   }
 
 
   ipcCall (name, params, callback) {
-    if (!this.ethConnector) {
+    if (!this.gethProcess) {
       let msg = 'geth process not started, use .start() before';
       logger.warn(msg);
       callback(msg, null);
@@ -123,7 +155,7 @@ class GethConnector {
       .replace(/\}\][\n\r]?\{/g, '}]|--|{') // }]{
       .split('|--|');
 
-    dechunkedData.forEach(function (chunk) {
+    dechunkedData.forEach((chunk)=> {
 
       if (this.lastChunk) {
         chunk = this.lastChunk + chunk;
@@ -149,9 +181,21 @@ class GethConnector {
     });
   }
 
+  _checkGeth () {
+
+    return new Promise((resolve, reject) => {
+      geth.run(['version'], function (err) {
+        if (err) {
+          reject(err);
+        }
+        resolve(geth.path());
+      });
+    });
+  }
+
   _connectToIPC () {
     if (!this.socket.writable) {
-      this.socket.connect({path: path.join(this.config.dataDir, 'geth.ipc')});
+      this.socket.connect({path: path.join(this.dataDir, 'geth.ipc')});
     }
   }
 
@@ -195,21 +239,44 @@ class GethConnector {
 
   _spawnGeth (extra) {
     return new Promise((resolve, reject) => {
+      if (this.gethProcess) {
+        return resolve(true);
+      }
+
       this.gethProcess = childProcess.spawn(this.executable, this.options, extra);
+
       this.gethProcess.on('exit', (code, signal) => {
-        console.log('exit:', code, signal);
-      });
-      this.gethProcess.on('close', (code, signal) => {
-        console.log('close:', code, signal);
-      });
-      this.gethProcess.on('error', (code) => {
-        console.log('error:', code);
+        logger.info('geth:spawn:exit:', code, signal);
       });
 
-      resolve('');//stubbed
+      this.gethProcess.on('close', (code, signal) => {
+        logger.info('geth:spawn:close:', code, signal);
+      });
+
+      this.gethProcess.on('error', (code) => {
+        return reject(`geth:spawn:error:${code}`);
+      });
+
+      this.gethProcess.stderr.on('data', function (data) {
+        logger.info(data.toString());
+      });
+
+      this.gethProcess.stdout.on('data', function (data) {
+        logger.info(data.toString());
+      });
+
+      return resolve(true);
     });
   }
+
+  stop () {
+    if (this.gethProcess) {
+      this.gethProcess.kill();
+      this.socket.destroy();
+      this.gethProcess = null;
+    }
+  }
 }
-;
+
 
 module.exports = GethConnector;

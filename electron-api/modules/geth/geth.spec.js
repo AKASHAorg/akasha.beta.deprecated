@@ -5,32 +5,44 @@ const geth   = require('./index');
 let connector;
 
 describe('gethConnector', function () {
-  before(function () {
+  this.timeout(10000);
+  before(function (done) {
     connector = geth.getInstance();
+    setTimeout(function () {
+      connector.start();
+    }, 500);
+
+    setTimeout(function () {
+      done();
+    }, 3500);
+  });
+
+  after(function () {
+    connector.stop();
   });
 
   it('should provide executable for geth', function () {
-    expect(geth).to.be.an('object');
+    expect(connector).to.be.an('object');
     const executable = connector.executable;
     expect(executable).to.exist;
   });
 
   it('should start geth process', function () {
-    expect(function () {
-      connector.start();
-    }).not.to.throw(Error);
+    expect(connector.gethProcess).to.be.an('object');
   });
 
-  it('should connect to IPC', function () {
-    expect(true).to.be.false;
+  it('should send rpc to ipc', function (done) {
+    connector.ipcCall('eth_coinbase', [], function (err, resp) {
+      expect(err).to.be.null;
+      done();
+    });
   });
 
-  it('should send rpc to ipc', function () {
-    expect(true).to.be.false;
-  });
-
-  it('should read data from rpc calls', function () {
-    expect(true).to.be.false;
+  it('should read data from rpc calls', function (done) {
+    connector.ipcCall('eth_coinbase', [], function (err, resp) {
+      expect(resp).to.exist;
+      done();
+    });
   });
 
   it('should unlock account', function () {
@@ -48,4 +60,5 @@ describe('gethConnector', function () {
   it('should destroy socket connection to IPC', function () {
     expect(true).to.be.false;
   });
+
 });

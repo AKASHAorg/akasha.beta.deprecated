@@ -13,29 +13,4 @@ const geth = new Binary()
   .use(process.platform === 'win32' ? 'geth.exe' : 'geth');
 
 
-const logger = new (winston.Logger)({
-  transports: [
-    new winston.transports.Console({
-      level:    'warn',
-      colorize: true
-    }),
-    new (winston.transports.File)(
-      {
-        filename: 'logs/geth-binary.log',
-        level:    'info',
-        maxsize:  10 * 1024, //1MB
-        maxFiles: 1,
-        name:     'log-geth-binary'
-      })]
-});
-
-
-geth.run(['version'], function (err) {
-  if (err) {
-    logger.warn(err);
-  }
-  logger.info('geth found');
-});
-
-
 module.exports = geth;
