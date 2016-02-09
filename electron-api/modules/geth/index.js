@@ -15,7 +15,7 @@ const platform = os.type();
 const symbolEnforcer = Symbol();
 const symbol         = Symbol();
 
-const env   = process.env.NODE_ENV || 'development';
+// const env   = process.env.NODE_ENV || 'development';
 let idCount = 1;
 
 const logger = new (winston.Logger)({
@@ -28,7 +28,7 @@ const logger = new (winston.Logger)({
       {
         filename: 'logs/geth.log',
         level:    'info',
-        maxsize:  10 * 1024 * 2, //2MB
+        maxsize:  10 * 1024 * 2, // 2MB
         maxFiles: 1,
         name:     'log-geth'
       }
@@ -144,26 +144,13 @@ class GethConnector {
    * @returns {Array|Array.<T>|*}
    * @private
    */
-  _setOptions ({dataDir, ipcPath, protocol=['--shh', '--rpc'], extra=[]}={}) {
+  _setOptions ({dataDir, ipcPath, protocol = ['--shh', '--rpc'], extra = []} = {}) {
     this.options = [];
     if (!check.array(protocol) || !check.array(extra)) {
       throw new Error('protocol, cors and extra options must be array type');
     }
     if (!dataDir) {
-      switch (platform) {
-        case 'Linux':
-          dataDir = path.join(os.homedir(), '.ethereum');
-          break;
-        case 'Darwin':
-          dataDir = path.join(os.homedir(), 'Library', 'Ethereum');
-          break;
-        case 'Windows_NT':
-          dataDir = '%APPDATA%/Ethereum';
-          break;
-        default:
-          logger.warn('geth:platform not supported');
-          throw new Error('Platform not supported');
-      }
+      dataDir = this._getDefaultDatadir();
     }
     this.dataDir = dataDir;
 
@@ -181,6 +168,25 @@ class GethConnector {
     return this.options;
   }
 
+  _getDefaultDatadir () {
+    let dataDir;
+    switch (platform) {
+      case 'Linux':
+        dataDir = path.join(os.homedir(), '.ethereum');
+        break;
+      case 'Darwin':
+        dataDir = path.join(os.homedir(), 'Library', 'Ethereum');
+        break;
+      case 'Windows_NT':
+        dataDir = '%APPDATA%/Ethereum';
+        break;
+      default:
+        logger.warn('geth:platform not supported');
+        throw new Error('Platform not supported');
+    }
+    return dataDir;
+  }
+
   /**
    * Construct data from ipc stream
    * @param data
@@ -188,7 +194,8 @@ class GethConnector {
    * @private
    */
   _deChunker (data) {
-    let result, dechunkedData;
+    let result;
+    let dechunkedData;
 
     return new Promise((resolve, reject)=> {
 
@@ -222,7 +229,7 @@ class GethConnector {
         clearTimeout(this.lastChunkTimeout);
         this.lastChunk = null;
 
-        return resolve(result);
+        resolve(result);
       });
     });
 
@@ -268,15 +275,16 @@ class GethConnector {
    * @private
    */
   _setSocketEvents () {
-    let promise, err;
+    let promise;
+    let err;
     this.socket.on('data', (data)=> {
-      this._deChunker(data).then((data)=> {
-        promise = this.ipcCallbacks[data.id];
-        delete this.ipcCallbacks[data.id];
-        if (!data.result) {
-          return promise.reject(data.error);
+      this._deChunker(data).then((resp)=> {
+        promise = this.ipcCallbacks[resp.id];
+        delete this.ipcCallbacks[resp.id];
+        if (!resp.result) {
+          return promise.reject(resp.error);
         }
-        return promise.resolve(data.result);
+        return promise.resolve(resp.result);
       }).catch(function (error) {
         err = `geth:ipcCall: ${error}`;
         logger.warn(err);

@@ -11,7 +11,7 @@ const check        = require('check-types');
 const symbolEnforcer = Symbol();
 const symbol         = Symbol();
 
-const env = process.env.NODE_ENV || 'development';
+// const env = process.env.NODE_ENV || 'development';
 
 const logger = new (winston.Logger)({
   transports: [
@@ -23,7 +23,7 @@ const logger = new (winston.Logger)({
       {
         filename: 'logs/ipfs.log',
         level:    'info',
-        maxsize:  10 * 1024, //1MB
+        maxsize:  10 * 1024, // 1MB
         maxFiles: 1,
         name:     'log-ipfs'
       }
