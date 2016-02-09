@@ -150,7 +150,7 @@ class GethConnector {
       throw new Error('protocol, cors and extra options must be array type');
     }
     if (!dataDir) {
-      dataDir = this._getDefaultDatadir();
+      dataDir = GethConnector.getDefaultDatadir();
     }
     this.dataDir = dataDir;
 
@@ -168,7 +168,7 @@ class GethConnector {
     return this.options;
   }
 
-  _getDefaultDatadir () {
+  static getDefaultDatadir () {
     let dataDir;
     switch (platform) {
       case 'Linux':
