@@ -1,6 +1,6 @@
 /* eslint strict: 0 */
 'use strict';
-require("babel-register");
+require('babel-register');
 
 const ipcMain = require('electron').ipcMain;
 const geth    = require('./modules/geth');
@@ -19,14 +19,14 @@ const apiWrapper = function (mainWindow) {
     mainWindow.setSize(width, height);
   });
 
-  ipcMain.on('request-unlock-account', function (event, account, password, timer = 30 * 60) {
+  ipcMain.on('request-unlock-account', function (event, account, password, timer = 60) {
     gethInstance
       .ipcCall('personal_unlockAccount', [account, password, timer])
       .then(function (isUnlocked) {
         event.sender.send('response-unlock-account', isUnlocked);
       }).catch(function (err) {
-      console.log(err);
-    });
+        console.log(err);
+      });
   });
 };
 

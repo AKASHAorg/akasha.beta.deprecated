@@ -1,5 +1,6 @@
 /* eslint strict: 0 */
 'use strict';
+require('babel-register');
 
 const electron = require('electron');
 const api = require('./electron-api');
