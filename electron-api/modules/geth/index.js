@@ -109,33 +109,29 @@ class GethConnector {
    * Call geth ipc methods
    * @param name
    * @param params
-   * @returns {Promise.<T>}
+   * @returns {bluebird|exports|module.exports}
    */
-  ipcCall (name, params) {
+  ipcCall (name, params = []) {
     let msg;
-    return new Promise((resolve, reject)=> {
+
+    return new Promise((send, deny)=> {
       if (!this.gethProcess) {
         msg = 'geth process not started, use .start() before';
         logger.warn(msg);
-        return reject(msg);
+        return deny(msg);
       }
       this._connectToIPC();
-      if (this.socket.writable) {
-        resolve();
-      } else {
-        return reject('Socket not writeable');
+      if (!this.socket.writable) {
+        return deny('Socket not writeable');
       }
-    }).then(()=> {
-      return new Promise((send, deny)=> {
-        this.ipcCallbacks[idCount] = {resolve: send, reject: deny};
-        this.socket.write(JSON.stringify({
-          jsonrpc: '2.0',
-          id:      idCount,
-          method:  name,
-          params:  params || []
-        }));
-        idCount++;
-      });
+      this.ipcCallbacks[idCount] = {resolve: send, reject: deny};
+      this.socket.write(JSON.stringify({
+        jsonrpc: '2.0',
+        id:      idCount,
+        method:  name,
+        params:  params || []
+      }));
+      idCount++;
     });
   }
 
@@ -192,16 +188,18 @@ class GethConnector {
    * @private
    */
   _deChunker (data) {
-    let result;
-    data              = data.toString();
-    let dechunkedData = data
-      .replace(/\}[\n\r]?\{/g, '}|--|{') // }{
-      .replace(/\}\][\n\r]?\[\{/g, '}]|--|[{') // }][{
-      .replace(/\}[\n\r]?\[\{/g, '}|--|[{') // }[{
-      .replace(/\}\][\n\r]?\{/g, '}]|--|{') // }]{
-      .split('|--|');
+    let result, dechunkedData;
 
     return new Promise((resolve, reject)=> {
+
+      data          = data.toString();
+      dechunkedData = data
+        .replace(/\}[\n\r]?\{/g, '}|--|{') // }{
+        .replace(/\}\][\n\r]?\[\{/g, '}]|--|[{') // }][{
+        .replace(/\}[\n\r]?\[\{/g, '}|--|[{') // }[{
+        .replace(/\}\][\n\r]?\{/g, '}]|--|{') // }]{
+        .split('|--|');
+
       dechunkedData.forEach((chunk)=> {
 
         if (this.lastChunk) {

@@ -41,20 +41,9 @@ describe('gethConnector', function () {
     });
   });
 
-  it('should unlock account', function () {
-    expect(true).to.be.false;
-  });
-
-  it('should get blockchain sync status', function () {
-    expect(true).to.be.false;
-  });
-
   it('should stop geth process', function () {
-    expect(true).to.be.false;
-  });
-
-  it('should destroy socket connection to IPC', function () {
-    expect(true).to.be.false;
+    connector.stop();
+    expect(connector.gethProcess).to.be.null;
   });
 
 })
