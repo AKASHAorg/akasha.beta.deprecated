@@ -31,16 +31,12 @@ describe('gethConnector', function () {
     expect(connector.gethProcess).to.be.an('object');
   });
 
-  it('should send rpc to ipc', function (done) {
-    connector.ipcCall('eth_coinbase', [], function (err, resp) {
-      expect(err).to.be.null;
-      done();
-    });
-  });
-
-  it('should read data from rpc calls', function (done) {
-    connector.ipcCall('eth_coinbase', [], function (err, resp) {
-      expect(resp).to.exist;
+  it('should send rpc to ipc and read data', function (done) {
+    connector.ipcCall('eth_coinbase', []).then(function (data) {
+      expect(data).to.exist;
+    }).catch(function (err) {
+      expect(err).to.be.undefined;
+    }).finally(function () {
       done();
     });
   });
@@ -61,4 +57,5 @@ describe('gethConnector', function () {
     expect(true).to.be.false;
   });
 
-});
+})
+;

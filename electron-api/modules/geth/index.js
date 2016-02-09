@@ -63,6 +63,10 @@ class GethConnector {
     this._setSocketEvents();
   }
 
+  /**
+   *
+   * @returns {*}
+   */
   static getInstance () {
     if (!this[symbol]) {
       this[symbol] = new GethConnector(symbolEnforcer);
@@ -70,6 +74,10 @@ class GethConnector {
     return this[symbol];
   }
 
+  /**
+   *
+   * @param options
+   */
   start (options = {}) {
     this._setOptions(options);
 
@@ -83,6 +91,51 @@ class GethConnector {
     }).catch((err)=> {
       logger.warn(`geth:binary:${err}`);
       throw new Error(`Could not download geth ${err}`);
+    });
+  }
+
+  /**
+   * Stop and flush data
+   */
+  stop () {
+    if (this.gethProcess) {
+      this.gethProcess.kill();
+      this.socket.destroy();
+      this.gethProcess = null;
+    }
+  }
+
+  /**
+   * Call geth ipc methods
+   * @param name
+   * @param params
+   * @returns {Promise.<T>}
+   */
+  ipcCall (name, params) {
+    let msg;
+    return new Promise((resolve, reject)=> {
+      if (!this.gethProcess) {
+        msg = 'geth process not started, use .start() before';
+        logger.warn(msg);
+        return reject(msg);
+      }
+      this._connectToIPC();
+      if (this.socket.writable) {
+        resolve();
+      } else {
+        return reject('Socket not writeable');
+      }
+    }).then(()=> {
+      return new Promise((send, deny)=> {
+        this.ipcCallbacks[idCount] = {resolve: send, reject: deny};
+        this.socket.write(JSON.stringify({
+          jsonrpc: '2.0',
+          id:      idCount,
+          method:  name,
+          params:  params || []
+        }));
+        idCount++;
+      });
     });
   }
 
@@ -123,37 +176,23 @@ class GethConnector {
     }
     this.ipcPath = ipcPath;
 
+    ipcPath = null;
+    dataDir = null;
+
     this.options.push('--datadir', `${this.dataDir}`);
 
     this.options = this.options.concat(protocol, extra);
     return this.options;
   }
 
-
-  ipcCall (name, params, callback) {
-    if (!this.gethProcess) {
-      let msg = 'geth process not started, use .start() before';
-      logger.warn(msg);
-      callback(msg, null);
-    }
-
-    this._connectToIPC();
-    if (this.socket.writable) {
-      this.ipcCallbacks[idCount] = callback;
-      this.socket.write(JSON.stringify({
-        jsonrpc: '2.0',
-        id:      idCount,
-        method:  name,
-        params:  params || []
-      }));
-
-      idCount++;
-    } else {
-      callback('Socket not writeable', null);
-    }
-  }
-
-  _deChunker (data, callback) {
+  /**
+   * Construct data from ipc stream
+   * @param data
+   * @returns {bluebird|exports|module.exports}
+   * @private
+   */
+  _deChunker (data) {
+    let result;
     data              = data.toString();
     let dechunkedData = data
       .replace(/\}[\n\r]?\{/g, '}|--|{') // }{
@@ -162,32 +201,40 @@ class GethConnector {
       .replace(/\}\][\n\r]?\{/g, '}]|--|{') // }]{
       .split('|--|');
 
-    dechunkedData.forEach((chunk)=> {
+    return new Promise((resolve, reject)=> {
+      dechunkedData.forEach((chunk)=> {
 
-      if (this.lastChunk) {
-        chunk = this.lastChunk + chunk;
-      }
+        if (this.lastChunk) {
+          chunk = this.lastChunk + chunk;
+        }
 
-      let result = chunk;
+        result = chunk;
 
-      try {
-        result = JSON.parse(result);
-      } catch (e) {
-        this.lastChunk = chunk;
+        try {
+          result = JSON.parse(result);
+        } catch (e) {
+          this.lastChunk = chunk;
+          clearTimeout(this.lastChunkTimeout);
+          this.lastChunkTimeout = setTimeout(function () {
+            return reject('Couldn\'t decode data: ' + chunk);
+          }, 1000 * 15);
+          return;
+        }
+
         clearTimeout(this.lastChunkTimeout);
-        this.lastChunkTimeout = setTimeout(function () {
-          callback('Couldn\'t decode data: ' + chunk);
-        }, 1000 * 15);
-        return;
-      }
+        this.lastChunk = null;
 
-      clearTimeout(this.lastChunkTimeout);
-      this.lastChunk = null;
-
-      callback(null, result);
+        return resolve(result);
+      });
     });
+
   }
 
+  /**
+   * Downloads geth executable
+   * @returns {bluebird|exports|module.exports}
+   * @private
+   */
   _checkGeth () {
 
     return new Promise((resolve, reject) => {
@@ -200,29 +247,42 @@ class GethConnector {
     });
   }
 
+  /**
+   * Connect to geth ipc
+   * @private
+   */
   _connectToIPC () {
     if (!this.socket.writable) {
       this.socket.connect({path: this.ipcPath});
     }
   }
 
+  /**
+   *
+   * @private
+   */
   _ipcDestroy () {
     this.socket.destroy();
   }
 
+  /**
+   * Resolves promisses from ipcCall
+   * @private
+   */
   _setSocketEvents () {
-
+    let promise, err;
     this.socket.on('data', (data)=> {
-      this._deChunker(data, (error, response)=> {
-        if (!error) {
-          let cb = this.ipcCallbacks[response.id];
-          if (response.result) {
-            cb(null, response.result);
-          } else {
-            cb(response.error, null);
-          }
-          delete this.ipcCallbacks[response.id];
+      this._deChunker(data).then((data)=> {
+        promise = this.ipcCallbacks[data.id];
+        delete this.ipcCallbacks[data.id];
+        if (!data.result) {
+          return promise.reject(data.error);
         }
+        return promise.resolve(data.result);
+      }).catch(function (error) {
+        err = `geth:ipcCall: ${error}`;
+        logger.warn(err);
+        throw new Error(err);
       });
     });
 
@@ -244,6 +304,12 @@ class GethConnector {
     });
   }
 
+  /**
+   *
+   * @param extra
+   * @returns {bluebird|exports|module.exports}
+   * @private
+   */
   _spawnGeth (extra) {
     return new Promise((resolve, reject) => {
       if (this.gethProcess) {
@@ -274,14 +340,6 @@ class GethConnector {
 
       return resolve(true);
     });
-  }
-
-  stop () {
-    if (this.gethProcess) {
-      this.gethProcess.kill();
-      this.socket.destroy();
-      this.gethProcess = null;
-    }
   }
 }
 
