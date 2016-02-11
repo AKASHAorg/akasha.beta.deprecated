@@ -144,7 +144,7 @@ const CircularProgress = React.createClass({
 
   getDefaultProps() {
     return {
-      mode:        'determinate',
+      mode:        'indeterminate',
       value:       0,
       min:         0,
       max:         100,
@@ -279,8 +279,12 @@ export class SyncProgress extends Component {
     let {innerIcon, value, strokeWidth} = this.props;
 
     return (
-      <CircularProgress innerIcon={innerIcon} value={value} strokeWidth={strokeWidth}>
-        <MenuEthereum style={{opacity: 0.54}} />
+      <CircularProgress innerIcon={innerIcon}
+                        mode={"determinate"}
+                        value={value}
+                        strokeWidth={strokeWidth}
+      >
+        <MenuEthereum style={{opacity: 0.54}}/>
       </CircularProgress>
     );
   }
