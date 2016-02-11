@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import autoPrefix from 'material-ui/lib/styles/auto-prefix';
 import Transitions from 'material-ui/lib/styles/transitions';
 import getMuiTheme from 'material-ui/lib/styles/getMuiTheme';
-import {MenuEthereum} from './icons';
+import {MenuEthereum, MenuAddEntry, MenuCommunities} from './icons';
+import Badge from 'material-ui/lib/badge';
 
 function getRelativeValue (value, min, max) {
   const clampedValue = Math.min(Math.max(min, value), max);
@@ -25,9 +26,9 @@ function getStyles (props, state) {
             },
           } = state.muiTheme;
 
-  const zoom     = size * 1.4;
+  const zoom     = size * 1.3;
   const baseSize = 32;
-  let margin     = Math.round(((50 * zoom) - 50) / 2);
+  let margin     = Math.round(((32 * zoom) - 32) / 2);
 
   if (margin < 0) margin = 0;
 
@@ -67,7 +68,7 @@ function getStyles (props, state) {
   if (props.mode === 'determinate') {
     const relVal                = getRelativeValue(value, min, max);
     styles.path.transition      = Transitions.create('all', '0.3s', null, 'linear');
-    styles.path.strokeDasharray = `${Math.round(relVal * 0.87)},200`;
+    styles.path.strokeDasharray = `${Math.round(relVal * 0.93)},200`;
   }
 
   return styles;
@@ -76,11 +77,7 @@ function getStyles (props, state) {
 const CircularProgress = React.createClass({
 
   propTypes: {
-    /**
-     * svg circle mask for data progress
-     */
 
-    circleMask: React.PropTypes.object,
     /**
      * Override the progress's color.
      */
@@ -244,13 +241,13 @@ const CircularProgress = React.createClass({
           <svg style={prepareStyles(styles.svg)}>
             {children}
             <circle
-              ref="path" style={{stroke:"rgba(0, 0, 0, 0.15)", strokeDasharray: "89, 200"}} cx="16"
-              cy="16" r="13" fill="none"
+              ref="path" style={{stroke:"rgba(0, 0, 0, 0.15)", strokeDasharray: "95, 200"}} cx="16"
+              cy="16" r="15" fill="none"
               strokeWidth={strokeWidth} strokeMiterlimit="10"
             />
             <circle
               ref="path" style={prepareStyles(styles.path)} cx="16"
-              cy="16" r="13" fill="none"
+              cy="16" r="15" fill="none"
               strokeWidth={strokeWidth} strokeMiterlimit="10"
             />
           </svg>
@@ -261,6 +258,42 @@ const CircularProgress = React.createClass({
 });
 
 export default CircularProgress;
+
+
+export class SyncProgressBadge extends Component {
+  static propTypes = {
+    innerIcon:   React.PropTypes.object,
+    strokeWidth: React.PropTypes.number,
+    value:       React.PropTypes.number
+  };
+
+  static defaultProps = {
+    value:       1,
+    strokeWidth: 1.2
+  };
+
+  render () {
+    let {innerIcon, value, strokeWidth} = this.props;
+
+    return (
+      <Badge style={{padding:0 }}
+             badgeStyle={{top: '7px', width: '14px', height:'14px', fontSize: '8px' }}
+             badgeContent={3}
+             primary={true}
+      >
+        <CircularProgress innerIcon={innerIcon}
+                          mode={"determinate"}
+                          value={value}
+                          strokeWidth={strokeWidth}
+        >
+
+          <MenuEthereum style={{opacity: 0.54}}/>
+
+        </CircularProgress>
+      </Badge>
+    );
+  }
+}
 
 
 export class SyncProgress extends Component {
@@ -279,13 +312,15 @@ export class SyncProgress extends Component {
     let {innerIcon, value, strokeWidth} = this.props;
 
     return (
-      <CircularProgress innerIcon={innerIcon}
-                        mode={"determinate"}
-                        value={value}
-                        strokeWidth={strokeWidth}
-      >
-        <MenuEthereum style={{opacity: 0.54}}/>
-      </CircularProgress>
+        <CircularProgress innerIcon={innerIcon}
+                          mode={"determinate"}
+                          value={value}
+                          strokeWidth={strokeWidth}
+        >
+
+          <MenuCommunities style={{opacity: 0.54}}/>
+
+        </CircularProgress>
     );
   }
 }

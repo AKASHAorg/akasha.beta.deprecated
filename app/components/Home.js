@@ -9,7 +9,7 @@ export default class Home extends Component {
         <div>
           <h2>Homeaa</h2>
           <Link to="/counter">to Counters</Link>
-          <SyncProgress value={48} strokeWidth={1.2} />
+          <SyncProgress value={100} strokeWidth={1.5} />
         </div>
       </div>
     );
