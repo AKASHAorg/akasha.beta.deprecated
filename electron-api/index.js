@@ -9,9 +9,6 @@ const ipfs    = require('./modules/ipfs');
 const gethInstance = geth.getInstance();
 const ipfsInstance = ipfs.getInstance();
 
-setTimeout(function () {
-  gethInstance.start();
-}, 10);
 
 
 const apiWrapper = function (mainWindow) {
@@ -20,6 +17,9 @@ const apiWrapper = function (mainWindow) {
   });
 
   ipcMain.on('request-unlock-account', function (event, account, password, timer = 60) {
+    setTimeout(function () {
+  gethInstance.start();
+}, 10);
     gethInstance
       .ipcCall('personal_unlockAccount', [account, password, timer])
       .then(function (isUnlocked) {
