@@ -100,10 +100,14 @@ class GethConnector {
   stop () {
     if (this.gethProcess) {
       this.gethProcess.kill();
-      this.socket.destroy();
       this.gethProcess = null;
     }
+
+    if (this.socket.writable) {
+      this.socket.destroy();
+    }
   }
+
 
   /**
    * Call geth ipc methods
@@ -144,7 +148,7 @@ class GethConnector {
    * @returns {Array|Array.<T>|*}
    * @private
    */
-  _setOptions ({dataDir, ipcPath, protocol = ['--shh', '--rpc'], extra = []} = {}) {
+  _setOptions ({dataDir, ipcPath, protocol = ['--shh', '--rpc', '--fast'], extra = []} = {}) {
     this.options = [];
     if (!check.array(protocol) || !check.array(extra)) {
       throw new Error('protocol, cors and extra options must be array type');

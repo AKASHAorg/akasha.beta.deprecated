@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 import autoPrefix from 'material-ui/lib/styles/auto-prefix';
 import Transitions from 'material-ui/lib/styles/transitions';
 import getMuiTheme from 'material-ui/lib/styles/getMuiTheme';
-import {MenuEthereum, MenuAddEntry, MenuCommunities} from './icons';
-import Badge from 'material-ui/lib/badge';
+
 
 function getRelativeValue (value, min, max) {
   const clampedValue = Math.min(Math.max(min, value), max);
@@ -17,13 +16,13 @@ function getStyles (props, state) {
           max,
           min,
           size,
-          value,
+          value
           } = props;
 
   const {
           baseTheme: {
-            palette,
-            },
+            palette
+            }
           } = state.muiTheme;
 
   const zoom     = size * 1.3;
@@ -38,7 +37,7 @@ function getStyles (props, state) {
       margin:   margin,
       display:  'inline-block',
       width:    baseSize,
-      height:   baseSize,
+      height:   baseSize
     },
 
     wrapper: {
@@ -46,14 +45,14 @@ function getStyles (props, state) {
       height:                   baseSize,
       display:                  'inline-block',
       transition:               Transitions.create('transform', '20s', null, 'linear'),
-      transitionTimingFunction: 'linear',
+      transitionTimingFunction: 'linear'
     },
 
     svg: {
       height:    baseSize,
       position:  'relative',
       transform: `scale(${zoom})`,
-      width:     baseSize,
+      width:     baseSize
     },
 
     path: {
@@ -61,7 +60,7 @@ function getStyles (props, state) {
       strokeDashoffset: 0,
       stroke:           props.color || palette.primary1Color,
       strokeLinecap:    'round',
-      transition:       Transitions.create('all', '1.5s', null, 'ease-in-out'),
+      transition:       Transitions.create('all', '1.5s', null, 'ease-in-out')
     },
   };
 
@@ -81,18 +80,14 @@ const CircularProgress = React.createClass({
     /**
      * Override the progress's color.
      */
-    color:      React.PropTypes.string,
-
-    /**
-     * svg path inside circle
-     */
-    innerIcon: React.PropTypes.object,
+    color: React.PropTypes.string,
 
     /**
      * Style for inner wrapper div.
      */
     innerStyle: React.PropTypes.object,
 
+    maskStyle: React.PropTypes.object,
 
     /**
      * The max value of progress, only works in determinate mode.
@@ -109,6 +104,8 @@ const CircularProgress = React.createClass({
      * for when there is no value for progress.
      */
     mode: React.PropTypes.oneOf(['determinate', 'indeterminate']),
+
+    radius: React.PropTypes.string,
 
     /**
      * The size of the progress.
@@ -128,52 +125,54 @@ const CircularProgress = React.createClass({
     /**
      * The value of progress, only works in determinate mode.
      */
-    value: React.PropTypes.number,
+    value: React.PropTypes.number
   },
 
   contextTypes: {
-    muiTheme: React.PropTypes.object,
+    muiTheme: React.PropTypes.object
   },
 
   childContextTypes: {
-    muiTheme: React.PropTypes.object,
+    muiTheme: React.PropTypes.object
   },
 
-  getDefaultProps() {
+  getDefaultProps () {
     return {
       mode:        'indeterminate',
       value:       0,
+      maskStyle:   {stroke: "rgba(0, 0, 0, 0.15)", strokeDasharray: "95, 200"},
       min:         0,
       max:         100,
+      radius: "15",
       size:        1,
       strokeWidth: 1.5
     };
   },
 
-  getInitialState() {
+  getInitialState () {
     return {
-      muiTheme: this.context.muiTheme || getMuiTheme(),
+      muiTheme: this.context.muiTheme || getMuiTheme()
     };
   },
 
-  getChildContext() {
+  getChildContext () {
     return {
-      muiTheme: this.state.muiTheme,
+      muiTheme: this.state.muiTheme
     };
   },
 
-  componentDidMount() {
+  componentDidMount () {
     this._scalePath(this.refs.path);
     this._rotateWrapper(this.refs.wrapper);
   },
 
   componentWillReceiveProps(nextProps, nextContext) {
     this.setState({
-      muiTheme: nextContext.muiTheme || this.state.muiTheme,
+      muiTheme: nextContext.muiTheme || this.state.muiTheme
     });
   },
 
-  componentWillUnmount() {
+  componentWillUnmount () {
     clearTimeout(this.scalePathTimer);
     clearTimeout(this.rotateWrapperTimer);
   },
@@ -204,7 +203,7 @@ const CircularProgress = React.createClass({
     this.scalePathTimer = setTimeout(() => this._scalePath(path, step + 1), step ? 750 : 250);
   },
 
-  _rotateWrapper(wrapper) {
+  _rotateWrapper (wrapper) {
     if (this.props.mode !== 'indeterminate') return;
 
     autoPrefix.set(wrapper.style, 'transform', 'rotate(0deg)', this.state.muiTheme);
@@ -219,13 +218,15 @@ const CircularProgress = React.createClass({
     this.rotateWrapperTimer = setTimeout(() => this._rotateWrapper(wrapper), 10050);
   },
 
-  render() {
+  render () {
     let {
           style,
           innerStyle,
+          maskStyle,
           size,
           strokeWidth,
           children,
+      radius,
           ...other,
           } = this.props;
 
@@ -241,86 +242,21 @@ const CircularProgress = React.createClass({
           <svg style={prepareStyles(styles.svg)}>
             {children}
             <circle
-              ref="path" style={{stroke:"rgba(0, 0, 0, 0.15)", strokeDasharray: "95, 200"}} cx="16"
-              cy="16" r="15" fill="none"
+              ref="path" style={maskStyle} cx="16"
+              cy="16" r={radius} fill="none"
               strokeWidth={strokeWidth} strokeMiterlimit="10"
             />
             <circle
               ref="path" style={prepareStyles(styles.path)} cx="16"
-              cy="16" r="15" fill="none"
+              cy="16" r={radius} fill="none"
               strokeWidth={strokeWidth} strokeMiterlimit="10"
             />
           </svg>
         </div>
       </div>
     );
-  },
+  }
 });
 
 export default CircularProgress;
 
-
-export class SyncProgressBadge extends Component {
-  static propTypes = {
-    innerIcon:   React.PropTypes.object,
-    strokeWidth: React.PropTypes.number,
-    value:       React.PropTypes.number
-  };
-
-  static defaultProps = {
-    value:       1,
-    strokeWidth: 1.2
-  };
-
-  render () {
-    let {innerIcon, value, strokeWidth} = this.props;
-
-    return (
-      <Badge style={{padding:0 }}
-             badgeStyle={{top: '7px', width: '14px', height:'14px', fontSize: '8px' }}
-             badgeContent={3}
-             primary={true}
-      >
-        <CircularProgress innerIcon={innerIcon}
-                          mode={"determinate"}
-                          value={value}
-                          strokeWidth={strokeWidth}
-        >
-
-          <MenuEthereum style={{opacity: 0.54}}/>
-
-        </CircularProgress>
-      </Badge>
-    );
-  }
-}
-
-
-export class SyncProgress extends Component {
-  static propTypes = {
-    innerIcon:   React.PropTypes.object,
-    strokeWidth: React.PropTypes.number,
-    value:       React.PropTypes.number
-  };
-
-  static defaultProps = {
-    value:       1,
-    strokeWidth: 1.2
-  };
-
-  render () {
-    let {innerIcon, value, strokeWidth} = this.props;
-
-    return (
-        <CircularProgress innerIcon={innerIcon}
-                          mode={"determinate"}
-                          value={value}
-                          strokeWidth={strokeWidth}
-        >
-
-          <MenuCommunities style={{opacity: 0.54}}/>
-
-        </CircularProgress>
-    );
-  }
-}

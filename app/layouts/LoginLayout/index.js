@@ -1,5 +1,6 @@
 import React, { PropTypes } from 'react';
 import Paper from 'material-ui/lib/paper';
+import { Scrollbars } from 'react-custom-scrollbars';
 import '../../styles/core.scss';
 
 // Note: Stateless/function components *will not* hot reload!
@@ -20,9 +21,13 @@ const style = {
 };
 function LoginLayout ({ children }) {
   return (
-    <div className='center-xs' style={{height: '100%'}}>
-      <Paper className='col-xs' style={style}>
-        {children}
+    <div className='center-xs'
+         style={{height: '100%'}}
+    >
+      <Paper className='col-xs'
+             style={style}
+      >
+          {children}
       </Paper>
     </div>
   );
