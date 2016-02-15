@@ -12,11 +12,8 @@ export default class Home extends Component {
         <div>
           <h2>Homeaa</h2>
           <Link to="/counter">to Counters</Link>
-          <SyncProgress value={12} />
+
           <ProfileBadge />
-          <SvgIcon>
-          <MenuAkashaLogo />
-          </SvgIcon>
         </div>
       </div>
     );
