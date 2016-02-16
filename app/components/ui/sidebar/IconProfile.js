@@ -2,6 +2,7 @@ import React, { PropTypes, Component } from 'react';
 import SvgIcon from 'material-ui/lib/svg-icon';
 import getMuiTheme from 'material-ui/lib/styles/getMuiTheme';
 import Colors from 'material-ui/lib/styles/colors';
+import Badge from 'material-ui/lib/badge';
 import CircleIcon from './CircleIcon';
 
 import {MenuUser} from '../svg';
@@ -60,20 +61,27 @@ export default class IconProfile extends Component {
             } = this.state.muiTheme;
 
     return (
-      <div
-        style={Object.assign(style, {borderColor:  palette.primary1Color})}
-        className="user-icon"
-      >
-        <SvgIcon
-          color={color}
-          hoverColor={hoverColor}
-          style={iconStyle}
-          viewBox={viewBox}
-          {...other}
+      <Badge
+      badgeContent={4}
+      badgeStyle={{top:'-4px', right: '-4px', fontSize: '10px', width: '16px', height: '16px', backgroundColor: Colors.red500}}
+      primary={true}
+      style={{padding:0}}
+    >
+        <div
+          style={Object.assign(style, {borderColor:  palette.primary1Color})}
+          className="user-icon"
         >
-          <MenuUser />
-        </SvgIcon>
-      </div>
+          <SvgIcon
+            color={color}
+            hoverColor={hoverColor}
+            style={iconStyle}
+            viewBox={viewBox}
+            {...other}
+          >
+            <MenuUser />
+          </SvgIcon>
+        </div>
+        </Badge>
     )
   }
 
