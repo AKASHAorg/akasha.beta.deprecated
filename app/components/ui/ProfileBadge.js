@@ -1,7 +1,7 @@
 import Badge from 'material-ui/lib/badge';
 import React, { Component } from 'react';
 import CircularProgress from './loaders/CicularProgress';
-import {MenuUser} from './icons';
+import {MenuUser} from './svg';
 
 export default class ProfileBadge extends Component {
   render () {

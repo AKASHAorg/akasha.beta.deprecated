@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import CircularProgress from './CicularProgress';
-import {MenuEthereum} from '../icons';
+import {MenuEthereum} from '../svg';
 
 export default class SyncProgress extends Component {
   static propTypes = {
