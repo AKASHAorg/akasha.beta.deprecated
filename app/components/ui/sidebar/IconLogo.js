@@ -6,15 +6,20 @@ import {MenuAkashaLogo} from '../svg';
 import Radium from 'radium';
 
 class IconLogo extends Component {
-  state = {
-    muiTheme: this.context.muiTheme || getMuiTheme()
-  };
 
   static propTypes = {
-    iconStyle:  PropTypes.object,
-    viewBox:    PropTypes.string,
+    color:      PropTypes.string,
     hoverColor: PropTypes.string,
-    color:      PropTypes.string
+    iconStyle:  PropTypes.object,
+    viewBox:    PropTypes.string
+  };
+
+  static contextTypes = {
+    muiTheme: React.PropTypes.object
+  };
+
+  static childContextTypes = {
+    muiTheme: React.PropTypes.object
   };
 
   static defaultProps = {
@@ -24,12 +29,8 @@ class IconLogo extends Component {
     hoverColor: Colors.darkBlack
   };
 
-  static contextTypes = {
-    muiTheme: React.PropTypes.object
-  };
-
-  static childContextTypes = {
-    muiTheme: React.PropTypes.object
+  state = {
+    muiTheme: this.context.muiTheme || getMuiTheme()
   };
 
   getChildContext () {
@@ -41,16 +42,16 @@ class IconLogo extends Component {
   render () {
     let {iconStyle, viewBox, hoverColor, color, ...other} = this.props;
     return (
-        <SvgIcon
-          color={color}
-          className={'hand-icon'}
-          hoverColor={hoverColor}
-          style={iconStyle}
-          viewBox={viewBox}
-          {...other}
-        >
-          <MenuAkashaLogo />
-        </SvgIcon>
+      <SvgIcon
+        className={'hand-icon'}
+        color={color}
+        hoverColor={hoverColor}
+        style={iconStyle}
+        viewBox={viewBox}
+        {...other}
+      >
+        <MenuAkashaLogo />
+      </SvgIcon>
     )
   }
 }

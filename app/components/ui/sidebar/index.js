@@ -13,6 +13,8 @@ import Community from './IconCommunity';
 import People from './IconPeople';
 import Logo from './IconLogo';
 
+import ProfilePannel from './pannels/ProfilePannel';
+
 export default class SideBar extends Component {
 
   static propTypes = {
@@ -64,6 +66,7 @@ export default class SideBar extends Component {
         <div style={{flexGrow: 1, padding: '16px'}}>
           <Logo style={{position:'absolute', bottom: '16px', width: '32px', height: '32px'}}/>
         </div>
+        <ProfilePannel />
       </div>
     );
 

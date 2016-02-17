@@ -3,7 +3,6 @@ import SvgIcon from 'material-ui/lib/svg-icon';
 import getMuiTheme from 'material-ui/lib/styles/getMuiTheme';
 import Colors from 'material-ui/lib/styles/colors';
 import Badge from 'material-ui/lib/badge';
-import CircleIcon from './CircleIcon';
 
 import {MenuUser} from '../svg';
 import './styles/sidebar.scss';
@@ -20,21 +19,21 @@ export default class IconProfile extends Component {
     iconStyle:  PropTypes.object,
     viewBox:    PropTypes.string,
     hoverColor: PropTypes.string,
-    color: PropTypes.string
+    color:      PropTypes.string
   };
 
   static defaultProps = {
-    style:      {
+    style: {
       transform:    'scale(1.2)',
       width:        '34px',
       height:       '34px',
-      borderWidth:       '1px',
-      borderStyle: 'solid',
+      borderWidth:  '1px',
+      borderStyle:  'solid',
       borderRadius: '50%'
     },
     iconStyle:  {width: '32px', height: '32px', transform: 'scale(0.9)', visibility: 'visible'},
     viewBox:    '0 0 32 32',
-    color: Colors.lightBlack,
+    color:      Colors.lightBlack,
     hoverColor: Colors.darkBlack
   };
 
@@ -62,11 +61,18 @@ export default class IconProfile extends Component {
 
     return (
       <Badge
-      badgeContent={4}
-      badgeStyle={{top:'-4px', right: '-4px', fontSize: '10px', width: '16px', height: '16px', backgroundColor: Colors.red500}}
-      primary={true}
-      style={{padding:0}}
-    >
+        badgeContent={1}
+        badgeStyle={{
+        top:'-4px',
+        right: '-4px',
+        fontSize: '10px',
+        width: '18px',
+        height: '18px',
+        backgroundColor: Colors.red500
+      }}
+        primary={true}
+        style={{padding:0}}
+      >
         <div
           style={Object.assign(style, {borderColor:  palette.primary1Color})}
           className="user-icon"
@@ -81,7 +87,7 @@ export default class IconProfile extends Component {
             <MenuUser />
           </SvgIcon>
         </div>
-        </Badge>
+      </Badge>
     )
   }
 
