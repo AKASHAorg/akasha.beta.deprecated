@@ -26,3 +26,18 @@ html, body {
   background: url(/img/logo.svg);
   background-size: 32px 30px;
 }
+
+.user-icon{
+  visibility: hidden;
+  &:hover, .active{
+    visibility: visible;
+    cursor: pointer;
+  }
+}
+
+.hand-icon {
+ &:hover{
+   cursor: pointer;
+ }
+}
+

@@ -1,6 +1,5 @@
 import React, { PropTypes } from 'react';
 import Radium from 'radium';
-import './styles/circleicon.scss';
 
 
 function CircleIcon ({ children, style }) {

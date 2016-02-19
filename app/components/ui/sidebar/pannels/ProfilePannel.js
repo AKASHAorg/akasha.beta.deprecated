@@ -156,10 +156,10 @@ class ProfilePannel extends Component {
           <div>
             <Tabs tabItemContainerStyle={{backgroundColor: 'transparent'}}>
               <Tab label="FEED" style={tabStyles.default_tab}>
-                <div style={{paddingLeft: '32px', paddingRight: '32px'}}>
+                <div>
                   <List subheader="Wednesday, 27 January 2016">
                     <ListItem
-                      leftAvatar={<Avatar src="" style={{left: '0'}} />}
+                      leftAvatar={<Avatar src="" />}
                       rightIconButton={rightIconMenu}
                       primaryText={<strong style={{color: Colors.darkBlack}}>Vasile Ghita</strong>}
                       secondaryText={
@@ -172,7 +172,7 @@ class ProfilePannel extends Component {
                     />
                     <Divider/>
                     <ListItem
-                      leftAvatar={<Avatar src="" style={{left: '0'}}/>}
+                      leftAvatar={<Avatar src=""/>}
                       rightIconButton={rightIconMenu}
                       primaryText={<strong style={{color: Colors.darkBlack}}>Vasile Ghita</strong>}
                       secondaryText={
@@ -187,7 +187,7 @@ class ProfilePannel extends Component {
                     </List>
                   <List subheader="Last week">
                     <ListItem
-                      leftAvatar={<Avatar src="" style={{left: '0'}}/>}
+                      leftAvatar={<Avatar src=""/>}
                       rightIconButton={rightIconMenu}
                       primaryText={<strong style={{color: Colors.darkBlack}}>Vasile Ghita</strong>}
                       secondaryText={
@@ -200,7 +200,7 @@ class ProfilePannel extends Component {
                     />
                     <Divider/>
                     <ListItem
-                      leftAvatar={<Avatar src="" style={{left: '0'}}/>}
+                      leftAvatar={<Avatar src="" />}
                       rightIconButton={rightIconMenu}
                       primaryText={<strong style={{color: Colors.darkBlack}}>Vasile Ghita</strong>}
                       secondaryText={
@@ -213,7 +213,7 @@ class ProfilePannel extends Component {
                     />
                     <Divider/>
                     <ListItem
-                      leftAvatar={<Avatar src="" style={{left: '0'}}/>}
+                      leftAvatar={<Avatar src=""/>}
                       rightIconButton={rightIconMenu}
                       primaryText={<strong style={{color: Colors.darkBlack}}>Vasile Ghita</strong>}
                       secondaryText={

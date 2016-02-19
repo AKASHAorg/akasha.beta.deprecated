@@ -5,7 +5,6 @@ import Colors from 'material-ui/lib/styles/colors';
 import Badge from 'material-ui/lib/badge';
 
 import {MenuUser} from '../svg';
-import './styles/sidebar.scss';
 
 
 export default class IconProfile extends Component {
