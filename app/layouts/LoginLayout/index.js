@@ -1,5 +1,6 @@
 import React, { PropTypes } from 'react';
 import Paper from 'material-ui/lib/paper';
+import '../../styles/core.scss';
 
 // Note: Stateless/function components *will not* hot reload!
 // react-transform *only* works on component classes.

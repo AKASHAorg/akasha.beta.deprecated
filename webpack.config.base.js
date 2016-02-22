@@ -54,13 +54,13 @@ webpackConfig.sassLoader = {
 // File loaders
 /* eslint-disable */
 webpackConfig.module.loaders.push(
-  { test: /\.woff(\?.*)?$/,  loader: 'file' },
-  { test: /\.woff2(\?.*)?$/, loader: 'file' },
-  { test: /\.otf(\?.*)?$/,   loader: 'file' },
-  { test: /\.ttf(\?.*)?$/,   loader: 'file' },
-  { test: /\.eot(\?.*)?$/,   loader: 'file' },
-  { test: /\.svg(\?.*)?$/,   loader: 'file' },
-  { test: /\.(png|jpg)$/,    loader: 'file' }
+  { test: /\.woff(\?.*)?$/,  loader: 'file?name=font/[name].[ext]' },
+  { test: /\.woff2(\?.*)?$/, loader: 'file?name=font/[name].[ext]' },
+  { test: /\.otf(\?.*)?$/,   loader: 'file?name=font/[name].[ext]' },
+  { test: /\.ttf(\?.*)?$/,   loader: 'file?name=font/[name].[ext]' },
+  { test: /\.eot(\?.*)?$/,   loader: 'file?name=font/[name].[ext]' },
+  { test: /\.svg(\?.*)?$/,   loader: 'file?name=font/[name].[ext]' },
+  { test: /\.(png|jpg)$/,    loader: 'file?name=images/[name].[ext]' }
 );
 
 module.exports = webpackConfig;

@@ -2,6 +2,7 @@ import Colors from 'material-ui/lib/styles/colors';
 import ColorManipulator from 'material-ui/lib/utils/color-manipulator';
 import Spacing from 'material-ui/lib/styles/spacing';
 import zIndex from 'material-ui/lib/styles/zIndex';
+import 'roboto-fontface';
 
 export default {
   spacing:    Spacing,
@@ -14,7 +15,7 @@ export default {
     accent1Color:       '#03A9F4',
     accent2Color:       '#40C4FF',
     accent3Color:       '#00B0FF',
-    textColor:          '#efefef',
+    textColor:          Colors.lightBlack,
     alternateTextColor: Colors.white,
     canvasColor:        Colors.white,
     borderColor:        Colors.grey300,
