@@ -1,15 +1,14 @@
 import React, { Component, PropTypes } from 'react';
-import Logo from '../ui/sidebar/IconLogo';
-import Paper from 'material-ui/lib/paper';
-import List from 'material-ui/lib/lists/list';
-import ListItem from 'material-ui/lib/lists/list-item';
-import MoreVertIcon from 'material-ui/lib/svg-icons/navigation/more-vert';
-import IconMenu from 'material-ui/lib/menus/icon-menu';
-import IconButton from 'material-ui/lib/icon-button';
-import MenuItem from 'material-ui/lib/menus/menu-item';
-import getMuiTheme from 'material-ui/lib/styles/getMuiTheme';
-import Avatar from 'material-ui/lib/avatar';
+import LoginHeader from '../../components/ui/partials/LoginHeader';
 
+import RadioButton from 'material-ui/lib/radio-button';
+import RadioButtonGroup from 'material-ui/lib/radio-button-group';
+import RaisedButton from 'material-ui/lib/raised-button';
+import TextField from 'material-ui/lib/text-field';
+import Checkbox from 'material-ui/lib/checkbox';
+import Divider from 'material-ui/lib/divider';
+
+import { Scrollbars } from 'react-custom-scrollbars';
 
 export default class Setup extends Component {
 
@@ -32,38 +31,83 @@ export default class Setup extends Component {
   };
 
   render () {
-    const {style, ...other} = this.props;
-    const { prepareStyles } = this.context.muiTheme;
-    console.log(this.context);
+    const {style} = this.props;
+    const radioStyle = {marginTop: '10px', marginBottom: '10px'};
     return (
-      <div className="center-xs">
-        <div
-          className="col-xs"
-          style={style}
-        >
-          <div style={{margin:0,
-           paddingTop: '10px',
-           paddingBottom: '10px',
-           paddingLeft: '42',
-           paddingRight: 0,
-           lineHeight: '18px',
-           fontSize: '18px'}}
+      <div style={style}>
+        <div className="start-xs">
+          <div
+            className="col-xs"
+            style={{flex: 1, padding: 0}}
           >
-            <div style={prepareStyles({textAlign: 'left'})}>{'AKASHA'}</div>
-            <Logo style={{width: '32px', height: '32px', position: 'absolute', left:0, top: '3px' }}/>
-
-            <IconMenu
-              iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
-              anchorOrigin={{horizontal: 'right', vertical: 'top'}}
-              targetOrigin={{horizontal: 'right', vertical: 'top'}}
-              style={{position: 'absolute', top:'-6px', right: '-22px'}}
-            >
-              <MenuItem primaryText="Refresh"/>
-              <MenuItem primaryText="Send feedback"/>
-              <MenuItem primaryText="Settings"/>
-              <MenuItem primaryText="Help"/>
-              <MenuItem primaryText="Sign out"/>
-            </IconMenu>
+            <LoginHeader />
+            <Scrollbars autoHide style={{ height: 540 }}>
+              <h1 style={{fontWeight: '400'}}>{'First time setup'}</h1>
+              <div>
+                <p>{'AKASHA is a next-generation social blogging network powered by a new kind of world computer known' +
+                ' as Ethereum and the Inter Planetary File System.'}
+                </p>
+                <p>
+                  {'If you haven’t heard of these technologies before don’t worry, simply click next and we’ll take care' +
+                  ' of the rest.'}
+                </p>
+                <p>
+                  {'If you already have the Ethereum Go client or IPFS installed on your machine please choose the' +
+                  ' advanced option.'}
+                </p>
+              </div>
+              <div style={{paddingLeft: '12px'}}>
+                <RadioButtonGroup defaultSelected="express"
+                                  name="installType"
+                >
+                  <RadioButton
+                    label={'Express setup'}
+                    style={radioStyle}
+                    value={'express'}
+                  />
+                  <RadioButton
+                    label={'Advanced'}
+                    style={radioStyle}
+                    value={'advanced'}
+                  />
+                </RadioButtonGroup>
+                <div style={{paddingLeft: '12px'}}>
+                <TextField
+                  floatingLabelText="Geth Datadir path"
+                  hintText="absolute path to geth"
+                />
+                <Checkbox
+                  label="Geth already running"
+                />
+                <TextField
+                  floatingLabelText="geth ipc path"
+                  hintText="absolute path to geth ipc file"
+                />
+                <Checkbox
+                  label="ipfs already running"
+                />
+                <TextField
+                  floatingLabelText="ipfs api path"
+                  hintText="http/socket path to ipfs"
+                />
+                  </div>
+              </div>
+            </Scrollbars>
+          </div>
+        </div>
+        <div className="end-xs"
+             style={{flex: 1}}
+        >
+          <div className="col-xs"
+               style={{padding: 0, position: 'absolute', bottom: 0, right: 0}}
+          >
+            <RaisedButton label="Cancel"
+                          style={{marginLeft: '12px'}}
+            />
+            <RaisedButton label="Next"
+                          primary={true}
+                          style={{marginLeft: '12px'}}
+            />
           </div>
         </div>
       </div>

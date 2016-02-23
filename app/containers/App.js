@@ -11,13 +11,13 @@ export default class App extends Component {
     muiTheme: PropTypes.object
   };
 
-  getChildContext() {
+  getChildContext () {
     return {
       muiTheme: ThemeManager.getMuiTheme(AkashaTheme)
     };
   }
 
-  render() {
+  render () {
     return (
       <div className="fill-height">
         {this.props.children}

@@ -13,7 +13,7 @@ import '../../styles/core.scss';
 // define it with a plain javascript function...
 const style = {
   height:        '100%',
-  padding:       '35px',
+  padding:       '30px',
   display:       'flex',
   flexDirection: 'column',
   position:      'relative'

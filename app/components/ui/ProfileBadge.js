@@ -14,6 +14,6 @@ export default class ProfileBadge extends Component {
           <MenuUser />
         </CircularProgress>
       </Badge>
-    )
+    );
   }
 }
