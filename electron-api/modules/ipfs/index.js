@@ -19,15 +19,13 @@ const logger = new (winston.Logger)({
       level:    'warn',
       colorize: true
     }),
-    new (winston.transports.File)(
-      {
-        filename: 'logs/ipfs.log',
-        level:    'info',
-        maxsize:  10 * 1024, // 1MB
-        maxFiles: 1,
-        name:     'log-ipfs'
-      }
-    )
+    new (winston.transports.File)({
+      filename: 'logs/ipfs.log',
+      level:    'info',
+      maxsize:  10 * 1024, // 1MB
+      maxFiles: 1,
+      name:     'log-ipfs'
+    })
   ]
 });
 
