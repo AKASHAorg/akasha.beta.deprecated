@@ -166,7 +166,12 @@
       {
         "capIsNewExceptions": [
           "Match.Where",
-          "Match.Optional"
+          "Match.Optional",
+          //for immutable
+          "Map",
+          "List",
+          "OrderedSet",
+          "Range"
         ]
       }
     ],
@@ -201,7 +206,7 @@
         "after": true
       }
     ],
-    "keyword-spacing": [2, {"before": true, "after": true}],
+    "keyword-spacing": [2, {"before": true, "after": true, "overrides": {}}],
     "space-before-function-paren": [
       2,
       "always"

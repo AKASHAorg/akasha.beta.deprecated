@@ -143,7 +143,7 @@ const CircularProgress = React.createClass({
       maskStyle:   {stroke: "rgba(0, 0, 0, 0.15)", strokeDasharray: "95, 200"},
       min:         0,
       max:         100,
-      radius: "15",
+      radius:      "15",
       size:        1,
       strokeWidth: 1.5
     };
@@ -226,7 +226,7 @@ const CircularProgress = React.createClass({
           size,
           strokeWidth,
           children,
-      radius,
+          radius,
           ...other,
           } = this.props;
 

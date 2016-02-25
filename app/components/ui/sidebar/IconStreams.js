@@ -20,7 +20,7 @@ export default class IconStreams extends Component {
   };
 
   static defaultProps = {
-     style:      {
+    style:      {
       width:        '32px',
       height:       '32px',
       borderWidth:  '1px',

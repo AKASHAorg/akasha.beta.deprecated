@@ -22,7 +22,7 @@ export default class IconProfile extends Component {
   };
 
   static defaultProps = {
-    style: {
+    style:      {
       transform:    'scale(1.2)',
       width:        '34px',
       height:       '34px',

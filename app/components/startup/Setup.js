@@ -6,33 +6,19 @@ import RadioButtonGroup from 'material-ui/lib/radio-button-group';
 import RaisedButton from 'material-ui/lib/raised-button';
 import TextField from 'material-ui/lib/text-field';
 import Checkbox from 'material-ui/lib/checkbox';
-import Divider from 'material-ui/lib/divider';
 
 import { Scrollbars } from 'react-custom-scrollbars';
 
-export default class Setup extends Component {
+class Setup extends Component {
 
-  static propTypes = {
-    style: PropTypes.object
-  };
-
-  static contextTypes = {
-    muiTheme: React.PropTypes.object
-  };
-
-  static defaultProps = {
-    style: {
-      width:         '100%',
-      height:        '100%',
-      display:       'flex',
-      flexDirection: 'column',
-      position:      'relative'
-    }
-  };
+  constructor (props, context) {
+    super(props, context);
+  }
 
   render () {
-    const {style} = this.props;
-    const radioStyle = {marginTop: '10px', marginBottom: '10px'};
+    const {style, actions, setupConfig} = this.props;
+    const radioStyle   = {marginTop: '10px', marginBottom: '10px'};
+    const buttonsStyle = {padding: 0, position: 'absolute', bottom: 0, right: 0};
     return (
       <div style={style}>
         <div className="start-xs">
@@ -41,15 +27,17 @@ export default class Setup extends Component {
             style={{flex: 1, padding: 0}}
           >
             <LoginHeader />
-            <Scrollbars autoHide style={{ height: 540 }}>
+            <Scrollbars autoHide
+                        style={{ height: 540 }}
+            >
               <h1 style={{fontWeight: '400'}}>{'First time setup'}</h1>
               <div>
-                <p>{'AKASHA is a next-generation social blogging network powered by a new kind of world computer known' +
-                ' as Ethereum and the Inter Planetary File System.'}
+                <p>{'AKASHA is a next-generation social blogging network powered by a new kind of world computers' +
+                ' known as Ethereum and the Inter Planetary File System.'}
                 </p>
                 <p>
-                  {'If you haven’t heard of these technologies before don’t worry, simply click next and we’ll take care' +
-                  ' of the rest.'}
+                  {'If you haven’t heard of these technologies before don’t worry, simply click next and we’ll take' +
+                  ' care' + ' of the rest.'}
                 </p>
                 <p>
                   {'If you already have the Ethereum Go client or IPFS installed on your machine please choose the' +
@@ -72,25 +60,25 @@ export default class Setup extends Component {
                   />
                 </RadioButtonGroup>
                 <div style={{paddingLeft: '12px'}}>
-                <TextField
-                  floatingLabelText="Geth Datadir path"
-                  hintText="absolute path to geth"
-                />
-                <Checkbox
-                  label="Geth already running"
-                />
-                <TextField
-                  floatingLabelText="geth ipc path"
-                  hintText="absolute path to geth ipc file"
-                />
-                <Checkbox
-                  label="ipfs already running"
-                />
-                <TextField
-                  floatingLabelText="ipfs api path"
-                  hintText="http/socket path to ipfs"
-                />
-                  </div>
+                  <TextField
+                    floatingLabelText="Geth Datadir path"
+                    hintText={setupConfig.get('gethPath')}
+                  />
+                  <Checkbox
+                    label="Geth already running"
+                  />
+                  <TextField
+                    floatingLabelText="geth ipc path"
+                    hintText="absolute path to geth ipc file"
+                  />
+                  <Checkbox
+                    label="ipfs already running"
+                  />
+                  <TextField
+                    floatingLabelText="ipfs api path"
+                    hintText="http/socket path to ipfs"
+                  />
+                </div>
               </div>
             </Scrollbars>
           </div>
@@ -99,7 +87,7 @@ export default class Setup extends Component {
              style={{flex: 1}}
         >
           <div className="col-xs"
-               style={{padding: 0, position: 'absolute', bottom: 0, right: 0}}
+               style={buttonsStyle}
           >
             <RaisedButton label="Cancel"
                           style={{marginLeft: '12px'}}
@@ -114,3 +102,27 @@ export default class Setup extends Component {
     );
   }
 }
+
+Setup.propTypes = {
+  actions:     PropTypes.object.isRequired,
+  setupConfig: PropTypes.object.isRequired,
+  style:       PropTypes.object
+};
+
+Setup.contextTypes = {
+  muiTheme: React.PropTypes.object
+};
+
+Setup.defaultProps = {
+  style: {
+    width:         '100%',
+    height:        '100%',
+    display:       'flex',
+    flexDirection: 'column',
+    position:      'relative'
+  }
+};
+
+export default Setup;
+
+

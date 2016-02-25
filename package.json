@@ -1,6 +1,6 @@
 {
-  "name": "akasha-platform",
-  "productName": "akasha-node-app",
+  "name": "akasha_platform",
+  "productName": "Akasha",
   "private": true,
   "description": "Akasha platform developed with electron and react",
   "main": "main.js",

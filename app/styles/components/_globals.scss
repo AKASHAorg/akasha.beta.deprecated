@@ -18,18 +18,17 @@ html, body {
   display: inline-flex;
 }
 
-
-.user-icon{
+.user-icon {
   visibility: hidden;
-  &:hover, .active{
+  &:hover, .active {
     visibility: visible;
     cursor: pointer;
   }
 }
 
 .hand-icon {
- &:hover{
-   cursor: pointer;
- }
+  &:hover {
+    cursor: pointer;
+  }
 }
 

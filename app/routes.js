@@ -9,7 +9,7 @@ export default (
   <Route path="/" component={App}>
     <Route component={LoginLayout}>
       <IndexRoute component={SetupPage}/>
-      <Route path="register" component={SetupPage} />
+      <Route path="register" component={SetupPage}/>
     </Route>
   </Route>
 );

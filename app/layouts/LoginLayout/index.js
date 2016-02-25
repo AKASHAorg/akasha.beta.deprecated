@@ -26,7 +26,7 @@ function LoginLayout ({ children }) {
       <Paper className='col-xs'
              style={style}
       >
-          {children}
+        {children}
       </Paper>
     </div>
   );

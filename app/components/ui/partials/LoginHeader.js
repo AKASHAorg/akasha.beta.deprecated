@@ -6,9 +6,7 @@ import Colors from 'material-ui/lib/styles/colors';
 import Logo from '../sidebar/IconLogo';
 import React, { Component } from 'react';
 
-
 export default class LoginHeader extends Component {
-
 
   static contextTypes = {
     muiTheme: React.PropTypes.object

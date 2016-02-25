@@ -20,7 +20,7 @@ export default class IconCommunity extends Component {
   };
 
   static defaultProps = {
-     style:      {
+    style:      {
       width:        '32px',
       height:       '32px',
       borderWidth:  '1px',
@@ -50,13 +50,13 @@ export default class IconCommunity extends Component {
   render () {
     let {style, iconStyle, viewBox, hoverColor, color, ...other} = this.props;
     const {
-            baseTheme: {
-              palette
-              }
-            } = this.state.muiTheme;
+          baseTheme: {
+            palette
+            }
+          } = this.state.muiTheme;
 
     style = Object.assign(style, {
-      borderColor: Colors.faintBlack,
+        borderColor: Colors.faintBlack,
         ':hover':    {
           borderColor: palette.primary1Color
         }

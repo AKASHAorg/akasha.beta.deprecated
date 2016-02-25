@@ -184,7 +184,7 @@ class ProfilePannel extends Component {
                       secondaryTextLines={2}
                     />
                     <Divider/>
-                    </List>
+                  </List>
                   <List subheader="Last week">
                     <ListItem
                       leftAvatar={<Avatar src=""/>}

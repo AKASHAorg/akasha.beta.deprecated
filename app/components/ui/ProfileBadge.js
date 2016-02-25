@@ -8,7 +8,7 @@ export default class ProfileBadge extends Component {
     return (
       <Badge
         badgeContent={1}
-        badgeStyle={{backgroundColor: 'red', fontSize:8, width: '14px', height: '14px', top:7, right:7}}
+        badgeStyle={{backgroundColor: 'red', fontSize: 8, width: '14px', height: '14px', top: 7, right: 7}}
       >
         <CircularProgress mode={"determinate"}>
           <MenuUser />

@@ -3,7 +3,7 @@ a {
   text-decoration: none;
 }
 
-html{
+html {
   line-height: 1.5;
 
   @media only screen and (min-width: 0) {
@@ -24,13 +24,35 @@ html{
 }
 
 // Header Styles
-h1 a, h2 a, h3 a, h4 a, h5 a, h6 a { font-weight: inherit; }
+h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
+  font-weight: inherit;
+}
 
 // Text Styles
-em { font-style: italic; }
-strong{ font-weight: 700; }
-small { font-size: 75%; }
-.strong { font-weight: 700; }
-.medium { font-weight: 500; }
-.light { font-weight: 300; }
-.thin { font-weight: 200; }
+em {
+  font-style: italic;
+}
+
+strong {
+  font-weight: 700;
+}
+
+small {
+  font-size: 75%;
+}
+
+.strong {
+  font-weight: 700;
+}
+
+.medium {
+  font-weight: 500;
+}
+
+.light {
+  font-weight: 300;
+}
+
+.thin {
+  font-weight: 200;
+}
