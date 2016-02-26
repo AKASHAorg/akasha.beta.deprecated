@@ -1,10 +1,13 @@
 import {SETUP_GETH, SET_GETH_IPC, SETUP_IPFS} from '../constants/SetupConstants';
 import { Map } from 'immutable';
 
+const remote      = require('electron').remote;
+const preferences = remote.getGlobal('userPreferences');
+
 const initialState = Map({
-  gethPath:    'a/b',
-  gethPathIpc: 'a/b/geth.ipc',
-  ipfsApiPath: 'ipfs/v1/etc'
+  gethPath:    preferences.gethPath,
+  gethPathIpc: preferences.gethPathIpc,
+  ipfsApiPath: preferences.ipfsApiPath
 });
 
 export default function setupConfig (state = initialState, action) {

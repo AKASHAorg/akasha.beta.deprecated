@@ -159,7 +159,7 @@ class GethConnector {
     this.dataDir = dataDir;
 
     if (!ipcPath) {
-      ipcPath = (platform == 'Windows_NT') ? '\\\\.\\pipe\\geth.ipc' : path.join(this.dataDir, 'geth.ipc');
+      ipcPath = path.join(this.dataDir, 'geth.ipc');
     }
     this.ipcPath = ipcPath;
 
@@ -182,7 +182,7 @@ class GethConnector {
         dataDir = path.join(os.homedir(), 'Library', 'Ethereum');
         break;
       case 'Windows_NT':
-        dataDir = '%APPDATA%/Ethereum';
+        dataDir = process.env.APPDATA + '/Ethereum';
         break;
       default:
         logger.warn('geth:platform not supported');

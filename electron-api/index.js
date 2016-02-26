@@ -6,10 +6,7 @@ const ipcMain = require('electron').ipcMain;
 const geth    = require('./modules/geth');
 const ipfs    = require('./modules/ipfs');
 const Promise = require('bluebird');
-
-const userConfig = require('./models/UserPreferences');
-
-new userConfig();
+const globals = require('./globals');
 
 const gethInstance = geth.getInstance();
 const ipfsInstance = ipfs.getInstance();
@@ -18,7 +15,6 @@ const startAll = function () {
   gethInstance.start();
   ipfsInstance.start();
 };
-
 
 const apiWrapper = function (mainWindow) {
 
@@ -45,8 +41,8 @@ const apiWrapper = function (mainWindow) {
       console.log(err);
     });
   });
-
   setTimeout(startAll, 50);
+
 };
 
 module.exports = apiWrapper;

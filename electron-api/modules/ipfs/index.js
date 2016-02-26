@@ -34,7 +34,7 @@ const logger = new (winston.Logger)({
  *    const ipfs = IpfsConnector.getInstance();
  *    ipfs.start();
  *    ipfs.api.cat('ipfsHash', ....)
- *    ipfs.stop(); //must be explicit @Todo: bind ipfs.stop() to main process exit
+ *    ipfs.stop();
  */
 class IpfsConnector {
 
@@ -63,10 +63,13 @@ class IpfsConnector {
     return this[symbol];
   }
 
+  getConnection () {
+    return this._conn;
+  }
 
   /**
    * start ipfs
-   * @returns {bool}
+   * @param daemon
    */
   start (daemon = true) {
 
@@ -131,6 +134,56 @@ class IpfsConnector {
    */
   get api () {
     return this._api;
+  }
+
+  /**
+   *
+   * @param hash
+   * @returns {bluebird|exports|module.exports}
+   */
+  cat (hash) {
+    let buf = '';
+    return new Promise((resolve, reject) => {
+      if (!this._api) {
+        return reject(new Error('no api server found'));
+      }
+
+      return this._api.cat(hash, (error, response)=> {
+        if (error) {
+          return reject(error);
+        }
+
+        if (response.readable) {
+          return response.on('error', (err)=> {
+            reject(err);
+          }).on('data', (data)=> {
+            buf += data;
+          }).on('end', ()=> {
+            resolve(buf);
+          });
+        }
+        return resolve(response);
+      });
+    });
+  }
+
+  add (data, isPath = true) {
+    let contentBody = data;
+    return new Promise((resolve, reject) => {
+      if (!this._api) {
+        return reject(new Error('no api server found'));
+      }
+      if (!isPath) {
+        contentBody = new Buffer(contentBody);
+      }
+      return this._api.add(contentBody, (error, response)=> {
+        if (error) {
+          return reject(error);
+        }
+        return resolve(response[0].Hash);
+      });
+
+    });
   }
 
   /**
