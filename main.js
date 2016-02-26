@@ -4,14 +4,18 @@ require('babel-register');
 
 const electron = require('electron');
 const api = require('./electron-api');
+const linvoDb = require('linvodb3');
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 
+const userData = 'userData';
 const crashReporter = electron.crashReporter;
 
 let mainWindow = null;
 let timeout;
 let ipcMain;
+
+linvoDb.dbPath = app.getPath(userData);
 
 crashReporter.start();
 
