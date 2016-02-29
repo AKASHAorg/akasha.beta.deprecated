@@ -6,7 +6,6 @@ const ipfsBin      = require('go-ipfs');
 const ipfsAPI      = require('ipfs-api');
 const Promise      = require('bluebird');
 const childProcess = require('child_process');
-const check        = require('check-types');
 
 const symbolEnforcer = Symbol();
 const symbol         = Symbol();
@@ -167,7 +166,28 @@ class IpfsConnector {
     });
   }
 
-  add (data, isPath = true) {
+  /**
+   * Parallel ipfs cat
+   * @param hashSources
+   * @returns {bluebird|exports|module.exports}
+   */
+  catMultiple (hashSources = []) {
+    let data = [];
+
+    hashSources.forEach((hash)=> {
+      data.push(this.cat(hash));
+    });
+
+    return new Promise((resolve, reject) => {
+      Promise.all(data).then((content)=> {
+        resolve(content);
+      }).catch((error)=> {
+        reject(error);
+      });
+    });
+  }
+
+  add (data, isPath = false) {
     let contentBody = data;
     return new Promise((resolve, reject) => {
       if (!this._api) {
@@ -180,7 +200,7 @@ class IpfsConnector {
         if (error) {
           return reject(error);
         }
-        return resolve(response[0].Hash);
+        return resolve(response);
       });
 
     });
@@ -298,7 +318,6 @@ class IpfsConnector {
    * @private
    */
   _kill (signal) {
-    check.nonEmptyString(signal);
     if (this.ipfsProcess) {
       this.ipfsProcess.kill(signal);
     }

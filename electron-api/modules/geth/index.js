@@ -5,7 +5,6 @@ const winston      = require('winston');
 const Promise      = require('bluebird');
 const path         = require('path');
 const childProcess = require('child_process');
-const check        = require('check-types');
 const geth         = require('./geth');
 const net          = require('net');
 const os           = require('os');
@@ -150,7 +149,7 @@ class GethConnector {
    */
   _setOptions ({dataDir, ipcPath, protocol = ['--shh', '--rpc', '--fast', '--cache', 512], extra = []} = {}) {
     this.options = [];
-    if (!check.array(protocol) || !check.array(extra)) {
+    if (!Array.isArray(protocol) || !Array.isArray(extra)) {
       throw new Error('protocol, cors and extra options must be array type');
     }
     if (!dataDir) {

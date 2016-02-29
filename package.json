@@ -133,7 +133,6 @@
   "dependencies": {
     "bin-wrapper": "^3.0.2",
     "bluebird": "^3.3.3",
-    "check-types": "^6.0.0",
     "electron-debug": "^0.5.1",
     "go-ipfs": "^0.3.11",
     "history": "^2.0.0",

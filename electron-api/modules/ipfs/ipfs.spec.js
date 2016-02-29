@@ -2,6 +2,7 @@
 'use strict';
 const ipfsConnector = require('./index');
 const expect        = require('chai').expect;
+const Promise       = require('bluebird');
 
 describe('ipfsConnector', function () {
   this.timeout(15000);
@@ -43,6 +44,25 @@ describe('ipfsConnector', function () {
 
   });
 
+  describe('#add()', function () {
+    let dataString;
+    it('should add text to ipfs', function () {
+      return ipfs.add(__dirname + '/test.txt', true).then(function (data) {
+        dataString = data;
+        console.log(data);
+        expect(data).to.exist;
+      });
+    });
+
+    it('should add file to ipfs', function () {
+      return ipfs.add(__dirname + '/test.txt').then(function (data) {
+        console.log(data);
+        expect(dataString).not.to.equal(data);
+        expect(data).to.exist;
+      });
+    });
+  });
+
   describe('#cat()', function () {
     it('should read data from ipfs', function () {
       return ipfs.cat('QmbJWAESqCsf4RFCqEY7jecCashj8usXiyDNfKtZCwwzGb').then(function (data) {
@@ -57,24 +77,21 @@ describe('ipfsConnector', function () {
         expect(error).to.exist;
       });
     });
-  });
 
-  describe('#add()', function () {
-    let dataString;
-    it('should add text to ipfs', function () {
-      return ipfs.add(__dirname + '/test.txt', false).then(function (data) {
-        dataString = data;
+    it('should read multiple sources', function () {
+      const sources = [
+        'QmYTwT2yEHoSZSRvFATUoK9juXJZ7D7BiUBNqG42gLoVWX',
+        'QmQuL6hRvE4SZVvccgZisjfvKhswVEKA1LspjbTaEPQJxT',
+        'QmbJWAESqCsf4RFCqEY7jecCashj8usXiyDNfKtZCwwzGb'
+      ];
+      ipfs.catMultiple(sources).then(function (data) {
         expect(data).to.exist;
-      });
-    });
-
-    it('should add file to ipfs', function () {
-      return ipfs.add(__dirname + '/test.txt').then(function (data) {
-        expect(dataString).not.to.equal(data);
-        expect(data).to.exist;
+      }).catch(function (err) {
+        expect(err).not.to.exist;
       });
     });
   });
+
 
   describe('#getConfig', function () {
     it('should get Datastore key', function () {
