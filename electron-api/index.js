@@ -38,8 +38,8 @@ const apiWrapper = function (mainWindow) {
       .then(function (isUnlocked) {
         event.sender.send('response-unlock-account', isUnlocked);
       }).catch(function (err) {
-      console.log(err);
-    });
+        console.log(err);
+      });
   });
   setTimeout(startAll, 50);
 
