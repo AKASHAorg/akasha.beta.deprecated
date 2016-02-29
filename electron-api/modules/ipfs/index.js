@@ -187,6 +187,47 @@ class IpfsConnector {
   }
 
   /**
+   * Get key value from ipfs config file
+   * @param key
+   * @returns {bluebird|exports|module.exports}
+   */
+  getConfig (key) {
+    return new Promise((resolve, reject)=> {
+      if (!this._api) {
+        return reject(new Error('no api server found'));
+      }
+      return this._api.config.get(key, (err, conf)=> {
+        if (err) {
+          return reject(err);
+        }
+
+        return resolve(conf);
+      });
+    });
+  }
+
+  /**
+   * Set {key:val} for ipfs config file
+   * @param key
+   * @param val
+   * @returns {bluebird|exports|module.exports}
+   */
+  setConfig (key, val) {
+    return new Promise((resolve, reject)=> {
+      if (!this._api) {
+        return reject(new Error('no api server found'));
+      }
+      return this._api.config.set(key, val, (err, conf)=> {
+        if (err) {
+          return reject(err);
+        }
+
+        return resolve(conf);
+      });
+    });
+  }
+
+  /**
    * Connect to ipfs api server
    * @returns {boolean}
    * @private

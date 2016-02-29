@@ -4,6 +4,7 @@ const ipfsConnector = require('./index');
 const expect        = require('chai').expect;
 
 describe('ipfsConnector', function () {
+  this.timeout(15000);
   let ipfs;
   before(function () {
     ipfs = ipfsConnector.getInstance();
@@ -14,8 +15,9 @@ describe('ipfsConnector', function () {
   });
 
   it('should prevent from creating objects', function () {
+    let ipfsClone;
     expect(function () {
-      new ipfsConnector();
+      ipfsClone = new ipfsConnector();
     }).to.throw(Error);
   });
 
@@ -24,13 +26,13 @@ describe('ipfsConnector', function () {
   });
 
   describe('#start()', function () {
-    this.timeout(10000);
     it('should wait start ipfs daemon process', function (done) {
       expect(function () {
         ipfs.start();
         setTimeout(function () {
-          done()
-        }, 3000);
+          done();
+        }, 10000);
+
       }).not.to.throw(Error);
     });
 
@@ -49,7 +51,7 @@ describe('ipfsConnector', function () {
     });
 
     it('should fail to read', function () {
-      return ipfs.cat('DUMMYBULLSHITlol').then(function (data) {
+      return ipfs.cat('dummytext').then(function (data) {
         expect(data).not.to.exist;
       }).catch(function (error) {
         expect(error).to.exist;
@@ -70,6 +72,41 @@ describe('ipfsConnector', function () {
       return ipfs.add(__dirname + '/test.txt').then(function (data) {
         expect(dataString).not.to.equal(data);
         expect(data).to.exist;
+      });
+    });
+  });
+
+  describe('#getConfig', function () {
+    it('should get Datastore key', function () {
+      return ipfs.getConfig('Datastore').then(function (config) {
+        expect(config).to.exist;
+        expect(config).to.be.a('object');
+      });
+    });
+
+    it('should fail to get undefined config key', function () {
+      return ipfs.getConfig('dummykey').then(function (config) {
+        expect(config).not.to.exist;
+      }).catch(function (err) {
+        expect(err).to.exist;
+      });
+    });
+  });
+
+  describe('#setConfig', function () {
+    it('should save {key:value} option for ipfs', function () {
+      return ipfs.setConfig('exampleKey', 'exampleValue').then(function (config) {
+        expect(config).to.exist;
+      }).catch(function (err) {
+        expect(err).not.to.exist;
+      });
+    });
+
+    it('should save {object.key:value} option for ipfs', function () {
+      return ipfs.setConfig('exampleKeyObject.key', 'exampleValue').then(function (config) {
+        expect(config).to.exist;
+      }).catch(function (err) {
+        expect(err).not.to.exist;
       });
     });
   });

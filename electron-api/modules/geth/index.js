@@ -25,13 +25,13 @@ const logger = new (winston.Logger)({
       colorize: true
     }),
     new (winston.transports.File)(
-      {
-        filename: 'logs/geth.log',
-        level:    'info',
-        maxsize:  10 * 1024 * 2, // 2MB
-        maxFiles: 1,
-        name:     'log-geth'
-      }
+    {
+      filename: 'logs/geth.log',
+      level:    'info',
+      maxsize:  10 * 1024 * 2, // 2MB
+      maxFiles: 1,
+      name:     'log-geth'
+    }
     )
   ]
 });
@@ -135,7 +135,7 @@ class GethConnector {
         method:  name,
         params:  params || []
       }));
-      idCount++;
+      return idCount++;
     });
   }
 
@@ -148,7 +148,7 @@ class GethConnector {
    * @returns {Array|Array.<T>|*}
    * @private
    */
-  _setOptions ({dataDir, ipcPath, protocol = ['--shh', '--rpc', '--fast'], extra = []} = {}) {
+  _setOptions ({dataDir, ipcPath, protocol = ['--shh', '--rpc', '--fast', '--cache', 512], extra = []} = {}) {
     this.options = [];
     if (!check.array(protocol) || !check.array(extra)) {
       throw new Error('protocol, cors and extra options must be array type');
@@ -169,6 +169,7 @@ class GethConnector {
     this.options.push('--datadir', `${this.dataDir}`);
 
     this.options = this.options.concat(protocol, extra);
+    console.log(this.options);
     return this.options;
   }
 
