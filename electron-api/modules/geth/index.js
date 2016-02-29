@@ -169,7 +169,6 @@ class GethConnector {
     this.options.push('--datadir', `${this.dataDir}`);
 
     this.options = this.options.concat(protocol, extra);
-    console.log(this.options);
     return this.options;
   }
 

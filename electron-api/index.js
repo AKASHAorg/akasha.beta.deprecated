@@ -43,12 +43,6 @@ const apiWrapper = function (mainWindow) {
   });
   setTimeout(startAll, 50);
 
-  setTimeout(function(){
-    ipfsInstance.api.config.show((err, res)=>{
-      console.log(err+ '', res+'');
-    });
-  }, 1000);
-
 };
 
 module.exports = apiWrapper;
