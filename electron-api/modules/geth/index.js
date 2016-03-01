@@ -336,5 +336,4 @@ class GethConnector {
   }
 }
 
-
-module.exports = GethConnector;
+export default GethConnector;

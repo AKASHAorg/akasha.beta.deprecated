@@ -365,4 +365,5 @@ class IpfsConnector {
   }
 
 }
-module.exports = IpfsConnector;
+
+export default IpfsConnector;
