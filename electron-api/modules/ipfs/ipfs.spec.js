@@ -2,11 +2,11 @@
 'use strict';
 const ipfsConnector = require('./index');
 const expect        = require('chai').expect;
-const Promise       = require('bluebird');
 
 describe('ipfsConnector', function () {
   this.timeout(15000);
   let ipfs;
+  let ipfsFolder;
   before(function () {
     ipfs = ipfsConnector.getInstance();
   });
@@ -47,18 +47,32 @@ describe('ipfsConnector', function () {
   describe('#add()', function () {
     let dataString;
     it('should add text to ipfs', function () {
-      return ipfs.add(__dirname + '/test.txt', true).then(function (data) {
+      return ipfs.add(__dirname + '/test.txt', {isPath: true}).then(function (data) {
         dataString = data;
-        console.log(data);
         expect(data).to.exist;
       });
     });
 
     it('should add file to ipfs', function () {
       return ipfs.add(__dirname + '/test.txt').then(function (data) {
-        console.log(data);
-        expect(dataString).not.to.equal(data);
         expect(data).to.exist;
+        expect(dataString[0].Hash).not.to.equal(data[0].Hash);
+      });
+    });
+
+    it('should add from multiple sources', function () {
+      const sources = [
+        [__dirname + '/test.txt'],
+        [__dirname + '/test.txt', {isPath: true}],
+        [__dirname + '', {isPath: true, recursive: true}]
+      ];
+      return ipfs.addMultiple(sources).then(function (hashes) {
+        expect(hashes).to.exist;
+        expect(hashes.length).to.equal(sources.length);
+        let folder = hashes[hashes.length - 1];
+        ipfsFolder = folder[folder.length - 1].Hash;
+      }).catch(function (error) {
+        expect(error).not.to.exist;
       });
     });
   });
@@ -84,12 +98,23 @@ describe('ipfsConnector', function () {
         'QmQuL6hRvE4SZVvccgZisjfvKhswVEKA1LspjbTaEPQJxT',
         'QmbJWAESqCsf4RFCqEY7jecCashj8usXiyDNfKtZCwwzGb'
       ];
-      ipfs.catMultiple(sources).then(function (data) {
+      return ipfs.catMultiple(sources).then(function (data) {
         expect(data).to.exist;
+        expect(data.length).to.equal(sources.length);
       }).catch(function (err) {
         expect(err).not.to.exist;
       });
     });
+
+    it('should get folder structure from ipfs', function () {
+
+      return ipfs.getFolderLinks(ipfsFolder).then(function (objects) {
+        expect(objects).to.exist;
+      }).catch(function (error) {
+        expect(error).not.to.exist;
+      });
+    });
+
   });
 
 

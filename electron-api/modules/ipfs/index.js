@@ -1,6 +1,7 @@
 /* eslint strict: 0 */
 'use strict';
 
+const path         = require('path');
 const winston      = require('winston');
 const ipfsBin      = require('go-ipfs');
 const ipfsAPI      = require('ipfs-api');
@@ -187,22 +188,59 @@ class IpfsConnector {
     });
   }
 
-  add (data, isPath = false) {
+  /**
+   *
+   * @param data
+   * @param isPath
+   * @param recursive
+   * @returns {bluebird|exports|module.exports}
+   */
+  add (data, {isPath = false, recursive = false} = {}) {
+    let options     = {};
     let contentBody = data;
     return new Promise((resolve, reject) => {
       if (!this._api) {
         return reject(new Error('no api server found'));
       }
+
+      if (recursive) {
+        options.recursive = recursive;
+      }
+
       if (!isPath) {
         contentBody = new Buffer(contentBody);
       }
-      return this._api.add(contentBody, (error, response)=> {
+
+      return this._api.add(contentBody, options, (error, response)=> {
         if (error) {
           return reject(error);
         }
         return resolve(response);
       });
 
+    });
+  }
+
+  /**
+   * Parallel ipfs add
+   * @param sources <code>sources=[['dummytext'], ['a.txt', {isPath:true}],['a/b/c',{isPath:true,
+    * recursive:true}]]</code>
+   * @returns {bluebird|exports|module.exports}
+   */
+  addMultiple (sources = []) {
+
+    let data = [];
+
+    sources.forEach((source)=> {
+      data.push(this.add(...source));
+    });
+
+    return new Promise((resolve, reject) => {
+      Promise.all(data).then((hashSources)=> {
+        resolve(hashSources);
+      }).catch((error)=> {
+        reject(error);
+      });
     });
   }
 
@@ -222,6 +260,25 @@ class IpfsConnector {
         }
 
         return resolve(conf);
+      });
+    });
+  }
+
+  /**
+   * Get folder structure as objects
+   * @param folderHash
+   * @returns {bluebird|exports|module.exports}
+   */
+  getFolderLinks (folderHash) {
+    return new Promise((resolve, reject)=> {
+      if (!this._api) {
+        return reject(new Error('no api server found'));
+      }
+      return this._api.ls(folderHash).then((links)=> {
+        resolve(links.Objects);
+      }).catch((error)=> {
+        console.log(error);
+        reject(error);
       });
     });
   }
