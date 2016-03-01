@@ -1,14 +1,17 @@
 /* eslint strict: 0 */
 'use strict';
-const ipfsConnector = require('./index');
+const ipfsConnector = require('../../../electron-api/modules/ipfs');
 const expect        = require('chai').expect;
+const logger        = require('./logger.stub');
 
 describe('ipfsConnector', function () {
   this.timeout(15000);
   let ipfs;
   let ipfsFolder;
+
   before(function () {
-    ipfs = ipfsConnector.getInstance();
+    ipfs        = ipfsConnector.getInstance();
+    ipfs.logger = logger;
   });
 
   after(function () {
@@ -69,8 +72,7 @@ describe('ipfsConnector', function () {
       return ipfs.addMultiple(sources).then(function (hashes) {
         expect(hashes).to.exist;
         expect(hashes.length).to.equal(sources.length);
-        let folder = hashes[hashes.length - 1];
-        ipfsFolder = folder[folder.length - 1].Hash;
+        ipfsFolder = hashes;
       }).catch(function (error) {
         expect(error).not.to.exist;
       });
@@ -93,11 +95,14 @@ describe('ipfsConnector', function () {
     });
 
     it('should read multiple sources', function () {
-      const sources = [
-        'QmYTwT2yEHoSZSRvFATUoK9juXJZ7D7BiUBNqG42gLoVWX',
-        'QmQuL6hRvE4SZVvccgZisjfvKhswVEKA1LspjbTaEPQJxT',
-        'QmbJWAESqCsf4RFCqEY7jecCashj8usXiyDNfKtZCwwzGb'
-      ];
+      const sources = ipfsFolder.filter(function (object, index) {
+        if (index < 2) {
+          return true;
+        }
+      }).map(function (element) {
+        return element[0].Hash;
+      });
+
       return ipfs.catMultiple(sources).then(function (data) {
         expect(data).to.exist;
         expect(data.length).to.equal(sources.length);
@@ -107,8 +112,9 @@ describe('ipfsConnector', function () {
     });
 
     it('should get folder structure from ipfs', function () {
+      let folder = ipfsFolder[ipfsFolder.length - 1];
 
-      return ipfs.getFolderLinks(ipfsFolder).then(function (objects) {
+      return ipfs.getFolderLinks(folder[folder.length - 1].Hash).then(function (objects) {
         expect(objects).to.exist;
       }).catch(function (error) {
         expect(error).not.to.exist;

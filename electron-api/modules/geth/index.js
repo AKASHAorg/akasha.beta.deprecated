@@ -1,13 +1,14 @@
 /* eslint strict: 0 */
 'use strict';
 
-const winston      = require('winston');
 const Promise      = require('bluebird');
 const path         = require('path');
 const childProcess = require('child_process');
 const geth         = require('./geth');
 const net          = require('net');
 const os           = require('os');
+
+const loggerRegistrar = require('../../loggers');
 
 const platform = os.type();
 
@@ -16,24 +17,6 @@ const symbol         = Symbol();
 
 // const env   = process.env.NODE_ENV || 'development';
 let idCount = 1;
-
-const logger = new (winston.Logger)({
-  transports: [
-    new winston.transports.Console({
-      level:    'warn',
-      colorize: true
-    }),
-    new (winston.transports.File)(
-    {
-      filename: 'logs/geth.log',
-      level:    'info',
-      maxsize:  10 * 1024 * 2, // 2MB
-      maxFiles: 1,
-      name:     'log-geth'
-    }
-    )
-  ]
-});
 
 
 class GethConnector {
@@ -46,6 +29,7 @@ class GethConnector {
     if (enforcer !== symbolEnforcer) {
       throw new Error('Cannot construct singleton');
     }
+    this.logger = loggerRegistrar.getInstance().registerLogger('geth');
 
     this.socket     = new net.Socket();
     this.executable = null;
@@ -88,7 +72,7 @@ class GethConnector {
         throw new Error(`Could not start geth ${err}`);
       });
     }).catch((err)=> {
-      logger.warn(`geth:binary:${err}`);
+      this.logger.warn(`geth:binary:${err}`);
       throw new Error(`Could not download geth ${err}`);
     });
   }
@@ -120,7 +104,7 @@ class GethConnector {
     return new Promise((send, deny)=> {
       if (!this.gethProcess) {
         msg = 'geth process not started, use .start() before';
-        logger.warn(msg);
+        this.logger.warn(msg);
         return deny(msg);
       }
       this._connectToIPC();
@@ -184,7 +168,6 @@ class GethConnector {
         dataDir = process.env.APPDATA + '/Ethereum';
         break;
       default:
-        logger.warn('geth:platform not supported');
         throw new Error('Platform not supported');
     }
     return dataDir;
@@ -288,28 +271,28 @@ class GethConnector {
           return promise.reject(resp.error);
         }
         return promise.resolve(resp.result);
-      }).catch(function (error) {
+      }).catch((error)=> {
         err = `geth:ipcCall: ${error}`;
-        logger.warn(err);
+        this.logger.warn(err);
         throw new Error(err);
       });
     });
 
-    this.socket.on('connect', function () {
-      logger.info('connection to ipc Established!');
+    this.socket.on('connect', ()=> {
+      this.logger.info('connection to ipc Established!');
     });
 
     this.socket.on('timeout', (e)=> {
-      logger.warn('connection to ipc timed out');
+      this.logger.warn('connection to ipc timed out');
       this._ipcDestroy();
     });
 
     this.socket.on('end', (e)=> {
-      logger.info('i/o to ipc ended');
+      this.logger.info('i/o to ipc ended');
     });
 
-    this.socket.on('error', function (error) {
-      logger.warn(error);
+    this.socket.on('error', (error)=> {
+      this.logger.warn(error);
     });
   }
 
@@ -328,23 +311,24 @@ class GethConnector {
       this.gethProcess = childProcess.spawn(this.executable, this.options, extra);
 
       this.gethProcess.on('exit', (code, signal) => {
-        logger.info('geth:spawn:exit:', code, signal);
+        this.logger.info('geth:spawn:exit:', code, signal);
       });
 
       this.gethProcess.on('close', (code, signal) => {
-        logger.info('geth:spawn:close:', code, signal);
+        this.logger.info('geth:spawn:close:', code, signal);
       });
 
       this.gethProcess.on('error', (code) => {
+        this.logger.warn(`geth:spawn:error:${code}`);
         return reject(`geth:spawn:error:${code}`);
       });
 
-      this.gethProcess.stderr.on('data', function (data) {
-        logger.info(data.toString());
+      this.gethProcess.stderr.on('data', (data)=> {
+        this.logger.info(data.toString());
       });
 
-      this.gethProcess.stdout.on('data', function (data) {
-        logger.info(data.toString());
+      this.gethProcess.stdout.on('data', (data)=> {
+        this.logger.info(data.toString());
       });
 
       return resolve(true);

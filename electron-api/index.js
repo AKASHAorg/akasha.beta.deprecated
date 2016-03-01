@@ -5,7 +5,6 @@ require('babel-register');
 const ipcMain = require('electron').ipcMain;
 const geth    = require('./modules/geth');
 const ipfs    = require('./modules/ipfs');
-const Promise = require('bluebird');
 const globals = require('./globals');
 
 const gethInstance = geth.getInstance();

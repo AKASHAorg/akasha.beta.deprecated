@@ -5,9 +5,12 @@ require('babel-register');
 const electron = require('electron');
 const app = electron.app;
 
-const userData = 'userData';
+const userData = app.getPath('userData');
 const linvoDb = require('linvodb3');
-linvoDb.dbPath = app.getPath(userData);
+linvoDb.dbPath = userData;
+
+const Logger  = require('./electron-api/loggers');
+const loggerContainer = Logger.getInstance(userData);
 
 const api = require('./electron-api');
 const BrowserWindow = electron.BrowserWindow;

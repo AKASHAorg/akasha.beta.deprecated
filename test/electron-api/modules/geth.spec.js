@@ -1,13 +1,15 @@
 /* eslint strict: 0 */
 'use strict';
 const expect = require('chai').expect;
-const geth   = require('./index');
+const geth   = require('../../../electron-api/modules/geth');
+const logger = require('./logger.stub');
 let connector;
 
 describe('gethConnector', function () {
   this.timeout(10000);
   before(function (done) {
-    connector = geth.getInstance();
+    connector        = geth.getInstance();
+    connector.logger = logger;
     setTimeout(function () {
       connector.start();
     }, 500);

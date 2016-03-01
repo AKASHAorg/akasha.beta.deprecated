@@ -1,39 +1,22 @@
 /* eslint strict: 0 */
 'use strict';
 
-const path         = require('path');
-const winston      = require('winston');
 const ipfsBin      = require('go-ipfs');
 const ipfsAPI      = require('ipfs-api');
 const Promise      = require('bluebird');
 const childProcess = require('child_process');
 
+const loggerRegistrar = require('../../loggers');
+
 const symbolEnforcer = Symbol();
 const symbol         = Symbol();
 
-// const env = process.env.NODE_ENV || 'development';
-
-const logger = new (winston.Logger)({
-  transports: [
-    new winston.transports.Console({
-      level:    'warn',
-      colorize: true
-    }),
-    new (winston.transports.File)({
-      filename: 'logs/ipfs.log',
-      level:    'info',
-      maxsize:  10 * 1024, // 1MB
-      maxFiles: 1,
-      name:     'log-ipfs'
-    })
-  ]
-});
 
 /**
  * Quick usage:
  *    const ipfs = IpfsConnector.getInstance();
  *    ipfs.start();
- *    ipfs.api.cat('ipfsHash', ....)
+ *    ipfs.cat('ipfsHash').then(...).catch(...)
  *    ipfs.stop();
  */
 class IpfsConnector {
@@ -50,6 +33,7 @@ class IpfsConnector {
     this._api        = null;
     this._conn       = '/ip4/127.0.0.1/tcp/5001';
     this._retry      = true;
+    this.logger      = loggerRegistrar.getInstance().registerLogger('ipfs');
   }
 
   /**
@@ -84,7 +68,7 @@ class IpfsConnector {
     if (daemon) {
       this._spawnIPFS(options).then(
         (data) => {
-          logger.info(`ipfs:start: ${data}`);
+          this.logger.info(`ipfs:start: ${data}`);
         }
       ).catch(
         (err) => {
@@ -95,11 +79,11 @@ class IpfsConnector {
               }
             ).catch(
               (errInit) => {
-                logger.warn(`ipfs:${errInit}`);
+                this.logger.warn(`ipfs:${errInit}`);
               }
             );
           }
-          return logger.warn(err);
+          return this.logger.warn(err);
         }
       );
     }
@@ -277,7 +261,6 @@ class IpfsConnector {
       return this._api.ls(folderHash).then((links)=> {
         resolve(links.Objects);
       }).catch((error)=> {
-        console.log(error);
         reject(error);
       });
     });
@@ -340,11 +323,11 @@ class IpfsConnector {
    */
   _logEvents () {
     this.ipfsProcess.stdout.on('data', (data) => {
-      logger.info(`ipfs:stdout: ${data}`);
+      this.logger.info(`ipfs:stdout: ${data}`);
     });
 
     this.ipfsProcess.stderr.on('data', (data) => {
-      logger.info(`ipfs:stderr: ${data}`);
+      this.logger.info(`ipfs:stderr: ${data}`);
     });
 
     return true;
