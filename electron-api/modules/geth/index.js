@@ -29,7 +29,7 @@ class GethConnector {
     if (enforcer !== symbolEnforcer) {
       throw new Error('Cannot construct singleton');
     }
-    this.logger = loggerRegistrar.getInstance().registerLogger('geth');
+    this.logger = loggerRegistrar.getInstance().registerLogger('geth', {maxsize: 1024 * 10 * 3});
 
     this.socket     = new net.Socket();
     this.executable = null;
