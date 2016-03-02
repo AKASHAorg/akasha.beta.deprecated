@@ -1,19 +1,19 @@
 /* eslint strict: 0, no-console: 0 */
 'use strict';
 
-const path = require('path');
+const path    = require('path');
 const express = require('express');
 const webpack = require('webpack');
-const config = require('./webpack.config.development');
+const config  = require('./webpack.config.development');
 
-const app = express();
+const app      = express();
 const compiler = webpack(config);
 
 const PORT = 3000;
 
 app.use(require('webpack-dev-middleware')(compiler, {
   publicPath: config.output.publicPath,
-  stats: {
+  stats:      {
     colors: true
   }
 }));

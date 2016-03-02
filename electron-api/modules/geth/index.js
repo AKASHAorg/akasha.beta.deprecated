@@ -155,6 +155,10 @@ class GethConnector {
     return this.options;
   }
 
+  /**
+   *
+   * @returns {*}
+   */
   static getDefaultDatadir () {
     let dataDir;
     switch (platform) {
@@ -165,7 +169,7 @@ class GethConnector {
         dataDir = path.join(os.homedir(), 'Library', 'Ethereum');
         break;
       case 'Windows_NT':
-        dataDir = process.env.APPDATA + '/Ethereum';
+        dataDir = path.join(process.env.APPDATA, '/Ethereum');
         break;
       default:
         throw new Error('Platform not supported');

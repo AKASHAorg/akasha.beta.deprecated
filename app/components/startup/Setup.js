@@ -68,15 +68,15 @@ class Setup extends Component {
                     label="Geth already running"
                   />
                   <TextField
-                    floatingLabelText="geth ipc path"
-                    hintText="absolute path to geth ipc file"
+                    floatingLabelText="Geth ipc path"
+                    hintText={setupConfig.get('gethPathIpc')}
                   />
                   <Checkbox
-                    label="ipfs already running"
+                    label="Ipfs already running"
                   />
                   <TextField
-                    floatingLabelText="ipfs api path"
-                    hintText="http/socket path to ipfs"
+                    floatingLabelText="Ipfs api path"
+                    hintText={setupConfig.get('ipfsApiPath')}
                   />
                 </div>
               </div>
