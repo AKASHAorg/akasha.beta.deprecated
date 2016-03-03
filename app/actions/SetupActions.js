@@ -12,3 +12,8 @@ export function setGethIpc (path) {
 
   return {type: types.SET_GETH_IPC, path};
 }
+
+export function showAdvanced () {
+
+  return {type: types.SHOW_ADVANCED};
+}

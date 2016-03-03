@@ -15,10 +15,39 @@ class Setup extends Component {
     super(props, context);
   }
 
+  handleChange = (ev, value)=> {
+    console.log(ev, value);
+  };
+
   render () {
     const {style, actions, setupConfig} = this.props;
-    const radioStyle   = {marginTop: '10px', marginBottom: '10px'};
-    const buttonsStyle = {padding: 0, position: 'absolute', bottom: 0, right: 0};
+    const radioStyle    = {marginTop: '10px', marginBottom: '10px'};
+    const buttonsStyle  = {padding: 0, position: 'absolute', bottom: 0, right: 0};
+    let advancedOptions = '';
+    if (setupConfig.get('showAdvanced')) {
+      advancedOptions = (
+        <div style={{paddingLeft: '12px'}}>
+          <TextField
+            floatingLabelText="Geth Datadir path"
+            hintText={setupConfig.get('gethPath')}
+          />
+          <Checkbox
+            label="Geth already running"
+          />
+          <TextField
+            floatingLabelText="Geth ipc path"
+            hintText={setupConfig.get('gethPathIpc')}
+          />
+          <Checkbox
+            label="Ipfs already running"
+          />
+          <TextField
+            floatingLabelText="Ipfs api path"
+            hintText={setupConfig.get('ipfsApiPath')}
+          />
+        </div>
+      );
+    }
     return (
       <div style={style}>
         <div className="start-xs">
@@ -27,8 +56,8 @@ class Setup extends Component {
             style={{flex: 1, padding: 0}}
           >
             <LoginHeader />
-            <Scrollbars autoHide
-                        style={{ height: 540 }}
+            <Scrollbars
+              style={{ height: 540 }}
             >
               <h1 style={{fontWeight: '400'}}>{'First time setup'}</h1>
               <div>
@@ -47,6 +76,7 @@ class Setup extends Component {
               <div style={{paddingLeft: '12px'}}>
                 <RadioButtonGroup defaultSelected="express"
                                   name="installType"
+                                  onChange={actions.showAdvanced}
                 >
                   <RadioButton
                     label={'Express setup'}
@@ -59,27 +89,9 @@ class Setup extends Component {
                     value={'advanced'}
                   />
                 </RadioButtonGroup>
-                <div style={{paddingLeft: '12px'}}>
-                  <TextField
-                    floatingLabelText="Geth Datadir path"
-                    hintText={setupConfig.get('gethPath')}
-                  />
-                  <Checkbox
-                    label="Geth already running"
-                  />
-                  <TextField
-                    floatingLabelText="Geth ipc path"
-                    hintText={setupConfig.get('gethPathIpc')}
-                  />
-                  <Checkbox
-                    label="Ipfs already running"
-                  />
-                  <TextField
-                    floatingLabelText="Ipfs api path"
-                    hintText={setupConfig.get('ipfsApiPath')}
-                  />
-                </div>
+                {advancedOptions}
               </div>
+
             </Scrollbars>
           </div>
         </div>
