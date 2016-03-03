@@ -13,7 +13,7 @@ export function setGethIpc (path) {
   return {type: types.SET_GETH_IPC, path};
 }
 
-export function showAdvanced () {
+export function toggleAdvanced (tick) {
 
-  return {type: types.SHOW_ADVANCED};
+  return {type: types.TOGGLE_ADVANCED, tick};
 }

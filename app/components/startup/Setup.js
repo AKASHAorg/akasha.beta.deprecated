@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import LoginHeader from '../../components/ui/partials/LoginHeader';
-
+import Colors from 'material-ui/lib/styles/colors';
 import RadioButton from 'material-ui/lib/radio-button';
 import RadioButtonGroup from 'material-ui/lib/radio-button-group';
 import RaisedButton from 'material-ui/lib/raised-button';
@@ -15,35 +15,101 @@ class Setup extends Component {
     super(props, context);
   }
 
-  handleChange = (ev, value)=> {
-    console.log(ev, value);
+  handleChange = (event, value)=> {
+    const {actions, setupConfig} = this.props;
+    const show = 'advanced' === value;
+    if (setupConfig.get('toggleAdvanced') === show) {
+      return;
+    }
+    actions.toggleAdvanced(show);
+  };
+
+  handleGethDatadir = (event)=> {
+    const {actions, setupConfig} = this.props;
+    const target         = event.target;
+    const currentDatadir = setupConfig.get('gethPath');
+    if (currentDatadir === target.value) {
+      return;
+    }
+    actions.setupGeth(target.value);
+  };
+
+  handleGethIpc = (event)=> {
+    const {actions, setupConfig} = this.props;
+    const target         = event.target;
+    const currentIpcPath = setupConfig.get('gethPathIpc');
+    if (currentIpcPath === target.value) {
+      return;
+    }
+    actions.setGethIpc(target.value);
+  };
+
+  handleIpfsPath = (event)=> {
+    const {actions, setupConfig} = this.props;
+    const target         = event.target;
+    const currentIpfsApi = setupConfig.get('ipfsApiPath');
+    if (currentIpfsApi === target.value) {
+      return;
+    }
+    actions.setupIPFS(target.value);
+
+  };
+
+  /**
+   * @TODO: verify all the paths
+   * @param event
+   */
+  handleSubmit = (event)=> {
+    const {setupConfig} = this.props;
+    console.log({
+      geth: setupConfig.get('gethPath'),
+      ipc:  setupConfig.get('gethPathIpc'),
+      ipfs: setupConfig.get('ipfsApiPath')
+    });
   };
 
   render () {
-    const {style, actions, setupConfig} = this.props;
-    const radioStyle    = {marginTop: '10px', marginBottom: '10px'};
-    const buttonsStyle  = {padding: 0, position: 'absolute', bottom: 0, right: 0};
-    let advancedOptions = '';
-    if (setupConfig.get('showAdvanced')) {
+    let advancedOptions      = '';
+    const {style, setupConfig} = this.props;
+    const radioStyle         = {marginTop: '10px', marginBottom: '10px'};
+    const buttonsStyle       = {padding: 0, position: 'absolute', bottom: 0, right: 0};
+    const errorStyle         = {color: Colors.minBlack};
+    const floatingLabelStyle = {color: Colors.lightBlack};
+    const inputStyle         = {color: Colors.darkBlack};
+    const rootStyle          = {width: '400px'};
+    if (setupConfig.get('toggleAdvanced')) {
       advancedOptions = (
         <div style={{paddingLeft: '12px'}}>
           <TextField
+            errorStyle={errorStyle}
+            errorText={"Change this if geth has different data directory"}
+            floatingLabelStyle={floatingLabelStyle}
             floatingLabelText="Geth Datadir path"
             hintText={setupConfig.get('gethPath')}
-          />
-          <Checkbox
-            label="Geth already running"
+            inputStyle={inputStyle}
+            onBlur={this.handleGethDatadir}
+            style={rootStyle}
+
           />
           <TextField
+            errorStyle={errorStyle}
+            errorText={"Change this if geth is already started with --ipcpath"}
+            floatingLabelStyle={floatingLabelStyle}
             floatingLabelText="Geth ipc path"
             hintText={setupConfig.get('gethPathIpc')}
-          />
-          <Checkbox
-            label="Ipfs already running"
+            inputStyle={inputStyle}
+            onBlur={this.handleGethIpc}
+            style={rootStyle}
           />
           <TextField
+            errorStyle={errorStyle}
+            errorText={"Change this if ipfs daemon is already running"}
+            floatingLabelStyle={floatingLabelStyle}
             floatingLabelText="Ipfs api path"
             hintText={setupConfig.get('ipfsApiPath')}
+            inputStyle={inputStyle}
+            onBlur={this.handleIpfsPath}
+            style={rootStyle}
           />
         </div>
       );
@@ -76,7 +142,7 @@ class Setup extends Component {
               <div style={{paddingLeft: '12px'}}>
                 <RadioButtonGroup defaultSelected="express"
                                   name="installType"
-                                  onChange={actions.showAdvanced}
+                                  onChange={this.handleChange}
                 >
                   <RadioButton
                     label={'Express setup'}
@@ -101,12 +167,10 @@ class Setup extends Component {
           <div className="col-xs"
                style={buttonsStyle}
           >
-            <RaisedButton label="Cancel"
-                          style={{marginLeft: '12px'}}
-            />
             <RaisedButton label="Next"
                           primary={true}
                           style={{marginLeft: '12px'}}
+                          onClick={this.handleSubmit}
             />
           </div>
         </div>
