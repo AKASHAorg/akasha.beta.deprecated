@@ -124,6 +124,7 @@
     "sass-loader": "^3.1.2",
     "selenium-webdriver": "^2.52.0",
     "sinon": "^1.17.3",
+    "solc": "^0.2.2-2",
     "style-loader": "^0.13.0",
     "webpack": "^1.12.14",
     "webpack-dev-middleware": "^1.5.1",

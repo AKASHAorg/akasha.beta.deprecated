@@ -17,3 +17,7 @@ export function toggleAdvanced (tick) {
 
   return {type: types.TOGGLE_ADVANCED, tick};
 }
+
+export function defaultOptions () {
+  return {type: types.DEFAULT_OPTIONS};
+}

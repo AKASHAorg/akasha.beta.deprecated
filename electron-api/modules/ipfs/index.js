@@ -11,6 +11,10 @@ const loggerRegistrar = require('../../loggers');
 const symbolEnforcer = Symbol();
 const symbol         = Symbol();
 
+const windowsApi = {host: 'localhost', port: '5001', procotol: 'http'};
+const unixApi    = '/ip4/127.0.0.1/tcp/5001';
+
+const defaultApi = (process.platform !== 'win32') ? unixApi : windowsApi;
 
 /**
  * Quick usage:
@@ -31,7 +35,7 @@ class IpfsConnector {
     }
     this.ipfsProcess = null;
     this._api        = null;
-    this._conn       = '/ip4/127.0.0.1/tcp/5001';
+    this._conn       = defaultApi;
     this._retry      = true;
     this.logger      = loggerRegistrar.getInstance().registerLogger('ipfs');
   }
@@ -98,7 +102,7 @@ class IpfsConnector {
    * @param rpc
    * @returns {IpfsConnector}
    */
-  setSchema ({socket, rpc = {host: 'localhost', port: '5001', procotol: 'http'}} = {}) {
+  setSchema ({socket, rpc = windowsApi} = {}) {
     if (socket) {
       this._conn = socket;
     } else {

@@ -11,7 +11,7 @@ const gethInstance = geth.getInstance();
 const ipfsInstance = ipfs.getInstance();
 
 const startAll = function () {
-  gethInstance.start();
+  gethInstance.start({extra: ['--testnet']});
   ipfsInstance.start();
 };
 

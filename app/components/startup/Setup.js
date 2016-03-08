@@ -6,6 +6,7 @@ import RadioButtonGroup from 'material-ui/lib/radio-button-group';
 import RaisedButton from 'material-ui/lib/raised-button';
 import TextField from 'material-ui/lib/text-field';
 import Checkbox from 'material-ui/lib/checkbox';
+import {hashHistory} from 'react-router';
 
 import { Scrollbars } from 'react-custom-scrollbars';
 
@@ -28,7 +29,7 @@ class Setup extends Component {
     const {actions, setupConfig} = this.props;
     const target         = event.target;
     const currentDatadir = setupConfig.get('gethPath');
-    if (currentDatadir === target.value) {
+    if (currentDatadir === target.value || !target.value) {
       return;
     }
     actions.setupGeth(target.value);
@@ -38,7 +39,7 @@ class Setup extends Component {
     const {actions, setupConfig} = this.props;
     const target         = event.target;
     const currentIpcPath = setupConfig.get('gethPathIpc');
-    if (currentIpcPath === target.value) {
+    if (currentIpcPath === target.value || !target.value) {
       return;
     }
     actions.setGethIpc(target.value);
@@ -48,7 +49,7 @@ class Setup extends Component {
     const {actions, setupConfig} = this.props;
     const target         = event.target;
     const currentIpfsApi = setupConfig.get('ipfsApiPath');
-    if (currentIpfsApi === target.value) {
+    if (currentIpfsApi === target.value || !target.value) {
       return;
     }
     actions.setupIPFS(target.value);
@@ -56,16 +57,17 @@ class Setup extends Component {
   };
 
   /**
-   * @TODO: verify all the paths
+   *
    * @param event
    */
   handleSubmit = (event)=> {
-    const {setupConfig} = this.props;
-    console.log({
-      geth: setupConfig.get('gethPath'),
-      ipc:  setupConfig.get('gethPathIpc'),
-      ipfs: setupConfig.get('ipfsApiPath')
-    });
+    const {actions, setupConfig} = this.props;
+
+    if (setupConfig.get('toggleAdvanced') !== 'advanced') {
+      actions.defaultOptions();
+    }
+    hashHistory.push('/sync-status');
+
   };
 
   render () {

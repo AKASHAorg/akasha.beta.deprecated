@@ -9,6 +9,12 @@ const schema = {
     type:    Number,
     default: configId
   },
+
+  isInit: {
+    type:    Boolean,
+    default: false
+  },
+
   services: {
     gethPath:    String,
     gethPathIpc: String,
@@ -24,18 +30,19 @@ class UserPreferences {
    * @param options
    */
   constructor (name = 'UserPreferences', options = {}) {
-    this.dbTable = new LinvoDb(name, schema, options);
+    this.dbTable       = new LinvoDb(name, schema, options);
+    this.defaultConfig = {
+      gethPath:    geth.getDefaultDatadir(),
+      gethPathIpc: geth.getDefaultDatadir() + '/geth.ipc',
+      ipfsApiPath: ipfs.getConnection()
+    };
     this.dbTable.find({idConfig: configId}).count((err, records)=> {
       let config;
       if (!err && records == 0) {
-        config = {
-          gethPath:    geth.getDefaultDatadir(),
-          gethPathIpc: geth.getDefaultDatadir() + '/geth.ipc',
-          ipfsApiPath: ipfs.getConnection()
-        };
+
 
         this.dbTable.insert({
-          services: config
+          services: this.defaultConfig
         });
       }
     });
