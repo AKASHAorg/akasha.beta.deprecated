@@ -21,3 +21,8 @@ export function toggleAdvanced (tick) {
 export function defaultOptions () {
   return {type: types.DEFAULT_OPTIONS};
 }
+
+export function submitOptions () {
+
+  return {type: types.SUBMIT_OPTIONS};
+}

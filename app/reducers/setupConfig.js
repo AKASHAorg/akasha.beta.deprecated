@@ -1,13 +1,17 @@
-import {SETUP_GETH, SET_GETH_IPC, SETUP_IPFS, TOGGLE_ADVANCED, DEFAULT_OPTIONS} from '../constants/SetupConstants';
+import {SETUP_GETH, SET_GETH_IPC, SETUP_IPFS, TOGGLE_ADVANCED,
+  DEFAULT_OPTIONS, SUBMIT_OPTIONS} from '../constants/SetupConstants';
 import { Map } from 'immutable';
 
-const remote      = require('electron').remote;
-const preferences = remote.getGlobal('userPreferences').defaultConfig;
+const remote          = require('electron').remote;
+const userPreferences = remote.getGlobal('userPreferences');
+
+const preferences = userPreferences.defaultConfig;
 
 const initialState = Map({
   gethPath:       preferences.gethPath,
   gethPathIpc:    preferences.gethPathIpc,
   ipfsApiPath:    preferences.ipfsApiPath,
+  isInit:         preferences.isInit,
   toggleAdvanced: false
 });
 
@@ -28,6 +32,14 @@ export default function setupConfig (state = initialState, action) {
         gethPathIpc: preferences.gethPathIpc,
         ipfsApiPath: preferences.ipfsApiPath
       });
+    case SUBMIT_OPTIONS:
+      const finalState = state.set('isInit', true);
+      const config     = state.toObject();
+
+      delete config.toggleAdvanced;
+      userPreferences.setConfig(config);
+
+      return finalState;
     default:
       return state;
   }

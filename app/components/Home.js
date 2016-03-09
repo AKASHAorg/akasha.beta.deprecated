@@ -11,7 +11,7 @@ export default class Home extends Component {
       <div>
         <div>
           <h2>Homeaa</h2>
-          <Link to="/counter">to Counters</Link>
+          <Link to="/register">to Counters</Link>
 
           <ProfileBadge />
         </div>

@@ -63,11 +63,11 @@ class Setup extends Component {
   handleSubmit = (event)=> {
     const {actions, setupConfig} = this.props;
 
-    if (setupConfig.get('toggleAdvanced') !== 'advanced') {
+    if (!setupConfig.get('toggleAdvanced')) {
       actions.defaultOptions();
     }
-    hashHistory.push('/sync-status');
-
+    actions.submitOptions();
+    hashHistory.push('sync-status');
   };
 
   render () {
@@ -79,6 +79,9 @@ class Setup extends Component {
     const floatingLabelStyle = {color: Colors.lightBlack};
     const inputStyle         = {color: Colors.darkBlack};
     const rootStyle          = {width: '400px'};
+
+    const defaultSelected = (!setupConfig.get('toggleAdvanced')) ? 'express' : 'advanced';
+
     if (setupConfig.get('toggleAdvanced')) {
       advancedOptions = (
         <div style={{paddingLeft: '12px'}}>
@@ -142,7 +145,7 @@ class Setup extends Component {
                 </p>
               </div>
               <div style={{paddingLeft: '12px'}}>
-                <RadioButtonGroup defaultSelected="express"
+                <RadioButtonGroup defaultSelected={defaultSelected}
                                   name="installType"
                                   onChange={this.handleChange}
                 >

@@ -9,16 +9,11 @@ const schema = {
     type:    Number,
     default: configId
   },
-
-  isInit: {
-    type:    Boolean,
-    default: false
-  },
-
   services: {
     gethPath:    String,
     gethPathIpc: String,
-    ipfsApiPath: String
+    ipfsApiPath: String,
+    isInit:      Boolean
   }
 };
 
@@ -34,10 +29,10 @@ class UserPreferences {
     this.defaultConfig = {
       gethPath:    geth.getDefaultDatadir(),
       gethPathIpc: geth.getDefaultDatadir() + '/geth.ipc',
-      ipfsApiPath: ipfs.getConnection()
+      ipfsApiPath: ipfs.getConnection(),
+      isInit:      false
     };
     this.dbTable.find({idConfig: configId}).count((err, records)=> {
-      let config;
       if (!err && records == 0) {
 
 
@@ -65,7 +60,8 @@ class UserPreferences {
    * @param cb
    * @returns {Array|{index: number, input: string}}
    */
-  setConfig (options = {}, cb) {
+  setConfig (options = {}) {
+
     return this.dbTable.update(
       {
         idConfig: configId
@@ -74,8 +70,11 @@ class UserPreferences {
         $set: {
           services: options
         }
+      },
+      {
+        multi: false
       }
-    ).exec(cb);
+    );
   }
 
 }
