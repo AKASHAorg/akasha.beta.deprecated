@@ -15,7 +15,7 @@ class Web3 {
     this.minerInit    = false;
     this.personalInit = false;
 
-    this._web3        = new Web3Factory();
+    this._web3     = new Web3Factory();
     this._web3.net = Promise.promisifyAll(this._web3.net);
     this._web3.shh = Promise.promisifyAll(this._web3.shh);
     this._web3.eth = Promise.promisifyAll(this._web3.eth);
@@ -50,7 +50,7 @@ class Web3 {
       });
     });
     this._web3.admin = Promise.promisifyAll(this._web3.admin);
-    this.adminInit = true;
+    this.adminInit   = true;
   }
 
   initMiner () {
@@ -65,7 +65,7 @@ class Web3 {
       });
     });
     this._web3.miner = Promise.promisifyAll(this._web3.miner)
-    this.minerInit = true;
+    this.minerInit   = true;
   }
 
   initPersonal () {
@@ -80,7 +80,7 @@ class Web3 {
       });
     });
     this._web3.personal = Promise.promisifyAll(this._web3.personal);
-    this.personalInit = true;
+    this.personalInit   = true;
   }
 
   setProvider (gethIpc, socket) {
