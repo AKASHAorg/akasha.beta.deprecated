@@ -49,13 +49,13 @@ class AkashaLogger {
   }
 
   /**
-   *
    * @param name
+   * @param level
    * @param maxsize
    * @param maxFiles
    * @returns {*}
    */
-  registerLogger (name, {maxsize = 10 * 1024, maxFiles = 1} = {}) {
+  registerLogger (name, { level = 'info', maxsize = 10 * 1024, maxFiles = 1 } = {}) {
     this.loggers[name] = new (winston.Logger)({
       transports: [
         new winston.transports.Console({
@@ -64,9 +64,9 @@ class AkashaLogger {
         }),
         new (winston.transports.File)({
           filename: path.join(this.logPath, `${name}.log`),
-          level:    'info',
-          maxsize:  maxsize,
-          maxFiles: maxFiles,
+          level,
+          maxsize,
+          maxFiles,
           name:     `log-${name}`
         })
       ]

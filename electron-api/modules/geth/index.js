@@ -7,6 +7,7 @@ const childProcess = require('child_process');
 const geth         = require('./geth');
 const net          = require('net');
 const os           = require('os');
+const Web3         = require('./web3');
 
 const loggerRegistrar = require('../../loggers');
 
@@ -29,19 +30,17 @@ class GethConnector {
     if (enforcer !== symbolEnforcer) {
       throw new Error('Cannot construct singleton');
     }
-    this.logger = loggerRegistrar.getInstance().registerLogger('geth', {maxsize: 1024 * 10 * 3});
+    this.logger = loggerRegistrar.getInstance().registerLogger('geth', { maxsize: 1024 * 10 * 3 });
 
     this.socket     = new net.Socket();
+    this.ipcStream  = new Web3();
     this.executable = null;
 
-    this.gethProcess      = null;
-    this.lastChunk        = null;
-    this.lastChunkTimeout = null;
-    this.dataDir          = null;
-    this.ipcPath          = null;
+    this.gethProcess = null;
+    this.dataDir     = null;
+    this.ipcPath     = null;
 
-    this.ipcCallbacks = {};
-    this.options      = [];
+    this.options = [];
 
     this._setSocketEvents();
   }
@@ -64,17 +63,24 @@ class GethConnector {
   start (options = {}) {
     this._setOptions(options);
 
-    this._checkGeth().then((binary)=> {
+    this._checkGeth().then((binary) => {
       this.executable = binary;
-      return this._spawnGeth({detached: true}).then(function (data) {
+      return this._spawnGeth({ detached: true }).then((data) => {
+        setTimeout(() => {
+          this.ipcStream.setProvider(this.ipcPath, this.socket);
+        }, 4000);
         return data;
-      }).catch(function (err) {
+      }).catch((err) => {
         throw new Error(`Could not start geth ${err}`);
       });
     }).catch((err)=> {
       this.logger.warn(`geth:binary:${err}`);
       throw new Error(`Could not download geth ${err}`);
     });
+  }
+
+  get web3 () {
+    return this.ipcStream.web3;
   }
 
   /**
@@ -91,37 +97,6 @@ class GethConnector {
     }
   }
 
-
-  /**
-   * Call geth ipc methods
-   * @param name
-   * @param params
-   * @returns {bluebird|exports|module.exports}
-   */
-  ipcCall (name, params = []) {
-    let msg;
-
-    return new Promise((send, deny)=> {
-      if (!this.gethProcess) {
-        msg = 'geth process not started, use .start() before';
-        this.logger.warn(msg);
-        return deny(msg);
-      }
-      this._connectToIPC();
-      if (!this.socket.writable) {
-        return deny('Socket not writeable');
-      }
-      this.ipcCallbacks[idCount] = {resolve: send, reject: deny};
-      this.socket.write(JSON.stringify({
-        jsonrpc: '2.0',
-        id:      idCount,
-        method:  name,
-        params:  params || []
-      }));
-      return idCount++;
-    });
-  }
-
   /**
    *
    * @param dataDir
@@ -134,7 +109,7 @@ class GethConnector {
   _setOptions ({dataDir, ipcPath, protocol = ['--shh', '--rpc', '--fast', '--cache', 512], extra = []} = {}) {
     this.options = [];
     if (!Array.isArray(protocol) || !Array.isArray(extra)) {
-      throw new Error('protocol, cors and extra options must be array type');
+      throw new Error('protocol and extra options must be array type');
     }
     if (!dataDir) {
       dataDir = GethConnector.getDefaultDatadir();
@@ -177,53 +152,6 @@ class GethConnector {
     return dataDir;
   }
 
-  /**
-   * Construct data from ipc stream
-   * @param data
-   * @returns {bluebird|exports|module.exports}
-   * @private
-   */
-  _deChunker (data) {
-    let result;
-    let dechunkedData;
-
-    return new Promise((resolve, reject)=> {
-
-      data          = data.toString();
-      dechunkedData = data
-        .replace(/\}[\n\r]?\{/g, '}|--|{') // }{
-        .replace(/\}\][\n\r]?\[\{/g, '}]|--|[{') // }][{
-        .replace(/\}[\n\r]?\[\{/g, '}|--|[{') // }[{
-        .replace(/\}\][\n\r]?\{/g, '}]|--|{') // }]{
-        .split('|--|');
-
-      dechunkedData.forEach((chunk)=> {
-
-        if (this.lastChunk) {
-          chunk = this.lastChunk + chunk;
-        }
-
-        result = chunk;
-
-        try {
-          result = JSON.parse(result);
-        } catch (e) {
-          this.lastChunk = chunk;
-          clearTimeout(this.lastChunkTimeout);
-          this.lastChunkTimeout = setTimeout(function () {
-            return reject('Couldn\'t decode data: ' + chunk);
-          }, 1000 * 15);
-          return;
-        }
-
-        clearTimeout(this.lastChunkTimeout);
-        this.lastChunk = null;
-
-        resolve(result);
-      });
-    });
-
-  }
 
   /**
    * Downloads geth executable
@@ -243,16 +171,6 @@ class GethConnector {
   }
 
   /**
-   * Connect to geth ipc
-   * @private
-   */
-  _connectToIPC () {
-    if (!this.socket.writable) {
-      this.socket.connect({path: this.ipcPath});
-    }
-  }
-
-  /**
    *
    * @private
    */
@@ -265,28 +183,12 @@ class GethConnector {
    * @private
    */
   _setSocketEvents () {
-    let promise;
-    let err;
-    this.socket.on('data', (data)=> {
-      this._deChunker(data).then((resp)=> {
-        promise = this.ipcCallbacks[resp.id];
-        delete this.ipcCallbacks[resp.id];
-        if (!resp.result) {
-          return promise.reject(resp.error);
-        }
-        return promise.resolve(resp.result);
-      }).catch((error)=> {
-        err = `geth:ipcCall: ${error}`;
-        this.logger.warn(err);
-        throw new Error(err);
-      });
-    });
 
-    this.socket.on('connect', ()=> {
+    this.socket.on('connect', () => {
       this.logger.info('connection to ipc Established!');
     });
 
-    this.socket.on('timeout', (e)=> {
+    this.socket.on('timeout', (e) => {
       this.logger.warn('connection to ipc timed out');
       this._ipcDestroy();
     });

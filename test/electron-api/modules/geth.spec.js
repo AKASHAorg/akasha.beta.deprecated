@@ -10,13 +10,11 @@ describe('gethConnector', function () {
   before(function (done) {
     connector        = geth.getInstance();
     connector.logger = logger;
-    setTimeout(function () {
-      connector.start();
-    }, 500);
+    connector.start();
 
     setTimeout(function () {
       done();
-    }, 3500);
+    }, 4500);
   });
 
   after(function () {
@@ -33,13 +31,27 @@ describe('gethConnector', function () {
     expect(connector.gethProcess).to.be.an('object');
   });
 
-  it('should send rpc to ipc and read data', function (done) {
-    connector.ipcCall('eth_coinbase', []).then(function (data) {
+  it('should send request to ipc and read data', function () {
+    return connector.web3.personal.listAccountsAsync().then((data)=> {
       expect(data).to.exist;
-    }).catch(function (err) {
-      expect(err).to.be.undefined;
-    }).finally(function () {
-      done();
+    }).catch((error)=> {
+      expect(error).not.to.exist;
+    });
+  });
+
+  it('should get coinbase', function () {
+    return connector.web3.eth.getCoinbaseAsync().then((data)=> {
+      expect(data).to.exist;
+    }).catch((error)=> {
+      expect(error).not.to.exist;
+    });
+  });
+
+  it('should get node status', function () {
+    return connector.web3.admin.nodeInfoAsync().then((data)=> {
+      expect(data).to.exist;
+    }).catch((error)=> {
+      expect(error).not.to.exist;
     });
   });
 
