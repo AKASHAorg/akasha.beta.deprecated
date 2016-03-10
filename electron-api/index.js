@@ -7,6 +7,11 @@ const geth    = require('./modules/geth');
 const ipfs    = require('./modules/ipfs');
 const globals = require('./globals');
 
+// Hook contract IPC events
+require('./modules/transactions');
+require('./modules/profiles');
+
+
 const gethInstance = geth.getInstance();
 const ipfsInstance = ipfs.getInstance();
 
