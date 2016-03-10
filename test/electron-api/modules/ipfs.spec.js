@@ -50,7 +50,7 @@ describe('ipfsConnector', function () {
   describe('#add()', function () {
     let dataString;
     it('should add text to ipfs', function () {
-      return ipfs.add(__dirname + '/test.txt', {isPath: true}).then(function (data) {
+      return ipfs.add(__dirname + '/test.txt', { isPath: true }).then(function (data) {
         dataString = data;
         expect(data).to.exist;
       });
@@ -66,8 +66,8 @@ describe('ipfsConnector', function () {
     it('should add from multiple sources', function () {
       const sources = [
         [__dirname + '/test.txt'],
-        [__dirname + '/test.txt', {isPath: true}],
-        [__dirname + '', {isPath: true, recursive: true}]
+        [__dirname + '/test.txt', { isPath: true }],
+        [__dirname + '', { isPath: true, recursive: true }]
       ];
       return ipfs.addMultiple(sources).then(function (hashes) {
         expect(hashes).to.exist;
