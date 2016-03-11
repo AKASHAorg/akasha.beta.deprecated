@@ -18,15 +18,15 @@ const watchTx = require('../../../contracts/api/watchtx');
 
 
 function send (arg, event) {
-  const response = {operation: arg.operation, to: arg.to, err: false};
-  web3.eth.sendTransaction({to: arg.to, value: arg.amount, gas: 21000, gasPrice: estimate.gas_price},
-    function (err1, tx) {
+  const response = { operation: arg.operation, to: arg.to, err: false };
+  web3.eth.sendTransaction({ to: arg.to, value: arg.amount, gas: 21000, gasPrice: estimate.gas_price },
+    (err1, tx) => {
       if (err1) {
         response.err = err1.toString().substr(7);
         event.sender.send('response-tx', response);
         return;
       }
-      watchTx('sendEther', tx, function (err2, success) {
+      watchTx('sendEther', tx, (err2, success) => {
         if (err2) {
           response.err = err2;
         }
@@ -35,22 +35,22 @@ function send (arg, event) {
     });
 }
 
-ipc.on('request-tx', function (event, arg, extra) {
+ipc.on('request-tx', (event, arg, extra) => {
   console.log(' ⚛  Request-tx::', arg);
 
   // The maximum possible cost of the operation on the blockchain;
   if (extra && extra.estimate) {
     if (arg.operation === 'wait') {
-      event.sender.send('response-tx', {gas: -1, cost: 0});
+      event.sender.send('response-tx', { gas: -1, cost: 0 });
       return;
     }
     const gas = 21000;
-    const cost = parseFloat(gas * estimate.unit_gas_price).toFixed(4) + ' ' + estimate.unit;
-    event.sender.send('response-tx', {gas, cost});
+    const cost = parseFloat(gas * estimate.unit_gas_price).toFixed(4) + ' ' + estimate.unit; // eslint-disable-line
+    event.sender.send('response-tx', { gas, cost });
     return;
   }
 
-  const response = {operation: arg.operation, to: arg.to, err: false};
+  const response = { operation: arg.operation, to: arg.to, err: false };
 
   if (arg.operation === 'send') {
     if (!arg.to || !web3.isAddress(arg.to)) {
@@ -64,7 +64,7 @@ ipc.on('request-tx', function (event, arg, extra) {
       return;
     }
 
-    web3.isNodeSyncing(function (sync) {
+    web3.isNodeSyncing((sync) => {
       if (sync) {
         response.err = 'GETH is not in sync';
         event.sender.send('response-tx', response);
