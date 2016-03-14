@@ -1,17 +1,12 @@
 /* eslint strict: 0 */
 'use strict';
 require('babel-register');
+require('./globals');
 
 const ipcMain = require('electron').ipcMain;
-const geth    = require('./modules/geth');
-const ipfs    = require('./modules/ipfs');
-const globals = require('./globals');
-
-const gethInstance = geth.getInstance();
-const ipfsInstance = ipfs.getInstance();
 
 const startAll = function () {
-  gethInstance.start({extra: ['--testnet']});
+  gethInstance.start({ extra: ['--testnet'] });
   ipfsInstance.start();
 };
 

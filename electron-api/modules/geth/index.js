@@ -103,7 +103,7 @@ class GethConnector {
    * @returns {Array|Array.<T>|*}
    * @private
    */
-  _setOptions ({dataDir, ipcPath, protocol = ['--shh', '--rpc', '--fast', '--cache', 512], extra = []} = {}) {
+  _setOptions ({dataDir, ipcPath, protocol = ['--shh', '--cache', 512], extra = []} = {}) {
     this.options = [];
     if (!Array.isArray(protocol) || !Array.isArray(extra)) {
       throw new Error('protocol and extra options must be array type');

@@ -6,18 +6,15 @@ import RadioButtonGroup from 'material-ui/lib/radio-button-group';
 import RaisedButton from 'material-ui/lib/raised-button';
 import TextField from 'material-ui/lib/text-field';
 import Checkbox from 'material-ui/lib/checkbox';
-import {hashHistory} from 'react-router';
+import { hashHistory } from 'react-router';
 
 import { Scrollbars } from 'react-custom-scrollbars';
 
 class Setup extends Component {
 
-  constructor (props, context) {
-    super(props, context);
-  }
+  handleChange = (event, value) => {
+    const { actions, setupConfig } = this.props;
 
-  handleChange = (event, value)=> {
-    const {actions, setupConfig} = this.props;
     const show = 'advanced' === value;
     if (setupConfig.get('toggleAdvanced') === show) {
       return;
@@ -25,8 +22,9 @@ class Setup extends Component {
     actions.toggleAdvanced(show);
   };
 
-  handleGethDatadir = (event)=> {
-    const {actions, setupConfig} = this.props;
+  handleGethDatadir = (event) => {
+    const { actions, setupConfig } = this.props;
+
     const target         = event.target;
     const currentDatadir = setupConfig.get('gethPath');
     if (currentDatadir === target.value || !target.value) {
@@ -35,8 +33,9 @@ class Setup extends Component {
     actions.setupGeth(target.value);
   };
 
-  handleGethIpc = (event)=> {
-    const {actions, setupConfig} = this.props;
+  handleGethIpc = (event) => {
+    const { actions, setupConfig } = this.props;
+
     const target         = event.target;
     const currentIpcPath = setupConfig.get('gethPathIpc');
     if (currentIpcPath === target.value || !target.value) {
@@ -45,8 +44,9 @@ class Setup extends Component {
     actions.setGethIpc(target.value);
   };
 
-  handleIpfsPath = (event)=> {
-    const {actions, setupConfig} = this.props;
+  handleIpfsPath = (event) => {
+    const { actions, setupConfig } = this.props;
+
     const target         = event.target;
     const currentIpfsApi = setupConfig.get('ipfsApiPath');
     if (currentIpfsApi === target.value || !target.value) {
@@ -56,12 +56,8 @@ class Setup extends Component {
 
   };
 
-  /**
-   *
-   * @param event
-   */
-  handleSubmit = (event)=> {
-    const {actions, setupConfig} = this.props;
+  handleSubmit = () => {
+    const { actions, setupConfig } = this.props;
 
     if (!setupConfig.get('toggleAdvanced')) {
       actions.defaultOptions();
@@ -71,20 +67,22 @@ class Setup extends Component {
   };
 
   render () {
-    let advancedOptions      = '';
-    const {style, setupConfig} = this.props;
-    const radioStyle         = {marginTop: '10px', marginBottom: '10px'};
-    const buttonsStyle       = {padding: 0, position: 'absolute', bottom: 0, right: 0};
-    const errorStyle         = {color: Colors.minBlack};
-    const floatingLabelStyle = {color: Colors.lightBlack};
-    const inputStyle         = {color: Colors.darkBlack};
-    const rootStyle          = {width: '400px'};
+    let advancedOptions = '';
+
+    const { style, setupConfig } = this.props;
+
+    const radioStyle         = { marginTop: '10px', marginBottom: '10px' };
+    const buttonsStyle       = { padding: 0, position: 'absolute', bottom: 0, right: 0 };
+    const errorStyle         = { color: Colors.minBlack };
+    const floatingLabelStyle = { color: Colors.lightBlack };
+    const inputStyle         = { color: Colors.darkBlack };
+    const rootStyle          = { width: '400px' };
 
     const defaultSelected = (!setupConfig.get('toggleAdvanced')) ? 'express' : 'advanced';
 
     if (setupConfig.get('toggleAdvanced')) {
       advancedOptions = (
-        <div style={{paddingLeft: '12px'}}>
+        <div style={{ paddingLeft: '12px' }}>
           <TextField
             errorStyle={errorStyle}
             errorText={"Change this if geth has different data directory"}
@@ -124,13 +122,13 @@ class Setup extends Component {
         <div className="start-xs">
           <div
             className="col-xs"
-            style={{flex: 1, padding: 0}}
+            style={{ flex: 1, padding: 0 }}
           >
             <LoginHeader />
             <Scrollbars
               style={{ height: 540 }}
             >
-              <h1 style={{fontWeight: '400'}}>{'First time setup'}</h1>
+              <h1 style={{ fontWeight: '400' }}>{'First time setup'}</h1>
               <div>
                 <p>{'AKASHA is a next-generation social blogging network powered by a new kind of world computers' +
                 ' known as Ethereum and the Inter Planetary File System.'}
@@ -144,7 +142,7 @@ class Setup extends Component {
                   ' advanced option.'}
                 </p>
               </div>
-              <div style={{paddingLeft: '12px'}}>
+              <div style={{ paddingLeft: '12px' }}>
                 <RadioButtonGroup defaultSelected={defaultSelected}
                                   name="installType"
                                   onChange={this.handleChange}
@@ -162,19 +160,18 @@ class Setup extends Component {
                 </RadioButtonGroup>
                 {advancedOptions}
               </div>
-
             </Scrollbars>
           </div>
         </div>
         <div className="end-xs"
-             style={{flex: 1}}
+             style={{ flex: 1 }}
         >
           <div className="col-xs"
                style={buttonsStyle}
           >
             <RaisedButton label="Next"
                           primary={true}
-                          style={{marginLeft: '12px'}}
+                          style={{ marginLeft: '12px' }}
                           onClick={this.handleSubmit}
             />
           </div>
