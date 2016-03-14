@@ -24,6 +24,7 @@ ipc.send('request-profile', {operation: 'create'}, {estimate: true}); // Estimat
 */
 
 const ipc = require('electron').ipcMain;
+const web3 = require('../../../contracts/api/web3');
 const Profile = require('./ProfileApi');
 const profile = new Profile();
 
@@ -33,7 +34,7 @@ function estimate (operation, event) {
   let cost = 0;
   const gas = agas.profile[operation] || -1;
   if (gas > 0) {
-    cost = parseFloat(gas * agas.unit_gas_price).toFixed(3) + ' ' + agas.unit; // eslint-disable-line
+    cost = parseFloat(gas * agas.unit_gas_price).toFixed(4) + ' ' + agas.unit; // eslint-disable-line
   }
   event.sender.send('response-profile', { gas, cost });
 }
@@ -52,13 +53,18 @@ function info (nameOrAddr, event) {
 
 function check (operation, event, args) {
   const response = { operation, err: false };
-  if (!profile.ready) {
-    response.err = 'profile contracts are not ready';
-    event.sender.send('response-profile', response);
+  if (!web3.eth.defaultAccount) {
+    response.err = 'coinbase not set';
+    event.sender.send('response-tx', response);
     return false;
   }
   if (!profile) {
     response.err = 'cannot initialize profile';
+    event.sender.send('response-profile', response);
+    return false;
+  }
+  if (!profile.ready) {
+    response.err = 'profile contracts are not ready';
     event.sender.send('response-profile', response);
     return false;
   }

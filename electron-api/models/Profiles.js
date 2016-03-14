@@ -10,7 +10,7 @@ const ProfileSchema = new LinvoDb('Profiles', {
 
 class ProfileModel {
 
-  get schema () {
+  get table () {
     return ProfileSchema;
   }
 

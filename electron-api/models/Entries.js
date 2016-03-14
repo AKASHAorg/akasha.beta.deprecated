@@ -10,7 +10,7 @@ const EntrySchema = new LinvoDb('Entries', {
 
 class EntryModel {
 
-  get schema () {
+  get table () {
     return EntrySchema;
   }
 

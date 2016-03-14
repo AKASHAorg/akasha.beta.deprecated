@@ -10,7 +10,7 @@ const CommentSchema = new LinvoDb('Comments', {
 
 class CommentModel {
 
-  get schema () {
+  get table () {
     return CommentSchema;
   }
 

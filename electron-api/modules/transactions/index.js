@@ -13,25 +13,54 @@ ipc.send('request-tx', {operation: 'wait', amount: 100*1000*1000*1000});
 
 const ipc = require('electron').ipcMain;
 const web3 = require('../../../contracts/api/web3');
-const estimate = require('../../../contracts/api/gas');
-const watchTx = require('../../../contracts/api/watchtx');
 
+
+function estimate (operation, event) {
+  const agas = require('../../../contracts/api/gas');
+  if (operation === 'wait') {
+    event.sender.send('response-tx', { gas: -1, cost: 0 });
+    return;
+  }
+  const gas = 21037;
+  const cost = parseFloat(gas * agas.unit_gas_price).toFixed(4) + ' ' + agas.unit; // eslint-disable-line
+  event.sender.send('response-tx', { gas, cost });
+}
 
 function send (arg, event) {
+  const agas = require('../../../contracts/api/gas');
   const response = { operation: arg.operation, to: arg.to, err: false };
-  web3.eth.sendTransaction({ to: arg.to, value: arg.amount, gas: 21000, gasPrice: estimate.gas_price },
-    (err1, tx) => {
-      if (err1) {
-        response.err = err1.toString().substr(7);
-        event.sender.send('response-tx', response);
-        return;
-      }
-      watchTx('sendEther', tx, (err2, success) => {
-        if (err2) {
-          response.err = err2;
-        }
-        event.sender.send('response-tx', response);
+  let balance1 = 0;
+  let balance2 = 0;
+  web3.eth.getBalanceAsync(arg.to)
+    .then((balance) => {
+      balance1 = balance.toNumber();
+      // console.log(' ~Initial remote balance::', balance1);
+      return web3.eth.sendTransactionAsync({
+        to:       arg.to,
+        value:    arg.amount,
+        gas:      22000,
+        gasPrice: agas.gas_price
       });
+    }).then((txHash) => {
+      web3.watchTx('sendEther()', txHash, (err, success) => {
+        if (err) {
+          response.err = err;
+          event.sender.send('response-tx', response);
+          return;
+        }
+        web3.eth.getBalance(arg.to, (_, balance) => {
+          balance2 = balance.toNumber();
+          // console.log(' ~Final remote balance::', balance2);
+          if (balance1 + arg.amount !== balance2) {
+            response.err = `balance doesnt match ${balance1 + arg.amount} != ${balance2}`;
+          }
+          event.sender.send('response-tx', response);
+        });
+      });
+    })
+    .catch((err) => {
+      response.err = err;
+      event.sender.send('response-tx', response);
     });
 }
 
@@ -40,19 +69,18 @@ ipc.on('request-tx', (event, arg, extra) => {
 
   // The maximum possible cost of the operation on the blockchain;
   if (extra && extra.estimate) {
-    if (arg.operation === 'wait') {
-      event.sender.send('response-tx', { gas: -1, cost: 0 });
-      return;
-    }
-    const gas = 21000;
-    const cost = parseFloat(gas * estimate.unit_gas_price).toFixed(4) + ' ' + estimate.unit; // eslint-disable-line
-    event.sender.send('response-tx', { gas, cost });
+    estimate(arg.operation, event);
     return;
   }
 
   const response = { operation: arg.operation, to: arg.to, err: false };
 
   if (arg.operation === 'send') {
+    if (!web3.eth.defaultAccount) {
+      response.err = 'coinbase not set';
+      event.sender.send('response-tx', response);
+      return;
+    }
     if (!arg.to || !web3.isAddress(arg.to)) {
       response.err = 'invalid TO address';
       event.sender.send('response-tx', response);

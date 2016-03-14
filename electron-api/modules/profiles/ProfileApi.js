@@ -25,7 +25,7 @@ class ProfileClass {
       });
       // Setup everything
       this._setupContracts(() => this._setupDatabase());
-    }, 1500);
+    }, 5055);
   }
 
   // Instantiate and wait for AkashaX and Profile Contracts to be ready
@@ -182,17 +182,17 @@ class ProfileClass {
     // Database waiting function;
     const waiting = (doc) => {
       if (doc.name === name) {
-        this.profileModel.schema.removeListener('save', waiting);
+        this.profileModel.table.removeListener('save', waiting);
         callback(null, doc);
         return;
       }
     };
     // After inserting new documents;
-    this.profileModel.schema.on('save', waiting);
+    this.profileModel.table.on('save', waiting);
 
     this._create(name, data, (err) => {
       if (err) {
-        this.profileModel.schema.removeListener('save', waiting);
+        this.profileModel.table.removeListener('save', waiting);
         callback(err);
         return;
       }
@@ -261,17 +261,17 @@ class ProfileClass {
         // Database waiting function;
         const waiting = (doc) => {
           if (doc.name === name) {
-            this.profileModel.schema.removeListener('save', waiting);
+            this.profileModel.table.removeListener('save', waiting);
             callback(null, doc);
             return;
           }
         };
         // After updating documents;
-        this.profileModel.schema.on('save', waiting);
+        this.profileModel.table.on('save', waiting);
 
         this._update(name, data, (err) => {
           if (err) {
-            this.profileModel.schema.removeListener('save', waiting);
+            this.profileModel.table.removeListener('save', waiting);
             callback(err);
             return;
           }
@@ -320,17 +320,17 @@ class ProfileClass {
     // Database waiting function;
     const waiting = (doc) => {
       if (doc.name === name) {
-        this.profileModel.schema.removeListener('remove', waiting);
+        this.profileModel.table.removeListener('remove', waiting);
         callback(null, true);
         return;
       }
     };
     // After removing documents;
-    this.profileModel.schema.on('remove', waiting);
+    this.profileModel.table.on('remove', waiting);
 
     this._delete(name, (err) => {
       if (err) {
-        this.profileModel.schema.removeListener('remove', waiting);
+        this.profileModel.table.removeListener('remove', waiting);
         callback(err);
         return;
       }
