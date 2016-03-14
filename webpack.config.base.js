@@ -27,11 +27,6 @@ const webpackConfig = {
 
   ],
   externals: [
-    'immutable',
-    'ipfs-api',
-    'material-ui',
-    'radium',
-    'web3'
   ]
 };
 

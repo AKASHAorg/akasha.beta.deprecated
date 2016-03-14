@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import AkashaTheme from '../layouts/AkashaTheme';
-import ThemeManager from 'material-ui/lib/styles/theme-manager';
+import getMuiTheme from 'material-ui/lib/styles/getMuiTheme';
 
 export default class App extends Component {
   static propTypes = {
@@ -13,7 +13,7 @@ export default class App extends Component {
 
   getChildContext () {
     return {
-      muiTheme: ThemeManager.getMuiTheme(AkashaTheme)
+      muiTheme: getMuiTheme(AkashaTheme)
     };
   }
 

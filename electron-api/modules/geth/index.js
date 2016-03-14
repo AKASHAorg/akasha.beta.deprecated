@@ -16,9 +16,6 @@ const platform = os.type();
 const symbolEnforcer = Symbol();
 const symbol         = Symbol();
 
-// const env   = process.env.NODE_ENV || 'development';
-let idCount = 1;
-
 
 class GethConnector {
 

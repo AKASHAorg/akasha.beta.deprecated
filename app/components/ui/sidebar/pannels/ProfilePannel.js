@@ -1,7 +1,7 @@
 import Pannel from './Pannel';
 import React, { PropTypes, Component } from 'react';
 import Radium from 'radium';
-import Colors from 'material-ui/lib/styles/colors';
+import * as Colors from 'material-ui/lib/styles/colors';
 import Paper from 'material-ui/lib/paper';
 import SvgIcon from 'material-ui/lib/svg-icon';
 import IconButton from 'material-ui/lib/icon-button';
