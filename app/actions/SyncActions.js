@@ -1,7 +1,6 @@
 import * as types from '../constants/SyncConstants';
 const remote       = require('electron').remote;
 const gethInstance = remote.getGlobal('gethInstance');
-console.log(gethInstance);
 
 export function isSyncing (message) {
   return { type: types.SYNC_ACTIVE, message };
@@ -9,7 +8,7 @@ export function isSyncing (message) {
 
 export function getSyncStatus () {
   return (dispatch, getState) => {
-    gethInstance.web3.eth.isSyncingAsync().then((data) => {
+    gethInstance.web3.eth.getSyncingAsync().then((data) => {
       dispatch(isSyncing(data));
       console.log(data);
     }).catch((err) => console.log(err));

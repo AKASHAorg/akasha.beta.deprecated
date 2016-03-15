@@ -1,5 +1,4 @@
 import Web3Factory from 'web3';
-import { toBoolVal, toIntVal, toIntValRestricted, toJSONObject, toStringVal } from './helpers';
 import Promise from 'bluebird';
 
 class Web3 {
@@ -39,32 +38,33 @@ class Web3 {
   }
 
   initAdmin () {
+    const { methods, properties } = this._adminMethods();
+
     if (this.adminInit) {
       return;
     }
-
-    this._adminMethods().forEach(method => {
-      this._web3._extend({
-        property: 'admin',
-        methods:  [new this._web3._extend.Method(method)]
-      });
+    this._web3._extend({
+      property: 'admin',
+      methods,
+      properties
     });
+
     this._web3.admin = Promise.promisifyAll(this._web3.admin);
     this.adminInit   = true;
   }
 
   initMiner () {
+    const { methods, properties } = this._minerMethods();
     if (this.minerInit) {
       return;
     }
-
-    this._minerMethods().forEach(method => {
-      this._web3._extend({
-        property: 'miner',
-        methods:  [new this._web3._extend.Method(method)]
-      });
+    this._web3._extend({
+      property: 'miner',
+      methods,
+      properties
     });
-    this._web3.miner = Promise.promisifyAll(this._web3.miner)
+
+    this._web3.miner = Promise.promisifyAll(this._web3.miner);
     this.minerInit   = true;
   }
 
@@ -72,12 +72,9 @@ class Web3 {
     if (this.personalInit) {
       return;
     }
-
-    this._personalMethods().forEach(method => {
-      this._web3._extend({
-        property: 'personal',
-        methods:  [new this._web3._extend.Method(method)]
-      });
+    this._web3._extend({
+      property: 'personal',
+      methods:  this._personalMethods().methods
     });
     this._web3.personal = Promise.promisifyAll(this._web3.personal);
     this.personalInit   = true;
@@ -91,179 +88,202 @@ class Web3 {
 
   _personalMethods () {
 
-    return [
-      {
-        name:            'unlockAccount',
-        call:            'personal_unlockAccount',
-        params:          3,
-        inputFormatter:  [this._web3._extend.utils.toAddress, toStringVal, toIntVal],
-        outputFormatter: toBoolVal
-      },
-      {
-        name:            'newAccount',
-        call:            'personal_newAccount',
-        params:          1,
-        inputFormatter:  [toStringVal],
-        outputFormatter: toStringVal
-      },
-      {
-        name:            'listAccounts',
-        call:            'personal_listAccounts',
-        params:          0,
-        outputFormatter: toJSONObject
-      },
-      {
-        name:            'deleteAccount',
-        call:            'personal_deleteAccount',
-        params:          2,
-        inputFormatter:  [this._web3._extend.utils.toAddress, toStringVal],
-        outputFormatter: toBoolVal
-      }
-    ];
+    return {
+      methods: [
+        new this._web3._extend.Method({
+          name:   'unlockAccount',
+          call:   'personal_unlockAccount',
+          params: 3,
+
+          inputFormatter:  [
+            this._web3._extend.utils.toAddress,
+            this._web3._extend.utils.formatInputString,
+            this._web3._extend.formatters.formatInputInt
+          ],
+          outputFormatter: this._web3._extend.formatters.formatOutputBool
+        }),
+
+        new this._web3._extend.Method({
+          name:            'newAccount',
+          call:            'personal_newAccount',
+          params:          1,
+          inputFormatter:  [this._web3._extend.utils.formatInputString],
+          outputFormatter: this._web3._extend.utils.formatOutputString
+        }),
+
+        new this._web3._extend.Method({
+          name:            'listAccounts',
+          call:            'personal_listAccounts',
+          params:          0,
+          inputFormatter:  [null],
+          outputFormatter: (obj) => obj
+        }),
+
+        new this._web3._extend.Method({
+          name:            'deleteAccount',
+          call:            'personal_deleteAccount',
+          params:          2,
+          inputFormatter:  [this._web3._extend.utils.toAddress, this._web3._extend.utils.formatInputString],
+          outputFormatter: this._web3._extend.formatters.formatOutputBool
+        })
+      ]
+    };
   }
 
   _adminMethods () {
-    return [
-      {
+    return {
+      methods: [
+        new this._web3._extend.Method({
+          name:            'addPeer',
+          call:            'admin_addPeer',
+          params:          1,
+          inputFormatter:  [this._web3._extend.utils.fromDecimal],
+          outputFormatter: this._web3._extend.formatters.formatOutputBool
+        }),
 
-        name:           'verbosity',
-        call:           'admin_verbosity',
-        params:         1,
-        inputFormatter: [toIntValRestricted]
+        new this._web3._extend.Method({
+          name:            'exportChain',
+          call:            'admin_exportChain',
+          params:          1,
+          inputFormatter:  [null],
+          outputFormatter: (obj) => obj
+        }),
 
-      },
-      {
+        new this._web3._extend.Method({
+          name:            'importChain',
+          call:            'admin_importChain',
+          params:          1,
+          inputFormatter:  [null],
+          outputFormatter: (obj) => obj
+        }),
 
-        name:            'nodeInfo',
-        call:            'admin_nodeInfo',
-        params:          0,
-        outputFormatter: toJSONObject
+        new this._web3._extend.Method({
+          name:            'verbosity',
+          call:            'admin_verbosity',
+          params:          1,
+          inputFormatter:  [this._web3._extend.utils.formatInputInt],
+          outputFormatter: this._web3._extend.formatters.formatOutputBool
+        }),
 
-      },
-      {
+        new this._web3._extend.Method({
+          name:            'setSolc',
+          call:            'admin_setSolc',
+          params:          1,
+          inputFormatter:  [null],
+          outputFormatter: this._web3._extend.formatters.formatOutputString
+        }),
 
-        name:            'addPeer',
-        call:            'admin_addPeer',
-        params:          1,
-        inputFormatter:  [toStringVal],
-        outputFormatter: toBoolVal
+        new this._web3._extend.Method({
+          name:            'startRPC',
+          call:            'admin_startRPC',
+          params:          4,
+          inputFormatter:  [null, this._web3._extend.utils.formatInputInteger, null, null],
+          outputFormatter: this._web3._extend.formatters.formatOutputBool
+        }),
 
-      },
-      {
+        new this._web3._extend.Method({
+          name:            'stopRPC',
+          call:            'admin_stopRPC',
+          params:          0,
+          inputFormatter:  [],
+          outputFormatter: this._web3._extend.formatters.formatOutputBool
+        })
+      ],
+      properties: [
+        new this._web3._extend.Property({
+          name:            'nodeInfo',
+          getter:          'admin_nodeInfo',
+          outputFormatter: this._web3._extend.formatters.formatOutputString
+        }),
 
-        name:            'peers',
-        call:            'admin_peers',
-        params:          0,
-        outputFormatter: toJSONObject
+        new this._web3._extend.Property({
+          name:            'peers',
+          getter:          'admin_peers',
+          outputFormatter: (obj) => obj
+        }),
 
-      },
-      {
+        new this._web3._extend.Property({
+          name:            'datadir',
+          getter:          'admin_datadir',
+          outputFormatter: this._web3._extend.formatters.formatOutputString
+        }),
 
-        name:            'startRPC',
-        call:            'admin_startRPC',
-        params:          4,
-        inputFormatter:  [toStringVal, toIntVal, toStringVal, toStringVal],
-        outputFormatter: toBoolVal
-
-      },
-      {
-
-        name:            'stopRPC',
-        call:            'admin_stopRPC',
-        params:          0,
-        outputFormatter: toBoolVal
-
-      },
-      {
-
-        name:           'sleepBlocks',
-        call:           'admin_sleepBlocks',
-        params:         1,
-        inputFormatter: [toIntVal]
-
-      },
-      {
-
-        name:            'datadir',
-        call:            'admin_datadir',
-        params:          0,
-        outputFormatter: toStringVal
-
-      },
-      {
-
-        name:            'setSolc',
-        call:            'admin_setSolc',
-        params:          1,
-        inputFormatter:  [toStringVal],
-        outputFormatter: toStringVal
-
-      },
-      {
-
-        name:            '',
-        call:            'admin_',
-        params:          0,
-        inputFormatter:  [this._web3._extend.utils.toAddress, toStringVal, toIntVal],
-        outputFormatter: toStringVal
-
-      },
-      {
-
-        name:            'getContractInfo',
-        call:            'admin_getContractInfo',
-        params:          1,
-        inputFormatter:  [this._web3._extend.utils.toAddress],
-        outputFormatter: toJSONObject
-
-      },
-      {
-
-        name:            'saveInfo',
-        call:            'admin_saveInfo',
-        params:          0,
-        inputFormatter:  [toJSONObject, toStringVal],
-        outputFormatter: toStringVal
-
-      },
-      {
-
-        name:            'register',
-        call:            'admin_register',
-        params:          3,
-        inputFormatter:  [this._web3._extend.utils.toAddress, this._web3._extend.utils.toAddress, toStringVal],
-        outputFormatter: toBoolVal
-
-      },
-      {
-
-        name:            'registerUrl',
-        call:            'admin_registerUrl',
-        params:          3,
-        inputFormatter:  [this._web3._extend.utils.toAddress, toStringVal, toStringVal],
-        outputFormatter: toBoolVal
-
-      }
-    ];
+        new this._web3._extend.Property({
+          name:            'chainSyncStatus',
+          getter:          'admin_chainSyncStatus',
+          outputFormatter: (obj) => obj
+        })
+      ]
+    };
   }
 
   _minerMethods () {
-    return [
-      {
-        name:            'start',
-        call:            'miner_start',
-        params:          1,
-        inputFormatter:  [toIntVal],
-        outputFormatter: toBoolVal
-      },
-      {
-        name:            'stop',
-        call:            'miner_stop',
-        params:          1,
-        inputFormatter:  [toIntVal],
-        outputFormatter: toBoolVal
-      }
-    ];
+    return {
+      methods: [
+        new this._web3._extend.Method({
+          name:            'start',
+          call:            'miner_start',
+          params:          1,
+          inputFormatter:  [this._web3._extend.formatters.formatInputInt],
+          outputFormatter: this._web3._extend.formatters.formatOutputBool
+        }),
+
+        new this._web3._extend.Method({
+          name:            'stop',
+          call:            'miner_stop',
+          params:          1,
+          inputFormatter:  [this._web3._extend.formatters.formatInputInt],
+          outputFormatter: this._web3._extend.formatters.formatOutputBool
+        }),
+
+        new this._web3._extend.Method({
+          name:            'setExtra',
+          call:            'miner_setExtra',
+          params:          1,
+          inputFormatter:  [this._web3._extend.utils.formatInputString],
+          outputFormatter: this._web3._extend.formatters.formatOutputBool
+        }),
+
+        new this._web3._extend.Method({
+          name:            'setGasPrice',
+          call:            'miner_setGasPrice',
+          params:          1,
+          inputFormatter:  [this._web3._extend.utils.formatInputString],
+          outputFormatter: this._web3._extend.formatters.formatOutputBool
+        }),
+
+        new this._web3._extend.Method({
+          name:            'startAutoDAG',
+          call:            'miner_startAutoDAG',
+          params:          0,
+          inputFormatter:  [],
+          outputFormatter: this._web3._extend.formatters.formatOutputBool
+        }),
+
+        new this._web3._extend.Method({
+          name:            'stopAutoDAG',
+          call:            'miner_stopAutoDAG',
+          params:          0,
+          inputFormatter:  [],
+          outputFormatter: this._web3._extend.formatters.formatOutputBool
+        }),
+
+        new this._web3._extend.Method({
+          name:            'makeDAG',
+          call:            'miner_makeDAG',
+          params:          1,
+          inputFormatter:  [this._web3._extend.formatters.inputDefaultBlockNumberFormatter],
+          outputFormatter: this._web3._extend.formatters.formatOutputBool
+        })
+      ],
+      properties: [
+        new this._web3._extend.Property({
+          name:            'hashrate',
+          getter:          'miner_hashrate',
+          outputFormatter: this._web3._extend.utils.toDecimal
+        })
+      ]
+    };
   }
 }
 
