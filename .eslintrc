@@ -1,11 +1,5 @@
 {
-  "parser": "babel-eslint",
   "extends": "airbnb",
-  "env": {
-    "browser": true,
-    "mocha": true,
-    "node": true
-  },
   "rules": {
     "react/forbid-prop-types": 0,
     "react/jsx-boolean-value": 0,
@@ -20,7 +14,6 @@
     "react/jsx-no-literals": 1,
     "react/jsx-no-undef": 1,
     "react/jsx-pascal-case": 1,
-    "react/jsx-sort-prop-types": 1,
     "react/jsx-sort-props": 1,
     "react/jsx-uses-react": 1,
     "react/jsx-uses-vars": 1,
@@ -228,19 +221,6 @@
       }
     ],
     "no-sparse-arrays": 2,
-    "no-throw-literal": 2,
-    // Hopefully this lets Meteor.Error pass
-    "no-unreachable": 2,
-    "no-with": 2,
-    "use-isnan": 2,
-    "wrap-iife": [
-      2,
-      "any"
-    ]
-  },
-  "plugins": [
-    "react"
-  ]
+    "no-throw-literal": 2
+  }
 }
-
-
