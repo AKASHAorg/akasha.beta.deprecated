@@ -25,9 +25,9 @@ class AkashaLogger {
 
     this.logPath = path.join(userData, 'logs');
     this.loggers = {};
-    fs.access(this.logPath, fs.F_OK, (err)=> {
+    fs.access(this.logPath, fs.F_OK, (err) => {
       if (err) {
-        fs.mkdir(this.logPath, (error)=> {
+        fs.mkdir(this.logPath, (error) => {
           if (!error) {
             console.log(error);
           }
@@ -55,11 +55,11 @@ class AkashaLogger {
    * @param maxFiles
    * @returns {*}
    */
-  registerLogger (name, { level = 'info', maxsize = 10 * 1024, maxFiles = 1 } = {}) {
+  registerLogger (name, { level = 'info', consoleLevel = 'warn', maxsize = 10 * 1024, maxFiles = 1 } = {}) {
     this.loggers[name] = new (winston.Logger)({
       transports: [
         new winston.transports.Console({
-          level:    'warn',
+          level:    consoleLevel,
           colorize: true
         }),
         new (winston.transports.File)({
@@ -85,5 +85,3 @@ class AkashaLogger {
 }
 
 export default AkashaLogger;
-
-

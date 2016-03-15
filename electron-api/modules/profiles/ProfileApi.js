@@ -3,22 +3,20 @@ const Promise = require('bluebird');
 const LinvoDb = require('linvodb3');
 const web3 = gethInstance.web3;
 const contracts = require('../../../contracts/api/contracts');
+const logger = require('../../loggers');
 const ProfileModel = require('../../models/Profiles');
 
 class ProfileClass {
 
   constructor () {
     this.ready = false;
-    this.myAddr = null;
     this.myName = null;
     this.xContract = null;
     this.contract = null;
+    this.log = logger.getInstance().registerLogger('profile', { level: 'info', consoleLevel: 'info' });
     this.profileModel = new ProfileModel();
 
     setTimeout(() => {
-      web3.eth.getCoinbase((_, coinbase) => {
-        this.myAddr = coinbase;
-      });
       // Setup everything
       this._setupContracts(() => this._setupDatabase());
     }, 5055);
@@ -39,16 +37,18 @@ class ProfileClass {
         if (block && block.toNumber() > 1) {
           web3.eth.getBalance(contracts.x.address, (err2, balance) => {
             if (balance && balance.toNumber() >= 1) {
-              console.log(' Profile: Setup contracts OK;');
-              clearInterval(interval);
-              if (typeof(callback) === 'function') {
-                this.ready = true;
-                callback();
-              }
+              this.log.info('Profile: Setup contracts OK;');
+              this.ready = true;
+            } else {
+              this.log.warn('Profile: xContract has no funds !!');
+            }
+            clearInterval(interval);
+            if (typeof(callback) === 'function') {
+              callback();
             }
           });
         } else if (!msgShown) {
-          console.warn(' Profile: Contracts are not ready.. Waiting..');
+          this.log.warn('Profile: Contracts are not ready yet... Waiting...');
           msgShown = true;
         }
       });
@@ -72,7 +72,7 @@ class ProfileClass {
       this.profileModel.delete(data.profile);
     });
 
-    console.log(` Profile: Setup database ${LinvoDb.dbPath}/Profile.db;`);
+    this.log.info(`Profile: Setup database ${LinvoDb.dbPath}/Profile.db;`);
   }
 
   // Ethereum functions (read only)
@@ -137,7 +137,7 @@ class ProfileClass {
   _create (name, data, callback) {
     const self = this;
     const promise1 = this.existsProfileName(name);
-    const promise2 = this.existsProfileAddr(this.myAddr);
+    const promise2 = this.existsProfileAddr(web3.eth.defaultAccount);
 
     Promise.join(promise1, promise2, (check1, check2) => {
       if (check1) {
@@ -161,14 +161,15 @@ class ProfileClass {
         // Send and wait transaction
         self.contract.create.waitTransaction(name, hash, {}, (err, success) => {
           if (err) {
-            callback(err, false);
+            this.log.warn(err);
+            callback(err.toString(), false);
           } else {
             self.myName = name;
             callback(null, success);
           }
         });
       }).catch((err) => {
-        console.warn(err);
+        this.log.warn(err);
         callback('ipfs add error');
       });
     });
@@ -203,7 +204,7 @@ class ProfileClass {
   _update (name, data, callback) {
     const self = this;
     const promise1 = this.existsProfileName(name);
-    const promise2 = this.isProfileOwner(this.myAddr, name);
+    const promise2 = this.isProfileOwner(web3.eth.defaultAccount, name);
 
     Promise.join(promise1, promise2, (check1, check2) => {
       if (!check1) {
@@ -227,13 +228,14 @@ class ProfileClass {
         // Send and wait transaction
         self.contract.update.waitTransaction(name, hash, {}, (err, success) => {
           if (err) {
-            callback(err, false);
+            this.log.warn(err);
+            callback(err.toString(), false);
           } else {
             callback(null, success);
           }
         });
       }).catch((err) => {
-        console.warn(err);
+        this.log.warn(err);
         callback('ipfs add error');
       });
     });
@@ -249,7 +251,7 @@ class ProfileClass {
         try {
           json = JSON.parse(json);
         } catch (e) {
-          console.warn(e);
+          this.log.warn(e);
           json = {};
         }
         data = Object.assign({}, json, data);
@@ -273,11 +275,11 @@ class ProfileClass {
           }
         });
       }).catch((err) => {
-        console.warn(err);
+        this.log.warn(err);
         callback(err.toString());
       });
     }).catch((err) => {
-      console.warn(err);
+      this.log.warn(err);
       callback(err.toString());
     });
   }
@@ -289,7 +291,7 @@ class ProfileClass {
   _delete (name, callback) {
     const self = this;
     const promise1 = this.existsProfileName(name);
-    const promise2 = this.isProfileOwner(this.myAddr, name);
+    const promise2 = this.isProfileOwner(web3.eth.defaultAccount, name);
 
     Promise.join(promise1, promise2, (check1, check2) => {
       if (!check1) {
@@ -303,7 +305,8 @@ class ProfileClass {
 
       self.contract.destroy.waitTransaction(name, {}, (err, success) => {
         if (err) {
-          callback(err, false);
+          this.log.warn(err);
+          callback(err.toString(), false);
         } else {
           self.myName = null;
           callback(null, success);
