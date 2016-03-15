@@ -1,13 +1,9 @@
 
 const Promise = require('bluebird');
 const LinvoDb = require('linvodb3');
-const web3 = require('../../../contracts/api/web3');
+const web3 = gethInstance.web3;
 const contracts = require('../../../contracts/api/contracts');
 const ProfileModel = require('../../models/Profiles');
-// const gethModule = require('../geth');
-const ipfsModule = require('../ipfs');
-// const geth = gethModule.getInstance();
-const ipfs = ipfsModule.getInstance();
 
 class ProfileClass {
 
@@ -88,7 +84,7 @@ class ProfileClass {
         if (err) {
           reject(err);
         } else {
-          resolve(web3.toAscii(name));
+          resolve(web3.toAscii(name).replace(/\u0000/g, ''));
         }
       });
     });
@@ -155,7 +151,7 @@ class ProfileClass {
 
       data = JSON.stringify(data);
       // Check was ok, now launch!
-      ipfs.add(data).then((hash) => {
+      ipfsInstance.add(data).then((hash) => {
         // Check
         if (!hash) {
           callback('null ipfs hash');
@@ -221,7 +217,7 @@ class ProfileClass {
 
       data = JSON.stringify(data);
       // Check was ok, now launch!
-      ipfs.add(data).then((hash) => {
+      ipfsInstance.add(data).then((hash) => {
         // Check
         if (!hash) {
           callback('null ipfs hash');
@@ -249,7 +245,7 @@ class ProfileClass {
         callback('profile name doesn\'t exist');
         return;
       }
-      ipfs.cat(pdoc.ipfs).then((json) => {
+      ipfsInstance.cat(pdoc.ipfs).then((json) => {
         try {
           json = JSON.parse(json);
         } catch (e) {

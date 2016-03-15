@@ -24,7 +24,7 @@ ipc.send('request-profile', {operation: 'create'}, {estimate: true}); // Estimat
 */
 
 const ipc = require('electron').ipcMain;
-const web3 = require('../../../contracts/api/web3');
+const web3 = gethInstance.web3;
 const Profile = require('./ProfileApi');
 const profile = new Profile();
 

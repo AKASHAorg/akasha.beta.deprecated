@@ -12,7 +12,7 @@ ipc.send('request-tx', {operation: 'wait', amount: 100*1000*1000*1000});
 */
 
 const ipc = require('electron').ipcMain;
-const web3 = require('../../../contracts/api/web3');
+const web3 = gethInstance.web3;
 
 
 function estimate (operation, event) {
