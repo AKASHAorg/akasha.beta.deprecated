@@ -60,5 +60,4 @@ describe('gethConnector', function () {
     expect(connector.gethProcess).to.be.null;
   });
 
-})
-;
+});

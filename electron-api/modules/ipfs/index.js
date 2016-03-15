@@ -11,7 +11,7 @@ const loggerRegistrar = require('../../loggers');
 const symbolEnforcer = Symbol();
 const symbol         = Symbol();
 
-const windowsApi = {host: 'localhost', port: '5001', procotol: 'http'};
+const windowsApi = { host: 'localhost', port: '5001', procotol: 'http' };
 const unixApi    = '/ip4/127.0.0.1/tcp/5001';
 
 const defaultApi = (process.platform !== 'win32') ? unixApi : windowsApi;
@@ -102,7 +102,7 @@ class IpfsConnector {
    * @param rpc
    * @returns {IpfsConnector}
    */
-  setSchema ({socket, rpc = windowsApi} = {}) {
+  setSchema ({ socket, rpc = windowsApi } = {}) {
     if (socket) {
       this._conn = socket;
     } else {
@@ -136,17 +136,17 @@ class IpfsConnector {
         return reject(new Error('no api server found'));
       }
 
-      return this._api.cat(hash, (error, response)=> {
+      return this._api.cat(hash, (error, response) => {
         if (error) {
           return reject(error);
         }
 
         if (response.readable) {
-          return response.on('error', (err)=> {
+          return response.on('error', (err) => {
             reject(err);
-          }).on('data', (data)=> {
+          }).on('data', (data) => {
             buf += data;
-          }).on('end', ()=> {
+          }).on('end', () => {
             resolve(buf);
           });
         }
@@ -163,12 +163,12 @@ class IpfsConnector {
   catMultiple (hashSources = []) {
     let data = [];
 
-    hashSources.forEach((hash)=> {
+    hashSources.forEach((hash) => {
       data.push(this.cat(hash));
     });
 
     return new Promise((resolve, reject) => {
-      Promise.all(data).then((content)=> {
+      Promise.all(data).then((content) => {
         resolve(content);
       }).catch((error)=> {
         reject(error);
@@ -183,7 +183,7 @@ class IpfsConnector {
    * @param recursive
    * @returns {bluebird|exports|module.exports}
    */
-  add (data, {isPath = false, recursive = false} = {}) {
+  add (data, { isPath = false, recursive = false } = {}) {
     let options     = {};
     let contentBody = data;
     return new Promise((resolve, reject) => {
@@ -199,7 +199,7 @@ class IpfsConnector {
         contentBody = new Buffer(contentBody);
       }
 
-      return this._api.add(contentBody, options, (error, response)=> {
+      return this._api.add(contentBody, options, (error, response) => {
         if (error) {
           return reject(error);
         }
@@ -219,14 +219,14 @@ class IpfsConnector {
 
     let data = [];
 
-    sources.forEach((source)=> {
+    sources.forEach((source) => {
       data.push(this.add(...source));
     });
 
     return new Promise((resolve, reject) => {
-      Promise.all(data).then((hashSources)=> {
+      Promise.all(data).then((hashSources) => {
         resolve(hashSources);
-      }).catch((error)=> {
+      }).catch((error) => {
         reject(error);
       });
     });
@@ -238,11 +238,11 @@ class IpfsConnector {
    * @returns {bluebird|exports|module.exports}
    */
   getConfig (key) {
-    return new Promise((resolve, reject)=> {
+    return new Promise((resolve, reject) => {
       if (!this._api) {
         return reject(new Error('no api server found'));
       }
-      return this._api.config.get(key, (err, conf)=> {
+      return this._api.config.get(key, (err, conf) => {
         if (err) {
           return reject(err);
         }
@@ -258,13 +258,13 @@ class IpfsConnector {
    * @returns {bluebird|exports|module.exports}
    */
   getFolderLinks (folderHash) {
-    return new Promise((resolve, reject)=> {
+    return new Promise((resolve, reject) => {
       if (!this._api) {
         return reject(new Error('no api server found'));
       }
-      return this._api.ls(folderHash).then((links)=> {
+      return this._api.ls(folderHash).then((links) => {
         resolve(links.Objects);
-      }).catch((error)=> {
+      }).catch((error) => {
         reject(error);
       });
     });
@@ -277,7 +277,7 @@ class IpfsConnector {
    * @returns {bluebird|exports|module.exports}
    */
   setConfig (key, val) {
-    return new Promise((resolve, reject)=> {
+    return new Promise((resolve, reject) => {
       if (!this._api) {
         return reject(new Error('no api server found'));
       }

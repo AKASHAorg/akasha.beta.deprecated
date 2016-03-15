@@ -1,7 +1,7 @@
 import React, { PropTypes, Component } from 'react';
 import SvgIcon from 'material-ui/lib/svg-icon';
 import getMuiTheme from 'material-ui/lib/styles/getMuiTheme';
-import Colors from 'material-ui/lib/styles/colors';
+import * as Colors from 'material-ui/lib/styles/colors';
 import Badge from 'material-ui/lib/badge';
 
 import {MenuUser} from '../svg';
