@@ -105,8 +105,32 @@ ipc.on('request-tx', (event, arg, extra) => {
   }
 
   if (arg.operation === 'wait') {
-    // TODO: Implement me
-    event.sender.send('response-tx', true);
+    const amount = arg.amount || parseInt(web3.toWei(1, 'ether'));
+    let interval = 0;
+    let msgShown = false;
+
+    interval = setInterval(() => {
+      if (!web3.eth.defaultAccount) {
+        event.sender.send('response-tx', { operation: 'wait', err: 'coinbase not set' });
+        clearInterval(interval);
+        return;
+      }
+      web3.eth.getBalance(web3.eth.defaultAccount, function (err, balance) {
+        if (balance.toNumber() >= amount) {
+          event.sender.send('response-tx', {
+            operation: 'wait',
+            balance:    balance.toNumber(),
+            err:        false
+          });
+          clearInterval(interval);
+        } else
+          console.log(' Insufficient funds, waiting again...');;
+        if (!msgShown) {
+          console.warn(' Waiting for coinbase address to be funded...');
+          msgShown = true;
+        }
+      });
+    }, 750);
     return;
   }
 

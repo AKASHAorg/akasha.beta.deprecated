@@ -55,7 +55,7 @@ function check (operation, event, args) {
   const response = { operation, err: false };
   if (!web3.eth.defaultAccount) {
     response.err = 'coinbase not set';
-    event.sender.send('response-tx', response);
+    event.sender.send('response-profile', response);
     return false;
   }
   if (!profile) {
