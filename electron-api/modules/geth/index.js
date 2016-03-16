@@ -111,7 +111,7 @@ class GethConnector {
         return [data[1], data[0]];
       }
 
-      if (!data[0] && data[1] > 0 && (data[3].timestamp + 60 * 2) > timeStamp) {
+      if (!data[0] && data[1] > 0 && (data[2].timestamp + 60 * 2) > timeStamp) {
         return false;
       }
 
