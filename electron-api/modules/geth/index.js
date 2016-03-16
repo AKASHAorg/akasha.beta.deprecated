@@ -95,6 +95,32 @@ class GethConnector {
   }
 
   /**
+   * Check if geth client is syncing
+   * @returns {Promise.<T>|*}
+   */
+  inSync () {
+    const rules = [
+      this.web3.eth.getSyncingAsync(),
+      this.web3.net.getPeerCountAsync(),
+      this.web3.eth.getBlockAsync('latest')
+    ];
+
+    return Promise.all(rules).then((data) => {
+      const timeStamp = Math.floor(new Date().getTime() / 1000);
+      if (data[0]) {
+        return [data[1], data[0]];
+      }
+
+      if (!data[0] && data[1] > 0 && (data[3].timestamp + 60 * 2) > timeStamp) {
+        return false;
+      }
+
+      return [data[1]];
+    });
+  }
+
+
+  /**
    *
    * @param dataDir
    * @param ipcPath
@@ -103,7 +129,7 @@ class GethConnector {
    * @returns {Array|Array.<T>|*}
    * @private
    */
-  _setOptions ({dataDir, ipcPath, protocol = ['--shh', '--cache', 512], extra = []} = {}) {
+  _setOptions ({dataDir, ipcPath, protocol = ['--shh', '--fast', '--cache', 512], extra = []} = {}) {
     this.options = [];
     if (!Array.isArray(protocol) || !Array.isArray(extra)) {
       throw new Error('protocol and extra options must be array type');

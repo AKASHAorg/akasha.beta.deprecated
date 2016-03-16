@@ -95,7 +95,7 @@ class Web3 {
           call:   'personal_unlockAccount',
           params: 3,
 
-          inputFormatter:  [
+          inputFormatter: [
             this._web3._extend.utils.toAddress,
             this._web3._extend.utils.formatInputString,
             this._web3._extend.formatters.formatInputInt
