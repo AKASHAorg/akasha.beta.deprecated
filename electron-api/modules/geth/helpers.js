@@ -86,10 +86,10 @@ export function watchTx (fname, txHash, callback) {
       const p0 = txInfo.gasPrice;
       const p1 = web3.fromWei(p0, 'szabo');
       const tot = parseFloat(web3.fromWei(gas * p0, agas.unit)).toFixed(3);
-      console.log(` ${fname} gas used ${gas} * price ${p1} szabo => cost ${tot} ${agas.unit};`);
+      console.log(` ${fname} gas used ${gas} * price ${p1} szabo => cost ${tot} ${agas.unit} ;`);
       // Return success or failure depending on gas usage
       if (gas >= agas.max_gas) {
-        callback('the contract rejected the call');
+        callback('the transaction was rejected');
       } else {
         callback(false, true);
       }

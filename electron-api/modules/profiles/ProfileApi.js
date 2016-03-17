@@ -2,40 +2,74 @@
 const Promise = require('bluebird');
 const LinvoDb = require('linvodb3');
 const web3 = gethInstance.web3;
-const contracts = require('../../../contracts/api/contracts');
+const agas = require('../contracts/gas');
 const ProfileModel = require('../../models/Profiles');
 const logger = require('../../loggers').getInstance();
 const log = logger.registerLogger('profile', { level: 'info', consoleLevel: 'info' });
 
+const symbolCheck = Symbol();
+const symbol      = Symbol();
+
 class ProfileClass {
 
-  constructor () {
+  /**
+   * @param enforcer
+   */
+  constructor (enforcer) {
+    if (enforcer !== symbolCheck) {
+      throw new Error('Profile: Cannot construct singleton!');
+    }
     this.ready = false;
     this.myName = null;
     this.xContract = null;
     this.contract = null;
     this.profileModel = new ProfileModel();
+    this._setupContracts(() => this._setupDatabase());
+  }
 
-    setTimeout(() => {
-      // Setup everything
-      this._setupContracts(() => this._setupDatabase());
-    }, 5055);
+  /**
+   * @returns {*}
+   */
+  static getInstance () {
+    if (!this[symbol]) {
+      this[symbol] = new ProfileClass(symbolCheck);
+    }
+    return this[symbol];
+  }
+
+  /**
+   * Estimate gas usage for profiles;
+   */
+  estimate (operation) {
+    let cost = '';
+    const gas = agas.profile[operation] || -1;
+    if (gas > 0) {
+      cost = parseFloat(gas * agas.unit_gas_price).toFixed(4) + ' ' + agas.unit; // eslint-disable-line
+    }
+    return { gas, cost };
   }
 
   // Instantiate and wait for AkashaX and Profile Contracts to be ready
   _setupContracts (callback) {
-    this.xContract = contracts.instantiateContract('AkashaX',
-      contracts.x.abi, contracts.x.address);
-    this.contract = contracts.instantiateContract('AkashaProfiles',
-      contracts.profile.abi, contracts.profile.address);
+    const contracts = require('../contracts/abi');
+    const getContract = require('../contracts').instantiateContract;
+
+    this.xContract = getContract('AkashaX', contracts.db.abi, contracts.db.address);
+    this.contract = getContract('AkashaProfiles', contracts.profile.abi, contracts.profile.address);
 
     let interval = 0;
+    let errShown = false;
     let msgShown = false;
 
     interval = setInterval(() => {
       this.xContract.blockn.call((err1, block) => {
+        if (err1 && !errShown) {
+          log.warn(`Profile: ${err1}`);
+          errShown = true;
+          return;
+        }
         if (block && block.toNumber() > 1) {
-          web3.eth.getBalance(contracts.x.address, (err2, balance) => {
+          web3.eth.getBalance(contracts.db.address, (err2, balance) => {
             if (balance && balance.toNumber() >= 1) {
               log.info('Profile: Setup contracts OK;');
               this.ready = true;
@@ -58,9 +92,8 @@ class ProfileClass {
   // Listen to Profile Contract events
   _setupDatabase () {
     this.xContract.__emitter.on('CreateProfile', (data) => {
-      const addr = data.profile;
-      this.resolveName(addr).then((name) => {
-        this.profileModel.create(addr, name, data.ipfs);
+      this.resolveName(data.profile).then((name) => {
+        this.profileModel.create(data.profile, name, data.ipfs);
       });
     });
 
@@ -73,6 +106,19 @@ class ProfileClass {
     });
 
     log.info(`Profile: Setup database ${LinvoDb.dbPath}/Profile.db;`);
+  }
+
+  _check (name) {
+    if (!name) {
+      return 'empty profile name';
+    }
+    if (!web3.eth.defaultAccount) {
+      return 'default address not set';
+    }
+    if (!this.ready) {
+      return 'profile contracts are not ready';
+    }
+    return true;
   }
 
   // Ethereum functions (read only)
@@ -149,6 +195,7 @@ class ProfileClass {
         return;
       }
 
+      log.warn(`Profile: Creating profile name "${name}"...`);
       data = JSON.stringify(data);
       // Check was ok, now launch!
       ipfsInstance.add(data).then((hash) => {
@@ -161,7 +208,7 @@ class ProfileClass {
         // Send and wait transaction
         self.contract.create.waitTransaction(name, hash, {}, (err, success) => {
           if (err) {
-            log.warn(err);
+            log.warn(`Profile create error: ${err}`);
             callback(err.toString(), false);
           } else {
             self.myName = name;
@@ -176,6 +223,11 @@ class ProfileClass {
   }
 
   create (name, data, callback) {
+    const check = this._check(name);
+    if (check !== true) {
+      callback(check);
+      return;
+    }
     // Database waiting function;
     const waiting = (doc) => {
       if (doc.name === name) {
@@ -228,7 +280,7 @@ class ProfileClass {
         // Send and wait transaction
         self.contract.update.waitTransaction(name, hash, {}, (err, success) => {
           if (err) {
-            log.warn(err);
+            log.warn(`Profile update error: ${err}`);
             callback(err.toString(), false);
           } else {
             callback(null, success);
@@ -242,6 +294,11 @@ class ProfileClass {
   }
 
   update (name, data, callback) {
+    const check = this._check(name);
+    if (check !== true) {
+      callback(check);
+      return;
+    }
     this.profileModel.getName(name).then((pdoc) => {
       if (!pdoc) {
         callback('profile name doesn\'t exist');
@@ -303,9 +360,10 @@ class ProfileClass {
         return;
       }
 
+      log.warn(`Profile: Deleting profile name "${name}"...`);
       self.contract.destroy.waitTransaction(name, {}, (err, success) => {
         if (err) {
-          log.warn(err);
+          log.warn(`Profile delete error: ${err}`);
           callback(err.toString(), false);
         } else {
           self.myName = null;
@@ -316,6 +374,11 @@ class ProfileClass {
   }
 
   delete (name, callback) {
+    const check = this._check(name);
+    if (check !== true) {
+      callback(check);
+      return;
+    }
     // Database waiting function;
     const waiting = (doc) => {
       if (doc.name === name) {

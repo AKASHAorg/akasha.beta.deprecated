@@ -13,4 +13,6 @@ global.ipfsInstance = ipfs.getInstance();
 setTimeout(() => {
   const txs = require('./modules/transactions');
   global.txs = txs.getInstance();
+  const prof = require('./modules/profiles');
+  global.profiles = prof.getInstance();
 }, 5000);
