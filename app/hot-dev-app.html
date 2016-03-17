@@ -7,15 +7,6 @@
 </head>
 <body>
 <div id="root" class="fill-height"></div>
-<script>
-window.ipc = require('electron').ipcRenderer;
-ipc.on('response-profile', function(event, arg) {
-  console.log('Response-profile::', arg);
-});
-ipc.on('response-tx', function(event, arg) {
-  console.log('Response-tx::', arg);
-});
-</script>
 <script src="http://localhost:3000/dist/bundle.js"></script>
 </body>
 </html>

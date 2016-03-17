@@ -5,10 +5,6 @@ require('./globals');
 
 const ipcMain = require('electron').ipcMain;
 
-// Hook contract IPC events
-require('./modules/transactions');
-require('./modules/profiles');
-
 const startAll = function () {
   gethInstance.start({ extra: ['--testnet'] });
   ipfsInstance.start();

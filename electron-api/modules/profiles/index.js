@@ -30,7 +30,7 @@ const profile = new Profile();
 
 
 function estimate (operation, event) {
-  const agas = require('../../../contracts/api/gas');
+  const agas = require('../contracts/gas');
   let cost = 0;
   const gas = agas.profile[operation] || -1;
   if (gas > 0) {
@@ -109,7 +109,7 @@ ipc.on('request-profile', (event, arg, extra) => {
 
   if (!arg.name) {
     arg.name = profile.myName;
-    if (!profile.myName || profile.myName === '') {
+    if (!profile.myName) {
       event.sender.send('response-profile', { operation: arg.operation, err: 'empty profile name' });
       return;
     }

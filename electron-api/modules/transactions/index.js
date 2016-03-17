@@ -1,139 +1,169 @@
-/* eslint complexity: [2,16] max-statements: [2,26] */
-
 /*
 :: Electron example ::
 
-ipc.send('request-tx', {operation: 'send', to: '0x123', amount: 1000});
-// Response-tx:: {operation: 'send', to: '0x123', err: false}
+const txs = require('electron').remote.getGlobal('txs');
 
-ipc.send('request-tx', {operation: 'wait', amount: 100*1000*1000*1000});
-// Response-tx:: {operation: 'wait', err: false}
+txs.send({to: '0x123', amount: 1}).then((d)=> console.log('sent!', d)).catch((e)=> console.log('err!', e));
+
+txs.wait().then((d)=> console.log('ok!', d)).catch((e)=> console.log('err!', e));
+
+JSON.stringify(txs.estimate('send'));
 
 */
 
-const ipc = require('electron').ipcMain;
+const Promise = require('bluebird');
 const web3 = gethInstance.web3;
+const watchTx = require('../geth/helpers').watchTx;
+const agas = require('../contracts/gas');
+const logger = require('../../loggers').getInstance();
+const log = logger.registerLogger('transaction', { level: 'info', consoleLevel: 'info' });
 
+const symbolCheck = Symbol();
+const symbol      = Symbol();
 
-function estimate (operation, event) {
-  const agas = require('../../../contracts/api/gas');
-  if (operation === 'wait') {
-    event.sender.send('response-tx', { gas: -1, cost: 0 });
-    return;
-  }
-  const gas = 21037;
-  const cost = parseFloat(gas * agas.unit_gas_price).toFixed(4) + ' ' + agas.unit; // eslint-disable-line
-  event.sender.send('response-tx', { gas, cost });
-}
+class TransactionsClass {
 
-function send (arg, event) {
-  const agas = require('../../../contracts/api/gas');
-  const response = { operation: arg.operation, to: arg.to, err: false };
-  let balance1 = 0;
-  let balance2 = 0;
-  web3.eth.getBalanceAsync(arg.to)
-    .then((balance) => {
-      balance1 = balance.toNumber();
-      // console.log(' ~Initial remote balance::', balance1);
-      return web3.eth.sendTransactionAsync({
-        to:       arg.to,
-        value:    arg.amount,
-        gas:      22000,
-        gasPrice: agas.gas_price
-      });
-    }).then((txHash) => {
-      web3.watchTx('sendEther()', txHash, (err, success) => {
-        if (err) {
-          response.err = err;
-          event.sender.send('response-tx', response);
-          return;
-        }
-        web3.eth.getBalance(arg.to, (_, balance) => {
-          balance2 = balance.toNumber();
-          // console.log(' ~Final remote balance::', balance2);
-          if (balance1 + arg.amount !== balance2) {
-            response.err = `balance doesnt match ${balance1 + arg.amount} != ${balance2}`;
-          }
-          event.sender.send('response-tx', response);
-        });
-      });
-    })
-    .catch((err) => {
-      response.err = err;
-      event.sender.send('response-tx', response);
-    });
-}
-
-ipc.on('request-tx', (event, arg, extra) => {
-  console.log(' ⚛  Request-tx::', arg);
-
-  // The maximum possible cost of the operation on the blockchain;
-  if (extra && extra.estimate) {
-    estimate(arg.operation, event);
-    return;
+  /**
+   * @param enforcer
+   */
+  constructor (enforcer) {
+    if (enforcer !== symbolCheck) {
+      throw new Error('Transaction: Cannot construct singleton!');
+    }
+    log.info('Transaction: Everything ok;');
   }
 
-  const response = { operation: arg.operation, to: arg.to, err: false };
+  /**
+   * @returns {*}
+   */
+  static getInstance () {
+    if (!this[symbol]) {
+      this[symbol] = new TransactionsClass(symbolCheck);
+    }
+    return this[symbol];
+  }
 
-  if (arg.operation === 'send') {
-    if (!web3.eth.defaultAccount) {
-      response.err = 'coinbase not set';
-      event.sender.send('response-tx', response);
-      return;
+  estimate (operation) {
+    if (operation === 'send') {
+      const gas = 21037;
+      const gasPrice = parseFloat(gas * agas.unit_gas_price).toFixed(4);
+      const cost = gasPrice + ' ' + agas.unit; // eslint-disable-line
+      return { gas, cost };
     }
-    if (!arg.to || !web3.isAddress(arg.to)) {
-      response.err = 'invalid TO address';
-      event.sender.send('response-tx', response);
-      return;
-    }
-    if (!arg.amount) {
-      response.err = 'empty AMOUNT';
-      event.sender.send('response-tx', response);
-      return;
-    }
+    return { gas: -1, cost: '' };
+  }
 
-    web3.isNodeSyncing((sync) => {
-      if (sync) {
-        response.err = 'GETH is not in sync';
-        event.sender.send('response-tx', response);
-        return;
+  /**
+   * Send Ether to another address;
+   * @returns {Promise}
+   */
+  send (options) {
+    return gethInstance.inSync().then((syncing) => {
+      if (syncing) {
+        throw new Error('GETH is not in sync!');
       }
-      console.log(` Sending "${arg.amount} wei" to "${arg.to}"..`);
-      send(arg, event);
-    });
-    return;
-  }
-
-  if (arg.operation === 'wait') {
-    const amount = arg.amount || parseInt(web3.toWei(1, 'ether'));
-    let interval = 0;
-    let msgShown = false;
-
-    interval = setInterval(() => {
       if (!web3.eth.defaultAccount) {
-        event.sender.send('response-tx', { operation: 'wait', err: 'coinbase not set' });
-        clearInterval(interval);
-        return;
+        throw new Error('coinbase not set!');
       }
-      web3.eth.getBalance(web3.eth.defaultAccount, function (err, balance) {
-        if (balance.toNumber() >= amount) {
-          event.sender.send('response-tx', {
-            operation: 'wait',
-            balance:    balance.toNumber(),
-            err:        false
-          });
-          clearInterval(interval);
-        } else
-          console.log(' Insufficient funds, waiting again...');;
-        if (!msgShown) {
-          console.warn(' Waiting for coinbase address to be funded...');
-          msgShown = true;
-        }
-      });
-    }, 750);
-    return;
+      if (!options.to || !web3.isAddress(options.to)) {
+        throw new Error('invalid TO address!');
+      }
+      if (!options.amount || options.amount < 0) {
+        throw new Error('invalid AMOUNT!');
+      }
+
+      log.info(`Transaction: Sending "${options.amount} wei" to "${options.to}"..`);
+      return this._send(options);
+    });
   }
 
-  event.sender.send('response-tx', false);
+  /**
+   * Send Ether to another address (private);
+   * @private
+   */
+  _send (options) {
+    let balance1 = 0;
+    let balance2 = 0;
 
-});
+    return new Promise((resolve, reject) => {
+      web3.eth.getBalanceAsync(options.to)
+        .then((balance) => {
+          balance1 = balance.toNumber();
+          return web3.eth.sendTransactionAsync({
+            to:       options.to,
+            value:    options.amount,
+            gas:      22000,
+            gasPrice: agas.gas_price
+          });
+        }).then((txHash) => {
+          watchTx('sendEther()', txHash, (err, success) => {
+            if (err) {
+              reject(err);
+              return;
+            }
+            web3.eth.getBalance(options.to, (_, balance) => {
+              balance2 = balance.toNumber();
+              if (balance1 + options.amount !== balance2) {
+                reject(`balance doesnt match ${balance1 + options.amount} != ${balance2}`);
+              } else {
+                resolve({ old_balance: balance1, balance: balance2 }); // eslint-disable-line
+              }
+            });
+          });
+        })
+        .catch((err) => {
+          reject(err.toString());
+        });
+    });
+  }
+
+  /**
+   * Wait for coinbase address to have "amount" balance;
+   * @returns {Promise}
+   */
+  wait (amount) {
+    if (!amount) {
+      amount = parseInt(web3.toWei(1, 'ether'));
+    }
+    return gethInstance.inSync().then((syncing) => {
+      if (syncing) {
+        throw new Error('GETH is not in sync!');
+      }
+      if (!web3.eth.defaultAccount) {
+        throw new Error('coinbase not set!');
+      }
+
+      log.info('Transaction: Waiting for coinbase address to be funded...');
+      return this._wait(amount);
+    });
+  }
+
+  /**
+   * Wait for coinbase address to have "amount" balance (private);
+   * @private
+   */
+  _wait (amount) {
+    const me = web3.eth.defaultAccount;
+    return new Promise((resolve, reject) => {
+      let interval = 0;
+      interval = setInterval(() => {
+        web3.eth.getBalance(me, (err, balance) => {
+          if (err) {
+            clearInterval(interval);
+            reject(err.toString());
+            return;
+          }
+          if (balance.toNumber() >= amount) {
+            clearInterval(interval);
+            log.info(`Transaction: Address ${me} has a balance of ${balance};`);
+            resolve({ balance: balance.toNumber() });
+            return;
+          }
+        });
+      }, 750);
+    });
+  }
+
+}
+
+export default TransactionsClass;

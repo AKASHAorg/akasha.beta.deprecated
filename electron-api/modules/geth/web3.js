@@ -83,6 +83,13 @@ class Web3 {
   setProvider (gethIpc, socket) {
     if (!this._web3.currentProvider) {
       this._web3.setProvider(new this._web3.providers.IpcProvider(gethIpc, socket));
+      this._web3.eth.getCoinbase((err, coinbase) => {
+        if (err) {
+          console.warn(err);
+        } else if (coinbase) {
+          this._web3.eth.defaultAccount = coinbase;
+        }
+      });
     }
   }
 

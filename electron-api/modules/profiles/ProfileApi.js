@@ -3,8 +3,9 @@ const Promise = require('bluebird');
 const LinvoDb = require('linvodb3');
 const web3 = gethInstance.web3;
 const contracts = require('../../../contracts/api/contracts');
-const logger = require('../../loggers');
 const ProfileModel = require('../../models/Profiles');
+const logger = require('../../loggers').getInstance();
+const log = logger.registerLogger('profile', { level: 'info', consoleLevel: 'info' });
 
 class ProfileClass {
 
@@ -13,7 +14,6 @@ class ProfileClass {
     this.myName = null;
     this.xContract = null;
     this.contract = null;
-    this.log = logger.getInstance().registerLogger('profile', { level: 'info', consoleLevel: 'info' });
     this.profileModel = new ProfileModel();
 
     setTimeout(() => {
@@ -37,10 +37,10 @@ class ProfileClass {
         if (block && block.toNumber() > 1) {
           web3.eth.getBalance(contracts.x.address, (err2, balance) => {
             if (balance && balance.toNumber() >= 1) {
-              this.log.info('Profile: Setup contracts OK;');
+              log.info('Profile: Setup contracts OK;');
               this.ready = true;
             } else {
-              this.log.warn('Profile: xContract has no funds !!');
+              log.warn('Profile: xContract has no funds !!');
             }
             clearInterval(interval);
             if (typeof(callback) === 'function') {
@@ -48,7 +48,7 @@ class ProfileClass {
             }
           });
         } else if (!msgShown) {
-          this.log.warn('Profile: Contracts are not ready yet... Waiting...');
+          log.warn('Profile: Contracts are not ready yet... Waiting...');
           msgShown = true;
         }
       });
@@ -72,7 +72,7 @@ class ProfileClass {
       this.profileModel.delete(data.profile);
     });
 
-    this.log.info(`Profile: Setup database ${LinvoDb.dbPath}/Profile.db;`);
+    log.info(`Profile: Setup database ${LinvoDb.dbPath}/Profile.db;`);
   }
 
   // Ethereum functions (read only)
@@ -161,7 +161,7 @@ class ProfileClass {
         // Send and wait transaction
         self.contract.create.waitTransaction(name, hash, {}, (err, success) => {
           if (err) {
-            this.log.warn(err);
+            log.warn(err);
             callback(err.toString(), false);
           } else {
             self.myName = name;
@@ -169,7 +169,7 @@ class ProfileClass {
           }
         });
       }).catch((err) => {
-        this.log.warn(err);
+        log.warn(err);
         callback('ipfs add error');
       });
     });
@@ -228,14 +228,14 @@ class ProfileClass {
         // Send and wait transaction
         self.contract.update.waitTransaction(name, hash, {}, (err, success) => {
           if (err) {
-            this.log.warn(err);
+            log.warn(err);
             callback(err.toString(), false);
           } else {
             callback(null, success);
           }
         });
       }).catch((err) => {
-        this.log.warn(err);
+        log.warn(err);
         callback('ipfs add error');
       });
     });
@@ -251,7 +251,7 @@ class ProfileClass {
         try {
           json = JSON.parse(json);
         } catch (e) {
-          this.log.warn(e);
+          log.warn(e);
           json = {};
         }
         data = Object.assign({}, json, data);
@@ -275,11 +275,11 @@ class ProfileClass {
           }
         });
       }).catch((err) => {
-        this.log.warn(err);
+        log.warn(err);
         callback(err.toString());
       });
     }).catch((err) => {
-      this.log.warn(err);
+      log.warn(err);
       callback(err.toString());
     });
   }
@@ -305,7 +305,7 @@ class ProfileClass {
 
       self.contract.destroy.waitTransaction(name, {}, (err, success) => {
         if (err) {
-          this.log.warn(err);
+          log.warn(err);
           callback(err.toString(), false);
         } else {
           self.myName = null;
