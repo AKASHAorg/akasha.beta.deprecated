@@ -70,7 +70,7 @@ class GethConnector {
       }).catch((err) => {
         throw new Error(`Could not start geth ${err}`);
       });
-    }).catch((err)=> {
+    }).catch((err) => {
       this.logger.warn(`geth:binary:${err}`);
       throw new Error(`Could not download geth ${err}`);
     });
@@ -213,7 +213,7 @@ class GethConnector {
 
     this.socket.on('timeout', (e) => {
       this.logger.warn('connection to ipc timed out');
-      this._ipcDestroy();
+      this.socket.end('no activity on socket... closing connection');
     });
 
     this.socket.on('end', (e)=> {

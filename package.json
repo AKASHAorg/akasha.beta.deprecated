@@ -11,6 +11,7 @@
     "lint": "node node_modules/eslint/bin/eslint.js app/ electron-api/",
     "hot-server": "node server.js",
     "build": "better-npm-run build",
+    "coverage": "better-npm-run coverage",
     "start": "better-npm-run start",
     "start-hot": "better-npm-run start-hot",
     "package": "better-npm-run package",
@@ -25,7 +26,7 @@
       }
     },
     "start-hot": {
-      "command": "electron --debug=1337 ./",
+      "command": "electron --remote-debugging-port=1337 ./",
       "env": {
         "HOT": 1,
         "NODE_ENV": "development"
@@ -51,6 +52,12 @@
     },
     "test-e2e": {
       "command": "mocha --compilers js:babel-core/register --require ./test/setup.js --require co-mocha ./test/e2e.js",
+      "env": {
+        "NODE_ENV": "test"
+      }
+    },
+    "coverage": {
+      "command": "istanbul cover _mocha -- -R spec",
       "env": {
         "NODE_ENV": "test"
       }
@@ -107,6 +114,8 @@
     "extract-text-webpack-plugin": "^1.0.1",
     "fbjs-scripts": "^0.5.0",
     "file-loader": "^0.8.5",
+    "isparta": "^4.0.0",
+    "istanbul": "^0.4.2",
     "jsdom": "^8.1.0",
     "minimist": "^1.2.0",
     "mocha": "^2.4.5",
