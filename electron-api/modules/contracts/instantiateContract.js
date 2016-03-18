@@ -7,7 +7,7 @@ const gas = require('./gas');
 const contractCache = {};
 
 function wrapFunction (fname, contract) {
-  console.log(`Wrapped func ${contract.__name}:${fname}()`);
+  // console.log(`Wrapped func ${contract.__name}:${fname}()`);
   contract[fname].waitTransaction = function (...args) {
     web3.eth.getBlock('latest', (blockErr, block) => {
       const now = Math.floor(new Date().getTime() / 1000);

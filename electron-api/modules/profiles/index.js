@@ -1,7 +1,7 @@
 /*
 :: Electron example ::
 
-const prof = require('electron').remote.getGlobal('profiles');
+const prof = require('electron').remote.getGlobal('akasha')profileInstance;
 
 JSON.stringify(prof.estimate('create'));
 

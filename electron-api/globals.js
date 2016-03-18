@@ -10,9 +10,14 @@ global.userPreferences = userPrefs;
 global.gethInstance = geth.getInstance();
 global.ipfsInstance = ipfs.getInstance();
 
-setTimeout(() => {
-  const txs = require('./modules/transactions');
-  global.txs = txs.getInstance();
-  const prof = require('./modules/profiles');
-  global.profiles = prof.getInstance();
-}, 5000);
+global.akasha = {};
+global.akasha.userPrefs = userPrefs;
+
+// setTimeout(() => {
+//   const txs = require('./modules/transactions');
+//   global.akasha.txInstance = txs.getInstance();
+//   const shh = require('./modules/whisper');
+//   global.akasha.shhInstance = shh.getInstance();
+//   const prof = require('./modules/profiles');
+//   global.akasha.profileInstance = prof.getInstance();
+// }, 5000);

@@ -62,6 +62,9 @@ class ProfileClass {
     let msgShown = false;
 
     interval = setInterval(() => {
+      if (!gethInstance || !gethInstance.web3 || !gethInstance.web3.eth) {
+        return;
+      }
       this.xContract.blockn.call((err1, block) => {
         if (err1 && !errShown) {
           log.warn(`Profile: ${err1}`);
