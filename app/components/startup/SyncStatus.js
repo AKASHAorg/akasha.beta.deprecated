@@ -1,34 +1,68 @@
-import React, { Component, PropTypes } from 'react';
-
+import React, {Component, PropTypes} from 'react';
 import LoginHeader from '../../components/ui/partials/LoginHeader';
 import RaisedButton from 'material-ui/lib/raised-button';
+import LinearProgress from 'material-ui/lib/linear-progress';
 
 class SyncStatus extends Component {
-
+  
+  constructor (props) {
+    super(props);
+    this.syncInterval = null;
+  }
+  
+  componentDidMount () {
+    this.startSync();
+  }
+  
+  startSync = () => {
+    const { actions } = this.props;
+    this.syncInterval = setInterval(() => actions.getSyncStatus(), 500);
+  };
+  
   handleStop = () => {
-
+    clearInterval(this.syncInterval);
   };
-
+  
   handleStart = () => {
-
+    
   };
-
+  
   handleComplete = () => {
-
+    
   };
-
+  
   handleCancel = () => {
-
+    
   };
-
+  
   handlePause = () => {
     const { actions } = this.props;
     actions.getSyncStatus();
   };
-
+  
   render () {
     const { style, syncState } = this.props;
     const buttonsStyle = { padding: 0, position: 'absolute', bottom: 0, right: 0 };
+    const message      = syncState.get('message');
+    let blockSync, blockProgress, currentProgress;
+    if (message.get) {
+      if (!message.get(1)) {
+        blockProgress = message.get(0);
+        blockSync     = (
+          <p>Finding peers: {blockProgress}</p>
+        );
+      } else {
+        blockProgress   = message.get(1).toObject();
+        currentProgress = ((blockProgress.currentBlock - blockProgress.startingBlock)
+          / (blockProgress.highestBlock - blockProgress.startingBlock)) * 100;
+        
+        blockSync = (
+          <LinearProgress mode="determinate"
+                          color={'#000'}
+                          value={currentProgress}/>
+        );
+      }
+    }
     return (
       <div style={style}>
         <div className="start-xs">
@@ -43,9 +77,7 @@ class SyncStatus extends Component {
                 {'Your machine is currently synchronizing with the Ethereum world computer network. You will be able' +
                 ' to log in and enjoy the full AKASHA experience as soon as the sync is complete.'}
               </p>
-              <p>
-                {'Ethereum sync estimated in:'}
-              </p>
+              {blockSync}
             </div>
           </div>
         </div>
@@ -61,12 +93,12 @@ class SyncStatus extends Component {
             />
             <RaisedButton label="Pause"
                           style={{ marginLeft: '12px' }}
-                          onClick={this.handlePause}
+                          onClick={this.handleStop}
             />
           </div>
         </div>
       </div>
-
+    
     );
   }
 }

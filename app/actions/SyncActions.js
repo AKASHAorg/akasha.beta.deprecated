@@ -6,7 +6,6 @@ export function isSyncing (message) {
   return { type: types.SYNC_ACTIVE, message };
 }
 
-
 export function stopSyncing (message) {
   return { type: types.SYNC_STOPPED, message };
 }

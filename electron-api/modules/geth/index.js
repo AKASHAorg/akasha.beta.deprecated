@@ -216,11 +216,11 @@ class GethConnector {
       this.socket.end('no activity on socket... closing connection');
     });
 
-    this.socket.on('end', (e)=> {
+    this.socket.on('end', (e) => {
       this.logger.info('i/o to ipc ended');
     });
 
-    this.socket.on('error', (error)=> {
+    this.socket.on('error', (error) => {
       this.logger.warn(error);
     });
   }
@@ -252,11 +252,11 @@ class GethConnector {
         return reject(`geth:spawn:error:${code}`);
       });
 
-      this.gethProcess.stderr.on('data', (data)=> {
+      this.gethProcess.stderr.on('data', (data) => {
         this.logger.info(data.toString());
       });
 
-      this.gethProcess.stdout.on('data', (data)=> {
+      this.gethProcess.stdout.on('data', (data) => {
         this.logger.info(data.toString());
       });
 
