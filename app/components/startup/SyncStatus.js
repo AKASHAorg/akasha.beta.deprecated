@@ -2,64 +2,79 @@ import React, {Component, PropTypes} from 'react';
 import LoginHeader from '../../components/ui/partials/LoginHeader';
 import RaisedButton from 'material-ui/lib/raised-button';
 import LinearProgress from 'material-ui/lib/linear-progress';
+import {hashHistory} from 'react-router';
 
 class SyncStatus extends Component {
-  
+
   constructor (props) {
     super(props);
     this.syncInterval = null;
   }
-  
+
   componentDidMount () {
     this.startSync();
   }
-  
+
   startSync = () => {
     const { actions } = this.props;
     this.syncInterval = setInterval(() => actions.getSyncStatus(), 500);
   };
-  
+
+  handleSubmit = () => {
+    const { actions, syncState } = this.props;
+    const actionId = syncState.get('actionId');
+    if (actionId === 1) {
+      this.handleStop();
+    } else if (actionId === 2) {
+      this.startSync();
+    } else {
+      actions.finishSync();
+    }
+  };
+
   handleStop = () => {
-    clearInterval(this.syncInterval);
-  };
-  
-  handleStart = () => {
-    
-  };
-  
-  handleComplete = () => {
-    
-  };
-  
-  handleCancel = () => {
-    
-  };
-  
-  handlePause = () => {
     const { actions } = this.props;
-    actions.getSyncStatus();
+    clearInterval(this.syncInterval);
+    actions.stopSyncing();
   };
-  
+
+  handleCancel = () => {
+    this.handleStop();
+    hashHistory.goBack();
+  };
+
   render () {
     const { style, syncState } = this.props;
     const buttonsStyle = { padding: 0, position: 'absolute', bottom: 0, right: 0 };
-    const message      = syncState.get('message');
-    let blockSync, blockProgress, currentProgress;
+    const message      = syncState.get('status');
+    let blockSync, blockProgress, currentProgress, pageTitle;
+    pageTitle          = syncState.get('currentState');
+    if (syncState.get('actionId') === 3) {
+      clearInterval(this.syncInterval);
+    }
+    
     if (message.get) {
+      console.log(message.toObject());
       if (!message.get(1)) {
         blockProgress = message.get(0);
         blockSync     = (
-          <p>Finding peers: {blockProgress}</p>
+          <div style={{paddingTop: '30px'}}><p>Finding peers: <b>{blockProgress}</b></p></div>
         );
       } else {
         blockProgress   = message.get(1).toObject();
         currentProgress = ((blockProgress.currentBlock - blockProgress.startingBlock)
           / (blockProgress.highestBlock - blockProgress.startingBlock)) * 100;
-        
+
         blockSync = (
-          <LinearProgress mode="determinate"
-                          color={'#000'}
-                          value={currentProgress}/>
+          <div style={{paddingTop: '30px'}}>
+            <LinearProgress mode="determinate"
+                            color={'#000'}
+                            value={currentProgress}/>
+            <p>
+              <span>peers: <b>{message.get(0)}</b></span>
+              <span style={{float: 'right', fontStyle: 'italic'}}>block: <b>{blockProgress.currentBlock}</b>/{blockProgress.highestBlock}</span>
+            </p>
+          </div>
         );
       }
     }
@@ -71,14 +86,14 @@ class SyncStatus extends Component {
             style={{ flex: 1, padding: 0 }}
           >
             <LoginHeader />
-            <h1 style={{ fontWeight: '400' }}>{syncState.get('currentState')}</h1>
+            <h1 style={{ fontWeight: '400' }}>{pageTitle}</h1>
             <div>
               <p>
                 {'Your machine is currently synchronizing with the Ethereum world computer network. You will be able' +
                 ' to log in and enjoy the full AKASHA experience as soon as the sync is complete.'}
               </p>
-              {blockSync}
             </div>
+            {blockSync}
           </div>
         </div>
         <div className="end-xs"
@@ -91,14 +106,13 @@ class SyncStatus extends Component {
                           style={{ marginLeft: '12px' }}
                           onClick={this.handleCancel}
             />
-            <RaisedButton label="Pause"
+            <RaisedButton label={syncState.get('action')}
                           style={{ marginLeft: '12px' }}
-                          onClick={this.handleStop}
+                          onClick={this.handleSubmit}
             />
           </div>
         </div>
       </div>
-    
     );
   }
 }

@@ -2,16 +2,16 @@ import * as types from '../constants/SyncConstants';
 const remote       = require('electron').remote;
 const gethRemote = remote.getGlobal('gethInstance');
 
-export function isSyncing (message) {
-  return { type: types.SYNC_ACTIVE, message };
+export function isSyncing (status) {
+  return { type: types.SYNC_ACTIVE, status };
 }
 
-export function stopSyncing (message) {
-  return { type: types.SYNC_STOPPED, message };
+export function stopSyncing () {
+  return { type: types.SYNC_STOPPED };
 }
 
-export function finishSync (message) {
-  return { type: types.SYNC_FINISHED, message };
+export function finishSync () {
+  return { type: types.SYNC_FINISHED };
 }
 
 export function getSyncStatus () {

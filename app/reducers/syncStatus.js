@@ -3,7 +3,9 @@ import { Map } from 'immutable';
 
 const initialState = Map({
   currentState: 'Synchronising',
-  message:      'Waiting for peers'
+  action:       'PAUSE',
+  actionId:     1,
+  status:       [0]
 });
 
 export default function syncStatus (state = initialState, action) {
@@ -12,17 +14,21 @@ export default function syncStatus (state = initialState, action) {
     case types.SYNC_ACTIVE:
       return state.merge({
         currentState: 'Synchronising',
-        message:      action.message
+        action:       'PAUSE',
+        actionId:     1,
+        status:       action.status
       });
     case types.SYNC_STOPPED:
       return state.merge({
         currentState: 'Synchronization was stopped',
-        message:      action.message
+        action:       'START',
+        actionId:     2
       });
     case types.SYNC_FINISHED:
       return state.merge({
         currentState: 'Synchronization completed',
-        message:      action.message
+        action:       'COMPLETE',
+        actionId:     3
       });
     default:
       return state;
