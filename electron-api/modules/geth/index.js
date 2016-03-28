@@ -58,14 +58,15 @@ class GethConnector {
    * @param options
    */
   start (options = {}) {
-    this._setOptions(options);
 
-    this._checkGeth().then((binary) => {
+    if (!this.options.length || !Object.keys(options).length) {
+      this._setOptions(options);
+    }
+
+    return this._checkGeth().then((binary) => {
       this.executable = binary;
       return this._spawnGeth({ detached: true }).then((data) => {
-        setTimeout(() => {
-          this.ipcStream.setProvider(this.ipcPath, this.socket);
-        }, 4000);
+        setTimeout(() => this.ipcStream.setProvider(this.ipcPath, this.socket), 4000);
         return data;
       }).catch((err) => {
         throw new Error(`Could not start geth ${err}`);
@@ -85,6 +86,7 @@ class GethConnector {
    */
   stop () {
     if (this.gethProcess) {
+      this.ipcStream.web3.reset();
       this.gethProcess.kill();
       this.gethProcess = null;
     }
@@ -129,7 +131,7 @@ class GethConnector {
    * @returns {Array|Array.<T>|*}
    * @private
    */
-  _setOptions ({dataDir, ipcPath, protocol = ['--shh', '--fast', '--cache', 512], extra = []} = {}) {
+  _setOptions ({ dataDir, ipcPath, protocol = ['--shh', '--fast', '--cache', 512], extra = ['--testnet'] } = {}) {
     this.options = [];
     if (!Array.isArray(protocol) || !Array.isArray(extra)) {
       throw new Error('protocol and extra options must be array type');

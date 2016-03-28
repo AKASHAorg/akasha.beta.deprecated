@@ -17,6 +17,9 @@ export default (
       <Route component={SyncStatus}
              path="sync-status"
       />
+      <Route component={SetupPage}
+             path="authenticate"
+      />
     </Route>
   </Route>
 );

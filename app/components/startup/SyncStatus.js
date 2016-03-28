@@ -12,34 +12,24 @@ class SyncStatus extends Component {
   }
 
   componentDidMount () {
-    this.startSync();
+    const { actions } = this.props;
+    actions.startSync();
   }
 
-  startSync = () => {
-    const { actions } = this.props;
-    this.syncInterval = setInterval(() => actions.getSyncStatus(), 500);
-  };
-
   handleSubmit = () => {
-    const { actions, syncState } = this.props;
+    const {actions, syncState } = this.props;
     const actionId = syncState.get('actionId');
     if (actionId === 1) {
-      this.handleStop();
-    } else if (actionId === 2) {
-      this.startSync();
-    } else {
-      actions.finishSync();
+      return actions.stopSync();
+    }
+
+    if (actionId === 2) {
+      return actions.resumeSync();
     }
   };
 
-  handleStop = () => {
-    const { actions } = this.props;
-    clearInterval(this.syncInterval);
-    actions.stopSyncing();
-  };
-
   handleCancel = () => {
-    this.handleStop();
+    actions.stopSync();
     hashHistory.goBack();
   };
 
@@ -49,10 +39,7 @@ class SyncStatus extends Component {
     const message      = syncState.get('status');
     let blockSync, blockProgress, currentProgress, pageTitle;
     pageTitle          = syncState.get('currentState');
-    if (syncState.get('actionId') === 3) {
-      clearInterval(this.syncInterval);
-    }
-    
+
     if (message.get) {
       console.log(message.toObject());
       if (!message.get(1)) {
@@ -72,7 +59,8 @@ class SyncStatus extends Component {
                             value={currentProgress}/>
             <p>
               <span>peers: <b>{message.get(0)}</b></span>
-              <span style={{float: 'right', fontStyle: 'italic'}}>block: <b>{blockProgress.currentBlock}</b>/{blockProgress.highestBlock}</span>
+              <span
+                style={{float: 'right', fontStyle: 'italic'}}>block: <b>{blockProgress.currentBlock}</b>/{blockProgress.highestBlock}</span>
             </p>
           </div>
         );

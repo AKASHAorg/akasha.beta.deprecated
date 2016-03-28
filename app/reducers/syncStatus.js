@@ -27,7 +27,7 @@ export default function syncStatus (state = initialState, action) {
     case types.SYNC_FINISHED:
       return state.merge({
         currentState: 'Synchronization completed',
-        action:       'COMPLETE',
+        action:       'COMPLETED',
         actionId:     3
       });
     default:

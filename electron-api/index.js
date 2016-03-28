@@ -6,7 +6,7 @@ require('./globals');
 const ipcMain = require('electron').ipcMain;
 
 const startAll = function () {
-  gethInstance.start({ extra: ['--testnet'] });
+  gethInstance.start();
   ipfsInstance.start();
 };
 
