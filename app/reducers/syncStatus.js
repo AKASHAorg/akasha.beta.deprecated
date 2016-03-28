@@ -30,6 +30,8 @@ export default function syncStatus (state = initialState, action) {
         action:       'COMPLETED',
         actionId:     3
       });
+    case types.SYNC_RESUME:
+      return state.set('currentState', 'Resuming synchronization...');
     default:
       return state;
   }

@@ -12,11 +12,15 @@ class SyncStatus extends Component {
   }
 
   componentDidMount () {
-    const { actions } = this.props;
-    actions.startSync();
+    const {actions, syncState } = this.props;
+    const actionId = syncState.get('actionId');
+    if (actionId === 2) {
+      return actions.resumeSync();
+    }
+    return actions.startSync();
   }
 
-  handleSubmit = () => {
+  handleSync = () => {
     const {actions, syncState } = this.props;
     const actionId = syncState.get('actionId');
     if (actionId === 1) {
@@ -29,6 +33,7 @@ class SyncStatus extends Component {
   };
 
   handleCancel = () => {
+    const {actions} = this.props;
     actions.stopSync();
     hashHistory.goBack();
   };
@@ -41,7 +46,6 @@ class SyncStatus extends Component {
     pageTitle          = syncState.get('currentState');
 
     if (message.get) {
-      console.log(message.toObject());
       if (!message.get(1)) {
         blockProgress = message.get(0);
         blockSync     = (
@@ -96,7 +100,7 @@ class SyncStatus extends Component {
             />
             <RaisedButton label={syncState.get('action')}
                           style={{ marginLeft: '12px' }}
-                          onClick={this.handleSubmit}
+                          onClick={this.handleSync}
             />
           </div>
         </div>

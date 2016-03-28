@@ -59,8 +59,9 @@ export function startSync () {
 export function resumeSync () {
   return (dispatch, getState) => {
     gethRemote.start().then(() => {
-      setTimeout(()=> dispatch(startSync()), 4000);
+      setTimeout(() => dispatch(startSync()), 4000);
     });
+    dispatch({ type: types.SYNC_RESUME });
   };
 }
 
