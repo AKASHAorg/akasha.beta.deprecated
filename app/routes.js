@@ -4,10 +4,11 @@ import App from './containers/App';
 import SetupPage from './containers/SetupPage';
 import SyncStatus from './containers/SyncStatus';
 import LoginLayout from './layouts/LoginLayout';
+import LoginPage from './containers/LoginPage';
 
 export default (
   <Route component={App}
-    path="/"
+         path="/"
   >
     <Route component={LoginLayout}>
       <IndexRoute component={SetupPage} />
@@ -17,7 +18,7 @@ export default (
       <Route component={SyncStatus}
              path="sync-status"
       />
-      <Route component={SetupPage}
+      <Route component={LoginPage}
              path="authenticate"
       />
     </Route>

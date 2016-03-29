@@ -13,11 +13,11 @@ global.ipfsInstance = ipfs.getInstance();
 global.akasha = {};
 global.akasha.userPrefs = userPrefs;
 
-// setTimeout(() => {
+setTimeout(() => {
 //   const txs = require('./modules/transactions');
 //   global.akasha.txInstance = txs.getInstance();
 //   const shh = require('./modules/whisper');
 //   global.akasha.shhInstance = shh.getInstance();
-//   const prof = require('./modules/profiles');
-//   global.akasha.profileInstance = prof.getInstance();
-// }, 5000);
+const prof = require('./modules/profiles');
+  global.akasha.profileInstance = prof.getInstance();
+ }, 5000);

@@ -59,7 +59,6 @@ class SyncStatus extends Component {
         blockSync = (
           <div style={{paddingTop: '30px'}}>
             <LinearProgress mode="determinate"
-                            color={'#000'}
                             value={currentProgress}/>
             <p>
               <span>peers: <b>{message.get(0)}</b></span>
