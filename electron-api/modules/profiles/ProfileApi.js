@@ -178,8 +178,16 @@ class ProfileClass {
   // Ethereum functions (will send transactions)
   // @returns Promise
 
-  /*
+  /**
+   * Get a profile name or address;
+   */
+  get (nameOrAddr) {
+    return this.profileModel.get(nameOrAddr);
+  }
+
+  /**
    * Create a new profile;
+   * @private
    * @param `name` must be a string;
    * @param `data` must be an object;
    */
@@ -225,6 +233,9 @@ class ProfileClass {
     });
   }
 
+  /**
+   * Create a new profile;
+   */
   create (name, data, callback) {
     const check = this._check(name);
     if (check !== true) {
@@ -251,8 +262,9 @@ class ProfileClass {
     });
   }
 
-  /*
+  /**
    * Update existing profile;
+   * @private
    * @param `name` must be a string;
    * @param `data` must be an object;
    */
@@ -296,6 +308,9 @@ class ProfileClass {
     });
   }
 
+  /**
+   * Update existing profile;
+   */
   update (name, data, callback) {
     const check = this._check(name);
     if (check !== true) {
@@ -344,8 +359,9 @@ class ProfileClass {
     });
   }
 
-  /*
+  /**
    * Destroy existing profile;
+   * @private
    * @param `name` must be a string;
    */
   _delete (name, callback) {
@@ -376,6 +392,9 @@ class ProfileClass {
     });
   }
 
+  /**
+   * Destroy existing profile;
+   */
   delete (name, callback) {
     const check = this._check(name);
     if (check !== true) {
