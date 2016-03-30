@@ -15,4 +15,6 @@ prof.delete('name', (e,r)=> console.log(e,r));
 
 */
 
-export default require('./ProfileApi');
+const ProfileApi = require('./ProfileApi');
+export default ProfileApi;
+

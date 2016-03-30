@@ -1,7 +1,7 @@
 import * as types from '../constants/SyncConstants';
 import { hashHistory } from 'react-router';
 
-const remote     = require('electron').remote;
+const remote = require('electron').remote;
 const gethRemote = remote.getGlobal('gethInstance');
 let syncInterval = false;
 
@@ -10,7 +10,7 @@ let syncInterval = false;
  * @param status
  * @returns {{type, status: {object}}}
  */
-function isSyncing (status) {
+function isSyncing(status) {
   return { type: types.SYNC_ACTIVE, status };
 }
 
@@ -18,7 +18,7 @@ function isSyncing (status) {
  * Action handler for sync completion
  * @returns {{type}}
  */
-export function finishSync () {
+export function finishSync() {
   hashHistory.push('/authenticate');
   return { type: types.SYNC_FINISHED };
 }
@@ -27,7 +27,7 @@ export function finishSync () {
  * Dispatcher for sync progress
  * @returns {function()}
  */
-export function getSyncStatus () {
+export function getSyncStatus() {
   return (dispatch, getState) => {
     gethRemote.inSync().then((data) => {
       if (!data) {
@@ -43,7 +43,7 @@ export function getSyncStatus () {
  * Dispatcher for starting sync
  * @returns {function()}
  */
-export function startSync () {
+export function startSync() {
   return (dispatch, getState) => {
     if (syncInterval) {
       clearInterval(syncInterval);
@@ -56,7 +56,7 @@ export function startSync () {
  * Dispatcher for resuming sync
  * @returns {function()}
  */
-export function resumeSync () {
+export function resumeSync() {
   return (dispatch, getState) => {
     gethRemote.start().then(() => {
       setTimeout(() => dispatch(startSync()), 4000);
@@ -69,7 +69,7 @@ export function resumeSync () {
  * Action for stopping sync
  * @returns {{type}}
  */
-export function stopSync () {
+export function stopSync() {
   gethRemote.stop();
   clearInterval(syncInterval);
   return { type: types.SYNC_STOPPED };
