@@ -1,17 +1,17 @@
 /* eslint strict: 0 */
 'use strict';
 require('babel-register');
-require('./globals');
+require('./globalServices');
+require('./globalModules');
 
 const ipcMain = require('electron').ipcMain;
 
-const startAll = function () {
+const startAll = function startAll() {
   gethInstance.start();
   ipfsInstance.start();
 };
 
-const apiWrapper = function (mainWindow) {
-
+const apiWrapper = function apiWrapper(mainWindow) {
   mainWindow.on('closed', () => {
     gethInstance.stop();
     ipfsInstance.stop();

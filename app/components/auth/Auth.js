@@ -1,10 +1,10 @@
 //noinspection JSUnresolvedVariable
-import React, { Component, PropTypes } from 'react';
-import LoginHeader from '../../components/ui/partials/LoginHeader';
+import React, { Component, PropTypes } from 'react'
+import LoginHeader from '../../components/ui/partials/LoginHeader'
 
 class Auth extends Component {
 
-  render () {
+  render() {
     const { style, authState } = this.props;
     return (
       <div style={style}>
@@ -23,9 +23,9 @@ class Auth extends Component {
 }
 
 Auth.propTypes = {
-  actions:   PropTypes.object.isRequired,
+  actions: PropTypes.object.isRequired,
   authState: PropTypes.object.isRequired,
-  style:     PropTypes.object
+  style: PropTypes.object
 };
 
 Auth.contextTypes = {
@@ -34,11 +34,11 @@ Auth.contextTypes = {
 
 Auth.defaultProps = {
   style: {
-    width:         '100%',
-    height:        '100%',
-    display:       'flex',
+    width: '100%',
+    height: '100%',
+    display: 'flex',
     flexDirection: 'column',
-    position:      'relative'
+    position: 'relative'
   }
 };
 

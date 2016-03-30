@@ -1,19 +1,19 @@
 const LinvoDb = require('linvodb3');
-const ipfs    = require('../modules/ipfs').getInstance();
-const geth    = require('../modules/geth');
+const ipfs = require('../modules/ipfs').getInstance();
+const geth = require('../modules/geth');
 
 const configId = 1;
 
 const schema = {
   idConfig: {
-    type:    Number,
+    type: Number,
     default: configId
   },
   services: {
-    gethPath:    String,
+    gethPath: String,
     gethPathIpc: String,
     ipfsApiPath: String,
-    isInit:      Boolean
+    isInit: Boolean
   }
 };
 
@@ -24,15 +24,15 @@ class UserPreferences {
    * @param name
    * @param options
    */
-  constructor (name = 'UserPreferences', options = {}) {
-    this.dbTable       = new LinvoDb(name, schema, options);
+  constructor(name = 'UserPreferences', options = {}) {
+    this.dbTable = new LinvoDb(name, schema, options);
     this.defaultConfig = {
-      gethPath:    geth.getDefaultDatadir(),
+      gethPath: geth.getDefaultDatadir(),
       gethPathIpc: geth.getDefaultDatadir() + '/geth.ipc',
       ipfsApiPath: ipfs.getConnection(),
-      isInit:      false
+      isInit: false
     };
-    this.dbTable.find({idConfig: configId}).count((err, records)=> {
+    this.dbTable.find({ idConfig: configId }).count((err, records)=> {
       if (!err && records == 0) {
 
 
@@ -48,8 +48,8 @@ class UserPreferences {
    * @param cb
    * @returns {Array|{index: number, input: string}}
    */
-  getServicesConfig (cb) {
-    return this.dbTable.findOne({idConfig: configId}).map(function (record) {
+  getServicesConfig(cb) {
+    return this.dbTable.findOne({ idConfig: configId }).map(function(record) {
       return record.services;
     }).exec(cb);
   }
@@ -60,7 +60,7 @@ class UserPreferences {
    * @param cb
    * @returns {Array|{index: number, input: string}}
    */
-  setConfig (options = {}) {
+  setConfig(options = {}) {
 
     return this.dbTable.update(
       {
