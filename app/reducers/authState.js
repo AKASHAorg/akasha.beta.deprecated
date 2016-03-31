@@ -2,17 +2,22 @@ import * as types from '../constants/AuthConstants';
 import { Map } from 'immutable';
 
 const initialState = Map({
+  profiles: [],
   authAddress: false,
-  authUser:    false,
-  authTime:    false,
-  authorized:  false,
-  message:     false
+  authUser: false,
+  authTime: false,
+  authorized: false,
+  message: false
 });
 
 
-export default function authState (state = initialState, action) {
+export default function authState(state = initialState, action) {
 
   switch (action.type) {
+    case types.LOCAL_PROFILES_FOUND:
+      return state.merge({ profiles: action.data });
+    case types.LOCAL_PROFILES_NONE:
+      return state.merge({ profiles: [], message: action.message });
     case types.AUTH_LOGIN:
       return state.merge({
         authAddress: 'stub'

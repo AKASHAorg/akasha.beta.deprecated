@@ -1,4 +1,3 @@
-
 const Promise = require('bluebird');
 const LinvoDb = require('linvodb3');
 const web3 = gethInstance.web3;
@@ -8,14 +7,14 @@ const logger = require('../../loggers').getInstance();
 const log = logger.registerLogger('profile', { level: 'info', consoleLevel: 'info' });
 
 const symbolCheck = Symbol();
-const symbol      = Symbol();
+const symbol = Symbol();
 
 class ProfileClass {
 
   /**
    * @param enforcer
    */
-  constructor (enforcer) {
+  constructor(enforcer) {
     if (enforcer !== symbolCheck) {
       throw new Error('Profile: Cannot construct singleton!');
     }
@@ -30,7 +29,7 @@ class ProfileClass {
   /**
    * @returns {*}
    */
-  static getInstance () {
+  static getInstance() {
     if (!this[symbol]) {
       this[symbol] = new ProfileClass(symbolCheck);
     }
@@ -40,7 +39,7 @@ class ProfileClass {
   /**
    * Estimate gas usage for profiles;
    */
-  estimate (operation) {
+  estimate(operation) {
     let cost = '';
     const gas = agas.profile[operation] || -1;
     if (gas > 0) {
@@ -50,7 +49,7 @@ class ProfileClass {
   }
 
   // Instantiate and wait for AkashaX and Profile Contracts to be ready
-  _setupContracts (callback) {
+  _setupContracts(callback) {
     const contracts = require('../contracts/abi');
     const getContract = require('../contracts').instantiateContract;
 
@@ -93,7 +92,7 @@ class ProfileClass {
   }
 
   // Listen to Profile Contract events
-  _setupDatabase () {
+  _setupDatabase() {
     this.xContract.__emitter.on('CreateProfile', (data) => {
       this.resolveName(data.profile).then((name) => {
         this.profileModel.create(data.profile, name, data.ipfs);
@@ -111,7 +110,7 @@ class ProfileClass {
     log.info(`Profile: Setup database ${LinvoDb.dbPath}/Profile.db;`);
   }
 
-  _check (name) {
+  _check(name) {
     if (!name) {
       return 'empty profile name';
     }
@@ -127,7 +126,7 @@ class ProfileClass {
   // Ethereum functions (read only)
   // @returns Promise
 
-  resolveName (addr) {
+  resolveName(addr) {
     return new Promise((resolve) => {
       this.xContract.profiles.call(addr, (err, name) => {
         if (err) {
@@ -139,7 +138,7 @@ class ProfileClass {
     });
   }
 
-  existsProfileName (name) {
+  existsProfileName(name) {
     return new Promise((resolve) => {
       this.xContract.existsProfileName.call(name, (err, exists) => {
         if (err) {
@@ -151,7 +150,7 @@ class ProfileClass {
     });
   }
 
-  existsProfileAddr (addr) {
+  existsProfileAddr(addr) {
     return new Promise((resolve) => {
       this.xContract.existsProfileAddr.call(addr, (err, exists) => {
         if (err) {
@@ -163,7 +162,7 @@ class ProfileClass {
     });
   }
 
-  isProfileOwner (addr, name) {
+  isProfileOwner(addr, name) {
     return new Promise((resolve) => {
       this.xContract.isProfileOwner.call(addr, name, (err, result) => {
         if (err) {
@@ -181,7 +180,7 @@ class ProfileClass {
   /**
    * Get a profile name or address;
    */
-  get (nameOrAddr) {
+  get(nameOrAddr) {
     return this.profileModel.get(nameOrAddr);
   }
 
@@ -191,7 +190,7 @@ class ProfileClass {
    * @param `name` must be a string;
    * @param `data` must be an object;
    */
-  _create (name, data, callback) {
+  _create(name, data, callback) {
     const self = this;
     const promise1 = this.existsProfileName(name);
     const promise2 = this.existsProfileAddr(web3.eth.defaultAccount);
@@ -236,7 +235,7 @@ class ProfileClass {
   /**
    * Create a new profile;
    */
-  create (name, data, callback) {
+  create(name, data, callback) {
     const check = this._check(name);
     if (check !== true) {
       callback(check);
@@ -268,7 +267,7 @@ class ProfileClass {
    * @param `name` must be a string;
    * @param `data` must be an object;
    */
-  _update (name, data, callback) {
+  _update(name, data, callback) {
     const self = this;
     const promise1 = this.existsProfileName(name);
     const promise2 = this.isProfileOwner(web3.eth.defaultAccount, name);
@@ -311,7 +310,7 @@ class ProfileClass {
   /**
    * Update existing profile;
    */
-  update (name, data, callback) {
+  update(name, data, callback) {
     const check = this._check(name);
     if (check !== true) {
       callback(check);
@@ -364,7 +363,7 @@ class ProfileClass {
    * @private
    * @param `name` must be a string;
    */
-  _delete (name, callback) {
+  _delete(name, callback) {
     const self = this;
     const promise1 = this.existsProfileName(name);
     const promise2 = this.isProfileOwner(web3.eth.defaultAccount, name);
@@ -395,7 +394,7 @@ class ProfileClass {
   /**
    * Destroy existing profile;
    */
-  delete (name, callback) {
+  delete(name, callback) {
     const check = this._check(name);
     if (check !== true) {
       callback(check);
