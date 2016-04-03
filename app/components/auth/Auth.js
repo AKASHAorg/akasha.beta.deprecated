@@ -9,17 +9,40 @@ import FlatButton from 'material-ui/lib/flat-button';
 import TextField from 'material-ui/lib/text-field';
 
 class Auth extends Component {
+
+  constructor(props, context) {
+    super(props, context);
+    this.state = {
+      openModal: false,
+      selectedIndex: false
+    }
+  }
+
   componentDidMount() {
     const { actions } = this.props;
     actions.getAccountsList();
   }
 
+  handleTouchTap = (index) => {
+    this.setState({openModal: true});
+  };
+
+  handleModalClose = () => {
+    this.setState(({openModal: false}));
+  };
+
+  handleLogin = () => {
+    const { actions } = this.props;
+    actions.authenticate('0x0cf0346267f94ac3d224c6e503f96fea69ac86e3', 'abc13', 50); //for testing
+  };
+
   render() {
     const { style, authState } = this.props;
+    const { openModal } = this.state;
     const profiles = authState.get('profiles');
     const modalActions = [
-      <FlatButton label="Cancel"/>,
-      <FlatButton label="Submit" primary={true}/>
+      <FlatButton label="Cancel" onTouchTap={this.handleModalClose} />,
+      <FlatButton label="Submit" primary={true} onTouchTap={this.handleLogin}/>
     ];
     return (
       <div style={style}>
@@ -39,8 +62,10 @@ class Auth extends Component {
                       primaryText={account.get('address')}
                       secondaryText={account.get('userName')}
                       secondaryTextLines={1}
+                      value={account.get('address')}
+                      onTouchTap={()=> this.handleTouchTap(index)}
                     />
-                    <Divider key={`d${index}`} inset />
+                    <Divider key={`d${index}`} inset/>
                   </div>
                 )
               )}
@@ -48,7 +73,7 @@ class Auth extends Component {
             <Dialog
               title="Authentication"
               modal
-              open
+              open={openModal}
               actions={modalActions}
               contentStyle={{width: '82%'}}
             >
@@ -63,7 +88,6 @@ class Auth extends Component {
                 disabled
                 fullWidth
                 floatingLabelText="Ethereum address"
-                value={profiles.getIn(['0', 'address'])}
               />
               <TextField type="password"
                          fullWidth

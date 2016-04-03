@@ -34,7 +34,7 @@ export function login(address, password, timer) {
                     gethInstance.web3.eth.defaultAccount = address;
                   }
                   return isAccepted;
-                });
+                }).catch(() => false);
 }
 
 export function logout(address) {

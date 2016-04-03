@@ -66,21 +66,19 @@ export function getAccountsList() {
  * @returns {function()}
  */
 export function authenticate(user, password, timer) {
-  return (dispatch) => {
+  return (dispatch) =>
     profileHelpers.login(user, password, timer)
                   .then(
                     (success) => {
                       if (success) {
-                        return dispatch(authSuccess);
+                        return dispatch(authSuccess());
                       }
                       return dispatch(authFailure('password not correct'));
                     }
                   )
                   .catch(
-                    (err) => {
-                      dispatch(authFailure(err));
-                    }
+                    (err) =>
+                      dispatch(authFailure(err))
                   );
-  };
 }
 
