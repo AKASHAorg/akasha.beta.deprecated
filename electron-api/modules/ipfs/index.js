@@ -205,7 +205,6 @@ class IpfsConnector {
         }
         return resolve(response);
       });
-
     });
   }
 

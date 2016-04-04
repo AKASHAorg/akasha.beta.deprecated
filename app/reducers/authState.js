@@ -1,7 +1,7 @@
 import * as types from '../constants/AuthConstants';
-import { Map } from 'immutable';
+import { fromJS } from 'immutable';
 
-const initialState = Map({
+const initialState = fromJS({
   profiles: [],
   authAddress: false,
   authUser: false,
