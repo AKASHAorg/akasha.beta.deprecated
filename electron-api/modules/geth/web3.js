@@ -18,6 +18,7 @@ class Web3 {
     this._web3.net = Promise.promisifyAll(this._web3.net);
     this._web3.shh = Promise.promisifyAll(this._web3.shh);
     this._web3.eth = Promise.promisifyAll(this._web3.eth);
+    this._web3.personal = Promise.promisifyAll(this._web3.personal);
 
     if (admin) {
       this.initAdmin();
@@ -25,10 +26,6 @@ class Web3 {
 
     if (miner) {
       this.initMiner();
-    }
-
-    if (personal) {
-      this.initPersonal();
     }
 
   }
@@ -68,18 +65,6 @@ class Web3 {
     this.minerInit = true;
   }
 
-  initPersonal() {
-    if (this.personalInit) {
-      return;
-    }
-    this._web3._extend({
-      property: 'personal',
-      methods: this._personalMethods().methods
-    });
-    this._web3.personal = Promise.promisifyAll(this._web3.personal);
-    this.personalInit = true;
-  }
-
   setProvider(gethIpc, socket) {
     if (!this._web3.currentProvider) {
       this._web3.setProvider(new this._web3.providers.IpcProvider(gethIpc, socket));
@@ -91,55 +76,6 @@ class Web3 {
         }
       });
     }
-  }
-
-  _personalMethods() {
-
-    return {
-      methods: [
-        new this._web3._extend.Method({
-          name: 'unlockAccount',
-          call: 'personal_unlockAccount',
-          params: 3,
-
-          inputFormatter: [
-            this._web3._extend.utils.toAddress,
-            this._web3._extend.utils.formatInputString,
-            this._web3._extend.formatters.formatInputInt
-          ],
-          outputFormatter: this._web3._extend.formatters.formatOutputBool
-        }),
-        new this._web3._extend.Method({
-          name: 'lockAccount',
-          call: 'personal_lockAccount',
-          params: 1,
-          inputFormatter: [this._web3._extend.formatters.inputAddressFormatter]
-        }),
-        new this._web3._extend.Method({
-          name: 'newAccount',
-          call: 'personal_newAccount',
-          params: 1,
-          inputFormatter: [this._web3._extend.utils.formatInputString],
-          outputFormatter: this._web3._extend.utils.formatOutputString
-        }),
-
-        new this._web3._extend.Method({
-          name: 'listAccounts',
-          call: 'personal_listAccounts',
-          params: 0,
-          inputFormatter: [null],
-          outputFormatter: (obj) => obj
-        }),
-
-        new this._web3._extend.Method({
-          name: 'deleteAccount',
-          call: 'personal_deleteAccount',
-          params: 2,
-          inputFormatter: [this._web3._extend.utils.toAddress, this._web3._extend.utils.formatInputString],
-          outputFormatter: this._web3._extend.formatters.formatOutputBool
-        })
-      ]
-    };
   }
 
   _adminMethods() {
@@ -288,6 +224,7 @@ class Web3 {
           outputFormatter: this._web3._extend.formatters.formatOutputBool
         })
       ],
+
       properties: [
         new this._web3._extend.Property({
           name: 'hashrate',

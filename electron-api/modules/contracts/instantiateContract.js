@@ -1,12 +1,12 @@
 
 const Emitter = require('events').EventEmitter;
-const web3 = gethInstance.web3;
 const helpers = require('../geth/helpers');
 const gas = require('./gas');
 
 const contractCache = {};
 
-function wrapFunction (fname, contract) {
+function wrapFunction(fname, contract) {
+  const web3 = global.gethInstance.web3;
   // console.log(`Wrapped func ${contract.__name}:${fname}()`);
   contract[fname].waitTransaction = function (...args) {
     web3.eth.getBlock('latest', (blockErr, block) => {
@@ -47,10 +47,11 @@ function wrapFunction (fname, contract) {
   };
 }
 
-function attachEvents (contract) {
+function attachEvents(contract) {
+  const web3 = global.gethInstance.web3;
   contract.__emitter = new Emitter();
-  // Save web3 AllEvents pointer
-  contract.__ae = contract.allEvents({}, { fromBlock: 'latest' }, (err, result) => {
+  // Save AllEvents pointer
+  contract.__ae = contract.allEvents({}, { fromBlock: 519000 }, (err, result) => {
     if (err) {
       console.warn(`Error ${contract.__name} Event:: ${err}`);
     } else {
@@ -79,13 +80,13 @@ function attachEvents (contract) {
 /**
  * Create web3 contract instance and attach event watcher;
  */
-export default function instantiateContract (contractName, abi, address) {
+export default function instantiateContract(contractName, abi, address) {
   // Load from cache?
   if (contractCache[contractName]) {
     return contractCache[contractName];
   }
   // Create new?
-  const contract = web3.eth.contract(abi);
+  const contract = global.gethInstance.web3.eth.contract(abi);
   const instance = contract.at(address);
   // Save name for later
   instance.__name = contractName;

@@ -1,20 +1,19 @@
 
 const Promise = require('bluebird');
-const web3 = gethInstance.web3;
 const helpers = require('../geth/helpers');
 const agas = require('../contracts/gas');
 const logger = require('../../loggers').getInstance();
 const log = logger.registerLogger('transaction', { level: 'info', consoleLevel: 'info' });
 
 const symbolCheck = Symbol();
-const symbol      = Symbol();
+const symbol = Symbol();
 
 class TransactionsClass {
 
   /**
    * @param enforcer
    */
-  constructor (enforcer) {
+  constructor(enforcer) {
     if (enforcer !== symbolCheck) {
       throw new Error('Transaction: Cannot construct singleton!');
     }
@@ -24,7 +23,7 @@ class TransactionsClass {
   /**
    * @returns {*}
    */
-  static getInstance () {
+  static getInstance() {
     if (!this[symbol]) {
       this[symbol] = new TransactionsClass(symbolCheck);
     }
@@ -34,7 +33,7 @@ class TransactionsClass {
   /**
    * Estimate gas usage for transactions;
    */
-  estimate (operation) {
+  estimate(operation) {
     if (operation === 'send') {
       const gas = 21037;
       const gasPrice = parseFloat(gas * agas.unit_gas_price).toFixed(4);
@@ -48,8 +47,9 @@ class TransactionsClass {
    * Send Ether to another address;
    * @returns {Promise}
    */
-  send (options) {
-    return gethInstance.inSync().then((syncing) => {
+  send(options) {
+    return global.gethInstance.inSync().then((syncing) => {
+      const web3 = global.gethInstance.web3;
       if (syncing) {
         throw new Error('GETH is not in sync!');
       }
@@ -71,7 +71,8 @@ class TransactionsClass {
    * Send Ether to another address (private);
    * @private
    */
-  _send (options) {
+  _send(options) {
+    const web3 = global.gethInstance.web3;
     let balance1 = 0;
     let balance2 = 0;
 
@@ -80,13 +81,11 @@ class TransactionsClass {
         .then((balance) => {
           balance1 = balance.toNumber();
           return web3.eth.sendTransactionAsync({
-            to:       options.to,
-            value:    options.amount,
-            gas:      22000,
-            gasPrice: agas.gas_price
-          });
+            from: options.from || web3.eth.defaultAccount,
+            to: options.to, value: options.amount,
+            gas: 22000, gasPrice: agas.gas_price });
         }).then((txHash) => {
-          helpers.watchTx('sendEther()', txHash, (err, success) => {
+          helpers.watchTx('sendEther()', txHash, (err) => {
             if (err) {
               reject(err);
               return;
@@ -96,7 +95,7 @@ class TransactionsClass {
               if (balance1 + options.amount !== balance2) {
                 reject(`balance doesnt match ${balance1 + options.amount} != ${balance2}`);
               } else {
-                resolve({ old_balance: balance1, balance: balance2 }); // eslint-disable-line
+                resolve({ old_balance: balance1, balance: balance2 });
               }
             });
           });
@@ -111,11 +110,12 @@ class TransactionsClass {
    * Wait for coinbase address to have "amount" balance;
    * @returns {Promise}
    */
-  wait (amount) {
+  wait(amount) {
+    const web3 = global.gethInstance.web3;
     if (!amount) {
-      amount = parseInt(web3.toWei(1, 'ether'));
+      amount = parseInt(web3.toWei(1, 'ether'), 10);
     }
-    return gethInstance.inSync().then((syncing) => {
+    return global.gethInstance.inSync().then((syncing) => {
       if (syncing) {
         throw new Error('GETH is not in sync!');
       }
@@ -131,7 +131,8 @@ class TransactionsClass {
    * Wait for coinbase address to have "amount" balance (private);
    * @private
    */
-  _wait (amount) {
+  _wait(amount) {
+    const web3 = global.gethInstance.web3;
     const me = web3.eth.defaultAccount;
     return new Promise((resolve, reject) => {
       let interval = 0;

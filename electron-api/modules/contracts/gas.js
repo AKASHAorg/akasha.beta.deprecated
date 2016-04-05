@@ -1,4 +1,4 @@
-/* eslint camelcase: 0 */
+/* eslint camelcase: 0 key-spacing: 0 */
 
 // Estimate gas usage
 
