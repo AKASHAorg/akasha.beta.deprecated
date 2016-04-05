@@ -1,9 +1,9 @@
-const path    = require('path');
+const path = require('path');
 const winston = require('winston');
-const fs      = require('fs');
+const fs = require('fs');
 
 const symbolEnforcer = Symbol();
-const symbol         = Symbol();
+const symbol = Symbol();
 
 
 class AkashaLogger {
@@ -13,7 +13,7 @@ class AkashaLogger {
    * @param userData
    * @param enforcer
    */
-  constructor (userData, enforcer) {
+  constructor(userData, enforcer) {
 
     if (enforcer !== symbolEnforcer) {
       throw new Error('Cannot construct singleton');
@@ -41,7 +41,7 @@ class AkashaLogger {
    * @param userData
    * @returns {*}
    */
-  static getInstance (userData) {
+  static getInstance(userData) {
     if (!this[symbol]) {
       this[symbol] = new AkashaLogger(userData, symbolEnforcer);
     }
@@ -55,11 +55,11 @@ class AkashaLogger {
    * @param maxFiles
    * @returns {*}
    */
-  registerLogger (name, { level = 'info', consoleLevel = 'warn', maxsize = 10 * 1024, maxFiles = 1 } = {}) {
+  registerLogger(name, { level = 'info', consoleLevel = 'warn', maxsize = 10 * 1024, maxFiles = 1 } = {}) {
     this.loggers[name] = new (winston.Logger)({
       transports: [
         new winston.transports.Console({
-          level:    consoleLevel,
+          level: consoleLevel,
           colorize: true
         }),
         new (winston.transports.File)({
@@ -67,7 +67,7 @@ class AkashaLogger {
           level,
           maxsize,
           maxFiles,
-          name:     `log-${name}`
+          name: `log-${name}`
         })
       ]
     });
@@ -79,7 +79,7 @@ class AkashaLogger {
    * @param name
    * @returns {*}
    */
-  getLogger (name) {
+  getLogger(name) {
     return this.loggers[name];
   }
 }

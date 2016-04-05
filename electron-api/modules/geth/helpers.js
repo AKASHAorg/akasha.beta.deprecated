@@ -1,32 +1,3 @@
-
-export function toStringVal(val) {
-  return String(val);
-}
-
-export function toBoolVal(val) {
-  return String(val) === 'true';
-}
-
-export function toIntVal(val) {
-  return parseInt(val, 10);
-}
-
-export function toIntValRestricted(val) {
-  const check = parseInt(val, 10);
-  if (check > 0 && check <= 6) {
-    return check;
-  }
-  return null;
-}
-
-export function toJSONObject(val) {
-  try {
-    return JSON.parse(val);
-  } catch (e) {
-    return val;
-  }
-}
-
 const Promise = require('bluebird');
 const agas = require('../contracts/gas');
 
