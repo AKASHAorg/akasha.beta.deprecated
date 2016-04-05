@@ -93,7 +93,7 @@ class CreateProfile extends Component {
 
             <TextField
                 floatingLabelStyle={floatLabelStyle}
-                floatingLabelText="First Name *"
+                floatingLabelText="First Name"
                 inputStyle={inputStyle}
                 style={{width: '210px'}}
                 ref={(c) => this.firstNameInput = c}
@@ -110,7 +110,7 @@ class CreateProfile extends Component {
             <TextField
                 fullWidth={true}
                 inputStyle={inputStyle}
-                floatingLabelText="User Name *"
+                floatingLabelText="User Name"
                 floatingLabelStyle={floatLabelStyle}
                 errorText={profile.getIn(['user', 'valid']) ? '' : profile.getIn(['user', 'err'])}
                 onChange={this.handleUpdateUser}
@@ -120,7 +120,7 @@ class CreateProfile extends Component {
                 ref="passwd1"
                 fullWidth={true}
                 inputStyle={inputStyle}
-                floatingLabelText="Password *"
+                floatingLabelText="Password"
                 floatingLabelStyle={floatLabelStyle}
                 errorText={profile.getIn(['passwd', 'valid']) ? '' : profile.getIn(['passwd', 'err1'])}
                 onChange={this.handleUpdatePasswd}
@@ -130,7 +130,7 @@ class CreateProfile extends Component {
                 ref="passwd2"
                 fullWidth={true}
                 inputStyle={inputStyle}
-                floatingLabelText="Verify Password *"
+                floatingLabelText="Verify Password"
                 floatingLabelStyle={floatLabelStyle}
                 errorText={profile.getIn(['passwd', 'valid']) ? '' : profile.getIn(['passwd', 'err2'])}
                 onChange={this.handleUpdatePasswd}

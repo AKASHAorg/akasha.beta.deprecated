@@ -9,14 +9,14 @@ const initialState = fromJS({
   passwd: { pwd1: '', pwd2: '', valid:  false, err1: '', err2: '' },
   unlock: { value: 5, enabled: false },
   opt_details: false,
-  create: { step: '', finished: false }
+  create: { steps: ['...'], finished: false, err: '' }
 });
 
 export default function profile (state = initialState, action) {
   switch (action.type) {
     case types.UPDATE_NAME:
       return state.mergeDeep({ name: {
-        first: action.last,
+        first: action.first,
         last:  action.last
       }});
     case types.VALID_NAME:
@@ -51,7 +51,11 @@ export default function profile (state = initialState, action) {
       return state.set('opt_details', action.enabled);
 
     case types.CREATE_USER_PENDING:
-      return state.setIn(['create', 'step'], action.step);
+      return state.updateIn(['create', 'steps'], list => list.push(action.step));
+    case types.CREATE_USER_SUCCESS:
+      return state.setIn(['create', 'finished'], true);
+    case types.CREATE_USER_FAILURE:
+      return state.setIn(['create', 'err'], action.err);
 
     default:
       return state;

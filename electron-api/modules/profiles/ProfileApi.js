@@ -1,21 +1,21 @@
 
 const Promise = require('bluebird');
 const LinvoDb = require('linvodb3');
-const web3 = gethInstance.web3;
 const agas = require('../contracts/gas');
+const upload = require('./upload');
 const ProfileModel = require('../../models/Profiles');
 const logger = require('../../loggers').getInstance();
 const log = logger.registerLogger('profile', { level: 'info', consoleLevel: 'info' });
 
 const symbolCheck = Symbol();
-const symbol      = Symbol();
+const symbol = Symbol();
 
 class ProfileClass {
 
   /**
    * @param enforcer
    */
-  constructor (enforcer) {
+  constructor(enforcer) {
     if (enforcer !== symbolCheck) {
       throw new Error('Profile: Cannot construct singleton!');
     }
@@ -24,13 +24,15 @@ class ProfileClass {
     this.xContract = null;
     this.contract = null;
     this.profileModel = new ProfileModel();
-    this._setupContracts(() => this._setupDatabase());
+    setTimeout(() =>
+      this._setupContracts(() => this._setupDatabase())
+    , 4000);
   }
 
   /**
    * @returns {*}
    */
-  static getInstance () {
+  static getInstance() {
     if (!this[symbol]) {
       this[symbol] = new ProfileClass(symbolCheck);
     }
@@ -40,7 +42,7 @@ class ProfileClass {
   /**
    * Estimate gas usage for profiles;
    */
-  estimate (operation) {
+  estimate(operation) {
     let cost = '';
     const gas = agas.profile[operation] || -1;
     if (gas > 0) {
@@ -50,24 +52,25 @@ class ProfileClass {
   }
 
   // Instantiate and wait for AkashaX and Profile Contracts to be ready
-  _setupContracts (callback) {
+  _setupContracts(callback) {
+    const web3 = global.gethInstance.web3;
     const contracts = require('../contracts/abi');
     const getContract = require('../contracts').instantiateContract;
-
-    this.xContract = getContract('AkashaX', contracts.db.abi, contracts.db.address);
-    this.contract = getContract('AkashaProfiles', contracts.profile.abi, contracts.profile.address);
 
     let interval = 0;
     let errShown = false;
     let msgShown = false;
 
     interval = setInterval(() => {
-      if (!gethInstance || !gethInstance.web3 || !gethInstance.web3.eth) {
+      if (!web3) {
         return;
       }
+      this.xContract = getContract('AkashaX', contracts.db.abi, contracts.db.address);
+      this.contract = getContract('AkashaProfiles', contracts.profile.abi, contracts.profile.address);
+
       this.xContract.blockn.call((err1, block) => {
         if (err1 && !errShown) {
-          log.warn(`Profile: ${err1}`);
+          log.warn(`Profile: ${err1}!`);
           errShown = true;
           return;
         }
@@ -89,33 +92,47 @@ class ProfileClass {
           msgShown = true;
         }
       });
-    }, 750);
+    }, 1000);
   }
 
   // Listen to Profile Contract events
-  _setupDatabase () {
-    this.xContract.__emitter.on('CreateProfile', (data) => {
+  _setupDatabase() {
+    this.xContract.__emitter.on('CreateProfile', data => {
       this.resolveName(data.profile).then((name) => {
-        this.profileModel.create(data.profile, name, data.ipfs);
+        upload.checkProfileHash(data.ipfs, result => {
+          if (result.valid) {
+            this.profileModel.create(data.profile, name, data.ipfs);
+          } else {
+            // console.log(`New AKASHA profile ${name} has invalid IPFS hash (ignored);`);
+          }
+        });
       });
     });
 
-    this.xContract.__emitter.on('UpdateProfile', (data) => {
-      this.profileModel.update(data.profile, data.ipfs);
+    this.xContract.__emitter.on('UpdateProfile', data => {
+      this.resolveName(data.profile).then((name) => {
+        upload.checkProfileHash(data.ipfs, result => {
+          if (result.valid) {
+            this.profileModel.update(data.profile, name, data.ipfs);
+          } else {
+            // console.log(`Updated AKASHA profile ${name} has invalid IPFS hash (ignored);`);
+          }
+        });
+      });
     });
 
-    this.xContract.__emitter.on('DestroyProfile', (data) => {
+    this.xContract.__emitter.on('DestroyProfile', data => {
       this.profileModel.delete(data.profile);
     });
 
     log.info(`Profile: Setup database ${LinvoDb.dbPath}/Profile.db;`);
   }
 
-  _check (name) {
+  _check(name) {
     if (!name) {
       return 'empty profile name';
     }
-    if (!web3.eth.defaultAccount) {
+    if (!global.gethInstance.web3.eth.defaultAccount) {
       return 'default address not set';
     }
     if (!this.ready) {
@@ -127,20 +144,20 @@ class ProfileClass {
   // Ethereum functions (read only)
   // @returns Promise
 
-  resolveName (addr) {
-    return new Promise((resolve) => {
+  resolveName(addr) {
+    return new Promise((resolve, reject) => {
       this.xContract.profiles.call(addr, (err, name) => {
         if (err) {
           reject(err);
         } else {
-          resolve(web3.toAscii(name).replace(/\u0000/g, ''));
+          resolve(global.gethInstance.web3.toAscii(name).replace(/\u0000/g, ''));
         }
       });
     });
   }
 
-  existsProfileName (name) {
-    return new Promise((resolve) => {
+  existsProfileName(name) {
+    return new Promise((resolve, reject) => {
       this.xContract.existsProfileName.call(name, (err, exists) => {
         if (err) {
           reject(err);
@@ -151,8 +168,8 @@ class ProfileClass {
     });
   }
 
-  existsProfileAddr (addr) {
-    return new Promise((resolve) => {
+  existsProfileAddr(addr) {
+    return new Promise((resolve, reject) => {
       this.xContract.existsProfileAddr.call(addr, (err, exists) => {
         if (err) {
           reject(err);
@@ -163,8 +180,8 @@ class ProfileClass {
     });
   }
 
-  isProfileOwner (addr, name) {
-    return new Promise((resolve) => {
+  isProfileOwner(addr, name) {
+    return new Promise((resolve, reject) => {
       this.xContract.isProfileOwner.call(addr, name, (err, result) => {
         if (err) {
           reject(err);
@@ -181,20 +198,18 @@ class ProfileClass {
   /**
    * Get a profile name or address;
    */
-  get (nameOrAddr) {
+  get(nameOrAddr) {
     return this.profileModel.get(nameOrAddr);
   }
 
   /**
    * Create a new profile;
    * @private
-   * @param `name` must be a string;
-   * @param `data` must be an object;
    */
-  _create (name, data, callback) {
+  _create(name, hash, callback) {
     const self = this;
     const promise1 = this.existsProfileName(name);
-    const promise2 = this.existsProfileAddr(web3.eth.defaultAccount);
+    const promise2 = this.existsProfileAddr(gethInstance.web3.eth.defaultAccount);
 
     Promise.join(promise1, promise2, (check1, check2) => {
       if (check1) {
@@ -207,71 +222,64 @@ class ProfileClass {
       }
 
       log.warn(`Profile: Creating profile name "${name}"...`);
-      data = JSON.stringify(data);
-      // Check was ok, now launch!
-      ipfsInstance.add(data).then((hash) => {
-        // Check
-        if (!hash) {
-          callback('null ipfs hash');
-          return;
+      // Send and wait transaction
+      self.contract.create.waitTransaction(name, hash, {}, (err, success) => {
+        if (err) {
+          log.warn(`Profile create error: ${err}`);
+          callback(err.toString(), false);
+        } else {
+          self.myName = name;
+          callback(null, success);
         }
-        hash = hash[0].Hash;
-        // Send and wait transaction
-        self.contract.create.waitTransaction(name, hash, {}, (err, success) => {
-          if (err) {
-            log.warn(`Profile create error: ${err}`);
-            callback(err.toString(), false);
-          } else {
-            self.myName = name;
-            callback(null, success);
-          }
-        });
-      }).catch((err) => {
-        log.warn(err);
-        callback('ipfs add error');
       });
     });
   }
 
   /**
    * Create a new profile;
+   * @param `name` the name of the user (string);
+   * @param `hash` the IPFS hash of the folder (string);
    */
-  create (name, data, callback) {
+  create(name, hash, callback) {
     const check = this._check(name);
     if (check !== true) {
       callback(check);
       return;
     }
-    // Database waiting function;
-    const waiting = (doc) => {
-      if (doc.name === name) {
-        this.profileModel.table.removeListener('save', waiting);
-        callback(null, doc);
+    upload.checkProfileHash(hash, response => {
+      if (!response.valid) {
+        callback('invalid ipfs hash');
         return;
       }
-    };
-    // After inserting new documents;
-    this.profileModel.table.on('save', waiting);
+      // Database waiting function;
+      const waiting = (doc) => {
+        if (doc.name === name) {
+          this.profileModel.table.removeListener('save', waiting);
+          callback(null, doc);
+          return;
+        }
+      };
+      // After inserting new documents;
+      this.profileModel.table.on('save', waiting);
 
-    this._create(name, data, (err) => {
-      if (err) {
-        this.profileModel.table.removeListener('save', waiting);
-        callback(err);
-        return;
-      }
+      this._create(name, hash, (err) => {
+        if (err) {
+          this.profileModel.table.removeListener('save', waiting);
+          callback(err);
+          return;
+        }
+      });
     });
   }
 
   /**
    * Update existing profile;
    * @private
-   * @param `name` must be a string;
-   * @param `data` must be an object;
    */
-  _update (name, data, callback) {
+  _update(name, hash, callback) {
     const self = this;
     const promise1 = this.existsProfileName(name);
-    const promise2 = this.isProfileOwner(web3.eth.defaultAccount, name);
+    const promise2 = this.isProfileOwner(gethInstance.web3.eth.defaultAccount, name);
 
     Promise.join(promise1, promise2, (check1, check2) => {
       if (!check1) {
@@ -282,36 +290,24 @@ class ProfileClass {
         callback('profile owner error');
         return;
       }
-
-      data = JSON.stringify(data);
-      // Check was ok, now launch!
-      ipfsInstance.add(data).then((hash) => {
-        // Check
-        if (!hash) {
-          callback('null ipfs hash');
-          return;
+      // Send and wait transaction
+      self.contract.update.waitTransaction(name, hash, {}, (err, success) => {
+        if (err) {
+          log.warn(`Profile update error: ${err}`);
+          callback(err.toString(), false);
+        } else {
+          callback(null, success);
         }
-        hash = hash[0].Hash;
-        // Send and wait transaction
-        self.contract.update.waitTransaction(name, hash, {}, (err, success) => {
-          if (err) {
-            log.warn(`Profile update error: ${err}`);
-            callback(err.toString(), false);
-          } else {
-            callback(null, success);
-          }
-        });
-      }).catch((err) => {
-        log.warn(err);
-        callback('ipfs add error');
       });
     });
   }
 
   /**
    * Update existing profile;
+   * @param `name` the name of the user (string);
+   * @param `hash` the IPFS hash of the folder (string);
    */
-  update (name, data, callback) {
+  update(name, hash, callback) {
     const check = this._check(name);
     if (check !== true) {
       callback(check);
@@ -322,15 +318,11 @@ class ProfileClass {
         callback('profile name doesn\'t exist');
         return;
       }
-      ipfsInstance.cat(pdoc.ipfs).then((json) => {
-        try {
-          json = JSON.parse(json);
-        } catch (e) {
-          log.warn(e);
-          json = {};
+      upload.checkProfileHash(hash, response => {
+        if (!response.valid) {
+          callback('invalid ipfs hash');
+          return;
         }
-        data = Object.assign({}, json, data);
-
         // Database waiting function;
         const waiting = (doc) => {
           if (doc.name === name) {
@@ -342,16 +334,13 @@ class ProfileClass {
         // After updating documents;
         this.profileModel.table.on('save', waiting);
 
-        this._update(name, data, (err) => {
+        this._update(name, hash, (err) => {
           if (err) {
             this.profileModel.table.removeListener('save', waiting);
             callback(err);
             return;
           }
         });
-      }).catch((err) => {
-        log.warn(err);
-        callback(err.toString());
       });
     }).catch((err) => {
       log.warn(err);
@@ -362,12 +351,11 @@ class ProfileClass {
   /**
    * Destroy existing profile;
    * @private
-   * @param `name` must be a string;
    */
-  _delete (name, callback) {
+  _delete(name, callback) {
     const self = this;
     const promise1 = this.existsProfileName(name);
-    const promise2 = this.isProfileOwner(web3.eth.defaultAccount, name);
+    const promise2 = this.isProfileOwner(gethInstance.web3.eth.defaultAccount, name);
 
     Promise.join(promise1, promise2, (check1, check2) => {
       if (!check1) {
@@ -394,8 +382,9 @@ class ProfileClass {
 
   /**
    * Destroy existing profile;
+   * @param `name` the name of the user (string);
    */
-  delete (name, callback) {
+  delete(name, callback) {
     const check = this._check(name);
     if (check !== true) {
       callback(check);

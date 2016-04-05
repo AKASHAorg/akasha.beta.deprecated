@@ -16,8 +16,7 @@ class CreateProfileStatus extends Component {
 
   render () {
     const { style, profile } = this.props;
-    const floatLabelStyle = { color: Colors.lightBlack };
-    const inputStyle      = { color: Colors.darkBlack };
+    const paraStyle = { marginTop: '20px' };
 
     return (
       <div style={style}>
@@ -34,14 +33,17 @@ class CreateProfileStatus extends Component {
             <h1 style={{ fontWeight: '400', display: 'inline', verticalAlign: 'middle' }}>
               {'Registering identity...'}
             </h1>
-            <p style={{ marginTop: '20px' }}>
+            <p style={paraStyle}>
               {'Your identity is broadcasted into the Ethereum world computer network.'}
             </p>
-            <p style={{ marginTop: '20px' }}>
-              [ {profile.getIn(['create', 'step'])} ... ]
+            <p style={paraStyle}>
+              {'This will take a few moments...'}
             </p>
-            <p style={{ marginTop: '20px' }}>
-              {'This will take a few moments.'}
+            <span style={paraStyle}>
+              { profile.getIn(['create', 'steps']).map((step) => <p>{step}</p>) }
+            </span>
+            <p style={{ marginTop: '20px', color: Colors.red300 }}>
+              { profile.getIn(['create', 'err']) }
             </p>
           </div>
 

@@ -4,11 +4,11 @@ const remote = require('electron').remote;
 import * as types from '../constants/ProfileConstants';
 import { hashHistory } from 'react-router';
 
-export function updateName (first, last) {
+export function updateName(first, last) {
   return { type: types.UPDATE_NAME, first, last };
 }
 
-export function validateName (name) {
+export function validateName(name) {
   if (!name) {
     return { type: types.VALID_NAME, valid: false };
   }
@@ -16,7 +16,7 @@ export function validateName (name) {
 }
 
 
-function validateUser (name) {
+function validateUser(name) {
   const prof = remote.getGlobal('akasha').profileInstance;
   const response = { type: types.VALID_USER, valid: false };
   if (!name) {
@@ -41,7 +41,7 @@ function validateUser (name) {
   };
 }
 
-export function updateUser (value) {
+export function updateUser(value) {
   return (dispatch) => {
     setTimeout(() => dispatch(validateUser(value)), 5);
     dispatch({ type: types.UPDATE_USER, value });
@@ -49,7 +49,7 @@ export function updateUser (value) {
 }
 
 
-function validatePasswd (pwd1, pwd2) {
+function validatePasswd(pwd1, pwd2) {
   const response = { type: types.VALID_PASSWD, valid: false, err1: '', err2: '' };
   if (!pwd1) {
     return response;
@@ -78,44 +78,96 @@ export function updatePasswd (pwd1, pwd2) {
 }
 
 
-export function unlockEnable (enabled) {
+export function unlockEnable(enabled) {
   return { type: types.UNLOCK_ENABLE, enabled };
 }
 
-export function unlockAccountFor (value) {
+export function unlockAccountFor(value) {
   return { type: types.UNLOCK_ACCOUNT_FOR, value };
 }
 
-export function toggleDetails (enabled) {
+export function toggleDetails(enabled) {
   return { type: types.TOGGLE_DETAILS, enabled };
 }
 
-export function createUser () {
+/**
+ * Step 1:: Create a new Ethereum address
+ * Step 2:: Set address as defaultAccount
+ * Step 3:: Send ether
+ * Step 4:: Unlock address
+ * Step 5:: Create new AKASHA profile
+ */
+function _createUser(dispatch, data) {
+  const web3 = remote.getGlobal('gethInstance').web3;
+  const akasha = remote.getGlobal('akasha');
+  const user = data.user.value;
+  dispatch({ type: types.CREATE_USER_PENDING, step: 'Creating new Ethereum address...' });
+
+  // Step 1:: Create a new Ethereum address
+  web3.personal.newAccount(data.passwd.pwd1, (err, address) => {
+    if (err || !address) {
+      dispatch({ type: types.CREATE_USER_FAILURE, err: 'could not create Ethereum address' });
+      return;
+    }
+    dispatch({ type: types.CREATE_USER_PENDING, step: `Address: ${address};` });
+    // Step 2:: Set address as defaultAccount
+    web3.eth.defaultAccount = address;
+    // Step 3:: Send ether
+    akasha.faucet.requestEther().then((success) => {
+      let unlockTime;
+      dispatch({ type: types.CREATE_USER_PENDING, step: `Ethereum address funded;` });
+      // Step 4:: Unlock address
+      if (data.unlock.enabled) {
+        unlockTime = data.unlock.value * 60;
+      } else {
+        unlockTime = 10;
+      }
+      web3.personal.unlockAccount(address, data.passwd.pwd1, unlockTime, (err, unlocked) => {
+        if (data.unlock.enabled) {
+          dispatch({ type: types.CREATE_USER_PENDING,
+            step: `Address unlocked for [${data.unlock.value}] minutes;` });
+        }
+        if (err || !unlocked) {
+          dispatch({ type: types.CREATE_USER_FAILURE, err: 'could not unlock address' });
+          return;
+        }
+        dispatch({ type: types.CREATE_USER_PENDING,
+          step: `Creating AKASHA profile [${user}]...` });
+        // Step 5:: Create new AKASHA profile
+        akasha.profileInstance.create(user, data.user.hash, (err, data) => {
+          if (err) {
+            dispatch({ type: types.CREATE_USER_FAILURE, err });
+          } else {
+            dispatch({ type: types.CREATE_USER_PENDING, step: 'Done!' });
+            setTimeout(() => {
+              dispatch({ type: types.CREATE_USER_SUCCESS });
+              // TODO :: Jump to dashboard !!
+            }, 3000);
+          }
+        });
+        // End of step 5
+      });
+    }).catch((err) => {
+      dispatch({ type: types.CREATE_USER_FAILURE, err: 'could not request ether' });
+    });
+  });
+}
+
+export function createUser() {
   return (dispatch, getState) => {
     const data = getState().profile.toJS();
-    const web3 = remote.getGlobal('gethInstance').web3;
-    const prof = remote.getGlobal('akasha').profileInstance;
+    const profileUpload = remote.getGlobal('akasha').profileUpload;
+    const meta = {
+      firstName: data.name.first,
+      lastName: data.name.last,
+    };
     hashHistory.push('/new-profile-status');
-    console.log('Creating profile::', data);;
 
-    // Step 1:: Create a new Ethereum address
-    // Step 2:: Send ether
-    // Step 3:: Unlock address
-    // Step 4:: Create new AKASHA profile
-    setTimeout(() => {
-    //   web3.personal.newAccount(data.passwd.pwd1, (err, address) => {
-      dispatch({ type: types.CREATE_USER_SUCCESS });
-    //   });
-    }, 3500);
-
-    // prof.create(data.user.value, data, (err, success) => {
-    //   if (err) {
-    //     dispatch({ type: types.CREATE_USER_FAILURE });
-    //   } else {
-    //     dispatch({ type: types.CREATE_USER_SUCCESS });
-    //   }
-    // });
-
-    dispatch({ type: types.CREATE_USER_PENDING, step: 'creating ethereum address' });
+    profileUpload.uploadProfile(data.user.value, meta).then((hash) => {
+      data.user.hash = hash;
+      _createUser(dispatch, data);
+    }).catch((err) => {
+      dispatch({ type: types.CREATE_USER_FAILURE, err: 'could not request ether' });
+    });
   };
 }

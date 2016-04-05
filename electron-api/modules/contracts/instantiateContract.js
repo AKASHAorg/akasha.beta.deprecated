@@ -51,7 +51,7 @@ function attachEvents(contract) {
   const web3 = global.gethInstance.web3;
   contract.__emitter = new Emitter();
   // Save AllEvents pointer
-  contract.__ae = contract.allEvents({}, { fromBlock: 519000 }, (err, result) => {
+  contract.__ae = contract.allEvents({}, { fromBlock: 0 }, (err, result) => {
     if (err) {
       console.warn(`Error ${contract.__name} Event:: ${err}`);
     } else {
