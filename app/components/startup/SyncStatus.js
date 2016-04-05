@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import LoginHeader from '../../components/ui/partials/LoginHeader';
 import RaisedButton from 'material-ui/lib/raised-button';
-import LinearProgress from 'material-ui/lib/linear-progress';
+import SyncProgress from '../ui/loaders/SyncProgress';
 import { hashHistory } from 'react-router';
 
 class SyncStatus extends Component {
@@ -37,35 +37,39 @@ class SyncStatus extends Component {
     const { style, syncState } = this.props;
     const buttonsStyle = { padding: 0, position: 'absolute', bottom: 0, right: 0 };
     const message = syncState.get('status');
-    let blockSync, blockProgress, currentProgress, pageTitle;
+    let blockSync, blockProgress, currentProgress, pageTitle, progressBody, peerInfo;
     pageTitle = syncState.get('currentState');
-
-    if (message.get) {
-      if (!message.get(1)) {
-        blockProgress = message.get(0);
-        blockSync = (
-          <div style={{paddingTop: '30px'}}><p>Finding peers: <b>{blockProgress}</b></p></div>
-        );
-      } else {
-        blockProgress = message.get(1).toObject();
-        currentProgress = ((blockProgress.currentBlock - blockProgress.startingBlock)
-          / (blockProgress.highestBlock - blockProgress.startingBlock)) * 100;
-
-        blockSync = (
-          <div style={{paddingTop: '30px'}}>
-            <LinearProgress mode="determinate"
-                            value={currentProgress}/>
-            <p>
-              <span>peers: <b>{message.get(0)}</b></span>
-              <span
-                style={{float: 'right', fontStyle: 'italic'}}>
-                block: <b>{blockProgress.currentBlock}</b>/{blockProgress.highestBlock}
-              </span>
-            </p>
+    if (message.get(1)) {
+      blockProgress = message.get(1).toObject();
+      currentProgress = ((blockProgress.currentBlock - blockProgress.startingBlock)
+        / (blockProgress.highestBlock - blockProgress.startingBlock)) * 100;
+      peerInfo = (message.get(0) !== 1) ? `${message.get(0)} peers`: '1 peer';
+      progressBody = (
+        <div>
+          <div style={{fontWeight: 'bold', padding: '5px', fontSize: '16px'}}>
+            {`${peerInfo} connected`}
           </div>
-        );
-      }
+          <div style={{fontSize: '20px'}}>
+            <span style={{fontWeight: 'bold'}}>
+              {blockProgress.currentBlock}
+            </span>/{blockProgress.highestBlock}
+          </div>
+        </div>
+      );
+    } else {
+      peerInfo = 'Finding peers';
+      progressBody = (
+        <div>
+          <div style={{fontWeight: 'bold', padding: '5px', fontSize: '16px'}}>{peerInfo}</div>
+        </div>
+      );
     }
+    blockSync = (
+      <div style={{paddingTop: '30px', textAlign: 'center', height: '250px'}}>
+        <SyncProgress value={currentProgress}/>
+        {progressBody}
+      </div>
+    );
     return (
       <div style={style}>
         <div className="start-xs">

@@ -34,7 +34,7 @@ class Auth extends Component {
   handleLogin = () => {
     const { actions } = this.props;
     actions.authenticate('0x0cf0346267f94ac3d224c6e503f96fea69ac86e3',
-      this.passwordRef.getValue(), 60) ;//for testing
+      this.passwordRef.getValue(), 60);//for testing
   };
 
   render() {

@@ -1,7 +1,7 @@
 import * as types from '../constants/SyncConstants';
-import { Map } from 'immutable';
+import { fromJS } from 'immutable';
 
-const initialState = Map({
+const initialState = fromJS({
   currentState: 'Synchronising',
   action: 'PAUSE',
   actionId: 1,
