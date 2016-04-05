@@ -93,7 +93,7 @@ export function toggleDetails(enabled) {
 /**
  * Step 1:: Create a new Ethereum address
  * Step 2:: Set address as defaultAccount
- * Step 3:: Send ether
+ * Step 3:: Fund the address from faucet
  * Step 4:: Unlock address
  * Step 5:: Create new AKASHA profile
  */

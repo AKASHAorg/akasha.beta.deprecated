@@ -8,7 +8,7 @@ const contractCache = {};
 function wrapFunction(fname, contract) {
   const web3 = global.gethInstance.web3;
   // console.log(`Wrapped func ${contract.__name}:${fname}()`);
-  contract[fname].waitTransaction = function (...args) {
+  contract[fname].waitTransaction = function waitTransaction(...args) {
     web3.eth.getBlock('latest', (blockErr, block) => {
       const now = Math.floor(new Date().getTime() / 1000);
       const diff = now - +block.timestamp;
@@ -23,7 +23,7 @@ function wrapFunction(fname, contract) {
         args[args.length - 1].gas = gas.max_gas;
         args[args.length - 1].gasPrice = gas.gas_price;
       }
-      newCall = function (err, tx) {
+      newCall = function sendTransaction(err, tx) {
         const cname = `${contract.__name}:${fname}()`;
         if (blockErr) {
           console.warn(cname, blockErr.toString());

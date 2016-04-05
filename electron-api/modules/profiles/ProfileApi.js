@@ -102,8 +102,6 @@ class ProfileClass {
         upload.checkProfileHash(data.ipfs, result => {
           if (result.valid) {
             this.profileModel.create(data.profile, name, data.ipfs);
-          } else {
-            // console.log(`New AKASHA profile ${name} has invalid IPFS hash (ignored);`);
           }
         });
       });
@@ -114,8 +112,6 @@ class ProfileClass {
         upload.checkProfileHash(data.ipfs, result => {
           if (result.valid) {
             this.profileModel.update(data.profile, name, data.ipfs);
-          } else {
-            // console.log(`Updated AKASHA profile ${name} has invalid IPFS hash (ignored);`);
           }
         });
       });

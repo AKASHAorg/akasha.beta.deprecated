@@ -8,11 +8,10 @@ class Web3 {
    * @param miner
    * @param personal
    */
-  constructor({ admin = true, miner = false, personal = true } = {}) {
+  constructor({ admin = true, miner = false } = {}) {
 
     this.adminInit = false;
     this.minerInit = false;
-    this.personalInit = false;
 
     this._web3 = new Web3Factory();
     this._web3.net = Promise.promisifyAll(this._web3.net);
