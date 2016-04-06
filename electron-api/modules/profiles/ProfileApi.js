@@ -327,38 +327,29 @@ class ProfileClass {
       callback(check);
       return;
     }
-    this.profileModel.getName(name).then((pdoc) => {
-      if (!pdoc) {
-        callback('profile name doesn\'t exist');
+    upload.checkProfileHash(hash, response => {
+      if (!response.valid) {
+        callback('invalid ipfs hash');
         return;
       }
-      upload.checkProfileHash(hash, response => {
-        if (!response.valid) {
-          callback('invalid ipfs hash');
+      // Database waiting function;
+      const waiting = (doc) => {
+        if (doc.name === name) {
+          this.profileModel.table.removeListener('save', waiting);
+          callback(null, doc);
           return;
         }
-        // Database waiting function;
-        const waiting = (doc) => {
-          if (doc.name === name) {
-            this.profileModel.table.removeListener('save', waiting);
-            callback(null, doc);
-            return;
-          }
-        };
-        // After updating documents;
-        this.profileModel.table.on('save', waiting);
+      };
+      // After updating documents;
+      this.profileModel.table.on('save', waiting);
 
-        this._update(name, hash, (err) => {
-          if (err) {
-            this.profileModel.table.removeListener('save', waiting);
-            callback(err);
-            return;
-          }
-        });
+      this._update(name, hash, (err) => {
+        if (err) {
+          this.profileModel.table.removeListener('save', waiting);
+          callback(err);
+          return;
+        }
       });
-    }).catch((err) => {
-      log.warn(err);
-      callback(err.toString());
     });
   }
 
