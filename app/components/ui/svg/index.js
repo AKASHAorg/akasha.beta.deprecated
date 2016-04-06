@@ -8,7 +8,6 @@ import MenuPortals from './MenuPortals';
 import MenuSearch from './MenuSearch';
 import MenuStreams from './MenuStreams';
 import MenuUser from './MenuUser';
-
 import ToolbarComments from './ToolbarComments';
 import ToolbarEthereum from './ToolbarEthereum';
 import ToolbarLogout from './ToolbarLogout';
@@ -18,6 +17,8 @@ import ToolbarVotes from './ToolbarVotes';
 import ToolbarWallet from './ToolbarWallet';
 
 
-export {MenuAddEntry, MenuAkashaLogo, MenuCommunities, MenuEntries, MenuEthereum,
+export {
+  MenuAddEntry, MenuAkashaLogo, MenuCommunities, MenuEntries, MenuEthereum,
   MenuPeople, MenuPortals, MenuSearch, MenuStreams, MenuUser, ToolbarComments,
-  ToolbarEthereum, ToolbarLogout, ToolbarProfile, ToolbarSettings, ToolbarVotes, ToolbarWallet};
+  ToolbarEthereum, ToolbarLogout, ToolbarProfile, ToolbarSettings, ToolbarVotes, ToolbarWallet
+};

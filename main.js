@@ -36,7 +36,7 @@ app.on('window-all-closed', () => {
 
 
 app.on('ready', () => {
-  mainWindow = new BrowserWindow({ width: 500, height: 700, resizable: false });
+  mainWindow = new BrowserWindow({ width: 500, height: 600, resizable: false });
    timeout = setTimeout(()=>{
      ipcMain = api(mainWindow);
   }, 100);
