@@ -5,8 +5,8 @@ const helpers = require('../geth/helpers');
 // Faucet simulator
 // TODO :: Implement me !!
 
-const ADDRESS = '0x499bce22c0d36fa0244744164f7a3e23c329744b';
-const PASSWD = 'AKASHA password';
+const ADDRESS = '0x0cf0346267f94ac3d224c6e503f96fea69ac86e3';
+const PASSWD = 'abc123';
 const FINNEY_VAL = 100;
 
 export function requestEther() {
