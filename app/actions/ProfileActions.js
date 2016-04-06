@@ -90,6 +90,10 @@ export function toggleDetails(enabled) {
   return { type: types.TOGGLE_DETAILS, enabled };
 }
 
+export function finishSetup() {
+  hashHistory.push('/landpage');
+}
+
 /**
  * Step 1:: Create a new Ethereum address
  * Step 2:: Set address as defaultAccount
@@ -109,6 +113,7 @@ function _createUser(dispatch, data) {
       dispatch({ type: types.CREATE_USER_FAILURE, err: 'could not create Ethereum address' });
       return;
     }
+    dispatch({ type: types.CREATE_ETH_ADDRESS, address });
     dispatch({ type: types.CREATE_USER_PENDING, step: `Address: ${address};` });
     // Step 2:: Set address as defaultAccount
     web3.eth.defaultAccount = address;
@@ -141,7 +146,8 @@ function _createUser(dispatch, data) {
             dispatch({ type: types.CREATE_USER_PENDING, step: 'Done!' });
             setTimeout(() => {
               dispatch({ type: types.CREATE_USER_SUCCESS });
-              // TODO :: Jump to dashboard !!
+              // Jump to dashboard next page !!
+              hashHistory.push('/new-profile-complete');
             }, 3000);
           }
         });

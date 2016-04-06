@@ -60,11 +60,13 @@ function safeIpfsGet(hash) {
  */
 
 const manifest = {
-  META_PATH: 'meta',
+  META_PATH: 'meta.json',
   AVATAR_PATH: 'avatar.png',
   AVATAR_LG_PATH: 'avatar-lg.png',
   BG_IMAGE_PATH: 'bg-image.jpg'
 };
+
+export { manifest };
 
 /**
  * Check if the IPFS hash respects the profile folder standard;
@@ -136,7 +138,7 @@ function createProfileFolder(user, metaData = {}) {
         return false;
       }
       // console.log(`Created temp folder ${root};`);
-      fs.writeFile(`${root}/meta`, JSON.stringify(metaData), 'utf8', (metaErr) => {
+      fs.writeFile(`${root}/${manifest.META_PATH}`, JSON.stringify(metaData), 'utf8', (metaErr) => {
         if (metaErr) {
           reject(metaErr.toString());
           return false;
