@@ -1,31 +1,23 @@
-import React, { Component } from 'react';
+import React from 'react';
 import CircularProgress from './CicularProgress';
-import {MenuEthereum} from '../svg';
+import { MenuEthereum } from '../svg';
 
-export default class SyncProgress extends Component {
-  static propTypes = {
-    innerIconStyle: React.PropTypes.object,
-    strokeWidth:    React.PropTypes.number,
-    value:          React.PropTypes.number
-  };
-
-  static defaultProps = {
-    value:          1,
-    strokeWidth:    1.2,
-    innerIconStyle: {opacity: 0.54}
-  };
-
-  render () {
-    let {innerIconStyle, value, strokeWidth} = this.props;
-
-    return (
-      <CircularProgress mode={"determinate"}
-                        strokeWidth={strokeWidth}
-                        value={value}>
-
-        <MenuEthereum style={innerIconStyle}/>
-
-      </CircularProgress>
-    );
-  }
+function SyncProgress({ innerIconStyle, value, strokeWidth }) {
+  return (
+    <CircularProgress mode={"determinate"} strokeWidth={strokeWidth} size={3} value={value} >
+      <MenuEthereum style={innerIconStyle} />
+    </CircularProgress>
+  );
 }
+SyncProgress.propTypes = {
+  innerIconStyle: React.PropTypes.object,
+  strokeWidth: React.PropTypes.number,
+  value: React.PropTypes.number
+};
+
+SyncProgress.defaultProps = {
+  value: 1,
+  strokeWidth: 1,
+  innerIconStyle: { opacity: 0.6 }
+};
+export default SyncProgress;

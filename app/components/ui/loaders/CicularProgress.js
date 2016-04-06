@@ -1,73 +1,74 @@
-import React, { Component } from 'react';
+import React from 'react';
 import autoPrefix from 'material-ui/lib/styles/auto-prefix';
 import Transitions from 'material-ui/lib/styles/transitions';
 import getMuiTheme from 'material-ui/lib/styles/getMuiTheme';
 
 
-function getRelativeValue (value, min, max) {
+function getRelativeValue(value, min, max) {
   const clampedValue = Math.min(Math.max(min, value), max);
-  const rangeValue   = max - min;
-  const relValue     = Math.round(clampedValue / rangeValue * 10000) / 10000;
+  const rangeValue = max - min;
+  const relValue = Math.round(clampedValue / rangeValue * 10000) / 10000;
   return relValue * 100;
 }
 
-function getStyles (props, state) {
+function getStyles(props, state) {
   const {
           max,
           min,
           size,
           value
-          } = props;
+        } = props;
 
   const {
           baseTheme: {
             palette
-            }
-          } = state.muiTheme;
+          }
+        } = state.muiTheme;
 
-  const zoom     = size * 1.3;
+  const zoom = size * 1.3;
   const baseSize = 32;
-  let margin     = Math.round(((32 * zoom) - 32) / 2);
+  let margin = Math.round(((32 * zoom) - 32) / 2);
 
   if (margin < 0) margin = 0;
 
   let styles = {
     root: {
       position: 'relative',
-      margin:   margin,
-      display:  'inline-block',
-      width:    baseSize,
-      height:   baseSize
+      margin: '13% auto',
+      display: 'inline-block',
+      width: baseSize,
+      height: baseSize
     },
 
     wrapper: {
-      width:                    baseSize,
-      height:                   baseSize,
-      display:                  'inline-block',
-      transition:               Transitions.create('transform', '20s', null, 'linear'),
+      width: baseSize,
+      height: baseSize,
+      margin: 'auto',
+      display: 'inline-block',
+      transition: Transitions.create('transform', '20s', null, 'linear'),
       transitionTimingFunction: 'linear'
     },
 
     svg: {
-      height:    baseSize,
-      position:  'relative',
+      height: baseSize,
+      position: 'relative',
       transform: `scale(${zoom})`,
-      width:     baseSize
+      width: baseSize
     },
 
     path: {
-      strokeDasharray:  '89,200',
+      strokeDasharray: '89,200',
       strokeDashoffset: 0,
-      stroke:           props.color || palette.primary1Color,
-      strokeLinecap:    'round',
-      transition:       Transitions.create('all', '1.5s', null, 'ease-in-out')
+      stroke: props.color || palette.primary1Color,
+      strokeLinecap: 'round',
+      transition: Transitions.create('all', '1.5s', null, 'ease-in-out')
     },
   };
 
   if (props.mode === 'determinate') {
-    const relVal                = getRelativeValue(value, min, max);
-    styles.path.transition      = Transitions.create('all', '0.3s', null, 'linear');
-    styles.path.strokeDasharray = `${Math.round(relVal * 0.93)},200`;
+    const relVal = getRelativeValue(value, min, max);
+    styles.path.transition = Transitions.create('all', '0.3s', null, 'linear');
+    styles.path.strokeDasharray = `${Math.round(relVal * 0.92)},200`;
   }
 
   return styles;
@@ -138,13 +139,13 @@ const CircularProgress = React.createClass({
 
   getDefaultProps () {
     return {
-      mode:        'indeterminate',
-      value:       0,
-      maskStyle:   {stroke: "rgba(0, 0, 0, 0.15)", strokeDasharray: "95, 200"},
-      min:         0,
-      max:         100,
-      radius:      "15",
-      size:        1,
+      mode: 'indeterminate',
+      value: 0,
+      maskStyle: { stroke: "rgba(0, 0, 0, 0.15)", strokeDasharray: "95, 200" },
+      min: 0,
+      max: 100,
+      radius: "15",
+      size: 1,
       strokeWidth: 1.5
     };
   },
@@ -177,7 +178,7 @@ const CircularProgress = React.createClass({
     clearTimeout(this.rotateWrapperTimer);
   },
 
-  scalePathTimer:     undefined,
+  scalePathTimer: undefined,
   rotateWrapperTimer: undefined,
 
   _scalePath(path, step) {
@@ -187,16 +188,16 @@ const CircularProgress = React.createClass({
     step %= 3;
 
     if (step === 0) {
-      path.style.strokeDasharray    = '1, 200';
-      path.style.strokeDashoffset   = 0;
+      path.style.strokeDasharray = '1, 200';
+      path.style.strokeDashoffset = 0;
       path.style.transitionDuration = '0ms';
     } else if (step === 1) {
-      path.style.strokeDasharray    = '89, 200';
-      path.style.strokeDashoffset   = -35;
+      path.style.strokeDasharray = '89, 200';
+      path.style.strokeDashoffset = -35;
       path.style.transitionDuration = '750ms';
     } else {
-      path.style.strokeDasharray    = '89,200';
-      path.style.strokeDashoffset   = -124;
+      path.style.strokeDasharray = '89,200';
+      path.style.strokeDashoffset = -124;
       path.style.transitionDuration = '850ms';
     }
 
@@ -228,11 +229,11 @@ const CircularProgress = React.createClass({
           children,
           radius,
           ...other,
-          } = this.props;
+        } = this.props;
 
     const {
             prepareStyles,
-            } = this.state.muiTheme;
+          } = this.state.muiTheme;
 
     const styles = getStyles(this.props, this.state);
 

@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 import SideBar from '../../components/ui/sidebar';
 import '../../styles/core.scss';
 
-function MainLayout ({ children }) {
+function MainLayout({ children }) {
   return (
     <div style={{height: '100%'}} className="row">
       <div style={{height: '100%'}} className="col-xs-3">

@@ -12,13 +12,13 @@ import '../../styles/core.scss';
 // LoginLayout is a pure function of its props, so we can
 // define it with a plain javascript function...
 const style = {
-  height:        '100%',
-  padding:       '30px',
-  display:       'flex',
+  height: '100%',
+  padding: '30px',
+  display: 'flex',
   flexDirection: 'column',
-  position:      'relative'
+  position: 'relative'
 };
-function LoginLayout ({ children }) {
+function LoginLayout({ children }) {
   return (
     <div className='center-xs'
          style={{height: '100%'}}

@@ -1,18 +1,13 @@
-import React, {Component, PropTypes} from 'react';
+import React, { Component, PropTypes } from 'react';
 import LoginHeader from '../../components/ui/partials/LoginHeader';
 import RaisedButton from 'material-ui/lib/raised-button';
-import LinearProgress from 'material-ui/lib/linear-progress';
-import {hashHistory} from 'react-router';
+import SyncProgress from '../ui/loaders/SyncProgress';
+import { hashHistory } from 'react-router';
 
 class SyncStatus extends Component {
 
-  constructor (props) {
-    super(props);
-    this.syncInterval = null;
-  }
-
-  componentDidMount () {
-    const {actions, syncState } = this.props;
+  componentDidMount() {
+    const { actions, syncState } = this.props;
     const actionId = syncState.get('actionId');
     if (actionId === 2) {
       return actions.resumeSync();
@@ -21,7 +16,7 @@ class SyncStatus extends Component {
   }
 
   handleSync = () => {
-    const {actions, syncState } = this.props;
+    const { actions, syncState } = this.props;
     const actionId = syncState.get('actionId');
     if (actionId === 1) {
       return actions.stopSync();
@@ -33,42 +28,48 @@ class SyncStatus extends Component {
   };
 
   handleCancel = () => {
-    const {actions} = this.props;
+    const { actions } = this.props;
     actions.stopSync();
     hashHistory.goBack();
   };
 
-  render () {
+  render() {
     const { style, syncState } = this.props;
     const buttonsStyle = { padding: 0, position: 'absolute', bottom: 0, right: 0 };
-    const message      = syncState.get('status');
-    let blockSync, blockProgress, currentProgress, pageTitle;
-    pageTitle          = syncState.get('currentState');
-
-    if (message.get) {
-      if (!message.get(1)) {
-        blockProgress = message.get(0);
-        blockSync     = (
-          <div style={{paddingTop: '30px'}}><p>Finding peers: <b>{blockProgress}</b></p></div>
-        );
-      } else {
-        blockProgress   = message.get(1).toObject();
-        currentProgress = ((blockProgress.currentBlock - blockProgress.startingBlock)
-          / (blockProgress.highestBlock - blockProgress.startingBlock)) * 100;
-
-        blockSync = (
-          <div style={{paddingTop: '30px'}}>
-            <LinearProgress mode="determinate"
-                            value={currentProgress}/>
-            <p>
-              <span>peers: <b>{message.get(0)}</b></span>
-              <span
-                style={{float: 'right', fontStyle: 'italic'}}>block: <b>{blockProgress.currentBlock}</b>/{blockProgress.highestBlock}</span>
-            </p>
+    const message = syncState.get('status');
+    let blockSync, blockProgress, currentProgress, pageTitle, progressBody, peerInfo;
+    pageTitle = syncState.get('currentState');
+    if (message.get(1)) {
+      blockProgress = message.get(1).toObject();
+      currentProgress = ((blockProgress.currentBlock - blockProgress.startingBlock)
+        / (blockProgress.highestBlock - blockProgress.startingBlock)) * 100;
+      peerInfo = (message.get(0) !== 1) ? `${message.get(0)} peers`: '1 peer';
+      progressBody = (
+        <div>
+          <div style={{fontWeight: 'bold', padding: '5px', fontSize: '16px'}}>
+            {`${peerInfo} connected`}
           </div>
-        );
-      }
+          <div style={{fontSize: '20px'}}>
+            <span style={{fontWeight: 'bold'}}>
+              {blockProgress.currentBlock}
+            </span>/{blockProgress.highestBlock}
+          </div>
+        </div>
+      );
+    } else {
+      peerInfo = 'Finding peers';
+      progressBody = (
+        <div>
+          <div style={{fontWeight: 'bold', padding: '5px', fontSize: '16px'}}>{peerInfo}</div>
+        </div>
+      );
     }
+    blockSync = (
+      <div style={{paddingTop: '30px', textAlign: 'center', height: '250px'}}>
+        <SyncProgress value={currentProgress}/>
+        {progressBody}
+      </div>
+    );
     return (
       <div style={style}>
         <div className="start-xs">
@@ -80,8 +81,9 @@ class SyncStatus extends Component {
             <h1 style={{ fontWeight: '400' }}>{pageTitle}</h1>
             <div>
               <p>
-                {'Your machine is currently synchronizing with the Ethereum world computer network. You will be able' +
-                ' to log in and enjoy the full AKASHA experience as soon as the sync is complete.'}
+                {'Your machine is currently synchronizing with the Ethereum world computer' +
+                ' network. You will be able to log in and enjoy the full AKASHA experience as' +
+                ' soon as the sync is complete.'}
               </p>
             </div>
             {blockSync}
@@ -109,8 +111,8 @@ class SyncStatus extends Component {
 }
 
 SyncStatus.propTypes = {
-  actions:   PropTypes.object.isRequired,
-  style:     PropTypes.object,
+  actions: PropTypes.object.isRequired,
+  style: PropTypes.object,
   syncState: PropTypes.object.isRequired
 };
 
@@ -120,11 +122,11 @@ SyncStatus.contextTypes = {
 
 SyncStatus.defaultProps = {
   style: {
-    width:         '100%',
-    height:        '100%',
-    display:       'flex',
+    width: '100%',
+    height: '100%',
+    display: 'flex',
     flexDirection: 'column',
-    position:      'relative'
+    position: 'relative'
   }
 };
 export default SyncStatus;
