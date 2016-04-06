@@ -9,7 +9,7 @@ const initialState = fromJS({
   passwd: { pwd1: '', pwd2: '', valid:  false, err1: '', err2: '' },
   unlock: { value: 5, enabled: false },
   opt_details: false,
-  create: { steps: ['...'], finished: false, err: '' }
+  create: { steps: ['...'], finished: false, address: '0x0', err: '' }
 });
 
 export default function profile (state = initialState, action) {
@@ -52,6 +52,8 @@ export default function profile (state = initialState, action) {
 
     case types.CREATE_USER_PENDING:
       return state.updateIn(['create', 'steps'], list => list.push(action.step));
+    case types.CREATE_ETH_ADDRESS:
+      return state.setIn(['create', 'address'], action.address);
     case types.CREATE_USER_SUCCESS:
       return state.setIn(['create', 'finished'], true);
     case types.CREATE_USER_FAILURE:

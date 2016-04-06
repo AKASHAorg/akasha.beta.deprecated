@@ -4,7 +4,6 @@ import { MenuAkashaLogo } from '../ui/svg';
 
 import * as Colors from 'material-ui/lib/styles/colors';
 import SvgIcon from 'material-ui/lib/svg-icon';
-import TextField from 'material-ui/lib/text-field';
 
 class CreateProfileStatus extends Component {
 
@@ -37,9 +36,9 @@ class CreateProfileStatus extends Component {
               {'Your identity is broadcasted into the Ethereum world computer network.'}
             </p>
             <p style={paraStyle}>
-              {'This will take a few moments...'}
+              {'This will take a few moments ...'}
             </p>
-            <span style={paraStyle}>
+            <span style={{ marginTop: '20px', fontSize: '13px' }}>
               { profile.getIn(['create', 'steps']).map((step) => <p>{step}</p>) }
             </span>
             <p style={{ marginTop: '20px', color: Colors.red300 }}>

@@ -4,10 +4,8 @@ import App from './containers/App';
 import SetupPage from './containers/SetupPage';
 import SyncStatus from './containers/SyncStatus';
 import LoginLayout from './layouts/LoginLayout';
-import CreateProfile from './containers/CreateProfile';
-import CreateProfileStatus from './containers/CreateProfileStatus';
 import LoginPage from './containers/LoginPage';
-
+import { CreateProfile, CreateProfileStatus, CreateProfileComplete } from './containers/CreateProfile';
 
 export default (
   <Route component={App} path="/">
@@ -18,6 +16,7 @@ export default (
       <Route component={LoginPage} path="authenticate" />
       <Route component={CreateProfile} path="new-profile" />
       <Route component={CreateProfileStatus} path="new-profile-status" />
+      <Route component={CreateProfileComplete} path="new-profile-complete" />
     </Route>
   </Route>
 );

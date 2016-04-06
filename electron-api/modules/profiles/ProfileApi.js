@@ -65,8 +65,10 @@ class ProfileClass {
       if (!web3) {
         return;
       }
-      this.xContract = getContract('AkashaX', contracts.db.abi, contracts.db.address);
-      this.contract = getContract('AkashaProfiles', contracts.profile.abi, contracts.profile.address);
+      this.xContract = getContract('AkashaX', contracts.db.abi,
+        contracts.db.address);
+      this.contract = getContract('AkashaProfiles', contracts.profile.abi,
+        contracts.profile.address);
 
       this.xContract.blockn.call((err1, block) => {
         if (err1 && !errShown) {
@@ -195,7 +197,23 @@ class ProfileClass {
    * Get a profile name or address;
    */
   get(nameOrAddr) {
-    return this.profileModel.get(nameOrAddr);
+    return new Promise(resolve => {
+      this.profileModel.get(nameOrAddr).then(obj => {
+        if (!obj) {
+          resolve(null);
+          return;
+        }
+        upload.checkProfileHash(obj.ipfs, check => {
+          if (check.meta) {
+            obj.meta = check.meta;
+          }
+          if (check.avatar) {
+            obj.avatar = `${obj.ipfs}/${upload.manifest.AVATAR_PATH}`;
+          }
+          resolve(obj);
+        });
+      });
+    });
   }
 
   /**
@@ -205,7 +223,7 @@ class ProfileClass {
   _create(name, hash, callback) {
     const self = this;
     const promise1 = this.existsProfileName(name);
-    const promise2 = this.existsProfileAddr(gethInstance.web3.eth.defaultAccount);
+    const promise2 = this.existsProfileAddr(global.gethInstance.web3.eth.defaultAccount);
 
     Promise.join(promise1, promise2, (check1, check2) => {
       if (check1) {
@@ -275,7 +293,7 @@ class ProfileClass {
   _update(name, hash, callback) {
     const self = this;
     const promise1 = this.existsProfileName(name);
-    const promise2 = this.isProfileOwner(gethInstance.web3.eth.defaultAccount, name);
+    const promise2 = this.isProfileOwner(global.gethInstance.web3.eth.defaultAccount, name);
 
     Promise.join(promise1, promise2, (check1, check2) => {
       if (!check1) {
@@ -351,7 +369,7 @@ class ProfileClass {
   _delete(name, callback) {
     const self = this;
     const promise1 = this.existsProfileName(name);
-    const promise2 = this.isProfileOwner(gethInstance.web3.eth.defaultAccount, name);
+    const promise2 = this.isProfileOwner(global.gethInstance.web3.eth.defaultAccount, name);
 
     Promise.join(promise1, promise2, (check1, check2) => {
       if (!check1) {

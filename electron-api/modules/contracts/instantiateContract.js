@@ -14,11 +14,11 @@ function wrapFunction(fname, contract) {
       const diff = now - +block.timestamp;
       let oldCall = null;
       let newCall = null;
-      // Hack the callback function
+      // Save the callback function
       if (typeof(args[args.length - 1]) === 'function') {
         oldCall = args.pop(); // Modify the args array!
       }
-      // Hack the gazz and gazz price !!
+      // Overwrite the gazz and gazz price !!
       if (typeof(args[args.length - 1]) === 'object') {
         args[args.length - 1].gas = gas.max_gas;
         args[args.length - 1].gasPrice = gas.gas_price;
@@ -59,10 +59,11 @@ function attachEvents(contract) {
       // Attach event time
       web3.eth.getBlock(result.blockHash, (_, block) => {
         if (block && block.timestamp) {
-          data.timestamp = block.timestamp * 1000;
+          data.timestamp = new Date(block.timestamp * 1000);
+          console.log(` e ${contract.__name} ${result.event}::`, data);
         }
       });
-      // Hack data values
+      // Fix data values
       for (const key of Object.keys(data)) {
         const val = data[key];
         // Big number?
@@ -70,7 +71,6 @@ function attachEvents(contract) {
           data[key] = val.toNumber();
         }
       }
-      console.log(` e ${contract.__name} ${result.event}::`, data);
       // Broadcast event
       contract.__emitter.emit(result.event.toString(), data);
     }
