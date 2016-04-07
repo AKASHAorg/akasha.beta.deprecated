@@ -7,13 +7,13 @@ import SvgIcon from 'material-ui/lib/svg-icon';
 
 class CreateProfileStatus extends Component {
 
-  componentDidMount () {
+  componentDidMount() {
     if (this.firstNameInput) {
       this.firstNameInput.focus();
     }
   }
 
-  render () {
+  render() {
     const { style, profile } = this.props;
     const paraStyle = { marginTop: '20px' };
 
@@ -23,10 +23,10 @@ class CreateProfileStatus extends Component {
           <div className="col-xs">
 
             <SvgIcon
-                color={Colors.lightBlack}
-                viewBox="0 0 32 32"
-                style={{ width: '32px', height: '32px', marginRight: '10px', verticalAlign: 'middle' }}
-              >
+              color={Colors.lightBlack}
+              viewBox="0 0 32 32"
+              style={{ width: '32px', height: '32px', marginRight: '10px', verticalAlign: 'middle' }}
+            >
               <MenuAkashaLogo />
             </SvgIcon>
             <h1 style={{ fontWeight: '400', display: 'inline', verticalAlign: 'middle' }}>
@@ -55,7 +55,7 @@ class CreateProfileStatus extends Component {
 CreateProfileStatus.propTypes = {
   actions: PropTypes.object.isRequired,
   profile: PropTypes.object.isRequired,
-  style:   PropTypes.object
+  style: PropTypes.object
 };
 
 CreateProfileStatus.contextTypes = {
@@ -64,11 +64,11 @@ CreateProfileStatus.contextTypes = {
 
 CreateProfileStatus.defaultProps = {
   style: {
-    width:         '100%',
-    height:        '100%',
-    display:       'flex',
+    width: '100%',
+    height: '100%',
+    display: 'flex',
     flexDirection: 'column',
-    position:      'relative'
+    position: 'relative'
   }
 };
 
