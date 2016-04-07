@@ -1,11 +1,11 @@
 /* eslint key-spacing: 0 quote-props: 0 */
 
 const db = {
-  'address': '0x08455210ea238f96b33851b385b83492cbe646ab',
-  'creation_block': 519035,
-  'creation_tx': '0xada6d7bacb3b5a56ef7a027d3ed9a8f9ee6a6fef28450c5dac61d4d3aaa9ee25',
-  'creator': '0xdaeb6794927ad1fb118575c66cf17c0f558bf945',
-  'abi': [
+  address: '0x02368a5f2979d8596c84e7d914e5d14c623c146b',
+  creation_block: 710316,
+  creation_tx: '0x6c9de4975e8b2cb0af8591517083d7a9ad08615fbef4af8d94238e5f49e666b9',
+  creator: '0xdaeb6794927ad1fb118575c66cf17c0f558bf945',
+  abi: [
     {
       'constant': false,
       'inputs': [
@@ -113,6 +113,10 @@ const db = {
         {
           'name': 'tags',
           'type': 'uint8'
+        },
+        {
+          'name': 'hash',
+          'type': 'string'
         }
       ],
       'type': 'function'
@@ -197,6 +201,23 @@ const db = {
           'type': 'bytes32'
         }
       ],
+      'name': 'seliforp',
+      'outputs': [
+        {
+          'name': '',
+          'type': 'address'
+        }
+      ],
+      'type': 'function'
+    },
+    {
+      'constant': true,
+      'inputs': [
+        {
+          'name': '',
+          'type': 'bytes32'
+        }
+      ],
       'name': 'comments',
       'outputs': [
         {
@@ -206,6 +227,10 @@ const db = {
         {
           'name': 'parent',
           'type': 'bytes32'
+        },
+        {
+          'name': 'hash',
+          'type': 'string'
         }
       ],
       'type': 'function'
@@ -399,6 +424,10 @@ const db = {
         {
           'name': 'name',
           'type': 'bytes32'
+        },
+        {
+          'name': 'hash',
+          'type': 'string'
         }
       ],
       'type': 'function'
@@ -534,14 +563,9 @@ const db = {
       'anonymous': false,
       'inputs': [
         {
-          'indexed': true,
+          'indexed': false,
           'name': 'profile',
           'type': 'address'
-        },
-        {
-          'indexed': false,
-          'name': 'ipfs',
-          'type': 'string'
         }
       ],
       'name': 'CreateProfile',
@@ -551,14 +575,9 @@ const db = {
       'anonymous': false,
       'inputs': [
         {
-          'indexed': true,
+          'indexed': false,
           'name': 'profile',
           'type': 'address'
-        },
-        {
-          'indexed': false,
-          'name': 'ipfs',
-          'type': 'string'
         }
       ],
       'name': 'UpdateProfile',
@@ -588,11 +607,6 @@ const db = {
           'indexed': false,
           'name': 'author',
           'type': 'address'
-        },
-        {
-          'indexed': false,
-          'name': 'ipfs',
-          'type': 'string'
         }
       ],
       'name': 'CreateEntry',
@@ -605,11 +619,6 @@ const db = {
           'indexed': true,
           'name': 'id',
           'type': 'bytes32'
-        },
-        {
-          'indexed': false,
-          'name': 'ipfs',
-          'type': 'string'
         }
       ],
       'name': 'UpdateEntry',
@@ -639,11 +648,6 @@ const db = {
           'indexed': false,
           'name': 'author',
           'type': 'address'
-        },
-        {
-          'indexed': false,
-          'name': 'ipfs',
-          'type': 'string'
         }
       ],
       'name': 'CreateComment',
@@ -656,11 +660,6 @@ const db = {
           'indexed': true,
           'name': 'id',
           'type': 'bytes32'
-        },
-        {
-          'indexed': false,
-          'name': 'ipfs',
-          'type': 'string'
         }
       ],
       'name': 'UpdateComment',
@@ -716,11 +715,11 @@ const db = {
 };
 
 const profile = {
-  'address': '0xe8b4af932d03cdac73b913ba9f2ca48b021b7f01',
-  'creation_block': 519038,
-  'creation_tx': '0x40bbc4704af793edf9a3a567c6bdb565e98e2727fa6d0ac630051d04de9a230a',
-  'creator': '0xdaeb6794927ad1fb118575c66cf17c0f558bf945',
-  'abi': [
+  address: '0x84249d28f2fa037244d89fa2cc6a55e65f436908',
+  creation_block: 710102,
+  creation_tx: '0x8bf1519c28f83d8a9b527143c5a92e3c342a1b4e6268941dcaed0e2408457cfd',
+  creator: '0xdaeb6794927ad1fb118575c66cf17c0f558bf945',
+  abi: [
     {
       'constant': true,
       'inputs': [],
@@ -847,11 +846,11 @@ const profile = {
 };
 
 const entry = {
-  'address': '0xa999c466888ab2c21f83c08ae33106d615a818a2',
-  'creation_block': 519038,
-  'creation_tx': '0x9822d4aa6fdace1b1387260662544eed960a377ed10757801ff88c3a796ff81e',
-  'creator': '0xdaeb6794927ad1fb118575c66cf17c0f558bf945',
-  'abi': [
+  address: '0xa999c466888ab2c21f83c08ae33106d615a818a2',
+  creation_block: 519038,
+  creation_tx: '0x9822d4aa6fdace1b1387260662544eed960a377ed10757801ff88c3a796ff81e',
+  creator: '0xdaeb6794927ad1fb118575c66cf17c0f558bf945',
+  abi: [
     {
       'constant': true,
       'inputs': [],

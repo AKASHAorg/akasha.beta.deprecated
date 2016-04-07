@@ -1,3 +1,5 @@
+/* eslint no-console: 0 */
+
 const Promise = require('bluebird');
 const agas = require('../contracts/gas');
 
@@ -36,7 +38,7 @@ export function watchTx(fname, txHash, callback) {
   }
 
   const web3 = global.gethInstance.web3;
-  let blockCounter = MAX_TRIES;
+  callback.blockCounter = MAX_TRIES;
   let filter = web3.eth.filter('latest');
 
   const failFunction = () => {
@@ -79,17 +81,17 @@ export function watchTx(fname, txHash, callback) {
     }
 
     console.log(` ${fname} waiting TX [${txHash.substr(0, 8)}..] ; ` +
-      `block ${MAX_TRIES - blockCounter} ;`);
-    if (blockCounter <= 0) {
+      `block ${MAX_TRIES - callback.blockCounter} ;`);
+    if (callback.blockCounter <= 0) {
       failFunction();
     } else {
       web3.eth.getTransactionAsync(txHash).then((txInfo) => {
         // If transaction is in pending, the blockHash is null
         if (!txInfo || !txInfo.blockHash) {
-          --blockCounter;
+          --callback.blockCounter;
         } else {
           successFunction(txInfo);
-          blockCounter = -1;
+          callback.blockCounter = -1;
         }
       });
     }
