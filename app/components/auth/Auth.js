@@ -33,7 +33,7 @@ class Auth extends Component {
 
   handleLogin = () => {
     const { actions } = this.props;
-    actions.authenticate('0x0cf0346267f94ac3d224c6e503f96fea69ac86e3',
+    actions.authenticate('0x516afdb86865ee1d329c8bdc9dae286a4504d081',
       this.passwordRef.getValue(), 60);//for testing
   };
 

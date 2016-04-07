@@ -9,7 +9,6 @@ import configureStore from './store/configureStore';
 // temporary
 import injectTapEventPlugin from 'react-tap-event-plugin';
 
-
 const store   = configureStore();
 const history = syncHistoryWithStore(hashHistory, store);
 
