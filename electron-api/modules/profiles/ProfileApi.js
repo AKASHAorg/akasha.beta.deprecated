@@ -137,14 +137,16 @@ class ProfileClass {
   // Ethereum functions (read only)
   // @returns Promise
 
-  resolveName(addr) {
+  resolveProfile(addr) {
     const toAscii = global.gethInstance.web3.toAscii;
     return new Promise((resolve, reject) => {
       this.xContract.profiles.call(addr, (err, avatar) => {
         if (err) {
           reject(err);
         } else {
-          resolve(toAscii(avatar[0]).replace(/\u0000/g, ''));
+          let [name, ipfs] = avatar;
+          name = toAscii(name).replace(/\u0000/g, '');
+          resolve({ name, ipfs });
         }
       });
     });
@@ -195,21 +197,15 @@ class ProfileClass {
   getAddr(addr) {
     const toAscii = global.gethInstance.web3.toAscii;
     return new Promise(resolve => {
-      this.xContract.profiles.call(addr, (_, avatar) => {
-        let [name, ipfs] = avatar;
-        if (!ipfs) {
-          resolve(null);
-          return false;
-        }
-        name = toAscii(name).replace(/\u0000/g, '');
-        const obj = { addr, name, ipfs };
-        upload.checkProfileHash(ipfs, check => {
+      this.resolveProfile(addr).then(obj => {
+        upload.checkProfileHash(obj.ipfs, check => {
           if (check.meta) {
             obj.meta = check.meta;
           }
           if (check.avatar) {
-            obj.avatar = `${ipfs}/${upload.manifest.AVATAR_PATH}`;
+            obj.avatar = `${obj.ipfs}/${upload.manifest.AVATAR_PATH}`;
           }
+          obj.addr = addr;
           resolve(obj);
         });
         return true;
