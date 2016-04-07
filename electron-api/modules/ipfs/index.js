@@ -127,10 +127,10 @@ class IpfsConnector {
   /**
    *
    * @param hash
-   * @returns {bluebird|exports|module.exports}
+   * @param encoding
    */
-  cat(hash) {
-    let buf = '';
+  cat(hash, encoding = 'utf8') {
+    let buf = new Buffer(0);
     return new Promise((resolve, reject) => {
       if (!this._api) {
         return reject(new Error('no api server found'));
@@ -145,9 +145,12 @@ class IpfsConnector {
           return response.on('error', (err) => {
             reject(err);
           }).on('data', (data) => {
-            buf += data;
+            buf = Buffer.concat([buf, data]);
           }).on('end', () => {
-            resolve(buf);
+            if (encoding) {
+              return resolve(buf.toString(encoding));
+            }
+            return resolve(buf);
           });
         }
         return resolve(response);
