@@ -5,6 +5,9 @@ function imageCreator(arrayBuffer, { mimeType = 'image/png', width = 100, height
   const blobFile = new Blob([arrayBuffer], { type: mimeType });
   const imageUrl = window.URL.createObjectURL(blobFile);
   const image = new Image(width, height);
+  image.onload = function onload() {
+    window.URL.revokeObjectURL(imageUrl);
+  };
   image.src = imageUrl;
   return image;
 }
@@ -12,7 +15,7 @@ function imageCreator(arrayBuffer, { mimeType = 'image/png', width = 100, height
 function getIpfsImage(hash, { mimeType = 'image/png', width = 100, height = 100 } = {}) {
   return ipfsRemote.cat(hash, false).then(
     data => imageCreator(data, { mimeType, width, height })
-  ).catch((err) => {throw new Error(err);});
+  ).catch(() => false);
 }
 
 export default imageCreator;

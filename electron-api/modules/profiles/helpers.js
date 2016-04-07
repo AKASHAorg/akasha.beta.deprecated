@@ -33,6 +33,7 @@ export function login(address, password, timer) {
                   if (isAccepted) {
                     gethInstance.web3.eth.defaultAccount = address;
                   }
+                  debugger;
                   return isAccepted;
                 }).catch(() => false);
 }

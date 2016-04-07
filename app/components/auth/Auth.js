@@ -6,7 +6,9 @@ import LoginHeader from '../../components/ui/partials/LoginHeader';
 import Divider from 'material-ui/lib/divider';
 import Dialog from 'material-ui/lib/dialog';
 import FlatButton from 'material-ui/lib/flat-button';
+import { Scrollbars } from 'react-custom-scrollbars';
 import TextField from 'material-ui/lib/text-field';
+import RaisedButton from 'material-ui/lib/raised-button';
 
 class Auth extends Component {
 
@@ -24,11 +26,11 @@ class Auth extends Component {
   }
 
   handleTouchTap = (index) => {
-    this.setState({openModal: true});
+    this.setState({ openModal: true });
   };
 
   handleModalClose = () => {
-    this.setState(({openModal: false}));
+    this.setState(({ openModal: false }));
   };
 
   handleLogin = () => {
@@ -42,7 +44,7 @@ class Auth extends Component {
     const { openModal } = this.state;
     const profiles = authState.get('profiles');
     const modalActions = [
-      <FlatButton label="Cancel" onTouchTap={this.handleModalClose} />,
+      <FlatButton label="Cancel" onTouchTap={this.handleModalClose}/>,
       <FlatButton label="Submit" primary={true} onTouchTap={this.handleLogin}/>
     ];
     return (
@@ -53,24 +55,33 @@ class Auth extends Component {
             style={{ flex: 1, padding: 0 }}
           >
             <LoginHeader title={'Log in'}/>
-            <List>
-              { profiles.map((account, index) =>
-                (
-                  <div key={index}>
-                    <ListItem
-                      key={`l${index}`}
-                      leftAvatar={<Avatar>JD</Avatar>}
-                      primaryText={account.get('address')}
-                      secondaryText={account.get('userName')}
-                      secondaryTextLines={1}
-                      value={account.get('address')}
-                      onTouchTap={()=> this.handleTouchTap(index)}
-                    />
-                    <Divider key={`d${index}`} inset/>
-                  </div>
-                )
-              )}
-            </List>
+            <div style={{paddingTop: '30px'}}>
+              <Scrollbars style={{ height: '440px' }}>
+                <List>
+                  { profiles.map((account, index) =>
+                    (
+                      <div key={index}>
+                        <ListItem
+                          key={`l${index}`}
+                          leftAvatar={<Avatar>{image}</Avatar>}
+                          primaryText={account.get('address')}
+                          secondaryText={account.get('userName')}
+                          secondaryTextLines={1}
+                          value={account.get('address')}
+                          onTouchTap={()=> this.handleTouchTap(index)}
+                        />
+                        <Divider key={`d${index}`} inset/>
+                      </div>
+                    )
+                  )}
+                </List>
+              </Scrollbars>
+            </div>
+            <div style={{float: 'right'}}>
+              <RaisedButton label="IMPORT IDENTITY"/>
+              <RaisedButton label="CREATE NEW IDENTITY"
+                            primary={true} style={{marginLeft: '10px'}}/>
+            </div>
             <Dialog
               title="Authentication"
               modal
