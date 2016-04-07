@@ -9,13 +9,13 @@ export function getLocalProfiles() {
   return gethInstance.web3.eth.getAccountsAsync().then((data) => {
     data.forEach(
       (account) => {
-        profilesPool.push(akasha.profileInstance.resolveName(account));
+        profilesPool.push(akasha.profileInstance.resolveProfile(account));
       }
     );
     return Promise.all(profilesPool)
-                  .map((userName, index) => {
-                    if (userName) {
-                      return { userName, address: data[index] };
+                  .map((profile, index) => {
+                    if (profile.ipfs) {
+                      return { userName: profile.name, ipfs: profile.ipfs, address: data[index] };
                     }
                     return false;
                   }).filter((onlyValid) => onlyValid);
