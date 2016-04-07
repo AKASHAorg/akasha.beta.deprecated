@@ -9,6 +9,7 @@ import FlatButton from 'material-ui/lib/flat-button';
 import { Scrollbars } from 'react-custom-scrollbars';
 import TextField from 'material-ui/lib/text-field';
 import RaisedButton from 'material-ui/lib/raised-button';
+import {getIpfsImage} from '../../utils/imageCreator';
 
 class Auth extends Component {
 
@@ -16,7 +17,8 @@ class Auth extends Component {
     super(props, context);
     this.state = {
       openModal: false,
-      selectedIndex: false
+      selectedIndex: false,
+      avatar:{}
     }
   }
 
@@ -41,12 +43,35 @@ class Auth extends Component {
 
   render() {
     const { style, authState } = this.props;
-    const { openModal } = this.state;
+    const { openModal, avatar } = this.state;
     const profiles = authState.get('profiles');
     const modalActions = [
       <FlatButton label="Cancel" onTouchTap={this.handleModalClose}/>,
       <FlatButton label="Submit" primary={true} onTouchTap={this.handleLogin}/>
     ];
+
+    let localProfiles = profiles.map((account, index) => {
+
+      return (
+        <div key={index}>
+          <ListItem
+            key={`l${index}`}
+            leftAvatar={<Avatar>aa</Avatar>}
+            primaryText={account.get('address')}
+            secondaryText={account.get('userName')}
+            secondaryTextLines={1}
+            value={account.get('address')}
+            onTouchTap={()=> this.handleTouchTap(index)}
+          />
+          <Divider key={`d${index}`} inset/>
+        </div>
+      )
+    });
+    if(!localProfiles.size){
+      localProfiles = (
+        <div>No profiles found.Create a new identity or import an existing one.</div>
+      )
+    }
     return (
       <div style={style}>
         <div className="start-xs">
@@ -58,22 +83,7 @@ class Auth extends Component {
             <div style={{paddingTop: '30px'}}>
               <Scrollbars style={{ height: '440px' }}>
                 <List>
-                  { profiles.map((account, index) =>
-                    (
-                      <div key={index}>
-                        <ListItem
-                          key={`l${index}`}
-                          leftAvatar={<Avatar>{image}</Avatar>}
-                          primaryText={account.get('address')}
-                          secondaryText={account.get('userName')}
-                          secondaryTextLines={1}
-                          value={account.get('address')}
-                          onTouchTap={()=> this.handleTouchTap(index)}
-                        />
-                        <Divider key={`d${index}`} inset/>
-                      </div>
-                    )
-                  )}
+                  {localProfiles}
                 </List>
               </Scrollbars>
             </div>
