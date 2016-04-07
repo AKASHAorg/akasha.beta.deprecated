@@ -99,26 +99,21 @@ class ProfileClass {
 
   // Listen to Profile Contract events
   _setupDatabase() {
-    this.xContract.__emitter.on('CreateProfile', data => {
-      this.resolveName(data.profile).then((name) => {
-        upload.checkProfileHash(data.ipfs, result => {
+    const toAscii = global.gethInstance.web3.toAscii;
+    const onUpdate = data => {
+      this.xContract.profiles.call(data.profile, (err, avatar) => {
+        let [name, ipfs] = avatar;
+        name = toAscii(name).replace(/\u0000/g, '');
+        upload.checkProfileHash(ipfs, result => {
           if (result.valid) {
-            this.profileModel.create(data.profile, name, data.ipfs);
+            this.profileModel.update(data.profile, name, ipfs);
           }
         });
       });
-    });
+    };
 
-    this.xContract.__emitter.on('UpdateProfile', data => {
-      this.resolveName(data.profile).then((name) => {
-        upload.checkProfileHash(data.ipfs, result => {
-          if (result.valid) {
-            this.profileModel.update(data.profile, name, data.ipfs);
-          }
-        });
-      });
-    });
-
+    this.xContract.__emitter.on('CreateProfile', onUpdate);
+    this.xContract.__emitter.on('UpdateProfile', onUpdate);
     this.xContract.__emitter.on('DestroyProfile', data => {
       this.profileModel.delete(data.profile);
     });
@@ -143,12 +138,13 @@ class ProfileClass {
   // @returns Promise
 
   resolveName(addr) {
+    const toAscii = global.gethInstance.web3.toAscii;
     return new Promise((resolve, reject) => {
-      this.xContract.profiles.call(addr, (err, name) => {
+      this.xContract.profiles.call(addr, (err, avatar) => {
         if (err) {
           reject(err);
         } else {
-          resolve(global.gethInstance.web3.toAscii(name).replace(/\u0000/g, ''));
+          resolve(toAscii(avatar[0]).replace(/\u0000/g, ''));
         }
       });
     });
@@ -194,25 +190,58 @@ class ProfileClass {
   // @returns Promise
 
   /**
-   * Get a profile name or address;
+   * Get a profile by address;
    */
-  get(nameOrAddr) {
+  getAddr(addr) {
+    const toAscii = global.gethInstance.web3.toAscii;
     return new Promise(resolve => {
-      this.profileModel.get(nameOrAddr).then(obj => {
-        if (!obj) {
+      this.xContract.profiles.call(addr, (_, avatar) => {
+        let [name, ipfs] = avatar;
+        if (!ipfs) {
           resolve(null);
-          return;
+          return false;
         }
-        upload.checkProfileHash(obj.ipfs, check => {
+        name = toAscii(name).replace(/\u0000/g, '');
+        const obj = { addr, name, ipfs };
+        upload.checkProfileHash(ipfs, check => {
           if (check.meta) {
             obj.meta = check.meta;
           }
           if (check.avatar) {
-            obj.avatar = `${obj.ipfs}/${upload.manifest.AVATAR_PATH}`;
+            obj.avatar = `${ipfs}/${upload.manifest.AVATAR_PATH}`;
           }
           resolve(obj);
         });
+        return true;
       });
+    });
+  }
+
+  /**
+   * Get a profile by name;
+   */
+  getName(name) {
+    return new Promise(resolve => {
+      this.xContract.seliforp.call(name, (_, addr) => {
+        resolve(this.getAddr(addr));
+      });
+    });
+  }
+
+  /*
+   * Find a profile by Name, or Address
+   * @param nameOrAddr
+   * @returns {addr, name, ipfs, ...}
+   */
+  get(nameOrAddr) {
+    return new Promise(resolve => {
+      if (nameOrAddr.length < 33) {
+        resolve(this.getName(nameOrAddr));
+      } else if (nameOrAddr.length === 40 || nameOrAddr.length === 42) {
+        resolve(this.getAddr(nameOrAddr));
+      } else {
+        resolve(null);
+      }
     });
   }
 
