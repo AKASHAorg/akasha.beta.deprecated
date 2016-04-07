@@ -1,3 +1,4 @@
+/* eslint no-console: 0 */
 
 const Emitter = require('events').EventEmitter;
 const helpers = require('../geth/helpers');
@@ -12,36 +13,35 @@ function wrapFunction(fname, contract) {
     web3.eth.getBlock('latest', (blockErr, block) => {
       const now = Math.floor(new Date().getTime() / 1000);
       const diff = now - +block.timestamp;
-      let oldCall = null;
-      let newCall = null;
+      let oldCallback = null;
+      let newCallback = null;
       // Save the callback function
       if (typeof(args[args.length - 1]) === 'function') {
-        oldCall = args.pop(); // Modify the args array!
+        oldCallback = args.pop(); // Modify the args array!
+        if (diff > 120) {
+          oldCallback('GETH is not in sync');
+          return;
+        }
       }
       // Overwrite the gazz and gazz price !!
       if (typeof(args[args.length - 1]) === 'object') {
         args[args.length - 1].gas = gas.max_gas;
         args[args.length - 1].gasPrice = gas.gas_price;
       }
-      newCall = function sendTransaction(err, tx) {
+      newCallback = function sendTransaction(err, tx) {
         const cname = `${contract.__name}:${fname}()`;
         if (blockErr) {
-          console.warn(cname, blockErr.toString());
-          oldCall(blockErr.toString());
+          oldCallback(blockErr.toString());
           return;
         }
         if (err) {
-          console.warn(cname, err.toString());
-          oldCall(err.toString().substr(7));
+          oldCallback(err.toString().substr(7));
           return;
+        } else {
+          helpers.watchTx(cname, tx, oldCallback);
         }
-        if (diff > 120) {
-          oldCall('GETH is not in sync');
-          return;
-        }
-        helpers.watchTx(cname, tx, oldCall);
       };
-      args.push(newCall);
+      args.push(newCallback);
       contract[fname].sendTransaction.apply(contract, args);
     });
   };
@@ -56,13 +56,6 @@ function attachEvents(contract) {
       console.warn(`Error ${contract.__name} Event:: ${err}`);
     } else {
       const data = result.args;
-      // Attach event time
-      web3.eth.getBlock(result.blockHash, (_, block) => {
-        if (block && block.timestamp) {
-          data.timestamp = new Date(block.timestamp * 1000);
-          console.log(` e ${contract.__name} ${result.event}::`, data);
-        }
-      });
       // Fix data values
       for (const key of Object.keys(data)) {
         const val = data[key];
@@ -71,8 +64,15 @@ function attachEvents(contract) {
           data[key] = val.toNumber();
         }
       }
-      // Broadcast event
-      contract.__emitter.emit(result.event.toString(), data);
+      // Attach event time
+      web3.eth.getBlock(result.blockHash, (_, block) => {
+        if (block && block.timestamp) {
+          data.timestamp = new Date(block.timestamp * 1000);
+        }
+        // Broadcast event
+        console.log(` e ${contract.__name} ${result.event}::`, data);
+        contract.__emitter.emit(result.event.toString(), data);
+      });
     }
   });
 }
