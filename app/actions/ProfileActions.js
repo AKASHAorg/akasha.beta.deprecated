@@ -1,5 +1,4 @@
 
-const Promise = require('bluebird');
 const remote = require('electron').remote;
 import * as types from '../constants/ProfileConstants';
 import { hashHistory } from 'react-router';

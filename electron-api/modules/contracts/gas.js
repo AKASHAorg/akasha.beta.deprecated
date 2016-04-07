@@ -3,23 +3,23 @@
 // Estimate gas usage
 
 const profile = {
-  create: 91957,
-  update: 31667,
-  delete: 20979
+  create: 151649,
+  update: 46213,
+  delete: 28689
 };
 
 const entry = {
-  create: 50208,
-  update: 37770,
+  create: 115062,
+  update: 52297,
   hide:   27566,
-  vote:   55612
+  vote:   56133
 };
 
 const comment = {
-  create: 74300,
-  update: 32148,
-  delete: 18708,
-  vote:   55453
+  create: 134795,
+  update: 46751,
+  delete: 26410,
+  vote:   55968
 };
 
 // Constants
