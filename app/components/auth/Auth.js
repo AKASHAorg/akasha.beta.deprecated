@@ -37,7 +37,7 @@ class Auth extends Component {
 
   handleLogin = () => {
     const { actions } = this.props;
-    actions.authenticate('0x516afdb86865ee1d329c8bdc9dae286a4504d081',
+    actions.authenticate('0xcf5290ff9d98794fe6e30ffca512b3ed71710d85',
       this.passwordRef.getValue(), 60);//for testing
   };
 
@@ -51,7 +51,6 @@ class Auth extends Component {
     ];
 
     let localProfiles = profiles.map((account, index) => {
-
       return (
         <div key={index}>
           <ListItem
