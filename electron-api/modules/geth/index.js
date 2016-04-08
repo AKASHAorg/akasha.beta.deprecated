@@ -130,7 +130,12 @@ class GethConnector {
    * @returns {Array|Array.<T>|*}
    * @private
    */
-  _setOptions({ dataDir, ipcPath, protocol = ['--shh', '--fast', '--cache', 512], extra = ['--testnet'] } = {}) {
+  _setOptions({
+    dataDir,
+    ipcPath,
+    protocol = ['--shh', '--fast', '--cache', 512],
+    extra = ['--testnet']
+  } = {}) {
     this.options = [];
     if (!Array.isArray(protocol) || !Array.isArray(extra)) {
       throw new Error('protocol and extra options must be array type');
@@ -183,9 +188,8 @@ class GethConnector {
    * @private
    */
   _checkGeth() {
-
     return new Promise((resolve, reject) => {
-      geth.run(['version'], function(err) {
+      geth.run(['version'], function (err) {
         if (err) {
           reject(err);
         }

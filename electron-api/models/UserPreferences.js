@@ -28,14 +28,12 @@ class UserPreferences {
     this.dbTable = new LinvoDb(name, schema, options);
     this.defaultConfig = {
       gethPath: geth.getDefaultDatadir(),
-      gethPathIpc: geth.getDefaultDatadir() + '/geth.ipc',
+      gethPathIpc: `${geth.getDefaultDatadir()}/geth.ipc`,
       ipfsApiPath: ipfs.getConnection(),
       isInit: false
     };
-    this.dbTable.find({ idConfig: configId }).count((err, records)=> {
-      if (!err && records == 0) {
-
-
+    this.dbTable.find({ idConfig: configId }).count((err, records) => {
+      if (!err && records === 0) {
         this.dbTable.insert({
           services: this.defaultConfig
         });
@@ -49,9 +47,7 @@ class UserPreferences {
    * @returns {Array|{index: number, input: string}}
    */
   getServicesConfig(cb) {
-    return this.dbTable.findOne({ idConfig: configId }).map(function(record) {
-      return record.services;
-    }).exec(cb);
+    return this.dbTable.findOne({ idConfig: configId }).map((record) => record.services).exec(cb);
   }
 
   /**
@@ -61,7 +57,6 @@ class UserPreferences {
    * @returns {Array|{index: number, input: string}}
    */
   setConfig(options = {}) {
-
     return this.dbTable.update(
       {
         idConfig: configId

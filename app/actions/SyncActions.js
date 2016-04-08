@@ -1,8 +1,6 @@
 import * as types from '../constants/SyncConstants';
 import { hashHistory } from 'react-router';
 
-const remote = require('electron').remote;
-const gethRemote = remote.getGlobal('gethInstance');
 let syncInterval = false;
 
 /**
@@ -29,7 +27,7 @@ export function finishSync() {
  */
 export function getSyncStatus() {
   return (dispatch, getState) => {
-    gethRemote.inSync().then((data) => {
+    window.gethInstance.inSync().then((data) => {
       if (!data) {
         clearInterval(syncInterval);
         return dispatch(finishSync('Synced'));
@@ -58,7 +56,7 @@ export function startSync() {
  */
 export function resumeSync() {
   return (dispatch, getState) => {
-    gethRemote.start().then(() => {
+    window.gethInstance.start().then(() => {
       setTimeout(() => dispatch(startSync()), 4000);
     });
     dispatch({ type: types.SYNC_RESUME });
@@ -70,7 +68,7 @@ export function resumeSync() {
  * @returns {{type}}
  */
 export function stopSync() {
-  gethRemote.stop();
+  window.gethInstance.stop();
   clearInterval(syncInterval);
   return { type: types.SYNC_STOPPED };
 }

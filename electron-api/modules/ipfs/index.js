@@ -173,7 +173,7 @@ class IpfsConnector {
     return new Promise((resolve, reject) => {
       Promise.all(data).then((content) => {
         resolve(content);
-      }).catch((error)=> {
+      }).catch((error) => {
         reject(error);
       });
     });
@@ -283,7 +283,7 @@ class IpfsConnector {
       if (!this._api) {
         return reject(new Error('no api server found'));
       }
-      return this._api.config.set(key, val, (err, conf)=> {
+      return this._api.config.set(key, val, (err, conf) => {
         if (err) {
           return reject(err);
         }
@@ -313,7 +313,7 @@ class IpfsConnector {
       this.ipfsProcess = childProcess.spawn(options.command, options.args, options.extra);
       this.ipfsProcess.once('exit', (code, signal) => {
         if (code !== 0 && !signal) {
-          return reject('could not start ipfs');
+          return reject(new Error('could not start ipfs'));
         }
         return resolve(this.ipfsProcess);
       });
@@ -349,7 +349,7 @@ class IpfsConnector {
 
       q.once('exit', (code, signal) => {
         if (code !== 0 && !signal) {
-          return reject('already init');
+          return reject(new Error('ipfs already init'));
         }
         return resolve(q);
       });

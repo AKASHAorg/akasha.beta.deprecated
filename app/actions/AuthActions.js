@@ -1,6 +1,4 @@
 import * as types from '../constants/AuthConstants';
-const remote = require('electron').remote;
-const profileHelpers = remote.getGlobal('akasha').profileHelpers;
 
 /**
  * Action for login success
@@ -43,7 +41,7 @@ function noLocalProfiles(message = 'no profiles') {
  */
 export function getAccountsList() {
   return (dispatch) => {
-    profileHelpers.getLocalProfiles().then(
+    window.akasha.profileHelpers.getLocalProfiles().then(
       (data) => {
         if (!data.length) {
           return dispatch(noLocalProfiles());
@@ -67,7 +65,7 @@ export function getAccountsList() {
  */
 export function authenticate(user, password, timer) {
   return (dispatch) =>
-    profileHelpers.login(user, password, timer)
+    window.akasha.profileHelpers.login(user, password, timer)
                   .then(
                     (success) => {
                       if (success) {
