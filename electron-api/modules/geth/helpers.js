@@ -25,7 +25,7 @@ export function signString(text) {
   });
 }
 
-const MAX_TRIES = 18;
+const MAX_TRIES = 90; // ~ 24min
 
 /**
  * Watch for a particular transaction hash and call the awaiting function when done;
