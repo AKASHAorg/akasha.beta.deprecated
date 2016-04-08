@@ -6,17 +6,21 @@ let app = remote.app;
 
 const userData = app.getPath('userData');
 const linvoDb = require('linvodb3');
-linvoDb.dbPath = userData;
-Logger.getInstance(userData);
 
-window.gethInstance = geth.getInstance();
-window.ipfsInstance = ipfs.getInstance();
+setTimeout(() => {
+  linvoDb.dbPath = userData;
+  Logger.getInstance(userData);
 
-window.gethInstance.start();
-window.ipfsInstance.start();
+  window.gethInstance = geth.getInstance();
+  window.ipfsInstance = ipfs.getInstance();
 
-app.on('before-quit', () => {
-  window.gethInstance.stop();
-  window.ipfsInstance.stop();
-  app = null;
-});
+  window.gethInstance.start();
+  window.ipfsInstance.start();
+
+  app.on('before-quit', () => {
+    window.gethInstance.stop();
+    window.ipfsInstance.stop();
+    app = null;
+  });
+}, 10);
+
