@@ -1,5 +1,3 @@
-
-const remote = require('electron').remote;
 import * as types from '../constants/ProfileConstants';
 import { hashHistory } from 'react-router';
 
@@ -16,7 +14,7 @@ export function validateName(name) {
 
 
 function validateUser(name) {
-  const prof = remote.getGlobal('akasha').profileInstance;
+  const prof = window.akasha.profileInstance;
   const response = { type: types.VALID_USER, valid: false };
   if (!name) {
     return response;
@@ -101,8 +99,8 @@ export function finishSetup() {
  * Step 5:: Create new AKASHA profile
  */
 function _createUser(dispatch, data) {
-  const web3 = remote.getGlobal('gethInstance').web3;
-  const akasha = remote.getGlobal('akasha');
+  const web3 = window.gethInstance.web3;
+  const akasha = window.akasha;
   const user = data.user.value;
   dispatch({ type: types.CREATE_USER_PENDING, step: 'Creating new Ethereum address...' });
 
@@ -161,7 +159,7 @@ function _createUser(dispatch, data) {
 export function createUser() {
   return (dispatch, getState) => {
     const data = getState().profile.toJS();
-    const profileUpload = remote.getGlobal('akasha').profileUpload;
+    const profileUpload = window.akasha.profileUpload;
     const meta = {
       firstName: data.name.first,
       lastName: data.name.last,

@@ -14,7 +14,6 @@ class AkashaLogger {
    * @param enforcer
    */
   constructor(userData, enforcer) {
-
     if (enforcer !== symbolEnforcer) {
       throw new Error('Cannot construct singleton');
     }
@@ -29,7 +28,7 @@ class AkashaLogger {
       if (err) {
         fs.mkdir(this.logPath, (error) => {
           if (!error) {
-            console.log(error);
+            throw new Error(error);
           }
         });
       }
@@ -49,13 +48,20 @@ class AkashaLogger {
   }
 
   /**
+   *
    * @param name
    * @param level
+   * @param consoleLevel
    * @param maxsize
    * @param maxFiles
    * @returns {*}
    */
-  registerLogger(name, { level = 'info', consoleLevel = 'warn', maxsize = 10 * 1024, maxFiles = 1 } = {}) {
+  registerLogger(name, {
+    level = 'info',
+    consoleLevel = 'warn',
+    maxsize = 10 * 1024,
+    maxFiles = 1
+  } = {}) {
     this.loggers[name] = new (winston.Logger)({
       transports: [
         new winston.transports.Console({

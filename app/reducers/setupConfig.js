@@ -3,10 +3,7 @@ import {
 } from '../constants/SetupConstants';
 import { Map } from 'immutable';
 
-const remote = require('electron').remote;
-const userPreferences = remote.getGlobal('userPreferences');
-
-const preferences = userPreferences.defaultConfig;
+const preferences = window.akasha.userPreferences.defaultConfig;
 
 const initialState = Map({
   gethPath: preferences.gethPath,
@@ -33,14 +30,11 @@ export default function setupConfig(state = initialState, action) {
         gethPathIpc: preferences.gethPathIpc,
         ipfsApiPath: preferences.ipfsApiPath
       });
-    case SUBMIT_OPTIONS:
-    {
+    case SUBMIT_OPTIONS: {
       const finalState = state.set('isInit', true);
       const config = state.toObject();
-
       delete config.toggleAdvanced;
-      userPreferences.setConfig(config);
-
+      window.akasha.userPreferences.setConfig(config);
       return finalState;
     }
     default:

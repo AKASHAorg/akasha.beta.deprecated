@@ -16,7 +16,7 @@
     "start-hot": "better-npm-run start-hot",
     "package": "better-npm-run package",
     "package-all": "npm run package -- --all",
-    "postinstall": "node node_modules/fbjs-scripts/node/check-dev-engines.js package.json && cd node_modules/leveldown && HOME=~/.electron-gyp node-gyp rebuild --target=0.36.7 --arch=x64 --dist-url=https://atom.io/download/atom-shell"
+    "postinstall": "node node_modules/fbjs-scripts/node/check-dev-engines.js package.json && cd node_modules/leveldown && HOME=~/.electron-gyp node-gyp rebuild --target=0.37.5 --arch=x64 --dist-url=https://atom.io/download/atom-shell"
   },
   "betterScripts": {
     "start": {
@@ -104,7 +104,7 @@
     "cssnano": "^3.5.2",
     "del": "^2.2.0",
     "electron-packager": "^6.0.0",
-    "electron-prebuilt": "0.37.3",
+    "electron-prebuilt": "0.37.5",
     "electron-rebuild": "^1.1.3",
     "eslint": "^2.7.0",
     "eslint-config-airbnb": "^6.2.0",
@@ -172,7 +172,7 @@
     "npm": "2.x || 3.x"
   },
   "engines": {
-    "electron": "0.36.7",
-    "atom-shell": "0.36.7"
+    "electron": "0.37.5",
+    "atom-shell": "0.37.5"
   }
 }

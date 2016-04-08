@@ -3,7 +3,7 @@
   "rules": {
     "comma-dangle": [0],
     "complexity": [2, 7],
-    "no-param-reassign": "off",
+    "no-param-reassign": [0],
     "max-depth": [2, 5],
     "max-statements": [2, 20]
   }
