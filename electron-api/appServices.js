@@ -6,11 +6,10 @@ let app = remote.app;
 
 const userData = app.getPath('userData');
 const linvoDb = require('linvodb3');
+linvoDb.dbPath = userData;
+Logger.getInstance(userData);
 
 setTimeout(() => {
-  linvoDb.dbPath = userData;
-  Logger.getInstance(userData);
-
   window.gethInstance = geth.getInstance();
   window.ipfsInstance = ipfs.getInstance();
 
