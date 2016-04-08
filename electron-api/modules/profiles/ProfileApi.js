@@ -142,7 +142,9 @@ class ProfileClass {
     return new Promise((resolve, reject) => {
       this.xContract.profiles.call(addr, (err, avatar) => {
         if (err) {
-          reject(err);
+          reject(new Error(err.toString()));
+        } else if (!avatar[1]) {
+          reject(new Error('invalid profile'));
         } else {
           let [name, ipfs] = avatar;
           name = toAscii(name).replace(/\u0000/g, '');
@@ -156,7 +158,7 @@ class ProfileClass {
     return new Promise((resolve, reject) => {
       this.xContract.existsProfileName.call(name, (err, exists) => {
         if (err) {
-          reject(err);
+          reject(err.toString());
         } else {
           resolve(exists);
         }
@@ -168,7 +170,7 @@ class ProfileClass {
     return new Promise((resolve, reject) => {
       this.xContract.existsProfileAddr.call(addr, (err, exists) => {
         if (err) {
-          reject(err);
+          reject(err.toString());
         } else {
           resolve(exists);
         }
@@ -194,33 +196,32 @@ class ProfileClass {
   /**
    * Get a profile by address;
    */
-  getAddr(addr) {
+  getAddr(addr, callback) {
     const toAscii = global.gethInstance.web3.toAscii;
-    return new Promise(resolve => {
-      this.resolveProfile(addr).then(obj => {
-        upload.checkProfileHash(obj.ipfs, check => {
-          if (check.meta) {
-            obj.meta = check.meta;
-          }
-          if (check.avatar) {
-            obj.avatar = `${obj.ipfs}/${upload.manifest.AVATAR_PATH}`;
-          }
-          obj.addr = addr;
-          resolve(obj);
-        });
-        return true;
+    this.resolveProfile(addr).then(obj => {
+      // obj = { name, ipfs }
+      upload.checkProfileHash(obj.ipfs, check => {
+        if (check.meta) {
+          obj.meta = check.meta;
+        }
+        if (check.avatar) {
+          obj.avatar = check.avatar;
+        }
+        obj.addr = addr;
+        callback(null, obj);
       });
+      return true;
+    }).catch(err => {
+      callback(err.message);
     });
   }
 
   /**
    * Get a profile by name;
    */
-  getName(name) {
-    return new Promise(resolve => {
-      this.xContract.seliforp.call(name, (_, addr) => {
-        resolve(this.getAddr(addr));
-      });
+  getName(name, callback) {
+    this.xContract.seliforp.call(name, (_, addr) => {
+      this.getAddr(addr, callback);
     });
   }
 
@@ -230,13 +231,25 @@ class ProfileClass {
    * @returns {addr, name, ipfs, ...}
    */
   get(nameOrAddr) {
-    return new Promise(resolve => {
+    return new Promise((resolve, reject) => {
       if (nameOrAddr.length < 33) {
-        resolve(this.getName(nameOrAddr));
+        this.getName(nameOrAddr, (err, obj) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(obj);
+          }
+        });
       } else if (nameOrAddr.length === 40 || nameOrAddr.length === 42) {
-        resolve(this.getAddr(nameOrAddr));
+        this.getAddr(nameOrAddr, (err, obj) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(obj);
+          }
+        });
       } else {
-        resolve(null);
+        reject(new Error('invalid name or address'));
       }
     });
   }
