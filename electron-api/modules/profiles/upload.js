@@ -101,7 +101,7 @@ export function checkProfileHash(hash, callback) {
         }
       }
       if (check.avatar) {
-        response.avatar = true;
+        response.avatar = `${hash}/${manifest.AVATAR_PATH}`;
       }
       // if (check.avatar_lg) {
       //   response.avatar_lg = true;
