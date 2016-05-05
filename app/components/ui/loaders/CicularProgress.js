@@ -4,26 +4,26 @@ import Transitions from 'material-ui/lib/styles/transitions';
 import getMuiTheme from 'material-ui/lib/styles/getMuiTheme';
 
 
-function getRelativeValue(value, min, max) {
+function getRelativeValue (value, min, max) {
   const clampedValue = Math.min(Math.max(min, value), max);
   const rangeValue = max - min;
   const relValue = Math.round(clampedValue / rangeValue * 10000) / 10000;
   return relValue * 100;
 }
 
-function getStyles(props, state) {
+function getStyles (props, state) {
   const {
-          max,
-          min,
-          size,
-          value
-        } = props;
+    max,
+    min,
+    size,
+    value
+  } = props;
 
   const {
-          baseTheme: {
-            palette
-          }
-        } = state.muiTheme;
+    baseTheme: {
+      palette
+    }
+  } = state.muiTheme;
 
   const zoom = size * 1.3;
   const baseSize = 32;
@@ -221,26 +221,26 @@ const CircularProgress = React.createClass({
 
   render () {
     let {
-          style,
-          innerStyle,
-          maskStyle,
-          size,
-          strokeWidth,
-          children,
-          radius,
-          ...other,
-        } = this.props;
+      style,
+      innerStyle,
+      maskStyle,
+      size,
+      strokeWidth,
+      children,
+      radius,
+      ...other,
+    } = this.props;
 
     const {
-            prepareStyles,
-          } = this.state.muiTheme;
+      prepareStyles,
+    } = this.state.muiTheme;
 
     const styles = getStyles(this.props, this.state);
 
     return (
-      <div {...other} style={prepareStyles(Object.assign(styles.root, style))}>
-        <div ref="wrapper" style={prepareStyles(Object.assign(styles.wrapper, innerStyle))}>
-          <svg style={prepareStyles(styles.svg)}>
+      <div {...other} style={prepareStyles(Object.assign(styles.root, style))} >
+        <div ref="wrapper" style={prepareStyles(Object.assign(styles.wrapper, innerStyle))} >
+          <svg style={prepareStyles(styles.svg)} >
             {children}
             <circle
               ref="path" style={maskStyle} cx="16"

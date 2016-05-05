@@ -1,4 +1,3 @@
-
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import CreateProfile from '../components/startup/CreateProfile';
@@ -19,7 +18,7 @@ function mapDispatchToProps (dispatch) {
 }
 
 export default {
-  CreateProfile: connect(mapStateToProps,mapDispatchToProps)(CreateProfile),
-  CreateProfileStatus: connect(mapStateToProps,mapDispatchToProps)(CreateProfileStatus),
-  CreateProfileComplete: connect(mapStateToProps,mapDispatchToProps)(CreateProfileComplete)
+  CreateProfile: connect(mapStateToProps, mapDispatchToProps)(CreateProfile),
+  CreateProfileStatus: connect(mapStateToProps, mapDispatchToProps)(CreateProfileStatus),
+  CreateProfileComplete: connect(mapStateToProps, mapDispatchToProps)(CreateProfileComplete)
 }

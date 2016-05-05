@@ -1,4 +1,3 @@
-
 const Promise = require('bluebird');
 const helpers = require('../geth/helpers');
 const agas = require('../contracts/gas');
@@ -13,7 +12,7 @@ class TransactionsClass {
   /**
    * @param enforcer
    */
-  constructor(enforcer) {
+  constructor (enforcer) {
     if (enforcer !== symbolCheck) {
       throw new Error('Transaction: Cannot construct singleton!');
     }
@@ -23,7 +22,7 @@ class TransactionsClass {
   /**
    * @returns {*}
    */
-  static getInstance() {
+  static getInstance () {
     if (!this[symbol]) {
       this[symbol] = new TransactionsClass(symbolCheck);
     }
@@ -33,7 +32,7 @@ class TransactionsClass {
   /**
    * Estimate gas usage for transactions;
    */
-  estimate(operation) {
+  estimate (operation) {
     if (operation === 'send') {
       const gas = 21037;
       const gasPrice = parseFloat(gas * agas.unit_gas_price).toFixed(4);
@@ -47,7 +46,7 @@ class TransactionsClass {
    * Send Ether to another address;
    * @returns {Promise}
    */
-  send(options) {
+  send (options) {
     return global.gethInstance.inSync().then((syncing) => {
       const web3 = global.gethInstance.web3;
       if (syncing) {
@@ -71,7 +70,7 @@ class TransactionsClass {
    * Send Ether to another address (private);
    * @private
    */
-  _send(options) {
+  _send (options) {
     const web3 = global.gethInstance.web3;
     let balance1 = 0;
     let balance2 = 0;
@@ -83,7 +82,8 @@ class TransactionsClass {
           return web3.eth.sendTransactionAsync({
             from: options.from || web3.eth.defaultAccount,
             to: options.to, value: options.amount,
-            gas: 22000, gasPrice: agas.gas_price });
+            gas: 22000, gasPrice: agas.gas_price
+          });
         }).then((txHash) => {
           helpers.watchTx('sendEther()', txHash, (err) => {
             if (err) {
@@ -110,7 +110,7 @@ class TransactionsClass {
    * Wait for coinbase address to have "amount" balance;
    * @returns {Promise}
    */
-  wait(amount) {
+  wait (amount) {
     const web3 = global.gethInstance.web3;
     if (!amount) {
       amount = parseInt(web3.toWei(1, 'ether'), 10);
@@ -131,7 +131,7 @@ class TransactionsClass {
    * Wait for coinbase address to have "amount" balance (private);
    * @private
    */
-  _wait(amount) {
+  _wait (amount) {
     const web3 = global.gethInstance.web3;
     const me = web3.eth.defaultAccount;
     return new Promise((resolve, reject) => {

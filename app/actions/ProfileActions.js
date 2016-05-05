@@ -1,11 +1,11 @@
 import * as types from '../constants/ProfileConstants';
 import { hashHistory } from 'react-router';
 
-export function updateName(first, last) {
+export function updateName (first, last) {
   return { type: types.UPDATE_NAME, first, last };
 }
 
-export function validateName(name) {
+export function validateName (name) {
   if (!name) {
     return { type: types.VALID_NAME, valid: false };
   }
@@ -13,7 +13,7 @@ export function validateName(name) {
 }
 
 
-function validateUser(name) {
+function validateUser (name) {
   const prof = window.akasha.profileInstance;
   const response = { type: types.VALID_USER, valid: false };
   if (!name) {
@@ -38,7 +38,7 @@ function validateUser(name) {
   };
 }
 
-export function updateUser(value) {
+export function updateUser (value) {
   return (dispatch) => {
     setTimeout(() => dispatch(validateUser(value)), 5);
     dispatch({ type: types.UPDATE_USER, value });
@@ -46,7 +46,7 @@ export function updateUser(value) {
 }
 
 
-function validatePasswd(pwd1, pwd2) {
+function validatePasswd (pwd1, pwd2) {
   const response = { type: types.VALID_PASSWD, valid: false, err1: '', err2: '' };
   if (!pwd1) {
     return response;
@@ -75,19 +75,19 @@ export function updatePasswd (pwd1, pwd2) {
 }
 
 
-export function unlockEnable(enabled) {
+export function unlockEnable (enabled) {
   return { type: types.UNLOCK_ENABLE, enabled };
 }
 
-export function unlockAccountFor(value) {
+export function unlockAccountFor (value) {
   return { type: types.UNLOCK_ACCOUNT_FOR, value };
 }
 
-export function toggleDetails(enabled) {
+export function toggleDetails (enabled) {
   return { type: types.TOGGLE_DETAILS, enabled };
 }
 
-export function finishSetup() {
+export function finishSetup () {
   hashHistory.push('/landpage');
 }
 
@@ -98,7 +98,7 @@ export function finishSetup() {
  * Step 4:: Unlock address
  * Step 5:: Create new AKASHA profile
  */
-function _createUser(dispatch, data) {
+function _createUser (dispatch, data) {
   const web3 = window.gethInstance.web3;
   const akasha = window.akasha;
   const user = data.user.value;
@@ -126,15 +126,19 @@ function _createUser(dispatch, data) {
       }
       web3.personal.unlockAccount(address, data.passwd.pwd1, unlockTime, (err, unlocked) => {
         if (data.unlock.enabled) {
-          dispatch({ type: types.CREATE_USER_PENDING,
-            step: `Address unlocked for [${data.unlock.value}] minutes;` });
+          dispatch({
+            type: types.CREATE_USER_PENDING,
+            step: `Address unlocked for [${data.unlock.value}] minutes;`
+          });
         }
         if (err || !unlocked) {
           dispatch({ type: types.CREATE_USER_FAILURE, err: 'could not unlock address' });
           return;
         }
-        dispatch({ type: types.CREATE_USER_PENDING,
-          step: `Creating AKASHA profile [${user}]...` });
+        dispatch({
+          type: types.CREATE_USER_PENDING,
+          step: `Creating AKASHA profile [${user}]...`
+        });
         // Step 5:: Create new AKASHA profile
         akasha.profileInstance.create(user, data.user.hash, (err, data) => {
           if (err) {
@@ -156,7 +160,7 @@ function _createUser(dispatch, data) {
   });
 }
 
-export function createUser() {
+export function createUser () {
   return (dispatch, getState) => {
     const data = getState().profile.toJS();
     const profileUpload = window.akasha.profileUpload;

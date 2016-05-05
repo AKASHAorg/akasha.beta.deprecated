@@ -1,4 +1,3 @@
-
 const Promise = require('bluebird');
 const LinvoDb = require('linvodb3');
 
@@ -10,7 +9,7 @@ const ProfileSchema = new LinvoDb('Profiles', {
 
 class ProfileModel {
 
-  get table() {
+  get table () {
     return ProfileSchema;
   }
 
@@ -21,7 +20,7 @@ class ProfileModel {
    * @param name
    * @returns {addr, name, ipfs}
    */
-  getName(name) {
+  getName (name) {
     return new Promise((resolve, reject) => {
       ProfileSchema.findOne({ name }, (err, doc) => {
         if (err) {
@@ -38,7 +37,7 @@ class ProfileModel {
    * @param addr
    * @returns {addr, name, ipfs}
    */
-  getAddr(addr) {
+  getAddr (addr) {
     return new Promise((resolve, reject) => {
       ProfileSchema.findOne({ addr }, (err, doc) => {
         if (err) {
@@ -55,7 +54,7 @@ class ProfileModel {
    * @param nameOrAddr
    * @returns {addr, name, ipfs}
    */
-  get(nameOrAddr) {
+  get (nameOrAddr) {
     return new Promise((resolve, reject) => {
       if (nameOrAddr.length < 33) {
         resolve(this.getName(nameOrAddr));
@@ -72,7 +71,7 @@ class ProfileModel {
    * @param options {}
    * @returns [{ addr, name, ipfs }]
    */
-  list(options = {}) {
+  list (options = {}) {
     return new Promise((resolve, reject) => {
       ProfileSchema.find(options, (err, docs) => {
         if (err) {
@@ -92,7 +91,7 @@ class ProfileModel {
    * @param name
    * @param ipfs
    */
-  create(addr, name, ipfs) {
+  create (addr, name, ipfs) {
     return this.update(addr, name, ipfs);
   }
 
@@ -101,9 +100,13 @@ class ProfileModel {
    * @param name
    * @param ipfs
    */
-  update(addr, name, ipfs) {
+  update (addr, name, ipfs) {
     return new Promise((resolve, reject) => {
-      ProfileSchema.update({ addr, name }, { addr, name, ipfs }, { upsert: true }, (err, num, newDoc) => {
+      ProfileSchema.update({ addr, name }, {
+        addr,
+        name,
+        ipfs
+      }, { upsert: true }, (err, num, newDoc) => {
         if (err) {
           reject(err);
         } else {
@@ -116,7 +119,7 @@ class ProfileModel {
   /*
    * @param addr
    */
-  delete(addr) {
+  delete (addr) {
     return new Promise((resolve, reject) => {
       ProfileSchema.remove({ addr }, { multi: true }, (err, num) => {
         if (err) {

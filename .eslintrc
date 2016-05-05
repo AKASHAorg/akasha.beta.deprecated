@@ -2,9 +2,10 @@
   "extends": "airbnb",
   "rules": {
     "comma-dangle": [0],
-    "complexity": [2, 7],
+    "complexity": [2, 10],
     "no-param-reassign": [0],
     "max-depth": [2, 5],
-    "max-statements": [2, 20]
+    "max-statements": [2, 20],
+    "space-before-function-paren": [2, "always"]
   }
 }

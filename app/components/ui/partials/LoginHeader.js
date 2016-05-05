@@ -17,10 +17,10 @@ const style = {
   fontSize: '18px'
 };
 
-function LoginHeader({ title }) {
+function LoginHeader ({ title }) {
   return (
-    <div style={style}>
-      <div style={{ fontWeight: '300' }}>{ title }</div>
+    <div style={style} >
+      <div style={{ fontWeight: '300' }} >{ title }</div>
       <Logo style={{ width: '32px', height: '32px', position: 'absolute', left: 0, top: '3px' }} />
       <IconMenu
         anchorOrigin={{ horizontal: 'right', vertical: 'top' }}

@@ -9,20 +9,19 @@ import FlatButton from 'material-ui/lib/flat-button';
 import { Scrollbars } from 'react-custom-scrollbars';
 import TextField from 'material-ui/lib/text-field';
 import RaisedButton from 'material-ui/lib/raised-button';
-import {getIpfsImage} from '../../utils/imageCreator';
 
 class Auth extends Component {
 
-  constructor(props, context) {
+  constructor (props, context) {
     super(props, context);
     this.state = {
       openModal: false,
       selectedIndex: false,
-      avatar:{}
+      avatar: {}
     }
   }
 
-  componentDidMount() {
+  componentDidMount () {
     const { actions } = this.props;
     actions.getAccountsList();
   }
@@ -41,18 +40,18 @@ class Auth extends Component {
       this.passwordRef.getValue(), 60);//for testing
   };
 
-  render() {
+  render () {
     const { style, authState } = this.props;
     const { openModal, avatar } = this.state;
     const profiles = authState.get('profiles');
     const modalActions = [
-      <FlatButton label="Cancel" onTouchTap={this.handleModalClose}/>,
-      <FlatButton label="Submit" primary={true} onTouchTap={this.handleLogin}/>
+      <FlatButton label="Cancel" onTouchTap={this.handleModalClose} />,
+      <FlatButton label="Submit" primary={true} onTouchTap={this.handleLogin} />
     ];
 
     let localProfiles = profiles.map((account, index) => {
       return (
-        <div key={index}>
+        <div key={index} >
           <ListItem
             key={`l${index}`}
             leftAvatar={<Avatar>aa</Avatar>}
@@ -62,34 +61,34 @@ class Auth extends Component {
             value={account.get('address')}
             onTouchTap={()=> this.handleTouchTap(index)}
           />
-          <Divider key={`d${index}`} inset/>
+          <Divider key={`d${index}`} inset />
         </div>
       )
     });
-    if(!localProfiles.size){
+    if (!localProfiles.size) {
       localProfiles = (
         <div>No profiles found.Create a new identity or import an existing one.</div>
       )
     }
     return (
-      <div style={style}>
-        <div className="start-xs">
+      <div style={style} >
+        <div className="start-xs" >
           <div
             className="col-xs"
             style={{ flex: 1, padding: 0 }}
           >
-            <LoginHeader title={'Log in'}/>
-            <div style={{paddingTop: '30px'}}>
-              <Scrollbars style={{ height: '440px' }}>
+            <LoginHeader title={'Log in'} />
+            <div style={{paddingTop: '30px'}} >
+              <Scrollbars style={{ height: '440px' }} >
                 <List>
                   {localProfiles}
                 </List>
               </Scrollbars>
             </div>
-            <div style={{float: 'right'}}>
-              <RaisedButton label="IMPORT IDENTITY"/>
+            <div style={{float: 'right'}} >
+              <RaisedButton label="IMPORT IDENTITY" />
               <RaisedButton label="CREATE NEW IDENTITY"
-                            primary={true} style={{marginLeft: '10px'}}/>
+                            primary={true} style={{marginLeft: '10px'}} />
             </div>
             <Dialog
               title="Authentication"

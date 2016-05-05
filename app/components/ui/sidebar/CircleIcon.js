@@ -3,7 +3,7 @@ import Radium from 'radium';
 
 
 function CircleIcon ({ children, style }) {
-  style = Object.assign(style, {marginTop: '16px'});
+  style = Object.assign(style, { marginTop: '16px' });
   return (
     <div
       style={style}
@@ -17,7 +17,7 @@ function CircleIcon ({ children, style }) {
 
 CircleIcon.propTypes = {
   children: PropTypes.element,
-  style:    PropTypes.object
+  style: PropTypes.object
 };
 
 

@@ -1,5 +1,10 @@
 import {
-  SETUP_GETH, SET_GETH_IPC, SETUP_IPFS, TOGGLE_ADVANCED, DEFAULT_OPTIONS, SUBMIT_OPTIONS
+  SETUP_GETH,
+  SET_GETH_IPC,
+  SETUP_IPFS,
+  TOGGLE_ADVANCED,
+  DEFAULT_OPTIONS,
+  SUBMIT_OPTIONS
 } from '../constants/SetupConstants';
 import { Map } from 'immutable';
 
@@ -13,7 +18,7 @@ const initialState = Map({
   toggleAdvanced: false
 });
 
-export default function setupConfig(state = initialState, action) {
+export default function setupConfig (state = initialState, action) {
 
   switch (action.type) {
     case SETUP_GETH:
@@ -30,7 +35,8 @@ export default function setupConfig(state = initialState, action) {
         gethPathIpc: preferences.gethPathIpc,
         ipfsApiPath: preferences.ipfsApiPath
       });
-    case SUBMIT_OPTIONS: {
+    case SUBMIT_OPTIONS:
+    {
       const finalState = state.set('isInit', true);
       const config = state.toObject();
       delete config.toggleAdvanced;

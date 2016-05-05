@@ -2,7 +2,7 @@ import React from 'react';
 import CircularProgress from './CicularProgress';
 import { MenuEthereum } from '../svg';
 
-function SyncProgress({ innerIconStyle, value, strokeWidth }) {
+function SyncProgress ({ innerIconStyle, value, strokeWidth }) {
   return (
     <CircularProgress mode={"determinate"} strokeWidth={strokeWidth} size={3} value={value} >
       <MenuEthereum style={innerIconStyle} />

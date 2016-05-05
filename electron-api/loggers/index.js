@@ -13,7 +13,7 @@ class AkashaLogger {
    * @param userData
    * @param enforcer
    */
-  constructor(userData, enforcer) {
+  constructor (userData, enforcer) {
     if (enforcer !== symbolEnforcer) {
       throw new Error('Cannot construct singleton');
     }
@@ -40,7 +40,7 @@ class AkashaLogger {
    * @param userData
    * @returns {*}
    */
-  static getInstance(userData) {
+  static getInstance (userData) {
     if (!this[symbol]) {
       this[symbol] = new AkashaLogger(userData, symbolEnforcer);
     }
@@ -56,7 +56,7 @@ class AkashaLogger {
    * @param maxFiles
    * @returns {*}
    */
-  registerLogger(name, {
+  registerLogger (name, {
     level = 'info',
     consoleLevel = 'warn',
     maxsize = 10 * 1024,
@@ -85,7 +85,7 @@ class AkashaLogger {
    * @param name
    * @returns {*}
    */
-  getLogger(name) {
+  getLogger (name) {
     return this.loggers[name];
   }
 }

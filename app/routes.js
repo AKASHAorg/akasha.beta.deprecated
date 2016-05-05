@@ -5,11 +5,15 @@ import SetupPage from './containers/SetupPage';
 import SyncStatus from './containers/SyncStatus';
 import LoginLayout from './layouts/LoginLayout';
 import LoginPage from './containers/LoginPage';
-import { CreateProfile, CreateProfileStatus, CreateProfileComplete } from './containers/CreateProfile';
+import {
+  CreateProfile,
+  CreateProfileStatus,
+  CreateProfileComplete
+} from './containers/CreateProfile';
 
 export default (
-  <Route component={App} path="/">
-    <Route component={LoginLayout}>
+  <Route component={App} path="/" >
+    <Route component={LoginLayout} >
       <IndexRoute component={SetupPage} />
       <Route component={SetupPage} path="setup-options" />
       <Route component={SyncStatus} path="sync-status" />

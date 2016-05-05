@@ -8,10 +8,6 @@ setTimeout(() => {
   const userPrefs = new UserPrefs();
 
   window.akasha = {
-    profileInstance: profileApi.getInstance(),
-    userPreferences: userPrefs,
-    faucet,
-    profileHelpers,
-    profileUpload
+    userPreferences: userPrefs
   };
 }, 20);

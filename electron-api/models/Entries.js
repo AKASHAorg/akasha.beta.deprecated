@@ -1,4 +1,3 @@
-
 const LinvoDb = require('linvodb3');
 
 const EntrySchema = new LinvoDb('Entries', {
@@ -10,11 +9,11 @@ const EntrySchema = new LinvoDb('Entries', {
 
 class EntryModel {
 
-  get table() {
+  get table () {
     return EntrySchema;
   }
 
-  get(id) {
+  get (id) {
     return new Promise((resolve, reject) => {
       EntrySchema.findOne({ id }, (err, doc) => {
         if (err) {

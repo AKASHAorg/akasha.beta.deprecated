@@ -11,7 +11,7 @@ const initialState = fromJS({
 });
 
 
-export default function authState(state = initialState, action) {
+export default function authState (state = initialState, action) {
 
   switch (action.type) {
     case types.LOCAL_PROFILES_FOUND:

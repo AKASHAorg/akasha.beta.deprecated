@@ -1,4 +1,3 @@
-
 const Promise = require('bluebird');
 const LinvoDb = require('linvodb3');
 const agas = require('../contracts/gas');
@@ -15,7 +14,7 @@ class ProfileClass {
   /**
    * @param enforcer
    */
-  constructor(enforcer) {
+  constructor (enforcer) {
     if (enforcer !== symbolCheck) {
       throw new Error('Profile: Cannot construct singleton!');
     }
@@ -25,14 +24,14 @@ class ProfileClass {
     this.contract = null;
     this.profileModel = new ProfileModel();
     setTimeout(() =>
-      this._setupContracts(() => this._setupDatabase())
-    , 4000);
+        this._setupContracts(() => this._setupDatabase())
+      , 4000);
   }
 
   /**
    * @returns {*}
    */
-  static getInstance() {
+  static getInstance () {
     if (!this[symbol]) {
       this[symbol] = new ProfileClass(symbolCheck);
     }
@@ -42,7 +41,7 @@ class ProfileClass {
   /**
    * Estimate gas usage for profiles;
    */
-  estimate(operation) {
+  estimate (operation) {
     let cost = '';
     const gas = agas.profile[operation] || -1;
     if (gas > 0) {
@@ -52,7 +51,7 @@ class ProfileClass {
   }
 
   // Instantiate and wait for AkashaX and Profile Contracts to be ready
-  _setupContracts(callback) {
+  _setupContracts (callback) {
     const web3 = global.gethInstance.web3;
     const contracts = require('../contracts/abi');
     const getContract = require('../contracts').instantiateContract;
@@ -98,7 +97,7 @@ class ProfileClass {
   }
 
   // Listen to Profile Contract events
-  _setupDatabase() {
+  _setupDatabase () {
     const toAscii = global.gethInstance.web3.toAscii;
     const onUpdate = data => {
       this.xContract.profiles.call(data.profile, (err, avatar) => {
@@ -121,7 +120,7 @@ class ProfileClass {
     log.info(`Profile: Setup database ${LinvoDb.dbPath}/Profile.db;`);
   }
 
-  _check(name) {
+  _check (name) {
     if (!name) {
       return 'empty profile name';
     }
@@ -137,7 +136,7 @@ class ProfileClass {
   // Ethereum functions (read only)
   // @returns Promise
 
-  resolveProfile(addr) {
+  resolveProfile (addr) {
     const toAscii = global.gethInstance.web3.toAscii;
     return new Promise((resolve, reject) => {
       this.xContract.profiles.call(addr, (err, avatar) => {
@@ -154,7 +153,7 @@ class ProfileClass {
     });
   }
 
-  existsProfileName(name) {
+  existsProfileName (name) {
     return new Promise((resolve, reject) => {
       this.xContract.existsProfileName.call(name, (err, exists) => {
         if (err) {
@@ -166,7 +165,7 @@ class ProfileClass {
     });
   }
 
-  existsProfileAddr(addr) {
+  existsProfileAddr (addr) {
     return new Promise((resolve, reject) => {
       this.xContract.existsProfileAddr.call(addr, (err, exists) => {
         if (err) {
@@ -178,7 +177,7 @@ class ProfileClass {
     });
   }
 
-  isProfileOwner(addr, name) {
+  isProfileOwner (addr, name) {
     return new Promise((resolve, reject) => {
       this.xContract.isProfileOwner.call(addr, name, (err, result) => {
         if (err) {
@@ -196,7 +195,7 @@ class ProfileClass {
   /**
    * Get a profile by address;
    */
-  getAddr(addr, callback) {
+  getAddr (addr, callback) {
     const toAscii = global.gethInstance.web3.toAscii;
     this.resolveProfile(addr).then(obj => {
       // obj = { name, ipfs }
@@ -219,7 +218,7 @@ class ProfileClass {
   /**
    * Get a profile by name;
    */
-  getName(name, callback) {
+  getName (name, callback) {
     this.xContract.seliforp.call(name, (_, addr) => {
       this.getAddr(addr, callback);
     });
@@ -230,7 +229,7 @@ class ProfileClass {
    * @param nameOrAddr
    * @returns {addr, name, ipfs, ...}
    */
-  get(nameOrAddr) {
+  get (nameOrAddr) {
     return new Promise((resolve, reject) => {
       if (nameOrAddr.length < 33) {
         this.getName(nameOrAddr, (err, obj) => {
@@ -258,7 +257,7 @@ class ProfileClass {
    * Create a new profile;
    * @private
    */
-  _create(name, hash, callback) {
+  _create (name, hash, callback) {
     const self = this;
     const promise1 = this.existsProfileName(name);
     const promise2 = this.existsProfileAddr(global.gethInstance.web3.eth.defaultAccount);
@@ -292,7 +291,7 @@ class ProfileClass {
    * @param `name` the name of the user (string);
    * @param `hash` the IPFS hash of the folder (string);
    */
-  create(name, hash, callback) {
+  create (name, hash, callback) {
     const check = this._check(name);
     if (check !== true) {
       callback(check);
@@ -328,7 +327,7 @@ class ProfileClass {
    * Update existing profile;
    * @private
    */
-  _update(name, hash, callback) {
+  _update (name, hash, callback) {
     const self = this;
     const promise1 = this.existsProfileName(name);
     const promise2 = this.isProfileOwner(global.gethInstance.web3.eth.defaultAccount, name);
@@ -359,7 +358,7 @@ class ProfileClass {
    * @param `name` the name of the user (string);
    * @param `hash` the IPFS hash of the folder (string);
    */
-  update(name, hash, callback) {
+  update (name, hash, callback) {
     const check = this._check(name);
     if (check !== true) {
       callback(check);
@@ -395,7 +394,7 @@ class ProfileClass {
    * Destroy existing profile;
    * @private
    */
-  _delete(name, callback) {
+  _delete (name, callback) {
     const self = this;
     const promise1 = this.existsProfileName(name);
     const promise2 = this.isProfileOwner(global.gethInstance.web3.eth.defaultAccount, name);
@@ -427,7 +426,7 @@ class ProfileClass {
    * Destroy existing profile;
    * @param `name` the name of the user (string);
    */
-  delete(name, callback) {
+  delete (name, callback) {
     const check = this._check(name);
     if (check !== true) {
       callback(check);

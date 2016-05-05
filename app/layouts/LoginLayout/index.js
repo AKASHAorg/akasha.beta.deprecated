@@ -18,7 +18,7 @@ const style = {
   flexDirection: 'column',
   position: 'relative'
 };
-function LoginLayout({ children }) {
+function LoginLayout ({ children }) {
   return (
     <div className='center-xs'
          style={{height: '100%'}}

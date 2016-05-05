@@ -29,7 +29,7 @@ class IpfsConnector {
    * Prevent multiple instances of IpfsConnector
    * @param enforcer
    */
-  constructor(enforcer) {
+  constructor (enforcer) {
     if (enforcer !== symbolEnforcer) {
       throw new Error('Cannot construct singleton');
     }
@@ -44,14 +44,14 @@ class IpfsConnector {
    * Get singleton instance
    * @returns {object}
    */
-  static getInstance() {
+  static getInstance () {
     if (!this[symbol]) {
       this[symbol] = new IpfsConnector(symbolEnforcer);
     }
     return this[symbol];
   }
 
-  getConnection() {
+  getConnection () {
     return this._conn;
   }
 
@@ -59,7 +59,7 @@ class IpfsConnector {
    * start ipfs
    * @param daemon
    */
-  start(daemon = true) {
+  start (daemon = true) {
 
     let options = {
       command: ipfsBin,
@@ -102,7 +102,7 @@ class IpfsConnector {
    * @param rpc
    * @returns {IpfsConnector}
    */
-  setSchema({ socket, rpc = windowsApi } = {}) {
+  setSchema ({ socket, rpc = windowsApi } = {}) {
     if (socket) {
       this._conn = socket;
     } else {
@@ -111,7 +111,7 @@ class IpfsConnector {
     return this;
   }
 
-  stop() {
+  stop () {
     this._kill('SIGINT');
     this.ipfsProcess = null;
   }
@@ -120,7 +120,7 @@ class IpfsConnector {
    * Send api calls to server
    * @returns {null|object}
    */
-  get api() {
+  get api () {
     return this._api;
   }
 
@@ -129,7 +129,7 @@ class IpfsConnector {
    * @param hash
    * @param encoding
    */
-  cat(hash, encoding = 'utf8') {
+  cat (hash, encoding = 'utf8') {
     let buf = new Buffer(0);
     return new Promise((resolve, reject) => {
       if (!this._api) {
@@ -163,7 +163,7 @@ class IpfsConnector {
    * @param hashSources
    * @returns {bluebird|exports|module.exports}
    */
-  catMultiple(hashSources = []) {
+  catMultiple (hashSources = []) {
     let data = [];
 
     hashSources.forEach((hash) => {
@@ -186,7 +186,7 @@ class IpfsConnector {
    * @param recursive
    * @returns {bluebird|exports|module.exports}
    */
-  add(data, { isPath = false, recursive = false } = {}) {
+  add (data, { isPath = false, recursive = false } = {}) {
     let options = {};
     let contentBody = data;
     return new Promise((resolve, reject) => {
@@ -217,7 +217,7 @@ class IpfsConnector {
     * recursive:true}]]</code>
    * @returns {bluebird|exports|module.exports}
    */
-  addMultiple(sources = []) {
+  addMultiple (sources = []) {
 
     let data = [];
 
@@ -239,7 +239,7 @@ class IpfsConnector {
    * @param key
    * @returns {bluebird|exports|module.exports}
    */
-  getConfig(key) {
+  getConfig (key) {
     return new Promise((resolve, reject) => {
       if (!this._api) {
         return reject(new Error('no api server found'));
@@ -259,7 +259,7 @@ class IpfsConnector {
    * @param folderHash
    * @returns {bluebird|exports|module.exports}
    */
-  getFolderLinks(folderHash) {
+  getFolderLinks (folderHash) {
     return new Promise((resolve, reject) => {
       if (!this._api) {
         return reject(new Error('no api server found'));
@@ -278,7 +278,7 @@ class IpfsConnector {
    * @param val
    * @returns {bluebird|exports|module.exports}
    */
-  setConfig(key, val) {
+  setConfig (key, val) {
     return new Promise((resolve, reject) => {
       if (!this._api) {
         return reject(new Error('no api server found'));
@@ -298,7 +298,7 @@ class IpfsConnector {
    * @returns {boolean}
    * @private
    */
-  _connectToAPI() {
+  _connectToAPI () {
     this._api = ipfsAPI(this._conn);
   }
 
@@ -308,7 +308,7 @@ class IpfsConnector {
    * @returns {bluebird|exports|module.exports}
    * @private
    */
-  _spawnIPFS(options) {
+  _spawnIPFS (options) {
     return new Promise((resolve, reject) => {
       this.ipfsProcess = childProcess.spawn(options.command, options.args, options.extra);
       this.ipfsProcess.once('exit', (code, signal) => {
@@ -327,7 +327,7 @@ class IpfsConnector {
    * @returns {boolean}
    * @private
    */
-  _logEvents() {
+  _logEvents () {
     this.ipfsProcess.stdout.on('data', (data) => {
       this.logger.info(`ipfs:stdout: ${data}`);
     });
@@ -343,7 +343,7 @@ class IpfsConnector {
    * run <code>ipfs init</code>
    * @private
    */
-  _initIpfs() {
+  _initIpfs () {
     return new Promise((resolve, reject) => {
       let q = childProcess.exec(ipfsBin + ' init');
 
@@ -363,7 +363,7 @@ class IpfsConnector {
    * kill child process & cleanup
    * @private
    */
-  _kill(signal) {
+  _kill (signal) {
     if (this.ipfsProcess) {
       this.ipfsProcess.kill(signal);
     }

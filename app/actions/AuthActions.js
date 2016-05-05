@@ -4,7 +4,7 @@ import * as types from '../constants/AuthConstants';
  * Action for login success
  * @returns {{type}}
  */
-function authSuccess() {
+function authSuccess () {
   return { type: types.AUTH_LOGIN_SUCCESS };
 }
 
@@ -13,7 +13,7 @@ function authSuccess() {
  * @param reason
  * @returns {{type, reason: *}}
  */
-function authFailure(reason) {
+function authFailure (reason) {
   return { type: types.AUTH_LOGIN_FAILURE, reason };
 }
 
@@ -22,7 +22,7 @@ function authFailure(reason) {
  * @param data
  * @returns {{type, data: *}}
  */
-function setLocalProfiles(data) {
+function setLocalProfiles (data) {
   return { type: types.LOCAL_PROFILES_FOUND, data };
 }
 
@@ -31,7 +31,7 @@ function setLocalProfiles(data) {
  * @param message
  * @returns {{type, message: string}}
  */
-function noLocalProfiles(message = 'no profiles') {
+function noLocalProfiles (message = 'no profiles') {
   return { type: types.LOCAL_PROFILES_NONE, message };
 }
 
@@ -39,7 +39,7 @@ function noLocalProfiles(message = 'no profiles') {
  * Dispatcher for local account list
  * @returns {function()}
  */
-export function getAccountsList() {
+export function getAccountsList () {
   return (dispatch) => {
     window.akasha.profileHelpers.getLocalProfiles().then(
       (data) => {
@@ -63,20 +63,20 @@ export function getAccountsList() {
  * @param timer
  * @returns {function()}
  */
-export function authenticate(user, password, timer) {
+export function authenticate (user, password, timer) {
   return (dispatch) =>
     window.akasha.profileHelpers.login(user, password, timer)
-                  .then(
-                    (success) => {
-                      if (success) {
-                        return dispatch(authSuccess());
-                      }
-                      return dispatch(authFailure('password not correct'));
-                    }
-                  )
-                  .catch(
-                    (err) =>
-                      dispatch(authFailure(err))
-                  );
+      .then(
+        (success) => {
+          if (success) {
+            return dispatch(authSuccess());
+          }
+          return dispatch(authFailure('password not correct'));
+        }
+      )
+      .catch(
+        (err) =>
+          dispatch(authFailure(err))
+      );
 }
 

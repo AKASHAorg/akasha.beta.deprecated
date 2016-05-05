@@ -1,26 +1,24 @@
-
 import React, { Component, PropTypes } from 'react';
 import { MenuAkashaLogo } from '../ui/svg';
-
 import * as Colors from 'material-ui/lib/styles/colors';
 import SvgIcon from 'material-ui/lib/svg-icon';
 
 class CreateProfileStatus extends Component {
 
-  componentDidMount() {
+  componentDidMount () {
     if (this.firstNameInput) {
       this.firstNameInput.focus();
     }
   }
 
-  render() {
+  render () {
     const { style, profile } = this.props;
     const paraStyle = { marginTop: '20px' };
 
     return (
-      <div style={style}>
-        <div className="row start-xs">
-          <div className="col-xs">
+      <div style={style} >
+        <div className="row start-xs" >
+          <div className="col-xs" >
 
             <SvgIcon
               color={Colors.lightBlack}
@@ -29,19 +27,19 @@ class CreateProfileStatus extends Component {
             >
               <MenuAkashaLogo />
             </SvgIcon>
-            <h1 style={{ fontWeight: '400', display: 'inline', verticalAlign: 'middle' }}>
+            <h1 style={{ fontWeight: '400', display: 'inline', verticalAlign: 'middle' }} >
               {'Registering identity...'}
             </h1>
-            <p style={paraStyle}>
+            <p style={paraStyle} >
               {'Your identity is broadcasted into the Ethereum world computer network.'}
             </p>
-            <p style={paraStyle}>
+            <p style={paraStyle} >
               {'This will take a few moments ...'}
             </p>
-            <span style={{ marginTop: '20px', fontSize: '13px' }}>
+            <span style={{ marginTop: '20px', fontSize: '13px' }} >
               { profile.getIn(['create', 'steps']).map((step) => <p>{step}</p>) }
             </span>
-            <p style={{ marginTop: '20px', color: Colors.red300 }}>
+            <p style={{ marginTop: '20px', color: Colors.red300 }} >
               { profile.getIn(['create', 'err']) }
             </p>
           </div>
