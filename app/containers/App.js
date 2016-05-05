@@ -19,7 +19,7 @@ export default class App extends Component {
 
   render () {
     return (
-      <div className="fill-height">
+      <div className="fill-height" >
         {this.props.children}
         {
           (() => {

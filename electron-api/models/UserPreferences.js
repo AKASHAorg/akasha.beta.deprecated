@@ -24,7 +24,7 @@ class UserPreferences {
    * @param name
    * @param options
    */
-  constructor(name = 'UserPreferences', options = {}) {
+  constructor (name = 'UserPreferences', options = {}) {
     this.dbTable = new LinvoDb(name, schema, options);
     this.defaultConfig = {
       gethPath: geth.getDefaultDatadir(),
@@ -46,7 +46,7 @@ class UserPreferences {
    * @param cb
    * @returns {Array|{index: number, input: string}}
    */
-  getServicesConfig(cb) {
+  getServicesConfig (cb) {
     return this.dbTable.findOne({ idConfig: configId }).map((record) => record.services).exec(cb);
   }
 
@@ -56,7 +56,7 @@ class UserPreferences {
    * @param cb
    * @returns {Array|{index: number, input: string}}
    */
-  setConfig(options = {}) {
+  setConfig (options = {}) {
     return this.dbTable.update(
       {
         idConfig: configId

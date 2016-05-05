@@ -3,8 +3,7 @@ import SvgIcon from 'material-ui/lib/svg-icon';
 import getMuiTheme from 'material-ui/lib/styles/getMuiTheme';
 import * as Colors from 'material-ui/lib/styles/colors';
 import Badge from 'material-ui/lib/badge';
-
-import {MenuUser} from '../svg';
+import { MenuUser } from '../svg';
 
 
 export default class IconProfile extends Component {
@@ -14,25 +13,25 @@ export default class IconProfile extends Component {
   };
 
   static propTypes = {
-    style:      PropTypes.object,
-    iconStyle:  PropTypes.object,
-    viewBox:    PropTypes.string,
+    style: PropTypes.object,
+    iconStyle: PropTypes.object,
+    viewBox: PropTypes.string,
     hoverColor: PropTypes.string,
-    color:      PropTypes.string
+    color: PropTypes.string
   };
 
   static defaultProps = {
-    style:      {
-      transform:    'scale(1.2)',
-      width:        '34px',
-      height:       '34px',
-      borderWidth:  '1px',
-      borderStyle:  'solid',
+    style: {
+      transform: 'scale(1.2)',
+      width: '34px',
+      height: '34px',
+      borderWidth: '1px',
+      borderStyle: 'solid',
       borderRadius: '50%'
     },
-    iconStyle:  {width: '32px', height: '32px', transform: 'scale(0.9)', visibility: 'visible'},
-    viewBox:    '0 0 32 32',
-    color:      Colors.lightBlack,
+    iconStyle: { width: '32px', height: '32px', transform: 'scale(0.9)', visibility: 'visible' },
+    viewBox: '0 0 32 32',
+    color: Colors.lightBlack,
     hoverColor: Colors.darkBlack
   };
 
@@ -51,12 +50,12 @@ export default class IconProfile extends Component {
   }
 
   render () {
-    const {style, iconStyle, viewBox, hoverColor, color, ...other} = this.props;
+    const { style, iconStyle, viewBox, hoverColor, color, ...other } = this.props;
     const {
-            baseTheme: {
-              palette
-              }
-            } = this.state.muiTheme;
+      baseTheme: {
+        palette
+      }
+    } = this.state.muiTheme;
 
     return (
       <Badge

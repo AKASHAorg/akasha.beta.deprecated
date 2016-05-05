@@ -1,4 +1,3 @@
-
 const abi = require('./abi');
 const gas = require('./gas');
 

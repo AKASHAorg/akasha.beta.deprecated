@@ -1,9 +1,7 @@
-
 const remote = require('remote');
 const dialog = remote.require('electron').dialog;
 import React, { Component, PropTypes } from 'react';
 import { MenuAkashaLogo } from '../ui/svg';
-
 import * as Colors from 'material-ui/lib/styles/colors';
 import SvgIcon from 'material-ui/lib/svg-icon';
 import RaisedButton from 'material-ui/lib/raised-button';
@@ -17,11 +15,11 @@ let bg_image_path = '';
 
 class CreateProfile extends Component {
 
-  componentWillMount() {
+  componentWillMount () {
     this.setState({ opt_details: false });
   }
 
-  componentDidMount() {
+  componentDidMount () {
     if (this.firstNameInput) {
       this.firstNameInput.focus();
     }
@@ -111,19 +109,22 @@ class CreateProfile extends Component {
   handleUploadAvatar = () => {
     dialog.showOpenDialog({
       title: 'Select image for your avatar',
-      properties: [ 'openFile' ],
+      properties: ['openFile'],
       filters: [{ name: 'Images', extensions: ['jpg', 'png'] }]
     }, files => {
-      if (!files) { return; }
+      if (!files) {
+        return;
+      }
       avatar_path = files[0];
       const img = new Image();
       const canvas = document.getElementById('canvasAvatar');
       const ctx = canvas.getContext('2d');
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      img.onload = function() {
+      img.onload = function () {
         const fract = img.height / canvas.height;
-        console.log( fract );;
+        console.log(fract);
+        ;
         const dWidth = Math.ceil(img.width / fract);
         const dHeight = Math.ceil(img.height / fract);
         ctx.drawImage(img, 0, 0, dWidth, dHeight);
@@ -136,10 +137,12 @@ class CreateProfile extends Component {
   handleUploadBgImage = () => {
     dialog.showOpenDialog({
       title: 'Select background image',
-      properties: [ 'openFile' ],
+      properties: ['openFile'],
       filters: [{ name: 'Images', extensions: ['jpg', 'png'] }]
     }, files => {
-      if (!files) { return; }
+      if (!files) {
+        return;
+      }
       const file = files[0];
     });
   }
@@ -160,15 +163,15 @@ class CreateProfile extends Component {
     }
   }
 
-  render() {
+  render () {
     const { style, profile } = this.props;
     const floatLabelStyle = { color: Colors.lightBlack };
     const inputStyle = { color: Colors.darkBlack };
 
     return (
-      <div style={style}>
-        <div className="row start-xs">
-          <div className="col-xs" style={{ flex: 1, padding: 0 }}>
+      <div style={style} >
+        <div className="row start-xs" >
+          <div className="col-xs" style={{ flex: 1, padding: 0 }} >
             <SvgIcon
               color={Colors.lightBlack}
               viewBox="0 0 32 32"
@@ -176,7 +179,7 @@ class CreateProfile extends Component {
             >
               <MenuAkashaLogo />
             </SvgIcon>
-            <h1 style={{ fontWeight: '400', display: 'inline', verticalAlign: 'middle' }}>
+            <h1 style={{ fontWeight: '400', display: 'inline', verticalAlign: 'middle' }} >
               {'Create new identity'}
             </h1>
 
@@ -206,24 +209,24 @@ class CreateProfile extends Component {
               value={profile.getIn(['user', 'value'])}
             />
             <TextField type="password"
-              ref="passwd1"
-              fullWidth
-              inputStyle={inputStyle}
-              floatingLabelText="Password"
-              floatingLabelStyle={floatLabelStyle}
-              errorText={profile.getIn(['passwd', 'valid']) ? '' : profile.getIn(['passwd', 'err1'])}
-              onChange={this.handleUpdatePasswd}
-              value={profile.getIn(['passwd', 'pwd1'])}
+                       ref="passwd1"
+                       fullWidth
+                       inputStyle={inputStyle}
+                       floatingLabelText="Password"
+                       floatingLabelStyle={floatLabelStyle}
+                       errorText={profile.getIn(['passwd', 'valid']) ? '' : profile.getIn(['passwd', 'err1'])}
+                       onChange={this.handleUpdatePasswd}
+                       value={profile.getIn(['passwd', 'pwd1'])}
             />
             <TextField type="password"
-              ref="passwd2"
-              fullWidth
-              inputStyle={inputStyle}
-              floatingLabelText="Verify Password"
-              floatingLabelStyle={floatLabelStyle}
-              errorText={profile.getIn(['passwd', 'valid']) ? '' : profile.getIn(['passwd', 'err2'])}
-              onChange={this.handleUpdatePasswd}
-              value={profile.getIn(['passwd', 'pwd2'])}
+                       ref="passwd2"
+                       fullWidth
+                       inputStyle={inputStyle}
+                       floatingLabelText="Verify Password"
+                       floatingLabelStyle={floatLabelStyle}
+                       errorText={profile.getIn(['passwd', 'valid']) ? '' : profile.getIn(['passwd', 'err2'])}
+                       onChange={this.handleUpdatePasswd}
+                       value={profile.getIn(['passwd', 'pwd2'])}
             />
 
             <Checkbox
@@ -233,9 +236,9 @@ class CreateProfile extends Component {
               onCheck={this.handleShowDetails}
             />
 
-            <div style={{ display: this.state.opt_details ? 'block' : 'none' }}>
+            <div style={{ display: this.state.opt_details ? 'block' : 'none' }} >
 
-              <h3 style={{ margin: '30px 0 10px 0' }}>{'Avatar'}</h3>
+              <h3 style={{ margin: '30px 0 10px 0' }} >{'Avatar'}</h3>
               <canvas
                 id="canvasAvatar"
                 onClick={this.handleUploadAvatar}
@@ -243,7 +246,7 @@ class CreateProfile extends Component {
               >
               </canvas>
 
-              <h3 style={{ margin: '20px 0 10px 0' }}>{'Background image'}</h3>
+              <h3 style={{ margin: '20px 0 10px 0' }} >{'Background image'}</h3>
               <canvas
                 id="canvasBgImage"
                 onClick={this.handleUploadBgImage}
@@ -251,14 +254,14 @@ class CreateProfile extends Component {
               >
               </canvas>
 
-              <h3 style={{ margin: '20px 0 0 0' }}>{'About you'}</h3>
+              <h3 style={{ margin: '20px 0 0 0' }} >{'About you'}</h3>
               <TextField
                 fullWidth
                 floatingLabelText="Short description"
                 floatingLabelStyle={floatLabelStyle}
               />
 
-              <h3 style={{ margin: '20px 0 0 0' }}>{'Links'}</h3>
+              <h3 style={{ margin: '20px 0 0 0' }} >{'Links'}</h3>
               <TextField
                 fullWidth
                 floatingLabelText="Title"
@@ -272,8 +275,8 @@ class CreateProfile extends Component {
 
             </div>
 
-            <div className="row">
-              <div className="col-xs-6">
+            <div className="row" >
+              <div className="col-xs-6" >
                 <Checkbox
                   label="Keep account unlocked for"
                   style={{ marginTop: '18px', marginLeft: '-4px', width: '280px' }}
@@ -281,7 +284,7 @@ class CreateProfile extends Component {
                   onCheck={this.handleUnlockActive}
                 />
               </div>
-              <div className="col-xs-6">
+              <div className="col-xs-6" >
                 <SelectField
                   value={profile.getIn(['unlock', 'value'])}
                   onChange={this.handleUnlockFor}
@@ -295,27 +298,27 @@ class CreateProfile extends Component {
               </div>
             </div>
 
-            <div style={{ marginTop: '20px' }}>
+            <div style={{ marginTop: '20px' }} >
               <small>
                 {'By proceeding to create your account and use AKASHA, you are agreeing to our' +
-                 'Terms of Service and Privacy Policy. If you do not agree, you cannot use AKASHA.'}
+                'Terms of Service and Privacy Policy. If you do not agree, you cannot use AKASHA.'}
               </small>
             </div>
           </div>
         </div>
 
-        <div className="row end-xs">
+        <div className="row end-xs" >
           <div className="col-xs"
-            style={
+               style={
               this.state.opt_details ? { margin: '25px 0 30px' } : { position: 'absolute', bottom: 0, right: 0 }
             }
           >
             <RaisedButton label="Cancel" />
             <RaisedButton label="Submit"
-              primary
-              disabled={!this.readyForSubmit()}
-              style={{ marginLeft: '12px' }}
-              onClick={this.handleSubmit}
+                          primary
+                          disabled={!this.readyForSubmit()}
+                          style={{ marginLeft: '12px' }}
+                          onClick={this.handleSubmit}
             />
           </div>
         </div>

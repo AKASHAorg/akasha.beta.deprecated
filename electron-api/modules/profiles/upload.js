@@ -1,10 +1,9 @@
-
 const electron = require('electron');
 const Promise = require('bluebird');
 const mkdirp = require('mkdirp');
 const fs = require('fs');
 
-function safeIpfsCat(hash) {
+function safeIpfsCat (hash) {
   return new Promise(resolve => {
     if (!global.ipfsInstance._api) {
       resolve(null);
@@ -33,7 +32,7 @@ function safeIpfsCat(hash) {
   });
 }
 
-function safeIpfsGet(hash) {
+function safeIpfsGet (hash) {
   return new Promise(resolve => {
     if (!global.ipfsInstance._api) {
       resolve(null);
@@ -73,7 +72,7 @@ export { manifest };
  * @param `hash` the IPFS hash of a folder (string);
  * @param `callback` the callback function;
  */
-export function checkProfileHash(hash, callback) {
+export function checkProfileHash (hash, callback) {
   const response = {
     valid: false, avatar: false
   };
@@ -127,7 +126,7 @@ export function checkProfileHash(hash, callback) {
  * @param `user` the user name;
  * @param `metaData` an object with extra profile info (first name, last name, etc);
  */
-function createProfileFolder(user, metaData = {}) {
+function createProfileFolder (user, metaData = {}) {
   const temp = electron.app.getPath('temp');
   const root = `${temp}/akasha/${user}`;
 
@@ -157,7 +156,7 @@ function createProfileFolder(user, metaData = {}) {
  * @param `metaData` an object with extra profile info (first name, last name, etc);
  * @param `extra` an object with extra files (avatar, bg image, etc);
  */
-export function uploadProfile(user, metaData = {}, extra = {}) {
+export function uploadProfile (user, metaData = {}, extra = {}) {
   return new Promise((resolve, reject) => {
     createProfileFolder(user, metaData).then(folder => {
       // TODO :: Add extra files here ???

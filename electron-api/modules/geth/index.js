@@ -23,7 +23,7 @@ class GethConnector {
    *
    * @param enforcer
    */
-  constructor(enforcer) {
+  constructor (enforcer) {
     if (enforcer !== symbolEnforcer) {
       throw new Error('Cannot construct singleton');
     }
@@ -46,7 +46,7 @@ class GethConnector {
    *
    * @returns {*}
    */
-  static getInstance() {
+  static getInstance () {
     if (!this[symbol]) {
       this[symbol] = new GethConnector(symbolEnforcer);
     }
@@ -57,7 +57,7 @@ class GethConnector {
    *
    * @param options
    */
-  start(options = {}) {
+  start (options = {}) {
     if (!this.options.length || !Object.keys(options).length) {
       this._setOptions(options);
     }
@@ -76,14 +76,14 @@ class GethConnector {
     });
   }
 
-  get web3() {
+  get web3 () {
     return this.ipcStream.web3;
   }
 
   /**
    * Stop and flush data
    */
-  stop() {
+  stop () {
     if (this.gethProcess) {
       this.ipcStream.web3.reset();
       this.gethProcess.kill();
@@ -99,7 +99,7 @@ class GethConnector {
    * Check if geth client is syncing
    * @returns {Promise.<T>|*}
    */
-  inSync() {
+  inSync () {
     const rules = [
       this.web3.eth.getSyncingAsync(),
       this.web3.net.getPeerCountAsync(),
@@ -130,7 +130,7 @@ class GethConnector {
    * @returns {Array|Array.<T>|*}
    * @private
    */
-  _setOptions({
+  _setOptions ({
     dataDir,
     ipcPath,
     protocol = ['--shh', '--fast', '--cache', 512],
@@ -146,7 +146,11 @@ class GethConnector {
     this.dataDir = dataDir;
 
     if (!ipcPath) {
-      ipcPath = path.join(this.dataDir, 'geth.ipc');
+      if (platform !== 'Windows_NT') {
+        ipcPath = path.join(this.dataDir, 'geth.ipc');
+      } else {
+        ipcPath = '\\\\.\\pipe\\geth.ipc';
+      }
     }
     this.ipcPath = ipcPath;
 
@@ -163,7 +167,7 @@ class GethConnector {
    *
    * @returns {*}
    */
-  static getDefaultDatadir() {
+  static getDefaultDatadir () {
     let dataDir;
     switch (platform) {
       case 'Linux':
@@ -187,7 +191,7 @@ class GethConnector {
    * @returns {bluebird|exports|module.exports}
    * @private
    */
-  _checkGeth() {
+  _checkGeth () {
     return new Promise((resolve, reject) => {
       geth.run(['version'], function (err) {
         if (err) {
@@ -202,7 +206,7 @@ class GethConnector {
    *
    * @private
    */
-  _ipcDestroy() {
+  _ipcDestroy () {
     this.socket.destroy();
   }
 
@@ -210,7 +214,7 @@ class GethConnector {
    * Resolves promisses from ipcCall
    * @private
    */
-  _setSocketEvents() {
+  _setSocketEvents () {
 
     this.socket.on('connect', () => {
       this.logger.info('connection to ipc Established!');
@@ -236,7 +240,7 @@ class GethConnector {
    * @returns {bluebird|exports|module.exports}
    * @private
    */
-  _spawnGeth(extra) {
+  _spawnGeth (extra) {
     return new Promise((resolve, reject) => {
       if (this.gethProcess) {
         return resolve(true);

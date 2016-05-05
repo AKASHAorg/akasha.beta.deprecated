@@ -6,7 +6,7 @@ const agas = require('../contracts/gas');
 /**
  * Sign a string and return (hash, v, r, s) used by ecrecover to regenerate the address;
  */
-export function signString(text) {
+export function signString (text) {
   /* eslint prefer-template: 0 */
   const web3 = global.gethInstance.web3;
   const sha = '0x' + web3.sha3(text);
@@ -31,7 +31,7 @@ const MAX_TRIES = 90; // ~ 24min
  * Watch for a particular transaction hash and call the awaiting function when done;
  * `fname` param should be in the form Contract:function()
  */
-export function watchTx(fname, txHash, callback) {
+export function watchTx (fname, txHash, callback) {
   if (!txHash) {
     callback('invalid tx');
     return;

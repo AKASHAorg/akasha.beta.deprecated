@@ -1,4 +1,3 @@
-
 const LinvoDb = require('linvodb3');
 
 const CommentSchema = new LinvoDb('Comments', {
@@ -10,11 +9,11 @@ const CommentSchema = new LinvoDb('Comments', {
 
 class CommentModel {
 
-  get table() {
+  get table () {
     return CommentSchema;
   }
 
-  get(id) {
+  get (id) {
     return new Promise((resolve, reject) => {
       CommentSchema.findOne({ id }, (err, doc) => {
         if (err) {

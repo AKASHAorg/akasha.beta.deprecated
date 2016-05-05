@@ -1,7 +1,5 @@
-
 import React, { Component, PropTypes } from 'react';
 import { MenuAkashaLogo } from '../ui/svg';
-
 import * as Colors from 'material-ui/lib/styles/colors';
 import SvgIcon from 'material-ui/lib/svg-icon';
 import RaisedButton from 'material-ui/lib/raised-button';
@@ -14,14 +12,14 @@ class CreateProfileComplete extends Component {
   //   actions.finishSetup();
   // }
 
-  render() {
+  render () {
     const { style, profile } = this.props;
     const fullName = `${profile.getIn(['name', 'first'])} ${profile.getIn(['name', 'last'])}`;
 
     return (
-      <div style={style}>
-        <div className="row start-xs">
-          <div className="col-xs" style={{ flex: 1, padding: 0 }}>
+      <div style={style} >
+        <div className="row start-xs" >
+          <div className="col-xs" style={{ flex: 1, padding: 0 }} >
             <SvgIcon
               color={Colors.lightBlack}
               viewBox="0 0 32 32"
@@ -29,7 +27,7 @@ class CreateProfileComplete extends Component {
             >
               <MenuAkashaLogo />
             </SvgIcon>
-            <h1 style={{ fontWeight: '400', display: 'inline', verticalAlign: 'middle' }}>
+            <h1 style={{ fontWeight: '400', display: 'inline', verticalAlign: 'middle' }} >
               {'Identity registered!'}
             </h1>
 
@@ -53,7 +51,7 @@ class CreateProfileComplete extends Component {
             />
 
             <h3>{'Tips before you get started'}</h3>
-            <p style={{ fontSize: '13px' }}>
+            <p style={{ fontSize: '13px' }} >
               {'Since we cannot help you recover passwords, or identities make sure to:'}<br />
               {'1. Write down your password and keep it safe'}<br />
               {'2. Backup your ID now and don’t be sorry later'}<br />
@@ -61,8 +59,8 @@ class CreateProfileComplete extends Component {
             </p>
           </div>
 
-          <div className="row end-xs">
-            <div className="col-xs" style={{ position: 'absolute', bottom: 0, right: 0 }}>
+          <div className="row end-xs" >
+            <div className="col-xs" style={{ position: 'absolute', bottom: 0, right: 0 }} >
               <RaisedButton
                 label="Backup"
                 disabled

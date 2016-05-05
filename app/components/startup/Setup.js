@@ -5,9 +5,7 @@ import RadioButton from 'material-ui/lib/radio-button';
 import RadioButtonGroup from 'material-ui/lib/radio-button-group';
 import RaisedButton from 'material-ui/lib/raised-button';
 import TextField from 'material-ui/lib/text-field';
-import Checkbox from 'material-ui/lib/checkbox';
 import { hashHistory } from 'react-router';
-
 import { Scrollbars } from 'react-custom-scrollbars';
 
 class Setup extends Component {
@@ -25,7 +23,7 @@ class Setup extends Component {
   handleGethDatadir = (event) => {
     const { actions, setupConfig } = this.props;
 
-    const target         = event.target;
+    const target = event.target;
     const currentDatadir = setupConfig.get('gethPath');
     if (currentDatadir === target.value || !target.value) {
       return;
@@ -36,7 +34,7 @@ class Setup extends Component {
   handleGethIpc = (event) => {
     const { actions, setupConfig } = this.props;
 
-    const target         = event.target;
+    const target = event.target;
     const currentIpcPath = setupConfig.get('gethPathIpc');
     if (currentIpcPath === target.value || !target.value) {
       return;
@@ -47,7 +45,7 @@ class Setup extends Component {
   handleIpfsPath = (event) => {
     const { actions, setupConfig } = this.props;
 
-    const target         = event.target;
+    const target = event.target;
     const currentIpfsApi = setupConfig.get('ipfsApiPath');
     if (currentIpfsApi === target.value || !target.value) {
       return;
@@ -71,18 +69,18 @@ class Setup extends Component {
 
     const { style, setupConfig } = this.props;
 
-    const radioStyle         = { marginTop: '10px', marginBottom: '10px' };
-    const buttonsStyle       = { padding: 0, position: 'absolute', bottom: 0, right: 0 };
-    const errorStyle         = { color: Colors.minBlack };
+    const radioStyle = { marginTop: '10px', marginBottom: '10px' };
+    const buttonsStyle = { padding: 0, position: 'absolute', bottom: 0, right: 0 };
+    const errorStyle = { color: Colors.minBlack };
     const floatingLabelStyle = { color: Colors.lightBlack };
-    const inputStyle         = { color: Colors.darkBlack };
-    const rootStyle          = { width: '400px' };
+    const inputStyle = { color: Colors.darkBlack };
+    const rootStyle = { width: '400px' };
 
     const defaultSelected = (!setupConfig.get('toggleAdvanced')) ? 'express' : 'advanced';
 
     if (setupConfig.get('toggleAdvanced')) {
       advancedOptions = (
-        <div style={{ paddingLeft: '12px' }}>
+        <div style={{ paddingLeft: '12px' }} >
           <TextField
             errorStyle={errorStyle}
             errorText={"Change this if geth has different data directory"}
@@ -118,8 +116,8 @@ class Setup extends Component {
       );
     }
     return (
-      <div style={style}>
-        <div className="start-xs">
+      <div style={style} >
+        <div className="start-xs" >
           <div
             className="col-xs"
             style={{ flex: 1, padding: 0 }}
@@ -128,7 +126,7 @@ class Setup extends Component {
             <Scrollbars
               style={{ height: 540 }}
             >
-              <h1 style={{ fontWeight: '400' }}>{'First time setup'}</h1>
+              <h1 style={{ fontWeight: '400' }} >{'First time setup'}</h1>
               <div>
                 <p>{'AKASHA is a next-generation social blogging network powered by a new kind of world computers' +
                 ' known as Ethereum and the Inter Planetary File System.'}
@@ -142,7 +140,7 @@ class Setup extends Component {
                   ' advanced option.'}
                 </p>
               </div>
-              <div style={{ paddingLeft: '12px' }}>
+              <div style={{ paddingLeft: '12px' }} >
                 <RadioButtonGroup defaultSelected={defaultSelected}
                                   name="installType"
                                   onChange={this.handleChange}
@@ -182,9 +180,9 @@ class Setup extends Component {
 }
 
 Setup.propTypes = {
-  actions:     PropTypes.object.isRequired,
+  actions: PropTypes.object.isRequired,
   setupConfig: PropTypes.object.isRequired,
-  style:       PropTypes.object
+  style: PropTypes.object
 };
 
 Setup.contextTypes = {
@@ -193,11 +191,11 @@ Setup.contextTypes = {
 
 Setup.defaultProps = {
   style: {
-    width:         '100%',
-    height:        '100%',
-    display:       'flex',
+    width: '100%',
+    height: '100%',
+    display: 'flex',
     flexDirection: 'column',
-    position:      'relative'
+    position: 'relative'
   }
 };
 

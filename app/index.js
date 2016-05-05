@@ -5,19 +5,19 @@ import { Router, hashHistory } from 'react-router';
 import { syncHistoryWithStore } from 'react-router-redux';
 import routes from './routes';
 import configureStore from './store/configureStore';
-
-// temporary
 import injectTapEventPlugin from 'react-tap-event-plugin';
 
-const store   = configureStore();
+// temporary
+
+const store = configureStore();
 const history = syncHistoryWithStore(hashHistory, store);
 
 injectTapEventPlugin();
 
 
 render(
-  <Provider store={store}>
-    <Router history={history}>
+  <Provider store={store} >
+    <Router history={history} >
       {routes}
     </Router>
   </Provider>,

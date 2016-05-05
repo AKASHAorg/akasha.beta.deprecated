@@ -8,7 +8,7 @@ const initialState = fromJS({
   status: [0]
 });
 
-export default function syncStatus(state = initialState, action) {
+export default function syncStatus (state = initialState, action) {
 
   switch (action.type) {
     case types.SYNC_ACTIVE:

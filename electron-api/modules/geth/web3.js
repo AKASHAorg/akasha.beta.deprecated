@@ -8,7 +8,7 @@ class Web3 {
    * @param miner
    * @param personal
    */
-  constructor({ admin = true, miner = false } = {}) {
+  constructor ({ admin = true, miner = false } = {}) {
 
     this.adminInit = false;
     this.minerInit = false;
@@ -29,11 +29,11 @@ class Web3 {
 
   }
 
-  get web3() {
+  get web3 () {
     return this._web3;
   }
 
-  initAdmin() {
+  initAdmin () {
     const { methods, properties } = this._adminMethods();
 
     if (this.adminInit) {
@@ -49,7 +49,7 @@ class Web3 {
     this.adminInit = true;
   }
 
-  initMiner() {
+  initMiner () {
     const { methods, properties } = this._minerMethods();
     if (this.minerInit) {
       return;
@@ -64,7 +64,7 @@ class Web3 {
     this.minerInit = true;
   }
 
-  setProvider(gethIpc, socket) {
+  setProvider (gethIpc, socket) {
     if (!this._web3.currentProvider) {
       this._web3.setProvider(new this._web3.providers.IpcProvider(gethIpc, socket));
       this._web3.eth.getCoinbase((err, coinbase) => {
@@ -77,7 +77,7 @@ class Web3 {
     }
   }
 
-  _adminMethods() {
+  _adminMethods () {
     return {
       methods: [
         new this._web3._extend.Method({
@@ -164,7 +164,7 @@ class Web3 {
     };
   }
 
-  _minerMethods() {
+  _minerMethods () {
     return {
       methods: [
         new this._web3._extend.Method({

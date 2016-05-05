@@ -14,27 +14,33 @@ import Avatar from 'material-ui/lib/avatar';
 import IconMenu from 'material-ui/lib/menus/icon-menu';
 import MenuItem from 'material-ui/lib/menus/menu-item';
 import MoreVertIcon from 'material-ui/lib/svg-icons/navigation/more-vert';
-
-import {ToolbarWallet, ToolbarComments, ToolbarVotes, ToolbarEthereum,
-  ToolbarProfile, ToolbarSettings, ToolbarLogout} from '../../svg';
+import {
+  ToolbarWallet,
+  ToolbarComments,
+  ToolbarVotes,
+  ToolbarEthereum,
+  ToolbarProfile,
+  ToolbarSettings,
+  ToolbarLogout
+} from '../../svg';
 
 const svgStyle = {
-  style:      {
-    width:     '20px',
-    height:    '20px',
+  style: {
+    width: '20px',
+    height: '20px',
     transform: 'scale(1.2)'
   },
-  color:      Colors.minBlack,
+  color: Colors.minBlack,
   hoverColor: Colors.lightBlack,
-  viewBox:    '0 0 20 20'
+  viewBox: '0 0 20 20'
 };
 
 const tabStyles = {
   default_tab: {
-    color:      Colors.grey500,
+    color: Colors.grey500,
     fontWeight: 400,
   },
-  active_tab:  {
+  active_tab: {
     color: Colors.deepOrange700,
   }
 };
@@ -45,12 +51,12 @@ const iconButtonElement = (
     tooltip="more"
     tooltipPosition="bottom-left"
   >
-    <MoreVertIcon color={Colors.grey400}/>
+    <MoreVertIcon color={Colors.grey400} />
   </IconButton>
 );
 
 const rightIconMenu = (
-  <IconMenu iconButtonElement={iconButtonElement}>
+  <IconMenu iconButtonElement={iconButtonElement} >
     <MenuItem>Reply</MenuItem>
     <MenuItem>Forward</MenuItem>
     <MenuItem>Delete</MenuItem>
@@ -64,14 +70,15 @@ class ProfilePannel extends Component {
     return (
       <Pannel>
         <div
-          style={{width:"100%", borderBottom: '2px solid #cccccc', paddingTop: "32px", paddingLeft: "32px", paddingRight: "32px", paddingBottom: "104px", backgroundColor:'rgba(0, 0, 0, 0.03)'}}>
-          <div className="row top-xs">
-            <div className="col-xs-4">
-              <Paper style={{width:'100px', height:'100px'}} zDepth={1} circle={true}/>
+          style={{width:"100%", borderBottom: '2px solid #cccccc', paddingTop: "32px", paddingLeft: "32px", paddingRight: "32px", paddingBottom: "104px", backgroundColor:'rgba(0, 0, 0, 0.03)'}} >
+          <div className="row top-xs" >
+            <div className="col-xs-4" >
+              <Paper style={{width:'100px', height:'100px'}} zDepth={1} circle={true} />
             </div>
-            <div className="col-xs-8" style={{marginTop: '-20px'}}>
-              <div className="row end-xs">
-                <IconButton tooltip="Wallet" style={{width: '40px', height: '40px'}} iconStyle={svgStyle.style}>
+            <div className="col-xs-8" style={{marginTop: '-20px'}} >
+              <div className="row end-xs" >
+                <IconButton tooltip="Wallet" style={{width: '40px', height: '40px'}}
+                            iconStyle={svgStyle.style} >
                   <SvgIcon viewBox={svgStyle.viewBox}
                            className={"hand-icon"}
                            color={svgStyle.color}
@@ -80,7 +87,8 @@ class ProfilePannel extends Component {
                     <ToolbarWallet />
                   </SvgIcon>
                 </IconButton>
-                <IconButton tooltip="Comments" style={{width: '40px', height: '40px'}} iconStyle={svgStyle.style}>
+                <IconButton tooltip="Comments" style={{width: '40px', height: '40px'}}
+                            iconStyle={svgStyle.style} >
                   <SvgIcon
                     viewBox={svgStyle.viewBox}
                     className={"hand-icon"}
@@ -90,7 +98,8 @@ class ProfilePannel extends Component {
                     <ToolbarComments />
                   </SvgIcon>
                 </IconButton>
-                <IconButton tooltip="Votes" style={{width: '40px', height: '40px'}} iconStyle={svgStyle.style}>
+                <IconButton tooltip="Votes" style={{width: '40px', height: '40px'}}
+                            iconStyle={svgStyle.style} >
                   <SvgIcon
                     viewBox={svgStyle.viewBox}
                     className={"hand-icon"}
@@ -100,7 +109,8 @@ class ProfilePannel extends Component {
                     <ToolbarVotes />
                   </SvgIcon>
                 </IconButton>
-                <IconButton tooltip="Network" style={{width: '40px', height: '40px'}} iconStyle={svgStyle.style}>
+                <IconButton tooltip="Network" style={{width: '40px', height: '40px'}}
+                            iconStyle={svgStyle.style} >
                   <SvgIcon
                     viewBox={svgStyle.viewBox}
                     className={"hand-icon"}
@@ -110,7 +120,8 @@ class ProfilePannel extends Component {
                     <ToolbarEthereum />
                   </SvgIcon>
                 </IconButton>
-                <IconButton tooltip="Profile" style={{width: '40px', height: '40px'}} iconStyle={svgStyle.style}>
+                <IconButton tooltip="Profile" style={{width: '40px', height: '40px'}}
+                            iconStyle={svgStyle.style} >
                   <SvgIcon
                     viewBox={svgStyle.viewBox}
                     className={"hand-icon"}
@@ -120,7 +131,8 @@ class ProfilePannel extends Component {
                     <ToolbarProfile />
                   </SvgIcon>
                 </IconButton>
-                <IconButton tooltip="Settings" style={{width: '40px', height: '40px'}} iconStyle={svgStyle.style}>
+                <IconButton tooltip="Settings" style={{width: '40px', height: '40px'}}
+                            iconStyle={svgStyle.style} >
                   <SvgIcon
                     viewBox={svgStyle.viewBox}
                     className={"hand-icon"}
@@ -130,7 +142,8 @@ class ProfilePannel extends Component {
                     <ToolbarSettings />
                   </SvgIcon>
                 </IconButton>
-                <IconButton tooltip="Logout" style={{width: '40px', height: '40px'}} iconStyle={svgStyle.style}>
+                <IconButton tooltip="Logout" style={{width: '40px', height: '40px'}}
+                            iconStyle={svgStyle.style} >
                   <SvgIcon
                     viewBox={svgStyle.viewBox}
                     className={"hand-icon"}
@@ -143,21 +156,23 @@ class ProfilePannel extends Component {
               </div>
             </div>
           </div>
-          <div className="row start-xs">
-            <div className="col-xs-12" style={{fontSize: '58px', fontFamily: "Roboto", fontWeight: 500}}>
+          <div className="row start-xs" >
+            <div className="col-xs-12"
+                 style={{fontSize: '58px', fontFamily: "Roboto", fontWeight: 500}} >
               {"John Doe"}
             </div>
-            <div className="col-xs-12" style={{fontSize: '28px', fontFamily: "Roboto", fontWeight: 200}}>
+            <div className="col-xs-12"
+                 style={{fontSize: '28px', fontFamily: "Roboto", fontWeight: 200}} >
               {"@johnDoe"}
             </div>
           </div>
         </div>
-        <div style={{width:"100%", marginTop: '-48px'}}>
+        <div style={{width:"100%", marginTop: '-48px'}} >
           <div>
-            <Tabs tabItemContainerStyle={{backgroundColor: 'transparent'}}>
-              <Tab label="FEED" style={tabStyles.default_tab}>
+            <Tabs tabItemContainerStyle={{backgroundColor: 'transparent'}} >
+              <Tab label="FEED" style={tabStyles.default_tab} >
                 <div>
-                  <List subheader="Wednesday, 27 January 2016">
+                  <List subheader="Wednesday, 27 January 2016" >
                     <ListItem
                       leftAvatar={<Avatar src="" />}
                       rightIconButton={rightIconMenu}
@@ -185,7 +200,7 @@ class ProfilePannel extends Component {
                     />
                     <Divider/>
                   </List>
-                  <List subheader="Last week">
+                  <List subheader="Last week" >
                     <ListItem
                       leftAvatar={<Avatar src=""/>}
                       rightIconButton={rightIconMenu}
@@ -230,10 +245,11 @@ class ProfilePannel extends Component {
 
                 </div>
               </Tab>
-              <Tab label={<span>You <sup style={{color: Colors.red500}}>(3)</sup></span>} style={tabStyles.default_tab}>
+              <Tab label={<span>You <sup style={{color: Colors.red500}}>(3)</sup></span>}
+                   style={tabStyles.default_tab} >
                 <div></div>
               </Tab>
-              <Tab label="MESSAGES" style={tabStyles.default_tab}>
+              <Tab label="MESSAGES" style={tabStyles.default_tab} >
                 <div></div>
               </Tab>
             </Tabs>

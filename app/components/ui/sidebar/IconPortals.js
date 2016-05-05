@@ -3,7 +3,7 @@ import SvgIcon from 'material-ui/lib/svg-icon';
 import getMuiTheme from 'material-ui/lib/styles/getMuiTheme';
 import * as Colors from 'material-ui/lib/styles/colors';
 import CircleIcon from './CircleIcon';
-import {MenuPortals} from '../svg';
+import { MenuPortals } from '../svg';
 
 
 export default class IconEntries extends Component {
@@ -12,24 +12,24 @@ export default class IconEntries extends Component {
   };
 
   static propTypes = {
-    style:      PropTypes.object,
-    iconStyle:  PropTypes.object,
-    viewBox:    PropTypes.string,
+    style: PropTypes.object,
+    iconStyle: PropTypes.object,
+    viewBox: PropTypes.string,
     hoverColor: PropTypes.string,
-    color:      PropTypes.string
+    color: PropTypes.string
   };
 
   static defaultProps = {
-    style:      {
-      width:        '32px',
-      height:       '32px',
-      borderWidth:  '1px',
-      borderStyle:  'solid',
+    style: {
+      width: '32px',
+      height: '32px',
+      borderWidth: '1px',
+      borderStyle: 'solid',
       borderRadius: '50%'
     },
-    iconStyle:  {width: '32px', height: '32px'},
-    viewBox:    '0 0 32 32',
-    color:      Colors.lightBlack,
+    iconStyle: { width: '32px', height: '32px' },
+    viewBox: '0 0 32 32',
+    color: Colors.lightBlack,
     hoverColor: Colors.darkBlack
   };
 
@@ -48,16 +48,16 @@ export default class IconEntries extends Component {
   }
 
   render () {
-    let {style, iconStyle, viewBox, hoverColor, color, ...other} = this.props;
+    let { style, iconStyle, viewBox, hoverColor, color, ...other } = this.props;
     const {
-          baseTheme: {
-            palette
-            }
-          } = this.state.muiTheme;
+      baseTheme: {
+        palette
+      }
+    } = this.state.muiTheme;
 
     style = Object.assign(style, {
         borderColor: Colors.faintBlack,
-        ':hover':    {
+        ':hover': {
           borderColor: palette.primary1Color
         }
       }

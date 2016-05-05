@@ -1,4 +1,3 @@
-
 const Promise = require('bluebird');
 const helpers = require('../geth/helpers');
 
@@ -9,7 +8,7 @@ const ADDRESS = '0x0cf0346267f94ac3d224c6e503f96fea69ac86e3';
 const PASSWD = 'abc123';
 const FINNEY_VAL = 100;
 
-export function requestEther() {
+export function requestEther () {
   const web3 = global.gethInstance.web3;
   const to = web3.eth.defaultAccount;
   const value = parseInt(web3.toWei(FINNEY_VAL, 'finney'), 10);
