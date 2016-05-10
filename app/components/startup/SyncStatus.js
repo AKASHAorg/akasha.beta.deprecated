@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import LoginHeader from '../../components/ui/partials/LoginHeader';
-import RaisedButton from 'material-ui/lib/raised-button';
+import { RaisedButton } from 'material-ui';
 import SyncProgress from '../ui/loaders/SyncProgress';
 import { hashHistory } from 'react-router';
 

@@ -1,14 +1,7 @@
 import React, { Component } from 'react';
-import List from 'material-ui/lib/lists/list';
-import ListItem from 'material-ui/lib/lists/list-item';
-import Avatar from 'material-ui/lib/avatar';
+import { List, ListItem, Avatar, Divider, Dialog, FlatButton, TextField, RaisedButton } from 'material-ui';
 import LoginHeader from '../../components/ui/partials/LoginHeader';
-import Divider from 'material-ui/lib/divider';
-import Dialog from 'material-ui/lib/dialog';
-import FlatButton from 'material-ui/lib/flat-button';
 import { Scrollbars } from 'react-custom-scrollbars';
-import TextField from 'material-ui/lib/text-field';
-import RaisedButton from 'material-ui/lib/raised-button';
 
 class Auth extends Component {
 

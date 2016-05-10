@@ -1,8 +1,5 @@
 import React from 'react';
-import autoPrefix from 'material-ui/lib/styles/auto-prefix';
-import Transitions from 'material-ui/lib/styles/transitions';
-import getMuiTheme from 'material-ui/lib/styles/getMuiTheme';
-
+import { autoPrefix, transitions, getMuiTheme} from 'material-ui/styles';
 
 function getRelativeValue (value, min, max) {
   const clampedValue = Math.min(Math.max(min, value), max);
@@ -45,7 +42,7 @@ function getStyles (props, state) {
       height: baseSize,
       margin: 'auto',
       display: 'inline-block',
-      transition: Transitions.create('transform', '20s', null, 'linear'),
+      transition: transitions.create('transform', '20s', null, 'linear'),
       transitionTimingFunction: 'linear'
     },
 
@@ -61,13 +58,13 @@ function getStyles (props, state) {
       strokeDashoffset: 0,
       stroke: props.color || palette.primary1Color,
       strokeLinecap: 'round',
-      transition: Transitions.create('all', '1.5s', null, 'ease-in-out')
+      transition: transitions.create('all', '1.5s', null, 'ease-in-out')
     },
   };
 
   if (props.mode === 'determinate') {
     const relVal = getRelativeValue(value, min, max);
-    styles.path.transition = Transitions.create('all', '0.3s', null, 'linear');
+    styles.path.transition = transitions.create('all', '0.3s', null, 'linear');
     styles.path.strokeDasharray = `${Math.round(relVal * 0.92)},200`;
   }
 

@@ -1,8 +1,6 @@
-import MoreVertIcon from 'material-ui/lib/svg-icons/navigation/more-vert';
-import IconMenu from 'material-ui/lib/menus/icon-menu';
-import IconButton from 'material-ui/lib/icon-button';
-import MenuItem from 'material-ui/lib/menus/menu-item';
-import * as Colors from 'material-ui/lib/styles/colors';
+import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
+import { IconMenu, IconButton, MenuItem } from 'material-ui';
+import * as Colors from 'material-ui/styles/colors';
 import Logo from '../sidebar/IconLogo';
 import React from 'react';
 
@@ -11,7 +9,7 @@ const style = {
   margin: 0,
   paddingTop: '10px',
   paddingBottom: '10px',
-  paddingLeft: '42',
+  paddingLeft: 42,
   paddingRight: 0,
   lineHeight: '18px',
   fontSize: '18px'

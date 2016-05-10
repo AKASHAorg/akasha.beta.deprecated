@@ -1,10 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import LoginHeader from '../../components/ui/partials/LoginHeader';
-import * as Colors from 'material-ui/lib/styles/colors';
-import RadioButton from 'material-ui/lib/radio-button';
-import RadioButtonGroup from 'material-ui/lib/radio-button-group';
-import RaisedButton from 'material-ui/lib/raised-button';
-import TextField from 'material-ui/lib/text-field';
+import * as Colors from 'material-ui/styles/colors';
+import { RadioButton, RadioButtonGroup, RaisedButton, TextField } from 'material-ui';
 import { hashHistory } from 'react-router';
 import { Scrollbars } from 'react-custom-scrollbars';
 

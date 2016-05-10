@@ -2,13 +2,8 @@ const remote = require('remote');
 const dialog = remote.require('electron').dialog;
 import React, { Component, PropTypes } from 'react';
 import { MenuAkashaLogo } from '../ui/svg';
-import * as Colors from 'material-ui/lib/styles/colors';
-import SvgIcon from 'material-ui/lib/svg-icon';
-import RaisedButton from 'material-ui/lib/raised-button';
-import TextField from 'material-ui/lib/text-field';
-import Checkbox from 'material-ui/lib/checkbox';
-import SelectField from 'material-ui/lib/select-field';
-import MenuItem from 'material-ui/lib/menus/menu-item';
+import * as Colors from 'material-ui/styles/colors';
+import { SvgIcon, RaisedButton, TextField, Checkbox, SelectField, MenuItem } from 'material-ui';
 
 let avatar_path = '';
 let bg_image_path = '';
