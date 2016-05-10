@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { MenuAkashaLogo } from '../ui/svg';
-import * as Colors from 'material-ui/lib/styles/colors';
-import SvgIcon from 'material-ui/lib/svg-icon';
+import * as Colors from 'material-ui/styles/colors';
+import { SvgIcon } from 'material-ui';
 
 class CreateProfileStatus extends Component {
 
