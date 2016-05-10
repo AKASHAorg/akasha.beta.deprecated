@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router';
 import SyncProgress from './ui/loaders/SyncProgress';
-import {MenuEthereum, MenuAkashaLogo} from './ui/svg';
+import { MenuEthereum, MenuAkashaLogo } from './ui/svg';
 import ProfileBadge from './ui/ProfileBadge';
 import SvgIcon from 'material-ui/lib/svg-icon';
 
@@ -12,7 +12,6 @@ export default class Home extends Component {
         <div>
           <h2>Homeaa</h2>
           <Link to="/register">to Counters</Link>
-
           <ProfileBadge />
         </div>
       </div>

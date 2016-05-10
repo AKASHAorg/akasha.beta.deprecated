@@ -26,7 +26,7 @@
       }
     },
     "renderer": {
-      "command": "node_modules/.bin/electron --remote-debugging-port=1337 ./",
+      "command": "node_modules\\.bin\\electron.cmd --remote-debugging-port=1337 main.js",
       "env": {
         "HOT": 1,
         "NODE_ENV": "development"
@@ -139,7 +139,6 @@
     "bin-wrapper": "3.0.2",
     "bluebird": "3.3.5",
     "electron-debug": "0.7.0",
-    "go-ipfs": "0.3.11",
     "history": "2.1.1",
     "immutable": "3.8.1",
     "ipfs-api": "3.0.2",

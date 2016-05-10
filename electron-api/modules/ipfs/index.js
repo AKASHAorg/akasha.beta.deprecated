@@ -1,7 +1,7 @@
 /* eslint strict: 0 */
 'use strict';
 
-const ipfsBin = require('go-ipfs');
+const ipfsBin = 'C:\\Program Files\\Git\\usr\\bin\\ipfs.exe';
 const ipfsAPI = require('ipfs-api');
 const Promise = require('bluebird');
 const childProcess = require('child_process');
@@ -11,10 +11,10 @@ const loggerRegistrar = require('../../loggers');
 const symbolEnforcer = Symbol();
 const symbol = Symbol();
 
-const windowsApi = { host: 'localhost', port: '5001', procotol: 'http' };
+const windowsApi = { host: 'localhost', port: '5001', protocol: 'http' };
 const unixApi = '/ip4/127.0.0.1/tcp/5001';
 
-const defaultApi = (process.platform !== 'win32') ? unixApi : windowsApi;
+const defaultApi =  unixApi;
 
 /**
  * Quick usage:
