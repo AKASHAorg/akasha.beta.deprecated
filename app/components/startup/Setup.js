@@ -12,7 +12,6 @@ class Setup extends Component {
 
   handleChange = (event, value) => {
     const { actions, setupConfig } = this.props;
-
     const show = 'advanced' === value;
     if (setupConfig.get('toggleAdvanced') === show) {
       return;
@@ -75,7 +74,6 @@ class Setup extends Component {
     const floatingLabelStyle = { color: Colors.lightBlack };
     const inputStyle = { color: Colors.darkBlack };
     const rootStyle = { width: '400px' };
-
     const defaultSelected = (!setupConfig.get('toggleAdvanced')) ? 'express' : 'advanced';
 
     if (setupConfig.get('toggleAdvanced')) {
@@ -86,7 +84,7 @@ class Setup extends Component {
             errorText={"Change this if geth has different data directory"}
             floatingLabelStyle={floatingLabelStyle}
             floatingLabelText="Geth Datadir path"
-            hintText={setupConfig.get('gethPath')}
+            hintText={<p>{setupConfig.get('gethPath')}</p>}
             inputStyle={inputStyle}
             onBlur={this.handleGethDatadir}
             style={rootStyle}
@@ -97,7 +95,7 @@ class Setup extends Component {
             errorText={"Change this if geth is already started with --ipcpath"}
             floatingLabelStyle={floatingLabelStyle}
             floatingLabelText="Geth ipc path"
-            hintText={setupConfig.get('gethPathIpc')}
+            hintText={<p>{setupConfig.get('gethPathIpc')}</p>}
             inputStyle={inputStyle}
             onBlur={this.handleGethIpc}
             style={rootStyle}
@@ -107,7 +105,7 @@ class Setup extends Component {
             errorText={"Change this if ipfs daemon is already running"}
             floatingLabelStyle={floatingLabelStyle}
             floatingLabelText="Ipfs api path"
-            hintText={setupConfig.get('ipfsApiPath')}
+            hintText={<p>{setupConfig.get('ipfsApiPath')}</p>}
             inputStyle={inputStyle}
             onBlur={this.handleIpfsPath}
             style={rootStyle}
@@ -169,6 +167,7 @@ class Setup extends Component {
           >
             <RaisedButton label="Next"
                           primary={true}
+                          backgroundColor={this.context.muiTheme.raisedButton.secondaryColor}
                           style={{ marginLeft: '12px' }}
                           onClick={this.handleSubmit}
             />
@@ -200,5 +199,3 @@ Setup.defaultProps = {
 };
 
 export default Setup;
-
-

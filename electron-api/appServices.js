@@ -16,7 +16,7 @@ setTimeout(() => {
   window.gethInstance.start();
   window.ipfsInstance.start();
 
-  app.on('before-quit', () => {
+  app.on('will-quit', () => {
     window.gethInstance.stop();
     window.ipfsInstance.stop();
     app = null;

@@ -16,7 +16,6 @@ export default function syncStatus (state = initialState, action) {
         currentState: 'Synchronising',
         action: 'PAUSE',
         actionId: 1,
-        status: action.status
       });
     case types.SYNC_STOPPED:
       return state.merge({
@@ -31,7 +30,11 @@ export default function syncStatus (state = initialState, action) {
         actionId: 3
       });
     case types.SYNC_RESUME:
-      return state.set('currentState', 'Resuming synchronization...');
+      return state.merge({
+        currentState: 'Resuming synchronization...',
+        action: 'STARTING...',
+        actionId: 4
+      });
     default:
       return state;
   }

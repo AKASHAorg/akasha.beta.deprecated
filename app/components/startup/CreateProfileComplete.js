@@ -14,6 +14,12 @@ class CreateProfileComplete extends Component {
 
   render () {
     const { style, profile } = this.props;
+    const akashaLogoStyles = {
+      width: '32px',
+      height: '32px',
+      marginRight: '10px',
+      verticalAlign: 'middle'
+    };
     const fullName = `${profile.getIn(['name', 'first'])} ${profile.getIn(['name', 'last'])}`;
 
     return (
@@ -23,7 +29,7 @@ class CreateProfileComplete extends Component {
             <SvgIcon
               color={Colors.lightBlack}
               viewBox="0 0 32 32"
-              style={{ width: '32px', height: '32px', marginRight: '10px', verticalAlign: 'middle' }}
+              style={ akashaLogoStyles }
             >
               <MenuAkashaLogo />
             </SvgIcon>
