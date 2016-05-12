@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { List, ListItem, Avatar, Divider, Dialog, FlatButton, TextField, RaisedButton } from 'material-ui';
 import LoginHeader from '../../components/ui/partials/LoginHeader';
 import { Scrollbars } from 'react-custom-scrollbars';
+import { hashHistory } from 'react-router';
 
 class Auth extends Component {
 
@@ -41,28 +42,8 @@ class Auth extends Component {
       <FlatButton label="Cancel" onTouchTap={this.handleModalClose} />,
       <FlatButton label="Submit" primary={true} onTouchTap={this.handleLogin} />
     ];
+    const localProfiles = this._getLocalProfiles();
 
-    let localProfiles = profiles.map((account, index) => {
-      return (
-        <div key={index} >
-          <ListItem
-            key={`l${index}`}
-            leftAvatar={<Avatar>aa</Avatar>}
-            primaryText={account.get('address')}
-            secondaryText={account.get('userName')}
-            secondaryTextLines={1}
-            value={account.get('address')}
-            onTouchTap={()=> this.handleTouchTap(index)}
-          />
-          <Divider key={`d${index}`} inset />
-        </div>
-      )
-    });
-    if (!localProfiles.size) {
-      localProfiles = (
-        <div>No profiles found.Create a new identity or import an existing one.</div>
-      )
-    }
     return (
       <div style={style} >
         <div className="start-xs" >
@@ -81,7 +62,10 @@ class Auth extends Component {
             <div style={{float: 'right'}} >
               <RaisedButton label="IMPORT IDENTITY" />
               <RaisedButton label="CREATE NEW IDENTITY"
-                            primary={true} style={{marginLeft: '10px'}} />
+                            primary={true} 
+                            style={{marginLeft: '10px'}} 
+                            onMouseUp={this._handleIdentityCreate}
+              />
             </div>
             <Dialog
               title="Authentication"
@@ -112,6 +96,32 @@ class Auth extends Component {
         </div>
       </div>
     );
+  }
+  _getLocalProfiles() {
+    const { authState } = this.props;
+    if(!authState.get('profiles').size) {
+      return <div>No profiles found. Create a new identity or import an existing one.</div>;
+    }
+    return authState.get('profiles').map((account, index) => {
+      return (
+        <div key={index} >
+          <ListItem
+            key={`l${index}`}
+            leftAvatar={<Avatar>aa</Avatar>}
+            primaryText={account.get('address')}
+            secondaryText={account.get('userName')}
+            secondaryTextLines={1}
+            value={account.get('address')}
+            onTouchTap={()=> this.handleTouchTap(index)}
+          />
+          <Divider key={`d${index}`} inset />
+        </div>
+      )
+    });
+  }
+  _handleIdentityCreate = (ev) => {
+    ev.preventDefault();
+    hashHistory.push('new-profile');
   }
 }
 

@@ -9,7 +9,7 @@ const style = {
   margin: 0,
   paddingTop: '10px',
   paddingBottom: '10px',
-  paddingLeft: 42,
+  paddingLeft: '42px',
   paddingRight: 0,
   lineHeight: '18px',
   fontSize: '18px'
