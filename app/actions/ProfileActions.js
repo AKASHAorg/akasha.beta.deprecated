@@ -12,7 +12,6 @@ export function validateName (name) {
   return { type: types.VALID_NAME, valid: true };
 }
 
-
 function validateUser (name) {
   const prof = window.akasha.profileInstance;
   const response = { type: types.VALID_USER, valid: false };

@@ -4,12 +4,35 @@ import React, { Component, PropTypes } from 'react';
 import { MenuAkashaLogo } from '../ui/svg';
 import * as Colors from 'material-ui/styles/colors';
 import { SvgIcon, RaisedButton, TextField, Checkbox, SelectField, MenuItem } from 'material-ui';
-
-let avatar_path = '';
-let bg_image_path = '';
+import Avatar from '../ui/avatar/avatar-editor';
+import Validator from 'validatorjs';
 
 class CreateProfile extends Component {
-
+  constructor() {
+    super();
+    this.state = {
+      formValues: {
+        firstName: '',
+        lastName: '',
+        userName: '',
+        password: '',
+        password_confirmation: ''
+      }
+    };
+    this.validatorTypes = {
+      firstName: 'required|min:3',
+      lastName: 'required|min:3',
+      userName: 'required|min:4',
+      password: 'required|min:8|max:32',
+      password2: 'required|confirmed'
+    };
+    this.validationErrorMessages = {
+      required: 'The :attribute is required.',
+      min: ':attribute should be at least :min characters long.',
+      max: ':attribute should not have more than :max characters.',
+      'confirmed.password2': 'Oups! Password verification is different than first one!'
+    }
+  }
   componentWillMount () {
     this.setState({ opt_details: false });
   }
@@ -18,144 +41,28 @@ class CreateProfile extends Component {
     if (this.firstNameInput) {
       this.firstNameInput.focus();
     }
-
-    // let dragOk = false;
-    // let x = 0;
-    // let y = 0;
-    //
-    // const img = new Image();
-    // const canvas = document.getElementById('canvasAvatar');
-    // const ctx = canvas.getContext('2d');
-    //
-    // function draw() {
-    //   ctx.clearRect(0, 0, canvas.width, canvas.height);
-    //   img.src = avatar_path;
-    //   img.onload = function() {
-    //     const dWidth = img.width / canvas.height / img.height;
-    //     ctx.drawImage(img, x, y, dWidth, canvas.height);
-    //   };
-    // }
-    //
-    // setInterval(draw, 25);
-
-    // function myMove(e) {
-    //   if (dragOk) {
-    //     x = e.pageX - canvas.offsetLeft;
-    //     y = e.pageY - canvas.offsetTop;
-    //   }
-    // }
-    //
-    // function myDown(e) {
-    //   if (e.pageX < x + 15 + canvas.offsetLeft && e.pageX > x - 15 +
-    //       canvas.offsetLeft && e.pageY < y + 15 + canvas.offsetTop &&
-    //       e.pageY > y -15 + canvas.offsetTop) {
-    //     x = e.pageX - canvas.offsetLeft;
-    //     y = e.pageY - canvas.offsetTop;
-    //     dragOk = true;
-    //     canvas.onmousemove = myMove;
-    //   }
-    // }
-    //
-    // function myUp() {
-    //   dragOk = false;
-    //   canvas.onmousemove = null;
-    // }
-    //
-    // canvas.onmousedown = myDown;
-    // canvas.onmouseup = myUp;
   }
 
-  handleUpdateName = () => {
-    const { actions } = this.props;
-    const nam1 = this.firstNameInput.getValue().trim();
-    const nam2 = this.lastNameInput.getValue().trim();
-    const name = `${nam1} ${nam2}`.trim();
-    if (actions.validateName(name).valid) {
-      actions.updateName(nam1, nam2);
-    }
-  }
+  handleUpdateName = () => {}
 
-  handleUpdateUser = (event) => {
-    const { actions } = this.props;
-    actions.updateUser(event.target.value.trim());
-  }
+  handleUpdateUser = (event) => {}
 
-  handleUpdatePasswd = () => {
-    const { actions, profile } = this.props;
-    const pwd1 = this.refs.passwd1.getValue();
-    const pwd2 = this.refs.passwd2.getValue();
-    actions.updatePasswd(pwd1, pwd2);
-  }
+  handleUpdatePasswd = () => {}
 
   handleShowDetails = (event, enable) => {
     this.setState({ opt_details: !this.state.opt_details });
   }
 
-  handleUnlockActive = (event, enable) => {
-    const { actions } = this.props;
-    actions.unlockEnable(enable);
-  }
+  handleUnlockActive = (event, enable) => {}
 
-  handleUnlockFor = (event, _, unlockFor) => {
-    const { actions } = this.props;
-    actions.unlockAccountFor(unlockFor);
-  }
+  handleUnlockFor = (event, _, unlockFor) => {}
 
-  handleUploadAvatar = () => {
-    dialog.showOpenDialog({
-      title: 'Select image for your avatar',
-      properties: ['openFile'],
-      filters: [{ name: 'Images', extensions: ['jpg', 'png'] }]
-    }, files => {
-      if (!files) {
-        return;
-      }
-      avatar_path = files[0];
-      const img = new Image();
-      const canvas = document.getElementById('canvasAvatar');
-      const ctx = canvas.getContext('2d');
+  handleUploadBgImage = () => {}
 
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      img.onload = function () {
-        const fract = img.height / canvas.height;
-        console.log(fract);
-        ;
-        const dWidth = Math.ceil(img.width / fract);
-        const dHeight = Math.ceil(img.height / fract);
-        ctx.drawImage(img, 0, 0, dWidth, dHeight);
-      };
-      img.src = avatar_path;
-
-    });
-  }
-
-  handleUploadBgImage = () => {
-    dialog.showOpenDialog({
-      title: 'Select background image',
-      properties: ['openFile'],
-      filters: [{ name: 'Images', extensions: ['jpg', 'png'] }]
-    }, files => {
-      if (!files) {
-        return;
-      }
-      const file = files[0];
-    });
-  }
-
-  readyForSubmit = () => {
-    const { profile } = this.props;
-    return (
-      profile.getIn(['name', 'valid']) &&
-      profile.getIn(['user', 'valid']) &&
-      profile.getIn(['passwd', 'valid'])
-    );
-  }
+  readyForSubmit = () => {}
 
   handleSubmit = () => {
-    const { actions } = this.props;
-    if (this.readyForSubmit()) {
-      actions.createUser();
-    }
+    actions.createUser();
   }
 
   render () {
@@ -234,13 +141,12 @@ class CreateProfile extends Component {
             <div style={{ display: this.state.opt_details ? 'block' : 'none' }} >
 
               <h3 style={{ margin: '30px 0 10px 0' }} >{'Avatar'}</h3>
-              <canvas
-                id="canvasAvatar"
-                onClick={this.handleUploadAvatar}
-                style={{ width: '220px', height: '220px', border: '1px dotted #ccc', background: '#eee' }}
-              >
-              </canvas>
-
+              <div>
+                <Avatar 
+                  image={this.state.avatarImage} 
+                  editable
+                  ref={(avatar) => this.avatar = avatar}/>
+              </div>
               <h3 style={{ margin: '20px 0 10px 0' }} >{'Background image'}</h3>
               <canvas
                 id="canvasBgImage"
