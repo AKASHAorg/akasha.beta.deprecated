@@ -4,15 +4,15 @@ import Auth from '../components/auth/Auth';
 import * as AuthActions from '../actions/AuthActions';
 
 function mapStateToProps (state) {
-  return {
-    authState: state.authState
-  };
+    return {
+        authState: state.authState
+    };
 }
 
 function mapDispatchToProps (dispatch) {
-  return {
-    actions: bindActionCreators(AuthActions, dispatch)
-  };
+    return {
+        actions: bindActionCreators(AuthActions, dispatch)
+    };
 }
 
 export default connect(

@@ -5,34 +5,27 @@ import { MenuAkashaLogo } from '../ui/svg';
 import * as Colors from 'material-ui/styles/colors';
 import { SvgIcon, RaisedButton, TextField, Checkbox, SelectField, MenuItem } from 'material-ui';
 import Avatar from '../ui/avatar/avatar-editor';
-import Validator from 'validatorjs';
+import ImageUploader from '../ui/image-uploader/image-uploader';
+import { inputFieldMethods } from '../../utils/dataModule';
+import validationProvider from '../../utils/validationProvider';
+import { user } from '../../utils/validationSchema';
+import ScrollBars from 'react-custom-scrollbars';
 
 class CreateProfile extends Component {
   constructor() {
     super();
+    this.getProps = inputFieldMethods.getProps.bind(this);
     this.state = {
-      formValues: {
-        firstName: '',
-        lastName: '',
-        userName: '',
-        password: '',
-        password_confirmation: ''
-      }
+      formValues: {}
     };
-    this.validatorTypes = {
-      firstName: 'required|min:3',
-      lastName: 'required|min:3',
-      userName: 'required|min:4',
-      password: 'required|min:8|max:32',
-      password2: 'required|confirmed'
-    };
-    this.validationErrorMessages = {
-      required: 'The :attribute is required.',
-      min: ':attribute should be at least :min characters long.',
-      max: ':attribute should not have more than :max characters.',
-      'confirmed.password2': 'Oups! Password verification is different than first one!'
-    }
+    this.validatorTypes = user.schema,
+    this.serverValidatedFields = ['userName']
   }
+
+  getValidatorData = () => {
+    return this.state.formValues;
+  }
+
   componentWillMount () {
     this.setState({ opt_details: false });
   }
@@ -43,12 +36,6 @@ class CreateProfile extends Component {
     }
   }
 
-  handleUpdateName = () => {}
-
-  handleUpdateUser = (event) => {}
-
-  handleUpdatePasswd = () => {}
-
   handleShowDetails = (event, enable) => {
     this.setState({ opt_details: !this.state.opt_details });
   }
@@ -57,18 +44,70 @@ class CreateProfile extends Component {
 
   handleUnlockFor = (event, _, unlockFor) => {}
 
-  handleUploadBgImage = () => {}
-
-  readyForSubmit = () => {}
-
   handleSubmit = () => {
-    actions.createUser();
+    let userData = {};
+    let avatarFile = this.avatar.getImage();
+    let profileImage = this.imageUploader.getImage();
+    
   }
 
   render () {
     const { style, profile } = this.props;
     const floatLabelStyle = { color: Colors.lightBlack };
     const inputStyle = { color: Colors.darkBlack };
+
+    const firstNameProps = this.getProps({
+        floatingLabelText: 'First Name',
+        ref: (firstNameInput) => this.firstNameInput = firstNameInput,
+        floatingLabelStyle: floatLabelStyle,
+        inputStyle: {inputStyle},
+        style: { width: '210px' },
+        statePath: 'formValues.firstName',
+        addValueLink: true,
+        onBlur: this.props.handleValidation('formValues.firstName')
+    });
+
+    const lastNameProps = this.getProps({
+        floatingLabelStyle: floatLabelStyle,
+        floatingLabelText: 'Last Name',
+        inputStyle: {inputStyle},
+        style: { width: '210px', marginLeft: '20px' },
+        statePath: 'formValues.lastName',
+        addValueLink: true,
+        onBlur: this.props.handleValidation('formValues.lastName')
+    });
+
+    const userNameProps = this.getProps({
+        fullWidth: true,
+        inputStyle: {inputStyle},
+        floatingLabelText: 'User Name',
+        floatingLabelStyle: floatLabelStyle,
+        addValueLink: true,
+        statePath: 'formValues.userName',
+        onBlur: this.props.handleValidation('formValues.userName')
+    });
+
+    const passwordProps = this.getProps({
+        type: 'password',
+        fullWidth: true,
+        inputStyle: {inputStyle},
+        floatingLabelText: 'Password',
+        floatingLabelStyle: floatLabelStyle,
+        addValueLink: true,
+        statePath: 'formValues.password',
+        onBlur: this.props.handleValidation('formValues.password')
+    });
+
+    const password2Props = this.getProps({
+        type: 'password',
+        fullWidth: true,
+        inputStyle: {inputStyle},
+        floatingLabelText: 'Verify Password',
+        floatingLabelStyle: floatLabelStyle,
+        addValueLink: true,
+        statePath: 'formValues.password2',
+        onBlur: this.props.handleValidation('formValues.password2')
+    });
 
     return (
       <div style={style} >
@@ -84,52 +123,11 @@ class CreateProfile extends Component {
             <h1 style={{ fontWeight: '400', display: 'inline', verticalAlign: 'middle' }} >
               {'Create new identity'}
             </h1>
-
-            <TextField
-              floatingLabelStyle={floatLabelStyle}
-              floatingLabelText="First Name"
-              inputStyle={inputStyle}
-              style={{ width: '210px' }}
-              ref={(c) => this.firstNameInput = c}
-              onBlur={this.handleUpdateName}
-            />
-            <TextField
-              floatingLabelStyle={floatLabelStyle}
-              floatingLabelText="Last Name"
-              inputStyle={inputStyle}
-              style={{ width: '210px', marginLeft: '20px' }}
-              ref={(c) => this.lastNameInput = c}
-              onBlur={this.handleUpdateName}
-            />
-            <TextField
-              fullWidth
-              inputStyle={inputStyle}
-              floatingLabelText="User Name"
-              floatingLabelStyle={floatLabelStyle}
-              errorText={profile.getIn(['user', 'valid']) ? '' : profile.getIn(['user', 'err'])}
-              onChange={this.handleUpdateUser}
-              value={profile.getIn(['user', 'value'])}
-            />
-            <TextField type="password"
-                       ref="passwd1"
-                       fullWidth
-                       inputStyle={inputStyle}
-                       floatingLabelText="Password"
-                       floatingLabelStyle={floatLabelStyle}
-                       errorText={profile.getIn(['passwd', 'valid']) ? '' : profile.getIn(['passwd', 'err1'])}
-                       onChange={this.handleUpdatePasswd}
-                       value={profile.getIn(['passwd', 'pwd1'])}
-            />
-            <TextField type="password"
-                       ref="passwd2"
-                       fullWidth
-                       inputStyle={inputStyle}
-                       floatingLabelText="Verify Password"
-                       floatingLabelStyle={floatLabelStyle}
-                       errorText={profile.getIn(['passwd', 'valid']) ? '' : profile.getIn(['passwd', 'err2'])}
-                       onChange={this.handleUpdatePasswd}
-                       value={profile.getIn(['passwd', 'pwd2'])}
-            />
+            <TextField {...firstNameProps} />
+            <TextField {...lastNameProps} />
+            <TextField {...userNameProps} />
+            <TextField {...passwordProps} />
+            <TextField {...password2Props} />
 
             <Checkbox
               label="Optional details"
@@ -142,23 +140,25 @@ class CreateProfile extends Component {
 
               <h3 style={{ margin: '30px 0 10px 0' }} >{'Avatar'}</h3>
               <div>
-                <Avatar 
-                  image={this.state.avatarImage} 
+                <Avatar
                   editable
-                  ref={(avatar) => this.avatar = avatar}/>
+                  ref={(avatar) => this.avatar = avatar}
+                />
               </div>
               <h3 style={{ margin: '20px 0 10px 0' }} >{'Background image'}</h3>
-              <canvas
-                id="canvasBgImage"
-                onClick={this.handleUploadBgImage}
-                style={{ width: '100%', height: '200px', border: '1px dotted #ccc', background: '#eee' }}
-              >
-              </canvas>
+
+              <ImageUploader
+                ref={(imageUploader) => this.imageUploader = imageUploader}
+                minHeight = {350}
+                minWidth = {1024}
+                multiFiles = {true}
+              />
 
               <h3 style={{ margin: '20px 0 0 0' }} >{'About you'}</h3>
               <TextField
                 fullWidth
                 floatingLabelText="Short description"
+                multiLine
                 floatingLabelStyle={floatLabelStyle}
               />
 
@@ -207,17 +207,17 @@ class CreateProfile extends Component {
             </div>
           </div>
         </div>
-
+        
         <div className="row end-xs" >
           <div className="col-xs"
                style={
-              this.state.opt_details ? { margin: '25px 0 30px' } : { position: 'absolute', bottom: 0, right: 0 }
+              this.state.opt_details ? { margin: '25px 0 30px' } : {}
             }
           >
             <RaisedButton label="Cancel" />
             <RaisedButton label="Submit"
                           primary
-                          disabled={!this.readyForSubmit()}
+                          disabled={false}
                           style={{ marginLeft: '12px' }}
                           onClick={this.handleSubmit}
             />
@@ -229,9 +229,15 @@ class CreateProfile extends Component {
 }
 
 CreateProfile.propTypes = {
-  actions: PropTypes.object.isRequired,
-  profile: PropTypes.object.isRequired,
-  style: PropTypes.object
+    actions: PropTypes.object.isRequired,
+    profile: PropTypes.object.isRequired,
+    style: PropTypes.object,
+    validate: React.PropTypes.func,
+    errors: React.PropTypes.object,
+    isValid: React.PropTypes.func,
+    getValidationMessages: React.PropTypes.func,
+    clearValidations: React.PropTypes.func,
+    handleValidation: React.PropTypes.func
 };
 
 CreateProfile.contextTypes = {
@@ -248,4 +254,4 @@ CreateProfile.defaultProps = {
   }
 };
 
-export default CreateProfile;
+export default validationProvider(CreateProfile);

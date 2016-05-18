@@ -14,8 +14,8 @@ class Avatar extends React.Component {
       avatarScale: 1.2
     }
   }
-  getImage () {
-    return this.refs.editor.getImage();
+  getImage  = () => {
+    return this.editor.getImage();
   }
   render () {
     const userName = this.props.userName;
@@ -83,7 +83,7 @@ class Avatar extends React.Component {
             }
             {!this.props.userName &&
               <SvgIcon style={{width: 150, height: 150}} color={this.context.muiTheme.palette.textColor}>
-                <AddPhotoIcon viewBox="-24 -24 75 75"/>
+                <AddPhotoIcon viewBox="-30 -30 86 86"/>
               </SvgIcon>
             }
           </div>

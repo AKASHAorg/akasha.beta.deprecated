@@ -1,6 +1,7 @@
 {
   "extends": "airbnb",
   "rules": {
+  	"indent": [2, 4],
     "comma-dangle": [0],
     "complexity": [2, 10],
     "no-param-reassign": [0],
