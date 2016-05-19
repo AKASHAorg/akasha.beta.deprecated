@@ -35,6 +35,22 @@ class ImageUploader extends React.Component {
             width: '100%',
             display: 'inherit'
         };
+        const errorStyle = {
+            position: 'absolute',
+            width: '80%',
+            bottom: '8px',
+            left: '10%',
+            padding: '8px 16px',
+            backgroundColor: '#FFF',
+            color: '#D40202',
+            boxShadow: '0px 0px 3px 0 rgba(0,0,0,0.6)'
+        };
+        const emptyContainerStyle = {
+            textAlign: 'center',
+            width: '100%',
+            height: '220px',
+            padding: '80px 5px'
+        };
 
         return (
             <div style = {this.context.muiTheme.imageUploader}>
@@ -58,7 +74,7 @@ class ImageUploader extends React.Component {
                     </div>
                 }
                 {!this.state.isNewImage &&
-                    <div style={{textAlign: 'center', width: '100%', height: 220, padding: '80px 5px'}}>
+                    <div style={emptyContainerStyle}>
                         <SvgIcon style = {{height: '42px', width: '100%'}}
                             color = {this.context.muiTheme.palette.textColor}
                         >
@@ -69,7 +85,7 @@ class ImageUploader extends React.Component {
                 }
                 <div style = {uploadButtonStyle} onClick = {this._handleDialogOpen}></div>
                 {this.state.error &&
-                    <div>{this.state.error}</div>
+                    <div style={errorStyle}>{this.state.error}</div>
                 }
                 
             </div>
@@ -103,16 +119,18 @@ class ImageUploader extends React.Component {
                 }).catch(err => {
                     this.setState({
                         error: err
-                    })
-                })
+                    });
+                });
             });
         });
     }
     _handleClearImage = () => {
         this.setState({
+            images: null,
             imageFile: null,
-            isNewImage: false
-        })
+            isNewImage: false,
+            error: null
+        });
     }
 }
 ImageUploader.propTypes = {

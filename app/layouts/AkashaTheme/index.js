@@ -17,7 +17,6 @@ export default {
     },
     imageUploader: {
         position: 'relative',
-        border: `1px solid ${Colors.lightBlack}`,
-        
+        border: `1px solid ${Colors.lightBlack}`
     }
 };
