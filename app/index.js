@@ -1,12 +1,13 @@
 import React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
+import { IntlProvider } from 'react-intl';
 import { Router, hashHistory } from 'react-router';
 import { syncHistoryWithStore } from 'react-router-redux';
 import routes from './routes';
 import configureStore from './store/configureStore';
 import injectTapEventPlugin from 'react-tap-event-plugin';
-
+import { roMessages } from './locale-data/ro';
 // temporary
 
 const store = configureStore();
@@ -14,12 +15,13 @@ const history = syncHistoryWithStore(hashHistory, store);
 
 injectTapEventPlugin();
 
-
 render(
   <Provider store={store} >
-    <Router history={history} >
-      {routes}
-    </Router>
+    <IntlProvider locale = "ro" messages = { roMessages }>
+      <Router history={history} >
+        {routes}
+      </Router>
+    </IntlProvider>
   </Provider>,
   document.getElementById('root')
 );
