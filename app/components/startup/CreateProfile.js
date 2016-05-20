@@ -184,10 +184,6 @@ class CreateProfile extends Component {
             <h1 style={{ fontWeight: '400', display: 'inline', verticalAlign: 'middle' }} >
               {'Create new identity'}
             </h1>
-            <p>
-                Today is {' '}
-                <FormattedDate value={Date.now()} />
-            </p>
             <TextField {...firstNameProps} />
             <TextField {...lastNameProps} />
             <TextField {...userNameProps} />
@@ -318,7 +314,7 @@ class CreateProfile extends Component {
                   this.state.opt_details ? { margin: '25px 0 30px' } : {}
                 }
               >
-                <RaisedButton label="Cancel" type="reset" />
+                <RaisedButton label="Cancel" type="reset" onClick = {this._handleCancel}/>
                 <RaisedButton label={(this.state.submitting ? 'Submitting' : 'Submit')}
                               type="submit"
                               onClick = {this._submitForm}
@@ -338,6 +334,9 @@ class CreateProfile extends Component {
     this.setState({
         submitting: true
     }, this.handleSubmit);
+  }
+  _handleCancel = () => {
+    this.props.history.goBack();
   }
   _handleAddLink = () => {
     let currentLinks = this.state.links;
