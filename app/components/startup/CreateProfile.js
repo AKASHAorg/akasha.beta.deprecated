@@ -5,15 +5,16 @@ import ReactDOM from 'react-dom';
 import _ from 'lodash';
 import { MenuAkashaLogo } from '../ui/svg';
 import * as Colors from 'material-ui/styles/colors';
-import { SvgIcon, IconButton, RaisedButton, TextField, Checkbox, SelectField, MenuItem } from 'material-ui';
+import { SvgIcon, IconButton, RaisedButton, TextField, Checkbox, SelectField, MenuItem, Divider } from 'material-ui';
 import ContentAddIcon from 'material-ui/svg-icons/content/add'
-import DeleteIcon from 'material-ui/svg-icons/action/delete';
+import CancelIcon from 'material-ui/svg-icons/navigation/cancel';
 import Avatar from '../ui/avatar/avatar-editor';
 import ImageUploader from '../ui/image-uploader/image-uploader';
 import { inputFieldMethods } from '../../utils/dataModule';
 import validationProvider from '../../utils/validationProvider';
 import { user } from '../../utils/validationSchema';
 import ScrollBars from 'react-custom-scrollbars';
+import {FormattedDate} from 'react-intl';
 
 class CreateProfile extends Component {
   constructor() {
@@ -57,13 +58,15 @@ class CreateProfile extends Component {
   handleUnlockFor = (event, _, unlockFor) => {}
 
   handleSubmit = (ev) => {
-    ev.preventDefault();
     let userData = this.state.formValues;
     let avatarFile = this.avatar.getImage();
     let profileImage = this.imageUploader.getImage();
     const errors = this.props.errors;
-    if(this.state.links.length > 0 || this.state.links[0].title.length > 0) {
-        userData.links = this.state.links
+    const userLinks = this.state.links.filter(link => {
+        return link.title.length > 0
+    });
+    if(userLinks.length > 0) {
+        userData.links = userLinks
     }
     if(avatarFile) {
         userData.avatarFile = avatarFile
@@ -80,14 +83,31 @@ class CreateProfile extends Component {
             return;
         }
     }
-    console.log('save user with data', userData);
+    /*
+    return this.props.actions.createUser(userData).then(() => {
+        // redirect to user homepage
+        
+
+        this.setState({
+            submitting: false
+        });
+    }).catch((err) => {
+        // show an error in snackBar -> dispatch it to store
+        this.setState({
+            createError: err,
+            submitting: false
+        });
+    });
+    */
+
+    console.log('save user with data ', userData);
+
   }
 
   render () {
     const { style, profile } = this.props;
     const floatLabelStyle = { color: Colors.lightBlack };
     const inputStyle = { color: Colors.darkBlack };
-
     const firstNameProps = this.getProps({
         floatingLabelText: 'First Name',
         ref: (firstNameInput) => this.firstNameInput = firstNameInput,
@@ -164,6 +184,10 @@ class CreateProfile extends Component {
             <h1 style={{ fontWeight: '400', display: 'inline', verticalAlign: 'middle' }} >
               {'Create new identity'}
             </h1>
+            <p>
+                Today is {' '}
+                <FormattedDate value={Date.now()} />
+            </p>
             <TextField {...firstNameProps} />
             <TextField {...lastNameProps} />
             <TextField {...userNameProps} />
@@ -207,8 +231,8 @@ class CreateProfile extends Component {
                     <h3 className="col-xs-10"
                     >{'Links'}</h3>
                     <div className = "col-xs-2 end-xs">
-                        <IconButton 
-                            tooltip="add new link" 
+                        <IconButton
+                            title = "add link"
                             onClick={this._handleAddLink}
                             primary
                         >
@@ -220,9 +244,10 @@ class CreateProfile extends Component {
                   </div>
                   {this.state.links.map((link, key) => {
                     return (
-                        <div key={key} className = "row middle-xs">
+                        <div key={key} className = "row">
                             <div className="col-xs-10">
                                 <TextField
+                                    autoFocus = {(this.state.links.length - 1) === key}
                                     fullWidth
                                     floatingLabelText="Title"
                                     value = {link.title}
@@ -237,13 +262,22 @@ class CreateProfile extends Component {
                                     onChange = {this._handleLinkChange.bind(this, 'url', link._id)}
                                 />
                             </div>
-                            <div className = "col-xs-2 center-xs">
-                                <IconButton onClick = {this._handleRemoveLink.bind(this, link._id)}>
-                                    <SvgIcon >
-                                        <DeleteIcon/>
-                                    </SvgIcon>
-                                </IconButton>
-                            </div>
+                            {this.state.links.length > 1 &&
+                                <div className = "col-xs-2 center-xs">
+                                    <IconButton
+                                        title = "remove link"
+                                        style = {{marginTop: '24px'}}
+                                        onClick = {this._handleRemoveLink.bind(this, link._id)}
+                                    >
+                                        <SvgIcon >
+                                            <CancelIcon />
+                                        </SvgIcon>
+                                    </IconButton>
+                                </div>
+                            }
+                            {this.state.links.length > 1 &&
+                                <Divider style={{marginTop: '16px'}} className = "col-xs-12"/>
+                            }
                         </div>
                     );
                   })}
@@ -285,8 +319,10 @@ class CreateProfile extends Component {
                 }
               >
                 <RaisedButton label="Cancel" type="reset" />
-                <RaisedButton label="Submit"
+                <RaisedButton label={(this.state.submitting ? 'Submitting' : 'Submit')}
                               type="submit"
+                              onClick = {this._submitForm}
+                              disabled = {this.state.submitting}
                               primary
                               disabled={false}
                               style={{ marginLeft: '12px' }}
@@ -298,8 +334,10 @@ class CreateProfile extends Component {
     );
   }
   _submitForm = (ev) => {
-    ReactDOM.findDOMNode(this.profileForm).submit();
-    this.profileForm.submit();
+    ev.preventDefault()
+    this.setState({
+        submitting: true
+    }, this.handleSubmit);
   }
   _handleAddLink = () => {
     let currentLinks = this.state.links;
@@ -318,11 +356,14 @@ class CreateProfile extends Component {
     }
   }
   _handleRemoveLink = (linkId, ev) => {
-    let links = this.state.links;
+    let links = _.cloneDeep(this.state.links);
     if(this.state.links.length > 1) {
         _.remove(links, link => {
             return link._id == linkId;
         });
+    }
+    for (let i = 0; i < links.length; i++) {
+        links[i]._id = i
     }
     this.setState({
         links: links
@@ -337,7 +378,7 @@ class CreateProfile extends Component {
   }
   _handleLinkChange = (field, linkId, ev) => {
     const emailRegex = /(.+){1,}@(.+){1,}\.(.+){2,}/
-    const links = this.state.links;
+    const links = _.cloneDeep(this.state.links);
     let fieldValue = ev.target.value;
     const index = _.findIndex(links, link => link._id == linkId)
     const link = links[index];
@@ -352,7 +393,7 @@ class CreateProfile extends Component {
     links[index] = link;
     this.setState({
         links: links
-    })
+    });
   }
   _handleAboutChange = (ev) => {
     this.setState({

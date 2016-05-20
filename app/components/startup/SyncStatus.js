@@ -3,6 +3,8 @@ import LoginHeader from '../../components/ui/partials/LoginHeader';
 import { RaisedButton } from 'material-ui';
 import SyncProgress from '../ui/loaders/SyncProgress';
 import { hashHistory } from 'react-router';
+import { defineMessages, FormattedMessage } from 'react-intl';
+
 
 class SyncStatus extends Component {
   constructor(props) {
@@ -13,6 +15,21 @@ class SyncStatus extends Component {
       intervals: [],
       timeouts: []
     };
+    this.messages = defineMessages({
+      beforeSyncStart: {
+        id: 'app.syncStatus.beforeSyncStart',
+        description: 'Message to show before sync is starting',
+        defaultMessage: `We are starting synchronization with the Ethereum world computer. 
+                        Please be patient.`
+      },
+      onSyncStart: {
+        id: 'app.syncStatus.onSyncStart',
+        description: 'Message to show when synchronizing',
+        defaultMessage: `Your machine is currently synchronizing with the Ethereum world computer
+                        network. You will be able to log in and enjoy the full AKASHA experience as
+                        soon as the sync is complete.`
+      }
+    })
   }
   componentDidMount () {
     const { actions, syncState } = this.props;
@@ -140,7 +157,7 @@ class SyncStatus extends Component {
             <div className="col-xs">
               <LoginHeader />
               <h1 style={{ fontWeight: '400' }} >Initializing</h1>
-              <p>We are starting synchronization with the Ethereum world computer. Please be patient.</p>
+              <p><FormattedMessage {...this.messages.beforeSyncStart} /></p>
             </div>
           </div>
         </div>
@@ -157,9 +174,8 @@ class SyncStatus extends Component {
             <h1 style={{ fontWeight: '400' }} >{pageTitle}</h1>
             <div>
               <p>
-                {'Your machine is currently synchronizing with the Ethereum world computer' +
-                ' network. You will be able to log in and enjoy the full AKASHA experience as' +
-                ' soon as the sync is complete.'}
+
+                <FormattedMessage {...this.messages.onSyncStart} />
               </p>
             </div>
             {blockSync}
