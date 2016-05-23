@@ -3,7 +3,8 @@ import LoginHeader from '../../components/ui/partials/LoginHeader';
 import { RaisedButton } from 'material-ui';
 import SyncProgress from '../ui/loaders/SyncProgress';
 import { hashHistory } from 'react-router';
-import { defineMessages, FormattedMessage } from 'react-intl';
+import { defineMessages, FormattedMessage, injectIntl } from 'react-intl';
+import {setupMessages} from '../../locale-data/messages';
 
 
 class SyncStatus extends Component {
@@ -15,21 +16,6 @@ class SyncStatus extends Component {
       intervals: [],
       timeouts: []
     };
-    this.messages = defineMessages({
-      beforeSyncStart: {
-        id: 'app.syncStatus.beforeSyncStart',
-        description: 'Message to show before sync is starting',
-        defaultMessage: `We are starting synchronization with the Ethereum world computer. 
-                        Please be patient.`
-      },
-      onSyncStart: {
-        id: 'app.syncStatus.onSyncStart',
-        description: 'Message to show when synchronizing',
-        defaultMessage: `Your machine is currently synchronizing with the Ethereum world computer
-                        network. You will be able to log in and enjoy the full AKASHA experience as
-                        soon as the sync is complete.`
-      }
-    })
   }
   componentDidMount () {
     const { actions, syncState } = this.props;
@@ -118,7 +104,7 @@ class SyncStatus extends Component {
     this.clearTimeout();
   };
   render () {
-    const { style, syncState } = this.props;
+    const { style, syncState, intl } = this.props;
     const buttonsStyle = { padding: 0, position: 'absolute', bottom: 0, right: 0 };
     const message = this.state.syncData;
     let blockSync, blockProgress, currentProgress, pageTitle, progressBody, peerInfo;
@@ -156,8 +142,10 @@ class SyncStatus extends Component {
           <div className="start-xs">
             <div className="col-xs">
               <LoginHeader />
-              <h1 style={{ fontWeight: '400' }} >Initializing</h1>
-              <p><FormattedMessage {...this.messages.beforeSyncStart} /></p>
+              <h1 style={{ fontWeight: '400' }} >
+                {intl.formatMessage(setupMessages.initializingTitle)}
+              </h1>
+              <p><FormattedMessage {...setupMessages.beforeSyncStart} /></p>
             </div>
           </div>
         </div>
@@ -175,7 +163,7 @@ class SyncStatus extends Component {
             <div>
               <p>
 
-                <FormattedMessage {...this.messages.onSyncStart} />
+                <FormattedMessage {...setupMessages.onSyncStart} />
               </p>
             </div>
             {blockSync}
@@ -222,4 +210,4 @@ SyncStatus.defaultProps = {
     position: 'relative'
   }
 };
-export default SyncStatus;
+export default injectIntl(SyncStatus);

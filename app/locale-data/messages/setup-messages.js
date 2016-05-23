@@ -1,0 +1,87 @@
+import { defineMessages } from 'react-intl';
+
+const setupMessages = defineMessages({
+    changeGethDataDir: {
+        id: 'app.setup.changeGethDataDir',
+        description: 'Label for changing geth data directory',
+        defaultMessage: 'Change this if geth has different data directory'
+    },
+    gethDataDirPath: {
+        id: 'app.setup.gethDataDirPath',
+        description: 'geth datadir path field label',
+        defaultMessage: 'Geth Datadir path'
+    },
+    changeGethAlreadyStarted: {
+        id: 'app.setup.changeGethAlreadyStarted',
+        description: 'input field placeholder text',
+        defaultMessage: 'Change this if geth is already started with --ipcpath'
+    },
+    gethIPCPath: {
+        id: 'app.setup.gethIPCPath',
+        description: 'geth ipc path input placeholder',
+        defaultMessage: 'Geth IPC Path'
+    },
+    changeIfIpfsRunning: {
+        id: 'app.setup.changeIfIpfsRunning',
+        description: 'ipfs input filed placeholder',
+        defaultMessage: 'Change this if ipfs daemon is already running'
+    },
+    ipfsPath: {
+        id: 'app.setup.ipfsPath',
+        description: 'ipfs input field label',
+        defaultMessage: 'Ipfs api path'
+    },
+    akashaNextGenNetwork: {
+        id: 'app.setup.akashaNextGenNetwork',
+        description: 'akasha next gen description',
+        defaultMessage: `AKASHA is a next-generation social blogging network powered by a new
+                        kind of world computers known as Ethereum and the
+                        Inter Planetary File System.`
+    },
+    youHaveNotHeared: {
+        id: 'app.setup.youHavenNotHeared',
+        description: 'You have not heard about these :)',
+        defaultMessage: `If you haven’t heard of these technologies before don’t worry, simply
+                        click next and we’ll take care of the rest.`
+    },
+    ifYouHaveEth: {
+        id: 'app.setup.ifYouHaveEth',
+        description: 'if you already have Ethereum',
+        defaultMessage: `If you already have the Ethereum Go client or IPFS installed on your
+                        machine please choose the advanced option.`
+    },
+    expressSetup: {
+        id: 'app.setup.expressSetup',
+        description: 'Express setup option checkbox',
+        defaultMessage: 'Express setup'
+    },
+    advancedSetup: {
+        id: 'app.setup.advancedSetup',
+        description: 'Advanced setup option checkbox',
+        defaultMessage: 'Advanced'
+    },
+    beforeSyncStart: {
+        id: 'app.setup.beforeSyncStart',
+        description: 'Message to show before sync is starting',
+        defaultMessage: `We are starting synchronization with the Ethereum world computer.
+                        Please be patient.`
+    },
+    onSyncStart: {
+        id: 'app.setup.onSyncStart',
+        description: 'Message to show when synchronizing',
+        defaultMessage: `Your machine is currently synchronizing with the Ethereum world computer
+                        network. You will be able to log in and enjoy the full AKASHA experience as
+                        soon as the sync is complete.`
+    },
+    initializingTitle: {
+        id: 'app.setup.initializingTitle',
+        description: 'Title for initializing state page',
+        defaultMessage: 'Initializing'
+    },
+    noProfilesFound: {
+        id: 'app.login.auth',
+        description: 'message if no local profiles fround.',
+        defaultMessage: 'No profiles found. Create a new identity or import an existing one.'
+    }
+});
+export { setupMessages };

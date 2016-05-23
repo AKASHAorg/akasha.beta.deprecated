@@ -3,6 +3,8 @@ import {SvgIcon, RaisedButton} from 'material-ui';
 import AddPhotoIcon from 'material-ui/svg-icons/image/add-a-photo';
 import DeleteIcon from 'material-ui/svg-icons/action/delete';
 import {getResizedImages} from '../../../utils/imageUtils'
+import {injectIntl} from 'react-intl';
+import {generalMessages} from '../../../locale-data/messages';
 const remote = require('remote');
 const dialog = remote.require('electron').dialog;
 
@@ -80,7 +82,7 @@ class ImageUploader extends React.Component {
                         >
                             <AddPhotoIcon viewBox = "0 0 24 24"/>
                         </SvgIcon>
-                        <text style={{display: 'block'}}>Add image</text>
+                        <text style={{display: 'block'}}>{this.props.intl.formatMessage(generalMessages.addImage)}</text>
                     </div>
                 }
                 <div style = {uploadButtonStyle} onClick = {this._handleDialogOpen}></div>
@@ -142,4 +144,4 @@ ImageUploader.propTypes = {
 ImageUploader.contextTypes = {
     muiTheme: React.PropTypes.object
 };
-export default ImageUploader;
+export default injectIntl(ImageUploader);

@@ -7,7 +7,7 @@ import { syncHistoryWithStore } from 'react-router-redux';
 import routes from './routes';
 import configureStore from './store/configureStore';
 import injectTapEventPlugin from 'react-tap-event-plugin';
-import { roMessages } from './locale-data/ro';
+import { ruMessages } from './locale-data/ru';
 // temporary
 
 const store = configureStore();
@@ -17,7 +17,7 @@ injectTapEventPlugin();
 
 render(
   <Provider store={store} >
-    <IntlProvider locale = "ro" messages = { roMessages }>
+    <IntlProvider locale="ru" messages={ruMessages} >
       <Router history={history} >
         {routes}
       </Router>

@@ -4,6 +4,9 @@ import * as Colors from 'material-ui/styles/colors';
 import { RadioButton, RadioButtonGroup, RaisedButton, TextField } from 'material-ui';
 import { hashHistory } from 'react-router';
 import { Scrollbars } from 'react-custom-scrollbars';
+import { injectIntl } from 'react-intl';
+import { setupMessages, generalMessages } from '../../locale-data/messages';
+
 
 class Setup extends Component {
 
@@ -63,7 +66,7 @@ class Setup extends Component {
   render () {
     let advancedOptions = '';
 
-    const { style, setupConfig } = this.props;
+    const { style, setupConfig, intl } = this.props;
 
     const radioStyle = { marginTop: '10px', marginBottom: '10px' };
     const buttonsStyle = { padding: 0, position: 'absolute', bottom: 0, right: 0 };
@@ -78,10 +81,10 @@ class Setup extends Component {
         <div style={{ paddingLeft: '12px' }} >
           <TextField
             errorStyle={errorStyle}
-            errorText={"Change this if geth has different data directory"}
+            errorText={intl.formatMessage(setupMessages.changeGethDataDir)}
             floatingLabelStyle={floatingLabelStyle}
-            floatingLabelText="Geth Datadir path"
-            hintText={<p>{setupConfig.get('gethPath')}</p>}
+            floatingLabelText={intl.formatMessage(setupMessages.gethDataDirPath)}
+            hintText={setupConfig.get('gethPath')}
             inputStyle={inputStyle}
             onBlur={this.handleGethDatadir}
             style={rootStyle}
@@ -89,20 +92,20 @@ class Setup extends Component {
           />
           <TextField
             errorStyle={errorStyle}
-            errorText={"Change this if geth is already started with --ipcpath"}
+            errorText={intl.formatMessage(setupMessages.changeGethAlreadyStarted)}
             floatingLabelStyle={floatingLabelStyle}
-            floatingLabelText="Geth ipc path"
-            hintText={<p>{setupConfig.get('gethPathIpc')}</p>}
+            floatingLabelText={intl.formatMessage(setupMessages.gethIPCPath)}
+            hintText={setupConfig.get('gethPathIpc')}
             inputStyle={inputStyle}
             onBlur={this.handleGethIpc}
             style={rootStyle}
           />
           <TextField
             errorStyle={errorStyle}
-            errorText={"Change this if ipfs daemon is already running"}
+            errorText={intl.formatMessage(setupMessages.changeIfIpfsRunning)}
             floatingLabelStyle={floatingLabelStyle}
-            floatingLabelText="Ipfs api path"
-            hintText={<p>{setupConfig.get('ipfsApiPath')}</p>}
+            floatingLabelText={intl.formatMessage(setupMessages.ipfsPath)}
+            hintText={setupConfig.get('ipfsApiPath')}
             inputStyle={inputStyle}
             onBlur={this.handleIpfsPath}
             style={rootStyle}
@@ -123,16 +126,12 @@ class Setup extends Component {
             >
               <h1 style={{ fontWeight: '400' }} >{'First time setup'}</h1>
               <div>
-                <p>{'AKASHA is a next-generation social blogging network powered by a new kind of world computers' +
-                ' known as Ethereum and the Inter Planetary File System.'}
+                <p>{intl.formatMessage(setupMessages.akashaNextGenNetwork)}</p>
+                <p>
+                  {intl.formatMessage(setupMessages.youHaveNotHeared)}
                 </p>
                 <p>
-                  {'If you haven’t heard of these technologies before don’t worry, simply click next and we’ll take' +
-                  ' care' + ' of the rest.'}
-                </p>
-                <p>
-                  {'If you already have the Ethereum Go client or IPFS installed on your machine please choose the' +
-                  ' advanced option.'}
+                  {intl.formatMessage(setupMessages.ifYouHaveEth)}
                 </p>
               </div>
               <div style={{ paddingLeft: '12px' }} >
@@ -141,12 +140,12 @@ class Setup extends Component {
                                   onChange={this.handleChange}
                 >
                   <RadioButton
-                    label={'Express setup'}
+                    label={intl.formatMessage(setupMessages.expressSetup)}
                     style={radioStyle}
                     value={'express'}
                   />
                   <RadioButton
-                    label={'Advanced'}
+                    label={intl.formatMessage(setupMessages.advancedSetup)}
                     style={radioStyle}
                     value={'advanced'}
                   />
@@ -162,7 +161,7 @@ class Setup extends Component {
           <div className="col-xs"
                style={buttonsStyle}
           >
-            <RaisedButton label="Next"
+            <RaisedButton label={intl.formatMessage(generalMessages.nextButtonLabel)}
                           primary={true}
                           backgroundColor={this.context.muiTheme.raisedButton.secondaryColor}
                           style={{ marginLeft: '12px' }}
@@ -195,4 +194,4 @@ Setup.defaultProps = {
   }
 };
 
-export default Setup;
+export default injectIntl(Setup);

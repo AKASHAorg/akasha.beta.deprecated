@@ -1,0 +1,32 @@
+[
+  {
+    "id": "app.general.privacyPolicy",
+    "description": "Privacy Policy",
+    "defaultMessage": "Privacy Policy"
+  },
+  {
+    "id": "app.general.termsOfService",
+    "description": "Terms of Service",
+    "defaultMessage": "Terms of Service"
+  },
+  {
+    "id": "app.general.addImage",
+    "description": "Add image",
+    "defaultMessage": "Add image"
+  },
+  {
+    "id": "app.general.nextButtonLabel",
+    "description": "Label for Next button",
+    "defaultMessage": "Next"
+  },
+  {
+    "id": "app.general.importIdentityLabel",
+    "description": "Import identity button label",
+    "defaultMessage": "Import identity"
+  },
+  {
+    "id": "app.general.createIdentityLabel",
+    "description": "Create identity button label",
+    "defaultMessage": "Create new identity"
+  }
+]
