@@ -3,7 +3,8 @@ import { List, ListItem, Avatar, Divider, Dialog, FlatButton, TextField, RaisedB
 import LoginHeader from '../../components/ui/partials/LoginHeader';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { hashHistory } from 'react-router';
-import { FormattedMessage, defineMessages } from 'react-intl';
+import { FormattedMessage, injectIntl } from 'react-intl';
+import { setupMessages, generalMessages } from '../../locale-data/messages';
 
 class Auth extends Component {
 
@@ -14,13 +15,6 @@ class Auth extends Component {
       selectedIndex: false,
       avatar: {}
     };
-    this.messages = defineMessages({
-      noProfilesFound: {
-        id: 'app.login.auth',
-        description: 'message if no local profiles fround.',
-        defaultMessage: `No profiles found. Create a new identity or import an existing one.`
-      }
-    })
   }
 
   componentDidMount () {
@@ -43,7 +37,7 @@ class Auth extends Component {
   };
 
   render () {
-    const { style, authState } = this.props;
+    const { style, authState, intl } = this.props;
     const { openModal, avatar } = this.state;
     const profiles = authState.get('profiles');
     const modalActions = [
@@ -68,8 +62,8 @@ class Auth extends Component {
               </Scrollbars>
             </div>
             <div style={{float: 'right'}} >
-              <RaisedButton label="IMPORT IDENTITY" />
-              <RaisedButton label="CREATE NEW IDENTITY"
+              <RaisedButton label={intl.formatMessage(generalMessages.importIdentityLabel)} />
+              <RaisedButton label={intl.formatMessage(generalMessages.createNewIdentityLabel)}
                             primary={true} 
                             style={{marginLeft: '10px'}} 
                             onMouseUp={this._handleIdentityCreate}
@@ -108,7 +102,7 @@ class Auth extends Component {
   _getLocalProfiles() {
     const { authState } = this.props;
     if(!authState.get('profiles').size) {
-      return <div><FormattedMessage {...this.messages.noProfilesFound}/></div>;
+      return <div><FormattedMessage {...setupMessages.noProfilesFound}/></div>;
     }
     return authState.get('profiles').map((account, index) => {
       return (
@@ -153,6 +147,6 @@ Auth.defaultProps = {
   }
 };
 
-export default Auth;
+export default injectIntl(Auth);
 
 
