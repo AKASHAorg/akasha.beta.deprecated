@@ -124,7 +124,7 @@ class Setup extends Component {
             <Scrollbars
               style={{ height: 540 }}
             >
-              <h1 style={{ fontWeight: '400' }} >{'First time setup'}</h1>
+              <h1 style={{ fontWeight: '400' }} >{intl.formatMessage(setupMessages.firstTimeSetupTitle)}</h1>
               <div>
                 <p>{intl.formatMessage(setupMessages.akashaNextGenNetwork)}</p>
                 <p>

@@ -17,7 +17,7 @@ injectTapEventPlugin();
 
 render(
   <Provider store={store} >
-    <IntlProvider locale="ru" messages={ruMessages} >
+    <IntlProvider locale="en" >
       <Router history={history} >
         {routes}
       </Router>

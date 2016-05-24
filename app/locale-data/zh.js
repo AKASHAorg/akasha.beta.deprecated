@@ -1,6 +1,4 @@
 const zhMessages = {
-    'app.login.auth': `Nici un profil gasit. Creati-va o identitate noua sau
-                       importati una existenta`,
     'app.createProfileTitle': '創建身份',
     'app.createProfile.optionalDetailsLabel': '可選細節',
     'app.createProfile.avatarTitle': '阿凡達',

@@ -53,8 +53,10 @@ export const profileMessages = defineMessages({
     },
     terms: {
         id: 'app.createProfile.terms',
-        description: 'Terms agreement for account creation. Do not translate {termsLink} and {privacyLink}!',
-        defaultMessage: `By proceeding to create your account and use AKASHA, you are agreeing
-                        to our {termsLink} and {privacyLink}. If you do not agree, you cannot use AKASHA.`
+        description: `Terms agreement for account creation.
+                        Do not translate {termsLink} and {privacyLink}!`,
+        defaultMessage: `By proceeding to create your account and use AKASHA, you are agreeing to
+                         our {termsLink} and {privacyLink}. If you do not agree, you cannot use
+                         AKASHA.`
     }
 });

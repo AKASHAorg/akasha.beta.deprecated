@@ -348,8 +348,8 @@ class CreateProfile extends Component {
                   <div className="col-xs"
                        style={ this.state.opt_details ? { margin: '25px 0 30px' } : {} }
                   >
-                    <RaisedButton label="Cancel" type="reset" onClick = {this._handleCancel}/>
-                    <RaisedButton label={'Submit'}
+                    <RaisedButton label={intl.formatMessage(generalMessages.cancel)} type="reset" onClick = {this._handleCancel}/>
+                    <RaisedButton label={intl.formatMessage(generalMessages.submit)}
                                   type="submit"
                                   onClick = {this._submitForm}
                                   disabled = {this.state.submitting}
@@ -367,8 +367,10 @@ class CreateProfile extends Component {
         ev.preventDefault()
         this.handleSubmit();
     }
-    _handleCancel = () => {
-        this.props.history.goBack();
+    _handleCancel = (ev) => {
+        ev.preventDefault();
+        this.profileForm.reset();
+        this.context.router.goBack();
     }
     _handleAddLink = () => {
         let currentLinks = this.state.links;
@@ -450,7 +452,8 @@ CreateProfile.propTypes = {
 };
 
 CreateProfile.contextTypes = {
-  muiTheme: React.PropTypes.object
+  muiTheme: React.PropTypes.object,
+  router: React.PropTypes.object
 };
 
 CreateProfile.defaultProps = {
