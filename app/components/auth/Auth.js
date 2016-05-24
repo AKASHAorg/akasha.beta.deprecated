@@ -53,7 +53,7 @@ class Auth extends Component {
             className="col-xs"
             style={{ flex: 1, padding: 0 }}
           >
-            <LoginHeader title={'Log in'} />
+            <LoginHeader title={intl.formatMessage(setupMessages.logInTitle)} />
             <div style={{paddingTop: '30px'}} >
               <Scrollbars style={{ height: '440px' }} >
                 <List>

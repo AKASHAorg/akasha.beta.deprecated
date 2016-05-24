@@ -30,6 +30,11 @@
     "defaultMessage": "Ipfs api path"
   },
   {
+    "id": "app.setup.firstTimeSetupTitle",
+    "description": "title for first time setup page",
+    "defaultMessage": "First time setup"
+  },
+  {
     "id": "app.setup.akashaNextGenNetwork",
     "description": "akasha next gen description",
     "defaultMessage": "AKASHA is a next-generation social blogging network powered by a new\n                        kind of world computers known as Ethereum and the\n                        Inter Planetary File System."
@@ -55,6 +60,26 @@
     "defaultMessage": "Advanced"
   },
   {
+    "id": "app.setup.synchronizing",
+    "description": "state of block sync",
+    "defaultMessage": "Synchronising"
+  },
+  {
+    "id": "app.setup.syncStopped",
+    "description": "state of block sync",
+    "defaultMessage": "Synchronization was stopped"
+  },
+  {
+    "id": "app.setup.syncCompleted",
+    "description": "state of block sync",
+    "defaultMessage": "Synchronization completed"
+  },
+  {
+    "id": "app.setup.syncResuming",
+    "description": "state of block sync",
+    "defaultMessage": "Resuming synchronization..."
+  },
+  {
     "id": "app.setup.beforeSyncStart",
     "description": "Message to show before sync is starting",
     "defaultMessage": "We are starting synchronization with the Ethereum world computer.\n                        Please be patient."
@@ -70,8 +95,38 @@
     "defaultMessage": "Initializing"
   },
   {
-    "id": "app.login.auth",
-    "description": "message if no local profiles fround.",
+    "id": "app.setup.noProfilesFound",
+    "description": "message if no local profiles found.",
     "defaultMessage": "No profiles found. Create a new identity or import an existing one."
+  },
+  {
+    "id": "app.setup.logInTitle",
+    "description": "login page title",
+    "defaultMessage": "Log in"
+  },
+  {
+    "id": "app.setup.findingPeers",
+    "description": "finding peers status",
+    "defaultMessage": "Finding peers"
+  },
+  {
+    "id": "app.setup.onePeer",
+    "description": "singular form of peers",
+    "defaultMessage": "peer"
+  },
+  {
+    "id": "app.setup.fewPeers",
+    "description": "plural form of peer. depends on language",
+    "defaultMessage": "peers"
+  },
+  {
+    "id": "app.setup.manyPeers",
+    "description": "in some languages there is another plural form of peers for many",
+    "defaultMessage": "peers"
+  },
+  {
+    "id": "app.setup.peers",
+    "description": "base plural form of peer",
+    "defaultMessage": "peers"
   }
 ]

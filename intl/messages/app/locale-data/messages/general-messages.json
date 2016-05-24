@@ -28,5 +28,65 @@
     "id": "app.general.createIdentityLabel",
     "description": "Create identity button label",
     "defaultMessage": "Create new identity"
+  },
+  {
+    "id": "app.general.refresh",
+    "description": "refresh button label",
+    "defaultMessage": "Refresh"
+  },
+  {
+    "id": "app.general.sendFeedback",
+    "description": "send feedback button label",
+    "defaultMessage": "Send feedback"
+  },
+  {
+    "id": "app.general.settings",
+    "description": "settings button label",
+    "defaultMessage": "Settings"
+  },
+  {
+    "id": "app.general.help",
+    "description": "Help button label",
+    "defaultMessage": "Help"
+  },
+  {
+    "id": "app.general.signOut",
+    "description": "sign out button label",
+    "defaultMessage": "Sign out"
+  },
+  {
+    "id": "app.general.cancel",
+    "description": "cancel button label",
+    "defaultMessage": "Cancel"
+  },
+  {
+    "id": "app.general.submit",
+    "description": "submit button label",
+    "defaultMessage": "Submit"
+  },
+  {
+    "id": "app.general.pause",
+    "description": "pause button label",
+    "defaultMessage": "Pause"
+  },
+  {
+    "id": "app.general.start",
+    "description": "start button label",
+    "defaultMessage": "Start"
+  },
+  {
+    "id": "app.general.completed",
+    "description": "completed button label",
+    "defaultMessage": "Completed"
+  },
+  {
+    "id": "app.general.starting",
+    "description": "starting button label",
+    "defaultMessage": "Starting..."
+  },
+  {
+    "id": "app.general.connected",
+    "description": "connected status",
+    "defaultMessage": "connected"
   }
 ]

@@ -31,6 +31,11 @@ const setupMessages = defineMessages({
         description: 'ipfs input field label',
         defaultMessage: 'Ipfs api path'
     },
+    firstTimeSetupTitle: {
+        id: 'app.setup.firstTimeSetupTitle',
+        description: 'title for first time setup page',
+        defaultMessage: 'First time setup'
+    },
     akashaNextGenNetwork: {
         id: 'app.setup.akashaNextGenNetwork',
         description: 'akasha next gen description',
@@ -60,6 +65,26 @@ const setupMessages = defineMessages({
         description: 'Advanced setup option checkbox',
         defaultMessage: 'Advanced'
     },
+    synchronizing: {
+        id: 'app.setup.synchronizing',
+        description: 'state of block sync',
+        defaultMessage: 'Synchronising'
+    },
+    syncStopped: {
+        id: 'app.setup.syncStopped',
+        description: 'state of block sync',
+        defaultMessage: 'Synchronization was stopped'
+    },
+    syncCompleted: {
+        id: 'app.setup.syncCompleted',
+        description: 'state of block sync',
+        defaultMessage: 'Synchronization completed'
+    },
+    syncResuming: {
+        id: 'app.setup.syncResuming',
+        description: 'state of block sync',
+        defaultMessage: 'Resuming synchronization...'
+    },
     beforeSyncStart: {
         id: 'app.setup.beforeSyncStart',
         description: 'Message to show before sync is starting',
@@ -79,9 +104,40 @@ const setupMessages = defineMessages({
         defaultMessage: 'Initializing'
     },
     noProfilesFound: {
-        id: 'app.login.auth',
-        description: 'message if no local profiles fround.',
+        id: 'app.setup.noProfilesFound',
+        description: 'message if no local profiles found.',
         defaultMessage: 'No profiles found. Create a new identity or import an existing one.'
+    },
+    logInTitle: {
+        id: 'app.setup.logInTitle',
+        description: 'login page title',
+        defaultMessage: 'Log in'
+    },
+    findingPeers: {
+        id: 'app.setup.findingPeers',
+        description: 'finding peers status',
+        defaultMessage: 'Finding peers'
+    },
+    onePeer: {
+        id: 'app.setup.onePeer',
+        description: 'singular form of peers',
+        defaultMessage: 'peer'
+    },
+    fewPeers: {
+        id: 'app.setup.fewPeers',
+        description: 'plural form of peer. depends on language',
+        defaultMessage: 'peers'
+    },
+    manyPeers: {
+        id: 'app.setup.manyPeers',
+        description: 'in some languages there is another plural form of peers for many',
+        defaultMessage: 'peers'
+    },
+    peers: {
+        id: 'app.setup.peers',
+        description: 'base plural form of peer',
+        defaultMessage: 'peers'
     }
 });
+
 export { setupMessages };
