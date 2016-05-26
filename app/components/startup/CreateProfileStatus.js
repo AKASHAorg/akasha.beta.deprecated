@@ -9,6 +9,9 @@ class CreateProfileStatus extends Component {
     if (this.firstNameInput) {
       this.firstNameInput.focus();
     }
+    setTimeout(() => {
+      this.context.router.push('new-profile-complete');
+    }, 2000);
   }
 
   render () {
@@ -37,7 +40,7 @@ class CreateProfileStatus extends Component {
               {'This will take a few moments ...'}
             </p>
             <span style={{ marginTop: '20px', fontSize: '13px' }} >
-              { profile.getIn(['create', 'steps']).map((step) => <p>{step}</p>) }
+              { profile.getIn(['create', 'steps']).map((step, key) => <p key={key}>{step}</p>) }
             </span>
             <p style={{ marginTop: '20px', color: Colors.red300 }} >
               { profile.getIn(['create', 'err']) }
@@ -57,7 +60,8 @@ CreateProfileStatus.propTypes = {
 };
 
 CreateProfileStatus.contextTypes = {
-  muiTheme: React.PropTypes.object
+  muiTheme: React.PropTypes.object,
+  router: React.PropTypes.object
 };
 
 CreateProfileStatus.defaultProps = {

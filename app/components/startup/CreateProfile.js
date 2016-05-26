@@ -62,11 +62,12 @@ class CreateProfile extends Component {
   handleSubmit = (ev) => {
     let userData = this.state.formValues;
     let avatarFile = this.avatar.getImage();
-    let profileImage = this.imageUploader.getImage();
+    let profileImage = this.imageUploader.refs['wrappedInstance'].getImage();
     const errors = this.props.errors;
     const userLinks = this.state.links.filter(link => {
         return link.title.length > 0
     });
+    // optional settings
     if(userLinks.length > 0) {
         userData.links = userLinks
     }
@@ -101,7 +102,7 @@ class CreateProfile extends Component {
         });
     });
     */
-
+    this.context.router.push('new-profile-status');
     console.log('save user with data ', userData);
 
   }
@@ -225,8 +226,7 @@ class CreateProfile extends Component {
                       <ImageUploader
                         ref={(imageUploader) => this.imageUploader = imageUploader}
                         minHeight = {350}
-                        minWidth = {1024}
-                        multiFiles = {true}
+                        minWidth = {672}
                       />
 
                       <h3 style={{ margin: '20px 0 0 0' }} >

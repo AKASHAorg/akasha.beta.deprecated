@@ -5,6 +5,10 @@ import SetupPage from './containers/SetupPage';
 import SyncStatus from './containers/SyncStatus';
 import LoginLayout from './layouts/LoginLayout';
 import LoginPage from './containers/LoginPage';
+import HomeLayout from './layouts/HomeLayout';
+import NewEntryPage from './containers/NewEntryPage';
+import StreamPage from './containers/StreamPage';
+
 import {
   CreateProfile,
   CreateProfileStatus,
@@ -21,6 +25,10 @@ export default (
       <Route component={CreateProfile} path="new-profile" />
       <Route component={CreateProfileStatus} path="new-profile-status" />
       <Route component={CreateProfileComplete} path="new-profile-complete" />
+    </Route>
+    <Route component={HomeLayout} path=":username" >
+      <IndexRoute component={StreamPage} />
+      <Route component={NewEntryPage} path="new-entry" />
     </Route>
   </Route>
 );
