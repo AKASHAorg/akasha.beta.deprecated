@@ -70,10 +70,10 @@ class CreateProfileComplete extends Component {
                 disabled
               />
               <RaisedButton
-                label="Next"
+                label="Enjoy AKASHA"
                 primary
                 style={{ marginLeft: '12px' }}
-                onClick={this.handleNext}
+                onClick={this._handleFinishSetup}
               />
             </div>
           </div>
@@ -81,6 +81,9 @@ class CreateProfileComplete extends Component {
         </div>
       </div>
     );
+  }
+  _handleFinishSetup = (ev) => {
+    this.context.router.push('/severs');
   }
 }
 
@@ -91,7 +94,8 @@ CreateProfileComplete.propTypes = {
 };
 
 CreateProfileComplete.contextTypes = {
-  muiTheme: React.PropTypes.object
+  muiTheme: React.PropTypes.object,
+  router: React.PropTypes.object
 };
 
 CreateProfileComplete.defaultProps = {

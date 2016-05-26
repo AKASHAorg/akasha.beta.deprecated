@@ -13,7 +13,7 @@ class ImageUploader extends React.Component {
         super(props);
         this.state = {};
     }
-    getImage (cb) {
+    getImage = () => {
         return this.state.images;
     }
     render () {
@@ -144,4 +144,4 @@ ImageUploader.propTypes = {
 ImageUploader.contextTypes = {
     muiTheme: React.PropTypes.object
 };
-export default injectIntl(ImageUploader);
+export default injectIntl(ImageUploader, {withRef: true});

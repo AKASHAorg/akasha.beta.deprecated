@@ -15,16 +15,15 @@ const style = {
     padding: '28px',
     display: 'flex',
     flexDirection: 'column',
-    position: 'relative'
+    position: 'relative',
+    width: '500px'
 };
 function LoginLayout ({ children }) {
     return (
-    <div className="center-xs"
+    <div className="start-xs"
       style={{ height: '100%' }}
     >
-        <Paper className="col-xs"
-          style={style}
-        >
+        <Paper style={style} >
             {children}
         </Paper>
     </div>
