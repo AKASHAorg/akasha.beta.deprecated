@@ -25,8 +25,15 @@
         "NODE_ENV": "production"
       }
     },
-    "renderer": {
+    "wingui": {
       "command": "node_modules\\.bin\\electron.cmd --remote-debugging-port=1337 main.js",
+      "env": {
+        "HOT": 1,
+        "NODE_ENV": "development"
+      }
+    },
+    "xgui": {
+      "command": "node_modules/.bin/electron --remote-debugging-port=1337 main.js",
       "env": {
         "HOT": 1,
         "NODE_ENV": "development"
