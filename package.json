@@ -13,7 +13,8 @@
     "build": "better-npm-run build",
     "coverage": "better-npm-run coverage",
     "start": "better-npm-run start",
-    "renderer": "better-npm-run renderer",
+    "wingui": "better-npm-run wingui",
+    "xgui": "better-npm-run xgui",
     "package": "better-npm-run package",
     "package-all": "npm run package -- --all",
     "postinstall": "node node_modules/fbjs-scripts/node/check-dev-engines.js package.json&& cd node_modules/leveldown && node-gyp rebuild --target=0.37.8 --arch=x64 --dist-url=https://atom.io/download/atom-shell"
