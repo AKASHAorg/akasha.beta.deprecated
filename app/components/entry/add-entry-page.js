@@ -10,7 +10,7 @@ class NewEntryPage extends Component {
 					<div className = "col-xs-9">First Entry</div>
 					<div className = "col-xs-3">Menus</div>
 				</Paper>
-				<div className = "row center-xs">
+				<div className = "row center-xs" style={{ marginTop: '32px' }}>
 					<div className = "col-xs-6">
                         <TextField
                           hintText = "Title"
