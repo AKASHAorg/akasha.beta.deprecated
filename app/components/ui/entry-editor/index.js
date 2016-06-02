@@ -19,8 +19,7 @@ import { HandleComponent } from './components';
 import EditorToolbar from './components/editor-toolbar';
 import rendererFn from './components/custom-renderer';
 
-const remote = require('remote');
-const dialog = remote.require('electron').dialog;
+const { dialog } = require('electron').remote;
 
 class EntryEditor extends Component {
     constructor (props) {

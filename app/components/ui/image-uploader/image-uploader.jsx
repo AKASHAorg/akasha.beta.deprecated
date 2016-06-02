@@ -5,8 +5,7 @@ import DeleteIcon from 'material-ui/svg-icons/action/delete';
 import { getResizedImages } from '../../../utils/imageUtils';
 import { injectIntl } from 'react-intl';
 import { generalMessages } from '../../../locale-data/messages';
-const remote = require('remote');
-const dialog = remote.require('electron').dialog;
+const { dialog } = require('electron').remote;
 
 class ImageUploader extends React.Component {
     constructor (props) {

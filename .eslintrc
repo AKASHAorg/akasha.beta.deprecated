@@ -7,7 +7,7 @@
     "no-param-reassign": [0],
     "max-depth": [2, 5],
     "max-statements": [2, 20],
-    "space-before-function-paren": [2, "always"],
+    "space-before-function-paren": [2, "always"]
   },
   "parser": "babel-eslint"
 }

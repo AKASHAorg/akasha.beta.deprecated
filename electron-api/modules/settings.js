@@ -1,6 +1,6 @@
 export const STATICS = {
     "GETH_SETPROVIDER_TIMEOUT": 4000
-}
+};
 
 export const EVENTS = {
     "server": {
@@ -23,4 +23,4 @@ export const EVENTS = {
             "stopGethInfo" : "client:logger:stopGethInfo"
         }
     }
-}
+};

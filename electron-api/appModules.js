@@ -1,6 +1,7 @@
 
 const Logger = require('./loggers');
-const remote = require('electron').remote;
+const electron = require('electron');
+const remote = electron.remote;
 let app = remote.app;
 
 const userData = app.getPath('userData');
