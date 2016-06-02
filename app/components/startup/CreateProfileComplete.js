@@ -1,9 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { MenuAkashaLogo } from '../ui/svg';
-import * as Colors from 'material-ui/lib/styles/colors';
-import SvgIcon from 'material-ui/lib/svg-icon';
-import RaisedButton from 'material-ui/lib/raised-button';
-import TextField from 'material-ui/lib/text-field';
+import * as Colors from 'material-ui/styles/colors';
+import { SvgIcon, RaisedButton, TextField } from 'material-ui';
 
 class CreateProfileComplete extends Component {
 
@@ -14,6 +12,12 @@ class CreateProfileComplete extends Component {
 
   render () {
     const { style, profile } = this.props;
+    const akashaLogoStyles = {
+      width: '32px',
+      height: '32px',
+      marginRight: '10px',
+      verticalAlign: 'middle'
+    };
     const fullName = `${profile.getIn(['name', 'first'])} ${profile.getIn(['name', 'last'])}`;
 
     return (
@@ -23,7 +27,7 @@ class CreateProfileComplete extends Component {
             <SvgIcon
               color={Colors.lightBlack}
               viewBox="0 0 32 32"
-              style={{ width: '32px', height: '32px', marginRight: '10px', verticalAlign: 'middle' }}
+              style={ akashaLogoStyles }
             >
               <MenuAkashaLogo />
             </SvgIcon>
@@ -66,10 +70,10 @@ class CreateProfileComplete extends Component {
                 disabled
               />
               <RaisedButton
-                label="Next"
+                label="Enjoy AKASHA"
                 primary
                 style={{ marginLeft: '12px' }}
-                onClick={this.handleNext}
+                onClick={this._handleFinishSetup}
               />
             </div>
           </div>
@@ -77,6 +81,9 @@ class CreateProfileComplete extends Component {
         </div>
       </div>
     );
+  }
+  _handleFinishSetup = (ev) => {
+    this.context.router.push('/severs');
   }
 }
 
@@ -87,7 +94,8 @@ CreateProfileComplete.propTypes = {
 };
 
 CreateProfileComplete.contextTypes = {
-  muiTheme: React.PropTypes.object
+  muiTheme: React.PropTypes.object,
+  router: React.PropTypes.object
 };
 
 CreateProfileComplete.defaultProps = {

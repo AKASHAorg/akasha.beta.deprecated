@@ -1,0 +1,37 @@
+[
+  {
+    "id": "app.firstName",
+    "description": "Placeholder for first name input",
+    "defaultMessage": "First Name"
+  },
+  {
+    "id": "app.lastName",
+    "description": "Placeholder for last name input",
+    "defaultMessage": "Last Name"
+  },
+  {
+    "id": "app.userName",
+    "description": "Placeholder for last name input",
+    "defaultMessage": "User Name"
+  },
+  {
+    "id": "app.password",
+    "description": "Placeholder for password input",
+    "defaultMessage": "Password"
+  },
+  {
+    "id": "app.passwordVerify",
+    "description": "Placeholder for password verify input",
+    "defaultMessage": "Verify Password"
+  },
+  {
+    "id": "app.inputField.title",
+    "description": "Placeholder for title input field",
+    "defaultMessage": "Title"
+  },
+  {
+    "id": "app.inputField.url",
+    "description": "Placeholder for url input field",
+    "defaultMessage": "URL"
+  }
+]
