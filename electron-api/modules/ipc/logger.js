@@ -1,8 +1,7 @@
-'use strict';
 
-const {ipcMain} = require('electron');
+const { ipcMain } = require('electron');
 const Logger = require('../../loggers');
-const {EVENTS} = require('../settings');
+const { EVENTS } = require('../settings');
 
 const symbolEnforcer = Symbol();
 const symbol = Symbol();
@@ -14,11 +13,11 @@ class LoggerService {
      * @param {Symbol} enforcer
      * @returns {LoggerService}
      */
-    constructor (enforcer){
+    constructor (enforcer) {
         if (enforcer !== symbolEnforcer) {
-          throw new Error('Cannot construct singleton');
+            throw new Error('Cannot construct singleton');
         }
-        this.loggerNames = ["geth", "ipfs"];
+        this.loggerNames = ['geth', 'ipfs'];
         this.PREVIOUS_LOG_LINES = -10;
         this.serverEvent = EVENTS.server.logger;
         this.clientEvent = EVENTS.client.logger;
@@ -29,33 +28,33 @@ class LoggerService {
      * @returns {GethAction}
      */
     static getInstance () {
-      if (!this[symbol]) {
-        this[symbol] = new LoggerService(symbolEnforcer);
-      }
-      return this[symbol];
+        if (!this[symbol]) {
+            this[symbol] = new LoggerService(symbolEnforcer);
+        }
+        return this[symbol];
     }
     /**
     * Shorthand function for sending events back to the View layer
     * @param event
     */
-    _sendEvent ( event ) {
-        return ( name, successCode, data ) => {
+    _sendEvent (event) {
+        return (name, successCode, data) => {
             event.sender.send(name, {
-                "success": successCode,
-                "status": data
+                success: successCode,
+                status: data
             });
         };
     }
     /*
      * It sets up the listeners for this module.
-     * Events used are: 
+     * Events used are:
      * server:logger:startService used by the View layer to start the geth executable
-     * 
+     *
      * @param {BrowserWindow} mainWindow
      * @returns undefined
      */
-    setupListeners (mainWindow){
-		ipcMain.on(this.serverEvent.gethInfo, (event, arg) => {
+    setupListeners (mainWindow) {
+        ipcMain.on(this.serverEvent.gethInfo, (event, arg) => {
             this._getGethInfo(event, arg);
         });
         ipcMain.on(this.serverEvent.stopGethInfo, (event, arg) => {
@@ -66,16 +65,16 @@ class LoggerService {
     * Shorthand function for getting the AkashaLogger instance
     * @returns {AkashaLogger}
     */
-	_getGlobalLogger () {
-		return Logger.getInstance();
-	}
+    _getGlobalLogger () {
+        return Logger.getInstance();
+    }
     /**
     * Shorthand function for getting a winston.Logger instance
     * @returns {winston.Logger}
     */
-	_getLog (name) {
-		return this._getGlobalLogger().getLogger(name);
-	}
+    _getLog (name) {
+        return this._getGlobalLogger().getLogger(name);
+    }
     /**
     * This function queries the GETH Logger for the last this.PREVIOUS_LOG_LINES entries
     * and sends them back to the view layer.
@@ -84,31 +83,33 @@ class LoggerService {
     * @param event, arg
     * @returns undefined
     */
-	_getGethInfo ( event, arg ) {
-		if(this._getLog("geth")) {
-    		this._getLog("geth").query({
-    			"start": this.PREVIOUS_LOG_LINES
-    		}, (err, data) => {
-    			if(!err) {
+    _getGethInfo (event, arg) {
+        if (this._getLog('geth')) {
+            this._getLog('geth').query({
+                start: this.PREVIOUS_LOG_LINES
+            }, (err, data) => {
+                if (!err) {
                     this._sendEvent(event)(this.clientEvent.gethInfo, true, data);
-    			} else {
-    				this._sendEvent(event)(this.clientEvent.gethInfo, false, err);
-    			}
-    		});
-            if(arg === true) {
-                this._getLog("geth").on('logging', this._sendGethUpdates(event));
+                } else {
+                    this._sendEvent(event)(this.clientEvent.gethInfo, false, err);
+                }
+            });
+            if (arg === true) {
+                this._getLog('geth').on('logging', this._sendGethUpdates(event));
             }
         }
-	}
+    }
     /**
     * This function is called every time the client wants to be updated with GETH new log entries.
     * It returns a function that gets called every time a new entry is logged by AkashaLogger.
     * @param event
-    * @returns {Function} 
+    * @returns {Function}
     */
     _sendGethUpdates (event) {
         this.__gethUpdatesHandler = (transport, level, msg, meta) => {
-            this._sendEvent(event)(this.clientEvent.gethInfo, true, {"log-geth": {"status": msg}});
+            this._sendEvent(event)(this.clientEvent.gethInfo, true, {
+                'log-get': { status: msg }
+            });
         };
         return this.__gethUpdatesHandler;
     }
@@ -117,8 +118,8 @@ class LoggerService {
     * @param event, arg
     * @returns undefined
     */
-    _stopGethInfo ( event, arg ) {
-        this._getLog("geth").removeListener('logging', this.__gethUpdatesHandler);
+    _stopGethInfo (event, arg) {
+        this._getLog('geth').removeListener('logging', this.__gethUpdatesHandler);
     }
 
 }
