@@ -46,8 +46,19 @@ const imageWidths = [
 function _readImageData (imagePath, canvas, ctx, options) {
     return new Promise((resolve, reject) => {
         const availableWidths = [];
+        let resizeWidths = imageWidths;
         const img = new Image();
         const { minWidth, minHeight } = options;
+        if (options.imageWidths) {
+            resizeWidths = imageWidths.filter((width) => {
+                for (let i = options.imageWidths.length - 1; i >= 0; i--) {
+                    if (width.key === options.imageWidths[i]) {
+                        return true;
+                    }
+                }
+                return false;
+            });
+        }
         img.onload = () => {
             const images = [];
             const imgWidth = img.width;
@@ -63,9 +74,9 @@ function _readImageData (imagePath, canvas, ctx, options) {
             }
             const aspectRatio = imgHeight > imgWidth ? imgHeight / imgWidth : imgWidth / imgHeight;
 
-            for (let i = imageWidths.length - 1; i >= 0; i--) {
-                if (img.width >= imageWidths[i].res) {
-                    availableWidths.push(imageWidths[i]);
+            for (let i = resizeWidths.length - 1; i >= 0; i--) {
+                if (img.width >= resizeWidths[i].res) {
+                    availableWidths.push(resizeWidths[i]);
                 }
             }
             _.forEach(availableWidths, width => {
@@ -87,7 +98,30 @@ function _readImageData (imagePath, canvas, ctx, options) {
         img.src = imagePath;
     });
 }
-
+/**
+ * Utility to resize images using Html5 canvas
+ * @param {Array} imagePaths Path(s) returned from a dialog window
+ * @param {Object} options
+ * @param {Number} options.minHeight Minimum allowed height
+ * @param {Number} options.minWidth Minimum allowed width
+ * @param {Array} options.imageWidths Resize using keys in this array only
+ * @return {Array} promises Array of promises for each passed path
+ *
+ * @example
+ *  const filePromises = getResizedImages([/path/to/image.jpg, /path/to/image2.png], {
+ *       minWidth: 250,
+ *       minHeight: 200,
+ *  });
+ *   Promise.all(filePromises).then(results =>
+ *       results.forEach(result => {
+ *          result is an array containing all image variants for a given path
+ *          result[0].dataUrl {base64 imageData}
+ *          result[0].height  {resulting height after resize}
+ *          result[0].width   {resulting width after resize}
+ *          result[0].key     {key}
+ *       });
+ *   ).catch(reason => reason {string} 'Image height is smaller than minimum allowed of 200 pixels')
+ */
 function getResizedImages (imagePaths, options) {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');

@@ -1,20 +1,59 @@
 import React from 'react';
-import {SvgIcon, RaisedButton} from 'material-ui';
+import { SvgIcon, RaisedButton } from 'material-ui';
 import AddPhotoIcon from 'material-ui/svg-icons/image/add-a-photo';
 import DeleteIcon from 'material-ui/svg-icons/action/delete';
-import {getResizedImages} from '../../../utils/imageUtils'
-import {injectIntl} from 'react-intl';
-import {generalMessages} from '../../../locale-data/messages';
+import { getResizedImages } from '../../../utils/imageUtils';
+import { injectIntl } from 'react-intl';
+import { generalMessages } from '../../../locale-data/messages';
 const remote = require('remote');
 const dialog = remote.require('electron').dialog;
 
 class ImageUploader extends React.Component {
-    constructor(props) {
+    constructor (props) {
         super(props);
         this.state = {};
     }
-    getImage = () => {
-        return this.state.images;
+    getImage = () => this.state.images;
+    _handleDialogOpen = () => {
+        const multiselection = this.props.multiFiles ? 'multiSelections' : '';
+        dialog.showOpenDialog({
+            title: this.props.dialogTitle,
+            properties: ['openFile', multiselection],
+            filters: [{ name: 'Images', extensions: ['jpg', 'png', 'gif'] }]
+        }, files => {
+            if (!files) {
+                return;
+            }
+            this.setState({
+                imageFile: files,
+                isNewImage: true
+            }, () => {
+                const {
+                    minWidth,
+                    minHeight
+                } = this.props;
+                const imageFiles = this.state.imageFile;
+                const outputFiles = getResizedImages(imageFiles, { minWidth, minHeight });
+
+                Promise.all(outputFiles).then(results => {
+                    this.setState({
+                        images: results
+                    });
+                }).catch(err => {
+                    this.setState({
+                        error: err
+                    });
+                });
+            });
+        });
+    }
+    _handleClearImage = () => {
+        this.setState({
+            images: null,
+            imageFile: null,
+            isNewImage: false,
+            error: null
+        });
     }
     render () {
         const uploadButtonStyle = {
@@ -59,89 +98,50 @@ class ImageUploader extends React.Component {
                 {this.state.isNewImage &&
                     <div>
                         { this.props.multiFiles &&
-                            this.state.imageFile.map((image, key) => {
-                                return <img src = {image} key = {key} style = {imageStyle} />
-                            })
+                            this.state.imageFile.map((image, key) =>
+                                <img src = {image} key = {key} style = {imageStyle} />
+                            )
                         }
                         { !this.props.multiFiles &&
                             <img src={this.state.imageFile[0]} style = {imageStyle} />
                         }
                         <div style={clearImageButtonStyle}>
                         <RaisedButton fullWidth secondary
-                            icon = {<DeleteIcon />}
-                            style = {{width: '100%'}}
-                            onClick = {this._handleClearImage}
+                          icon = {<DeleteIcon />}
+                          style = {{ width: '100%' }}
+                          onClick = {this._handleClearImage}
                         />
                         </div>
                     </div>
                 }
                 {!this.state.isNewImage &&
                     <div style={emptyContainerStyle}>
-                        <SvgIcon style = {{height: '42px', width: '100%'}}
-                            color = {this.context.muiTheme.palette.textColor}
+                        <SvgIcon style = {{ height: '42px', width: '100%' }}
+                          color = {this.context.muiTheme.palette.textColor}
                         >
-                            <AddPhotoIcon viewBox = "0 0 24 24"/>
+                            <AddPhotoIcon viewBox = "0 0 24 24" />
                         </SvgIcon>
-                        <text style={{display: 'block'}}>{this.props.intl.formatMessage(generalMessages.addImage)}</text>
+                        <text style={{ display: 'block' }}>
+                            {this.props.intl.formatMessage(generalMessages.addImage)}
+                        </text>
                     </div>
                 }
                 <div style = {uploadButtonStyle} onClick = {this._handleDialogOpen}></div>
                 {this.state.error &&
                     <div style={errorStyle}>{this.state.error}</div>
                 }
-                
             </div>
         );
-    }
-    _handleDialogOpen = (ev) => {
-        const multiselection = this.props.multiFiles ? 'multiSelections' : '';
-        dialog.showOpenDialog({
-            title: this.props.dialogTitle,
-            properties: ['openFile', multiselection],
-            filters: [{ name: 'Images', extensions: ['jpg', 'png', 'gif'] }]
-        }, files => {
-            if (!files) {
-                return;
-            }
-            this.setState({
-                imageFile: files,
-                isNewImage: true
-            }, () => {
-                let {
-                    minWidth,
-                    minHeight
-                } = this.props;
-                const imageFiles = this.state.imageFile;
-                let files = getResizedImages(imageFiles, {minWidth, minHeight});
-
-                Promise.all(files).then(results => {
-                    this.setState({
-                        images: results
-                    });
-                }).catch(err => {
-                    this.setState({
-                        error: err
-                    });
-                });
-            });
-        });
-    }
-    _handleClearImage = () => {
-        this.setState({
-            images: null,
-            imageFile: null,
-            isNewImage: false,
-            error: null
-        });
     }
 }
 ImageUploader.propTypes = {
     minWidth: React.PropTypes.number,
     minHeight: React.PropTypes.number,
     dialogTitle: React.PropTypes.string,
-    multiFiles: React.PropTypes.bool
+    multiFiles: React.PropTypes.bool,
+    intl: React.PropTypes.object
 };
 ImageUploader.contextTypes = {
     muiTheme: React.PropTypes.object
 };
-export default injectIntl(ImageUploader, {withRef: true});
+export default injectIntl(ImageUploader, { withRef: true });
