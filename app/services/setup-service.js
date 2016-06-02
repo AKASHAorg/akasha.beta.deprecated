@@ -1,9 +1,9 @@
 const { ipcRenderer } = require('electron');
 import { EVENTS } from '../../electron-api/modules/settings';
 
-export function startGethService () {
+export function startGethService (options) {
     return new Promise((resolve, reject) => {
-        ipcRenderer.send(EVENTS.server.geth.startService);
+        ipcRenderer.send(EVENTS.server.geth.startService, options);
         ipcRenderer.on(EVENTS.client.geth.startService, (event, data) => {
             console.info('Client:SetupService:Received event ', event, ' with data ', data);
             if (!data.success) {
