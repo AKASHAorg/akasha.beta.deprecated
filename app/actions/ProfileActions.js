@@ -5,13 +5,12 @@ export function updateName (first, last) {
   return { type: types.UPDATE_NAME, first, last };
 }
 
-export function validateName (name) {
+export function validateUsername (name) {
   if (!name) {
     return { type: types.VALID_NAME, valid: false };
   }
   return { type: types.VALID_NAME, valid: true };
 }
-
 
 function validateUser (name) {
   const prof = window.akasha.profileInstance;

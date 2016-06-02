@@ -1,7 +1,7 @@
 import React, { PropTypes, Component } from 'react';
-import SvgIcon from 'material-ui/lib/svg-icon';
-import getMuiTheme from 'material-ui/lib/styles/getMuiTheme';
-import * as Colors from 'material-ui/lib/styles/colors';
+import { SvgIcon } from 'material-ui';
+import * as Colors from 'material-ui/styles/colors';
+import { getMuiTheme } from 'material-ui/styles';
 import { MenuAkashaLogo } from '../svg';
 import Radium from 'radium';
 

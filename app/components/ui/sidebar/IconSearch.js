@@ -1,14 +1,13 @@
 import React, { PropTypes, Component } from 'react';
-import SvgIcon from 'material-ui/lib/svg-icon';
-import getMuiTheme from 'material-ui/lib/styles/getMuiTheme';
-import * as Colors from 'material-ui/lib/styles/colors';
+import { SvgIcon } from 'material-ui';
+import { colors } from 'material-ui/styles';
 import CircleIcon from './CircleIcon';
 import { MenuSearch } from '../svg';
 
 
 export default class IconSearch extends Component {
   state = {
-    muiTheme: this.context.muiTheme || getMuiTheme()
+    muiTheme: this.context.muiTheme
   };
 
   static propTypes = {
@@ -27,10 +26,9 @@ export default class IconSearch extends Component {
       borderStyle: 'solid',
       borderRadius: '50%'
     },
-    iconStyle: { width: '32px', height: '32px' },
     viewBox: '0 0 32 32',
-    color: Colors.lightBlack,
-    hoverColor: Colors.darkBlack
+    color: colors.lightBlack,
+    hoverColor: colors.darkBlack
   };
 
   static contextTypes = {
@@ -48,7 +46,7 @@ export default class IconSearch extends Component {
   }
 
   render () {
-    let { style, iconStyle, viewBox, hoverColor, color, ...other } = this.props;
+    let { style, iconStyle, viewBox, hoverColor, color, tooltip, ...other } = this.props;
     const {
       baseTheme: {
         palette
@@ -56,7 +54,7 @@ export default class IconSearch extends Component {
     } = this.state.muiTheme;
 
     style = Object.assign(style, {
-        borderColor: Colors.faintBlack,
+        borderColor: colors.faintBlack,
         ':hover': {
           borderColor: palette.primary1Color
         }
@@ -65,7 +63,8 @@ export default class IconSearch extends Component {
 
     return (
       <CircleIcon
-        style={style}
+        onClick = {this._handleClick}
+        tooltip = {tooltip}
       >
         <SvgIcon
           color={color}
@@ -78,6 +77,9 @@ export default class IconSearch extends Component {
         </SvgIcon>
       </CircleIcon>
     )
+  }
+  _handleClick = (ev) => {
+    if(this.props.onClick) return this.props.onClick(ev);
   }
 }
 

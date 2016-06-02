@@ -1,15 +1,13 @@
 import React, { PropTypes, Component } from 'react';
-import SvgIcon from 'material-ui/lib/svg-icon';
-import getMuiTheme from 'material-ui/lib/styles/getMuiTheme';
-import * as Colors from 'material-ui/lib/styles/colors';
-import Badge from 'material-ui/lib/badge';
+import { SvgIcon, Badge } from 'material-ui';
+import { colors } from 'material-ui/styles';
 import { MenuUser } from '../svg';
 
 
 export default class IconProfile extends Component {
 
   state = {
-    muiTheme: this.context.muiTheme || getMuiTheme()
+    muiTheme: this.context.muiTheme
   };
 
   static propTypes = {
@@ -31,8 +29,8 @@ export default class IconProfile extends Component {
     },
     iconStyle: { width: '32px', height: '32px', transform: 'scale(0.9)', visibility: 'visible' },
     viewBox: '0 0 32 32',
-    color: Colors.lightBlack,
-    hoverColor: Colors.darkBlack
+    color: colors.lightBlack,
+    hoverColor: colors.darkBlack
   };
 
   static contextTypes = {
@@ -66,7 +64,7 @@ export default class IconProfile extends Component {
         fontSize: '10px',
         width: '18px',
         height: '18px',
-        backgroundColor: Colors.red500
+        backgroundColor: colors.red500
       }}
         primary={true}
         style={{padding:0}}

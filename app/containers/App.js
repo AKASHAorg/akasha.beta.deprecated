@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import AkashaTheme from '../layouts/AkashaTheme';
-import getMuiTheme from 'material-ui/lib/styles/getMuiTheme';
+import { getMuiTheme } from 'material-ui/styles';
 
 export default class App extends Component {
   static propTypes = {

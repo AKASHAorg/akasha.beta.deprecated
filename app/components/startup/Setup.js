@@ -1,18 +1,17 @@
 import React, { Component, PropTypes } from 'react';
 import LoginHeader from '../../components/ui/partials/LoginHeader';
-import * as Colors from 'material-ui/lib/styles/colors';
-import RadioButton from 'material-ui/lib/radio-button';
-import RadioButtonGroup from 'material-ui/lib/radio-button-group';
-import RaisedButton from 'material-ui/lib/raised-button';
-import TextField from 'material-ui/lib/text-field';
+import * as Colors from 'material-ui/styles/colors';
+import { RadioButton, RadioButtonGroup, RaisedButton, TextField } from 'material-ui';
 import { hashHistory } from 'react-router';
 import { Scrollbars } from 'react-custom-scrollbars';
+import { injectIntl } from 'react-intl';
+import { setupMessages, generalMessages } from '../../locale-data/messages';
+
 
 class Setup extends Component {
 
   handleChange = (event, value) => {
     const { actions, setupConfig } = this.props;
-
     const show = 'advanced' === value;
     if (setupConfig.get('toggleAdvanced') === show) {
       return;
@@ -56,18 +55,17 @@ class Setup extends Component {
 
   handleSubmit = () => {
     const { actions, setupConfig } = this.props;
-
     if (!setupConfig.get('toggleAdvanced')) {
-      actions.defaultOptions();
+      actions.startGeth(null);
     }
-    actions.submitOptions();
-    hashHistory.push('sync-status');
+    actions.startGeth(setupConfig);
+    // hashHistory.push('sync-status');
   };
 
   render () {
     let advancedOptions = '';
 
-    const { style, setupConfig } = this.props;
+    const { style, setupConfig, intl } = this.props;
 
     const radioStyle = { marginTop: '10px', marginBottom: '10px' };
     const buttonsStyle = { padding: 0, position: 'absolute', bottom: 0, right: 0 };
@@ -75,7 +73,6 @@ class Setup extends Component {
     const floatingLabelStyle = { color: Colors.lightBlack };
     const inputStyle = { color: Colors.darkBlack };
     const rootStyle = { width: '400px' };
-
     const defaultSelected = (!setupConfig.get('toggleAdvanced')) ? 'express' : 'advanced';
 
     if (setupConfig.get('toggleAdvanced')) {
@@ -83,9 +80,9 @@ class Setup extends Component {
         <div style={{ paddingLeft: '12px' }} >
           <TextField
             errorStyle={errorStyle}
-            errorText={"Change this if geth has different data directory"}
+            errorText={intl.formatMessage(setupMessages.changeGethDataDir)}
             floatingLabelStyle={floatingLabelStyle}
-            floatingLabelText="Geth Datadir path"
+            floatingLabelText={intl.formatMessage(setupMessages.gethDataDirPath)}
             hintText={setupConfig.get('gethPath')}
             inputStyle={inputStyle}
             onBlur={this.handleGethDatadir}
@@ -94,9 +91,9 @@ class Setup extends Component {
           />
           <TextField
             errorStyle={errorStyle}
-            errorText={"Change this if geth is already started with --ipcpath"}
+            errorText={intl.formatMessage(setupMessages.changeGethAlreadyStarted)}
             floatingLabelStyle={floatingLabelStyle}
-            floatingLabelText="Geth ipc path"
+            floatingLabelText={intl.formatMessage(setupMessages.gethIPCPath)}
             hintText={setupConfig.get('gethPathIpc')}
             inputStyle={inputStyle}
             onBlur={this.handleGethIpc}
@@ -104,9 +101,9 @@ class Setup extends Component {
           />
           <TextField
             errorStyle={errorStyle}
-            errorText={"Change this if ipfs daemon is already running"}
+            errorText={intl.formatMessage(setupMessages.changeIfIpfsRunning)}
             floatingLabelStyle={floatingLabelStyle}
-            floatingLabelText="Ipfs api path"
+            floatingLabelText={intl.formatMessage(setupMessages.ipfsPath)}
             hintText={setupConfig.get('ipfsApiPath')}
             inputStyle={inputStyle}
             onBlur={this.handleIpfsPath}
@@ -126,18 +123,14 @@ class Setup extends Component {
             <Scrollbars
               style={{ height: 540 }}
             >
-              <h1 style={{ fontWeight: '400' }} >{'First time setup'}</h1>
+              <h1 style={{ fontWeight: '400' }} >{intl.formatMessage(setupMessages.firstTimeSetupTitle)}</h1>
               <div>
-                <p>{'AKASHA is a next-generation social blogging network powered by a new kind of world computers' +
-                ' known as Ethereum and the Inter Planetary File System.'}
+                <p>{intl.formatMessage(setupMessages.akashaNextGenNetwork)}</p>
+                <p>
+                  {intl.formatMessage(setupMessages.youHaveNotHeared)}
                 </p>
                 <p>
-                  {'If you haven’t heard of these technologies before don’t worry, simply click next and we’ll take' +
-                  ' care' + ' of the rest.'}
-                </p>
-                <p>
-                  {'If you already have the Ethereum Go client or IPFS installed on your machine please choose the' +
-                  ' advanced option.'}
+                  {intl.formatMessage(setupMessages.ifYouHaveEth)}
                 </p>
               </div>
               <div style={{ paddingLeft: '12px' }} >
@@ -146,12 +139,12 @@ class Setup extends Component {
                                   onChange={this.handleChange}
                 >
                   <RadioButton
-                    label={'Express setup'}
+                    label={intl.formatMessage(setupMessages.expressSetup)}
                     style={radioStyle}
                     value={'express'}
                   />
                   <RadioButton
-                    label={'Advanced'}
+                    label={intl.formatMessage(setupMessages.advancedSetup)}
                     style={radioStyle}
                     value={'advanced'}
                   />
@@ -167,8 +160,9 @@ class Setup extends Component {
           <div className="col-xs"
                style={buttonsStyle}
           >
-            <RaisedButton label="Next"
+            <RaisedButton label={intl.formatMessage(generalMessages.nextButtonLabel)}
                           primary={true}
+                          backgroundColor={this.context.muiTheme.raisedButton.secondaryColor}
                           style={{ marginLeft: '12px' }}
                           onClick={this.handleSubmit}
             />
@@ -199,6 +193,4 @@ Setup.defaultProps = {
   }
 };
 
-export default Setup;
-
-
+export default injectIntl(Setup);

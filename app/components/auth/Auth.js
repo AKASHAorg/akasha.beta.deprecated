@@ -1,14 +1,10 @@
 import React, { Component } from 'react';
-import List from 'material-ui/lib/lists/list';
-import ListItem from 'material-ui/lib/lists/list-item';
-import Avatar from 'material-ui/lib/avatar';
+import { List, ListItem, Avatar, Divider, Dialog, FlatButton, TextField, RaisedButton } from 'material-ui';
 import LoginHeader from '../../components/ui/partials/LoginHeader';
-import Divider from 'material-ui/lib/divider';
-import Dialog from 'material-ui/lib/dialog';
-import FlatButton from 'material-ui/lib/flat-button';
 import { Scrollbars } from 'react-custom-scrollbars';
-import TextField from 'material-ui/lib/text-field';
-import RaisedButton from 'material-ui/lib/raised-button';
+import { hashHistory } from 'react-router';
+import { FormattedMessage, injectIntl } from 'react-intl';
+import { setupMessages, generalMessages } from '../../locale-data/messages';
 
 class Auth extends Component {
 
@@ -18,7 +14,7 @@ class Auth extends Component {
       openModal: false,
       selectedIndex: false,
       avatar: {}
-    }
+    };
   }
 
   componentDidMount () {
@@ -41,35 +37,15 @@ class Auth extends Component {
   };
 
   render () {
-    const { style, authState } = this.props;
+    const { style, authState, intl } = this.props;
     const { openModal, avatar } = this.state;
     const profiles = authState.get('profiles');
     const modalActions = [
       <FlatButton label="Cancel" onTouchTap={this.handleModalClose} />,
       <FlatButton label="Submit" primary={true} onTouchTap={this.handleLogin} />
     ];
+    const localProfiles = this._getLocalProfiles();
 
-    let localProfiles = profiles.map((account, index) => {
-      return (
-        <div key={index} >
-          <ListItem
-            key={`l${index}`}
-            leftAvatar={<Avatar>aa</Avatar>}
-            primaryText={account.get('address')}
-            secondaryText={account.get('userName')}
-            secondaryTextLines={1}
-            value={account.get('address')}
-            onTouchTap={()=> this.handleTouchTap(index)}
-          />
-          <Divider key={`d${index}`} inset />
-        </div>
-      )
-    });
-    if (!localProfiles.size) {
-      localProfiles = (
-        <div>No profiles found.Create a new identity or import an existing one.</div>
-      )
-    }
     return (
       <div style={style} >
         <div className="start-xs" >
@@ -77,7 +53,7 @@ class Auth extends Component {
             className="col-xs"
             style={{ flex: 1, padding: 0 }}
           >
-            <LoginHeader title={'Log in'} />
+            <LoginHeader title={intl.formatMessage(setupMessages.logInTitle)} />
             <div style={{paddingTop: '30px'}} >
               <Scrollbars style={{ height: '440px' }} >
                 <List>
@@ -86,9 +62,12 @@ class Auth extends Component {
               </Scrollbars>
             </div>
             <div style={{float: 'right'}} >
-              <RaisedButton label="IMPORT IDENTITY" />
-              <RaisedButton label="CREATE NEW IDENTITY"
-                            primary={true} style={{marginLeft: '10px'}} />
+              <RaisedButton label={intl.formatMessage(generalMessages.importIdentityLabel)} />
+              <RaisedButton label={intl.formatMessage(generalMessages.createNewIdentityLabel)}
+                            primary={true} 
+                            style={{marginLeft: '10px'}} 
+                            onMouseUp={this._handleIdentityCreate}
+              />
             </div>
             <Dialog
               title="Authentication"
@@ -120,6 +99,32 @@ class Auth extends Component {
       </div>
     );
   }
+  _getLocalProfiles() {
+    const { authState } = this.props;
+    if(!authState.get('profiles').size) {
+      return <div><FormattedMessage {...setupMessages.noProfilesFound}/></div>;
+    }
+    return authState.get('profiles').map((account, index) => {
+      return (
+        <div key={index} >
+          <ListItem
+            key={`l${index}`}
+            leftAvatar={<Avatar>aa</Avatar>}
+            primaryText={account.get('address')}
+            secondaryText={account.get('userName')}
+            secondaryTextLines={1}
+            value={account.get('address')}
+            onTouchTap={()=> this.handleTouchTap(index)}
+          />
+          <Divider key={`d${index}`} inset />
+        </div>
+      )
+    });
+  }
+  _handleIdentityCreate = (ev) => {
+    ev.preventDefault();
+    hashHistory.push('new-profile');
+  }
 }
 
 Auth.propTypes = {
@@ -142,6 +147,6 @@ Auth.defaultProps = {
   }
 };
 
-export default Auth;
+export default injectIntl(Auth);
 
 
