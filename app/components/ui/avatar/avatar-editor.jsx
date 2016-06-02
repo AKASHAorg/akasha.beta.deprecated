@@ -3,8 +3,7 @@ import AvatarEditor from 'react-avatar-editor';
 import AddPhotoIcon from 'material-ui/svg-icons/image/add-a-photo';
 import ClearIcon from 'material-ui/svg-icons/content/clear';
 import {SvgIcon, Slider} from 'material-ui';
-const remote = require('remote');
-const dialog = remote.require('electron').dialog;
+const { dialog } = require('electron').remote;
 
 class Avatar extends React.Component {
     constructor(props) {
