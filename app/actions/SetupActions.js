@@ -1,4 +1,21 @@
+import { startGethService } from '../services/setup-service';
 import * as types from '../constants/SetupConstants';
+
+export function startGeth (options) {
+    return dispatch => {
+        startGethService(options).then(data => {
+            if (!data.success) {
+                console.log(data);
+                dispatch({ type: types.START_GETH_FAILURE, data });
+            }
+            console.log(data);
+            dispatch({ type: types.START_GETH, data });
+        }).catch(reason => {
+            console.log(reason);
+            dispatch({ type: types.START_GETH_FAILURE, reason });
+        });
+    };
+}
 
 export function setupGeth (path) {
   return { type: types.SETUP_GETH, path };
