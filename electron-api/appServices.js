@@ -13,7 +13,7 @@ setTimeout(() => {
   window.gethInstance = geth.getInstance();
   window.ipfsInstance = ipfs.getInstance();
 
-  window.gethInstance.start();
+  //window.gethInstance.start();
   window.ipfsInstance.start();
 
   app.on('before-quit', () => {
