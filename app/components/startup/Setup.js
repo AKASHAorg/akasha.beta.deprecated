@@ -55,12 +55,11 @@ class Setup extends Component {
 
   handleSubmit = () => {
     const { actions, setupConfig } = this.props;
-
     if (!setupConfig.get('toggleAdvanced')) {
-      actions.defaultOptions();
+      actions.startGeth(null);
     }
-    actions.submitOptions();
-    hashHistory.push('sync-status');
+    actions.startGeth(setupConfig);
+    // hashHistory.push('sync-status');
   };
 
   render () {
