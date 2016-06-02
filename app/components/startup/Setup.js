@@ -59,7 +59,7 @@ class Setup extends Component {
       actions.startGeth(null);
     }
     actions.startGeth(setupConfig);
-    // hashHistory.push('sync-status');
+    hashHistory.push('sync-status');
   };
 
   render () {
