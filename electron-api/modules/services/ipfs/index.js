@@ -6,7 +6,7 @@ const ipfsAPI = require('ipfs-api');
 const Promise = require('bluebird');
 const childProcess = require('child_process');
 
-const loggerRegistrar = require('../../loggers');
+const loggerRegistrar = require('../../../loggers');
 
 const symbolEnforcer = Symbol();
 const symbol = Symbol();

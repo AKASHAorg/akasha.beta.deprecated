@@ -9,7 +9,7 @@ const net = require('net');
 const os = require('os');
 const Web3 = require('./web3');
 
-const loggerRegistrar = require('../../loggers');
+const loggerRegistrar = require('../../../loggers');
 
 const platform = os.type();
 
@@ -266,6 +266,7 @@ class GethConnector {
       });
 
       this.gethProcess.stdout.on('data', (data) => {
+        console.log(" --- " + data);
         this.logger.info(data.toString());
       });
 

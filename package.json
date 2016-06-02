@@ -7,6 +7,7 @@
   "scripts": {
     "test": "better-npm-run test",
     "test-watch": "npm test -- --watch",
+    "debug-ipc": "ELECTRON_RUN_AS_NODE=true node_modules/.bin/electron node_modules/node-inspector/bin/inspector.js",
     "test-e2e": "better-npm-run test-e2e",
     "lint": "node node_modules/eslint/bin/eslint.js app/ electron-api/",
     "browser": "node server.js",
@@ -34,7 +35,7 @@
       }
     },
     "xgui": {
-      "command": "node_modules/.bin/electron --remote-debugging-port=1337 main.js",
+      "command": "node_modules/.bin/electron --remote-debugging-port=1337 --debug=5858 main.js",
       "env": {
         "HOT": 1,
         "NODE_ENV": "development"

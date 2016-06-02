@@ -1,6 +1,7 @@
 /* eslint strict: 0 */
 'use strict';
 require('babel-register');
+const {EVENTS} = require('./electron-api/modules/settings');
 
 const electron = require('electron');
 const app = electron.app;
@@ -18,6 +19,10 @@ if (process.env.NODE_ENV === 'development') {
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
+});
+
+app.on('will-quit', () => {
+  electron.ipcRenderer.send(EVENTS.server.geth.stopService);
 });
 
 
@@ -39,4 +44,5 @@ app.on('ready', () => {
   if (process.env.NODE_ENV === 'development') {
     mainWindow.openDevTools();
   }
+  require('./electron-api/modules/ipc/index.js').initIPCServices(mainWindow);
 });
