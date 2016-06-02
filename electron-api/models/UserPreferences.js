@@ -1,6 +1,6 @@
 const LinvoDb = require('linvodb3');
-const ipfs = require('../modules/ipfs').getInstance();
-const geth = require('../modules/geth');
+const ipfs = require('../modules/services/ipfs').getInstance();
+const geth = require('../modules/services/geth');
 
 const configId = 1;
 
