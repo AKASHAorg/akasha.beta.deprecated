@@ -9,7 +9,8 @@
     "max-statements": [2, 20],
     "space-before-function-paren": [2, "always"],
     "eqeqeq": "off",
-    "import/no-unresolved": "off"
-  },
+    "import/no-unresolved": "off",
+    "no-underscore-dangle": ["error", { "allowAfterThis": true }]
+    },
   "parser": "babel-eslint"
 }
