@@ -117,6 +117,10 @@ class GethConnector {
       }
 
       return [data[1]];
+    }).catch((err) => {
+      console.log("--------------------");
+      console.log(err);
+      console.log("--------------------");
     });
   }
 
