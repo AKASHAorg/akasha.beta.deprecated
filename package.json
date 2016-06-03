@@ -7,7 +7,7 @@
   "scripts": {
     "test": "better-npm-run test",
     "test-watch": "npm test -- --watch",
-    "debug-ipc": "ELECTRON_RUN_AS_NODE=true node_modules/.bin/electron node_modules/node-inspector/bin/inspector.js",
+    "debug-ipc": "ELECTRON_RUN_AS_NODE=true node_modules/.bin/electron node_modules/node-inspector/bin/inspector.js --no-preload",
     "test-e2e": "better-npm-run test-e2e",
     "lint": "node node_modules/eslint/bin/eslint.js app/ electron-api/",
     "browser": "node server.js",
@@ -146,7 +146,8 @@
     "webpack": "1.13.1",
     "webpack-dev-middleware": "1.6.1",
     "webpack-hot-middleware": "2.10.0",
-    "webpack-target-electron-renderer": "0.4.0"
+    "webpack-target-electron-renderer": "0.4.0",
+    "node-inspector": "0.12.8"
   },
   "dependencies": {
     "bin-wrapper": "3.0.2",

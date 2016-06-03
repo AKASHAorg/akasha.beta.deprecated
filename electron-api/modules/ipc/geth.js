@@ -98,15 +98,24 @@ class GethService {
     }
     _getBlockUpdates (event) {
         this.getGethService().inSync().then((data) => {
+            let message = 'empty';
             if (data.length > 0) {
-                this._sendEvent(event)(this.clientEvent.syncUpdate, true, {
+            message = {
                     currentBlock: data.length > 1 ? data[1].currentBlock : -1,
                     highestBlock: data.length > 1 ? data[1].highestBlock : -1,
                     startingBlock: data.length > 1 ? data[1].startingBlock : -1,
                     peerCount: data[0]
-                });
+                }
+            }
+            if(!this.prevMessage) {
+                this.prevMessage = message;
             } else {
-                this._sendEvent(event)(this.clientEvent.syncUpdate, true, 'empty');
+                let messageString = typeof message === 'string' ? message : JSON.stringify(this.message);
+                let prevMessageString = typeof this.prevMessage === 'string' ? this.prevMessage : JSON.stringify(this.prevMessage);
+                if(this.prevMessage != message) {
+                    this._sendEvent(event)(this.clientEvent.syncUpdate, true, message);
+                }
+                this.prevMessage = message;
             }
         }).catch((err) => {
             this._stopGethUpdates();
