@@ -89,7 +89,6 @@ class GethService {
     _getGethUpdates (event, arg) {
         this.updatesFlag = setInterval(() => this._getBlockUpdates(event),
             this.BLOCK_UPDATE_INTERVAL);
-        console.log(this.updatesFlag);
     }
     _stopGethUpdates (event, arg) {
         clearInterval(this.updatesFlag);

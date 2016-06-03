@@ -187,54 +187,7 @@ class GethConnector {
         }
         return dataDir;
     }
-  }
 
-  /**
-   * Check if geth client is syncing
-   * @returns {Promise.<T>|*}
-   */
-  inSync () {
-    const rules = [
-      this.web3.eth.getSyncingAsync(),
-      this.web3.net.getPeerCountAsync(),
-      this.web3.eth.getBlockAsync('latest')
-    ];
-
-    return Promise.all(rules).then((data) => {
-      const timeStamp = Math.floor(new Date().getTime() / 1000);
-      if (data[0]) {
-        return [data[1], data[0]];
-      }
-
-      if (!data[0] && data[1] > 0 && (data[2].timestamp + 60 * 2) > timeStamp) {
-        return false;
-      }
-
-      return [data[1]];
-    }).catch((err) => {
-
-    });
-  }
-
-
-  /**
-   *
-   * @param dataDir
-   * @param ipcPath
-   * @param protocol
-   * @param extra
-   * @returns {Array|Array.<T>|*}
-   * @private
-   */
-  _setOptions ({
-    dataDir,
-    ipcPath,
-    protocol = ['--shh', '--fast', '--cache', 512],
-    extra = ['--testnet']
-  } = {}) {
-    this.options = [];
-    if (!Array.isArray(protocol) || !Array.isArray(extra)) {
-      throw new Error('protocol and extra options must be array type');
 
     /**
      * Downloads geth executable
@@ -317,7 +270,6 @@ class GethConnector {
             });
 
             this.gethProcess.stdout.on('data', (data) => {
-                console.log(" --- " + data);
                 this.logger.info(data.toString());
             });
 
