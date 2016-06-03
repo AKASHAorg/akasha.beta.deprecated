@@ -26,19 +26,17 @@ class SyncStatus extends Component {
     getSyncStatus = () => {
         updateSync((err, updateData) => {
             const { success, status } = updateData;
-            
+            console.log('current status: ', status);
             if (err) {
                 return this.setState({
                     syncError: status
                 });
             }
             if (success && status === 'empty') {
-                console.log(success, status);
                 return removeUpdateSync(() => {
                     hashHistory.push('/authenticate');
                 });
             }
-            
             return this.setState({
                 syncData: status
             });
