@@ -1,13 +1,38 @@
 {
-  "extends": "airbnb",
-  "rules": {
-  	"indent": [2, 4],
-    "comma-dangle": [0],
-    "complexity": [2, 10],
-    "no-param-reassign": [0],
-    "max-depth": [2, 5],
-    "max-statements": [2, 20],
-    "space-before-function-paren": [2, "always"]
-  },
-  "parser": "babel-eslint"
+    "extends": "airbnb",
+    "rules": {
+        "indent": [
+            2,
+            4
+        ],
+        "comma-dangle": [
+            0
+        ],
+        "complexity": [
+            2,
+            10
+        ],
+        "no-param-reassign": [
+            0
+        ],
+        "max-depth": [
+            2,
+            5
+        ],
+        "max-statements": [
+            2,
+            20
+        ],
+        "space-before-function-paren": [
+            2,
+            "always"
+        ],
+        "no-underscore-dangle": [
+            "error",
+            {
+                "allowAfterThis": true
+            }
+        ]
+    },
+    "parser": "babel-eslint"
 }
