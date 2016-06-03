@@ -1,11 +1,10 @@
-export const SETUP_GETH   = 'SETUP_GETH';
-export const SETUP_IPFS   = 'SETUP_IPFS';
-export const SET_GETH_IPC = 'SET_GETH_IPC';
-
-export const TOGGLE_ADVANCED = 'TOGGLE_ADVANCED';
-export const DEFAULT_OPTIONS = 'DEFAULT_OPTIONS';
-
-export const SUBMIT_OPTIONS = 'SUBMIT_OPTIONS';
-
-export const START_GETH = 'START_GETH';
-export const START_GETH_FAILURE = 'START_GETH_FAILURE';
+// geth
+export const START_GETH_SUCCESS = 'START_GETH_SUCCESS';
+export const START_GETH_ERROR = 'START_GETH_ERROR';
+export const STOP_GETH_SUCCESS = 'STOP_GETH_SUCCESS';
+export const STOP_GETH_ERROR = 'STOP_GETH_ERROR';
+// ipfs
+export const START_IPFS_SUCCESS = 'START_IPFS_SUCCESS';
+export const START_IPFS_ERROR = 'START_IPFS_ERROR';
+export const STOP_IPFS_SUCCESS = 'STOP_IPFS_SUCCESS';
+export const STOP_IPFS_ERROR = 'STOP_IPFS_ERROR';
