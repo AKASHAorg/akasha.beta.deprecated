@@ -60,8 +60,7 @@ class IpfsConnector {
      * @param daemon
      */
     start (daemon = true) {
-
-        let options = {
+        const options = {
             command: ipfsBin,
             args: ['daemon'],
             extra: {
@@ -78,7 +77,7 @@ class IpfsConnector {
                 (err) => {
                     if (this._retry) {
                         return this._initIpfs().then(
-                            (data) => {
+                            () => {
                                 this.start();
                             }
                         ).catch(
@@ -164,7 +163,7 @@ class IpfsConnector {
      * @returns {bluebird|exports|module.exports}
      */
     catMultiple (hashSources = []) {
-        let data = [];
+        const data = [];
 
         hashSources.forEach((hash) => {
             data.push(this.cat(hash));
@@ -187,7 +186,7 @@ class IpfsConnector {
      * @returns {bluebird|exports|module.exports}
      */
     add (data, { isPath = false, recursive = false } = {}) {
-        let options = {};
+        const options = {};
         let contentBody = data;
         return new Promise((resolve, reject) => {
             if (!this._api) {
@@ -218,8 +217,7 @@ class IpfsConnector {
      * @returns {bluebird|exports|module.exports}
      */
     addMultiple (sources = []) {
-
-        let data = [];
+        const data = [];
 
         sources.forEach((source) => {
             data.push(this.add(...source));
@@ -345,7 +343,7 @@ class IpfsConnector {
      */
     _initIpfs () {
         return new Promise((resolve, reject) => {
-            let q = childProcess.exec(ipfsBin + ' init');
+            const q = childProcess.exec(ipfsBin + ' init');
 
             q.once('exit', (code, signal) => {
                 if (code !== 0 && !signal) {

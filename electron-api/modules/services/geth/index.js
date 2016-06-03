@@ -164,7 +164,7 @@ class GethConnector {
         ipcPath = null;
         dataDir = null;
 
-        this.spawnOptions.push('--datadir', `${this.dataDir}`);
+        this.spawnOptions.push('--ipcpath', `${this.ipcPath}`);
 
         this.spawnOptions = this.spawnOptions.concat(protocol, extra);
         return this.spawnOptions;
@@ -200,7 +200,7 @@ class GethConnector {
      */
     _checkGeth () {
         return new Promise((resolve, reject) => {
-            geth.run(['version'], function (err) {
+            geth.run(['version'], (err) => {
                 if (err) {
                     reject(err);
                 }
