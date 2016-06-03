@@ -58,12 +58,11 @@ class GethConnector {
      * @param options
      */
     start (options = {}) {
-        if(this.gethProcess){
-            if(this.gethProcess.connected){
+        if (this.gethProcess) {
+            if (this.gethProcess.connected) {
                 return Promise.resolve('Already started');
             }
         }
-        console.log(this.spawnOptions);
         if (!this.spawnOptions.length || !Object.keys(options).length) {
             this._setOptions(options);
         }
@@ -105,7 +104,7 @@ class GethConnector {
      * @returns {Promise.<T>|*}
      */
     inSync () {
-        if(!this.socket.writable){
+        if (!this.socket.writable) {
             return Promise.reject(new Error('no ipc connection'));
         }
         const rules = [
