@@ -57,8 +57,9 @@ class Setup extends Component {
     const { actions, setupConfig } = this.props;
     if (!setupConfig.get('toggleAdvanced')) {
       actions.startGeth(null);
+    } else {
+      actions.startGeth(setupConfig);
     }
-    actions.startGeth(setupConfig);
     hashHistory.push('sync-status');
   };
 
