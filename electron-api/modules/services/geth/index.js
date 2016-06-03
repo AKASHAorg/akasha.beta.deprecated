@@ -37,7 +37,7 @@ class GethConnector {
         this.dataDir = null;
         this.ipcPath = null;
 
-        this.options = [];
+        this.spawnOptions = [];
 
         this._setSocketEvents();
     }
@@ -58,10 +58,14 @@ class GethConnector {
      * @param options
      */
     start (options = {}) {
-        if (!this.options.length || !Object.keys(options).length) {
+        if (this.gethProcess) {
+            if (this.gethProcess.connected) {
+                return Promise.resolve('Already started');
+            }
+        }
+        if (!this.spawnOptions.length || !Object.keys(options).length) {
             this._setOptions(options);
         }
-
         return this._checkGeth().then((binary) => {
             this.executable = binary;
             return this._spawnGeth({ detached: true }).then((data) => {
@@ -100,7 +104,7 @@ class GethConnector {
      * @returns {Promise.<T>|*}
      */
     inSync () {
-        if(!this.socket.writable){
+        if (!this.socket.writable) {
             return Promise.reject(new Error('no ipc connection'));
         }
         const rules = [
@@ -139,7 +143,7 @@ class GethConnector {
         protocol = ['--shh', '--fast', '--cache', 512],
         extra = ['--testnet']
     } = {}) {
-        this.options = [];
+        this.spawnOptions = [];
         if (!Array.isArray(protocol) || !Array.isArray(extra)) {
             throw new Error('protocol and extra options must be array type');
         }
@@ -160,10 +164,10 @@ class GethConnector {
         ipcPath = null;
         dataDir = null;
 
-        this.options.push('--datadir', `${this.dataDir}`);
+        this.spawnOptions.push('--ipcpath', `${this.ipcPath}`);
 
-        this.options = this.options.concat(protocol, extra);
-        return this.options;
+        this.spawnOptions = this.spawnOptions.concat(protocol, extra);
+        return this.spawnOptions;
     }
 
     /**
@@ -196,7 +200,7 @@ class GethConnector {
      */
     _checkGeth () {
         return new Promise((resolve, reject) => {
-            geth.run(['version'], function (err) {
+            geth.run(['version'], (err) => {
                 if (err) {
                     reject(err);
                 }
@@ -250,7 +254,7 @@ class GethConnector {
                 return resolve(true);
             }
 
-            this.gethProcess = childProcess.spawn(this.executable, this.options, extra);
+            this.gethProcess = childProcess.spawn(this.executable, this.spawnOptions, extra);
 
             this.gethProcess.on('exit', (code, signal) => {
                 this.logger.info('geth:spawn:exit:', code, signal);

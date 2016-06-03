@@ -3,38 +3,38 @@
 // Estimate gas usage
 
 const profile = {
-  create: 151649,
-  update: 46213,
-  delete: 28689
+    create: 151649,
+    update: 46213,
+    delete: 28689
 };
 
 const entry = {
-  create: 115062,
-  update: 52297,
-  hide: 27566,
-  vote: 56133
+    create: 115062,
+    update: 52297,
+    hide: 27566,
+    vote: 56133
 };
 
 const comment = {
-  create: 134795,
-  update: 46751,
-  delete: 26410,
-  vote: 55968
+    create: 134795,
+    update: 46751,
+    delete: 26410,
+    vote: 55968
 };
 
 // Constants
 
 const conversionMap = {
-  kwei: 1000,
-  mwei: 1000000,
-  gwei: 1000000000,
-  shannon: 1000000000,
-  nano: 1000000000,
-  szabo: 1000000000000,
-  micro: 1000000000000,
-  finney: 1000000000000000,
-  milli: 1000000000000000,
-  ether: 1000000000000000000
+    kwei: 1000,
+    mwei: 1000000,
+    gwei: 1000000000,
+    shannon: 1000000000,
+    nano: 1000000000,
+    szabo: 1000000000000,
+    micro: 1000000000000,
+    finney: 1000000000000000,
+    milli: 1000000000000000,
+    ether: 1000000000000000000
 };
 
 const max_gas = 200 * 1000;
