@@ -47,8 +47,6 @@ class LoggerService {
     }
     /*
      * It sets up the listeners for this module.
-     * Events used are:
-     * server:logger:startService used by the View layer to start the geth executable
      *
      * @param {BrowserWindow} mainWindow
      * @returns undefined

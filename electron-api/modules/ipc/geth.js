@@ -72,16 +72,21 @@ class GethService {
         };
     }
     _startGethService (event, arg) {
-        this.getGethService().start().then((data) => {
-            this._sendEvent(event)(this.clientEvent.startService, true, data);
-            this._sendEvent(event)(this.clientEvent.startSyncing, true, this.STARTSYNC_MSG);
+        this
+            .getGethService()
+            .start()
+            .then(
+                (data) => {
+                    this._sendEvent(event)(this.clientEvent.startService, true, data);
+                    this._sendEvent(event)(this.clientEvent.startSyncing, true, this.STARTSYNC_MSG);
 
-            setTimeout(() => {
-                this._getGethUpdates(event, arg);
-            }, STATICS.GETH_SETPROVIDER_TIMEOUT + 1000);
-        }).catch((data) => {
-            event.sender.send(this.clientEvent.startService, false, data);
-        });
+                    setTimeout(() => {
+                        this._getGethUpdates(event, arg);
+                    }, STATICS.GETH_SETPROVIDER_TIMEOUT + 1000);
+                })
+            .catch((data) => {
+                event.sender.send(this.clientEvent.startService, false, data);
+            });
     }
     _stopGethService (event, arg) {
         this.getGethService().stop();
@@ -97,27 +102,33 @@ class GethService {
         return GethConnector.getInstance();
     }
     _getBlockUpdates (event) {
-        this.getGethService().inSync().then((data) => {
-            let message = 'empty';
-            if (data.length > 0) {
-            message = {
-                    currentBlock: data.length > 1 ? data[1].currentBlock : -1,
-                    highestBlock: data.length > 1 ? data[1].highestBlock : -1,
-                    startingBlock: data.length > 1 ? data[1].startingBlock : -1,
-                    peerCount: data[0]
+        this
+            .getGethService()
+            .inSync()
+            .then((data) => {
+                let message = 'empty';
+                if (data.length > 0) {
+                    message = {
+                        currentBlock: data.length > 1 ? data[1].currentBlock : -1,
+                        highestBlock: data.length > 1 ? data[1].highestBlock : -1,
+                        startingBlock: data.length > 1 ? data[1].startingBlock : -1,
+                        peerCount: data[0]
+                    };
                 }
-            }
-            if(!this.prevMessage) {
-                this.prevMessage = message;
-            } else {
-                let messageString = typeof message === 'string' ? message : JSON.stringify(this.message);
-                let prevMessageString = typeof this.prevMessage === 'string' ? this.prevMessage : JSON.stringify(this.prevMessage);
-                if(this.prevMessage != message) {
-                    this._sendEvent(event)(this.clientEvent.syncUpdate, true, message);
+                if (!this.prevMessage) {
+                    this.prevMessage = message;
+                } else {
+                    const msgIsString = typeof message === 'string';
+                    const prev = typeof this.prevMessage === 'string';
+                    const msg = msgIsString ? message : JSON.stringify(this.message);
+                    const prevString = prev ? this.prevMessage : JSON.stringify(this.prevMessage);
+                    if (prevString != msg) {
+                        this._sendEvent(event)(this.clientEvent.syncUpdate, true, message);
+                    }
+                    this.prevMessage = message;
                 }
-                this.prevMessage = message;
-            }
-        }).catch((err) => {
+            })
+        .catch((err) => {
             this._stopGethUpdates();
         });
     }
