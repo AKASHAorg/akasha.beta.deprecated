@@ -6,7 +6,6 @@ class Web3 {
   /**
    * @param admin
    * @param miner
-   * @param personal
    */
   constructor ({ admin = true, miner = false } = {}) {
 
