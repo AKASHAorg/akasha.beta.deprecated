@@ -1,4 +1,3 @@
-const remote = require('remote');
 import React, { Component, PropTypes } from 'react';
 import _ from 'lodash';
 import { MenuAkashaLogo } from '../ui/svg';
