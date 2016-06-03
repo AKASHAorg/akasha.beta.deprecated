@@ -14,16 +14,18 @@ export function startGethService (options) {
     });
 }
 
-export function updateSync () {
-    return new Promise((resolve, reject) => {
-        ipcRenderer.on(EVENTS.client.geth.syncUpdate, (event, data) => {
-            // console.info('Client:SetupService:updateStatus ', data);
-            if (!data.success) {
-                return reject(data);
-            }
-            return resolve(data);
-        });
+export function updateSync (cb) {
+    ipcRenderer.on(EVENTS.client.geth.syncUpdate, (event, data) => {
+        if (!data.success) {
+            return cb(data.status);
+        }
+        return cb(null, data);
     });
+}
+
+export function removeUpdateSync (cb) {
+    ipcRenderer.removeAllListeners(EVENTS.client.geth.syncUpdate);
+    cb();
 }
 // startIPFS () {
 //     return new Promise((resolve, reject) => {
