@@ -6,7 +6,6 @@ import { hashHistory } from 'react-router';
  * @returns {{type}}
  */
 export function finishSync () {
-  hashHistory.push('/authenticate');
   return { type: types.SYNC_FINISHED };
 }
 

@@ -5,28 +5,43 @@ import SyncProgress from '../ui/loaders/SyncProgress';
 import { hashHistory } from 'react-router';
 import { FormattedMessage, FormattedPlural, injectIntl } from 'react-intl';
 import { setupMessages, generalMessages } from '../../locale-data/messages';
-import { updateSync } from '../../services/setup-service';
+import { updateSync, removeUpdateSync } from '../../services/setup-service';
 
 class SyncStatus extends Component {
     constructor (props) {
         super(props);
         this.state = {
             syncData: null,
+            syncError: null,
             gethInstance: window.gethInstance,
             intervals: [],
             timeouts: []
         };
-    }
-    componentWillMount () {
         this.getSyncStatus();
     }
+    componentDidMount () {}
     componentDidUpdate () {
-        this.getSyncStatus();
+        // this.getSyncStatus();
     }
-    componentWillUnmount () {}
     getSyncStatus = () => {
-        updateSync().then((updateData) => {
-            this.setState({ updateData });
+        updateSync((err, updateData) => {
+            const { success, status } = updateData;
+            
+            if (err) {
+                return this.setState({
+                    syncError: status
+                });
+            }
+            if (success && status === 'empty') {
+                console.log(success, status);
+                return removeUpdateSync(() => {
+                    hashHistory.push('/authenticate');
+                });
+            }
+            
+            return this.setState({
+                syncData: status
+            });
         });
     }
     startSync = () => {}
@@ -64,7 +79,7 @@ class SyncStatus extends Component {
     render () {
         const { style, syncState, intl } = this.props;
         const buttonsStyle = { padding: 0 };
-        console.log(this.state.updateData);
+        // console.log(this.state.updateData);
         const message = this.state.syncData;
         let blockSync;
         let blockProgress;
@@ -175,7 +190,8 @@ SyncStatus.propTypes = {
 };
 
 SyncStatus.contextTypes = {
-    muiTheme: React.PropTypes.object
+    muiTheme: React.PropTypes.object,
+    router: React.PropTypes.object
 };
 
 SyncStatus.defaultProps = {

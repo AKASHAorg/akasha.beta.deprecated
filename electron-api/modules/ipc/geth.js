@@ -98,6 +98,7 @@ class GethService {
     }
     _getBlockUpdates (event) {
         this.getGethService().inSync().then((data) => {
+            console.log(data);
             if (data.length > 0) {
                 this._sendEvent(event)(this.clientEvent.syncUpdate, true, {
                     currentBlock: data.length > 1 ? data[1].currentBlock : -1,
