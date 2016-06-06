@@ -7,7 +7,6 @@ const initialState = fromJS({
 });
 
 export default function syncStatus (state = initialState, action) {
-
     switch (action.type) {
     case types.SYNC_ACTIVE:
         return state.merge({
@@ -20,10 +19,6 @@ export default function syncStatus (state = initialState, action) {
     case types.SYNC_FINISHED:
         return state.merge({
             actionId: 3
-        });
-    case types.SYNC_RESUME:
-        return state.merge({
-            actionId: 4
         });
     default:
         return state;

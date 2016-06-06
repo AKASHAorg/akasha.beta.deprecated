@@ -1,20 +1,18 @@
 import * as types from '../constants/SyncConstants';
-import { hashHistory } from 'react-router';
-
-/**
- * Action handler for sync completion
- * @returns {{type}}
- */
-export function finishSync () {
-  return { type: types.SYNC_FINISHED };
-}
+import { startGethService, stopGethService } from '../services/setup-service';
 
 /**
  * Dispatcher for starting sync
  * @returns {function()}
  */
 export function startSync () {
-  return { type: types.SYNC_ACTIVE };
+    startGethService().then((data) => {
+        if (!data.success) {
+            console.log(data);
+            return { type: types.SYNC_ACTIVE_ERROR };
+        }
+        return { type: types.SYNC_ACTIVE };
+    });
 }
 
 /**
@@ -22,7 +20,7 @@ export function startSync () {
  * @returns {function()}
  */
 export function resumeSync () {
-  return { type: types.SYNC_RESUME };
+    return { type: types.SYNC_RESUME };
 }
 
 /**
@@ -30,5 +28,12 @@ export function resumeSync () {
  * @returns {{type}}
  */
 export function stopSync () {
-  return { type: types.SYNC_STOPPED };
+    return dispatch => {
+        stopGethService().then(data => {
+            // if (!data.success) {
+            //     return dispatch({ type: types.SYNC_STOP_ERROR });
+            // }
+            return dispatch({ type: types.SYNC_STOPPED });
+        });
+    };
 }
