@@ -4,3 +4,6 @@
 [submodule "contracts.sol"]
 	path = contracts.sol
 	url = git@github.com:AkashaProject/contracts.sol.git
+[submodule "electron-api/modules/services/ipfs-connector"]
+	path = electron-api/modules/services/ipfs-connector
+	url = git@github.com:AkashaProject/ipfs-connector.git
