@@ -17,37 +17,41 @@ class SyncStatus extends Component {
             intervals: [],
             timeouts: []
         };
-        this.getSyncStatus();
-    }
-    componentDidMount () {}
-    componentDidUpdate () {
-        // this.getSyncStatus();
+        this.syncStatusListener = this.getSyncStatus;
+        this.syncStatusListener();
     }
     getSyncStatus = () => {
         updateSync((err, updateData) => {
             const { success, status } = updateData;
-            console.log('current status: ', status);
+            // console.log('current status: ', status);
             if (err) {
                 return this.setState({
                     syncError: status
                 });
             }
             if (success && status === 'empty') {
-                return removeUpdateSync(() => {
-                    hashHistory.push('/authenticate');
-                });
+                return this.finishSync();
             }
             return this.setState({
                 syncData: status
             });
         });
     }
-    startSync = () => {}
-    stopSync = () => {}
-    resumeSync = () => {}
-    finishSync = () => {}
-    handleSync = () => {}
-    handleCancel = () => {}
+    finishSync = () => {
+        removeUpdateSync(this.syncStatusListener, () => hashHistory.push('/authenticate'));
+    }
+    handleSync = () => {
+        const { syncState, actions } = this.props;
+        if (syncState.get('actionId') === 1) {
+            return actions.stopSync();
+        }
+        return actions.startSync();
+    }
+    handleCancel = () => {
+        const { actions } = this.props;
+        actions.stopSync();
+        return hashHistory.goBack();
+    }
     _getActionLabels = () => {
         const { syncState, intl } = this.props;
         const labels = {};
@@ -75,9 +79,8 @@ class SyncStatus extends Component {
         return labels;
     }
     render () {
-        const { style, syncState, intl } = this.props;
+        const { style, intl } = this.props;
         const buttonsStyle = { padding: 0 };
-        // console.log(this.state.updateData);
         const message = this.state.syncData;
         let blockSync;
         let blockProgress;
@@ -86,11 +89,11 @@ class SyncStatus extends Component {
         let progressBody;
         let peerInfo;
         pageTitle = this._getActionLabels().title;
-        if (message && message[1]) {
-            blockProgress = message[1];
+        if (message && message.peerCount > 0 && message.highestBlock > 0) {
+            blockProgress = message;
             currentProgress = (blockProgress.currentBlock / blockProgress.highestBlock) * 100;
             peerInfo = (
-                <FormattedPlural value={message[0]}
+                <FormattedPlural value={message.peerCount}
                   one = {intl.formatMessage(setupMessages.onePeer)}
                   few = {intl.formatMessage(setupMessages.fewPeers)}
                   many = {intl.formatMessage(setupMessages.manyPeers)}
@@ -100,7 +103,7 @@ class SyncStatus extends Component {
             progressBody = (
                 <div>
                     <div style={{ fontWeight: 'bold', padding: '5px', fontSize: '16px' }} >
-                       {message[0]} {peerInfo} { `${intl.formatMessage(generalMessages.connected)}`}
+                       {message.peerCount} {peerInfo} {`${intl.formatMessage(generalMessages.connected)}`}
                     </div>
                     <div style={{ fontSize: '20px' }} >
                         <strong style={{ fontWeight: 'bold' }} >
@@ -126,21 +129,6 @@ class SyncStatus extends Component {
                 {progressBody}
              </div>
         );
-        if (!this.state.syncData) {
-            return (
-            <div style={style}>
-                <div className="start-xs" style = {{ position: 'relative' }}>
-                    <div className="col-xs">
-                        <LoginHeader />
-                        <h1 style={{ fontWeight: '400' }} >
-                            {intl.formatMessage(setupMessages.initializingTitle)}
-                        </h1>
-                        <p><FormattedMessage {...setupMessages.beforeSyncStart} /></p>
-                    </div>
-                </div>
-            </div>
-            );
-        }
         return (
           <div style={style}>
             <div className="start-xs" style={{ position: 'relative' }} >
@@ -152,7 +140,6 @@ class SyncStatus extends Component {
                 <h1 style={{ fontWeight: '400' }} >{pageTitle}</h1>
                 <div>
                   <p>
-
                     <FormattedMessage {...setupMessages.onSyncStart} />
                   </p>
                 </div>
@@ -170,7 +157,6 @@ class SyncStatus extends Component {
                   onClick={this.handleCancel}
                 />
                 <RaisedButton label={this._getActionLabels().action}
-                  disabled={syncState.get('actionId') === 4}
                   style={{ marginLeft: '12px' }}
                   onClick={this.handleSync}
                 />
@@ -184,7 +170,8 @@ class SyncStatus extends Component {
 SyncStatus.propTypes = {
     actions: PropTypes.object.isRequired,
     style: PropTypes.object,
-    syncState: PropTypes.object.isRequired
+    syncState: PropTypes.object.isRequired,
+    intl: PropTypes.object
 };
 
 SyncStatus.contextTypes = {
