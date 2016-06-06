@@ -5,7 +5,8 @@ export const STATICS = {
 export const EVENTS = {
     "server": {
         "geth": {
-            "startService": "server:geth:startService"
+            "startService": "server:geth:startService",
+            "stopService": "server:geth:stopService"
         },
         "ipfs": {
             "startService": "server:ipfs:startService"
@@ -19,7 +20,8 @@ export const EVENTS = {
         "geth": {
             "startService": "client:geth:startService",
             "startSyncing": "client:geth:startSyncing",
-            "syncUpdate": "client:geth:syncUpdate"
+            "syncUpdate": "client:geth:syncUpdate",
+            "stopService": "client:geth:stopService"
         },
         "ipfs": {
             "startService": "client:ipfs:startService"
