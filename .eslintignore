@@ -3,3 +3,5 @@ node_modules/**
 dist/**
 *.spec.js
 app/app.html
+ipfs-connector/**
+contracts.sol/**
