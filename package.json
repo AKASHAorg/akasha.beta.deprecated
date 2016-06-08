@@ -54,7 +54,7 @@
       }
     },
     "test": {
-      "command": "mocha --compilers js:babel-core/register --recursive --require ./test/setup.js test/**/*.spec.js",
+      "command": "./node_modules/.bin/mocha --compilers js:babel-core/register --recursive --require ./test/setup.js test/**/*.spec.js",
       "env": {
         "NODE_ENV": "test"
       }
@@ -128,6 +128,7 @@
     "jsdom": "9.2.1",
     "minimist": "1.2.0",
     "mocha": "2.5.3",
+    "node-inspector": "0.12.8",
     "node-libs-browser": "1.0.0",
     "node-sass": "3.7.0",
     "postcss": "5.0.21",
@@ -143,12 +144,12 @@
     "sass-loader": "3.2.0",
     "selenium-webdriver": "2.53.2",
     "sinon": "1.17.4",
+    "spectron": "^3.2.2",
     "style-loader": "0.13.1",
     "webpack": "1.13.1",
     "webpack-dev-middleware": "1.6.1",
     "webpack-hot-middleware": "2.10.0",
-    "webpack-target-electron-renderer": "0.4.0",
-    "node-inspector": "0.12.8"
+    "webpack-target-electron-renderer": "0.4.0"
   },
   "dependencies": {
     "bin-wrapper": "3.0.2",

@@ -1,6 +1,7 @@
 
 const { ipcMain } = require('electron');
-const IpfsConnector = require('../services/ipfs/index.js');
+const { IpfsConnector } = require('../services/ipfs-connector/index.js');
+const loggerRegistrar = require('../../loggers');
 const { EVENTS } = require('../settings');
 
 const symbolEnforcer = Symbol();
@@ -63,6 +64,7 @@ class IpfsService {
         };
     }
     _startIpfsService (event, arg) {
+        this.getIpfsService().setLogger(loggerRegistrar.getInstance().registerLogger('ipfs', { maxsize: 1024 * 10 * 3 }));
         this
             .getIpfsService()
             .start()
@@ -77,6 +79,7 @@ class IpfsService {
         this
             .getIpfsService()
             .stop();
+        this._sendEvent(event)(this.clientEvent.stopService, true, null);
     }
     getIpfsService () {
         return IpfsConnector.getInstance();

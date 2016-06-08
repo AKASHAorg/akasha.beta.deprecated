@@ -85,11 +85,12 @@ class GethService {
                     }, STATICS.GETH_SETPROVIDER_TIMEOUT + 1000);
                 })
             .catch((data) => {
-                event.sender.send(this.clientEvent.startService, false, data);
+                this._sendEvent(event)(this.clientEvent.startService, false, data);
             });
     }
     _stopGethService (event, arg) {
         this.getGethService().stop();
+        this._sendEvent(event)(this.clientEvent.stopService, !this.getGethService().gethProcess, null);
     }
     _getGethUpdates (event, arg) {
         this.updatesFlag = setInterval(() => this._getBlockUpdates(event),
