@@ -125,6 +125,7 @@
     "file-loader": "0.8.5",
     "isparta": "4.0.0",
     "istanbul": "0.4.3",
+    "jsdoc": "^3.4.0",
     "jsdom": "9.2.1",
     "minimist": "1.2.0",
     "mocha": "2.5.3",
