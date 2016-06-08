@@ -2,8 +2,7 @@ import * as types from '../constants/SyncConstants';
 import { fromJS } from 'immutable';
 
 const initialState = fromJS({
-    actionId: 1,
-    status: [0]
+    actionId: 1
 });
 
 export default function syncStatus (state = initialState, action) {

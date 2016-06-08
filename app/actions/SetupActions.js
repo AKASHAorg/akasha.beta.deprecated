@@ -1,8 +1,33 @@
 import { startGethService, stopGethService, startIPFSService } from '../services/setup-service';
+import { hashHistory } from 'react-router';
+import { saveSettings } from './SettingsActions';
 import * as types from '../constants/SetupConstants';
 
+export function nextStep (pathName) {
+    return hashHistory.push(pathName);
+}
+export function toggleAdvancedSettings (isAdvanced) {
+    return dispatch => dispatch({ type: types.SETUP_ADVANCED_SETTINGS, isAdvanced });
+}
+export function setupGethDataDir (path) {
+    return dispatch => dispatch({ type: types.SETUP_GETH_DATADIR, path });
+}
+export function setupGethIPCPath (path) {
+    return dispatch => dispatch({ type: types.SETUP_GETH_IPCPATH, path });
+}
+export function setupGethCacheSize (size) {
+    return dispatch => dispatch({ type: types.SETUP_GETH_CACHE_SIZE, size });
+}
+export function setupIPFSApiPort (port) {
+    return dispatch => dispatch({ type: types.SETUP_IPFS_API_PORT, port });
+}
+export function setupIPFSGatewayPort (port) {
+    return dispatch => dispatch({ type: types.SETUP_IPFS_GATEWAY_PORT, port });
+}
 // start / stop geth
 function startGethSuccess (data) {
+    saveSettings('geth', data);
+    nextStep('sync-status');
     return { type: types.START_GETH_SUCCESS, data };
 }
 
@@ -32,16 +57,12 @@ function stopIPFSError (data) {
 }
 
 export function startGeth (options) {
-    return dispatch => {
-        startGethService(options).then(data => {
-            if (!data.success) {
-                return dispatch(startGethError(data));
-            }
-            return dispatch(startGethSuccess(data));
-        }).catch(reason => {
-            dispatch(startGethError(reason));
-        });
-    };
+    return dispatch => startGethService(options).then((data) => {
+        if (!data.success) {
+            return dispatch(startGethError({ data, options }));
+        }
+        return dispatch(startGethSuccess(data));
+    }).catch(err => dispatch(startGethError({ err })));
 }
 export function stopGeth () {
     return dispatch => {
