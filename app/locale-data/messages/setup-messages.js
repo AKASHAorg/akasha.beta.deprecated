@@ -21,15 +21,30 @@ const setupMessages = defineMessages({
         description: 'geth ipc path input placeholder',
         defaultMessage: 'Geth IPC Path'
     },
+    gethCacheSize: {
+        id: 'app.setup.gethCacheSize',
+        description: 'geth cache size input placeholder',
+        defaultMessage: 'Geth cache size'
+    },
     changeIfIpfsRunning: {
         id: 'app.setup.changeIfIpfsRunning',
-        description: 'ipfs input filed placeholder',
+        description: 'ipfs input field placeholder',
         defaultMessage: 'Change this if ipfs daemon is already running'
     },
-    ipfsPath: {
-        id: 'app.setup.ipfsPath',
+    changeGethCacheSize: {
+        id: 'app.setup.changeGethCacheSize',
+        description: 'geth cache size input label',
+        defaultMessage: 'Change Geth cache size (min. 512MB)'
+    },
+    ipfsApiPort: {
+        id: 'app.setup.ipfsApiPort',
         description: 'ipfs input field label',
-        defaultMessage: 'Ipfs api path'
+        defaultMessage: 'IPFS API port'
+    },
+    ipfsGatewayPort: {
+        id: 'app.setup.ipfsGatewayPort',
+        description: 'ipfs input field label',
+        defaultMessage: 'IPFS gateway port'
     },
     firstTimeSetupTitle: {
         id: 'app.setup.firstTimeSetupTitle',

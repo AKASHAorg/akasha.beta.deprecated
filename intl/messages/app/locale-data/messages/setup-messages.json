@@ -20,14 +20,29 @@
     "defaultMessage": "Geth IPC Path"
   },
   {
+    "id": "app.setup.gethCacheSize",
+    "description": "geth cache size input placeholder",
+    "defaultMessage": "Geth cache size"
+  },
+  {
     "id": "app.setup.changeIfIpfsRunning",
-    "description": "ipfs input filed placeholder",
+    "description": "ipfs input field placeholder",
     "defaultMessage": "Change this if ipfs daemon is already running"
   },
   {
-    "id": "app.setup.ipfsPath",
+    "id": "app.setup.changeGethCacheSize",
+    "description": "geth cache size input label",
+    "defaultMessage": "Change Geth cache size (min. 512MB)"
+  },
+  {
+    "id": "app.setup.ipfsApiPort",
     "description": "ipfs input field label",
-    "defaultMessage": "Ipfs api path"
+    "defaultMessage": "IPFS API port"
+  },
+  {
+    "id": "app.setup.ipfsGatewayPort",
+    "description": "ipfs input field label",
+    "defaultMessage": "IPFS gateway port"
   },
   {
     "id": "app.setup.firstTimeSetupTitle",
