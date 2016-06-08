@@ -1,7 +1,7 @@
 /* eslint strict: 0 */
 'use strict';
 const expect = require('chai').expect;
-const geth   = require('../../../electron-api/modules/geth');
+const geth   = require('../../../electron-api/modules/services/geth');
 const logger = require('./logger.stub');
 let connector;
 
