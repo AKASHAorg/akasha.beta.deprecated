@@ -1,16 +1,23 @@
 {
-  "extends": "airbnb",
-  "rules": {
-  	"indent": [2, 4],
+    "extends": "airbnb",
+    "rules": {
+  	"indent": [2, 4, {"SwitchCase": 1}],
     "comma-dangle": [0],
     "complexity": [2, 10],
     "no-param-reassign": [0],
     "max-depth": [2, 5],
     "max-statements": [2, 20],
     "space-before-function-paren": [2, "always"],
-    "eqeqeq": "off",
-    "import/no-unresolved": "off",
+    "eqeqeq": ["error", "allow-null"],
     "no-underscore-dangle": ["error", { "allowAfterThis": true }]
     },
-  "parser": "babel-eslint"
+    "parser": "babel-eslint",
+    "env": {
+        "browser": true,
+        "node": true,
+        "shared-node-browser": true,
+        "mocha": true,
+        "es6": true,
+        "commonjs": true
+    }
 }
