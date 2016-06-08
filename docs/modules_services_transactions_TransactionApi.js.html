@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: modules/services/transactions/TransactionApi.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: modules/services/transactions/TransactionApi.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const Promise = require('bluebird');
+const helpers = require('../geth/helpers');
+const agas = require('../contracts/gas');
+const logger = require('../../loggers').getInstance();
+const log = logger.registerLogger('transaction', { level: 'info', consoleLevel: 'info' });
+
+const symbolCheck = Symbol();
+const symbol = Symbol();
+
+class TransactionsClass {
+
+    /**
+     * @param enforcer
+     */
+    constructor (enforcer) {
+        if (enforcer !== symbolCheck) {
+            throw new Error('Transaction: Cannot construct singleton!');
+        }
+        log.info('Transaction: Everything ok;');
+    }
+
+    /**
+     * @returns {*}
+     */
+    static getInstance () {
+        if (!this[symbol]) {
+            this[symbol] = new TransactionsClass(symbolCheck);
+        }
+        return this[symbol];
+    }
+
+    /**
+     * Estimate gas usage for transactions;
+     */
+    estimate (operation) {
+        if (operation === 'send') {
+            const gas = 21037;
+            const gasPrice = parseFloat(gas * agas.unit_gas_price).toFixed(4);
+            const cost = gasPrice + ' ' + agas.unit; // eslint-disable-line
+            return { gas, cost };
+        }
+        return { gas: -1, cost: '' };
+    }
+
+    /**
+     * Send Ether to another address;
+     * @returns {Promise}
+     */
+    send (options) {
+        return global.gethInstance.inSync().then((syncing) => {
+            const web3 = global.gethInstance.web3;
+            if (syncing) {
+                throw new Error('GETH is not in sync!');
+            }
+            if (!web3.eth.defaultAccount) {
+                throw new Error('default address not set!');
+            }
+            if (!options.to || !web3.isAddress(options.to)) {
+                throw new Error('invalid TO address!');
+            }
+            if (!options.amount || options.amount &lt; 0) {
+                throw new Error('invalid AMOUNT!');
+            }
+            log.info(`Transaction: Sending "${options.amount} wei" to "${options.to}"..`);
+            return this._send(options);
+        });
+    }
+
+    /**
+     * Send Ether to another address (private);
+     * @private
+     */
+    _send (options) {
+        const web3 = global.gethInstance.web3;
+        let balance1 = 0;
+        let balance2 = 0;
+
+        return new Promise((resolve, reject) => {
+            web3.eth.getBalanceAsync(options.to)
+                .then((balance) => {
+                    balance1 = balance.toNumber();
+                    return web3.eth.sendTransactionAsync({
+                        from: options.from || web3.eth.defaultAccount,
+                        to: options.to, value: options.amount,
+                        gas: 22000, gasPrice: agas.gas_price
+                    });
+                }).then((txHash) => {
+                helpers.watchTx('sendEther()', txHash, (err) => {
+                    if (err) {
+                        reject(err);
+                        return;
+                    }
+                    web3.eth.getBalance(options.to, (_, balance) => {
+                        balance2 = balance.toNumber();
+                        if (balance1 + options.amount !== balance2) {
+                            reject(`balance doesnt match ${balance1 + options.amount} != ${balance2}`);
+                        } else {
+                            resolve({ old_balance: balance1, balance: balance2 });
+                        }
+                    });
+                });
+            })
+                .catch((err) => {
+                    reject(err.toString());
+                });
+        });
+    }
+
+    /**
+     * Wait for coinbase address to have "amount" balance;
+     * @returns {Promise}
+     */
+    wait (amount) {
+        const web3 = global.gethInstance.web3;
+        if (!amount) {
+            amount = parseInt(web3.toWei(1, 'ether'), 10);
+        }
+        return global.gethInstance.inSync().then((syncing) => {
+            if (syncing) {
+                throw new Error('GETH is not in sync!');
+            }
+            if (!web3.eth.defaultAccount) {
+                throw new Error('coinbase not set!');
+            }
+            log.info('Transaction: Waiting for coinbase address to be funded...');
+            return this._wait(amount);
+        });
+    }
+
+    /**
+     * Wait for coinbase address to have "amount" balance (private);
+     * @private
+     */
+    _wait (amount) {
+        const web3 = global.gethInstance.web3;
+        const me = web3.eth.defaultAccount;
+        return new Promise((resolve, reject) => {
+            let interval = 0;
+            interval = setInterval(() => {
+                web3.eth.getBalance(me, (err, balance) => {
+                    if (err) {
+                        clearInterval(interval);
+                        reject(err.toString());
+                        return;
+                    }
+                    if (balance.toNumber() >= amount) {
+                        clearInterval(interval);
+                        log.info(`Transaction: Address ${me} has a balance of ${balance};`);
+                        resolve({ balance: balance.toNumber() });
+                        return;
+                    }
+                });
+            }, 750);
+        });
+    }
+
+}
+
+export default TransactionsClass;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AkashaLogger.html">AkashaLogger</a></li><li><a href="GethConnector.html">GethConnector</a></li><li><a href="GethService.html">GethService</a></li><li><a href="IpfsConnector.html">IpfsConnector</a></li><li><a href="IpfsService.html">IpfsService</a></li><li><a href="ProfileClass.html">ProfileClass</a></li><li><a href="TransactionsClass.html">TransactionsClass</a></li><li><a href="UserPreferences.html">UserPreferences</a></li><li><a href="Web3.html">Web3</a></li></ul><h3>Global</h3><ul><li><a href="global.html#checkProfileHash">checkProfileHash</a></li><li><a href="global.html#createProfileFolder">createProfileFolder</a></li><li><a href="global.html#getLocalProfiles">getLocalProfiles</a></li><li><a href="global.html#manifest">manifest</a></li><li><a href="global.html#signString">signString</a></li><li><a href="global.html#uploadProfile">uploadProfile</a></li><li><a href="global.html#watchTx">watchTx</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Wed Jun 08 2016 10:06:54 GMT+0300 (EEST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
