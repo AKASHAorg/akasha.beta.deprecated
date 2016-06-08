@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: modules/services/contracts/instantiateContract.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: modules/services/contracts/instantiateContract.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/* eslint no-console: 0 */
+
+const Emitter = require('events').EventEmitter;
+const helpers = require('../geth/helpers');
+const gas = require('./gas');
+
+const contractCache = {};
+
+function wrapFunction (fname, contract) {
+    const web3 = global.gethInstance.web3;
+    // console.log(`Wrapped func ${contract.__name}:${fname}()`);
+    contract[fname].waitTransaction = function waitTransaction (...args) {
+        web3.eth.getBlock('latest', (blockErr, block) => {
+            const now = Math.floor(new Date().getTime() / 1000);
+            const diff = now - +block.timestamp;
+            let oldCallback = null;
+            let newCallback = null;
+            // Save the callback function
+            if (typeof(args[args.length - 1]) === 'function') {
+                oldCallback = args.pop(); // Modify the args array!
+                if (diff > 120) {
+                    oldCallback('GETH is not in sync');
+                    return;
+                }
+            }
+            // Overwrite the gazz and gazz price !!
+            if (typeof(args[args.length - 1]) === 'object') {
+                args[args.length - 1].gas = gas.max_gas;
+                args[args.length - 1].gasPrice = gas.gas_price;
+            }
+            newCallback = function sendTransaction (err, tx) {
+                const cname = `${contract.__name}:${fname}()`;
+                if (blockErr) {
+                    oldCallback(blockErr.toString());
+                    return;
+                }
+                if (err) {
+                    oldCallback(err.toString().substr(7));
+                    return;
+                } else {
+                    helpers.watchTx(cname, tx, oldCallback);
+                }
+            };
+            args.push(newCallback);
+            contract[fname].sendTransaction.apply(contract, args);
+        });
+    };
+}
+
+function attachEvents (contract) {
+    const web3 = global.gethInstance.web3;
+    contract.__emitter = new Emitter();
+    // Save AllEvents pointer
+    contract.__ae = contract.allEvents({}, { fromBlock: 0 }, (err, result) => {
+        if (err) {
+            console.warn(`Error ${contract.__name} Event:: ${err}`);
+        } else {
+            const data = result.args;
+            // Fix data values
+            for (const key of Object.keys(data)) {
+                const val = data[key];
+                // Big number?
+                if (typeof(val) === 'object' &amp;&amp; val.toNumber) {
+                    data[key] = val.toNumber();
+                }
+            }
+            // Attach event time
+            web3.eth.getBlock(result.blockHash, (_, block) => {
+                if (block &amp;&amp; block.timestamp) {
+                    data.timestamp = new Date(block.timestamp * 1000);
+                }
+                // Broadcast event
+                console.log(` e ${contract.__name} ${result.event}::`, data);
+                contract.__emitter.emit(result.event.toString(), data);
+            });
+        }
+    });
+}
+
+/**
+ * Create web3 contract instance and attach event watcher;
+ */
+export default function instantiateContract (contractName, abi, address) {
+    // Load from cache?
+    if (contractCache[contractName]) {
+        return contractCache[contractName];
+    }
+    // Create new?
+    const contract = global.gethInstance.web3.eth.contract(abi);
+    const instance = contract.at(address);
+    // Save name for later
+    instance.__name = contractName;
+    // Fix all functions from contract
+    abi.forEach((json) => {
+        if (!json.constant &amp;&amp; json.type === 'function') {
+            wrapFunction(json.name, instance);
+        }
+    });
+    if (contractName === 'AkashaX' &amp;&amp; !instance.__emitter) {
+        attachEvents(instance);
+    }
+    contractCache[contractName] = instance;
+    return instance;
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="AkashaLogger.html">AkashaLogger</a></li><li><a href="GethConnector.html">GethConnector</a></li><li><a href="GethService.html">GethService</a></li><li><a href="IpfsConnector.html">IpfsConnector</a></li><li><a href="IpfsService.html">IpfsService</a></li><li><a href="ProfileClass.html">ProfileClass</a></li><li><a href="TransactionsClass.html">TransactionsClass</a></li><li><a href="UserPreferences.html">UserPreferences</a></li><li><a href="Web3.html">Web3</a></li></ul><h3>Global</h3><ul><li><a href="global.html#checkProfileHash">checkProfileHash</a></li><li><a href="global.html#createProfileFolder">createProfileFolder</a></li><li><a href="global.html#getLocalProfiles">getLocalProfiles</a></li><li><a href="global.html#manifest">manifest</a></li><li><a href="global.html#signString">signString</a></li><li><a href="global.html#uploadProfile">uploadProfile</a></li><li><a href="global.html#watchTx">watchTx</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Wed Jun 08 2016 10:06:54 GMT+0300 (EEST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
