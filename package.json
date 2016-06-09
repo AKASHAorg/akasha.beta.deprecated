@@ -8,6 +8,8 @@
     "test": "better-npm-run test",
     "test-watch": "npm test -- --watch",
     "debug-ipc": "ELECTRON_RUN_AS_NODE=true node_modules/.bin/electron node_modules/node-inspector/bin/inspector.js --no-preload",
+    "test-ipc": "node_modules/.bin/mocha test/spectron/spectron-main.js",
+    "test-real": "node_modules/.bin/mocha test/spectron/spectron-real.js",
     "test-e2e": "better-npm-run test-e2e",
     "lint": "node node_modules/eslint/bin/eslint.js app/ electron-api/",
     "browser": "node server.js",
