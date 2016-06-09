@@ -6,6 +6,7 @@ import { hashHistory } from 'react-router';
 import { FormattedMessage, FormattedPlural, injectIntl } from 'react-intl';
 import { setupMessages, generalMessages } from '../../locale-data/messages';
 import { updateSync, removeUpdateSync } from '../../services/setup-service';
+import { getGethLogs, startLogger, removeGethLogListener } from '../../services/logging-service';
 
 class SyncStatus extends Component {
     constructor (props) {
@@ -18,28 +19,28 @@ class SyncStatus extends Component {
             timeouts: []
         };
         this.syncStatusListener = this.getSyncStatus;
+        this.gethLogger = null;
         this.syncStatusListener();
     }
-    getSyncStatus = () => {
+    getSyncStatus = () =>
         updateSync((err, updateData) => {
             const { success, status } = updateData;
-            // console.log('current status: ', status);
             if (err) {
                 return this.setState({
                     syncError: status
                 });
             }
             if (success && status === 'empty') {
-                return this.finishSync();
+                this.finishSync();
+            } else {
+                this.setState({
+                    syncData: status
+                });
             }
-            return this.setState({
-                syncData: status
-            });
         });
-    }
-    finishSync = () => {
+
+    finishSync = () =>
         removeUpdateSync(this.syncStatusListener, () => hashHistory.push('/authenticate'));
-    }
     handleSync = () => {
         const { syncState, actions } = this.props;
         if (syncState.get('actionId') === 1) {
@@ -78,6 +79,28 @@ class SyncStatus extends Component {
         }
         return labels;
     }
+    _handleDetails = () => {
+        // if (this.gethLogger) {
+        //     return removeGethLogListener(this.gethLogger, () => {
+        //         this.setState({
+        //             showGethLogs: false,
+        //             gethLogs: null
+        //         });
+        //     });
+        // }
+        // startLogger('gethInfo', { continuous: true });
+        // this.gethLogger = getGethLogs((err, data) => {
+        //     if (err) return console.log(err);
+        //     const logData = this.state.gethLogs.slice();
+        //     logData.push(data);
+        //     this.setState({
+        //         showGethLogs: true,
+        //         gethLogs: logData
+        //     });
+        // });
+        // console.log();
+        // return this.gethLogger();
+    }
     render () {
         const { style, intl } = this.props;
         const buttonsStyle = { padding: 0 };
@@ -93,41 +116,42 @@ class SyncStatus extends Component {
             blockProgress = message;
             currentProgress = (blockProgress.currentBlock / blockProgress.highestBlock) * 100;
             peerInfo = (
-                <FormattedPlural value={message.peerCount}
-                  one = {intl.formatMessage(setupMessages.onePeer)}
-                  few = {intl.formatMessage(setupMessages.fewPeers)}
-                  many = {intl.formatMessage(setupMessages.manyPeers)}
-                  other = {intl.formatMessage(setupMessages.peers)}
-                />
+              <FormattedPlural
+                value={message.peerCount}
+                one={intl.formatMessage(setupMessages.onePeer)}
+                few={intl.formatMessage(setupMessages.fewPeers)}
+                many={intl.formatMessage(setupMessages.manyPeers)}
+                other={intl.formatMessage(setupMessages.peers)}
+              />
             );
             progressBody = (
-                <div>
-                    <div style={{ fontWeight: 'bold', padding: '5px', fontSize: '16px' }} >
-                       {message.peerCount} {peerInfo} {`${intl.formatMessage(generalMessages.connected)}`}
-                    </div>
-                    <div style={{ fontSize: '20px' }} >
-                        <strong style={{ fontWeight: 'bold' }} >
-                            {blockProgress.currentBlock}
-                        </strong>/
-                        {blockProgress.highestBlock}
-                  </div>
+              <div>
+                <div style={{ fontWeight: 'bold', padding: '5px', fontSize: '16px' }} >
+                {message.peerCount} {peerInfo} {`${intl.formatMessage(generalMessages.connected)}`}
                 </div>
+                <div style={{ fontSize: '20px' }} >
+                  <strong style={{ fontWeight: 'bold' }} >
+                     {blockProgress.currentBlock}
+                  </strong>/
+                    {blockProgress.highestBlock}
+                </div>
+              </div>
           );
         } else {
             peerInfo = intl.formatMessage(setupMessages.findingPeers);
             progressBody = (
-                <div>
-                    <div style={{ fontWeight: 'bold', padding: '5px', fontSize: '16px' }} >
-                        {peerInfo}
-                    </div>
+              <div>
+                <div style={{ fontWeight: 'bold', padding: '5px', fontSize: '16px' }} >
+                  {peerInfo}
                 </div>
+              </div>
             );
         }
         blockSync = (
-            <div style={{ padding: '64px 0', textAlign: 'center' }} >
-                <SyncProgress value={currentProgress} />
-                {progressBody}
-             </div>
+          <div style={{ padding: '64px 0', textAlign: 'center' }} >
+            <SyncProgress value={currentProgress} />
+              {progressBody}
+          </div>
         );
         return (
           <div style={style}>
@@ -146,22 +170,45 @@ class SyncStatus extends Component {
                 {blockSync}
               </div>
             </div>
-            <div className="end-xs"
+            <div
+              className="row"
               style={{ flex: 1 }}
             >
-              <div className="col-xs"
+              <div className="col-xs-4 start-xs">
+                <RaisedButton
+                  label="View details"
+                  onClick={this._handleDetails}
+                />
+              </div>
+              <div
+                className="col-xs-8 end-xs"
                 style={buttonsStyle}
               >
-                <RaisedButton label={intl.formatMessage(generalMessages.cancel)}
+                <RaisedButton
+                  label={intl.formatMessage(generalMessages.cancel)}
                   style={{ marginLeft: '12px' }}
                   onClick={this.handleCancel}
                 />
-                <RaisedButton label={this._getActionLabels().action}
+                <RaisedButton
+                  label={this._getActionLabels().action}
                   style={{ marginLeft: '12px' }}
                   onClick={this.handleSync}
                 />
               </div>
             </div>
+            <ul>
+            {this.state.showGethLogs &&
+              
+                this.state.gethLogs.map((log, key) => (
+                  <li key={key} style={{ marginBottom: '8px' }}>
+                    <abbr title="Log Level">{log.level}</abbr>
+                    <span> {new Date(log.timestamp).toLocaleString()} =></span>
+                    <p>{log.status}</p>
+                  </li>
+                ))
+              
+            }
+            </ul>
           </div>
         );
     }

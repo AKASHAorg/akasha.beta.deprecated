@@ -1,51 +1,71 @@
+/* eslint new-cap: ["error", { "capIsNewExceptions": ["Map"] }] */
+import * as setupActions from '../actions/SetupActions';
 import * as types from '../constants/SetupConstants';
-import { Map, fromJS } from 'immutable';
-
-const preferences = window.akasha.userPreferences.defaultConfig;
+import { Map } from 'immutable';
 
 const initialState = Map({
-    gethPath: preferences.gethPath,
-    gethPathIpc: preferences.gethPathIpc,
-    ipfsApiPath: preferences.ipfsApiPath,
-    isInit: preferences.isInit,
-    toggleAdvanced: false,
-    gethStarted: false,
-    gethMessage: null
+    geth: Map({
+        dataDir: '',
+        ipcPath: '',
+        status: '',
+        cacheSize: '',
+        started: false,
+    }),
+    ipfs: Map({
+        apiPort: '',
+        gatewayPort: '',
+        started: false,
+        status: ''
+    }),
+    currentStep: 1,
+    isAdvanced: false
 });
 
 export default function setupConfig (state = initialState, action) {
     switch (action.type) {
-    case types.SETUP_GETH:
-        return state.set('gethPath', action.path);
-    case types.SET_GETH_IPC:
-        return state.set('gethPathIpc', action.path);
-    case types.SETUP_IPFS:
-        return state.set('ipfsApiPath', action.path);
-    case types.TOGGLE_ADVANCED:
-        return state.set('toggleAdvanced', action.tick);
-    case types.DEFAULT_OPTIONS:
-        return state.merge({
-            gethPath: preferences.gethPath,
-            gethPathIpc: preferences.gethPathIpc,
-            ipfsApiPath: preferences.ipfsApiPath
+    case types.SETUP_ADVANCED_SETTINGS:
+        return state.set('isAdvanced', action.isAdvanced);
+    case types.SETUP_GETH_DATADIR:
+        return state.updateIn(['geth', 'dataDir'], () => action.path);
+    case types.SETUP_GETH_IPCPATH:
+        return state.updateIn(['geth', 'ipcPath'], () => action.path);
+    case types.SETUP_GETH_CACHE_SIZE:
+        return state.updateIn(['geth', 'cacheSize'], () => action.size);
+    case types.SETUP_IPFS_API_PORT:
+        return state.updateIn(['ipfs', 'apiPort'], () => action.port);
+    case types.SETUP_IPFS_GATEWAY_PORT:
+        return state.updateIn(['ipfs', 'gatewayPort'], () => action.port);
+    case types.START_GETH_SUCCESS:
+        return state.mergeIn(['geth'], {
+            started: true,
+            dataDir: action.data.dataDir,
+            ipcPath: action.data.ipcPath,
+            status: action.data.status
         });
-    case types.SUBMIT_OPTIONS:
-        {
-            const finalState = state.set('isInit', true);
-            const config = state.toObject();
-            delete config.toggleAdvanced;
-            window.akasha.userPreferences.setConfig(config);
-            return finalState;
-        }
-    case types.GETH_START:
-        return state.merge({
-            gethStarted: true,
-            gethMessage: action.data
+    case types.START_GETH_ERROR:
+        return state.mergeIn(['geth'], {
+            started: false,
+            status: action.data.status
         });
-    case types.GETH_START_FAILED:
-        return state.merge({
-            gethStarted: false,
-            gethMessage: action.data
+    case types.STOP_GETH_SUCCESS:
+        return state.mergeIn(['geth'], {
+            started: false,
+            status: action.data.status,
+        });
+    case types.STOP_GETH_ERROR:
+        return state.mergeIn(['geth'], {
+            started: true,
+            status: action.data.status
+        });
+    case types.RETRY_SETUP:
+        return state.mergeDeep({
+            geth: {
+                status: ''
+            },
+            ipfs: {
+                status: ''
+            },
+            isAdvanced: action.isAdvanced
         });
     default:
         return state;
