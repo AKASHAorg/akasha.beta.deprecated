@@ -1,10 +1,24 @@
+
 // geth
+    // setup
+export const SETUP_ADVANCED_SETTINGS = 'SETUP_ADVANCED_SETTINGS';
+export const SETUP_GETH_DATADIR = 'SETUP_GETH_DATADIR';
+export const SETUP_GETH_IPCPATH = 'SETUP_GETH_IPCPATH';
+export const SETUP_GETH_CACHE_SIZE = 'SETUP_GETH_CACHE_SIZE';
+    // start/stop
 export const START_GETH_SUCCESS = 'START_GETH_SUCCESS';
 export const START_GETH_ERROR = 'START_GETH_ERROR';
 export const STOP_GETH_SUCCESS = 'STOP_GETH_SUCCESS';
 export const STOP_GETH_ERROR = 'STOP_GETH_ERROR';
+
 // ipfs
+    // setup
+export const SETUP_IPFS_API_PORT = 'SETUP_IPFS_API_PORT';
+export const SETUP_IPFS_GATEWAY_PORT = 'SETUP_IPFS_GATEWAY_PORT';
+    // start/stop
 export const START_IPFS_SUCCESS = 'START_IPFS_SUCCESS';
 export const START_IPFS_ERROR = 'START_IPFS_ERROR';
 export const STOP_IPFS_SUCCESS = 'STOP_IPFS_SUCCESS';
 export const STOP_IPFS_ERROR = 'STOP_IPFS_ERROR';
+
+export const RETRY_SETUP = 'RETRY_SETUP';
