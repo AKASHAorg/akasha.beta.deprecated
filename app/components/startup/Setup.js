@@ -83,7 +83,7 @@ class Setup extends Component {
         if (!setupConfig.get('isAdvanced')) {
             actions.startGeth();
         } else {
-            actions.startGeth(setupConfig.get('geth'));
+            actions.startGeth(setupConfig.get('geth').toJS());
         }
     }
     _getLogs = () => {

@@ -42,11 +42,11 @@ class SyncStatus extends Component {
     finishSync = () =>
         removeUpdateSync(this.syncStatusListener, () => hashHistory.push('/authenticate'));
     handleSync = () => {
-        const { syncState, actions } = this.props;
+        const { syncState, actions, setupConfig } = this.props;
         if (syncState.get('actionId') === 1) {
             return actions.stopSync();
         }
-        return actions.startSync();
+        return actions.startSync(setupConfig.get('geth').toJS());
     }
     handleCancel = () => {
         const { actions } = this.props;
@@ -57,49 +57,49 @@ class SyncStatus extends Component {
         const { syncState, intl } = this.props;
         const labels = {};
         switch (syncState.get('actionId')) {
-        case 1:
-            labels.title = intl.formatMessage(setupMessages.synchronizing);
-            labels.action = intl.formatMessage(generalMessages.pause);
-            break;
-        case 2:
-            labels.title = intl.formatMessage(setupMessages.syncStopped);
-            labels.action = intl.formatMessage(generalMessages.start);
-            break;
-        case 3:
-            labels.title = intl.formatMessage(setupMessages.syncCompleted);
-            labels.action = intl.formatMessage(generalMessages.completed);
-            break;
-        case 4:
-            labels.title = intl.formatMessage(setupMessages.syncResuming);
-            labels.action = intl.formatMessage(generalMessages.starting);
-            break;
-        default:
-            labels.title = intl.formatMessage(setupMessages.synchronizing);
-            labels.action = intl.formatMessage(generalMessages.pause);
+            case 1:
+                labels.title = intl.formatMessage(setupMessages.synchronizing);
+                labels.action = intl.formatMessage(generalMessages.pause);
+                break;
+            case 2:
+                labels.title = intl.formatMessage(setupMessages.syncStopped);
+                labels.action = intl.formatMessage(generalMessages.start);
+                break;
+            case 3:
+                labels.title = intl.formatMessage(setupMessages.syncCompleted);
+                labels.action = intl.formatMessage(generalMessages.completed);
+                break;
+            case 4:
+                labels.title = intl.formatMessage(setupMessages.syncResuming);
+                labels.action = intl.formatMessage(generalMessages.starting);
+                break;
+            default:
+                labels.title = intl.formatMessage(setupMessages.synchronizing);
+                labels.action = intl.formatMessage(generalMessages.pause);
         }
         return labels;
     }
     _handleDetails = () => {
-        // if (this.gethLogger) {
-        //     return removeGethLogListener(this.gethLogger, () => {
-        //         this.setState({
-        //             showGethLogs: false,
-        //             gethLogs: null
-        //         });
-        //     });
-        // }
-        // startLogger('gethInfo', { continuous: true });
-        // this.gethLogger = getGethLogs((err, data) => {
-        //     if (err) return console.log(err);
-        //     const logData = this.state.gethLogs.slice();
-        //     logData.push(data);
-        //     this.setState({
-        //         showGethLogs: true,
-        //         gethLogs: logData
-        //     });
-        // });
-        // console.log();
-        // return this.gethLogger();
+        if (this.gethLogger) {
+            return removeGethLogListener(this.gethLogger, () => {
+                this.setState({
+                    showGethLogs: false,
+                    gethLogs: null
+                });
+            });
+        }
+        startLogger('gethInfo', { continuous: true });
+        this.gethLogger = getGethLogs((err, data) => {
+            if (err) return console.log(err);
+            const logData = this.state.gethLogs.slice();
+            logData.push(data);
+            this.setState({
+                showGethLogs: true,
+                gethLogs: logData
+            });
+        });
+        console.log(this.gethLogger);
+        return this.gethLogger();
     }
     render () {
         const { style, intl } = this.props;
@@ -206,7 +206,6 @@ class SyncStatus extends Component {
                     <p>{log.status}</p>
                   </li>
                 ))
-              
             }
             </ul>
           </div>
@@ -218,7 +217,8 @@ SyncStatus.propTypes = {
     actions: PropTypes.object.isRequired,
     style: PropTypes.object,
     syncState: PropTypes.object.isRequired,
-    intl: PropTypes.object
+    intl: PropTypes.object,
+    setupConfig: PropTypes.object.isRequired
 };
 
 SyncStatus.contextTypes = {
