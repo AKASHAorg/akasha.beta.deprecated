@@ -74,7 +74,7 @@ class GethService {
     _startGethService (event, arg) {
         this
             .getGethService()
-            .start()
+            .start(this._formatOptions(arg))
             .then(
                 (data) => {
                     this._sendEvent(event)(this.clientEvent.startService, true, data);
@@ -132,6 +132,17 @@ class GethService {
         .catch((err) => {
             this._stopGethUpdates();
         });
+    }
+
+    _formatOptions (options) {
+        if(options.cache) {
+            const cacheValue = parseInt(options.cache);
+            if(!isNaN(cacheValue)) {
+                options.protocol = ['--shh', '--fast', '--cache', cacheValue];
+            }
+            delete options.cache;
+        }
+        return options;
     }
 }
 

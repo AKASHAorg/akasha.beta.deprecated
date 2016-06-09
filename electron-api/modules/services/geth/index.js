@@ -63,6 +63,7 @@ class GethConnector {
                 return Promise.resolve('Already started');
             }
         }
+        this.logger.warn(JSON.stringify(options));
         if (!this.spawnOptions.length || !Object.keys(options).length) {
             this._setOptions(options);
         }

@@ -42,7 +42,7 @@ describe('application launch', function () {
                 ipcRenderer.on('client:geth:startService', (err, status) => {
                     done(status);
                 });
-                ipcRenderer.send('server:geth:startService');
+                ipcRenderer.send('server:geth:startService', {dataDir: "/tmp/gabig7", cache: 722});
             })
             .then((ret) => {
                 expect(ret.value.success).to.be.true;
