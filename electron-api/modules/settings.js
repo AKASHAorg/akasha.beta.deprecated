@@ -9,7 +9,8 @@ export const EVENTS = {
             "stopService": "server:geth:stopService"
         },
         "ipfs": {
-            "startService": "server:ipfs:startService"
+            "startService": "server:ipfs:startService",
+            "stopService": "server:ipfs:stopService"
         },
         "logger": {
             "gethInfo" : "server:logger:gethInfo",
@@ -24,7 +25,8 @@ export const EVENTS = {
             "stopService": "client:geth:stopService"
         },
         "ipfs": {
-            "startService": "client:ipfs:startService"
+            "startService": "client:ipfs:startService",
+            "stopService": "client:ipfs:stopService"
         },
         "logger": {
             "gethInfo" : "client:logger:gethInfo",

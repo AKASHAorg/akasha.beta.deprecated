@@ -52,7 +52,7 @@ class IpfsService {
             this._startIpfsService(event, arg);
         });
         ipcMain.on(this.serverEvent.stopService, (event, arg) => {
-            this._stopIpfsService(event, arg);
+            IpfsConnector.getInstance().stop();
         });
     }
     _sendEvent (event) {
