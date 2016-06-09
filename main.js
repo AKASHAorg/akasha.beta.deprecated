@@ -34,7 +34,7 @@ app.on('will-quit', () => {
 
 app.on('ready', () => {
     mainWindow = new BrowserWindow({
-        width: 500,
+        width: 900,
         height: 600,
         resizable: true,
         webPreferences: {

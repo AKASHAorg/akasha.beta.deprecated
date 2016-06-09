@@ -13,6 +13,7 @@ function getElectronPath () {
 
 describe('application launch', function () {
     let client;
+    let app;
     this.timeout(10000);
 
     before(() => {
@@ -22,6 +23,7 @@ describe('application launch', function () {
         });
         return this.app.start().then(() => {
             client = this.app.client;
+            app = this.app;
             client.timeoutsImplicitWait(5000);
             client.timeoutsAsyncScript(5000);
         });

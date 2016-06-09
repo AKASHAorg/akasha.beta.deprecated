@@ -6,7 +6,8 @@ export const EVENTS = {
     "server": {
         "geth": {
             "startService": "server:geth:startService",
-            "stopService": "server:geth:stopService"
+            "stopService": "server:geth:stopService",
+            "contract": "server:geth.contract"
         },
         "ipfs": {
             "startService": "server:ipfs:startService",
@@ -22,7 +23,8 @@ export const EVENTS = {
             "startService": "client:geth:startService",
             "startSyncing": "client:geth:startSyncing",
             "syncUpdate": "client:geth:syncUpdate",
-            "stopService": "client:geth:stopService"
+            "stopService": "client:geth:stopService",
+            "contract": "client:geth.contract"
         },
         "ipfs": {
             "startService": "client:ipfs:startService",
