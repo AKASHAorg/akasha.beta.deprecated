@@ -136,15 +136,15 @@ class GethService {
     }
 
     _formatOptions (options) {
-        options = JSON.parse(JSON.stringify(options));
-        if(options.cache) {
-            const cacheValue = parseInt(options.cache);
+        let opts = JSON.parse(JSON.stringify(options));
+        if(opts.cache) {
+            const cacheValue = parseInt(opts.cache);
             if(!isNaN(cacheValue)) {
-                options.protocol = ['--shh', '--fast', '--cache', cacheValue];
+                opts.protocol = ['--shh', '--fast', '--cache', cacheValue];
             }
-            delete options.cache;
+            delete opts.cache;
         }
-        return options;
+        return opts;
     }
 }
 
