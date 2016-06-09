@@ -164,7 +164,8 @@ class GethConnector {
 
         ipcPath = null;
         dataDir = null;
-
+        
+        this.spawnOptions.push('--datadir', `${this.dataDir}`);
         this.spawnOptions.push('--ipcpath', `${this.ipcPath}`);
 
         this.spawnOptions = this.spawnOptions.concat(protocol, extra);
