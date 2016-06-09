@@ -64,6 +64,7 @@ export function startGeth (options) {
         return dispatch(startGethSuccess(data));
     }).catch(err => dispatch(startGethError({ err })));
 }
+
 export function stopGeth () {
     return dispatch => {
         stopGethService().then(data => {
@@ -97,4 +98,8 @@ export function stopIPFS () {
             return dispatch(stopIPFSSuccess(data));
         }).catch(reason => dispatch(stopIPFSError(reason)));
     };
+}
+
+export function retrySetup (isAdvanced) {
+    return dispatch => dispatch({ type: types.RETRY_SETUP, isAdvanced });
 }

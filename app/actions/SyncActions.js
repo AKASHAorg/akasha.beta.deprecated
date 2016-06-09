@@ -6,12 +6,12 @@ import { startGethService, stopGethService } from '../services/setup-service';
  * @returns {function()}
  */
 export function startSync () {
-    startGethService().then((data) => {
+    return dispatch => startGethService().then(data => {
         if (!data.success) {
             console.log(data);
-            return { type: types.SYNC_ACTIVE_ERROR };
+            return dispatch({ type: types.SYNC_ACTIVE_ERROR });
         }
-        return { type: types.SYNC_ACTIVE };
+        return dispatch({ type: types.SYNC_ACTIVE });
     });
 }
 

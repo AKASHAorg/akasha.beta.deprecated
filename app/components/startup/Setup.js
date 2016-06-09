@@ -1,13 +1,24 @@
 import React, { Component, PropTypes } from 'react';
 import LoginHeader from '../../components/ui/partials/LoginHeader';
-import { RadioButton, RadioButtonGroup, RaisedButton, TextField } from 'material-ui';
-import { hashHistory } from 'react-router';
+import { RadioButton, RadioButtonGroup, RaisedButton } from 'material-ui';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { injectIntl } from 'react-intl';
 import { setupMessages, generalMessages } from '../../locale-data/messages';
 import { AdvancedSetupForm } from '../ui/forms/advanced-setup-form.js';
+import { getGethLogs, startLogger } from '../../services/logging-service';
 
 class Setup extends Component {
+    constructor (props) {
+        super(props);
+        this.state = {
+            gethLogs: []
+        };
+    }
+    componentWillReceiveProps (nextProps) {
+        if (!nextProps.setupConfig.getIn(['geth', 'status'])) {
+            this._getLogs();
+        }
+    }
     handleChange = (ev, value) => {
         const { actions, setupConfig } = this.props;
         const show = value === 'advanced';
@@ -74,15 +85,48 @@ class Setup extends Component {
         } else {
             actions.startGeth(setupConfig.get('geth'));
         }
-    };
+    }
+    _getLogs = () => {
+        if (!this.gethLogger) {
+            startLogger('gethInfo');
+        }
+        this.gethLogger = getGethLogs((err, data) => {
+            if (err) {
+                console.log(err);
+            }
+            let logData = this.state.gethLogs.slice();
+            if (data.status['log-geth']) {
+                logData = data.status['log-geth'];
+            } else {
+                logData.push({ message: data.status['log-get'].status });
+            }
+            return this.setState({
+                gethLogs: logData
+            });
+        });
+    }
+    _retrySetup = () => {
+        const { actions, setupConfig } = this.props;
+        actions.retrySetup(setupConfig.get('isAdvanced'));
+    }
+    _sendReport = () => {
 
+    }
     render () {
         const { style, setupConfig, intl } = this.props;
         const radioStyle = { marginTop: '10px', marginBottom: '10px' };
         const buttonsStyle = { padding: 0, position: 'absolute', bottom: 0, right: 0 };
         const defaultSelected = (!setupConfig.get('isAdvanced')) ? 'express' : 'advanced';
-
-        if (!setupConfig.getIn(['geth', 'started']) && !setupConfig.getIn(['geth', 'status'])) {
+        const logListStyle = {
+            maxHeight: 500,
+            overflowY: 'scroll',
+            paddingLeft: 4,
+            overflowX: 'hidden',
+            fontFamily: 'Consolas',
+            backgroundColor: 'rgba(0,0,0,0.02)'
+        };
+        if (!setupConfig.getIn(['geth', 'started'])
+                && setupConfig.getIn(['geth', 'status']) !== '') {
             return (
               <div style={style}>
                 <div className="start-xs" >
@@ -98,7 +142,7 @@ class Setup extends Component {
                             {Object.keys(setupConfig.get('geth').toJS()).map((key) => (
                               <p key={key}>
                                 <b>{key}: </b>
-                                <b>{setupConfig.get('geth').toJS()[key].toString()}</b>
+                                <b>{setupConfig.get('geth').toJS()[key]}</b>
                               </p>
                             ))}
                         </div>
@@ -109,10 +153,20 @@ class Setup extends Component {
                         </div>
                       }
                     <div>Logs:</div>
-                    <div>Show some logs here</div>
                     <div>
-                      <RaisedButton label="Retry" />
-                      <RaisedButton label="Send Report" />
+                      <ul style={logListStyle}>
+                      {this.state.gethLogs.map((log, key) => (
+                        <li key={key} style={{ marginBottom: '8px' }}>
+                          <abbr title="Log Level">{log.level}</abbr>
+                          <span> {new Date(log.timestamp).toLocaleString()} =></span>
+                          <p>{log.message}</p>
+                        </li>
+                      ))}
+                      </ul>
+                    </div>
+                    <div>
+                      <RaisedButton label="Retry" onClick={this._retrySetup} />
+                      <RaisedButton label="Send Report" onClick={this._sendReport} />
                     </div>
                   </div>
                 </div>

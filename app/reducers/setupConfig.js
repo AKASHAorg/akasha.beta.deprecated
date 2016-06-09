@@ -45,8 +45,7 @@ export default function setupConfig (state = initialState, action) {
     case types.START_GETH_ERROR:
         return state.mergeIn(['geth'], {
             started: false,
-            status: action.data.status,
-            options: action.options
+            status: action.data.status
         });
     case types.STOP_GETH_SUCCESS:
         return state.mergeIn(['geth'], {
@@ -57,6 +56,16 @@ export default function setupConfig (state = initialState, action) {
         return state.mergeIn(['geth'], {
             started: true,
             status: action.data.status
+        });
+    case types.RETRY_SETUP:
+        return state.mergeDeep({
+            geth: {
+                status: ''
+            },
+            ipfs: {
+                status: ''
+            },
+            isAdvanced: action.isAdvanced
         });
     default:
         return state;

@@ -6,6 +6,7 @@ import { hashHistory } from 'react-router';
 import { FormattedMessage, FormattedPlural, injectIntl } from 'react-intl';
 import { setupMessages, generalMessages } from '../../locale-data/messages';
 import { updateSync, removeUpdateSync } from '../../services/setup-service';
+import { getGethLogs, startLogger, removeGethLogListener } from '../../services/logging-service';
 
 class SyncStatus extends Component {
     constructor (props) {
@@ -18,10 +19,11 @@ class SyncStatus extends Component {
             timeouts: []
         };
         this.syncStatusListener = this.getSyncStatus;
+        this.gethLogger = null;
         this.syncStatusListener();
     }
-    getSyncStatus = () => {
-        return updateSync((err, updateData) => {
+    getSyncStatus = () =>
+        updateSync((err, updateData) => {
             const { success, status } = updateData;
             if (err) {
                 return this.setState({
@@ -36,10 +38,9 @@ class SyncStatus extends Component {
                 });
             }
         });
-    }
-    finishSync = () => {
-        return removeUpdateSync(this.syncStatusListener, () => hashHistory.push('/authenticate'));
-    }
+
+    finishSync = () =>
+        removeUpdateSync(this.syncStatusListener, () => hashHistory.push('/authenticate'));
     handleSync = () => {
         const { syncState, actions } = this.props;
         if (syncState.get('actionId') === 1) {
@@ -77,6 +78,28 @@ class SyncStatus extends Component {
             labels.action = intl.formatMessage(generalMessages.pause);
         }
         return labels;
+    }
+    _handleDetails = () => {
+        // if (this.gethLogger) {
+        //     return removeGethLogListener(this.gethLogger, () => {
+        //         this.setState({
+        //             showGethLogs: false,
+        //             gethLogs: null
+        //         });
+        //     });
+        // }
+        // startLogger('gethInfo', { continuous: true });
+        // this.gethLogger = getGethLogs((err, data) => {
+        //     if (err) return console.log(err);
+        //     const logData = this.state.gethLogs.slice();
+        //     logData.push(data);
+        //     this.setState({
+        //         showGethLogs: true,
+        //         gethLogs: logData
+        //     });
+        // });
+        // console.log();
+        // return this.gethLogger();
     }
     render () {
         const { style, intl } = this.props;
@@ -148,11 +171,17 @@ class SyncStatus extends Component {
               </div>
             </div>
             <div
-              className="end-xs"
+              className="row"
               style={{ flex: 1 }}
             >
+              <div className="col-xs-4 start-xs">
+                <RaisedButton
+                  label="View details"
+                  onClick={this._handleDetails}
+                />
+              </div>
               <div
-                className="col-xs"
+                className="col-xs-8 end-xs"
                 style={buttonsStyle}
               >
                 <RaisedButton
@@ -167,6 +196,19 @@ class SyncStatus extends Component {
                 />
               </div>
             </div>
+            <ul>
+            {this.state.showGethLogs &&
+              
+                this.state.gethLogs.map((log, key) => (
+                  <li key={key} style={{ marginBottom: '8px' }}>
+                    <abbr title="Log Level">{log.level}</abbr>
+                    <span> {new Date(log.timestamp).toLocaleString()} =></span>
+                    <p>{log.status}</p>
+                  </li>
+                ))
+              
+            }
+            </ul>
           </div>
         );
     }
