@@ -15,6 +15,7 @@ export function startGethService (options) {
             if (!data) {
                 return reject('OMG! Main process doesn`t respond to us!');
             }
+            // return reject({ status: false });
             return resolve(data);
         });
     });
@@ -69,8 +70,8 @@ export function stopIPFSService () {
  */
 export function updateSync (cb) {
     return ipcRenderer.on(EVENTS.client.geth.syncUpdate, (event, data) => {
-        if (!data.success) {
-            return cb(data.status);
+        if (!data) {
+            return cb('Main process does not respond!');
         }
         return cb(null, data);
     });
