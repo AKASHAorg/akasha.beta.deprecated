@@ -5,7 +5,7 @@ import { Scrollbars } from 'react-custom-scrollbars';
 import { injectIntl } from 'react-intl';
 import { setupMessages, generalMessages } from '../../locale-data/messages';
 import { AdvancedSetupForm } from '../ui/forms/advanced-setup-form.js';
-import { getGethLogs, startLogger } from '../../services/logging-service';
+import { getGethLogs, startLogger, removeGethLogListener } from '../../services/logging-service';
 
 class Setup extends Component {
     constructor (props) {
@@ -20,70 +20,70 @@ class Setup extends Component {
         }
     }
     handleChange = (ev, value) => {
-        const { actions, setupConfig } = this.props;
+        const { setupActions, setupConfig } = this.props;
         const show = value === 'advanced';
         if (setupConfig.get('isAdvanced') === show) {
             return;
         }
-        actions.toggleAdvancedSettings(show);
+        setupActions.toggleAdvancedSettings(show);
     };
 
     handleGethDatadir = (ev) => {
-        const { actions, setupConfig } = this.props;
+        const { setupActions, setupConfig } = this.props;
 
         const target = ev.target;
         const currentDatadir = setupConfig.getIn(['geth', 'dataDir']);
         if (currentDatadir === target.value || !target.value) {
             return;
         }
-        actions.setupGethDataDir(target.value);
+        setupActions.setupGethDataDir(target.value);
     };
 
     handleGethIpc = (ev) => {
-        const { actions, setupConfig } = this.props;
+        const { setupActions, setupConfig } = this.props;
 
         const target = ev.target;
         const currentIpcPath = setupConfig.getIn(['geth', 'ipcPath']);
         if (currentIpcPath === target.value || !target.value) {
             return;
         }
-        actions.setupGethIPCPath(target.value);
+        setupActions.setupGethIPCPath(target.value);
     };
     handleGethCacheSize = (ev) => {
-        const { actions, setupConfig } = this.props;
+        const { setupActions, setupConfig } = this.props;
 
         const target = ev.target;
         const currentCacheSize = setupConfig.getIn(['geth', 'cacheSize']);
         if (currentCacheSize === target.value || !target.value) {
             return;
         }
-        actions.setupGethCacheSize(target.value);
+        setupActions.setupGethCacheSize(target.value);
     }
     handleIpfsApiPort = (ev) => {
-        const { actions, setupConfig } = this.props;
+        const { setupActions, setupConfig } = this.props;
 
         const target = ev.target;
         const currentIpfsApiPort = setupConfig.getIn(['ipfs', 'apiPort']);
         if (currentIpfsApiPort === target.value || !target.value) {
             return;
         }
-        actions.setupIPFSApiPort(target.value);
+        setupActions.setupIPFSApiPort(target.value);
     };
     handleIpfsGatewayPort = (ev) => {
-        const { actions, setupConfig } = this.props;
+        const { setupActions, setupConfig } = this.props;
         const target = ev.target;
         const currentIpfsGatewayPort = setupConfig.getIn(['ipfs', 'gatewayPort']);
         if (currentIpfsGatewayPort === target.value || !target.value) {
             return;
         }
-        actions.setupIPFSGatewayPort(target.value);
+        setupActions.setupIPFSGatewayPort(target.value);
     }
     handleSubmit = () => {
-        const { actions, setupConfig } = this.props;
+        const { setupActions, setupConfig } = this.props;
         if (!setupConfig.get('isAdvanced')) {
-            actions.startGeth();
+            setupActions.startGeth();
         } else {
-            actions.startGeth(setupConfig.get('geth').toJS());
+            setupActions.startGeth(setupConfig.get('geth').toJS());
         }
     }
     _getLogs = () => {
@@ -106,8 +106,8 @@ class Setup extends Component {
         });
     }
     _retrySetup = () => {
-        const { actions, setupConfig } = this.props;
-        actions.retrySetup(setupConfig.get('isAdvanced'));
+        const { setupActions, setupConfig } = this.props;
+        setupActions.retrySetup(setupConfig.get('isAdvanced'));
     }
     _sendReport = () => {
 
@@ -251,7 +251,7 @@ class Setup extends Component {
 }
 
 Setup.propTypes = {
-    actions: PropTypes.object.isRequired,
+    setupActions: PropTypes.object.isRequired,
     setupConfig: PropTypes.object.isRequired,
     style: PropTypes.object,
     intl: PropTypes.object

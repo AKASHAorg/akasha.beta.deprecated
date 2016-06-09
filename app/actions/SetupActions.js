@@ -1,113 +1,107 @@
-import { startGethService, stopGethService, startIPFSService } from '../services/setup-service';
+import { SetupService, SettingsService } from '../services';
 import { hashHistory } from 'react-router';
-import { saveSettings } from './SettingsActions';
 import * as types from '../constants/SetupConstants';
 
-export function nextStep (pathName) {
-    return hashHistory.push(pathName);
-}
-export function toggleAdvancedSettings (isAdvanced) {
-    return dispatch => dispatch({ type: types.SETUP_ADVANCED_SETTINGS, isAdvanced });
-}
-export function setupGethDataDir (path) {
-    return dispatch => dispatch({ type: types.SETUP_GETH_DATADIR, path });
-}
-export function setupGethIPCPath (path) {
-    return dispatch => dispatch({ type: types.SETUP_GETH_IPCPATH, path });
-}
-export function setupGethCacheSize (size) {
-    return dispatch => dispatch({ type: types.SETUP_GETH_CACHE_SIZE, size });
-}
-export function setupIPFSApiPort (port) {
-    return dispatch => dispatch({ type: types.SETUP_IPFS_API_PORT, port });
-}
-export function setupIPFSGatewayPort (port) {
-    return dispatch => dispatch({ type: types.SETUP_IPFS_GATEWAY_PORT, port });
-}
-// start / stop geth
-function startGethSuccess (data) {
-    saveSettings('geth', data);
-    nextStep('sync-status');
-    return { type: types.START_GETH_SUCCESS, data };
-}
-
-function stopGethSuccess (data) {
-    return { type: types.STOP_GETH_SUCCESS, data };
-}
-
-function startGethError (data) {
-    return { type: types.START_GETH_ERROR, data };
-}
-
-function stopGethError (data) {
-    return { type: types.STOP_GETH_ERROR, data };
-}
-// start/stop ipfs
-function startIPFSSuccess (data) {
-    return { type: types.START_IPFS_SUCCESS, data };
-}
-function stopIPFSSuccess (data) {
-    return { type: types.STOP_IPFS_SUCCESS, data };
-}
-function startIPFSError (data) {
-    return { type: types.START_IPFS_ERROR, data };
-}
-function stopIPFSError (data) {
-    return { type: types.STOP_IPFS_ERROR, data };
-}
-
-export function startGeth (options) {
-    let startupOptions = {};
-    if (options) {
-        startupOptions = {
-            dataDir: options.dataDir,
-            ipcPath: options.ipcPath,
-            cache: options.cacheSize
-        };
+class SetupActions {
+    constructor (dispatch) {
+        this.dispatch = dispatch;
+        this.setupService = new SetupService;
+        this.settingsService = new SettingsService;
     }
-    return dispatch => startGethService(startupOptions).then((data) => {
-        if (!data.success) {
-            return dispatch(startGethError({ data }));
+    startGeth = (options) => {
+        let startupOptions = {};
+        if (options) {
+            startupOptions = {
+                dataDir: options.dataDir,
+                ipcPath: options.ipcPath,
+                cache: options.cacheSize
+            };
         }
-        return dispatch(startGethSuccess(data));
-    }).catch(err => dispatch(startGethError({ err })));
-}
-
-export function stopGeth () {
-    return dispatch => {
-        stopGethService().then(data => {
+        this.setupService.startGeth(startupOptions).then((data) => {
             if (!data.success) {
-                return dispatch(stopGethError(data));
+                return this.dispatch(this._startGethError({ data }));
             }
-            return dispatch(stopGethSuccess(data));
+            return this.dispatch(this._startGethSuccess(data));
+        }).catch(err => this.dispatch(this._startGethError({ err })));
+    }
+    stopGeth = () => {
+        this.setupService.stopGeth().then(data => {
+            if (!data) {
+                return this.dispatch(this._stopGethError('Main process crashed'));
+            }
+            return this.dispatch(this._stopGethSuccess(data));
         }).catch(reason => {
-            dispatch(stopGethError(reason));
+            this.dispatch(this._stopGethError(reason));
         });
-    };
-}
-
-export function startIPFS (options) {
-    return dispatch => {
-        startIPFSService(options).then(data => {
+    }
+    startIPFS = (options) => {
+        this.setupService.startIPFS(options).then(data => {
             if (!data.success) {
-                return dispatch(startIPFSError(data));
+                return this.dispatch(this._startIPFSError(data));
             }
-            return dispatch(startIPFSSuccess(data));
-        }).catch(reason => dispatch(startIPFSError(reason)));
-    };
-}
-
-export function stopIPFS () {
-    return dispatch => {
-        stopIPFS().then((data) => {
+            return this.dispatch(this._startIPFSSuccess(data));
+        }).catch(reason => this.dispatch(this._startIPFSError(reason)));
+    }
+    stopIPFS = () => {
+        this.setupService.stopIPFS().then((data) => {
             if (!data.success) {
-                return dispatch(stopIPFSError(data));
+                return this.dispatch(this._stopIPFSError(data));
             }
-            return dispatch(stopIPFSSuccess(data));
-        }).catch(reason => dispatch(stopIPFSError(reason)));
-    };
+            return this.dispatch(this._stopIPFSSuccess(data));
+        }).catch(reason => this.dispatch(this._stopIPFSError(reason)));
+    }
+    retrySetup = (isAdvanced) => {
+        this.dispatch({ type: types.RETRY_SETUP, isAdvanced });
+    }
+    toggleAdvancedSettings = (isAdvanced) => {
+        this.dispatch({ type: types.SETUP_ADVANCED_SETTINGS, isAdvanced });
+    }
+    setupGethDataDir = (path) => {
+        this.dispatch({ type: types.SETUP_GETH_DATADIR, path });
+    }
+    setupGethIPCPath = (path) => {
+        this.dispatch({ type: types.SETUP_GETH_IPCPATH, path });
+    }
+    setupGethCacheSize = (size) => {
+        this.dispatch({ type: types.SETUP_GETH_CACHE_SIZE, size });
+    }
+    setupIPFSApiPort = (port) => {
+        this.dispatch({ type: types.SETUP_IPFS_API_PORT, port });
+    }
+    setupIPFSGatewayPort = (port) => {
+        this.dispatch({ type: types.SETUP_IPFS_GATEWAY_PORT, port });
+    }
+
+    _startGethSuccess = (data) => {
+        this.settingsService.saveSettings('geth', data);
+        this._nextStep('sync-status');
+        return { type: types.START_GETH_SUCCESS, data };
+    }
+    _startGethError (data) {
+        return { type: types.START_GETH_ERROR, data };
+    }
+    _stopGethSuccess (data) {
+        return { type: types.STOP_GETH_SUCCESS, data };
+    }
+    _stopGethError (data) {
+        return { type: types.STOP_GETH_ERROR, data };
+    }
+    _startIPFSSuccess (data) {
+        this.settingsService.saveSettings('ipfs', data);
+        return { type: types.START_IPFS_SUCCESS, data };
+    }
+    _startIPFSError (data) {
+        return { type: types.START_IPFS_ERROR, data };
+    }
+    _stopIPFSSuccess (data) {
+        return { type: types.STOP_IPFS_SUCCESS, data };
+    }
+    _stopIPFSError (data) {
+        return { type: types.STOP_IPFS_ERROR, data };
+    }
+    _nextStep (pathName) {
+        return hashHistory.push(pathName);
+    }
 }
 
-export function retrySetup (isAdvanced) {
-    return dispatch => dispatch({ type: types.RETRY_SETUP, isAdvanced });
-}
+export { SetupActions };

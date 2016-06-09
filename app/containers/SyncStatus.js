@@ -1,22 +1,21 @@
-import React, { Component, PropTypes } from 'react';
-import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import SyncStatus from '../components/startup/SyncStatus';
-import * as SyncActions from '../actions/SyncActions';
+import { SyncActions } from '../actions/SyncActions';
 
 function mapStateToProps (state) {
-  return {
-    syncState: state.syncStatus
-  };
+    return {
+        syncState: state.syncStatus,
+        setupConfig: state.setupConfig
+    };
 }
 
 function mapDispatchToProps (dispatch) {
-  return {
-    actions: bindActionCreators(SyncActions, dispatch)
-  };
+    return {
+        syncActions: new SyncActions(dispatch)
+    };
 }
 
 export default connect(
-  mapStateToProps,
-  mapDispatchToProps
+    mapStateToProps,
+    mapDispatchToProps
 )(SyncStatus);

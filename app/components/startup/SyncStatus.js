@@ -5,7 +5,6 @@ import SyncProgress from '../ui/loaders/SyncProgress';
 import { hashHistory } from 'react-router';
 import { FormattedMessage, FormattedPlural, injectIntl } from 'react-intl';
 import { setupMessages, generalMessages } from '../../locale-data/messages';
-import { updateSync, removeUpdateSync } from '../../services/setup-service';
 import { getGethLogs, startLogger, removeGethLogListener } from '../../services/logging-service';
 
 class SyncStatus extends Component {
@@ -18,39 +17,39 @@ class SyncStatus extends Component {
             intervals: [],
             timeouts: []
         };
-        this.syncStatusListener = this.getSyncStatus;
+        // this.syncStatusListener = this.getSyncStatus;
         this.gethLogger = null;
-        this.syncStatusListener();
+        // this.syncStatusListener();
     }
-    getSyncStatus = () =>
-        updateSync((err, updateData) => {
-            const { success, status } = updateData;
-            if (err) {
-                return this.setState({
-                    syncError: status
-                });
-            }
-            if (success && status === 'empty') {
-                this.finishSync();
-            } else {
-                this.setState({
-                    syncData: status
-                });
-            }
-        });
+    // getSyncStatus = () =>
+        // updateSync((err, updateData) => {
+        //     const { success, status } = updateData;
+        //     if (err) {
+        //         return this.setState({
+        //             syncError: status
+        //         });
+        //     }
+        //     if (success && status === 'empty') {
+        //         this.finishSync();
+        //     } else {
+        //         this.setState({
+        //             syncData: status
+        //         });
+        //     }
+        // });
 
     finishSync = () =>
         removeUpdateSync(this.syncStatusListener, () => hashHistory.push('/authenticate'));
     handleSync = () => {
-        const { syncState, actions, setupConfig } = this.props;
+        const { syncState, syncActions, setupConfig } = this.props;
         if (syncState.get('actionId') === 1) {
-            return actions.stopSync();
+            return syncActions.stopSync();
         }
-        return actions.startSync(setupConfig.get('geth').toJS());
+        return syncActions.startSync(setupConfig.get('geth').toJS());
     }
     handleCancel = () => {
-        const { actions } = this.props;
-        actions.stopSync();
+        const { syncActions } = this.props;
+        syncActions.stopSync();
         return hashHistory.goBack();
     }
     _getActionLabels = () => {
@@ -214,7 +213,7 @@ class SyncStatus extends Component {
 }
 
 SyncStatus.propTypes = {
-    actions: PropTypes.object.isRequired,
+    syncActions: PropTypes.object.isRequired,
     style: PropTypes.object,
     syncState: PropTypes.object.isRequired,
     intl: PropTypes.object,
