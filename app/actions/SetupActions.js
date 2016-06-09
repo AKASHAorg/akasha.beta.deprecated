@@ -57,9 +57,17 @@ function stopIPFSError (data) {
 }
 
 export function startGeth (options) {
-    return dispatch => startGethService(options).then((data) => {
+    let startupOptions = {};
+    if (options) {
+        startupOptions = {
+            dataDir: options.dataDir,
+            ipcPath: options.ipcPath,
+            cache: options.cacheSize
+        };
+    }
+    return dispatch => startGethService(startupOptions).then((data) => {
         if (!data.success) {
-            return dispatch(startGethError({ data, options }));
+            return dispatch(startGethError({ data }));
         }
         return dispatch(startGethSuccess(data));
     }).catch(err => dispatch(startGethError({ err })));
