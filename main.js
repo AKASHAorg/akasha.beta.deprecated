@@ -2,7 +2,7 @@
 'use strict';
 require('babel-register');
 const gethService = require('./electron-api/modules/services/geth');
-const ipfsService = require('./electron-api/modules/services/ipfs');
+const ipfsService = require('./electron-api/modules/services/ipfs-connector');
 const electron = require('electron');
 const app = electron.app;
 
