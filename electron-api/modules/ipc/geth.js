@@ -77,7 +77,8 @@ class GethService {
             .start(this._formatOptions(arg))
             .then(
                 (data) => {
-                    this._sendEvent(event)(this.clientEvent.startService, true, data);
+                    // data instead of arg to see what geth says when starts
+                    this._sendEvent(event)(this.clientEvent.startService, true, arg);
                     this._sendEvent(event)(this.clientEvent.startSyncing, true, this.STARTSYNC_MSG);
 
                     setTimeout(() => {
