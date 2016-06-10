@@ -1,22 +1,34 @@
+import { ipcRenderer } from 'electron';
 import * as types from '../constants/ProfileConstants';
+import { ProfileService } from '../services';
 
-export function validateUsername (name) {}
+class ProfileActions {
+    constructor (dispatch) {
+        this.dispatch = dispatch;
+        this.profileService = new ProfileService;
+    }
+    validateUsername = (username) => {
 
-export function updateProfile (value) {}
+    }
+    updateProfile = (profileData) => {
 
+    }
+    updatePassword = (password1, password2) => {
 
-function validatePasswd (pwd1, pwd2) {}
+    }
+    /**
+     * Step 1:: Create a new Ethereum address
+     * Step 2:: Set address as defaultAccount
+     * Step 3:: Fund the address from faucet
+     * Step 4:: Unlock address
+     * Step 5:: Create new AKASHA profile
+     */
+    createProfile = (userData) => {
 
-export function updatePasswd (pwd1, pwd2) {}
+    }
+    getProfilesList = () => {
 
-/**
- * Step 1:: Create a new Ethereum address
- * Step 2:: Set address as defaultAccount
- * Step 3:: Fund the address from faucet
- * Step 4:: Unlock address
- * Step 5:: Create new AKASHA profile
- */
+    }
+}
 
-export function createProfile () {}
-
-export function getProfilesList () {}
+export { ProfileActions };

@@ -5,8 +5,6 @@ import SyncProgress from '../ui/loaders/SyncProgress';
 import { hashHistory } from 'react-router';
 import { FormattedMessage, FormattedPlural, injectIntl } from 'react-intl';
 import { setupMessages, generalMessages } from '../../locale-data/messages';
-import { updateSync, removeUpdateSync } from '../../services/setup-service';
-import { getGethLogs, startLogger, removeGethLogListener } from '../../services/logging-service';
 
 class SyncStatus extends Component {
     constructor (props) {
@@ -14,16 +12,13 @@ class SyncStatus extends Component {
         this.state = {
             syncData: null,
             syncError: null,
-            gethInstance: window.gethInstance,
-            intervals: [],
-            timeouts: []
+            gethLogs: []
         };
-        this.syncStatusListener = this.getSyncStatus;
-        this.gethLogger = null;
-        this.syncStatusListener();
+        this.getSyncStatus();
     }
-    getSyncStatus = () =>
-        updateSync((err, updateData) => {
+    getSyncStatus = () => {
+        const { syncActions } = this.props;
+        syncActions.startUpdateSync((err, updateData) => {
             const { success, status } = updateData;
             if (err) {
                 return this.setState({
@@ -31,6 +26,7 @@ class SyncStatus extends Component {
                 });
             }
             if (success && status === 'empty') {
+                // @TODO start ipfs first!
                 this.finishSync();
             } else {
                 this.setState({
@@ -38,68 +34,75 @@ class SyncStatus extends Component {
                 });
             }
         });
-
-    finishSync = () =>
-        removeUpdateSync(this.syncStatusListener, () => hashHistory.push('/authenticate'));
+    }
+    finishSync = () => {
+        const { syncActions } = this.props;
+        syncActions.stopUpdateSync(() => hashHistory.push('/authenticate'));
+    }
     handleSync = () => {
-        const { syncState, actions } = this.props;
+        const { syncState, syncActions, setupConfig } = this.props;
         if (syncState.get('actionId') === 1) {
-            return actions.stopSync();
+            syncActions.stopSync();
+            return syncActions.stopUpdateSync(() => {
+                return;
+            });
         }
-        return actions.startSync();
+        syncActions.startSync(setupConfig.get('geth').toJS());
+        return this.getSyncStatus();
     }
     handleCancel = () => {
-        const { actions } = this.props;
-        actions.stopSync();
-        return hashHistory.goBack();
+        const { syncActions } = this.props;
+        syncActions.stopSync();
+        syncActions.stopUpdateSync(() => {
+            return hashHistory.goBack();
+        });
+        
     }
     _getActionLabels = () => {
         const { syncState, intl } = this.props;
         const labels = {};
         switch (syncState.get('actionId')) {
-        case 1:
-            labels.title = intl.formatMessage(setupMessages.synchronizing);
-            labels.action = intl.formatMessage(generalMessages.pause);
-            break;
-        case 2:
-            labels.title = intl.formatMessage(setupMessages.syncStopped);
-            labels.action = intl.formatMessage(generalMessages.start);
-            break;
-        case 3:
-            labels.title = intl.formatMessage(setupMessages.syncCompleted);
-            labels.action = intl.formatMessage(generalMessages.completed);
-            break;
-        case 4:
-            labels.title = intl.formatMessage(setupMessages.syncResuming);
-            labels.action = intl.formatMessage(generalMessages.starting);
-            break;
-        default:
-            labels.title = intl.formatMessage(setupMessages.synchronizing);
-            labels.action = intl.formatMessage(generalMessages.pause);
+            case 1:
+                labels.title = intl.formatMessage(setupMessages.synchronizing);
+                labels.action = intl.formatMessage(generalMessages.pause);
+                break;
+            case 2:
+                labels.title = intl.formatMessage(setupMessages.syncStopped);
+                labels.action = intl.formatMessage(generalMessages.start);
+                break;
+            case 3:
+                labels.title = intl.formatMessage(setupMessages.syncCompleted);
+                labels.action = intl.formatMessage(generalMessages.completed);
+                break;
+            case 4:
+                labels.title = intl.formatMessage(setupMessages.syncResuming);
+                labels.action = intl.formatMessage(generalMessages.starting);
+                break;
+            default:
+                labels.title = intl.formatMessage(setupMessages.synchronizing);
+                labels.action = intl.formatMessage(generalMessages.pause);
         }
         return labels;
     }
     _handleDetails = () => {
-        // if (this.gethLogger) {
-        //     return removeGethLogListener(this.gethLogger, () => {
-        //         this.setState({
-        //             showGethLogs: false,
-        //             gethLogs: null
-        //         });
-        //     });
-        // }
-        // startLogger('gethInfo', { continuous: true });
-        // this.gethLogger = getGethLogs((err, data) => {
-        //     if (err) return console.log(err);
-        //     const logData = this.state.gethLogs.slice();
-        //     logData.push(data);
-        //     this.setState({
-        //         showGethLogs: true,
-        //         gethLogs: logData
-        //     });
-        // });
-        // console.log();
-        // return this.gethLogger();
+        const { loggerActions } = this.props;
+        if (!this.state.showGethLogs) {
+            loggerActions.startGethLogger({ continuous: true }, (err, data) => {
+                const logData = this.state.gethLogs.slice();
+                logData.push(data.status['log-geth']);
+                this.setState({
+                    showGethLogs: true,
+                    gethLogs: logData
+                });
+            });
+        } else {
+            loggerActions.stopGethLogger(() => {
+                this.setState({
+                    showGethLogs: false,
+                    gethLogs: []
+                });
+            });
+        }
     }
     render () {
         const { style, intl } = this.props;
@@ -197,16 +200,14 @@ class SyncStatus extends Component {
               </div>
             </div>
             <ul>
-            {this.state.showGethLogs &&
-              
+            {this.state.showGethLogs && this.state.gethLogs.size > 0 &&
                 this.state.gethLogs.map((log, key) => (
                   <li key={key} style={{ marginBottom: '8px' }}>
-                    <abbr title="Log Level">{log.level}</abbr>
-                    <span> {new Date(log.timestamp).toLocaleString()} =></span>
+                    {/** <abbr title="Log Level">{log.level}</abbr>
+                    <span> {new Date(log.timestamp).toLocaleString()} =></span>*/}
                     <p>{log.status}</p>
                   </li>
                 ))
-              
             }
             </ul>
           </div>
@@ -215,10 +216,12 @@ class SyncStatus extends Component {
 }
 
 SyncStatus.propTypes = {
-    actions: PropTypes.object.isRequired,
+    syncActions: PropTypes.object.isRequired,
+    loggerActions: PropTypes.object.isRequired,
     style: PropTypes.object,
     syncState: PropTypes.object.isRequired,
-    intl: PropTypes.object
+    intl: PropTypes.object,
+    setupConfig: PropTypes.object.isRequired
 };
 
 SyncStatus.contextTypes = {
