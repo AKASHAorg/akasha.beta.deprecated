@@ -10,15 +10,7 @@ class SyncActions {
      * Dispatcher for starting sync
      * @returns {function()}
      */
-    startSync = (options) => {
-        this.setupService.startGeth(options).then(data => {
-            if (!data.success) {
-                console.log(data);
-                return this.dispatch({ type: types.SYNC_ACTIVE_ERROR });
-            }
-            return this.dispatch({ type: types.SYNC_ACTIVE });
-        });
-    }
+    startSync = () => this.dispatch({ type: types.SYNC_ACTIVE })
     /**
      * Dispatcher for resuming sync
      * @returns {function()}

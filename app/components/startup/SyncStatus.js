@@ -14,7 +14,14 @@ class SyncStatus extends Component {
             syncError: null,
             gethLogs: []
         };
-        this.getSyncStatus();
+        // this.getSyncStatus();
+    }
+    componentDidMount () {
+        const { setupConfig, syncActions } = this.props;
+        if (setupConfig.getIn(['geth', 'started'])) {
+            syncActions.startSync();
+            this.getSyncStatus();
+        }
     }
     getSyncStatus = () => {
         const { syncActions } = this.props;
@@ -40,23 +47,20 @@ class SyncStatus extends Component {
         syncActions.stopUpdateSync(() => hashHistory.push('/authenticate'));
     }
     handleSync = () => {
-        const { syncState, syncActions, setupConfig } = this.props;
+        const { syncState, syncActions, setupActions, setupConfig } = this.props;
         if (syncState.get('actionId') === 1) {
             syncActions.stopSync();
-            return syncActions.stopUpdateSync(() => {
-                return;
-            });
+            return syncActions.stopUpdateSync();
         }
-        syncActions.startSync(setupConfig.get('geth').toJS());
+        setupActions.startGeth(setupConfig.get('geth').toJS());
+        syncActions.startSync();
         return this.getSyncStatus();
     }
     handleCancel = () => {
         const { syncActions } = this.props;
         syncActions.stopSync();
-        syncActions.stopUpdateSync(() => {
-            return hashHistory.goBack();
-        });
-        
+        syncActions.stopUpdateSync();
+        hashHistory.goBack();
     }
     _getActionLabels = () => {
         const { syncState, intl } = this.props;
@@ -217,6 +221,7 @@ class SyncStatus extends Component {
 
 SyncStatus.propTypes = {
     syncActions: PropTypes.object.isRequired,
+    setupActions: PropTypes.object.isRequired,
     loggerActions: PropTypes.object.isRequired,
     style: PropTypes.object,
     syncState: PropTypes.object.isRequired,

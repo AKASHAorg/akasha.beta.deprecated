@@ -5,7 +5,6 @@ import { Scrollbars } from 'react-custom-scrollbars';
 import { injectIntl } from 'react-intl';
 import { setupMessages, generalMessages } from '../../locale-data/messages';
 import { AdvancedSetupForm } from '../ui/forms/advanced-setup-form.js';
-
 class Setup extends Component {
     constructor (props) {
         super(props);
@@ -13,11 +12,14 @@ class Setup extends Component {
             gethLogs: []
         };
     }
-    // componentWillReceiveProps (nextProps) {
-    //     if (!nextProps.setupConfig.getIn(['geth', 'status'])) {
-    //         this._getLogs();
-    //     }
-    // }
+    componentWillReceiveProps (nextProps) {
+        if (nextProps.setupConfig.getIn(['geth', 'started'])) {
+            return this.context.router.replace('sync-status');
+        }
+        if (!nextProps.setupConfig.getIn(['geth', 'status'])) {
+            return this._getLogs();
+        }
+    }
     handleChange = (ev, value) => {
         const { setupActions, setupConfig } = this.props;
         const show = value === 'advanced';
@@ -237,7 +239,8 @@ Setup.propTypes = {
 };
 
 Setup.contextTypes = {
-    muiTheme: React.PropTypes.object
+    muiTheme: React.PropTypes.object,
+    router: React.PropTypes.object
 };
 
 Setup.defaultProps = {
