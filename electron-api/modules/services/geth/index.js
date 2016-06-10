@@ -35,6 +35,8 @@ class GethConnector {
         this.ipcStream = new Web3();
         this.executable = null;
 
+        this.ipcPipe = false;
+
         this.gethProcess = null;
         this.dataDir = null;
         this.ipcPath = null;
@@ -71,7 +73,9 @@ class GethConnector {
         return this._checkGeth().then((binary) => {
             this.executable = binary;
             return this._spawnGeth({ detached: true }).then((data) => {
-                setTimeout(() => this.ipcStream.setProvider(this.ipcPath, this.socket), 4000);
+                setTimeout(() => {
+                    this.ipcStream.setProvider(this.ipcPath, this.socket);
+                }, 4000);
                 return data;
             }).catch((err) => {
                 throw new Error(`Could not start geth ${err}`);
@@ -95,10 +99,6 @@ class GethConnector {
             this.gethProcess.kill();
             this.gethProcess = null;
         }
-
-        if (this.socket.writable) {
-            this.socket.destroy();
-        }
     }
 
     /**
@@ -119,7 +119,7 @@ class GethConnector {
      * @returns {Promise.<T>|*}
      */
     inSync () {
-        if (!this.socket.writable) {
+        if (!this.ipcPipe) {
             return Promise.reject(new Error('no ipc connection'));
         }
         const rules = [
@@ -224,9 +224,9 @@ class GethConnector {
         return new Promise((resolve, reject) => {
             geth.run(['version'], (err) => {
                 if (err) {
-                    reject(err);
+                    return reject(err);
                 }
-                resolve(geth.path());
+                return resolve(geth.path());
             });
         });
     }
@@ -245,6 +245,7 @@ class GethConnector {
      */
     _setSocketEvents () {
         this.socket.on('connect', () => {
+            this.ipcPipe = true;
             this.logger.info('connection to ipc Established!');
         });
 
@@ -258,6 +259,8 @@ class GethConnector {
         });
 
         this.socket.on('error', (error) => {
+            this.ipcPipe = false;
+            this.web3.reset();
             this.socket.end(error.message);
             this.logger.warn(error);
         });
