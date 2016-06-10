@@ -27,7 +27,9 @@ class GethConnector {
         if (enforcer !== symbolEnforcer) {
             throw new Error('Cannot construct singleton');
         }
-        this.logger = loggerRegistrar.getInstance().registerLogger('geth', { maxsize: 1024 * 10 * 3 });
+        this.logger = loggerRegistrar
+                        .getInstance()
+                        .registerLogger('geth', { maxsize: 1024 * 10 * 3 });
 
         this.socket = new net.Socket();
         this.ipcStream = new Web3();
@@ -63,7 +65,6 @@ class GethConnector {
                 return Promise.resolve('Already started');
             }
         }
-        this.logger.warn(JSON.stringify(options));
         if (!this.spawnOptions.length || !Object.keys(options).length) {
             this._setOptions(options);
         }
@@ -98,6 +99,19 @@ class GethConnector {
         if (this.socket.writable) {
             this.socket.destroy();
         }
+    }
+
+    /**
+    * Checks for running geth
+    */
+    isRunning () {
+        let run = false;
+        if (this.gethProcess && this.gethProcess.pid) {
+            if (this.web3.isConnected()) {
+                run = true;
+            }
+        }
+        return run;
     }
 
     /**
@@ -230,22 +244,21 @@ class GethConnector {
      * @private
      */
     _setSocketEvents () {
-
         this.socket.on('connect', () => {
             this.logger.info('connection to ipc Established!');
         });
 
-        this.socket.on('timeout', (e) => {
+        this.socket.on('timeout', () => {
             this.logger.warn('connection to ipc timed out');
             this.socket.end('no activity on socket... closing connection');
         });
 
-        this.socket.on('end', (e) => {
+        this.socket.on('end', () => {
             this.logger.info('i/o to ipc ended');
         });
 
         this.socket.on('error', (error) => {
-            this.socket.end(error);
+            this.socket.end(error.message);
             this.logger.warn(error);
         });
     }
