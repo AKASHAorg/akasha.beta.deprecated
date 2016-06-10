@@ -100,6 +100,9 @@ class GethService {
         }
     }
     _stopGethService (event) {
+        if (this.updatesFlag) {
+            this._stopGethUpdates();
+        }
         this.getGethService().stop();
         this._sendEvent(event)(this.clientEvent.stopService,
                                 !this.getGethService().gethProcess,
@@ -111,6 +114,7 @@ class GethService {
     }
     _stopGethUpdates () {
         clearInterval(this.updatesFlag);
+        this.updatesFlag = false;
     }
     getGethService () {
         return GethConnector.getInstance();
