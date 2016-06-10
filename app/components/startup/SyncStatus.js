@@ -12,15 +12,20 @@ class SyncStatus extends Component {
         this.state = {
             syncData: null,
             syncError: null,
-            gethLogs: []
+            gethLogs: [],
+            showGethLogs: false
         };
-        // this.getSyncStatus();
     }
-    componentDidMount () {
+    componentWillMount () {
         const { setupConfig, syncActions } = this.props;
         if (setupConfig.getIn(['geth', 'started'])) {
             syncActions.startSync();
             this.getSyncStatus();
+        }
+    }
+    componentWillReceiveProps (nextProps) {
+        if (!nextProps.setupConfig.getIn(['geth', 'started'])) {
+            this.context.router.replace('setup-options');
         }
     }
     getSyncStatus = () => {
@@ -57,10 +62,9 @@ class SyncStatus extends Component {
         return this.getSyncStatus();
     }
     handleCancel = () => {
-        const { syncActions } = this.props;
+        const { syncActions, setupActions } = this.props;
         syncActions.stopSync();
-        syncActions.stopUpdateSync();
-        hashHistory.goBack();
+        setupActions.stopGeth();
     }
     _getActionLabels = () => {
         const { syncState, intl } = this.props;
@@ -90,6 +94,7 @@ class SyncStatus extends Component {
     }
     _handleDetails = () => {
         const { loggerActions } = this.props;
+        console.log(this.state.showGethLogs);
         if (!this.state.showGethLogs) {
             loggerActions.startGethLogger({ continuous: true }, (err, data) => {
                 const logData = this.state.gethLogs.slice();

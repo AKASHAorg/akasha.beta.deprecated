@@ -1,6 +1,3 @@
-[submodule "contracts"]
-	path = contracts
-	url = git@github.com:AkashaProject/contracts.git
 [submodule "contracts.sol"]
 	path = contracts.sol
 	url = git@github.com:AkashaProject/contracts.sol.git

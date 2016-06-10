@@ -16,7 +16,7 @@ class Setup extends Component {
         if (nextProps.setupConfig.getIn(['geth', 'started'])) {
             return this.context.router.replace('sync-status');
         }
-        if (!nextProps.setupConfig.getIn(['geth', 'status'])) {
+        if (nextProps.setupConfig.getIn(['geth', 'status']) === false) {
             return this._getLogs();
         }
     }
@@ -107,7 +107,7 @@ class Setup extends Component {
             backgroundColor: 'rgba(0,0,0,0.02)'
         };
         if (!setupConfig.getIn(['geth', 'started'])
-                && setupConfig.getIn(['geth', 'status']) !== '') {
+                && setupConfig.getIn(['geth', 'status']) === false) {
             return (
               <div style={style}>
                 <div className="start-xs" >
