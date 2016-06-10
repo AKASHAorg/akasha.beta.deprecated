@@ -179,7 +179,7 @@ class GethConnector {
             }
             ipcPath = path.join(ipcPath, 'geth.ipc');
         }
-        
+
         this.ipcPath = ipcPath;
 
         ipcPath = null;
