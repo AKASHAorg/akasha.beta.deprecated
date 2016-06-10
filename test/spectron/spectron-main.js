@@ -42,7 +42,7 @@ describe('application launch', function () {
                 ipcRenderer.on('client:geth:startService', (err, status) => {
                     done(status);
                 });
-                ipcRenderer.send('server:geth:startService', {dataDir: "/tmp/gabig7", cache: 722});
+                ipcRenderer.send('server:geth:startService');
             })
             .then((ret) => {
                 expect(ret.value.success).to.be.true;
@@ -105,5 +105,21 @@ describe('application launch', function () {
                 expect(ret.value.success).to.be.true;
             });
     });
+
+    it('start geth service with options', () => {
+        return client
+            .waitUntilWindowLoaded(7000)
+            .executeAsync((done) => {
+                ipcRenderer.on('client:geth:startService', (err, status) => {
+                    done(status);
+                });
+                ipcRenderer.send('server:geth:startService', {dataDir: "/tmp/spectron-tests", cache: 722});
+            })
+            .then((ret) => {
+                expect(ret.value.success).to.be.true;
+            })
+            .pause(7000); // wait for ipc connector to get set
+    });
+
 });
 
