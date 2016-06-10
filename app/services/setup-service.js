@@ -1,13 +1,13 @@
-const { ipcRenderer } = require('electron');
+import { ipcRenderer } from 'electron';
 import { EVENTS } from '../../electron-api/modules/settings';
 import _ from 'lodash';
 
 class SetupService {
     constructor () {
-        this.listeners = [];
+        this.listeners = {};
     }
-    removeListeners (channel, listener) {
-        ipcRenderer.removeListeners(channel, listener);
+    removeListener (channel) {
+        ipcRenderer.removeListener(channel, this.listeners[channel]);
     }
     /**
      * sends start Geth command to main process w/o options
@@ -17,7 +17,7 @@ class SetupService {
     startGeth = (options) =>
         new Promise((resolve, reject) => {
             ipcRenderer.send(EVENTS.server.geth.startService, options);
-            ipcRenderer.on(EVENTS.client.geth.startService,
+            ipcRenderer.once(EVENTS.client.geth.startService,
                 (event, data) => {
                 // no data means that something very bad happened
                 // like losing the main process
@@ -32,7 +32,7 @@ class SetupService {
     stopGeth = () =>
         new Promise((resolve, reject) => {
             ipcRenderer.send(EVENTS.server.geth.stopService);
-            ipcRenderer.on(EVENTS.client.geth.stopService, (event, data) => {
+            ipcRenderer.once(EVENTS.client.geth.stopService, (event, data) => {
                 // no data means that something very bad happened
                 // like losing the main process
                 if (!data) {
@@ -49,7 +49,7 @@ class SetupService {
     startIPFS = (options) =>
         new Promise((resolve, reject) => {
             ipcRenderer.send(EVENTS.server.ipfs.startService, options);
-            ipcRenderer.on(EVENTS.client.ipfs.startService, (event, data) => {
+            ipcRenderer.once(EVENTS.client.ipfs.startService, (event, data) => {
                 // no data means that something very bad happened
                 // like losing the main process
                 if (!data) {
@@ -62,7 +62,7 @@ class SetupService {
     stopIPFS = () =>
         new Promise((resolve, reject) => {
             ipcRenderer.send(EVENTS.server.ipfs.stopService);
-            ipcRenderer.on(EVENTS.client.ipfs.stopService, (event, data) => {
+            ipcRenderer.once(EVENTS.client.ipfs.stopService, (event, data) => {
                 // no data means that something very bad happened
                 // like losing the main process
                 if (!data) {
@@ -76,15 +76,21 @@ class SetupService {
      * @param {function} cb callback
      */
     startUpdateSync = (cb) => {
-        ipcRenderer.on(EVENTS.client.geth.syncUpdate, (event, data) => {
+        const channel = EVENTS.client.geth.syncUpdate;
+        if (this.listeners[channel]) {
+            this.removeListener(channel);
+        }
+        this.listeners[channel] = (ev, data) => {
             if (!data) {
                 return cb('Main process does not respond!');
             }
             return cb(null, data);
-        });
+        };
+        return ipcRenderer.on(EVENTS.client.geth.syncUpdate, this.listeners[channel]);
     }
-    stopUpdateSync = (listener, cb) => {
-        ipcRenderer.removeListener(EVENTS.client.geth.syncUpdate, listener);
+    stopUpdateSync = (cb) => {
+        const channel = EVENTS.client.geth.syncUpdate;
+        this.removeListener(channel);
         return cb();
     }
 }

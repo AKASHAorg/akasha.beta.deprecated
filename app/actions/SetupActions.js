@@ -73,7 +73,7 @@ class SetupActions {
     }
 
     _startGethSuccess = (data) => {
-        this.settingsService.saveSettings('geth', data);
+        // this.settingsService.saveSettings('geth', data);
         this._nextStep('sync-status');
         return { type: types.START_GETH_SUCCESS, data };
     }

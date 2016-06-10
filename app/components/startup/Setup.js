@@ -5,7 +5,6 @@ import { Scrollbars } from 'react-custom-scrollbars';
 import { injectIntl } from 'react-intl';
 import { setupMessages, generalMessages } from '../../locale-data/messages';
 import { AdvancedSetupForm } from '../ui/forms/advanced-setup-form.js';
-import { getGethLogs, startLogger, removeGethLogListener } from '../../services/logging-service';
 
 class Setup extends Component {
     constructor (props) {
@@ -14,11 +13,11 @@ class Setup extends Component {
             gethLogs: []
         };
     }
-    componentWillReceiveProps (nextProps) {
-        if (!nextProps.setupConfig.getIn(['geth', 'status'])) {
-            this._getLogs();
-        }
-    }
+    // componentWillReceiveProps (nextProps) {
+    //     if (!nextProps.setupConfig.getIn(['geth', 'status'])) {
+    //         this._getLogs();
+    //     }
+    // }
     handleChange = (ev, value) => {
         const { setupActions, setupConfig } = this.props;
         const show = value === 'advanced';
@@ -86,32 +85,12 @@ class Setup extends Component {
             setupActions.startGeth(setupConfig.get('geth').toJS());
         }
     }
-    _getLogs = () => {
-        if (!this.gethLogger) {
-            startLogger('gethInfo');
-        }
-        this.gethLogger = getGethLogs((err, data) => {
-            if (err) {
-                console.log(err);
-            }
-            let logData = this.state.gethLogs.slice();
-            if (data.status['log-geth']) {
-                logData = data.status['log-geth'];
-            } else {
-                logData.push({ message: data.status['log-get'].status });
-            }
-            return this.setState({
-                gethLogs: logData
-            });
-        });
-    }
+    _getLogs = () => {}
     _retrySetup = () => {
         const { setupActions, setupConfig } = this.props;
         setupActions.retrySetup(setupConfig.get('isAdvanced'));
     }
-    _sendReport = () => {
-
-    }
+    _sendReport = () => {}
     render () {
         const { style, setupConfig, intl } = this.props;
         const radioStyle = { marginTop: '10px', marginBottom: '10px' };
