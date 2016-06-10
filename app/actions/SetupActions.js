@@ -18,6 +18,7 @@ class SetupActions {
             };
         }
         this.setupService.startGeth(startupOptions).then((data) => {
+            console.log(data);
             if (!data.success) {
                 return this.dispatch(this._startGethError({ data }));
             }
@@ -74,7 +75,6 @@ class SetupActions {
 
     _startGethSuccess = (data) => {
         // this.settingsService.saveSettings('geth', data);
-        this._nextStep('sync-status');
         return { type: types.START_GETH_SUCCESS, data };
     }
     _startGethError (data) {
@@ -98,9 +98,6 @@ class SetupActions {
     }
     _stopIPFSError (data) {
         return { type: types.STOP_IPFS_ERROR, data };
-    }
-    _nextStep (pathName) {
-        return hashHistory.push(pathName);
     }
 }
 

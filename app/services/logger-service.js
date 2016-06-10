@@ -15,22 +15,23 @@ class LoggerService {
 
     stopGethInfo = (cb) => {
         const stopChannel = EVENTS.client.logger.stopGethInfo;
+        const gethInfoChannel = EVENTS.client.logger.gethInfo;
         ipcRenderer.send(stopChannel);
         ipcRenderer.once(stopChannel, (ev, data) => {
             if (!data) {
                 const error = new Error('Sorry but the main process refuses to communicate');
-                cb(error);
+                return cb(error);
             }
-            this.removeListener(EVENTS.client.logger.gethInfo);
+            if (typeof this.listeners[gethInfoChannel] === 'fuction') {
+                this.removeListener(EVENTS.client.logger.gethInfo);
+                this.listeners[EVENTS.client.logger.gethInfo] = null;
+            }
             return cb(data);
         });
     }
 
     startGethInfo = (cb) => {
         const channel = EVENTS.client.logger.gethInfo;
-        if (this.listeners[channel]) {
-            this.removeListener(channel);
-        }
         this.listeners[channel] = (ev, data) => {
             if (!data) {
                 return cb('Main process does not respond!');
