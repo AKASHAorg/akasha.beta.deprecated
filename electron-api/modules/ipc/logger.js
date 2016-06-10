@@ -117,7 +117,11 @@ class LoggerService {
     * @returns undefined
     */
     _stopGethInfo (event, arg) {
-        this._getLog('geth').removeListener('logging', this.__gethUpdatesHandler);
+        // We have to check for the existing of this function handler as someone might send
+        //the stopGethInfo message before the startGethInfo
+        if(this.__gethUpdatesHandler && typeof this.__gethUpdatesHandler == 'function') {
+            this._getLog('geth').removeListener('logging', this.__gethUpdatesHandler);
+        }
     }
 
 }

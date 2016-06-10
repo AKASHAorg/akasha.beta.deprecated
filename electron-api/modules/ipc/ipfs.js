@@ -44,10 +44,10 @@ class IpfsService {
      * Events used are:
      * server:ipfs:startService used by the View layer to start the ipfs executable
      *
-     * @param {BrowserWindow} mainWindow
+     * @param {BrowserWindow} mainWindow -- ignored for now
      * @returns undefined
      */
-    setupListeners (mainWindow) {
+    setupListeners () {
         ipcMain.on(this.serverEvent.startService, (event, arg) => {
             this._startIpfsService(event, arg);
         });
@@ -63,8 +63,11 @@ class IpfsService {
             });
         };
     }
-    _startIpfsService (event, arg) {
-        this.getIpfsService().setLogger(loggerRegistrar.getInstance().registerLogger('ipfs', { maxsize: 1024 * 10 * 3 }));
+    _startIpfsService (event) {
+        this
+            .getIpfsService()
+            .setLogger(loggerRegistrar.getInstance()
+            .registerLogger('ipfs', { maxsize: 1024 * 10 * 3 }));
         this
             .getIpfsService()
             .start()
@@ -75,11 +78,10 @@ class IpfsService {
                 this._sendEvent(event)(this.clientEvent.startService, false, data);
             });
     }
-    _stopIpfsService (event, arg) {
+    _stopIpfsService (event) {
         this
             .getIpfsService()
             .stop();
-        console.log(this.clientEvent.stopService);
         this._sendEvent(event)(this.clientEvent.stopService, true, null);
     }
     getIpfsService () {
