@@ -28,6 +28,11 @@ class SyncStatus extends Component {
             this.context.router.replace('setup-options');
         }
     }
+    componentWillUnmount () {
+        const { syncActions, loggerActions } = this.props;
+        syncActions.stopSync();
+        loggerActions.stopGethLogger();
+    }
     getSyncStatus = () => {
         const { syncActions } = this.props;
         syncActions.startUpdateSync((err, updateData) => {
@@ -94,24 +99,27 @@ class SyncStatus extends Component {
     }
     _handleDetails = () => {
         const { loggerActions } = this.props;
-        console.log(this.state.showGethLogs);
         if (!this.state.showGethLogs) {
-            loggerActions.startGethLogger({ continuous: true }, (err, data) => {
+            return loggerActions.startGethLogger({ continuous: true }, (err, data) => {
+                if (err) return console.log(err);
                 const logData = this.state.gethLogs.slice();
-                logData.push(data.status['log-geth']);
+                if (data.length > 1) {
+                    logData.concat(data);
+                } else {
+                    logData.unshift(data.status['log-geth'][0]);
+                }
                 this.setState({
                     showGethLogs: true,
                     gethLogs: logData
                 });
             });
-        } else {
-            loggerActions.stopGethLogger(() => {
-                this.setState({
-                    showGethLogs: false,
-                    gethLogs: []
-                });
-            });
         }
+        loggerActions.stopGethLogger(() => {
+            this.setState({
+                showGethLogs: false,
+                gethLogs: []
+            });
+        });
     }
     render () {
         const { style, intl } = this.props;
@@ -188,7 +196,8 @@ class SyncStatus extends Component {
             >
               <div className="col-xs-4 start-xs">
                 <RaisedButton
-                  label="View details"
+                  label={this.state.showGethLogs ? 'Hide details' : 'View details'}
+                  primary={this.state.showGethLogs}
                   onClick={this._handleDetails}
                 />
               </div>
@@ -208,13 +217,12 @@ class SyncStatus extends Component {
                 />
               </div>
             </div>
-            <ul>
-            {this.state.showGethLogs && this.state.gethLogs.size > 0 &&
+            <ul style = {this.props.logListStyle}>
+            {this.state.showGethLogs &&
                 this.state.gethLogs.map((log, key) => (
                   <li key={key} style={{ marginBottom: '8px' }}>
-                    {/** <abbr title="Log Level">{log.level}</abbr>
-                    <span> {new Date(log.timestamp).toLocaleString()} =></span>*/}
-                    <p>{log.status}</p>
+                    <abbr title="Log Level">{log.level}</abbr>
+                    <p>{log.message}</p>
                   </li>
                 ))
             }
@@ -229,6 +237,7 @@ SyncStatus.propTypes = {
     setupActions: PropTypes.object.isRequired,
     loggerActions: PropTypes.object.isRequired,
     style: PropTypes.object,
+    logListStyle: PropTypes.object,
     syncState: PropTypes.object.isRequired,
     intl: PropTypes.object,
     setupConfig: PropTypes.object.isRequired
@@ -245,6 +254,14 @@ SyncStatus.defaultProps = {
         height: '100%',
         display: 'flex',
         flexDirection: 'column'
+    },
+    logListStyle: {
+        maxHeight: 330,
+        overflowY: 'scroll',
+        paddingLeft: 4,
+        overflowX: 'hidden',
+        fontFamily: 'Consolas',
+        backgroundColor: 'rgba(0,0,0,0.02)'
     }
 };
 export default injectIntl(SyncStatus);
