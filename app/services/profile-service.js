@@ -4,15 +4,15 @@ import profileDB from './db/profile';
 
 class ProfileService {
     constructor () {
-        this.listeners = [];
+        this.listeners = {};
     }
-    removeListener (channel, listener) {
-        ipcRenderer.removeListener(channel, listener);
+    removeListener (channel) {
+        ipcRenderer.removeListener(channel, this.listeners[channel]);
     }
     validateUsername = (username) =>
         new Promise((resolve, reject) => {
             ipcRenderer.send(EVENTS.server.profile.verifyUsername, username);
-            ipcRenderer.on(EVENTS.client.profile.verifyUsername, (ev, data) => {
+            ipcRenderer.once(EVENTS.client.profile.verifyUsername, (ev, data) => {
                 if (!data) {
                     return reject('OMG!! Main process doesn`t want to communicate with us!');
                 }
@@ -22,7 +22,7 @@ class ProfileService {
     createProfile = (profileData) =>
         new Promise((resolve, reject) => {
             ipcRenderer.send(EVENTS.server.profile.create, profileData);
-            ipcRenderer.on(EVENTS.client.profile.create, (ev, data) => {
+            ipcRenderer.once(EVENTS.client.profile.create, (ev, data) => {
                 if (!data) {
                     return reject('Ouch! Main process cannot communicate with us!');
                 }

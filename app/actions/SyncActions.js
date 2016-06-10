@@ -23,12 +23,8 @@ class SyncActions {
      * Dispatcher for resuming sync
      * @returns {function()}
      */
-    resumeSync = () => {
-        return this.dispatch({ type: types.SYNC_RESUME });
-    }
-    pauseSync = () => {
-        return this.dispatch({ type: types.SYNC_PAUSE });
-    }
+    resumeSync = () => this.dispatch({ type: types.SYNC_RESUME });
+    pauseSync = () => this.dispatch({ type: types.SYNC_PAUSE });
     /**
      * Action for stopping sync
      * @returns {{type}}
@@ -36,10 +32,16 @@ class SyncActions {
     stopSync = () => {
         this.setupService.stopGeth().then(data => {
             if (!data.success) {
-                return dispatch({ type: types.SYNC_STOP_ERROR });
+                return this.dispatch({ type: types.SYNC_STOP_ERROR });
             }
             return this.dispatch({ type: types.SYNC_STOPPED, data });
         });
+    }
+    startUpdateSync = (cb) => {
+        this.setupService.startUpdateSync(cb);
+    }
+    stopUpdateSync = (cb) => {
+        this.setupService.stopUpdateSync(cb);
     }
 }
 

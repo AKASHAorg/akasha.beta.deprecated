@@ -5,7 +5,6 @@ import SyncProgress from '../ui/loaders/SyncProgress';
 import { hashHistory } from 'react-router';
 import { FormattedMessage, FormattedPlural, injectIntl } from 'react-intl';
 import { setupMessages, generalMessages } from '../../locale-data/messages';
-import { getGethLogs, startLogger, removeGethLogListener } from '../../services/logging-service';
 
 class SyncStatus extends Component {
     constructor (props) {
@@ -13,44 +12,51 @@ class SyncStatus extends Component {
         this.state = {
             syncData: null,
             syncError: null,
-            gethInstance: window.gethInstance,
-            intervals: [],
-            timeouts: []
+            gethLogs: []
         };
-        // this.syncStatusListener = this.getSyncStatus;
-        this.gethLogger = null;
-        // this.syncStatusListener();
+        this.getSyncStatus();
     }
-    // getSyncStatus = () =>
-        // updateSync((err, updateData) => {
-        //     const { success, status } = updateData;
-        //     if (err) {
-        //         return this.setState({
-        //             syncError: status
-        //         });
-        //     }
-        //     if (success && status === 'empty') {
-        //         this.finishSync();
-        //     } else {
-        //         this.setState({
-        //             syncData: status
-        //         });
-        //     }
-        // });
-
-    finishSync = () =>
-        removeUpdateSync(this.syncStatusListener, () => hashHistory.push('/authenticate'));
+    getSyncStatus = () => {
+        const { syncActions } = this.props;
+        syncActions.startUpdateSync((err, updateData) => {
+            const { success, status } = updateData;
+            if (err) {
+                return this.setState({
+                    syncError: status
+                });
+            }
+            if (success && status === 'empty') {
+                // @TODO start ipfs first!
+                this.finishSync();
+            } else {
+                this.setState({
+                    syncData: status
+                });
+            }
+        });
+    }
+    finishSync = () => {
+        const { syncActions } = this.props;
+        syncActions.stopUpdateSync(() => hashHistory.push('/authenticate'));
+    }
     handleSync = () => {
         const { syncState, syncActions, setupConfig } = this.props;
         if (syncState.get('actionId') === 1) {
-            return syncActions.stopSync();
+            syncActions.stopSync();
+            return syncActions.stopUpdateSync(() => {
+                return;
+            });
         }
-        return syncActions.startSync(setupConfig.get('geth').toJS());
+        syncActions.startSync(setupConfig.get('geth').toJS());
+        return this.getSyncStatus();
     }
     handleCancel = () => {
         const { syncActions } = this.props;
         syncActions.stopSync();
-        return hashHistory.goBack();
+        syncActions.stopUpdateSync(() => {
+            return hashHistory.goBack();
+        });
+        
     }
     _getActionLabels = () => {
         const { syncState, intl } = this.props;
@@ -79,26 +85,24 @@ class SyncStatus extends Component {
         return labels;
     }
     _handleDetails = () => {
-        if (this.gethLogger) {
-            return removeGethLogListener(this.gethLogger, () => {
+        const { loggerActions } = this.props;
+        if (!this.state.showGethLogs) {
+            loggerActions.startGethLogger({ continuous: true }, (err, data) => {
+                const logData = this.state.gethLogs.slice();
+                logData.push(data.status['log-geth']);
+                this.setState({
+                    showGethLogs: true,
+                    gethLogs: logData
+                });
+            });
+        } else {
+            loggerActions.stopGethLogger(() => {
                 this.setState({
                     showGethLogs: false,
-                    gethLogs: null
+                    gethLogs: []
                 });
             });
         }
-        startLogger('gethInfo', { continuous: true });
-        this.gethLogger = getGethLogs((err, data) => {
-            if (err) return console.log(err);
-            const logData = this.state.gethLogs.slice();
-            logData.push(data);
-            this.setState({
-                showGethLogs: true,
-                gethLogs: logData
-            });
-        });
-        console.log(this.gethLogger);
-        return this.gethLogger();
     }
     render () {
         const { style, intl } = this.props;
@@ -196,12 +200,11 @@ class SyncStatus extends Component {
               </div>
             </div>
             <ul>
-            {this.state.showGethLogs &&
-              
+            {this.state.showGethLogs && this.state.gethLogs.size > 0 &&
                 this.state.gethLogs.map((log, key) => (
                   <li key={key} style={{ marginBottom: '8px' }}>
-                    <abbr title="Log Level">{log.level}</abbr>
-                    <span> {new Date(log.timestamp).toLocaleString()} =></span>
+                    {/** <abbr title="Log Level">{log.level}</abbr>
+                    <span> {new Date(log.timestamp).toLocaleString()} =></span>*/}
                     <p>{log.status}</p>
                   </li>
                 ))
@@ -214,6 +217,7 @@ class SyncStatus extends Component {
 
 SyncStatus.propTypes = {
     syncActions: PropTypes.object.isRequired,
+    loggerActions: PropTypes.object.isRequired,
     style: PropTypes.object,
     syncState: PropTypes.object.isRequired,
     intl: PropTypes.object,
