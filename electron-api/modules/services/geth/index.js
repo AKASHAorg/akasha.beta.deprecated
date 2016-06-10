@@ -159,12 +159,18 @@ class GethConnector {
             } else {
                 ipcPath = '\\\\.\\pipe\\geth.ipc';
             }
+        } else {
+            if (platform === 'Windows_NT') {
+                ipcPath = path.join('\\\\.\\pipe\\', ipcPath);
+            }
+            ipcPath = path.join(ipcPath, 'geth.ipc');
         }
+        
         this.ipcPath = ipcPath;
 
         ipcPath = null;
         dataDir = null;
-        
+
         this.spawnOptions.push('--datadir', `${this.dataDir}`);
         this.spawnOptions.push('--ipcpath', `${this.ipcPath}`);
 
