@@ -1,7 +1,12 @@
-const { ipcRenderer } = require('electron');
+import { ipcRenderer } from 'electron';
 import { EVENTS } from '../../electron-api/modules/settings';
 
-export function getHearthBeat () {
-
+class HearthbeatService {
+    constructor () {
+        this.listeners = [];
+    }
+    startHearthBeat = () => {}
+    getHearthBeat = () => {}
+    removeHearthBeat = () => {}
 }
-export function removeHearthBeat () {}
+export { HearthbeatService };

@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import CreateProfile from '../components/startup/CreateProfile';
 import CreateProfileStatus from '../components/startup/CreateProfileStatus';
 import CreateProfileComplete from '../components/startup/CreateProfileComplete';
-import * as ProfileActions from '../actions/ProfileActions';
+import { ProfileActions } from '../actions/ProfileActions';
 
 function mapStateToProps (state) {
     return {
@@ -13,7 +13,7 @@ function mapStateToProps (state) {
 
 function mapDispatchToProps (dispatch) {
     return {
-        actions: bindActionCreators(ProfileActions, dispatch)
+        profileActions: new ProfileActions(dispatch)
     };
 }
 
