@@ -93,6 +93,7 @@ class LoggerService {
                 }
             });
             if (arg === true) {
+                this._stopGethInfo(event);
                 this._getLog('geth').on('logging', this._sendGethUpdates(event));
             }
         }
@@ -106,7 +107,13 @@ class LoggerService {
     _sendGethUpdates (event) {
         this.__gethUpdatesHandler = (transport, level, msg, meta) => {
             this._sendEvent(event)(this.clientEvent.gethInfo, true, {
-                'log-get': { status: msg }
+                'log-geth': [
+                    {
+                        level: level,
+                        message: msg,
+                        timestamp: (new Date()).toString()
+                    }
+                ]
             });
         };
         return this.__gethUpdatesHandler;
@@ -116,11 +123,12 @@ class LoggerService {
     * @param event, arg
     * @returns undefined
     */
-    _stopGethInfo (event, arg) {
+    _stopGethInfo () {
         // We have to check for the existing of this function handler as someone might send
         //the stopGethInfo message before the startGethInfo
         if(this.__gethUpdatesHandler && typeof this.__gethUpdatesHandler == 'function') {
             this._getLog('geth').removeListener('logging', this.__gethUpdatesHandler);
+            this.__gethUpdatesHandler = null;
         }
     }
 
