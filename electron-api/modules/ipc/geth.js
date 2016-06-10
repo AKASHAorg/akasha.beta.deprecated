@@ -136,7 +136,7 @@ class GethService {
     }
 
     _formatOptions (options) {
-        let opts = JSON.parse(JSON.stringify(options));
+        let opts = Object.assign({}, options);
         if(opts.cache) {
             const cacheValue = parseInt(opts.cache);
             if(!isNaN(cacheValue)) {
