@@ -105,7 +105,7 @@ class GethService {
         }
         this.getGethService().stop();
         this._sendEvent(event)(this.clientEvent.stopService,
-                                !this.getGethService().gethProcess,
+                                !!!this.getGethService().gethProcess,
                                 null);
     }
     _getGethUpdates (event) {
@@ -122,6 +122,7 @@ class GethService {
     _getBlockUpdates (event) {
         if(!this.getGethService().isRunning()) {
             this._stopGethUpdates();
+            this._sendEvent(event)(this.clientEvent.stopService, false, 'Geth has died.');
             return false;
         }
         this
