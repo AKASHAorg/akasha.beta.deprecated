@@ -5,7 +5,6 @@ import SyncProgress from '../ui/loaders/SyncProgress';
 import { hashHistory } from 'react-router';
 import { FormattedMessage, FormattedPlural, injectIntl } from 'react-intl';
 import { setupMessages, generalMessages } from '../../locale-data/messages';
-import { updateSync, removeUpdateSync } from '../../services/setup-service';
 
 class SyncStatus extends Component {
     constructor (props) {
@@ -13,70 +12,97 @@ class SyncStatus extends Component {
         this.state = {
             syncData: null,
             syncError: null,
-            gethInstance: window.gethInstance,
-            intervals: [],
-            timeouts: []
+            gethLogs: []
         };
-        this.syncStatusListener = this.getSyncStatus;
-        this.syncStatusListener();
+        this.getSyncStatus();
     }
     getSyncStatus = () => {
-        updateSync((err, updateData) => {
+        const { syncActions } = this.props;
+        syncActions.startUpdateSync((err, updateData) => {
             const { success, status } = updateData;
-            // console.log('current status: ', status);
             if (err) {
                 return this.setState({
                     syncError: status
                 });
             }
             if (success && status === 'empty') {
-                return this.finishSync();
+                // @TODO start ipfs first!
+                this.finishSync();
+            } else {
+                this.setState({
+                    syncData: status
+                });
             }
-            return this.setState({
-                syncData: status
-            });
         });
     }
     finishSync = () => {
-        removeUpdateSync(this.syncStatusListener, () => hashHistory.push('/authenticate'));
+        const { syncActions } = this.props;
+        syncActions.stopUpdateSync(() => hashHistory.push('/authenticate'));
     }
     handleSync = () => {
-        const { syncState, actions } = this.props;
+        const { syncState, syncActions, setupConfig } = this.props;
         if (syncState.get('actionId') === 1) {
-            return actions.stopSync();
+            syncActions.stopSync();
+            return syncActions.stopUpdateSync(() => {
+                return;
+            });
         }
-        return actions.startSync();
+        syncActions.startSync(setupConfig.get('geth').toJS());
+        return this.getSyncStatus();
     }
     handleCancel = () => {
-        const { actions } = this.props;
-        actions.stopSync();
-        return hashHistory.goBack();
+        const { syncActions } = this.props;
+        syncActions.stopSync();
+        syncActions.stopUpdateSync(() => {
+            return hashHistory.goBack();
+        });
+        
     }
     _getActionLabels = () => {
         const { syncState, intl } = this.props;
         const labels = {};
         switch (syncState.get('actionId')) {
-        case 1:
-            labels.title = intl.formatMessage(setupMessages.synchronizing);
-            labels.action = intl.formatMessage(generalMessages.pause);
-            break;
-        case 2:
-            labels.title = intl.formatMessage(setupMessages.syncStopped);
-            labels.action = intl.formatMessage(generalMessages.start);
-            break;
-        case 3:
-            labels.title = intl.formatMessage(setupMessages.syncCompleted);
-            labels.action = intl.formatMessage(generalMessages.completed);
-            break;
-        case 4:
-            labels.title = intl.formatMessage(setupMessages.syncResuming);
-            labels.action = intl.formatMessage(generalMessages.starting);
-            break;
-        default:
-            labels.title = intl.formatMessage(setupMessages.synchronizing);
-            labels.action = intl.formatMessage(generalMessages.pause);
+            case 1:
+                labels.title = intl.formatMessage(setupMessages.synchronizing);
+                labels.action = intl.formatMessage(generalMessages.pause);
+                break;
+            case 2:
+                labels.title = intl.formatMessage(setupMessages.syncStopped);
+                labels.action = intl.formatMessage(generalMessages.start);
+                break;
+            case 3:
+                labels.title = intl.formatMessage(setupMessages.syncCompleted);
+                labels.action = intl.formatMessage(generalMessages.completed);
+                break;
+            case 4:
+                labels.title = intl.formatMessage(setupMessages.syncResuming);
+                labels.action = intl.formatMessage(generalMessages.starting);
+                break;
+            default:
+                labels.title = intl.formatMessage(setupMessages.synchronizing);
+                labels.action = intl.formatMessage(generalMessages.pause);
         }
         return labels;
+    }
+    _handleDetails = () => {
+        const { loggerActions } = this.props;
+        if (!this.state.showGethLogs) {
+            loggerActions.startGethLogger({ continuous: true }, (err, data) => {
+                const logData = this.state.gethLogs.slice();
+                logData.push(data.status['log-geth']);
+                this.setState({
+                    showGethLogs: true,
+                    gethLogs: logData
+                });
+            });
+        } else {
+            loggerActions.stopGethLogger(() => {
+                this.setState({
+                    showGethLogs: false,
+                    gethLogs: []
+                });
+            });
+        }
     }
     render () {
         const { style, intl } = this.props;
@@ -93,41 +119,42 @@ class SyncStatus extends Component {
             blockProgress = message;
             currentProgress = (blockProgress.currentBlock / blockProgress.highestBlock) * 100;
             peerInfo = (
-                <FormattedPlural value={message.peerCount}
-                  one = {intl.formatMessage(setupMessages.onePeer)}
-                  few = {intl.formatMessage(setupMessages.fewPeers)}
-                  many = {intl.formatMessage(setupMessages.manyPeers)}
-                  other = {intl.formatMessage(setupMessages.peers)}
-                />
+              <FormattedPlural
+                value={message.peerCount}
+                one={intl.formatMessage(setupMessages.onePeer)}
+                few={intl.formatMessage(setupMessages.fewPeers)}
+                many={intl.formatMessage(setupMessages.manyPeers)}
+                other={intl.formatMessage(setupMessages.peers)}
+              />
             );
             progressBody = (
-                <div>
-                    <div style={{ fontWeight: 'bold', padding: '5px', fontSize: '16px' }} >
-                       {message.peerCount} {peerInfo} {`${intl.formatMessage(generalMessages.connected)}`}
-                    </div>
-                    <div style={{ fontSize: '20px' }} >
-                        <strong style={{ fontWeight: 'bold' }} >
-                            {blockProgress.currentBlock}
-                        </strong>/
-                        {blockProgress.highestBlock}
-                  </div>
+              <div>
+                <div style={{ fontWeight: 'bold', padding: '5px', fontSize: '16px' }} >
+                {message.peerCount} {peerInfo} {`${intl.formatMessage(generalMessages.connected)}`}
                 </div>
+                <div style={{ fontSize: '20px' }} >
+                  <strong style={{ fontWeight: 'bold' }} >
+                     {blockProgress.currentBlock}
+                  </strong>/
+                    {blockProgress.highestBlock}
+                </div>
+              </div>
           );
         } else {
             peerInfo = intl.formatMessage(setupMessages.findingPeers);
             progressBody = (
-                <div>
-                    <div style={{ fontWeight: 'bold', padding: '5px', fontSize: '16px' }} >
-                        {peerInfo}
-                    </div>
+              <div>
+                <div style={{ fontWeight: 'bold', padding: '5px', fontSize: '16px' }} >
+                  {peerInfo}
                 </div>
+              </div>
             );
         }
         blockSync = (
-            <div style={{ padding: '64px 0', textAlign: 'center' }} >
-                <SyncProgress value={currentProgress} />
-                {progressBody}
-             </div>
+          <div style={{ padding: '64px 0', textAlign: 'center' }} >
+            <SyncProgress value={currentProgress} />
+              {progressBody}
+          </div>
         );
         return (
           <div style={style}>
@@ -146,32 +173,55 @@ class SyncStatus extends Component {
                 {blockSync}
               </div>
             </div>
-            <div className="end-xs"
+            <div
+              className="row"
               style={{ flex: 1 }}
             >
-              <div className="col-xs"
+              <div className="col-xs-4 start-xs">
+                <RaisedButton
+                  label="View details"
+                  onClick={this._handleDetails}
+                />
+              </div>
+              <div
+                className="col-xs-8 end-xs"
                 style={buttonsStyle}
               >
-                <RaisedButton label={intl.formatMessage(generalMessages.cancel)}
+                <RaisedButton
+                  label={intl.formatMessage(generalMessages.cancel)}
                   style={{ marginLeft: '12px' }}
                   onClick={this.handleCancel}
                 />
-                <RaisedButton label={this._getActionLabels().action}
+                <RaisedButton
+                  label={this._getActionLabels().action}
                   style={{ marginLeft: '12px' }}
                   onClick={this.handleSync}
                 />
               </div>
             </div>
+            <ul>
+            {this.state.showGethLogs && this.state.gethLogs.size > 0 &&
+                this.state.gethLogs.map((log, key) => (
+                  <li key={key} style={{ marginBottom: '8px' }}>
+                    {/** <abbr title="Log Level">{log.level}</abbr>
+                    <span> {new Date(log.timestamp).toLocaleString()} =></span>*/}
+                    <p>{log.status}</p>
+                  </li>
+                ))
+            }
+            </ul>
           </div>
         );
     }
 }
 
 SyncStatus.propTypes = {
-    actions: PropTypes.object.isRequired,
+    syncActions: PropTypes.object.isRequired,
+    loggerActions: PropTypes.object.isRequired,
     style: PropTypes.object,
     syncState: PropTypes.object.isRequired,
-    intl: PropTypes.object
+    intl: PropTypes.object,
+    setupConfig: PropTypes.object.isRequired
 };
 
 SyncStatus.contextTypes = {

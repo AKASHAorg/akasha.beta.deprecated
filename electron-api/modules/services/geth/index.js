@@ -27,11 +27,15 @@ class GethConnector {
         if (enforcer !== symbolEnforcer) {
             throw new Error('Cannot construct singleton');
         }
-        this.logger = loggerRegistrar.getInstance().registerLogger('geth', { maxsize: 1024 * 10 * 3 });
+        this.logger = loggerRegistrar
+                        .getInstance()
+                        .registerLogger('geth', { maxsize: 1024 * 10 * 3 });
 
         this.socket = new net.Socket();
         this.ipcStream = new Web3();
         this.executable = null;
+
+        this.ipcPipe = false;
 
         this.gethProcess = null;
         this.dataDir = null;
@@ -69,7 +73,9 @@ class GethConnector {
         return this._checkGeth().then((binary) => {
             this.executable = binary;
             return this._spawnGeth({ detached: true }).then((data) => {
-                setTimeout(() => this.ipcStream.setProvider(this.ipcPath, this.socket), 4000);
+                setTimeout(() => {
+                    this.ipcStream.setProvider(this.ipcPath, this.socket);
+                }, 4000);
                 return data;
             }).catch((err) => {
                 throw new Error(`Could not start geth ${err}`);
@@ -93,10 +99,19 @@ class GethConnector {
             this.gethProcess.kill();
             this.gethProcess = null;
         }
+    }
 
-        if (this.socket.writable) {
-            this.socket.destroy();
+    /**
+    * Checks for running geth
+    */
+    isRunning () {
+        let run = false;
+        if (this.gethProcess && this.gethProcess.pid) {
+            if (this.web3.isConnected()) {
+                run = true;
+            }
         }
+        return run;
     }
 
     /**
@@ -104,7 +119,7 @@ class GethConnector {
      * @returns {Promise.<T>|*}
      */
     inSync () {
-        if (!this.socket.writable) {
+        if (!this.ipcPipe) {
             return Promise.reject(new Error('no ipc connection'));
         }
         const rules = [
@@ -164,7 +179,7 @@ class GethConnector {
             }
             ipcPath = path.join(ipcPath, 'geth.ipc');
         }
-        
+
         this.ipcPath = ipcPath;
 
         ipcPath = null;
@@ -209,9 +224,9 @@ class GethConnector {
         return new Promise((resolve, reject) => {
             geth.run(['version'], (err) => {
                 if (err) {
-                    reject(err);
+                    return reject(err);
                 }
-                resolve(geth.path());
+                return resolve(geth.path());
             });
         });
     }
@@ -229,22 +244,24 @@ class GethConnector {
      * @private
      */
     _setSocketEvents () {
-
         this.socket.on('connect', () => {
+            this.ipcPipe = true;
             this.logger.info('connection to ipc Established!');
         });
 
-        this.socket.on('timeout', (e) => {
+        this.socket.on('timeout', () => {
             this.logger.warn('connection to ipc timed out');
             this.socket.end('no activity on socket... closing connection');
         });
 
-        this.socket.on('end', (e) => {
+        this.socket.on('end', () => {
             this.logger.info('i/o to ipc ended');
         });
 
         this.socket.on('error', (error) => {
-            this.socket.end(error);
+            this.ipcPipe = false;
+            this.web3.reset();
+            this.socket.end(error.message);
             this.logger.warn(error);
         });
     }
