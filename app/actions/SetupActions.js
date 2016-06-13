@@ -17,6 +17,11 @@ class SetupActions {
                 cache: options.cacheSize
             };
         }
+        // return (dispatch, getState) => {
+        //     this.setupService.startGeth(startupOptions).then((data) => {
+        //         console.log(data);
+        //     });
+        // };
         this.setupService.startGeth(startupOptions).then((data) => {
             console.log(data);
             if (!data.success) {
@@ -87,7 +92,7 @@ class SetupActions {
         return { type: types.STOP_GETH_ERROR, data };
     }
     _startIPFSSuccess (data) {
-        this.settingsService.saveSettings('ipfs', data);
+        // this.settingsService.saveSettings('ipfs', data);
         return { type: types.START_IPFS_SUCCESS, data };
     }
     _startIPFSError (data) {

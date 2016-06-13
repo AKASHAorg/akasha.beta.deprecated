@@ -1,3 +1,4 @@
+import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import Setup from '../components/startup/Setup';
 import { SetupActions } from '../actions/SetupActions';

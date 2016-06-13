@@ -60,7 +60,8 @@ class SyncStatus extends Component {
         const { syncState, syncActions, setupActions, setupConfig } = this.props;
         if (syncState.get('actionId') === 1) {
             syncActions.stopSync();
-            return syncActions.stopUpdateSync();
+            syncActions.stopUpdateSync();
+            return setupActions.stopGeth();
         }
         setupActions.startGeth(setupConfig.get('geth').toJS());
         syncActions.startSync();

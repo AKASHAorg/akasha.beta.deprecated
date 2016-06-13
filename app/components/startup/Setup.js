@@ -235,7 +235,8 @@ Setup.propTypes = {
     setupActions: PropTypes.object.isRequired,
     setupConfig: PropTypes.object.isRequired,
     style: PropTypes.object,
-    intl: PropTypes.object
+    intl: PropTypes.object,
+    dispatch: PropTypes.func
 };
 
 Setup.contextTypes = {
