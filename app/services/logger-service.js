@@ -10,7 +10,9 @@ class LoggerService {
     }
     startLogger = (logger, options, cb) => {
         ipcRenderer.send(EVENTS.server.logger[logger], options ? options.continuous : false);
-        return cb();
+        if (cb) {
+            return cb();
+        }
     }
 
     stopGethInfo = (cb) => {
@@ -21,7 +23,9 @@ class LoggerService {
             this.removeListener(EVENTS.client.logger.gethInfo);
             this.listeners[EVENTS.client.logger.gethInfo] = null;
         }
-        return cb();
+        if (cb) {
+            return cb();
+        }
     }
 
     startGethInfo = (cb) => {
