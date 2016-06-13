@@ -13,6 +13,7 @@ function getElectronPath () {
 
 describe('application launch', function () {
     let client;
+    let app;
     this.timeout(10000);
 
     before(() => {
@@ -22,6 +23,7 @@ describe('application launch', function () {
         });
         return this.app.start().then(() => {
             client = this.app.client;
+            app = this.app;
             client.timeoutsImplicitWait(5000);
             client.timeoutsAsyncScript(5000);
         });
@@ -103,5 +105,21 @@ describe('application launch', function () {
                 expect(ret.value.success).to.be.true;
             });
     });
+
+    it('start geth service with options', () => {
+        return client
+            .waitUntilWindowLoaded(7000)
+            .executeAsync((done) => {
+                ipcRenderer.on('client:geth:startService', (err, status) => {
+                    done(status);
+                });
+                ipcRenderer.send('server:geth:startService', {dataDir: "/tmp/spectron-tests", cache: 722});
+            })
+            .then((ret) => {
+                expect(ret.value.success).to.be.true;
+            })
+            .pause(7000); // wait for ipc connector to get set
+    });
+
 });
 

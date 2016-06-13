@@ -29,6 +29,7 @@ class GethService {
         this.clientEvent = EVENTS.client.geth;
         this.BLOCK_UPDATE_INTERVAL = 1000;
         this.STARTSYNC_MSG = 'Start synchronizing with the network';
+        this.ALREADY_RUNNING = 'Geth is already running';
     }
     /**
      * Makes sure it returns the same reference to a GethService instance
@@ -46,10 +47,10 @@ class GethService {
      * Events used are:
      * server:geth:startService used by the View layer to start the geth executable
      *
-     * @param {BrowserWindow} mainWindow
+     * @param {BrowserWindow} mainWindow -- ignored for now
      * @returns undefined
      */
-    setupListeners (mainWindow) {
+    setupListeners () {
         ipcMain.on(this.serverEvent.startService, (event, arg) => {
             this._startGethService(event, arg);
         });
@@ -72,32 +73,48 @@ class GethService {
         };
     }
     _startGethService (event, arg) {
-        this
-            .getGethService()
-            .start()
-            .then(
-                (data) => {
-                    this._sendEvent(event)(this.clientEvent.startService, true, data);
-                    this._sendEvent(event)(this.clientEvent.startSyncing, true, this.STARTSYNC_MSG);
+        if (this.getGethService().isRunning()) {
+            this._sendEvent(event)(this.clientEvent.startService, false, this.ALREADY_RUNNING);
+        } else {
+            this
+                .getGethService()
+                .start(this._formatOptions(arg))
+                .then(
+                    () => {
+                        // data [the function parameter] instead of arg
+                        // to see what geth says when starts
+                        this._sendEvent(event)(this.clientEvent.startService,
+                                                true,
+                                                arg);
+                        this._sendEvent(event)(this.clientEvent.startSyncing,
+                                                true,
+                                                this.STARTSYNC_MSG);
 
-                    setTimeout(() => {
-                        this._getGethUpdates(event, arg);
-                    }, STATICS.GETH_SETPROVIDER_TIMEOUT + 1000);
-                })
-            .catch((data) => {
-                this._sendEvent(event)(this.clientEvent.startService, false, data);
-            });
+                        setTimeout(() => {
+                            this._getGethUpdates(event, arg);
+                        }, STATICS.GETH_SETPROVIDER_TIMEOUT + 1000);
+                    })
+                .catch((data) => {
+                    this._sendEvent(event)(this.clientEvent.startService, false, data);
+                });
+        }
     }
-    _stopGethService (event, arg) {
+    _stopGethService (event) {
+        if (this.updatesFlag) {
+            this._stopGethUpdates();
+        }
         this.getGethService().stop();
-        this._sendEvent(event)(this.clientEvent.stopService, !this.getGethService().gethProcess, null);
+        this._sendEvent(event)(this.clientEvent.stopService,
+                                !this.getGethService().gethProcess,
+                                null);
     }
-    _getGethUpdates (event, arg) {
+    _getGethUpdates (event) {
         this.updatesFlag = setInterval(() => this._getBlockUpdates(event),
             this.BLOCK_UPDATE_INTERVAL);
     }
-    _stopGethUpdates (event, arg) {
+    _stopGethUpdates () {
         clearInterval(this.updatesFlag);
+        this.updatesFlag = false;
     }
     getGethService () {
         return GethConnector.getInstance();
@@ -123,15 +140,27 @@ class GethService {
                     const prev = typeof this.prevMessage === 'string';
                     const msg = msgIsString ? message : JSON.stringify(this.message);
                     const prevString = prev ? this.prevMessage : JSON.stringify(this.prevMessage);
-                    if (prevString != msg) {
+                    if (prevString != msg) { // eslint-disable-line eqeqeq
                         this._sendEvent(event)(this.clientEvent.syncUpdate, true, message);
                     }
                     this.prevMessage = message;
                 }
             })
-        .catch((err) => {
+        .catch(() => {
             this._stopGethUpdates();
         });
+    }
+
+    _formatOptions (options) {
+        const opts = Object.assign({}, options);
+        if (opts.cache) {
+            const cacheValue = parseInt(opts.cache, 10);
+            if (!isNaN(cacheValue)) {
+                opts.protocol = ['--shh', '--fast', '--cache', cacheValue];
+            }
+            delete opts.cache;
+        }
+        return opts;
     }
 }
 

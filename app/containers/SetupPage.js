@@ -1,19 +1,17 @@
-import React, { Component, PropTypes } from 'react';
-import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import Setup from '../components/startup/Setup';
-import * as SetupActions from '../actions/SetupActions';
+import { SetupActions } from '../actions/SetupActions';
 
 function mapStateToProps (state) {
-  return {
-    setupConfig: state.setupConfig
-  };
+    return {
+        setupConfig: state.setupConfig
+    };
 }
 
 function mapDispatchToProps (dispatch) {
-  return {
-    actions: bindActionCreators(SetupActions, dispatch)
-  };
+    return {
+        setupActions: new SetupActions(dispatch)
+    };
 }
 
 export default connect(

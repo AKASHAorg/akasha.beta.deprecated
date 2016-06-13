@@ -1,7 +1,6 @@
-import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import Auth from '../components/auth/Auth';
-import * as AuthActions from '../actions/AuthActions';
+import { ProfileActions } from '../actions/ProfileActions';
 
 function mapStateToProps (state) {
     return {
@@ -11,7 +10,7 @@ function mapStateToProps (state) {
 
 function mapDispatchToProps (dispatch) {
     return {
-        actions: bindActionCreators(AuthActions, dispatch)
+        profileActions: new ProfileActions(dispatch)
     };
 }
 
