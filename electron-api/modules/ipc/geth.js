@@ -120,6 +120,10 @@ class GethService {
         return GethConnector.getInstance();
     }
     _getBlockUpdates (event) {
+        if(!this.getGethService().isRunning()) {
+            this._stopGethUpdates();
+            return false;
+        }
         this
             .getGethService()
             .inSync()
