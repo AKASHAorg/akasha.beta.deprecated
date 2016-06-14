@@ -47,7 +47,9 @@ class GethService extends IpcService {
 
     _startGethService (event, arg) {
         if (this.getGethService().isRunning()) {
-            this._sendEvent(event)(this.clientEvent.startService, false, this.ALREADY_RUNNING);
+            this._sendEvent(event)(this.clientEvent.startService, false, this.ALREADY_RUNNING, {
+                isRunning: true
+            });
         } else {
             this
                 .getGethService()
@@ -172,7 +174,7 @@ class GethService extends IpcService {
     }
 
     hasFilters () {
-        return this.filter.keys().length > 0;
+        return Object.keys(this.filter).length > 0;
     }
     /**
     * type is usually "tx/transaction", but it could be a blockHash, contract Address, ...

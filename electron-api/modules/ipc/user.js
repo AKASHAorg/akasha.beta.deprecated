@@ -27,8 +27,10 @@ class UserService extends IpcService {
      * @returns undefined
      */
     setupListeners () {
-        ipcMain.on(this.serverEvent.signup, (event, arg) => {
-            this._signUp(event, arg);
+        ipcMain.on(this.serverEvent.signUp, (event, arg) => {
+            this._signUp(event, {
+                data: JSON.stringify(arg)
+            });
         });
     }
 
