@@ -16,6 +16,11 @@ export const EVENTS = {
         "logger": {
             "gethInfo" : "server:logger:gethInfo",
             "stopGethInfo" : "server:logger:stopGethInfo"
+        },
+        "user": {
+            "signUp": "server:user:signUp",
+            "exists": "server:user:exists",
+            "login": "server:user:login"
         }
     },
     "client": {
@@ -33,6 +38,11 @@ export const EVENTS = {
         "logger": {
             "gethInfo" : "client:logger:gethInfo",
             "stopGethInfo" : "client:logger:stopGethInfo"
+        },
+        "user": {
+            "signUp": "client:user:signUp",
+            "exists": "client:user:exists",
+            "login": "client:user:login"
         }
     }
 };
