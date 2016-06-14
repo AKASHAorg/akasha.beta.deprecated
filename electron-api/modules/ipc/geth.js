@@ -1,47 +1,26 @@
-
 const { ipcMain } = require('electron');
 const GethConnector = require('../services/geth/index.js');
 const { STATICS } = require('../settings');
-const { EVENTS } = require('../settings');
-
-const symbolEnforcer = Symbol();
-const symbol = Symbol();
+const IpcService = require('./ipcService');
 
 /**
  * GethService class
- * It provides the View layer with access to geth instance.
- * It also registers events for the View layer, in order for the View layer
+ * It provides the Renderer with access to geth instance.
+ * It also registers events for the Renderer, in order for the Renderer
  * to be notified of what happens on the blockchain.
  *
  */
-class GethService {
+class GethService extends IpcService {
     /*
-     * This is called from the getInstance function.
-     * It shouldn't be called from any other place with new GethService
-     * @param {Symbol} enforcer
      * @returns {GethService}
      */
-    constructor (enforcer) {
-        if (enforcer !== symbolEnforcer) {
-            throw new Error('Cannot construct singleton');
-        }
-        this.serverEvent = EVENTS.server.geth;
-        this.clientEvent = EVENTS.client.geth;
+    constructor () {
+        super('geth');
         this.BLOCK_UPDATE_INTERVAL = 1000;
         this.STARTSYNC_MSG = 'Start synchronizing with the network';
         this.ALREADY_RUNNING = 'Geth is already running';
     }
-    /**
-     * Makes sure it returns the same reference to a GethService instance
-     * This must be used in order to get a GethService instance
-     * @returns {GethService}
-     */
-    static getInstance () {
-        if (!this[symbol]) {
-            this[symbol] = new GethService(symbolEnforcer);
-        }
-        return this[symbol];
-    }
+
     /*
      * It sets up the listeners for this module.
      * Events used are:
@@ -64,14 +43,7 @@ class GethService {
             this._stopGethService(event, arg);
         });
     }
-    _sendEvent (event) {
-        return (name, successCode, data) => {
-            event.sender.send(name, {
-                success: successCode,
-                status: data
-            });
-        };
-    }
+
     _startGethService (event, arg) {
         if (this.getGethService().isRunning()) {
             this._sendEvent(event)(this.clientEvent.startService, false, this.ALREADY_RUNNING);

@@ -1,57 +1,25 @@
 
 const { ipcMain } = require('electron');
 const Logger = require('../../loggers');
-const { EVENTS } = require('../settings');
+const IpcService = require('./ipcService');
 
-const symbolEnforcer = Symbol();
-const symbol = Symbol();
 
-class LoggerService {
+class LoggerService extends IpcService {
     /*
-     * This is called from the getInstance function.
-     * It shouldn't be called from any other place with new LoggerService
-     * @param {Symbol} enforcer
      * @returns {LoggerService}
      */
-    constructor (enforcer) {
-        if (enforcer !== symbolEnforcer) {
-            throw new Error('Cannot construct singleton');
-        }
+    constructor () {
+        super('logger');
         this.loggerNames = ['geth', 'ipfs'];
         this.PREVIOUS_LOG_LINES = -10;
-        this.serverEvent = EVENTS.server.logger;
-        this.clientEvent = EVENTS.client.logger;
-    }
-    /**
-     * Makes sure it returns the same reference to a GethAction instance
-     * This must be used in order to get a GethAction instance
-     * @returns {GethAction}
-     */
-    static getInstance () {
-        if (!this[symbol]) {
-            this[symbol] = new LoggerService(symbolEnforcer);
-        }
-        return this[symbol];
-    }
-    /**
-    * Shorthand function for sending events back to the View layer
-    * @param event
-    */
-    _sendEvent (event) {
-        return (name, successCode, data) => {
-            event.sender.send(name, {
-                success: successCode,
-                status: data
-            });
-        };
     }
     /*
      * It sets up the listeners for this module.
      *
-     * @param {BrowserWindow} mainWindow
+     * @param {BrowserWindow} mainWindow - ignored for now
      * @returns undefined
      */
-    setupListeners (mainWindow) {
+    setupListeners () {
         ipcMain.on(this.serverEvent.gethInfo, (event, arg) => {
             this._getGethInfo(event, arg);
         });
@@ -125,8 +93,8 @@ class LoggerService {
     */
     _stopGethInfo () {
         // We have to check for the existing of this function handler as someone might send
-        //the stopGethInfo message before the startGethInfo
-        if(this.__gethUpdatesHandler && typeof this.__gethUpdatesHandler == 'function') {
+        // the stopGethInfo message before the startGethInfo
+        if (this.__gethUpdatesHandler && typeof this.__gethUpdatesHandler === 'function') {
             this._getLog('geth').removeListener('logging', this.__gethUpdatesHandler);
             this.__gethUpdatesHandler = null;
         }
