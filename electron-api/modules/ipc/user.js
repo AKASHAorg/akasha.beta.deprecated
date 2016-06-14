@@ -27,8 +27,10 @@ class UserService extends IpcService {
      * @returns undefined
      */
     setupListeners () {
-        ipcMain.on(this.serverEvent.signup, (event, arg) => {
-            this._signUp(event, arg);
+        ipcMain.on(this.serverEvent.signUp, (event, arg) => {
+            this._signUp(event, {
+                data: JSON.stringify(arg)
+            });
         });
     }
 
@@ -48,14 +50,22 @@ class UserService extends IpcService {
             .add(arg)
             .then((response) => {
                 const ipfsHash = response[0].Hash;
-                const web3 = UserService.getService('geth').getGethService().web3;
+                const geth = UserService.getService('geth').getGethService();
+                const web3 = geth.web3;
                 web3.eth.getCoinbase((err, res) => {
                     if (err) {
                         this._sendEvent(event)(this.clientEvent.signUp, false, this.NO_COINBASE_FAIL);
                     } else {
                         web3.personal.unlockAccountAsync(res, this.password, 20000).then((data) => {
                             const registry = new dapples.class(gethInstance.web3).objects.registry;
-
+                            const ipfsHashDelimiter = Math.floor(ipfsHash.length/2);
+                            registry.register(web3.fromUtf8(arg.username), [ipfsHash.substring(0,ipfsHashDelimiter), ipfsHash.substring(ipfsHashDelimiter)], {
+                                    gas: 800000
+                                }, (err, tx) => {
+                                geth.addFilter('tx', tx, (txInfo) => {
+                                    this._sendEvent(event)(this.clientEvent.signUp, true, txInfo);
+                                });
+                            });
                         });
                     }
                 });
