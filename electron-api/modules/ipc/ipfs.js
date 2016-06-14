@@ -1,43 +1,23 @@
-
+/* eslint strict: 0, no-console: 0 */
+'use strict';
 const { ipcMain } = require('electron');
 const { IpfsConnector } = require('../services/ipfs-connector/index.js');
 const loggerRegistrar = require('../../loggers');
-const { EVENTS } = require('../settings');
-
-const symbolEnforcer = Symbol();
-const symbol = Symbol();
+const IpcService = require('./ipcService');
 
 /**
  * IpfsService class
- * It provides the View layer with access to geth instance.
- * It also registers events for the View layer, in order for the View layer
- * to be notified of what happens on the blockchain.
+ * It provides the Renderer with access to Ipfs instance.
+ * It also registers events for the Renderer, in order for the Renderer
+ * to be notified of what happens on ipfs.
  *
  */
-class IpfsService {
+class IpfsService extends IpcService {
     /*
-     * This is called from the getInstance function.
-     * It shouldn't be called from any other place with new IpfsService
-     * @param {Symbol} enforcer
      * @returns {IpfsService}
      */
-    constructor (enforcer) {
-        if (enforcer !== symbolEnforcer) {
-            throw new Error('Cannot construct singleton');
-        }
-        this.serverEvent = EVENTS.server.ipfs;
-        this.clientEvent = EVENTS.client.ipfs;
-    }
-    /**
-     * Makes sure it returns the same reference to a IpfsService instance
-     * This must be used in order to get a IpfsService instance
-     * @returns {IpfsService}
-     */
-    static getInstance () {
-        if (!this[symbol]) {
-            this[symbol] = new IpfsService(symbolEnforcer);
-        }
-        return this[symbol];
+    constructor () {
+        super('ipfs');
     }
     /*
      * It sets up the listeners for this module.
@@ -55,19 +35,19 @@ class IpfsService {
             this._stopIpfsService(event, arg);
         });
     }
-    _sendEvent (event) {
-        return (name, successCode, data) => {
-            event.sender.send(name, {
-                success: successCode,
-                status: data
-            });
-        };
-    }
-    _startIpfsService (event) {
+    _startIpfsService (event, arg) {
         this
             .getIpfsService()
             .setLogger(loggerRegistrar.getInstance()
             .registerLogger('ipfs', { maxsize: 1024 * 10 * 3 }));
+        if (arg && typeof arg === 'object') {
+            if (arg.apiPort && !isNaN(parseInt(arg.apiPort))) {
+                this.getIpfsService().setConfig('apiAddress', '/ip4/127.0.0.1/tcp/' + arg.apiPort);
+            }
+            if (arg.repoDir && arg.repoDir.length > 0) {
+                this.getIpfsService().setIpfsFolder(arg.repoDir);
+            }
+        }
         this
             .getIpfsService()
             .start()
