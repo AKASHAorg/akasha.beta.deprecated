@@ -30,11 +30,15 @@ class IpcService {
      * @returns {Function} the event handler
      */
     _sendEvent (event) {
-        return (name, successCode, data) => {
-            event.sender.send(name, {
+        return (name, successCode, data, extra) => {
+            let result = {
                 success: successCode,
                 status: data
-            });
+            };
+            if(extra && typeof extra === 'object') {
+                result = Object.assign(result, extra);
+            }
+            event.sender.send(name, result);
         };
     }
     /**
