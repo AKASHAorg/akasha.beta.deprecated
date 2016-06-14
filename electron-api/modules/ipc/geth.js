@@ -146,13 +146,15 @@ class GethService extends IpcService {
 
     _startWatchingTheBlockchain () {
         const web3 = this.getGethService().web3;
-
+        console.log('start watching');
         this._watcher = web3.eth.filter('latest', (error, result) => {
+            console.log(result);
             if (this.hasFilters()) {
                 if (!error) {
-                    web3.eth.getBlockAsync(result).then((blockObject) => {
+                    web3.eth.getBlockAsync(result).then((blockObject, y) => {
                         if (this.filter['tx'].length > 0) {
                             const txs = blockObject.transactions;
+                            console.log('block: ' + blockObject.hash + ' has ' + txs.length + ' transactions.');
                             if (txs && txs.length > 0) {
                                 for (let i = 0, l = txs.length; i < l; i++) {
                                     let tempTx = txs[i];
@@ -180,6 +182,7 @@ class GethService extends IpcService {
     * type is usually "tx/transaction", but it could be a blockHash, contract Address, ...
     */
     addFilter (type, value, handler) {
+        console.log(type + ' - ' + value);
         if (!this.filter[type]) {
             this.filter[type] = [];
         }
