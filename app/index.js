@@ -8,6 +8,8 @@ import routes from './routes';
 import configureStore from './store/configureStore';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import { ruMessages } from './locale-data/ru';
+import debug from 'debug';
+window.appDebug = debug.enable('App:*');
 // temporary
 
 const store = configureStore();

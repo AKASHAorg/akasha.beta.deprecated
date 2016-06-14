@@ -12,14 +12,15 @@ class Setup extends Component {
             gethLogs: []
         };
     }
-    // componentWillReceiveProps (nextProps) {
-    //     if (nextProps.setupConfig.getIn(['geth', 'started'])) {
-    //         return this.context.router.replace('sync-status');
-    //     }
-    //     if (nextProps.setupConfig.getIn(['geth', 'status']) === false) {
-    //         return this._getLogs();
-    //     }
-    // }
+    componentWillReceiveProps (nextProps) {
+        if (nextProps.setupConfig.getIn(['geth', 'started'])) {
+            return this.context.router.replace('sync-status');
+        }
+        if (nextProps.setupConfig.getIn(['geth', 'status']) === false) {
+            return this._getLogs();
+        }
+        return nextProps;
+    }
     handleChange = (ev, value) => {
         const { setupActions, setupConfig } = this.props;
         const show = value === 'advanced';
@@ -84,7 +85,7 @@ class Setup extends Component {
         if (!setupConfig.get('isAdvanced')) {
             setupActions.startGeth();
         } else {
-            setupActions.startGeth(setupConfig.get('geth').toJS());
+            setupActions.startGethWithOptions(setupConfig.get('geth').toJS());
         }
     }
     _getLogs = () => {}

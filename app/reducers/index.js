@@ -6,6 +6,7 @@ import profile from './profileRedux';
 import authState from './authState';
 import panelState from './panelState';
 import appState from './appState';
+import settingsState from './settingsState';
 
 const rootReducer = combineReducers({
     setupConfig,
@@ -14,6 +15,7 @@ const rootReducer = combineReducers({
     authState,
     panelState,
     appState,
+    settingsState,
     routing,
 });
 
