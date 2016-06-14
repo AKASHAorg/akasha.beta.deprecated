@@ -1,4 +1,6 @@
-import { SetupService, SettingsService } from '../services';
+import { SetupService } from '../services';
+import { SettingsActions } from './SettingsActions';
+import { AppActions } from './AppActions';
 import { hashHistory } from 'react-router';
 import * as types from '../constants/SetupConstants';
 
@@ -6,7 +8,8 @@ class SetupActions {
     constructor (dispatch) {
         this.dispatch = dispatch;
         this.setupService = new SetupService;
-        this.settingsService = new SettingsService;
+        this.settingsActions = new SettingsActions(dispatch);
+        this.appActions = new AppActions(dispatch);
     }
     startGeth = (options) => {
         let startupOptions = {};
@@ -16,19 +19,35 @@ class SetupActions {
                 ipcPath: options.ipcPath,
                 cache: options.cacheSize
             };
+        } else {
+            this.settingsActions.getSettings('geth').then((gethSettings) => {
+                console.log(gethSettings);
+            });
         }
-        // return (dispatch, getState) => {
-        //     this.setupService.startGeth(startupOptions).then((data) => {
-        //         console.log(data);
-        //     });
-        // };
         this.setupService.startGeth(startupOptions).then((data) => {
-            console.log(data);
             if (!data.success) {
-                return this.dispatch(this._startGethError({ data }));
+                const error = new Error(`Error starting Geth! ${data.status}`);
+                return Promise.reject(this.dispatch(this._startGethError(error)));
             }
-            return this.dispatch(this._startGethSuccess(data));
-        }).catch(err => this.dispatch(this._startGethError({ err })));
+            return Promise.resolve(this.dispatch(this._startGethSuccess({ data })));
+        })
+        .then(() => {
+            this.dispatch((dispatch, getState) => {
+                const gethSettings = getState().setupConfig.get('geth');
+                const { dataDir, ipcPath, cacheSize } = gethSettings.toJS();
+                if (gethSettings.get('started') && options) {
+                    this.settingsActions.saveSettings('geth', { dataDir, ipcPath, cacheSize });
+                }
+            });
+        })
+        .catch(reason => this.dispatch(() => {
+            this.appActions.showError({
+                code: 105,
+                type: reason.type ? reason.type : 'GETH_START_ERROR',
+                message: reason.data ? reason.data.message : reason.stack()
+            });
+            console.log(reason.type, reason);
+        }));
     }
     stopGeth = () => {
         this.setupService.stopGeth().then(data => {

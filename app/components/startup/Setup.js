@@ -12,14 +12,14 @@ class Setup extends Component {
             gethLogs: []
         };
     }
-    componentWillReceiveProps (nextProps) {
-        if (nextProps.setupConfig.getIn(['geth', 'started'])) {
-            return this.context.router.replace('sync-status');
-        }
-        if (nextProps.setupConfig.getIn(['geth', 'status']) === false) {
-            return this._getLogs();
-        }
-    }
+    // componentWillReceiveProps (nextProps) {
+    //     if (nextProps.setupConfig.getIn(['geth', 'started'])) {
+    //         return this.context.router.replace('sync-status');
+    //     }
+    //     if (nextProps.setupConfig.getIn(['geth', 'status']) === false) {
+    //         return this._getLogs();
+    //     }
+    // }
     handleChange = (ev, value) => {
         const { setupActions, setupConfig } = this.props;
         const show = value === 'advanced';
