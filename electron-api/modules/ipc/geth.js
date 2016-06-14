@@ -16,6 +16,7 @@ class GethService extends IpcService {
      */
     constructor () {
         super('geth');
+        this.filter = {};
         this.BLOCK_UPDATE_INTERVAL = 1000;
         this.STARTSYNC_MSG = 'Start synchronizing with the network';
         this.ALREADY_RUNNING = 'Geth is already running';
@@ -64,6 +65,7 @@ class GethService extends IpcService {
 
                         setTimeout(() => {
                             this._getGethUpdates(event, arg);
+                            this._startWatchingTheBlockchain();
                         }, STATICS.GETH_SETPROVIDER_TIMEOUT + 1000);
                     })
                 .catch((data) => {
@@ -138,6 +140,62 @@ class GethService extends IpcService {
             delete opts.cache;
         }
         return opts;
+    }
+
+    _startWatchingTheBlockchain () {
+        const web3 = this.getGethService().web3;
+
+        this._watcher = web3.eth.filter('latest', (error, result) => {
+            if (this.hasFilters()) {
+                if (!error) {
+                    web3.eth.getBlockAsync(result).then((blockObject) => {
+                        if (this.filter['tx'].length > 0) {
+                            const txs = blockObject.transactions;
+                            if (txs && txs.length > 0) {
+                                for (let i = 0, l = txs.length; i < l; i++) {
+                                    let tempTx = txs[i];
+                                    for (let j = 0; j < this.filter['tx'].length; j++) {
+                                        const myFilter = this.filter['tx'][j];
+                                        if (myFilter.value === tempTx) {
+                                            web3.eth.getTransactionAsync(tempTx).then((txInfo) => {
+                                                myFilter.handler(txInfo);
+                                            });
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    hasFilters () {
+        return this.filter.keys().length > 0;
+    }
+    /**
+    * type is usually "tx/transaction", but it could be a blockHash, contract Address, ...
+    */
+    addFilter (type, value, handler) {
+        if (!this.filter[type]) {
+            this.filter[type] = [];
+        }
+        this.filter[type].push({
+            value: value,
+            handler: handler
+        });
+    }
+
+    removeFilter (type, value) {
+        let filters = this.filter[type];
+        let filterPoz = -1;
+        for(var i = 0, l = filters.length; i < l; i++) {
+            if(filters[i].value === value) {
+                filterPoz = i;
+            }
+        }
+        filters.splice(i, 1);
     }
 }
 
