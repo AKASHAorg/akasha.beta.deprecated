@@ -262,7 +262,9 @@ class GethConnector {
             this.ipcPipe = false;
             this.web3.reset();
             this.socket.end(error.message);
+            this.web3.currentProvider = null;
             this.logger.warn(error);
+            GethConnector[symbol] = null;
         });
     }
 
