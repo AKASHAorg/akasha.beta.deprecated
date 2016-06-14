@@ -1,7 +1,6 @@
 const IpfsService = require('./ipfs.js');
 const GethService = require('./geth.js');
 const LoggerService = require('./logger.js');
-const util = require('util');
 
 // initialize the AkashaLogger with the user data folder
 const app = require('electron').app;
@@ -9,12 +8,18 @@ const mainLogger = require('../../loggers/').getInstance(app.getPath('userData')
 
 // catch all errors [especially not the ones caused by us]
 const generalLogger = mainLogger.registerLogger('general');
+
+// we must ensure this is called only once
+const geth = new GethService();
+const logger = new LoggerService();
+const ipfs = new IpfsService();
+
 process.on('uncaughtException', (err) => {
-    generalLogger.log(util.inspect(err, false, null));
+    generalLogger.warn(err);
 });
 
 export function initIPCServices (mainWindow) {
-    (new GethService()).setupListeners(mainWindow);
-    (new LoggerService()).setupListeners(mainWindow);
-    (new IpfsService()).setupListeners(mainWindow);
+    geth.setupListeners(mainWindow);
+    logger.setupListeners(mainWindow);
+    ipfs.setupListeners(mainWindow);
 }
