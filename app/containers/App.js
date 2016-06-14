@@ -33,19 +33,18 @@ class App extends Component {
         const { appState } = this.props;
         const error = appState.get('error');
         const errorMessage = error.get('code')
-                ? `Code ${error.get('code')}: ${error.get('message')}` : '';
+                ? `Error ${error.get('code')}: ${error.get('message')}` : '';
         return (
           <div className="fill-height" >
             {this.props.children}
-            <div className="errors">
-              <Snackbar
-                action="send report"
-                onActionTouchTap={this._handleSendReport}
-                message={errorMessage}
-                open={(this.props.appState.get('error').size > 0)}
-                onRequestClose={this._handleErrorClose}
-              />
-            </div>
+            <Snackbar
+              style={{ maxWidth: 500 }}
+              action="send report"
+              onActionTouchTap={this._handleSendReport}
+              message={errorMessage}
+              open={(this.props.appState.get('error').size > 0)}
+              onRequestClose={this._handleErrorClose}
+            />
                 {(process.env.NODE_ENV !== 'production') &&
                     React.createElement(require('./DevTools'))
                 }

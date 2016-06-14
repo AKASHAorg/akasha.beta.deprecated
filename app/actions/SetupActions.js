@@ -11,34 +11,27 @@ class SetupActions {
         this.settingsActions = new SettingsActions(dispatch);
         this.appActions = new AppActions(dispatch);
     }
-    startGeth = (options) => {
-        let startupOptions = {};
-        if (options) {
-            startupOptions = {
-                dataDir: options.dataDir,
-                ipcPath: options.ipcPath,
-                cache: options.cacheSize
-            };
-        } else {
-            this.settingsActions.getSettings('geth').then((gethSettings) => {
-                console.log(gethSettings);
+    startGeth = () => {
+        this.settingsActions.getSettings('geth').then(() => {
+            this.dispatch((dispatch, getState) => {
+                const gethSettings = getState().settingsState.get('geth');
+                if (gethSettings.size > 0) {
+                    console.info('starting geth with options', gethSettings.first().toJS());
+                    return this.startGethWithOptions(gethSettings.first().toJS());
+                }
             });
-        }
-        this.setupService.startGeth(startupOptions).then((data) => {
+        });
+        this.setupService.startGeth().then((data) => {
+            // if geth is already running do nothing
+            if (data.isRunning) {
+                return Promise.resolve();
+            }
+            // if geth could not start return an error and alert user
             if (!data.success) {
-                const error = new Error(`Error starting Geth! ${data.status}`);
+                const error = new Error(` ${data.status}`);
                 return Promise.reject(this.dispatch(this._startGethError(error)));
             }
             return Promise.resolve(this.dispatch(this._startGethSuccess({ data })));
-        })
-        .then(() => {
-            this.dispatch((dispatch, getState) => {
-                const gethSettings = getState().setupConfig.get('geth');
-                const { dataDir, ipcPath, cacheSize } = gethSettings.toJS();
-                if (gethSettings.get('started') && options) {
-                    this.settingsActions.saveSettings('geth', { dataDir, ipcPath, cacheSize });
-                }
-            });
         })
         .catch(reason => this.dispatch(() => {
             this.appActions.showError({
@@ -46,7 +39,40 @@ class SetupActions {
                 type: reason.type ? reason.type : 'GETH_START_ERROR',
                 message: reason.data ? reason.data.message : reason.stack()
             });
-            console.log(reason.type, reason);
+        }));
+    }
+    startGethWithOptions = (options) => {
+        const startupOptions = {
+            dataDir: options.dataDir,
+            ipcPath: options.ipcPath,
+            cache: options.cacheSize
+        };
+
+        this.setupService.startGeth(startupOptions).then((data) => {
+            // if geth is already running do nothing
+            if (data.isRunning) {
+                return Promise.resolve();
+            }
+            if (!data.success) {
+                const error = new Error(` ${data.status}`);
+                return Promise.reject(this.dispatch(this._startGethError(error)));
+            }
+            return Promise.resolve(this.dispatch(this._startGethSuccess({ data })));
+        })
+        .then(() => {
+            this.dispatch((dispatch, getState) => {
+                const gethSettings = getState().setupConfig.get('geth');
+                if (gethSettings.get('started') && options) {
+                    this.settingsActions.saveSettings('geth', startupOptions);
+                }
+            });
+        })
+        .catch(reason => this.dispatch(() => {
+            this.appActions.showError({
+                code: 105,
+                type: reason.type ? reason.type : 'GETH_START_ERROR',
+                message: reason.data ? reason.data.message : reason
+            });
         }));
     }
     stopGeth = () => {

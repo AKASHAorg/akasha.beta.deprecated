@@ -24,10 +24,17 @@ class ProfileActions {
      * Step 5:: Create new AKASHA profile
      */
     createProfile = (userData) => {
-
+        // this.profileService.createProfile(userData).then((data) => {
+        //     if (!data) return console.log('no data received!');
+        //     console.log('profile successfully created', data);
+        //     this.dispatch(this._createProfileSuccess(data));
+        // });
     }
     getProfilesList = () => {
 
+    }
+    _createProfileSuccess (userData) {
+        return { type: types.CREATE_PROFILE_SUCCESS, userData };
     }
 }
 
