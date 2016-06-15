@@ -9,7 +9,7 @@ const initialState = fromJS({
 export default function settingsState (state = initialState, action) {
     switch (action.type) {
         case types.GET_SETTINGS_SUCCESS:
-            return state.merge({ [action.table]: action.data[0] });
+            return state.merge({ [action.table]: action.data });
         case types.GET_SETTINGS_ERROR:
             return state.merge({ [action.table]: action.error });
         default:

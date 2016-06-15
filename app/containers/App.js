@@ -33,6 +33,13 @@ class App extends Component {
         const { appActions } = this.props;
         appActions.clearErrors();
     }
+    _handleSendReport = () => {
+
+    }
+    _handleErrorClose = () => {
+        const { appActions } = this.props;
+        appActions.clearErrors();
+    }
     render () {
         const { appState } = this.props;
         const error = appState.get('error');
@@ -59,16 +66,11 @@ class App extends Component {
 App.propTypes = {
     appState: PropTypes.object,
     appActions: PropTypes.object,
-    settingsActions: PropTypes.object,
-    settingsState: PropTypes.object
-};
-App.contextTypes = {
-    router: PropTypes.object
+    settingsActions: PropTypes.object
 };
 function mapStateToProps (state) {
     return {
-        appState: state.appState,
-        settingsState: state.settingsState
+        appState: state.appState
     };
 }
 function mapDispatchToProps (dispatch) {
