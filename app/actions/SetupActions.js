@@ -33,6 +33,12 @@ class SetupActions {
             }
             return Promise.resolve(this.dispatch(this._startGethSuccess({ data })));
         })
+        .then(() => {
+            this.dispatch((dispatch) => {
+                const gethSettings = { dataDir: '', ipcPath: '', cache: 512 };
+                this.settingsActions.saveSettings('geth', gethSettings);
+            });
+        })
         .catch(reason => this.dispatch(() => {
             this.appActions.showError({
                 code: 105,

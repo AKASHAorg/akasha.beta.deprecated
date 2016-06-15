@@ -1,15 +1,19 @@
 /* eslint strict: 0 */
 'use strict';
 require('babel-register');
-const gethService = require('./electron-api/modules/services/geth');
-const ipfsService = require('./electron-api/modules/services/ipfs-connector');
 const electron = require('electron');
+const gethService = require('./electron-api/modules/services/geth');
+const { IpfsConnector } = require('./electron-api/modules/services/ipfs-connector');
+const ipcApi = require('./electron-api/modules/ipc');
+const Logger = require('./electron-api/loggers');
 const app = electron.app;
 
+const userData = app.getPath('userData');
 const BrowserWindow = electron.BrowserWindow;
 const crashReporter = electron.crashReporter;
 
 let mainWindow = null;
+Logger.getInstance(userData);
 
 crashReporter.start({
     productName: 'Akasha',
@@ -27,8 +31,12 @@ app.on('window-all-closed', () => {
 });
 
 app.on('will-quit', () => {
-    gethService.getInstance().stop();
-    ipfsService.getInstance().stop();
+    if (gethService.getInstance().ipcPipe) {
+        gethService.getInstance().stop();
+    }
+    if (IpfsConnector.getInstance().process) {
+        IpfsConnector.getInstance().stop();
+    }
 });
 
 
@@ -36,10 +44,7 @@ app.on('ready', () => {
     mainWindow = new BrowserWindow({
         width: 900,
         height: 600,
-        resizable: true,
-        webPreferences: {
-            preload: `${__dirname}/preload.js`
-        }
+        resizable: true
     });
     if (process.env.HOT) {
         mainWindow.loadURL(`file://${__dirname}/app/hot-dev-app.html`);
@@ -57,5 +62,5 @@ app.on('ready', () => {
     mainWindow.on('closed', () => {
         mainWindow = null;
     });
-    require('./electron-api/modules/ipc/index.js').initIPCServices(mainWindow);
+    ipcApi.initIPCServices(mainWindow);
 });

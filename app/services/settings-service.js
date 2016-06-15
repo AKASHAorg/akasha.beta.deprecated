@@ -4,8 +4,10 @@ import settingsDB from './db/settings';
 
 class SettingsService {
     saveSettings (table, settings) {
-        return settingsDB[table].toArray().each().then(collection => {
-            collection.delete();
+        return settingsDB[table].toArray().then(collection => {
+            if (collection.length > 0) {
+                collection.each().delete();
+            }
         })
         .then(() => {
             return settingsDB.transaction('rw', settingsDB[table], () => {
