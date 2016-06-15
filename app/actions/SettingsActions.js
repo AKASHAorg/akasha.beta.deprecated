@@ -16,12 +16,6 @@ class SettingsActions {
             this.dispatch({ type: types.SAVE_SETTINGS_ERROR, error: reason, table }));
 
     getSettings (table) {
-        // return (dispatch) => {
-        //     return this.settingsService.getSettings(table).then(
-        //         data => dispatch({ type: types.GET_SETTINGS_SUCCESS, data, table })
-        //         () => dispatch({ type: types.GET_SETTINGS_ERROR, error: 'error?', table })
-        //     )
-        // }
         return this.settingsService.getSettings(table).then((data) => {
             if (!data) {
                 return this.dispatch({ type: types.GET_SETTINGS_ERROR, error: 'error?', table });
