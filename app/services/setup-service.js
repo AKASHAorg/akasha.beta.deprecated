@@ -77,9 +77,6 @@ class SetupService {
      */
     startUpdateSync = (cb) => {
         const channel = EVENTS.client.geth.syncUpdate;
-        if (this.listeners[channel]) {
-            this.removeListener(channel);
-        }
         this.listeners[channel] = (ev, data) => {
             if (!data) {
                 return cb('Main process does not respond!');
@@ -90,8 +87,13 @@ class SetupService {
     }
     stopUpdateSync = (cb) => {
         const channel = EVENTS.client.geth.syncUpdate;
-        this.removeListener(channel);
-        return cb();
+        if (typeof this.listeners[channel] === 'function') {
+            this.removeListener(channel);
+            this.listeners[channel] = null;
+        }
+        if (cb) {
+            return cb();
+        }
     }
 }
 

@@ -36,12 +36,17 @@ export default function setupConfig (state = initialState, action) {
         case types.SETUP_IPFS_GATEWAY_PORT:
             return state.updateIn(['ipfs', 'gatewayPort'], () => action.port);
         case types.START_GETH_SUCCESS:
+            if (action.data.status) {
+                return state.mergeIn(['geth'], {
+                    started: true,
+                    dataDir: action.data.status.dataDir,
+                    ipcPath: action.data.status.ipcPath,
+                    cacheSize: action.data.status.cache,
+                    status: action.data.status
+                });
+            }
             return state.mergeIn(['geth'], {
-                started: true,
-                dataDir: action.data.status.dataDir,
-                ipcPath: action.data.status.ipcPath,
-                cacheSize: action.data.status.cache,
-                status: action.data.status
+                started: true
             });
         case types.START_GETH_ERROR:
             return state.mergeIn(['geth'], {

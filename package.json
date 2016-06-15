@@ -7,7 +7,7 @@
   "scripts": {
     "test": "better-npm-run test",
     "test-watch": "npm test -- --watch",
-    "debug-ipc": "ELECTRON_RUN_AS_NODE=true node_modules/.bin/electron node_modules/node-inspector/bin/inspector.js --no-preload",
+    "debug-ipc": "ELECTRON_RUN_AS_NODE=true node_modules/.bin/electron node_modules/node-inspector/bin/inspector.js --no-preload --web-port 8181",
     "test-ipc": "node_modules/.bin/mocha test/spectron/spectron-main.js",
     "test-real": "node_modules/.bin/mocha test/spectron/spectron-real.js",
     "test-e2e": "better-npm-run test-e2e",
@@ -157,6 +157,7 @@
   "dependencies": {
     "bin-wrapper": "3.0.2",
     "bluebird": "3.4.0",
+    "debug": "^2.2.0",
     "dexie": "^1.3.6",
     "draft-js": "^0.7.0",
     "electron-debug": "1.0.0",

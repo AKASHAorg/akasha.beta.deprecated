@@ -1,19 +1,28 @@
 import * as types from '../constants/SettingsConstants';
+import { AppActions } from './AppActions';
 import { SettingsService } from '../services';
 
 // save app level settings
 class SettingsActions {
-    constructor () {
+    constructor (dispatch) {
         this.settingsService = new SettingsService;
+        this.appActions = new AppActions(dispatch);
+        this.dispatch = dispatch;
     }
-    saveSettings (table, settings) {
-        return dispatch => {
-            this.settingsService.saveSettings(table, settings).then(() => {
-                dispatch({ type: types.SAVE_SETTINGS_SUCCESS, data: { table, settings } });
-            });
-        };
+    saveSettings = (table, settings) =>
+        this.settingsService.saveSettings(table, settings).then((data) => {
+            this.dispatch({ type: types.SAVE_SETTINGS_SUCCESS, settings, table });
+        }).catch(reason =>
+            this.dispatch({ type: types.SAVE_SETTINGS_ERROR, error: reason, table }));
+
+    getSettings (table) {
+        return this.settingsService.getSettings(table).then((data) => {
+            if (!data) {
+                return this.dispatch({ type: types.GET_SETTINGS_ERROR, error: 'error?', table });
+            }
+            return this.dispatch({ type: types.GET_SETTINGS_SUCCESS, data, table });
+        }).catch(reason => this.dispatch({ type: types.GET_SETTINGS_ERROR, error: reason, table }));
     }
-    getSettings () {}
     saveUserSettings () {}
     getUserSettings () {}
 }
