@@ -1,47 +1,27 @@
-
 const { ipcMain } = require('electron');
 const GethConnector = require('../services/geth/index.js');
 const { STATICS } = require('../settings');
-const { EVENTS } = require('../settings');
-
-const symbolEnforcer = Symbol();
-const symbol = Symbol();
+const IpcService = require('./ipcService');
 
 /**
  * GethService class
- * It provides the View layer with access to geth instance.
- * It also registers events for the View layer, in order for the View layer
+ * It provides the Renderer with access to geth instance.
+ * It also registers events for the Renderer, in order for the Renderer
  * to be notified of what happens on the blockchain.
  *
  */
-class GethService {
+class GethService extends IpcService {
     /*
-     * This is called from the getInstance function.
-     * It shouldn't be called from any other place with new GethService
-     * @param {Symbol} enforcer
      * @returns {GethService}
      */
-    constructor (enforcer) {
-        if (enforcer !== symbolEnforcer) {
-            throw new Error('Cannot construct singleton');
-        }
-        this.serverEvent = EVENTS.server.geth;
-        this.clientEvent = EVENTS.client.geth;
+    constructor () {
+        super('geth');
+        this.filter = {};
         this.BLOCK_UPDATE_INTERVAL = 1000;
         this.STARTSYNC_MSG = 'Start synchronizing with the network';
         this.ALREADY_RUNNING = 'Geth is already running';
     }
-    /**
-     * Makes sure it returns the same reference to a GethService instance
-     * This must be used in order to get a GethService instance
-     * @returns {GethService}
-     */
-    static getInstance () {
-        if (!this[symbol]) {
-            this[symbol] = new GethService(symbolEnforcer);
-        }
-        return this[symbol];
-    }
+
     /*
      * It sets up the listeners for this module.
      * Events used are:
@@ -64,17 +44,12 @@ class GethService {
             this._stopGethService(event, arg);
         });
     }
-    _sendEvent (event) {
-        return (name, successCode, data) => {
-            event.sender.send(name, {
-                success: successCode,
-                status: data
-            });
-        };
-    }
+
     _startGethService (event, arg) {
         if (this.getGethService().isRunning()) {
-            this._sendEvent(event)(this.clientEvent.startService, false, this.ALREADY_RUNNING);
+            this._sendEvent(event)(this.clientEvent.startService, false, this.ALREADY_RUNNING, {
+                isRunning: true
+            });
         } else {
             this
                 .getGethService()
@@ -92,6 +67,7 @@ class GethService {
 
                         setTimeout(() => {
                             this._getGethUpdates(event, arg);
+                            this._startWatchingTheBlockchain();
                         }, STATICS.GETH_SETPROVIDER_TIMEOUT + 1000);
                     })
                 .catch((data) => {
@@ -105,7 +81,7 @@ class GethService {
         }
         this.getGethService().stop();
         this._sendEvent(event)(this.clientEvent.stopService,
-                                !this.getGethService().gethProcess,
+                                !!!this.getGethService().gethProcess,
                                 null);
     }
     _getGethUpdates (event) {
@@ -120,6 +96,11 @@ class GethService {
         return GethConnector.getInstance();
     }
     _getBlockUpdates (event) {
+        if(!this.getGethService().isRunning()) {
+            this._stopGethUpdates();
+            this._sendEvent(event)(this.clientEvent.stopService, false, 'Geth has died.');
+            return false;
+        }
         this
             .getGethService()
             .inSync()
@@ -161,6 +142,65 @@ class GethService {
             delete opts.cache;
         }
         return opts;
+    }
+
+    _startWatchingTheBlockchain () {
+        const web3 = this.getGethService().web3;
+        console.log('start watching');
+        this._watcher = web3.eth.filter('latest', (error, result) => {
+            console.log(result);
+            if (this.hasFilters()) {
+                if (!error) {
+                    web3.eth.getBlockAsync(result).then((blockObject, y) => {
+                        if (this.filter['tx'].length > 0) {
+                            const txs = blockObject.transactions;
+                            console.log('block: ' + blockObject.hash + ' has ' + txs.length + ' transactions.');
+                            if (txs && txs.length > 0) {
+                                for (let i = 0, l = txs.length; i < l; i++) {
+                                    let tempTx = txs[i];
+                                    for (let j = 0; j < this.filter['tx'].length; j++) {
+                                        const myFilter = this.filter['tx'][j];
+                                        if (myFilter.value === tempTx) {
+                                            web3.eth.getTransactionAsync(tempTx).then((txInfo) => {
+                                                myFilter.handler(txInfo);
+                                            });
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    hasFilters () {
+        return Object.keys(this.filter).length > 0;
+    }
+    /**
+    * type is usually "tx/transaction", but it could be a blockHash, contract Address, ...
+    */
+    addFilter (type, value, handler) {
+        console.log(type + ' - ' + value);
+        if (!this.filter[type]) {
+            this.filter[type] = [];
+        }
+        this.filter[type].push({
+            value: value,
+            handler: handler
+        });
+    }
+
+    removeFilter (type, value) {
+        let filters = this.filter[type];
+        let filterPoz = -1;
+        for(var i = 0, l = filters.length; i < l; i++) {
+            if(filters[i].value === value) {
+                filterPoz = i;
+            }
+        }
+        filters.splice(i, 1);
     }
 }
 

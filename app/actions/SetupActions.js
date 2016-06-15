@@ -1,4 +1,6 @@
-import { SetupService, SettingsService } from '../services';
+import { SetupService } from '../services';
+import { SettingsActions } from './SettingsActions';
+import { AppActions } from './AppActions';
 import { hashHistory } from 'react-router';
 import * as types from '../constants/SetupConstants';
 
@@ -6,23 +8,72 @@ class SetupActions {
     constructor (dispatch) {
         this.dispatch = dispatch;
         this.setupService = new SetupService;
-        this.settingsService = new SettingsService;
+        this.settingsActions = new SettingsActions(dispatch);
+        this.appActions = new AppActions(dispatch);
     }
-    startGeth = (options) => {
-        let startupOptions = {};
-        if (options) {
-            startupOptions = {
-                dataDir: options.dataDir,
-                ipcPath: options.ipcPath,
-                cache: options.cacheSize
-            };
-        }
-        this.setupService.startGeth(startupOptions).then((data) => {
-            if (!data.success) {
-                return this.dispatch(this._startGethError({ data }));
+    startGeth = () => {
+        this.settingsActions.getSettings('geth').then(() => {
+            this.dispatch((dispatch, getState) => {
+                const gethSettings = getState().settingsState.get('geth');
+                if (gethSettings.size > 0) {
+                    console.info('starting geth with options', gethSettings.first().toJS());
+                    return this.startGethWithOptions(gethSettings.first().toJS());
+                }
+            });
+        });
+        this.setupService.startGeth().then((data) => {
+            // if geth is already running do nothing
+            if (data.isRunning) {
+                return Promise.resolve();
             }
-            return this.dispatch(this._startGethSuccess(data));
-        }).catch(err => this.dispatch(this._startGethError({ err })));
+            // if geth could not start return an error and alert user
+            if (!data.success) {
+                const error = new Error(` ${data.status}`);
+                return Promise.reject(this.dispatch(this._startGethError(error)));
+            }
+            return Promise.resolve(this.dispatch(this._startGethSuccess({ data })));
+        })
+        .catch(reason => this.dispatch(() => {
+            this.appActions.showError({
+                code: 105,
+                type: reason.type ? reason.type : 'GETH_START_ERROR',
+                message: reason.data ? reason.data.message : reason.stack()
+            });
+        }));
+    }
+    startGethWithOptions = (options) => {
+        const startupOptions = {
+            dataDir: options.dataDir,
+            ipcPath: options.ipcPath,
+            cache: options.cacheSize
+        };
+
+        this.setupService.startGeth(startupOptions).then((data) => {
+            // if geth is already running do nothing
+            if (data.isRunning) {
+                return Promise.resolve();
+            }
+            if (!data.success) {
+                const error = new Error(` ${data.status}`);
+                return Promise.reject(this.dispatch(this._startGethError(error)));
+            }
+            return Promise.resolve(this.dispatch(this._startGethSuccess({ data })));
+        })
+        .then(() => {
+            this.dispatch((dispatch, getState) => {
+                const gethSettings = getState().setupConfig.get('geth');
+                if (gethSettings.get('started') && options) {
+                    this.settingsActions.saveSettings('geth', startupOptions);
+                }
+            });
+        })
+        .catch(reason => this.dispatch(() => {
+            this.appActions.showError({
+                code: 105,
+                type: reason.type ? reason.type : 'GETH_START_ERROR',
+                message: reason.data ? reason.data.message : reason
+            });
+        }));
     }
     stopGeth = () => {
         this.setupService.stopGeth().then(data => {
@@ -74,7 +125,6 @@ class SetupActions {
 
     _startGethSuccess = (data) => {
         // this.settingsService.saveSettings('geth', data);
-        this._nextStep('sync-status');
         return { type: types.START_GETH_SUCCESS, data };
     }
     _startGethError (data) {
@@ -87,7 +137,7 @@ class SetupActions {
         return { type: types.STOP_GETH_ERROR, data };
     }
     _startIPFSSuccess (data) {
-        this.settingsService.saveSettings('ipfs', data);
+        // this.settingsService.saveSettings('ipfs', data);
         return { type: types.START_IPFS_SUCCESS, data };
     }
     _startIPFSError (data) {
@@ -98,9 +148,6 @@ class SetupActions {
     }
     _stopIPFSError (data) {
         return { type: types.STOP_IPFS_ERROR, data };
-    }
-    _nextStep (pathName) {
-        return hashHistory.push(pathName);
     }
 }
 

@@ -4,12 +4,23 @@ import settingsDB from './db/settings';
 
 class SettingsService {
     saveSettings (table, settings) {
-        return new Promise((resolve, reject) => {
-            settingsDB.transaction('rw', settingsDB.geth, async() => {
-                resolve(await settingsDB[table].add({ settings }));
-            }).catch(err => reject(err));
+        return settingsDB[table].toArray().each().then(collection => {
+            collection.delete();
+        })
+        .then(() => {
+            return settingsDB.transaction('rw', settingsDB[table], () => {
+                return settingsDB[table].put(settings);
+            });
         });
     }
-    getSettings (table, query) {}
+    getSettings (table, query) {
+        let q = {};
+        if (query) {
+            q = query;
+        }
+        return settingsDB.transaction('r', settingsDB[table], () => {
+            return settingsDB[table].toArray();
+        });
+    }
 }
 export { SettingsService };

@@ -5,7 +5,6 @@ import { Scrollbars } from 'react-custom-scrollbars';
 import { injectIntl } from 'react-intl';
 import { setupMessages, generalMessages } from '../../locale-data/messages';
 import { AdvancedSetupForm } from '../ui/forms/advanced-setup-form.js';
-
 class Setup extends Component {
     constructor (props) {
         super(props);
@@ -13,11 +12,15 @@ class Setup extends Component {
             gethLogs: []
         };
     }
-    // componentWillReceiveProps (nextProps) {
-    //     if (!nextProps.setupConfig.getIn(['geth', 'status'])) {
-    //         this._getLogs();
-    //     }
-    // }
+    componentWillReceiveProps (nextProps) {
+        if (nextProps.setupConfig.getIn(['geth', 'started'])) {
+            return this.context.router.replace('sync-status');
+        }
+        if (nextProps.setupConfig.getIn(['geth', 'status']) === false) {
+            return this._getLogs();
+        }
+        return nextProps;
+    }
     handleChange = (ev, value) => {
         const { setupActions, setupConfig } = this.props;
         const show = value === 'advanced';
@@ -82,7 +85,7 @@ class Setup extends Component {
         if (!setupConfig.get('isAdvanced')) {
             setupActions.startGeth();
         } else {
-            setupActions.startGeth(setupConfig.get('geth').toJS());
+            setupActions.startGethWithOptions(setupConfig.get('geth').toJS());
         }
     }
     _getLogs = () => {}
@@ -105,7 +108,7 @@ class Setup extends Component {
             backgroundColor: 'rgba(0,0,0,0.02)'
         };
         if (!setupConfig.getIn(['geth', 'started'])
-                && setupConfig.getIn(['geth', 'status']) !== '') {
+                && setupConfig.getIn(['geth', 'status']) === false) {
             return (
               <div style={style}>
                 <div className="start-xs" >
@@ -233,11 +236,13 @@ Setup.propTypes = {
     setupActions: PropTypes.object.isRequired,
     setupConfig: PropTypes.object.isRequired,
     style: PropTypes.object,
-    intl: PropTypes.object
+    intl: PropTypes.object,
+    dispatch: PropTypes.func
 };
 
 Setup.contextTypes = {
-    muiTheme: React.PropTypes.object
+    muiTheme: React.PropTypes.object,
+    router: React.PropTypes.object
 };
 
 Setup.defaultProps = {

@@ -10,15 +10,7 @@ class SyncActions {
      * Dispatcher for starting sync
      * @returns {function()}
      */
-    startSync = (options) => {
-        this.setupService.startGeth(options).then(data => {
-            if (!data.success) {
-                console.log(data);
-                return this.dispatch({ type: types.SYNC_ACTIVE_ERROR });
-            }
-            return this.dispatch({ type: types.SYNC_ACTIVE });
-        });
-    }
+    startSync = () => this.dispatch({ type: types.SYNC_ACTIVE })
     /**
      * Dispatcher for resuming sync
      * @returns {function()}
@@ -30,11 +22,8 @@ class SyncActions {
      * @returns {{type}}
      */
     stopSync = () => {
-        this.setupService.stopGeth().then(data => {
-            if (!data.success) {
-                return this.dispatch({ type: types.SYNC_STOP_ERROR });
-            }
-            return this.dispatch({ type: types.SYNC_STOPPED, data });
+        this.stopUpdateSync(() => {
+            this.dispatch({ type: types.SYNC_STOPPED });
         });
     }
     startUpdateSync = (cb) => {
