@@ -2,7 +2,8 @@
 'use strict';
 require('babel-register');
 const gethService = require('./electron-api/modules/services/geth');
-const ipfsService = require('./electron-api/modules/services/ipfs-connector');
+const { IpfsConnector } = require('./electron-api/modules/services/ipfs-connector');
+const ipcApi = require('./electron-api/modules/ipc');
 const electron = require('electron');
 const app = electron.app;
 
@@ -27,8 +28,12 @@ app.on('window-all-closed', () => {
 });
 
 app.on('will-quit', () => {
-    gethService.getInstance().stop();
-    ipfsService.getInstance().stop();
+    if (gethService.getInstance().ipcPipe) {
+        gethService.getInstance().stop();
+    }
+    if (IpfsConnector.getInstance().process) {
+        IpfsConnector.getInstance().stop();
+    }
 });
 
 
@@ -57,5 +62,5 @@ app.on('ready', () => {
     mainWindow.on('closed', () => {
         mainWindow = null;
     });
-    require('./electron-api/modules/ipc/index.js').initIPCServices(mainWindow);
+    ipcApi.initIPCServices(mainWindow);
 });
