@@ -1,5 +1,5 @@
 import React from 'react';
-import AvatarEditor from 'react-avatar-editor';
+import AvatarEditor from 'react-avatar-editor/dist';
 import AddPhotoIcon from 'material-ui/svg-icons/image/add-a-photo';
 import ClearIcon from 'material-ui/svg-icons/content/clear';
 import {SvgIcon, Slider} from 'material-ui';
