@@ -23,7 +23,7 @@ class Avatar extends React.Component {
         const userName = this.props.userName;
         const palette = this.context.muiTheme.palette;
         const avatarEmptyStyle = {
-            width: '150px', 
+            width: '150px',
             height: '150px',
             borderRadius: '50%',
             overflow: 'hidden',
@@ -67,7 +67,7 @@ class Avatar extends React.Component {
                 onMouseEnter = {this._handleMouseEnter}
                 onMouseLeave={this._handleMouseLeave}>
             { this.state.showChangeAvatar && !this.state.isNewAvatarLoaded &&
-              <div style = {dialogHandlerStyle} 
+              <div style = {dialogHandlerStyle}
                     onClick = {this._handleDialogOpen}
               />
             }
