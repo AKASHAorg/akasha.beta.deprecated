@@ -19,8 +19,12 @@ class App extends Component {
             muiTheme: getMuiTheme(AkashaTheme)
         };
     }
-    componentWillMount () {
+    componentDidMount () {
         // check if geth settings are already stored
+        const { settingsActions, settingsState } = this.props;
+        settingsActions.getSettings('geth').then(() => {
+            console.log(settingsState);
+        });
     }
     _handleSendReport = () => {
 
@@ -55,11 +59,16 @@ class App extends Component {
 App.propTypes = {
     appState: PropTypes.object,
     appActions: PropTypes.object,
-    settingsActions: PropTypes.object
+    settingsActions: PropTypes.object,
+    settingsState: PropTypes.object
+};
+App.contextTypes = {
+    router: PropTypes.object
 };
 function mapStateToProps (state) {
     return {
-        appState: state.appState
+        appState: state.appState,
+        settingsState: state.settingsState
     };
 }
 function mapDispatchToProps (dispatch) {

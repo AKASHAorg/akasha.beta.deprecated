@@ -10,17 +10,14 @@
     "debug-ipc": "ELECTRON_RUN_AS_NODE=true node_modules/.bin/electron node_modules/node-inspector/bin/inspector.js --no-preload --web-port 8181",
     "test-ipc": "node_modules/.bin/mocha test/spectron/spectron-main.js",
     "test-real": "node_modules/.bin/mocha test/spectron/spectron-real.js",
-    "test-e2e": "better-npm-run test-e2e",
     "lint": "node node_modules/eslint/bin/eslint.js app/ electron-api/",
     "browser": "node server.js",
     "build": "better-npm-run build",
-    "coverage": "better-npm-run coverage",
     "start": "better-npm-run start",
     "wingui": "better-npm-run wingui",
     "xgui": "better-npm-run xgui",
     "package": "better-npm-run package",
-    "package-all": "npm run package -- --all",
-    "postinstall": "node node_modules/fbjs-scripts/node/check-dev-engines.js package.json&& cd node_modules/leveldown && node-gyp rebuild --target=1.2.1 --arch=x64 --dist-url=https://atom.io/download/atom-shell"
+    "package-all": "npm run package -- --all"
   },
   "betterScripts": {
     "start": {
@@ -30,14 +27,14 @@
       }
     },
     "wingui": {
-      "command": "node_modules\\.bin\\electron.cmd --remote-debugging-port=1337 main.js",
+      "command": "node_modules\\.bin\\electron.cmd --remote-debugging-port=1337 .",
       "env": {
         "HOT": 1,
         "NODE_ENV": "development"
       }
     },
     "xgui": {
-      "command": "node_modules/.bin/electron --remote-debugging-port=1337 --debug=5858 main.js",
+      "command": "node_modules/.bin/electron --remote-debugging-port=1337 --debug=5858 .",
       "env": {
         "HOT": 1,
         "NODE_ENV": "development"
@@ -60,18 +57,6 @@
       "env": {
         "NODE_ENV": "test"
       }
-    },
-    "test-e2e": {
-      "command": "mocha --compilers js:babel-core/register --require ./test/setup.js --require co-mocha ./test/e2e.js",
-      "env": {
-        "NODE_ENV": "test"
-      }
-    },
-    "coverage": {
-      "command": "istanbul cover _mocha -- -R spec",
-      "env": {
-        "NODE_ENV": "test"
-      }
     }
   },
   "repository": {
@@ -90,7 +75,7 @@
   "homepage": "https://github.com/AkashaProject/node-app#readme",
   "devDependencies": {
     "asar": "0.11.0",
-    "babel-cli": "6.9.0",
+    "babel-cli": "6.10.1",
     "babel-core": "6.9.1",
     "babel-eslint": "^6.0.4",
     "babel-loader": "6.2.4",
@@ -106,17 +91,18 @@
     "babel-runtime": "6.9.2",
     "better-npm-run": "0.0.8",
     "chai": "3.5.0",
-    "chromedriver": "2.21.2",
     "co-mocha": "1.1.2",
     "css-loader": "0.23.1",
     "css-modules-require-hook": "4.0.1",
-    "cssnano": "3.7.0",
+    "cssnano": "3.7.1",
+    "debug": "^2.2.0",
     "del": "2.2.0",
     "devtron": "^1.1.2",
-    "electron-packager": "7.0.3",
+    "electron-debug": "^1.0.0",
+    "electron-packager": "7.0.4",
     "electron-prebuilt": "1.2.2",
     "electron-rebuild": "1.1.5",
-    "eslint": "2.11.1",
+    "eslint": "2.12.0",
     "eslint-config-airbnb": "^9.0.1",
     "eslint-plugin-import": "^1.8.1",
     "eslint-plugin-jsx-a11y": "^1.2.2",
@@ -125,8 +111,6 @@
     "extract-text-webpack-plugin": "1.0.1",
     "fbjs-scripts": "0.7.1",
     "file-loader": "0.8.5",
-    "isparta": "4.0.0",
-    "istanbul": "0.4.3",
     "jsdoc": "^3.4.0",
     "jsdom": "9.2.1",
     "minimist": "1.2.0",
@@ -157,17 +141,12 @@
   "dependencies": {
     "bin-wrapper": "3.0.2",
     "bluebird": "3.4.0",
-    "debug": "^2.2.0",
     "dexie": "^1.3.6",
     "draft-js": "^0.7.0",
-    "electron-debug": "1.0.0",
     "fuse.js": "^2.2.0",
     "history": "3.0.0",
     "immutable": "3.8.1",
     "ipfs-api": "6.0.1",
-    "leveldown": "1.4.6",
-    "levelup": "1.3.2",
-    "linvodb3": "3.19.0",
     "lodash": "^4.12.0",
     "material-ui": "0.15.x",
     "mkdirp": "0.5.x",
@@ -184,7 +163,6 @@
     "react-validation-mixin": "^5.3.4",
     "react-validatorjs-strategy": "^0.1.10",
     "redux": "3.5.2",
-    "redux-promise": "0.5.3",
     "redux-thunk": "2.1.0",
     "roboto-fontface": "0.5.0",
     "validatorjs": "^2.0.5",
