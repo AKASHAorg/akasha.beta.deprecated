@@ -1,10 +1,13 @@
 import React, { Component, PropTypes } from 'react';
+import { remote } from 'electron';
 import LoginHeader from '../../components/ui/partials/LoginHeader';
 import { RadioButton, RadioButtonGroup, RaisedButton } from 'material-ui';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { injectIntl } from 'react-intl';
 import { setupMessages, generalMessages } from '../../locale-data/messages';
 import { AdvancedSetupForm } from '../ui/forms/advanced-setup-form.js';
+const { dialog } = remote;
+
 class Setup extends Component {
     constructor (props) {
         super(props);
@@ -12,14 +15,19 @@ class Setup extends Component {
             gethLogs: []
         };
     }
-    componentWillReceiveProps (nextProps) {
-        if (nextProps.setupConfig.getIn(['geth', 'started'])) {
-            return this.context.router.replace('sync-status');
-        }
-        if (nextProps.setupConfig.getIn(['geth', 'status']) === false) {
-            return this._getLogs();
-        }
-        return nextProps;
+    componentWillMount () {
+        const { eProcActions, settingsActions, dispatch } = this.props;
+        settingsActions.getSettings('geth').then(() => {
+            dispatch((dispatch, getState) => {
+                console.log(getState(), 'wtf state');
+                // settings detected. don`t start ipfs
+                if (getState().settingsState.get('geth').size > 0) {
+                    return this.context.router.replace('sync-status');
+                }
+                // start ipfs to get default config
+                eProcActions.startIPFS();
+            });
+        });
     }
     handleChange = (ev, value) => {
         const { setupActions, setupConfig } = this.props;
@@ -31,14 +39,20 @@ class Setup extends Component {
     };
 
     handleGethDatadir = (ev) => {
+        ev.target.blur();
+        ev.preventDefault();
         const { setupActions, setupConfig } = this.props;
-
-        const target = ev.target;
-        const currentDatadir = setupConfig.getIn(['geth', 'dataDir']);
-        if (currentDatadir === target.value || !target.value) {
-            return;
+        if (!this.state.isDialogOpen) {
+            this.showOpenDialog('geth data directory', (paths) => {
+                this.setState({
+                    isDialogOpen: false
+                }, () => {
+                    if (paths) {
+                        setupActions.setupGethDataDir(paths[0]);
+                    }
+                });
+            });
         }
-        setupActions.setupGethDataDir(target.value);
     };
 
     handleGethIpc = (ev) => {
@@ -53,13 +67,38 @@ class Setup extends Component {
     };
     handleGethCacheSize = (ev) => {
         const { setupActions, setupConfig } = this.props;
-
         const target = ev.target;
         const currentCacheSize = setupConfig.getIn(['geth', 'cacheSize']);
         if (currentCacheSize === target.value || !target.value) {
             return;
         }
-        setupActions.setupGethCacheSize(target.value);
+        if (target.value < 512) {
+            this.setState({
+                cacheSizeError: 'Cache size should not be less than 512Mb'
+            });
+        } else {
+            this.setState({
+                cacheSizeError: null
+            }, () => {
+                setupActions.setupGethCacheSize(target.value);
+            });
+        }
+    }
+    handleIpfsPath = (ev) => {
+        const { setupActions } = this.props;
+        ev.target.blur();
+        ev.stopPropagation();
+        if (!this.state.isDialogOpen) {
+            this.showOpenDialog('ipfs path', (paths) => {
+                this.setState({
+                    isDialogOpen: false
+                }, () => {
+                    if (paths) {
+                        setupActions.setupIPFSPath(paths[0]);
+                    }
+                });
+            });
+        }
     }
     handleIpfsApiPort = (ev) => {
         const { setupActions, setupConfig } = this.props;
@@ -81,12 +120,23 @@ class Setup extends Component {
         setupActions.setupIPFSGatewayPort(target.value);
     }
     handleSubmit = () => {
-        const { setupActions, setupConfig } = this.props;
-        if (!setupConfig.get('isAdvanced')) {
-            setupActions.startGeth();
-        } else {
-            setupActions.startGethWithOptions(setupConfig.get('geth').toJS());
-        }
+        const { settingsActions, setupConfig } = this.props;
+        console.log(setupConfig.get('geth').toJS());
+        const { dataDir, ipcPath, cache } = setupConfig.get('geth').toJS();
+        settingsActions.saveSettings('geth', { dataDir, ipcPath, cache }).then(() => {
+            this.context.router.push('sync-status');
+        });
+    }
+    showOpenDialog = (title, cb) => {
+        this.setState({
+            isDialogOpen: true
+        }, () => {
+            dialog.showOpenDialog({
+                title: `Select ${title}`,
+                buttonLabel: 'Select',
+                properties: ['openDirectory']
+            }, cb);
+        });
     }
     _getLogs = () => {}
     _retrySetup = () => {
@@ -199,9 +249,11 @@ class Setup extends Component {
                       <AdvancedSetupForm
                         intl={intl}
                         setupConfig={setupConfig}
+                        cacheSizeError={this.state.cacheSizeError}
                         handleGethDatadir={this.handleGethDatadir}
                         handleGethIpc={this.handleGethIpc}
                         handleGethCacheSize={this.handleGethCacheSize}
+                        handleIpfsPath={this.handleIpfsPath}
                         handleIpfsApiPort={this.handleIpfsApiPort}
                         handleIpfsGatewayPort={this.handleIpfsGatewayPort}
                       />
@@ -233,7 +285,9 @@ class Setup extends Component {
 }
 
 Setup.propTypes = {
+    eProcActions: PropTypes.object.isRequired,
     setupActions: PropTypes.object.isRequired,
+    settingsActions: PropTypes.object.isRequired,
     setupConfig: PropTypes.object.isRequired,
     style: PropTypes.object,
     intl: PropTypes.object,
