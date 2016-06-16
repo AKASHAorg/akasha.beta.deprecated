@@ -1,11 +1,14 @@
 import * as types from '../constants/SyncConstants';
 import { SetupService } from '../services';
+import { SettingsActions } from './';
 
 class SyncActions {
     constructor (dispatch) {
         this.dispatch = dispatch;
+        this.settingsActions = new SettingsActions(dispatch);
         this.setupService = new SetupService;
     }
+    
     /**
      * Dispatcher for starting sync
      * @returns {function()}
@@ -16,7 +19,11 @@ class SyncActions {
      * @returns {function()}
      */
     resumeSync = () => this.dispatch({ type: types.SYNC_RESUME });
-    pauseSync = () => this.dispatch({ type: types.SYNC_PAUSE });
+    pauseSync = () => {
+        this.stopUpdateSync(() => {
+            this.dispatch({ type: types.SYNC_PAUSE });
+        });
+    }
     /**
      * Action for stopping sync
      * @returns {{type}}

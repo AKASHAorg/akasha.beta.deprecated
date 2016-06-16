@@ -1,5 +1,4 @@
 /* eslint new-cap: ["error", { "capIsNewExceptions": ["Map"] }] */
-import * as setupActions from '../actions/SetupActions';
 import * as types from '../constants/SetupConstants';
 import { Map } from 'immutable';
 
@@ -8,12 +7,13 @@ const initialState = Map({
         dataDir: '',
         ipcPath: '',
         status: '',
-        cacheSize: '',
+        cache: '',
         started: false,
     }),
     ipfs: Map({
         apiPort: '',
         gatewayPort: '',
+        ipfsPath: '',
         started: false,
         status: ''
     }),
@@ -30,7 +30,9 @@ export default function setupConfig (state = initialState, action) {
         case types.SETUP_GETH_IPCPATH:
             return state.updateIn(['geth', 'ipcPath'], () => action.path);
         case types.SETUP_GETH_CACHE_SIZE:
-            return state.updateIn(['geth', 'cacheSize'], () => action.size);
+            return state.updateIn(['geth', 'cache'], () => action.size);
+        case types.SETUP_IPFS_PATH:
+            return state.updateIn(['ipfs', 'ipfsPath'], () => action.path);
         case types.SETUP_IPFS_API_PORT:
             return state.updateIn(['ipfs', 'apiPort'], () => action.port);
         case types.SETUP_IPFS_GATEWAY_PORT:
@@ -41,7 +43,7 @@ export default function setupConfig (state = initialState, action) {
                     started: true,
                     dataDir: action.data.status.dataDir,
                     ipcPath: action.data.status.ipcPath,
-                    cacheSize: action.data.status.cache,
+                    cache: action.data.status.cache,
                     status: action.data.status
                 });
             }

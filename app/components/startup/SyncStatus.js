@@ -17,16 +17,9 @@ class SyncStatus extends Component {
         };
     }
     componentWillMount () {
-        const { setupConfig, syncActions } = this.props;
-        if (setupConfig.getIn(['geth', 'started'])) {
-            syncActions.startSync();
-            this.getSyncStatus();
-        }
-    }
-    componentWillReceiveProps (nextProps) {
-        if (!nextProps.setupConfig.getIn(['geth', 'started'])) {
-            this.context.router.replace('setup-options');
-        }
+        const { eProcActions } = this.props;
+        // start geth here!
+        eProcActions.startGeth();
     }
     componentWillUnmount () {
         const { syncActions, loggerActions } = this.props;
@@ -69,8 +62,10 @@ class SyncStatus extends Component {
     }
     handleCancel = () => {
         const { syncActions, setupActions } = this.props;
-        syncActions.stopSync();
-        setupActions.stopGeth();
+        syncActions.stopSync(() => {
+            setupActions.stopGeth();
+            this.context.router.push('setup-options');
+        });
     }
     _getActionLabels = () => {
         const { syncState, intl } = this.props;
@@ -135,7 +130,8 @@ class SyncStatus extends Component {
         pageTitle = this._getActionLabels().title;
         if (message && message.peerCount > 0 && message.highestBlock > 0) {
             blockProgress = message;
-            currentProgress = (blockProgress.currentBlock / blockProgress.highestBlock) * 100;
+            currentProgress = ((blockProgress.currentBlock - blockProgress.startingBlock) /
+                (blockProgress.highestBlock - blockProgress.startingBlock)) * 100;
             peerInfo = (
               <FormattedPlural
                 value={message.peerCount}
@@ -234,6 +230,7 @@ class SyncStatus extends Component {
 }
 
 SyncStatus.propTypes = {
+    eProcActions: PropTypes.object.isRequired,
     syncActions: PropTypes.object.isRequired,
     setupActions: PropTypes.object.isRequired,
     loggerActions: PropTypes.object.isRequired,

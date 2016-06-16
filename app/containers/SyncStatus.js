@@ -1,8 +1,6 @@
 import { connect } from 'react-redux';
 import SyncStatus from '../components/startup/SyncStatus';
-import { SyncActions } from '../actions/SyncActions';
-import { SetupActions } from '../actions/SetupActions';
-import { LoggerActions } from '../actions/LoggerActions';
+import { SyncActions, SetupActions, LoggerActions, EProcActions } from '../actions';
 
 function mapStateToProps (state) {
     return {
@@ -13,6 +11,7 @@ function mapStateToProps (state) {
 
 function mapDispatchToProps (dispatch) {
     return {
+        eProcActions: new EProcActions(dispatch),
         syncActions: new SyncActions(dispatch),
         setupActions: new SetupActions(dispatch),
         loggerActions: new LoggerActions(dispatch)
