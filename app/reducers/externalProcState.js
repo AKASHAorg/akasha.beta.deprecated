@@ -1,1 +1,1 @@
-// reducer for external processess
+// reducer for external process
