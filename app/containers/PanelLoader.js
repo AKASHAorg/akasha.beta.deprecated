@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import PanelLoader from '../components/panels/panel-loader';
-import { PanelActions } from '../actions/PanelActions';
+import { AppActions } from '../actions';
 
 function mapStateToProps (state) {
     return {
@@ -10,7 +10,7 @@ function mapStateToProps (state) {
 
 function mapDispatchToProps (dispatch) {
     return {
-        panelActions: new PanelActions(dispatch)
+        appActions: new AppActions(dispatch)
     };
 }
 

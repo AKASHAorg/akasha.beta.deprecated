@@ -6,10 +6,12 @@ import { setupMessages } from '../../../locale-data/messages';
 const AdvancedSetupForm = (props) => {
     const {
         intl,
+        cacheSizeError,
         setupConfig,
         handleGethIpc,
         handleGethDatadir,
         handleGethCacheSize,
+        handleIpfsPath,
         handleIpfsApiPort,
         handleIpfsGatewayPort
     } = props;
@@ -24,9 +26,10 @@ const AdvancedSetupForm = (props) => {
           errorText={intl.formatMessage(setupMessages.changeGethDataDir)}
           floatingLabelStyle={floatingLabelStyle}
           floatingLabelText={intl.formatMessage(setupMessages.gethDataDirPath)}
-          hintText={setupConfig.getIn(['geth', 'dataDir'])}
+          value={setupConfig.getIn(['geth', 'dataDir'])}
           inputStyle={inputStyle}
-          onBlur={handleGethDatadir}
+          onClick={handleGethDatadir}
+          onFocus={handleGethDatadir}
           style={rootStyle}
         />
         <TextField
@@ -40,16 +43,27 @@ const AdvancedSetupForm = (props) => {
           style={rootStyle}
         />
         <TextField
-          errorStyle={errorStyle}
-          errorText={intl.formatMessage(setupMessages.changeGethCacheSize)}
+          errorStyle={cacheSizeError ? {color: 'red'} : errorStyle}
+          errorText={cacheSizeError || intl.formatMessage(setupMessages.changeGethCacheSize)}
           floatingLabelStyle={floatingLabelStyle}
           floatingLabelText={intl.formatMessage(setupMessages.gethCacheSize)}
           hintText={setupConfig.getIn(['geth', 'cacheSize'])}
           inputStyle={inputStyle}
           onBlur={handleGethCacheSize}
           style={rootStyle}
-          min="512"
           type="number"
+        />
+        <TextField
+          errorStyle={errorStyle}
+          errorText={'Change ipfs directory'}
+          floatingLabelStyle={floatingLabelStyle}
+          floatingLabelText={'IPFS Path'}
+          value={setupConfig.getIn(['ipfs', 'ipfsPath'])}
+          inputStyle={inputStyle}
+          onClick={handleIpfsPath}
+          onFocus={handleIpfsPath}
+          style={rootStyle}
+          type="text"
         />
         <TextField
           errorStyle={errorStyle}
@@ -78,10 +92,12 @@ const AdvancedSetupForm = (props) => {
 };
 AdvancedSetupForm.propTypes = {
     intl: PropTypes.object,
+    cacheSizeError: PropTypes.string,
     setupConfig: PropTypes.object,
     handleGethDatadir: PropTypes.func,
     handleGethIpc: PropTypes.func,
     handleGethCacheSize: PropTypes.func,
+    handleIpfsPath: PropTypes.func,
     handleIpfsApiPort: PropTypes.func,
     handleIpfsGatewayPort: PropTypes.func
 };

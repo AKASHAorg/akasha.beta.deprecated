@@ -4,12 +4,14 @@ const dbg = debug('App:settingsDB');
 
 const db = new Dexie('settings');
 db.version(1).stores({
-    geth: ',dataDir, ipcPath, cache',
-    ipfs: ',apiPort, gatewayPort'
+    geth: '&name, dataDir, ipcPath, cache',
+    user: '&username, autoCrashReports'
 });
 
-db.geth.hook('creating', (primaryKey, obj, trans) => {
-    dbg('saving to geth ', primaryKey, obj, trans);
+db.geth.hook('creating', (primaryKey, obj, transaction) => {
+    dbg('creating.. ', primaryKey, obj, transaction);
 });
+
+db.open();
 
 export default db;

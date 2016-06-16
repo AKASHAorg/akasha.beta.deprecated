@@ -1,7 +1,7 @@
 import React, { PropTypes, Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import * as PanelActions from '../../../actions/PanelActions';
+import { AppActions } from '../../../actions';
 import {
   MenuAddEntry,
   MenuAkashaLogo,
@@ -55,16 +55,16 @@ class SideBar extends Component {
     _handleNewEntry = (ev) => {
         const entries = 0;
         if(entries > 0) {
-            this.props.dispatch(PanelActions.showPanel({name: 'newEntry', overlay: true}));
+            this.props.dispatch(AppActions.showPanel({name: 'newEntry', overlay: true}));
         } else {
-            this.props.dispatch(PanelActions.hidePanels());
+            this.props.dispatch(AppActions.hidePanels());
             this.context.router.push('/severs/new-entry');
         }
     }
     _handleNavigation = (to, ev) => {
         const basePath = '/severs'; //change this with logged user`s username
 
-        this.props.dispatch(PanelActions.hidePanels());
+        this.props.dispatch(AppActions.hidePanels());
         if(!to) {
             // navigate to index route
             return this.context.router.push(basePath);
@@ -72,7 +72,7 @@ class SideBar extends Component {
         this.context.router.push(`${basePath}/${to}`);
     }
     _handlePanelShow = (panelName, ev) => {
-        this.props.dispatch(PanelActions.showPanel(panelName));
+        this.props.dispatch(AppActions.showPanel(panelName));
     }
 }
 SideBar.propTypes = {
