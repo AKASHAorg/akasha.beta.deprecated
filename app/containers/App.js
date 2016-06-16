@@ -1,30 +1,18 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { SettingsActions } from '../actions/SettingsActions';
-import { AppActions } from '../actions/AppActions';
+import { SettingsActions, AppActions } from '../actions';
 import AkashaTheme from '../layouts/AkashaTheme';
 import { getMuiTheme } from 'material-ui/styles';
 import { Snackbar } from 'material-ui';
 
 class App extends Component {
-    static propTypes = {
-        children: PropTypes.element.isRequired
-    };
-
-    static childContextTypes = {
-        muiTheme: PropTypes.object
-    };
     getChildContext () {
         return {
             muiTheme: getMuiTheme(AkashaTheme)
         };
     }
-    componentDidMount () {
-        // check if geth settings are already stored
-        const { settingsActions, settingsState } = this.props;
-        settingsActions.getSettings('geth').then(() => {
-            console.log(settingsState);
-        });
+    componentWillMount () {
+       
     }
     _handleSendReport = () => {
 
@@ -68,6 +56,13 @@ App.propTypes = {
     appActions: PropTypes.object,
     settingsActions: PropTypes.object
 };
+App.contextTypes = {
+    router: React.PropTypes.object
+};
+App.childContextTypes = {
+    muiTheme: PropTypes.object
+};
+
 function mapStateToProps (state) {
     return {
         appState: state.appState

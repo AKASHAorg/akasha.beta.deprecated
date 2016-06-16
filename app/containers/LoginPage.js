@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import Auth from '../components/auth/Auth';
-import { ProfileActions } from '../actions/ProfileActions';
+import { ProfileActions } from '../actions';
 
 function mapStateToProps (state) {
     return {

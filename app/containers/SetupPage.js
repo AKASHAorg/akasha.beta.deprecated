@@ -1,7 +1,6 @@
 import { connect } from 'react-redux';
 import Setup from '../components/startup/Setup';
-import { SetupActions } from '../actions/SetupActions';
-import { SyncActions } from '../actions/SyncActions';
+import { SetupActions, SyncActions, SettingsActions, EProcActions } from '../actions';
 
 function mapStateToProps (state) {
     return {
@@ -11,8 +10,11 @@ function mapStateToProps (state) {
 
 function mapDispatchToProps (dispatch) {
     return {
+        eProcActions: new EProcActions(dispatch),
         setupActions: new SetupActions(dispatch),
-        syncActions: new SyncActions(dispatch)
+        settingsActions: new SettingsActions(dispatch),
+        syncActions: new SyncActions(dispatch),
+        dispatch
     };
 }
 

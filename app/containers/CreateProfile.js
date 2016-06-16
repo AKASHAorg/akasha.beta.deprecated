@@ -1,9 +1,8 @@
-import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import CreateProfile from '../components/startup/CreateProfile';
 import CreateProfileStatus from '../components/startup/CreateProfileStatus';
 import CreateProfileComplete from '../components/startup/CreateProfileComplete';
-import { ProfileActions } from '../actions/ProfileActions';
+import { ProfileActions } from '../actions';
 
 function mapStateToProps (state) {
     return {
