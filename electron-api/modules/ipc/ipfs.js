@@ -41,7 +41,7 @@ class IpfsService extends IpcService {
             .setLogger(loggerRegistrar.getInstance()
             .registerLogger('ipfs', { maxsize: 1024 * 10 * 3 }));
         if (arg && typeof arg === 'object') {
-            if (arg.apiPort && !isNaN(parseInt(arg.apiPort))) {
+            if (arg.apiPort && !isNaN(parseInt(arg.apiPort, 10))) {
                 this.getIpfsService().setConfig('apiAddress', '/ip4/127.0.0.1/tcp/' + arg.apiPort);
             }
             if (arg.repoDir && arg.repoDir.length > 0) {
@@ -52,17 +52,19 @@ class IpfsService extends IpcService {
             .getIpfsService()
             .start()
             .then((data) => {
-                this._sendEvent(event)(this.clientEvent.startService, true, data);
+                this._sendEvent(event)(this.clientEvent.startService, true, Object.assign({
+                    ipfsMessage: data
+                }, arg));
             })
             .catch((data) => {
                 this._sendEvent(event)(this.clientEvent.startService, false, data);
             });
     }
-    _stopIpfsService (event) {
+    _stopIpfsService (event, arg) {
         this
             .getIpfsService()
             .stop();
-        this._sendEvent(event)(this.clientEvent.stopService, true, null);
+        this._sendEvent(event)(this.clientEvent.stopService, true, arg);
     }
     getIpfsService () {
         return IpfsConnector.getInstance();

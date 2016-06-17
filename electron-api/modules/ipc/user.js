@@ -1,6 +1,7 @@
 const { ipcMain } = require('electron');
 const IpcService = require('./ipcService');
-const dapples = require('../../../contracts.sol/build/js_module.js');
+const Dapple = require('../../../contracts.sol/build/js_module.js');
+const request = require('request');
 
 /**
  * UserService class
@@ -35,6 +36,15 @@ class UserService extends IpcService {
         ipcMain.on(this.serverEvent.exists, (event, arg) => {
             this._usernameExists(event, arg);
         });
+        ipcMain.on(this.serverEvent.createCoinbase, (event, arg) => {
+            this._createCoinbase(event, arg);
+        });
+        ipcMain.on(this.serverEvent.faucetEther, (event, arg) => {
+            this._faucetEther(event, arg);
+        });
+        ipcMain.on(this.serverEvent.registerProfile, (event, arg) => {
+            this._registerProfile(event, arg);
+        });
     }
 
     getPassword () {
@@ -48,11 +58,33 @@ class UserService extends IpcService {
     _usernameExists (event, arg) {
         const geth = UserService.getService('geth').getGethService();
         const web3 = geth.web3;
-        const registry = new dapples.class(web3).objects.registry;
+        const registry = new Dapple.class(web3).objects.registry;
         registry.hasProfile.call(web3.fromUtf8(arg.username), {
 
-        }, function(err, res){
-            console.log(res);
+        }, (err, res) => {
+            if (!err) {
+                this._sendEvent(event)(this.clientEvent.createCoinbase, true, res);
+            }
+        });
+    }
+
+    _createCoinbase (event, arg) {
+        const web3 = this.__getWeb3();
+        web3.personal.newAccountAsync(arg.password).then((data) => {
+            this._sendEvent(event)(this.clientEvent.createCoinbase, true, data);
+        });
+    }
+
+    _faucetEther (event, arg) {
+        const URL = 'http://faucet.ma.cx:3000/donate/' + arg.account; // eslint-disable-line prefer-template
+        request({
+            uri: URL,
+            method: 'GET',
+            timeout: 10000,
+            followRedirect: true,
+            maxRedirects: 2
+        }, (error, response, body) => {
+          // console.log(body);
         });
     }
 
@@ -64,26 +96,36 @@ class UserService extends IpcService {
             .add(arg)
             .then((response) => {
                 const ipfsHash = response[0].Hash;
-                console.log('ipfs hash: '+ipfsHash);
-                const geth = UserService.getService('geth').getGethService();
-                const web3 = geth.web3;
+                const web3 = this.__getWeb3();
                 web3.eth.getCoinbase((err, res) => {
-                    console.log('account: ' + res);
                     if (err) {
-                        this._sendEvent(event)(this.clientEvent.signUp, false, this.NO_COINBASE_FAIL);
+                        this.
+                            _sendEvent(event)(
+                                    this.clientEvent.signUp,
+                                    false,
+                                    this.NO_COINBASE_FAIL);
                     } else {
                         web3.personal.unlockAccountAsync(res, this.password, 20000).then(() => {
-                            console.log('unlock went through');
-                            const registry = new dapples.class(web3).objects.registry;
+                            const registry = new Dapple.class(web3).objects.registry;
                             const ipfsHashDelimiter = Math.floor(ipfsHash.length / 2);
-                            registry.register(web3.fromUtf8(JSON.parse(arg.data).username), [ipfsHash.substring(0, ipfsHashDelimiter), ipfsHash.substring(ipfsHashDelimiter)], {
+                            registry.register(
+                                web3.fromUtf8(JSON.parse(arg.data).username),
+                                [
+                                    ipfsHash.substring(0, ipfsHashDelimiter),
+                                    ipfsHash.substring(ipfsHashDelimiter)
+                                ],
+                                {
                                     gas: 1900000
-                                }, (err, tx) => {
-                                console.log('transaction went through: ' + tx);
-                                UserService.getService('geth').addFilter('tx', tx, (txInfo) => {
-                                    this._sendEvent(event)(this.clientEvent.signUp, true, txInfo);
+                                }, (error, tx) => {
+                                    if (!error) {
+                                        UserService
+                                            .getService('geth')
+                                            .addFilter('tx', tx, (txInfo) => {
+                                                this.
+                                                    _sendEvent(event)(this.clientEvent.signUp, true, txInfo);
+                                            });
+                                    }
                                 });
-                            });
                         });
                     }
                 });
@@ -91,6 +133,52 @@ class UserService extends IpcService {
             .catch(() => {
                 this._sendEvent(event)(this.clientEvent.signUp, false, this.IPFS_ADD_SIGNUP_FAIL);
             });
+    }
+
+    _registerProfile (event, arg) {
+        UserService
+            .getService('ipfs')
+            .getIpfsService()
+            .api
+            .add(arg)
+            .then((response) => {
+                const ipfsHash = response[0].Hash;
+                const web3 = this.__getWeb3();
+                web3.personal.unlockAccountAsync(arg.account, arg.password, 300).then(() => {
+                    const registry = new Dapple.class(web3).objects.registry;
+                    const ipfsHashDelimiter = Math.floor(ipfsHash.length / 2);
+                    registry.register(
+                        web3.fromUtf8(JSON.parse(arg.data).username),
+                        [
+                            ipfsHash.substring(0, ipfsHashDelimiter),
+                            ipfsHash.substring(ipfsHashDelimiter)
+                        ],
+                        {
+                            gas: 1900000
+                        }, (err, tx) => {
+                            this._sendEvent(event)(
+                                this.clientEvent.registryRegisterHash,
+                                true,
+                                tx); // o sa ii pasez si currentblock
+                            UserService.getService('geth').addFilter('tx', tx, (txInfo) => {
+                                this._sendEvent(event)(
+                                    this.clientEvent.registryRegisterComplete,
+                                    true,
+                                    txInfo);
+                            });
+                        });
+                });
+            })
+            .catch(() => {
+                this._sendEvent(event)(this.clientEvent.signUp, false, this.IPFS_ADD_SIGNUP_FAIL);
+            });
+    }
+
+    __getWeb3 () {
+        return UserService
+                .getService('geth')
+                .getGethService()
+                .web3;
     }
 }
 
