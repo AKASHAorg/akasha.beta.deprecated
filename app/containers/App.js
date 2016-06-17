@@ -11,12 +11,6 @@ class App extends Component {
             muiTheme: getMuiTheme(AkashaTheme)
         };
     }
-    componentWillMount () {
-       
-    }
-    _handleSendReport = () => {
-
-    }
     _handleErrorClose = () => {
         const { appActions } = this.props;
         appActions.clearErrors();

@@ -96,10 +96,10 @@ class GethService extends IpcService {
         return GethConnector.getInstance();
     }
     _getBlockUpdates (event) {
-        if(!this.getGethService().isRunning()) {
+        if (!this.getGethService().isRunning()) {
             this._stopGethUpdates();
             this._sendEvent(event)(this.clientEvent.stopService, false, 'Geth has died.');
-            return false;
+            return;
         }
         this
             .getGethService()
@@ -146,20 +146,17 @@ class GethService extends IpcService {
 
     _startWatchingTheBlockchain () {
         const web3 = this.getGethService().web3;
-        console.log('start watching');
         this._watcher = web3.eth.filter('latest', (error, result) => {
-            console.log(result);
             if (this.hasFilters()) {
                 if (!error) {
-                    web3.eth.getBlockAsync(result).then((blockObject, y) => {
-                        if (this.filter['tx'].length > 0) {
+                    web3.eth.getBlockAsync(result).then((blockObject) => {
+                        if (this.filter.tx.length > 0) {
                             const txs = blockObject.transactions;
-                            console.log('block: ' + blockObject.hash + ' has ' + txs.length + ' transactions.');
                             if (txs && txs.length > 0) {
                                 for (let i = 0, l = txs.length; i < l; i++) {
-                                    let tempTx = txs[i];
-                                    for (let j = 0; j < this.filter['tx'].length; j++) {
-                                        const myFilter = this.filter['tx'][j];
+                                    const tempTx = txs[i];
+                                    for (let j = 0; j < this.filter.tx.length; j++) {
+                                        const myFilter = this.filter.tx[j];
                                         if (myFilter.value === tempTx) {
                                             web3.eth.getTransactionAsync(tempTx).then((txInfo) => {
                                                 myFilter.handler(txInfo);
@@ -182,25 +179,23 @@ class GethService extends IpcService {
     * type is usually "tx/transaction", but it could be a blockHash, contract Address, ...
     */
     addFilter (type, value, handler) {
-        console.log(type + ' - ' + value);
         if (!this.filter[type]) {
             this.filter[type] = [];
         }
-        this.filter[type].push({
-            value: value,
-            handler: handler
-        });
+        this.filter[type].push({ value, handler });
     }
 
     removeFilter (type, value) {
-        let filters = this.filter[type];
+        const filters = this.filter[type];
         let filterPoz = -1;
-        for(var i = 0, l = filters.length; i < l; i++) {
-            if(filters[i].value === value) {
+        let i = 0;
+        const l = filters.length;
+        for (; i < l; i++) {
+            if (filters[i].value === value) {
                 filterPoz = i;
             }
         }
-        filters.splice(i, 1);
+        filters.splice(filterPoz, 1);
     }
 }
 

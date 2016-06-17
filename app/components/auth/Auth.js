@@ -26,8 +26,8 @@ class Auth extends Component {
     }
 
     componentDidMount () {
-        const { actions } = this.props;
-        actions.getProfilesList();
+        // const { actions } = this.props;
+        // actions.getProfilesList();
     }
 
     handleTouchTap = (index) => {
@@ -45,25 +45,24 @@ class Auth extends Component {
     };
   _getLocalProfiles() {
     const { authState } = this.props;
-    if(!authState.get('profiles').size) {
-      return <div><FormattedMessage {...setupMessages.noProfilesFound}/></div>;
-    }
-    return authState.get('profiles').map((account, index) => {
-      return (
-        <div key={index} >
-          <ListItem
-            key={`l${index}`}
-            leftAvatar={<Avatar>aa</Avatar>}
-            primaryText={account.get('address')}
-            secondaryText={account.get('userName')}
-            secondaryTextLines={1}
-            value={account.get('address')}
-            onTouchTap={()=> this.handleTouchTap(index)}
-          />
-          <Divider key={`d${index}`} inset />
-        </div>
-      )
-    });
+    return <div><FormattedMessage {...setupMessages.noProfilesFound}/></div>;
+
+    // return authState.get('profiles').map((account, index) => {
+    //   return (
+    //     <div key={index} >
+    //       <ListItem
+    //         key={`l${index}`}
+    //         leftAvatar={<Avatar>aa</Avatar>}
+    //         primaryText={account.get('address')}
+    //         secondaryText={account.get('userName')}
+    //         secondaryTextLines={1}
+    //         value={account.get('address')}
+    //         onTouchTap={()=> this.handleTouchTap(index)}
+    //       />
+    //       <Divider key={`d${index}`} inset />
+    //     </div>
+    //   )
+    // });
   }
   _handleIdentityCreate = (ev) => {
     ev.preventDefault();
@@ -135,7 +134,6 @@ class Auth extends Component {
 }
 
 Auth.propTypes = {
-  actions: React.PropTypes.object.isRequired,
   authState: React.PropTypes.object.isRequired,
   style: React.PropTypes.object
 };

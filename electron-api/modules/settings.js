@@ -20,7 +20,10 @@ export const EVENTS = {
         "user": {
             "signUp": "server:user:signUp",
             "exists": "server:user:exists",
-            "login": "server:user:login"
+            "login": "server:user:login",
+            "createCoinbase": "server:user:createCoinbase",
+            "faucetEther": "server:user:faucetEther",
+            "registerProfile": "server:user:registerProfile"
         }
     },
     "client": {
@@ -42,7 +45,11 @@ export const EVENTS = {
         "user": {
             "signUp": "client:user:signUp",
             "exists": "client:user:exists",
-            "login": "client:user:login"
+            "login": "client:user:login",
+            "createCoinbase": "client:user:createCoinbase",
+            "faucetEther": "client:user:faucetEther",
+            "registerProfileHash": "client:user:registerProfileHash",
+            "registerProfileComplete": "client:user:registerProfileComplete"
         }
     }
 };

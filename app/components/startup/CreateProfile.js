@@ -11,8 +11,7 @@ import ImageUploader from '../ui/image-uploader/image-uploader';
 import { inputFieldMethods } from '../../utils/dataModule';
 import validationProvider from '../../utils/validationProvider';
 import { UserValidation } from '../../utils/validationSchema';
-import ScrollBars from 'react-custom-scrollbars';
-import { defineMessages, injectIntl, FormattedMessage, FormattedHTMLMessage } from 'react-intl';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import { profileMessages, formMessages, generalMessages } from '../../locale-data/messages';
 
 class CreateProfile extends Component {
@@ -67,27 +66,12 @@ class CreateProfile extends Component {
             userData.about = this.state.about;
         }
         // check for remaining errors
-        for (const key in errors) {
-            if (errors[key].length > 0) {
+        Object.keys(errors).forEach(errKey => {
+            if (errors[errKey].length > 0) {
                 return;
             }
-        }
-        /*
-        return this.props.actions.createUser(userData).then(() => {
-            // redirect to user homepage
-
-
-            this.setState({
-                submitting: false
-            });
-        }).catch((err) => {
-            // show an error in snackBar -> dispatch it to store
-            this.setState({
-                createError: err,
-                submitting: false
-            });
         });
-        */
+
         this.context.router.push('new-profile-status');
         console.log('save user with data ', userData);
     }
@@ -117,7 +101,7 @@ class CreateProfile extends Component {
         }
     }
     _handleRemoveLink = (linkId) => {
-        const links = _.cloneDeep(this.state.links);
+        const links = _.clone(this.state.links);
         if (this.state.links.length > 1) {
             _.remove(links, link => link._id === linkId);
         }
@@ -197,7 +181,7 @@ class CreateProfile extends Component {
             required: true,
             addValueLink: true,
             statePath: 'formValues.userName',
-            onBlur: this.props.handleValidation('formValues.userName')
+            onChange: this.props.handleValidation('formValues.userName')
         });
 
         const passwordProps = this.getProps({
@@ -210,7 +194,7 @@ class CreateProfile extends Component {
             required: true,
             addValueLink: true,
             statePath: 'formValues.password',
-            onBlur: this.props.handleValidation('formValues.password')
+            onBlur: this.props.handleServerValidation('formValues.password')
         });
 
         const password2Props = this.getProps({
@@ -444,7 +428,6 @@ class CreateProfile extends Component {
 }
 
 CreateProfile.propTypes = {
-    actions: PropTypes.object.isRequired,
     profile: PropTypes.object.isRequired,
     style: PropTypes.object,
     validate: React.PropTypes.func,
@@ -453,6 +436,7 @@ CreateProfile.propTypes = {
     getValidationMessages: React.PropTypes.func,
     clearValidations: React.PropTypes.func,
     handleValidation: React.PropTypes.func,
+    handleServerValidation: React.PropTypes.func,
     intl: React.PropTypes.object
 };
 
