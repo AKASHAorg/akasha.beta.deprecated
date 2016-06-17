@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import r from 'ramda';
 
 function imageCreator (arrayBuffer, { mimeType = 'image/png', width = 100, height = 100 } = {}) {
     const blobFile = new Blob([arrayBuffer], { type: mimeType });
@@ -79,7 +79,7 @@ function _readImageData (imagePath, canvas, ctx, options) {
                     availableWidths.push(resizeWidths[i]);
                 }
             }
-            _.forEach(availableWidths, width => {
+            r.forEach(availableWidths, width => {
                 canvas.width = width.res;
                 canvas.height = width.res / aspectRatio;
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
