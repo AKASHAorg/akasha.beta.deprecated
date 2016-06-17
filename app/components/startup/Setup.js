@@ -2,7 +2,6 @@ import React, { Component, PropTypes } from 'react';
 import { remote } from 'electron';
 import LoginHeader from '../../components/ui/partials/LoginHeader';
 import { RadioButton, RadioButtonGroup, RaisedButton } from 'material-ui';
-import { Scrollbars } from 'react-custom-scrollbars';
 import { injectIntl } from 'react-intl';
 import { setupMessages, generalMessages } from '../../locale-data/messages';
 import { AdvancedSetupForm } from '../ui/forms/advanced-setup-form.js';
@@ -16,16 +15,20 @@ class Setup extends Component {
         };
     }
     componentWillMount () {
-        const { eProcActions, settingsActions, dispatch } = this.props;
-        settingsActions.getSettings('geth').then(() => {
-            dispatch((dispatch, getState) => {
-                console.log(getState(), 'wtf state');
-                // settings detected. don`t start ipfs
-                if (getState().settingsState.get('geth').size > 0) {
-                    return this.context.router.replace('sync-status');
+        const { settingsActions, dispatcher } = this.props;
+        settingsActions.getSettings('flags').then(() => {
+            dispatcher((dispatch, getState) => {
+                const flags = getState().settingsState.get('flags');
+                if (flags.size > 0) {
+                    const changeRequestFlags = flags.first().get('requestStartupChange');
+                    if (!changeRequestFlags) {
+                        return settingsActions.getSettings('geth').then(() => {
+                            if (getState().settingsState.get('geth').size > 0) {
+                                return this.context.router.replace('sync-status');
+                            }
+                        });
+                    }
                 }
-                // start ipfs to get default config
-                eProcActions.startIPFS();
             });
         });
     }
@@ -121,9 +124,13 @@ class Setup extends Component {
     }
     handleSubmit = () => {
         const { settingsActions, setupConfig } = this.props;
-        console.log(setupConfig.get('geth').toJS());
         const { dataDir, ipcPath, cache } = setupConfig.get('geth').toJS();
-        settingsActions.saveSettings('geth', { dataDir, ipcPath, cache }).then(() => {
+        const { ipfsPath } = setupConfig.get('ipfs').toJS();
+        const p = [];
+        p.push(settingsActions.saveSettings('geth', { dataDir, ipcPath, cache }));
+        p.push(settingsActions.saveSettings('ipfs', { ipfsPath }));
+        p.push(settingsActions.saveSettings('flags', { requestStartupChange: false }));
+        Promise.all(p).then(() => {
             this.context.router.push('sync-status');
         });
     }
@@ -213,38 +220,35 @@ class Setup extends Component {
                 style={{ flex: 1, padding: 0 }}
               >
                 <LoginHeader />
-                <Scrollbars
-                  style={{ height: 540 }}
-                >
-                  <h1 style={{ fontWeight: '400' }} >
+                <h1 style={{ fontWeight: '400' }} >
                     {intl.formatMessage(setupMessages.firstTimeSetupTitle)}
-                  </h1>
-                  <div>
-                    <p>{intl.formatMessage(setupMessages.akashaNextGenNetwork)}</p>
-                    <p>
-                      {intl.formatMessage(setupMessages.youHaveNotHeared)}
-                    </p>
-                    <p>
-                      {intl.formatMessage(setupMessages.ifYouHaveEth)}
-                    </p>
-                  </div>
-                  <div style={{ paddingLeft: '12px' }} >
-                    <RadioButtonGroup
-                      defaultSelected={defaultSelected}
-                      name="installType"
-                      onChange={this.handleChange}
-                    >
-                      <RadioButton
-                        label={intl.formatMessage(setupMessages.expressSetup)}
-                        style={radioStyle}
-                        value={'express'}
-                      />
-                      <RadioButton
-                        label={intl.formatMessage(setupMessages.advancedSetup)}
-                        style={radioStyle}
-                        value={'advanced'}
-                      />
-                    </RadioButtonGroup>
+                </h1>
+                <div>
+                  <p>{intl.formatMessage(setupMessages.akashaNextGenNetwork)}</p>
+                  <p>
+                    {intl.formatMessage(setupMessages.youHaveNotHeared)}
+                  </p>
+                  <p>
+                    {intl.formatMessage(setupMessages.ifYouHaveEth)}
+                  </p>
+                </div>
+                <div style={{ paddingLeft: '12px' }} >
+                  <RadioButtonGroup
+                    defaultSelected={defaultSelected}
+                    name="installType"
+                    onChange={this.handleChange}
+                  >
+                    <RadioButton
+                      label={intl.formatMessage(setupMessages.expressSetup)}
+                      style={radioStyle}
+                      value={'express'}
+                    />
+                    <RadioButton
+                      label={intl.formatMessage(setupMessages.advancedSetup)}
+                      style={radioStyle}
+                      value={'advanced'}
+                    />
+                  </RadioButtonGroup>
                     {setupConfig.get('isAdvanced') &&
                       <AdvancedSetupForm
                         intl={intl}
@@ -258,8 +262,7 @@ class Setup extends Component {
                         handleIpfsGatewayPort={this.handleIpfsGatewayPort}
                       />
                     }
-                  </div>
-                </Scrollbars>
+                </div>
               </div>
             </div>
             <div
@@ -291,7 +294,7 @@ Setup.propTypes = {
     setupConfig: PropTypes.object.isRequired,
     style: PropTypes.object,
     intl: PropTypes.object,
-    dispatch: PropTypes.func
+    dispatcher: PropTypes.func
 };
 
 Setup.contextTypes = {

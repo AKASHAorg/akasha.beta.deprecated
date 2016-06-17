@@ -17,9 +17,11 @@ class SyncStatus extends Component {
         };
     }
     componentWillMount () {
-        const { eProcActions } = this.props;
+        const { syncActions } = this.props;
         // start geth here!
-        eProcActions.startGeth();
+        syncActions.startSync().then(() => {
+            this.getSyncStatus();
+        });
     }
     componentWillUnmount () {
         const { syncActions, loggerActions } = this.props;
@@ -46,24 +48,23 @@ class SyncStatus extends Component {
         });
     }
     finishSync = () => {
-        const { syncActions } = this.props;
-        syncActions.stopUpdateSync(() => hashHistory.push('/authenticate'));
+        const { syncActions, eProcActions } = this.props;
+        syncActions.stopUpdateSync().then(() => {
+            eProcActions.startIPFS();
+            hashHistory.push('/authenticate');
+        });
     }
     handleSync = () => {
-        const { syncState, syncActions, setupActions, setupConfig } = this.props;
+        const { syncState, syncActions } = this.props;
         if (syncState.get('actionId') === 1) {
-            syncActions.stopSync();
-            syncActions.stopUpdateSync();
-            return setupActions.stopGeth();
+            return syncActions.stopSync();
         }
-        setupActions.startGeth(setupConfig.get('geth').toJS());
         syncActions.startSync();
         return this.getSyncStatus();
     }
     handleCancel = () => {
-        const { syncActions, setupActions } = this.props;
-        syncActions.stopSync(() => {
-            setupActions.stopGeth();
+        const { syncActions } = this.props;
+        syncActions.requestCancel().then(() => {
             this.context.router.push('setup-options');
         });
     }
@@ -97,7 +98,7 @@ class SyncStatus extends Component {
         const { loggerActions } = this.props;
         if (!this.state.showGethLogs) {
             return loggerActions.startGethLogger({ continuous: true }, (err, data) => {
-                if (err) return console.log(err);
+                if (err) return console.error(err);
                 const logData = this.state.gethLogs.slice();
                 if (data.length > 1) {
                     logData.concat(data);
@@ -106,7 +107,7 @@ class SyncStatus extends Component {
                 }
                 this.setState({
                     showGethLogs: true,
-                    gethLogs: logData
+                    gethLogs: logData.slice(0, 20)
                 });
             });
         }
@@ -217,7 +218,7 @@ class SyncStatus extends Component {
             <ul style = {this.props.logListStyle}>
             {this.state.showGethLogs &&
                 this.state.gethLogs.map((log, key) => (
-                  <li key={key} style={{ marginBottom: '8px' }}>
+                  <li key={key} style={{ marginBottom: '8px', backgroundColor: (log.level === 'warn' ? 'orange' : log.level === 'error' ? 'red' : 'transparent') }}>
                     <abbr title="Log Level">{log.level}</abbr>
                     <p>{log.message}</p>
                   </li>

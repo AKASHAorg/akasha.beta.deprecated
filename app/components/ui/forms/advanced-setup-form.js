@@ -65,6 +65,7 @@ const AdvancedSetupForm = (props) => {
           style={rootStyle}
           type="text"
         />
+        {/**
         <TextField
           errorStyle={errorStyle}
           errorText={intl.formatMessage(setupMessages.changeIfIpfsRunning)}
@@ -87,6 +88,7 @@ const AdvancedSetupForm = (props) => {
           style={rootStyle}
           type="number"
         />
+      */}
       </div>
     );
 };
