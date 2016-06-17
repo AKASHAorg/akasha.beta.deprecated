@@ -35,7 +35,7 @@ class IpcService {
                 success: successCode,
                 status: data
             };
-            if(extra && typeof extra === 'object') {
+            if (extra && typeof extra === 'object') {
                 result = Object.assign(result, extra);
             }
             event.sender.send(name, result);
@@ -44,7 +44,7 @@ class IpcService {
     /**
     *
     */
-    static getService(type) {
+    static getService (type) {
         return IpcService.services[type];
     }
 }
