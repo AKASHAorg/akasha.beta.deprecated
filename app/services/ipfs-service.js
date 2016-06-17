@@ -20,6 +20,10 @@ class IpfsService {
                 return resolve(data);
             });
         });
+    /**
+     * Reconfigure ipfs
+     * TBD
+     */
     configureIpfs = (config) =>
         new Promise((resolve, reject) => {
             ipcRenderer.send(EVENTS.server.ipfs.configureService, config);

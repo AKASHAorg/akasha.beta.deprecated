@@ -22,16 +22,15 @@ class SetupService {
         };
         return ipcRenderer.on(EVENTS.client.geth.syncUpdate, this.listeners[channel]);
     }
-    stopUpdateSync = (cb) => {
-        const channel = EVENTS.client.geth.syncUpdate;
-        if (typeof this.listeners[channel] === 'function') {
-            this.removeListener(channel);
-            this.listeners[channel] = null;
-        }
-        if (cb) {
-            return cb();
-        }
-    }
+    stopUpdateSync = () =>
+        new Promise((resolve) => {
+            const channel = EVENTS.client.geth.syncUpdate;
+            if (typeof this.listeners[channel] === 'function') {
+                this.removeListener(channel);
+                this.listeners[channel] = null;
+            }
+            return resolve();
+        });
 }
 
 export { SetupService };

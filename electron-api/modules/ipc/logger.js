@@ -77,7 +77,7 @@ class LoggerService extends IpcService {
             this._sendEvent(event)(this.clientEvent.gethInfo, true, {
                 'log-geth': [
                     {
-                        level: level,
+                        level: level, // eslint-disable-line object-shorthand
                         message: msg,
                         timestamp: (new Date()).toString()
                     }

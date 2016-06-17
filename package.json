@@ -152,6 +152,7 @@
     "material-ui": "0.15.x",
     "mkdirp": "0.5.x",
     "radium": "0.17.1",
+    "ramda": "^0.21.0",
     "react": "15.1.x",
     "react-avatar-editor": "^4.0.0",
     "react-custom-scrollbars": "4.0.0-beta.2",
