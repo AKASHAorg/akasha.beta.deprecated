@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import r from 'ramda';
 
 // this module provides various data manipulation methods
 export const inputFieldMethods = {
@@ -16,7 +16,7 @@ export const inputFieldMethods = {
         const parts = statePath.split('.');
         const nameSpace = parts.shift();
         const errorKey = parts[parts.length - 1];
-        const props = _.omit(params, ['statePath', 'addValueLink']);
+        const props = r.omit(['statePath', 'addValueLink'], params);
         const validationErrors = this.props.getValidationMessages(errorKey);
         const state = this.state;
         let value = state[nameSpace];
@@ -28,7 +28,7 @@ export const inputFieldMethods = {
             const constructedObj = {};
             let internalPtr;
 
-            constructedObj[nameSpace] = _.cloneDeep(state[nameSpace]) || {};
+            constructedObj[nameSpace] = r.clone(state[nameSpace]) || {};
 
             // if the value should be placed right in component's
             // state, then just set the value and return
