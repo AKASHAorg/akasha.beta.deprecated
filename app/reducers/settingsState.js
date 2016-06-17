@@ -3,7 +3,8 @@ import { fromJS } from 'immutable';
 
 const initialState = fromJS({
     geth: {},
-    ipfs: {}
+    ipfs: {},
+    flags: {}
 });
 
 export default function settingsState (state = initialState, action) {

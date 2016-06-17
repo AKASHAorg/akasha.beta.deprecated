@@ -5,6 +5,8 @@ const dbg = debug('App:settingsDB');
 const db = new Dexie('settings');
 db.version(1).stores({
     geth: '&name, dataDir, ipcPath, cache',
+    ipfs: '&name, ipfsPath',
+    flags: '&name, requestStartupChange',
     user: '&username, autoCrashReports'
 });
 

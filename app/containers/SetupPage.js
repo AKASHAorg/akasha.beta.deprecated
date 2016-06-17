@@ -14,7 +14,7 @@ function mapDispatchToProps (dispatch) {
         setupActions: new SetupActions(dispatch),
         settingsActions: new SettingsActions(dispatch),
         syncActions: new SyncActions(dispatch),
-        dispatch
+        dispatcher: dispatch
     };
 }
 

@@ -17,7 +17,6 @@ class EProcActions {
         this.settingsActions.getSettings('geth').then(() =>
             this.dispatch((dispatch, getState) => {
                 const gethSettings = getState().settingsState.get('geth');
-                console.log(gethSettings);
                 if (gethSettings.size > 0) {
                     return gethSettings.first().toJS();
                 }
@@ -28,7 +27,6 @@ class EProcActions {
             this.gethService.startGeth(gethSettings)
         )
         .then(gethState => {
-            console.log(gethState);
             // if geth is already running do nothing
             if (gethState.isRunning) {
                 return Promise.resolve();
@@ -44,7 +42,7 @@ class EProcActions {
             this.appActions.showError({
                 code: 105,
                 type: reason.type ? reason.type : 'GETH_START_ERROR',
-                message: reason.data ? reason.data.message : reason.stack()
+                message: reason.data ? reason.data.message : reason.stack
             });
         }));
 
@@ -58,14 +56,32 @@ class EProcActions {
             this.dispatch(this._stopGethError(reason));
         });
     }
-    startIPFS = (options) => {
-        this.ipfsService.startIPFS(options).then(data => {
-            if (!data.success) {
-                return this.dispatch(this._startIPFSError(data));
+    startIPFS = () =>
+        this.settingsActions.getSettings('ipfs').then(() => {
+            this.dispatch((dispatch, getState) => {
+                const ipfsSettings = getState().settingsState.get('ipfs');
+                if (ipfsSettings.size > 0) {
+                    return ipfsSettings.first().toJS();
+                }
+                return {};
+            });
+        })
+        .then((ipfsSettings) => this.ipfsService.startIPFS(ipfsSettings))
+        .then((ipfsState) => {
+            if (!ipfsState.success) {
+                const error = new Error(` ${ipfsState.status}`);
+                return Promise.reject(this.dispatch(this._startIPFSError(error)));
             }
-            return this.dispatch(this._startIPFSSuccess(data));
-        }).catch(reason => this.dispatch(this._startIPFSError(reason)));
-    }
+            return Promise.resolve(this.dispatch(this._startIPFSSuccess({ data: ipfsState })));
+        })
+        .catch(reason => this.dispatch(() => {
+            this.dispatch(this._startIPFSError(reason));
+            this.appActions.showError({
+                code: 205,
+                type: reason.type ? reason.type : 'IPFS_START_ERROR',
+                message: reason.data ? reason.data.message : reason.stack
+            });
+        }));
     configIPFS = (config) => {
         this.ipfsService.configIpfs(config).then(data => {
             if (!data.success) {

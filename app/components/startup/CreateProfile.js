@@ -72,22 +72,7 @@ class CreateProfile extends Component {
                 return;
             }
         }
-        /*
-        return this.props.actions.createUser(userData).then(() => {
-            // redirect to user homepage
 
-
-            this.setState({
-                submitting: false
-            });
-        }).catch((err) => {
-            // show an error in snackBar -> dispatch it to store
-            this.setState({
-                createError: err,
-                submitting: false
-            });
-        });
-        */
         this.context.router.push('new-profile-status');
         console.log('save user with data ', userData);
     }
@@ -444,7 +429,6 @@ class CreateProfile extends Component {
 }
 
 CreateProfile.propTypes = {
-    actions: PropTypes.object.isRequired,
     profile: PropTypes.object.isRequired,
     style: PropTypes.object,
     validate: React.PropTypes.func,
