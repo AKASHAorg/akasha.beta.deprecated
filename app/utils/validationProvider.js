@@ -26,7 +26,6 @@ export default function (Component) {
                 // server validation here
             });
         }
-
         render () {
             return (
               <Component

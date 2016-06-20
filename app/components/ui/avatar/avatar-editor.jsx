@@ -2,29 +2,68 @@ import React from 'react';
 import AvatarEditor from 'react-avatar-editor/dist';
 import AddPhotoIcon from 'material-ui/svg-icons/image/add-a-photo';
 import ClearIcon from 'material-ui/svg-icons/content/clear';
-import {SvgIcon, Slider} from 'material-ui';
-const { dialog } = require('electron').remote;
+import { SvgIcon, Slider } from 'material-ui';
+import {remote} from 'electron';
+const { dialog } = remote;
 
 class Avatar extends React.Component {
-    constructor(props) {
+    constructor (props) {
         super(props);
         this.state = {
             avatarImage: null,
             avatarScale: 1.2
+        };
+    }
+    getImage = () => {
+        if (this.editor && this.state.avatarImage) {
+            return this.editor.getImage();
         }
+        return null;
     }
-  getImage  = () => {
-    if(this.editor && this.state.avatarImage) {
-        return this.editor.getImage();
+    _handleMouseEnter = () => {
+        this.setState({
+            showChangeAvatar: this.props.editable,
+            showNameTooltip: this.props.editable
+        });
     }
-    return null;
-  }
+    _handleMouseLeave = () => {
+        this.setState({
+            showChangeAvatar: false,
+            showNameTooltip: false
+        });
+    }
+    _handleAvatarClear = () => {
+        this.setState({
+            avatarImage: null,
+            isNewAvatarLoaded: false
+        });
+    }
+    _handleSliderChange = (ev, sliderValue) => {
+        this.setState({
+            avatarScale: sliderValue
+        });
+    }
+    _handleDialogOpen = () => {
+        dialog.showOpenDialog({
+            title: 'Select image for your avatar',
+            properties: ['openFile'],
+            filters: [{ name: 'Images', extensions: ['jpg', 'png'] }]
+        }, files => {
+            if (!files) {
+                return;
+            }
+            this.setState({
+                avatarImage: files[0],
+                isNewAvatarLoaded: true
+            });
+        });
+    }
     render () {
         const userName = this.props.userName;
         const palette = this.context.muiTheme.palette;
         const avatarEmptyStyle = {
-            width: '150px',
-            height: '150px',
+            width: (this.props.radius || 150),
+            height: (this.props.radius || 150),
             borderRadius: '50%',
             overflow: 'hidden',
             border: `1px solid ${palette.textColor}`
@@ -52,119 +91,107 @@ class Avatar extends React.Component {
             textAlign: 'center',
             width: '100%'
         };
-        let userInitials, avatarImage;
+        let userInitials;
+        let avatarImage;
         if (this.props.userName) {
-          userInitials = userName.split(' ').map((part) => part.charAt(0)).join('');
+            userInitials = userName.split(' ').map((part) => part.charAt(0)).join('');
         }
-        if(this.state.avatarImage) {
-          avatarImage = this.state.avatarImage
-        } else if(this.props.image) {
-          avatarImage = this.props.image
+        if (this.state.avatarImage) {
+            avatarImage = this.state.avatarImage;
+        } else if (this.props.image) {
+            avatarImage = this.props.image;
         }
 
         return (
-            <div style = {{maxWidth: '150px', position: 'relative'}}
-                onMouseEnter = {this._handleMouseEnter}
-                onMouseLeave={this._handleMouseLeave}>
-            { this.state.showChangeAvatar && !this.state.isNewAvatarLoaded &&
-              <div style = {dialogHandlerStyle}
-                    onClick = {this._handleDialogOpen}
-              />
+          <div
+            style={{ maxWidth: (this.props.radius || 150), position: 'relative' }}
+            onMouseEnter={this._handleMouseEnter}
+            onMouseLeave={this._handleMouseLeave}
+            {...this.props}
+          >
+          {this.state.showChangeAvatar && !this.state.isNewAvatarLoaded &&
+            <div
+              style={dialogHandlerStyle}
+              onClick={this._handleDialogOpen}
+            />
             }
 
-            { avatarImage &&
+            {avatarImage &&
+              <div>
+                <AvatarEditor
+                  style={{ borderRadius: 150 }}
+                  border={this.state.isNewAvatarLoaded ? 10 : 0}
+                  image={avatarImage}
+                  ref={(editor) => { this.editor = editor; }}
+                  width={130}
+                  height={130}
+                  borderRadius={100}
+                  scale={this.state.avatarScale}
+                />
                 <div>
-                    <AvatarEditor
-                      style = {{ borderRadius: 150 }}
-                      border = {this.state.isNewAvatarLoaded ? 10 : 0}
-                      image = {avatarImage}
-                      ref = {(editor) => this.editor = editor}
-                      width = {130}
-                      height = {130}
-                      borderRadius = {100}
-                      scale = {this.state.avatarScale}
-                    />
-                    <div>
-                        <Slider defaultValue = {this.state.avatarScale}
-                            max = {2}
-                            min = {1}
-                            step = {0.1}
-                            onChange = {this._handleSliderChange}
-                        />
-                        <div style = {avatarClearStyle}
-                            onClick = {this._handleAvatarClear}>
-                            <SvgIcon>
-                                <ClearIcon color = "red"/>
-                            </SvgIcon>
-                        </div>
-                    </div>
+                  <Slider
+                    defaultValue={this.state.avatarScale}
+                    max={2}
+                    min={1}
+                    step={0.1}
+                    onChange={this._handleSliderChange}
+                  />
+                  <div
+                    style={avatarClearStyle}
+                    onClick={this._handleAvatarClear}
+                  >
+                    <SvgIcon>
+                      <ClearIcon color="red" />
+                    </SvgIcon>
+                  </div>
                 </div>
+              </div>
             }
             {!avatarImage &&
-                <div style={avatarEmptyStyle}>
-                    {this.props.userName &&
-                        <div style={{ height: '100%', backgroundColor: '#DDD' }}>
-                        <div style={userInitialsAlignStyle} />
-                            <div style={userInitialsWrapperStyle}>
-                                <h2>{userInitials}</h2>
-                            </div>
-                        </div>
-                    }
-                    {!this.props.userName &&
-                        <SvgIcon style={{width: 150, height: 150}} color={palette.textColor}>
-                            <AddPhotoIcon viewBox="-30 -30 86 86"/>
-                        </SvgIcon>
-                    }
-                </div>
+              <div style={avatarEmptyStyle}>
+                {this.props.userName &&
+                  <div
+                    style={{
+                        height: '100%',
+                        backgroundColor: this.props.backgroundColor
+                    }}
+                  >
+                    <div style={userInitialsAlignStyle} />
+                    <div style={userInitialsWrapperStyle}>
+                      <h2 style={this.props.userInitialsStyle}>{userInitials}</h2>
+                    </div>
+                  </div>
+                }
+                {!this.props.userName &&
+                  <SvgIcon
+                    style={{
+                        width: this.props.radius,
+                        height: this.props.radius
+                    }}
+                    color={palette.textColor}
+                  >
+                    <AddPhotoIcon viewBox="-30 -30 86 86" />
+                  </SvgIcon>
+                }
+              </div>
             }
-            </div>
+          </div>
           );
-    }
-    _handleMouseEnter = (ev) => {
-        this.setState({
-            showChangeAvatar: (this.props.editable ? true : false),
-            showNameTooltip: (this.props.editable ? false : true)
-        });
-    }
-    _handleMouseLeave = (ev) => {
-        this.setState({
-            showChangeAvatar: false,
-            showNameTooltip: false
-        });
-    }
-    _handleAvatarClear = (ev) => {
-        this.setState({
-            avatarImage: null,
-            isNewAvatarLoaded: false
-        });
-    }
-    _handleSliderChange = (ev, sliderValue) => {
-        this.setState({
-            avatarScale: sliderValue
-        })
-    }
-    _handleDialogOpen = (ev) => {
-        dialog.showOpenDialog({
-            title: 'Select image for your avatar',
-            properties: ['openFile'],
-            filters: [{ name: 'Images', extensions: ['jpg', 'png'] }]
-        }, files => {
-            if (!files) {
-                return;
-            }
-            this.setState({
-                avatarImage: files[0],
-                isNewAvatarLoaded: true
-            });
-        });
     }
 }
 Avatar.propTypes = {
     image: React.PropTypes.string,
     editable: React.PropTypes.bool,
-    userName: React.PropTypes.string
+    userName: React.PropTypes.string,
+    radius: React.PropTypes.number,
+    userInitialsStyle: React.PropTypes.object,
+    backgroundColor: React.PropTypes.string
 };
 Avatar.contextTypes = {
     muiTheme: React.PropTypes.object
-}
+};
+Avatar.defaultProps = {
+    radius: 150,
+    backgroundColor: 'rgba(239, 239, 239, 1)'
+};
 export default Avatar;
