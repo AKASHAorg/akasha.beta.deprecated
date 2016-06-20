@@ -19,6 +19,33 @@ class ProfileService {
                 return resolve(data);
             });
         });
+    getProfilesList = () =>
+        new Promise((resolve, reject) => {
+            return resolve([
+                {
+                    userName: '@severs',
+                    firstName: 'Sever',
+                    lastName: 'Abibula',
+                    avatar: '',
+                    address: '0xe1d10c20b12a321'
+                },
+                {
+                    userName: '@atrulylongusernamefortesting',
+                    firstName: 'SomeLongUserFirstname',
+                    lastName: 'SomeLongUserLastname',
+                    avatar: '',
+                    address: '0xe1d10c20b12a322'
+                }
+            ]);
+            // ipcRenderer.send(EVENTS.server.profile.list);
+            // ipcRenderer.once(EVENTS.client.profile.list, (ev, data) => {
+            //     if (!data) {
+            //         const err = new Error('Main Process down!');
+            //         return reject(err);
+            //     }
+            //     return resolve(data);
+            // });
+        });
     createProfile = (profileData) =>
         new Promise((resolve, reject) => {
             ipcRenderer.send(EVENTS.server.profile.create, profileData);
