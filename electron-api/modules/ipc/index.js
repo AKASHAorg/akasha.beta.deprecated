@@ -20,6 +20,11 @@ process.on('uncaughtException', (err) => {
     generalLogger.warn(err);
 });
 
+app.on('before-quit', () => {
+    geth.shutDown();
+    logger.shutDown();
+});
+
 export function initIPCServices (mainWindow) {
     geth.setupListeners(mainWindow);
     logger.setupListeners(mainWindow);
