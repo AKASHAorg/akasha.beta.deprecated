@@ -81,7 +81,7 @@ class GethService extends IpcService {
         }
         this.getGethService().stop();
         this._sendEvent(event)(this.clientEvent.stopService,
-                                !!!this.getGethService().gethProcess,
+                                !this.getGethService().gethProcess,
                                 null);
     }
     _getGethUpdates (event) {
@@ -196,6 +196,11 @@ class GethService extends IpcService {
             }
         }
         filters.splice(filterPoz, 1);
+    }
+
+    shutDown () {
+        this._stopGethUpdates();
+        this._watcher.stopWatching();
     }
 }
 

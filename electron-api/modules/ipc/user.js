@@ -2,6 +2,7 @@ const { ipcMain } = require('electron');
 const IpcService = require('./ipcService');
 const Dapple = require('../../../contracts.sol/build/js_module.js');
 const request = require('request');
+const Promise = require('bluebird');
 
 /**
  * UserService class
@@ -45,6 +46,9 @@ class UserService extends IpcService {
         ipcMain.on(this.serverEvent.registerProfile, (event, arg) => {
             this._registerProfile(event, arg);
         });
+        ipcMain.on(this.serverEvent.listAccounts, (event, arg) => {
+            this._listAccounts(event, arg);
+        });
     }
 
     getPassword () {
@@ -75,6 +79,36 @@ class UserService extends IpcService {
         });
     }
 
+    _listAccounts (event, arg) {
+        const web3 = this.__getWeb3();
+        const profilePromises = [];
+        web3.personal.getListAccountsAsync().then((data) => {
+            const akashaContracts = new Dapple.class(web3);
+            const registry = akashaContracts.objects.registry;
+            const profile = akashaContracts.classes.AkashaProfile;
+            const getByAddrPromise = Promise.promisify(registry.getByAddr.call);
+            for (let i = 0; i < data.length; i++) {
+                const ethAccount = data[i];
+                profilePromises
+                .push(getByAddrPromise(ethAccount)
+                .then((profileContractAddress) => profileContractAddress));
+            }
+
+            Promise.all(profilePromises).then((results) => {
+                for (let i = 0; i < results.length; i++) {
+                    const akashaProfileContractHash = results[i];
+                    if (akashaProfileContractHash !== '0x0000000000000000000000000000000000000000') {
+                        profile.at(akashaProfileContractHash).getIpfs.call((err, tuple) => {
+                            // console.log(web3.toUtf8(tuple[0]) + web3.toUtf8(tuple[1]));
+                            // TODO: get the ipfsHash and get user info
+                        });
+                    }
+                }
+            });
+            this._sendEvent(event)(this.clientEvent.listAccounts, true, data);
+        });
+    }
+
     _faucetEther (event, arg) {
         const URL = 'http://faucet.ma.cx:3000/donate/' + arg.account; // eslint-disable-line prefer-template
         request({
@@ -82,9 +116,14 @@ class UserService extends IpcService {
             method: 'GET',
             timeout: 10000,
             followRedirect: true,
-            maxRedirects: 2
+            maxRedirects: 4
         }, (error, response, body) => {
-          // console.log(body);
+            UserService
+                .getService('geth')
+                .addFilter('tx', body.txhash, (txInfo) => {
+                    this.
+                        _sendEvent(event)(this.clientEvent.faucetEther, true, txInfo);
+                });
         });
     }
 
@@ -122,7 +161,9 @@ class UserService extends IpcService {
                                             .getService('geth')
                                             .addFilter('tx', tx, (txInfo) => {
                                                 this.
-                                                    _sendEvent(event)(this.clientEvent.signUp, true, txInfo);
+                                                    _sendEvent(event)(this.clientEvent.signUp,
+                                                                        true,
+                                                                        txInfo);
                                             });
                                     }
                                 });
