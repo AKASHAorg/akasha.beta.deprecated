@@ -200,7 +200,9 @@ class GethService extends IpcService {
 
     shutDown () {
         this._stopGethUpdates();
-        this._watcher.stopWatching();
+        if (this._watcher) {
+            this._watcher.stopWatching();
+        }
     }
 }
 

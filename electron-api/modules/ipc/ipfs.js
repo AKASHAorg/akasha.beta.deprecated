@@ -41,9 +41,6 @@ class IpfsService extends IpcService {
             .setLogger(loggerRegistrar.getInstance()
             .registerLogger('ipfs', { maxsize: 1024 * 10 * 3 }));
         if (arg && typeof arg === 'object') {
-            if (arg.apiPort && !isNaN(parseInt(arg.apiPort, 10))) {
-                this.getIpfsService().setConfig('apiAddress', '/ip4/127.0.0.1/tcp/' + arg.apiPort);
-            }
             if (arg.repoDir && arg.repoDir.length > 0) {
                 this.getIpfsService().setIpfsFolder(arg.repoDir);
             }
