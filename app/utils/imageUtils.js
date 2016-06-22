@@ -11,12 +11,6 @@ function imageCreator (arrayBuffer, { mimeType = 'image/png', width = 100, heigh
     return image;
 }
 
-function getIpfsImage (hash, { mimeType = 'image/png', width = 100, height = 100 } = {}) {
-    return window.ipfsInstance.cat(hash, false).then(
-        data => imageCreator(data, { mimeType, width, height })
-    ).catch(() => false);
-}
-
 
 /**
  * @TODO Move this to a config file
@@ -79,7 +73,7 @@ function _readImageData (imagePath, canvas, ctx, options) {
                     availableWidths.push(resizeWidths[i]);
                 }
             }
-            r.forEach(availableWidths, width => {
+            r.forEach(width => {
                 canvas.width = width.res;
                 canvas.height = width.res / aspectRatio;
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
@@ -92,7 +86,7 @@ function _readImageData (imagePath, canvas, ctx, options) {
                         height: canvas.height
                     }
                 );
-            });
+            }, availableWidths);
             resolve(images);
         };
         img.src = imagePath;
@@ -134,4 +128,4 @@ function getResizedImages (imagePaths, options) {
 }
 
 export default imageCreator;
-export { getIpfsImage, getResizedImages };
+export { getResizedImages };

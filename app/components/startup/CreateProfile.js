@@ -47,23 +47,24 @@ class CreateProfile extends Component {
     }
 
     handleSubmit = () => {
-        const userData = this.state.formValues;
+        const { profileActions } = this.props;
+        const profileData = this.state.formValues;
         const avatarFile = this.avatar.getImage();
         const profileImage = this.imageUploader.refs.wrappedInstance.getImage();
         const errors = this.props.errors;
         const userLinks = this.state.links.filter(link => link.title.length > 0);
         // optional settings
         if (userLinks.length > 0) {
-            userData.links = userLinks;
+            profileData.links = userLinks;
         }
         if (avatarFile) {
-            userData.avatarFile = avatarFile;
+            profileData.avatarFile = avatarFile;
         }
         if (profileImage) {
-            userData.profileImage = profileImage;
+            profileData.profileImage = profileImage;
         }
         if (this.state.about) {
-            userData.about = this.state.about;
+            profileData.about = this.state.about;
         }
         // check for remaining errors
         Object.keys(errors).forEach(errKey => {
@@ -71,9 +72,10 @@ class CreateProfile extends Component {
                 return;
             }
         });
-
-        this.context.router.push('new-profile-status');
-        console.log('save user with data ', userData);
+        // save a temporary profile to indexedDB
+        profileActions.saveTempProfile(profileData, '1').then(() => {
+            // this.context.router.push('new-profile-status');
+        });
     }
     _submitForm = (ev) => {
         ev.preventDefault();
@@ -145,7 +147,7 @@ class CreateProfile extends Component {
         console.log('show modal ', modalName);
     }
     render () {
-        const { style, profile, intl } = this.props;
+        const { style, profileState, intl } = this.props;
         const floatLabelStyle = { color: Colors.lightBlack };
         const inputStyle = { color: Colors.darkBlack };
         const firstNameProps = this.getProps({
@@ -349,13 +351,13 @@ class CreateProfile extends Component {
                       <Checkbox
                         label={intl.formatMessage(profileMessages.keepAccUnlockedLabel)}
                         style={{ marginTop: '18px', marginLeft: '-4px', width: '280px' }}
-                        checked={profile.getIn(['unlock', 'enabled'])}
+                        checked={profileState.getIn(['newProfile', 'unlock', 'enabled'])}
                         onCheck={this.handleUnlockActive}
                       />
                     </div>
                     <div className="col-xs-6" >
                       <SelectField
-                        value={profile.getIn(['unlock', 'value'])}
+                        value={profileState.getIn(['newProfile', 'unlock', 'value'])}
                         onChange={this.handleUnlockFor}
                         style={{ width: '100px' }}
                       >
@@ -421,11 +423,12 @@ class CreateProfile extends Component {
 }
 
 CreateProfile.propTypes = {
-    profile: PropTypes.object.isRequired,
+    profileState: PropTypes.object.isRequired,
     style: PropTypes.object,
     validate: React.PropTypes.func,
     errors: React.PropTypes.object,
     isValid: React.PropTypes.func,
+    profileActions: React.PropTypes.object,
     getValidationMessages: React.PropTypes.func,
     clearValidations: React.PropTypes.func,
     handleValidation: React.PropTypes.func,
