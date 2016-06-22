@@ -41,8 +41,7 @@ class SyncActions {
      * @returns {{type}}
      */
     stopSync = () =>
-        this.dispatch(() => this.stopUpdateSync())
-            .then(() => this.eProcActions.stopGeth());
+        this.dispatch(() => this.stopUpdateSync());
 
     startUpdateSync = (cb) => {
         this.setupService.startUpdateSync(cb);

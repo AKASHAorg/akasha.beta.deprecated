@@ -46,20 +46,58 @@ class ProfileService {
             //     return resolve(data);
             // });
         });
-    createProfile = (profileData) =>
-        new Promise((resolve, reject) => {
-            ipcRenderer.send(EVENTS.server.profile.create, profileData);
-            ipcRenderer.once(EVENTS.client.profile.create, (ev, data) => {
-                if (!data) {
-                    return reject('Ouch! Main process cannot communicate with us!');
-                }
-                // save profile to indexedDB
-                // index by address?
-                return profileDB.transaction('rw', profileDB.localProfiles, async() =>
-                    resolve(await profileDB.localProfiles.add({ data }))
-                ).catch(err => reject(err));
+    saveTempProfile = (profileData, currentStep) =>
+        profileDB.transaction('rw', profileDB.newProfile, () => {
+            profileDB.newProfile.put({
+                name: 'newProfile',
+                profileData,
+                currentStep
             });
         });
+
+    clearTempProfile = () =>
+        profileDB.newProfile.delete();
+
+    getTempProfile = () =>
+        profileDB.transaction('r', profileDB.newProfile, () =>
+            profileDB.newProfile.toArray());
+
+    createEthAddress = (profilePassword) =>
+        new Promise((resolve, reject) => {
+            ipcRenderer.once(EVENTS.client.user.createCoinbase, (ev, data) => {
+                if (!data) {
+                    const error = new Error('Main process silenced...');
+                    return reject(error);
+                }
+                return resolve(data);
+            });
+            ipcRenderer.send(EVENTS.server.user.createCoinbase, { password: profilePassword });
+        });
+    fundFromFaucet = (profileAddress) =>
+        new Promise((resolve, reject) => {
+            ipcRenderer.one(EVENTS.client.user.faucet, (ev, data) => {
+                if (!data) {
+                    const error = new Error('Main process did not return anything!');
+                    return reject(error);
+                }
+                return resolve(data);
+            });
+            ipcRenderer.send(EVENTS.client.user.faucet, profileAddress);
+        })
+    createProfile = (profileData) => {}
+        // new Promise((resolve, reject) => {
+        //     ipcRenderer.send(EVENTS.server.profile.create, profileData);
+        //     ipcRenderer.once(EVENTS.client.profile.create, (ev, data) => {
+        //         if (!data) {
+        //             return reject('Ouch! Main process cannot communicate with us!');
+        //         }
+        //         // save profile to indexedDB
+        //         // index by address?
+        //         return profileDB.transaction('rw', profileDB.localProfiles, async() =>
+        //             resolve(await profileDB.localProfiles.add({ data }))
+        //         ).catch(err => reject(err));
+        //     });
+        // });
     updateProfile = () => {}
 }
 

@@ -23,9 +23,9 @@ class Auth extends Component {
         };
     }
 
-    componentDidMount () {
+    componentWillMount () {
         const { profileActions } = this.props;
-        profileActions.getProfilesList();
+        profileActions.checkTempProfile();
     }
 
     handleTouchTap = (index) => {
@@ -192,7 +192,8 @@ Auth.propTypes = {
 };
 
 Auth.contextTypes = {
-    muiTheme: React.PropTypes.object
+    muiTheme: React.PropTypes.object,
+    router: React.PropTypes.object
 };
 
 Auth.defaultProps = {

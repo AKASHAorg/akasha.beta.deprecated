@@ -6,7 +6,7 @@ import { ProfileActions } from '../actions';
 
 function mapStateToProps (state) {
     return {
-        profile: state.profile
+        profileState: state.profileState
     };
 }
 

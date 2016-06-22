@@ -3,7 +3,7 @@ import AvatarEditor from 'react-avatar-editor/dist';
 import AddPhotoIcon from 'material-ui/svg-icons/image/add-a-photo';
 import ClearIcon from 'material-ui/svg-icons/content/clear';
 import { SvgIcon, Slider } from 'material-ui';
-import {remote} from 'electron';
+import { remote } from 'electron';
 const { dialog } = remote;
 
 class Avatar extends React.Component {
@@ -14,12 +14,26 @@ class Avatar extends React.Component {
             avatarScale: 1.2
         };
     }
-    getImage = () => {
-        if (this.editor && this.state.avatarImage) {
-            return this.editor.getImage();
-        }
-        return null;
+    setArrayBufferImage = () => {
+        return (blob) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                this.setState({
+                    avatarData: reader.result
+                });
+            };
+            reader.readAsArrayBuffer(blob);
+        };
     }
+    setImage = () => {
+        if (this.refs.editor && this.state.avatarImage) {
+            const imageCanvas = this.refs.editor.getImage();
+            imageCanvas.toBlob(this.setArrayBufferImage(), 'image/jpg');
+        }
+    }
+
+    getImage = () => this.state.avatarData;
+
     _handleMouseEnter = () => {
         this.setState({
             showChangeAvatar: this.props.editable,
@@ -122,11 +136,12 @@ class Avatar extends React.Component {
                   style={{ borderRadius: 150 }}
                   border={this.state.isNewAvatarLoaded ? 10 : 0}
                   image={avatarImage}
-                  ref={(editor) => { this.editor = editor; }}
+                  ref="editor"
                   width={130}
                   height={130}
                   borderRadius={100}
                   scale={this.state.avatarScale}
+                  onLoadSuccess={this.setImage}
                 />
                 <div>
                   <Slider
