@@ -92,12 +92,10 @@ class ProfileActions {
         this.getTempProfile().then(() =>
             this.dispatch((dispatch, getState) => {
                 const unfinishedProfiles = getState().profileState.get('newProfile');
-                console.log(unfinishedProfiles.getIn(['profileData', 'avatarFile']).toJS(), 'avatar');
                 if (unfinishedProfiles.size > 0) {
                     const currentStep = unfinishedProfiles.get('currentStep');
                     const profilePassword = unfinishedProfiles.getIn(['profileData', 'password']);
                     const profileAddress = unfinishedProfiles.getIn(['profileData', 'address']);
-                    console.log(currentStep);
                     switch (currentStep) {
                         case '1':
                             return this.createEthAddress(profilePassword);
