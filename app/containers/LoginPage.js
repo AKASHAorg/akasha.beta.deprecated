@@ -4,7 +4,7 @@ import { ProfileActions } from '../actions';
 
 function mapStateToProps (state) {
     return {
-        authState: state.authState
+        profileState: state.profileState
     };
 }
 

@@ -154,7 +154,7 @@
     "radium": "0.17.1",
     "ramda": "^0.21.0",
     "react": "15.1.x",
-    "react-avatar-editor": "^4.0.0",
+    "react-avatar-editor": "^4.0.2",
     "react-custom-scrollbars": "4.0.0-beta.2",
     "react-dom": "15.1.x",
     "react-intl": "^2.1.2",

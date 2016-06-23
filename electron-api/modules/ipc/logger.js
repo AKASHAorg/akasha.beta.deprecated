@@ -100,6 +100,10 @@ class LoggerService extends IpcService {
         }
     }
 
+    shutDown () {
+        this._stopGethInfo();
+    }
+
 }
 
 export default LoggerService;

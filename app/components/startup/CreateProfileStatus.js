@@ -4,74 +4,78 @@ import * as Colors from 'material-ui/styles/colors';
 import { SvgIcon } from 'material-ui';
 
 class CreateProfileStatus extends Component {
-
-  componentDidMount () {
-    if (this.firstNameInput) {
-      this.firstNameInput.focus();
+    componentDidMount () {
+        if (this.firstNameInput) {
+            this.firstNameInput.focus();
+        }
+        const { profileActions, profileState } = this.props;
+        const tempProfile = profileState.get('newProfile');
+        if (tempProfile.size > 0) {
+            profileActions.createProfile();
+        }
     }
-    setTimeout(() => {
-      this.context.router.push('new-profile-complete');
-    }, 2000);
-  }
 
-  render () {
-    const { style, profile } = this.props;
-    const paraStyle = { marginTop: '20px' };
+    render () {
+        const { style, profileState } = this.props;
+        const paraStyle = { marginTop: '20px' };
 
-    return (
-      <div style={style} >
-        <div className="row start-xs" >
-          <div className="col-xs" >
-
-            <SvgIcon
-              color={Colors.lightBlack}
-              viewBox="0 0 32 32"
-              style={{ width: '32px', height: '32px', marginRight: '10px', verticalAlign: 'middle' }}
-            >
-              <MenuAkashaLogo />
-            </SvgIcon>
-            <h1 style={{ fontWeight: '400', display: 'inline', verticalAlign: 'middle' }} >
-              {'Registering identity...'}
-            </h1>
-            <p style={paraStyle} >
-              {'Your identity is broadcasted into the Ethereum world computer network.'}
-            </p>
-            <p style={paraStyle} >
-              {'This will take a few moments ...'}
-            </p>
-            <span style={{ marginTop: '20px', fontSize: '13px' }} >
-              { profile.getIn(['create', 'steps']).map((step, key) => <p key={key}>{step}</p>) }
-            </span>
-            <p style={{ marginTop: '20px', color: Colors.red300 }} >
-              { profile.getIn(['create', 'err']) }
-            </p>
+        return (
+          <div style={style} >
+            <div className="row start-xs" >
+              <div className="col-xs" >
+                <SvgIcon
+                  color={Colors.lightBlack}
+                  viewBox="0 0 32 32"
+                  style={{
+                      width: '32px',
+                      height: '32px',
+                      marginRight: '10px',
+                      verticalAlign: 'middle'
+                  }}
+                >
+                  <MenuAkashaLogo />
+                </SvgIcon>
+                <h1 style={{ fontWeight: '400', display: 'inline', verticalAlign: 'middle' }} >
+                    {'Registering identity...'}
+                </h1>
+                <p style={paraStyle} >
+                    {'Your identity is broadcasted into the Ethereum world computer network.'}
+                </p>
+                <p style={paraStyle} >
+                    {'This will take a few moments ...'}
+                </p>
+                <span style={{ marginTop: '20px', fontSize: '13px' }} >
+                    {/** profileState.getIn(['create', 'steps']).map((step, key) => <p key={key}>{step}</p>)*/}
+                </span>
+                <p style={{ marginTop: '20px', color: Colors.red300 }} >
+                    {/** profileState.getIn(['create', 'err']) */}
+                </p>
+              </div>
+            </div>
           </div>
-
-        </div>
-      </div>
-    );
-  }
+        );
+    }
 }
 
 CreateProfileStatus.propTypes = {
-  actions: PropTypes.object.isRequired,
-  profile: PropTypes.object.isRequired,
-  style: PropTypes.object
+    profileActions: PropTypes.object.isRequired,
+    profileState: PropTypes.object,
+    style: PropTypes.object
 };
 
 CreateProfileStatus.contextTypes = {
-  muiTheme: React.PropTypes.object,
-  router: React.PropTypes.object
+    muiTheme: React.PropTypes.object,
+    router: React.PropTypes.object
 };
 
 CreateProfileStatus.defaultProps = {
-  style: {
-    width: '100%',
-    height: '100%',
-    display: 'flex',
-    flexDirection: 'column',
-    position: 'relative'
-  }
+    style: {
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        position: 'relative'
+    }
 };
 
 export default CreateProfileStatus;

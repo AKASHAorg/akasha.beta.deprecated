@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import _ from 'lodash';
+import r from 'ramda';
 import { MenuAkashaLogo } from '../ui/svg';
 import * as Colors from 'material-ui/styles/colors';
 import { SvgIcon, IconButton, RaisedButton,
@@ -25,7 +25,7 @@ class CreateProfile extends Component {
                     title: '',
                     url: '',
                     type: '',
-                    _id: 0
+                    id: 0
                 }
             ]
         };
@@ -47,23 +47,24 @@ class CreateProfile extends Component {
     }
 
     handleSubmit = () => {
-        const userData = this.state.formValues;
+        const { profileActions } = this.props;
+        const profileData = this.state.formValues;
         const avatarFile = this.avatar.getImage();
         const profileImage = this.imageUploader.refs.wrappedInstance.getImage();
         const errors = this.props.errors;
         const userLinks = this.state.links.filter(link => link.title.length > 0);
         // optional settings
         if (userLinks.length > 0) {
-            userData.links = userLinks;
+            profileData.links = userLinks;
         }
         if (avatarFile) {
-            userData.avatarFile = avatarFile;
+            profileData.avatarFile = avatarFile;
         }
         if (profileImage) {
-            userData.profileImage = profileImage;
+            profileData.profileImage = profileImage;
         }
         if (this.state.about) {
-            userData.about = this.state.about;
+            profileData.about = this.state.about;
         }
         // check for remaining errors
         Object.keys(errors).forEach(errKey => {
@@ -71,9 +72,10 @@ class CreateProfile extends Component {
                 return;
             }
         });
-
-        this.context.router.push('new-profile-status');
-        console.log('save user with data ', userData);
+        // save a temporary profile to indexedDB
+        profileActions.saveTempProfile(profileData, '1').then(() => {
+            // this.context.router.push('new-profile-status');
+        });
     }
     _submitForm = (ev) => {
         ev.preventDefault();
@@ -93,7 +95,7 @@ class CreateProfile extends Component {
                 title: '',
                 url: '',
                 type: '',
-                _id: currentLinks.length
+                id: currentLinks.length
             });
             this.setState({
                 links: currentLinks
@@ -101,12 +103,12 @@ class CreateProfile extends Component {
         }
     }
     _handleRemoveLink = (linkId) => {
-        const links = _.clone(this.state.links);
+        const links = r.clone(this.state.links);
         if (this.state.links.length > 1) {
-            _.remove(links, link => link._id === linkId);
+            r.remove(r.propEq('id', linkId), links);
         }
         for (let i = 0; i < links.length; i++) {
-            links[i]._id = i;
+            links[i].id = i;
         }
         this.setState({
             links
@@ -115,15 +117,14 @@ class CreateProfile extends Component {
     _checkLinks = () =>
         this.state.links.every(link =>
             Object.keys(link).forEach((key) =>
-                (key !== '_id' && key !== 'type' && link[key].length !== 0)
+                (key !== 'id' && key !== 'type' && link[key].length !== 0)
             )
         );
 
     _handleLinkChange = (field, linkId, ev) => {
-        const emailRegex = /(.+){1,}@(.+){1,}\.(.+){2,}/;
-        const links = _.cloneDeep(this.state.links);
+        const links = r.clone(this.state.links);
         const fieldValue = ev.target.value;
-        const index = _.findIndex(links, link => link._id === linkId);
+        const index = r.findIndex(r.propEq('id', linkId))(links);
         const link = links[index];
         link[field] = fieldValue;
         if (field === 'url') {
@@ -146,12 +147,12 @@ class CreateProfile extends Component {
         console.log('show modal ', modalName);
     }
     render () {
-        const { style, profile, intl } = this.props;
+        const { style, profileState, intl } = this.props;
         const floatLabelStyle = { color: Colors.lightBlack };
         const inputStyle = { color: Colors.darkBlack };
         const firstNameProps = this.getProps({
             floatingLabelText: intl.formatMessage(formMessages.firstName),
-            ref: (firstNameInput) => this.firstNameInput = firstNameInput,
+            ref: (firstNameInput) => { this.firstNameInput = firstNameInput; },
             floatingLabelStyle: floatLabelStyle,
             inputStyle: { inputStyle },
             style: { width: '210px', verticalAlign: 'middle' },
@@ -181,7 +182,10 @@ class CreateProfile extends Component {
             required: true,
             addValueLink: true,
             statePath: 'formValues.userName',
-            onChange: this.props.handleValidation('formValues.userName')
+            onChange: this.props.handleValidation('formValues.userName', {
+                server: true,
+                action: 'validateUsername'
+            })
         });
 
         const passwordProps = this.getProps({
@@ -194,7 +198,7 @@ class CreateProfile extends Component {
             required: true,
             addValueLink: true,
             statePath: 'formValues.password',
-            onBlur: this.props.handleServerValidation('formValues.password')
+            onBlur: this.props.handleValidation('formValues.password')
         });
 
         const password2Props = this.getProps({
@@ -212,13 +216,14 @@ class CreateProfile extends Component {
 
         return (
           <div style={style} >
-            <form action=""
-              onSubmit = {this.handleSubmit}
-              ref={(profileForm) => this.profileForm = profileForm}
+            <form
+              action=""
+              onSubmit={this.handleSubmit}
+              ref={(profileForm) => { this.profileForm = profileForm; }}
             >
-            <div className="row start-xs" >
-              <div className="col-xs" style={{ flex: 1, padding: 0 }} >
-                <div className="row middle-xs">
+              <div className="row start-xs" >
+                <div className="col-xs" style={{ flex: 1, padding: 0 }} >
+                  <div className="row middle-xs">
                     <SvgIcon
                       color={Colors.lightBlack}
                       viewBox="0 0 32 32"
@@ -230,197 +235,187 @@ class CreateProfile extends Component {
                     >
                       <MenuAkashaLogo />
                     </SvgIcon>
-                    <h1 style={{
-                        fontWeight: '400',
-                        display: 'inline',
-                        verticalAlign: 'middle',
-                        margin: 0 }}
+                    <h1
+                      style={{
+                          fontWeight: '400',
+                          display: 'inline',
+                          verticalAlign: 'middle',
+                          margin: 0 }}
                     >
                       <FormattedMessage {...profileMessages.createProfileTitle} />
                     </h1>
-                </div>
-                <TextField {...firstNameProps} />
-                <TextField {...lastNameProps} />
-                <TextField {...userNameProps} />
-                <TextField {...passwordProps} />
-                <TextField {...password2Props} />
-                    <Checkbox
-                      label={intl.formatMessage(profileMessages.optionalDetailsLabel)}
-                      style={{ marginTop: '18px', marginLeft: '-4px' }}
-                      checked={this.state.opt_details}
-                      onCheck={this.handleShowDetails}
-                    />
-
-                    <div style={{ display: this.state.opt_details ? 'block' : 'none' }} >
-
-                      <h3 style={{ margin: '30px 0 10px 0' }} >
-                        {intl.formatMessage(profileMessages.avatarTitle)}
-                      </h3>
-                      <div>
-                        <Avatar
-                          editable
-                          ref={(avatar) => this.avatar = avatar}
-                        />
-                      </div>
-                      <h3 style={{ margin: '20px 0 10px 0' }} >
-                        {intl.formatMessage(profileMessages.backgroundImageTitle)}
-                      </h3>
-
-                      <ImageUploader
-                        ref={(imageUploader) => this.imageUploader = imageUploader}
-                        minHeight = {350}
-                        minWidth = {672}
+                  </div>
+                  <TextField {...firstNameProps} />
+                  <TextField {...lastNameProps} />
+                  <TextField {...userNameProps} />
+                  <TextField {...passwordProps} />
+                  <TextField {...password2Props} />
+                  <Checkbox
+                    label={intl.formatMessage(profileMessages.optionalDetailsLabel)}
+                    style={{ marginTop: '18px', marginLeft: '-4px' }}
+                    checked={this.state.opt_details}
+                    onCheck={this.handleShowDetails}
+                  />
+                  <div style={{ display: this.state.opt_details ? 'block' : 'none' }} >
+                    <h3 style={{ margin: '30px 0 10px 0' }} >
+                      {intl.formatMessage(profileMessages.avatarTitle)}
+                    </h3>
+                    <div>
+                      <Avatar
+                        editable
+                        ref={(avatar) => { this.avatar = avatar; }}
                       />
-
-                      <h3 style={{ margin: '20px 0 0 0' }} >
-                        {intl.formatMessage(profileMessages.aboutYouTitle)}
-                      </h3>
-                      <TextField
-                        fullWidth
-                        floatingLabelText={
-                            intl.formatMessage(profileMessages.shortDescriptionLabel)
-                        }
-                        multiLine
-                        value = {this.state.about}
-                        floatingLabelStyle={floatLabelStyle}
-                        onChange = {this._handleAboutChange}
-                      />
-                      <div className = "row" style={{ margin: '20px 0 0 0' }}>
-                        <h3 className="col-xs-10">
-                          {intl.formatMessage(profileMessages.linksTitle)}
-                        </h3>
-                        <div className = "col-xs-2 end-xs">
-                            <IconButton
-                              title = {intl.formatMessage(profileMessages.addLinkButtonTitle)}
-                              onClick={this._handleAddLink}
-                              primary
-                            >
-                                <SvgIcon >
-                                    <ContentAddIcon
-                                      color={this.context.muiTheme.palette.primary1Color}
-                                    />
-                                </SvgIcon>
-                            </IconButton>
-                        </div>
-                      </div>
-                      {this.state.links.map((link, key) =>
-                            <div key={key} className = "row">
-                                <div className="col-xs-10">
-                                    <TextField
-                                      autoFocus = {(this.state.links.length - 1) === key}
-                                      fullWidth
-                                      floatingLabelText={intl.formatMessage(formMessages.title)}
-                                      value = {link.title}
-                                      floatingLabelStyle={floatLabelStyle}
-                                      onChange = {
-                                        this._handleLinkChange.bind(this, 'title', link._id)
-                                      }
-                                    />
-                                    <TextField
-                                      fullWidth
-                                      floatingLabelText={intl.formatMessage(formMessages.url)}
-                                      value = {link.url}
-                                      floatingLabelStyle={floatLabelStyle}
-                                      onChange = {
-                                        this._handleLinkChange.bind(this, 'url', link._id)
-                                      }
-                                    />
-                                </div>
-                                {this.state.links.length > 1 &&
-                                    <div className = "col-xs-2 center-xs">
-                                        <IconButton
-                                          title = {
-                                           intl.formatMessage(profileMessages.removeLinkButtonTitle)
-                                          }
-                                          style = {{ marginTop: '24px' }}
-                                          onClick = {
-                                            this._handleRemoveLink.bind(this, link._id)
-                                          }
-                                        >
-                                            <SvgIcon >
-                                                <CancelIcon />
-                                            </SvgIcon>
-                                        </IconButton>
-                                    </div>
-                                }
-                                {this.state.links.length > 1 &&
-                                    <Divider
-                                      style={{ marginTop: '16px' }}
-                                      className = "col-xs-12"
-                                    />
-                                }
-                            </div>
-                      )}
                     </div>
-                    <div className="row" >
-                      <div className="col-xs-6" >
-                        <Checkbox
-                          label={intl.formatMessage(profileMessages.keepAccUnlockedLabel)}
-                          style={{ marginTop: '18px', marginLeft: '-4px', width: '280px' }}
-                          checked={profile.getIn(['unlock', 'enabled'])}
-                          onCheck={this.handleUnlockActive}
-                        />
-                      </div>
-                      <div className="col-xs-6" >
-                        <SelectField
-                          value={profile.getIn(['unlock', 'value'])}
-                          onChange={this.handleUnlockFor}
-                          style={{ width: '100px' }}
+                    <h3 style={{ margin: '20px 0 10px 0' }} >
+                      {intl.formatMessage(profileMessages.backgroundImageTitle)}
+                    </h3>
+                    <ImageUploader
+                      ref={(imageUploader) => { this.imageUploader = imageUploader; }}
+                      minHeight={350}
+                      minWidth={672}
+                    />
+                    <h3 style={{ margin: '20px 0 0 0' }} >
+                      {intl.formatMessage(profileMessages.aboutYouTitle)}
+                    </h3>
+                    <TextField
+                      fullWidth
+                      floatingLabelText={
+                          intl.formatMessage(profileMessages.shortDescriptionLabel)
+                      }
+                      multiLine
+                      value={this.state.about}
+                      floatingLabelStyle={floatLabelStyle}
+                      onChange={this._handleAboutChange}
+                    />
+                    <div className="row" style={{ margin: '20px 0 0 0' }}>
+                      <h3 className="col-xs-10">
+                        {intl.formatMessage(profileMessages.linksTitle)}
+                      </h3>
+                      <div className="col-xs-2 end-xs">
+                        <IconButton
+                          title={intl.formatMessage(profileMessages.addLinkButtonTitle)}
+                          onClick={this._handleAddLink}
+                          primary
                         >
-                          <MenuItem value={1} primaryText="1 min" />
-                          <MenuItem value={5} primaryText="5 min" />
-                          <MenuItem value={15} primaryText="15 min" />
-                          <MenuItem value={30} primaryText="30 min" />
-                        </SelectField>
+                          <SvgIcon >
+                            <ContentAddIcon
+                              color={this.context.muiTheme.palette.primary1Color}
+                            />
+                          </SvgIcon>
+                        </IconButton>
                       </div>
                     </div>
-                    <div style={{ marginTop: '20px' }} >
-                      <small>
-                        <FormattedMessage
-                          {...profileMessages.terms}
-                          values = {{
-                              termsLink: (
-                                <a href="/terms" onClick = {
-                                        (ev) => this._handleModalShow(ev, 'termsOfService')
-                                }
-                                >
-                                    {intl.formatMessage(generalMessages.termsOfService)}
-                                </a>
-                              ),
-                              privacyLink: (
-                                    <a href="/privacy"
-                                      onClick = {
-                                            (ev) => this._handleModalShow(ev, 'privacyPolicy')
-                                      }
-                                    >
-                                        {intl.formatMessage(generalMessages.privacyPolicy)}
-                                    </a>
-                                )
-                          }}
-                        />
-                      </small>
+                    {this.state.links.map((link, key) =>
+                      <div key={key} className="row">
+                        <div className="col-xs-10">
+                          <TextField
+                            autoFocus={(this.state.links.length - 1) === key}
+                            fullWidth
+                            floatingLabelText={intl.formatMessage(formMessages.title)}
+                            value={link.title}
+                            floatingLabelStyle={floatLabelStyle}
+                            onChange={(ev) => this._handleLinkChange('title', link.id, ev)}
+                          />
+                          <TextField
+                            fullWidth
+                            floatingLabelText={intl.formatMessage(formMessages.url)}
+                            value={link.url}
+                            floatingLabelStyle={floatLabelStyle}
+                            onChange={(ev) => this._handleLinkChange('url', link.id, ev)}
+                          />
+                        </div>
+                        {this.state.links.length > 1 &&
+                          <div className="col-xs-2 center-xs">
+                            <IconButton
+                              title={intl.formatMessage(profileMessages.removeLinkButtonTitle)}
+                              style={{ marginTop: '24px' }}
+                              onClick={(ev) => this._handleRemoveLink(link.id, ev)}
+                            >
+                              <SvgIcon >
+                                <CancelIcon />
+                              </SvgIcon>
+                            </IconButton>
+                          </div>
+                        }
+                        {this.state.links.length > 1 &&
+                          <Divider
+                            style={{ marginTop: '16px' }}
+                            className="col-xs-12"
+                          />
+                        }
+                      </div>
+                    )}
+                  </div>
+                  <div className="row" >
+                    <div className="col-xs-6" >
+                      <Checkbox
+                        label={intl.formatMessage(profileMessages.keepAccUnlockedLabel)}
+                        style={{ marginTop: '18px', marginLeft: '-4px', width: '280px' }}
+                        checked={profileState.getIn(['newProfile', 'unlock', 'enabled'])}
+                        onCheck={this.handleUnlockActive}
+                      />
+                    </div>
+                    <div className="col-xs-6" >
+                      <SelectField
+                        value={profileState.getIn(['newProfile', 'unlock', 'value'])}
+                        onChange={this.handleUnlockFor}
+                        style={{ width: '100px' }}
+                      >
+                        <MenuItem value={1} primaryText="1 min" />
+                        <MenuItem value={5} primaryText="5 min" />
+                        <MenuItem value={15} primaryText="15 min" />
+                        <MenuItem value={30} primaryText="30 min" />
+                      </SelectField>
                     </div>
                   </div>
-                </div>
-                <div className="row end-xs" >
-                  <div className="col-xs"
-                    style={ this.state.opt_details ? { margin: '25px 0 30px' } : {} }
-                  >
-                    <RaisedButton
-                      label={intl.formatMessage(generalMessages.cancel)}
-                      type="reset"
-                      onClick = {this._handleCancel}
-                    />
-                    <RaisedButton label={intl.formatMessage(generalMessages.submit)}
-                      type="submit"
-                      onClick = {this._submitForm}
-                      disabled = {this.state.submitting}
-                      primary
-                      disabled={false}
-                      style={{ marginLeft: '12px' }}
-                    />
+                  <div style={{ marginTop: '20px' }} >
+                    <small>
+                      <FormattedMessage
+                        {...profileMessages.terms}
+                        values={{
+                            termsLink: (
+                              <a
+                                href="/terms"
+                                onClick={(ev) => this._handleModalShow(ev, 'termsOfService')}
+                              >
+                                {intl.formatMessage(generalMessages.termsOfService)}
+                              </a>
+                            ),
+                            privacyLink: (
+                              <a
+                                href="/privacy"
+                                onClick={(ev) => this._handleModalShow(ev, 'privacyPolicy')}
+                              >
+                                {intl.formatMessage(generalMessages.privacyPolicy)}
+                              </a>
+                            )
+                        }}
+                      />
+                    </small>
                   </div>
                 </div>
+              </div>
+              <div className="row end-xs" >
+                <div
+                  className="col-xs"
+                  style={this.state.opt_details ? { margin: '25px 0 30px' } : {}}
+                >
+                  <RaisedButton
+                    label={intl.formatMessage(generalMessages.cancel)}
+                    type="reset"
+                    onClick={this._handleCancel}
+                  />
+                  <RaisedButton
+                    label={intl.formatMessage(generalMessages.submit)}
+                    type="submit"
+                    onClick={this._submitForm}
+                    disabled={this.state.submitting}
+                    primary
+                    disabled={false}
+                    style={{ marginLeft: '12px' }}
+                  />
+                </div>
+              </div>
             </form>
           </div>
         );
@@ -428,11 +423,12 @@ class CreateProfile extends Component {
 }
 
 CreateProfile.propTypes = {
-    profile: PropTypes.object.isRequired,
+    profileState: PropTypes.object.isRequired,
     style: PropTypes.object,
     validate: React.PropTypes.func,
     errors: React.PropTypes.object,
     isValid: React.PropTypes.func,
+    profileActions: React.PropTypes.object,
     getValidationMessages: React.PropTypes.func,
     clearValidations: React.PropTypes.func,
     handleValidation: React.PropTypes.func,

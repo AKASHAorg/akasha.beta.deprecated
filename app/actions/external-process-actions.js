@@ -76,6 +76,7 @@ class EProcActions {
         })
         .catch(reason => this.dispatch(() => {
             this.dispatch(this._startIPFSError(reason));
+            console.error(reason);
             this.appActions.showError({
                 code: 205,
                 type: reason.type ? reason.type : 'IPFS_START_ERROR',
