@@ -2,6 +2,7 @@ const IpfsService = require('./ipfs.js');
 const GethService = require('./geth.js');
 const LoggerService = require('./logger.js');
 const UserService = require('./user.js');
+const EntryService = require('./entry.js');
 
 // initialize the AkashaLogger with the user data folder
 const app = require('electron').app;
@@ -15,6 +16,7 @@ const geth = new GethService();
 const logger = new LoggerService();
 const ipfs = new IpfsService();
 const user = new UserService();
+const entry = new EntryService(); // this should be initialized in UserService after login
 
 process.on('uncaughtException', (err) => {
     generalLogger.warn(err);
@@ -30,4 +32,5 @@ export function initIPCServices (mainWindow) {
     logger.setupListeners(mainWindow);
     ipfs.setupListeners(mainWindow);
     user.setupListeners(mainWindow);
+    entry.setupListeners(mainWindow);
 }

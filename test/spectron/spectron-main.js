@@ -66,6 +66,25 @@ describe('application launch', function () {
             });
     });
 
+    it('create eth account - coinbase', () => {
+        return client
+            .waitUntilWindowLoaded(1000)
+            .executeAsync((done) => {
+                ipcRenderer.on('client:user:createCoinbase', (err, status) => {
+                    done(status);
+                });
+                ipcRenderer.send('server:user:createCoinbase', {
+                    password: 'zz'
+                });
+            })
+            .then((ret) => {
+                expect(ret.value.status)
+                    .to.be.a('string')
+                    .to.have.length.above(8);
+                expect(ret.value.success).to.be.true;
+            });
+    });
+
     it('stop geth service', () => {
         return client
             .executeAsync((done) => {
@@ -121,5 +140,17 @@ describe('application launch', function () {
             .pause(7000); // wait for ipc connector to get set
     });
 
+    it('stop geth service', () => {
+        return client
+            .executeAsync((done) => {
+                ipcRenderer.on('client:geth:stopService', (err, status) => {
+                    done(status);
+                });
+                ipcRenderer.send('server:geth:stopService');
+            })
+            .then((ret) => {
+                expect(ret.value.success).to.be.true;
+            });
+    });
 });
 

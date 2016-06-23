@@ -17,14 +17,18 @@ export const EVENTS = {
             gethInfo: 'server:logger:gethInfo',
             stopGethInfo: 'server:logger:stopGethInfo'
         },
-        "user": {
-            "signUp": "server:user:signUp",
-            "exists": "server:user:exists",
-            "login": "server:user:login",
-            "createCoinbase": "server:user:createCoinbase",
-            "faucetEther": "server:user:faucetEther",
-            "registerProfile": "server:user:registerProfile",
-            "listAccounts": "server:user:listAccounts"
+        user: {
+            signUp: 'server:user:signUp',
+            exists: 'server:user:exists',
+            login: 'server:user:login',
+            createCoinbase: 'server:user:createCoinbase',
+            faucetEther: 'server:user:faucetEther',
+            registerProfile: 'server:user:registerProfile',
+            listAccounts: 'server:user:listAccounts',
+            getBalance: 'server:user:getBalance'
+        },
+        entry: {
+            publish: 'server:entry:publish'
         }
     },
     client: {
@@ -43,15 +47,19 @@ export const EVENTS = {
             gethInfo: 'client:logger:gethInfo',
             stopGethInfo: 'client:logger:stopGethInfo'
         },
-        "user": {
-            "signUp": "client:user:signUp",
-            "exists": "client:user:exists",
-            "login": "client:user:login",
-            "createCoinbase": "client:user:createCoinbase",
-            "faucetEther": "client:user:faucetEther",
-            "registerProfileHash": "client:user:registerProfileHash",
-            "registerProfileComplete": "client:user:registerProfileComplete",
-            "listAccounts": "client:user:listAccounts"
+        user: {
+            signUp: 'client:user:signUp',
+            exists: 'client:user:exists',
+            login: 'client:user:login',
+            createCoinbase: 'client:user:createCoinbase',
+            faucetEther: 'client:user:faucetEther',
+            registerProfileHash: 'client:user:registerProfileHash',
+            registerProfileComplete: 'client:user:registerProfileComplete',
+            listAccounts: 'client:user:listAccounts',
+            getBalance: 'client:user:getBalance'
+        },
+        entry: {
+            publish: 'client:entry:publish'
         }
     }
 };
