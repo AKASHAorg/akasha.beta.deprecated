@@ -18,13 +18,9 @@ class UserService extends MainService {
         super('user');
         this.IPFS_ADD_SIGNUP_FAIL = 'ipfs add user signup fail';
         this.NO_COINBASE_FAIL = 'no coinbase / no ethereum account';
-        this.UNLOCK_COINBASE_FAIL = 'unlock account fail, check your password';
-        this.password = 'zz';
         this.textFields = ['username', 'firstName', 'lastName', 'description'];
         this.CREATE_PROFILE_CONTRACT_GAS = 19000;
-        this.UNLOCK_INTERVAL = 2000;
         this.FAUCET_URL = 'http://faucet.ma.cx:3000/donate/';
-        this.ZERO_ADDR = '0x0000000000000000000000000000000000000000';
     }
     /*
      * It sets up the listeners for this module.
@@ -56,14 +52,6 @@ class UserService extends MainService {
         ipcMain.on(this.serverEvent.getBalance, (event, arg) => {
             this._getBalance(event, arg);
         });
-    }
-
-    getPassword () {
-        return this.password;
-    }
-
-    setPassword (password) {
-        this.password = password;
     }
 
     _usernameExists (event, arg) {
@@ -223,45 +211,37 @@ class UserService extends MainService {
             .then((response) => {
                 const ipfsHash = response[0].Hash;
                 const web3 = this.__getWeb3();
-                web3.eth.getCoinbaseAsync().then((res) => {
-                    web3
-                        .personal
-                        .unlockAccountAsync(arg.account, arg.password, this.UNLOCK_INTERVAL)
-                        .then(() => {
-                            const registry = new Dapple.class(web3).objects.registry;
-                            const ipfsHashDelimiter = Math.floor(ipfsHash.length / 2);
-                            registry.register(
-                                web3.fromUtf8(arg.username),
-                                [
-                                    ipfsHash.substring(0, ipfsHashDelimiter),
-                                    ipfsHash.substring(ipfsHashDelimiter)
-                                ],
-                                {
-                                    gas: this.CREATE_PROFILE_CONTRACT_GAS
-                                }, (error, tx) => {
-                                    this._sendEvent(event)(
-                                        this.clientEvent.registryRegisterHash,
-                                        true,
-                                        tx); // o sa ii pasez si currentblock
-                                    if (!error) {
-                                        this
-                                            .__getGeth()
-                                            .addFilter('tx', tx, (txInfo) => {
-                                                this.
-                                                    _sendEvent(event)(this.clientEvent.signUp,
-                                                                        true,
-                                                                        txInfo);
-                                            });
-                                    }
-                                });
-                        }).catch((err) => {
-                            this._sendEvent(event)(this.clientEvent.signUp,
-                                                false,
-                                                this.UNLOCK_COINBASE_FAIL);
-                        });
-                }).catch((err) => {
-                    this._sendEvent(event)(this.clientEvent.signUp, false, this.NO_COINBASE_FAIL);
-                });
+                web3
+                    .personal
+                    .unlockAccountAsync(arg.account, arg.password, this.UNLOCK_INTERVAL)
+                    .then(() => {
+                        const registry = new Dapple.class(web3).objects.registry;
+                        registry.register(
+                            web3.fromUtf8(arg.username),
+                            this._chopIpfsHash(ipfsHash),
+                            {
+                                gas: this.CREATE_PROFILE_CONTRACT_GAS
+                            }, (error, tx) => {
+                                this._sendEvent(event)(
+                                    this.clientEvent.registryRegisterHash,
+                                    true,
+                                    tx); // o sa ii pasez si currentblock
+                                if (!error) {
+                                    this
+                                        .__getGeth()
+                                        .addFilter('tx', tx, (txInfo) => {
+                                            this.
+                                                _sendEvent(event)(this.clientEvent.signUp,
+                                                                    true,
+                                                                    txInfo);
+                                        });
+                                }
+                            });
+                    }).catch((err) => {
+                        this._sendEvent(event)(this.clientEvent.signUp,
+                                            false,
+                                            this.UNLOCK_COINBASE_FAIL);
+                    });
             })
             .catch((err) => {
                 this._sendEvent(event)(this.clientEvent.signUp, false, this.IPFS_ADD_SIGNUP_FAIL);

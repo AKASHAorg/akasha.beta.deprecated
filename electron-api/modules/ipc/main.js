@@ -12,6 +12,14 @@ class MainService extends IpcService {
      */
     constructor (type) {
         super(type);
+        this.UNLOCK_INTERVAL = 2000;
+        this.ZERO_ADDR = '0x0000000000000000000000000000000000000000';
+        this.UNLOCK_COINBASE_FAIL = 'unlock account fail, check your password';
+    }
+
+    _chopIpfsHash (hash) {
+        const delimiter = Math.floor(hash.length / 2);
+        return [hash.substring(0, delimiter), hash.substring(delimiter)];
     }
 
     _getIpfsAPI () {
