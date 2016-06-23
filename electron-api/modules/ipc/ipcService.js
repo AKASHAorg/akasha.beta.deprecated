@@ -1,6 +1,7 @@
 /* eslint strict: 0, no-console: 0 */
 'use strict';
 const { EVENTS } = require('../settings');
+const { ipcMain } = require('electron');
 
 /**
  * IpcService class
@@ -38,7 +39,8 @@ class IpcService {
             if (extra && typeof extra === 'object') {
                 result = Object.assign(result, extra);
             }
-            event.sender.send(name, result);
+            const sender = event ? event.sender : ipcMain;
+            sender.send(name, result);
         };
     }
 
