@@ -1,21 +1,21 @@
 export const STATICS = {
-    "GETH_SETPROVIDER_TIMEOUT": 4000
+    GETH_SETPROVIDER_TIMEOUT: 4000
 };
 
 export const EVENTS = {
-    "server": {
-        "geth": {
-            "startService": "server:geth:startService",
-            "stopService": "server:geth:stopService",
-            "contract": "server:geth.contract"
+    server: {
+        geth: {
+            startService: 'server:geth:startService',
+            stopService: 'server:geth:stopService',
+            contract: 'server:geth.contract'
         },
-        "ipfs": {
-            "startService": "server:ipfs:startService",
-            "stopService": "server:ipfs:stopService"
+        ipfs: {
+            startService: 'server:ipfs:startService',
+            stopService: 'server:ipfs:stopService'
         },
-        "logger": {
-            "gethInfo" : "server:logger:gethInfo",
-            "stopGethInfo" : "server:logger:stopGethInfo"
+        logger: {
+            gethInfo: 'server:logger:gethInfo',
+            stopGethInfo: 'server:logger:stopGethInfo'
         },
         "user": {
             "signUp": "server:user:signUp",
@@ -23,24 +23,25 @@ export const EVENTS = {
             "login": "server:user:login",
             "createCoinbase": "server:user:createCoinbase",
             "faucetEther": "server:user:faucetEther",
-            "registerProfile": "server:user:registerProfile"
+            "registerProfile": "server:user:registerProfile",
+            "listAccounts": "server:user:listAccounts"
         }
     },
-    "client": {
-        "geth": {
-            "startService": "client:geth:startService",
-            "startSyncing": "client:geth:startSyncing",
-            "syncUpdate": "client:geth:syncUpdate",
-            "stopService": "client:geth:stopService",
-            "contract": "client:geth.contract"
+    client: {
+        geth: {
+            startService: 'client:geth:startService',
+            startSyncing: 'client:geth:startSyncing',
+            syncUpdate: 'client:geth:syncUpdate',
+            stopService: 'client:geth:stopService',
+            contract: 'client:geth.contract'
         },
-        "ipfs": {
-            "startService": "client:ipfs:startService",
-            "stopService": "client:ipfs:stopService"
+        ipfs: {
+            startService: 'client:ipfs:startService',
+            stopService: 'client:ipfs:stopService'
         },
-        "logger": {
-            "gethInfo" : "client:logger:gethInfo",
-            "stopGethInfo" : "client:logger:stopGethInfo"
+        logger: {
+            gethInfo: 'client:logger:gethInfo',
+            stopGethInfo: 'client:logger:stopGethInfo'
         },
         "user": {
             "signUp": "client:user:signUp",
@@ -49,7 +50,8 @@ export const EVENTS = {
             "createCoinbase": "client:user:createCoinbase",
             "faucetEther": "client:user:faucetEther",
             "registerProfileHash": "client:user:registerProfileHash",
-            "registerProfileComplete": "client:user:registerProfileComplete"
+            "registerProfileComplete": "client:user:registerProfileComplete",
+            "listAccounts": "client:user:listAccounts"
         }
     }
 };

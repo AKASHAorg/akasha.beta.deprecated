@@ -2,18 +2,21 @@ import Dexie from 'dexie';
 import debug from 'debug';
 const dbg = debug('App:settingsDB');
 
-const db = new Dexie('settings');
-db.version(1).stores({
+const settingsDB = new Dexie('settings');
+settingsDB.version(1).stores({
     geth: '&name, dataDir, ipcPath, cache',
     ipfs: '&name, ipfsPath',
     flags: '&name, requestStartupChange',
     user: '&username, autoCrashReports'
 });
 
-db.geth.hook('creating', (primaryKey, obj, transaction) => {
-    dbg('creating.. ', primaryKey, obj, transaction);
+settingsDB.geth.hook('creating', (primaryKey, obj, transaction) => {
+    dbg('creating.. ', obj);
+});
+settingsDB.ipfs.hook('creating', (primaryKey, obj, transaction) => {
+    dbg('creating.. ', obj);
 });
 
-db.open();
+settingsDB.open();
 
-export default db;
+export default settingsDB;

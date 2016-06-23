@@ -2,14 +2,12 @@ import React, { Component } from 'react';
 import {
     List,
     ListItem,
-    Avatar,
-    Divider,
     Dialog,
     FlatButton,
     TextField,
     RaisedButton } from 'material-ui';
+import Avatar from '../ui/avatar/avatar-editor';
 import LoginHeader from '../../components/ui/partials/LoginHeader';
-import { Scrollbars } from 'react-custom-scrollbars';
 import { hashHistory } from 'react-router';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import { setupMessages, generalMessages } from '../../locale-data/messages';
@@ -25,13 +23,15 @@ class Auth extends Component {
         };
     }
 
-    componentDidMount () {
-        // const { actions } = this.props;
-        // actions.getProfilesList();
+    componentWillMount () {
+        const { profileActions } = this.props;
+        profileActions.checkTempProfile();
     }
 
     handleTouchTap = (index) => {
-        this.setState({ openModal: true });
+        const { profileState } = this.props;
+        const selectedProfile = profileState.get('profiles').get(index);
+        this.setState({ openModal: true, selectedProfile });
     };
 
     handleModalClose = () => {
@@ -39,45 +39,75 @@ class Auth extends Component {
     };
 
     handleLogin = () => {
-        const { actions } = this.props;
-        actions.authenticate('0xcf5290ff9d98794fe6e30ffca512b3ed71710d85',
-        this.passwordRef.getValue(), 60);//for testing
+        const { profileActions } = this.props;
+        const selectedProfile = this.state.selectedProfile;
+        profileActions.login({
+            address: selectedProfile.get('address'),
+            password: this.passwordRef.getValue()
+        });
     };
-  _getLocalProfiles() {
-    const { authState } = this.props;
-    return <div><FormattedMessage {...setupMessages.noProfilesFound}/></div>;
+    _getLocalProfiles () {
+        const { profileState } = this.props;
+        const profilesList = profileState.get('profiles');
+        if (profilesList.size === 0) {
+            return <div><FormattedMessage {...setupMessages.noProfilesFound} /></div>;
+        }
 
-    // return authState.get('profiles').map((account, index) => {
-    //   return (
-    //     <div key={index} >
-    //       <ListItem
-    //         key={`l${index}`}
-    //         leftAvatar={<Avatar>aa</Avatar>}
-    //         primaryText={account.get('address')}
-    //         secondaryText={account.get('userName')}
-    //         secondaryTextLines={1}
-    //         value={account.get('address')}
-    //         onTouchTap={()=> this.handleTouchTap(index)}
-    //       />
-    //       <Divider key={`d${index}`} inset />
-    //     </div>
-    //   )
-    // });
-  }
-  _handleIdentityCreate = (ev) => {
-    ev.preventDefault();
-    hashHistory.push('new-profile');
-  }
+        return profileState.get('profiles').map((profile, index) => {
+            const profileName = `${profile.get('firstName')} ${profile.get('lastName')}`;
+            const avatarProps = {
+                editable: false,
+                userName: profileName,
+                image: profile.get('avatar'),
+                radius: 48,
+                className: 'col-xs-4 middle-xs',
+                userInitialsStyle: { fontSize: 18 }
+            };
+            return (
+              <ListItem
+                key={index}
+                leftAvatar={
+                  <Avatar {...avatarProps} />
+                }
+                primaryText={
+                  <div
+                    style={{
+                        marginLeft: 16,
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis'
+                    }}
+                  >
+                    <b>{profileName}</b>
+                  </div>
+                }
+                secondaryText={
+                  <div style={{ marginLeft: 16 }}>
+                    {profile.get('userName')}
+                  </div>
+                }
+                secondaryTextLines={1}
+                value={profile.get('address')}
+                onTouchTap={() => this.handleTouchTap(index)}
+                className="row"
+                style={{ border: '1px solid #DDD', marginBottom: 8 }}
+              />
+            );
+        });
+    }
+    _handleIdentityCreate = (ev) => {
+        ev.preventDefault();
+        hashHistory.push('new-profile');
+    }
     render () {
-        const { style, authState, intl } = this.props;
-        const { openModal, avatar } = this.state;
-        const profiles = authState.get('profiles');
+        const { style, profileState, intl } = this.props;
+        const { openModal } = this.state;
         const modalActions = [
             <FlatButton label="Cancel" onTouchTap={this.handleModalClose} />,
             <FlatButton label="Submit" primary onTouchTap={this.handleLogin} />
         ];
         const localProfiles = this._getLocalProfiles();
-
+        const selectedProfile = this.state.selectedProfile;
         return (
           <div style={style} >
             <div className="start-xs" >
@@ -87,69 +117,93 @@ class Auth extends Component {
               >
                 <LoginHeader title={intl.formatMessage(setupMessages.logInTitle)} />
                 <div style={{ paddingTop: '30px' }} >
-                  <Scrollbars style={{ height: '440px' }} >
-                    <List>
-                      {localProfiles}
-                    </List>
-                  </Scrollbars>
+                  <List>
+                    {localProfiles}
+                  </List>
+                </div>
+                <div className="col-xs end-xs" >
+                  <RaisedButton label={intl.formatMessage(generalMessages.importIdentityLabel)} />
+                  <RaisedButton
+                    label={intl.formatMessage(generalMessages.createNewIdentityLabel)}
+                    primary
+                    style={{ marginLeft: '10px' }}
+                    onMouseUp={this._handleIdentityCreate}
+                  />
+                </div>
+                {this.state.selectedProfile &&
+                  <Dialog
+                    title="Authentication"
+                    modal
+                    open={openModal}
+                    actions={modalActions}
+                    contentStyle={{ width: '82%' }}
+                  >
+                    <Avatar
+                      editable={false}
+                      userName={
+                          `${selectedProfile.get('firstName')} ${selectedProfile.get('lastName')}`
+                      }
+                    />
+                    <div className="row">
+                      <div className="col-xs-6">
+                        <TextField
+                          disabled
+                          fullWidth
+                          floatingLabelText="Name"
+                          value={
+                            `${selectedProfile.get('firstName')} ${selectedProfile.get('lastName')}`
+                          }
+                        />
+                      </div>
+                      <div className="col-xs-6">
+                        <TextField
+                          disabled
+                          floatingLabelText="userName"
+                          value={`${selectedProfile.get('userName')}`}
+                          fullWidth
+                        />
+                      </div>
+                    </div>
+                    <TextField
+                      disabled
+                      fullWidth
+                      floatingLabelText="Ethereum address"
+                      value={selectedProfile.get('address')}
+                    />
+                    <TextField
+                      type="password"
+                      fullWidth
+                      floatingLabelText="Password"
+                      ref={node => this.passwordRef = node}
+                    />
+                  </Dialog>
+                }
+              </div>
             </div>
-            <div style={{float: 'right'}} >
-              <RaisedButton label={intl.formatMessage(generalMessages.importIdentityLabel)} />
-              <RaisedButton label={intl.formatMessage(generalMessages.createNewIdentityLabel)}
-                            primary={true} 
-                            style={{marginLeft: '10px'}} 
-                            onMouseUp={this._handleIdentityCreate}
-              />
-            </div>
-            <Dialog
-              title="Authentication"
-              modal
-              open={openModal}
-              actions={modalActions}
-              contentStyle={{width: '82%'}}
-            >
-              <Avatar>JD</Avatar>
-              <TextField
-                disabled
-                fullWidth
-                floatingLabelText="Username"
-                value="gigi"
-              />
-              <TextField
-                disabled
-                fullWidth
-                floatingLabelText="Ethereum address"
-              />
-              <TextField type="password"
-                         fullWidth
-                         floatingLabelText="Password"
-                         ref={node => this.passwordRef=node}
-              />
-            </Dialog>
           </div>
-        </div>
-      </div>
-    );
-  }
+        );
+    }
 }
 
 Auth.propTypes = {
-  authState: React.PropTypes.object.isRequired,
-  style: React.PropTypes.object
+    profileActions: React.PropTypes.object.isRequired,
+    profileState: React.PropTypes.object.isRequired,
+    style: React.PropTypes.object
 };
 
 Auth.contextTypes = {
-  muiTheme: React.PropTypes.object
+    muiTheme: React.PropTypes.object,
+    router: React.PropTypes.object
 };
 
 Auth.defaultProps = {
-  style: {
-    width: '100%',
-    height: '100%',
-    display: 'flex',
-    flexDirection: 'column',
-    position: 'relative'
-  }
+    style: {
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        position: 'relative'
+    }
 };
 
 export default injectIntl(Auth);

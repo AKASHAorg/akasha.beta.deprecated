@@ -41,6 +41,15 @@ class IpcService {
             event.sender.send(name, result);
         };
     }
+
+    /**
+    * Placeholder for subclasses
+    * Here, each IPCService will add cleanup stuff
+    */
+    shutDown () {
+
+    }
+
     /**
     *
     */
