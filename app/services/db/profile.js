@@ -1,19 +1,22 @@
 import Dexie from 'dexie';
+import { tempProfileSchema } from './schema/temp-profile';
 import debug from 'debug';
 const dbg = debug('App:profileDB');
 
 const profileDB = new Dexie('profiles');
 profileDB.version(1).stores({
-    localProfiles: '&address, profileData',
-    loggedProfile: '&address, profileData',
-    newProfile: '&name, profileData, currentStep'
+    localProfiles: '&address, userName',
+    loggedProfile: '&address, userName',
+    tempProfile: 'userName, currentStatus'
 });
 
-profileDB.newProfile.hook('creating', (primaryKey, obj) => {
-    dbg('creating newProfile ', obj);
+profileDB.tempProfile.defineClass(tempProfileSchema);
+
+profileDB.tempProfile.hook('creating', (primaryKey, obj) => {
+    dbg('creating tempProfile ', obj);
 });
-profileDB.newProfile.hook('creating', (primaryKey, obj) => {
-    dbg('creating newProfile ', obj);
+profileDB.tempProfile.hook('creating', (primaryKey, obj) => {
+    dbg('creating tempProfile ', obj);
 });
 profileDB.localProfiles.hook('creating', (primaryKey, obj) => {
     dbg('creating localProfiles ', obj);

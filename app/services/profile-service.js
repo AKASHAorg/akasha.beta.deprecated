@@ -46,21 +46,39 @@ class ProfileService {
             //     return resolve(data);
             // });
         });
-    saveTempProfile = (profileData, currentStep) =>
-        profileDB.transaction('rw', profileDB.newProfile, () => {
-            profileDB.newProfile.put({
-                name: 'newProfile',
-                profileData,
-                currentStep
+    saveTempProfile = (profileData, currentStatus) =>
+        profileDB.transaction('rw', profileDB.tempProfile, () => {
+            const { userName, firstName, lastName, password, password2 } = profileData;
+            const optionalData = {
+                avatarFile: profileData.avatarFile,
+                backgroundImage: profileData.backgroundImage,
+                aboutMe: profileData.aboutMe,
+                links: profileData.links
+            };
+
+            profileDB.tempProfile.put({
+                userName,
+                firstName,
+                lastName,
+                password,
+                password2,
+                optionalData,
+                currentStatus
             });
         });
 
+    updateTempProfile = (userName, changes) =>
+        profileDB.transaction('rw', profileDB.tempProfile, () => {
+            profileDB.tempProfile.update(userName, { ...changes });
+        });
+
     clearTempProfile = () =>
-        profileDB.newProfile.delete();
+        profileDB.tempProfile.delete();
 
     getTempProfile = () =>
-        profileDB.transaction('r', profileDB.newProfile, () =>
-            profileDB.newProfile.toArray());
+        profileDB.transaction('r', profileDB.tempProfile, () =>
+            profileDB.tempProfile.toArray()
+        )
 
     createEthAddress = (profilePassword) =>
         new Promise((resolve, reject) => {
@@ -75,14 +93,14 @@ class ProfileService {
         });
     fundFromFaucet = (profileAddress) =>
         new Promise((resolve, reject) => {
-            ipcRenderer.one(EVENTS.client.user.faucet, (ev, data) => {
+            ipcRenderer.once(EVENTS.client.user.faucetEther, (ev, data) => {
                 if (!data) {
                     const error = new Error('Main process did not return anything!');
                     return reject(error);
                 }
                 return resolve(data);
             });
-            ipcRenderer.send(EVENTS.client.user.faucet, profileAddress);
+            ipcRenderer.send(EVENTS.server.user.faucetEther, { account: profileAddress });
         })
     createProfile = (profileData) => {}
         // new Promise((resolve, reject) => {

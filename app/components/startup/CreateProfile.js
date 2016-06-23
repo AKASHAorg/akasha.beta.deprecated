@@ -73,8 +73,12 @@ class CreateProfile extends Component {
             }
         });
         // save a temporary profile to indexedDB
-        profileActions.saveTempProfile(profileData, '1').then(() => {
-            // this.context.router.push('new-profile-status');
+        profileActions.saveTempProfile(profileData, {
+            currentStep: 0,
+            status: 'finished',
+            message: 'Profile creation started!'
+        }).then(() => {
+            this.context.router.push('authenticate');
         });
     }
     _submitForm = (ev) => {
