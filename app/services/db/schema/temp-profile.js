@@ -3,7 +3,8 @@ function Status () {
     return {
         currentStep: Number,
         status: String,
-        message: String
+        message: String,
+        faucetRequested: false
     };
 }
 
