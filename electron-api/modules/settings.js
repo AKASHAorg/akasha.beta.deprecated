@@ -52,6 +52,7 @@ export const EVENTS = {
             exists: 'client:user:exists',
             login: 'client:user:login',
             createCoinbase: 'client:user:createCoinbase',
+            faucetRequestEther: 'client:user:faucetRequestEther',
             faucetEther: 'client:user:faucetEther',
             registerProfileHash: 'client:user:registerProfileHash',
             registerProfileComplete: 'client:user:registerProfileComplete',

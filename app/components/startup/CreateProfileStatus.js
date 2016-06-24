@@ -5,11 +5,8 @@ import { SvgIcon } from 'material-ui';
 
 class CreateProfileStatus extends Component {
     componentDidMount () {
-        const { profileActions, profileState } = this.props;
-        const tempProfile = profileState.get('newProfile');
-        if (tempProfile.size > 0) {
-            profileActions.createProfile();
-        }
+        const { profileActions } = this.props;
+        profileActions.createProfile();
     }
 
     render () {

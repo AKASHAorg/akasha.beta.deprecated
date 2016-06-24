@@ -20,7 +20,8 @@ const initialState = fromJS({
         currentStatus: {
             currentStep: '',
             status: '',
-            message: ''
+            message: '',
+            faucetRequested: false
         }
     })
 });
@@ -53,6 +54,10 @@ export default function profileState (state = initialState, action) {
         case types.FUND_FROM_FAUCET_START:
             return state.updateIn(['tempProfile', 'currentStatus'],
                 (cStatus) => Object.assign(cStatus, { status: 'pending' })
+            );
+        case types.REQUEST_FUND_FROM_FAUCET_SUCCESS:
+            return state.updateIn(['tempProfile', 'currentStatus'],
+                (cStatus) => Object.assign(cStatus, { faucetRequested: true })
             );
         case types.FUND_FROM_FAUCET_SUCCESS:
             return state.updateIn(['tempProfile', 'currentStatus'],

@@ -238,16 +238,19 @@ class UserService extends MainService {
                                 }
                             });
                     }).catch((err) => {
+                        console.error(err);
                         this._sendEvent(event)(this.clientEvent.signUp,
                                             false,
                                             this.UNLOCK_COINBASE_FAIL);
                     });
             })
             .catch((err) => {
+                console.error(err);
                 this._sendEvent(event)(this.clientEvent.signUp, false, this.IPFS_ADD_SIGNUP_FAIL);
             });
         })
             .catch((err) => {
+                console.error(err);
                 this._sendEvent(event)(this.clientEvent.signUp, false, this.IPFS_ADD_SIGNUP_FAIL);
             });
     }
