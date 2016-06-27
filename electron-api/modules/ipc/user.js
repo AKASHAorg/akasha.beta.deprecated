@@ -31,9 +31,6 @@ class UserService extends MainService {
      * @returns undefined
      */
     setupListeners () {
-        ipcMain.on(this.serverEvent.signUp, (event, arg) => {
-            this._signUp(event, arg);
-        });
         ipcMain.on(this.serverEvent.exists, (event, arg) => {
             this._usernameExists(event, arg);
         });
@@ -44,13 +41,16 @@ class UserService extends MainService {
             this._faucetEther(event, arg);
         });
         ipcMain.on(this.serverEvent.registerProfile, (event, arg) => {
-            this._signUp(event, arg);
+            this._registerProfile(event, arg);
         });
         ipcMain.on(this.serverEvent.listAccounts, (event, arg) => {
             this._listAccounts(event, arg);
         });
         ipcMain.on(this.serverEvent.getBalance, (event, arg) => {
             this._getBalance(event, arg);
+        });
+        ipcMain.on(this.serverEvent.listEtherAccounts, (event, arg) => {
+            this._listEtherAccounts(event, arg);
         });
     }
 
@@ -79,7 +79,17 @@ class UserService extends MainService {
     _getBalance (event, arg) {
         const web3 = this.__getWeb3();
         web3.eth.getBalanceAsync(arg.account).then((data) => {
-            this._sendEvent(event)(this.clientEvent.getBalance, true, data);
+            const etherBalance = parseFloat(web3.fromWei(data.toString(), 'ether'));
+            this._sendEvent(event)(this.clientEvent.getBalance, true, etherBalance);
+        });
+    }
+
+    _listEtherAccounts (event, arg) {
+        const web3 = this.__getWeb3();
+        web3.personal.getListAccountsAsync().then((data) => {
+            this._sendEvent(event)(this.clientEvent.getBalance, true, {
+                accounts: data
+            });
         });
     }
 
@@ -197,7 +207,7 @@ class UserService extends MainService {
         }).catch((err) => err);
     }
 
-    _signUp (event, arg) {
+    _registerProfile (event, arg) {
         this
         ._uploadImages(arg)
         .then((imageHashes) => {

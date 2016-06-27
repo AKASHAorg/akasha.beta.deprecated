@@ -25,6 +25,7 @@ export const EVENTS = {
             faucetEther: 'server:user:faucetEther',
             registerProfile: 'server:user:registerProfile',
             listAccounts: 'server:user:listAccounts',
+            listEtherAccounts: 'server:user:listEtherAccounts',
             getBalance: 'server:user:getBalance'
         },
         entry: {
@@ -57,6 +58,7 @@ export const EVENTS = {
             registerProfileHash: 'client:user:registerProfileHash',
             registerProfileComplete: 'client:user:registerProfileComplete',
             listAccounts: 'client:user:listAccounts',
+            listEtherAccounts: 'server:user:listEtherAccounts',
             getBalance: 'client:user:getBalance'
         },
         entry: {
