@@ -51,8 +51,9 @@ class SyncStatus extends Component {
         const { syncActions, eProcActions } = this.props;
         syncActions.stopUpdateSync().then(() => {
             console.log('Starting ipfs');
-            eProcActions.startIPFS();
-            hashHistory.push('/authenticate');
+            eProcActions.startIPFS().then(() => {
+                this.context.router.push('/authenticate');
+            });
         });
     }
     handleSync = () => {
