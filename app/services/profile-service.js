@@ -121,7 +121,7 @@ class ProfileService {
         });
     completeProfileCreation = (profileData) =>
         new Promise((resolve, reject) => {
-            ipcRenderer.once(EVENTS.client.user.signUp, (ev, data) => {
+            ipcRenderer.once(EVENTS.client.user.registerProfile, (ev, data) => {
                 if (!data) {
                     const error = new Error('Main process did not return anything!');
                     return reject(error);
@@ -137,7 +137,7 @@ class ProfileService {
                 optionalData: profileData.get('optionalData')
             };
             dbg('completeProfileCreation_Start', data);
-            ipcRenderer.send(EVENTS.server.user.signUp, data);
+            ipcRenderer.send(EVENTS.server.user.registerProfile, data);
         })
     updateProfile = () => {}
 }
