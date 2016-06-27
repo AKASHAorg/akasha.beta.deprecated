@@ -161,7 +161,7 @@ class ProfileActions {
     createProfile = () => {
         this.dispatch((dispatch, getState) => {
             const unfinishedProfiles = getState().profileState.get('tempProfile');
-            dbg('createProfile', unfinishedProfiles);
+            dbg('createProfile', unfinishedProfiles.toJS());
             if (unfinishedProfiles) {
                 const currentStep = unfinishedProfiles.get('currentStatus').currentStep;
                 const profilePassword = unfinishedProfiles.get('password');
