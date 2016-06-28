@@ -183,8 +183,8 @@ class UserService extends MainService {
 
     _uploadImages (signupJSON) {
         const imagePromises = [];
-        if (signupJSON.avatar) {
-            imagePromises.push(this._uploadImage('avatar', signupJSON.avatar));
+        if (signupJSON.optionalData.avatarFile) {
+            imagePromises.push(this._uploadImage('avatar', signupJSON.optionalData.avatarFile));
         }
         if (signupJSON.bg1) {
             imagePromises.push(this._uploadImage('bg1', signupJSON.bg1));
@@ -203,6 +203,7 @@ class UserService extends MainService {
             for (const result of data) {
                 imageHashes[result.name] = result.hash;
             }
+            console.log(imageHashes);
             return imageHashes;
         }).catch((err) => err);
     }

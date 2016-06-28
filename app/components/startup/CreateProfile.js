@@ -73,7 +73,7 @@ class CreateProfile extends Component {
             }
         });
         // save a temporary profile to indexedDB
-        profileActions.saveTempProfile(profileData, {
+        profileActions.createTempProfile(profileData, {
             currentStep: 0,
             status: 'finished',
             message: 'Profile creation started!'

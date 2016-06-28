@@ -2,7 +2,6 @@ import React, { Component, PropTypes } from 'react';
 import LoginHeader from '../../components/ui/partials/LoginHeader';
 import { RaisedButton } from 'material-ui';
 import SyncProgress from '../ui/loaders/SyncProgress';
-import { hashHistory } from 'react-router';
 import { FormattedMessage, FormattedPlural, injectIntl } from 'react-intl';
 import { setupMessages, generalMessages } from '../../locale-data/messages';
 

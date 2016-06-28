@@ -67,18 +67,6 @@ export default function profileState (state = initialState, action) {
             return state.updateIn(['tempProfile', 'currentStatus'],
                 (cStatus) => Object.assign(cStatus, { status: 'failed' })
             );
-        case types.AUTH_LOGIN:
-            return state.merge({
-                authAddress: 'stub'
-            });
-        case types.AUTH_LOGIN_SUCCESS:
-            return state.merge({
-                authAddress: 'stub'
-            });
-        case types.AUTH_LOGIN_FAILURE:
-            return state.merge({
-                authAddress: 'stub'
-            });
         default:
             return state;
     }

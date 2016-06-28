@@ -117,13 +117,7 @@ class GethService extends IpcService {
                 if (!this.prevMessage) {
                     this.prevMessage = message;
                 } else {
-                    const msgIsString = typeof message === 'string';
-                    const prev = typeof this.prevMessage === 'string';
-                    const msg = msgIsString ? message : JSON.stringify(this.message);
-                    const prevString = prev ? this.prevMessage : JSON.stringify(this.prevMessage);
-                    if (prevString != msg) { // eslint-disable-line eqeqeq
-                        this._sendEvent(event)(this.clientEvent.syncUpdate, true, message);
-                    }
+                    this._sendEvent(event)(this.clientEvent.syncUpdate, true, message);
                     this.prevMessage = message;
                 }
             })

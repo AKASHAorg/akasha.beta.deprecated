@@ -38,19 +38,20 @@ class MainService extends IpcService {
                 .catch((err) => reject(err));
         });
     }
-
+    // this already returns a promise created at _addToIpfs() method above
     _uploadImage (name, buffer) {
-        return new Promise((resolve, reject) => {
-            this._addToIpfs({
-                data: buffer,
-                options: {
-                    isPath: true
-                }
-            }).then((response) => resolve({ name,
-                    hash: response[0].Hash
-                })
-            ).catch((err) => reject(err));
-        });
+        console.log(new Buffer(buffer));
+        return this._addToIpfs({
+            data: buffer,
+            options: {
+                isPath: true
+            }
+        }).then(response => {
+            return { name,
+                hash: response[0].Hash
+            };
+        // better to catch these errors later when you use _uploadImage
+        }).catch((err) => console.error(err));
     }
 
     __getGeth () {

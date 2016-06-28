@@ -10,7 +10,7 @@ function Status () {
 
 function OptionalData () {
     return {
-        avatarFile: Blob,
+        avatarFile: Uint8Array,
         backgroundImage: Array,
         about: String,
         links: Object
