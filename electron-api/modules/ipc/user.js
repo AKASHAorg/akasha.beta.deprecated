@@ -19,7 +19,7 @@ class UserService extends MainService {
         this.IPFS_ADD_SIGNUP_FAIL = 'ipfs add user signup fail';
         this.NO_COINBASE_FAIL = 'no coinbase / no ethereum account';
         this.textFields = ['username', 'firstName', 'lastName', 'description'];
-        this.CREATE_PROFILE_CONTRACT_GAS = 19000;
+        this.CREATE_PROFILE_CONTRACT_GAS = 800000;
         this.FAUCET_URL = 'http://faucet.ma.cx:3000/donate/';
     }
     /*
@@ -52,6 +52,9 @@ class UserService extends MainService {
         ipcMain.on(this.serverEvent.listEtherAccounts, (event, arg) => {
             this._listEtherAccounts(event, arg);
         });
+        ipcMain.on(this.serverEvent.login, (event, arg) => {
+            this._login(event, arg);
+        });
     }
 
     _usernameExists (event, arg) {
@@ -78,10 +81,32 @@ class UserService extends MainService {
     */
     _getBalance (event, arg) {
         const web3 = this.__getWeb3();
-        web3.eth.getBalanceAsync(arg.account).then((data) => {
+        web3.eth.getBalanceAsync(this._getCoinbase(arg, web3)).then((data) => {
             const etherBalance = parseFloat(web3.fromWei(data.toString(), 'ether'));
             this._sendEvent(event)(this.clientEvent.getBalance, true, etherBalance);
         });
+    }
+
+    _login (event, arg) {
+        const web3 = this.__getWeb3();
+        web3
+            .personal
+            .unlockAccountAsync(arg.account,
+                                arg.password,
+                                arg.interval ? arg.interval : this.UNLOCK_INTERVAL)
+            .then((result) => {
+                if (result) { // if successful then it is true
+                    web3.eth.defaultAccount = arg.account;
+                    this._sendEvent(event)(this.clientEvent.login,
+                                        true,
+                                        this.UNLOCK_COINBASE_SUCCESS);
+                }
+            })
+            .catch((err) => {
+                this._sendEvent(event)(this.clientEvent.login,
+                                    false,
+                                    this.UNLOCK_COINBASE_FAIL);
+            });
     }
 
     _listEtherAccounts (event, arg) {
@@ -119,10 +144,12 @@ class UserService extends MainService {
             }
 
             Promise.all(profilePromises).then((results) => {
+                let noProfile = true;
                 for (let i = 0; i < results.length; i++) {
                     const akashaProfileContractHash = results[i].profileContractAddress;
-                    const ethAccount = results[i].ethAccount;
+                    const ethAccount = results[i].eth;
                     if (akashaProfileContractHash !== this.ZERO_ADDR) {
+                        noProfile = false;
                         profile
                             .at(akashaProfileContractHash)
                             .getIpfs
@@ -139,7 +166,7 @@ class UserService extends MainService {
                                             this._sendEvent(event)(
                                                 this.clientEvent.listAccounts,
                                                 true,
-                                                Object.assign({ ethAddress, result }, data)
+                                                { ethAddress, result }
                                             );
                                         })
                                         .catch((ipfsErr) => {
@@ -152,12 +179,20 @@ class UserService extends MainService {
                             })(ethAccount));
                     }
                 }
+                if (noProfile) {
+                    this._sendEvent(event)(
+                        this.clientEvent.listAccounts,
+                        true,
+                        []);
+                }
             });
         });
     }
 
     _faucetEther (event, arg) {
-        const URL = this.FAUCET_URL + arg.account; // eslint-disable-line prefer-template
+        const web3 = this.__getWeb3();
+        const URL = this.FAUCET_URL +
+                    this._getCoinbase(arg, web3); // eslint-disable-line prefer-template
         request({
             uri: URL,
             method: 'GET',
@@ -170,7 +205,7 @@ class UserService extends MainService {
             }
             if (body && body.txhash) {
                 this.
-                    _sendEvent(event)(this.clientEvent.faucetEther, true, body.txhash);
+                    _sendEvent(event)(this.clientEvent.faucetRequestEther, true, body.txhash);
             }
             this
                 .__getGeth()
@@ -227,42 +262,48 @@ class UserService extends MainService {
                     .unlockAccountAsync(arg.account, arg.password, this.UNLOCK_INTERVAL)
                     .then(() => {
                         const registry = new Dapple.class(web3).objects.registry;
-                        registry.register(
+                        return registry.register(
                             web3.fromUtf8(arg.username),
                             this._chopIpfsHash(ipfsHash),
                             {
                                 gas: this.CREATE_PROFILE_CONTRACT_GAS
                             }, (error, tx) => {
-                                this._sendEvent(event)(
-                                    this.clientEvent.registryRegisterHash,
+                                if (!error) {
+                                    this._sendEvent(event)(
+                                        this.clientEvent.registerProfileHash,
                                     true,
                                     tx); // o sa ii pasez si currentblock
-                                if (!error) {
                                     this
                                         .__getGeth()
                                         .addFilter('tx', tx, (txInfo) => {
                                             this.
-                                                _sendEvent(event)(this.clientEvent.signUp,
+                                                _sendEvent(event)(this.clientEvent.registerProfileComplete,
                                                                     true,
                                                                     txInfo);
                                         });
+                                } else {
+                                    this._sendEvent(event)(
+                                        this.clientEvent.registerProfileHash,
+                                    false,
+                                    error.message); // o sa ii pasez si currentblock
                                 }
                             });
                     }).catch((err) => {
-                        console.error(err);
-                        this._sendEvent(event)(this.clientEvent.signUp,
+                        this._sendEvent(event)(this.clientEvent.registerProfileHash,
                                             false,
                                             this.UNLOCK_COINBASE_FAIL);
                     });
             })
             .catch((err) => {
-                console.error(err);
-                this._sendEvent(event)(this.clientEvent.signUp, false, this.IPFS_ADD_SIGNUP_FAIL);
+                this._sendEvent(event)(this.clientEvent.registerProfileHash,
+                                        false,
+                                        this.IPFS_ADD_SIGNUP_FAIL);
             });
         })
             .catch((err) => {
-                console.error(err);
-                this._sendEvent(event)(this.clientEvent.signUp, false, this.IPFS_ADD_SIGNUP_FAIL);
+                this._sendEvent(event)(this.clientEvent.registerProfileHash,
+                                        false,
+                                        this.IPFS_ADD_SIGNUP_FAIL);
             });
     }
 }
