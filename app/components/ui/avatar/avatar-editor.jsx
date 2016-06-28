@@ -14,20 +14,21 @@ class Avatar extends React.Component {
             avatarScale: 1.2
         };
     }
-    setArrayBufferImage = () => {
-        return (blob) => {
+
+    setArrayBufferImage = () =>
+        (blob) => {
             const reader = new FileReader();
             reader.onloadend = () => {
                 this.setState({
-                    avatarData: reader.result
+                    avatarData: new Uint8Array(reader.result)
                 });
             };
             reader.readAsArrayBuffer(blob);
         };
-    }
+
     setImage = () => {
         if (this.refs.editor && this.state.avatarImage) {
-            const imageCanvas = this.refs.editor.getImage();
+            const imageCanvas = this.refs.editor.getImageScaledToCanvas();
             imageCanvas.toBlob(this.setArrayBufferImage(), 'image/jpg');
         }
     }

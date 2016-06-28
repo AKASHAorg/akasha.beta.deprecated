@@ -27,17 +27,17 @@ class ProfileActions {
         })
         .catch(reason => this.dispatch({ type: types.GET_TEMP_PROFILE_ERROR, reason }));
 
-    saveTempProfile = (profileData, currentStatus) =>
-        this.profileService.saveTempProfile(profileData, currentStatus).then(() => {
-            dbg('saveTempProfile', { profileData, currentStatus });
+    createTempProfile = (profileData, currentStatus) =>
+        this.profileService.createTempProfile(profileData, currentStatus).then(() => {
+            dbg('createTempProfile', { profileData, currentStatus });
             this.dispatch({
-                type: types.SAVE_TEMP_PROFILE_SUCCESS,
+                type: types.CREATE_TEMP_PROFILE_SUCCESS,
                 profileData,
                 currentStatus
             });
         }).catch(reason => {
             console.error(reason);
-            this.dispatch({ type: types.SAVE_TEMP_PROFILE_ERROR, reason });
+            this.dispatch({ type: types.CREATE_TEMP_PROFILE_ERROR, reason });
         });
 
     updateTempProfile = (profileData, currentStatus) =>
@@ -57,21 +57,14 @@ class ProfileActions {
             this.dispatch({ type: types.UPDATE_TEMP_PROFILE_ERROR, reason });
         });
 
-    clearTempProfile = () =>
-        this.profileService.clearTempProfile().then(() => {
-            dbg('clearTempProfile');
-            this.dispatch({ type: types.CLEAR_TEMP_PROFILE_SUCCESS });
+    deleteTempProfile = () =>
+        this.profileService.deleteTempProfile().then(() => {
+            dbg('deleteTempProfile');
+            this.dispatch({ type: types.DELETE_TEMP_PROFILE_SUCCESS });
         }).catch(reason => {
             console.error(reason);
-            this.dispatch({ type: types.CLEAR_TEMP_PROFILE_ERROR, reason });
+            this.dispatch({ type: types.DELETE_TEMP_PROFILE_ERROR, reason });
         });
-    /**
-     * Step 1:: Create a new Ethereum address
-     * Step 2:: Set address as defaultAccount
-     * Step 3:: Fund the address from faucet
-     * Step 4:: Unlock address
-     * Step 5:: Create new AKASHA profile
-     */
 
     createEthAddress (profilePassword) {
         this.dispatch({ type: types.CREATE_ETH_ADDRESS_START });
@@ -157,7 +150,12 @@ class ProfileActions {
             return console.error(result);
         });
     }
-
+     /**
+     * Step 0:: Create a new Ethereum address
+     * Step 1:: Request funds from faucet
+     * Step 2:: Receive funds from faucet
+     * Step 3:: Create new profile
+     */
     createProfile = () => {
         this.dispatch((dispatch, getState) => {
             const unfinishedProfiles = getState().profileState.get('tempProfile');
@@ -191,7 +189,7 @@ class ProfileActions {
                 const tempProfile = getState().profileState.get('tempProfile');
                 dbg('checkTempProfile', tempProfile);
                 if (tempProfile.size > 0) {
-                    hashHistory.push('new-profile-status');
+                    return hashHistory.push('new-profile-status');
                 }
                 return this.getProfilesList();
             });

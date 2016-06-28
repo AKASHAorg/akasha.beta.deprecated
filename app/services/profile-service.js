@@ -50,7 +50,7 @@ class ProfileService {
             dbg('getProfilesList_Start', EVENTS.server.user.listAccounts);
             ipcRenderer.send(EVENTS.server.user.listAccounts);
         });
-    saveTempProfile = (profileData, currentStatus) =>
+    createTempProfile = (profileData, currentStatus) =>
         profileDB.transaction('rw', profileDB.tempProfile, () => {
             const { userName, firstName, lastName, password, password2 } = profileData;
             const optionalData = {
@@ -59,8 +59,8 @@ class ProfileService {
                 aboutMe: profileData.aboutMe,
                 links: profileData.links
             };
-            dbg('saveTempProfile(put)', profileData, optionalData);
-            return profileDB.tempProfile.put({
+            dbg('saveTempProfile(add)', profileData, optionalData);
+            return profileDB.tempProfile.add({
                 userName,
                 firstName,
                 lastName,
@@ -77,7 +77,7 @@ class ProfileService {
             return profileDB.tempProfile.update(userName, { ...changes });
         });
 
-    clearTempProfile = () =>
+    deleteTempProfile = () =>
         profileDB.tempProfile.delete();
 
     getTempProfile = () =>

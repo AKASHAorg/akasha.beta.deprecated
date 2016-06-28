@@ -4,9 +4,11 @@ import * as Colors from 'material-ui/styles/colors';
 import { SvgIcon } from 'material-ui';
 
 class CreateProfileStatus extends Component {
-    componentDidMount () {
+    componentWillMount () {
         const { profileActions } = this.props;
-        profileActions.createProfile();
+        profileActions.getTempProfile().then(() => {
+            profileActions.createProfile();
+        });
     }
 
     render () {
