@@ -15,6 +15,7 @@ class MainService extends IpcService {
         this.UNLOCK_INTERVAL = 2000;
         this.ZERO_ADDR = '0x0000000000000000000000000000000000000000';
         this.UNLOCK_COINBASE_FAIL = 'unlock account fail, check your password';
+        this.UNLOCK_COINBASE_SUCCESS = 'unlock account successful';
     }
 
     _chopIpfsHash (hash) {
@@ -27,6 +28,10 @@ class MainService extends IpcService {
                 .getService('ipfs')
                 .getIpfsService()
                 .api;
+    }
+
+    _getCoinbase (arg, web3) {
+        return arg.account ? arg.account : web3.eth.defaultAccount;
     }
 
     _addToIpfs (data) {
