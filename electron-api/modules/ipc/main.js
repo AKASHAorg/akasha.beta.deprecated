@@ -43,9 +43,7 @@ class MainService extends IpcService {
                 .catch((err) => reject(err));
         });
     }
-    // this already returns a promise created at _addToIpfs() method above
     _uploadImage (name, buffer) {
-        console.log(new Buffer(buffer));
         return this._addToIpfs({
             data: buffer,
             options: {
@@ -55,7 +53,6 @@ class MainService extends IpcService {
             return { name,
                 hash: response[0].Hash
             };
-        // better to catch these errors later when you use _uploadImage
         }).catch((err) => console.error(err));
     }
 

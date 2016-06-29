@@ -1,7 +1,7 @@
 import * as types from '../constants/ProfileConstants';
 import { ProfileService } from '../services';
 import { SettingsActions } from '../actions';
-import {hashHistory} from 'react-router';
+import { hashHistory } from 'react-router';
 import debug from 'debug';
 const dbg = debug('App:ProfileActions:');
 
@@ -11,15 +11,37 @@ class ProfileActions {
         this.profileService = new ProfileService;
         this.settingsActions = new SettingsActions(dispatch);
     }
-
+    /**
+     * Validates userName at the blockchain level
+     */
     validateUsername = (username) => {
-
+        this.profileService.validateUsername(username).then(result => {
+            this.dispatch({ type: types.VALIDATE_USERNAME_SUCCESS, result });
+        }).catch(reason => console.error(reason));
     }
 
-    login = (profileData) => {
-        console.log('login with profile', profileData);
-    }
-
+    login = (profileData) =>
+        this.profileService.login(profileData).then(result => {
+            if (!result) {
+                const error = new Error('Main process doomed');
+                return this.dispatch({ type: types.LOGIN_ERROR, error });
+            }
+            if (!result.success) {
+                const error = new Error(result.status.message, 'login action');
+                return this.dispatch({ type: types.LOGIN_ERROR, error });
+            }
+            return this.dispatch({ type: types.LOGIN_SUCCESS, profileData });
+        }).then(() => {
+            this.dispatch((dispatch, getState) => {
+                const loggedProfile = getState().profileState.get('loggedProfile');
+                if (loggedProfile.size > 0) {
+                    hashHistory.push(`/${loggedProfile.get('username')}`);
+                }
+            });
+        }).catch(reason => console.error(reason));
+    /**
+     * Retrieve all temporary profiles
+     */
     getTempProfile = () =>
         this.profileService.getTempProfile().then((profile) => {
             dbg('getTempProfile', profile);
@@ -65,7 +87,10 @@ class ProfileActions {
             console.error(reason);
             this.dispatch({ type: types.DELETE_TEMP_PROFILE_ERROR, reason });
         });
-
+    /**
+     * Step0: Creates a new eth address and updates the status of the profile creation process
+     * @param: {string} profilePassword
+     */
     createEthAddress (profilePassword) {
         this.dispatch({ type: types.CREATE_ETH_ADDRESS_START });
         this.profileService.createEthAddress(profilePassword).then((result) => {
@@ -90,6 +115,10 @@ class ProfileActions {
         )
         .catch(reason => this.dispatch({ type: types.CREATE_ETH_ADDRESS_ERROR, error: reason }));
     }
+    /**
+     * Step1: Send request to faucet and store the status of this step in indexedDB
+     * @param {string} profileAddress
+     */
     requestFundFromFaucet (profileAddress) {
         this.dispatch({ type: types.FUND_FROM_FAUCET_START });
         this.profileService.requestFundFromFaucet(profileAddress).then((result) => {
@@ -112,6 +141,10 @@ class ProfileActions {
             this.fundFromFaucet();
         });
     }
+    /**
+     * Step2: Verify if balance > 0 or faucet transaction was mined
+     * and proceed to the next step
+     */
     fundFromFaucet () {
         dbg('funding from faucet');
         this.profileService.fundFromFaucet().then((result) => {
@@ -136,7 +169,10 @@ class ProfileActions {
         })
         .catch(reason => this.dispatch({ type: types.FUND_FROM_FAUCET_ERROR, error: reason }));
     }
-
+    /**
+     * Step4 (last step) acctually create the profile using data received from the user
+     * @param {object} profileData
+     */
     completeProfileCreation (profileData) {
         this.profileService.completeProfileCreation(profileData).then(result => {
             dbg('completeProfileCreation', result);
@@ -145,12 +181,15 @@ class ProfileActions {
         })
         .then((result) => {
             if (result.success) {
-                return this.clearTempProfile();
+                return this.deleteTempProfile();
             }
             return console.error(result);
+        }).then(() => {
+            hashHistory.push('')
         });
     }
      /**
+     * Resumes the process of profile creation
      * Step 0:: Create a new Ethereum address
      * Step 1:: Request funds from faucet
      * Step 2:: Receive funds from faucet
@@ -183,6 +222,10 @@ class ProfileActions {
             }
         });
     }
+    /**
+     * Check if temp profile exists. If true then navigate to profile status page.
+     * Else populate profile lists
+     */
     checkTempProfile = () =>
         this.getTempProfile().then(() => {
             this.dispatch((dispatch, getState) => {
@@ -194,13 +237,18 @@ class ProfileActions {
                 return this.getProfilesList();
             });
         }).catch(reason => console.error(reason, reason.stack));
-
+    /**
+     * get all local profiles available
+     * returns only the address and userName
+     */
     getProfilesList = () =>
-        this.profileService.getProfilesList().then((profiles) => {
-            dbg('getProfilesList', profiles);
-            return this.dispatch({ type: types.GET_PROFILES_LIST_SUCCESS, profiles });
+        this.profileService.getProfilesList().then((result) => {
+            dbg('getProfilesList', result.status);
+            return this.dispatch({ type: types.GET_PROFILES_LIST_SUCCESS, profiles: result.status });
         }).catch(reason => this.dispatch({ type: types.GET_PROFILES_LIST_ERROR, reason }));
-
+    /**
+     *
+     */
     _createProfileStepFailure (message) {
         return { type: types.CREATE_PROFILE_STEP_ERROR, message };
     }

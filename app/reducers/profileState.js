@@ -28,8 +28,10 @@ const initialState = fromJS({
 
 export default function profileState (state = initialState, action) {
     switch (action.type) {
+        case types.LOGIN_SUCCESS:
+            return state.merge({ loggedProfile: action.profileData });
         case types.GET_PROFILES_LIST_SUCCESS:
-            return state.merge({ profiles: action.profiles });
+            return state.merge({ profiles: List.of(action.profiles) });
         case types.GET_PROFILES_LIST_ERROR:
             return state.merge({ profiles: [], messages: action.message });
         case types.GET_TEMP_PROFILE_SUCCESS:

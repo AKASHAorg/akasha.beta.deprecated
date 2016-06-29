@@ -1,17 +1,32 @@
+// PAYLOADS
+// Standard communication server => client
+
+
+sender.send('channelName', { status, success, data })
+
+`status: 'object': {
+    message: 'string' 'A hardcoded message', // this message should be displayed to user
+    error: 'string' This should be the stackTrace // mostly for development, we can hide in production
+}`
+
+`success: 'boolean'`
+
+`data: 'object or array'`;
+
 
 export const EVENTS = {
     TO_SERVER: {
         geth: {
-            startService: 'no parameter' || 'object with these keys: cache, ipcPath, dataDir, extra'
+            startService: 'no parameter' || 'object with these keys: cache, ipcPath, dataDir, extra',
             stopService: 'no parameter',
             contract: 'This should be removed, have you any idea what it is supposed to do?'
         },
         ipfs: {
-            startService: 'no parameter' || 'object with 1 key: repoDir, but we don\'t use it for now'
+            startService: 'no parameter' || 'object with 1 key: repoDir, but we don\'t use it for now',
             stopService: 'no parameter'
         },
         logger: {
-            gethInfo: 'no parameter' || 'a boolean, if true it will keep sending lines from the logs'
+            gethInfo: 'no parameter' || 'a boolean, if true it will keep sending lines from the logs',
             stopGethInfo: 'no parameter'
         },
         user: {
@@ -20,14 +35,91 @@ export const EVENTS = {
             logout: 'object with key: account',
             createCoinbase: 'object with key: password',
             faucetEther: 'object with key: account[optional]',
-            registerProfile: 'object with keys. Sever should fill this up',
+            registerProfile: 'object with keys. '
+                    `{
+                        account: 'string',
+                        password: 'Uint8Array',
+                        firstName: 'string',
+                        lastName: 'string',
+                        userName: 'string',
+                        optionalData: 'object' : {
+                            about: 'string',
+                            links: [{
+                                id: 'number',
+                                title: 'string',
+                                type:  'string' one of ('internal', 'other'),
+                                url: 'string'
+                            }],
+                            avatar: ArrayBuffer,
+                            background: [
+                                [...], => represents a single image with multiple resolution dimensions
+                                [
+                                    { => this is a sigle variant
+                                        height: 'number',
+                                        width: 'number',
+                                        key: 'string' one of ('small', med, xmed, large, xlarge),
+                                        imageFile: ArrayBuffer
+                                    },
+                                    {...},
+                                    {...}
+                                    // when image width is larger than 1920 there will be 6 variants
+                                ],
+                                [...]
+                            ]
+                        }
+                    }`,
             listAccounts: 'no parameter',
             getProfileDetails: 'object with key: account[optional]',
             listEtherAccounts: 'no parameter',
             getBalance: 'object with key: account[optional]'
         },
         entry: {
-            publish: 'object with keys. Sever should fill this up'
+            publish: 'object' `{
+                status: 'string' one of ('draft', 'published'),
+                visibility: 'string' one of ('public', 'private'), //can be extended in future
+                title: 'string',
+                featuredImage: 'unknown yet. must be discussed',
+                tags: 'array' [
+                    {}, => 1 tag
+                    {
+                        id: 'tag id UUID ?'
+                        name: 'string',
+                        description?: 'string',
+                        ...
+                    }
+                ],
+                excerpt: 'string',
+                licence: 'object': {
+                    name: '',
+                    id: 'uuid',
+                    description: 'string'
+                },
+                body: 'object': {
+                    entityMap: { //all entities like images, videos etc.
+                        0: {
+                            "type": "image", // this is a image inside article body
+                            "mutability": "IMMUTABLE",
+                            "data": { // actual image
+                                "key": "mlarge",
+                                "imageFile": ArrayBuffer,
+                                "width": 1280,
+                                "height": 868
+                          }
+                    },
+                    blocks: [ // blocks are lines inside editor
+                        {...}, => line 1
+                        {
+                            key: 'string',
+                            text: 'string',
+                            type: 'string',
+                            .... other metadata
+                        }, => line 2
+                        {...} => line 3
+                        ....
+                    ] 
+
+                }
+            }`
         }
     },
     TO_CLIENT: {// All messages are objects with success key a boolean true - it worked, false - it failed

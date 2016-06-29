@@ -1,7 +1,7 @@
 import { ipcRenderer } from 'electron';
 import { EVENTS } from '../../electron-api/modules/settings';
 
-
+/** Ipfs Service Management */
 class IpfsService {
     /**
      * Send start IPFS service command to main process. Optionally can pass options
@@ -34,6 +34,9 @@ class IpfsService {
                 return resolve(data);
             });
         });
+    /**
+     * Stop ipfs service
+     */
     stopIPFS = () =>
         new Promise((resolve, reject) => {
             ipcRenderer.send(EVENTS.server.ipfs.stopService);

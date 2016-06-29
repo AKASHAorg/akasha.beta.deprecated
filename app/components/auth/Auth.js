@@ -30,7 +30,12 @@ class Auth extends Component {
 
     handleTouchTap = (index) => {
         const { profileState } = this.props;
-        const selectedProfile = profileState.get('profiles').get(index);
+        const profile = profileState.get('profiles').get(index);
+        const selectedProfile = {
+            ethAddress: profile.ethAddress,
+            ...JSON.parse(profile.result)
+        };
+
         this.setState({ openModal: true, selectedProfile });
     };
 
@@ -41,10 +46,8 @@ class Auth extends Component {
     handleLogin = () => {
         const { profileActions } = this.props;
         const selectedProfile = this.state.selectedProfile;
-        profileActions.login({
-            address: selectedProfile.get('address'),
-            password: this.passwordRef.getValue()
-        });
+        selectedProfile.password = this.passwordRef.getValue();
+        profileActions.login(selectedProfile);
     };
     _getLocalProfiles () {
         const { profileState } = this.props;
@@ -52,13 +55,14 @@ class Auth extends Component {
         if (profilesList.size === 0) {
             return <div><FormattedMessage {...setupMessages.noProfilesFound} /></div>;
         }
-
         return profileState.get('profiles').map((profile, index) => {
-            const profileName = `${profile.get('firstName')} ${profile.get('lastName')}`;
+            const profileAddress = profile.ethAddress;
+            const profileData = JSON.parse(profile.result);
+            const profileName = `${profileData.firstName} ${profileData.lastName}`;
             const avatarProps = {
                 editable: false,
                 userName: profileName,
-                image: profile.get('avatar'),
+                image: profileData.avatar,
                 radius: 48,
                 className: 'col-xs-4 middle-xs',
                 userInitialsStyle: { fontSize: 18 }
@@ -83,11 +87,11 @@ class Auth extends Component {
                 }
                 secondaryText={
                   <div style={{ marginLeft: 16 }}>
-                    {profile.get('userName')}
+                    {profileData.username}
                   </div>
                 }
                 secondaryTextLines={1}
-                value={profile.get('address')}
+                value={profileAddress}
                 onTouchTap={() => this.handleTouchTap(index)}
                 className="row"
                 style={{ border: '1px solid #DDD', marginBottom: 8 }}
@@ -108,6 +112,7 @@ class Auth extends Component {
         ];
         const localProfiles = this._getLocalProfiles();
         const selectedProfile = this.state.selectedProfile;
+        console.log(selectedProfile, 'selectedProfile');
         return (
           <div style={style} >
             <div className="start-xs" >
@@ -141,7 +146,7 @@ class Auth extends Component {
                     <Avatar
                       editable={false}
                       userName={
-                          `${selectedProfile.get('firstName')} ${selectedProfile.get('lastName')}`
+                          `${selectedProfile.firstName} ${selectedProfile.lastName}`
                       }
                     />
                     <div className="row">
@@ -151,7 +156,7 @@ class Auth extends Component {
                           fullWidth
                           floatingLabelText="Name"
                           value={
-                            `${selectedProfile.get('firstName')} ${selectedProfile.get('lastName')}`
+                            `${selectedProfile.firstName} ${selectedProfile.lastName}`
                           }
                         />
                       </div>
@@ -159,7 +164,7 @@ class Auth extends Component {
                         <TextField
                           disabled
                           floatingLabelText="userName"
-                          value={`${selectedProfile.get('userName')}`}
+                          value={`${selectedProfile.username}`}
                           fullWidth
                         />
                       </div>
@@ -168,7 +173,7 @@ class Auth extends Component {
                       disabled
                       fullWidth
                       floatingLabelText="Ethereum address"
-                      value={selectedProfile.get('address')}
+                      value={selectedProfile.ethAddress}
                     />
                     <TextField
                       type="password"

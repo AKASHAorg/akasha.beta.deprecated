@@ -257,15 +257,16 @@ class UserService extends MainService {
             .then((response) => {
                 const ipfsHash = response[0].Hash;
                 const web3 = this.__getWeb3();
-                web3
+                return web3
                     .personal
-                    .unlockAccountAsync(arg.account, arg.password, this.UNLOCK_INTERVAL)
-                    .then(() => {
+                    .unlockAccountAsync(arg.account, arg.password, 10000)
+                    .then((unlocked) => {
                         const registry = new Dapple.class(web3).objects.registry;
                         return registry.register(
                             web3.fromUtf8(arg.username),
                             this._chopIpfsHash(ipfsHash),
                             {
+                                from: arg.account,
                                 gas: this.CREATE_PROFILE_CONTRACT_GAS
                             }, (error, tx) => {
                                 if (!error) {
@@ -282,13 +283,14 @@ class UserService extends MainService {
                                                                     txInfo);
                                         });
                                 } else {
-                                    this._sendEvent(event)(
+                                    return this._sendEvent(event)(
                                         this.clientEvent.registerProfileHash,
                                     false,
                                     error.message); // o sa ii pasez si currentblock
                                 }
                             });
                     }).catch((err) => {
+                        console.error(err);
                         this._sendEvent(event)(this.clientEvent.registerProfileHash,
                                             false,
                                             this.UNLOCK_COINBASE_FAIL);
