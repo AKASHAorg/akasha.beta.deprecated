@@ -12,8 +12,6 @@ const AdvancedSetupForm = (props) => {
         handleGethDatadir,
         handleGethCacheSize,
         handleIpfsPath,
-        handleIpfsApiPort,
-        handleIpfsGatewayPort
     } = props;
     const errorStyle = { color: Colors.minBlack };
     const floatingLabelStyle = { color: Colors.lightBlack };
@@ -65,30 +63,6 @@ const AdvancedSetupForm = (props) => {
           style={rootStyle}
           type="text"
         />
-        {/**
-        <TextField
-          errorStyle={errorStyle}
-          errorText={intl.formatMessage(setupMessages.changeIfIpfsRunning)}
-          floatingLabelStyle={floatingLabelStyle}
-          floatingLabelText={intl.formatMessage(setupMessages.ipfsApiPort)}
-          hintText={setupConfig.getIn(['ipfs', 'apiPort'])}
-          inputStyle={inputStyle}
-          onBlur={handleIpfsApiPort}
-          style={rootStyle}
-          type="number"
-        />
-        <TextField
-          errorStyle={errorStyle}
-          errorText={intl.formatMessage(setupMessages.changeIfIpfsRunning)}
-          floatingLabelStyle={floatingLabelStyle}
-          floatingLabelText={intl.formatMessage(setupMessages.ipfsGatewayPort)}
-          hintText={setupConfig.getIn(['ipfs', 'gatewayPort'])}
-          inputStyle={inputStyle}
-          onBlur={handleIpfsGatewayPort}
-          style={rootStyle}
-          type="number"
-        />
-      */}
       </div>
     );
 };

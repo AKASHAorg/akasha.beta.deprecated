@@ -2,13 +2,13 @@ import * as types from '../constants/SettingsConstants';
 import { AppActions } from './';
 import { SettingsService } from '../services';
 
-// save app level settings
 class SettingsActions {
     constructor (dispatch) {
         this.settingsService = new SettingsService;
         this.appActions = new AppActions(dispatch);
         this.dispatch = dispatch;
     }
+    // save app level settings
     saveSettings = (table, settings) =>
         this.settingsService.saveSettings(table, settings).then(() => {
             this.dispatch({ type: types.SAVE_SETTINGS_SUCCESS, settings, table });
@@ -27,6 +27,7 @@ class SettingsActions {
         .then(() => this.dispatch((dispatch, getState) => getState().settingsState.get(table)))
         .catch(reason => this.dispatch({ type: types.GET_SETTINGS_ERROR, error: reason, table }));
     }
+    // save user level settings
     saveUserSettings () {}
     getUserSettings () {}
 }

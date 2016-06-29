@@ -28,7 +28,8 @@ class Avatar extends React.Component {
 
     setImage = () => {
         if (this.refs.editor && this.state.avatarImage) {
-            const imageCanvas = this.refs.editor.getImageScaledToCanvas();
+            const imageCanvas = this.refs.editor.getImage();
+            console.log(imageCanvas);
             imageCanvas.toBlob(this.setArrayBufferImage(), 'image/jpg');
         }
     }

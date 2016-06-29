@@ -73,19 +73,26 @@ function _readImageData (imagePath, canvas, ctx, options) {
                     availableWidths.push(resizeWidths[i]);
                 }
             }
+            const blobCb = (width, canvasWidth, canvasHeight) =>
+                (blob) => {
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                        images.push(
+                            {
+                                key: width.key,
+                                imageFile: reader.result,
+                                width: canvasWidth,
+                                height: canvasHeight
+                            }
+                        );
+                    };
+                    reader.readAsArrayBuffer(blob);
+                };
             r.forEach(width => {
                 canvas.width = width.res;
                 canvas.height = width.res / aspectRatio;
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                const imageData = canvas.toDataURL();
-                images.push(
-                    {
-                        key: width.key,
-                        dataURL: imageData,
-                        width: canvas.width,
-                        height: canvas.height
-                    }
-                );
+                canvas.toBlob(blobCb(width, canvas.width, canvas.height), 'image/jpg');
             }, availableWidths);
             resolve(images);
         };

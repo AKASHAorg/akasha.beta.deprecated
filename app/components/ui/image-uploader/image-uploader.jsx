@@ -35,6 +35,7 @@ class ImageUploader extends React.Component {
                 const outputFiles = getResizedImages(imageFiles, { minWidth, minHeight });
 
                 Promise.all(outputFiles).then(results => {
+                    console.log(results);
                     this.setState({
                         images: results
                     });

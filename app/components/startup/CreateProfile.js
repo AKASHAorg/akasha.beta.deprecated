@@ -73,6 +73,9 @@ class CreateProfile extends Component {
             }
         });
         // save a temporary profile to indexedDB
+        console.log('profile creation is disabled for testing purposes!!')
+        return;
+        
         profileActions.createTempProfile(profileData, {
             currentStep: 0,
             status: 'finished',
@@ -91,10 +94,10 @@ class CreateProfile extends Component {
         this.context.router.goBack();
     }
     _handleAddLink = () => {
-        const currentLinks = this.state.links;
+        const currentLinks = this.state.links.slice();
         const notEmpty = this._checkLinks();
 
-        if (!!notEmpty) {
+        if (!notEmpty) {
             currentLinks.push({
                 title: '',
                 url: '',
@@ -107,7 +110,7 @@ class CreateProfile extends Component {
         }
     }
     _handleRemoveLink = (linkId) => {
-        const links = r.clone(this.state.links);
+        const links = this.state.links.slice();
         if (this.state.links.length > 1) {
             r.remove(r.propEq('id', linkId), links);
         }
@@ -139,6 +142,7 @@ class CreateProfile extends Component {
             }
         }
         links[index] = link;
+        console.log(links);
         this.setState({ links });
     }
     _handleAboutChange = (ev) => {
