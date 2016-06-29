@@ -37,7 +37,7 @@ class GethService extends IpcService {
         ipcMain.on(this.serverEvent.stopUpdates, (event, arg) => {
             this._stopGethUpdates(event, arg);
         });
-        ipcMain.on(this.serverEvent.getUpdates, (event, arg) => {
+        ipcMain.on(this.serverEvent.syncUpdate, (event, arg) => {
             this._getGethUpdates(event, arg);
         });
         ipcMain.on(this.serverEvent.stopService, (event, arg) => {
