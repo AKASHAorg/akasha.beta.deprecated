@@ -26,6 +26,7 @@ export const EVENTS = {
             faucetEther: 'server:user:faucetEther',
             registerProfile: 'server:user:registerProfile',
             listAccounts: 'server:user:listAccounts',
+            getProfileDetails: 'server:user:getProfileDetails',
             listEtherAccounts: 'server:user:listEtherAccounts',
             getBalance: 'server:user:getBalance'
         },
