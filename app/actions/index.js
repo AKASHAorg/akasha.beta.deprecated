@@ -5,3 +5,4 @@ export { ProfileActions } from './profile-actions';
 export { SettingsActions } from './settings-actions';
 export { SetupActions } from './setup-actions';
 export { SyncActions } from './sync-actions';
+export { ValidationActions } from './validation-actions';
