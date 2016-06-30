@@ -58,6 +58,9 @@ export const inputFieldMethods = {
         if (statePath && params.addValueLink) {
             props.onChange = (ev) => {
                 this.setState(getNewValuePath(ev.target.value));
+                if (props.onTextChange) {
+                    props.onTextChange(ev);
+                }
             };
         }
         if (validationErrors.length > 0) {

@@ -5,3 +5,4 @@ export { SettingsService } from './settings-service';
 export { SetupService } from './setup-service';
 export { GethService } from './geth-service';
 export { IpfsService } from './ipfs-service';
+export { ValidationService } from './validation-service';

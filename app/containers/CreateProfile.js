@@ -2,7 +2,7 @@ import { connect } from 'react-redux';
 import CreateProfile from '../components/startup/CreateProfile';
 import CreateProfileStatus from '../components/startup/CreateProfileStatus';
 import CreateProfileComplete from '../components/startup/CreateProfileComplete';
-import { ProfileActions } from '../actions';
+import { ProfileActions, ValidationActions } from '../actions';
 
 function mapStateToProps (state) {
     return {
@@ -12,7 +12,8 @@ function mapStateToProps (state) {
 
 function mapDispatchToProps (dispatch) {
     return {
-        profileActions: new ProfileActions(dispatch)
+        profileActions: new ProfileActions(dispatch),
+        validationActions: new ValidationActions(dispatch)
     };
 }
 

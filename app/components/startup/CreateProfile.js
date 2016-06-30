@@ -49,16 +49,12 @@ class CreateProfile extends Component {
     handleSubmit = () => {
         const { profileActions } = this.props;
         const profileData = this.state.formValues;
-        const avatarFile = this.avatar.getImage();
         const profileImage = this.imageUploader.refs.wrappedInstance.getImage();
         const errors = this.props.errors;
         const userLinks = this.state.links.filter(link => link.title.length > 0);
         // optional settings
         if (userLinks.length > 0) {
             profileData.links = userLinks;
-        }
-        if (avatarFile) {
-            profileData.avatarFile = avatarFile;
         }
         if (profileImage) {
             profileData.profileImage = profileImage;
@@ -73,16 +69,22 @@ class CreateProfile extends Component {
             }
         });
         // save a temporary profile to indexedDB
-        console.log('profile creation is disabled for testing purposes!!')
-        return;
-        
-        profileActions.createTempProfile(profileData, {
-            currentStep: 0,
-            status: 'finished',
-            message: 'Profile creation started!'
+        // console.log(profileData);
+        // console.log('profile creation is disabled for testing purposes!!')
+        // return;
+        this.avatar.getImage().then(uintArr => {
+            if (uintArr) {
+                profileData.avatarFile = uintArr;
+            }
+            return profileData;
         }).then(() => {
-            this.context.router.push('authenticate');
-        });
+            return profileActions.createTempProfile(profileData, {
+                currentStep: 0,
+                status: 'finished',
+                message: 'Profile creation started!'
+            });
+        })
+        .then(() => this.context.router.push('authenticate'));
     }
     _submitForm = (ev) => {
         ev.preventDefault();
@@ -110,9 +112,9 @@ class CreateProfile extends Component {
         }
     }
     _handleRemoveLink = (linkId) => {
-        const links = this.state.links.slice();
+        let links = this.state.links;
         if (this.state.links.length > 1) {
-            r.remove(r.propEq('id', linkId), links);
+            links = r.reject((link) => link.id === linkId, links);
         }
         for (let i = 0; i < links.length; i++) {
             links[i].id = i;
@@ -142,7 +144,6 @@ class CreateProfile extends Component {
             }
         }
         links[index] = link;
-        console.log(links);
         this.setState({ links });
     }
     _handleAboutChange = (ev) => {
@@ -190,10 +191,7 @@ class CreateProfile extends Component {
             required: true,
             addValueLink: true,
             statePath: 'formValues.userName',
-            onChange: this.props.handleValidation('formValues.userName', {
-                server: true,
-                action: 'validateUsername'
-            })
+            onTextChange: this.props.handleValidation('formValues.userName')
         });
 
         const passwordProps = this.getProps({
@@ -353,28 +351,6 @@ class CreateProfile extends Component {
                         }
                       </div>
                     )}
-                  </div>
-                  <div className="row" >
-                    <div className="col-xs-6" >
-                      <Checkbox
-                        label={intl.formatMessage(profileMessages.keepAccUnlockedLabel)}
-                        style={{ marginTop: '18px', marginLeft: '-4px', width: '280px' }}
-                        checked={profileState.getIn(['newProfile', 'unlock', 'enabled'])}
-                        onCheck={this.handleUnlockActive}
-                      />
-                    </div>
-                    <div className="col-xs-6" >
-                      <SelectField
-                        value={profileState.getIn(['newProfile', 'unlock', 'value'])}
-                        onChange={this.handleUnlockFor}
-                        style={{ width: '100px' }}
-                      >
-                        <MenuItem value={1} primaryText="1 min" />
-                        <MenuItem value={5} primaryText="5 min" />
-                        <MenuItem value={15} primaryText="15 min" />
-                        <MenuItem value={30} primaryText="30 min" />
-                      </SelectField>
-                    </div>
                   </div>
                   <div style={{ marginTop: '20px' }} >
                     <small>

@@ -2,7 +2,6 @@ import React from 'react';
 import validator from 'react-validation-mixin';
 import strategy from 'react-validatorjs-strategy';
 import r from 'ramda';
-
 export default function (Component) {
     const validationClass = validator(strategy)(Component);
     return class ValidationProvider extends validationClass {
@@ -24,6 +23,26 @@ export default function (Component) {
             this.validate(validationKey, (err) => {
                 if (err) return;
                 // server validation here
+                const serverValidationRules = this.refs.component.serverValidatedFields;
+                if (validationKey.indexOf(serverValidationRules) !== -1) {
+                    const validationActionName = `validate${
+                        validationKey[0].toUpperCase()
+                    }${
+                        validationKey.slice(1).toLowerCase()
+                    }`;
+                    const { validationActions } = this.props;
+                    if (!validationActions[validationActionName]) {
+                        console.warn(`${validationActionName}() not found in ValidationActions`);
+                        return;
+                    }
+                    const state = this.refs.component.state;
+                    const statePathLens = r.lensPath(key.split('.'));
+                    const value = r.view(statePathLens, state);
+
+                    validationActions[validationActionName](value, (isValid) => {
+                        console.log(validationKey, 'is valid:', isValid.success);
+                    });
+                }
             });
         }
         render () {

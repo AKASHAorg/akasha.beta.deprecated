@@ -15,27 +15,23 @@ class Avatar extends React.Component {
         };
     }
 
-    setArrayBufferImage = () =>
-        (blob) => {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                this.setState({
-                    avatarData: new Uint8Array(reader.result)
-                });
-            };
-            reader.readAsArrayBuffer(blob);
-        };
+    getImage = () => {
+        return new Promise((resolve) => {
+            if (this.refs.editor && this.state.avatarImage) {
+                const imageCanvas = this.refs.editor.getImageScaledToCanvas();
 
-    setImage = () => {
-        if (this.refs.editor && this.state.avatarImage) {
-            const imageCanvas = this.refs.editor.getImage();
-            console.log(imageCanvas);
-            imageCanvas.toBlob(this.setArrayBufferImage(), 'image/jpg');
-        }
+                imageCanvas.toBlob(blob => {
+                    const reader = new FileReader();
+                    reader.onloadend = (ev) =>
+                        resolve(new Uint8Array(ev.target.result));
+
+                    reader.readAsArrayBuffer(blob);
+                }, 'image/jpg');
+            } else {
+                resolve(null);
+            }
+        });
     }
-
-    getImage = () => this.state.avatarData;
-
     _handleMouseEnter = () => {
         this.setState({
             showChangeAvatar: this.props.editable,
@@ -143,7 +139,6 @@ class Avatar extends React.Component {
                   height={130}
                   borderRadius={100}
                   scale={this.state.avatarScale}
-                  onLoadSuccess={this.setImage}
                 />
                 <div>
                   <Slider
