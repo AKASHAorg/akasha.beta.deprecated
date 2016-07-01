@@ -63,21 +63,9 @@ class ProfileService {
      */
     createTempProfile = (profileData, currentStatus) =>
         profileDB.transaction('rw', profileDB.tempProfile, () => {
-            const { userName, firstName, lastName, password, password2 } = profileData;
-            const optionalData = {
-                avatarFile: profileData.avatarFile,
-                backgroundImage: profileData.backgroundImage,
-                aboutMe: profileData.aboutMe,
-                links: profileData.links
-            };
-            dbg('saveTempProfile(add)', profileData, optionalData);
+            dbg('saveTempProfile(add)', profileData);
             return profileDB.tempProfile.add({
-                userName,
-                firstName,
-                lastName,
-                password,
-                password2,
-                optionalData,
+                ...profileData,
                 currentStatus
             });
         });

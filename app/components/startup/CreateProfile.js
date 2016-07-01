@@ -49,18 +49,21 @@ class CreateProfile extends Component {
     handleSubmit = () => {
         const { profileActions } = this.props;
         const profileData = this.state.formValues;
+        const optionalData = {};
         const profileImage = this.imageUploader.refs.wrappedInstance.getImage();
         const errors = this.props.errors;
         const userLinks = this.state.links.filter(link => link.title.length > 0);
+        profileData.password = new TextEncoder('utf-8').encode(this.state.formValues.password);
+        profileData.password2 = new TextEncoder('utf-8').encode(this.state.formValues.password2);
         // optional settings
         if (userLinks.length > 0) {
-            profileData.links = userLinks;
+            optionalData.links = userLinks;
         }
         if (profileImage) {
-            profileData.profileImage = profileImage;
+            optionalData.coverImage = profileImage;
         }
         if (this.state.about) {
-            profileData.about = this.state.about;
+            optionalData.about = this.state.about;
         }
         // check for remaining errors
         Object.keys(errors).forEach(errKey => {
@@ -74,8 +77,9 @@ class CreateProfile extends Component {
         // return;
         this.avatar.getImage().then(uintArr => {
             if (uintArr) {
-                profileData.avatarFile = uintArr;
+                optionalData.avatarFile = uintArr;
             }
+            profileData.optionalData = optionalData;
             return profileData;
         }).then(() => {
             return profileActions.createTempProfile(profileData, {

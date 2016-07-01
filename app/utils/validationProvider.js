@@ -40,7 +40,12 @@ export default function (Component) {
                     const value = r.view(statePathLens, state);
 
                     validationActions[validationActionName](value, (isValid) => {
-                        console.log(validationKey, 'is valid:', isValid.success);
+                        console.log(validationKey, 'is valid:', isValid.status);
+                        if (isValid.status !== '0x0000000000000000000000000000000000000000') {
+                            this.state.errors[validationKey][0] = 'Username already registered!';
+                            console.log(this.state);
+                            return;
+                        }
                     });
                 }
             });
@@ -55,7 +60,7 @@ export default function (Component) {
                 getValidationMessages={this.getValidationMessages}
                 clearValidations={this.clearValidations}
                 handleValidation={this.handleCustomValidation}
-                { ...this.props }
+                {...this.props}
               >
                 {this.props.children}
               </Component>

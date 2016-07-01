@@ -3,6 +3,7 @@ const MainService = require('./main');
 const Dapple = require('../../../contracts.sol/build/js_module.js');
 const request = require('request');
 const Promise = require('bluebird');
+const r = require('ramda');
 
 /**
  * UserService class
@@ -18,7 +19,7 @@ class UserService extends MainService {
         super('user');
         this.IPFS_ADD_SIGNUP_FAIL = 'ipfs add user signup fail';
         this.NO_COINBASE_FAIL = 'no coinbase / no ethereum account';
-        this.textFields = ['username', 'firstName', 'lastName', 'description'];
+        this.textFields = ['username', 'firstName', 'lastName'];
         this.CREATE_PROFILE_CONTRACT_GAS = 800000;
         this.FAUCET_URL = 'http://faucet.ma.cx:3000/donate/';
     }
@@ -71,7 +72,7 @@ class UserService extends MainService {
 
     _createCoinbase (event, arg) {
         const web3 = this.__getWeb3();
-        web3.personal.newAccountAsync(arg.password).then((data) => {
+        web3.personal.newAccountAsync(arg.password.toString()).then((data) => {
             this._sendEvent(event)(this.clientEvent.createCoinbase, true, data);
         });
     }
@@ -92,7 +93,7 @@ class UserService extends MainService {
         web3
             .personal
             .unlockAccountAsync(arg.account,
-                                arg.password,
+                                arg.password.toString(),
                                 arg.interval ? arg.interval : this.UNLOCK_INTERVAL)
             .then((result) => {
                 if (result) { // if successful then it is true
@@ -218,36 +219,46 @@ class UserService extends MainService {
 
     _uploadImages (signupJSON) {
         const imagePromises = [];
-        if (signupJSON.optionalData.avatarFile) {
-            imagePromises.push(this._uploadImage('avatar', signupJSON.optionalData.avatarFile));
+        const optionalData = signupJSON.optionalData;
+        const coverImage = optionalData.coverImage;
+        const avatarFile = optionalData.avatarFile;
+
+        if (avatarFile) {
+            imagePromises.push(this._uploadImage('avatar', avatarFile));
         }
-        if (signupJSON.bg1) {
-            imagePromises.push(this._uploadImage('bg1', signupJSON.bg1));
+        // we allways have 1 pic here so we know there is only index 0;
+        if (coverImage && coverImage.length > 0) {
+            coverImage[0].forEach(coverVariant => {
+                imagePromises.push(
+                    this._uploadImage(coverVariant.key, coverVariant.imageFile));
+            });
         }
-        if (signupJSON.bg2) {
-            imagePromises.push(this._uploadImage('bg2', signupJSON.bg2));
-        }
-        if (signupJSON.bg3) {
-            imagePromises.push(this._uploadImage('bg3', signupJSON.bg3));
-        }
-        if (signupJSON.bg4) {
-            imagePromises.push(this._uploadImage('bg4', signupJSON.bg4));
-        }
-        return Promise.all(imagePromises).then((data) => {
-            const imageHashes = {};
-            for (const result of data) {
-                imageHashes[result.name] = result.hash;
-            }
-            console.log(imageHashes);
-            return imageHashes;
-        }).catch((err) => err);
+        return Promise.all(imagePromises).then(imageHashes => {
+            const coverHashedImages = [];
+            imageHashes.forEach(imageHash => {
+                if (imageHash.name === 'avatar') {
+                    signupJSON.optionalData.avatarFile = imageHash.hash;
+                    return;
+                }
+                const imageVar = r.map(r.find(r.where({
+                    key: r.contains(imageHash.name)
+                })))(signupJSON.optionalData.coverImage);
+                imageVar[0].imageFile = imageHash.hash;
+                coverHashedImages.push(imageVar[0]);
+            });
+            signupJSON.optionalData.coverImage = coverHashedImages;
+            return signupJSON;
+        });
     }
 
     _registerProfile (event, arg) {
         this
         ._uploadImages(arg)
-        .then((imageHashes) => {
-            const fullProfileJSON = Object.assign({}, imageHashes);
+        .then((fullProfileJSON) => {
+            delete fullProfileJSON.password;
+            delete fullProfileJSON.password2;
+            delete fullProfileJSON.account;
+
             for (const key of this.textFields) {
                 fullProfileJSON[key] = arg[key];
             }
@@ -259,7 +270,7 @@ class UserService extends MainService {
                 const web3 = this.__getWeb3();
                 return web3
                     .personal
-                    .unlockAccountAsync(arg.account, arg.password, 10000)
+                    .unlockAccountAsync(arg.account, arg.password.toString(), 10000)
                     .then((unlocked) => {
                         const registry = new Dapple.class(web3).objects.registry;
                         return registry.register(

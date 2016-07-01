@@ -80,7 +80,7 @@ function _readImageData (imagePath, canvas, ctx, options) {
                         images.push(
                             {
                                 key: width.key,
-                                imageFile: reader.result,
+                                imageFile: new Uint8Array(reader.result),
                                 width: canvasWidth,
                                 height: canvasHeight
                             }
