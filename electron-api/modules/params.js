@@ -68,9 +68,11 @@ export const EVENTS = {
                             ]
                         }
                     }`,
-            listAccounts: 'no parameter',
-            getProfileDetails: 'object with key: account[optional]',
-            listEtherAccounts: 'no parameter',
+            listEthAccounts: 'no parameter',
+            getProfileData: 'object' 
+            `{
+                ipfsHash: 'string'
+            }`,
             getBalance: 'object with key: account[optional]'
         },
         entry: {
@@ -148,7 +150,23 @@ export const EVENTS = {
             faucetEther: 'object with tx JSON',
             registerProfileHash: 'string txHash',
             registerProfileComplete: 'object with tx Object',
-            listAccounts: 'array with accounts [JSONs with eth addresses, usernames - only what\'s in the AkashaRegistry contract]',
+            listAccounts: 'array with accounts':
+                `[
+                    {
+                        ethAddress: 'String'
+                        ipfsHash: 'String'
+                    }, {
+                        ...
+                    }
+                ]`,
+            getProfileData: 'object'
+            `{
+                username: 'String',
+                firstName: 'String',
+                lastName: 'String',
+                optionalData: {...},
+                ...
+            }`
             listEtherAccounts: 'array with accounts [string eth addresses]',
             getBalance: 'string with the sum in ETH'
         },

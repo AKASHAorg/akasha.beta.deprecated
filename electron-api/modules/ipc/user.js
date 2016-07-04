@@ -44,8 +44,8 @@ class UserService extends MainService {
         ipcMain.on(this.serverEvent.registerProfile, (event, arg) => {
             this._registerProfile(event, arg);
         });
-        ipcMain.on(this.serverEvent.listAccounts, (event, arg) => {
-            this._listAccounts(event, arg);
+        ipcMain.on(this.serverEvent.listEthAccounts, (event, arg) => {
+            this._listEthAccounts(event, arg);
         });
         ipcMain.on(this.serverEvent.getBalance, (event, arg) => {
             this._getBalance(event, arg);
@@ -119,7 +119,7 @@ class UserService extends MainService {
         });
     }
 
-    _listAccounts (event, arg) {
+    _listEthAccounts (event, arg) {
         const web3 = this.__getWeb3();
         const profilePromises = [];
         web3.personal.getListAccountsAsync().then((data) => {
@@ -165,14 +165,14 @@ class UserService extends MainService {
                                         })
                                         .then((result) => {
                                             this._sendEvent(event)(
-                                                this.clientEvent.listAccounts,
+                                                this.clientEvent.listEthAccounts,
                                                 true,
                                                 { ethAddress, result }
                                             );
                                         })
                                         .catch((ipfsErr) => {
                                             this._sendEvent(event)(
-                                                this.clientEvent.listAccounts,
+                                                this.clientEvent.listEthAccounts,
                                                 false,
                                                 ipfsErr);
                                         });
@@ -182,7 +182,7 @@ class UserService extends MainService {
                 }
                 if (noProfile) {
                     this._sendEvent(event)(
-                        this.clientEvent.listAccounts,
+                        this.clientEvent.listEthAccounts,
                         true,
                         []);
                 }
@@ -252,6 +252,8 @@ class UserService extends MainService {
     }
 
     _registerProfile (event, arg) {
+        const profilePassword = arg.password.toString();
+        const accountAddress = arg.account;
         this
         ._uploadImages(arg)
         .then((fullProfileJSON) => {
@@ -270,14 +272,14 @@ class UserService extends MainService {
                 const web3 = this.__getWeb3();
                 return web3
                     .personal
-                    .unlockAccountAsync(arg.account, arg.password.toString(), 10000)
+                    .unlockAccountAsync(accountAddress, profilePassword, 10000)
                     .then((unlocked) => {
                         const registry = new Dapple.class(web3).objects.registry;
                         return registry.register(
                             web3.fromUtf8(arg.username),
                             this._chopIpfsHash(ipfsHash),
                             {
-                                from: arg.account,
+                                from: accountAddress,
                                 gas: this.CREATE_PROFILE_CONTRACT_GAS
                             }, (error, tx) => {
                                 if (!error) {
@@ -308,16 +310,18 @@ class UserService extends MainService {
                     });
             })
             .catch((err) => {
+                console.error(err);
                 this._sendEvent(event)(this.clientEvent.registerProfileHash,
                                         false,
                                         this.IPFS_ADD_SIGNUP_FAIL);
             });
         })
-            .catch((err) => {
-                this._sendEvent(event)(this.clientEvent.registerProfileHash,
-                                        false,
-                                        this.IPFS_ADD_SIGNUP_FAIL);
-            });
+        .catch((err) => {
+            console.error(err);
+            this._sendEvent(event)(this.clientEvent.registerProfileHash,
+                                    false,
+                                    this.IPFS_ADD_SIGNUP_FAIL);
+        });
     }
 }
 

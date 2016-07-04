@@ -25,9 +25,8 @@ export const EVENTS = {
             createCoinbase: 'server:user:createCoinbase',
             faucetEther: 'server:user:faucetEther',
             registerProfile: 'server:user:registerProfile',
-            listAccounts: 'server:user:listAccounts',
-            getProfileDetails: 'server:user:getProfileDetails',
-            listEtherAccounts: 'server:user:listEtherAccounts',
+            getProfileData: 'server:user:getProfileData',
+            listEthAccounts: 'server:user:listEthAccounts',
             getBalance: 'server:user:getBalance'
         },
         entry: {
@@ -60,7 +59,7 @@ export const EVENTS = {
             faucetEther: 'client:user:faucetEther',
             registerProfileHash: 'client:user:registerProfileHash',
             registerProfileComplete: 'client:user:registerProfileComplete',
-            listAccounts: 'client:user:listAccounts',
+            listEthAccounts: 'client:user:listEthAccounts',
             listEtherAccounts: 'server:user:listEtherAccounts',
             getBalance: 'client:user:getBalance'
         },
