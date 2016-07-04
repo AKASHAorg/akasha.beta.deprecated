@@ -19,7 +19,7 @@ class UserService extends MainService {
         super('user');
         this.IPFS_ADD_SIGNUP_FAIL = 'ipfs add user signup fail';
         this.NO_COINBASE_FAIL = 'no coinbase / no ethereum account';
-        this.textFields = ['username', 'firstName', 'lastName'];
+        this.textFields = ['userName', 'firstName', 'lastName'];
         this.CREATE_PROFILE_CONTRACT_GAS = 800000;
         this.FAUCET_URL = 'http://faucet.ma.cx:3000/donate/';
     }
@@ -65,7 +65,11 @@ class UserService extends MainService {
 
         }, (err, res) => {
             if (!err) {
-                this._sendEvent(event)(this.clientEvent.exists, true, res);
+                this._sendEvent(event)(this.clientEvent.exists, true, {
+                    exists: res !== this.ZERO_ADDR
+                });
+            } else {
+                this._sendEvent(event)(this.clientEvent.exists, false, err);
             }
         });
     }
@@ -113,7 +117,8 @@ class UserService extends MainService {
     _listEtherAccounts (event, arg) {
         const web3 = this.__getWeb3();
         web3.personal.getListAccountsAsync().then((data) => {
-            this._sendEvent(event)(this.clientEvent.getBalance, true, {
+            console.log(data);
+            this._sendEvent(event)(this.clientEvent.listEtherAccounts, true, {
                 accounts: data
             });
         });
@@ -228,6 +233,7 @@ class UserService extends MainService {
         }
         // we allways have 1 pic here so we know there is only index 0;
         if (coverImage && coverImage.length > 0) {
+            console.log(coverImage[0]);
             coverImage[0].forEach(coverVariant => {
                 imagePromises.push(
                     this._uploadImage(coverVariant.key, coverVariant.imageFile));
