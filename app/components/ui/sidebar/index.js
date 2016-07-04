@@ -1,19 +1,6 @@
 import React, { PropTypes, Component } from 'react';
-import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { AppActions } from '../../../actions';
-import {
-  MenuAddEntry,
-  MenuAkashaLogo,
-  MenuCommunities,
-  MenuEntries,
-  MenuEthereum,
-  MenuPeople,
-  MenuPortals,
-  MenuSearch,
-  MenuStreams,
-  MenuUser
-} from '../svg';
 import Profile from './IconProfile';
 import AddEntry from './IconAddEntry';
 import Search from './IconSearch';
@@ -24,55 +11,58 @@ import People from './IconPeople';
 import Logo from './IconLogo';
 
 class SideBar extends Component {
-    render () {
-        let { 
-            style,
-            iconStyle,
-            innerStyle,
-            ...other } = this.props;
-        return (
-            <div style={style} >
-                <div style={{flexGrow: 1, padding: '16px'}} >
-                    <Profile onClick = {this._handlePanelShow.bind(null, {name: 'userProfile', overlay: true})} />
-                </div>
-            <div style={{flexGrow: 1, padding: '16px'}} >
-                <AddEntry onClick = {this._handleNewEntry} tooltip="Add new entry" />
-                <Search onClick = {this._handleSearch} tooltip = "Search" />
-            </div>
-            <div style={{flexGrow: 4, padding: '16px'}} >
-                <Streams onClick = {this._handleNavigation.bind(this, null)} tooltip = "Stream" />
-                <Portals disabled tooltip="Coming Soon" />
-                <Community disabled tooltip="Coming Soon" />
-                <People onClick = {this._handlePeople} tooltip = "People" />
-            </div>
-            <div style={{flexGrow: 1, padding: '16px'}} >
-                <Logo style={{position:'absolute', bottom: '16px', width: '32px', height: '32px'}} />
-            </div>
-            </div>
-        );
-
-    }
     _handleNewEntry = (ev) => {
         const entries = 0;
-        if(entries > 0) {
-            this.props.dispatch(AppActions.showPanel({name: 'newEntry', overlay: true}));
+        if (entries > 0) {
+            this.props.appActions.showPanel({name: 'newEntry', overlay: true});
         } else {
-            this.props.dispatch(AppActions.hidePanels());
+            this.props.appActions.hidePanel();
             this.context.router.push('/severs/new-entry');
         }
     }
     _handleNavigation = (to, ev) => {
-        const basePath = '/severs'; //change this with logged user`s username
+        const basePath = '/severs'; // change this with logged user`s username
 
-        this.props.dispatch(AppActions.hidePanels());
-        if(!to) {
+        this.props.appActions.hidePanel();
+        if (!to) {
             // navigate to index route
             return this.context.router.push(basePath);
         }
         this.context.router.push(`${basePath}/${to}`);
     }
     _handlePanelShow = (panelName, ev) => {
-        this.props.dispatch(AppActions.showPanel(panelName));
+        this.props.appActions.showPanel(panelName);
+    }
+    render () {
+        const {
+            style,
+            iconStyle,
+            innerStyle,
+            ...other } = this.props;
+        return (
+          <div style={style} >
+            <div style={{ flexGrow: 1, padding: '16px' }} >
+              <Profile
+                onClick={() => this._handlePanelShow({ name: 'userProfile', overlay: true })}
+              />
+            </div>
+            <div style={{ flexGrow: 1, padding: '16px' }} >
+              <AddEntry onClick={this._handleNewEntry} tooltip="Add new entry" />
+              <Search onClick={this._handleSearch} tooltip="Search" />
+            </div>
+            <div style={{ flexGrow: 4, padding: '16px' }} >
+              <Streams onClick={() => this._handleNavigation(null)} tooltip="Stream" />
+              <Portals disabled tooltip="Coming Soon" />
+              <Community disabled tooltip="Coming Soon" />
+              <People onClick={this._handlePeople} tooltip="People" />
+            </div>
+            <div style={{ flexGrow: 1, padding: '16px' }} >
+              <Logo
+                style={{ position: 'absolute', bottom: '16px', width: '32px', height: '32px' }}
+              />
+            </div>
+          </div>
+        );
     }
 }
 SideBar.propTypes = {
@@ -81,12 +71,13 @@ SideBar.propTypes = {
     innerStyle: PropTypes.object,
     viewBox: PropTypes.string,
     color: PropTypes.string,
+    appActions: PropTypes.object
 };
 
 SideBar.contextTypes = {
     router: React.PropTypes.object,
     actions: React.PropTypes.object
-}
+};
 SideBar.defaultProps = {
     style: {
         height: '100%',
@@ -104,10 +95,13 @@ SideBar.defaultProps = {
     },
     viewBox: '0 0 32 32',
     color: '#000'
-}
+};
 export default connect(
-    state => ({ 
+    state => ({
         panelState: state.panelState,
-        profiles: state.profile
+        profile: state.profileState
+    }),
+    dispatch => ({
+        appActions: new AppActions(dispatch)
     })
 )(SideBar);

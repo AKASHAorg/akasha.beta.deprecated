@@ -1,8 +1,9 @@
 import React, { Component, PropTypes } from 'react';
-import { IconButton } from 'material-ui';
+import { IconButton, TextField } from 'material-ui';
 import {
     Editor,
     EditorState,
+    SelectionState,
     getDefaultKeyBinding,
     CompositeDecorator,
     convertToRaw,
@@ -10,6 +11,7 @@ import {
     RichUtils,
     Entity } from 'draft-js';
 import { getResizedImages } from '../../../utils/imageUtils';
+import clickAway from '../../../utils/clickAway';
 import styles from './style.css';
 import AddCircle from 'material-ui/svg-icons/content/add-circle-outline';
 import PhotoCircle from 'material-ui/svg-icons/image/add-a-photo';
@@ -33,12 +35,43 @@ class EntryEditor extends Component {
         this.state = {
             editorState: EditorState.createEmpty(compositeDecorator),
             showAddButton: false,
-            toolbarVisible: false
+            toolbarVisible: false,
+            editorEnabled: true,
+            readOnly: props.readOnly || false
         };
+        if (props.content) {
+
+        }
+    }
+    componentDidMount () {
+        const readOnly = this.state.readOnly;
+        if (!readOnly) {
+            this.refs.titleInput.focus();
+        }
     }
     getContent = () => {
         const rawData = convertToRaw(this.state.editorState.getCurrentContent());
         return rawData;
+    }
+    componentClickAway = () => {
+        const selection = this.state.editorState.getSelection();
+        if (selection.getAnchorKey()) {
+            EditorState.forceSelection(this.state.editorState, SelectionState.createEmpty());
+        }
+    }
+    focus = () => {
+        if (this.state.toolbarVisible) {
+            this._toggleToolbarVisibility(false);
+        }
+        this.refs.editor.focus();
+    }
+    blur = () => {
+        this.refs.editor.blur();
+    }
+    toggleAddButton = () => {
+        this.setState({
+            showAddButton: !this.state.showAddButton
+        });
     }
     _handleEditorChange = (editorState) => {
         this.setState({
@@ -47,7 +80,11 @@ class EntryEditor extends Component {
             if (this.props.onChange) {
                 return this.props.onChange(editorState.getCurrentContent().getPlainText());
             }
+            return null;
         });
+    }
+    _handleEditorContainerClick = (ev) => {
+        this.focus();
     }
     _handleAddClick = () => {
         this.setState({
@@ -55,7 +92,7 @@ class EntryEditor extends Component {
             showAddButton: !this.state.showAddButton,
         });
     }
-    _handleBeforeInput = (str) => {
+    _handleBeforeInput = () => {
         this.setState({
             showAddButton: false
         });
@@ -139,48 +176,74 @@ class EntryEditor extends Component {
             showAddButton: false,
         });
     }
+    _handleTitleKeyPress = (ev) => {
+        if (ev.charCode === 13) {
+            this.refs.editor.focus();
+        }
+    }
+    _toggleToolbarVisibility = (visible) => {
+        if (visible) {
+            return this.setState({
+                toolbarVisible: visible
+            });
+        }
+        return this.setState({
+            toolbarVisible: !this.state.toolbarVisible
+        });
+    }
     render () {
         const { editorState } = this.state;
         const addButtonStyles = this._getAddButtonStyles();
 
         return (
-            <div className = "editor" style = {{ textAlign: 'left' }}>
-                <div style = {addButtonStyles}>
-                    <IconButton
-                      onMouseDown = {this._handleAddClick}
-                      style = {{
-                          transform: this.state.showAddButton ? 'rotate(135deg)' : 'rotate(-180deg)'
-                      }}
-                    >
-                        <AddCircle color={this.state.showAddButton ? 'rgb(3, 169, 244)' : '#DDD'} />
-                    </IconButton>
-                    {this.state.showAddButton &&
-                        <IconButton onClick = {this._addImage} >
-                            <PhotoCircle />
-                        </IconButton>
-                    }
-                </div>
-                <div>
-                    <Editor
-                      ref="editor"
-                      editorState = {editorState}
-                      blockRendererFn = {rendererFn}
-                      onClick = {this._handleEditorClick}
-                      onChange = {this._handleEditorChange}
-                      handleReturn = {this._handleReturn}
-                      placeholder = {this.state.showAddButton ? '' : 'Type your text'}
-                      handleBeforeInput = {this._handleBeforeInput}
-                    />
-                </div>
-                <EditorToolbar
-                  ref = "toolbar"
-                  editorState = {editorState}
-                  toggleVisibility = {this._handleToolbarVisibility}
-                  toggleBlockType = {this._toggleBlockType}
-                  toggleInlineStyle = {this._toggleInlineStyle}
-                  setLink = {this._setLink}
-                />
+          <div className="editor" style={{ textAlign: 'left' }}>
+            <div style={addButtonStyles}>
+              <IconButton
+                onMouseDown={this._handleAddClick}
+                style={{
+                    transform: this.state.showAddButton ? 'rotate(135deg)' : 'rotate(-180deg)'
+                }}
+              >
+                <AddCircle color={this.state.showAddButton ? 'rgb(3, 169, 244)' : '#DDD'} />
+              </IconButton>
+                {this.state.showAddButton &&
+                  <IconButton onClick={this._addImage} >
+                    <PhotoCircle />
+                  </IconButton>
+                }
             </div>
+            <div>
+              <TextField
+                ref="titleInput"
+                hintText="Title"
+                underlineShow={false}
+                hintStyle={{ fontSize: 32 }}
+                inputStyle={{ fontSize: 32 }}
+                onKeyPress={this._handleTitleKeyPress}
+                fullWidth
+              />
+              <div onClick={this._handleEditorContainerClick}>
+                <Editor
+                  ref="editor"
+                  editorState={editorState}
+                  blockRendererFn={rendererFn}
+                  onChange={this._handleEditorChange}
+                  handleReturn={this._handleReturn}
+                  placeholder={this.state.showAddButton ? '' : 'Type your text'}
+                  handleBeforeInput={this._handleBeforeInput}
+                />
+              </div>
+            </div>
+            <EditorToolbar
+              ref="toolbar"
+              editorState={editorState}
+              isVisible={this.state.toolbarVisible}
+              toggleVisibility={this._toggleToolbarVisibility}
+              toggleBlockType={this._toggleBlockType}
+              toggleInlineStyle={this._toggleInlineStyle}
+              setLink={this._setLink}
+            />
+          </div>
         );
     }
 }
@@ -189,4 +252,4 @@ EntryEditor.propTypes = {
     onChange: PropTypes.func
 };
 
-export default EntryEditor;
+export default clickAway(EntryEditor);
