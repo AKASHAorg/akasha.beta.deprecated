@@ -51,7 +51,7 @@ export const EVENTS = {
                                 url: 'string'
                             }],
                             avatar: ArrayBuffer,
-                            background: [
+                            coverImage: [
                                 [...], => represents a single image with multiple resolution dimensions
                                 [
                                     { => this is a sigle variant
