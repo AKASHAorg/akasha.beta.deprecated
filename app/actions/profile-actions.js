@@ -231,12 +231,15 @@ class ProfileActions {
             this.dispatch((dispatch, getState) => {
                 const tempProfile = getState().profileState.get('tempProfile');
                 dbg('checkTempProfile', tempProfile);
-                if (tempProfile.size > 0) {
+                if (tempProfile && tempProfile.size > 0) {
                     return hashHistory.push('new-profile-status');
                 }
                 return this.getProfilesList();
             });
-        }).catch(reason => console.error(reason, reason.stack));
+        }).catch(reason => {
+            console.error(reason, reason.stack);
+            this.dispatch({ type: types.CHECK_TEMP_PROFILE_ERROR, reason });
+        });
     /**
      * get all local profiles available
      * returns only the address and userName

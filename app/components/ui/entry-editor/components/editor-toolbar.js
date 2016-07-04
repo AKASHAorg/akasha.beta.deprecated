@@ -38,6 +38,10 @@ class EditorToolbar extends Component {
                 top: selectionPosition.top - 60 + window.scrollY,
                 left
             });
+        } else if (!newProps.isVisible) {
+            this.setState({
+                isVisible: false
+            });
         }
     }
     _handleBoldText = (ev) => {

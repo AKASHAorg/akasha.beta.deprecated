@@ -9,12 +9,12 @@ class PanelLoader extends Component {
         if (activePanel.get('name')) {
             const Panel = Panels[activePanel.get('name')];
             return (
-                <div className="panel" style={{ height: '100%' }} >
-                    <Panel />
-                    {activePanel.get('overlay') &&
-                        <div className = "overlay" />
-                    }
-                </div>
+              <div className="panel" style={{ height: '100%' }} >
+                <Panel />
+                  {activePanel.get('overlay') &&
+                    <div className="overlay" />
+                  }
+              </div>
             );
         }
         return null;

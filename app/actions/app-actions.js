@@ -18,7 +18,7 @@ class AppActions {
      */
     changePanel = (panel) => this.showPanel(panel);
     showPanel = (panel) => this.dispatch({ type: types.SHOW_PANEL, panel });
-    hidePanels = () => this.dispatch({ type: types.HIDE_PANELS });
+    hidePanel = (panel) => this.dispatch({ type: types.HIDE_PANEL, panel });
 }
 
 export { AppActions };
