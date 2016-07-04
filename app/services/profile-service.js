@@ -31,7 +31,7 @@ class ProfileService {
      */
     getProfilesList = () =>
         new Promise((resolve, reject) => {
-            ipcRenderer.once(EVENTS.client.user.listAccounts, (ev, data) => {
+            ipcRenderer.once(EVENTS.client.user.listEthAccounts, (ev, data) => {
                 if (!data) {
                     const err = new Error('Main Process down!');
                     return reject(err);
@@ -39,8 +39,8 @@ class ProfileService {
                 dbg('getProfilesList_Success', data);
                 return resolve(data);
             });
-            dbg('getProfilesList_Start', EVENTS.server.user.listAccounts);
-            ipcRenderer.send(EVENTS.server.user.listAccounts);
+            dbg('getProfilesList_Start', EVENTS.server.user.listEthAccounts);
+            ipcRenderer.send(EVENTS.server.user.listEthAccounts);
         });
     login = (profileData) =>
         new Promise((resolve, reject) => {
