@@ -35,6 +35,7 @@ export const EVENTS = {
             logout: 'object with key: account',
             createCoinbase: 'object with key: password',
             faucetEther: 'object with key: account[optional]',
+            getIpfsImage: 'object with ipfsHash key',
             registerProfile: 'object with keys. '
                     `{
                         account: 'string',
@@ -150,6 +151,7 @@ export const EVENTS = {
             faucetEther: 'object with tx JSON',
             registerProfileHash: 'string txHash',
             registerProfileComplete: 'object with tx Object',
+            getIpfsImage: 'an ArrayBuffer',
             listAccounts: 'array with accounts':
                 `[
                     {
@@ -161,7 +163,7 @@ export const EVENTS = {
                 ]`,
             getProfileData: 'object'
             `{
-                username: 'String',
+                userName: 'String',
                 firstName: 'String',
                 lastName: 'String',
                 optionalData: {...},
