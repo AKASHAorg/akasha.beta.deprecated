@@ -18,7 +18,6 @@ export const EVENTS = {
             stopGethInfo: 'server:logger:stopGethInfo'
         },
         user: {
-            signUp: 'server:user:signUp',
             exists: 'server:user:exists',
             login: 'server:user:login',
             logout: 'server:user:logout',
@@ -27,7 +26,8 @@ export const EVENTS = {
             registerProfile: 'server:user:registerProfile',
             getProfileData: 'server:user:getProfileData',
             listEthAccounts: 'server:user:listEthAccounts',
-            getBalance: 'server:user:getBalance'
+            getBalance: 'server:user:getBalance',
+            getIpfsImage: 'server:user:getIpfsImage'
         },
         entry: {
             publish: 'server:entry:publish'
@@ -50,7 +50,6 @@ export const EVENTS = {
             stopGethInfo: 'client:logger:stopGethInfo'
         },
         user: {
-            signUp: 'client:user:signUp',
             exists: 'client:user:exists',
             login: 'client:user:login',
             logout: 'client:user:logout',
@@ -60,8 +59,10 @@ export const EVENTS = {
             registerProfileHash: 'client:user:registerProfileHash',
             registerProfileComplete: 'client:user:registerProfileComplete',
             listEthAccounts: 'client:user:listEthAccounts',
-            listEtherAccounts: 'server:user:listEtherAccounts',
-            getBalance: 'client:user:getBalance'
+            listEtherAccounts: 'client:user:listEtherAccounts',
+            getProfileData: 'client:user:getProfileData',
+            getBalance: 'client:user:getBalance',
+            getIpfsImage: 'client:user:getIpfsImage'
         },
         entry: {
             publish: 'client:entry:publish'

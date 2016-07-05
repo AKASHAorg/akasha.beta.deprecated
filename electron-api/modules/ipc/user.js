@@ -47,8 +47,14 @@ class UserService extends MainService {
         ipcMain.on(this.serverEvent.listEthAccounts, (event, arg) => {
             this._listEthAccounts(event, arg);
         });
+        ipcMain.on(this.serverEvent.getProfileData, (event, arg) => {
+            this._getProfileData(event, arg);
+        });
         ipcMain.on(this.serverEvent.getBalance, (event, arg) => {
             this._getBalance(event, arg);
+        });
+        ipcMain.on(this.serverEvent.getIpfsImage, (event, arg) => {
+            this._getIpfsImage(event, arg);
         });
         ipcMain.on(this.serverEvent.listEtherAccounts, (event, arg) => {
             this._listEtherAccounts(event, arg);
@@ -117,7 +123,6 @@ class UserService extends MainService {
     _listEtherAccounts (event, arg) {
         const web3 = this.__getWeb3();
         web3.personal.getListAccountsAsync().then((data) => {
-            console.log(data);
             this._sendEvent(event)(this.clientEvent.listEtherAccounts, true, {
                 accounts: data
             });
@@ -150,42 +155,37 @@ class UserService extends MainService {
             }
 
             Promise.all(profilePromises).then((results) => {
-                let noProfile = true;
+                let numberOfProfiles = 0;
+                let pIndex = 0;
+                const profiles = [];
                 for (let i = 0; i < results.length; i++) {
                     const akashaProfileContractHash = results[i].profileContractAddress;
                     const ethAccount = results[i].eth;
                     if (akashaProfileContractHash !== this.ZERO_ADDR) {
-                        noProfile = false;
+                        numberOfProfiles++;
                         profile
                             .at(akashaProfileContractHash)
                             .getIpfs
                             .call(((ethAddress) => {
                                 return (err, tuple) => {
                                     const ipfsHash = web3.toUtf8(tuple[0]) + web3.toUtf8(tuple[1]);
-                                    this.
-                                        _getIpfsAPI()
-                                        .cat({
-                                            id: ipfsHash,
-                                            encoding: 'utf8'
-                                        })
-                                        .then((result) => {
-                                            this._sendEvent(event)(
-                                                this.clientEvent.listEthAccounts,
-                                                true,
-                                                { ethAddress, result }
-                                            );
-                                        })
-                                        .catch((ipfsErr) => {
-                                            this._sendEvent(event)(
-                                                this.clientEvent.listEthAccounts,
-                                                false,
-                                                ipfsErr);
-                                        });
+                                    pIndex++;
+                                    profiles.push({
+                                        address: ethAddress,
+                                        ipfsHash
+                                    });
+                                    if (pIndex >= numberOfProfiles) {
+                                        this._sendEvent(event)(
+                                            this.clientEvent.listEthAccounts,
+                                            true,
+                                            profiles
+                                        );
+                                    }
                                 };
                             })(ethAccount));
                     }
                 }
-                if (noProfile) {
+                if (numberOfProfiles === 0) {
                     this._sendEvent(event)(
                         this.clientEvent.listEthAccounts,
                         true,
@@ -193,6 +193,28 @@ class UserService extends MainService {
                 }
             });
         });
+    }
+
+    _getProfileData (event, arg) {
+        this.
+            _getIpfsAPI()
+            .cat({
+                id: arg.ipfsHash,
+                encoding: 'utf8'
+            })
+            .then((result) => {
+                this._sendEvent(event)(
+                    this.clientEvent.getProfileData,
+                    true,
+                    result
+                );
+            })
+            .catch((ipfsErr) => {
+                this._sendEvent(event)(
+                    this.clientEvent.getProfileData,
+                    false,
+                    ipfsErr);
+            });
     }
 
     _faucetEther (event, arg) {
@@ -222,18 +244,39 @@ class UserService extends MainService {
         });
     }
 
+    _getIpfsImage (event, arg) {
+        this.
+            _getIpfsAPI()
+            .cat({
+                id: arg.ipfsHash
+            })
+            .then((result) => {
+                // require('fs').writeFile('poz1.png', result);
+                this._sendEvent(event)(
+                    this.clientEvent.getIpfsImage,
+                    true,
+                    result
+                );
+            })
+            .catch((ipfsErr) => {
+                this._sendEvent(event)(
+                    this.clientEvent.getIpfsImage,
+                    false,
+                    ipfsErr);
+            });
+    }
+
     _uploadImages (signupJSON) {
         const imagePromises = [];
         const optionalData = signupJSON.optionalData;
         const coverImage = optionalData.coverImage;
-        const avatarFile = optionalData.avatarFile;
+        const avatarBuffer = optionalData.avatar;
 
-        if (avatarFile) {
-            imagePromises.push(this._uploadImage('avatar', avatarFile));
+        if (avatarBuffer) {
+            imagePromises.push(this._uploadImage('avatar', avatarBuffer));
         }
         // we allways have 1 pic here so we know there is only index 0;
         if (coverImage && coverImage.length > 0) {
-            console.log(coverImage[0]);
             coverImage[0].forEach(coverVariant => {
                 imagePromises.push(
                     this._uploadImage(coverVariant.key, coverVariant.imageFile));
@@ -243,7 +286,7 @@ class UserService extends MainService {
             const coverHashedImages = [];
             imageHashes.forEach(imageHash => {
                 if (imageHash.name === 'avatar') {
-                    signupJSON.optionalData.avatarFile = imageHash.hash;
+                    signupJSON.optionalData.avatar = imageHash.hash;
                     return;
                 }
                 const imageVar = r.map(r.find(r.where({
@@ -282,17 +325,13 @@ class UserService extends MainService {
                     .then((unlocked) => {
                         const registry = new Dapple.class(web3).objects.registry;
                         return registry.register(
-                            web3.fromUtf8(arg.username),
+                            web3.fromUtf8(arg.userName),
                             this._chopIpfsHash(ipfsHash),
                             {
                                 from: accountAddress,
                                 gas: this.CREATE_PROFILE_CONTRACT_GAS
                             }, (error, tx) => {
                                 if (!error) {
-                                    this._sendEvent(event)(
-                                        this.clientEvent.registerProfileHash,
-                                    true,
-                                    tx); // o sa ii pasez si currentblock
                                     this
                                         .__getGeth()
                                         .addFilter('tx', tx, (txInfo) => {
@@ -301,29 +340,31 @@ class UserService extends MainService {
                                                                     true,
                                                                     txInfo);
                                         });
+                                    this._sendEvent(event)(
+                                        this.clientEvent.registerProfileHash,
+                                    true,
+                                    tx); // o sa ii pasez si currentblock
                                 } else {
-                                    return this._sendEvent(event)(
+                                    this._sendEvent(event)(
                                         this.clientEvent.registerProfileHash,
                                     false,
                                     error.message); // o sa ii pasez si currentblock
                                 }
+                                return false;
                             });
                     }).catch((err) => {
-                        console.error(err);
                         this._sendEvent(event)(this.clientEvent.registerProfileHash,
                                             false,
                                             this.UNLOCK_COINBASE_FAIL);
                     });
             })
             .catch((err) => {
-                console.error(err);
                 this._sendEvent(event)(this.clientEvent.registerProfileHash,
                                         false,
                                         this.IPFS_ADD_SIGNUP_FAIL);
             });
         })
         .catch((err) => {
-            console.error(err);
             this._sendEvent(event)(this.clientEvent.registerProfileHash,
                                     false,
                                     this.IPFS_ADD_SIGNUP_FAIL);
