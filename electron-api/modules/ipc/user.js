@@ -205,6 +205,9 @@ class UserService extends MainService {
             .then((result) => {
                 let rez = 1;
                 result = JSON.parse(result);
+                Object.assign(result, {
+                    ipfsHash: arg.ipfsHash
+                });
                 if (result.optionalData.avatar) {
                     rez = this.
                         _getIpfsAPI()
@@ -387,26 +390,26 @@ class UserService extends MainService {
                                     tx); // o sa ii pasez si currentblock
                                 } else {
                                     this._sendEvent(event)(
-                                        this.clientEvent.registerProfileHash,
+                                        this.clientEvent.registerProfile,
                                     false,
                                     error.message); // o sa ii pasez si currentblock
                                 }
                                 return false;
                             });
                     }).catch((err) => {
-                        this._sendEvent(event)(this.clientEvent.registerProfileHash,
+                        this._sendEvent(event)(this.clientEvent.registerProfile,
                                             false,
                                             this.UNLOCK_COINBASE_FAIL);
                     });
             })
             .catch((err) => {
-                this._sendEvent(event)(this.clientEvent.registerProfileHash,
+                this._sendEvent(event)(this.clientEvent.registerProfile,
                                         false,
                                         this.IPFS_ADD_SIGNUP_FAIL);
             });
         })
         .catch((err) => {
-            this._sendEvent(event)(this.clientEvent.registerProfileHash,
+            this._sendEvent(event)(this.clientEvent.registerProfile,
                                     false,
                                     this.IPFS_ADD_SIGNUP_FAIL);
         });
