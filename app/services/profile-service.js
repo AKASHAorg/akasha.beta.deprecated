@@ -49,7 +49,6 @@ class ProfileService {
                     const err = new Error('Main process is not responding');
                     return reject(err);
                 }
-                data.status = JSON.parse(data.status);
                 dbg('getProfileData', data);
                 return resolve(data);
             });
@@ -66,7 +65,7 @@ class ProfileService {
                 dbg('logging in', data);
                 return resolve(data);
             });
-            const account = profileData.ethAddress;
+            const account = profileData.address;
             const password = profileData.password;
             ipcRenderer.send(EVENTS.server.user.login, { account, password });
         });
@@ -196,7 +195,7 @@ class ProfileService {
                 account: profileData.get('address'),
                 firstName: profileData.get('firstName'),
                 lastName: profileData.get('lastName'),
-                username: profileData.get('userName'),
+                userName: profileData.get('userName'),
                 password: profileData.get('password'),
                 optionalData: profileData.get('optionalData')
             };

@@ -160,8 +160,9 @@ class ProfileActions {
                         status: 'finished',
                         message: 'fund from faucet success.'
                     }
-                });
-                return newerProfile;
+                }).then(() =>
+                    this.completeProfileCreation(newerProfile)
+                );
             })
         )
         .then((profileData) => {
@@ -245,12 +246,13 @@ class ProfileActions {
         return this.getProfilesList().then(() => {
             this.dispatch((dispatch, getState) => {
                 const profilesHash = getState().profileState.get('profiles');
+                const profileDataPromises = [];
                 profilesHash.forEach(profileHash => {
-                    return this.getProfileData(profileHash.get('ipfsHash'));
+                    profileDataPromises.push(this.getProfileData(profileHash.get('ipfsHash')));
                 });
+                return Promise.all(profileDataPromises);
             });
-        })
-        .then(() => {})
+        }).then(() => {})
         .catch(reason => console.error(reason));
     }
     /**

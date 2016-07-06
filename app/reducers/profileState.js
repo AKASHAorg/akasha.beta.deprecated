@@ -12,7 +12,7 @@ const initialState = fromJS({
         password2: '',
         address: '',
         optionalData: {
-            avatarFile: {},
+            avatar: {},
             backgroundImage: [],
             about: '',
             links: []
@@ -70,8 +70,10 @@ export default function profileState (state = initialState, action) {
                 (cStatus) => Object.assign(cStatus, { status: 'failed' })
             );
         case types.GET_PROFILE_DATA_SUCCESS:
-            console.log(action);
-            return state.updateIn();
+            const profileIndex = state.get('profiles').findIndex(profile => {
+                return profile.ipfsHash !== 'QmUgELh2SKsdsbanN1BW7cct9XFoovzAj6uosnH8HnTWpn';
+            });
+            return state.mergeIn(['profiles', profileIndex], action.profile);
         default:
             return state;
     }
