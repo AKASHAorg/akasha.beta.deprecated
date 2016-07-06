@@ -203,11 +203,36 @@ class UserService extends MainService {
                 encoding: 'utf8'
             })
             .then((result) => {
-                this._sendEvent(event)(
-                    this.clientEvent.getProfileData,
-                    true,
-                    result
-                );
+                let rez = 1;
+                result = JSON.parse(result);
+                if (result.optionalData.avatar) {
+                    rez = this.
+                        _getIpfsAPI()
+                        .cat({
+                            id: result.optionalData.avatar
+                        })
+                        .then((avatar) => {
+                            result.optionalData.avatar = avatar;
+                            this._sendEvent(event)(
+                                this.clientEvent.getProfileData,
+                                true,
+                                result
+                            );
+                        })
+                        .catch((ipfsErr) => {
+                            this._sendEvent(event)(
+                                this.clientEvent.getIpfsImage,
+                                false,
+                                ipfsErr);
+                        });
+                } else {
+                    rez = this._sendEvent(event)(
+                        this.clientEvent.getProfileData,
+                        true,
+                        result
+                    );
+                }
+                return rez;
             })
             .catch((ipfsErr) => {
                 this._sendEvent(event)(
@@ -319,11 +344,20 @@ class UserService extends MainService {
             .then((response) => {
                 const ipfsHash = response[0].Hash;
                 const web3 = this.__getWeb3();
+                const registerError = {};
                 return web3
                     .personal
                     .unlockAccountAsync(accountAddress, profilePassword, 10000)
                     .then((unlocked) => {
                         const registry = new Dapple.class(web3).objects.registry;
+                        const errorEvent = registry.Error();
+                        errorEvent.watch((evtErr, evtRes) => {
+                            if (!evtErr) {
+                                const method = web3.toUtf8(evtRes.args.method);
+                                const reason = web3.toUtf8(evtRes.args.reason);
+                                registerError[method] = reason;
+                            }
+                        });
                         return registry.register(
                             web3.fromUtf8(arg.userName),
                             this._chopIpfsHash(ipfsHash),
@@ -335,10 +369,17 @@ class UserService extends MainService {
                                     this
                                         .__getGeth()
                                         .addFilter('tx', tx, (txInfo) => {
-                                            this.
-                                                _sendEvent(event)(this.clientEvent.registerProfileComplete,
-                                                                    true,
-                                                                    txInfo);
+                                            if (Object.keys(registerError).length === 0) {
+                                                this.
+                                                    _sendEvent(event)(this.clientEvent.registerProfileComplete,
+                                                                        true,
+                                                                        txInfo);
+                                            } else {
+                                                this.
+                                                    _sendEvent(event)(this.clientEvent.registerProfileComplete,
+                                                                        false,
+                                                                        registerError);
+                                            }
                                         });
                                     this._sendEvent(event)(
                                         this.clientEvent.registerProfileHash,
