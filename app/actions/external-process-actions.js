@@ -69,8 +69,7 @@ class EProcActions {
         .then((ipfsSettings) => this.ipfsService.startIPFS(ipfsSettings))
         .then((ipfsState) => {
             if (!ipfsState.success) {
-                const error = new Error(` ${ipfsState.status}`);
-                return Promise.reject(this.dispatch(this._startIPFSError(error)));
+                return Promise.resolve(this.dispatch(this._startIPFSSuccess({ data: ipfsState })));
             }
             return Promise.resolve(this.dispatch(this._startIPFSSuccess({ data: ipfsState })));
         })
@@ -80,7 +79,7 @@ class EProcActions {
             this.appActions.showError({
                 code: 205,
                 type: reason.type ? reason.type : 'IPFS_START_ERROR',
-                message: reason.data ? reason.data.message : reason.stack
+                message: 'Ipfs process cannot be started!'
             });
         }));
     configIPFS = (config) => {

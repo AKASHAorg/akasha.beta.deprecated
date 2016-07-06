@@ -77,7 +77,7 @@ class CreateProfile extends Component {
         // return;
         this.avatar.getImage().then(uintArr => {
             if (uintArr) {
-                optionalData.avatarFile = uintArr;
+                optionalData.avatar = uintArr;
             }
             profileData.optionalData = optionalData;
             return profileData;
