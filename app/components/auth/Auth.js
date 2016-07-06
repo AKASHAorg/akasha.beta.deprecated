@@ -33,7 +33,7 @@ class Auth extends Component {
         const profile = profileState.get('profiles').get(index);
         const selectedProfile = {
             ethAddress: profile.ethAddress,
-            ...JSON.parse(profile.result)
+            ...profile.result
         };
 
         this.setState({ openModal: true, selectedProfile });
@@ -56,8 +56,9 @@ class Auth extends Component {
             return <div><FormattedMessage {...setupMessages.noProfilesFound} /></div>;
         }
         return profileState.get('profiles').map((profile, index) => {
+            console.log(profile);
             const profileAddress = profile.ethAddress;
-            const profileData = JSON.parse(profile.result);
+            const profileData = profile.result;
             const profileName = `${profileData.firstName} ${profileData.lastName}`;
             const avatarProps = {
                 editable: false,

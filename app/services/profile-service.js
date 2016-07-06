@@ -42,6 +42,20 @@ class ProfileService {
             dbg('getProfilesList_Start', EVENTS.server.user.listEthAccounts);
             ipcRenderer.send(EVENTS.server.user.listEthAccounts);
         });
+    getProfileData = (ipfsHash) => {
+        return new Promise((resolve, reject) => {
+            ipcRenderer.once(EVENTS.client.user.getProfileData, (ev, data) => {
+                if (!data) {
+                    const err = new Error('Main process is not responding');
+                    return reject(err);
+                }
+                data.status = JSON.parse(data.status);
+                dbg('getProfileData', data);
+                return resolve(data);
+            });
+            ipcRenderer.send(EVENTS.server.user.getProfileData, { ipfsHash });
+        });
+    }
     login = (profileData) =>
         new Promise((resolve, reject) => {
             ipcRenderer.once(EVENTS.client.user.login, (ev, data) => {

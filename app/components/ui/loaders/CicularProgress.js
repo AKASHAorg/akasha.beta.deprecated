@@ -1,80 +1,194 @@
 import React from 'react';
-import { autoPrefix, transitions, getMuiTheme} from 'material-ui/styles';
+import { autoPrefix, transitions, getMuiTheme } from 'material-ui/styles';
 
 function getRelativeValue (value, min, max) {
-  const clampedValue = Math.min(Math.max(min, value), max);
-  const rangeValue = max - min;
-  const relValue = Math.round(clampedValue / rangeValue * 10000) / 10000;
-  return relValue * 100;
+    const clampedValue = Math.min(Math.max(min, value), max);
+    const rangeValue = max - min;
+    const relValue = Math.round(clampedValue / rangeValue * 10000) / 10000;
+    return relValue * 100;
 }
 
 function getStyles (props, state) {
-  const {
-    max,
-    min,
-    size,
-    value
-  } = props;
+    const {
+        max,
+        min,
+        size,
+        value
+    } = props;
 
-  const {
-    baseTheme: {
-      palette
+    const {
+        baseTheme: {
+            palette
+        }
+    } = state.muiTheme;
+
+    const zoom = size * 1.3;
+    const baseSize = 32;
+    let margin = Math.round(((32 * zoom) - 32) / 2);
+
+    if (margin < 0) margin = 0;
+
+    const styles = {
+        root: {
+            position: 'relative',
+            margin: '13% auto',
+            display: 'inline-block',
+            width: baseSize,
+            height: baseSize
+        },
+
+        wrapper: {
+            width: baseSize,
+            height: baseSize,
+            margin: 'auto',
+            display: 'inline-block',
+            transition: transitions.create('transform', '20s', null, 'linear'),
+            transitionTimingFunction: 'linear'
+        },
+
+        svg: {
+            height: baseSize,
+            position: 'relative',
+            transform: `scale(${zoom})`,
+            width: baseSize
+        },
+
+        path: {
+            strokeDasharray: '89,200',
+            strokeDashoffset: 0,
+            stroke: props.color || palette.primary1Color,
+            strokeLinecap: 'round',
+            transition: transitions.create('all', '1.5s', null, 'ease-in-out')
+        },
+    };
+
+    if (props.mode === 'determinate') {
+        const relVal = getRelativeValue(value, min, max);
+        styles.path.transition = transitions.create('all', '0.3s', null, 'linear');
+        styles.path.strokeDasharray = `${Math.round(relVal * 0.92)},200`;
     }
-  } = state.muiTheme;
 
-  const zoom = size * 1.3;
-  const baseSize = 32;
-  let margin = Math.round(((32 * zoom) - 32) / 2);
-
-  if (margin < 0) margin = 0;
-
-  let styles = {
-    root: {
-      position: 'relative',
-      margin: '13% auto',
-      display: 'inline-block',
-      width: baseSize,
-      height: baseSize
-    },
-
-    wrapper: {
-      width: baseSize,
-      height: baseSize,
-      margin: 'auto',
-      display: 'inline-block',
-      transition: transitions.create('transform', '20s', null, 'linear'),
-      transitionTimingFunction: 'linear'
-    },
-
-    svg: {
-      height: baseSize,
-      position: 'relative',
-      transform: `scale(${zoom})`,
-      width: baseSize
-    },
-
-    path: {
-      strokeDasharray: '89,200',
-      strokeDashoffset: 0,
-      stroke: props.color || palette.primary1Color,
-      strokeLinecap: 'round',
-      transition: transitions.create('all', '1.5s', null, 'ease-in-out')
-    },
-  };
-
-  if (props.mode === 'determinate') {
-    const relVal = getRelativeValue(value, min, max);
-    styles.path.transition = transitions.create('all', '0.3s', null, 'linear');
-    styles.path.strokeDasharray = `${Math.round(relVal * 0.92)},200`;
-  }
-
-  return styles;
+    return styles;
 }
+class CircularProgress extends React.Component {
+    constructor (props) {
+        super(props);
+        this.state = {
+            muiTheme: getMuiTheme()
+        };
+        this.scalePathTimer = undefined;
+        this.rotateWrapperTimer = undefined;
+    }
+    componentDidMount () {
+        this._scalePath(this.refs.path);
+        this._rotateWrapper(this.refs.wrapper);
+    }
 
-const CircularProgress = React.createClass({
+    componentWillReceiveProps (nextProps, nextContext) {
+        this.setState({
+            muiTheme: nextContext.muiTheme || this.state.muiTheme
+        });
+    }
 
-  propTypes: {
+    componentWillUnmount () {
+        clearTimeout(this.scalePathTimer);
+        clearTimeout(this.rotateWrapperTimer);
+    }
 
+    _scalePath (path, step) {
+        if (this.props.mode !== 'indeterminate') return;
+
+        step = step || 0;
+        step %= 3;
+
+        if (step === 0) {
+            path.style.strokeDasharray = '1, 200';
+            path.style.strokeDashoffset = 0;
+            path.style.transitionDuration = '0ms';
+        } else if (step === 1) {
+            path.style.strokeDasharray = '89, 200';
+            path.style.strokeDashoffset = -35;
+            path.style.transitionDuration = '750ms';
+        } else {
+            path.style.strokeDasharray = '89,200';
+            path.style.strokeDashoffset = -124;
+            path.style.transitionDuration = '850ms';
+        }
+
+        this.scalePathTimer = setTimeout(() => this._scalePath(path, step + 1), step ? 750 : 250);
+    }
+
+    _rotateWrapper (wrapper) {
+        if (this.props.mode !== 'indeterminate') return;
+
+        autoPrefix.set(wrapper.style, 'transform', 'rotate(0deg)', this.state.muiTheme);
+        autoPrefix.set(wrapper.style, 'transitionDuration', '0ms', this.state.muiTheme);
+
+        setTimeout(() => {
+            autoPrefix.set(wrapper.style, 'transform', 'rotate(1800deg)', this.state.muiTheme);
+            autoPrefix.set(wrapper.style, 'transitionDuration', '10s', this.state.muiTheme);
+            autoPrefix.set(
+                wrapper.style,
+                'transitionTimingFunction',
+                'linear',
+                this.state.muiTheme
+            );
+        }, 50);
+
+        this.rotateWrapperTimer = setTimeout(() => this._rotateWrapper(wrapper), 10050);
+    }
+
+    render () {
+        const {
+            style,
+            innerStyle,
+            children
+        } = this.props;
+        let {
+            maskStyle,
+            strokeWidth,
+            radius,
+            ...other,
+        } = this.props;
+
+        const {
+            prepareStyles,
+        } = this.state.muiTheme;
+
+        const styles = getStyles(this.props, this.state);
+
+        return (
+          <div {...other} style={prepareStyles(Object.assign(styles.root, style))} >
+            <div ref="wrapper" style={prepareStyles(Object.assign(styles.wrapper, innerStyle))} >
+              <svg style={prepareStyles(styles.svg)} >
+                {children}
+                <circle
+                  ref="path" style={maskStyle} cx="16"
+                  cy="16" r={radius} fill="none"
+                  strokeWidth={strokeWidth} strokeMiterlimit="10"
+                />
+                <circle
+                  ref="path" style={prepareStyles(styles.path)} cx="16"
+                  cy="16" r={radius} fill="none"
+                  strokeWidth={strokeWidth} strokeMiterlimit="10"
+                />
+              </svg>
+            </div>
+          </div>
+        );
+    }
+}
+CircularProgress.defaultProps = {
+    mode: 'indeterminate',
+    value: 0,
+    maskStyle: { stroke: 'rgba(0, 0, 0, 0.15)', strokeDasharray: '95, 200' },
+    min: 0,
+    max: 100,
+    radius: '15',
+    size: 1,
+    strokeWidth: 1.5
+};
+CircularProgress.propTypes = {
     /**
      * Override the progress's color.
      */
@@ -123,138 +237,13 @@ const CircularProgress = React.createClass({
     /**
      * The value of progress, only works in determinate mode.
      */
-    value: React.PropTypes.number
-  },
-
-  contextTypes: {
+    value: React.PropTypes.number,
+    children: React.PropTypes.node
+};
+CircularProgress.contextTypes = {
     muiTheme: React.PropTypes.object
-  },
-
-  childContextTypes: {
+};
+CircularProgress.childContextTypes = {
     muiTheme: React.PropTypes.object
-  },
-
-  getDefaultProps () {
-    return {
-      mode: 'indeterminate',
-      value: 0,
-      maskStyle: { stroke: "rgba(0, 0, 0, 0.15)", strokeDasharray: "95, 200" },
-      min: 0,
-      max: 100,
-      radius: "15",
-      size: 1,
-      strokeWidth: 1.5
-    };
-  },
-
-  getInitialState () {
-    return {
-      muiTheme: this.context.muiTheme || getMuiTheme()
-    };
-  },
-
-  getChildContext () {
-    return {
-      muiTheme: this.state.muiTheme
-    };
-  },
-
-  componentDidMount () {
-    this._scalePath(this.refs.path);
-    this._rotateWrapper(this.refs.wrapper);
-  },
-
-  componentWillReceiveProps(nextProps, nextContext) {
-    this.setState({
-      muiTheme: nextContext.muiTheme || this.state.muiTheme
-    });
-  },
-
-  componentWillUnmount () {
-    clearTimeout(this.scalePathTimer);
-    clearTimeout(this.rotateWrapperTimer);
-  },
-
-  scalePathTimer: undefined,
-  rotateWrapperTimer: undefined,
-
-  _scalePath(path, step) {
-    if (this.props.mode !== 'indeterminate') return;
-
-    step = step || 0;
-    step %= 3;
-
-    if (step === 0) {
-      path.style.strokeDasharray = '1, 200';
-      path.style.strokeDashoffset = 0;
-      path.style.transitionDuration = '0ms';
-    } else if (step === 1) {
-      path.style.strokeDasharray = '89, 200';
-      path.style.strokeDashoffset = -35;
-      path.style.transitionDuration = '750ms';
-    } else {
-      path.style.strokeDasharray = '89,200';
-      path.style.strokeDashoffset = -124;
-      path.style.transitionDuration = '850ms';
-    }
-
-    this.scalePathTimer = setTimeout(() => this._scalePath(path, step + 1), step ? 750 : 250);
-  },
-
-  _rotateWrapper (wrapper) {
-    if (this.props.mode !== 'indeterminate') return;
-
-    autoPrefix.set(wrapper.style, 'transform', 'rotate(0deg)', this.state.muiTheme);
-    autoPrefix.set(wrapper.style, 'transitionDuration', '0ms', this.state.muiTheme);
-
-    setTimeout(() => {
-      autoPrefix.set(wrapper.style, 'transform', 'rotate(1800deg)', this.state.muiTheme);
-      autoPrefix.set(wrapper.style, 'transitionDuration', '10s', this.state.muiTheme);
-      autoPrefix.set(wrapper.style, 'transitionTimingFunction', 'linear', this.state.muiTheme);
-    }, 50);
-
-    this.rotateWrapperTimer = setTimeout(() => this._rotateWrapper(wrapper), 10050);
-  },
-
-  render () {
-    let {
-      style,
-      innerStyle,
-      maskStyle,
-      size,
-      strokeWidth,
-      children,
-      radius,
-      ...other,
-    } = this.props;
-
-    const {
-      prepareStyles,
-    } = this.state.muiTheme;
-
-    const styles = getStyles(this.props, this.state);
-
-    return (
-      <div {...other} style={prepareStyles(Object.assign(styles.root, style))} >
-        <div ref="wrapper" style={prepareStyles(Object.assign(styles.wrapper, innerStyle))} >
-          <svg style={prepareStyles(styles.svg)} >
-            {children}
-            <circle
-              ref="path" style={maskStyle} cx="16"
-              cy="16" r={radius} fill="none"
-              strokeWidth={strokeWidth} strokeMiterlimit="10"
-            />
-            <circle
-              ref="path" style={prepareStyles(styles.path)} cx="16"
-              cy="16" r={radius} fill="none"
-              strokeWidth={strokeWidth} strokeMiterlimit="10"
-            />
-          </svg>
-        </div>
-      </div>
-    );
-  }
-});
-
+};
 export default CircularProgress;
-
