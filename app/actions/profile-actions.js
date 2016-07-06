@@ -218,7 +218,7 @@ class ProfileActions {
                 }
             } else {
                 // no new profile.
-                this.getProfilesList();
+                this.getLocalProfiles();
             }
         });
     }
@@ -234,21 +234,49 @@ class ProfileActions {
                 if (tempProfile && tempProfile.size > 0) {
                     return hashHistory.push('new-profile-status');
                 }
-                return this.getProfilesList();
+                return this.getLocalProfiles();
             });
         }).catch(reason => {
             console.error(reason, reason.stack);
             this.dispatch({ type: types.CHECK_TEMP_PROFILE_ERROR, reason });
         });
+
+    getLocalProfiles = () => {
+        return this.getProfilesList().then(() => {
+            this.dispatch((dispatch, getState) => {
+                const profilesHash = getState().profileState.get('profiles');
+                profilesHash.forEach(profileHash => {
+                    return this.getProfileData(profileHash.get('ipfsHash'));
+                });
+            });
+        })
+        .then(() => {})
+        .catch(reason => console.error(reason));
+    }
     /**
      * get all local profiles available
      * returns only the address and userName
      */
-    getProfilesList = () =>
-        this.profileService.getProfilesList().then((result) => {
+    getProfilesList = () => {
+        return this.profileService.getProfilesList().then((result) => {
             dbg('getProfilesList', result.status);
-            return this.dispatch({ type: types.GET_PROFILES_LIST_SUCCESS, profiles: result.status });
+            return this.dispatch({
+                type: types.GET_PROFILES_LIST_SUCCESS,
+                profiles: result.status
+            });
         }).catch(reason => this.dispatch({ type: types.GET_PROFILES_LIST_ERROR, reason }));
+    }
+
+    getProfileData = (ipfsHash) => {
+        return this.profileService.getProfileData(ipfsHash).then((result) => {
+            dbg('get profiles list for ', ipfsHash);
+            return this.dispatch({
+                type: types.GET_PROFILE_DATA_SUCCESS,
+                profile: result.status
+            });
+        });
+    }
+
     /**
      *
      */

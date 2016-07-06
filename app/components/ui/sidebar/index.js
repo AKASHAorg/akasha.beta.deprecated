@@ -11,26 +11,27 @@ import People from './IconPeople';
 import Logo from './IconLogo';
 
 class SideBar extends Component {
-    _handleNewEntry = (ev) => {
+    _handleNewEntry = () => {
         const entries = 0;
         if (entries > 0) {
-            this.props.appActions.showPanel({name: 'newEntry', overlay: true});
+            this.props.appActions.showPanel({ name: 'newEntry', overlay: true });
         } else {
             this.props.appActions.hidePanel();
             this.context.router.push('/severs/new-entry');
         }
     }
-    _handleNavigation = (to, ev) => {
-        const basePath = '/severs'; // change this with logged user`s username
-
+    _handleNavigation = (to) => {
+        const { profileState } = this.props;
+        const loggedUser = profileState.get('loggedProfile');
+        const basePath = loggedUser.get('username');
         this.props.appActions.hidePanel();
         if (!to) {
             // navigate to index route
             return this.context.router.push(basePath);
         }
-        this.context.router.push(`${basePath}/${to}`);
+        return this.context.router.push(`${basePath}/${to}`);
     }
-    _handlePanelShow = (panelName, ev) => {
+    _handlePanelShow = (panelName) => {
         this.props.appActions.showPanel(panelName);
     }
     render () {
@@ -71,12 +72,12 @@ SideBar.propTypes = {
     innerStyle: PropTypes.object,
     viewBox: PropTypes.string,
     color: PropTypes.string,
-    appActions: PropTypes.object
+    appActions: PropTypes.object,
+    profileState: PropTypes.object
 };
 
 SideBar.contextTypes = {
     router: React.PropTypes.object,
-    actions: React.PropTypes.object
 };
 SideBar.defaultProps = {
     style: {
@@ -99,7 +100,7 @@ SideBar.defaultProps = {
 export default connect(
     state => ({
         panelState: state.panelState,
-        profile: state.profileState
+        profileState: state.profileState
     }),
     dispatch => ({
         appActions: new AppActions(dispatch)
