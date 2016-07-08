@@ -34,10 +34,17 @@ class IpcService {
         return (name, successCode, data, extra) => {
             let result = {
                 success: successCode,
-                status: data
+                data,
+                status: {
+                    message: 'ok'
+                }
             };
-            if (extra && typeof extra === 'object') {
-                result = Object.assign(result, extra);
+            if (extra) {
+                if (typeof extra === 'object') {
+                    data = Object.assign(data, extra);
+                } else if (typeof extra === 'string') {
+                    result.status.message = extra;
+                }
             }
             const sender = event ? event.sender : ipcMain;
             sender.send(name, result);
