@@ -20,6 +20,7 @@ class GethService extends IpcService {
         this.BLOCK_UPDATE_INTERVAL = 1000;
         this.STARTSYNC_MSG = 'Start synchronizing with the network';
         this.ALREADY_RUNNING = 'Geth is already running';
+        this.GETH_FAIL_MESSAGE = 'Geth has died.';
     }
 
     /*
@@ -60,9 +61,10 @@ class GethService extends IpcService {
                         // to see what geth says when starts
                         this._sendEvent(event)(this.clientEvent.startService,
                                                 true,
-                                                arg);
+                                                Object.assign({}, arg));
                         this._sendEvent(event)(this.clientEvent.startSyncing,
                                                 true,
+                                                {},
                                                 this.STARTSYNC_MSG);
 
                         setTimeout(() => {
@@ -70,8 +72,8 @@ class GethService extends IpcService {
                             this._startWatchingTheBlockchain();
                         }, STATICS.GETH_SETPROVIDER_TIMEOUT + 1000);
                     })
-                .catch((data) => {
-                    this._sendEvent(event)(this.clientEvent.startService, false, data);
+                .catch((err) => {
+                    this._sendEvent(event)(this.clientEvent.startService, false, err, err.toString());
                 });
         }
     }
@@ -82,7 +84,7 @@ class GethService extends IpcService {
         this.getGethService().stop();
         this._sendEvent(event)(this.clientEvent.stopService,
                                 !this.getGethService().gethProcess,
-                                null);
+                                {});
     }
     _getGethUpdates (event) {
         this.updatesFlag = setInterval(() => this._getBlockUpdates(event),
@@ -98,14 +100,16 @@ class GethService extends IpcService {
     _getBlockUpdates (event) {
         if (!this.getGethService().isRunning()) {
             this._stopGethUpdates();
-            this._sendEvent(event)(this.clientEvent.stopService, false, 'Geth has died.');
+            this._sendEvent(event)(this.clientEvent.stopService, false, {}, this.GETH_FAIL_MESSAGE);
             return;
         }
         this
             .getGethService()
             .inSync()
             .then((data) => {
-                let message = 'empty';
+                let message = {
+                    empty: true
+                };
                 if (data.length > 0) {
                     message = {
                         currentBlock: data.length > 1 ? data[1].currentBlock : -1,

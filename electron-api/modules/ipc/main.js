@@ -53,7 +53,14 @@ class MainService extends IpcService {
             return { name,
                 hash: response[0].Hash
             };
-        }).catch((err) => console.error(err));
+        }).catch((err) => {
+            this.__getLogger('ipfs').error(err);
+            return err;
+        });
+    }
+
+    __getLogger (loggerName) {
+        return MainService.getService('logger')._getLog(loggerName);
     }
 
     __getGeth () {

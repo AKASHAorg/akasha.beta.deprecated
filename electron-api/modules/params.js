@@ -130,7 +130,8 @@ export const EVENTS = {
         geth: {
             startService: 'object with the keys&values sent TO_SERVER',
             startSyncing: 'string message',
-            syncUpdate: 'object with keys: currentBlock, highestBlock, startingBlock, peerCount',
+            syncUpdate: `object with keys: currentBlock, highestBlock, startingBlock, peerCount
+                        or an object with key "empty" and value true`,
             stopService: 'null',
             contract: 'This should be removed, have you any idea what it is supposed to do?'
         },
@@ -143,7 +144,9 @@ export const EVENTS = {
             stopGethInfo: 'I don\'t send anything back. Do you need anything here?'
         },
         user: {
-            exists: 'boolean',
+            exists: `{
+                exists: boolean
+            }`,
             login: 'string message',
             logout: 'string message',
             createCoinbase: 'boolean true',

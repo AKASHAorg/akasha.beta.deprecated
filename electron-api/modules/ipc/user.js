@@ -75,16 +75,24 @@ class UserService extends MainService {
                     exists: res !== this.ZERO_ADDR
                 });
             } else {
-                this._sendEvent(event)(this.clientEvent.exists, false, err);
+                this._sendEvent(event)(this.clientEvent.exists, false, err, err.toString());
             }
         });
     }
 
     _createCoinbase (event, arg) {
         const web3 = this.__getWeb3();
-        web3.personal.newAccountAsync(arg.password.toString()).then((data) => {
-            this._sendEvent(event)(this.clientEvent.createCoinbase, true, data);
-        });
+        web3
+            .personal
+            .newAccountAsync(arg.password.toString())
+            .then((data) => {
+                this._sendEvent(event)(this.clientEvent.createCoinbase, true, {
+                    coinbase: data
+                });
+            })
+            .catch((err) => {
+                this._sendEvent(event)(this.clientEvent.createCoinbase, false, err, err.toString());
+            });
     }
     /**
     * @param {Object} event, {Object} arg
@@ -92,10 +100,18 @@ class UserService extends MainService {
     */
     _getBalance (event, arg) {
         const web3 = this.__getWeb3();
-        web3.eth.getBalanceAsync(this._getCoinbase(arg, web3)).then((data) => {
-            const etherBalance = parseFloat(web3.fromWei(data.toString(), 'ether'));
-            this._sendEvent(event)(this.clientEvent.getBalance, true, etherBalance);
-        });
+        web3
+            .eth
+            .getBalanceAsync(this._getCoinbase(arg, web3))
+            .then((data) => {
+                const etherBalance = parseFloat(web3.fromWei(data.toString(), 'ether'));
+                this._sendEvent(event)(this.clientEvent.getBalance, true, {
+                    etherBalance
+                });
+            })
+            .catch((err) => {
+                this._sendEvent(event)(this.clientEvent.getBalance, false, err, err.toString());
+            });
     }
 
     _login (event, arg) {
@@ -110,23 +126,31 @@ class UserService extends MainService {
                     web3.eth.defaultAccount = arg.account;
                     this._sendEvent(event)(this.clientEvent.login,
                                         true,
+                                        {},
                                         this.UNLOCK_COINBASE_SUCCESS);
                 }
             })
             .catch((err) => {
                 this._sendEvent(event)(this.clientEvent.login,
                                     false,
+                                    err,
                                     this.UNLOCK_COINBASE_FAIL);
             });
     }
 
     _listEtherAccounts (event, arg) {
         const web3 = this.__getWeb3();
-        web3.personal.getListAccountsAsync().then((data) => {
-            this._sendEvent(event)(this.clientEvent.listEtherAccounts, true, {
-                accounts: data
+        web3
+            .personal
+            .getListAccountsAsync()
+            .then((data) => {
+                this._sendEvent(event)(this.clientEvent.listEtherAccounts, true, {
+                    accounts: data
+                });
+            })
+            .catch((err) => {
+                this._sendEvent(event)(this.clientEvent.listEtherAccounts, false, err, err.toString());
             });
-        });
     }
 
     _listEthAccounts (event, arg) {
@@ -226,7 +250,8 @@ class UserService extends MainService {
                             this._sendEvent(event)(
                                 this.clientEvent.getIpfsImage,
                                 false,
-                                ipfsErr);
+                                ipfsErr,
+                                ipfsErr.toString());
                         });
                 } else {
                     rez = this._sendEvent(event)(
@@ -241,7 +266,8 @@ class UserService extends MainService {
                 this._sendEvent(event)(
                     this.clientEvent.getProfileData,
                     false,
-                    ipfsErr);
+                    ipfsErr,
+                    ipfsErr.toString());
             });
     }
 
@@ -261,7 +287,9 @@ class UserService extends MainService {
             }
             if (body && body.txhash) {
                 this.
-                    _sendEvent(event)(this.clientEvent.faucetRequestEther, true, body.txhash);
+                    _sendEvent(event)(this.clientEvent.faucetRequestEther, true, {
+                        txHash: body.txhash
+                    });
             }
             this
                 .__getGeth()
@@ -290,7 +318,8 @@ class UserService extends MainService {
                 this._sendEvent(event)(
                     this.clientEvent.getIpfsImage,
                     false,
-                    ipfsErr);
+                    ipfsErr,
+                    ipfsErr.toString());
             });
     }
 
@@ -381,17 +410,19 @@ class UserService extends MainService {
                                                 this.
                                                     _sendEvent(event)(this.clientEvent.registerProfileComplete,
                                                                         false,
-                                                                        registerError);
+                                                                        registerError,
+                                                                        registerError.method);
                                             }
                                         });
                                     this._sendEvent(event)(
                                         this.clientEvent.registerProfileHash,
                                     true,
-                                    tx); // o sa ii pasez si currentblock
+                                    { tx }); // o sa ii pasez si currentblock
                                 } else {
                                     this._sendEvent(event)(
                                         this.clientEvent.registerProfile,
                                     false,
+                                    error,
                                     error.message); // o sa ii pasez si currentblock
                                 }
                                 return false;
@@ -399,18 +430,21 @@ class UserService extends MainService {
                     }).catch((err) => {
                         this._sendEvent(event)(this.clientEvent.registerProfile,
                                             false,
+                                            err,
                                             this.UNLOCK_COINBASE_FAIL);
                     });
             })
             .catch((err) => {
                 this._sendEvent(event)(this.clientEvent.registerProfile,
                                         false,
+                                        err,
                                         this.IPFS_ADD_SIGNUP_FAIL);
             });
         })
         .catch((err) => {
             this._sendEvent(event)(this.clientEvent.registerProfile,
                                     false,
+                                    err,
                                     this.IPFS_ADD_SIGNUP_FAIL);
         });
     }
