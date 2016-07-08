@@ -42,19 +42,26 @@ class ProfileService {
             dbg('getProfilesList_Start', EVENTS.server.user.listEthAccounts);
             ipcRenderer.send(EVENTS.server.user.listEthAccounts);
         });
-    getProfileData = (ipfsHash) => {
-        return new Promise((resolve, reject) => {
-            ipcRenderer.once(EVENTS.client.user.getProfileData, (ev, data) => {
-                if (!data) {
-                    const err = new Error('Main process is not responding');
-                    return reject(err);
-                }
-                dbg('getProfileData', data);
-                return resolve(data);
-            });
-            ipcRenderer.send(EVENTS.server.user.getProfileData, { ipfsHash });
-        });
+
+    getProfileData = (ipfsHashArray, cb) => {
+        const clientChannel = EVENTS.client.user.getProfileData;
+        if (typeof this.listeners[clientChannel] === 'function') {
+            return;
+        }
+        this.listeners[clientChannel] = (ev, data) => {
+            if (!data.success) {
+                return cb(data.status.error);
+            }
+            return cb(null, data);
+        };
+
+        ipcRenderer.on(clientChannel, this.listeners[clientChannel]);
+
+        for (let i = ipfsHashArray.length - 1; i >= 0; i--) {
+            ipcRenderer.send(EVENTS.server.user.getProfileData, { ipfsHash: ipfsHashArray[i] });
+        }
     }
+
     login = (profileData) =>
         new Promise((resolve, reject) => {
             ipcRenderer.once(EVENTS.client.user.login, (ev, data) => {
@@ -68,6 +75,46 @@ class ProfileService {
             const account = profileData.address;
             const password = profileData.password;
             ipcRenderer.send(EVENTS.server.user.login, { account, password });
+        });
+    logout = (account) =>
+        new Promise((resolve, reject) => {
+
+            // ipcRenderer.once(EVENTS.client.user.logout, (ev, data) => {
+            //     if (!data) {
+            //         const err = new Error('Main process can`t handle requests!');
+            //         return reject(err);
+            //     }
+            //     return resolve(data);
+            // });
+            ipcRenderer.send(EVENTS.server.user.logout, { account });
+            return resolve();
+        });
+    /**
+     * Save logged profile to indexedDB database.
+     * @param profileData {object}
+     */
+    saveLoggedProfile = (profileData) =>
+        profileDB.transaction('rw', profileDB.loggedProfile, () => {
+            dbg('saving logged profile', profileData);
+            if (profileData.password) {
+                delete profileData.password;
+            }
+            return profileDB.loggedProfile.add({
+                ...profileData
+            });
+        });
+    /**
+     * Destroy logged profile from db
+     */
+    removeLoggedProfile = () =>
+        profileDB.loggedProfile.clear();
+    /**
+     * Get logged profile from indexedDB
+     */
+    getLoggedProfile = () =>
+        profileDB.transaction('r', profileDB.loggedProfile, () => {
+            dbg('getLoggedProfile');
+            return profileDB.loggedProfile.toArray();
         });
     /**
      * Create a temporary profile in indexedDB

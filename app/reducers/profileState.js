@@ -69,11 +69,12 @@ export default function profileState (state = initialState, action) {
             return state.updateIn(['tempProfile', 'currentStatus'],
                 (cStatus) => Object.assign(cStatus, { status: 'failed' })
             );
-        case types.GET_PROFILE_DATA_SUCCESS:
-            const profileIndex = state.get('profiles').findIndex(profile => {
-                return profile.ipfsHash !== 'QmUgELh2SKsdsbanN1BW7cct9XFoovzAj6uosnH8HnTWpn';
-            });
-            return state.mergeIn(['profiles', profileIndex], action.profile);
+        case types.GET_PROFILE_DATA_SUCCESS: {
+            const profileIndex = state.get('profiles').findIndex(profile =>
+                profile.get('ipfsHash') === action.profiles.ipfsHash
+            );
+            return state.mergeIn(['profiles', profileIndex], action.profiles);
+        }
         default:
             return state;
     }

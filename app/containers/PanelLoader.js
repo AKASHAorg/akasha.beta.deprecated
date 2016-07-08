@@ -1,16 +1,18 @@
 import { connect } from 'react-redux';
 import PanelLoader from '../components/panels/panel-loader';
-import { AppActions } from '../actions';
+import { AppActions, ProfileActions } from '../actions';
 
 function mapStateToProps (state) {
     return {
-        panelState: state.panelState
+        panelState: state.panelState,
+        profileState: state.profileState
     };
 }
 
 function mapDispatchToProps (dispatch) {
     return {
-        appActions: new AppActions(dispatch)
+        appActions: new AppActions(dispatch),
+        profileActions: new ProfileActions(dispatch),
     };
 }
 
