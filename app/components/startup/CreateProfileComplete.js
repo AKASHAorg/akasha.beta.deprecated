@@ -4,7 +4,10 @@ import * as Colors from 'material-ui/styles/colors';
 import { SvgIcon, RaisedButton, TextField } from 'material-ui';
 
 class CreateProfileComplete extends Component {
-
+    _handleFinishSetup = () => {
+        const { profile } = this.props;
+        this.context.router.push(`/${profile.get('username')}`);
+    }
     render () {
         const { style, profile } = this.props;
         const akashaLogoStyles = {
@@ -13,7 +16,7 @@ class CreateProfileComplete extends Component {
             marginRight: '10px',
             verticalAlign: 'middle'
         };
-        const fullName = `${profile.getIn(['name', 'first'])} ${profile.getIn(['name', 'last'])}`;
+        const fullName = `${profile.get('firstName')} ${profile.get('lastName')}`;
 
         return (
           <div style={style} >
@@ -40,13 +43,13 @@ class CreateProfileComplete extends Component {
                   disabled
                   floatingLabelText="Username"
                   style={{ width: '210px', marginLeft: '20px' }}
-                  value={profile.getIn(['user', 'value'])}
+                  value={profile.get('username')}
                 />
                 <TextField
                   disabled
                   floatingLabelText="Ethereum address"
                   style={{ width: '100%' }}
-                  value={profile.getIn(['create', 'address'])}
+                  value={profile.get('address')}
                 />
 
                 <h3>{'Tips before you get started'}</h3>
@@ -76,9 +79,6 @@ class CreateProfileComplete extends Component {
             </div>
           </div>
         );
-    }
-    _handleFinishSetup = (ev) => {
-        this.context.router.push('/severs');
     }
 }
 

@@ -9,7 +9,7 @@ const baseConfig = require('./webpack.config.base');
 
 const config = Object.create(baseConfig);
 
-config.devtool = 'source-map';
+config.devtool = '#inline-source-map';
 
 config.entry = './app/index';
 

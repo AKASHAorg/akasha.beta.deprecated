@@ -2,11 +2,10 @@ import React, { Component } from 'react';
 import {
     List,
     ListItem,
-    Dialog,
     FlatButton,
-    TextField,
     RaisedButton } from 'material-ui';
 import Avatar from '../ui/avatar/avatar-editor';
+import LoginDialog from '../ui/dialogs/login-dialog';
 import LoginHeader from '../../components/ui/partials/LoginHeader';
 import { hashHistory } from 'react-router';
 import { FormattedMessage, injectIntl } from 'react-intl';
@@ -25,17 +24,14 @@ class Auth extends Component {
 
     componentWillMount () {
         const { profileActions } = this.props;
-        profileActions.checkTempProfile();
+        profileActions.checkTempProfile().then(() => {
+            profileActions.checkLoggedProfile();
+        });
     }
 
     handleTouchTap = (index) => {
         const { profileState } = this.props;
-        const profile = profileState.get('profiles').get(index);
-        const selectedProfile = {
-            ethAddress: profile.ethAddress,
-            ...JSON.parse(profile.result)
-        };
-
+        const selectedProfile = profileState.get('profiles').get(index);
         this.setState({ openModal: true, selectedProfile });
     };
 
@@ -45,8 +41,8 @@ class Auth extends Component {
 
     handleLogin = () => {
         const { profileActions } = this.props;
-        const selectedProfile = this.state.selectedProfile;
-        selectedProfile.password = this.passwordRef.getValue();
+        const selectedProfile = this.state.selectedProfile.toJS();
+        selectedProfile.password = this.state.password;
         profileActions.login(selectedProfile);
     };
     _getLocalProfiles () {
@@ -55,14 +51,21 @@ class Auth extends Component {
         if (profilesList.size === 0) {
             return <div><FormattedMessage {...setupMessages.noProfilesFound} /></div>;
         }
+        if (profilesList.first().size <= 2) {
+            return <div>Finding Local Profiles</div>;
+        }
         return profileState.get('profiles').map((profile, index) => {
-            const profileAddress = profile.ethAddress;
-            const profileData = JSON.parse(profile.result);
-            const profileName = `${profileData.firstName} ${profileData.lastName}`;
+            const profileAddress = profile.get('address');
+            const optionalData = profile.get('optionalData');
+            const profileName = `${profile.get('firstName')} ${profile.get('lastName')}`;
+            // console.log(optionalData.get('avatar'))
             const avatarProps = {
                 editable: false,
                 userName: profileName,
-                image: profileData.avatar,
+                image: optionalData ?
+                    `data:image/gif;base64,${
+                        btoa(String.fromCharCode.apply(null, optionalData.get('avatar')))
+                    }` : null,
                 radius: 48,
                 className: 'col-xs-4 middle-xs',
                 userInitialsStyle: { fontSize: 18 }
@@ -87,7 +90,7 @@ class Auth extends Component {
                 }
                 secondaryText={
                   <div style={{ marginLeft: 16 }}>
-                    {profileData.username}
+                    {profile.get('username')}
                   </div>
                 }
                 secondaryTextLines={1}
@@ -103,16 +106,26 @@ class Auth extends Component {
         ev.preventDefault();
         hashHistory.push('new-profile');
     }
+    _handlePasswordChange = (ev) => {
+        ev.preventDefault();
+        this.setState({
+            password: ev.target.value
+        });
+    }
+    _handleDialogKeyPress = (ev) => {
+        if (ev.charCode === 13) {
+            this.handleLogin();
+        }
+    }
     render () {
         const { style, profileState, intl } = this.props;
         const { openModal } = this.state;
         const modalActions = [
-            <FlatButton label="Cancel" onTouchTap={this.handleModalClose} />,
-            <FlatButton label="Submit" primary onTouchTap={this.handleLogin} />
+          <FlatButton label="Cancel" onTouchTap={this.handleModalClose} />,
+          <FlatButton label="Submit" primary onTouchTap={this.handleLogin} />
         ];
         const localProfiles = this._getLocalProfiles();
         const selectedProfile = this.state.selectedProfile;
-        console.log(selectedProfile, 'selectedProfile');
         return (
           <div style={style} >
             <div className="start-xs" >
@@ -136,52 +149,14 @@ class Auth extends Component {
                   />
                 </div>
                 {this.state.selectedProfile &&
-                  <Dialog
-                    title="Authentication"
-                    modal
-                    open={openModal}
-                    actions={modalActions}
-                    contentStyle={{ width: '82%' }}
-                  >
-                    <Avatar
-                      editable={false}
-                      userName={
-                          `${selectedProfile.firstName} ${selectedProfile.lastName}`
-                      }
-                    />
-                    <div className="row">
-                      <div className="col-xs-6">
-                        <TextField
-                          disabled
-                          fullWidth
-                          floatingLabelText="Name"
-                          value={
-                            `${selectedProfile.firstName} ${selectedProfile.lastName}`
-                          }
-                        />
-                      </div>
-                      <div className="col-xs-6">
-                        <TextField
-                          disabled
-                          floatingLabelText="userName"
-                          value={`${selectedProfile.username}`}
-                          fullWidth
-                        />
-                      </div>
-                    </div>
-                    <TextField
-                      disabled
-                      fullWidth
-                      floatingLabelText="Ethereum address"
-                      value={selectedProfile.ethAddress}
-                    />
-                    <TextField
-                      type="password"
-                      fullWidth
-                      floatingLabelText="Password"
-                      ref={node => this.passwordRef = node}
-                    />
-                  </Dialog>
+                  <LoginDialog
+                    profile={selectedProfile}
+                    isOpen={openModal}
+                    modalActions={modalActions}
+                    title={'Log In'}
+                    onPasswordChange={this._handlePasswordChange}
+                    onKeyPress={this._handleDialogKeyPress}
+                  />
                 }
               </div>
             </div>

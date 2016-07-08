@@ -3,16 +3,20 @@ import Panels from './index';
 
 
 class PanelLoader extends Component {
+    _handleOverlayClick = () => {
+        const { appActions } = this.props;
+        appActions.hidePanel();
+    }
     render () {
-        const { panelState } = this.props;
+        const { panelState, ...other } = this.props;
         const activePanel = panelState.get('activePanel');
         if (activePanel.get('name')) {
             const Panel = Panels[activePanel.get('name')];
             return (
               <div className="panel" style={{ height: '100%' }} >
-                <Panel />
+                <Panel {...other} />
                   {activePanel.get('overlay') &&
-                    <div className="overlay" />
+                    <div className="overlay" onClick={this._handleOverlayClick} />
                   }
               </div>
             );
@@ -22,7 +26,9 @@ class PanelLoader extends Component {
 }
 PanelLoader.propTypes = {
     children: PropTypes.element,
-    panelState: PropTypes.object
+    panelState: PropTypes.object,
+    profileState: PropTypes.object,
+    appActions: PropTypes.object
 };
 PanelLoader.contextTypes = {
     muiTheme: PropTypes.object
