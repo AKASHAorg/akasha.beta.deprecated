@@ -2,6 +2,7 @@ import React from 'react';
 import { Paper, TextField, RaisedButton } from 'material-ui';
 import ImageUploader from '../ui/image-uploader/image-uploader';
 import LicenceDialog from '../ui/dialogs/licence-dialog';
+import licences from '../ui/dialogs/licences';
 
 class PublishPanel extends React.Component {
     constructor (props) {
@@ -21,7 +22,28 @@ class PublishPanel extends React.Component {
             isLicencingOpen: true
         });
     }
+    _handleLicenceSet = (ev, selectedLicence) => {
+        this.setState({
+            selectedLicence,
+            isLicencingOpen: false
+        });
+    }
     render () {
+        let selectedLicence;
+        if (this.state.selectedLicence) {
+            selectedLicence = this.state.selectedLicence;
+        } else {
+            selectedLicence = {
+                mainLicence: licences.find(lic => lic.id === '1'),
+                subLicence: null,
+                isDefault: false
+            };
+        }
+        const licenceDescription = selectedLicence.mainLicence.description.map((descr, key) => {
+            return (
+              <span key={key}>{descr.text}</span>
+            );
+        });
         return (
           <Paper
             style={{
@@ -33,6 +55,8 @@ class PublishPanel extends React.Component {
               isOpen={this.state.isLicencingOpen}
               defaultSelected="1"
               onRequestClose={this._handleLicenceDialogClose}
+              onDone={this._handleLicenceSet}
+              licences={licences}
             />
             <div className="col-xs-12">
               <div className="row middle-xs">
@@ -58,7 +82,14 @@ class PublishPanel extends React.Component {
                 </div>
                 <div className="col-xs-12 field">
                   <small>Licence</small>
-                  <TextField name="licence" fullWidth onFocus={this._handleLicenceFocus} />
+                  <TextField
+                    name="licence"
+                    fullWidth
+                    onFocus={this._handleLicenceFocus}
+                    errorText={licenceDescription}
+                    errorStyle={{ color: '#DDD' }}
+                    value={selectedLicence.mainLicence.label}
+                  />
                 </div>
                 <div className="col-xs-12 field">
                   <small>
@@ -81,5 +112,7 @@ class PublishPanel extends React.Component {
         );
     }
 }
-
+PublishPanel.propTypes = {
+    width: React.PropTypes.string
+};
 export default PublishPanel;
