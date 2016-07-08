@@ -2,11 +2,10 @@ import React, { Component } from 'react';
 import {
     List,
     ListItem,
-    Dialog,
     FlatButton,
-    TextField,
     RaisedButton } from 'material-ui';
 import Avatar from '../ui/avatar/avatar-editor';
+import LoginDialog from '../ui/dialogs/login-dialog';
 import LoginHeader from '../../components/ui/partials/LoginHeader';
 import { hashHistory } from 'react-router';
 import { FormattedMessage, injectIntl } from 'react-intl';
@@ -25,7 +24,9 @@ class Auth extends Component {
 
     componentWillMount () {
         const { profileActions } = this.props;
-        profileActions.checkTempProfile();
+        profileActions.checkTempProfile().then(() => {
+            profileActions.checkLoggedProfile();
+        });
     }
 
     handleTouchTap = (index) => {
@@ -41,7 +42,7 @@ class Auth extends Component {
     handleLogin = () => {
         const { profileActions } = this.props;
         const selectedProfile = this.state.selectedProfile.toJS();
-        selectedProfile.password = this.passwordRef.getValue();
+        selectedProfile.password = this.state.password;
         profileActions.login(selectedProfile);
     };
     _getLocalProfiles () {
@@ -57,10 +58,14 @@ class Auth extends Component {
             const profileAddress = profile.get('address');
             const optionalData = profile.get('optionalData');
             const profileName = `${profile.get('firstName')} ${profile.get('lastName')}`;
+            // console.log(optionalData.get('avatar'))
             const avatarProps = {
                 editable: false,
                 userName: profileName,
-                image: optionalData ? optionalData.get('avatar') : null,
+                image: optionalData ?
+                    `data:image/gif;base64,${
+                        btoa(String.fromCharCode.apply(null, optionalData.get('avatar')))
+                    }` : null,
                 radius: 48,
                 className: 'col-xs-4 middle-xs',
                 userInitialsStyle: { fontSize: 18 }
@@ -101,12 +106,23 @@ class Auth extends Component {
         ev.preventDefault();
         hashHistory.push('new-profile');
     }
+    _handlePasswordChange = (ev) => {
+        ev.preventDefault();
+        this.setState({
+            password: ev.target.value
+        });
+    }
+    _handleDialogKeyPress = (ev) => {
+        if (ev.charCode === 13) {
+            this.handleLogin();
+        }
+    }
     render () {
         const { style, profileState, intl } = this.props;
         const { openModal } = this.state;
         const modalActions = [
-            <FlatButton label="Cancel" onTouchTap={this.handleModalClose} />,
-            <FlatButton label="Submit" primary onTouchTap={this.handleLogin} />
+          <FlatButton label="Cancel" onTouchTap={this.handleModalClose} />,
+          <FlatButton label="Submit" primary onTouchTap={this.handleLogin} />
         ];
         const localProfiles = this._getLocalProfiles();
         const selectedProfile = this.state.selectedProfile;
@@ -133,52 +149,14 @@ class Auth extends Component {
                   />
                 </div>
                 {this.state.selectedProfile &&
-                  <Dialog
-                    title="Authentication"
-                    modal
-                    open={openModal}
-                    actions={modalActions}
-                    contentStyle={{ width: '82%' }}
-                  >
-                    <Avatar
-                      editable={false}
-                      userName={
-                          `${selectedProfile.get('firstName')} ${selectedProfile.get('lastName')}`
-                      }
-                    />
-                    <div className="row">
-                      <div className="col-xs-6">
-                        <TextField
-                          disabled
-                          fullWidth
-                          floatingLabelText="Name"
-                          value={
-                            `${selectedProfile.get('firstName')} ${selectedProfile.get('lastName')}`
-                          }
-                        />
-                      </div>
-                      <div className="col-xs-6">
-                        <TextField
-                          disabled
-                          floatingLabelText="userName"
-                          value={`${selectedProfile.get('username')}`}
-                          fullWidth
-                        />
-                      </div>
-                    </div>
-                    <TextField
-                      disabled
-                      fullWidth
-                      floatingLabelText="Ethereum address"
-                      value={selectedProfile.get('address')}
-                    />
-                    <TextField
-                      type="password"
-                      fullWidth
-                      floatingLabelText="Password"
-                      ref={node => this.passwordRef = node}
-                    />
-                  </Dialog>
+                  <LoginDialog
+                    profile={selectedProfile}
+                    isOpen={openModal}
+                    modalActions={modalActions}
+                    title={'Log In'}
+                    onPasswordChange={this._handlePasswordChange}
+                    onKeyPress={this._handleDialogKeyPress}
+                  />
                 }
               </div>
             </div>

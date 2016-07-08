@@ -2,6 +2,8 @@ import * as types from '../constants/ProfileConstants';
 import { ProfileService } from '../services';
 import { SettingsActions } from '../actions';
 import { hashHistory } from 'react-router';
+import { ipcRenderer } from 'electron';
+import { EVENTS } from '../../electron-api/modules/settings';
 import debug from 'debug';
 const dbg = debug('App:ProfileActions:');
 
@@ -31,14 +33,40 @@ class ProfileActions {
                 return this.dispatch({ type: types.LOGIN_ERROR, error });
             }
             return this.dispatch({ type: types.LOGIN_SUCCESS, profileData });
-        }).then(() => {
+        })
+        .then(() => {
             this.dispatch((dispatch, getState) => {
                 const loggedProfile = getState().profileState.get('loggedProfile');
                 if (loggedProfile.size > 0) {
-                    hashHistory.push(`/${loggedProfile.get('username')}`);
+                    this.profileService.saveLoggedProfile(loggedProfile.toJS()).then(() => {
+                        hashHistory.push(`/${loggedProfile.get('username')}`);
+                    });
                 }
             });
-        }).catch(reason => console.error(reason));
+        })
+        .catch(reason => console.error(reason));
+
+    logout = (account) => {
+        this.profileService.logout(account).then(result => {
+            this.dispatch({ type: types.LOGOUT_SUCCESS, result });
+        })
+        .then(() => {
+            this.profileService.removeLoggedProfile().then(() => {
+                hashHistory.push('authenticate');
+            });
+        });
+    }
+    checkLoggedProfile = (noRedirect) =>
+        this.profileService.getLoggedProfile().then(loggedProfile => {
+            const profile = loggedProfile[0];
+            if (profile) {
+                this.dispatch({ type: types.LOGIN_SUCCESS, profileData: profile });
+                if (!noRedirect) {
+                    return hashHistory.push(`/${profile.username}`);
+                }
+            }
+            return null;
+        });
     /**
      * Retrieve all temporary profiles
      */
@@ -185,8 +213,9 @@ class ProfileActions {
                 return this.deleteTempProfile();
             }
             return console.error(result);
-        }).then(() => {
-            hashHistory.push('')
+        })
+        .then(() => {
+            hashHistory.push('authenticate');
         });
     }
      /**
@@ -229,7 +258,7 @@ class ProfileActions {
      */
     checkTempProfile = () =>
         this.getTempProfile().then(() => {
-            this.dispatch((dispatch, getState) => {
+            return this.dispatch((dispatch, getState) => {
                 const tempProfile = getState().profileState.get('tempProfile');
                 dbg('checkTempProfile', tempProfile);
                 if (tempProfile && tempProfile.size > 0) {
@@ -245,14 +274,13 @@ class ProfileActions {
     getLocalProfiles = () => {
         return this.getProfilesList().then(() => {
             this.dispatch((dispatch, getState) => {
+                // EVENTS.client.user.getProfileData
+                
                 const profilesHash = getState().profileState.get('profiles');
-                const profileDataPromises = [];
-                profilesHash.forEach(profileHash => {
-                    profileDataPromises.push(this.getProfileData(profileHash.get('ipfsHash')));
-                });
-                return Promise.all(profileDataPromises);
+                const hashes = profilesHash.toJS().map(el => el.ipfsHash);
+                this.getProfileData(hashes);
             });
-        }).then(() => {})
+        })
         .catch(reason => console.error(reason));
     }
     /**
@@ -260,21 +288,24 @@ class ProfileActions {
      * returns only the address and userName
      */
     getProfilesList = () => {
-        return this.profileService.getProfilesList().then((result) => {
-            dbg('getProfilesList', result.status);
-            return this.dispatch({
-                type: types.GET_PROFILES_LIST_SUCCESS,
-                profiles: result.status
-            });
+        return this.profileService.getProfilesList().then((profiles) => {
+            dbg('getProfilesList', profiles);
+            return this.dispatch({ type: types.GET_PROFILES_LIST_SUCCESS, profiles: profiles.status });
         }).catch(reason => this.dispatch({ type: types.GET_PROFILES_LIST_ERROR, reason }));
     }
 
-    getProfileData = (ipfsHash) => {
-        return this.profileService.getProfileData(ipfsHash).then((result) => {
-            dbg('get profiles list for ', ipfsHash);
+    getProfileData = (ipfsHashes) => {
+        this.profileService.getProfileData(ipfsHashes, (err, data) => {
+            if (err) {
+                console.error(err);
+                this.dispatch({
+                    type: types.GET_PROFILE_DATA_ERROR,
+                    error: err
+                });
+            }
             return this.dispatch({
                 type: types.GET_PROFILE_DATA_SUCCESS,
-                profile: result.status
+                profiles: data.status
             });
         });
     }

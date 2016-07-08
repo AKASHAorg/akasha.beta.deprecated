@@ -1,6 +1,6 @@
 import React, { PropTypes, Component } from 'react';
 import { connect } from 'react-redux';
-import { AppActions } from '../../../actions';
+import { AppActions, ProfileActions } from '../../../actions';
 import Profile from './IconProfile';
 import AddEntry from './IconAddEntry';
 import Search from './IconSearch';
@@ -11,6 +11,12 @@ import People from './IconPeople';
 import Logo from './IconLogo';
 
 class SideBar extends Component {
+    componentWillMount () {
+        const { profileState, profileActions } = this.props;
+        if (profileState.get('loggedProfile').size === 0) {
+            profileActions.checkLoggedProfile(true);
+        }
+    }
     _handleNewEntry = () => {
         const entries = 0;
         if (entries > 0) {
@@ -73,7 +79,8 @@ SideBar.propTypes = {
     viewBox: PropTypes.string,
     color: PropTypes.string,
     appActions: PropTypes.object,
-    profileState: PropTypes.object
+    profileState: PropTypes.object,
+    profileActions: PropTypes.object
 };
 
 SideBar.contextTypes = {
@@ -103,6 +110,7 @@ export default connect(
         profileState: state.profileState
     }),
     dispatch => ({
-        appActions: new AppActions(dispatch)
+        appActions: new AppActions(dispatch),
+        profileActions: new ProfileActions(dispatch),
     })
 )(SideBar);
