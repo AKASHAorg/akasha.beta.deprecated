@@ -19,7 +19,7 @@ function CoverImage () {
 
 function OptionalData () {
     return {
-        avatarFile: Uint8Array,
+        avatar: Uint8Array,
         coverImage: [[CoverImage]],
         about: String,
         links: Array

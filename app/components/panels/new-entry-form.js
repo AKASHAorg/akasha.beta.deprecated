@@ -4,7 +4,7 @@ import { Paper } from 'material-ui';
 class NewEntryFormPanel extends Component {
     render () {
         return (
-            <Paper style={ this.props.rootStyle }>Having more than 1 entries or drafts..</Paper>
+          <Paper style={ this.props.rootStyle }>Having more than 1 entries or drafts..</Paper>
         );
     }
 }

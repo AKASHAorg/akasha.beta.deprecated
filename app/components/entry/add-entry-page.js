@@ -19,7 +19,10 @@ class NewEntryPage extends Component {
         };
     }
     _attemptToSave = (ev) => {
-
+        const { appActions } = this.props;
+        appActions.showPanel({ name: 'publishEntry', overlay: true });
+        console.log('attempt to save entry');
+        console.log(this.props);
     }
     _cancelEntryCreate = (ev) => {
 

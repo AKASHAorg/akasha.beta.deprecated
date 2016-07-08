@@ -131,32 +131,37 @@ class Avatar extends React.Component {
             {avatarImage &&
               <div>
                 <AvatarEditor
-                  style={{ borderRadius: 150 }}
+                  style={{
+                      borderRadius: 150,
+                      border: this.props.offsetBorder ? this.props.offsetBorder : 0
+                  }}
                   border={this.state.isNewAvatarLoaded ? 10 : 0}
                   image={avatarImage}
                   ref="editor"
-                  width={130}
-                  height={130}
+                  width={this.props.radius || 130}
+                  height={this.props.radius || 130}
                   borderRadius={100}
-                  scale={this.state.avatarScale}
+                  scale={this.props.editable ? 1 : this.state.avatarScale}
                 />
-                <div>
-                  <Slider
-                    defaultValue={this.state.avatarScale}
-                    max={2}
-                    min={1}
-                    step={0.1}
-                    onChange={this._handleSliderChange}
-                  />
-                  <div
-                    style={avatarClearStyle}
-                    onClick={this._handleAvatarClear}
-                  >
-                    <SvgIcon>
-                      <ClearIcon color="red" />
-                    </SvgIcon>
+                {this.props.editable &&
+                  <div>
+                    <Slider
+                      defaultValue={this.state.avatarScale}
+                      max={2}
+                      min={1}
+                      step={0.1}
+                      onChange={this._handleSliderChange}
+                    />
+                    <div
+                      style={avatarClearStyle}
+                      onClick={this._handleAvatarClear}
+                    >
+                      <SvgIcon>
+                        <ClearIcon color="red" />
+                      </SvgIcon>
+                    </div>
                   </div>
-                </div>
+                }
               </div>
             }
             {!avatarImage &&

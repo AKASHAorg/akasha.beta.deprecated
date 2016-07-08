@@ -12,7 +12,7 @@ const initialState = fromJS({
         password2: '',
         address: '',
         optionalData: {
-            avatarFile: {},
+            avatar: {},
             backgroundImage: [],
             about: '',
             links: []
@@ -31,7 +31,7 @@ export default function profileState (state = initialState, action) {
         case types.LOGIN_SUCCESS:
             return state.merge({ loggedProfile: action.profileData });
         case types.GET_PROFILES_LIST_SUCCESS:
-            return state.merge({ profiles: List.of(action.profiles) });
+            return state.merge({ profiles: fromJS(action.profiles) });
         case types.GET_PROFILES_LIST_ERROR:
             return state.merge({ profiles: [], messages: action.message });
         case types.GET_TEMP_PROFILE_SUCCESS:
@@ -69,6 +69,12 @@ export default function profileState (state = initialState, action) {
             return state.updateIn(['tempProfile', 'currentStatus'],
                 (cStatus) => Object.assign(cStatus, { status: 'failed' })
             );
+        case types.GET_PROFILE_DATA_SUCCESS: {
+            const profileIndex = state.get('profiles').findIndex(profile =>
+                profile.get('ipfsHash') === action.profiles.ipfsHash
+            );
+            return state.mergeIn(['profiles', profileIndex], action.profiles);
+        }
         default:
             return state;
     }
