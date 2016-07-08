@@ -57,7 +57,7 @@ class LoggerService extends IpcService {
                 if (!err) {
                     this._sendEvent(event)(this.clientEvent.gethInfo, true, data);
                 } else {
-                    this._sendEvent(event)(this.clientEvent.gethInfo, false, err);
+                    this._sendEvent(event)(this.clientEvent.gethInfo, false, err, err.toString());
                 }
             });
             if (arg === true) {
