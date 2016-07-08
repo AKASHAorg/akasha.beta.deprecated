@@ -48,9 +48,9 @@ class GethService extends IpcService {
 
     _startGethService (event, arg) {
         if (this.getGethService().isRunning()) {
-            this._sendEvent(event)(this.clientEvent.startService, false, this.ALREADY_RUNNING, {
+            this._sendEvent(event)(this.clientEvent.startService, true, {
                 isRunning: true
-            });
+            }, this.ALREADY_RUNNING);
         } else {
             this
                 .getGethService()
