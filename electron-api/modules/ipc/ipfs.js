@@ -49,12 +49,12 @@ class IpfsService extends IpcService {
             .getIpfsService()
             .start()
             .then((data) => {
-                this._sendEvent(event)(this.clientEvent.startService, true, Object.assign({
-                    ipfsMessage: data
-                }, arg));
+                // data is a string "All systems up" from ipfs-connector. If it changes
+                // in the future, we'd have to change it below too
+                this._sendEvent(event)(this.clientEvent.startService, true, arg, data);
             })
-            .catch((data) => {
-                this._sendEvent(event)(this.clientEvent.startService, false, data);
+            .catch((err) => {
+                this._sendEvent(event)(this.clientEvent.startService, false, err, err.toString());
             });
     }
     _stopIpfsService (event, arg) {
