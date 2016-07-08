@@ -1,0 +1,12 @@
+strict digraph {
+  AkashaProfile
+  getCollector [color=blue]
+  setEthAddress
+  getIpfs [color=blue]
+  setHash
+  UpdateInfo
+  destroy
+  null
+  setHash -> UpdateInfo
+}
+

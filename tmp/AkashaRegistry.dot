@@ -1,0 +1,12 @@
+strict digraph {
+  register
+  Register
+  unregister
+  hasProfile [color=blue]
+  getById [color=blue]
+  getByAddr [color=blue]
+  getMyProfile [color=blue]
+  null
+  register -> Register
+}
+
