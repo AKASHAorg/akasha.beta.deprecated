@@ -27,7 +27,8 @@ class EProcActions {
             this.gethService.startGeth(gethSettings)
         )
         .then(gethState => {
-            // if geth is already running do nothing
+            // @TODO: if geth is already running verify if it`s on testnet!
+
             if (gethState.isRunning) {
                 return Promise.resolve();
             }
@@ -91,15 +92,14 @@ class EProcActions {
         }).catch(reason => this.dispatch(this._configIpfsError(reason)));
     }
     stopIPFS = () => {
-        this.ipfsService.stopIPFS().then((data) => {
+        this.ipfsService.stopIPFS().then(data => {
             if (!data.success) {
-                return this.dispatch(this._stopIPFSError(data));
+                return this.dispatch(this._stopIPFSError(data.status.error));
             }
             return this.dispatch(this._stopIPFSSuccess(data));
         }).catch(reason => this.dispatch(this._stopIPFSError(reason)));
     }
-    _startGethSuccess = (data) => {
-    // this.settingsService.saveSettings('geth', data);
+    _startGethSuccess (data) {
         return { type: types.START_GETH_SUCCESS, data };
     }
     _startGethError (data) {

@@ -30,20 +30,21 @@ class SyncStatus extends Component {
     getSyncStatus = () => {
         const { syncActions } = this.props;
         syncActions.startUpdateSync((err, updateData) => {
-            const { success, status } = updateData;
+            const { success, status, data } = updateData;
             if (err) {
                 return this.setState({
-                    syncError: status
+                    syncError: status.message
                 });
             }
-            if (success && status === 'empty') {
+            if (success && data.empty) {
                 // @TODO start ipfs first!
                 this.finishSync();
             } else {
                 this.setState({
-                    syncData: status
+                    syncData: data
                 });
             }
+            return null;
         });
     }
     finishSync = () => {
@@ -98,21 +99,21 @@ class SyncStatus extends Component {
     _handleDetails = () => {
         const { loggerActions } = this.props;
         if (!this.state.showGethLogs) {
-            return loggerActions.startGethLogger({ continuous: true }, (err, data) => {
+            return loggerActions.startGethLogger({ continuous: true }, (err, logs) => {
                 if (err) return console.error(err);
                 const logData = this.state.gethLogs.slice();
-                if (data.length > 1) {
-                    logData.concat(data);
+                if (logs.data.length > 1) {
+                    logData.concat(logs.data);
                 } else {
-                    logData.unshift(data.status['log-geth'][0]);
+                    logData.unshift(logs.data['log-geth'][0]);
                 }
-                this.setState({
+                return this.setState({
                     showGethLogs: true,
                     gethLogs: logData.slice(0, 20)
                 });
             });
         }
-        loggerActions.stopGethLogger(() => {
+        return loggerActions.stopGethLogger(() => {
             this.setState({
                 showGethLogs: false,
                 gethLogs: []
@@ -216,10 +217,19 @@ class SyncStatus extends Component {
                 />
               </div>
             </div>
-            <ul style = {this.props.logListStyle}>
+            <ul style={this.props.logListStyle}>
             {this.state.showGethLogs &&
                 this.state.gethLogs.map((log, key) => (
-                  <li key={key} style={{ marginBottom: '8px', backgroundColor: (log.level === 'warn' ? 'orange' : log.level === 'error' ? 'red' : 'transparent') }}>
+                  <li
+                    key={key}
+                    style={{
+                        marginBottom: '8px',
+                        backgroundColor: (
+                            log.level === 'warn' ?
+                            'orange' : log.level === 'error' ?
+                            'red' : 'transparent')
+                    }}
+                  >
                     <abbr title="Log Level">{log.level}</abbr>
                     <p>{log.message}</p>
                   </li>

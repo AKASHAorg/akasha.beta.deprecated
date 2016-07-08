@@ -131,7 +131,10 @@ class Avatar extends React.Component {
             {avatarImage &&
               <div>
                 <AvatarEditor
-                  style={{ borderRadius: 150, border: this.props.offsetBorder ? this.props.offsetBorder : 0}}
+                  style={{
+                      borderRadius: 150,
+                      border: this.props.offsetBorder ? this.props.offsetBorder : 0
+                  }}
                   border={this.state.isNewAvatarLoaded ? 10 : 0}
                   image={avatarImage}
                   ref="editor"

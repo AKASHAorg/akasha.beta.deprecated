@@ -81,13 +81,13 @@ class CreateProfile extends Component {
             }
             profileData.optionalData = optionalData;
             return profileData;
-        }).then(() => {
-            return profileActions.createTempProfile(profileData, {
+        }).then(() =>
+            profileActions.createTempProfile(profileData, {
                 currentStep: 0,
                 status: 'finished',
                 message: 'Profile creation started!'
-            });
-        })
+            })
+        )
         .then(() => this.context.router.push('authenticate'));
     }
     _submitForm = (ev) => {
@@ -160,7 +160,7 @@ class CreateProfile extends Component {
         console.log('show modal ', modalName);
     }
     render () {
-        const { style, profileState, intl } = this.props;
+        const { style, intl } = this.props;
         const floatLabelStyle = { color: Colors.lightBlack };
         const inputStyle = { color: Colors.darkBlack };
         const firstNameProps = this.getProps({
