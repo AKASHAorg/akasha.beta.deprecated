@@ -22,6 +22,8 @@ class UserService extends MainService {
         this.textFields = ['userName', 'firstName', 'lastName'];
         this.CREATE_PROFILE_CONTRACT_GAS = 800000;
         this.FAUCET_URL = 'http://faucet.ma.cx:3000/donate/';
+        this.LOCK_COINBASE_SUCCESS = 'lock account successful';
+        this.LOCK_COINBASE_FAIL = 'lock account failed';
     }
     /*
      * It sets up the listeners for this module.
@@ -61,6 +63,9 @@ class UserService extends MainService {
         });
         ipcMain.on(this.serverEvent.login, (event, arg) => {
             this._login(event, arg);
+        });
+        ipcMain.on(this.serverEvent.logout, (event, arg) => {
+            this._logout(event, arg);
         });
     }
 
@@ -126,7 +131,7 @@ class UserService extends MainService {
                     web3.eth.defaultAccount = arg.account;
                     this._sendEvent(event)(this.clientEvent.login,
                                         true,
-                                        {},
+                                        Object.assign({}, arg),
                                         this.UNLOCK_COINBASE_SUCCESS);
                 }
             })
@@ -135,6 +140,30 @@ class UserService extends MainService {
                                     false,
                                     err,
                                     this.UNLOCK_COINBASE_FAIL);
+            });
+    }
+
+    _logout (event, arg) {
+        const web3 = this.__getWeb3();
+        web3
+            .personal
+            .lockAccountAsync((arg && arg.account) ? arg.account : web3.eth.defaultAccount)
+            .then((result) => {
+                if (result) {
+                    this._sendEvent(event)(this.clientEvent.logout,
+                                        true,
+                                        Object.assign({}, arg ? arg : {
+                                            account: web3.eth.defaultAccount
+                                        }),
+                                        this.LOCK_COINBASE_SUCCESS);
+                    web3.eth.defaultAccount = null;
+                }
+            })
+            .catch((err) => {
+                this._sendEvent(event)(this.clientEvent.logout,
+                                    false,
+                                    err,
+                                    this.LOCK_COINBASE_FAIL);
             });
     }
 
