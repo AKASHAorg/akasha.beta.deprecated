@@ -26,9 +26,11 @@ class Setup extends Component {
                             if (getState().settingsState.get('geth').size > 0) {
                                 return this.context.router.replace('sync-status');
                             }
+                            return null;
                         });
                     }
                 }
+                return null;
             });
         });
     }
@@ -44,7 +46,7 @@ class Setup extends Component {
     handleGethDatadir = (ev) => {
         ev.target.blur();
         ev.preventDefault();
-        const { setupActions, setupConfig } = this.props;
+        const { setupActions } = this.props;
         if (!this.state.isDialogOpen) {
             this.showOpenDialog('geth data directory', (paths) => {
                 this.setState({
