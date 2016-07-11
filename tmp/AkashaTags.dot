@@ -1,0 +1,12 @@
+strict digraph {
+  exists [color=blue]
+  add
+  push
+  TagCreated
+  getTagAt [color=blue]
+  getTagId [color=blue]
+  null
+  add -> push
+  add -> TagCreated
+}
+
