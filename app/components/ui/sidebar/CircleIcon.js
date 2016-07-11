@@ -24,7 +24,6 @@ function CircleIcon ({ children, disabled, tooltip, onClick }) {
           style={style}
           disabled = {disabled}
           iconStyle={{ width: '32px', height: '32px', fill: '#000' }}
-          backgroundColor="rgba(0,0,0,0)"
           onClick = {onClick}
         >
             {children}
