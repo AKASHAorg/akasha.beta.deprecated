@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { ProfileActions, AppActions } from '../actions';
+import { ProfileActions, AppActions, EntryActions } from '../actions';
 import AddEntryPage from '../components/entry/add-entry-page';
 
 class NewEntryPage extends Component {
@@ -12,14 +12,16 @@ class NewEntryPage extends Component {
 }
 function mapStateToProps (state) {
     return {
-        profileState: state.profileState
+        profileState: state.profileState,
+        entryStateL: state.entryState
     };
 }
 
 function mapDispatchToProps (dispatch) {
     return {
         profileActions: new ProfileActions(dispatch),
-        appActions: new AppActions(dispatch)
+        appActions: new AppActions(dispatch),
+        entryActions: new EntryActions(dispatch)
     };
 }
 

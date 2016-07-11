@@ -10,6 +10,7 @@ import {
 import EntryEditor from '../ui/entry-editor';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import CloseIcon from 'material-ui/svg-icons/navigation/close';
+import throttle from 'lodash.throttle';
 
 class NewEntryPage extends Component {
     constructor (props) {
@@ -17,18 +18,35 @@ class NewEntryPage extends Component {
         this.state = {
             publishable: false
         };
+        this.throttledSave = throttle(this._saveDraft, 1000, { trailing: true, leading: false });
     }
-    _attemptToSave = (ev) => {
+    _setupEntryForPublication = (ev) => {
         const { appActions } = this.props;
-        appActions.showPanel({ name: 'publishEntry', overlay: true });
-        console.log('attempt to save entry');
-        console.log(this.props);
+        this._saveDraft((entry) => {
+            console.log('redirect to publish panel..', entry);
+        });
+        appActions.showPanel({ name: 'publishEntry', overlay: false });
+
+        // console.log('attempt to save entry');
+        // console.log(this.props);
+    }
+    _saveDraft = (cb) => {
+        const { entryActions } = this.props;
+        const content = this.editor.getContent();
+        const title = this.state.entryTitle;
+        console.log('saving..', { title, content });
+
+        if (typeof cb === 'function') {
+            cb({ title, content });
+        }
     }
     _cancelEntryCreate = (ev) => {
 
     }
     _handleEditorChange = (text) => {
-        if (text.length > 0) {
+        const txt = text.trim();
+
+        if (txt.length > 0) {
             this.setState({
                 publishable: true
             });
@@ -37,6 +55,11 @@ class NewEntryPage extends Component {
                 publishable: false
             });
         }
+        this.throttledSave();
+    }
+    _handleTitleChange = (ev) => {
+        this.setState({ entryTitle: ev.target.value });
+        this.throttledSave();
     }
     render () {
         return (
@@ -53,7 +76,7 @@ class NewEntryPage extends Component {
                   primary
                   label="Publish"
                   disabled={!this.state.publishable}
-                  onClick={this._attemptToSave}
+                  onClick={this._setupEntryForPublication}
                 />
                 <IconMenu
                   iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
@@ -71,7 +94,12 @@ class NewEntryPage extends Component {
             </Toolbar>
             <div className="row center-xs" style={{ marginTop: '32px' }}>
               <div className="col-xs-6">
-                <EntryEditor onChange={this._handleEditorChange} readOnly={false} />
+                <EntryEditor
+                  editorRef={(editor) => { this.editor = editor; }}
+                  onChange={this._handleEditorChange}
+                  onTitleChange={this._handleTitleChange}
+                  readOnly={false}
+                />
               </div>
             </div>
           </div>

@@ -49,10 +49,11 @@ class EntryEditor extends Component {
             this.refs.titleInput.focus();
         }
     }
-    getContent = () => {
-        const rawData = convertToRaw(this.state.editorState.getCurrentContent());
-        return rawData;
-    }
+
+    getContent = () => convertToRaw(this.state.editorState.getCurrentContent());
+
+    getTitle = () => this.state.title;
+
     componentClickAway = () => {
         const selection = this.state.editorState.getSelection();
         if (selection.getAnchorKey()) {
@@ -63,10 +64,10 @@ class EntryEditor extends Component {
         if (this.state.toolbarVisible) {
             this._toggleToolbarVisibility(false);
         }
-        this.refs.editor.focus();
+        this.editor.focus();
     }
     blur = () => {
-        this.refs.editor.blur();
+        this.editor.blur();
     }
     toggleAddButton = () => {
         this.setState({
@@ -84,6 +85,7 @@ class EntryEditor extends Component {
         });
     }
     _handleEditorContainerClick = (ev) => {
+        ev.preventDefault();
         this.focus();
     }
     _handleAddClick = () => {
@@ -178,7 +180,7 @@ class EntryEditor extends Component {
     }
     _handleTitleKeyPress = (ev) => {
         if (ev.charCode === 13) {
-            this.refs.editor.focus();
+            this.editor.focus();
         }
     }
     _toggleToolbarVisibility = (visible) => {
@@ -220,11 +222,17 @@ class EntryEditor extends Component {
                 hintStyle={{ fontSize: 32 }}
                 inputStyle={{ fontSize: 32 }}
                 onKeyPress={this._handleTitleKeyPress}
+                onChange={this.props.onTitleChange}
                 fullWidth
               />
               <div onClick={this._handleEditorContainerClick}>
                 <Editor
-                  ref="editor"
+                  ref={(editor) => {
+                      this.editor = editor;
+                      if (this.props.editorRef) {
+                          this.props.editorRef(this);
+                      }
+                  }}
                   editorState={editorState}
                   blockRendererFn={rendererFn}
                   onChange={this._handleEditorChange}
@@ -249,7 +257,11 @@ class EntryEditor extends Component {
 }
 
 EntryEditor.propTypes = {
-    onChange: PropTypes.func
+    onChange: PropTypes.func,
+    editorRef: PropTypes.func,
+    onTitleChange: PropTypes.func,
+    readOnly: PropTypes.bool,
+    content: PropTypes.object,
 };
 
 export default clickAway(EntryEditor);

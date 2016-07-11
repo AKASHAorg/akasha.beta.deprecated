@@ -25,7 +25,7 @@ class LicenceDialog extends React.Component {
     _handleMainLicenceCheck = (ev, val) => {
         this.setState({
             mainLicence: this.props.licences.find(lic => lic.id === val),
-            subLicence: null
+            subLicence: undefined
         });
     }
     _handleDefaultLicenceSet = (ev, isChecked) => {
@@ -62,8 +62,9 @@ class LicenceDialog extends React.Component {
                   value={licence.id}
                   label={licence.label}
                   style={{ marginTop: 16 }}
-                  checked={(selectedMainLicenceId === licence.id ||
-                            (this.state.subLicence && this.state.subLicence.parent === licence.id))
+                  checked={
+                    (selectedMainLicenceId === licence.id) ||
+                    (this.state.subLicence && this.state.subLicence.parent === licence.id)
                   }
                   onCheck={(ev, val) => this._handleMainLicenceCheck(ev, val)}
                 />
