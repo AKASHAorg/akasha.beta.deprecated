@@ -28,7 +28,7 @@ class NewEntryPage extends Component {
 
     }
     _handleEditorChange = (text) => {
-        if (text.length > 30) {
+        if (text.length > 0) {
             this.setState({
                 publishable: true
             });

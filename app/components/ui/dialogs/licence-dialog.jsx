@@ -40,18 +40,21 @@ class LicenceDialog extends React.Component {
         const radios = this.props.licences.filter(lic => lic.parent === null).map(licence => {
             const sublicence = this.props.licences
                                 .filter(lic => lic.parent === licence.id)
-                                .map(sublic =>
-                                  <RadioButton
-                                    key={sublic.id}
-                                    value={sublic.id}
-                                    label={sublic.label}
-                                    style={{ marginTop: 16, paddingLeft: 34 }}
-                                    onCheck={(ev, val) => this._handleSubLicenceCheck(ev, val)}
-                                    checked={
-                                      (this.state.subLicence &&
-                                        this.state.subLicence.id === sublic.id)
-                                    }
-                                  />
+                                .map(sublic => {
+                                    const subLicence = this.state.subLicence;
+                                    return (
+                                      <RadioButton
+                                        key={sublic.id}
+                                        value={sublic.id}
+                                        label={sublic.label}
+                                        style={{ marginTop: 16, paddingLeft: 34 }}
+                                        onCheck={(ev, val) => this._handleSubLicenceCheck(ev, val)}
+                                        checked={
+                                          (subLicence && subLicence.id === sublic.id) || false
+                                        }
+                                      />
+                                  );
+                                }
                                 );
             return (
               <span key={licence.id}>
