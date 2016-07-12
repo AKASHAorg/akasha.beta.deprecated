@@ -24,9 +24,8 @@ class NewEntryPage extends Component {
         const { appActions } = this.props;
         this._saveDraft((entry) => {
             console.log('redirect to publish panel..', entry);
+            appActions.showPanel({ name: 'publishEntry', overlay: false });
         });
-        appActions.showPanel({ name: 'publishEntry', overlay: false });
-
         // console.log('attempt to save entry');
         // console.log(this.props);
     }
@@ -35,10 +34,11 @@ class NewEntryPage extends Component {
         const content = this.editor.getContent();
         const title = this.state.entryTitle;
         console.log('saving..', { title, content });
-
-        if (typeof cb === 'function') {
-            cb({ title, content });
-        }
+        entryActions.saveDraft({ title, content }).then(() => {
+            if (typeof cb === 'function') {
+                cb({ title, content });
+            }
+        });
     }
     _cancelEntryCreate = (ev) => {
 
@@ -106,5 +106,8 @@ class NewEntryPage extends Component {
         );
     }
 }
-
+NewEntryPage.propTypes = {
+    entryActions: React.PropTypes.object,
+    entryState: React.PropTypes.object
+};
 export default NewEntryPage;

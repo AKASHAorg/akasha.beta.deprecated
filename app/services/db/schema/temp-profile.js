@@ -1,3 +1,5 @@
+import MultiResImage from './multi-res-image';
+
 // schema for tempProfile
 function Status () {
     return {
@@ -8,19 +10,10 @@ function Status () {
     };
 }
 
-function CoverImage () {
-    return {
-        key: String,
-        imageFile: Uint8Array,
-        width: Number,
-        height: Number
-    };
-}
-
 function OptionalData () {
     return {
         avatar: Uint8Array,
-        coverImage: [[CoverImage]],
+        coverImage: [[MultiResImage]],
         about: String,
         links: Array
     };
