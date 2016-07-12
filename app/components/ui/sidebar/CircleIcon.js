@@ -19,15 +19,15 @@ function CircleIcon ({ children, disabled, tooltip, onClick }) {
         borderRadius: '50%'
     };
     return (
-        <IconButton
-          tooltip = {tooltip}
-          style={style}
-          disabled = {disabled}
-          iconStyle={{ width: '32px', height: '32px', fill: '#000' }}
-          onClick = {onClick}
-        >
-            {children}
-        </IconButton>
+      <IconButton
+        tooltip={tooltip}
+        style={style}
+        disabled={disabled}
+        iconStyle={{ width: '32px', height: '32px', fill: '#000' }}
+        onClick={onClick}
+      >
+          {children}
+      </IconButton>
     );
 }
 
