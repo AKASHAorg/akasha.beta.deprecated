@@ -4,9 +4,11 @@ import {
     Editor,
     EditorState,
     SelectionState,
+    ContentState,
     getDefaultKeyBinding,
     CompositeDecorator,
     convertToRaw,
+    convertFromRaw,
     AtomicBlockUtils,
     RichUtils,
     Entity } from 'draft-js';
@@ -23,15 +25,16 @@ import rendererFn from './components/custom-renderer';
 
 const { dialog } = require('electron').remote;
 
+const compositeDecorator = new CompositeDecorator([
+    {
+        strategy: handleStrategy,
+        component: HandleComponent
+    }
+]);
+
 class EntryEditor extends Component {
     constructor (props) {
         super(props);
-        const compositeDecorator = new CompositeDecorator([
-            {
-                strategy: handleStrategy,
-                component: HandleComponent
-            }
-        ]);
         this.state = {
             editorState: EditorState.createEmpty(compositeDecorator),
             showAddButton: false,
@@ -39,14 +42,23 @@ class EntryEditor extends Component {
             editorEnabled: true,
             readOnly: props.readOnly || false
         };
-        if (props.content) {
-
-        }
     }
     componentDidMount () {
         const readOnly = this.state.readOnly;
         if (!readOnly) {
             this.refs.titleInput.focus();
+        }
+    }
+
+    componentWillReceiveProps (nextProps) {
+        const currentContent = this.state.editorState.getCurrentContent();
+        if (nextProps.content && convertFromRaw(nextProps.content) !== currentContent) {
+            console.log('changed :(');
+            this.setState({
+                editorState: EditorState.createWithContent(
+                    convertFromRaw(nextProps.content)
+                )
+            });
         }
     }
 
@@ -223,6 +235,7 @@ class EntryEditor extends Component {
                 inputStyle={{ fontSize: 32 }}
                 onKeyPress={this._handleTitleKeyPress}
                 onChange={this.props.onTitleChange}
+                value={this.props.title}
                 fullWidth
               />
               <div onClick={this._handleEditorContainerClick}>

@@ -4,16 +4,21 @@ import { ProfileActions, AppActions, EntryActions } from '../actions';
 import AddEntryPage from '../components/entry/add-entry-page';
 
 class NewEntryPage extends Component {
+    componentWillMount () {}
     render () {
         return (
           <AddEntryPage {...this.props} />
         );
     }
 }
+NewEntryPage.propTypes = {
+    params: React.PropTypes.object,
+    entryActions: React.PropTypes.object
+};
 function mapStateToProps (state) {
     return {
         profileState: state.profileState,
-        entryStateL: state.entryState
+        entryState: state.entryState
     };
 }
 

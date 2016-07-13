@@ -29,6 +29,7 @@ export default (
     <Route component={HomeLayout} path=":username" >
       <IndexRoute component={StreamPage} />
       <Route component={NewEntryPage} path="new-entry" />
+      <Route component={NewEntryPage} path="drafts/:draftId" />
     </Route>
   </Route>
 );

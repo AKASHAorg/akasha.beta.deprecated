@@ -20,21 +20,45 @@ class NewEntryPage extends Component {
         };
         this.throttledSave = throttle(this._saveDraft, 1000, { trailing: true, leading: false });
     }
+    componentWillMount () {
+        this._loadSavedDrafts();
+    }
+    componentWillUpdate (nextProps) {
+        if (nextProps.params.draftId && (this.props.params.draftId !== nextProps.params.draftId)) {
+            this._loadSavedDrafts();
+        }
+    }
+    _loadSavedDrafts = () => {
+        const { entryActions } = this.props;
+        entryActions.getDrafts();
+    }
     _setupEntryForPublication = (ev) => {
         const { appActions } = this.props;
         this._saveDraft((entry) => {
-            console.log('redirect to publish panel..', entry);
             appActions.showPanel({ name: 'publishEntry', overlay: false });
         });
-        // console.log('attempt to save entry');
-        // console.log(this.props);
     }
     _saveDraft = (cb) => {
-        const { entryActions } = this.props;
+        const { entryActions, entryState } = this.props;
+        const params = this.props.params;
+        let currentDraft = {};
+        if (params.draftId) {
+            currentDraft = entryState.get('drafts')
+                                     .find(draft => draft.id === parseInt(params.draftId, 10));
+        }
         const content = this.editor.getContent();
-        const title = this.state.entryTitle;
-        console.log('saving..', { title, content });
-        entryActions.saveDraft({ title, content }).then(() => {
+        const title = this.state.title;
+        currentDraft.content = content;
+        currentDraft.title = title;
+        if (currentDraft.id) {
+            entryActions.updateDraft({ ...currentDraft }).then(() => {
+                if (typeof cb === 'function') {
+                    cb({ ...currentDraft });
+                }
+            });
+            return;
+        }
+        entryActions.createDraft({ ...currentDraft }).then(() => {
             if (typeof cb === 'function') {
                 cb({ title, content });
             }
@@ -58,10 +82,24 @@ class NewEntryPage extends Component {
         this.throttledSave();
     }
     _handleTitleChange = (ev) => {
-        this.setState({ entryTitle: ev.target.value });
+        this.setState({ title: ev.target.value });
         this.throttledSave();
     }
     render () {
+        const { entryState } = this.props;
+        const draft = entryState.get('drafts').find(currentDraft => currentDraft.id === parseInt(this.props.params.draftId, 10));
+        let entryTitle = 'First entry';
+        if (entryState.get('drafts').size > 0 && !entryState.get('savingDraft')) {
+            entryTitle = 'New Entry';
+        } else if (entryState.get('savingDraft')) {
+            entryTitle = 'Saving draft...';
+        }
+        let title = '';
+        if (this.state.title) {
+            title = this.state.title;
+        } else if (draft && draft.title) {
+            title = draft.title;
+        }
         return (
           <div>
             <Toolbar
@@ -69,7 +107,7 @@ class NewEntryPage extends Component {
               style={{ backgroundColor: '#FFF', borderBottom: '1px solid rgb(204, 204, 204)' }}
             >
               <ToolbarGroup>
-                <h3>First entry</h3>
+                <h3>{entryTitle}</h3>
               </ToolbarGroup>
               <ToolbarGroup>
                 <RaisedButton
@@ -99,6 +137,8 @@ class NewEntryPage extends Component {
                   onChange={this._handleEditorChange}
                   onTitleChange={this._handleTitleChange}
                   readOnly={false}
+                  content={(draft ? draft.content : null)}
+                  title={title}
                 />
               </div>
             </div>
@@ -108,6 +148,7 @@ class NewEntryPage extends Component {
 }
 NewEntryPage.propTypes = {
     entryActions: React.PropTypes.object,
-    entryState: React.PropTypes.object
+    entryState: React.PropTypes.object,
+    params: React.PropTypes.object
 };
 export default NewEntryPage;
