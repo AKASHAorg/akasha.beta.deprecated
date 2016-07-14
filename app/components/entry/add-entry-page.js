@@ -20,17 +20,15 @@ class NewEntryPage extends Component {
         };
         this.throttledSave = throttle(this._saveDraft, 1000, { trailing: true, leading: false });
     }
-    componentWillMount () {
-        this._loadSavedDrafts();
-    }
     componentWillUpdate (nextProps) {
-        if (nextProps.params.draftId && (this.props.params.draftId !== nextProps.params.draftId)) {
+        const { params } = nextProps;
+        if (params.draftId && (this.props.params.draftId !== params.draftId)) {
             this._loadSavedDrafts();
         }
     }
     _loadSavedDrafts = () => {
         const { entryActions } = this.props;
-        entryActions.getDrafts();
+        return entryActions.getDrafts();
     }
     _setupEntryForPublication = (ev) => {
         const { appActions } = this.props;

@@ -28,7 +28,7 @@ class EntryService {
         new Promise((resolve, reject) => {
             entriesDB.transaction('rw', entriesDB.drafts, () => {
                 return entriesDB.drafts.toArray().then(drafts => {
-                    dbg('Found entries', drafts);
+                    dbg('getAllDrafts', drafts);
                     return resolve(drafts);
                 });
             });

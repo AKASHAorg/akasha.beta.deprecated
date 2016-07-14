@@ -1,6 +1,6 @@
 import React, { PropTypes, Component } from 'react';
 import { connect } from 'react-redux';
-import { AppActions, ProfileActions } from '../../../actions';
+import { AppActions, ProfileActions, EntryActions } from '../../../actions';
 import Profile from './IconProfile';
 import AddEntry from './IconAddEntry';
 import Search from './IconSearch';
@@ -12,18 +12,22 @@ import Logo from './IconLogo';
 
 class SideBar extends Component {
     componentWillMount () {
-        const { profileState, profileActions } = this.props;
+        const { profileState, profileActions, entryActions } = this.props;
         if (profileState.get('loggedProfile').size === 0) {
             profileActions.checkLoggedProfile(true);
+            entryActions.getDrafts();
         }
     }
     _handleNewEntry = () => {
-        const entries = 0;
-        if (entries > 0) {
+        const { entryState, profileState } = this.props;
+        const publishedEntries = entryState.get('published');
+        const draftEntries = entryState.get('drafts');
+        const loggedProfile = profileState.get('loggedProfile');
+        if (publishedEntries.size > 0 || draftEntries.size > 0) {
             this.props.appActions.showPanel({ name: 'newEntry', overlay: true });
         } else {
             this.props.appActions.hidePanel();
-            this.context.router.push('/severs/new-entry');
+            this.context.router.push(`/${loggedProfile.get('username')}/new-entry`);
         }
     }
     _handleNavigation = (to) => {
@@ -80,7 +84,9 @@ SideBar.propTypes = {
     color: PropTypes.string,
     appActions: PropTypes.object,
     profileState: PropTypes.object,
-    profileActions: PropTypes.object
+    profileActions: PropTypes.object,
+    entryActions: PropTypes.object,
+    entryState: PropTypes.object
 };
 
 SideBar.contextTypes = {
@@ -107,10 +113,12 @@ SideBar.defaultProps = {
 export default connect(
     state => ({
         panelState: state.panelState,
-        profileState: state.profileState
+        profileState: state.profileState,
+        entryState: state.entryState
     }),
     dispatch => ({
         appActions: new AppActions(dispatch),
         profileActions: new ProfileActions(dispatch),
+        entryActions: new EntryActions(dispatch)
     })
 )(SideBar);

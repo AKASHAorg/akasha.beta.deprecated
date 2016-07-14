@@ -28,6 +28,7 @@ PanelLoader.propTypes = {
     children: PropTypes.element,
     panelState: PropTypes.object,
     profileState: PropTypes.object,
+    entryState: PropTypes.object,
     appActions: PropTypes.object
 };
 PanelLoader.contextTypes = {
