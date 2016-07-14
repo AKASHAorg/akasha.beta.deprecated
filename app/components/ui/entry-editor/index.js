@@ -52,8 +52,7 @@ class EntryEditor extends Component {
 
     componentWillReceiveProps (nextProps) {
         const currentContent = this.state.editorState.getCurrentContent();
-        if (nextProps.content && convertFromRaw(nextProps.content) !== currentContent) {
-            console.log('changed :(');
+        if (nextProps.content && !currentContent.hasText()) {
             this.setState({
                 editorState: EditorState.createWithContent(
                     convertFromRaw(nextProps.content)

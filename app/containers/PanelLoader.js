@@ -5,7 +5,8 @@ import { AppActions, ProfileActions } from '../actions';
 function mapStateToProps (state) {
     return {
         panelState: state.panelState,
-        profileState: state.profileState
+        profileState: state.profileState,
+        entryState: state.entryState
     };
 }
 

@@ -41,9 +41,9 @@ class EntryActions {
         });
     }
     getDrafts = () => {
-        this.entryService.getAllDrafts().then(result => {
+        return this.entryService.getAllDrafts().then(result => {
             dbg('dispatching', types.GET_DRAFTS_SUCCESS, result);
-            this.dispatch({ type: types.GET_DRAFTS_SUCCESS, drafts: result });
+            return this.dispatch({ type: types.GET_DRAFTS_SUCCESS, drafts: result });
         }).catch(reason => this.dispatch({ type: types.GET_DRAFTS_ERROR, error: reason }));
     }
 }
