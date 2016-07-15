@@ -14,8 +14,7 @@ class SideBar extends Component {
     componentWillMount () {
         const { profileState, profileActions, entryActions } = this.props;
         if (profileState.get('loggedProfile').size === 0) {
-            profileActions.checkLoggedProfile(true);
-            entryActions.getDrafts();
+            profileActions.checkLoggedProfile({ noRedirect: true });
         }
     }
     _handleNewEntry = () => {
@@ -27,7 +26,7 @@ class SideBar extends Component {
             this.props.appActions.showPanel({ name: 'newEntry', overlay: true });
         } else {
             this.props.appActions.hidePanel();
-            this.context.router.push(`/${loggedProfile.get('username')}/new-entry`);
+            this.context.router.push(`/${loggedProfile.get('username')}/draft/new`);
         }
     }
     _handleNavigation = (to) => {

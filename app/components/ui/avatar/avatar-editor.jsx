@@ -15,8 +15,8 @@ class Avatar extends React.Component {
         };
     }
 
-    getImage = () => {
-        return new Promise((resolve) => {
+    getImage = () =>
+        new Promise((resolve) => {
             if (this.refs.editor && this.state.avatarImage) {
                 const imageCanvas = this.refs.editor.getImageScaledToCanvas();
 
@@ -31,7 +31,7 @@ class Avatar extends React.Component {
                 resolve(null);
             }
         });
-    }
+
     _handleMouseEnter = () => {
         this.setState({
             showChangeAvatar: this.props.editable,
@@ -71,38 +71,21 @@ class Avatar extends React.Component {
         });
     }
     render () {
-        const userName = this.props.userName;
+        const {
+              radius,
+              editable,
+              userName,
+              image,
+              userInitialsStyle,
+              avatarEmptyStyle,
+              avatarClearStyle,
+              dialogHandlerStyle,
+              userInitialsAlignStyle,
+              userInitialsWrapperStyle,
+              offsetBorder,
+              backgroundColor,
+              ...other } = this.props;
         const palette = this.context.muiTheme.palette;
-        const avatarEmptyStyle = {
-            width: (this.props.radius || 150),
-            height: (this.props.radius || 150),
-            borderRadius: '50%',
-            overflow: 'hidden',
-            border: `1px solid ${palette.textColor}`
-        };
-        const avatarClearStyle = {
-            cursor: 'pointer',
-            position: 'absolute',
-            top: 0,
-            right: 0
-        };
-        const dialogHandlerStyle = {
-            height: '100%',
-            width: '100%',
-            position: 'absolute',
-            cursor: 'pointer'
-        };
-        const userInitialsAlignStyle = {
-            height: '100%',
-            display: 'inline-block',
-            verticalAlign: 'middle'
-        };
-        const userInitialsWrapperStyle = {
-            display: 'inline-block',
-            verticalAlign: 'middle',
-            textAlign: 'center',
-            width: '100%'
-        };
         let userInitials;
         let avatarImage;
         if (this.props.userName) {
@@ -110,16 +93,16 @@ class Avatar extends React.Component {
         }
         if (this.state.avatarImage) {
             avatarImage = this.state.avatarImage;
-        } else if (this.props.image) {
-            avatarImage = this.props.image;
+        } else if (image) {
+            avatarImage = image;
         }
 
         return (
           <div
-            style={{ maxWidth: (this.props.radius || 150), position: 'relative' }}
+            style={{ maxWidth: (radius || 150), position: 'relative' }}
             onMouseEnter={this._handleMouseEnter}
             onMouseLeave={this._handleMouseLeave}
-            {...this.props}
+            {...other}
           >
           {this.state.showChangeAvatar && !this.state.isNewAvatarLoaded &&
             <div
@@ -133,17 +116,18 @@ class Avatar extends React.Component {
                 <AvatarEditor
                   style={{
                       borderRadius: 150,
-                      border: this.props.offsetBorder ? this.props.offsetBorder : 0
+                      border: offsetBorder || 0,
+                      backgroundColor
                   }}
                   border={this.state.isNewAvatarLoaded ? 10 : 0}
                   image={avatarImage}
                   ref="editor"
-                  width={this.props.radius || 130}
-                  height={this.props.radius || 130}
+                  width={radius || 130}
+                  height={radius || 130}
                   borderRadius={100}
-                  scale={this.props.editable ? 1 : this.state.avatarScale}
+                  scale={editable ? 1 : this.state.avatarScale}
                 />
-                {this.props.editable &&
+                {editable &&
                   <div>
                     <Slider
                       defaultValue={this.state.avatarScale}
@@ -175,11 +159,11 @@ class Avatar extends React.Component {
                   >
                     <div style={userInitialsAlignStyle} />
                     <div style={userInitialsWrapperStyle}>
-                      <h2 style={this.props.userInitialsStyle}>{userInitials}</h2>
+                      <h2 style={userInitialsStyle}>{userInitials}</h2>
                     </div>
                   </div>
                 }
-                {!this.props.userName &&
+                {!userName &&
                   <SvgIcon
                     style={{
                         width: this.props.radius,
@@ -202,13 +186,49 @@ Avatar.propTypes = {
     userName: React.PropTypes.string,
     radius: React.PropTypes.number,
     userInitialsStyle: React.PropTypes.object,
-    backgroundColor: React.PropTypes.string
+    backgroundColor: React.PropTypes.string,
+    avatarEmptyStyle: React.PropTypes.object,
+    avatarClearStyle: React.PropTypes.object,
+    dialogHandlerStyle: React.PropTypes.object,
+    userInitialsAlignStyle: React.PropTypes.object,
+    userInitialsWrapperStyle: React.PropTypes.object,
+    offsetBorder: React.PropTypes.number
 };
 Avatar.contextTypes = {
     muiTheme: React.PropTypes.object
 };
 Avatar.defaultProps = {
     radius: 150,
-    backgroundColor: 'rgba(239, 239, 239, 1)'
+    backgroundColor: 'rgba(239, 239, 239, 1)',
+    avatarEmptyStyle: {
+        width: 150,
+        height: 150,
+        borderRadius: '50%',
+        overflow: 'hidden',
+        border: `1px solid #444`
+    },
+    avatarClearStyle: {
+        cursor: 'pointer',
+        position: 'absolute',
+        top: 0,
+        right: 0
+    },
+    dialogHandlerStyle: {
+        height: '100%',
+        width: '100%',
+        position: 'absolute',
+        cursor: 'pointer'
+    },
+    userInitialsAlignStyle: {
+        height: '100%',
+        display: 'inline-block',
+        verticalAlign: 'middle'
+    },
+    userInitialsWrapperStyle: {
+        display: 'inline-block',
+        verticalAlign: 'middle',
+        textAlign: 'center',
+        width: '100%'
+    }
 };
 export default Avatar;

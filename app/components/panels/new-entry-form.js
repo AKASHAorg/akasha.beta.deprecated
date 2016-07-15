@@ -9,7 +9,6 @@ import {
     Card,
     CardHeader,
     CardText,
-    CardActions,
     IconMenu,
     IconButton,
     CircularProgress } from 'material-ui';
@@ -37,15 +36,26 @@ class NewEntryFormPanel extends Component {
         });
     }
     _handleSortByValueChange = (ev, value, payload) => {
-        console.log(payload);
         this.setState({
             sortByValue: payload
         });
     }
+    _handleEntryEdit = (ev, entryId) => {
+        const entryType = this.state.tabsValue;
+        const { router } = this.context;
+        const { profileState, appActions } = this.props;
+        const username = profileState.get('loggedProfile').get('username');
+        appActions.hidePanel();
+        switch (entryType) {
+            case 'drafts':
+                return router.push(`/${username}/draft/${entryId}`);
+            default:
+                break;
+        }
+    }
     _getTabContent = () => {
         const { entryState } = this.props;
         let entries;
-        console.log(this.state.tabsValue);
         switch (this.state.tabsValue) {
             case 'drafts':
                 entries = entryState.get('drafts');
@@ -66,14 +76,22 @@ class NewEntryFormPanel extends Component {
                   title="Draft"
                   subtitle="1 day ago - 18 words so far"
                 >
-                  <IconMenu iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}>
-                    <MenuItem primaryText="Edit" />
-                    <MenuItem primaryText="Publish" />
-                    <MenuItem primaryText="Delete" />
-                  </IconMenu>
+                  <div style={{ width: '55%', display: 'inline-block', textAlign: 'right' }}>
+                    <IconMenu iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}>
+                      <MenuItem
+                        primaryText="Edit"
+                        onClick={(ev) => this._handleEntryEdit(ev, card.id)}
+                      />
+                      <MenuItem primaryText="Publish" />
+                      <MenuItem primaryText="Delete" />
+                    </IconMenu>
+                  </div>
                 </CardHeader>
                 <CardText>
-                  <h2>
+                  <h2
+                    onClick={(ev) => this._handleEntryEdit(ev, card.id)}
+                    style={{ cursor: 'pointer' }}
+                  >
                     {card.title && card.title}
                     {!card.title && 'No Title'}
                   </h2>
@@ -81,10 +99,6 @@ class NewEntryFormPanel extends Component {
                 <CardText>
                   <p>{card.excerpt}</p>
                 </CardText>
-                <CardActions expandable >
-                  <RaisedButton label="Delete" />
-                  <RaisedButton label="Edit" primary />
-                </CardActions>
               </Card>
             );
         });
@@ -175,7 +189,13 @@ class NewEntryFormPanel extends Component {
 }
 NewEntryFormPanel.propTypes = {
     maxWidth: PropTypes.string,
-    rootStyle: PropTypes.object
+    rootStyle: PropTypes.object,
+    profileState: PropTypes.object,
+    entryState: PropTypes.object,
+    appActions: PropTypes.object
+};
+NewEntryFormPanel.contextTypes = {
+    router: PropTypes.object
 };
 NewEntryFormPanel.defaultProps = {
     rootStyle: {

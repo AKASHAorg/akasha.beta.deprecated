@@ -20,13 +20,14 @@ const style = {
 };
 function LoginLayout ({ children }) {
     return (
-    <div className="start-xs"
-      style={{ height: '100%' }}
-    >
+      <div
+        className="start-xs"
+        style={{ height: '100%' }}
+      >
         <Paper style={style} >
             {children}
         </Paper>
-    </div>
+      </div>
     );
 }
 

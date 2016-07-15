@@ -2,65 +2,66 @@ import React, { Component } from 'react';
 import {
     Toolbar,
     ToolbarGroup,
-    TextField,
-    RaisedButton,
+    FlatButton,
     IconButton,
     IconMenu,
     MenuItem } from 'material-ui';
 import EntryEditor from '../ui/entry-editor';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
-import CloseIcon from 'material-ui/svg-icons/navigation/close';
-import throttle from 'lodash.throttle';
+import r from 'ramda';
 
 class NewEntryPage extends Component {
     constructor (props) {
         super(props);
         this.state = {
-            publishable: false
+            publishable: false,
+            draftToEdit: {}
         };
-        this.throttledSave = throttle(this._saveDraft, 1000, { trailing: true, leading: false });
     }
-    componentWillUpdate (nextProps) {
-        const { params } = nextProps;
-        if (params.draftId && (this.props.params.draftId !== params.draftId)) {
-            this._loadSavedDrafts();
+    componentWillMount () {
+        const { entryActions, params } = this.props;
+        if (params.draftId !== 'new') {
+            entryActions.getDraftById(params.draftId);
         }
     }
-    _loadSavedDrafts = () => {
-        const { entryActions } = this.props;
-        return entryActions.getDrafts();
+    componentDidMount () {
+        const { params, entryState } = this.props;
+        if (params.draftId !== 'new') {
+            const draft = entryState.get('drafts').find(
+                drft => drft.id === parseInt(params.draftId, 10));
+            this.editor.setTitle(draft.title);
+            this.editor.setContent(draft.content);
+        }
     }
-    _setupEntryForPublication = (ev) => {
+    _setupEntryForPublication = () => {
         const { appActions } = this.props;
-        this._saveDraft((entry) => {
+        this._saveDraft(() => {
             appActions.showPanel({ name: 'publishEntry', overlay: false });
         });
     }
     _saveDraft = (cb) => {
-        const { entryActions, entryState } = this.props;
-        const params = this.props.params;
-        let currentDraft = {};
-        if (params.draftId) {
-            currentDraft = entryState.get('drafts')
-                                     .find(draft => draft.id === parseInt(params.draftId, 10));
+        const { entryActions, entryState, params } = this.props;
+        let draft;
+        if (params.draftId !== 'new') {
+            draft = entryState.get('drafts').find(drft => drft.id === parseInt(params.draftId, 10));
+        } else {
+            draft = r.clone(this.state.draftToEdit);
         }
         const content = this.editor.getContent();
-        const title = this.state.title;
-        currentDraft.content = content;
-        currentDraft.title = title;
-        if (currentDraft.id) {
-            entryActions.updateDraft({ ...currentDraft }).then(() => {
-                if (typeof cb === 'function') {
-                    cb({ ...currentDraft });
-                }
-            });
-            return;
+        const title = this.editor.getTitle();
+        draft.content = content;
+        draft.title = title;
+        if (params.draftId !== 'new') {
+            entryActions.updateDraft({ ...draft });
+        } else {
+            entryActions.createDraft({ ...draft });
         }
-        entryActions.createDraft({ ...currentDraft }).then(() => {
-            if (typeof cb === 'function') {
-                cb({ title, content });
-            }
+        this.setState({
+            draftToEdit: draft
         });
+        if (typeof cb === 'function') {
+            cb();
+        }
     }
     _cancelEntryCreate = (ev) => {
 
@@ -77,26 +78,20 @@ class NewEntryPage extends Component {
                 publishable: false
             });
         }
-        this.throttledSave();
+        console.log('editorChange')
+        this._saveDraft();
     }
-    _handleTitleChange = (ev) => {
-        this.setState({ title: ev.target.value });
-        this.throttledSave();
+    _handleTitleChange = () => {
+        this._saveDraft();
     }
     render () {
         const { entryState } = this.props;
-        const draft = entryState.get('drafts').find(currentDraft => currentDraft.id === parseInt(this.props.params.draftId, 10));
+        const draft = this.state.draftToEdit;
         let entryTitle = 'First entry';
         if (entryState.get('drafts').size > 0 && !entryState.get('savingDraft')) {
             entryTitle = 'New Entry';
         } else if (entryState.get('savingDraft')) {
             entryTitle = 'Saving draft...';
-        }
-        let title = '';
-        if (this.state.title) {
-            title = this.state.title;
-        } else if (draft && draft.title) {
-            title = draft.title;
         }
         return (
           <div>
@@ -108,7 +103,7 @@ class NewEntryPage extends Component {
                 <h3>{entryTitle}</h3>
               </ToolbarGroup>
               <ToolbarGroup>
-                <RaisedButton
+                <FlatButton
                   primary
                   label="Publish"
                   disabled={!this.state.publishable}
@@ -118,14 +113,12 @@ class NewEntryPage extends Component {
                   iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
                   anchorOrigin={{ horizontal: 'left', vertical: 'top' }}
                   targetOrigin={{ horizontal: 'left', vertical: 'top' }}
+                  style={{ margin: '4px 0' }}
                 >
                   <MenuItem primaryText="Create public link" />
                   <MenuItem primaryText="Word count" />
                   <MenuItem primaryText="Delete draft" />
                 </IconMenu>
-                <IconButton onClick={this._cancelEntryCreate}>
-                  <CloseIcon />
-                </IconButton>
               </ToolbarGroup>
             </Toolbar>
             <div className="row center-xs" style={{ marginTop: '32px' }}>
@@ -135,8 +128,6 @@ class NewEntryPage extends Component {
                   onChange={this._handleEditorChange}
                   onTitleChange={this._handleTitleChange}
                   readOnly={false}
-                  content={(draft ? draft.content : null)}
-                  title={title}
                 />
               </div>
             </div>
@@ -147,6 +138,7 @@ class NewEntryPage extends Component {
 NewEntryPage.propTypes = {
     entryActions: React.PropTypes.object,
     entryState: React.PropTypes.object,
-    params: React.PropTypes.object
+    params: React.PropTypes.object,
+    appActions: React.PropTypes.object
 };
 export default NewEntryPage;

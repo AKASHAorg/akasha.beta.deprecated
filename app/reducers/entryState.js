@@ -16,6 +16,8 @@ export default function entryState (state = initialState, action) {
             return state.merge({ savingDraft: true });
         case types.GET_DRAFTS_SUCCESS:
             return state.merge({ drafts: action.drafts });
+        case types.GET_DRAFT_SUCCESS:
+            return state.merge({ drafts: state.get('drafts').push(action.draft) });
         case types.CREATE_DRAFT_SUCCESS:
             state.merge({ drafts: state.get('drafts').push(fromJS(action.draft)) });
             return state.set('savingDraft', false);

@@ -48,12 +48,12 @@ class ProfileActions {
             });
         });
     }
-    checkLoggedProfile = (noRedirect) =>
+    checkLoggedProfile = (options = {}) =>
         this.profileService.getLoggedProfile().then(loggedProfile => {
             const profile = loggedProfile[0];
             if (profile) {
                 this.dispatch({ type: types.LOGIN_SUCCESS, profileData: profile });
-                if (!noRedirect) {
+                if (!options.noRedirect) {
                     return hashHistory.push(`/${profile.username}`);
                 }
             }
