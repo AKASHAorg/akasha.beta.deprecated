@@ -5,3 +5,4 @@ dist/**
 app/app.html
 ipfs-connector/**
 contracts.sol/**
+main/**
