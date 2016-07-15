@@ -25,13 +25,19 @@ class EntryService {
             });
         });
     getAllDrafts = () =>
-        new Promise((resolve, reject) => {
-            entriesDB.transaction('rw', entriesDB.drafts, () => {
-                return entriesDB.drafts.toArray().then(drafts => {
-                    dbg('getAllDrafts', drafts);
-                    return resolve(drafts);
-                });
-            });
+        entriesDB.transaction('rw', entriesDB.drafts, () =>
+            entriesDB.drafts.toArray().then(drafts => {
+                dbg('getAllDrafts', drafts);
+                return drafts;
+            })
+        );
+    getById = (table, id) =>
+        entriesDB.transaction('r', entriesDB[table], () => {
+            dbg('getById from', table, 'with id', id);
+            return entriesDB[table]
+                    .where('id')
+                    .equals(parseInt(id, 10))
+                    .first();
         });
 }
 

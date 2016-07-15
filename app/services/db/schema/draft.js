@@ -9,12 +9,9 @@ export function getDraftClass (db) {
         content: EntryContent,
         tags: Array,
         excerpt: String,
-        featuredImage: [[MultiResImage]]
+        featuredImage: [[MultiResImage]],
+        updated_at: String,
+        created_at: String
     });
-
-    Draft.prototype.save = function () {
-        console.log(this, 'zis!');
-        return db.drafts.put(this);
-    };
     return Draft;
 }

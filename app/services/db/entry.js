@@ -13,6 +13,13 @@ entriesDB.drafts.mapToClass(getDraftClass());
 
 entriesDB.drafts.hook('creating', (primaryKey, obj, transaction) => {
     dbg('creating.. ', obj);
+    obj.created_at = new Date().toString();
+});
+entriesDB.drafts.hook('updating', (modifications, primaryKey, obj, transaction) => {
+    dbg('updating..', obj, modifications);
+    return {
+        updated_at: new Date().toString()
+    };
 });
 entriesDB.entries.hook('creating', (primaryKey, obj, transaction) => {
     dbg('creating.. ', obj);

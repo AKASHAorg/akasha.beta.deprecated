@@ -40,7 +40,8 @@ class EntryEditor extends Component {
             showAddButton: false,
             toolbarVisible: false,
             editorEnabled: true,
-            readOnly: props.readOnly || false
+            readOnly: props.readOnly || false,
+            title: ''
         };
     }
     componentDidMount () {
@@ -49,22 +50,14 @@ class EntryEditor extends Component {
             this.refs.titleInput.focus();
         }
     }
-
-    componentWillReceiveProps (nextProps) {
-        const currentContent = this.state.editorState.getCurrentContent();
-        if (nextProps.content && !currentContent.hasText()) {
-            this.setState({
-                editorState: EditorState.createWithContent(
-                    convertFromRaw(nextProps.content)
-                )
-            });
-        }
-    }
-
     getContent = () => convertToRaw(this.state.editorState.getCurrentContent());
-
     getTitle = () => this.state.title;
-
+    setContent = (content) => {
+        this.setState({
+            editorState: EditorState.createWithContent(convertFromRaw(content), compositeDecorator)
+        });
+    }
+    setTitle = (title) => this.setState({ title });
     componentClickAway = () => {
         const selection = this.state.editorState.getSelection();
         if (selection.getAnchorKey()) {
@@ -194,6 +187,10 @@ class EntryEditor extends Component {
             this.editor.focus();
         }
     }
+    _handleTitleChange = (ev) => {
+        this.setState({ title: ev.target.value });
+        if (this.props.onTitleChange) this.props.onTitleChange(ev);
+    }
     _toggleToolbarVisibility = (visible) => {
         if (visible) {
             return this.setState({
@@ -233,8 +230,8 @@ class EntryEditor extends Component {
                 hintStyle={{ fontSize: 32 }}
                 inputStyle={{ fontSize: 32 }}
                 onKeyPress={this._handleTitleKeyPress}
-                onChange={this.props.onTitleChange}
-                value={this.props.title}
+                onChange={this._handleTitleChange}
+                value={this.state.title}
                 fullWidth
               />
               <div onClick={this._handleEditorContainerClick}>
