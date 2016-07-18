@@ -39,13 +39,13 @@ if (version) {
     DEFAULT_OPTS.version = version;
     startPack();
 } else {
-  // use the same version as the currently-installed electron-prebuilt
+    // use the same version as the currently-installed electron-prebuilt
     exec('npm list electron-prebuilt', (err, stdout) => {
         if (err) {
-          DEFAULT_OPTS.version = '0.36.2';
-      } else {
-          DEFAULT_OPTS.version = stdout.split('electron-prebuilt@')[1].replace(/\s/g, '');
-      }
+            DEFAULT_OPTS.version = '0.36.2';
+        } else {
+            DEFAULT_OPTS.version = stdout.split('electron-prebuilt@')[1].replace(/\s/g, '');
+        }
 
         startPack();
     });
@@ -57,42 +57,42 @@ function startPack () {
     webpack(cfg, (err, stats) => {
         if (err) return console.error(err);
         del('release')
-    .then(paths => {
-        if (shouldBuildAll) {
-          // build for all platforms
-            const archs = ['ia32', 'x64'];
-            const platforms = ['linux', 'win32', 'darwin'];
+            .then(paths => {
+                if (shouldBuildAll) {
+                    // build for all platforms
+                    const archs = ['ia32', 'x64'];
+                    const platforms = ['linux', 'win32', 'darwin'];
 
-            platforms.forEach(plat => {
-                archs.forEach(arch => {
-                  pack(plat, arch, log(plat, arch));
-              });
+                    platforms.forEach(plat => {
+                        archs.forEach(arch => {
+                            pack(plat, arch, log(plat, arch));
+                        });
+                    });
+                } else {
+                    // build for current platform only
+                    pack(os.platform(), os.arch(), log(os.platform(), os.arch()));
+                }
+            })
+            .catch(err => {
+                console.error(err);
             });
-        } else {
-          // build for current platform only
-            pack(os.platform(), os.arch(), log(os.platform(), os.arch()));
-        }
-    })
-    .catch(err => {
-        console.error(err);
-    });
     });
 }
 
 function pack (plat, arch, cb) {
-  // there is no darwin ia32 electron
+    // there is no darwin ia32 electron
     if (plat === 'darwin' && arch === 'ia32') return;
 
     const iconObj = {
         icon: DEFAULT_OPTS.icon + (() => {
-          let extension = '.png';
-          if (plat === 'darwin') {
-            extension = '.icns';
-        } else if (plat === 'win32') {
-          extension = '.ico';
-      }
-          return extension;
-      })()
+            let extension = '.png';
+            if (plat === 'darwin') {
+                extension = '.icns';
+            } else if (plat === 'win32') {
+                extension = '.ico';
+            }
+            return extension;
+        })()
     };
 
     const opts = Object.assign({}, DEFAULT_OPTS, iconObj, {

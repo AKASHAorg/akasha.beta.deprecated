@@ -2,12 +2,14 @@
 import { app, crashReporter, BrowserWindow } from 'electron';
 import { GethConnector } from '@akashaproject/geth-connector';
 import { IpfsConnector } from '@akashaproject/ipfs-connector';
-
+import AppLogger from './lib/Logger';
+import { resolve } from 'path';
 
 const userData = app.getPath('userData');
+const viewHtml = resolve(__dirname, '../app');
 let mainWindow: any;
 
-Logger.getInstance(userData);
+AppLogger.getInstance(userData);
 
 crashReporter.start({
     productName: 'Akasha',
@@ -17,7 +19,7 @@ crashReporter.start({
 });
 
 if (process.env.NODE_ENV === 'development') {
-    require('electron-debug')();
+    require('electron-debug')({showDevTools: true});
 }
 
 app.on('window-all-closed', () => {
@@ -25,12 +27,8 @@ app.on('window-all-closed', () => {
 });
 
 app.on('will-quit', () => {
-    if (gethService.getInstance().ipcPipe) {
-        gethService.getInstance().stop();
-    }
-    if (IpfsConnector.getInstance().process) {
-        IpfsConnector.getInstance().stop();
-    }
+    GethConnector.getInstance().stop();
+    IpfsConnector.getInstance().stop();
 });
 
 
@@ -41,14 +39,11 @@ app.on('ready', () => {
         resizable: true
     });
     if (process.env.HOT) {
-        mainWindow.loadURL(`file://${__dirname}/app/hot-dev-app.html`);
+        mainWindow.loadURL(`file://${viewHtml}/hot-dev-app.html`);
     } else {
-        mainWindow.loadURL(`file://${__dirname}/app/app.html`);
+        mainWindow.loadURL(`file://${viewHtml}/app.html`);
     }
 
-    if (process.env.NODE_ENV === 'development') {
-        mainWindow.openDevTools();
-    }
     mainWindow.webContents.on('did-finish-load', () => {
         mainWindow.show();
         mainWindow.focus();
@@ -56,6 +51,5 @@ app.on('ready', () => {
     mainWindow.on('closed', () => {
         mainWindow = null;
     });
-    ipcApi.initIPCServices(mainWindow);
 });
 
