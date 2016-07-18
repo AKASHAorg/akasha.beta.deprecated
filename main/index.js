@@ -1,9 +1,13 @@
 "use strict";
 const electron_1 = require('electron');
+const geth_connector_1 = require('@akashaproject/geth-connector');
 const ipfs_connector_1 = require('@akashaproject/ipfs-connector');
+const Logger_1 = require('./lib/Logger');
+const path_1 = require('path');
 const userData = electron_1.app.getPath('userData');
+const viewHtml = path_1.resolve(__dirname, '../app');
 let mainWindow;
-Logger.getInstance(userData);
+Logger_1.default.getInstance(userData);
 electron_1.crashReporter.start({
     productName: 'Akasha',
     companyName: 'Akasha Project',
@@ -11,19 +15,15 @@ electron_1.crashReporter.start({
     autoSubmit: false
 });
 if (process.env.NODE_ENV === 'development') {
-    require('electron-debug')();
+    require('electron-debug')({ showDevTools: true });
 }
 electron_1.app.on('window-all-closed', () => {
     if (process.platform !== 'darwin')
         electron_1.app.quit();
 });
 electron_1.app.on('will-quit', () => {
-    if (gethService.getInstance().ipcPipe) {
-        gethService.getInstance().stop();
-    }
-    if (ipfs_connector_1.IpfsConnector.getInstance().process) {
-        ipfs_connector_1.IpfsConnector.getInstance().stop();
-    }
+    geth_connector_1.GethConnector.getInstance().stop();
+    ipfs_connector_1.IpfsConnector.getInstance().stop();
 });
 electron_1.app.on('ready', () => {
     mainWindow = new electron_1.BrowserWindow({
@@ -32,13 +32,10 @@ electron_1.app.on('ready', () => {
         resizable: true
     });
     if (process.env.HOT) {
-        mainWindow.loadURL(`file://${__dirname}/app/hot-dev-app.html`);
+        mainWindow.loadURL(`file://${viewHtml}/hot-dev-app.html`);
     }
     else {
-        mainWindow.loadURL(`file://${__dirname}/app/app.html`);
-    }
-    if (process.env.NODE_ENV === 'development') {
-        mainWindow.openDevTools();
+        mainWindow.loadURL(`file://${viewHtml}/app.html`);
     }
     mainWindow.webContents.on('did-finish-load', () => {
         mainWindow.show();
@@ -47,5 +44,4 @@ electron_1.app.on('ready', () => {
     mainWindow.on('closed', () => {
         mainWindow = null;
     });
-    ipcApi.initIPCServices(mainWindow);
 });
