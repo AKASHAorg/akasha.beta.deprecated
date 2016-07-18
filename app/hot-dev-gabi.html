@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Hello Electron React!</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+<div id="root" class="fill-height">
+<div id="geth">start geth</div>
+<div id="ipfs">start ipfs</div>
+<div id="user">listAccounts</div>
+<div id="lea">listEthAccounts</div>
+<div id="getProfile">getProfileData</div>
+<div id="cc">Create coinbase</div>
+<div id="faucet">Faucet</div>
+<div id="login">Login</div>
+<div id="logout">Logout</div>
+<div id="balance">Balance</div>
+<div id="usersup">Signup</div>
+<div id="getImage">getIpfsImage</div>
+<div id="userex">user exists</div>
+<div id="pub">Publish</div>
+<div id="tagEx">Tag exists</div>
+<div id="tagAdd">Add tags</div>
+<div id="log1" style="inline-block">show log</div><div id="stop" style="inline-block">stop watching log</div>
+<div id="log2"></div>
+<canvas id="cvs"></canvas>
+<canvas id="cvs2"></canvas>
+</div>
+<script>
+const {ipcRenderer} = require('electron');
+const {remote} = require('electron');
+</script>
+<script>
+ipcRenderer.on('client:logger:gethInfo', function(event, arg){
+//document.getElementById('log2').innerHTML = document.getElementById('log2').innerHTML + '<br/>' + JSON.stringify(arg.status['log-geth']);
+});
+ipcRenderer.on('client:geth:syncUpdate', function(event, arg){
+//document.getElementById('log2').innerHTML = JSON.stringify(arg);
+});
+ipcRenderer.on('client:user:listAccounts', function(event, arg){
+document.getElementById('log2').innerHTML = JSON.stringify(arg);
+});
+ipcRenderer.on('client:user:createCoinbase', function(event, arg){
+document.getElementById('log2').innerHTML = JSON.stringify(arg);
+});
+ipcRenderer.on('client:entry:tagExists', function(event, arg){
+document.getElementById('log2').innerHTML = JSON.stringify(arg);
+});
+ipcRenderer.on('client:user:getBalance', function(event, arg){
+document.getElementById('log2').innerHTML = JSON.stringify(arg);
+});
+ipcRenderer.on('client:user:getIpfsImage', function(event, arg){
+document.getElementById('log2').innerHTML = JSON.stringify(arg);
+});
+ipcRenderer.on('client:entry:publish', function(event, arg){
+document.getElementById('log2').innerHTML = JSON.stringify(arg);
+});
+ipcRenderer.on('client:entry:addTags', function(event, arg){
+document.getElementById('log2').innerHTML = JSON.stringify(arg);
+});
+ipcRenderer.on('client:user:listEthAccounts', function(event, arg){
+document.getElementById('log2').innerHTML = JSON.stringify(arg);
+});
+ipcRenderer.on('client:user:faucetEther', function(event, arg){
+document.getElementById('log2').innerHTML = JSON.stringify(arg);
+});
+ipcRenderer.on('client:user:login', function(event, arg){
+document.getElementById('log2').innerHTML = JSON.stringify(arg);
+});
+ipcRenderer.on('client:user:logout', function(event, arg){
+document.getElementById('log2').innerHTML = JSON.stringify(arg);
+});
+ipcRenderer.on('client:user:getProfileData', function(event, arg){
+document.getElementById('log2').innerHTML = JSON.stringify(arg);
+});
+ipcRenderer.on('client:ipfs:startService', function(event, arg){
+console.log(arg);
+});
+document.getElementById('log1').addEventListener('click', function(){
+	ipcRenderer.send("server:logger:gethInfo", true);
+}, false);
+document.getElementById('tagEx').addEventListener('click', function(){
+	ipcRenderer.send("server:entry:tagExists", {
+		tag: 'economy'
+	});
+}, false);
+document.getElementById('tagAdd').addEventListener('click', function(){
+	ipcRenderer.send("server:entry:addTags", {
+		tags: ['politics3'],
+		account: '0xa62c43265aec5aa33a41dd13f7c20d6dd83623ba',
+		password: 'zz'
+	});
+}, false);
+document.getElementById('getImage').addEventListener('click', function(){
+	ipcRenderer.send("server:user:getIpfsImage", {
+		ipfsHash: 'QmYFcHAZXUL9dvx9kEdyuY65FPJcH5bxpi7AiFtweh3FZG'
+	});
+}, false);//QmUCNXhnEEu64nGvyHPnYJs92qJcBXkeeqwnMsazAGNGBu
+document.getElementById('pub').addEventListener('click', function(){
+	ipcRenderer.send("server:entry:publish", {
+		tags: ['lolo9'],
+		entry: {
+			title: 'My tiuytle',
+			summary: 'My summary',
+			body: 'My body'
+		},
+		account: '0xa62c43265aec5aa33a41dd13f7c20d6dd83623ba',
+		password: 'zz'
+	});
+}, false);
+document.getElementById('user').addEventListener('click', function(){
+	ipcRenderer.send("server:user:listAccounts");
+}, false);
+document.getElementById('faucet').addEventListener('click', function(){
+	ipcRenderer.send("server:user:faucetEther", {
+		account: '0xa62c43265aec5aa33a41dd13f7c20d6dd83623ba'
+	});
+}, false);
+document.getElementById('userex').addEventListener('click', function(){
+	ipcRenderer.send("server:user:exists", {
+		username: 'Alfa'
+	});
+}, false);
+document.getElementById('balance').addEventListener('click', function(){
+	ipcRenderer.send("server:user:getBalance", {
+		username: 'Alfa'
+	});
+}, false);
+document.getElementById('getProfile').addEventListener('click', function(){
+	ipcRenderer.send("server:user:getProfileData", {
+		ipfsHash: 'QmezPXLWSimGHKJCitvWTWo3qVqFWjsRT8gxJstRP6junY'
+	});
+}, false);
+document.getElementById('lea').addEventListener('click', function(){
+	ipcRenderer.send("server:user:listEthAccounts");
+}, false);
+document.getElementById('login').addEventListener('click', function(){
+	ipcRenderer.send("server:user:login", {
+		account: '0xa62c43265aec5aa33a41dd13f7c20d6dd83623ba',
+		password: 'zz'
+	});
+}, false);
+document.getElementById('logout').addEventListener('click', function(){
+	ipcRenderer.send("server:user:logout");
+}, false);
+document.getElementById('cc').addEventListener('click', function(){
+	ipcRenderer.send("server:user:createCoinbase", {
+		password: 'zz'
+	});
+}, false);
+document.getElementById('usersup').addEventListener('click', function(){
+	var index=0;
+	var avatarBuffer = null;
+	var big1Buffer = null;
+	var canvas = document.getElementById('cvs');
+	var ctx = canvas.getContext('2d');
+	ctx.beginPath();
+	ctx.moveTo(2,2);
+	ctx.lineTo(200,20);
+	ctx.lineTo(120,120);
+	ctx.closePath();
+	ctx.stroke();
+	canvas.toBlob(function(blob){
+		var reader = new FileReader();
+		reader.onload = function(){
+			avatarBuffer = new Uint8Array(reader.result);
+			index++;
+			if(index>1) {
+				ipcRenderer.send("server:user:registerProfile", {
+					userName: 'Gamma7',
+					lastName: 'Munteanu',
+					optionalData: {
+						about: 'tralalala',
+						avatar: avatarBuffer,
+						coverImage: [
+					        {
+					          "key": "small",
+					          "imageFile": big1Buffer,
+					          "width": 320,
+					          "height": 200
+					        },
+
+					        {
+					          "key": "med",
+					          "imageFile": big1Buffer,
+					          "width": 640,
+					          "height": 401
+					        }
+						]
+					},
+					account: '0xa62c43265aec5aa33a41dd13f7c20d6dd83623ba',
+					password: 'zz'
+				});
+			}
+		}
+		reader.readAsArrayBuffer(blob)
+	});
+
+	var canvas2 = document.getElementById('cvs2');
+	var ctx2 = canvas.getContext('2d');
+	ctx2.beginPath();
+	ctx2.moveTo(3,3);
+	ctx2.lineTo(200,20);
+	ctx2.lineTo(110,110);
+	ctx2.closePath();
+	ctx2.stroke();
+	canvas2.toBlob(function(blob){
+		var reader = new FileReader();
+		reader.onload = function(){
+			big1Buffer = new Uint8Array(reader.result);
+			index++;
+			if(index>1) {
+				ipcRenderer.send("server:user:registerProfile", {
+					userName: 'Gamma7',
+					lastName: 'Munteanu',
+					optionalData: {
+						about: 'tralalala',
+						avatar: avatarBuffer,
+						coverImage: [
+							[
+					        {
+					          "key": "small",
+					          "imageFile": big1Buffer,
+					          "width": 320,
+					          "height": 200
+					        },
+
+					        {
+					          "key": "med",
+					          "imageFile": big1Buffer,
+					          "width": 640,
+					          "height": 401
+					        }
+					        ]
+						]
+					},
+					account: '0xa62c43265aec5aa33a41dd13f7c20d6dd83623ba',
+					password: 'zz'
+				});
+			}
+		}
+		reader.readAsArrayBuffer(blob);
+	});
+
+
+}, false);
+document.getElementById('geth').addEventListener('click', function(){
+	ipcRenderer.send("server:geth:startService");
+});
+document.getElementById('ipfs').addEventListener('click', function(){
+	ipcRenderer.send("server:ipfs:startService", {
+		apiPort: 2222
+	});
+});
+document.getElementById('stop').addEventListener('click', function(){
+	ipcRenderer.send("server:logger:stopGethInfo");
+});
+</script>
+</body>
+</html>
