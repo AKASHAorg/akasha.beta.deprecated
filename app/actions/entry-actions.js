@@ -57,7 +57,9 @@ class EntryActions {
     getDraftById = (id) =>
         this.entryService.getById('drafts', id).then(result => {
             dbg('dispatching', types.GET_DRAFT_SUCCESS, result);
-            return this.dispatch({ type: types.GET_DRAFT_SUCCESS, draft: result });
+            this.dispatch({ type: types.GET_DRAFT_SUCCESS, draft: result });
+            console.log(result);
+            return result;
         }).catch(reason => this.dispatch({ type: types.GET_DRAFT_ERROR, error: reason }));
 }
 

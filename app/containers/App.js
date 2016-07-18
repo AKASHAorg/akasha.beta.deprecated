@@ -38,8 +38,8 @@ class App extends Component {
               open={(this.props.appState.get('error').size > 0)}
               onRequestClose={this._handleErrorClose}
             />
-                {(process.env.NODE_ENV !== 'production') &&
-                    React.createElement(require('./DevTools'))
+                {/** (process.env.NODE_ENV !== 'production') &&
+                    React.createElement(require('./DevTools'))**/
                 }
           </div>
         );

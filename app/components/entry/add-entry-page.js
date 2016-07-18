@@ -24,19 +24,24 @@ class NewEntryPage extends Component {
             entryActions.getDraftById(params.draftId);
         }
     }
-    componentDidMount () {
-        const { params, entryState } = this.props;
-        if (params.draftId !== 'new') {
-            const draft = entryState.get('drafts').find(
-                drft => drft.id === parseInt(params.draftId, 10));
+    componentWillReceiveProps (nextProps) {
+        const currentDrafts = this.props.entryState.get('drafts');
+        const nextDrafts = nextProps.entryState.get('drafts');
+
+        if (nextDrafts !== currentDrafts && nextProps.params.draftId !== 'new') {
+            const draft = nextDrafts.find(
+                drft => drft.id === parseInt(nextProps.params.draftId, 10));
             this.editor.setTitle(draft.title);
             this.editor.setContent(draft.content);
         }
     }
     _setupEntryForPublication = () => {
-        const { appActions } = this.props;
+        const { profileState, params } = this.props;
+        const loggedProfile = profileState.get('loggedProfile');
         this._saveDraft(() => {
-            appActions.showPanel({ name: 'publishEntry', overlay: false });
+            this.context.router.push(
+              `/${loggedProfile.get('username')}/draft/${params.draftId}/publish`
+            );
         });
     }
     _saveDraft = (cb) => {
@@ -63,9 +68,6 @@ class NewEntryPage extends Component {
             cb();
         }
     }
-    _cancelEntryCreate = (ev) => {
-
-    }
     _handleEditorChange = (text) => {
         const txt = text.trim();
 
@@ -78,7 +80,6 @@ class NewEntryPage extends Component {
                 publishable: false
             });
         }
-        console.log('editorChange')
         this._saveDraft();
     }
     _handleTitleChange = () => {
@@ -100,7 +101,7 @@ class NewEntryPage extends Component {
               style={{ backgroundColor: '#FFF', borderBottom: '1px solid rgb(204, 204, 204)' }}
             >
               <ToolbarGroup>
-                <h3>{entryTitle}</h3>
+                <h3 style={{ fontWeight: '200' }}>{entryTitle}</h3>
               </ToolbarGroup>
               <ToolbarGroup>
                 <FlatButton
@@ -131,14 +132,21 @@ class NewEntryPage extends Component {
                 />
               </div>
             </div>
+            {this.props.children &&
+                React.cloneElement(this.props.children, { draft })
+            }
           </div>
         );
     }
 }
 NewEntryPage.propTypes = {
-    entryActions: React.PropTypes.object,
-    entryState: React.PropTypes.object,
+    entryActions: React.PropTypes.object.isRequired,
+    entryState: React.PropTypes.object.isRequired,
+    profileState: React.PropTypes.object.isRequired,
     params: React.PropTypes.object,
-    appActions: React.PropTypes.object
+    children: React.PropTypes.node
+};
+NewEntryPage.contextTypes = {
+    router: React.PropTypes.object
 };
 export default NewEntryPage;

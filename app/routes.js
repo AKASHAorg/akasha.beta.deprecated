@@ -7,6 +7,7 @@ import LoginLayout from './layouts/LoginLayout';
 import LoginPage from './containers/LoginPage';
 import HomeLayout from './layouts/HomeLayout';
 import NewEntryPage from './containers/NewEntryPage';
+import PublishEntryPanel from './containers/PublishEntryPanel';
 import StreamPage from './containers/StreamPage';
 
 import {
@@ -28,7 +29,9 @@ export default (
     </Route>
     <Route component={HomeLayout} path=":username" >
       <IndexRoute component={StreamPage} />
-      <Route component={NewEntryPage} path="draft/:draftId" />
+      <Route component={NewEntryPage} path="draft/:draftId">
+        <Route component={PublishEntryPanel} path="publish"/>
+      </Route>
     </Route>
   </Route>
 );
