@@ -30,7 +30,9 @@ export const EVENTS = {
             getIpfsImage: 'server:user:getIpfsImage'
         },
         entry: {
-            publish: 'server:entry:publish'
+            publish: 'server:entry:publish',
+            tagExists: 'server:entry:tagExists',
+            addTags: 'server:entry:addTags'
         }
     },
     client: {
@@ -65,7 +67,9 @@ export const EVENTS = {
             getIpfsImage: 'client:user:getIpfsImage'
         },
         entry: {
-            publish: 'client:entry:publish'
+            publish: 'client:entry:publish',
+            tagExists: 'client:entry:tagExists',
+            addTags: 'client:entry:addTags'
         }
     }
 };

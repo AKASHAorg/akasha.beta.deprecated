@@ -122,6 +122,12 @@ export const EVENTS = {
                     ] 
 
                 }
+            }`,
+            tagExists: `{
+                tag: string
+            }`,
+            addTags: `{
+                tags: array of strings
             }`
         }
     },
@@ -176,7 +182,18 @@ export const EVENTS = {
             getBalance: 'string with the sum in ETH'
         },
         entry: {
-            publish: '...'
+            publish: `{
+                same obj sent to server +,
+                ipfsHash: string
+            }`,
+            tagExists: {
+                exists: boolean,
+                tag: string
+            },
+            addTags: `{
+                tx: string,
+                tag: string
+            }`
         }
     }
 };

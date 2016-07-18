@@ -9,10 +9,12 @@ const Promise = require('bluebird');
  * for publishing stuff
  * a publish JSON payload has to look like this:
  * {
-    title: 'My title',
-    summary: 'My summary',
     tags: ['economy', 'politics'],
-    article: 'The whole article'
+    entry: {
+        title: 'My title',
+        summary: 'My summary',
+        ...
+    }
  }
  */
 class EntryService extends MainService {
@@ -22,7 +24,9 @@ class EntryService extends MainService {
     constructor () {
         super('entry');
         this.ADD_TAGS_FAILED = 'Adding tags failed';
+        this.NO_TAG_PARAMETER = 'No tag parameter sent';
         this.MAIN_ATTRIBUTES = ['title', 'summary'];
+        this.CREATE_ENTRY_CONTRACT_GAS = 2600000;
     }
     /*
      * It sets up the listeners for this module.
@@ -36,9 +40,34 @@ class EntryService extends MainService {
         ipcMain.on(this.serverEvent.publish, (event, arg) => {
             this._publish(event, arg);
         });
+        ipcMain.on(this.serverEvent.tagExists, (event, arg) => {
+            this._tagExists(event, arg);
+        });
+        ipcMain.on(this.serverEvent.addTags, (event, arg) => {
+            this._tagHandler(event, arg);
+        });
     }
 
-    _tagHandler (pubObj) {
+    _tagExists (event, arg) {
+        if (arg.tag) {
+            const web3 = this.__getWeb3();
+            const tagsContract = new Dapple.class(web3).objects.tags;
+            tagsContract.exists.call(web3.fromUtf8(arg.tag), {}, (err, res) => {
+                if (err) {
+                    this._sendEvent(event)(this.clientEvent.tagExists, false, err, err.toString());
+                } else {
+                    this._sendEvent(event)(this.clientEvent.tagExists, true, {
+                        exists: res,
+                        tag: arg.tag
+                    });
+                }
+            });
+        } else {
+            this._sendEvent(event)(this.clientEvent.tagExists, false, {}, this.NO_TAG_PARAMETER);
+        }
+    }
+
+    _tagHandler (event, pubObj) {
         const web3 = this.__getWeb3();
         const tagsContract = new Dapple.class(web3).objects.tags;
         const tagExistsPromises = [];
@@ -56,21 +85,29 @@ class EntryService extends MainService {
         Promise.all(tagExistsPromises).then((results) => {
             let idx = 0;
             let numberOfTagsToBeAdded = 0;
-            const tagAddedHandler = (err, tx) => {
-                if (err) {
-                    this._sendEvent()(this.clientEvent.signUp,
-                                false,
-                                { err,
-                                    message: this.ADD_TAGS_FAILED
-                                });
-                } else {
-                    this.__getGeth().addFilter('tx', tx, () => {
-                        idx++;
-                        if (idx >= numberOfTagsToBeAdded) {
-                            this._publishArticle(pubObj);
-                        }
-                    });
-                }
+            const tagAddedHandler = (tag) => {
+                return (err, tx) => {
+                    if (err) {
+                        this._sendEvent(event)(this.clientEvent.addTags,
+                                    false,
+                                    err,
+                                    this.ADD_TAGS_FAILED
+                                    );
+                    } else {
+                        this._sendEvent(event)(this.clientEvent.addTags,
+                                    true,
+                                    { tx, tag }
+                                    );
+                        this.__getGeth().addFilter('tx', tx, () => {
+                            idx++;
+                            if (idx >= numberOfTagsToBeAdded) {
+                                if (pubObj.entry && pubObj.entry.title) {
+                                    this._publishArticle(event, pubObj);
+                                }
+                            }
+                        });
+                    }
+                };
             };
             web3
                 .personal
@@ -81,13 +118,21 @@ class EntryService extends MainService {
                             numberOfTagsToBeAdded++;
                             tagsContract.add(
                                 web3.fromUtf8(result.tag),
-                                {},
-                                tagAddedHandler);
+                                {
+                                    from: this._getCoinbase(pubObj)
+                                },
+                                tagAddedHandler(result.tag));
+                        }
+                    }
+                    if (numberOfTagsToBeAdded === 0) {
+                        if (pubObj.entry && pubObj.entry.title) {
+                            this._publishArticle(event, pubObj);
                         }
                     }
                 }).catch((err) => {
-                    this._sendEvent()(this.clientEvent.signUp,
+                    this._sendEvent(event)(this.clientEvent.addTags,
                                         false,
+                                        err,
                                         this.UNLOCK_COINBASE_FAIL);
                 });
         });
@@ -95,15 +140,15 @@ class EntryService extends MainService {
 
     _publish (event, arg) {
         if (arg.tags && typeof arg.tags === 'object') {
-            this._tagHandler(arg);
+            this._tagHandler(event, arg);
         } else {
             // TODO: maybe we must not publish an article with no tags
-            this._publishArticle(arg);
+            this._publishArticle(event, arg);
         }
     }
 
-    _publishArticle (pubObj) {
-        this._sendEvent()(this.clientEvent.publish, true, {
+    _publishArticle (event, pubObj) {
+        this._sendEvent(event)(this.clientEvent.publish, true, {
             message: pubObj
         });
         const mainObj = {};
@@ -115,39 +160,44 @@ class EntryService extends MainService {
         }).then((response) => {
             const hash = response[0].Hash;
             const web3 = this.__getWeb3();
-            const mainContract = new Dapple.class(web3).objects.akashaMain;
-            mainContract.publishEntry(
-                this._chopIpfsHash(hash),
-                pubObj.tags,
-                {},
-                (err, tx) => {
-                    if (err) {
-                        this._sendEvent()(this.clientEvent.publish,
-                                    false,
-                                    { err,
-                                        message: this.PUBLISH_ARTICLE_FAIL
-                                    });
-                    } else {
-                        this.__getGeth().addFilter('tx', tx, () => {
-                            this._sendEvent()(this.clientEvent.publish,
-                                    true,
-                                    pubObj);
-                        });
-                    }
-                }
-            );
+            web3
+                .personal
+                .unlockAccountAsync(pubObj.account, pubObj.password, this.UNLOCK_INTERVAL)
+                .then(() => {
+                    const mainContract = new Dapple.class(web3).objects.akashaMain;
+                    return mainContract.publishEntry(
+                        this._chopIpfsHash(hash),
+                        pubObj.tags,
+                        {
+                            from: this._getCoinbase(pubObj),
+                            gas: this.CREATE_ENTRY_CONTRACT_GAS
+                        },
+                        (err, tx) => {
+                            if (err) {
+                                this._sendEvent(event)(this.clientEvent.publish,
+                                            false,
+                                            err,
+                                            this.PUBLISH_ARTICLE_FAIL);
+                            } else {
+                                this._sendEvent(event)(this.clientEvent.publish,
+                                        true,
+                                        Object.assign({ tx }, pubObj));
+                                this.__getGeth().addFilter('tx', tx, () => {
+                                    //debug and check the .log key
+                                    this._sendEvent(event)(this.clientEvent.publish,
+                                            true,
+                                            Object.assign({ ipfsHash: hash }, pubObj));
+                                });
+                            }
+                        }
+                    );
+                }).catch((err) => {
+                    this._sendEvent(event)(this.clientEvent.signUp,
+                                        false,
+                                        err,
+                                        this.UNLOCK_COINBASE_FAIL);
+                });
         });
-        const web3 = this.__getWeb3();
-        web3
-            .personal
-            .unlockAccountAsync(pubObj.account, pubObj.password, this.UNLOCK_INTERVAL)
-            .then(() => {
-
-            }).catch((err) => {
-                this._sendEvent()(this.clientEvent.signUp,
-                                    false,
-                                    this.UNLOCK_COINBASE_FAIL);
-            });
     }
 }
 
