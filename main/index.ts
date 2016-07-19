@@ -7,7 +7,9 @@ import { resolve } from 'path';
 
 const userData = app.getPath('userData');
 const viewHtml = resolve(__dirname, '../app');
-let mainWindow: any;
+export const runningWindow = {
+    mainWindow: {}
+};
 
 AppLogger.getInstance(userData);
 
@@ -19,7 +21,7 @@ crashReporter.start({
 });
 
 if (process.env.NODE_ENV === 'development') {
-    require('electron-debug')({showDevTools: true});
+    require('electron-debug')({ showDevTools: true });
 }
 
 app.on('window-all-closed', () => {
@@ -33,10 +35,14 @@ app.on('will-quit', () => {
 
 
 app.on('ready', () => {
-    mainWindow = new BrowserWindow({
+    const mainWindow = new BrowserWindow({
         width: 1280,
         height: 720,
-        resizable: true
+        resizable: true,
+        webPreferences: {
+            nodeIntegration: false,
+            preload: resolve(__dirname, 'preloader.js')
+        }
     });
     if (process.env.HOT) {
         mainWindow.loadURL(`file://${viewHtml}/hot-dev-app.html`);
@@ -47,9 +53,6 @@ app.on('ready', () => {
     mainWindow.webContents.on('did-finish-load', () => {
         mainWindow.show();
         mainWindow.focus();
-    });
-    mainWindow.on('closed', () => {
-        mainWindow = null;
     });
 });
 
