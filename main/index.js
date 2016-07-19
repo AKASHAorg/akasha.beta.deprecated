@@ -6,7 +6,9 @@ const Logger_1 = require('./lib/Logger');
 const path_1 = require('path');
 const userData = electron_1.app.getPath('userData');
 const viewHtml = path_1.resolve(__dirname, '../app');
-let mainWindow;
+exports.runningWindow = {
+    mainWindow: {}
+};
 Logger_1.default.getInstance(userData);
 electron_1.crashReporter.start({
     productName: 'Akasha',
@@ -26,10 +28,14 @@ electron_1.app.on('will-quit', () => {
     ipfs_connector_1.IpfsConnector.getInstance().stop();
 });
 electron_1.app.on('ready', () => {
-    mainWindow = new electron_1.BrowserWindow({
+    const mainWindow = new electron_1.BrowserWindow({
         width: 1280,
         height: 720,
-        resizable: true
+        resizable: true,
+        webPreferences: {
+            nodeIntegration: false,
+            preload: path_1.resolve(__dirname, 'preloader.js')
+        }
     });
     if (process.env.HOT) {
         mainWindow.loadURL(`file://${viewHtml}/hot-dev-app.html`);
@@ -41,7 +47,5 @@ electron_1.app.on('ready', () => {
         mainWindow.show();
         mainWindow.focus();
     });
-    mainWindow.on('closed', () => {
-        mainWindow = null;
-    });
 });
+//# sourceMappingURL=index.js.map

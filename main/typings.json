@@ -6,7 +6,7 @@
     "bluebird": "registry:npm/bluebird#3.3.4+20160427051630"
   },
   "globalDependencies": {
-    "electron": "registry:env/electron#0.37.6+20160416165306",
+    "github-electron": "registry:dt/github-electron#1.2.5+20160624085047",
     "winston": "registry:dt/winston#0.0.0+20160417152829"
   }
 }
