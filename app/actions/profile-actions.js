@@ -112,7 +112,7 @@ class ProfileActions {
      * @param: {string} profilePassword
      */
     createEthAddress (profilePassword) {
-        this.dispatch({ type: types.CREATE_ETH_ADDRESS_START });
+        this.dispatch({ type: types.CREATE_ETH_ADDRESS });
         this.profileService.createEthAddress(profilePassword).then(result => {
             dbg('createEthAddress', result);
             if (!result.success) {
@@ -143,7 +143,7 @@ class ProfileActions {
      * @param {string} profileAddress
      */
     requestFundFromFaucet (profileAddress) {
-        this.dispatch({ type: types.FUND_FROM_FAUCET_START });
+        this.dispatch({ type: types.FUND_FROM_FAUCET });
         this.profileService.requestFundFromFaucet(profileAddress).then(result => {
             dbg('requestFundFromFaucet_success', result);
             if (!result.success) {

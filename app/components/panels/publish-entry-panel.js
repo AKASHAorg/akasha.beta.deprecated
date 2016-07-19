@@ -10,7 +10,13 @@ class PublishPanel extends React.Component {
     constructor (props) {
         super(props);
         this.state = {
-            isLicencingOpen: false
+            isLicencingOpen: false,
+            title: '',
+            content: {},
+            excerpt: '',
+            tags: [],
+            licence: '',
+            featuredImage: []
         };
     }
     componentWillMount () {
@@ -45,12 +51,12 @@ class PublishPanel extends React.Component {
             featuredImage
         });
     }
-    _handleLicenceDialogClose = (ev) => {
+    _handleLicenceDialogClose = () => {
         this.setState({
             isLicencingOpen: false
         });
     }
-    _handleLicenceFocus = (ev) => {
+    _handleLicenceFocus = () => {
         this.setState({
             isLicencingOpen: true
         });
@@ -61,20 +67,22 @@ class PublishPanel extends React.Component {
             isLicencingOpen: false
         });
     }
-    _handleScroll = (ev) => {
+    _handleScroll = () => {
         const scrollTop = this.refs.panelContent.scrollTop;
         if (scrollTop > 0) {
             this.refs.panelTitle.style.boxShadow = '0px 3px 3px -1px rgba(0,0,0,0.2)';
-            this.refs.panelTitle.style.height = 96 - (scrollTop / 2) + 'px';
+            this.refs.panelTitle.style.height = `${96 - (scrollTop / 1.5)}px`;
         } else {
             this.refs.panelTitle.style.boxShadow = 'none';
         }
     }
-    _publishEntry = () => {
-        console.log(this.state);
+    _publishEntry = () => {}
+    _handleTagAutocomplete = (value) => {
+        console.log('search for a tag containing ', value);
+        const { entryActions } = this.props;
     }
-    _handleDeleteTag = (ev) => {
-
+    _checkTagExistence = (tag) => {
+        console.log('check if tag exists ', tag);
     }
     render () {
         let selectedLicence;
@@ -121,16 +129,16 @@ class PublishPanel extends React.Component {
                     top: 0,
                     left: 0,
                     right: 0,
-                    minHeight: 64,
+                    minHeight: 56,
                     height: 96,
                     padding: '12px 24px',
                     background: '#FFF',
                     margin: 0,
                     zIndex: 10,
-                    transition: 'all 0.318s ease-in-out'
+                    transition: 'all 0.118s ease-in-out'
                 }}
               >
-                <h2 className="col-xs-7">Publish a New Entry</h2>
+                <h3 className="col-xs-7" style={{ fontWeight: 300 }}>Publish a New Entry</h3>
                 <div className="col-xs-4 end-xs">0.002 ETH</div>
               </div>
               <div
@@ -151,15 +159,25 @@ class PublishPanel extends React.Component {
               >
                 <div className="col-xs-12 field">
                   <small>Title shown in preview</small>
-                  <TextField name="title" fullWidth value={this.state.title} />
+                  <TextField
+                    name="title"
+                    fullWidth
+                    value={this.state.title}
+                    onChange={(ev) => this.setState({ title: ev.target.value })}
+                  />
                 </div>
                 <div className="col-xs-12 field">
                   <small>Featured Image</small>
-                  <ImageUploader />
+                  <ImageUploader dialogTitle={'Add a featured image'} />
                 </div>
                 <div className="col-xs-12 field">
                   <small>Tags</small>
-                  <TagsField tags={this.state.tags} fullWidth />
+                  <TagsField
+                    tags={this.state.tags}
+                    onRequestTagAutocomplete={this._handleTagAutocomplete}
+                    onTagAdded={this._checkTagExistence}
+                    fullWidth
+                  />
                 </div>
                 <div className="col-xs-12 field">
                   <small>Excerpt shown in preview</small>
@@ -218,6 +236,8 @@ class PublishPanel extends React.Component {
 }
 PublishPanel.propTypes = {
     width: React.PropTypes.string,
-    entryState: React.PropTypes.object
+    entryState: React.PropTypes.object,
+    entryActions: React.PropTypes.object,
+    draft: React.PropTypes.object
 };
 export default PublishPanel;

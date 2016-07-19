@@ -7,6 +7,7 @@ class LoggerService {
     }
     removeListener (channel) {
         ipcRenderer.removeListener(channel, this.listeners[channel]);
+        this.listeners[channel] = null;
     }
     startLogger = (logger, options, cb) => {
         ipcRenderer.send(EVENTS.server.logger[logger], options ? options.continuous : false);
@@ -21,7 +22,6 @@ class LoggerService {
         ipcRenderer.send(stopChannel);
         if (typeof this.listeners[gethInfoChannel] === 'function') {
             this.removeListener(EVENTS.client.logger.gethInfo);
-            this.listeners[EVENTS.client.logger.gethInfo] = null;
         }
         if (cb) {
             return cb();

@@ -133,7 +133,19 @@ class NewEntryPage extends Component {
               </div>
             </div>
             {this.props.children &&
-                React.cloneElement(this.props.children, { draft })
+              <div>
+                {React.cloneElement(this.props.children, { draft })}
+                <div
+                  style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      bottom: 0,
+                      right: 0,
+                      zIndex: 5,
+                      backgroundColor: 'rgba(255, 255, 255, 0.9)' }}
+                />
+              </div>
             }
           </div>
         );

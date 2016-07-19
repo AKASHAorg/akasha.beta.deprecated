@@ -47,7 +47,7 @@ app.on('ready', () => {
         resizable: true
     });
     if (process.env.HOT) {
-        mainWindow.loadURL(`file://${__dirname}/app/hot-dev-gabi.html`);
+        mainWindow.loadURL(`file://${__dirname}/app/hot-dev-app.html`);
     } else {
         mainWindow.loadURL(`file://${__dirname}/app/app.html`);
     }

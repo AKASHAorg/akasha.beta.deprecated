@@ -14,6 +14,7 @@ class EntryActions {
             leading: true
         });
     }
+
     createDraft = (draft) => {
         dbg('dispatching', types.SAVE_DRAFT);
         this.dispatch({ type: types.SAVE_DRAFT, draft });
@@ -35,18 +36,18 @@ class EntryActions {
             return this.dispatch({ type: types.CREATE_DRAFT_ERROR, error: reason });
         });
     }
+
     updateDraft = (draft) => {
         this.dispatch({ type: types.SAVE_DRAFT, draft });
         return this.throttledUpdateDraft(draft);
     }
-    _throttleUpdateDraft = (draft) => {
-        return this.entryService.saveDraft(draft).then(result => {
+    _throttleUpdateDraft = (draft) =>
+        this.entryService.saveDraft(draft).then(result => {
             dbg('dispatching', types.UPDATE_DRAFT_SUCCESS);
             return this.dispatch({ type: types.UPDATE_DRAFT_SUCCESS, draft: result });
         }).catch(reason =>
             this.dispatch({ type: types.UPDATE_DRAFT_ERROR, error: reason })
         );
-    }
 
     getDrafts = () =>
         this.entryService.getAllDrafts().then(result => {
@@ -58,9 +59,32 @@ class EntryActions {
         this.entryService.getById('drafts', id).then(result => {
             dbg('dispatching', types.GET_DRAFT_SUCCESS, result);
             this.dispatch({ type: types.GET_DRAFT_SUCCESS, draft: result });
-            console.log(result);
             return result;
         }).catch(reason => this.dispatch({ type: types.GET_DRAFT_ERROR, error: reason }));
+
+    getTags = (startingIndex = 0) => {
+        this.dispatch({ type: types.GET_TAGS });
+        return this.entryService.getTags(startingIndex).then(result => {
+            dbg('dispatching', types.GET_TAGS_SUCCESS, result);
+            return this.dispatch({ type: types.GET_TAGS_SUCCESS, tags: result });
+        }).catch(reason => this.dispatch({ type: types.GET_TAGS_ERROR, error: reason }));
+    }
+
+    checkTagExistence = (tag) => {
+        this.dispatch({ type: types.CHECK_TAG_EXISTENCE });
+        return this.entryService.checkTagExistence(tag).then(result => {
+            dbg('dispatching', types.CHECK_TAG_EXISTENCE_SUCCESS, result);
+            return this.dispatch({ type: types.CHECK_TAG_EXISTENCE_SUCCESS, result });
+        }).catch(reason => this.dispatch({ type: types.CHECK_TAG_EXISTENCE_ERROR, error: reason }));
+    }
+
+    createTag = (tag) => {
+        this.dispatch({ type: types.CREATE_TAG });
+        return this.entryService.createTag(tag).then(result => {
+            dbg('dispatching', types.CREATE_TAG_SUCCESS, result);
+            return this.dispatch({ type: types.CREATE_TAG_SUCCESS, tag: result.tag });
+        }).catch(reason => this.dispatch({ type: types.CREATE_TAG_ERROR, error: reason }));
+    }
 }
 
 export { EntryActions };

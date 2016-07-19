@@ -5,10 +5,21 @@ class TagsField extends React.Component {
     constructor (props) {
         super(props);
         this.state = {
-            currentTags: props.tags || []
+            currentTags: props.tags || [],
+            existentTags: props.existentTags || [],
+            tagString: ''
         };
     }
+
+    getTags = () => this.state.currentTags
+
+    _checkTagAutocomplete = (value) => {
+        this.props.onRequestTagAutocomplete(value);
+    }
     _handleInputChange = (ev) => {
+        if (ev.target.value.length >= 3) {
+            this._checkTagAutocomplete(ev.target.value);
+        }
         this.setState({
             tagString: ev.target.value,
         });
@@ -20,26 +31,37 @@ class TagsField extends React.Component {
             currentTags
         });
     }
-    _createTag = () => {
-        // @TODO allow alphanumeric characters only
-        const tag = this.state.tagString.trim().toLowerCase();
-        if (this.state.currentTags.indexOf(tag) !== -1) {
-            return this.setState({
-                error: `Tag "${tag}" already added!`,
+    _createError = (error, removeCurrentTag) => {
+        this.setState({
+            error
+        });
+        if (removeCurrentTag) {
+            this.setState({
                 tagString: ''
             });
         }
-        if (tag.length > 2 && tag.length < 25) {
-            this.state.currentTags.push(tag);
-            this.state.error = '';
-            if (this.props.onTagAdded) {
-                this.props.onTagAdded(tag);
+    }
+    _createTag = () => {
+        const currentTags = this.state.currentTags;
+        const tag = this.state.tagString.trim().toLowerCase();
+        const ALPHANUMERIC_REGEX = /^[a-z0-9-]+$/i;
+        if (currentTags.indexOf(tag) !== -1) {
+            return this._createError(`Tag "${tag}" already added!`, true);
+        }
+        if (tag.length > 2 && tag.length <= 24) {
+            if (ALPHANUMERIC_REGEX.test(tag)) {
+                currentTags.push(tag);
+                this.state.error = '';
+                if (this.props.onTagAdded) {
+                    this.props.onTagAdded(tag);
+                }
+            } else {
+                this._createError('Tags can contain only letters, numbers and dashes (-).', false);
             }
+        } else if (tag.length >= 25) {
+            this._createError('Tags can have maximum 24 characters.', false);
         } else {
-            this.setState({
-                error: 'Tags can have between 3 and 24 characters',
-                tagString: ''
-            });
+            this._createError('Tags should have at least 3 characters.', false);
         }
         return null;
     }
@@ -55,6 +77,14 @@ class TagsField extends React.Component {
             }
         }
     }
+    // _handleBlur = (ev) => {
+    //     const value = ev.target.value;
+    //     if (value.length > 0) {
+    //         this.setState({
+    //             tagString: value
+    //         }, this._createTag);
+    //     }
+    // }
     render () {
         const currentTags = this.state.currentTags;
         const tags = currentTags.map((tag, key) => (
@@ -62,9 +92,11 @@ class TagsField extends React.Component {
             key={key}
             onRequestDelete={(ev) => { this._handleDeleteTag(ev, key); }}
             backgroundColor="transparent"
+            title="Tag exists in the network"
             style={{
                 display: 'inline-block',
-                border: '1px solid #DDD',
+                border: '1px solid',
+                borderColor: '#74cc00',
                 borderRadius: 3,
                 height: 34,
                 verticalAlign: 'middle',
@@ -87,6 +119,8 @@ class TagsField extends React.Component {
             underlineStyle={{ bottom: '-4px' }}
             errorStyle={{ bottom: '-18px' }}
             disabled={currentTags >= 10}
+            onChange={this._handleInputChange}
+            value={this.state.tagString}
           >
             <div>
               {tags}
@@ -119,6 +153,8 @@ class TagsField extends React.Component {
 TagsField.propTypes = {
     tags: React.PropTypes.array,
     onTagAdded: React.PropTypes.func,
+    existentTags: React.PropTypes.array,
+    onRequestTagAutocomplete: React.PropTypes.func
 };
 
 export default TagsField;

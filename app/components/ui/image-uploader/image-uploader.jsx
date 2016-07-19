@@ -35,7 +35,6 @@ class ImageUploader extends React.Component {
                 const outputFiles = getResizedImages(imageFiles, { minWidth, minHeight });
 
                 Promise.all(outputFiles).then(results => {
-                    console.log(results);
                     this.setState({
                         images: results
                     });
@@ -94,43 +93,46 @@ class ImageUploader extends React.Component {
         };
 
         return (
-            <div style = {this.context.muiTheme.imageUploader}>
-                {this.state.isNewImage &&
-                    <div>
-                        { this.props.multiFiles &&
-                            this.state.imageFile.map((image, key) =>
-                                <img src = {image} key = {key} style = {imageStyle} />
-                            )
-                        }
-                        { !this.props.multiFiles &&
-                            <img src={this.state.imageFile[0]} style = {imageStyle} />
-                        }
-                        <div style={clearImageButtonStyle}>
-                        <RaisedButton fullWidth secondary
-                          icon = {<DeleteIcon />}
-                          style = {{ width: '100%' }}
-                          onClick = {this._handleClearImage}
-                        />
-                        </div>
-                    </div>
+          <div style={this.context.muiTheme.imageUploader}>
+              {this.state.isNewImage &&
+                <div>
+                  {this.props.multiFiles &&
+                     this.state.imageFile.map((image, key) =>
+                       <img src={image} key={key} style={imageStyle} role="presentation" />
+                     )
+                  }
+                  {!this.props.multiFiles &&
+                    <img src={this.state.imageFile[0]} style={imageStyle} role="presentation" />
+                  }
+                  <div style={clearImageButtonStyle}>
+                    <RaisedButton
+                      fullWidth
+                      secondary
+                      icon={<DeleteIcon />}
+                      style={{ width: '100%' }}
+                      onClick={this._handleClearImage}
+                    />
+                  </div>
+                </div>
                 }
                 {!this.state.isNewImage &&
-                    <div style={emptyContainerStyle}>
-                        <SvgIcon style = {{ height: '42px', width: '100%' }}
-                          color = {this.context.muiTheme.palette.textColor}
-                        >
-                            <AddPhotoIcon viewBox = "0 0 24 24" />
-                        </SvgIcon>
-                        <text style={{ display: 'block' }}>
-                            {this.props.intl.formatMessage(generalMessages.addImage)}
-                        </text>
-                    </div>
+                  <div style={emptyContainerStyle}>
+                    <SvgIcon
+                      style={{ height: '42px', width: '100%' }}
+                      color={this.context.muiTheme.palette.textColor}
+                    >
+                      <AddPhotoIcon viewBox="0 0 24 24" />
+                    </SvgIcon>
+                    <text style={{ display: 'block' }}>
+                      {this.props.intl.formatMessage(generalMessages.addImage)}
+                    </text>
+                  </div>
                 }
-                <div style = {uploadButtonStyle} onClick = {this._handleDialogOpen}></div>
+            <div style={uploadButtonStyle} onClick={this._handleDialogOpen}></div>
                 {this.state.error &&
-                    <div style={errorStyle}>{this.state.error}</div>
+                  <div style={errorStyle}>{this.state.error}</div>
                 }
-            </div>
+          </div>
         );
     }
 }
