@@ -9,7 +9,7 @@ const hashPath = (...path: string[]) => {
 };
 const channels = {
 
-    geth: ['startService', 'stopService', 'contract'],
+    geth: ['startService', 'stopService', 'restartService', 'startSyncing', 'syncUpdate'],
 
     ipfs: ['startService', 'stopService'],
 
@@ -22,7 +22,7 @@ const channels = {
 };
 
 const processes = ['server', 'client'];
-const EVENTS = { server: {}, client: {} };
+const EVENTS: any = { server: {}, client: {} };
 Object.keys(channels).forEach((attr) => {
     channels[attr].forEach((endpoint: string) => {
         processes.forEach((proc) => {

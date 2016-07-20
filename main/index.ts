@@ -2,16 +2,9 @@
 import { app, crashReporter, BrowserWindow } from 'electron';
 import { GethConnector } from '@akashaproject/geth-connector';
 import { IpfsConnector } from '@akashaproject/ipfs-connector';
-import AppLogger from './lib/Logger';
 import { resolve } from 'path';
 
-const userData = app.getPath('userData');
 const viewHtml = resolve(__dirname, '../app');
-export const runningWindow = {
-    mainWindow: {}
-};
-
-AppLogger.getInstance(userData);
 
 crashReporter.start({
     productName: 'Akasha',
@@ -32,7 +25,6 @@ app.on('will-quit', () => {
     GethConnector.getInstance().stop();
     IpfsConnector.getInstance().stop();
 });
-
 
 app.on('ready', () => {
     const mainWindow = new BrowserWindow({

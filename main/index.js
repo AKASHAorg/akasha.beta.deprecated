@@ -2,14 +2,8 @@
 const electron_1 = require('electron');
 const geth_connector_1 = require('@akashaproject/geth-connector');
 const ipfs_connector_1 = require('@akashaproject/ipfs-connector');
-const Logger_1 = require('./lib/Logger');
 const path_1 = require('path');
-const userData = electron_1.app.getPath('userData');
 const viewHtml = path_1.resolve(__dirname, '../app');
-exports.runningWindow = {
-    mainWindow: {}
-};
-Logger_1.default.getInstance(userData);
 electron_1.crashReporter.start({
     productName: 'Akasha',
     companyName: 'Akasha Project',

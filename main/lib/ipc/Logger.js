@@ -2,23 +2,21 @@
 const path_1 = require('path');
 const winston_1 = require('winston');
 const fs_1 = require('fs');
+const electron_1 = require('electron');
 const symbolEnforcer = Symbol();
 const symbol = Symbol();
 class AppLogger {
-    constructor(userData, enforcer) {
+    constructor(enforcer) {
         if (enforcer !== symbolEnforcer) {
             throw new Error('Cannot construct singleton');
         }
-        if (!userData) {
-            userData = process.cwd();
-        }
         this.loggers = {};
-        const defaultPath = path_1.join(userData, 'logs');
+        const defaultPath = path_1.join(electron_1.app.getPath('userData'), 'logs');
         this._setLogsFolder(defaultPath);
     }
-    static getInstance(userData) {
+    static getInstance() {
         if (!this[symbol]) {
-            this[symbol] = new AppLogger(userData, symbolEnforcer);
+            this[symbol] = new AppLogger(symbolEnforcer);
         }
         return this[symbol];
     }
