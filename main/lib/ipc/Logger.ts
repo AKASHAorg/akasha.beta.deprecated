@@ -1,6 +1,7 @@
 import { join as pathJoin } from 'path';
 import { Logger, transports } from 'winston';
 import { W_OK, access as fsAccess, mkdir } from 'fs';
+import { app } from 'electron';
 
 const symbolEnforcer = Symbol();
 const symbol = Symbol();
@@ -12,30 +13,24 @@ class AppLogger {
 
     /**
      *
-     * @param userData      Folder target for logs
      * @param enforcer
      */
-    constructor(userData: string, enforcer: Symbol) {
+    constructor(enforcer: Symbol) {
         if (enforcer !== symbolEnforcer) {
             throw new Error('Cannot construct singleton');
         }
-
-        if (!userData) {
-            userData = process.cwd();
-        }
         this.loggers = {};
-        const defaultPath = pathJoin(userData, 'logs');
+        const defaultPath = pathJoin(app.getPath('userData'), 'logs');
         this._setLogsFolder(defaultPath);
     }
 
     /**
      *
-     * @param userData
      * @returns {*}
      */
-    static getInstance(userData: string) {
+    static getInstance() {
         if (!this[symbol]) {
-            this[symbol] = new AppLogger(userData, symbolEnforcer);
+            this[symbol] = new AppLogger(symbolEnforcer);
         }
         return this[symbol];
     }
