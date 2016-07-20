@@ -32,7 +32,8 @@ export const EVENTS = {
         entry: {
             publish: 'server:entry:publish',
             tagExists: 'server:entry:tagExists',
-            addTags: 'server:entry:addTags'
+            addTags: 'server:entry:addTags',
+            getTags: 'server:entry:getTags'
         }
     },
     client: {
@@ -69,7 +70,8 @@ export const EVENTS = {
         entry: {
             publish: 'client:entry:publish',
             tagExists: 'client:entry:tagExists',
-            addTags: 'client:entry:addTags'
+            addTags: 'client:entry:addTags',
+            getTags: 'client:entry:getTags'
         }
     }
 };

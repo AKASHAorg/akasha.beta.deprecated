@@ -26,7 +26,7 @@ class EntryService extends MainService {
         this.ADD_TAGS_FAILED = 'Adding tags failed';
         this.NO_TAG_PARAMETER = 'No tag parameter sent';
         this.MAIN_ATTRIBUTES = ['title', 'summary'];
-        this.CREATE_ENTRY_CONTRACT_GAS = 2600000;
+        this.CREATE_ENTRY_CONTRACT_GAS = 2800000;
     }
     /*
      * It sets up the listeners for this module.
@@ -45,6 +45,9 @@ class EntryService extends MainService {
         });
         ipcMain.on(this.serverEvent.addTags, (event, arg) => {
             this._tagHandler(event, arg);
+        });
+        ipcMain.on(this.serverEvent.getTags, (event, arg) => {
+            this._getTags(event, arg);
         });
     }
 
@@ -65,6 +68,32 @@ class EntryService extends MainService {
         } else {
             this._sendEvent(event)(this.clientEvent.tagExists, false, {}, this.NO_TAG_PARAMETER);
         }
+    }
+
+    _getTags (event, arg) {
+        const web3 = this.__getWeb3();
+        const tagsContract = new Dapple.class(web3).objects.tags;
+        const tags = [];
+        tagsContract._length((err, res) => {
+            if (err) {
+                this._sendEvent(event)(this.clientEvent.getTags, false, err, err.toString());
+            } else {
+                const numberOfTags = res.toNumber();
+                let idx = (typeof arg.position !== 'undefined') ? arg.position : 1;
+                for (; idx < numberOfTags - 1; idx++) {
+                    tagsContract.getTagAt.call(idx, {}, (serr, sres) => {
+                        if (!serr) {
+                            tags.push(web3.toUtf8(sres));
+                            if (tags.length >= numberOfTags - 1) {
+                                this._sendEvent(event)(this.clientEvent.getTags, true, {
+                                    tags
+                                });
+                            }
+                        }
+                    });
+                }
+            }
+        });
     }
 
     _tagHandler (event, pubObj) {
@@ -139,12 +168,12 @@ class EntryService extends MainService {
     }
 
     _publish (event, arg) {
-        if (arg.tags && typeof arg.tags === 'object') {
-            this._tagHandler(event, arg);
-        } else {
+        // if (arg.tags && typeof arg.tags === 'object') {
+        //     this._tagHandler(event, arg);
+        // } else {
             // TODO: maybe we must not publish an article with no tags
-            this._publishArticle(event, arg);
-        }
+        this._publishArticle(event, arg);
+        // }
     }
 
     _publishArticle (event, pubObj) {
@@ -164,10 +193,34 @@ class EntryService extends MainService {
                 .personal
                 .unlockAccountAsync(pubObj.account, pubObj.password, this.UNLOCK_INTERVAL)
                 .then(() => {
+                    const indexedTagsContract = new Dapple.class(web3).objects.indexedTags;
+                    const errorEvent = indexedTagsContract.Error();
+                    errorEvent.watch((evtErr, evtRes) => {
+                        console.log(require('util').inspect(evtRes.args, false, null));
+                        console.log(web3.toUtf8(evtRes.args.method));
+                        console.log(web3.toUtf8(evtRes.args.reason));
+                        if (!evtErr) {
+                            const method = web3.toUtf8(evtRes.args.method);
+                            const reason = web3.toUtf8(evtRes.args.reason);
+                            console.log(reason);
+                            console.log('----------------------');
+                            console.log(method);
+                        }
+                    });
                     const mainContract = new Dapple.class(web3).objects.akashaMain;
+                    // const mainErrorEvt = mainContract.Published();
+                    // mainErrorEvt.watch((evtErr, evtRes) => {
+                    //     if (!evtErr) {
+                    //         const method = web3.toUtf8(evtRes.args.method);
+                    //         const reason = web3.toUtf8(evtRes.args.reason);
+                    //         console.log(reason);
+                    //         console.log('----------------------');
+                    //         console.log(method);
+                    //     }
+                    // });
                     return mainContract.publishEntry(
-                        this._chopIpfsHash(hash),
-                        pubObj.tags,
+                        this._toBytes32Array(this._chopIpfsHash(hash), web3.fromUtf8),
+                        this._toBytes32Array(pubObj.tags, web3.fromUtf8),
                         {
                             from: this._getCoinbase(pubObj),
                             gas: this.CREATE_ENTRY_CONTRACT_GAS
@@ -183,7 +236,7 @@ class EntryService extends MainService {
                                         true,
                                         Object.assign({ tx }, pubObj));
                                 this.__getGeth().addFilter('tx', tx, () => {
-                                    //debug and check the .log key
+                                    // debug and check the .log key
                                     this._sendEvent(event)(this.clientEvent.publish,
                                             true,
                                             Object.assign({ ipfsHash: hash }, pubObj));

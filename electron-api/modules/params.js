@@ -128,6 +128,9 @@ export const EVENTS = {
             }`,
             addTags: `{
                 tags: array of strings
+            }`,
+            getTags: `{
+                position: int // optional
             }`
         }
     },
@@ -193,6 +196,9 @@ export const EVENTS = {
             addTags: `{
                 tx: string,
                 tag: string
+            }`,
+            getTags: `{
+                tags: array of strings
             }`
         }
     }

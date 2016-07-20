@@ -23,6 +23,14 @@ class MainService extends IpcService {
         return [hash.substring(0, delimiter), hash.substring(delimiter)];
     }
 
+    _toBytes32Array (arrayOfStrings, toBytes32Converter) {
+        const rez = [];
+        for (const el of arrayOfStrings) {
+            rez.push(toBytes32Converter(el));
+        }
+        return rez;
+    }
+
     _getIpfsAPI () {
         return MainService
                 .getService('ipfs')
