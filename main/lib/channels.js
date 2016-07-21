@@ -8,12 +8,12 @@ const hashPath = (...path) => {
     return hash.digest('hex');
 };
 const channels = {
-    geth: ['startService', 'stopService', 'restartService', 'startSyncing', 'syncUpdate'],
-    ipfs: ['startService', 'stopService'],
-    logger: ['gethInfo', 'stopGethInfo'],
-    user: ['exists', 'login', 'logout', 'createCoinbase', 'faucetEther', 'registerProfile',
+    geth: ['manager', 'startService', 'stopService', 'restartService', 'startSyncing', 'syncUpdate'],
+    ipfs: ['manager', 'startService', 'stopService'],
+    logger: ['manager', 'gethInfo', 'stopGethInfo'],
+    user: ['manager', 'exists', 'login', 'logout', 'createCoinbase', 'faucetEther', 'registerProfile',
         'getProfileData', 'listEthAccounts', 'getBalance', 'getIpfsImage'],
-    entry: ['publish']
+    entry: ['manager', 'publish']
 };
 const processes = ['server', 'client'];
 const EVENTS = { server: {}, client: {} };
