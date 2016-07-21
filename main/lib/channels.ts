@@ -9,16 +9,16 @@ const hashPath = (...path: string[]) => {
 };
 const channels = {
 
-    geth: ['startService', 'stopService', 'restartService', 'startSyncing', 'syncUpdate'],
+    geth: ['manager', 'startService', 'stopService', 'restartService', 'startSyncing', 'syncUpdate'],
 
-    ipfs: ['startService', 'stopService'],
+    ipfs: ['manager', 'startService', 'stopService'],
 
-    logger: ['gethInfo', 'stopGethInfo'],
+    logger: ['manager', 'gethInfo', 'stopGethInfo'],
 
-    user: ['exists', 'login', 'logout', 'createCoinbase', 'faucetEther', 'registerProfile',
+    user: ['manager', 'exists', 'login', 'logout', 'createCoinbase', 'faucetEther', 'registerProfile',
         'getProfileData', 'listEthAccounts', 'getBalance', 'getIpfsImage'],
 
-    entry: ['publish']
+    entry: ['manager', 'publish']
 };
 
 const processes = ['server', 'client'];

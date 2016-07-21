@@ -1,21 +1,46 @@
-import { GethConnector } from '@akashaproject/geth-connector';
-import { AbstractEmitter } from './event/AbstractEmitter';
-import { GethStart, GethRestart, GethStop } from '../dataTypes';
+/// <reference path="../../typings/main.d.ts" />
+import { GethConnector, CONSTANTS } from '@akashaproject/geth-connector';
+import GethEmitter from './event/GethEmitter';
 import channels from '../channels';
+import Logger from './Logger';
 import IpcMainEvent = Electron.IpcMainEvent;
+import IpcRenderer = Electron.IpcRenderer;
+import IpcRendererEvent = Electron.IpcRendererEvent;
 
-class GethIPC extends AbstractEmitter {
+class GethIPC extends GethEmitter {
+    public logger = 'gethLog';
+
+    constructor() {
+        super();
+        GethConnector.getInstance().setLogger(
+            Logger.getInstance().registerLogger(this.logger)
+        );
+        this.attachEmitters();
+        this.registerListener(
+            channels.server.geth.manager,
+            (event: any, data: IPCmanager) => {
+                if (data.listen) {
+                    this.listenEvents(data.channel);
+                    this.fireEvent(channels.client.geth.manager, {data: data}, event );
+                }
+                this.purgeListener(data.channel);
+            }
+        );
+        this.listenEvents(channels.server.geth.manager);
+    }
+
     initListeners() {
         // register listeners
         this._start()
             ._restart()
             ._stop();
     }
-    // @Todo:
-    attachEmitters() {
 
-    }
-
+    /**
+     *
+     * @returns {GethIPC}
+     * @private
+     */
     private _start() {
         this.registerListener(
             channels.server.geth.startService,
@@ -26,6 +51,11 @@ class GethIPC extends AbstractEmitter {
         return this;
     }
 
+    /**
+     *
+     * @returns {GethIPC}
+     * @private
+     */
     private _restart() {
         this.registerListener(
             channels.server.geth.restartService,
@@ -36,6 +66,11 @@ class GethIPC extends AbstractEmitter {
         return this;
     }
 
+    /**
+     *
+     * @returns {GethIPC}
+     * @private
+     */
     private _stop() {
         this.registerListener(
             channels.server.geth.stopService,
@@ -45,5 +80,6 @@ class GethIPC extends AbstractEmitter {
         );
         return this;
     }
+
 }
 export default GethIPC;
