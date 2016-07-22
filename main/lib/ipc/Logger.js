@@ -24,13 +24,16 @@ class AppLogger {
         this.logPath = path;
         return fs_1.access(this.logPath, fs_1.W_OK, (err) => {
             if (err) {
-                return fs_1.mkdir(this.logPath, (error) => {
+                fs_1.mkdir(this.logPath, (error) => {
                     if (error) {
                         this.PATH_OK = false;
+                        throw new Error(error.message);
                     }
+                    this.PATH_OK = true;
                 });
+                return;
             }
-            return this.PATH_OK = true;
+            this.PATH_OK = true;
         });
     }
     registerLogger(name, { level = 'info', consoleLevel = 'warn', maxsize = 10 * 1024, maxFiles = 1 } = {}) {

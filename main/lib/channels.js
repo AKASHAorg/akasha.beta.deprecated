@@ -8,7 +8,7 @@ const hashPath = (...path) => {
     return hash.digest('hex');
 };
 const channels = {
-    geth: ['manager', 'startService', 'stopService', 'restartService', 'startSyncing', 'syncUpdate'],
+    geth: ['manager', 'startService', 'stopService', 'restartService', 'syncStatus'],
     ipfs: ['manager', 'startService', 'stopService'],
     logger: ['manager', 'gethInfo', 'stopGethInfo'],
     user: ['manager', 'exists', 'login', 'logout', 'createCoinbase', 'faucetEther', 'registerProfile',
@@ -23,7 +23,7 @@ Object.keys(channels).forEach((attr) => {
             if (!EVENTS[proc].hasOwnProperty(attr)) {
                 EVENTS[proc][attr] = {};
             }
-            EVENTS[proc][attr][endpoint] = hashPath(proc, attr, endpoint, new Date().getTime().toString());
+            EVENTS[proc][attr][endpoint] = hashPath(proc, attr, endpoint);
         });
     });
 });

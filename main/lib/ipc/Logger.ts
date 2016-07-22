@@ -44,13 +44,16 @@ class AppLogger {
         this.logPath = path;
         return fsAccess(this.logPath, W_OK, (err) => {
             if (err) {
-                return mkdir(this.logPath, (error) => {
+                mkdir(this.logPath, (error) => {
                     if (error) {
                         this.PATH_OK = false;
+                        throw new Error(error.message);
                     }
+                    this.PATH_OK = true;
                 });
+                return;
             }
-            return this.PATH_OK = true;
+            this.PATH_OK = true;
         });
     }
 

@@ -1,8 +1,9 @@
 import { ipcMain } from 'electron';
 import IpcMainEventListener = Electron.IpcMainEventListener;
+import WebContents = Electron.WebContents;
 
 export abstract class AbstractListener {
-    public listeners: Map<string, IpcMainEventListener>;
+    public listeners: Map<string, IpcMainEventListener> = new Map();
 
     /**
      * Start listening for a registered channel
@@ -10,7 +11,7 @@ export abstract class AbstractListener {
      * @returns {Electron.IpcMain}
      */
     listenEvents(channel: string) {
-        if (this.listeners.get(channel)) {
+        if (!this.listeners.get(channel)) {
             throw new Error(`Must register a listener for ${channel}`);
         }
         return ipcMain.on(channel, this.listeners.get(channel));
@@ -57,5 +58,14 @@ export abstract class AbstractListener {
         return ipcMain.removeListener(channel, this.listeners.get(channel));
     }
 
-    abstract initListeners(): any;
+    /**
+     *
+     * @param channel
+     * @returns {number}
+     */
+    getListenersCount(channel: string) {
+        return ipcMain.listenerCount(channel);
+    }
+
+    abstract initListeners(webContents: WebContents): any;
 }
