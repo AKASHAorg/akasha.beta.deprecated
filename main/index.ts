@@ -3,9 +3,10 @@ import { app, crashReporter, BrowserWindow } from 'electron';
 import { GethConnector } from '@akashaproject/geth-connector';
 import { IpfsConnector } from '@akashaproject/ipfs-connector';
 import { resolve } from 'path';
+import { initModules } from './lib/ipc/exports';
 
 const viewHtml = resolve(__dirname, '../app');
-
+const modules = initModules();
 crashReporter.start({
     productName: 'Akasha',
     companyName: 'Akasha Project',
@@ -32,7 +33,7 @@ app.on('ready', () => {
         height: 720,
         resizable: true,
         webPreferences: {
-            nodeIntegration: false,
+            // nodeIntegration: false,
             preload: resolve(__dirname, 'preloader.js')
         }
     });
@@ -45,6 +46,19 @@ app.on('ready', () => {
     mainWindow.webContents.on('did-finish-load', () => {
         mainWindow.show();
         mainWindow.focus();
+        modules.logger.registerLogger('APP');
+        modules.initListeners(mainWindow.webContents);
+    });
+
+    mainWindow.webContents.on('crashed', () => {
+        modules.logger.getLogger('APP').warn('APP CRASHED');
+    });
+    mainWindow.on('unresponsive', () => {
+        modules.logger.getLogger('APP').warn('APP is unresponsive');
+    });
+    process.on('uncaughtException', (err: Error) => {
+        console.log(err);
+        modules.logger.getLogger('APP').error(`${err.message} ${err.stack}`);
     });
 });
 

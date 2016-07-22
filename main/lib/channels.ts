@@ -9,7 +9,7 @@ const hashPath = (...path: string[]) => {
 };
 const channels = {
 
-    geth: ['manager', 'startService', 'stopService', 'restartService', 'startSyncing', 'syncUpdate'],
+    geth: ['manager', 'startService', 'stopService', 'restartService', 'syncStatus'],
 
     ipfs: ['manager', 'startService', 'stopService'],
 
@@ -29,7 +29,7 @@ Object.keys(channels).forEach((attr) => {
             if (!EVENTS[proc].hasOwnProperty(attr)) {
                 EVENTS[proc][attr] = {};
             }
-            EVENTS[proc][attr][endpoint] = hashPath(proc, attr, endpoint, new Date().getTime().toString());
+            EVENTS[proc][attr][endpoint] = hashPath(proc, attr, endpoint);
         });
     });
 });

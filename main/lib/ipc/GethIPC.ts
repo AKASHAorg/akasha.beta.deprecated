@@ -1,39 +1,71 @@
 /// <reference path="../../typings/main.d.ts" />
-import { GethConnector, CONSTANTS } from '@akashaproject/geth-connector';
+import { GethConnector } from '@akashaproject/geth-connector';
 import GethEmitter from './event/GethEmitter';
 import channels from '../channels';
 import Logger from './Logger';
 import IpcMainEvent = Electron.IpcMainEvent;
 import IpcRenderer = Electron.IpcRenderer;
 import IpcRendererEvent = Electron.IpcRendererEvent;
+import WebContents = Electron.WebContents;
 
 class GethIPC extends GethEmitter {
     public logger = 'gethLog';
 
     constructor() {
         super();
+        this.attachEmitters();
+    }
+
+    initListeners(webContents: WebContents) {
         GethConnector.getInstance().setLogger(
             Logger.getInstance().registerLogger(this.logger)
         );
-        this.attachEmitters();
-        this.registerListener(
-            channels.server.geth.manager,
-            (event: any, data: IPCmanager) => {
-                if (data.listen) {
-                    this.listenEvents(data.channel);
-                    this.fireEvent(channels.client.geth.manager, {data: data}, event );
-                }
-                this.purgeListener(data.channel);
-            }
-        );
-        this.listenEvents(channels.server.geth.manager);
-    }
-
-    initListeners() {
+        this.webContents = webContents;
         // register listeners
         this._start()
             ._restart()
-            ._stop();
+            ._stop()
+            ._manager();
+    }
+
+    /**
+     * Module ipc channel manager
+     * @private
+     */
+    private _manager() {
+        this.registerListener(
+            channels.server.geth.manager,
+            /**
+             * @param event
+             * @param data
+             * @returns {any}
+             */
+            (event: any, data: IPCmanager) => {
+                // listen on new channel
+                if (data.listen) {
+                    // check if already listening on channel
+                    if (this.getListenersCount(data.channel) > 1) {
+                        // emit error
+                        return this.fireEvent(
+                            channels.client.geth.manager,
+                            {
+                                data: {},
+                                error: { message: `already listening on ${data.channel}` }
+                            },
+                            event
+                        );
+                    }
+                    // start listening for events on channel
+                    this.listenEvents(data.channel);
+                    // emit ok response
+                    return this.fireEvent(channels.client.geth.manager, { data: data }, event);
+                }
+                // remove listener on `channel`
+                return this.purgeListener(data.channel);
+            }
+        );
+        // start listening immediately on `manager` channel
+        this.listenEvents(channels.server.geth.manager);
     }
 
     /**

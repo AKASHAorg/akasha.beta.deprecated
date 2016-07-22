@@ -7,21 +7,31 @@ class GethIPC extends GethEmitter_1.default {
     constructor() {
         super();
         this.logger = 'gethLog';
-        geth_connector_1.GethConnector.getInstance().setLogger(Logger_1.default.getInstance().registerLogger(this.logger));
         this.attachEmitters();
-        this.registerListener(channels_1.default.server.geth.manager, (event, data) => {
-            if (data.listen) {
-                this.listenEvents(data.channel);
-                this.fireEvent(channels_1.default.client.geth.manager, { data: data }, event);
-            }
-            this.purgeListener(data.channel);
-        });
-        this.listenEvents(channels_1.default.server.geth.manager);
     }
-    initListeners() {
+    initListeners(webContents) {
+        geth_connector_1.GethConnector.getInstance().setLogger(Logger_1.default.getInstance().registerLogger(this.logger));
+        this.webContents = webContents;
         this._start()
             ._restart()
-            ._stop();
+            ._stop()
+            ._manager();
+    }
+    _manager() {
+        this.registerListener(channels_1.default.server.geth.manager, (event, data) => {
+            if (data.listen) {
+                if (this.getListenersCount(data.channel) > 1) {
+                    return this.fireEvent(channels_1.default.client.geth.manager, {
+                        data: {},
+                        error: { message: `already listening on ${data.channel}` }
+                    }, event);
+                }
+                this.listenEvents(data.channel);
+                return this.fireEvent(channels_1.default.client.geth.manager, { data: data }, event);
+            }
+            return this.purgeListener(data.channel);
+        });
+        this.listenEvents(channels_1.default.server.geth.manager);
     }
     _start() {
         this.registerListener(channels_1.default.server.geth.startService, (event, data) => {
