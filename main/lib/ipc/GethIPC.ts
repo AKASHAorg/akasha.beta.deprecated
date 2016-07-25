@@ -1,15 +1,17 @@
 /// <reference path="../../typings/main.d.ts" />
-import { GethConnector } from '@akashaproject/geth-connector';
+import { GethConnector, gethHelper } from '@akashaproject/geth-connector';
 import GethEmitter from './event/GethEmitter';
 import channels from '../channels';
 import Logger from './Logger';
+import { gethResponse } from './event/responses';
 import IpcMainEvent = Electron.IpcMainEvent;
 import IpcRenderer = Electron.IpcRenderer;
 import IpcRendererEvent = Electron.IpcRendererEvent;
 import WebContents = Electron.WebContents;
 
 class GethIPC extends GethEmitter {
-    public logger = 'gethLog';
+    public logger = 'geth';
+    private DEFAULT_MANAGED: string[] = ['startService', 'stopService'];
 
     constructor() {
         super();
@@ -25,6 +27,8 @@ class GethIPC extends GethEmitter {
         this._start()
             ._restart()
             ._stop()
+            ._syncStatus()
+            ._logs()
             ._manager();
     }
 
@@ -48,17 +52,14 @@ class GethIPC extends GethEmitter {
                         // emit error
                         return this.fireEvent(
                             channels.client.geth.manager,
-                            {
-                                data: {},
-                                error: { message: `already listening on ${data.channel}` }
-                            },
+                            gethResponse({}, { message: `already listening on ${data.channel}` }),
                             event
                         );
                     }
                     // start listening for events on channel
                     this.listenEvents(data.channel);
                     // emit ok response
-                    return this.fireEvent(channels.client.geth.manager, { data: data }, event);
+                    return this.fireEvent(channels.client.geth.manager, gethResponse(data), event);
                 }
                 // remove listener on `channel`
                 return this.purgeListener(data.channel);
@@ -66,6 +67,10 @@ class GethIPC extends GethEmitter {
         );
         // start listening immediately on `manager` channel
         this.listenEvents(channels.server.geth.manager);
+        this.DEFAULT_MANAGED.forEach(
+            (action: string) =>
+                this.listenEvents(channels.server.geth[action])
+        );
     }
 
     /**
@@ -76,7 +81,7 @@ class GethIPC extends GethEmitter {
     private _start() {
         this.registerListener(
             channels.server.geth.startService,
-            (event: IpcMainEvent, data: GethStart) => {
+            (event: IpcMainEvent, data: GethStartRequest) => {
                 GethConnector.getInstance().start(data);
             }
         );
@@ -91,7 +96,7 @@ class GethIPC extends GethEmitter {
     private _restart() {
         this.registerListener(
             channels.server.geth.restartService,
-            (event: IpcMainEvent, data: GethRestart) => {
+            (event: IpcMainEvent, data: GethRestartRequest) => {
                 GethConnector.getInstance().restart(data.timer);
             }
         );
@@ -106,12 +111,80 @@ class GethIPC extends GethEmitter {
     private _stop() {
         this.registerListener(
             channels.server.geth.stopService,
-            (event: IpcMainEvent, data: GethStop) => {
+            (event: IpcMainEvent, data: GethStopRequest) => {
                 GethConnector.getInstance().stop(data.signal);
             }
         );
         return this;
     }
 
+    /**
+     *
+     * @returns {GethIPC}
+     * @private
+     */
+    private _syncStatus() {
+        this.registerListener(
+            channels.server.geth.syncStatus,
+            (event: any) => {
+                return gethHelper
+                    .inSync()
+                    .then((state: any[]) => {
+                            let response: GethSyncStatus;
+                            if (!state.length) {
+                                response = { synced: true };
+                            } else {
+                                response = { synced: false, peerCount: state[0] };
+                                if (state.length === 2) {
+                                    Object.assign(response, state[1]);
+                                }
+                            }
+                            this.fireEvent(
+                                channels.client.geth.syncStatus,
+                                gethResponse(response),
+                                event
+                            );
+                        }
+                    )
+                    .catch(err => {
+                        this.fireEvent(
+                            channels.client.geth.syncStatus,
+                            gethResponse({}, { message: err.message }),
+                            event
+                        );
+                    });
+            }
+        );
+        return this;
+    }
+
+    /**
+     *
+     * @returns {GethIPC}
+     * @private
+     */
+    private _logs() {
+        this.registerListener(
+            channels.server.geth.logs,
+            (event: any) => {
+                GethConnector.getInstance().logger.query(
+                    { start: -20, limit: 20 },
+                    (err: Error, info: any) => {
+                        let response: MainResponse;
+                        if (err) {
+                            response = gethResponse({}, { message: err.message });
+                        } else {
+                            response = gethResponse(info);
+                        }
+                        this.fireEvent(
+                            channels.client.geth.logs,
+                            response,
+                            event
+                        );
+                    }
+                );
+            });
+        return this;
+    }
 }
 export default GethIPC;

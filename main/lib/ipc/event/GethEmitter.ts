@@ -58,7 +58,7 @@ abstract class GethEmitter extends AbstractEmitter {
     private _stopped() {
         GethConnector.getInstance().on(
             CONSTANTS.STOPPED, () => {
-                this.fireEvent(channels.client.geth.startService, gethResponse({ stopped: true }));
+                this.fireEvent(channels.client.geth.stopService, gethResponse({ stopped: true }));
             }
         );
         return this;

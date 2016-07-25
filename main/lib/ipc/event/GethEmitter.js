@@ -32,7 +32,7 @@ class GethEmitter extends AbstractEmitter_1.AbstractEmitter {
     }
     _stopped() {
         geth_connector_1.GethConnector.getInstance().on(geth_connector_1.CONSTANTS.STOPPED, () => {
-            this.fireEvent(channels_1.default.client.geth.startService, responses_1.gethResponse({ stopped: true }));
+            this.fireEvent(channels_1.default.client.geth.stopService, responses_1.gethResponse({ stopped: true }));
         });
         return this;
     }
