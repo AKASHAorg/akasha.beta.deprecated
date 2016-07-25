@@ -33,7 +33,8 @@ export const EVENTS = {
             publish: 'server:entry:publish',
             tagExists: 'server:entry:tagExists',
             addTags: 'server:entry:addTags',
-            getTags: 'server:entry:getTags'
+            getTags: 'server:entry:getTags',
+            saveComment: 'server:entry:saveComment'
         }
     },
     client: {
@@ -71,7 +72,8 @@ export const EVENTS = {
             publish: 'client:entry:publish',
             tagExists: 'client:entry:tagExists',
             addTags: 'client:entry:addTags',
-            getTags: 'client:entry:getTags'
+            getTags: 'client:entry:getTags',
+            saveComment: 'client:entry:saveComment'
         }
     }
 };

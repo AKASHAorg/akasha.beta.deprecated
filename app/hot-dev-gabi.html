@@ -23,6 +23,8 @@
 <div id="pub">Publish</div>
 <div id="tagEx">Tag exists</div>
 <div id="tagAdd">Add tags</div>
+<div id="getTags">Get tags</div>
+<div id="saveComment">Save Comment</div>
 <div id="log1" style="inline-block">show log</div><div id="stop" style="inline-block">stop watching log</div>
 <div id="log2"></div>
 <canvas id="cvs"></canvas>
@@ -60,6 +62,12 @@ document.getElementById('log2').innerHTML = JSON.stringify(arg);
 ipcRenderer.on('client:entry:addTags', function(event, arg){
 document.getElementById('log2').innerHTML = JSON.stringify(arg);
 });
+ipcRenderer.on('client:entry:saveComment', function(event, arg){
+document.getElementById('log2').innerHTML = JSON.stringify(arg);
+});
+ipcRenderer.on('client:entry:getTags', function(event, arg){
+document.getElementById('log2').innerHTML = JSON.stringify(arg);
+});
 ipcRenderer.on('client:user:listEthAccounts', function(event, arg){
 document.getElementById('log2').innerHTML = JSON.stringify(arg);
 });
@@ -88,9 +96,24 @@ document.getElementById('tagEx').addEventListener('click', function(){
 }, false);
 document.getElementById('tagAdd').addEventListener('click', function(){
 	ipcRenderer.send("server:entry:addTags", {
-		tags: ['politics3'],
+		tags: ['sociologie'],
 		account: '0xa62c43265aec5aa33a41dd13f7c20d6dd83623ba',
 		password: 'zz'
+	});
+}, false);
+document.getElementById('saveComment').addEventListener('click', function(){
+	ipcRenderer.send("server:entry:saveComment", {
+		comment: {
+			"aasas": "asdasdasdasd, sadasdasdasd"
+		},
+		account: '0xa62c43265aec5aa33a41dd13f7c20d6dd83623ba',
+		password: 'zz',
+		entryHash: '0x72097d47de3b36436594de13489cac15512e7f12'
+	});
+}, false);
+document.getElementById('getTags').addEventListener('click', function(){
+	ipcRenderer.send("server:entry:getTags", {
+		position: 0
 	});
 }, false);
 document.getElementById('getImage').addEventListener('click', function(){

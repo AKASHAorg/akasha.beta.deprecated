@@ -131,6 +131,10 @@ export const EVENTS = {
             }`,
             getTags: `{
                 position: int // optional
+            }`,
+            saveComment: `{
+                entryHash: string,
+                comment: JSON object
             }`
         }
     },
@@ -199,6 +203,9 @@ export const EVENTS = {
             }`,
             getTags: `{
                 tags: array of strings
+            }`,
+            saveComment: `{
+                entryHash: string
             }`
         }
     }

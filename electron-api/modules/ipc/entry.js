@@ -49,6 +49,59 @@ class EntryService extends MainService {
         ipcMain.on(this.serverEvent.getTags, (event, arg) => {
             this._getTags(event, arg);
         });
+        ipcMain.on(this.serverEvent.saveComment, (event, arg) => {
+            this._saveComment(event, arg);
+        });
+    }
+
+    _saveComment (event, arg) {
+        this._addToIpfs({
+            data: JSON.stringify(arg.comment)
+        }).then((response) => {
+            const hash = response[0].Hash;
+            const web3 = this.__getWeb3();
+            web3
+                .personal
+                .unlockAccountAsync(this._getCoinbase(arg), arg.password, this.UNLOCK_INTERVAL)
+                .then(() => {
+                    const mainContract = new Dapple.class(web3).objects.akashaMain;
+                    return mainContract.publishEntry(
+                        web3.fromUtf8(arg.entryHash),
+                        this._toBytes32Array(this._chopIpfsHash(hash), web3.fromUtf8),
+                        {
+                            from: this._getCoinbase(arg),
+                            gas: this.CREATE_ENTRY_CONTRACT_GAS
+                        },
+                        (err, tx) => {
+                            if (err) {
+                                this._sendEvent(event)(this.clientEvent.saveComment,
+                                            false,
+                                            err,
+                                            this.PUBLISH_ARTICLE_FAIL);
+                            } else {
+                                this._sendEvent(event)(this.clientEvent.saveComment,
+                                        true,
+                                        Object.assign({ tx }, arg));
+                                this.__getGeth().addFilter('tx', tx, () => {
+                                    this._sendEvent(event)(this.clientEvent.saveComment,
+                                            true,
+                                            Object.assign({ ipfsHash: hash }, arg));
+                                });
+                            }
+                        }
+                    );
+                }).catch((err) => {
+                    this._sendEvent(event)(this.clientEvent.saveComment,
+                                        false,
+                                        err,
+                                        this.UNLOCK_COINBASE_FAIL);
+                });
+        }).catch((err) => {
+            this._sendEvent(event)(this.clientEvent.saveComment,
+                                false,
+                                err,
+                                err.toString());
+        });
     }
 
     _tagExists (event, arg) {
@@ -191,22 +244,22 @@ class EntryService extends MainService {
             const web3 = this.__getWeb3();
             web3
                 .personal
-                .unlockAccountAsync(pubObj.account, pubObj.password, this.UNLOCK_INTERVAL)
+                .unlockAccountAsync(this._getCoinbase(pubObj), pubObj.password, this.UNLOCK_INTERVAL)
                 .then(() => {
-                    const indexedTagsContract = new Dapple.class(web3).objects.indexedTags;
-                    const errorEvent = indexedTagsContract.Error();
-                    errorEvent.watch((evtErr, evtRes) => {
-                        console.log(require('util').inspect(evtRes.args, false, null));
-                        console.log(web3.toUtf8(evtRes.args.method));
-                        console.log(web3.toUtf8(evtRes.args.reason));
-                        if (!evtErr) {
-                            const method = web3.toUtf8(evtRes.args.method);
-                            const reason = web3.toUtf8(evtRes.args.reason);
-                            console.log(reason);
-                            console.log('----------------------');
-                            console.log(method);
-                        }
-                    });
+                    // const indexedTagsContract = new Dapple.class(web3).objects.indexedTags;
+                    // const errorEvent = indexedTagsContract.Error();
+                    // errorEvent.watch((evtErr, evtRes) => {
+                    //     console.log(require('util').inspect(evtRes.args, false, null));
+                    //     console.log(web3.toUtf8(evtRes.args.method));
+                    //     console.log(web3.toUtf8(evtRes.args.reason));
+                    //     if (!evtErr) {
+                    //         const method = web3.toUtf8(evtRes.args.method);
+                    //         const reason = web3.toUtf8(evtRes.args.reason);
+                    //         console.log(reason);
+                    //         console.log('----------------------');
+                    //         console.log(method);
+                    //     }
+                    // });
                     const mainContract = new Dapple.class(web3).objects.akashaMain;
                     // const mainErrorEvt = mainContract.Published();
                     // mainErrorEvt.watch((evtErr, evtRes) => {
@@ -245,11 +298,16 @@ class EntryService extends MainService {
                         }
                     );
                 }).catch((err) => {
-                    this._sendEvent(event)(this.clientEvent.signUp,
+                    this._sendEvent(event)(this.clientEvent.publish,
                                         false,
                                         err,
                                         this.UNLOCK_COINBASE_FAIL);
                 });
+        }).catch((err) => {
+            this._sendEvent(event)(this.clientEvent.publish,
+                                false,
+                                err,
+                                err.toString());
         });
     }
 }
