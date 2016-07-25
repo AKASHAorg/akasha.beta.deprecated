@@ -8,7 +8,7 @@ const hashPath = (...path) => {
     return hash.digest('hex');
 };
 const channels = {
-    geth: ['manager', 'startService', 'stopService', 'restartService', 'syncStatus'],
+    geth: ['manager', 'startService', 'stopService', 'restartService', 'syncStatus', 'logs'],
     ipfs: ['manager', 'startService', 'stopService'],
     logger: ['manager', 'gethInfo', 'stopGethInfo'],
     user: ['manager', 'exists', 'login', 'logout', 'createCoinbase', 'faucetEther', 'registerProfile',

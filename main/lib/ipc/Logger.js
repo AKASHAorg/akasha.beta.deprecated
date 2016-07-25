@@ -36,22 +36,25 @@ class AppLogger {
             this.PATH_OK = true;
         });
     }
-    registerLogger(name, { level = 'info', consoleLevel = 'warn', maxsize = 10 * 1024, maxFiles = 1 } = {}) {
+    registerLogger(name, { level = 'info', errorLevel = 'warn', maxsize = 10 * 1024, maxFiles = 1 } = {}) {
         if (!this.PATH_OK) {
             throw new Error(`${this.logPath} is not accessible`);
         }
         this.loggers[name] = new (winston_1.Logger)({
             transports: [
-                new winston_1.transports.Console({
-                    level: consoleLevel,
-                    colorize: true
+                new (winston_1.transports.File)({
+                    filename: path_1.join(this.logPath, `${name}.error.log`),
+                    errorLevel: errorLevel,
+                    maxsize: maxsize,
+                    maxFiles: maxFiles,
+                    name: `${name}Error`
                 }),
                 new (winston_1.transports.File)({
-                    filename: path_1.join(this.logPath, `${name}.log`),
+                    filename: path_1.join(this.logPath, `${name}.info.log`),
                     level: level,
                     maxsize: maxsize,
                     maxFiles: maxFiles,
-                    name: `log-${name}`
+                    name: `${name}Info`
                 })
             ]
         });

@@ -9,7 +9,7 @@ const hashPath = (...path: string[]) => {
 };
 const channels = {
 
-    geth: ['manager', 'startService', 'stopService', 'restartService', 'syncStatus'],
+    geth: ['manager', 'startService', 'stopService', 'restartService', 'syncStatus', 'logs'],
 
     ipfs: ['manager', 'startService', 'stopService'],
 

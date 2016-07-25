@@ -61,14 +61,14 @@ class AppLogger {
      *
      * @param name
      * @param level
-     * @param consoleLevel
+     * @param errorLevel
      * @param maxsize
      * @param maxFiles
      * @returns {any}
      */
     registerLogger(name: string, {
         level = 'info',
-        consoleLevel = 'warn',
+        errorLevel = 'warn',
         maxsize = 10 * 1024,
         maxFiles = 1
     } = {}) {
@@ -77,16 +77,19 @@ class AppLogger {
         }
         this.loggers[name] = new (Logger)({
             transports: [
-                new transports.Console({
-                    level: consoleLevel,
-                    colorize: true
+                new (transports.File)({
+                    filename: pathJoin(this.logPath, `${name}.error.log`),
+                    errorLevel,
+                    maxsize,
+                    maxFiles,
+                    name: `${name}Error`
                 }),
                 new (transports.File)({
-                    filename: pathJoin(this.logPath, `${name}.log`),
+                    filename: pathJoin(this.logPath, `${name}.info.log`),
                     level,
                     maxsize,
                     maxFiles,
-                    name: `log-${name}`
+                    name: `${name}Info`
                 })
             ]
         });

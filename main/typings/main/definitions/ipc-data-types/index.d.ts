@@ -8,14 +8,14 @@ interface MainResponse {
     };
 }
 
-interface IPCmanager{
+interface IPCmanager {
     channel: string;
     listen: boolean;
 }
 
 // Define type of `data`
 //  renderer -> channels.server.geth.start
-interface GethStart {
+interface GethStartRequest {
     datadir?: string;
     ipcpath?: string;
     cache?: string;
@@ -28,16 +28,29 @@ interface GethStatus {
     starting?: boolean;
     api: boolean;
     spawned: boolean;
-    started?:  boolean;
+    started?: boolean;
     stopped?: boolean;
 }
 
 // channels.server.geth.restart
-interface GethRestart {
+interface GethRestartRequest {
     timer?: number;
 }
 
 // channels.server.geth.stop
-interface GethStop {
+interface GethStopRequest {
     signal?: string;
+}
+
+// channels.client.geth.syncStatus
+interface GethSyncStatus {
+    currentBlock?: number;
+    highestBlock?: number;
+    startingBlock?: number;
+    peerCount?: number;
+    synced: boolean;
+}
+
+interface GethLogsRequest{
+    stopWatching?: boolean
 }
