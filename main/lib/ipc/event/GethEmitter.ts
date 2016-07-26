@@ -14,7 +14,7 @@ abstract class GethEmitter extends AbstractEmitter {
     }
 
     private _download() {
-        GethConnector.getInstance().once(
+        GethConnector.getInstance().on(
             CONSTANTS.DOWNLOADING_BINARY, () => {
                 this.fireEvent(channels.client.geth.startService, gethResponse({ downloading: true }));
             }

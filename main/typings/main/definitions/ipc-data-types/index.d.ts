@@ -32,6 +32,14 @@ interface GethStatus {
     stopped?: boolean;
 }
 
+interface IpfsStatus {
+    downloading?: boolean;
+    api: boolean;
+    spawned: boolean;
+    started?: boolean;
+    stopped?: boolean;
+}
+
 // channels.server.geth.restart
 interface GethRestartRequest {
     timer?: number;
@@ -51,6 +59,3 @@ interface GethSyncStatus {
     synced: boolean;
 }
 
-interface GethLogsRequest{
-    stopWatching?: boolean
-}
