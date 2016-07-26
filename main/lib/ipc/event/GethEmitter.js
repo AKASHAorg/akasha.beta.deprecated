@@ -13,7 +13,7 @@ class GethEmitter extends AbstractEmitter_1.AbstractEmitter {
             ._stopped();
     }
     _download() {
-        geth_connector_1.GethConnector.getInstance().once(geth_connector_1.CONSTANTS.DOWNLOADING_BINARY, () => {
+        geth_connector_1.GethConnector.getInstance().on(geth_connector_1.CONSTANTS.DOWNLOADING_BINARY, () => {
             this.fireEvent(channels_1.default.client.geth.startService, responses_1.gethResponse({ downloading: true }));
         });
         return this;
