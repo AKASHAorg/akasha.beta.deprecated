@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { SettingsActions, AppActions } from '../actions';
+import { asyncConnect } from 'redux-connect';
+import { SettingsActions, AppActions, BootstrapActions } from '../actions';
 import AkashaTheme from '../layouts/AkashaTheme';
 import { getMuiTheme } from 'material-ui/styles';
 import { Snackbar } from 'material-ui';
@@ -38,8 +39,8 @@ class App extends Component {
               open={(this.props.appState.get('error').size > 0)}
               onRequestClose={this._handleErrorClose}
             />
-                {/** (process.env.NODE_ENV !== 'production') &&
-                    React.createElement(require('./DevTools'))**/
+                {(process.env.NODE_ENV !== 'production') &&
+                    React.createElement(require('./DevTools'))
                 }
           </div>
         );
@@ -48,7 +49,9 @@ class App extends Component {
 App.propTypes = {
     appState: PropTypes.object,
     appActions: PropTypes.object,
-    settingsActions: PropTypes.object
+    settingsActions: PropTypes.object,
+    bootstrapActions: PropTypes.object,
+    children: PropTypes.element
 };
 App.contextTypes = {
     router: React.PropTypes.object
@@ -59,17 +62,21 @@ App.childContextTypes = {
 
 function mapStateToProps (state) {
     return {
-        appState: state.appState
+        appState: state.appState,
+        routeState: state.reduxAsyncConnect
     };
 }
 function mapDispatchToProps (dispatch) {
     return {
         settingsActions: new SettingsActions(dispatch),
-        appActions: new AppActions(dispatch)
+        appActions: new AppActions(dispatch),
+        bootstrapActions: new BootstrapActions(dispatch),
     };
 }
-
-export default connect(
+export default asyncConnect([{
+    promise: ({ store: { dispatch, getState } }) =>
+        Promise.resolve(new BootstrapActions(dispatch).initApp(getState))
+}])(connect(
     mapStateToProps,
     mapDispatchToProps
-)(App);
+)(App));

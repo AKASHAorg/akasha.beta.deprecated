@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux';
 import { routerReducer as routing } from 'react-router-redux';
+import { reducer as reduxAsyncConnect } from 'redux-connect';
 import setupConfig from './setupConfig';
 import syncStatus from './syncStatus';
 import profileState from './profileState';
@@ -16,6 +17,7 @@ const rootReducer = combineReducers({
     appState,
     settingsState,
     entryState,
+    reduxAsyncConnect,
     routing,
 });
 

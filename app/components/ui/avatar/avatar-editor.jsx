@@ -119,13 +119,13 @@ class Avatar extends React.Component {
                       border: offsetBorder || 0,
                       backgroundColor
                   }}
-                  border={this.state.isNewAvatarLoaded ? 10 : 0}
+                  border={this.state.isNewAvatarLoaded ? 5 : 0}
                   image={avatarImage}
                   ref="editor"
                   width={radius || 130}
                   height={radius || 130}
                   borderRadius={100}
-                  scale={editable ? 1 : this.state.avatarScale}
+                  scale={editable ? this.state.avatarScale : 1}
                 />
                 {editable &&
                   <div>
@@ -192,7 +192,7 @@ Avatar.propTypes = {
     dialogHandlerStyle: React.PropTypes.object,
     userInitialsAlignStyle: React.PropTypes.object,
     userInitialsWrapperStyle: React.PropTypes.object,
-    offsetBorder: React.PropTypes.number
+    offsetBorder: React.PropTypes.string
 };
 Avatar.contextTypes = {
     muiTheme: React.PropTypes.object
@@ -205,7 +205,7 @@ Avatar.defaultProps = {
         height: 150,
         borderRadius: '50%',
         overflow: 'hidden',
-        border: `1px solid #444`
+        border: '1px solid #444'
     },
     avatarClearStyle: {
         cursor: 'pointer',

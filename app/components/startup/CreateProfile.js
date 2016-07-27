@@ -3,7 +3,7 @@ import r from 'ramda';
 import { MenuAkashaLogo } from '../ui/svg';
 import * as Colors from 'material-ui/styles/colors';
 import { SvgIcon, IconButton, RaisedButton,
-         TextField, Checkbox, SelectField, MenuItem, Divider } from 'material-ui';
+         TextField, Checkbox, Divider } from 'material-ui';
 import ContentAddIcon from 'material-ui/svg-icons/content/add';
 import CancelIcon from 'material-ui/svg-icons/navigation/cancel';
 import Avatar from '../ui/avatar/avatar-editor';
@@ -50,7 +50,7 @@ class CreateProfile extends Component {
         const { profileActions } = this.props;
         const profileData = this.state.formValues;
         const optionalData = {};
-        const profileImage = this.imageUploader.refs.wrappedInstance.getImage();
+        const profileImage = this.imageUploader.getWrappedInstance().getImage();
         const errors = this.props.errors;
         const userLinks = this.state.links.filter(link => link.title.length > 0);
         profileData.password = new TextEncoder('utf-8').encode(this.state.formValues.password);

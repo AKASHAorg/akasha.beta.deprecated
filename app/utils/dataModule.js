@@ -16,7 +16,7 @@ export const inputFieldMethods = {
         const parts = statePath.split('.');
         const nameSpace = parts.shift();
         const errorKey = parts[parts.length - 1];
-        const props = r.omit(['statePath', 'addValueLink'], params);
+        const props = r.omit(['statePath', 'addValueLink', 'onTextChange'], params);
         const validationErrors = this.props.getValidationMessages(errorKey);
         const state = this.state;
         let value = state[nameSpace];
@@ -58,8 +58,8 @@ export const inputFieldMethods = {
         if (statePath && params.addValueLink) {
             props.onChange = (ev) => {
                 this.setState(getNewValuePath(ev.target.value));
-                if (props.onTextChange) {
-                    props.onTextChange(ev);
+                if (params.onTextChange) {
+                    params.onTextChange(ev);
                 }
             };
         }

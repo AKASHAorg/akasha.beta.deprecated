@@ -12,28 +12,30 @@ import Logo from './IconLogo';
 
 class SideBar extends Component {
     componentWillMount () {
-        const { profileState, profileActions, entryActions } = this.props;
+        const { profileState, profileActions } = this.props;
         if (profileState.get('loggedProfile').size === 0) {
             profileActions.checkLoggedProfile({ noRedirect: true });
         }
     }
     _handleNewEntry = () => {
-        const { entryState, profileState } = this.props;
-        const publishedEntries = entryState.get('published');
-        const draftEntries = entryState.get('drafts');
+        const { entryActions, entryState, profileState, appActions } = this.props;
+        const entriesCount = entryState.get('entriesCount');
+        const draftsCount = entryState.get('draftsCount');
         const loggedProfile = profileState.get('loggedProfile');
-        if (publishedEntries.size > 0 || draftEntries.size > 0) {
-            this.props.appActions.showPanel({ name: 'newEntry', overlay: true });
+
+        if (entriesCount > 0 || draftsCount > 0) {
+            appActions.showPanel({ name: 'newEntry', overlay: true });
+            entryActions.getDrafts();
         } else {
-            this.props.appActions.hidePanel();
-            this.context.router.push(`/${loggedProfile.get('username')}/draft/new`);
+            appActions.hidePanel();
+            this.context.router.push(`/${loggedProfile.get('userName')}/draft/new`);
         }
     }
     _handleNavigation = (to) => {
-        const { profileState } = this.props;
+        const { profileState, appActions } = this.props;
         const loggedUser = profileState.get('loggedProfile');
-        const basePath = loggedUser.get('username');
-        this.props.appActions.hidePanel();
+        const basePath = loggedUser.get('userName');
+        appActions.hidePanel();
         if (!to) {
             // navigate to index route
             return this.context.router.push(basePath);

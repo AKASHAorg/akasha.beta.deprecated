@@ -1,17 +1,21 @@
 import { GethService, IpfsService } from '../services';
-import { SettingsActions, AppActions } from './';
-import * as types from '../constants/external-process-constants';
+import { SettingsActions } from './';
+import { externalProcessActionCreators, appActionCreators } from './action-creators';
+let eProcActions = null;
 /**
  * External processes actions (Geth, IPFS)
  *
  */
 class EProcActions {
     constructor (dispatch) {
+        if (!eProcActions) {
+            eProcActions = this;
+        }
         this.dispatch = dispatch;
         this.settingsActions = new SettingsActions(dispatch);
-        this.appActions = new AppActions(dispatch);
         this.gethService = new GethService;
         this.ipfsService = new IpfsService;
+        return eProcActions;
     }
     startGeth = () =>
         this.settingsActions.getSettings('geth').then(() =>
@@ -35,28 +39,32 @@ class EProcActions {
             // if geth could not start return an error and alert user
             if (!gethState.success) {
                 const error = new Error(` ${gethState.status}`);
-                return Promise.reject(this.dispatch(this._startGethError(error)));
+                return this.dispatch(externalProcessActionCreators.startGethError(error));
             }
-            return Promise.resolve(this.dispatch(this._startGethSuccess({ data: gethState })));
+            return this.dispatch(
+                externalProcessActionCreators.startGethSuccess({ data: gethState })
+            );
         })
-        .catch(reason => this.dispatch(() => {
-            this.appActions.showError({
+        .catch(reason => this.dispatch(
+            appActionCreators.showError({
                 code: 105,
                 type: reason.type ? reason.type : 'GETH_START_ERROR',
                 message: reason.data ? reason.data.message : reason.stack
-            });
-        }));
+            })
+        ));
 
     stopGeth = () => {
         this.gethService.stopGeth().then(data => {
             if (!data) {
-                return this.dispatch(this._stopGethError('Main process crashed'));
+                return this.dispatch(
+                    externalProcessActionCreators.stopGethError('Main process crashed')
+                );
             }
-            return this.dispatch(this._stopGethSuccess(data));
+            return this.dispatch(externalProcessActionCreators.stopGethSuccess(data));
         }).catch(reason => {
-            this.dispatch(this._stopGethError(reason));
+            this.dispatch(externalProcessActionCreators.stopGethError(reason));
         });
-    }
+    };
     startIPFS = () =>
         this.settingsActions.getSettings('ipfs').then(() => {
             this.dispatch((dispatch, getState) => {
@@ -70,66 +78,41 @@ class EProcActions {
         .then((ipfsSettings) => this.ipfsService.startIPFS(ipfsSettings))
         .then((ipfsState) => {
             if (!ipfsState.success) {
-                return Promise.resolve(this.dispatch(this._startIPFSSuccess({ data: ipfsState })));
+                return this.dispatch(
+                    externalProcessActionCreators.startIPFSSuccess({ data: ipfsState })
+                );
             }
-            return Promise.resolve(this.dispatch(this._startIPFSSuccess({ data: ipfsState })));
+            return this.dispatch(
+                externalProcessActionCreators.startIPFSSuccess({ data: ipfsState })
+            );
         })
-        .catch(reason => this.dispatch(() => {
-            this.dispatch(this._startIPFSError(reason));
-            console.error(reason);
-            this.appActions.showError({
-                code: 205,
-                type: reason.type ? reason.type : 'IPFS_START_ERROR',
-                message: 'Ipfs process cannot be started!'
-            });
+        .catch(reason => this.dispatch((dispatch) => {
+            dispatch(this._startIPFSError(reason));
+            dispatch(
+                appActionCreators.showError({
+                    code: 205,
+                    type: reason.type ? reason.type : 'IPFS_START_ERROR',
+                    message: 'Ipfs process cannot be started!'
+                })
+            );
         }));
     configIPFS = (config) => {
         this.ipfsService.configIpfs(config).then(data => {
             if (!data.success) {
-                return this.dispatch(this._configIpfsError(data.status));
+                return this.dispatch(externalProcessActionCreators.configIpfsError(data.status));
             }
-            return this.dispatch(this._configIpfsSuccess(data));
-        }).catch(reason => this.dispatch(this._configIpfsError(reason)));
-    }
+            return this.dispatch(externalProcessActionCreators.configIpfsSuccess(data));
+        }).catch(reason => this.dispatch(externalProcessActionCreators.configIpfsError(reason)));
+    };
     stopIPFS = () => {
         this.ipfsService.stopIPFS().then(data => {
             if (!data.success) {
-                return this.dispatch(this._stopIPFSError(data.status.error));
+                return this.dispatch(
+                    externalProcessActionCreators.stopIPFSError(data.status.error)
+                );
             }
-            return this.dispatch(this._stopIPFSSuccess(data));
-        }).catch(reason => this.dispatch(this._stopIPFSError(reason)));
-    }
-    _startGethSuccess (data) {
-        return { type: types.START_GETH_SUCCESS, data };
-    }
-    _startGethError (data) {
-        return { type: types.START_GETH_ERROR, data };
-    }
-    _stopGethSuccess (data) {
-        return { type: types.STOP_GETH_SUCCESS, data };
-    }
-    _stopGethError (data) {
-        return { type: types.STOP_GETH_ERROR, data };
-    }
-    _startIPFSSuccess (data) {
-        // this.settingsService.saveSettings('ipfs', data);
-        return { type: types.START_IPFS_SUCCESS, data };
-    }
-    _startIPFSError (data) {
-        return { type: types.START_IPFS_ERROR, data };
-    }
-    _configIpfsSuccess (data) {
-        return { type: types.CONFIG_IPFS_SUCCESS, data };
-    }
-    _configIpfsError (data) {
-        return { type: types.CONFIG_IPFS_ERROR, data };
-    }
-    _stopIPFSSuccess (data) {
-        return { type: types.STOP_IPFS_SUCCESS, data };
-    }
-    _stopIPFSError (data) {
-        return { type: types.STOP_IPFS_ERROR, data };
+            return this.dispatch(externalProcessActionCreators.stopIPFSSuccess(data));
+        }).catch(reason => this.dispatch(externalProcessActionCreators.stopIPFSError(reason)));
     }
 }
-
 export { EProcActions };

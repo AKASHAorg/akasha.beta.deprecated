@@ -44,14 +44,21 @@ class NewEntryFormPanel extends Component {
         const entryType = this.state.tabsValue;
         const { router } = this.context;
         const { profileState, appActions } = this.props;
-        const username = profileState.get('loggedProfile').get('username');
+        const userName = profileState.get('loggedProfile').get('userName');
         appActions.hidePanel();
         switch (entryType) {
             case 'drafts':
-                return router.push(`/${username}/draft/${entryId}`);
+                return router.push(`/${userName}/draft/${entryId}`);
             default:
                 break;
         }
+    }
+    _handleNewEntry = (ev) => {
+        const { router } = this.context;
+        const { profileState, appActions } = this.props;
+        const userName = profileState.get('loggedProfile').get('userName');
+        appActions.hidePanel();
+        return router.push(`/${userName}/draft/new`);
     }
     _getTabContent = () => {
         const { entryState } = this.props;
@@ -133,7 +140,7 @@ class NewEntryFormPanel extends Component {
                 </Tabs>
               </div>
               <div className="col-xs-4 end-xs">
-                <RaisedButton label="new entry" primary />
+                <RaisedButton label="new entry" primary onTouchTap={this._handleNewEntry} />
               </div>
             </div>
             <div className="row" style={{ margin: 0, padding: '0 18px' }}>
@@ -192,6 +199,7 @@ NewEntryFormPanel.propTypes = {
     rootStyle: PropTypes.object,
     profileState: PropTypes.object,
     entryState: PropTypes.object,
+    entryActions: PropTypes.object,
     appActions: PropTypes.object
 };
 NewEntryFormPanel.contextTypes = {

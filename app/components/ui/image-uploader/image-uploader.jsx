@@ -2,7 +2,7 @@ import React from 'react';
 import { SvgIcon, RaisedButton } from 'material-ui';
 import AddPhotoIcon from 'material-ui/svg-icons/image/add-a-photo';
 import DeleteIcon from 'material-ui/svg-icons/action/delete';
-import { getResizedImages } from '../../../utils/imageUtils';
+import imageCreator, { getResizedImages } from '../../../utils/imageUtils';
 import { injectIntl } from 'react-intl';
 import { generalMessages } from '../../../locale-data/messages';
 const { dialog } = require('electron').remote;
@@ -12,7 +12,26 @@ class ImageUploader extends React.Component {
         super(props);
         this.state = {};
     }
-    getImage = () => this.state.images;
+    componentWillReceiveProps (nextProps) {
+        if (nextProps.initialImage && nextProps.initialImage.files.length > 0) {
+            const { initialImage } = nextProps;
+            const containerSize = initialImage.containerSize;
+            const matchingFile = initialImage.files.find(img => img.width >= containerSize.width);
+            const initialImageFile = imageCreator(matchingFile.imageFile);
+            this.setState({
+                initialImageFile
+            });
+        }
+    }
+    componentWillUnmount = () => {
+        window.URL.revokeObjectURL(this.state.initialImageFile);
+    }
+    getImage = () => {
+        if (this.state.isNewImage) {
+            return this.state.images;
+        }
+        return this.props.initialImage;
+    }
     _handleDialogOpen = () => {
         const multiselection = this.props.multiFiles ? 'multiSelections' : '';
         dialog.showOpenDialog({
@@ -38,7 +57,8 @@ class ImageUploader extends React.Component {
                     this.setState({
                         images: results
                     });
-                }).catch(err => {
+                })
+                .catch(err => {
                     this.setState({
                         error: err
                     });
@@ -55,53 +75,26 @@ class ImageUploader extends React.Component {
         });
     }
     render () {
-        const uploadButtonStyle = {
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            zIndex: 1,
-            cursor: 'pointer'
-        };
-        const clearImageButtonStyle = {
-            position: 'absolute',
-            top: '8px',
-            right: '-8px',
-            zIndex: 3,
-            width: 36
-        };
-        const imageStyle = {
-            width: '100%',
-            display: 'inherit'
-        };
-        const errorStyle = {
-            position: 'absolute',
-            width: '80%',
-            bottom: '8px',
-            left: '10%',
-            padding: '8px 16px',
-            backgroundColor: '#FFF',
-            color: '#D40202',
-            boxShadow: '0px 0px 3px 0 rgba(0,0,0,0.6)'
-        };
-        const emptyContainerStyle = {
-            textAlign: 'center',
-            width: '100%',
-            height: '220px',
-            padding: '80px 5px'
-        };
-
+        const {
+            imageStyle,
+            clearImageButtonStyle,
+            emptyContainerStyle,
+            uploadButtonStyle,
+            errorStyle,
+            multiFiles,
+            intl
+        } = this.props;
+        const { initialImageFile } = this.state;
         return (
           <div style={this.context.muiTheme.imageUploader}>
               {this.state.isNewImage &&
                 <div>
-                  {this.props.multiFiles &&
+                  {multiFiles &&
                      this.state.imageFile.map((image, key) =>
                        <img src={image} key={key} style={imageStyle} role="presentation" />
                      )
                   }
-                  {!this.props.multiFiles &&
+                  {!multiFiles &&
                     <img src={this.state.imageFile[0]} style={imageStyle} role="presentation" />
                   }
                   <div style={clearImageButtonStyle}>
@@ -115,7 +108,14 @@ class ImageUploader extends React.Component {
                   </div>
                 </div>
                 }
-                {!this.state.isNewImage &&
+                {!this.state.isNewImage && initialImageFile &&
+                  <img
+                    src={this.state.initialImageFile}
+                    role="presentation"
+                    style={imageStyle}
+                  />
+                }
+                {!this.state.isNewImage && !initialImageFile &&
                   <div style={emptyContainerStyle}>
                     <SvgIcon
                       style={{ height: '42px', width: '100%' }}
@@ -124,7 +124,7 @@ class ImageUploader extends React.Component {
                       <AddPhotoIcon viewBox="0 0 24 24" />
                     </SvgIcon>
                     <text style={{ display: 'block' }}>
-                      {this.props.intl.formatMessage(generalMessages.addImage)}
+                      {intl.formatMessage(generalMessages.addImage)}
                     </text>
                   </div>
                 }
@@ -136,12 +136,56 @@ class ImageUploader extends React.Component {
         );
     }
 }
+ImageUploader.defaultProps = {
+    uploadButtonStyle: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 1,
+        cursor: 'pointer'
+    },
+    clearImageButtonStyle: {
+        position: 'absolute',
+        top: '8px',
+        right: '-8px',
+        zIndex: 3,
+        width: 36
+    },
+    imageStyle: {
+        width: '100%',
+        display: 'inherit'
+    },
+    errorStyle: {
+        position: 'absolute',
+        width: '80%',
+        bottom: '8px',
+        left: '10%',
+        padding: '8px 16px',
+        backgroundColor: '#FFF',
+        color: '#D40202',
+        boxShadow: '0px 0px 3px 0 rgba(0,0,0,0.6)'
+    },
+    emptyContainerStyle: {
+        textAlign: 'center',
+        width: '100%',
+        height: '220px',
+        padding: '80px 5px'
+    }
+};
 ImageUploader.propTypes = {
     minWidth: React.PropTypes.number,
     minHeight: React.PropTypes.number,
     dialogTitle: React.PropTypes.string,
     multiFiles: React.PropTypes.bool,
-    intl: React.PropTypes.object
+    intl: React.PropTypes.object,
+    initialImage: React.PropTypes.object,
+    uploadButtonStyle: React.PropTypes.object,
+    clearImageButtonStyle: React.PropTypes.object,
+    imageStyle: React.PropTypes.object,
+    errorStyle: React.PropTypes.object,
+    emptyContainerStyle: React.PropTypes.object
 };
 ImageUploader.contextTypes = {
     muiTheme: React.PropTypes.object

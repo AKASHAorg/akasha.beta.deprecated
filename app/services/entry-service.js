@@ -13,23 +13,21 @@ class EntryService {
         ipcRenderer.removeListener(channel, this.listeners[channel]);
         this.listeners[channel] = null;
     }
-    saveDraft = (draft) =>
-        new Promise((resolve, reject) => {
-            entriesDB.transaction('rw', entriesDB.drafts, () => {
-                if (draft.id) {
-                    return entriesDB.drafts.update(draft.id, draft).then(updated => {
-                        dbg('draft ', draft, 'updated');
-                        if (updated) {
-                            return entriesDB.drafts.get(draft.id)
-                                            .then(updatedDraft => resolve(updatedDraft));
-                        }
-                        return reject(draft);
-                    });
-                }
-                return entriesDB.drafts.add(draft).then(draftId => {
-                    dbg('draft with id', draftId, 'created');
-                    return entriesDB.drafts.get(draftId).then(foundDraft => resolve(foundDraft));
+    saveDraft = (partialDraft) =>
+        entriesDB.transaction('rw', entriesDB.drafts, () => {
+            if (partialDraft.id) {
+                return entriesDB.drafts.update(partialDraft.id, partialDraft).then(updated => {
+                    dbg('draft ', partialDraft.id, 'updated');
+                    if (updated) {
+                        console.log(entriesDB.drafts.get(partialDraft.id), 'updated');
+                        return partialDraft;
+                    }
+                    return null;
                 });
+            }
+            return entriesDB.drafts.add(partialDraft).then(draftId => {
+                dbg('draft with id', draftId, 'created');
+                return partialDraft;
             });
         });
     getAllDrafts = () =>
@@ -38,6 +36,10 @@ class EntryService {
                 dbg('getAllDrafts', drafts);
                 return drafts;
             })
+        );
+    getResourceCount = (table) =>
+        entriesDB.transaction('rw', entriesDB[table], () =>
+            entriesDB[table].count()
         );
     // get resource by id (drafts or entries);
     getById = (table, id) =>

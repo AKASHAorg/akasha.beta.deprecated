@@ -90,7 +90,7 @@ class Auth extends Component {
                 }
                 secondaryText={
                   <div style={{ marginLeft: 16 }}>
-                    {profile.get('username')}
+                    {profile.get('userName')}
                   </div>
                 }
                 secondaryTextLines={1}

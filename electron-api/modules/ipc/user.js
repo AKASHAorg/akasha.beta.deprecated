@@ -72,7 +72,7 @@ class UserService extends MainService {
     _usernameExists (event, arg) {
         const web3 = this.__getWeb3();
         const registry = new Dapple.class(web3).objects.registry;
-        registry.getById.call(web3.fromUtf8(arg.username), {
+        registry.getById.call(web3.fromUtf8(arg.userName), {
 
         }, (err, res) => {
             if (!err) {

@@ -5,10 +5,18 @@ class TagsField extends React.Component {
     constructor (props) {
         super(props);
         this.state = {
-            currentTags: props.tags || [],
-            existentTags: props.existentTags || [],
+            currentTags: [],
+            existentTags: [],
             tagString: ''
         };
+    }
+
+    componentWillReceiveProps (nextProps) {
+        if (nextProps.tags.length > this.state.currentTags.length) {
+            this.setState({
+                currentTags: nextProps.tags
+            });
+        }
     }
 
     getTags = () => this.state.currentTags
@@ -29,6 +37,10 @@ class TagsField extends React.Component {
         currentTags.splice(index, 1);
         this.setState({
             currentTags
+        }, () => {
+            if (this.props.onBlur) {
+                this.props.onBlur(ev);
+            }
         });
     }
     _createError = (error, removeCurrentTag) => {
@@ -77,14 +89,18 @@ class TagsField extends React.Component {
             }
         }
     }
-    // _handleBlur = (ev) => {
-    //     const value = ev.target.value;
-    //     if (value.length > 0) {
-    //         this.setState({
-    //             tagString: value
-    //         }, this._createTag);
-    //     }
-    // }
+    _handleInputBlur = (ev) => {
+        const value = ev.target.value;
+        if (value && value.length > 0) {
+            this._createTag();
+            this.setState({
+                tagString: ''
+            });
+        }
+        if (this.props.onBlur) {
+            this.props.onBlur(ev);
+        }
+    }
     render () {
         const currentTags = this.state.currentTags;
         const tags = currentTags.map((tag, key) => (
@@ -121,6 +137,7 @@ class TagsField extends React.Component {
             disabled={currentTags >= 10}
             onChange={this._handleInputChange}
             value={this.state.tagString}
+            onBlur={this._handleInputBlur}
           >
             <div>
               {tags}
@@ -154,7 +171,8 @@ TagsField.propTypes = {
     tags: React.PropTypes.array,
     onTagAdded: React.PropTypes.func,
     existentTags: React.PropTypes.array,
-    onRequestTagAutocomplete: React.PropTypes.func
+    onRequestTagAutocomplete: React.PropTypes.func,
+    onBlur: React.PropTypes.func
 };
 
 export default TagsField;

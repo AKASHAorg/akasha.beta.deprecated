@@ -6,9 +6,9 @@ import {
     IconButton,
     IconMenu,
     MenuItem } from 'material-ui';
+import { convertFromRaw } from 'draft-js';
 import EntryEditor from '../ui/entry-editor';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
-import r from 'ramda';
 
 class NewEntryPage extends Component {
     constructor (props) {
@@ -40,34 +40,31 @@ class NewEntryPage extends Component {
         const loggedProfile = profileState.get('loggedProfile');
         this._saveDraft(() => {
             this.context.router.push(
-              `/${loggedProfile.get('username')}/draft/${params.draftId}/publish`
+              `/${loggedProfile.get('userName')}/draft/${params.draftId}/publish`
             );
         });
-    }
+    };
+    _getWordCount = (rawContent) => {
+        let text = convertFromRaw(rawContent).getPlainText(' ');
+        text = text.trim();
+        text = text.replace(/[ ]{2,}/gi, ' '); // convert 2 or more spaces to 1
+        return text.split(' ').length;
+    };
     _saveDraft = (cb) => {
-        const { entryActions, entryState, params } = this.props;
-        let draft;
-        if (params.draftId !== 'new') {
-            draft = entryState.get('drafts').find(drft => drft.id === parseInt(params.draftId, 10));
-        } else {
-            draft = r.clone(this.state.draftToEdit);
-        }
+        const { entryActions, params } = this.props;
         const content = this.editor.getContent();
         const title = this.editor.getTitle();
-        draft.content = content;
-        draft.title = title;
+        const wordCount = this._getWordCount(content);
         if (params.draftId !== 'new') {
-            entryActions.updateDraft({ ...draft });
+            const draftId = parseInt(params.draftId, 10);
+            entryActions.updateDraftThrottled({ id: draftId, content, title, wordCount });
         } else {
-            entryActions.createDraft({ ...draft });
+            entryActions.createDraft({ content, title, wordCount });
         }
-        this.setState({
-            draftToEdit: draft
-        });
         if (typeof cb === 'function') {
             cb();
         }
-    }
+    };
     _handleEditorChange = (text) => {
         const txt = text.trim();
 
@@ -81,13 +78,16 @@ class NewEntryPage extends Component {
             });
         }
         this._saveDraft();
-    }
+    };
     _handleTitleChange = () => {
         this._saveDraft();
-    }
+    };
     render () {
-        const { entryState } = this.props;
-        const draft = this.state.draftToEdit;
+        const { entryState, params } = this.props;
+        const draftId = parseInt(params.draftId, 10);
+        const draft = entryState.get('drafts').find(drft =>
+          drft.id === draftId
+        );
         let entryTitle = 'First entry';
         if (entryState.get('drafts').size > 0 && !entryState.get('savingDraft')) {
             entryTitle = 'New Entry';

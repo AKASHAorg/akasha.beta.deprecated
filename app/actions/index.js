@@ -1,3 +1,4 @@
+export { BootstrapActions } from './bootstrap-actions';
 export { AppActions } from './app-actions';
 export { EProcActions } from './external-process-actions';
 export { LoggerActions } from './logger-actions';

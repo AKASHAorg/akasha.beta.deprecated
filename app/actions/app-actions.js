@@ -1,15 +1,22 @@
-import * as types from '../constants/AppConstants';
+import { appActionCreators } from './action-creators'
+let appActions = null;
 
 class AppActions {
     constructor (dispatch) {
+        if (!appActions) {
+            appActions = this;
+        }
         this.dispatch = dispatch;
+        return appActions;
     }
+
     showError = (error) => {
-        this.dispatch({ type: types.SHOW_ERROR, error });
-    }
+        this.dispatch(appActionCreators.showError(error));
+    };
+
     clearErrors = () => {
-        this.dispatch({ type: types.CLEAR_ERRORS });
-    }
+        this.dispatch(appActionCreators.clearError);
+    };
     /**
      * Changes currently visible panel
      * @param {Object} panel
@@ -17,8 +24,8 @@ class AppActions {
      * @param {Boolean} panel.overlay Shows clickable overlay below panel. Useful to close the panel
      */
     changePanel = (panel) => this.showPanel(panel);
-    showPanel = (panel) => this.dispatch({ type: types.SHOW_PANEL, panel });
-    hidePanel = (panel) => this.dispatch({ type: types.HIDE_PANEL, panel });
+    showPanel = (panel) => this.dispatch(appActionCreators.showPanel(panel));
+    hidePanel = (panel) => this.dispatch(appActionCreators.hidePanel(panel));
 }
 
 export { AppActions };

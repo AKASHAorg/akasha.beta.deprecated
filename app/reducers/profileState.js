@@ -43,7 +43,7 @@ export default function profileState (state = initialState, action) {
         case types.CREATE_ETH_ADDRESS_SUCCESS:
             return state.mergeDeep(fromJS({
                 tempProfile: {
-                    address: action.data.status,
+                    address: action.data.coinbase,
                     currentStatus: {
                         status: 'finished'
                     }

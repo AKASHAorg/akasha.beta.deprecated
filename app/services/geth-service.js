@@ -1,5 +1,7 @@
 import { ipcRenderer } from 'electron';
 import { EVENTS } from '../../electron-api/modules/settings';
+import debug from 'debug';
+const dbg = debug('App:GethService:');
 
 class GethService {
     /**
@@ -9,7 +11,7 @@ class GethService {
      */
     startGeth = (options) =>
         new Promise((resolve, reject) => {
-            ipcRenderer.send(EVENTS.server.geth.startService, options);
+            dbg('Starting Geth service on channel:', EVENTS.client.geth.startService);
             ipcRenderer.once(EVENTS.client.geth.startService,
                 (event, data) => {
                 // no data means that something very bad happened
@@ -17,14 +19,14 @@ class GethService {
                     if (!data) {
                         return reject('OMG! Main process doesn`t respond to us!');
                     }
-                    // return reject({ status: false });
                     return resolve(data);
                 });
+            ipcRenderer.send(EVENTS.server.geth.startService, options);
         });
 
     stopGeth = () =>
         new Promise((resolve, reject) => {
-            ipcRenderer.send(EVENTS.server.geth.stopService);
+            dbg('Stopping Geth service on channel:', EVENTS.client.geth.stopService);
             ipcRenderer.once(EVENTS.client.geth.stopService, (event, data) => {
                 // no data means that something very bad happened
                 // like losing the main process
@@ -33,6 +35,7 @@ class GethService {
                 }
                 return resolve(data);
             });
+            ipcRenderer.send(EVENTS.server.geth.stopService);
         });
 }
 

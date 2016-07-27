@@ -45,7 +45,7 @@ const loginDialog = (props) => {
             <TextField
               disabled
               floatingLabelText="userName"
-              value={`${profile.get('username')}`}
+              value={`${profile.get('userName')}`}
               fullWidth
             />
           </div>

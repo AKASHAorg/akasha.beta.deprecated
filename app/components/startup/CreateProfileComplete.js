@@ -6,7 +6,7 @@ import { SvgIcon, RaisedButton, TextField } from 'material-ui';
 class CreateProfileComplete extends Component {
     _handleFinishSetup = () => {
         const { profile } = this.props;
-        this.context.router.push(`/${profile.get('username')}`);
+        this.context.router.push(`/${profile.get('userName')}`);
     }
     render () {
         const { style, profile } = this.props;
@@ -43,7 +43,7 @@ class CreateProfileComplete extends Component {
                   disabled
                   floatingLabelText="Username"
                   style={{ width: '210px', marginLeft: '20px' }}
-                  value={profile.get('username')}
+                  value={profile.get('userName')}
                 />
                 <TextField
                   disabled

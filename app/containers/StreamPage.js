@@ -3,10 +3,6 @@ import { EntryActions } from '../actions';
 import { connect } from 'react-redux';
 
 class StreamPage extends Component {
-    componentWillMount () {
-        const { entryActions } = this.props;
-        entryActions.getDrafts();
-    }
     render () {
         return (
           <div>Stream Page</div>

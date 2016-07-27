@@ -1,39 +1,39 @@
+import { setupActionCreators } from './action-creators';
 import { SetupService } from '../services';
-import { AppActions, SettingsActions } from './';
-import { hashHistory } from 'react-router';
-import * as types from '../constants/SetupConstants';
+let setupActions = null;
 
 class SetupActions {
     constructor (dispatch) {
+        if (!setupActions) {
+            setupActions = this;
+        }
         this.dispatch = dispatch;
-        this.setupService = new SetupService;
-        this.settingsActions = new SettingsActions(dispatch);
-        this.appActions = new AppActions(dispatch);
+        this.setupService = new SetupService();
+        return setupActions;
     }
     retrySetup = (isAdvanced) => {
-        this.dispatch({ type: types.RETRY_SETUP, isAdvanced });
-    }
+        this.dispatch(setupActionCreators.retrySetup(isAdvanced));
+    };
     toggleAdvancedSettings = (isAdvanced) => {
-        this.dispatch({ type: types.SETUP_ADVANCED_SETTINGS, isAdvanced });
-    }
+        this.dispatch(setupActionCreators.toggleAdvancedSettings(isAdvanced));
+    };
     setupGethDataDir = (path) => {
-        this.dispatch({ type: types.SETUP_GETH_DATADIR, path });
-    }
+        this.dispatch(setupActionCreators.setupGethDataDir(path));
+    };
     setupGethIPCPath = (path) => {
-        this.dispatch({ type: types.SETUP_GETH_IPCPATH, path });
-    }
+        this.dispatch(setupActionCreators.setupGethIPCPath(path));
+    };
     setupGethCacheSize = (size) => {
-        this.dispatch({ type: types.SETUP_GETH_CACHE_SIZE, size });
-    }
+        this.dispatch(setupActionCreators.setupGethCacheSize(size));
+    };
     setupIPFSPath = (path) => {
-        this.dispatch({ type: types.SETUP_IPFS_PATH, path });
-    }
+        this.dispatch(setupActionCreators.setupIPFSPath(path));
+    };
     setupIPFSApiPort = (port) => {
-        this.dispatch({ type: types.SETUP_IPFS_API_PORT, port });
-    }
+        this.dispatch(setupActionCreators.setupIPFSApiPort(port));
+    };
     setupIPFSGatewayPort = (port) => {
-        this.dispatch({ type: types.SETUP_IPFS_GATEWAY_PORT, port });
+        this.dispatch(setupActionCreators.setupIPFSGatewayPort(port));
     }
 }
-
 export { SetupActions };

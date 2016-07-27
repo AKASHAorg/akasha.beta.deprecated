@@ -1,58 +1,63 @@
-import * as types from '../constants/ProfileConstants';
 import { ProfileService } from '../services';
 import { SettingsActions } from '../actions';
+import { profileActionCreators } from './action-creators';
 import { hashHistory } from 'react-router';
 import { ipcRenderer } from 'electron';
-import { EVENTS } from '../../electron-api/modules/settings';
 import debug from 'debug';
 const dbg = debug('App:ProfileActions:');
+let profileActions = null;
 
 class ProfileActions {
     constructor (dispatch) {
+        if (!profileActions) {
+            profileActions = this;
+        }
         this.dispatch = dispatch;
         this.profileService = new ProfileService;
         this.settingsActions = new SettingsActions(dispatch);
+        return profileActions;
     }
 
     login = (profileData) =>
         this.profileService.login(profileData).then(result => {
             if (!result) {
                 const error = new Error('Main process doomed');
-                return this.dispatch({ type: types.LOGIN_ERROR, error });
+                return this.dispatch(profileActionCreators.loginError(error));
             }
             if (!result.success) {
                 const error = new Error(result.status.message, 'login action');
-                return this.dispatch({ type: types.LOGIN_ERROR, error });
+                return this.dispatch(profileActionCreators.loginError(error));
             }
-            return this.dispatch({ type: types.LOGIN_SUCCESS, profileData });
+            return this.dispatch(profileActionCreators.loginSuccess(result));
         })
         .then(() => {
             this.dispatch((dispatch, getState) => {
                 const loggedProfile = getState().profileState.get('loggedProfile');
                 if (loggedProfile.size > 0) {
                     this.profileService.saveLoggedProfile(loggedProfile.toJS()).then(() => {
-                        hashHistory.push(`/${loggedProfile.get('username')}`);
+                        hashHistory.push(`/${loggedProfile.get('userName')}`);
                     });
                 }
             });
         })
-        .catch(reason => console.error(reason));
+        .catch(reason => profileActionCreators.loginError(reason));
 
     logout = (account) => {
         this.profileService.logout(account).then(result => {
-            this.dispatch({ type: types.LOGOUT_SUCCESS, result });
+            this.dispatch(profileActionCreators.logoutSuccess(result));
         })
         .then(() => {
             this.profileService.removeLoggedProfile().then(() => {
                 hashHistory.push('authenticate');
             });
-        });
+        }).catch(reason => profileActionCreators.logoutError(reason));
     }
+
     checkLoggedProfile = (options = {}) =>
         this.profileService.getLoggedProfile().then(loggedProfile => {
             const profile = loggedProfile[0];
             if (profile) {
-                this.dispatch({ type: types.LOGIN_SUCCESS, profileData: profile });
+                this.dispatch(profileActionCreators.loginSuccess(profile));
                 if (!options.noRedirect) {
                     return hashHistory.push(`/${profile.username}`);
                 }
@@ -65,22 +70,19 @@ class ProfileActions {
     getTempProfile = () =>
         this.profileService.getTempProfile().then((profile) => {
             dbg('getTempProfile', profile);
-            return this.dispatch({ type: types.GET_TEMP_PROFILE_SUCCESS, profile });
+            return this.dispatch(profileActionCreators.getTempProfileSuccess(profile));
         })
-        .catch(reason => this.dispatch({ type: types.GET_TEMP_PROFILE_ERROR, reason }));
+        .catch(reason => this.dispatch(profileActionCreators.getTempProfileError(reason)));
 
     createTempProfile = (profileData, currentStatus) =>
         this.profileService.createTempProfile(profileData, currentStatus).then(() => {
             dbg('createTempProfile', { profileData, currentStatus });
-            this.dispatch({
-                type: types.CREATE_TEMP_PROFILE_SUCCESS,
-                profileData,
-                currentStatus
-            });
-        }).catch(reason => {
-            console.error(reason);
-            this.dispatch({ type: types.CREATE_TEMP_PROFILE_ERROR, reason });
-        });
+            this.dispatch(
+                profileActionCreators.createTempProfileSuccess(profileData, currentStatus)
+            );
+        }).catch(reason =>
+            this.dispatch(profileActionCreators.createTempProfileError(reason))
+        );
 
     updateTempProfile = (profileData, currentStatus) =>
         this.profileService.updateTempProfile(profileData.get('userName'), {
@@ -88,37 +90,38 @@ class ProfileActions {
             ...currentStatus })
         .then(() => {
             dbg('updateTempProfile', { ...profileData.toJS(), ...currentStatus });
-            return this.dispatch({
-                type: types.UPDATE_TEMP_PROFILE_SUCCESS,
-                ...profileData.toJS(),
-                ...currentStatus
-            });
+            return this.dispatch(
+                profileActionCreators.updateTempProfileSuccess(
+                    ...profileData.toJS(),
+                    ...currentStatus
+                )
+            );
         })
-        .catch(reason => {
-            console.error(reason);
-            this.dispatch({ type: types.UPDATE_TEMP_PROFILE_ERROR, reason });
-        });
+        .catch(reason =>
+            this.dispatch(profileActionCreators.updateTempProfileError(reason))
+        );
 
     deleteTempProfile = () =>
         this.profileService.deleteTempProfile().then(() => {
             dbg('deleteTempProfile');
-            this.dispatch({ type: types.DELETE_TEMP_PROFILE_SUCCESS });
-        }).catch(reason => {
-            console.error(reason);
-            this.dispatch({ type: types.DELETE_TEMP_PROFILE_ERROR, reason });
-        });
+            this.dispatch(profileActionCreators.deleteTempProfileSuccess());
+        }).catch(reason =>
+            this.dispatch(profileActionCreators.deleteTempProfileError(reason))
+        );
+
     /**
      * Step0: Creates a new eth address and updates the status of the profile creation process
      * @param: {string} profilePassword
      */
     createEthAddress (profilePassword) {
-        this.dispatch({ type: types.CREATE_ETH_ADDRESS });
+        this.dispatch(profileActionCreators.createEthAddress());
         this.profileService.createEthAddress(profilePassword).then(result => {
             dbg('createEthAddress', result);
             if (!result.success) {
                 dbg(result.status.message);
+                this.dispatch(profileActionCreators.createEthAddressError(result.status.message));
             }
-            this.dispatch({ type: types.CREATE_ETH_ADDRESS_SUCCESS, data: result.data });
+            this.dispatch(profileActionCreators.createEthAddressSuccess(result.data));
         })
         .then(() =>
             this.dispatch((dispatch, getState) => {
@@ -136,25 +139,21 @@ class ProfileActions {
         .then((newerProfile) =>
             this.requestFundFromFaucet(newerProfile.get('address'))
         )
-        .catch(reason => this.dispatch({ type: types.CREATE_ETH_ADDRESS_ERROR, error: reason }));
+        .catch(reason => this.dispatch(profileActionCreators.createEthAddressError(reason)));
     }
     /**
      * Step1: Send request to faucet and store the status of this step in indexedDB
      * @param {string} profileAddress
      */
     requestFundFromFaucet (profileAddress) {
-        this.dispatch({ type: types.FUND_FROM_FAUCET });
+        this.dispatch(profileActionCreators.requestFund());
         this.profileService.requestFundFromFaucet(profileAddress).then(result => {
             dbg('requestFundFromFaucet_success', result);
             if (!result.success) {
-                dbg(result.status.message);
-                console.error(result.status.error);
-                this.dispatch({ type: types.REQUEST_FUND_FROM_FAUCET_ERROR, data: result.status });
+                dbg('ERROR: ', result.status.message);
+                this.dispatch(profileActionCreators.requestFundError(result.status.error));
             }
-            return this.dispatch({
-                type: types.REQUEST_FUND_FROM_FAUCET_SUCCESS,
-                data: result.data
-            });
+            return this.dispatch(profileActionCreators.requestFundSuccess(result.data));
         })
         .then(() => {
             this.dispatch((dispatch, getState) => {
@@ -180,7 +179,7 @@ class ProfileActions {
         dbg('funding from faucet');
         this.profileService.fundFromFaucet().then(result => {
             dbg('fundFromFaucet', result);
-            return this.dispatch({ type: types.FUND_FROM_FAUCET_SUCCESS, data: result.data });
+            return this.dispatch(profileActionCreators.fundSuccess(result.data));
         })
         .then(() =>
             this.dispatch((dispatch, getState) => {
@@ -196,7 +195,7 @@ class ProfileActions {
                 );
             })
         )
-        .catch(reason => this.dispatch({ type: types.FUND_FROM_FAUCET_ERROR, error: reason }));
+        .catch(reason => this.dispatch(profileActionCreators.fundError(reason)));
     }
     /**
      * Step4 (last step) acctually create the profile using data received from the user
@@ -206,22 +205,24 @@ class ProfileActions {
         this.profileService.completeProfileCreation(profileData).then(result => {
             dbg('completeProfileCreation', result);
             if (!result.success) {
-                this.dispatch({
-                    type: types.COMPLETE_PROFILE_CREATION_ERROR,
-                    error: result.status
-                });
+                this.dispatch(
+                    profileActionCreators.completeProfileCreationError(result.status.error)
+                );
             }
-            this.dispatch({ type: types.COMPLETE_PROFILE_CREATION_SUCCESS, data: result.data });
+            this.dispatch(profileActionCreators.completeProfileCreationSuccess(result.data));
             return result;
         })
         .then((result) => {
             if (result.success) {
                 return this.deleteTempProfile();
             }
-            return console.error(result);
+            dbg('completeProfileCreation_ERROR', result);
+            return result;
         })
-        .then(() => {
-            hashHistory.push('authenticate');
+        .then((result) => {
+            if (result.success) {
+                hashHistory.push('authenticate');
+            }
         });
     }
      /**
@@ -257,6 +258,7 @@ class ProfileActions {
             return this.getLocalProfiles();
         });
     }
+
     /**
      * Check if temp profile exists. If true then navigate to profile status page.
      * Else populate profile lists
@@ -271,10 +273,9 @@ class ProfileActions {
                 }
                 return this.getLocalProfiles();
             })
-        ).catch(reason => {
-            console.error(reason, reason.stack);
-            this.dispatch({ type: types.CHECK_TEMP_PROFILE_ERROR, reason });
-        });
+        ).catch(reason =>
+            this.dispatch(profileActionCreators.checkTempProfileError(reason))
+        )
 
     getLocalProfiles = () =>
         this.getProfilesList().then(() =>
@@ -294,34 +295,17 @@ class ProfileActions {
     getProfilesList = () =>
         this.profileService.getProfilesList().then(profiles => {
             dbg('getProfilesList', profiles);
-            return this.dispatch({
-                type: types.GET_PROFILES_LIST_SUCCESS,
-                profiles: profiles.data
-            });
-        }).catch(reason => this.dispatch({ type: types.GET_PROFILES_LIST_ERROR, reason }));
+            return this.dispatch(profileActionCreators.getProfilesListSuccess(profiles.data));
+        }).catch(reason => this.dispatch(profileActionCreators.getProfilesListError(reason)));
 
     getProfileData = (ipfsHashes) => {
-        this.profileService.getProfileData(ipfsHashes, (err, profiles) => {
+        this.profileService.getProfileData(ipfsHashes, (err, profile) => {
             if (err) {
-                console.error(err);
-                this.dispatch({
-                    type: types.GET_PROFILE_DATA_ERROR,
-                    error: err
-                });
+                dbg('ERROR', err);
+                this.dispatch(profileActionCreators.getProfileDataError(err));
             }
-            return this.dispatch({
-                type: types.GET_PROFILE_DATA_SUCCESS,
-                profiles: profiles.data
-            });
+            return this.dispatch(profileActionCreators.getProfileDataSuccess(profile));
         });
     }
-
-    /**
-     *
-     */
-    _createProfileStepFailure (message) {
-        return { type: types.CREATE_PROFILE_STEP_ERROR, message };
-    }
 }
-
 export { ProfileActions };

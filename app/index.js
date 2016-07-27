@@ -1,6 +1,7 @@
 import React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
+import { ReduxAsyncConnect } from 'redux-connect';
 import { IntlProvider } from 'react-intl';
 import { Router, hashHistory } from 'react-router';
 import { syncHistoryWithStore } from 'react-router-redux';
@@ -15,12 +16,13 @@ window.appDebug = debug.enable('App:*');
 const store = configureStore();
 const history = syncHistoryWithStore(hashHistory, store);
 
-injectTapEventPlugin();
+global.Perf = require('react-addons-perf');
 
+injectTapEventPlugin();
 render(
   <Provider store={store} >
     <IntlProvider locale="en" >
-      <Router history={history} >
+      <Router history={history} render={(props) => <ReduxAsyncConnect {...props} />} >
         {routes}
       </Router>
     </IntlProvider>

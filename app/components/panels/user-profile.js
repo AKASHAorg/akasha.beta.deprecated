@@ -132,4 +132,4 @@ UserProfilePanel.propTypes = {
     profileActions: PropTypes.object,
 };
 
-export default radium(UserProfilePanel);
+export default UserProfilePanel;

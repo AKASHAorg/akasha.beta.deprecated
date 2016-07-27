@@ -1,13 +1,18 @@
-import * as types from '../constants/SyncConstants';
+import { syncActionCreators } from './action-creators';
 import { SetupService } from '../services';
 import { SettingsActions, EProcActions } from './';
+let syncActions = null;
 
 class SyncActions {
     constructor (dispatch) {
+        if (!syncActions) {
+            syncActions = this;
+        }
         this.dispatch = dispatch;
         this.settingsActions = new SettingsActions(dispatch);
         this.setupService = new SetupService;
         this.eProcActions = new EProcActions(dispatch);
+        return syncActions;
     }
 
     /**
@@ -18,18 +23,19 @@ class SyncActions {
         this.dispatch(() =>
             this.eProcActions.startGeth()
         ).then(() =>
-            this.dispatch({ type: types.SYNC_ACTIVE })
+            this.dispatch(syncActionCreators.startSync())
         );
     /**
      * Dispatcher for resuming sync
      * @returns {function()}
      */
-    resumeSync = () => this.dispatch({ type: types.SYNC_RESUME });
+    resumeSync = () => this.dispatch(syncActionCreators.resumeSync());
     pauseSync = () => {
         this.stopUpdateSync(() => {
-            this.dispatch({ type: types.SYNC_PAUSE });
+            this.dispatch(syncActionCreators.pauseSync());
         });
-    }
+    };
+    
     requestCancel = () =>
         this.dispatch(() =>
             this.settingsActions.saveSettings('flags', { requestStartupChange: true })
@@ -41,15 +47,13 @@ class SyncActions {
      * @returns {{type}}
      */
     stopSync = () =>
-        this.dispatch(() => this.stopUpdateSync());
+        this.dispatch(() => this.stopUpdateSync().then(() => syncActionCreators.stopSync()));
 
     startUpdateSync = (cb) => {
         this.setupService.startUpdateSync(cb);
-    }
+    };
+    
     stopUpdateSync = () =>
-        this.setupService.stopUpdateSync().then(() =>
-            this.dispatch({ type: types.SYNC_STOPPED })
-        );
+        this.setupService.stopUpdateSync();
 }
-
 export { SyncActions };
