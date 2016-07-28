@@ -52,6 +52,12 @@ class EntryService extends MainService {
         ipcMain.on(this.serverEvent.saveComment, (event, arg) => {
             this._saveComment(event, arg);
         });
+        ipcMain.on(this.serverEvent.upvoteEntry, (event, arg) => {
+            this._upvoteEntry(event, arg);
+        });
+        ipcMain.on(this.serverEvent.downvoteEntry, (event, arg) => {
+            this._downvoteEntry(event, arg);
+        });
     }
 
     _saveComment (event, arg) {
@@ -105,6 +111,64 @@ class EntryService extends MainService {
     }
 
     _tagExists (event, arg) {
+        if (arg.tag) {
+            const web3 = this.__getWeb3();
+            const tagsContract = new Dapple.class(web3).objects.tags;
+            tagsContract.exists.call(web3.fromUtf8(arg.tag), {}, (err, res) => {
+                if (err) {
+                    this._sendEvent(event)(this.clientEvent.tagExists, false, err, err.toString());
+                } else {
+                    this._sendEvent(event)(this.clientEvent.tagExists, true, {
+                        exists: res,
+                        tag: arg.tag
+                    });
+                }
+            });
+        } else {
+            this._sendEvent(event)(this.clientEvent.tagExists, false, {}, this.NO_TAG_PARAMETER);
+        }
+    }
+
+    _upvoteEntry (event, arg) {
+        const web3 = this.__getWeb3();
+        web3
+            .personal
+            .unlockAccountAsync(this._getCoinbase(arg), arg.password, this.UNLOCK_INTERVAL)
+            .then(() => {
+                const mainContract = new Dapple.class(web3).objects.akashaMain;
+                return mainContract.upVoteEntry(
+                    arg.entryHash,
+                    arg.weight,
+                    {
+                        from: this._getCoinbase(arg)
+                    },
+                    (err, tx) => {
+                        if (err) {
+                            this._sendEvent(event)(this.clientEvent.upvoteEntry,
+                                        false,
+                                        err,
+                                        err.toString());
+                        } else {
+                            this._sendEvent(event)(this.clientEvent.upvoteEntry,
+                                    true,
+                                    Object.assign({ tx }, arg));
+                            this.__getGeth().addFilter('tx', tx, () => {
+                                this._sendEvent(event)(this.clientEvent.upvoteEntry,
+                                        true,
+                                        arg);
+                            });
+                        }
+                    }
+                );
+            }).catch((err) => {
+                this._sendEvent(event)(this.clientEvent.upvoteEntry,
+                                    false,
+                                    err,
+                                    this.UNLOCK_COINBASE_FAIL);
+            });
+    }
+
+    _downvoteEntry (event, arg) {
         if (arg.tag) {
             const web3 = this.__getWeb3();
             const tagsContract = new Dapple.class(web3).objects.tags;

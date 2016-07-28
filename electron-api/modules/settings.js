@@ -34,7 +34,9 @@ export const EVENTS = {
             tagExists: 'server:entry:tagExists',
             addTags: 'server:entry:addTags',
             getTags: 'server:entry:getTags',
-            saveComment: 'server:entry:saveComment'
+            saveComment: 'server:entry:saveComment',
+            upvoteEntry: 'server:entry:upvoteEntry',
+            downvoteEntry: 'server:entry:downvoteEntry'
         }
     },
     client: {
@@ -73,7 +75,9 @@ export const EVENTS = {
             tagExists: 'client:entry:tagExists',
             addTags: 'client:entry:addTags',
             getTags: 'client:entry:getTags',
-            saveComment: 'client:entry:saveComment'
+            saveComment: 'client:entry:saveComment',
+            upvoteEntry: 'client:entry:upvoteEntry',
+            downvoteEntry: 'client:entry:downvoteEntry'
         }
     }
 };

@@ -135,6 +135,14 @@ export const EVENTS = {
             saveComment: `{
                 entryHash: string,
                 comment: JSON object
+            }`,
+            upvoteEntry: `{
+                entryHash: string,
+                weight: int
+            }`,
+            downvoteEntry: `{
+                entryHash: string,
+                weight: int
             }`
         }
     },
@@ -206,6 +214,14 @@ export const EVENTS = {
             }`,
             saveComment: `{
                 entryHash: string
+            }`,
+            upvoteEntry: `{
+                entryHash: string,
+                weight: int
+            }`,
+            downvoteEntry: `{
+                entryHash: string,
+                weight: int
             }`
         }
     }
