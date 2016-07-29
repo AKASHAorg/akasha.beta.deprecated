@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-import SideBar from '../../components/ui/sidebar';
+import SideBar from '../../shared-components/ui/sidebar';
 import '../../styles/core.scss';
 import PanelLoader from '../../containers/PanelLoader';
 

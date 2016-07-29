@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { asyncConnect } from 'redux-connect';
-import { SettingsActions, AppActions, BootstrapActions } from '../actions';
+import { SettingsActions } from 'local-flux';
 import AkashaTheme from '../layouts/AkashaTheme';
 import { getMuiTheme } from 'material-ui/styles';
 import { Snackbar } from 'material-ui';
@@ -13,7 +13,7 @@ class App extends Component {
         };
     }
     _handleSendReport = () => {
-
+        
     };
     _handleErrorClose = () => {
         const { appActions } = this.props;
@@ -23,22 +23,22 @@ class App extends Component {
         const { appState } = this.props;
         const error = appState.get('error');
         const errorMessage = error.get('code')
-                ? `Error ${error.get('code')}: ${error.get('message')}` : '';
+            ? `Error ${error.get('code')}: ${error.get('message')}` : '';
         return (
-          <div className="fill-height" >
-            {this.props.children}
-            <Snackbar
-              style={{ maxWidth: 500 }}
-              action="send report"
-              onActionTouchTap={this._handleSendReport}
-              message={errorMessage}
-              open={(this.props.appState.get('error').size > 0)}
-              onRequestClose={this._handleErrorClose}
-            />
+            <div className="fill-height" >
+                {this.props.children}
+                <Snackbar
+                    style={{ maxWidth: 500 }}
+                    action="send report"
+                    onActionTouchTap={this._handleSendReport}
+                    message={errorMessage}
+                    open={(this.props.appState.get('error').size > 0)}
+                    onRequestClose={this._handleErrorClose}
+                />
                 {(process.env.NODE_ENV !== 'production') &&
-                    React.createElement(require('././DevTools'))
+                React.createElement(require('./DevTools'))
                 }
-          </div>
+            </div>
         );
     }
 }

@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
-import PanelLoader from '../components/panels/panel-loader';
-import { AppActions, ProfileActions } from '../actions';
+import PanelLoader from '../shared-components/Panels/panel-loader';
+import { AppActions, ProfileActions } from 'local-flux';
 
 function mapStateToProps (state) {
     return {

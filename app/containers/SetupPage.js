@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
-import Setup from '../components/startup/Setup';
-import { SetupActions, SyncActions, SettingsActions, EProcActions } from '../actions';
+import Setup from '../shared-components/startup/Setup';
+import { SetupActions, SyncActions, SettingsActions, EProcActions } from 'local-flux';
 
 function mapStateToProps (state) {
     return {

@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 import { Paper } from 'material-ui';
 import '../../styles/core.scss';
 
-// Note: Stateless/function components *will not* hot reload!
+// Note: Stateless/function shared-components *will not* hot reload!
 // react-transform *only* works on component classes.
 //
 // Since layouts rarely change, they are a good place to

@@ -1,11 +1,11 @@
 import React from 'react';
 import { Route, IndexRoute } from 'react-router';
-import App from './containers/App';
+import App from './routes/AppContainer';
 import SetupPage from './containers/SetupPage';
 import SyncStatus from './containers/SyncStatus';
-import LoginLayout from './layouts/LoginLayout';
+import Login from './layouts/LoginLayout';
 import LoginPage from './containers/LoginPage';
-import HomeLayout from './layouts/HomeLayout';
+import Home from './layouts/HomeLayout';
 import NewEntryPage from './containers/NewEntryPage';
 import PublishEntryPanel from './containers/PublishEntryPanel';
 import StreamPage from './containers/StreamPage';
@@ -18,16 +18,18 @@ import {
 
 export default (
   <Route component={App} path="/" >
-    <Route component={LoginLayout} >
-      <IndexRoute component={SetupPage} />
-      <Route component={SetupPage} path="setup-options" />
-      <Route component={SyncStatus} path="sync-status" />
-      <Route component={LoginPage} path="authenticate" />
+    <IndexRoute component={BootApp} />
+    <Route component={Setup}>
+      <IndexRoute component={Configuration} />
+      <Route component={Synchronization} path="sync-status" />
+    </Route>
+    <Route component={Login}>
+      <IndexRoute component={LoginPage} path="authenticate" />
       <Route component={CreateProfile} path="new-profile" />
       <Route component={CreateProfileStatus} path="new-profile-status" />
       <Route component={CreateProfileComplete} path="new-profile-complete" />
     </Route>
-    <Route component={HomeLayout} path=":username" >
+    <Route component={Home} path=":username" >
       <IndexRoute component={StreamPage} />
       <Route component={NewEntryPage} path="draft/:draftId">
         <Route component={PublishEntryPanel} path="publish"/>

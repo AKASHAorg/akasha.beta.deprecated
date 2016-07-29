@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { EntryActions } from '../actions';
+import { EntryActions } from 'local-flux';
 import { connect } from 'react-redux';
 
 class StreamPage extends Component {

@@ -1,6 +1,6 @@
-import PublishEntryPanel from '../components/panels/publish-entry-panel';
+import PublishEntryPanel from '../shared-components/Panels/publish-entry-panel';
 import { connect } from 'react-redux';
-import { ProfileActions, EntryActions } from '../actions';
+import { ProfileActions, EntryActions } from 'local-flux';
 
 function mapStateToProps (state) {
     return {

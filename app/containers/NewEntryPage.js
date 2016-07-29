@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { ProfileActions, EntryActions } from '../actions';
-import AddEntryPage from '../components/entry/add-entry-page';
+import { ProfileActions, EntryActions } from 'local-flux';
+import AddEntryPage from '../shared-components/entry/add-entry-page';
 
 class NewEntryPage extends Component {
     componentWillMount () {}

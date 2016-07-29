@@ -6,7 +6,7 @@ import { IntlProvider } from 'react-intl';
 import { Router, hashHistory } from 'react-router';
 import { syncHistoryWithStore } from 'react-router-redux';
 import routes from './routes';
-import configureStore from './store/configureStore';
+import configureStore from './local-flux/store/configureStore';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import { ruMessages } from './locale-data/ru';
 import debug from 'debug';
