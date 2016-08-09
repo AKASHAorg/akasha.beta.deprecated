@@ -1,7 +1,7 @@
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import { IconMenu, IconButton, MenuItem } from 'material-ui';
 import * as Colors from 'material-ui/styles/colors';
-import Logo from '../sidebar/IconLogo';
+import Logo from '../Sidebar/IconLogo';
 import React from 'react';
 import { generalMessages } from '../../../locale-data/messages';
 import { injectIntl } from 'react-intl';

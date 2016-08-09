@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import CreateProfile from './components/CreateProfile';
+import CreateProfileComplete from './components/CreateProfileComplete';
 import { ProfileActions, ValidationActions } from 'local-flux';
 
 function mapStateToProps (state) {
@@ -18,4 +18,4 @@ function mapDispatchToProps (dispatch) {
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(CreateProfile);
+)(CreateProfileComplete);

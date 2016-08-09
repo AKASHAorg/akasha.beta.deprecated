@@ -2,9 +2,9 @@ import React from 'react';
 import { SvgIcon, RaisedButton } from 'material-ui';
 import AddPhotoIcon from 'material-ui/svg-icons/image/add-a-photo';
 import DeleteIcon from 'material-ui/svg-icons/action/delete';
-import imageCreator, { getResizedImages } from '../../../utils/imageUtils';
+import imageCreator, { getResizedImages } from '../../utils/imageUtils';
 import { injectIntl } from 'react-intl';
-import { generalMessages } from '../../../locale-data/messages';
+import { generalMessages } from 'locale-data/messages';
 const { dialog } = require('electron').remote;
 
 class ImageUploader extends React.Component {

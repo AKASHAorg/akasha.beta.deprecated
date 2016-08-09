@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import { IconButton, SvgIcon } from 'material-ui';
 import { colors } from 'material-ui/styles';
-import Avatar from '../../ui/avatar/avatar-editor';
+import Avatar from '../../Avatar/avatar';
 import {
   ToolbarWallet,
   ToolbarComments,
@@ -10,7 +10,7 @@ import {
   ToolbarProfile,
   ToolbarSettings,
   ToolbarLogout
-} from '../../ui/svg';
+} from '../../svg';
 
 const UserProfileHeader = (props) => {
     const { profile } = props;

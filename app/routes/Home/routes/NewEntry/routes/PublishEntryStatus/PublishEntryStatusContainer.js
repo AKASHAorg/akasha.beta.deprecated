@@ -1,21 +1,22 @@
+import PublishEntryStatus from './components/publish-entry-status';
 import { connect } from 'react-redux';
-import CreateProfile from './components/CreateProfile';
-import { ProfileActions, ValidationActions } from 'local-flux';
+import { ProfileActions, EntryActions } from 'local-flux';
 
 function mapStateToProps (state) {
     return {
-        profileState: state.profileState
+        profileState: state.profileState,
+        entryState: state.entryState
     };
 }
 
 function mapDispatchToProps (dispatch) {
     return {
         profileActions: new ProfileActions(dispatch),
-        validationActions: new ValidationActions(dispatch)
+        entryActions: new EntryActions(dispatch)
     };
 }
 
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(CreateProfile);
+)(PublishEntryStatus);

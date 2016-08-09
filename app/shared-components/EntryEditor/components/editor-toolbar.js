@@ -7,7 +7,6 @@ import {
     IconButton,
     SvgIcon,
     } from 'material-ui';
-import clickAway from '../../../../utils/clickAway';
 import BoldIcon from 'material-ui/svg-icons/editor/format-bold';
 import ItalicIcon from 'material-ui/svg-icons/editor/format-italic';
 import QuoteIcon from 'material-ui/svg-icons/editor/format-quote';

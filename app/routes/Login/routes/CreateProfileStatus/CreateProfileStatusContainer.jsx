@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
-import Auth from './components/Auth';
-import { ProfileActions } from 'local-flux';
+import CreateProfileStatus from './components/CreateProfileStatus';
+import { ProfileActions, ValidationActions } from 'local-flux';
 
 function mapStateToProps (state) {
     return {
@@ -10,10 +10,12 @@ function mapStateToProps (state) {
 
 function mapDispatchToProps (dispatch) {
     return {
-        profileActions: new ProfileActions(dispatch)
+        profileActions: new ProfileActions(dispatch),
+        validationActions: new ValidationActions(dispatch)
     };
 }
+
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(Auth);
+)(CreateProfileStatus);

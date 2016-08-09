@@ -2,7 +2,7 @@ import React from 'react';
 import {
     Dialog,
     TextField } from 'material-ui';
-import Avatar from '../avatar/avatar-editor';
+import Avatar from '../Avatar/avatar';
 const loginDialog = (props) => {
     const {
         profile,

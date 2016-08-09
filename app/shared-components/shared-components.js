@@ -1,2 +1,2 @@
-export SideBar from './SideBar/side-bar';
+export SideBar from './Sidebar/side-bar';
 export Avatar from './Avatar/avatar.js';

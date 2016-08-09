@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import SyncStatus from '../shared-components/startup/SyncStatus';
+import SyncStatus from './components/Sync';
 import { SyncActions, SetupActions, LoggerActions, EProcActions } from 'local-flux';
 
 function mapStateToProps (state) {

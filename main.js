@@ -42,8 +42,8 @@ app.on('will-quit', () => {
 
 app.on('ready', () => {
     mainWindow = new BrowserWindow({
-        width: 1280,
-        height: 720,
+        width: (1280 + 16),
+        height: (720 + 59),
         resizable: true
     });
     if (process.env.HOT) {

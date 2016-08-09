@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { asyncConnect } from 'redux-connect';
-import { SettingsActions } from 'local-flux';
+import { SettingsActions, BootstrapActions, AppActions } from 'local-flux';
 import AkashaTheme from '../layouts/AkashaTheme';
 import { getMuiTheme } from 'material-ui/styles';
 import { Snackbar } from 'material-ui';

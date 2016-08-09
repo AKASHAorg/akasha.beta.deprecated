@@ -10,20 +10,22 @@ export default class PanelContainer extends React.Component {
         } else {
             this.refs.panelTitle.style.boxShadow = 'none';
         }
-    }
+    };
     render () {
+        let rootStyle = {
+            position: 'relative',
+            width: '100%',
+            zIndex: 10,
+            height: '100%',
+            maxWidth: this.props.width
+        };
+        if (this.props.centered) {
+            rootStyle.left = '50%';
+            rootStyle.marginLeft = -1 * (this.props.width / 2);
+        }
         return (
           <Paper
-            style={{
-                position: 'absolute',
-                top: 0,
-                left: '50%',
-                marginLeft: '-320px',
-                bottom: 0,
-                width: (this.props.width || 640),
-                zIndex: 10,
-                height: '100%',
-            }}
+            style={rootStyle}
           >
             <div
               className="row middle-xs"
@@ -42,20 +44,27 @@ export default class PanelContainer extends React.Component {
                   transition: 'all 0.118s ease-in-out'
               }}
             >
-              <h3 className="col-xs-7" style={{ fontWeight: 300 }}>{this.props.title}</h3>
-              <div className="col-xs-4 end-xs">0.002 ETH</div>
+              {this.props.header &&
+                 this.props.header
+              }
+              {!this.props.header &&
+                <div>
+                  <h3 className="col-xs-7" style={{ fontWeight: 300 }}>{this.props.title}</h3>
+                  <div className="col-xs-4 end-xs">0.002 ETH</div>
+                </div>
+              }
             </div>
             <div
               className="row"
               style={{
                   position: 'absolute',
-                  top: 64,
-                  bottom: 64,
+                  top: 56,
+                  bottom: 56,
                   left: 0,
                   right: 0,
                   overflowY: 'auto',
-                  overFlowX: 'hidden',
-                  padding: '24px',
+                  overflowX: 'hidden',
+                  padding: 24,
                   margin: 0
               }}
               ref="panelContent"
@@ -64,7 +73,7 @@ export default class PanelContainer extends React.Component {
               {this.props.children}
             </div>
             <div
-              className="row end-xs"
+              className="row"
               ref="panelActions"
               style={{
                   position: 'absolute',
@@ -77,13 +86,20 @@ export default class PanelContainer extends React.Component {
                   boxShadow: '0px -1px 3px -1px rgba(0, 0, 0, 0.2)'
               }}
             >
-              {this.props.actions}
+              <div className="col-xs-6 start-xs">
+                {this.props.leftActions}
+              </div>
+              <div className="col-xs-6 end-xs">
+                {this.props.actions}
+              </div>
             </div>
           </Paper>
         );
     }
 }
-
+PanelContainer.defaultProps = {
+    width: 640
+};
 PanelContainer.propTypes = {
     actions: React.PropTypes.node,
     children: React.PropTypes.node,

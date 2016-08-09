@@ -12,8 +12,8 @@ import {
     AtomicBlockUtils,
     RichUtils,
     Entity } from 'draft-js';
-import { getResizedImages } from '../../../utils/imageUtils';
-import clickAway from '../../../utils/clickAway';
+import { getResizedImages } from '../../utils/imageUtils';
+import clickAway from '../../utils/clickAway';
 import styles from './style.css';
 import AddCircle from 'material-ui/svg-icons/content/add-circle-outline';
 import PhotoCircle from 'material-ui/svg-icons/image/add-a-photo';

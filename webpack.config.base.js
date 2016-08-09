@@ -22,7 +22,7 @@ const webpackConfig = {
     extensions: ['', '.js', '.jsx'],
     root: path.join(__dirname, 'app'),
     packageMains: ['webpack', 'browser', 'web', 'browserify', ['jam', 'main'], 'main'],
-    modulesDirectories: ['node_modules', 'local-flux', 'shared-components']
+    modulesDirectories: ['node_modules', 'local-flux', 'shared-components', 'locale-data']
   },
   plugins: [
 

@@ -12,7 +12,7 @@ import {
     IconMenu,
     IconButton,
     CircularProgress } from 'material-ui';
-import SearchBar from '../ui/search-bar/search-bar';
+import SearchBar from '../SearchBar/search-bar';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 
 class NewEntryFormPanel extends Component {

@@ -1,18 +1,18 @@
 import React, { Component, PropTypes } from 'react';
 import r from 'ramda';
-import { MenuAkashaLogo } from '../ui/svg';
+import { MenuAkashaLogo } from 'shared-components/svg';
 import * as Colors from 'material-ui/styles/colors';
 import { SvgIcon, IconButton, RaisedButton,
     TextField, Checkbox, Divider } from 'material-ui';
 import ContentAddIcon from 'material-ui/svg-icons/content/add';
 import CancelIcon from 'material-ui/svg-icons/navigation/cancel';
-import Avatar from '../ui/avatar/avatar-editor';
-import ImageUploader from '../ui/image-uploader/image-uploader';
-import { inputFieldMethods } from '../../utils/dataModule';
-import validationProvider from '../../utils/validationProvider';
-import { UserValidation } from '../../utils/validationSchema';
+import Avatar from 'shared-components/Avatar/avatar';
+import ImageUploader from 'shared-components/ImageUploader/image-uploader';
+import { inputFieldMethods } from '../../../../../utils/dataModule';
+import validationProvider from '../../../../../utils/validationProvider';
+import { UserValidation } from '../../../../../utils/validationSchema';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import { profileMessages, formMessages, generalMessages } from '../../locale-data/messages';
+import { profileMessages, formMessages, generalMessages } from 'locale-data/messages';
 
 class CreateProfile extends Component {
     constructor (props) {
