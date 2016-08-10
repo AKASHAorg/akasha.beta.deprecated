@@ -1,4 +1,5 @@
 import { appActionCreators } from './action-creators'
+import { AppService } from '../services';
 let appActions = null;
 
 class AppActions {
@@ -7,9 +8,15 @@ class AppActions {
             appActions = this;
         }
         this.dispatch = dispatch;
+        this.appService = new AppService();
         return appActions;
     }
-
+    checkForUpdates = () => {
+        this.appService.checkForUpdates().then(updates => {
+            this.dispatch(appActionCreators.checkForUpdates(updates));
+        });
+    };
+    updateApp = () => {};
     showError = (error) => {
         this.dispatch(appActionCreators.showError(error));
     };

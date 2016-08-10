@@ -33,13 +33,15 @@ class SyncActions {
     pauseSync = () => {
         this.stopUpdateSync(() => {
             this.dispatch(syncActionCreators.pauseSync());
+            this.eProcActions.stopGeth();
         });
     };
-    
+
     requestCancel = () =>
         this.dispatch(() =>
             this.settingsActions.saveSettings('flags', { requestStartupChange: true })
         ).then(() => {
+            this.eProcActions.stopGeth()
             this.stopUpdateSync();
         });
     /**
@@ -52,7 +54,6 @@ class SyncActions {
     startUpdateSync = (cb) => {
         this.setupService.startUpdateSync(cb);
     };
-    
     stopUpdateSync = () =>
         this.setupService.stopUpdateSync();
 }

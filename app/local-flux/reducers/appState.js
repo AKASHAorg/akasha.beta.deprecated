@@ -4,7 +4,9 @@ import { createReducer } from './create-reducer';
 
 const initialState = fromJS({
     error: [],
-    appLoading: false
+    updates: null,
+    appLoading: false,
+    appUpdating: false
 });
 
 
@@ -15,10 +17,16 @@ const appState = createReducer(initialState, {
     ['@reduxAsyncConnect/END_GLOBAL_LOAD']: (state) => {
         return state.merge({ appLoading: false });
     },
+    [types.CHECK_FOR_UPDATES]: (state, action) => {
+        return state.merge({updates: action.updates});
+    },
+    [types.UPDATE_APP]: (state, action) => {
+        return state.set('appUpdating', action.updating);
+    },
     [types.SHOW_ERROR]: (state, action) => {
         return state.merge({ error: action.error });
     },
-    [types.CLEAR_ERRORS]: (state, action) => {
+    [types.CLEAR_ERRORS]: () => {
         return initialState;
     }
 });

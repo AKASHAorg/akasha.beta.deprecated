@@ -1,10 +1,17 @@
 import { connect } from 'react-redux';
+import { asyncConnect } from 'redux-connect';
 import Configuration from './components/Configuration';
-import { SetupActions, SyncActions, SettingsActions, EProcActions } from 'local-flux';
+import {
+    SetupActions,
+    SyncActions,
+    SettingsActions,
+    EProcActions,
+    BootstrapActions } from 'local-flux';
 
 function mapStateToProps (state) {
     return {
-        setupConfig: state.setupConfig
+        setupConfig: state.setupConfig,
+        settingsState: state.settingsState
     };
 }
 
@@ -17,7 +24,10 @@ function mapDispatchToProps (dispatch) {
     };
 }
 
-export default connect(
+export default asyncConnect([{
+    promise: ({ store: { dispatch, getState } }) =>
+        Promise.resolve(new BootstrapActions(dispatch).initConfig(getState))
+}])(connect(
     mapStateToProps,
     mapDispatchToProps
-)(Configuration);
+)(Configuration));

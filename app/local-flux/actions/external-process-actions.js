@@ -22,7 +22,7 @@ class EProcActions {
             this.dispatch((dispatch, getState) => {
                 const gethSettings = getState().settingsState.get('geth');
                 if (gethSettings.size > 0) {
-                    return gethSettings.first().toJS();
+                    return gethSettings.toJS();
                 }
                 return {};
             })
@@ -31,8 +31,6 @@ class EProcActions {
             this.gethService.startGeth(gethSettings)
         )
         .then(gethState => {
-            // @TODO: if geth is already running verify if it`s on testnet!
-
             if (gethState.isRunning) {
                 return Promise.resolve();
             }
@@ -65,12 +63,25 @@ class EProcActions {
             this.dispatch(externalProcessActionCreators.stopGethError(reason));
         });
     };
+    getGethStatus = () => {
+        this.gethService.getStatus().then(data => {
+            if(!data) {
+                return this.dispatch(
+                    externalProcessActionCreators.getGethStatusError('Main process crashed')
+                );
+            }
+            console.log(data);
+            return this.dispatch(externalProcessActionCreators.getGethStatusSuccess(data))
+        }).catch(reason => {
+            this.dispatch(externalProcessActionCreators.getGethStatusError(reason));
+        });
+    };
     startIPFS = () =>
         this.settingsActions.getSettings('ipfs').then(() => {
             this.dispatch((dispatch, getState) => {
                 const ipfsSettings = getState().settingsState.get('ipfs');
                 if (ipfsSettings.size > 0) {
-                    return ipfsSettings.first().toJS();
+                    return ipfsSettings.toJS();
                 }
                 return {};
             });

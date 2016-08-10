@@ -1,6 +1,12 @@
 import { connect } from 'react-redux';
+import { asyncConnect } from 'redux-connect';
 import Setup from './components/setup';
-import { SetupActions, SyncActions, SettingsActions, EProcActions } from 'local-flux';
+import {
+    SetupActions,
+    SyncActions,
+    SettingsActions,
+    EProcActions,
+    BootstrapActions } from 'local-flux';
 
 function mapStateToProps (state) {
     return {
@@ -17,7 +23,10 @@ function mapDispatchToProps (dispatch) {
     };
 }
 
-export default connect(
+export default asyncConnect([{
+    promise: ({ store: { dispatch, getState } }) =>
+        Promise.resolve(new BootstrapActions(dispatch).initSetup(getState))
+}])(connect(
     mapStateToProps,
     mapDispatchToProps
-)(Setup);
+)(Setup));

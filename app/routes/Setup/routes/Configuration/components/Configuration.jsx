@@ -16,25 +16,11 @@ class Setup extends Component {
         };
     }
     componentWillMount () {
-        const { settingsActions, settingsState } = this.props;
-        settingsActions.getSettings('flags').then(() => {
-            console.log(settingsState, 'settingsState');
-            // dispatcher((dispatch, getState) => {
-            //     const flags = getState().settingsState.get('flags');
-            //     if (flags.size > 0) {
-            //         const changeRequestFlags = flags.first().get('requestStartupChange');
-            //         if (!changeRequestFlags) {
-            //             return settingsActions.getSettings('geth').then(() => {
-            //                 if (getState().settingsState.get('geth').size > 0) {
-            //                     return this.context.router.replace('sync-status');
-            //                 }
-            //                 return null;
-            //             });
-            //         }
-            //     }
-            //     return null;
-            // });
-        });
+        const { settingsState } = this.props;
+        const cancelRequest = settingsState.getIn(['flags', 'requestStartupChange']);
+        if (!cancelRequest) {
+            this.context.router.push('setup/sync-status');
+        }
     }
     handleChange = (ev, value) => {
         const { setupActions, setupConfig } = this.props;

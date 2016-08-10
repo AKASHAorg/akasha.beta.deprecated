@@ -3,18 +3,7 @@ import { connect } from 'react-redux';
 import { ProfileActions, EntryActions } from 'local-flux';
 import AddEntryPage from './components/add-entry';
 
-class NewEntryPage extends Component {
-    componentWillMount () {}
-    render () {
-        return (
-            <AddEntryPage {...this.props} />
-        );
-    }
-}
-NewEntryPage.propTypes = {
-    params: React.PropTypes.object,
-    entryActions: React.PropTypes.object
-};
+
 function mapStateToProps (state) {
     return {
         profileState: state.profileState,
@@ -32,4 +21,4 @@ function mapDispatchToProps (dispatch) {
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(NewEntryPage);
+)(AddEntryPage);

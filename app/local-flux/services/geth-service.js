@@ -37,6 +37,14 @@ class GethService {
             });
             ipcRenderer.send(EVENTS.server.geth.stopService);
         });
+    getStatus = () =>
+        new Promise((resolve, reject) => {
+            dbg('Retrieving Geth status');
+            resolve({
+                isRunning: false,
+                network: 'main'
+            });
+        })
 }
 
 export { GethService };

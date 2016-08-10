@@ -147,11 +147,9 @@ class SyncStatus extends Component {
             progressBody = (
               <div>
                 <div style={{ fontWeight: 'bold', padding: '5px', fontSize: '16px' }} >
-                  {
-                      `${message.peerCount}
-                       ${peerInfo}
-                       ${intl.formatMessage(generalMessages.connected)}`
-                  }
+                  {`${message.peerCount}`}&nbsp;
+                  {peerInfo}&nbsp;
+                  {`${intl.formatMessage(generalMessages.connected)}`}
                 </div>
                 <div style={{ fontSize: '20px' }} >
                   <strong style={{ fontWeight: 'bold' }} >

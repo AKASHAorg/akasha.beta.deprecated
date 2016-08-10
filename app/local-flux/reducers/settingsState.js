@@ -11,7 +11,7 @@ const initialState = fromJS({
 
 const settingsState =  createReducer(initialState, {
     [types.GET_SETTINGS_SUCCESS]: (state, action) => {
-        return state.merge({ [action.table]: fromJS(action.data) });
+        return state.merge({ [action.table]: fromJS(action.data[0]) });
     },
     [types.GET_SETTINGS_ERROR]: (state, action) => {
         return state.merge({ [action.table]: { error: action.error }});

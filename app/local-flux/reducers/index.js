@@ -8,6 +8,7 @@ import panelState from './panelState';
 import appState from './appState';
 import settingsState from './settingsState';
 import entryState from './entryState';
+import externalProcState from './externalProcState';
 
 const rootReducer = combineReducers({
     setupConfig,
@@ -17,6 +18,7 @@ const rootReducer = combineReducers({
     appState,
     settingsState,
     entryState,
+    externalProcState,
     reduxAsyncConnect,
     routing,
 });

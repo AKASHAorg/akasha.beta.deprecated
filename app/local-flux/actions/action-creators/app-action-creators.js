@@ -7,6 +7,13 @@ export function showError (error) {
     };
 }
 
+export function checkForUpdates (updates) {
+    return {
+        type: types.CHECK_FOR_UPDATES,
+        updates
+    }
+}
+
 export function clearError () {
     return { type: types.CLEAR_ERRORS };
 }
