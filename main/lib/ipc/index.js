@@ -8,7 +8,10 @@ function initModules() {
         initListeners: (webContents) => {
             gethChannel.initListeners(webContents);
         },
-        logger: logger
+        logger: logger,
+        flushAll: () => {
+            gethChannel.purgeAllListeners();
+        }
     };
 }
 exports.initModules = initModules;
