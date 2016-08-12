@@ -3,9 +3,9 @@ const electron_1 = require('electron');
 const geth_connector_1 = require('@akashaproject/geth-connector');
 const ipfs_connector_1 = require('@akashaproject/ipfs-connector');
 const path_1 = require('path');
-const exports_1 = require('./lib/ipc/exports');
+const index_1 = require('./lib/ipc/index');
 const viewHtml = path_1.resolve(__dirname, '../app');
-const modules = exports_1.initModules();
+const modules = index_1.initModules();
 electron_1.crashReporter.start({
     productName: 'Akasha',
     companyName: 'Akasha Project',
@@ -28,6 +28,7 @@ electron_1.app.on('ready', () => {
         width: 1280,
         height: 720,
         resizable: true,
+        show: false,
         webPreferences: {
             preload: path_1.resolve(__dirname, 'preloader.js')
         }
@@ -39,10 +40,12 @@ electron_1.app.on('ready', () => {
         mainWindow.loadURL(`file://${viewHtml}/app.html`);
     }
     mainWindow.webContents.on('did-finish-load', () => {
-        mainWindow.show();
-        mainWindow.focus();
         modules.logger.registerLogger('APP');
         modules.initListeners(mainWindow.webContents);
+    });
+    mainWindow.once('ready-to-show', () => {
+        mainWindow.show();
+        mainWindow.focus();
     });
     mainWindow.webContents.on('crashed', () => {
         modules.logger.getLogger('APP').warn('APP CRASHED');

@@ -79,7 +79,7 @@ class AppLogger {
             transports: [
                 new (transports.File)({
                     filename: pathJoin(this.logPath, `${name}.error.log`),
-                    errorLevel,
+                    level: errorLevel,
                     maxsize,
                     maxFiles,
                     name: `${name}Error`

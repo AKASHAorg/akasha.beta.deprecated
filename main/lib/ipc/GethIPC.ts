@@ -131,12 +131,18 @@ class GethIPC extends GethEmitter {
                     .inSync()
                     .then((state: any[]) => {
                             let response: GethSyncStatus;
+                            let knownStates: number;
+                            let pulledStates: number;
                             if (!state.length) {
                                 response = { synced: true };
                             } else {
                                 response = { synced: false, peerCount: state[0] };
                                 if (state.length === 2) {
-                                    Object.assign(response, state[1]);
+                                    knownStates = GethConnector.getInstance()
+                                        .web3.toDecimal(state[1].knownStates);
+                                    pulledStates = GethConnector.getInstance()
+                                        .web3.toDecimal(state[1].pulledStates);
+                                    Object.assign(response, state[1], { knownStates, pulledStates });
                                 }
                             }
                             this.fireEvent(

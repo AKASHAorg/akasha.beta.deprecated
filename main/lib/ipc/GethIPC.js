@@ -59,13 +59,19 @@ class GethIPC extends GethEmitter_1.default {
                 .inSync()
                 .then((state) => {
                 let response;
+                let knownStates;
+                let pulledStates;
                 if (!state.length) {
                     response = { synced: true };
                 }
                 else {
                     response = { synced: false, peerCount: state[0] };
                     if (state.length === 2) {
-                        Object.assign(response, state[1]);
+                        knownStates = geth_connector_1.GethConnector.getInstance()
+                            .web3.toDecimal(state[1].knownStates);
+                        pulledStates = geth_connector_1.GethConnector.getInstance()
+                            .web3.toDecimal(state[1].pulledStates);
+                        Object.assign(response, state[1], { knownStates: knownStates, pulledStates: pulledStates });
                     }
                 }
                 this.fireEvent(channels_1.default.client.geth.syncStatus, responses_1.gethResponse(response), event);

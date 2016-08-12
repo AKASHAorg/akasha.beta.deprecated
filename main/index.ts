@@ -3,7 +3,7 @@ import { app, crashReporter, BrowserWindow } from 'electron';
 import { GethConnector } from '@akashaproject/geth-connector';
 import { IpfsConnector } from '@akashaproject/ipfs-connector';
 import { resolve } from 'path';
-import { initModules } from './lib/ipc/exports';
+import { initModules } from './lib/ipc/index';
 
 const viewHtml = resolve(__dirname, '../app');
 const modules = initModules();
@@ -32,11 +32,13 @@ app.on('ready', () => {
         width: 1280,
         height: 720,
         resizable: true,
+        show: false,
         webPreferences: {
             // nodeIntegration: false,
             preload: resolve(__dirname, 'preloader.js')
         }
     });
+    // BrowserWindow.addDevToolsExtension('/home/marius/.config/chromium/Default/Extensions/fmkadmapgofadopljbjfkapdkoienihi/0.15.0_0');
     if (process.env.HOT) {
         mainWindow.loadURL(`file://${viewHtml}/hot-dev-app.html`);
     } else {
@@ -44,10 +46,13 @@ app.on('ready', () => {
     }
 
     mainWindow.webContents.on('did-finish-load', () => {
-        mainWindow.show();
-        mainWindow.focus();
         modules.logger.registerLogger('APP');
         modules.initListeners(mainWindow.webContents);
+    });
+
+    mainWindow.once('ready-to-show', () => {
+        mainWindow.show();
+        mainWindow.focus();
     });
 
     mainWindow.webContents.on('crashed', () => {

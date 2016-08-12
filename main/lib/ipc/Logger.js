@@ -44,7 +44,7 @@ class AppLogger {
             transports: [
                 new (winston_1.transports.File)({
                     filename: path_1.join(this.logPath, `${name}.error.log`),
-                    errorLevel: errorLevel,
+                    level: errorLevel,
                     maxsize: maxsize,
                     maxFiles: maxFiles,
                     name: `${name}Error`
