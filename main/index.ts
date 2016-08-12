@@ -22,10 +22,6 @@ app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') app.quit();
 });
 
-app.on('will-quit', () => {
-    GethConnector.getInstance().stop();
-    IpfsConnector.getInstance().stop();
-});
 
 app.on('ready', () => {
     const mainWindow = new BrowserWindow({
@@ -44,6 +40,14 @@ app.on('ready', () => {
     } else {
         mainWindow.loadURL(`file://${viewHtml}/app.html`);
     }
+
+    mainWindow.once('close', (ev: Event) => {
+        ev.preventDefault();
+        modules.flushAll();
+        GethConnector.getInstance().stop();
+        IpfsConnector.getInstance().stop();
+        setTimeout(() => app.quit(), 300);
+    });
 
     mainWindow.webContents.on('did-finish-load', () => {
         modules.logger.registerLogger('APP');

@@ -15,6 +15,9 @@ export abstract class AbstractEmitter extends AbstractListener {
         if (event) {
             return event.sender.send(channel, data);
         }
+        if (!this.webContents) {
+            return;
+        }
         return this.webContents.send(channel, data);
     }
 

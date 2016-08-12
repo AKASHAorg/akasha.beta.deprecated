@@ -19,10 +19,6 @@ electron_1.app.on('window-all-closed', () => {
     if (process.platform !== 'darwin')
         electron_1.app.quit();
 });
-electron_1.app.on('will-quit', () => {
-    geth_connector_1.GethConnector.getInstance().stop();
-    ipfs_connector_1.IpfsConnector.getInstance().stop();
-});
 electron_1.app.on('ready', () => {
     const mainWindow = new electron_1.BrowserWindow({
         width: 1280,
@@ -39,6 +35,13 @@ electron_1.app.on('ready', () => {
     else {
         mainWindow.loadURL(`file://${viewHtml}/app.html`);
     }
+    mainWindow.once('close', (ev) => {
+        ev.preventDefault();
+        modules.flushAll();
+        geth_connector_1.GethConnector.getInstance().stop();
+        ipfs_connector_1.IpfsConnector.getInstance().stop();
+        setTimeout(() => electron_1.app.quit(), 300);
+    });
     mainWindow.webContents.on('did-finish-load', () => {
         modules.logger.registerLogger('APP');
         modules.initListeners(mainWindow.webContents);

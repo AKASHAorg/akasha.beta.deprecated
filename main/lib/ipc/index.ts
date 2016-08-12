@@ -9,7 +9,10 @@ export function initModules() {
         initListeners: (webContents: WebContents) => {
             gethChannel.initListeners(webContents);
         },
-        logger
+        logger,
+        flushAll: () => {
+            gethChannel.purgeAllListeners();
+        }
     };
 }
 
