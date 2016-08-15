@@ -5,7 +5,6 @@ const ipfs_connector_1 = require('@akashaproject/ipfs-connector');
 const path_1 = require('path');
 const index_1 = require('./lib/ipc/index');
 const viewHtml = path_1.resolve(__dirname, '../app');
-const modules = index_1.initModules();
 electron_1.crashReporter.start({
     productName: 'Akasha',
     companyName: 'Akasha Project',
@@ -20,6 +19,7 @@ electron_1.app.on('window-all-closed', () => {
         electron_1.app.quit();
 });
 electron_1.app.on('ready', () => {
+    const modules = index_1.initModules();
     const mainWindow = new electron_1.BrowserWindow({
         width: 1280,
         height: 720,

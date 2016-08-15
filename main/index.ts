@@ -6,7 +6,6 @@ import { resolve } from 'path';
 import { initModules } from './lib/ipc/index';
 
 const viewHtml = resolve(__dirname, '../app');
-const modules = initModules();
 crashReporter.start({
     productName: 'Akasha',
     companyName: 'Akasha Project',
@@ -24,6 +23,7 @@ app.on('window-all-closed', () => {
 
 
 app.on('ready', () => {
+    const modules = initModules();
     const mainWindow = new BrowserWindow({
         width: 1280,
         height: 720,
@@ -34,7 +34,7 @@ app.on('ready', () => {
             preload: resolve(__dirname, 'preloader.js')
         }
     });
-    // BrowserWindow.addDevToolsExtension('/home/marius/.config/chromium/Default/Extensions/fmkadmapgofadopljbjfkapdkoienihi/0.15.0_0');
+   // BrowserWindow.addDevToolsExtension('/home/marius/.config/chromium/Default/Extensions/fmkadmapgofadopljbjfkapdkoienihi/0.15.0_0');
     if (process.env.HOT) {
         mainWindow.loadURL(`file://${viewHtml}/hot-dev-app.html`);
     } else {
