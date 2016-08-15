@@ -16,8 +16,11 @@ const entryState = createReducer(initialState, {
     [types.SAVE_DRAFT]: (state) => {
         return state.merge({ savingDraft: true });
     },
-    [types.GET_DRAFT_SUCCESS]: (state, action) => {
+    [types.GET_DRAFTS_SUCCESS]: (state, action) => {
         return state.merge({ drafts: List(action.drafts) });
+    },
+    [types.GET_DRAFT_SUCCESS]: (state, action) => {
+        return state.merge({ drafts: List([fromJS(action.draft)]) });
     },
     [types.CREATE_DRAFT_SUCCESS]: (state, action) => {
         state.merge({ drafts: state.get('drafts').push(fromJS(action.draft)) });

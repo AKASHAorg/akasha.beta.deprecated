@@ -2,14 +2,25 @@ import React from 'react';
 import { Paper } from 'material-ui';
 
 export default class PanelContainer extends React.Component {
+    constructor (props) {
+        super(props);
+        this.state = {
+            scrollTop: 0
+        }
+    }
     _handleScroll = () => {
         const scrollTop = this.refs.panelContent.scrollTop;
-        if (scrollTop > 0) {
-            this.refs.panelTitle.style.boxShadow = '0px 3px 3px -1px rgba(0,0,0,0.2)';
-            this.refs.panelTitle.style.height = `${96 - (scrollTop / 1.5)}px`;
-        } else {
-            this.refs.panelTitle.style.boxShadow = 'none';
-        }
+        this.setState({
+            scrollTop,
+            titleHeight: `${80 - (scrollTop / 1.5)}px`
+        });
+        
+        // if (scrollTop > 0) {
+        //     this.refs.panelTitle.style.boxShadow = '0px 3px 3px -1px rgba(0,0,0,0.2)';
+        //     this.refs.panelTitle.style.height = `${80 - (scrollTop / 1.5)}px`;
+        // } else {
+        //     this.refs.panelTitle.style.boxShadow = 'none';
+        // }
     };
     render () {
         let rootStyle = {
@@ -25,7 +36,7 @@ export default class PanelContainer extends React.Component {
         }
         return (
           <Paper
-            style={rootStyle}
+            style={Object.assign(rootStyle, this.props.style)}
           >
             <div
               className="row middle-xs"
@@ -36,21 +47,25 @@ export default class PanelContainer extends React.Component {
                   left: 0,
                   right: 0,
                   minHeight: 56,
-                  height: 96,
+                  height: this.state.titleHeight,
                   padding: '12px 24px',
                   background: '#FFF',
                   margin: 0,
                   zIndex: 10,
-                  transition: 'all 0.118s ease-in-out'
+                  transition: 'all 0.118s ease-in-out',
+                  boxShadow: (this.state.scrollTop > 0) ? '0px 3px 3px -1px rgba(0,0,0,0.2)': 'none',
+                  borderBottom: (this.props.showBorder && this.state.scrollTop === 0) ? '1px solid #DDD': 'none'
               }}
             >
               {this.props.header &&
                  this.props.header
               }
               {!this.props.header &&
-                <div>
-                  <h3 className="col-xs-7" style={{ fontWeight: 300 }}>{this.props.title}</h3>
-                  <div className="col-xs-4 end-xs">0.002 ETH</div>
+                <div className="col-xs-12">
+                  <div className="row middle-xs">
+                    <h3 className="col-xs-7" style={{ fontWeight: 300 }}>{this.props.title}</h3>
+                    <div className="col-xs-4 end-xs">0.002 ETH</div>
+                  </div>
                 </div>
               }
             </div>
@@ -64,7 +79,7 @@ export default class PanelContainer extends React.Component {
                   right: 0,
                   overflowY: 'auto',
                   overflowX: 'hidden',
-                  padding: 24,
+                  padding: '32px 24px',
                   margin: 0
               }}
               ref="panelContent"

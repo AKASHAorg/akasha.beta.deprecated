@@ -175,7 +175,7 @@ export function getProfilesListError (error) {
 export function getProfileDataSuccess (profile) {
     return {
         type: types.GET_PROFILE_DATA_SUCCESS,
-        profile
+        profile: profile.data
     };
 }
 

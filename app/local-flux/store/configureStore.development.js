@@ -3,6 +3,7 @@ import { persistState } from 'redux-devtools';
 import thunk from 'redux-thunk';
 import rootReducer from '../reducers';
 import DevTools from '../../routes/DevTools';
+import * as reducers from '../reducers';
 
 const finalCreateStore = compose(
   applyMiddleware(thunk),
@@ -19,7 +20,7 @@ export default function configureStore (initialState) {
 
   if (module.hot) {
     module.hot.accept('../reducers', () =>
-      store.replaceReducer(require('../reducers/index'))
+      store.replaceReducer(reducers)
     );
   }
 

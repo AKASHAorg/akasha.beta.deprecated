@@ -9,6 +9,7 @@ import appState from './appState';
 import settingsState from './settingsState';
 import entryState from './entryState';
 import externalProcState from './externalProcState';
+import tagState from './tagState';
 
 const rootReducer = combineReducers({
     setupConfig,
@@ -19,6 +20,7 @@ const rootReducer = combineReducers({
     settingsState,
     entryState,
     externalProcState,
+    tagState,
     reduxAsyncConnect,
     routing,
 });

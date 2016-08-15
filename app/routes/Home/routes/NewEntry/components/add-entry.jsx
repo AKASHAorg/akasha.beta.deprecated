@@ -19,21 +19,18 @@ class NewEntryPage extends Component {
         };
     }
     componentWillMount () {
-        const { entryActions, params } = this.props;
+        const { entryActions, entryState, params } = this.props;
         if (params.draftId !== 'new') {
-            entryActions.getDraftById(params.draftId);
+            const draftToEdit = entryState.get('drafts').find(draft =>
+                draft.id === parseInt(params.draftId, 10));
+            this.setState({
+                draftToEdit
+            });
         }
     }
-    componentWillReceiveProps (nextProps) {
-        const currentDrafts = this.props.entryState.get('drafts');
-        const nextDrafts = nextProps.entryState.get('drafts');
-        
-        if (nextDrafts !== currentDrafts && nextProps.params.draftId !== 'new') {
-            const draft = nextDrafts.find(
-                drft => drft.id === parseInt(nextProps.params.draftId, 10));
-            this.editor.setTitle(draft.title);
-            this.editor.setContent(draft.content);
-        }
+    componentDidMount () {
+        this.editor.setTitle(this.state.draftToEdit.title);
+        this.editor.setContent(this.state.draftToEdit.content);
     }
     _setupEntryForPublication = () => {
         const { profileState, params } = this.props;
@@ -57,6 +54,7 @@ class NewEntryPage extends Component {
         const wordCount = this._getWordCount(content);
         if (params.draftId !== 'new') {
             const draftId = parseInt(params.draftId, 10);
+            this.state.draftToEdit = {id: draftId, content, title, wordCount};
             entryActions.updateDraftThrottled({ id: draftId, content, title, wordCount });
         } else {
             entryActions.createDraft({ content, title, wordCount });
@@ -84,10 +82,7 @@ class NewEntryPage extends Component {
     };
     render () {
         const { entryState, params } = this.props;
-        const draftId = parseInt(params.draftId, 10);
-        const draft = entryState.get('drafts').find(drft =>
-            drft.id === draftId
-        );
+        const draft = this.state.draftToEdit;
         let entryTitle = 'First entry';
         if (entryState.get('drafts').size > 0 && !entryState.get('savingDraft')) {
             entryTitle = 'New Entry';
@@ -95,7 +90,7 @@ class NewEntryPage extends Component {
             entryTitle = 'Saving draft...';
         }
         return (
-            <div>
+            <div style={{height: '100%'}}>
                 <Toolbar
                     className="row"
                     style={{ backgroundColor: '#FFF', borderBottom: '1px solid rgb(204, 204, 204)' }}
@@ -133,18 +128,18 @@ class NewEntryPage extends Component {
                     </div>
                 </div>
                 {this.props.children &&
-                <div>
-                    {React.cloneElement(this.props.children, { draft })}
-                    <div
-                        style={{
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            bottom: 0,
-                            right: 0,
-                            zIndex: 5,
-                            backgroundColor: 'rgba(255, 255, 255, 0.9)' }}
-                    />
+                <div className="row">
+                  {React.cloneElement(this.props.children, { draft })}
+                  <div
+                    style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        bottom: 0,
+                        right: 0,
+                        zIndex: 5,
+                        backgroundColor: 'rgba(255, 255, 255, 0.9)' }}
+                  />
                 </div>
                 }
             </div>

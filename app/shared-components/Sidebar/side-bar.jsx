@@ -22,7 +22,7 @@ class SideBar extends Component {
         const entriesCount = entryState.get('entriesCount');
         const draftsCount = entryState.get('draftsCount');
         const loggedProfile = profileState.get('loggedProfile');
-        
+
         if (entriesCount > 0 || draftsCount > 0) {
             appActions.showPanel({ name: 'newEntry', overlay: true });
             entryActions.getDrafts();
@@ -30,7 +30,7 @@ class SideBar extends Component {
             appActions.hidePanel();
             this.context.router.push(`/${loggedProfile.get('userName')}/draft/new`);
         }
-    }
+    };
     _handleNavigation = (to) => {
         const { profileState, appActions } = this.props;
         const loggedUser = profileState.get('loggedProfile');
@@ -41,39 +41,35 @@ class SideBar extends Component {
             return this.context.router.push(basePath);
         }
         return this.context.router.push(`${basePath}/${to}`);
-    }
+    };
     _handlePanelShow = (panelName) => {
         this.props.appActions.showPanel(panelName);
-    }
+    };
     render () {
-        const {
-            style,
-            iconStyle,
-            innerStyle,
-            ...other } = this.props;
+        const { style } = this.props;
         return (
-            <div style={style} >
-                <div style={{ flexGrow: 1, padding: '16px' }} >
-                    <Profile
-                        onClick={() => this._handlePanelShow({ name: 'userProfile', overlay: true })}
-                    />
-                </div>
-                <div style={{ flexGrow: 1, padding: '16px' }} >
-                    <AddEntry onClick={this._handleNewEntry} tooltip="Add new entry" />
-                    <Search onClick={this._handleSearch} tooltip="Search" />
-                </div>
-                <div style={{ flexGrow: 4, padding: '16px' }} >
-                    <Streams onClick={() => this._handleNavigation(null)} tooltip="Stream" />
-                    <Portals disabled tooltip="Coming Soon" />
-                    <Community disabled tooltip="Coming Soon" />
-                    <People onClick={this._handlePeople} tooltip="People" />
-                </div>
-                <div style={{ flexGrow: 1, padding: '16px' }} >
-                    <Logo
-                        style={{ position: 'absolute', bottom: '16px', width: '32px', height: '32px' }}
-                    />
-                </div>
+          <div style={style} >
+            <div style={{ flexGrow: 1, padding: '16px' }} >
+              <Profile
+                onClick={() => this._handlePanelShow({ name: 'userProfile', overlay: true })}
+              />
             </div>
+            <div style={{ flexGrow: 1, padding: '16px' }} >
+              <AddEntry onClick={this._handleNewEntry} tooltip="Add new entry" />
+              <Search onClick={this._handleSearch} tooltip="Search" />
+            </div>
+            <div style={{ flexGrow: 4, padding: '16px' }} >
+              <Streams onClick={() => this._handleNavigation(null)} tooltip="Stream" />
+              <Portals disabled tooltip="Coming Soon" />
+              <Community disabled tooltip="Coming Soon" />
+              <People onClick={this._handlePeople} tooltip="People" />
+            </div>
+            <div style={{ flexGrow: 1, padding: '16px' }} >
+              <Logo
+                style={{ position: 'absolute', bottom: '16px', width: '32px', height: '32px' }}
+              />
+            </div>
+          </div>
         );
     }
 }

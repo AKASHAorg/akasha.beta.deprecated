@@ -1,5 +1,4 @@
 import React, { PropTypes } from 'react';
-import { Paper } from 'material-ui';
 import '../../styles/core.scss';
 
 // Note: Stateless/function shared-components *will not* hot reload!
@@ -21,12 +20,11 @@ const style = {
 function LoginLayout ({ children }) {
     return (
       <div
-        className="start-xs"
-        style={{ height: '100%' }}
+        className="row"
       >
-        <Paper style={style} >
-          {children}
-        </Paper>
+        <div className="col-xs-6">
+        {children}
+        </div>
       </div>
     );
 }
@@ -34,6 +32,5 @@ function LoginLayout ({ children }) {
 LoginLayout.propTypes = {
     children: PropTypes.element
 };
-
 
 export default LoginLayout;

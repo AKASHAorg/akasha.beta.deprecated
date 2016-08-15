@@ -8,3 +8,4 @@ export { SetupActions } from './setup-actions';
 export { SyncActions } from './sync-actions';
 export { ValidationActions } from './validation-actions';
 export { EntryActions } from './entry-actions';
+export { TagActions } from './tag-actions';

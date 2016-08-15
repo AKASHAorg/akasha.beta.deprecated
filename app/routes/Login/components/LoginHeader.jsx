@@ -20,27 +20,24 @@ const style = {
 function LoginHeader ({ title, intl }) {
     const { formatMessage } = intl;
     return (
-        <div style={style} >
-            <div style={{ fontWeight: '300' }} >{ title }</div>
-            <Logo style={{
-                width: '32px',
-                height: '32px',
-                position: 'absolute',
-                left: 0,
-                top: '3px' }}
-            />
-            <IconMenu
+        <div className="col-xs-12" >
+          <div className="row middle-xs">
+            <Logo className="col-xs-1 start-xs" />
+            <div className="col-xs-3" style={{ fontWeight: '300' }} >{ title }</div>
+            <div className="col-xs-8 end-xs">
+              <IconMenu
                 anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
                 iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
-                style={{ position: 'absolute', top: '-6px', right: '-18px' }}
                 targetOrigin={{ horizontal: 'right', vertical: 'top' }}
-            >
+              >
                 <MenuItem primaryText={formatMessage(generalMessages.refresh)} />
                 <MenuItem primaryText={formatMessage(generalMessages.sendFeedback)} />
                 <MenuItem primaryText={formatMessage(generalMessages.settings)} />
                 <MenuItem primaryText={formatMessage(generalMessages.help)} />
                 <MenuItem primaryText={formatMessage(generalMessages.signOut)} />
-            </IconMenu>
+              </IconMenu>
+            </div>
+          </div>
         </div>
     );
 }

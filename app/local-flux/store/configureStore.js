@@ -1,5 +1,10 @@
+import prodStore from './configureStore.production';
+import devStore from './configureStore.development';
+let ConfigureStore;
 if (process.env.NODE_ENV === 'production') {
-  module.exports = require('./configureStore.production.js');
+    ConfigureStore = prodStore;
 } else {
-  module.exports = require('./configureStore.development.js');
+    ConfigureStore = devStore;
 }
+
+export default ConfigureStore;

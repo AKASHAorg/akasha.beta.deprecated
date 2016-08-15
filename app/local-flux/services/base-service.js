@@ -38,3 +38,5 @@ class BaseService {
         return cb(null, data);
     }
 }
+
+export default BaseService;

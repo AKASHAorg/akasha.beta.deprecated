@@ -6,6 +6,7 @@ import {
     RaisedButton } from 'material-ui';
 import Avatar from 'shared-components/Avatar/avatar';
 import LoginDialog from 'shared-components/Dialogs/login-dialog';
+import PanelContainer from 'shared-components/PanelContainer/panel-container';
 import LoginHeader from '../../../components/LoginHeader';
 import { hashHistory } from 'react-router';
 import { FormattedMessage, injectIntl } from 'react-intl';
@@ -22,9 +23,8 @@ class Auth extends Component {
     }
     componentWillMount () {
         const { profileActions } = this.props;
-        console.log(this.props);
         profileActions.checkTempProfile().then(() => {
-            profileActions.checkLoggedProfile();
+            profileActions.checkLoggedProfile({redirect: true});
         });
     }
     handleTouchTap = (index) => {
@@ -54,7 +54,6 @@ class Auth extends Component {
             const profileAddress = profile.get('address');
             const optionalData = profile.get('optionalData');
             const profileName = `${profile.get('firstName')} ${profile.get('lastName')}`;
-            // console.log(optionalData.get('avatar'))
             const avatarProps = {
                 editable: false,
                 userName: profileName,
@@ -92,7 +91,7 @@ class Auth extends Component {
                 secondaryTextLines={1}
                 value={profileAddress}
                 onTouchTap={() => this.handleTouchTap(index)}
-                className="row"
+                className="col-xs-12"
                 style={{ border: '1px solid #DDD', marginBottom: 8 }}
               />
             );
@@ -100,7 +99,7 @@ class Auth extends Component {
     }
     _handleIdentityCreate = (ev) => {
         ev.preventDefault();
-        hashHistory.push('new-profile');
+        hashHistory.push('authenticate/new-profile');
     };
     _handlePasswordChange = (ev) => {
         ev.preventDefault();
@@ -123,42 +122,33 @@ class Auth extends Component {
         const localProfiles = this._getLocalProfiles();
         const selectedProfile = this.state.selectedProfile;
         return (
-          <div style={style} >
-            <div className="start-xs" >
-              <div
-                className="col-xs"
-                style={{ flex: 1, padding: 0 }}
-              >
-                <LoginHeader title={intl.formatMessage(setupMessages.logInTitle)} />
-                <div style={{ paddingTop: '30px' }} >
-                  <List>
-                    {localProfiles}
-                  </List>
-                </div>
-                <div className="col-xs end-xs" >
-                  <RaisedButton
-                    label={intl.formatMessage(generalMessages.importIdentityLabel)}
-                  />
-                  <RaisedButton
-                    label={intl.formatMessage(generalMessages.createNewIdentityLabel)}
-                    primary
-                    style={{ marginLeft: '10px' }}
-                    onMouseUp={this._handleIdentityCreate}
-                  />
-                </div>
-                  {this.state.selectedProfile &&
-                    <LoginDialog
-                      profile={selectedProfile}
-                      isOpen={openModal}
-                      modalActions={modalActions}
-                      title={'Log In'}
-                      onPasswordChange={this._handlePasswordChange}
-                      onKeyPress={this._handleDialogKeyPress}
-                    />
-                  }
-              </div>
-            </div>
-          </div>
+            <PanelContainer
+              showBorder
+              header={<LoginHeader title={intl.formatMessage(setupMessages.logInTitle)} />}
+              actions={[
+                <RaisedButton
+                  key="createNewIdentity"
+                  label={intl.formatMessage(generalMessages.createNewIdentityLabel)}
+                  primary
+                  style={{ marginLeft: '10px' }}
+                  onMouseUp={this._handleIdentityCreate}
+                />
+              ]}
+            >
+              <List className="col-xs-12">
+                {localProfiles}
+              </List>
+              {this.state.selectedProfile &&
+                <LoginDialog
+                  profile={selectedProfile}
+                  isOpen={openModal}
+                  modalActions={modalActions}
+                  title={'Log In'}
+                  onPasswordChange={this._handlePasswordChange}
+                  onKeyPress={this._handleDialogKeyPress}
+                />
+              }
+            </PanelContainer>
         );
     }
 }

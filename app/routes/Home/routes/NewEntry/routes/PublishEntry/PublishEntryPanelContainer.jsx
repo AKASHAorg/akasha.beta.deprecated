@@ -5,7 +5,8 @@ import { ProfileActions, EntryActions } from 'local-flux';
 function mapStateToProps (state) {
     return {
         profileState: state.profileState,
-        entryState: state.entryState
+        entryState: state.entryState,
+        tagState: state.tagState
     };
 }
 

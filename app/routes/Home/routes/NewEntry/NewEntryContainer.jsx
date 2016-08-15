@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { ProfileActions, EntryActions } from 'local-flux';
+import { asyncConnect } from 'redux-connect';
+import { ProfileActions, EntryActions, BootstrapActions } from 'local-flux';
 import AddEntryPage from './components/add-entry';
 
 
@@ -18,7 +19,10 @@ function mapDispatchToProps (dispatch) {
     };
 }
 
-export default connect(
+export default asyncConnect([{
+    promise: ({store: {dispatch, getState}, params}) =>
+        Promise.resolve(new BootstrapActions(dispatch).initEntryEditor(getState, params))
+}])(connect(
     mapStateToProps,
     mapDispatchToProps
-)(AddEntryPage);
+)(AddEntryPage));

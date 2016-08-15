@@ -12,14 +12,13 @@ class EntryService {
     removeListener = (channel) => {
         ipcRenderer.removeListener(channel, this.listeners[channel]);
         this.listeners[channel] = null;
-    }
+    };
     saveDraft = (partialDraft) =>
         entriesDB.transaction('rw', entriesDB.drafts, () => {
             if (partialDraft.id) {
                 return entriesDB.drafts.update(partialDraft.id, partialDraft).then(updated => {
                     dbg('draft ', partialDraft.id, 'updated');
                     if (updated) {
-                        console.log(entriesDB.drafts.get(partialDraft.id), 'updated');
                         return partialDraft;
                     }
                     return null;
@@ -34,7 +33,10 @@ class EntryService {
         entriesDB.transaction('rw', entriesDB.drafts, () =>
             entriesDB.drafts.toArray().then(drafts => {
                 dbg('getAllDrafts', drafts);
-                return drafts;
+                const convDrafts = drafts.map(draft => {
+                   return Object.assign({}, draft);
+                });
+                return convDrafts;
             })
         );
     getResourceCount = (table) =>
@@ -53,66 +55,7 @@ class EntryService {
     saveTag = (tag) =>
         tagsDB.transaction('rw', tagsDB.blockTags, () => {
             tagsDB.blockTags.add(tag);
-        })
-    getTags = (startingIndex) => {
-        const serverChannel = EVENTS.server.entry.getTags;
-        const clientChannel = EVENTS.client.entry.getTags;
-
-        if (typeof this.listeners[clientChannel] === 'function') {
-            return false;
-        }
-        return new Promise((resolve, reject) => {
-            this.listeners[clientChannel] = (ev, data) => {
-                dbg('getTags', data);
-                if (!data) {
-                    const error = new Error('Main Process Crashed!');
-                    return reject(error);
-                }
-                if (!data.success) {
-                    const error = new Error(data.status.message);
-                    return reject(error);
-                }
-                return this.saveTag(data.tag).then(results => resolve(results));
-            };
-            ipcRenderer.on(clientChannel, this.listeners[clientChannel]);
-            ipcRenderer.send(serverChannel, startingIndex);
         });
-    }
-    checkTagExistence = (tag) => {
-        const serverChannel = EVENTS.server.entry.tagExists;
-        const clientChannel = EVENTS.client.entry.tagExists;
-
-        return new Promise((resolve, reject) => {
-            ipcRenderer.on(clientChannel, (ev, data) => {
-                if (!data) {
-                    const error = new Error('Main Process Crashed!');
-                    return reject(error);
-                }
-                if (!data.success) {
-                    return reject(data.status.message);
-                }
-                return resolve(data);
-            });
-            ipcRenderer.send(serverChannel, tag);
-        });
-    }
-    createTag = (tag) => {
-        const serverChannel = EVENTS.server.entry.addTag;
-        const clientChannel = EVENTS.client.entry.addTag;
-        return new Promise((resolve, reject) => {
-            ipcRenderer.on(clientChannel, (ev, data) => {
-                if (!data) {
-                    const error = new Error('Main Process Crashed');
-                    return reject(error);
-                }
-                if (!data.success) {
-                    return reject(data.status.message);
-                }
-                return resolve(data);
-            });
-            ipcRenderer.send(serverChannel, tag);
-        });
-    }
     publishEntry = (entry) => {
         const serverChannel = EVENTS.server.entry.publish;
         const clientChannel = EVENTS.client.entry.publish;
@@ -129,7 +72,7 @@ class EntryService {
             });
             ipcRenderer.send(serverChannel, entry);
         });
-    }
+    };
 }
 
 export { EntryService };

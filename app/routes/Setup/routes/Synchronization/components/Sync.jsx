@@ -177,6 +177,7 @@ class SyncStatus extends Component {
         );
         return (
           <PanelContainer
+            showBorder
             actions={[
               <RaisedButton
                 key="cancel"

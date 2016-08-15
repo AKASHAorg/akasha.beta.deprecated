@@ -26,16 +26,9 @@ class PublishPanel extends React.Component {
             this._setWorkingDraft(this.props.draft);
         }
     }
-    
     componentDidMount () {
         const panelSize = ReactDOM.findDOMNode(this).getBoundingClientRect();
         this.panelSize = panelSize;
-    }
-    
-    componentWillReceiveProps (nextProps) {
-        if (nextProps.draft && nextProps.draft.id) {
-            this._setWorkingDraft(nextProps.draft);
-        }
     }
     _setWorkingDraft = (draft) => {
         const { title, content, tags, licence, featuredImage, id } = draft;
@@ -54,17 +47,17 @@ class PublishPanel extends React.Component {
             licence,
             featuredImage
         });
-    }
+    };
     _handleLicenceDialogClose = () => {
         this.setState({
             isLicencingOpen: false
         });
-    }
+    };
     _handleLicenceFocus = () => {
         this.setState({
             isLicencingOpen: true
         });
-    }
+    };
     _handleLicenceSet = (ev, selectedLicence) => {
         this.setState({
             licence: selectedLicence,
@@ -72,29 +65,29 @@ class PublishPanel extends React.Component {
         }, () => {
             this._handleDraftUpdate(null, 'licence');
         });
-    }
+    };
     _publishEntry = () => {
         const { entryState, params } = this.props;
         const draftToPublish = entryState.get('drafts').find(draft =>
         draft.id === parseInt(params.draftId, 10));
         this._handleDraftUpdate(null, 'featuredImage');
         console.log('publish entry', draftToPublish);
-    }
+    };
     _handleTagAutocomplete = (value) => {
         const { entryActions } = this.props;
-    }
+    };
     _checkTagExistence = (tag) => {
         const { entryActions } = this.props;
         const tags = this.state.tags;
         tags.forEach(tagName => {
             entryActions.checkTagExistence(tagName);
         });
-    }
+    };
     _handleDraftUpdate = (ev, field) => {
         const { entryActions } = this.props;
         let fieldValue = this.state[field];
         if (field === 'tags') {
-            fieldValue = this.refs.tagsField.getTags();
+            fieldValue = this.tagsField.getTags();
         }
         if (field === 'featuredImage') {
             fieldValue = this.featuredImageUploader.getWrappedInstance().getImage()[0];
@@ -103,7 +96,7 @@ class PublishPanel extends React.Component {
             id: this.state.id,
             [field]: fieldValue
         });
-    }
+    };
     _getFeaturedImage = () => {
         const panelSize = this.panelSize;
         if (this.state.featuredImage) {
@@ -114,7 +107,7 @@ class PublishPanel extends React.Component {
             };
         }
         return null;
-    }
+    };
     render () {
         let selectedLicence;
         if (this.state.selectedLicence) {
@@ -126,94 +119,102 @@ class PublishPanel extends React.Component {
                 isDefault: false
             };
         }
-        const licenceDescription = selectedLicence.mainLicence.description.map((descr, key) => {
-            return (
-                <span key={key}>{descr.text}</span>
-            );
-        });
+        const licenceDescription = selectedLicence.mainLicence.description.map((descr, key) =>
+          <span key={key}>{descr.text}</span>
+        );
+        const { tags } = this.props.draft;
+        const existingTags = this.props.tagState.get('tags');
         return (
-            <PanelContainer
-                width={650}
-                title="Publish a New Entry"
-                actions={[
-                    <div className="col-xs-2" key="cancel">
-                        <RaisedButton label="Later" onTouchTap={this._handleCancelButton} />
-                    </div>,
-                    <div className="col-xs-2" key="publish">
-                        <RaisedButton label="Publish" primary onTouchTap={this._publishEntry} />
-                    </div>
-                ]}
-            >
-                <LicenceDialog
-                    isOpen={this.state.isLicencingOpen}
-                    defaultSelected="1"
-                    onRequestClose={this._handleLicenceDialogClose}
-                    onDone={this._handleLicenceSet}
-                    licences={licences}
+          <PanelContainer
+            showBorder
+            title="Publish a New Entry"
+            style={{ left: '50%', marginLeft: '-320px', position: 'absolute', top: 0, bottom: 0 }}
+            actions={[
+              <RaisedButton
+                key="cancel"
+                label="Later"
+                onTouchTap={this._handleCancelButton}
+              />,
+              <RaisedButton
+                key="publish"
+                label="Publish"
+                primary
+                style={{ marginLeft: 8 }}
+                onTouchTap={this._publishEntry}
+              />
+            ]}
+          >
+            <LicenceDialog
+              isOpen={this.state.isLicencingOpen}
+              defaultSelected="1"
+              onRequestClose={this._handleLicenceDialogClose}
+              onDone={this._handleLicenceSet}
+              licences={licences}
+            />
+            <div className="col-xs-12">
+              <div className="col-xs-12 field">
+                <small>Title shown in preview</small>
+                <TextField
+                  name="title"
+                  fullWidth
+                  value={this.state.title}
+                  onChange={(ev) => this.setState({ title: ev.target.value })}
+                  onBlur={(ev) => this._handleDraftUpdate(ev, 'title')}
                 />
-                <div className="col-xs-12">
-                    <div className="col-xs-12 field">
-                        <small>Title shown in preview</small>
-                        <TextField
-                            name="title"
-                            fullWidth
-                            value={this.state.title}
-                            onChange={(ev) => this.setState({ title: ev.target.value })}
-                            onBlur={(ev) => this._handleDraftUpdate(ev, 'title')}
-                        />
-                    </div>
-                    <div className="col-xs-12 field">
-                        <small>Featured Image</small>
-                        <ImageUploader
-                            ref={(featuredImageUploader) => {
-                                this.featuredImageUploader = featuredImageUploader;
-                            }}
-                            dialogTitle={'Add a featured image'}
-                            initialImage={this._getFeaturedImage()}
-                        />
-                    </div>
-                    <div className="col-xs-12 field">
-                        <small>Tags</small>
-                        <TagsField
-                            tags={this.state.tags || []}
-                            ref="tagsField"
-                            onRequestTagAutocomplete={this._handleTagAutocomplete}
-                            onTagAdded={this._checkTagExistence}
-                            onBlur={(ev) => this._handleDraftUpdate(ev, 'tags')}
-                            fullWidth
-                        />
-                    </div>
-                    <div className="col-xs-12 field">
-                        <small>Excerpt shown in preview</small>
-                        <TextField
-                            name="excerpt"
-                            multiLine
-                            fullWidth
-                            value={this.state.excerpt}
-                            onChange={(ev) => this.setState({ excerpt: ev.target.value })}
-                            onBlur={(ev) => this._handleDraftUpdate(ev, 'excerpt')}
-                        />
-                    </div>
-                    <div className="col-xs-12 field">
-                        <small>Licence</small>
-                        <TextField
-                            name="licence"
-                            fullWidth
-                            onFocus={this._handleLicenceFocus}
-                            errorText={licenceDescription}
-                            errorStyle={{ color: '#DDD' }}
-                            value={selectedLicence.mainLicence.label}
-                        />
-                    </div>
-                    <div className="col-xs-12 field">
-                        <small>
-                            By proceeding to publish this entry, you agree with the
-                            <b> 0.005 ETH</b> fee which will be deducted from your
-                            <b> 0.02 ETH</b> balance.
-                        </small>
-                    </div>
-                </div>
-            </PanelContainer>
+              </div>
+              <div className="col-xs-12 field">
+                <small>Featured Image</small>
+                <ImageUploader
+                  ref={(featuredImageUploader) => {
+                      this.featuredImageUploader = featuredImageUploader;
+                  }}
+                  dialogTitle={'Add a featured image'}
+                  initialImage={this._getFeaturedImage()}
+                />
+              </div>
+              <div className="col-xs-12 field">
+                <small>Tags</small>
+                <TagsField
+                  tags={tags}
+                  existingTags={existingTags}
+                  ref={(tagsField) => this.tagsField = tagsField}
+                  onRequestTagAutocomplete={this._handleTagAutocomplete}
+                  onTagAdded={this._checkTagExistence}
+                  onBlur={(ev) => this._handleDraftUpdate(ev, 'tags')}
+                  fullWidth
+                />
+              </div>
+              <div className="col-xs-12 field">
+                <small>Excerpt shown in preview</small>
+                <TextField
+                  name="excerpt"
+                  multiLine
+                  fullWidth
+                  value={this.state.excerpt}
+                  onChange={(ev) => this.setState({ excerpt: ev.target.value })}
+                  onBlur={(ev) => this._handleDraftUpdate(ev, 'excerpt')}
+                />
+              </div>
+              <div className="col-xs-12 field">
+                <small>Licence</small>
+                <TextField
+                  name="licence"
+                  fullWidth
+                  onFocus={this._handleLicenceFocus}
+                  errorText={licenceDescription}
+                  errorStyle={{ color: '#DDD' }}
+                  value={selectedLicence.mainLicence.label}
+                />
+              </div>
+              <div className="col-xs-12 field" style={{ marginBottom: 24 }}>
+                <small>
+                  By proceeding to publish this entry, you agree with the
+                  <b> 0.005 ETH</b> fee which will be deducted from your
+                  <b> 0.02 ETH</b> balance.
+                </small>
+              </div>
+            </div>
+          </PanelContainer>
         );
     }
 }

@@ -1,6 +1,5 @@
 import React, { Component, PropTypes } from 'react';
 import r from 'ramda';
-import { MenuAkashaLogo } from 'shared-components/svg';
 import * as Colors from 'material-ui/styles/colors';
 import { SvgIcon, IconButton, RaisedButton,
     TextField, Checkbox, Divider } from 'material-ui';
@@ -12,6 +11,8 @@ import { inputFieldMethods } from '../../../../../utils/dataModule';
 import validationProvider from '../../../../../utils/validationProvider';
 import { UserValidation } from '../../../../../utils/validationSchema';
 import { injectIntl, FormattedMessage } from 'react-intl';
+import CreateProfileHeader from '../../../components/CreateProfileHeader';
+import PanelContainer from 'shared-components/PanelContainer/panel-container';
 import { profileMessages, formMessages, generalMessages } from 'locale-data/messages';
 
 class CreateProfile extends Component {
@@ -44,7 +45,7 @@ class CreateProfile extends Component {
     getValidatorData = () => this.state.formValues;
     handleShowDetails = () => {
         this.setState({ opt_details: !this.state.opt_details });
-    }
+    };
     
     handleSubmit = () => {
         const { profileActions } = this.props;
@@ -89,16 +90,16 @@ class CreateProfile extends Component {
             })
         )
             .then(() => this.context.router.push('authenticate'));
-    }
+    };
     _submitForm = (ev) => {
         ev.preventDefault();
         this.handleSubmit();
-    }
+    };
     _handleCancel = (ev) => {
         ev.preventDefault();
         this.profileForm.reset();
         this.context.router.goBack();
-    }
+    };
     _handleAddLink = () => {
         const currentLinks = this.state.links.slice();
         const notEmpty = this._checkLinks();
@@ -114,7 +115,7 @@ class CreateProfile extends Component {
                 links: currentLinks
             });
         }
-    }
+    };
     _handleRemoveLink = (linkId) => {
         let links = this.state.links;
         if (this.state.links.length > 1) {
@@ -126,7 +127,7 @@ class CreateProfile extends Component {
         this.setState({
             links
         });
-    }
+    };
     _checkLinks = () =>
         this.state.links.every(link =>
             Object.keys(link).forEach((key) =>
@@ -149,16 +150,16 @@ class CreateProfile extends Component {
         }
         links[index] = link;
         this.setState({ links });
-    }
+    };
     _handleAboutChange = (ev) => {
         this.setState({
             about: ev.target.value
         });
-    }
+    };
     _handleModalShow = (ev, modalName) => {
         ev.preventDefault();
         console.log('show modal ', modalName);
-    }
+    };
     render () {
         const { style, intl } = this.props;
         const floatLabelStyle = { color: Colors.lightBlack };
@@ -225,187 +226,159 @@ class CreateProfile extends Component {
         });
         
         return (
-            <div style={style} >
+            <PanelContainer
+              showBorder
+              actions={[
+                  <RaisedButton
+                    key="cancel"
+                    label={intl.formatMessage(generalMessages.cancel)}
+                    type="reset"
+                    onClick={this._handleCancel}
+                  />,
+                  <RaisedButton
+                    key="submit"
+                    label={intl.formatMessage(generalMessages.submit)}
+                    type="submit"
+                    onClick={this._submitForm}
+                    style={{marginLeft: 8}}
+                    disabled={this.state.submitting}
+                    primary
+                    disabled={false}
+                  />
+              ]}
+              header={<CreateProfileHeader title={profileMessages.createProfileTitle} />}
+            >
                 <form
                     action=""
                     onSubmit={this.handleSubmit}
                     ref={(profileForm) => { this.profileForm = profileForm; }}
                 >
-                    <div className="row start-xs" >
-                        <div className="col-xs" style={{ flex: 1, padding: 0 }} >
-                            <div className="row middle-xs">
-                                <SvgIcon
-                                    color={Colors.lightBlack}
-                                    viewBox="0 0 32 32"
-                                    style={{
-                                        width: '32px',
-                                        height: '32px',
-                                        marginRight: '10px',
-                                        verticalAlign: 'middle' }}
-                                >
-                                    <MenuAkashaLogo />
-                                </SvgIcon>
-                                <h1
-                                    style={{
-                                        fontWeight: '400',
-                                        display: 'inline',
-                                        verticalAlign: 'middle',
-                                        margin: 0 }}
-                                >
-                                    <FormattedMessage {...profileMessages.createProfileTitle} />
-                                </h1>
-                            </div>
-                            <TextField {...firstNameProps} />
-                            <TextField {...lastNameProps} />
-                            <TextField {...userNameProps} />
-                            <TextField {...passwordProps} />
-                            <TextField {...password2Props} />
-                            <Checkbox
-                                label={intl.formatMessage(profileMessages.optionalDetailsLabel)}
-                                style={{ marginTop: '18px', marginLeft: '-4px' }}
-                                checked={this.state.opt_details}
-                                onCheck={this.handleShowDetails}
+                    <TextField {...firstNameProps} />
+                    <TextField {...lastNameProps} />
+                    <TextField {...userNameProps} />
+                    <TextField {...passwordProps} />
+                    <TextField {...password2Props} />
+                    <Checkbox
+                        label={intl.formatMessage(profileMessages.optionalDetailsLabel)}
+                        style={{ marginTop: '18px', marginLeft: '-4px' }}
+                        checked={this.state.opt_details}
+                        onCheck={this.handleShowDetails}
+                    />
+                    <div style={{ display: this.state.opt_details ? 'block' : 'none' }} >
+                        <h3 style={{ margin: '30px 0 10px 0' }} >
+                            {intl.formatMessage(profileMessages.avatarTitle)}
+                        </h3>
+                        <div>
+                            <Avatar
+                                editable
+                                ref={(avatar) => { this.avatar = avatar; }}
                             />
-                            <div style={{ display: this.state.opt_details ? 'block' : 'none' }} >
-                                <h3 style={{ margin: '30px 0 10px 0' }} >
-                                    {intl.formatMessage(profileMessages.avatarTitle)}
-                                </h3>
-                                <div>
-                                    <Avatar
-                                        editable
-                                        ref={(avatar) => { this.avatar = avatar; }}
-                                    />
-                                </div>
-                                <h3 style={{ margin: '20px 0 10px 0' }} >
-                                    {intl.formatMessage(profileMessages.backgroundImageTitle)}
-                                </h3>
-                                <ImageUploader
-                                    ref={(imageUploader) => { this.imageUploader = imageUploader; }}
-                                    minHeight={350}
-                                    minWidth={672}
-                                />
-                                <h3 style={{ margin: '20px 0 0 0' }} >
-                                    {intl.formatMessage(profileMessages.aboutYouTitle)}
-                                </h3>
-                                <TextField
-                                    fullWidth
-                                    floatingLabelText={
-                                        intl.formatMessage(profileMessages.shortDescriptionLabel)
-                                    }
-                                    multiLine
-                                    value={this.state.about}
-                                    floatingLabelStyle={floatLabelStyle}
-                                    onChange={this._handleAboutChange}
-                                />
-                                <div className="row" style={{ margin: '20px 0 0 0' }}>
-                                    <h3 className="col-xs-10">
-                                        {intl.formatMessage(profileMessages.linksTitle)}
-                                    </h3>
-                                    <div className="col-xs-2 end-xs">
-                                        <IconButton
-                                            title={intl.formatMessage(profileMessages.addLinkButtonTitle)}
-                                            onClick={this._handleAddLink}
-                                            primary
-                                        >
-                                            <SvgIcon >
-                                                <ContentAddIcon
-                                                    color={this.context.muiTheme.palette.primary1Color}
-                                                />
-                                            </SvgIcon>
-                                        </IconButton>
-                                    </div>
-                                </div>
-                                {this.state.links.map((link, key) =>
-                                    <div key={key} className="row">
-                                        <div className="col-xs-10">
-                                            <TextField
-                                                autoFocus={(this.state.links.length - 1) === key}
-                                                fullWidth
-                                                floatingLabelText={intl.formatMessage(formMessages.title)}
-                                                value={link.title}
-                                                floatingLabelStyle={floatLabelStyle}
-                                                onChange={(ev) => this._handleLinkChange('title', link.id, ev)}
-                                            />
-                                            <TextField
-                                                fullWidth
-                                                floatingLabelText={intl.formatMessage(formMessages.url)}
-                                                value={link.url}
-                                                floatingLabelStyle={floatLabelStyle}
-                                                onChange={(ev) => this._handleLinkChange('url', link.id, ev)}
-                                            />
-                                        </div>
-                                        {this.state.links.length > 1 &&
-                                        <div className="col-xs-2 center-xs">
-                                            <IconButton
-                                                title={intl.formatMessage(profileMessages.removeLinkButtonTitle)}
-                                                style={{ marginTop: '24px' }}
-                                                onClick={(ev) => this._handleRemoveLink(link.id, ev)}
-                                            >
-                                                <SvgIcon >
-                                                    <CancelIcon />
-                                                </SvgIcon>
-                                            </IconButton>
-                                        </div>
-                                        }
-                                        {this.state.links.length > 1 &&
-                                        <Divider
-                                            style={{ marginTop: '16px' }}
-                                            className="col-xs-12"
+                        </div>
+                        <h3 style={{ margin: '20px 0 10px 0' }} >
+                            {intl.formatMessage(profileMessages.backgroundImageTitle)}
+                        </h3>
+                        <ImageUploader
+                            ref={(imageUploader) => { this.imageUploader = imageUploader; }}
+                            minHeight={350}
+                            minWidth={672}
+                        />
+                        <h3 style={{ margin: '20px 0 0 0' }} >
+                            {intl.formatMessage(profileMessages.aboutYouTitle)}
+                        </h3>
+                        <TextField
+                            fullWidth
+                            floatingLabelText={
+                                intl.formatMessage(profileMessages.shortDescriptionLabel)
+                            }
+                            multiLine
+                            value={this.state.about}
+                            floatingLabelStyle={floatLabelStyle}
+                            onChange={this._handleAboutChange}
+                        />
+                        <div className="row" style={{ margin: '20px 0 0 0' }}>
+                            <h3 className="col-xs-10">
+                                {intl.formatMessage(profileMessages.linksTitle)}
+                            </h3>
+                            <div className="col-xs-2 end-xs">
+                                <IconButton
+                                    title={intl.formatMessage(profileMessages.addLinkButtonTitle)}
+                                    onClick={this._handleAddLink}
+                                    primary
+                                >
+                                    <SvgIcon >
+                                        <ContentAddIcon
+                                            color={this.context.muiTheme.palette.primary1Color}
                                         />
-                                        }
-                                    </div>
-                                )}
+                                    </SvgIcon>
+                                </IconButton>
                             </div>
-                            <div style={{ marginTop: '20px' }} >
-                                <small>
-                                    <FormattedMessage
-                                        {...profileMessages.terms}
-                                        values={{
-                                            termsLink: (
-                                                <a
-                                                    href="/terms"
-                                                    onClick={(ev) => this._handleModalShow(ev, 'termsOfService')}
-                                                >
-                                                    {intl.formatMessage(generalMessages.termsOfService)}
-                                                </a>
-                                            ),
-                                            privacyLink: (
-                                                <a
-                                                    href="/privacy"
-                                                    onClick={(ev) => this._handleModalShow(ev, 'privacyPolicy')}
-                                                >
-                                                    {intl.formatMessage(generalMessages.privacyPolicy)}
-                                                </a>
-                                            )
-                                        }}
+                        </div>
+                        {this.state.links.map((link, key) =>
+                            <div key={key} className="row">
+                                <div className="col-xs-10">
+                                    <TextField
+                                        autoFocus={(this.state.links.length - 1) === key}
+                                        fullWidth
+                                        floatingLabelText={intl.formatMessage(formMessages.title)}
+                                        value={link.title}
+                                        floatingLabelStyle={floatLabelStyle}
+                                        onChange={(ev) => this._handleLinkChange('title', link.id, ev)}
                                     />
-                                </small>
+                                    <TextField
+                                        fullWidth
+                                        floatingLabelText={intl.formatMessage(formMessages.url)}
+                                        value={link.url}
+                                        floatingLabelStyle={floatLabelStyle}
+                                        onChange={(ev) => this._handleLinkChange('url', link.id, ev)}
+                                    />
+                                </div>
+                                {this.state.links.length > 1 &&
+                                <div className="col-xs-2 center-xs">
+                                    <IconButton
+                                        title={intl.formatMessage(profileMessages.removeLinkButtonTitle)}
+                                        style={{ marginTop: '24px' }}
+                                        onClick={(ev) => this._handleRemoveLink(link.id, ev)}
+                                    >
+                                        <SvgIcon >
+                                            <CancelIcon />
+                                        </SvgIcon>
+                                    </IconButton>
+                                </div>
+                                }
+                                {this.state.links.length > 1 &&
+                                <Divider
+                                    style={{ marginTop: '16px' }}
+                                    className="col-xs-12"
+                                />
+                                }
                             </div>
-                        </div>
+                        )}
                     </div>
-                    <div className="row end-xs" >
-                        <div
-                            className="col-xs"
-                            style={this.state.opt_details ? { margin: '25px 0 30px' } : {}}
-                        >
-                            <RaisedButton
-                                label={intl.formatMessage(generalMessages.cancel)}
-                                type="reset"
-                                onClick={this._handleCancel}
-                            />
-                            <RaisedButton
-                                label={intl.formatMessage(generalMessages.submit)}
-                                type="submit"
-                                onClick={this._submitForm}
-                                disabled={this.state.submitting}
-                                primary
-                                disabled={false}
-                                style={{ marginLeft: '12px' }}
-                            />
-                        </div>
-                    </div>
+                    <small>
+                      <FormattedMessage
+                        {...profileMessages.terms}
+                        values={{
+                          termsLink: (
+                            <a
+                              href="/terms"
+                              onClick={(ev) => this._handleModalShow(ev, 'termsOfService')}
+                            >
+                              {intl.formatMessage(generalMessages.termsOfService)}
+                            </a>
+                          ),
+                          privacyLink: (
+                            <a
+                              href="/privacy"
+                              onClick={(ev) => this._handleModalShow(ev, 'privacyPolicy')}
+                            >
+                              {intl.formatMessage(generalMessages.privacyPolicy)}
+                            </a>
+                          )
+                        }}
+                      />
+                    </small>
                 </form>
-            </div>
+            </PanelContainer>
         );
     }
 }

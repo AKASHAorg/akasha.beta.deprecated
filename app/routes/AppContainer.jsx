@@ -5,6 +5,7 @@ import { SettingsActions, BootstrapActions, AppActions } from 'local-flux';
 import AkashaTheme from '../layouts/AkashaTheme';
 import { getMuiTheme } from 'material-ui/styles';
 import { Snackbar } from 'material-ui';
+import DevTools from './DevTools';
 
 class App extends Component {
     getChildContext () {
@@ -36,7 +37,7 @@ class App extends Component {
                     onRequestClose={this._handleErrorClose}
                 />
                 {(process.env.NODE_ENV !== 'production') &&
-                React.createElement(require('./DevTools'))
+                <DevTools />
                 }
             </div>
         );

@@ -1,6 +1,7 @@
 import { GethService, IpfsService } from '../services';
 import { SettingsActions } from './';
 import { externalProcessActionCreators, appActionCreators } from './action-creators';
+
 let eProcActions = null;
 /**
  * External processes actions (Geth, IPFS)
@@ -13,8 +14,8 @@ class EProcActions {
         }
         this.dispatch = dispatch;
         this.settingsActions = new SettingsActions(dispatch);
-        this.gethService = new GethService;
-        this.ipfsService = new IpfsService;
+        this.gethService = new GethService();
+        this.ipfsService = new IpfsService();
         return eProcActions;
     }
     startGeth = () =>
@@ -65,13 +66,12 @@ class EProcActions {
     };
     getGethStatus = () => {
         this.gethService.getStatus().then(data => {
-            if(!data) {
+            if (!data) {
                 return this.dispatch(
                     externalProcessActionCreators.getGethStatusError('Main process crashed')
                 );
             }
-            console.log(data);
-            return this.dispatch(externalProcessActionCreators.getGethStatusSuccess(data))
+            return this.dispatch(externalProcessActionCreators.getGethStatusSuccess(data));
         }).catch(reason => {
             this.dispatch(externalProcessActionCreators.getGethStatusError(reason));
         });

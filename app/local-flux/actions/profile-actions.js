@@ -28,14 +28,19 @@ class ProfileActions {
                 const error = new Error(result.status.message, 'login action');
                 return this.dispatch(profileActionCreators.loginError(error));
             }
-            return this.dispatch(profileActionCreators.loginSuccess(result));
+            return this.dispatch(profileActionCreators.loginSuccess(result.data));
         })
         .then(() => {
             this.dispatch((dispatch, getState) => {
+                const localProfiles = getState().profileState.get('profiles');
                 const loggedProfile = getState().profileState.get('loggedProfile');
                 if (loggedProfile.size > 0) {
-                    this.profileService.saveLoggedProfile(loggedProfile.toJS()).then(() => {
-                        hashHistory.push(`/${loggedProfile.get('userName')}`);
+                    const profileData = localProfiles.find(profile =>
+                        profile.address === loggedProfile.get('address')
+                    );
+                    console.log(profileData);
+                    this.profileService.saveLoggedProfile(profileData.toJS()).then(() => {
+                        hashHistory.push(`${profileData.get('userName')}`);
                     });
                 }
             });
@@ -51,14 +56,15 @@ class ProfileActions {
                 hashHistory.push('authenticate');
             });
         }).catch(reason => profileActionCreators.logoutError(reason));
-    }
+    };
 
     checkLoggedProfile = (options = {}) =>
         this.profileService.getLoggedProfile().then(loggedProfile => {
             const profile = loggedProfile[0];
+            console.log(profile, 'loggedProfile')
             if (profile) {
                 this.dispatch(profileActionCreators.loginSuccess(profile));
-                if (!options.noRedirect) {
+                if (options.redirect) {
                     return hashHistory.push(`/${profile.username}`);
                 }
             }
@@ -257,7 +263,7 @@ class ProfileActions {
             // no new profile.
             return this.getLocalProfiles();
         });
-    }
+    };
 
     /**
      * Check if temp profile exists. If true then navigate to profile status page.
@@ -275,13 +281,11 @@ class ProfileActions {
             })
         ).catch(reason =>
             this.dispatch(profileActionCreators.checkTempProfileError(reason))
-        )
+        );
 
     getLocalProfiles = () =>
         this.getProfilesList().then(() =>
             this.dispatch((dispatch, getState) => {
-                // EVENTS.client.user.getProfileData
-
                 const profilesHash = getState().profileState.get('profiles');
                 const hashes = profilesHash.toJS().map(el => el.ipfsHash);
                 this.getProfileData(hashes);

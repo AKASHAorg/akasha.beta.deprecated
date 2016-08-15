@@ -82,9 +82,9 @@ const profileState = createReducer(initialState, {
     },
     [types.GET_PROFILE_DATA_SUCCESS]: (state, action) => {
         const profileIndex = state.get('profiles').findIndex(profile =>
-            profile.get('ipfsHash') === action.profiles.ipfsHash
+            profile.get('ipfsHash') === action.profile.ipfsHash
         );
-        return state.mergeIn(['profiles', profileIndex], action.profiles);
+        return state.mergeIn(['profiles', profileIndex], action.profile);
     }
 });
 

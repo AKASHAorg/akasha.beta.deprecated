@@ -18,13 +18,13 @@ class ProfileService {
      */
     validateUsername = (username) =>
         new Promise((resolve, reject) => {
-            ipcRenderer.send(EVENTS.server.profile.verifyUsername, username);
             ipcRenderer.once(EVENTS.client.profile.verifyUsername, (ev, data) => {
                 if (!data) {
                     return reject('OMG!! Main process doesn`t want to communicate with us!');
                 }
                 return resolve(data);
             });
+            ipcRenderer.send(EVENTS.server.profile.verifyUsername, username);
         });
     /**
      * Get a list of local profiles created
@@ -60,7 +60,7 @@ class ProfileService {
         for (let i = ipfsHashArray.length - 1; i >= 0; i--) {
             ipcRenderer.send(EVENTS.server.user.getProfileData, { ipfsHash: ipfsHashArray[i] });
         }
-    }
+    };
 
     login = (profileData) =>
         new Promise((resolve, reject) => {
@@ -99,9 +99,7 @@ class ProfileService {
             if (profileData.password) {
                 delete profileData.password;
             }
-            return profileDB.loggedProfile.add({
-                ...profileData
-            });
+            return profileDB.loggedProfile.add(profileData);
         });
     /**
      * Destroy logged profile from db
@@ -152,7 +150,7 @@ class ProfileService {
     getTempProfile = () =>
         profileDB.transaction('r', profileDB.tempProfile, () =>
             profileDB.tempProfile.toArray()
-        )
+        );
     /**
      * Get ballance for a profile
      * @param {string} profileAddress

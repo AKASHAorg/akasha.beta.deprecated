@@ -1,6 +1,7 @@
 import { connect } from 'react-redux';
+import { asyncConnect } from 'redux-connect';
 import Auth from './components/Auth';
-import { ProfileActions } from 'local-flux';
+import { ProfileActions, BootstrapActions } from 'local-flux';
 
 function mapStateToProps (state) {
     return {
@@ -13,7 +14,11 @@ function mapDispatchToProps (dispatch) {
         profileActions: new ProfileActions(dispatch)
     };
 }
-export default connect(
+
+export default asyncConnect([{
+    promise: ({ store: { dispatch, getState } }) =>
+        Promise.resolve(new BootstrapActions(dispatch).initAuth(getState))
+}])(connect(
     mapStateToProps,
     mapDispatchToProps
-)(Auth);
+)(Auth));

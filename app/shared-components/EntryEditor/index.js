@@ -22,8 +22,8 @@ import { HandleComponent } from './components';
 
 import EditorToolbar from './components/editor-toolbar';
 import rendererFn from './components/custom-renderer';
-
-const { dialog } = require('electron').remote;
+import { remote } from 'electron';
+const { dialog } = remote;
 
 const compositeDecorator = new CompositeDecorator([
     {

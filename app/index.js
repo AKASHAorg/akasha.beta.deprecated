@@ -11,12 +11,13 @@ import injectTapEventPlugin from 'react-tap-event-plugin';
 import { ruMessages } from './locale-data/ru';
 import debug from 'debug';
 window.appDebug = debug.enable('App:*');
+import ReactPerf from 'react-addons-perf';
 // temporary
 
 const store = configureStore();
 const history = syncHistoryWithStore(hashHistory, store);
 
-global.Perf = require('react-addons-perf');
+global.Perf = ReactPerf;
 
 injectTapEventPlugin();
 render(

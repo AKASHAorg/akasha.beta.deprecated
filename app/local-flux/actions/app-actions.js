@@ -1,5 +1,6 @@
-import { appActionCreators } from './action-creators'
+import { appActionCreators } from './action-creators';
 import { AppService } from '../services';
+
 let appActions = null;
 
 class AppActions {

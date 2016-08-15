@@ -10,7 +10,7 @@ import AuthContainer from './routes/Login/routes/Authenticate/AuthContainer';
 import CreateProfileContainer from './routes/Login/routes/CreateProfile/CreateProfileContainer';
 import CreateProfileStatusContainer from './routes/Login/routes/CreateProfileStatus/CreateProfileStatusContainer';
 import CreateProfileCompleteContainer from './routes/Login/routes/CreateProfileComplete/CreateProfileCompleteContainer';
-import HomeLayout from './routes/Home/HomeLayout';
+import HomeContainer from './routes/Home/HomeContainer';
 import NewEntryContainer from './routes/Home/routes/NewEntry/NewEntryContainer';
 import PublishEntryPanelContainer from './routes/Home/routes/NewEntry/routes/PublishEntry/PublishEntryPanelContainer';
 import PublishEntryStatusContainer from './routes/Home/routes/NewEntry/routes/PublishEntryStatus/PublishEntryStatusContainer';
@@ -51,7 +51,7 @@ export default (
     </Route>
 
     {/** user home after login */}
-    <Route component={HomeLayout} path=":username" >
+    <Route component={HomeContainer} path=":username" >
 
       {/** loads articles from blockchain */}
       <IndexRoute component={StreamPageContainer} />
