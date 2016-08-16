@@ -82,14 +82,18 @@ class AppLogger {
                     level: errorLevel,
                     maxsize,
                     maxFiles,
-                    name: `${name}Error`
+                    name: `${name}Error`,
+                    tailable: true,
+                    zippedArchive: true
                 }),
                 new (transports.File)({
                     filename: pathJoin(this.logPath, `${name}.info.log`),
                     level,
                     maxsize,
                     maxFiles,
-                    name: `${name}Info`
+                    name: `${name}Info`,
+                    tailable: true,
+                    zippedArchive: true
                 })
             ]
         });

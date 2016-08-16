@@ -11,7 +11,7 @@ import WebContents = Electron.WebContents;
 
 class GethIPC extends GethEmitter {
     public logger = 'geth';
-    private DEFAULT_MANAGED: string[] = ['startService', 'stopService'];
+    private DEFAULT_MANAGED: string[] = ['startService', 'stopService', 'status'];
 
     constructor() {
         super();
@@ -29,6 +29,7 @@ class GethIPC extends GethEmitter {
             ._stop()
             ._syncStatus()
             ._logs()
+            ._status()
             ._manager();
     }
 
@@ -174,7 +175,7 @@ class GethIPC extends GethEmitter {
             channels.server.geth.logs,
             (event: any) => {
                 GethConnector.getInstance().logger.query(
-                    { start: -20, limit: 20 },
+                    { start: 0, limit: 20 },
                     (err: Error, info: any) => {
                         let response: MainResponse;
                         if (err) {
@@ -190,6 +191,24 @@ class GethIPC extends GethEmitter {
                     }
                 );
             });
+        return this;
+    }
+
+    /**
+     * geth service status
+     * @private
+     */
+    private _status() {
+        this.registerListener(
+            channels.server.geth.status,
+            (event: any) => {
+                this.fireEvent(
+                    channels.client.geth.status,
+                    gethResponse({}),
+                    event
+                );
+            }
+        );
         return this;
     }
 }

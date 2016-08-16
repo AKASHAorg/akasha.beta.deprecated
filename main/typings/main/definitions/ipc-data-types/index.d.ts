@@ -59,3 +59,7 @@ interface GethSyncStatus {
     synced: boolean;
 }
 
+// channels.server.ipfs.stop
+interface IpfsStopRequest {
+    signal?: string;
+}
