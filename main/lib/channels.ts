@@ -10,9 +10,9 @@ const hashPath = (...path: string[]) => {
 };
 const channels = {
 
-    geth: ['manager', 'startService', 'stopService', 'restartService', 'syncStatus', 'logs'],
+    geth: ['manager', 'startService', 'stopService', 'restartService', 'syncStatus', 'logs', 'status'],
 
-    ipfs: ['manager', 'startService', 'stopService'],
+    ipfs: ['manager', 'startService', 'stopService', 'status'],
 
     user: ['manager', 'exists', 'login', 'logout', 'createCoinbase', 'faucetEther', 'registerProfile',
         'getProfileData', 'listEthAccounts', 'getBalance', 'getIpfsImage'],

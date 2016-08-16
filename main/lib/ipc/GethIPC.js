@@ -8,7 +8,7 @@ class GethIPC extends GethEmitter_1.default {
     constructor() {
         super();
         this.logger = 'geth';
-        this.DEFAULT_MANAGED = ['startService', 'stopService'];
+        this.DEFAULT_MANAGED = ['startService', 'stopService', 'status'];
         this.attachEmitters();
     }
     initListeners(webContents) {
@@ -19,6 +19,7 @@ class GethIPC extends GethEmitter_1.default {
             ._stop()
             ._syncStatus()
             ._logs()
+            ._status()
             ._manager();
     }
     _manager() {
@@ -84,7 +85,7 @@ class GethIPC extends GethEmitter_1.default {
     }
     _logs() {
         this.registerListener(channels_1.default.server.geth.logs, (event) => {
-            geth_connector_1.GethConnector.getInstance().logger.query({ start: -20, limit: 20 }, (err, info) => {
+            geth_connector_1.GethConnector.getInstance().logger.query({ start: 0, limit: 20 }, (err, info) => {
                 let response;
                 if (err) {
                     response = responses_1.gethResponse({}, { message: err.message });
@@ -94,6 +95,12 @@ class GethIPC extends GethEmitter_1.default {
                 }
                 this.fireEvent(channels_1.default.client.geth.logs, response, event);
             });
+        });
+        return this;
+    }
+    _status() {
+        this.registerListener(channels_1.default.server.geth.status, (event) => {
+            this.fireEvent(channels_1.default.client.geth.status, responses_1.gethResponse({}), event);
         });
         return this;
     }

@@ -3,7 +3,7 @@
   "productName": "AKASHA",
   "private": true,
   "description": "Akasha platform",
-  "main": "main/index.js",
+  "main": "main.js",
   "scripts": {
     "test": "better-npm-run test",
     "test-watch": "npm test -- --watch",
