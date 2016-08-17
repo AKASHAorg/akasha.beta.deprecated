@@ -87,7 +87,6 @@ class EntryActions {
             return this.dispatch(entryActionCreators.getTagsSuccess(result));
         }).catch(reason => this.dispatch(entryActionCreators.getTagsError(reason)));
     };
-
     checkTagExistence = (tag) => {
         this.dispatch(entryActionCreators.checkTagExistence());
         return this.entryService.checkTagExistence(tag).then(result => {

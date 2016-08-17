@@ -3,7 +3,7 @@ import { createReducer } from './create-reducer';
 import { fromJS, List } from 'immutable';
 
 const initialState = fromJS({
-    tags: List(),
+    tagsCount: 0,
     isLoading: false
 });
 
@@ -15,7 +15,7 @@ const tagState =  createReducer(initialState, {
     },
     [types.GET_TAGS_SUCCESS]: (state, action) => {
         return state.merge({
-            tags: state.get('tags').concat(action.tags),
+            tagsCount: state.get('tagsCount') + action.tags.length,
             isLoading: false
         });
     },

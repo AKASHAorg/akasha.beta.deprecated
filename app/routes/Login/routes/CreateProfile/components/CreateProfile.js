@@ -5,8 +5,8 @@ import { SvgIcon, IconButton, RaisedButton,
     TextField, Checkbox, Divider } from 'material-ui';
 import ContentAddIcon from 'material-ui/svg-icons/content/add';
 import CancelIcon from 'material-ui/svg-icons/navigation/cancel';
-import Avatar from 'shared-components/Avatar/avatar';
-import ImageUploader from 'shared-components/ImageUploader/image-uploader';
+import Avatar from '../../../../../shared-components/Avatar/avatar';
+import ImageUploader from '../../../../../shared-components/ImageUploader/image-uploader';
 import { inputFieldMethods } from '../../../../../utils/dataModule';
 import validationProvider from '../../../../../utils/validationProvider';
 import { UserValidation } from '../../../../../utils/validationSchema';

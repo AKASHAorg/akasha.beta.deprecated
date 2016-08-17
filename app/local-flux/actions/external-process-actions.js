@@ -22,7 +22,7 @@ class EProcActions {
         this.settingsActions.getSettings('geth').then(() =>
             this.dispatch((dispatch, getState) => {
                 const gethSettings = getState().settingsState.get('geth');
-                if (gethSettings.size > 0) {
+                if (gethSettings) {
                     return gethSettings.toJS();
                 }
                 return {};
@@ -98,7 +98,7 @@ class EProcActions {
             );
         })
         .catch(reason => this.dispatch((dispatch) => {
-            dispatch(this._startIPFSError(reason));
+            dispatch(externalProcessActionCreators.startIPFSError(reason));
             dispatch(
                 appActionCreators.showError({
                     code: 205,

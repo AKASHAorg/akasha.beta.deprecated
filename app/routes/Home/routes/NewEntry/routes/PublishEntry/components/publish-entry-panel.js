@@ -2,11 +2,12 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { TextField, RaisedButton } from 'material-ui';
 import PanelContainer from 'shared-components/PanelContainer/panel-container';
-import ImageUploader from 'shared-components/ImageUploader/image-uploader';
-import LicenceDialog from 'shared-components/Dialogs/licence-dialog';
-import TagsField from 'shared-components/TagsField/tags-field';
+import ImageUploader from '../../../../../../../shared-components/ImageUploader/image-uploader';
+import LicenceDialog from '../../../../../../../shared-components/Dialogs/licence-dialog';
+import TagsField from '../../../../../../../shared-components/TagsField/tags-field';
 import licences from 'shared-components/Dialogs/licences';
 import { convertFromRaw } from 'draft-js';
+import { TagService } from 'local-flux/services';
 
 class PublishPanel extends React.Component {
     constructor (props) {
@@ -31,21 +32,16 @@ class PublishPanel extends React.Component {
         this.panelSize = panelSize;
     }
     _setWorkingDraft = (draft) => {
-        const { title, content, tags, licence, featuredImage, id } = draft;
+        const { content } = draft;
         let { excerpt } = draft;
         if (!excerpt) {
             excerpt = convertFromRaw(content).getPlainText()
                 .slice(0, 120)
                 .replace(/\r?\n|\r/g, '');
         }
+        draft.excerpt = excerpt;
         return this.setState({
-            id,
-            title,
-            content,
-            excerpt,
-            tags,
-            licence,
-            featuredImage
+            ...draft
         });
     };
     _handleLicenceDialogClose = () => {
@@ -74,23 +70,24 @@ class PublishPanel extends React.Component {
         console.log('publish entry', draftToPublish);
     };
     _handleTagAutocomplete = (value) => {
-        const { entryActions } = this.props;
+        const { tagActions } = this.props;
     };
-    _checkTagExistence = (tag) => {
-        const { entryActions } = this.props;
-        const tags = this.state.tags;
-        tags.forEach(tagName => {
-            entryActions.checkTagExistence(tagName);
+    _handleTagAdd = (tag) => {
+        const newTags = this.state.tags.slice();
+        newTags.push(tag);
+        this.setState({
+            tags: newTags
         });
+        this._handleDraftUpdate(null, 'tags');
     };
     _handleDraftUpdate = (ev, field) => {
         const { entryActions } = this.props;
         let fieldValue = this.state[field];
         if (field === 'tags') {
-            fieldValue = this.tagsField.getTags();
+            fieldValue = this.state.tags;
         }
         if (field === 'featuredImage') {
-            fieldValue = this.featuredImageUploader.getWrappedInstance().getImage()[0];
+            fieldValue = this.state.featuredImage;
         }
         entryActions.updateDraft({
             id: this.state.id,
@@ -109,7 +106,19 @@ class PublishPanel extends React.Component {
         return null;
     };
     render () {
+        const { tags } = this.props.draft;
+        const tagService = new TagService();
+        let existingTags = [];
         let selectedLicence;
+        if (tags && tags.length > 0) {
+            tags.forEach(tag => {
+                tagService.checkExistingTag(tag).then(exists => {
+                    if (exists) {
+                        existingTags.push(tag);
+                    }
+                });
+            });
+        }
         if (this.state.selectedLicence) {
             selectedLicence = this.state.selectedLicence;
         } else {
@@ -122,8 +131,6 @@ class PublishPanel extends React.Component {
         const licenceDescription = selectedLicence.mainLicence.description.map((descr, key) =>
           <span key={key}>{descr.text}</span>
         );
-        const { tags } = this.props.draft;
-        const existingTags = this.props.tagState.get('tags');
         return (
           <PanelContainer
             showBorder
@@ -179,7 +186,7 @@ class PublishPanel extends React.Component {
                   existingTags={existingTags}
                   ref={(tagsField) => this.tagsField = tagsField}
                   onRequestTagAutocomplete={this._handleTagAutocomplete}
-                  onTagAdded={this._checkTagExistence}
+                  onTagAdded={this._handleTagAdd}
                   onBlur={(ev) => this._handleDraftUpdate(ev, 'tags')}
                   fullWidth
                 />

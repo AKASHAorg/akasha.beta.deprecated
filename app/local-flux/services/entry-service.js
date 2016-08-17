@@ -15,6 +15,7 @@ class EntryService {
     };
     saveDraft = (partialDraft) =>
         entriesDB.transaction('rw', entriesDB.drafts, () => {
+            console.log(partialDraft, 'partialDraft')
             if (partialDraft.id) {
                 return entriesDB.drafts.update(partialDraft.id, partialDraft).then(updated => {
                     dbg('draft ', partialDraft.id, 'updated');
@@ -51,10 +52,6 @@ class EntryService {
                     .where('id')
                     .equals(parseInt(id, 10))
                     .first();
-        });
-    saveTag = (tag) =>
-        tagsDB.transaction('rw', tagsDB.blockTags, () => {
-            tagsDB.blockTags.add(tag);
         });
     publishEntry = (entry) => {
         const serverChannel = EVENTS.server.entry.publish;

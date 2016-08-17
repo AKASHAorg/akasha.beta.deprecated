@@ -26,8 +26,6 @@ class BootstrapActions {
     initApp = (getState) => {
         // @TODO check for newer entries
         const promises = [];
-        // promises.push(this.entryActions.getEntriesCount());
-        // promises.push(this.entryActions.getDraftsCount());
         return Promise.all(promises);
     };
     bootApp = (getState) => {

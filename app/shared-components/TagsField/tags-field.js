@@ -5,25 +5,25 @@ class TagsField extends React.Component {
     constructor (props) {
         super(props);
         this.state = {
-            currentTags: [],
-            existentTags: [],
+            currentTags: props.tags,
             tagString: ''
         };
     }
 
     componentWillReceiveProps (nextProps) {
-        if (nextProps.tags.length > this.state.currentTags.length) {
+        console.log(nextProps);
+        if (nextProps.existingTags.length > this.state.existingTags.length) {
             this.setState({
-                currentTags: nextProps.tags
+                existingTags: nextProps.existingTags
             });
         }
     }
 
-    getTags = () => this.state.currentTags
+    getTags = () => this.state.currentTags;
 
     _checkTagAutocomplete = (value) => {
         this.props.onRequestTagAutocomplete(value);
-    }
+    };
     _handleInputChange = (ev) => {
         if (ev.target.value.length >= 3) {
             this._checkTagAutocomplete(ev.target.value);
@@ -31,7 +31,7 @@ class TagsField extends React.Component {
         this.setState({
             tagString: ev.target.value,
         });
-    }
+    };
     _handleDeleteTag = (ev, index) => {
         const currentTags = this.state.currentTags.slice();
         currentTags.splice(index, 1);
@@ -42,7 +42,7 @@ class TagsField extends React.Component {
                 this.props.onBlur(ev);
             }
         });
-    }
+    };
     _createError = (error, removeCurrentTag) => {
         this.setState({
             error
@@ -52,7 +52,7 @@ class TagsField extends React.Component {
                 tagString: ''
             });
         }
-    }
+    };
     _createTag = () => {
         const currentTags = this.state.currentTags;
         const tag = this.state.tagString.trim().toLowerCase();
@@ -76,7 +76,7 @@ class TagsField extends React.Component {
             this._createError('Tags should have at least 3 characters.', false);
         }
         return null;
-    }
+    };
     _handleTagDetect = (ev) => {
         const MODIFIER_CHARCODES = [13, 32, 44, 59];
         for (let i = 0; i < MODIFIER_CHARCODES.length; i++) {
@@ -88,7 +88,7 @@ class TagsField extends React.Component {
                 });
             }
         }
-    }
+    };
     _handleInputBlur = (ev) => {
         const value = ev.target.value;
         if (value && value.length > 0) {
@@ -100,31 +100,35 @@ class TagsField extends React.Component {
         if (this.props.onBlur) {
             this.props.onBlur(ev);
         }
-    }
+    };
     render () {
         const currentTags = this.state.currentTags;
-        const tags = currentTags.map((tag, key) => (
-          <Chip
-            key={key}
-            onRequestDelete={(ev) => { this._handleDeleteTag(ev, key); }}
-            backgroundColor="transparent"
-            title="Tag exists in the network"
-            style={{
+        const tags = currentTags.map((tag, key) => {
+            const tagExists = this.props.existingTags.indexOf(tag) > -1;
+            // console.log(tagExists, tag, this.props.existingTags, 'exists?');
+            const style = {
                 display: 'inline-block',
                 border: '1px solid',
-                borderColor: '#74cc00',
+                borderColor: tagExists ? '#74cc00' : '#ffaa0e',
                 borderRadius: 3,
                 height: 34,
                 verticalAlign: 'middle',
                 marginRight: '4px',
                 marginBottom: '4px',
-            }}
-            labelStyle={{ lineHeight: '32px', display: 'inline-block', verticalAlign: 'top' }}
-          >
-            {tag}
-          </Chip>
-            )
-        );
+            };
+            return (
+              <Chip
+                key={key}
+                onRequestDelete={(ev) => { this._handleDeleteTag(ev, key); }}
+                backgroundColor="transparent"
+                title="Tag exists in the network"
+                style={style}
+                labelStyle={{ lineHeight: '32px', display: 'inline-block', verticalAlign: 'top' }}
+              >
+                {tag}
+              </Chip>
+          );
+        });
         return (
           <TextField
             fullWidth
@@ -170,7 +174,7 @@ class TagsField extends React.Component {
 TagsField.propTypes = {
     tags: React.PropTypes.array,
     onTagAdded: React.PropTypes.func,
-    existentTags: React.PropTypes.array,
+    existingTags: React.PropTypes.array,
     onRequestTagAutocomplete: React.PropTypes.func,
     onBlur: React.PropTypes.func
 };

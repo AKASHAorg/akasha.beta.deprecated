@@ -4,8 +4,8 @@ import {
     ListItem,
     FlatButton,
     RaisedButton } from 'material-ui';
-import Avatar from 'shared-components/Avatar/avatar';
-import LoginDialog from 'shared-components/Dialogs/login-dialog';
+import Avatar from '../../../../../shared-components/Avatar/avatar';
+import LoginDialog from '../../../../../shared-components/Dialogs/login-dialog';
 import PanelContainer from 'shared-components/PanelContainer/panel-container';
 import LoginHeader from '../../../components/LoginHeader';
 import { hashHistory } from 'react-router';

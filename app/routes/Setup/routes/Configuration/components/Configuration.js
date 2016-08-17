@@ -18,7 +18,8 @@ class Setup extends Component {
     componentWillMount () {
         const { settingsState } = this.props;
         const cancelRequest = settingsState.getIn(['flags', 'requestStartupChange']);
-        if (!cancelRequest) {
+        const gethSettings = settingsState.get('geth')
+        if (!cancelRequest && gethSettings) {
             this.context.router.push('setup/sync-status');
         }
     }
