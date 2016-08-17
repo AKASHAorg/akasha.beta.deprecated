@@ -1,9 +1,9 @@
+import { hashHistory } from 'react-router';
+import debug from 'debug';
 import { ProfileService } from '../services';
 import { SettingsActions } from '../actions';
 import { profileActionCreators } from './action-creators';
-import { hashHistory } from 'react-router';
-import { ipcRenderer } from 'electron';
-import debug from 'debug';
+
 const dbg = debug('App:ProfileActions:');
 let profileActions = null;
 
@@ -13,7 +13,7 @@ class ProfileActions {
             profileActions = this;
         }
         this.dispatch = dispatch;
-        this.profileService = new ProfileService;
+        this.profileService = new ProfileService();
         this.settingsActions = new SettingsActions(dispatch);
         return profileActions;
     }
@@ -35,12 +35,11 @@ class ProfileActions {
                 const localProfiles = getState().profileState.get('profiles');
                 const loggedProfile = getState().profileState.get('loggedProfile');
                 if (loggedProfile.size > 0) {
-                    const profileData = localProfiles.find(profile =>
-                        profile.address === loggedProfile.get('address')
+                    const profile = localProfiles.find(prof =>
+                        prof.address === loggedProfile.get('address')
                     );
-                    console.log(profileData);
-                    this.profileService.saveLoggedProfile(profileData.toJS()).then(() => {
-                        hashHistory.push(`${profileData.get('userName')}`);
+                    this.profileService.saveLoggedProfile(profile.toJS()).then(() => {
+                        hashHistory.push(`${profile.get('userName')}`);
                     });
                 }
             });
@@ -61,7 +60,6 @@ class ProfileActions {
     checkLoggedProfile = (options = {}) =>
         this.profileService.getLoggedProfile().then(loggedProfile => {
             const profile = loggedProfile[0];
-            console.log(profile, 'loggedProfile')
             if (profile) {
                 this.dispatch(profileActionCreators.loginSuccess(profile));
                 if (options.redirect) {
