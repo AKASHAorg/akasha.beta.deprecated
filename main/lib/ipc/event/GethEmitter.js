@@ -3,6 +3,7 @@ const geth_connector_1 = require('@akashaproject/geth-connector');
 const AbstractEmitter_1 = require('./AbstractEmitter');
 const channels_1 = require('../../channels');
 const responses_1 = require('./responses');
+const index_1 = require('../contracts/index');
 class GethEmitter extends AbstractEmitter_1.AbstractEmitter {
     attachEmitters() {
         this._download()
@@ -27,6 +28,7 @@ class GethEmitter extends AbstractEmitter_1.AbstractEmitter {
     _started() {
         geth_connector_1.GethConnector.getInstance().on(geth_connector_1.CONSTANTS.STARTED, () => {
             this.fireEvent(channels_1.default.client.geth.startService, responses_1.gethResponse({ started: true }));
+            index_1.constructed.init(geth_connector_1.GethConnector.getInstance().web3);
         });
         return this;
     }
