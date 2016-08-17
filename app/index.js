@@ -6,17 +6,18 @@ import { IntlProvider } from 'react-intl';
 import { Router, hashHistory } from 'react-router';
 import { syncHistoryWithStore } from 'react-router-redux';
 import routes from './routes';
-import configureStore from './store/configureStore';
+import configureStore from './local-flux/store/configureStore';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import { ruMessages } from './locale-data/ru';
 import debug from 'debug';
 window.appDebug = debug.enable('App:*');
+import ReactPerf from 'react-addons-perf';
 // temporary
 
 const store = configureStore();
 const history = syncHistoryWithStore(hashHistory, store);
 
-global.Perf = require('react-addons-perf');
+global.Perf = ReactPerf;
 
 injectTapEventPlugin();
 render(

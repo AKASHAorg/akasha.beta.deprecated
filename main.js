@@ -42,8 +42,8 @@ app.on('will-quit', () => {
 
 app.on('ready', () => {
     mainWindow = new BrowserWindow({
-        width: 1280,
-        height: 720,
+        width: (1280 + 16),
+        height: (720 + 59),
         resizable: true
     });
     if (process.env.HOT) {
@@ -54,6 +54,7 @@ app.on('ready', () => {
 
     if (process.env.NODE_ENV === 'development') {
         mainWindow.openDevTools();
+        BrowserWindow.addDevToolsExtension('C:\\Users\\Sever Abibula\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Extensions\\fmkadmapgofadopljbjfkapdkoienihi\\0.15.0_0');
     }
     mainWindow.webContents.on('did-finish-load', () => {
         mainWindow.show();

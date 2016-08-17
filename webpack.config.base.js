@@ -21,7 +21,8 @@ const webpackConfig = {
   resolve: {
     extensions: ['', '.js', '.jsx'],
     root: path.join(__dirname, 'app'),
-    packageMains: ['webpack', 'browser', 'web', 'browserify', ['jam', 'main'], 'main']
+    packageMains: ['webpack', 'browser', 'web', 'browserify', ['jam', 'main'], 'main'],
+    modulesDirectories: ['node_modules', 'local-flux', 'shared-components', 'locale-data']
   },
   plugins: [
 
@@ -46,7 +47,7 @@ webpackConfig.sassLoader = {
 };
 
 
-// File loaders
+// File Loaders
 /* eslint-disable */
 webpackConfig.module.loaders.push(
   { test: /\.woff(\?.*)?$/,  loader: 'file?name=font/[name].[ext]' },

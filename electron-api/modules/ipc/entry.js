@@ -201,11 +201,11 @@ class EntryService extends MainService {
                     tagsContract.getTagAt.call(idx, {}, (serr, sres) => {
                         if (!serr) {
                             tags.push(web3.toUtf8(sres));
-                            if (tags.length >= numberOfTags - 1) {
+                            // if (tags.length >= numberOfTags - 1) {
                                 this._sendEvent(event)(this.clientEvent.getTags, true, {
                                     tags
                                 });
-                            }
+                            // }
                         }
                     });
                 }
