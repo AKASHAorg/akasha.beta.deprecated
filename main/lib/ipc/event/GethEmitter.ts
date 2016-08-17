@@ -2,6 +2,7 @@ import { GethConnector, CONSTANTS } from '@akashaproject/geth-connector';
 import { AbstractEmitter } from './AbstractEmitter';
 import channels from '../../channels';
 import { gethResponse } from './responses';
+import { constructed } from '../contracts/index';
 
 abstract class GethEmitter extends AbstractEmitter {
     attachEmitters() {
@@ -45,6 +46,8 @@ abstract class GethEmitter extends AbstractEmitter {
         GethConnector.getInstance().on(
             CONSTANTS.STARTED, () => {
                 this.fireEvent(channels.client.geth.startService, gethResponse({ started: true }));
+                // inject web3 instance
+                constructed.init(GethConnector.getInstance().web3);
             }
         );
         return this;
