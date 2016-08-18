@@ -60,13 +60,16 @@ export default class Profile extends BaseContract {
      * @returns {"~bluebird/bluebird".Bluebird}
      */
     updateHash(hash: string[], address: string, gas?: number) {
+        const ipfsHashTr = hash.map((v) => {
+            return this.gethInstance.web3.fromUtf8(v);
+        });
         return new Promise((resolve, reject) => {
             if (hash.length !== 2) {
                 return reject(new Error('Expected exactly 2 ipfs slices'));
             }
             this.contract
                 .at(address)
-                .setHash(hash, { gas }, (err: Error, tx: string) => {
+                .setHash(ipfsHashTr, { gas }, (err: Error, tx: string) => {
                     if (err) {
                         return reject(err);
                     }
