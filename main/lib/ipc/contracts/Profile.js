@@ -33,13 +33,16 @@ class Profile extends BaseContract_1.default {
         });
     }
     updateHash(hash, address, gas) {
+        const ipfsHashTr = hash.map((v) => {
+            return this.gethInstance.web3.fromUtf8(v);
+        });
         return new Promise((resolve, reject) => {
             if (hash.length !== 2) {
                 return reject(new Error('Expected exactly 2 ipfs slices'));
             }
             this.contract
                 .at(address)
-                .setHash(hash, { gas: gas }, (err, tx) => {
+                .setHash(ipfsHashTr, { gas: gas }, (err, tx) => {
                 if (err) {
                     return reject(err);
                 }

@@ -7,6 +7,9 @@ class BaseContract {
     flattenIpfs(ipfsHash) {
         return this.gethInstance.web3.toUtf8(`${ipfsHash[0]}${ipfsHash[1]}`);
     }
+    getContract() {
+        return this.contract;
+    }
 }
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = BaseContract;

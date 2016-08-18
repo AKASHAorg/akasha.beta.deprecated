@@ -53,7 +53,11 @@ export default class Registry extends BaseContract {
      * @returns {PromiseLike<TResult>|Bluebird<U>|Promise<TResult>|Thenable<U>}
      */
     register(username: string, ipfsHash: string[], gas?: number) {
-        return this.profileExists(username)
+        const usernameTr = this.gethInstance.web3.fromUtf8(username);
+        const ipfsHashTr = ipfsHash.map((v) => {
+            return this.gethInstance.web3.fromUtf8(v);
+        });
+        return this.profileExists(usernameTr)
             .then((address: string) => {
                 const exists = this.gethInstance.web3.toUtf8(address);
 
@@ -61,11 +65,11 @@ export default class Registry extends BaseContract {
                     throw new Error(`${username} already taken`);
                 }
 
-                if (ipfsHash.length !== 2) {
+                if (ipfsHashTr.length !== 2) {
                     throw new Error('Expected exactly 2 ipfs slices');
                 }
                 return this.contract
-                    .registerAsync(username, ipfsHash, {gas});
+                    .registerAsync(usernameTr, ipfsHashTr, {gas});
             });
     }
 

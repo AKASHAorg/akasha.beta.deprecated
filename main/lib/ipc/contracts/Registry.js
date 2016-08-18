@@ -24,17 +24,21 @@ class Registry extends BaseContract_1.default {
             .getMyProfileAsync();
     }
     register(username, ipfsHash, gas) {
-        return this.profileExists(username)
+        const usernameTr = this.gethInstance.web3.fromUtf8(username);
+        const ipfsHashTr = ipfsHash.map((v) => {
+            return this.gethInstance.web3.fromUtf8(v);
+        });
+        return this.profileExists(usernameTr)
             .then((address) => {
             const exists = this.gethInstance.web3.toUtf8(address);
             if (exists) {
                 throw new Error(`${username} already taken`);
             }
-            if (ipfsHash.length !== 2) {
+            if (ipfsHashTr.length !== 2) {
                 throw new Error('Expected exactly 2 ipfs slices');
             }
             return this.contract
-                .registerAsync(username, ipfsHash, { gas: gas });
+                .registerAsync(usernameTr, ipfsHashTr, { gas: gas });
         });
     }
 }
