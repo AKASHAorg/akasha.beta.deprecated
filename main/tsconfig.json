@@ -9,7 +9,8 @@
         "moduleResolution": "classic",
         "noLib": false,
         "preserveConstEnums": true,
-        "suppressImplicitAnyIndexErrors": true
+        "suppressImplicitAnyIndexErrors": true,
+        "experimentalDecorators": true
     },
     "exclude": [
         "node_modules",

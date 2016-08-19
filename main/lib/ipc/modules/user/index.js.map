@@ -1,1 +1,1 @@
-{"version":3,"file":"index.js","sourceRoot":"","sources":["index.ts"],"names":[],"mappings":"","sourcesContent":[""]}
+{"version":3,"file":"index.js","sourceRoot":"","sources":["index.ts"],"names":[],"mappings":";AAAA,uBAAiB,QAAQ,CAAC,CAAA;AAE1B;IAGI,IAAI;QACA,IAAI,CAAC,IAAI,GAAG,IAAI,cAAI,EAAE,CAAC;IAC3B,CAAC;AACL,CAAC;AAEY,cAAM,GAAG,IAAI,IAAI,EAAE,CAAC","sourcesContent":["import Auth from './Auth';\n\nclass User {\n    auth: Auth;\n\n    init() {\n        this.auth = new Auth();\n    }\n}\n\nexport const module = new User();\n"]}
