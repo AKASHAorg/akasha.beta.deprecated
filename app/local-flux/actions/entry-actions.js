@@ -1,4 +1,4 @@
-import { EntryService } from '../services';
+import { EntryService, ProfileService } from '../services';
 import { entryActionCreators } from './action-creators';
 import { hashHistory } from 'react-router';
 import throttle from 'lodash.throttle';
@@ -15,6 +15,7 @@ class EntryActions {
         }
         this.dispatch = dispatch;
         this.entryService = new EntryService();
+        this.profileService = new ProfileService();
         this.throttledUpdateDraft = throttle(this._throttleUpdateDraft, 2000, {
             trailing: true,
             leading: true
@@ -44,7 +45,7 @@ class EntryActions {
     };
     updateDraft = (changes) => {
         this.dispatch(entryActionCreators.startSavingDraft());
-        this.entryService.saveDraft(changes).then(savedDraft => {
+        return this.entryService.saveDraft(changes).then(savedDraft => {
             dbg('dispatching', 'UPDATE_DRAFT_SUCCESS', savedDraft);
             return this.dispatch(entryActionCreators.updateDraftSuccess(savedDraft));
         }).catch(reason => this.dispatch(entryActionCreators.updateDraftError(reason)));
@@ -110,6 +111,19 @@ class EntryActions {
         }).catch(reason =>
             this.dispatch(entryActionCreators.updateDraftError(reason))
         );
-
+    getProfileBalance = (profileAddress) =>
+        this.profileService.getProfileBalance(profileAddress);
+    publishEntry = (entry, profileAddress) => {
+        dbg('publish entry', entry);
+        this.entryService.publishEntry(entry, profileAddress).then(response => {
+            dbg(response, 'returned from entry publishing');
+            return this.dispatch(entryActionCreators.publishEntrySuccess, response.data);
+        }).catch(reason => {
+            console.error(reason, reason.message);
+        });
+    };
+    requestAuthentication = () => {
+        
+    }
 }
 export { EntryActions };

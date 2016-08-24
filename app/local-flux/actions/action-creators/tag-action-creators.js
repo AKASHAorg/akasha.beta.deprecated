@@ -20,20 +20,20 @@ export function getTagsError (error) {
     };
 }
 
-export function createTag () {
+export function registerTags () {
     return {
         type: types.CREATE_TAG
     };
 }
 
-export function createTagSuccess (tag) {
+export function registerTagsSuccess (tags) {
     return {
         type: types.CREATE_TAG_SUCCESS,
-        tag
+        tags
     };
 }
 
-export function createTagError (error) {
+export function registerTagsError (error) {
     return {
         type: types.CREATE_TAG_ERROR,
         error

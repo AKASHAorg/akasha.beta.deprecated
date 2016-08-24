@@ -12,7 +12,7 @@ class MainService extends IpcService {
      */
     constructor (type) {
         super(type);
-        this.UNLOCK_INTERVAL = 2000;
+        this.UNLOCK_INTERVAL = 12000;
         this.ZERO_ADDR = '0x0000000000000000000000000000000000000000';
         this.UNLOCK_COINBASE_FAIL = 'unlock account fail, check your password';
         this.UNLOCK_COINBASE_SUCCESS = 'unlock account successful';

@@ -6,8 +6,8 @@ class ValidationActions {
         if (!validationActions) {
             validationActions = this;
         }
+        this.validationService = new ValidationService();
         this.dispatch = dispatch;
-        this.validationService = new ValidationService;
         return validationActions;
     }
     validateUsername = (userName, cb) => {

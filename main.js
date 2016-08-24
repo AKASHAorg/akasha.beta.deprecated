@@ -54,7 +54,7 @@ app.on('ready', () => {
 
     if (process.env.NODE_ENV === 'development') {
         mainWindow.openDevTools();
-        BrowserWindow.addDevToolsExtension('C:\\Users\\Sever Abibula\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Extensions\\fmkadmapgofadopljbjfkapdkoienihi\\0.15.0_0');
+        // BrowserWindow.addDevToolsExtension('C:\\Users\\Sever Abibula\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Extensions\\fmkadmapgofadopljbjfkapdkoienihi\\0.15.0_0');
     }
     mainWindow.webContents.on('did-finish-load', () => {
         mainWindow.show();

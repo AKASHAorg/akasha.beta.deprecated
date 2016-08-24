@@ -13,12 +13,22 @@ entriesDB.drafts.mapToClass(getDraftClass());
 
 entriesDB.drafts.hook('creating', (primaryKey, obj, transaction) => {
     dbg('creating.. ', obj);
-    obj.created_at = new Date().toString();
+    obj.status = {
+        created_at: new Date().toString(),
+        updated_at: new Date().toString(),
+        tagsPublished: false,
+        publishing: false
+    };
 });
 entriesDB.drafts.hook('updating', (modifications, primaryKey, obj, transaction) => {
     dbg('updating..', obj, modifications);
     return {
-        updated_at: new Date().toString()
+        status: {
+            created_at: obj.status.created_at,
+            updated_at: new Date().toString(),
+            tagsPublished: obj.status.tagsPublished,
+            publishing: obj.status.publishing
+        }
     };
 });
 entriesDB.entries.hook('creating', (primaryKey, obj, transaction) => {

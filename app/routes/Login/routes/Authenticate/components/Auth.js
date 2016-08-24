@@ -18,7 +18,9 @@ class Auth extends Component {
         this.state = {
             openModal: false,
             selectedIndex: false,
-            avatar: {}
+            avatar: {},
+            unlockTimer: 5,
+            unlockIsChecked: false
         };
     }
     componentWillMount () {
@@ -39,7 +41,11 @@ class Auth extends Component {
         const { profileActions } = this.props;
         const selectedProfile = this.state.selectedProfile.toJS();
         selectedProfile.password = this.state.password;
-        profileActions.login(selectedProfile);
+        let unlockInterval = 0;
+        if (this.state.unlockIsChecked) {
+            unlockInterval = this.state.unlockTimer;
+        }
+        profileActions.login(selectedProfile, unlockInterval, false);
     };
     _getLocalProfiles () {
         const { profileState } = this.props;
@@ -112,6 +118,16 @@ class Auth extends Component {
             this.handleLogin();
         }
     };
+    _handleUnlockTimerChange = (key, payload) => {
+        this.setState({
+            unlockTimer: payload,
+        });
+    };
+    _handleUnlockCheck = (isUnlocked) => {
+        this.setState({
+            unlockIsChecked: isUnlocked
+        });
+    };
     render () {
         const { style, intl } = this.props;
         const { openModal } = this.state;
@@ -146,6 +162,10 @@ class Auth extends Component {
                   title={'Log In'}
                   onPasswordChange={this._handlePasswordChange}
                   onKeyPress={this._handleDialogKeyPress}
+                  onUnlockTimerChange={this._handleUnlockTimerChange}
+                  onUnlockCheck={this._handleUnlockCheck}
+                  unlockTimerKey={this.state.unlockTimer}
+                  isUnlockedChecked={this.state.unlockIsChecked}
                 />
               }
             </PanelContainer>

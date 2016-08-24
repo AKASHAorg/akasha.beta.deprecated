@@ -31,3 +31,15 @@ export function hidePanel (panel) {
         panel
     };
 }
+
+export function showAuthDialog () {
+    return {
+        type: types.SHOW_AUTH_DIALOG
+    }
+}
+
+export function hideAuthDialog () {
+    return {
+        type: types.HIDE_AUTH_DIALOG
+    }
+}

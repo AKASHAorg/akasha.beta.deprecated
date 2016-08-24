@@ -1,6 +1,6 @@
+import { fromJS } from 'immutable';
 import * as types from '../constants/AppConstants';
 import { createReducer } from './create-reducer';
-import { fromJS } from 'immutable';
 
 const initialState = fromJS({
     activePanel: {

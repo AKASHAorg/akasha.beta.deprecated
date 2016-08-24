@@ -9,6 +9,7 @@ import {
 import { convertFromRaw } from 'draft-js';
 import EntryEditor from 'shared-components/EntryEditor';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
+import { is } from 'immutable';
 
 class NewEntryPage extends Component {
     constructor (props) {
@@ -19,19 +20,27 @@ class NewEntryPage extends Component {
         };
     }
     componentWillMount () {
-        const { entryActions, entryState, params } = this.props;
+        this._setDraftToEdit(this.props);
+    }
+    componentWillReceiveProps (nextProps) {
+        this._setDraftToEdit(nextProps);
+    }
+    _setDraftToEdit = (props) => {
+        const { entryState, params } = props;
         if (params.draftId !== 'new') {
-            const draftToEdit = entryState.get('drafts').find(draft =>
-                draft.id === parseInt(params.draftId, 10));
+            const draftToEdit = entryState.get('drafts').find(draft => {
+                return draft.id === parseInt(params.draftId, 10);
+            });
             this.setState({
-                draftToEdit
+                draftToEdit,
+                publishable: draftToEdit.wordCount > 1
+            });
+        } else {
+            this.setState({
+                draftToEdit: {}
             });
         }
-    }
-    componentDidMount () {
-        this.editor.setTitle(this.state.draftToEdit.title);
-        this.editor.setContent(this.state.draftToEdit.content);
-    }
+    };
     _setupEntryForPublication = () => {
         const { profileState, params } = this.props;
         const loggedProfile = profileState.get('loggedProfile');
@@ -41,20 +50,24 @@ class NewEntryPage extends Component {
             );
         });
     };
-    _getWordCount = (rawContent) => {
-        let text = convertFromRaw(rawContent).getPlainText(' ');
-        text = text.trim();
-        text = text.replace(/[ ]{2,}/gi, ' '); // convert 2 or more spaces to 1
-        return text.split(' ').length;
+    _getWordCount = (content) => {
+        const plainText = content.getPlainText('');
+        // new line, carriage return, line feed
+        const regex = /(?:\r\n|\r|\n)/g;
+        // replace above characters w/ space
+        const cleanString = plainText.replace(regex, ' ').trim();
+        // matches words according to whitespace
+        const wordArray = cleanString.match(/\S+/g);
+        return wordArray ? wordArray.length : 0;
     };
     _saveDraft = (cb) => {
         const { entryActions, params } = this.props;
-        const content = this.editor.getContent();
+        const content = this.editor.getRawContent();
+        const contentState = this.editor.getContent();
         const title = this.editor.getTitle();
-        const wordCount = this._getWordCount(content);
+        const wordCount = this._getWordCount(contentState);
         if (params.draftId !== 'new') {
             const draftId = parseInt(params.draftId, 10);
-            this.state.draftToEdit = {id: draftId, content, title, wordCount};
             entryActions.updateDraftThrottled({ id: draftId, content, title, wordCount });
         } else {
             entryActions.createDraft({ content, title, wordCount });
@@ -63,86 +76,79 @@ class NewEntryPage extends Component {
             cb();
         }
     };
-    _handleEditorChange = (text) => {
-        const txt = text.trim();
-        
-        if (txt.length > 0) {
-            this.setState({
-                publishable: true
-            });
-        } else {
-            this.setState({
-                publishable: false
-            });
-        }
+    _handleEditorAutosave = () => {
         this._saveDraft();
     };
-    _handleTitleChange = () => {
-        this._saveDraft();
-    };
+    _handleTitleChange = () => {};
     render () {
-        const { entryState, params } = this.props;
+        const { entryState } = this.props;
         const draft = this.state.draftToEdit;
         let entryTitle = 'First entry';
-        if (entryState.get('drafts').size > 0 && !entryState.get('savingDraft')) {
+        if (entryState.get('drafts').size > 1 && !entryState.get('savingDraft')) {
             entryTitle = 'New Entry';
         } else if (entryState.get('savingDraft')) {
             entryTitle = 'Saving draft...';
         }
         return (
-            <div style={{height: '100%'}}>
-                <Toolbar
-                    className="row"
-                    style={{ backgroundColor: '#FFF', borderBottom: '1px solid rgb(204, 204, 204)' }}
+          <div style={{ height: '100%' }}>
+            <Toolbar
+              className="row"
+              style={{ backgroundColor: '#FFF', borderBottom: '1px solid rgb(204, 204, 204)' }}
+            >
+              <ToolbarGroup>
+                <h3 style={{ fontWeight: '200' }}>{entryTitle}</h3>
+              </ToolbarGroup>
+              <ToolbarGroup>
+                <FlatButton
+                  primary
+                  label="Publish"
+                  disabled={!this.state.publishable}
+                  onClick={this._setupEntryForPublication}
+                />
+                <IconMenu
+                  iconButtonElement={
+                    <IconButton>
+                      <MoreVertIcon />
+                    </IconButton>
+                  }
+                  anchorOrigin={{ horizontal: 'left', vertical: 'top' }}
+                  targetOrigin={{ horizontal: 'left', vertical: 'top' }}
+                  style={{ margin: '4px 0' }}
                 >
-                    <ToolbarGroup>
-                        <h3 style={{ fontWeight: '200' }}>{entryTitle}</h3>
-                    </ToolbarGroup>
-                    <ToolbarGroup>
-                        <FlatButton
-                            primary
-                            label="Publish"
-                            disabled={!this.state.publishable}
-                            onClick={this._setupEntryForPublication}
-                        />
-                        <IconMenu
-                            iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
-                            anchorOrigin={{ horizontal: 'left', vertical: 'top' }}
-                            targetOrigin={{ horizontal: 'left', vertical: 'top' }}
-                            style={{ margin: '4px 0' }}
-                        >
-                            <MenuItem primaryText="Create public link" />
-                            <MenuItem primaryText="Word count" />
-                            <MenuItem primaryText="Delete draft" />
-                        </IconMenu>
-                    </ToolbarGroup>
-                </Toolbar>
-                <div className="row center-xs" style={{ marginTop: '32px' }}>
-                    <div className="col-xs-6">
-                        <EntryEditor
-                            editorRef={(editor) => { this.editor = editor; }}
-                            onChange={this._handleEditorChange}
-                            onTitleChange={this._handleTitleChange}
-                            readOnly={false}
-                        />
-                    </div>
-                </div>
-                {this.props.children &&
-                <div className="row">
-                  {React.cloneElement(this.props.children, { draft })}
-                  <div
-                    style={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        bottom: 0,
-                        right: 0,
-                        zIndex: 5,
-                        backgroundColor: 'rgba(255, 255, 255, 0.9)' }}
-                  />
-                </div>
-                }
+                  <MenuItem primaryText="Create public link" />
+                  <MenuItem primaryText="Word count" />
+                  <MenuItem primaryText="Delete draft" />
+                </IconMenu>
+              </ToolbarGroup>
+            </Toolbar>
+            <div className="row center-xs" style={{ marginTop: '32px' }}>
+              <div className="col-xs-6">
+                <EntryEditor
+                  editorRef={(editor) => { this.editor = editor; }}
+                  onAutosave={this._handleEditorAutosave}
+                  onTitleChange={this._handleTitleChange}
+                  readOnly={false}
+                  content={draft.content}
+                  title={draft.title}
+                />
+              </div>
             </div>
+            {this.props.children &&
+              <div className="row">
+                {React.cloneElement(this.props.children, { draft })}
+                <div
+                  style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      bottom: 0,
+                      right: 0,
+                      zIndex: 5,
+                      backgroundColor: 'rgba(255, 255, 255, 0.9)' }}
+                />
+              </div>
+            }
+          </div>
         );
     }
 }

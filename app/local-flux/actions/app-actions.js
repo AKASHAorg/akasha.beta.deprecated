@@ -12,6 +12,11 @@ class AppActions {
         this.appService = new AppService();
         return appActions;
     }
+    init = () => {
+        console.log('appActions init');
+        this.entryActions = new EntryActions(this.dispatch);
+        this.entryActions.init();
+    };
     checkForUpdates = () => {
         this.appService.checkForUpdates().then(updates => {
             this.dispatch(appActionCreators.checkForUpdates(updates));
@@ -34,6 +39,11 @@ class AppActions {
     changePanel = (panel) => this.showPanel(panel);
     showPanel = (panel) => this.dispatch(appActionCreators.showPanel(panel));
     hidePanel = (panel) => this.dispatch(appActionCreators.hidePanel(panel));
+    showAuthDialog = () => this.dispatch(appActionCreators.showAuthDialog());
+    hideAuthDialog = () => this.dispatch(appActionCreators.hideAuthDialog());
+    resumeEntryPublishing = () => {
+        // console.log(payload);
+    }
 }
 
 export { AppActions };

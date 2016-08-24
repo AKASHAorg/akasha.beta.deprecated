@@ -6,9 +6,9 @@ const initialState = fromJS({
     error: [],
     updates: null,
     appLoading: false,
-    appUpdating: false
+    appUpdating: false,
+    showAuthDialog: false,
 });
-
 
 const appState = createReducer(initialState, {
     ['@reduxAsyncConnect/BEGIN_GLOBAL_LOAD']: (state) => {
@@ -18,7 +18,7 @@ const appState = createReducer(initialState, {
         return state.merge({ appLoading: false });
     },
     [types.CHECK_FOR_UPDATES]: (state, action) => {
-        return state.merge({updates: action.updates});
+        return state.merge({ updates: action.updates });
     },
     [types.UPDATE_APP]: (state, action) => {
         return state.set('appUpdating', action.updating);
@@ -28,6 +28,12 @@ const appState = createReducer(initialState, {
     },
     [types.CLEAR_ERRORS]: () => {
         return initialState;
+    },
+    [types.SHOW_AUTH_DIALOG]: (state) => {
+        return state.set('showAuthDialog', true);
+    },
+    [types.HIDE_AUTH_DIALOG]: (state) => {
+        return state.set('showAuthDialog', false);
     }
 });
 

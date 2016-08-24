@@ -5,22 +5,17 @@ class TagsField extends React.Component {
     constructor (props) {
         super(props);
         this.state = {
-            currentTags: props.tags,
             tagString: ''
         };
     }
-
-    componentWillReceiveProps (nextProps) {
-        console.log(nextProps);
-        if (nextProps.existingTags.length > this.state.existingTags.length) {
-            this.setState({
-                existingTags: nextProps.existingTags
-            });
-        }
-    }
-
-    getTags = () => this.state.currentTags;
-
+    // componentWillReceiveProps (nextProps) {
+    //     console.log(nextProps);
+    //     if (nextProps.existingTags.length !== this.props.existingTags.length) {
+    //         this.setState({
+    //             existingTags: nextProps.existingTags
+    //         });
+    //     }
+    // }
     _checkTagAutocomplete = (value) => {
         this.props.onRequestTagAutocomplete(value);
     };
@@ -33,15 +28,7 @@ class TagsField extends React.Component {
         });
     };
     _handleDeleteTag = (ev, index) => {
-        const currentTags = this.state.currentTags.slice();
-        currentTags.splice(index, 1);
-        this.setState({
-            currentTags
-        }, () => {
-            if (this.props.onBlur) {
-                this.props.onBlur(ev);
-            }
-        });
+        this.props.onDelete(index);
     };
     _createError = (error, removeCurrentTag) => {
         this.setState({
@@ -54,15 +41,14 @@ class TagsField extends React.Component {
         }
     };
     _createTag = () => {
-        const currentTags = this.state.currentTags;
+        const currentTags = this.props.tags;
         const tag = this.state.tagString.trim().toLowerCase();
         const ALPHANUMERIC_REGEX = /^[a-z0-9-]+$/i;
-        if (currentTags.indexOf(tag) !== -1) {
+        if (currentTags.indexOf(tag) > -1) {
             return this._createError(`Tag "${tag}" already added!`, true);
         }
         if (tag.length > 2 && tag.length <= 24) {
             if (ALPHANUMERIC_REGEX.test(tag)) {
-                currentTags.push(tag);
                 this.state.error = '';
                 if (this.props.onTagAdded) {
                     this.props.onTagAdded(tag);
@@ -102,7 +88,7 @@ class TagsField extends React.Component {
         }
     };
     render () {
-        const currentTags = this.state.currentTags;
+        const currentTags = this.props.tags;
         const tags = currentTags.map((tag, key) => {
             const tagExists = this.props.existingTags.indexOf(tag) > -1;
             // console.log(tagExists, tag, this.props.existingTags, 'exists?');
@@ -121,7 +107,7 @@ class TagsField extends React.Component {
                 key={key}
                 onRequestDelete={(ev) => { this._handleDeleteTag(ev, key); }}
                 backgroundColor="transparent"
-                title="Tag exists in the network"
+                title={tagExists ? 'Tag exists in the network' : 'This tag will be added'}
                 style={style}
                 labelStyle={{ lineHeight: '32px', display: 'inline-block', verticalAlign: 'top' }}
               >
@@ -174,6 +160,7 @@ class TagsField extends React.Component {
 TagsField.propTypes = {
     tags: React.PropTypes.array,
     onTagAdded: React.PropTypes.func,
+    onDelete: React.PropTypes.func,
     existingTags: React.PropTypes.array,
     onRequestTagAutocomplete: React.PropTypes.func,
     onBlur: React.PropTypes.func

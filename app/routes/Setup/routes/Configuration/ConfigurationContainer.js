@@ -6,7 +6,7 @@ import {
     SyncActions,
     SettingsActions,
     EProcActions,
-    BootstrapActions } from 'local-flux';
+    BootstrapBundleActions } from 'local-flux';
 
 function mapStateToProps (state) {
     return {
@@ -26,7 +26,7 @@ function mapDispatchToProps (dispatch) {
 
 export default asyncConnect([{
     promise: ({ store: { dispatch, getState } }) =>
-        Promise.resolve(new BootstrapActions(dispatch).initConfig(getState))
+        Promise.resolve(new BootstrapBundleActions(dispatch).initConfig(getState))
 }])(connect(
     mapStateToProps,
     mapDispatchToProps

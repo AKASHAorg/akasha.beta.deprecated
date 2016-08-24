@@ -35,74 +35,72 @@ const compositeDecorator = new CompositeDecorator([
 class EntryEditor extends Component {
     constructor (props) {
         super(props);
+        const { content, title } = this.props;
+        let editorState = EditorState.createEmpty(compositeDecorator);
+        if (content) {
+            const convertedContent = convertFromRaw(content);
+            editorState = EditorState.createWithContent(convertedContent, compositeDecorator);
+        }
         this.state = {
-            editorState: EditorState.createEmpty(compositeDecorator),
+            editorState,
             showAddButton: false,
             toolbarVisible: false,
             editorEnabled: true,
             readOnly: props.readOnly || false,
-            title: ''
+            title
         };
     }
     componentDidMount () {
-        const readOnly = this.state.readOnly;
-        if (!readOnly) {
-            this.refs.titleInput.focus();
+        if (!this.state.readOnly) {
+            this.titleInput.focus();
         }
     }
-    getContent = () => convertToRaw(this.state.editorState.getCurrentContent());
+    getRawContent = () => convertToRaw(this.state.editorState.getCurrentContent());
+    getContent = () => this.state.editorState.getCurrentContent();
     getTitle = () => this.state.title;
-    setContent = (content) => {
-        this.setState({
-            editorState: EditorState.createWithContent(convertFromRaw(content), compositeDecorator)
-        });
-    }
-    setTitle = (title) => this.setState({ title });
     componentClickAway = () => {
         const selection = this.state.editorState.getSelection();
         if (selection.getAnchorKey()) {
             EditorState.forceSelection(this.state.editorState, SelectionState.createEmpty());
         }
-    }
+    };
     focus = () => {
         if (this.state.toolbarVisible) {
             this._toggleToolbarVisibility(false);
         }
         this.editor.focus();
-    }
+    };
     blur = () => {
         this.editor.blur();
-    }
+    };
     toggleAddButton = () => {
         this.setState({
             showAddButton: !this.state.showAddButton
         });
-    }
+    };
     _handleEditorChange = (editorState) => {
         this.setState({
             editorState,
-        }, () => {
-            if (this.props.onChange) {
-                return this.props.onChange(editorState.getCurrentContent().getPlainText());
-            }
-            return null;
         });
-    }
+        if (this.props.onAutosave) {
+            this.props.onAutosave();
+        }
+    };
     _handleEditorContainerClick = (ev) => {
         ev.preventDefault();
         this.focus();
-    }
+    };
     _handleAddClick = () => {
         this.setState({
             lastSelection: this.state.editorState.getSelection().getAnchorKey(),
             showAddButton: !this.state.showAddButton,
         });
-    }
+    };
     _handleBeforeInput = () => {
         this.setState({
             showAddButton: false
         });
-    }
+    };
     _toggleBlockType = (blockType, src) => {
         const entityKey = Entity.create(blockType, 'IMMUTABLE', src[0]);
         this.setState({
@@ -111,7 +109,7 @@ class EntryEditor extends Component {
         this._handleEditorChange(
             AtomicBlockUtils.insertAtomicBlock(this.state.editorState, entityKey, ' ')
         );
-    }
+    };
     _addImage = () => {
         dialog.showOpenDialog({
             title: 'Select Image',
@@ -133,7 +131,7 @@ class EntryEditor extends Component {
                 });
             });
         });
-    }
+    };
     _handleReturn = (ev) => {
         if (ev.shiftKey) {
             this.setState({
@@ -142,7 +140,7 @@ class EntryEditor extends Component {
             return true;
         }
         return false;
-    }
+    };
     _getAddButtonStyles = () => {
         const { editorState } = this.state;
         const startKey = this.state.startKey || editorState.getSelection().getStartKey();
@@ -159,7 +157,7 @@ class EntryEditor extends Component {
         if (this._canShowAddButton(selectionContent, editorState)) {
             const node = document.querySelector(`span[data-offset-key="${startKey}-0-0"]`);
             let anchorNode = window.getSelection().anchorNode;
-
+            // @TODO: use state for dom manipulation;
             addButtonStyles.opacity = 1;
             if (node) {
                 addButtonStyles.top = node.getBoundingClientRect().top - 12 + window.scrollY;
@@ -174,23 +172,23 @@ class EntryEditor extends Component {
             }
         }
         return addButtonStyles;
-    }
+    };
     _canShowAddButton = (selectionContent, editorState) => this.state.showAddButton ||
         (selectionContent.length === 0 && editorState.getSelection().getHasFocus())
     _testFocus = () => {
         this.setState({
             showAddButton: false,
         });
-    }
+    };
     _handleTitleKeyPress = (ev) => {
         if (ev.charCode === 13) {
             this.editor.focus();
         }
-    }
+    };
     _handleTitleChange = (ev) => {
         this.setState({ title: ev.target.value });
         if (this.props.onTitleChange) this.props.onTitleChange(ev);
-    }
+    };
     _toggleToolbarVisibility = (visible) => {
         if (visible) {
             return this.setState({
@@ -200,7 +198,7 @@ class EntryEditor extends Component {
         return this.setState({
             toolbarVisible: !this.state.toolbarVisible
         });
-    }
+    };
     render () {
         const { editorState } = this.state;
         const addButtonStyles = this._getAddButtonStyles();
@@ -224,7 +222,7 @@ class EntryEditor extends Component {
             </div>
             <div>
               <TextField
-                ref="titleInput"
+                ref={(titleInput) => this.titleInput = titleInput}
                 hintText="Title"
                 underlineShow={false}
                 hintStyle={{ fontSize: 32 }}

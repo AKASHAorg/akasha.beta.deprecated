@@ -4,7 +4,7 @@ const dbg = debug('App:tagsDB');
 
 const tagsDB = new Dexie('tags');
 tagsDB.version(1).stores({
-    blockTags: '++idx, &tag'
+    blockTags: '&tag'
 });
 
 tagsDB.blockTags.hook('creating', (primaryKey, obj, transaction) => {

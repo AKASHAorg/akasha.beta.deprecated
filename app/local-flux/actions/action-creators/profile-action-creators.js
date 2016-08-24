@@ -185,3 +185,10 @@ export function getProfileDataError (error) {
         error
     };
 }
+
+export function setActionAfterAuth (nextAction) {
+    return {
+        type: types.SET_AFTER_AUTH_ACTION,
+        nextAction,
+    };
+}

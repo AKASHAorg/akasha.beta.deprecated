@@ -1,7 +1,6 @@
 import { hashHistory } from 'react-router';
 import debug from 'debug';
 import { ProfileService } from '../services';
-import { SettingsActions } from '../actions';
 import { profileActionCreators } from './action-creators';
 
 const dbg = debug('App:ProfileActions:');
@@ -12,14 +11,12 @@ class ProfileActions {
         if (!profileActions) {
             profileActions = this;
         }
-        this.dispatch = dispatch;
         this.profileService = new ProfileService();
-        this.settingsActions = new SettingsActions(dispatch);
+        this.dispatch = dispatch;
         return profileActions;
     }
-
-    login = (profileData) =>
-        this.profileService.login(profileData).then(result => {
+    login = (profileData, unlockInterval, isConfirmation) =>
+        this.profileService.login(profileData, unlockInterval).then(result => {
             if (!result) {
                 const error = new Error('Main process doomed');
                 return this.dispatch(profileActionCreators.loginError(error));
@@ -38,7 +35,10 @@ class ProfileActions {
                     const profile = localProfiles.find(prof =>
                         prof.address === loggedProfile.get('address')
                     );
-                    this.profileService.saveLoggedProfile(profile.toJS()).then(() => {
+                    if (isConfirmation) {
+                        return this.profileService.updateLoggedProfile(profile.toJS());
+                    }
+                    return this.profileService.createLoggedProfile(profile.toJS()).then(() => {
                         hashHistory.push(`${profile.get('userName')}`);
                     });
                 }
@@ -308,6 +308,9 @@ class ProfileActions {
             }
             return this.dispatch(profileActionCreators.getProfileDataSuccess(profile));
         });
-    }
+    };
+    requestAuthentication = (nextAction) => {
+        this.dispatch(profileActionCreators.setActionAfterAuth(nextAction));
+    };
 }
 export { ProfileActions };

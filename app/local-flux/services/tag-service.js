@@ -1,5 +1,6 @@
 import { ipcRenderer } from 'electron';
 import debug from 'debug';
+import Dexie from 'dexie';
 import BaseService from './base-service';
 import tagsDB from './db/tags';
 
@@ -34,26 +35,15 @@ class TagService extends BaseService {
             ipcRenderer.send(serverChannel, startingIndex);
         });
     };
-    // checkTagExistence = (tag) => {
-    //     const serverChannel = this.eventChannels.server.entry.tagExists;
-    //     const clientChannel = this.eventChannels.client.entry.tagExists;
-    //     return new Promise((resolve, reject) => {
-    //         ipcRenderer.on(clientChannel, (ev, data) => {
-    //             if (!data) {
-    //                 const error = new Error('Main Process Crashed!');
-    //                 return reject(error);
-    //             }
-    //             if (!data.success) {
-    //                 return reject(data.status.message);
-    //             }
-    //             return resolve(data);
-    //         });
-    //         ipcRenderer.send(serverChannel, tag);
-    //     });
-    // };
-    createTag = (tag) => {
-        const serverChannel = this.eventChannels.server.entry.addTag;
-        const clientChannel = this.eventChannels.client.entry.addTag;
+
+    getLocalTagsCount = () =>
+        tagsDB.transaction('rw', tagsDB.blockTags, () =>
+            tagsDB.blockTags.count()
+        );
+
+    registerTags = (tags) => {
+        const serverChannel = this.eventChannels.server.entry.addTags;
+        const clientChannel = this.eventChannels.client.entry.addTags;
         return new Promise((resolve, reject) => {
             ipcRenderer.on(clientChannel, (ev, data) => {
                 if (!data) {
@@ -63,9 +53,11 @@ class TagService extends BaseService {
                 if (!data.success) {
                     return reject(data.status.message);
                 }
+                dbg('registerTags success', data);
                 return resolve(data);
             });
-            ipcRenderer.send(serverChannel, tag);
+            dbg('registerTags send', tags);
+            ipcRenderer.send(serverChannel, tags);
         });
     };
     saveTagToDB = (tags) =>
@@ -74,15 +66,13 @@ class TagService extends BaseService {
                 tagsDB.blockTags.put({ tag });
             });
         });
-    checkExistingTag = (tag) => {
+    checkExistingTags = (tags) => {
         return tagsDB.transaction('r', tagsDB.blockTags, () => {
-            tagsDB.blockTags.where('tag').equalsIgnoreCase(tag).toArray().then(res => {
-                if (res.length === 0) {
-                    return false;
-                } else {
-                    return true
-                }
+            const promises = [];
+            tags.forEach(tag => {
+                promises.push(tagsDB.blockTags.where('tag').equalsIgnoreCase(tag).toArray());
             });
+            return Dexie.Promise.all(promises).then(result => result);
         });
     };
 }

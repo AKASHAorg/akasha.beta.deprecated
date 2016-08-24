@@ -4,23 +4,24 @@ import {
     EProcActions,
     AppActions,
     SettingsActions,
-    TagActions } from './';
-import { hashHistory } from 'react-router';
+    TagActions } from '../';
+import debug from 'debug';
 
+let dbg = debug('App:BootstrapBundleActions*');
 let bootstrapActions = null;
 
-class BootstrapActions {
+class BootstrapBundleActions {
     constructor (dispatch) {
         if (!bootstrapActions) {
             bootstrapActions = this;
         }
-        this.entryActions = new EntryActions(dispatch);
-        this.profileActions = new ProfileActions(dispatch);
-        this.appActions = new AppActions(dispatch);
-        this.eProcActions = new EProcActions(dispatch);
-        this.settingsActions = new SettingsActions(dispatch);
-        this.tagActions = new TagActions(dispatch);
         this.dispatch = dispatch;
+        this.appActions = new AppActions(this.dispatch);
+        this.entryActions = new EntryActions(this.dispatch);
+        this.profileActions = new ProfileActions(this.dispatch);
+        this.eProcActions = new EProcActions(this.dispatch);
+        this.settingsActions = new SettingsActions(this.dispatch);
+        this.tagActions = new TagActions(this.dispatch);
         return bootstrapActions;
     }
     initApp = (getState) => {
@@ -50,14 +51,15 @@ class BootstrapActions {
         const promises = [];
         promises.push(this.profileActions.getTempProfile());
         promises.push(this.profileActions.checkLoggedProfile());
+        promises.push(this.tagActions.getTags({ fetchAll: true }));
         return Promise.all(promises).then(() => {
             const profileState = getState().profileState;
             const tempProfile = getState().profileState.get('tempProfile');
             const loggedProfile = profileState.get('loggedProfile');
             if (tempProfile.get('address')) {
-                console.log('temp profile is: ', tempProfile);
+                dbg('temp profile is', tempProfile);
             } else if (loggedProfile.get('address')) {
-                console.log('logged profile is: ', loggedProfile);
+                dbg('logged profile is', loggedProfile);
             } else {
                 this.profileActions.getLocalProfiles();
             }
@@ -82,4 +84,4 @@ class BootstrapActions {
     initStreamPage = () => {};
 }
 
-export { BootstrapActions };
+export { BootstrapBundleActions };

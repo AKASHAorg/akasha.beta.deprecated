@@ -1,6 +1,8 @@
-import { GethService, IpfsService } from '../services';
-import { SettingsActions } from './';
-import { externalProcessActionCreators, appActionCreators } from './action-creators';
+import { GethService, IpfsService, SetupService } from '../services';
+import {
+    externalProcessActionCreators,
+    appActionCreators,
+    syncActionCreators } from './action-creators';
 
 let eProcActions = null;
 /**
@@ -12,26 +14,14 @@ class EProcActions {
         if (!eProcActions) {
             eProcActions = this;
         }
-        this.dispatch = dispatch;
-        this.settingsActions = new SettingsActions(dispatch);
         this.gethService = new GethService();
         this.ipfsService = new IpfsService();
+        this.setupService = new SetupService();
+        this.dispatch = dispatch;
         return eProcActions;
     }
-    startGeth = () =>
-        this.settingsActions.getSettings('geth').then(() =>
-            this.dispatch((dispatch, getState) => {
-                const gethSettings = getState().settingsState.get('geth');
-                if (gethSettings) {
-                    return gethSettings.toJS();
-                }
-                return {};
-            })
-        )
-        .then(gethSettings =>
-            this.gethService.startGeth(gethSettings)
-        )
-        .then(gethState => {
+    startGeth = (gethSettings) =>
+        this.gethService.startGeth(gethSettings).then(gethState => {
             if (gethState.isRunning) {
                 return Promise.resolve();
             }
@@ -76,18 +66,8 @@ class EProcActions {
             this.dispatch(externalProcessActionCreators.getGethStatusError(reason));
         });
     };
-    startIPFS = () =>
-        this.settingsActions.getSettings('ipfs').then(() => {
-            this.dispatch((dispatch, getState) => {
-                const ipfsSettings = getState().settingsState.get('ipfs');
-                if (ipfsSettings.size > 0) {
-                    return ipfsSettings.toJS();
-                }
-                return {};
-            });
-        })
-        .then((ipfsSettings) => this.ipfsService.startIPFS(ipfsSettings))
-        .then((ipfsState) => {
+    startIPFS = (ipfsSettings) =>
+        this.ipfsService.startIPFS(ipfsSettings).then((ipfsState) => {
             if (!ipfsState.success) {
                 return this.dispatch(
                     externalProcessActionCreators.startIPFSSuccess({ data: ipfsState })
@@ -124,6 +104,29 @@ class EProcActions {
             }
             return this.dispatch(externalProcessActionCreators.stopIPFSSuccess(data));
         }).catch(reason => this.dispatch(externalProcessActionCreators.stopIPFSError(reason)));
-    }
+    };
+    startSync = () => this.dispatch(syncActionCreators.startSync());
+    /**
+     * Dispatcher for resuming sync
+     * @returns {function()}
+     */
+    resumeSync = () => this.dispatch(syncActionCreators.resumeSync());
+    pauseSync = () => {
+        this.stopUpdateSync(() => {
+            this.dispatch(syncActionCreators.pauseSync());
+            this.eProcActions.stopGeth();
+        });
+    };
+    /**
+     * Action for stopping sync
+     * @returns {{type}}
+     */
+    stopSync = () =>
+        this.dispatch(() => this.stopUpdateSync().then(() => syncActionCreators.stopSync()));
+    startUpdateSync = (cb) => {
+        this.setupService.startUpdateSync(cb);
+    };
+    stopUpdateSync = () =>
+        this.setupService.stopUpdateSync();
 }
 export { EProcActions };

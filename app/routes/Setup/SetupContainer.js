@@ -6,7 +6,8 @@ import {
     SyncActions,
     SettingsActions,
     EProcActions,
-    BootstrapActions } from 'local-flux';
+    BootstrapBundleActions,
+    ExternalProcessBundleActions } from 'local-flux';
 
 function mapStateToProps (state) {
     return {
@@ -17,15 +18,17 @@ function mapStateToProps (state) {
 function mapDispatchToProps (dispatch) {
     return {
         eProcActions: new EProcActions(dispatch),
+        eProcBundleActions: new ExternalProcessBundleActions(dispatch),
         setupActions: new SetupActions(dispatch),
-        settingsActions: new SettingsActions(dispatch),
-        syncActions: new SyncActions(dispatch),
+        settingsActions: new SettingsActions(dispatch)
     };
 }
 
 export default asyncConnect([{
-    promise: ({ store: { dispatch, getState } }) =>
-        Promise.resolve(new BootstrapActions(dispatch).initSetup(getState))
+    promise: ({ store: { dispatch, getState } }) => {
+        const bootstrapActions = new BootstrapBundleActions(dispatch);
+        return Promise.resolve(bootstrapActions.initSetup(getState));
+    }
 }])(connect(
     mapStateToProps,
     mapDispatchToProps

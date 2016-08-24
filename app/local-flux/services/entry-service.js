@@ -1,7 +1,6 @@
 import { ipcRenderer } from 'electron';
 import { EVENTS } from '../../../electron-api/modules/settings';
 import entriesDB from './db/entry';
-import tagsDB from './db/tags';
 import debug from 'debug';
 const dbg = debug('App:EntryService:');
 
@@ -15,7 +14,6 @@ class EntryService {
     };
     saveDraft = (partialDraft) =>
         entriesDB.transaction('rw', entriesDB.drafts, () => {
-            console.log(partialDraft, 'partialDraft')
             if (partialDraft.id) {
                 return entriesDB.drafts.update(partialDraft.id, partialDraft).then(updated => {
                     dbg('draft ', partialDraft.id, 'updated');
@@ -35,7 +33,7 @@ class EntryService {
             entriesDB.drafts.toArray().then(drafts => {
                 dbg('getAllDrafts', drafts);
                 const convDrafts = drafts.map(draft => {
-                   return Object.assign({}, draft);
+                    return Object.assign({}, draft);
                 });
                 return convDrafts;
             })
@@ -53,11 +51,14 @@ class EntryService {
                     .equals(parseInt(id, 10))
                     .first();
         });
-    publishEntry = (entry) => {
+    publishEntry = (entry, profileAddress) => {
         const serverChannel = EVENTS.server.entry.publish;
         const clientChannel = EVENTS.client.entry.publish;
+        entry.account = profileAddress;
+        entry.password = "asdasdasd";
         return new Promise((resolve, reject) => {
             ipcRenderer.on(clientChannel, (ev, data) => {
+                dbg('publishEntry', data);
                 if (!data) {
                     const error = new Error('Main Process Crashed');
                     return reject(error);

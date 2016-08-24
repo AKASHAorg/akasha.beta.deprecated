@@ -12,10 +12,10 @@ class GethService {
     startGeth = (options) =>
         new Promise((resolve, reject) => {
             dbg('Starting Geth service on channel:', EVENTS.client.geth.startService);
-            ipcRenderer.once(EVENTS.client.geth.startService,
-                (event, data) => {
+            ipcRenderer.once(EVENTS.client.geth.startService, (event, data) => {
                 // no data means that something very bad happened
                 // like losing the main process
+                console.log(data);
                     if (!data) {
                         return reject('OMG! Main process doesn`t respond to us!');
                     }

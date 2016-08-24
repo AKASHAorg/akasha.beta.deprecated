@@ -25,7 +25,15 @@ class EntryService extends MainService {
         super('entry');
         this.ADD_TAGS_FAILED = 'Adding tags failed';
         this.NO_TAG_PARAMETER = 'No tag parameter sent';
-        this.MAIN_ATTRIBUTES = ['title', 'summary'];
+        this.MAIN_ATTRIBUTES = [
+            'title',
+            'content',
+            'excerpt',
+            'featured_image',
+            'tags',
+            'wordCount',
+            'licence'
+        ];
         this.CREATE_ENTRY_CONTRACT_GAS = 2800000;
     }
     /*
@@ -294,9 +302,9 @@ class EntryService extends MainService {
     }
 
     _publishArticle (event, pubObj) {
-        this._sendEvent(event)(this.clientEvent.publish, true, {
-            message: pubObj
-        });
+        // this._sendEvent(event)(this.clientEvent.publish, true, {
+        //     message: pubObj
+        // });
         const mainObj = {};
         for (const attr of this.MAIN_ATTRIBUTES) {
             mainObj[attr] = pubObj[attr];
@@ -306,10 +314,7 @@ class EntryService extends MainService {
         }).then((response) => {
             const hash = response[0].Hash;
             const web3 = this.__getWeb3();
-            web3
-                .personal
-                .unlockAccountAsync(this._getCoinbase(pubObj), pubObj.password, this.UNLOCK_INTERVAL)
-                .then(() => {
+            
                     // const indexedTagsContract = new Dapple.class(web3).objects.indexedTags;
                     // const errorEvent = indexedTagsContract.Error();
                     // errorEvent.watch((evtErr, evtRes) => {
@@ -335,11 +340,17 @@ class EntryService extends MainService {
                     //         console.log(method);
                     //     }
                     // });
+                    mainContract.Published().watch(function (err, response) {
+                        console.log(err, response, 'error, response');
+                    });
+                    mainContract.Error().watch(function (err, response) {
+                        console.log(err, response, 'error, response, Error()');
+                    });
                     return mainContract.publishEntry(
                         this._toBytes32Array(this._chopIpfsHash(hash), web3.fromUtf8),
                         this._toBytes32Array(pubObj.tags, web3.fromUtf8),
                         {
-                            from: this._getCoinbase(pubObj),
+                            from: pubObj.account,
                             gas: this.CREATE_ENTRY_CONTRACT_GAS
                         },
                         (err, tx) => {
@@ -353,6 +364,7 @@ class EntryService extends MainService {
                                         true,
                                         Object.assign({ tx }, pubObj));
                                 this.__getGeth().addFilter('tx', tx, () => {
+                                    
                                     // debug and check the .log key
                                     this._sendEvent(event)(this.clientEvent.publish,
                                             true,
@@ -361,12 +373,6 @@ class EntryService extends MainService {
                             }
                         }
                     );
-                }).catch((err) => {
-                    this._sendEvent(event)(this.clientEvent.publish,
-                                        false,
-                                        err,
-                                        this.UNLOCK_COINBASE_FAIL);
-                });
         }).catch((err) => {
             this._sendEvent(event)(this.clientEvent.publish,
                                 false,

@@ -12,6 +12,7 @@ import CreateProfileStatusContainer from './routes/Login/routes/CreateProfileSta
 import CreateProfileCompleteContainer from './routes/Login/routes/CreateProfileComplete/CreateProfileCompleteContainer';
 import HomeContainer from './routes/Home/HomeContainer';
 import NewEntryContainer from './routes/Home/routes/NewEntry/NewEntryContainer';
+import PublishTagsContainer from './routes/Home/routes/NewEntry/routes/PublishTags/PublishTagsContainer';
 import PublishEntryPanelContainer from './routes/Home/routes/NewEntry/routes/PublishEntry/PublishEntryPanelContainer';
 import PublishEntryStatusContainer from './routes/Home/routes/NewEntry/routes/PublishEntryStatus/PublishEntryStatusContainer';
 import PublishEntryCompleteContainer from './routes/Home/routes/NewEntry/routes/PublishEntryComplete/PublishEntryCompleteContainer';
@@ -58,7 +59,8 @@ export default (
 
       {/** create a new entry or edit existing one */}
       <Route component={NewEntryContainer} path="draft/:draftId" >
-
+        {/** publish tags */}
+        <Route component={PublishTagsContainer} path="publish-tags" />
         {/** publish an entry */}
         <Route component={PublishEntryPanelContainer} path="publish" />
 

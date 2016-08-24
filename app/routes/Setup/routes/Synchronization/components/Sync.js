@@ -17,20 +17,20 @@ class SyncStatus extends Component {
         };
     }
     componentWillMount () {
-        const { syncActions } = this.props;
+        const { eProcBundleActions } = this.props;
         // start geth here!
-        syncActions.startSync().then(() => {
+        eProcBundleActions.startSync().then(() => {
             this.getSyncStatus();
         });
     }
     componentWillUnmount () {
-        const { syncActions, loggerActions } = this.props;
-        syncActions.stopSync();
+        const { eProcActions, loggerActions } = this.props;
+        eProcActions.stopSync();
         loggerActions.stopGethLogger();
     }
     getSyncStatus = () => {
-        const { syncActions } = this.props;
-        syncActions.startUpdateSync((err, updateData) => {
+        const { eProcActions } = this.props;
+        eProcActions.startUpdateSync((err, updateData) => {
             const { success, status, data } = updateData;
             if (err) {
                 return this.setState({
@@ -49,25 +49,25 @@ class SyncStatus extends Component {
         });
     };
     finishSync = () => {
-        const { syncActions, eProcActions } = this.props;
+        const { eProcActions, eProcBundleActions } = this.props;
         let promises = [];
-        promises.push(syncActions.stopUpdateSync());
-        promises.push(eProcActions.startIPFS());
+        promises.push(eProcActions.stopUpdateSync());
+        promises.push(eProcBundleActions.startIPFS());
         Promise.all(promises).then(() => {
             this.context.router.push('authenticate');
         });
     };
     handleSync = () => {
-        const { syncState, syncActions } = this.props;
+        const { syncState, eProcActions } = this.props;
         if (syncState.get('actionId') === 1) {
-            return syncActions.stopSync();
+            return eProcActions.stopSync();
         }
-        syncActions.startSync();
+        eProcActions.startSync();
         return this.getSyncStatus();
     };
     handleCancel = () => {
-        const { syncActions } = this.props;
-        syncActions.requestCancel().then(() => {
+        const { eProcBundleActions } = this.props;
+        eProcBundleActions.requestCancelSync().then(() => {
             this.context.router.push('setup');
         });
     };
@@ -122,7 +122,7 @@ class SyncStatus extends Component {
         });
     };
     render () {
-        const { style, intl } = this.props;
+        const { intl } = this.props;
         const message = this.state.syncData;
         let blockSync;
         let blockProgress;
@@ -241,7 +241,7 @@ class SyncStatus extends Component {
 
 SyncStatus.propTypes = {
     eProcActions: PropTypes.object.isRequired,
-    syncActions: PropTypes.object.isRequired,
+    eProcBundleActions: PropTypes.object.isRequired,
     setupActions: PropTypes.object.isRequired,
     loggerActions: PropTypes.object.isRequired,
     style: PropTypes.object,

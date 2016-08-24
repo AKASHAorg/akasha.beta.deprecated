@@ -10,9 +10,11 @@ class ProfileService {
     constructor () {
         this.listeners = {};
     }
+
     removeListener (channel) {
         ipcRenderer.removeListener(channel, this.listeners[channel]);
     }
+
     /**
      * Validate username on blockchain
      */
@@ -62,7 +64,7 @@ class ProfileService {
         }
     };
 
-    login = (profileData) =>
+    login = (profileData, interval) =>
         new Promise((resolve, reject) => {
             ipcRenderer.once(EVENTS.client.user.login, (ev, data) => {
                 if (!data) {
@@ -74,7 +76,7 @@ class ProfileService {
             });
             const account = profileData.address;
             const password = profileData.password;
-            ipcRenderer.send(EVENTS.server.user.login, { account, password });
+            ipcRenderer.send(EVENTS.server.user.login, { account, password, interval });
         });
     logout = (account) =>
         new Promise((resolve, reject) => {
@@ -93,13 +95,23 @@ class ProfileService {
      * Save logged profile to indexedDB database.
      * @param profileData {object}
      */
-    saveLoggedProfile = (profileData) =>
+    createLoggedProfile = (profileData) =>
         profileDB.transaction('rw', profileDB.loggedProfile, () => {
             dbg('saving logged profile', profileData);
             if (profileData.password) {
                 delete profileData.password;
             }
             return profileDB.loggedProfile.add(profileData);
+        });
+    updateLoggedProfile = (loggedProfile) =>
+        profileDB.transaction('rw', profileDB.loggedProfile, () => {
+            dbg('updating loggedProfile', loggedProfile);
+            return profileDB.loggedProfile.update(loggedProfile.address, loggedProfile);
+        });
+    deleteLoggedProfile = (loggedProfile) =>
+        profileDB.transaction('rw', profileDB.loggedProfile, () => {
+            dbg('deleting loggedProfile', loggedProfile);
+            return profileDB.loggedProfile.delete(loggedProfile.address);
         });
     /**
      * Destroy logged profile from db
@@ -252,7 +264,8 @@ class ProfileService {
      * @param {object} newProfile
      * @return new Promise
      */
-    updateProfile = () => {}
+    updateProfile = () => {
+    }
 }
 
-export { ProfileService };
+export {ProfileService};

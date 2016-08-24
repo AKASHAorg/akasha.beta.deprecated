@@ -6,41 +6,29 @@ export default class PanelContainer extends React.Component {
         super(props);
         this.state = {
             scrollTop: 0
-        }
+        };
     }
     _handleScroll = () => {
-        const scrollTop = this.refs.panelContent.scrollTop;
+        const scrollTop = this.panelContent.scrollTop;
         this.setState({
             scrollTop,
             titleHeight: `${80 - (scrollTop / 1.5)}px`
         });
-        
-        // if (scrollTop > 0) {
-        //     this.refs.panelTitle.style.boxShadow = '0px 3px 3px -1px rgba(0,0,0,0.2)';
-        //     this.refs.panelTitle.style.height = `${80 - (scrollTop / 1.5)}px`;
-        // } else {
-        //     this.refs.panelTitle.style.boxShadow = 'none';
-        // }
     };
     render () {
-        let rootStyle = {
+        const rootStyle = {
             position: 'relative',
             width: '100%',
             zIndex: 10,
             height: '100%',
             maxWidth: this.props.width
         };
-        if (this.props.centered) {
-            rootStyle.left = '50%';
-            rootStyle.marginLeft = -1 * (this.props.width / 2);
-        }
         return (
           <Paper
             style={Object.assign(rootStyle, this.props.style)}
           >
             <div
               className="row middle-xs"
-              ref="panelTitle"
               style={{
                   position: 'absolute',
                   top: 0,
@@ -53,8 +41,10 @@ export default class PanelContainer extends React.Component {
                   margin: 0,
                   zIndex: 10,
                   transition: 'all 0.118s ease-in-out',
-                  boxShadow: (this.state.scrollTop > 0) ? '0px 3px 3px -1px rgba(0,0,0,0.2)': 'none',
-                  borderBottom: (this.props.showBorder && this.state.scrollTop === 0) ? '1px solid #DDD': 'none'
+                  boxShadow: (this.state.scrollTop > 0) ?
+                      '0px 3px 3px -1px rgba(0,0,0,0.2)' : 'none',
+                  borderBottom: (this.props.showBorder && this.state.scrollTop === 0) ?
+                      '1px solid #DDD' : 'none'
               }}
             >
               {this.props.header &&
@@ -64,7 +54,9 @@ export default class PanelContainer extends React.Component {
                 <div className="col-xs-12">
                   <div className="row middle-xs">
                     <h3 className="col-xs-7" style={{ fontWeight: 300 }}>{this.props.title}</h3>
-                    <div className="col-xs-4 end-xs">0.002 ETH</div>
+                      {this.props.subTitle &&
+                        <div className="col-xs-4 end-xs">{this.props.subTitle}</div>
+                      }
                   </div>
                 </div>
               }
@@ -82,32 +74,33 @@ export default class PanelContainer extends React.Component {
                   padding: '32px 24px',
                   margin: 0
               }}
-              ref="panelContent"
+              ref={(panelContent) => this.panelContent = panelContent}
               onScroll={this._handleScroll}
             >
               {this.props.children}
             </div>
-            <div
-              className="row"
-              ref="panelActions"
-              style={{
-                  position: 'absolute',
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  padding: '12px 24px',
-                  background: '#FFF',
-                  margin: 0,
-                  boxShadow: '0px -1px 3px -1px rgba(0, 0, 0, 0.2)'
-              }}
-            >
-              <div className="col-xs-6 start-xs">
-                {this.props.leftActions}
-              </div>
-              <div className="col-xs-6 end-xs">
-                {this.props.actions}
-              </div>
-            </div>
+              {(this.props.leftActions || this.props.actions) &&
+                <div
+                  className="row"
+                  style={{
+                      position: 'absolute',
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      padding: '12px 24px',
+                      background: '#FFF',
+                      margin: 0,
+                      boxShadow: '0px -1px 3px -1px rgba(0, 0, 0, 0.2)'
+                  }}
+                >
+                  <div className="col-xs-6 start-xs">
+                      {this.props.leftActions}
+                  </div>
+                  <div className="col-xs-6 end-xs">
+                      {this.props.actions}
+                  </div>
+                </div>
+              }
           </Paper>
         );
     }
@@ -119,5 +112,10 @@ PanelContainer.propTypes = {
     actions: React.PropTypes.node,
     children: React.PropTypes.node,
     width: React.PropTypes.number,
-    title: React.PropTypes.string
+    title: React.PropTypes.string,
+    showBorder: React.PropTypes.bool,
+    header: React.PropTypes.node,
+    leftActions: React.PropTypes.node,
+    style: React.PropTypes.object,
+    subTitle: React.PropTypes.string
 };

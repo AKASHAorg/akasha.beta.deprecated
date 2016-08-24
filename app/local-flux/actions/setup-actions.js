@@ -7,8 +7,8 @@ class SetupActions {
         if (!setupActions) {
             setupActions = this;
         }
-        this.dispatch = dispatch;
         this.setupService = new SetupService();
+        this.dispatch = dispatch;
         return setupActions;
     }
     retrySetup = (isAdvanced) => {

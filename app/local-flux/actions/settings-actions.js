@@ -1,5 +1,4 @@
 import { settingsActionCreators } from './action-creators';
-import { AppActions } from './';
 import { SettingsService } from '../services';
 
 let settingsActions = null;

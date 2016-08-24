@@ -9,9 +9,8 @@ export function getDraftClass () {
         content: EntryContent,
         tags: Array,
         excerpt: String,
-        featuredImage: [MultiResImage],
-        updated_at: String,
-        created_at: String
+        featuredImage: MultiResImage,
+        status: {} // local use
     });
     return Draft;
 }
