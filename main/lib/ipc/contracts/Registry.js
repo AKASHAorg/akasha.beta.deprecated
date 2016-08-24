@@ -38,7 +38,8 @@ class Registry extends BaseContract_1.default {
                 throw new Error('Expected exactly 2 ipfs slices');
             }
             return this.contract
-                .registerAsync(usernameTr, ipfsHashTr, { gas: gas });
+                .register
+                .request(usernameTr, ipfsHashTr, { gas: gas });
         });
     }
 }
