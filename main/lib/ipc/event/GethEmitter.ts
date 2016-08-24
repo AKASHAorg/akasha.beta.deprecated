@@ -3,9 +3,11 @@ import { AbstractEmitter } from './AbstractEmitter';
 import channels from '../../channels';
 import { gethResponse } from './responses';
 import { constructed } from '../contracts/index';
+import {module as user} from '../modules/user/index';
 
 abstract class GethEmitter extends AbstractEmitter {
     attachEmitters() {
+        user.init();
         this._download()
             ._error()
             ._fatal()
@@ -48,6 +50,14 @@ abstract class GethEmitter extends AbstractEmitter {
                 this.fireEvent(channels.client.geth.startService, gethResponse({ started: true }));
                 // inject web3 instance
                 constructed.init(GethConnector.getInstance().web3);
+                const x = new Uint8Array(6);
+                x[0] = 97;
+                x[1] = 98;
+                x[2] = 99;
+                x[3] = 49;
+                x[4] = 50;
+                x[5] = 51;
+                user.auth.generateKey(x);
             }
         );
         return this;

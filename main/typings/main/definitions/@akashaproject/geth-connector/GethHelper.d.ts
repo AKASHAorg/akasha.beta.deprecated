@@ -9,6 +9,7 @@ export declare class GethHelper {
     stopTxWatch(): any;
     addTxToWatch(tx: string, autoWatch?: boolean): this;
     getCurrentTxQueue(): IterableIterator<any>;
+    hasKey(address: string): Promise<boolean>;
 }
 declare const helper: GethHelper;
 export default helper;

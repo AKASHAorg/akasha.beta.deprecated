@@ -1,7 +1,7 @@
 import Auth from './Auth';
 
 class User {
-    auth: Auth;
+    public auth: Auth;
 
     init() {
         this.auth = new Auth();
