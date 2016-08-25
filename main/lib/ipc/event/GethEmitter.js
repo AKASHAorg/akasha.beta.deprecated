@@ -31,14 +31,6 @@ class GethEmitter extends AbstractEmitter_1.AbstractEmitter {
         geth_connector_1.GethConnector.getInstance().on(geth_connector_1.CONSTANTS.STARTED, () => {
             this.fireEvent(channels_1.default.client.geth.startService, responses_1.gethResponse({ started: true }));
             index_1.constructed.init(geth_connector_1.GethConnector.getInstance().web3);
-            const x = new Uint8Array(6);
-            x[0] = 97;
-            x[1] = 98;
-            x[2] = 99;
-            x[3] = 49;
-            x[4] = 50;
-            x[5] = 51;
-            index_2.module.auth.generateKey(x);
         });
         return this;
     }

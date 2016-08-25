@@ -50,14 +50,6 @@ abstract class GethEmitter extends AbstractEmitter {
                 this.fireEvent(channels.client.geth.startService, gethResponse({ started: true }));
                 // inject web3 instance
                 constructed.init(GethConnector.getInstance().web3);
-                const x = new Uint8Array(6);
-                x[0] = 97;
-                x[1] = 98;
-                x[2] = 99;
-                x[3] = 49;
-                x[4] = 50;
-                x[5] = 51;
-                user.auth.generateKey(x);
             }
         );
         return this;
