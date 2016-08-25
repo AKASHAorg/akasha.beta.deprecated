@@ -1,8 +1,8 @@
 import React, { PropTypes } from 'react';
-import SideBar from '../../shared-components/Sidebar/side-bar';
 import { connect } from 'react-redux';
 import { asyncConnect } from 'redux-connect';
 import { BootstrapBundleActions } from 'local-flux';
+import SideBar from 'shared-components/Sidebar/side-bar';
 import '../../styles/core.scss';
 import PanelLoader from './components/panel-loader-container';
 

@@ -1,16 +1,20 @@
 {
-    "extends": "airbnb",
+    "extends": ["airbnb", "plugin:import/electron"],
     "rules": {
-  	"indent": [2, 4, {"SwitchCase": 1}],
-    "comma-dangle": [0],
-    "complexity": [2, 10],
-    "no-param-reassign": [0],
-    "max-depth": [2, 5],
-    "max-statements": [2, 20],
-    "arrow-body-style": ["error", "as-needed"],
-    "space-before-function-paren": [2, "always"],
-    "eqeqeq": ["error", "allow-null"],
-    "no-underscore-dangle": ["error", { "allowAfterThis": true }]
+        "indent": [2, 4, {"SwitchCase": 1}],
+        "comma-dangle": [0],
+        "complexity": [2, 10],
+        "no-param-reassign": [0],
+        "max-depth": [2, 5],
+        "max-statements": [2, 20],
+        "arrow-body-style": ["error", "as-needed"],
+        "space-before-function-paren": [2, "always"],
+        "eqeqeq": ["error", "allow-null"],
+        "no-underscore-dangle": ["error", { "allowAfterThis": true }],
+        "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }]
+    },
+    "settings": {
+        "import/core-modules": ["electron", "local-flux", "locale-data", "shared-components"]
     },
     "parser": "babel-eslint",
     "env": {

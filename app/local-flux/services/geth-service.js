@@ -15,12 +15,11 @@ class GethService {
             ipcRenderer.once(EVENTS.client.geth.startService, (event, data) => {
                 // no data means that something very bad happened
                 // like losing the main process
-                console.log(data);
-                    if (!data) {
-                        return reject('OMG! Main process doesn`t respond to us!');
-                    }
-                    return resolve(data);
-                });
+                if (!data) {
+                    return reject('OMG! Main process doesn`t respond to us!');
+                }
+                return resolve(data);
+            });
             ipcRenderer.send(EVENTS.server.geth.startService, options);
         });
 
@@ -39,11 +38,12 @@ class GethService {
         });
     getStatus = () =>
         new Promise((resolve, reject) => {
-            dbg('Retrieving Geth status');
-            resolve({
+            const status = {
                 isRunning: false,
                 network: 'main'
-            });
+            };
+            dbg('Retrieving Geth status', status);
+            resolve(status);
         })
 }
 

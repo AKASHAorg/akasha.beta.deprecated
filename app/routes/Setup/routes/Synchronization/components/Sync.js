@@ -38,7 +38,6 @@ class SyncStatus extends Component {
                 });
             }
             if (success && data.empty) {
-                // @TODO start ipfs first!
                 this.finishSync();
             } else {
                 this.setState({
