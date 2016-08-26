@@ -63,3 +63,40 @@ interface GethSyncStatus {
 interface IpfsStopRequest {
     signal?: string;
 }
+
+/////////////////////////// < AUTH > \\\\\\\\\\\\\\\\\\\\\\\\
+
+// channels.server.auth.login
+interface AuthLoginRequest {
+    account: string;
+    password: Uint8Array;
+    rememberTime: number; // number of minutes to remember the password
+}
+
+// channels.client.auth.login
+interface AuthLoginResponse {
+    token: string;
+    expiration: Date;
+}
+
+// channels.server.auth.logout
+interface AuthLogoutRequest {
+    flush?: boolean;
+}
+
+// channels.client.auth.logout
+interface AuthLogoutResponse {
+    done: boolean;
+}
+
+// channels.server.auth.generateEthKey
+interface AuthKeygenRequest {
+    password: Uint8Array;
+}
+
+// channels.client.auth.generateEthKey
+interface AuthKeygenResponse {
+    address: string;
+}
+
+////////////////////////// </ AUTH > \\\\\\\\\\\\\\\\\\\\\\\\

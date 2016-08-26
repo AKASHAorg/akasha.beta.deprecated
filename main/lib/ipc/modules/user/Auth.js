@@ -6,17 +6,19 @@ const Promise = require('bluebird');
 const randomBytesAsync = Promise.promisify(crypto_1.randomBytes);
 class Auth {
     generateKey(pass) {
-        return this._encrypt(pass)
-            .then(() => {
+        try {
+            const transformed = Buffer.from(pass).toString('utf8');
             return geth_connector_1.GethConnector.getInstance()
                 .web3
                 .personal
-                .newAccountAsync(this._read().toString('utf8'));
-        })
-            .then((address) => {
-            this.login(address, pass, 2);
-            return address;
-        });
+                .newAccountAsync(transformed)
+                .then((address) => {
+                return address;
+            });
+        }
+        catch (err) {
+            return Promise.reject(err);
+        }
     }
     _generateRandom() {
         return randomBytesAsync(256).then((buff) => {
@@ -32,8 +34,13 @@ class Auth {
             return true;
         });
     }
-    _read() {
-        return Buffer.concat([this._decipher.update(this._encrypted), this._decipher.final()]);
+    _read(token) {
+        if (!this.isLogged(token)) {
+            throw new Error('Token is not valid');
+        }
+        const result = Buffer.concat([this._decipher.update(this._encrypted), this._decipher.final()]);
+        this._encrypt(result);
+        return result;
     }
     login(acc, pass, timer) {
         return geth_connector_1.gethHelper
@@ -42,41 +49,48 @@ class Auth {
             if (!found) {
                 throw new Error(`local key for ${acc} not found`);
             }
-            this._encrypt(pass)
-                .then(() => {
-                return geth_connector_1.GethConnector.getInstance()
-                    .web3
-                    .personal
-                    .unlockAccountAsync(acc, this._read().toString('utf8'), 2000);
-            })
-                .then((unlocked) => {
-                if (!unlocked) {
-                    throw new Error(`invalid password`);
-                }
-                return randomBytesAsync(256);
-            })
-                .then((buff) => {
-                const token = geth_connector_1.GethConnector.getInstance()
-                    .web3
-                    .sha3(buff.toString('hex'), { encoding: 'hex' });
-                return this._signSession(acc, token)
-                    .then((signedString) => {
-                    const expiration = new Date();
-                    expiration.setMinutes(expiration.getMinutes() + timer);
-                    this._session = {
-                        expiration: expiration,
-                        address: acc,
-                        vrs: ethereumjs_util_1.fromRpcSig(signedString)
-                    };
-                    setTimeout(() => this._flushSession(), 1000 * 60 * timer);
-                    return { token: token, expiration: expiration };
-                });
-            })
-                .catch((err) => {
-                return { error: err.message };
-            })
-                .finally(() => geth_connector_1.GethConnector.getInstance().web3.personal.lockAccountAsync(acc));
+            return this._encrypt(pass);
+        })
+            .then(() => {
+            return geth_connector_1.GethConnector.getInstance()
+                .web3
+                .personal
+                .unlockAccountAsync(acc, Buffer.from(pass).toString('utf8'), 1000);
+        })
+            .then((unlocked) => {
+            if (!unlocked) {
+                throw new Error(`invalid password`);
+            }
+            return randomBytesAsync(256);
+        })
+            .then((buff) => {
+            const token = geth_connector_1.GethConnector.getInstance()
+                .web3
+                .sha3(buff.toString('hex'), { encoding: 'hex' });
+            return this._signSession(acc, token)
+                .then((signedString) => {
+                const expiration = new Date();
+                expiration.setMinutes(expiration.getMinutes() + timer);
+                geth_connector_1.GethConnector.getInstance().web3.personal.lockAccountAsync(acc);
+                this._session = {
+                    expiration: expiration,
+                    address: acc,
+                    vrs: ethereumjs_util_1.fromRpcSig(signedString)
+                };
+                setTimeout(() => this._flushSession(), 1000 * 60 * timer);
+                return { token: token, expiration: expiration };
+            });
+        })
+            .catch((err) => {
+            geth_connector_1.GethConnector.getInstance().web3.personal.lockAccountAsync(acc);
+            return { error: { message: err.message } };
         });
+    }
+    logout() {
+        if (this._session) {
+            geth_connector_1.GethConnector.getInstance().web3.personal.lockAccountAsync(this._session.address);
+        }
+        this._flushSession();
     }
     isLogged(token) {
         let pubKey;
@@ -101,6 +115,8 @@ class Auth {
     _flushSession() {
         this._session = null;
         this._encrypted = null;
+        this._cipher = null;
+        this._decipher = null;
     }
     _signSession(account, hash) {
         return geth_connector_1.GethConnector.getInstance()
@@ -109,13 +125,10 @@ class Auth {
             .signAsync(account, hash);
     }
     signData(data, token) {
-        if (this.isLogged(token)) {
-            return geth_connector_1.GethConnector.getInstance()
-                .web3
-                .personal
-                .unlockAccountAndSendTransactionAsync(data, this._read().toString('utf8'));
-        }
-        return Promise.reject(new Error('Authentication required'));
+        return geth_connector_1.GethConnector.getInstance()
+            .web3
+            .personal
+            .unlockAccountAndSendTransactionAsync(data, this._read(token).toString('utf8'));
     }
 }
 Object.defineProperty(exports, "__esModule", { value: true });

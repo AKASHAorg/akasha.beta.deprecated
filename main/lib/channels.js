@@ -11,8 +11,8 @@ const hashPath = (...path) => {
 const channels = {
     geth: ['manager', 'startService', 'stopService', 'restartService', 'syncStatus', 'logs', 'status'],
     ipfs: ['manager', 'startService', 'stopService', 'status'],
-    user: ['manager', 'exists', 'login', 'logout', 'createCoinbase', 'faucetEther', 'registerProfile',
-        'getProfileData', 'listEthAccounts', 'getBalance', 'getIpfsImage'],
+    auth: ['manager', 'login', 'logout', 'generateEthKey', 'getLocalIdentities'],
+    user: ['manager', 'exists', 'registerProfile', 'getProfileData', 'getBalance', 'getIpfsImage'],
     entry: ['manager', 'publish']
 };
 const processes = ['server', 'client'];

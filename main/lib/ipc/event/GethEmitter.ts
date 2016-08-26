@@ -3,11 +3,10 @@ import { AbstractEmitter } from './AbstractEmitter';
 import channels from '../../channels';
 import { gethResponse } from './responses';
 import { constructed } from '../contracts/index';
-import {module as user} from '../modules/user/index';
+import { initModules } from '../modules/index';
 
 abstract class GethEmitter extends AbstractEmitter {
     attachEmitters() {
-        user.init();
         this._download()
             ._error()
             ._fatal()
@@ -48,8 +47,16 @@ abstract class GethEmitter extends AbstractEmitter {
         GethConnector.getInstance().on(
             CONSTANTS.STARTED, () => {
                 this.fireEvent(channels.client.geth.startService, gethResponse({ started: true }));
+            }
+        );
+
+        GethConnector.getInstance().once(
+            CONSTANTS.IPC_CONNECTED, () => {
+                this.fireEvent(channels.client.geth.startService, gethResponse({}));
                 // inject web3 instance
                 constructed.init(GethConnector.getInstance().web3);
+                // wait for ipc connection
+                initModules();
             }
         );
         return this;
