@@ -51,8 +51,10 @@ class EntryEditor extends Component {
         };
     }
     componentDidMount () {
-        if (!this.state.readOnly) {
+        if (!this.state.readOnly && this.props.title) {
             this.titleInput.focus();
+        } else if (this.state.readOnly) {
+            this.editor.focus();
         }
     }
     getRawContent = () => convertToRaw(this.state.editorState.getCurrentContent());
@@ -202,7 +204,6 @@ class EntryEditor extends Component {
     render () {
         const { editorState } = this.state;
         const addButtonStyles = this._getAddButtonStyles();
-
         return (
           <div className="editor" style={{ textAlign: 'left' }}>
             <div style={addButtonStyles}>
@@ -221,6 +222,7 @@ class EntryEditor extends Component {
                 }
             </div>
             <div>
+            {this.props.title &&
               <TextField
                 ref={(titleInput) => this.titleInput = titleInput}
                 hintText="Title"
@@ -232,6 +234,8 @@ class EntryEditor extends Component {
                 value={this.state.title}
                 fullWidth
               />
+            }
+              
               <div onClick={this._handleEditorContainerClick}>
                 <Editor
                   ref={(editor) => {
@@ -244,7 +248,7 @@ class EntryEditor extends Component {
                   blockRendererFn={rendererFn}
                   onChange={this._handleEditorChange}
                   handleReturn={this._handleReturn}
-                  placeholder={this.state.showAddButton ? '' : 'Type your text'}
+                  placeholder={this.state.showAddButton ? '' : this.props.textHint}
                   handleBeforeInput={this._handleBeforeInput}
                 />
               </div>

@@ -20,7 +20,6 @@ function mapDispatchToProps (dispatch) {
         eProcActions: new EProcActions(dispatch),
         setupActions: new SetupActions(dispatch),
         settingsActions: new SettingsActions(dispatch),
-        syncActions: new SyncActions(dispatch),
     };
 }
 

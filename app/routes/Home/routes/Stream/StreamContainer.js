@@ -13,13 +13,19 @@ class StreamPage extends Component {
         };
     }
     _handleFilterChange = (val) => {
+        const { params } = this.props;
+        if (val === this.state.filter) {
+          return;
+        }
         this.setState({
             filter: val
+        }, () => {
+            this.context.router.push(`/${params.username}/explore/${val}`);
         });
     };
     render () {
         return (
-          <div>
+          <div style={{ height: '100%' }}>
             <div
               style={{
                   zIndex: 10,
@@ -33,16 +39,25 @@ class StreamPage extends Component {
               <StreamMenu
                 activeTab={this.state.filter}
                 onChange={this._handleFilterChange}
+                routeParams={this.props.params}
               />
             </div>
-            <div className="row" style={{ marginTop: 45 }}>
-              <div className="col-xs-12">
-                <div className="row">
-                  <div className="col-xs-8">
-                    <TheStream filter={this.state.filter} />
+            <div className="row" style={{ marginTop: 45, height: '100%' }}>
+              <div className="col-xs-12" style={{ height: '100%' }}>
+                <div className="row" style={{ height: '100%' }}>
+                  <div className="col-xs-8" style={{ height: '100%', position: 'relative' }}>
+                    <TheStream
+                      filter={this.state.filter}
+                      {...this.props}
+                    >
+                      {this.props.children}
+                    </TheStream>
                   </div>
-                  <div className="col-xs-4">
-                    <StreamSidebar />
+                  <div
+                    className="col-xs-4"
+                    style={{ backgroundColor: '#F5F5F5', minHeight: '100%' }}
+                  >
+                    <StreamSidebar params={this.props.params} />
                   </div>
                 </div>
               </div>
@@ -53,7 +68,13 @@ class StreamPage extends Component {
 }
 
 StreamPage.propTypes = {
-    entryActions: React.PropTypes.object
+    entryActions: React.PropTypes.object,
+    children: React.PropTypes.node,
+    params: React.PropTypes.object
+};
+
+StreamPage.contextTypes = {
+    router: React.PropTypes.object
 };
 
 function mapStateToProps (state) {

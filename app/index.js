@@ -5,13 +5,15 @@ import { ReduxAsyncConnect } from 'redux-connect';
 import { IntlProvider } from 'react-intl';
 import { Router, hashHistory } from 'react-router';
 import { syncHistoryWithStore } from 'react-router-redux';
+
+import injectTapEventPlugin from 'react-tap-event-plugin';
 import routes from './routes';
 import configureStore from './local-flux/store/configureStore';
-import injectTapEventPlugin from 'react-tap-event-plugin';
 import { ruMessages } from './locale-data/ru';
 import debug from 'debug';
-window.appDebug = debug.enable('App:*');
 import ReactPerf from 'react-addons-perf';
+
+window.appDebug = debug.enable('App:*');
 // temporary
 
 const store = configureStore();

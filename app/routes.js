@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, IndexRoute } from 'react-router';
+import { Route, IndexRoute, IndexRedirect } from 'react-router';
 import AppContainer from './routes/AppContainer';
 import BootAppContainer from './routes/BootApp/BootAppContainer';
 import SetupContainer from './routes/Setup/SetupContainer';
@@ -17,6 +17,7 @@ import PublishEntryPanelContainer from './routes/Home/routes/NewEntry/routes/Pub
 import PublishEntryStatusContainer from './routes/Home/routes/NewEntry/routes/PublishEntryStatus/PublishEntryStatusContainer';
 import PublishEntryCompleteContainer from './routes/Home/routes/NewEntry/routes/PublishEntryComplete/PublishEntryCompleteContainer';
 import StreamPageContainer from './routes/Home/routes/Stream/StreamContainer';
+import EntryListContainer from './routes/Home/routes/Stream/routes/EntryList/EntryListContainer';
 
 
 export default (
@@ -53,9 +54,11 @@ export default (
 
     {/** user home after login */}
     <Route component={HomeContainer} path=":username" >
-
+      <IndexRedirect to="explore" />
       {/** loads articles from blockchain */}
-      <IndexRoute component={StreamPageContainer} />
+      <Route component={StreamPageContainer}>
+        <Route component={EntryListContainer} path="explore(/:filter)(/:tagName)" />
+      </Route>
 
       {/** create a new entry or edit existing one */}
       <Route component={NewEntryContainer} path="draft/:draftId" >

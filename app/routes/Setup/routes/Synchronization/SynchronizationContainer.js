@@ -18,7 +18,6 @@ function mapDispatchToProps (dispatch) {
     return {
         eProcActions: new EProcActions(dispatch),
         eProcBundleActions: new ExternalProcessBundleActions(dispatch),
-        syncActions: new SyncActions(dispatch),
         setupActions: new SetupActions(dispatch),
         loggerActions: new LoggerActions(dispatch)
     };
