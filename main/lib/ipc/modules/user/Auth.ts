@@ -15,23 +15,25 @@ export default class Auth {
      * @param pass
      * @returns {Bluebird<string>|PromiseLike<string>|Thenable<string>|Promise<string>}
      */
-    generateKey(pass: any) {
-        return this._encrypt(pass)
-            .then(() => {
-                return GethConnector.getInstance()
-                    .web3
-                    .personal
-                    .newAccountAsync(this._read().toString('utf8'));
-            })
-            .then((address: string) => {
-                this.login(address, pass, 2);
-                return address;
-            });
+    public generateKey(pass: any) {
+        try {
+            const transformed = Buffer.from(pass).toString('utf8');
+            return GethConnector.getInstance()
+                .web3
+                .personal
+                .newAccountAsync(transformed)
+                .then((address: string) => {
+                    return address;
+                });
+        } catch (err) {
+            return Promise.reject(err);
+        }
+
     }
 
     /**
      *
-     * @returns {Promise<TResult>|Bluebird<U>|PromiseLike<TResult>|Thenable<U>}
+     * @returns {PromiseLike<boolean>|Promise<boolean>|Thenable<boolean>|Bluebird<boolean>}
      * @private
      */
     private _generateRandom() {
@@ -61,8 +63,13 @@ export default class Auth {
      * @returns {Buffer}
      * @private
      */
-    private _read() {
-        return Buffer.concat([this._decipher.update(this._encrypted), this._decipher.final()]);
+    private _read(token: any) {
+        if (!this.isLogged(token)) {
+            throw new Error('Token is not valid');
+        }
+        const result = Buffer.concat([this._decipher.update(this._encrypted), this._decipher.final()]);
+        this._encrypt(result);
+        return result;
     }
 
     /**
@@ -72,7 +79,7 @@ export default class Auth {
      * @param timer
      * @returns {Bluebird<U>}
      */
-    protected login(acc: string, pass: Uint8Array[], timer?: number) {
+    public login(acc: string, pass: any | Uint8Array, timer?: number) {
 
         return gethHelper
             .hasKey(acc)
@@ -83,41 +90,49 @@ export default class Auth {
                 // temporary until personal_sign is shipped
                 // follow here https://github.com/ethereum/go-ethereum/pull/2940
                 // @TODO: migrate to personal_sign when available
-                this._encrypt(pass)
-                    .then(() => {
-                        return GethConnector.getInstance()
-                            .web3
-                            .personal
-                            .unlockAccountAsync(acc, this._read().toString('utf8'), 2000);
-                    })
-                    .then((unlocked: boolean) => {
-                        if (!unlocked) {
-                            throw new Error(`invalid password`);
-                        }
-                        return randomBytesAsync(256);
-                    })
-                    .then((buff: Buffer) => {
-                            const token = GethConnector.getInstance()
-                                .web3
-                                .sha3(buff.toString('hex'), {encoding: 'hex'});
-                            return this._signSession(acc, token)
-                                .then((signedString: string) => {
-                                    const expiration = new Date();
-                                    expiration.setMinutes(expiration.getMinutes() + timer);
-                                    this._session = {
-                                        expiration,
-                                        address: acc,
-                                        vrs: fromRpcSig(signedString)
-                                    };
-                                    setTimeout(() => this._flushSession(), 1000 * 60 * timer);
-                                    return {token, expiration};
-                                });
-                    })
-                    .catch((err: Error) => {
-                        return {error: err.message};
-                    })
-                    .finally(() => GethConnector.getInstance().web3.personal.lockAccountAsync(acc));
+                return this._encrypt(pass);
+            })
+            .then(() => {
+                return GethConnector.getInstance()
+                    .web3
+                    .personal
+                    .unlockAccountAsync(acc, Buffer.from(pass).toString('utf8'), 1000);
+            })
+            .then((unlocked: boolean) => {
+                if (!unlocked) {
+                    throw new Error(`invalid password`);
+                }
+                return randomBytesAsync(256);
+            })
+            .then((buff: Buffer) => {
+                const token = GethConnector.getInstance()
+                    .web3
+                    .sha3(buff.toString('hex'), { encoding: 'hex' });
+                return this._signSession(acc, token)
+                    .then((signedString: string) => {
+                        const expiration = new Date();
+                        expiration.setMinutes(expiration.getMinutes() + timer);
+                        GethConnector.getInstance().web3.personal.lockAccountAsync(acc);
+                        this._session = {
+                            expiration,
+                            address: acc,
+                            vrs: fromRpcSig(signedString)
+                        };
+                        setTimeout(() => this._flushSession(), 1000 * 60 * timer);
+                        return { token, expiration };
+                    });
+            })
+            .catch((err: Error) => {
+                GethConnector.getInstance().web3.personal.lockAccountAsync(acc);
+                return { error: { message: err.message } };
             });
+    }
+
+    public logout() {
+        if (this._session) {
+            GethConnector.getInstance().web3.personal.lockAccountAsync(this._session.address);
+        }
+        this._flushSession();
     }
 
     /**
@@ -136,12 +151,12 @@ export default class Auth {
         if (now > this._session.expiration) {
             return false;
         }
-        const {v, r, s} = this._session.vrs;
+        const { v, r, s } = this._session.vrs;
         try {
             pubKey = bufferToHex(ecrecover(toBuffer(token), v, r, s));
             ethAddr = pubToAddress(pubKey);
             return bufferToHex(ethAddr) === this._session.address;
-        }catch (err) {
+        } catch (err) {
             return false;
         }
 
@@ -154,6 +169,8 @@ export default class Auth {
     private _flushSession() {
         this._session = null;
         this._encrypted = null;
+        this._cipher = null;
+        this._decipher = null;
     }
 
     /**
@@ -177,12 +194,9 @@ export default class Auth {
      * @returns {any}
      */
     public signData(data: {}, token: string) {
-        if (this.isLogged(token)) {
-            return GethConnector.getInstance()
-                .web3
-                .personal
-                .unlockAccountAndSendTransactionAsync(data, this._read().toString('utf8'));
-        }
-        return Promise.reject(new Error('Authentication required'));
+        return GethConnector.getInstance()
+            .web3
+            .personal
+            .unlockAccountAndSendTransactionAsync(data, this._read(token).toString('utf8'));
     }
 }

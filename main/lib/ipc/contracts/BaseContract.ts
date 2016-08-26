@@ -26,4 +26,22 @@ export default class BaseContract {
     getContract() {
         return this.contract;
     }
+
+    /**
+     *
+     * @param method
+     * @param params
+     * @returns {any}
+     */
+    extractData(method: string, ...params: any[]) {
+        return this.contract[method]
+            .request(params)
+            .params[0];
+    }
+
+    estimateGas(method: string, ...params: any[]) {
+        return this.contract[method]
+            .estimateGas(params);
+    }
+
 }

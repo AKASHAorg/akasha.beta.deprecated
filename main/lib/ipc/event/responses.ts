@@ -13,8 +13,26 @@ export const gethResponse = (data: Object, error?: {message: string, fatal?: boo
     return { data: status, error };
 };
 
+/**
+ *
+ * @param data
+ * @param error
+ * @returns {{data: IpfsStatus, error: {message: string, fatal?: boolean}}}
+ */
 export const ipfsResponse = (data: Object, error?: {message: string, fatal?: boolean}): MainResponse => {
     const status = IpfsConnector.getInstance().serviceStatus;
     const merged: IpfsStatus = Object.assign(data, {api: status.api, spawned: status.process});
     return {data: merged, error};
+};
+
+/**
+ *
+ * @param rawData
+ * @returns {any}
+ */
+export const mainResponse = (rawData: any): MainResponse => {
+    if (rawData.error) {
+        return { data: {}, error: rawData.error };
+    }
+    return {data: rawData};
 };

@@ -11,4 +11,10 @@ exports.ipfsResponse = (data, error) => {
     const merged = Object.assign(data, { api: status.api, spawned: status.process });
     return { data: merged, error: error };
 };
+exports.mainResponse = (rawData) => {
+    if (rawData.error) {
+        return { data: {}, error: rawData.error };
+    }
+    return { data: rawData };
+};
 //# sourceMappingURL=responses.js.map

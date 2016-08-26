@@ -14,8 +14,9 @@ const channels = {
 
     ipfs: ['manager', 'startService', 'stopService', 'status'],
 
-    user: ['manager', 'exists', 'login', 'logout', 'createCoinbase', 'faucetEther', 'registerProfile',
-        'getProfileData', 'listEthAccounts', 'getBalance', 'getIpfsImage'],
+    auth: ['manager', 'login', 'logout', 'generateEthKey', 'getLocalIdentities'],
+
+    user: ['manager', 'exists', 'registerProfile', 'getProfileData', 'getBalance', 'getIpfsImage'],
 
     entry: ['manager', 'publish']
 };

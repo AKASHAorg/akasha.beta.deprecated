@@ -10,6 +10,15 @@ class BaseContract {
     getContract() {
         return this.contract;
     }
+    extractData(method, ...params) {
+        return this.contract[method]
+            .request(params)
+            .params[0];
+    }
+    estimateGas(method, ...params) {
+        return this.contract[method]
+            .estimateGas(params);
+    }
 }
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = BaseContract;

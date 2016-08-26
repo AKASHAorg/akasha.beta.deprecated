@@ -46,13 +46,44 @@ export default class Registry extends BaseContract {
     }
 
     /**
-     * Register a new profile
+     *
+     * @returns {PromiseLike<TResult>|Bluebird<U>|Thenable<U>}
+     */
+    getLocalProfiles() {
+        let keyList: string[];
+        const profileList: [string[]] = [[]];
+        return this.gethInstance
+            .web3
+            .eth
+            .getAccountsAsync()
+            .then((list: string[]) => {
+                list.sort();
+               const checkForProfile = list.map((val: string) => {
+                  return this.getByAddress(val);
+               });
+                keyList = list;
+                return Promise.all(checkForProfile);
+            })
+            .then((addrList: string[]) => {
+                addrList.forEach((val: string, index: number) => {
+                    val = this.gethInstance.web3.toUtf8(val);
+                    if (val !== '') {
+                        profileList.push([keyList[index], val]);
+                    }
+                });
+                keyList = null;
+                return profileList;
+            });
+    }
+
+    /**
+     *
      * @param username
      * @param ipfsHash
      * @param gas
-     * @returns {PromiseLike<TResult>|Bluebird<U>|Promise<TResult>|Thenable<U>}
+     * @returns {PromiseLike<TResult>|Promise<TResult>|Thenable<U>|Bluebird<U>}
      */
-    register(username: string, ipfsHash: string[], gas?: number) {
+    register(username: string, ipfsHash: string[], gas: number = 90000) {
         const usernameTr = this.gethInstance.web3.fromUtf8(username);
         const ipfsHashTr = ipfsHash.map((v) => {
             return this.gethInstance.web3.fromUtf8(v);
@@ -68,9 +99,12 @@ export default class Registry extends BaseContract {
                 if (ipfsHashTr.length !== 2) {
                     throw new Error('Expected exactly 2 ipfs slices');
                 }
-                return this.contract
-                    .register
-                    .request(usernameTr, ipfsHashTr, {gas});
+
+                const estimatedGas = this.estimateGas('register', usernameTr, ipfsHashTr);
+                if (estimatedGas > gas) {
+                    throw new Error(`Gas required: ${estimatedGas}, Gas provided: ${gas}`);
+                }
+                return this.extractData('register', usernameTr, ipfsHashTr, {gas});
             });
     }
 

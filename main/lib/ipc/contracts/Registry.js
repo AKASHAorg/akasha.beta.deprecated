@@ -23,7 +23,33 @@ class Registry extends BaseContract_1.default {
         return this.contract
             .getMyProfileAsync();
     }
-    register(username, ipfsHash, gas) {
+    getLocalProfiles() {
+        let keyList;
+        const profileList = [[]];
+        return this.gethInstance
+            .web3
+            .eth
+            .getAccountsAsync()
+            .then((list) => {
+            list.sort();
+            const checkForProfile = list.map((val) => {
+                return this.getByAddress(val);
+            });
+            keyList = list;
+            return Promise.all(checkForProfile);
+        })
+            .then((addrList) => {
+            addrList.forEach((val, index) => {
+                val = this.gethInstance.web3.toUtf8(val);
+                if (val !== '') {
+                    profileList.push([keyList[index], val]);
+                }
+            });
+            keyList = null;
+            return profileList;
+        });
+    }
+    register(username, ipfsHash, gas = 90000) {
         const usernameTr = this.gethInstance.web3.fromUtf8(username);
         const ipfsHashTr = ipfsHash.map((v) => {
             return this.gethInstance.web3.fromUtf8(v);
@@ -37,9 +63,11 @@ class Registry extends BaseContract_1.default {
             if (ipfsHashTr.length !== 2) {
                 throw new Error('Expected exactly 2 ipfs slices');
             }
-            return this.contract
-                .register
-                .request(usernameTr, ipfsHashTr, { gas: gas });
+            const estimatedGas = this.estimateGas('register', usernameTr, ipfsHashTr);
+            if (estimatedGas > gas) {
+                throw new Error(`Gas required: ${estimatedGas}, Gas provided: ${gas}`);
+            }
+            return this.extractData('register', usernameTr, ipfsHashTr, { gas: gas });
         });
     }
 }
