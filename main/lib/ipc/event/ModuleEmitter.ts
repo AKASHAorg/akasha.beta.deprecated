@@ -8,7 +8,6 @@ abstract class ModuleEmitter extends AbstractEmitter {
 
     /**
      *
-     * @param module
      * @private
      */
     protected _manager() {
@@ -19,7 +18,7 @@ abstract class ModuleEmitter extends AbstractEmitter {
                         if (this.getListenersCount(data.channel) > 1) {
                             return this.fireEvent(
                                 channels.client[this.MODULE_NAME].manager,
-                                mainResponse({}, { message: `already listening on ${data.channel}` }),
+                                mainResponse({error: { message: `already listening on ${data.channel}` }}),
                                 event
                             );
                         }

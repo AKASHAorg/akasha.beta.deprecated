@@ -3,10 +3,13 @@
     "node": "registry:dt/node#4.0.0+20160509154515"
   },
   "dependencies": {
-    "bluebird": "registry:npm/bluebird#3.3.4+20160427051630"
+    "bluebird": "registry:npm/bluebird#3.3.4+20160427051630",
+    "chai": "registry:npm/chai#3.5.0+20160723033700",
+    "rimraf": "registry:npm/rimraf#2.5.0+20160723033700"
   },
   "globalDependencies": {
     "github-electron": "registry:dt/github-electron#1.2.5+20160624085047",
+    "mocha": "registry:env/mocha#2.2.5+20160723033700",
     "winston": "registry:dt/winston#0.0.0+20160417152829"
   }
 }
