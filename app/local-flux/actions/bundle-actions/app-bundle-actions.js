@@ -1,13 +1,12 @@
-let appBundleActions = null;
-import { EntryActions } from '../'
+import { EntryActions } from '../';
 
+let appBundleActions = null;
 class AppBundleActions {
     constructor (dispatch) {
         if (!appBundleActions) {
             appBundleActions = this;
         }
         this.dispatch = dispatch;
-        this.appService = new AppService();
         this.entryActions = new EntryActions(dispatch);
         return appBundleActions;
     }

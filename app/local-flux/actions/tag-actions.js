@@ -1,7 +1,6 @@
+import debug from 'debug';
 import { tagActionCreators } from './action-creators';
 import { TagService } from '../services';
-import { AppActions } from './';
-import debug from 'debug';
 
 const dbg = debug('App:TagActions');
 

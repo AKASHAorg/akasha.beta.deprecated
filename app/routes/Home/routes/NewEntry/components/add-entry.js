@@ -6,10 +6,8 @@ import {
     IconButton,
     IconMenu,
     MenuItem } from 'material-ui';
-import { convertFromRaw } from 'draft-js';
 import EntryEditor from 'shared-components/EntryEditor';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
-import { is } from 'immutable';
 
 class NewEntryPage extends Component {
     constructor (props) {
@@ -28,9 +26,9 @@ class NewEntryPage extends Component {
     _setDraftToEdit = (props) => {
         const { entryState, params } = props;
         if (params.draftId !== 'new') {
-            const draftToEdit = entryState.get('drafts').find(draft => {
-                return draft.id === parseInt(params.draftId, 10);
-            });
+            const draftToEdit = entryState.get('drafts').find(draft =>
+                draft.id === parseInt(params.draftId, 10)
+            );
             this.setState({
                 draftToEdit,
                 publishable: draftToEdit.wordCount > 1
@@ -90,7 +88,7 @@ class NewEntryPage extends Component {
             entryTitle = 'Saving draft...';
         }
         return (
-          <div style={{ height: '100%' }}>
+          <div style={{ height: '100%', position: 'relative' }}>
             <Toolbar
               className="row"
               style={{ backgroundColor: '#FFF', borderBottom: '1px solid rgb(204, 204, 204)' }}
@@ -121,7 +119,19 @@ class NewEntryPage extends Component {
                 </IconMenu>
               </ToolbarGroup>
             </Toolbar>
-            <div className="row center-xs" style={{ marginTop: '32px' }}>
+            <div
+              className="row center-xs"
+              style={{
+                  marginTop: '32px',
+                  position: 'absolute',
+                  left: 0,
+                  right: 0,
+                  top: 24,
+                  bottom: 0,
+                  overflowY: 'auto',
+                  padding: '24px 0'
+              }}
+            >
               <div className="col-xs-6">
                 <EntryEditor
                   editorRef={(editor) => { this.editor = editor; }}
@@ -130,6 +140,8 @@ class NewEntryPage extends Component {
                   readOnly={false}
                   content={draft.content}
                   title={draft.title}
+                  showTitleField
+                  textHint="Write something"
                 />
               </div>
             </div>

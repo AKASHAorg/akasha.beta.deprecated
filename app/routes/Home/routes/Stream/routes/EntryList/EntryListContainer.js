@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { ProfileActions, EntryActions } from 'local-flux';
+import { ProfileActions, EntryActions, AppActions } from 'local-flux';
 import EntryList from './components/entry-list';
 
 
@@ -12,6 +12,7 @@ function mapStateToProps (state) {
 
 function mapDispatchToProps (dispatch) {
     return {
+        appActions: new AppActions(dispatch),
         profileActions: new ProfileActions(dispatch),
         entryActions: new EntryActions(dispatch)
     };

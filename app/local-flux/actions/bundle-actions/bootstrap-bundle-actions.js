@@ -1,3 +1,4 @@
+import debug from 'debug';
 import {
     EntryActions,
     ProfileActions,
@@ -5,9 +6,8 @@ import {
     AppActions,
     SettingsActions,
     TagActions } from '../';
-import debug from 'debug';
 
-let dbg = debug('App:BootstrapBundleActions*');
+const dbg = debug('App:BootstrapBundleActions*');
 let bootstrapActions = null;
 
 class BootstrapBundleActions {
@@ -82,6 +82,7 @@ class BootstrapBundleActions {
         return Promise.all(promises);
     };
     initStreamPage = () => {};
+    initEntryPage = () => {};
 }
 
 export { BootstrapBundleActions };

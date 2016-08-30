@@ -5,7 +5,7 @@ const dbg = debug('App:entriesDB');
 
 const entriesDB = new Dexie('entries');
 entriesDB.version(1).stores({
-    drafts: '++id',
+    drafts: '++id,tags',
     entries: '&ipfsHash',
 });
 

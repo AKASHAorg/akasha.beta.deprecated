@@ -222,20 +222,20 @@ class EntryEditor extends Component {
                 }
             </div>
             <div>
-            {this.props.title &&
+            {this.props.showTitleField &&
               <TextField
                 ref={(titleInput) => this.titleInput = titleInput}
                 hintText="Title"
                 underlineShow={false}
                 hintStyle={{ fontSize: 32 }}
                 inputStyle={{ fontSize: 32 }}
+                style={{ marginBottom: 16 }}
                 onKeyPress={this._handleTitleKeyPress}
                 onChange={this._handleTitleChange}
                 value={this.state.title}
                 fullWidth
               />
             }
-              
               <div onClick={this._handleEditorContainerClick}>
                 <Editor
                   ref={(editor) => {
@@ -254,7 +254,7 @@ class EntryEditor extends Component {
               </div>
             </div>
             <EditorToolbar
-              ref="toolbar"
+              ref={(toolbar) => this.toolbar = toolbar}
               editorState={editorState}
               isVisible={this.state.toolbarVisible}
               toggleVisibility={this._toggleToolbarVisibility}
@@ -269,10 +269,13 @@ class EntryEditor extends Component {
 
 EntryEditor.propTypes = {
     onChange: PropTypes.func,
+    title: PropTypes.string,
+    showTitleField: PropTypes.bool,
     editorRef: PropTypes.func,
     onTitleChange: PropTypes.func,
     readOnly: PropTypes.bool,
     content: PropTypes.object,
+    textHint: PropTypes.string
 };
 
 export default clickAway(EntryEditor);

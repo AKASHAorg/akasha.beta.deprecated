@@ -1,5 +1,6 @@
 import React from 'react';
 import { Subheader, Chip, FlatButton } from 'material-ui';
+import { TagChip } from 'shared-components';
 
 class StreamSidebar extends React.Component {
     constructor (props) {
@@ -9,18 +10,6 @@ class StreamSidebar extends React.Component {
         this.context.router.push(`/${this.props.params.username}/explore/tag/${tag}`);
     }
     render () {
-        const tagStyle = {
-            display: 'inline-block',
-            border: '1px solid',
-            borderColor: '#DDD',
-            backgroundColor: '#FFF',
-            borderRadius: 3,
-            height: 34,
-            verticalAlign: 'middle',
-            marginRight: '4px',
-            marginBottom: '4px',
-            cursor: 'pointer'
-        };
         const followedTags = [
             'mathematics',
             'blockchain',
@@ -61,13 +50,11 @@ class StreamSidebar extends React.Component {
               </Subheader>
               <div className="start-xs" style={{ paddingLeft: 16 }}>
                 {followedTags.map((tag, key) =>
-                  <Chip
+                  <TagChip
                     key={key}
-                    style={tagStyle}
-                    onTouchTap={(ev) => this._handleTagNavigation(ev, tag)}
-                  >
-                    {tag}
-                  </Chip>
+                    tag={tag}
+                    onTouchTap={this._handleTagNavigation}
+                  />
                 )}
               </div>
               <Subheader className="start-xs row">
@@ -75,13 +62,11 @@ class StreamSidebar extends React.Component {
               </Subheader>
               <div className="start-xs" style={{ paddingLeft: 16 }}>
                 {recommendedTags.map((tag, key) =>
-                  <Chip
+                  <TagChip
                     key={key}
-                    style={tagStyle}
-                    onTouchTap={(ev) => this._handleTagNavigation(ev, tag)}
-                  >
-                    {tag}
-                  </Chip>
+                    onTouchTap={this._handleTagNavigation}
+                    tag={tag}
+                  />
                 )}
               </div>
             </div>

@@ -4,14 +4,14 @@ export function getGethStatusSuccess (data) {
     return {
         type: types.GET_GETH_STATUS_SUCCESS,
         status: data
-    }
+    };
 }
 
 export function getGethStatusError (err) {
     return {
         type: types.GET_GETH_STATUS_ERROR,
         error: err
-    }
+    };
 }
 export function startGethSuccess (data) {
     return {

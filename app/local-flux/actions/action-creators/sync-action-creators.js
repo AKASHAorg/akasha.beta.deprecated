@@ -1,12 +1,12 @@
 import * as types from '../../constants/SyncConstants';
 
-export function startSync() {
+export function startSync () {
     return {
         type: types.SYNC_ACTIVE
     };
 }
 
-export function stopSync() {
+export function stopSync () {
     return {
         type: types.SYNC_STOPPED
     };
@@ -21,5 +21,5 @@ export function pauseSync () {
 export function resumeSync () {
     return {
         type: types.SYNC_RESUME
-    }
+    };
 }

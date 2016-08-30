@@ -12,11 +12,6 @@ class AppActions {
         this.appService = new AppService();
         return appActions;
     }
-    init = () => {
-        console.log('appActions init');
-        this.entryActions = new EntryActions(this.dispatch);
-        this.entryActions.init();
-    };
     checkForUpdates = () => {
         this.appService.checkForUpdates().then(updates => {
             this.dispatch(appActionCreators.checkForUpdates(updates));
@@ -28,7 +23,7 @@ class AppActions {
     };
 
     clearErrors = () => {
-        this.dispatch(appActionCreators.clearError);
+        this.dispatch(appActionCreators.clearError());
     };
     /**
      * Changes currently visible panel
@@ -43,7 +38,10 @@ class AppActions {
     hideAuthDialog = () => this.dispatch(appActionCreators.hideAuthDialog());
     resumeEntryPublishing = () => {
         // console.log(payload);
-    }
+    };
+    showEntryModal = (entryData) =>
+        Promise.resolve(this.dispatch(appActionCreators.showEntryModal(entryData)));
+
 }
 
 export { AppActions };

@@ -78,7 +78,7 @@ class NewEntryFormPanel extends Component {
         }
         const entryCards = entries.map((card, key) => {
             return (
-              <Card key={key}>
+              <Card key={key} style={{ marginBottom: 8 }}>
                 <CardHeader
                   title="Draft"
                   subtitle="1 day ago - 18 words so far"
@@ -143,7 +143,17 @@ class NewEntryFormPanel extends Component {
                 <RaisedButton label="new entry" primary onTouchTap={this._handleNewEntry} />
               </div>
             </div>
-            <div className="row" style={{ margin: 0, padding: '0 18px' }}>
+            <div
+              className="row"
+              style={{
+                  margin: 0,
+                  padding: '0 18px',
+                  position: 'absolute',
+                  top: 61,
+                  bottom: 0,
+                  overflowY: 'auto'
+              }}
+            >
               <div className="col-xs-12" style={{ padding: 0 }}>
                 <div className="row middle-xs" style={{ margin: 0 }}>
                   <div className="col-xs-8">

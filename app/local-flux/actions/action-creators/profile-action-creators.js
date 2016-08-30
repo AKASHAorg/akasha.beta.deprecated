@@ -68,7 +68,7 @@ export function updateTempProfileSuccess (profileData, currentStatus) {
 export function updateTempProfileError (error) {
     return {
         type: types.UPDATE_TEMP_PROFILE_ERROR,
-        reason
+        error
     };
 }
 

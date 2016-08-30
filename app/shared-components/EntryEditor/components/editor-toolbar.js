@@ -30,11 +30,11 @@ class EditorToolbar extends Component {
             }
             const selectionPosition = ranges[0].getBoundingClientRect();
             const left = selectionPosition.left + (selectionPosition.width / 2) +
-                    window.scrollX -
-                    (ReactDOM.findDOMNode(this).getBoundingClientRect().width / 2);
+                    window.scrollX - (this.rootNode.getBoundingClientRect().width / 2);
+            console.log(window.scrollTop, 'scrollsss');
             this.setState({
                 isVisible: true,
-                top: selectionPosition.top - 60 + window.scrollY,
+                top: selectionPosition.top - 120 + window.pageYOffset,
                 left
             });
         } else if (!newProps.isVisible) {
@@ -64,43 +64,54 @@ class EditorToolbar extends Component {
         };
 
         return (
-            <Toolbar style = {rootStyle}>
-                <ToolbarGroup>
-                    <IconButton onMouseDown = {this._handleBoldText}>
-                        <SvgIcon>
-                            <BoldIcon color="#FFF" />
-                        </SvgIcon>
-                    </IconButton>
-                    <IconButton onClick = {this._handleItalicText}>
-                        <SvgIcon>
-                            <ItalicIcon color="#FFF" />
-                        </SvgIcon>
-                    </IconButton>
-                    <ToolbarSeparator style={{ marginLeft: 8 }} />
-                    <IconButton onClick = {this._handleQuoteText}>
-                        <SvgIcon>
-                            <QuoteIcon color="#FFF" />
-                        </SvgIcon>
-                    </IconButton>
-                    <IconButton onClick = {this._handleBulletList} >
-                        <SvgIcon>
-                            <BulletListIcon color="#FFF" />
-                        </SvgIcon>
-                    </IconButton>
-                    <IconButton onClick = {this._handleNumberList} >
-                        <SvgIcon>
-                            <NumberListIcon color="#FFF" />
-                        </SvgIcon>
-                    </IconButton>
-                    <ToolbarSeparator style={{ marginLeft: 8 }} />
-                    <IconButton onClick = {this._handleLinkCreate} >
-                        <SvgIcon>
-                            <InsertLinkIcon color="#FFF" />
-                        </SvgIcon>
-                    </IconButton>
-                    <div className = "caret-down" style = {{ borderTopColor: '#525252', position: 'absolute', bottom: '-8px', left: '50%', marginLeft: '-10px' }} />
-                </ToolbarGroup>
+          <div ref={(rootNode) => this.rootNode = rootNode}>
+            <Toolbar style={rootStyle}>
+              <ToolbarGroup>
+                <IconButton onMouseDown={this._handleBoldText}>
+                  <SvgIcon>
+                    <BoldIcon color="#FFF" />
+                  </SvgIcon>
+                </IconButton>
+                <IconButton onClick={this._handleItalicText}>
+                  <SvgIcon>
+                    <ItalicIcon color="#FFF" />
+                  </SvgIcon>
+                </IconButton>
+                <ToolbarSeparator style={{ marginLeft: 8 }} />
+                <IconButton onClick={this._handleQuoteText}>
+                  <SvgIcon>
+                    <QuoteIcon color="#FFF" />
+                  </SvgIcon>
+                </IconButton>
+                <IconButton onClick={this._handleBulletList} >
+                  <SvgIcon>
+                    <BulletListIcon color="#FFF" />
+                  </SvgIcon>
+                </IconButton>
+                <IconButton onClick={this._handleNumberList} >
+                  <SvgIcon>
+                    <NumberListIcon color="#FFF" />
+                  </SvgIcon>
+                </IconButton>
+                <ToolbarSeparator style={{ marginLeft: 8 }} />
+                <IconButton onClick={this._handleLinkCreate} >
+                  <SvgIcon>
+                    <InsertLinkIcon color="#FFF" />
+                  </SvgIcon>
+                </IconButton>
+                <div
+                  className="caret-down"
+                  style={{
+                      borderTopColor: '#525252',
+                      position: 'absolute',
+                      bottom: '-8px',
+                      left: '50%',
+                      marginLeft: '-10px'
+                  }}
+                />
+              </ToolbarGroup>
             </Toolbar>
+          </div>
         );
     }
 }

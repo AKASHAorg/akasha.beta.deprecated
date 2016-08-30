@@ -8,7 +8,7 @@ const webpackConfig = {
   module: {
     loaders: [{
       test: /\.(js|jsx)$/,
-      loaders: ['babel'],
+      loaders: ['babel-loader'],
       exclude: /node_modules/
     }
     ]
@@ -35,9 +35,9 @@ webpackConfig.module.loaders.push({
   test: /\.scss$/,
   include: /app/,
   loaders: [
-    "style",
-    "css?sourceMap",
-    "sass?sourceMap"
+    "style-loader",
+    "css-loader?modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]!",
+    "sass-loader?sourceMap"
   ]
 });
 

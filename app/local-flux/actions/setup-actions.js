@@ -1,5 +1,6 @@
 import { setupActionCreators } from './action-creators';
 import { SetupService } from '../services';
+
 let setupActions = null;
 
 class SetupActions {

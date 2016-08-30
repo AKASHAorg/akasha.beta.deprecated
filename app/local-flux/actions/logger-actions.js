@@ -1,4 +1,5 @@
 import { LoggerService } from '../services';
+
 let loggerActions = null;
 
 class LoggerActions {

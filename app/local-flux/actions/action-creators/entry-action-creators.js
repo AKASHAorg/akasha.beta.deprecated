@@ -150,5 +150,5 @@ export function publishEntrySuccess (entry) {
     return {
         type: types.PUBLISH_ENTRY_SUCCESS,
         entry
-    }
+    };
 }

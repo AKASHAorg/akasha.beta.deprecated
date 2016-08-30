@@ -1,0 +1,13 @@
+.modal {
+    position: 'absolute';
+    left: 64px;
+    top: 0;
+    bottom: 0;
+}
+.panelLoader {
+    zIndex: 990
+}
+.entryLoader {
+    z-index: 900;
+    right: 0
+}

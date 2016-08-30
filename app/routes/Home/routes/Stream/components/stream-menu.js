@@ -14,9 +14,24 @@ const StreamMenu = (props) =>
               tabItemContainerStyle={{ backgroundColor: 'transparent' }}
               onChange={props.onChange}
             >
-              <Tab label="STREAM" value="stream" style={{ color: '#444' }} />
-              <Tab label="TOP ENTRIES" value="top" style={{ color: '#444' }} />
-              <Tab label="SAVED" value="saved" style={{ color: '#444' }} />
+              <Tab
+                onActive={props.onActive}
+                label="STREAM"
+                value="stream"
+                style={{ color: '#444' }}
+              />
+              <Tab
+                onActive={props.onActive}
+                label="TOP ENTRIES"
+                value="top"
+                style={{ color: '#444' }}
+              />
+              <Tab
+                onActive={props.onActive}
+                label="SAVED"
+                value="saved"
+                style={{ color: '#444' }}
+              />
               {props.routeParams.filter === 'tag' &&
                 <Tab
                   label={props.routeParams.tagName}

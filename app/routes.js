@@ -19,7 +19,6 @@ import PublishEntryCompleteContainer from './routes/Home/routes/NewEntry/routes/
 import StreamPageContainer from './routes/Home/routes/Stream/StreamContainer';
 import EntryListContainer from './routes/Home/routes/Stream/routes/EntryList/EntryListContainer';
 
-
 export default (
   <Route component={AppContainer} path="/" > {/** displays errors and various info */}
 
@@ -57,7 +56,7 @@ export default (
       <IndexRedirect to="explore" />
       {/** loads articles from blockchain */}
       <Route component={StreamPageContainer}>
-        <Route component={EntryListContainer} path="explore(/:filter)(/:tagName)" />
+        <Route component={EntryListContainer} path="/:username/explore(/:filter)(/tagName)" />
       </Route>
 
       {/** create a new entry or edit existing one */}

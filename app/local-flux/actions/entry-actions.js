@@ -1,8 +1,8 @@
-import { EntryService, ProfileService } from '../services';
-import { entryActionCreators } from './action-creators';
 import { hashHistory } from 'react-router';
 import throttle from 'lodash.throttle';
 import debug from 'debug';
+import { EntryService, ProfileService } from '../services';
+import { entryActionCreators } from './action-creators';
 
 const dbg = debug('App:EntryActions');
 
@@ -123,7 +123,18 @@ class EntryActions {
         });
     };
     requestAuthentication = () => {
-        
-    }
+
+    };
+    getSortedEntries = ({ sortBy }) => {
+        this.entryService.getSortedEntries({ sortBy }).then(result => {
+            console.log(result, 'result for sortBy', sortBy);
+        });
+    };
+    getSavedEntries = () => {
+        this.entryService.getSavedEntries();
+    };
+    getEntriesForTag = ({ tagName }) => {
+        this.entryService.getEntriesForTag({ tagName });
+    };
 }
 export { EntryActions };

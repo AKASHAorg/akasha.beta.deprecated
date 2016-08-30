@@ -17,14 +17,13 @@ class Avatar extends React.Component {
 
     getImage = () =>
         new Promise((resolve) => {
-            if (this.refs.editor && this.state.avatarImage) {
-                const imageCanvas = this.refs.editor.getImageScaledToCanvas();
+            if (this.editor && this.state.avatarImage) {
+                const imageCanvas = this.editor.getImageScaledToCanvas();
 
                 imageCanvas.toBlob(blob => {
                     const reader = new FileReader();
                     reader.onloadend = (ev) =>
                         resolve(new Uint8Array(ev.target.result));
-
                     reader.readAsArrayBuffer(blob);
                 }, 'image/jpg');
             } else {
@@ -121,7 +120,7 @@ class Avatar extends React.Component {
                   }}
                   border={this.state.isNewAvatarLoaded ? 5 : 0}
                   image={avatarImage}
-                  ref="editor"
+                  ref={(editor) => this.editor = editor}
                   width={radius || 130}
                   height={radius || 130}
                   borderRadius={100}

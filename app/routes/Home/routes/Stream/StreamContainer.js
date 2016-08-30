@@ -12,15 +12,48 @@ class StreamPage extends Component {
             filter: 'stream'
         };
     }
-    _handleFilterChange = (val) => {
-        const { params } = this.props;
-        if (val === this.state.filter) {
-          return;
+    componentWillMount () {
+        this._handleFilterChange(this.props.params.filter);
+    }
+    componentDidMount () {
+        this._fetchEntries(this.props, this.state);
+    }
+    componentWillReceiveProps (nextProps) {
+        if (nextProps.params.filter !== this.state.filter) {
+            this._handleFilterChange(nextProps.params.filter);
         }
+    }
+    componentWillUpdate (nextProps, nextState) {
+        if (nextState.filter === this.state.filter) {
+            return;
+        }
+        this._fetchEntries(nextProps, nextState);
+    }
+    _fetchEntries = (props, state) => {
+        const { entryActions, params } = props;
+        const { filter } = state;
+        switch (filter) {
+            case 'top':
+                entryActions.getSortedEntries({ sortBy: 'rating' });
+                break;
+            case 'saved':
+                entryActions.getSavedEntries();
+                break;
+            case 'tag':
+                entryActions.getEntriesForTag({ tagName: params.tagName });
+                break;
+            default: // 'stream'
+                entryActions.getSortedEntries({ sortBy: 'date' });
+        }
+    }
+    _handleTabActivation = (tab) => {
+        const { params } = this.props;
+        this.context.router.push(`/${params.username}/explore/${tab.props.value}`);
+    }
+    _handleFilterChange = (val) => {
+        if (val === this.state.filter) return;
         this.setState({
             filter: val
-        }, () => {
-            this.context.router.push(`/${params.username}/explore/${val}`);
         });
     };
     render () {
@@ -40,6 +73,7 @@ class StreamPage extends Component {
                 activeTab={this.state.filter}
                 onChange={this._handleFilterChange}
                 routeParams={this.props.params}
+                onActive={this._handleTabActivation}
               />
             </div>
             <div className="row" style={{ marginTop: 45, height: '100%' }}>
@@ -49,9 +83,7 @@ class StreamPage extends Component {
                     <TheStream
                       filter={this.state.filter}
                       {...this.props}
-                    >
-                      {this.props.children}
-                    </TheStream>
+                    />
                   </div>
                   <div
                     className="col-xs-4"

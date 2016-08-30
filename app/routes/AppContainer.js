@@ -6,7 +6,6 @@ import { getMuiTheme } from 'material-ui/styles';
 import { Snackbar } from 'material-ui';
 import AuthDialog from 'shared-components/Dialogs/auth-dialog';
 import AkashaTheme from '../layouts/AkashaTheme';
-import DevTools from './DevTools';
 
 class App extends Component {
     constructor (props) {
@@ -71,9 +70,6 @@ class App extends Component {
               onSubmit={this._handleConfirmation}
               onCancel={this._handleCancellation}
             />
-            {(process.env.NODE_ENV !== 'production') &&
-              <DevTools />
-            }
           </div>
         );
     }
@@ -81,6 +77,8 @@ class App extends Component {
 App.propTypes = {
     appState: PropTypes.object,
     appActions: PropTypes.object,
+    profileState: PropTypes.object,
+    profileActions: PropTypes.object,
     settingsActions: PropTypes.object,
     bootstrapActions: PropTypes.object,
     children: PropTypes.element

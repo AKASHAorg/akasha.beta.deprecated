@@ -59,7 +59,7 @@ class SideBar extends Component {
               <Search onClick={this._handleSearch} tooltip="Search" />
             </div>
             <div style={{ flexGrow: 4, padding: '16px' }} >
-              <Streams onClick={() => this._handleNavigation(null)} tooltip="Stream" />
+              <Streams onClick={() => this._handleNavigation('explore/stream')} tooltip="Stream" />
               <Portals disabled tooltip="Coming Soon" />
               <Community disabled tooltip="Coming Soon" />
               <People onClick={this._handlePeople} tooltip="People" />

@@ -1,5 +1,6 @@
+import { AppActions } from '../';
+
 let tagBundleActions = null;
-import { AppActions } from '../'
 
 class TagBundleActions {
     constructor (dispatch) {

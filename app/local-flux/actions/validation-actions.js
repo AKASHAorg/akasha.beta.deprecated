@@ -1,4 +1,5 @@
 import { ValidationService } from '../services';
+
 let validationActions = null;
 
 class ValidationActions {

@@ -11,7 +11,7 @@ export function checkForUpdates (updates) {
     return {
         type: types.CHECK_FOR_UPDATES,
         updates
-    }
+    };
 }
 
 export function clearError () {
@@ -35,11 +35,18 @@ export function hidePanel (panel) {
 export function showAuthDialog () {
     return {
         type: types.SHOW_AUTH_DIALOG
-    }
+    };
 }
 
 export function hideAuthDialog () {
     return {
         type: types.HIDE_AUTH_DIALOG
-    }
+    };
+}
+
+export function showEntryModal (entryData) {
+    return {
+        type: types.SHOW_ENTRY_MODAL,
+        entryData
+    };
 }

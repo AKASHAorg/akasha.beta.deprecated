@@ -1,16 +1,18 @@
 import React from 'react';
+import styles from './stream.scss';
 
 class Stream extends React.Component {
     constructor (props) {
         super(props);
-        this.state = {};
-    }
-    componentWillReceiveProps (nextProps) {
-        console.log(nextProps, nextProps.params, 'nextProps');
+        this.state = {
+            pagination: {}
+        };
     }
     render () {
         return (
-          <div className="row" style={{ position: 'absolute', top: 0, left: 12, right: 7, bottom: 45, overflowY: 'auto' }}>
+          <div
+            className={`row ${styles.root}`}
+          >
             <div className="col-xs-12">
               <div className="row center-xs">
                 <div className="col-xs-10" style={{ padding: '24px 0' }}>
@@ -23,6 +25,7 @@ class Stream extends React.Component {
     }
 }
 Stream.propTypes = {
-    filter: React.PropTypes.string
+    filter: React.PropTypes.string,
+    children: React.PropTypes.node
 };
 export default Stream;

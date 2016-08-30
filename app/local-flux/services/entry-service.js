@@ -71,6 +71,17 @@ class EntryService {
             ipcRenderer.send(serverChannel, entry);
         });
     };
+    getSortedEntries = ({ sortBy }) =>
+        entriesDB.transaction('r', entriesDB.drafts, () => {
+            if (sortBy === 'rating') {
+                return entriesDB.drafts.where('tags').anyOf('top-rating').toArray();
+            }
+            if (sortBy === 'top') {
+                return entriesDB.drafts.sortBy('status.created_at').toArray();
+            }
+        });
+    getSavedEntries = () => {};
+    getEntriesForTag = () => {};
 }
 
 export { EntryService };

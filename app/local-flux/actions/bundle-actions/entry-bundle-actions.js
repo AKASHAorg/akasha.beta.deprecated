@@ -1,5 +1,5 @@
-import { EntryActions, ProfileActions, TagActions, AppActions } from '../';
 import debug from 'debug';
+import { EntryActions, ProfileActions, TagActions, AppActions } from '../';
 
 const dbg = debug('App:EntryBundleActions');
 let entryBundleActions = null;
