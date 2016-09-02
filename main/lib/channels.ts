@@ -20,7 +20,7 @@ const channels = {
 
     entry: ['manager', 'publish'],
 
-    tx: ['addToQueue', 'listen']
+    tx: ['manager', 'addToQueue', 'emitMined']
 };
 
 const processes = ['server', 'client'];
