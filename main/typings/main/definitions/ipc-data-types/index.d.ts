@@ -108,3 +108,22 @@ interface RequestEtherResponse {
 }
 
 ////////////////////////// </ AUTH > \\\\\\\\\\\\\\\\\\\\\\\\
+
+/////////////////////////  < TX > \\\\\\\\\\\\\\\\\\\\\\\\\\\
+interface AddToQueueRequest {
+    tx: string;
+}
+
+interface AddToQueueResponse {
+    watching: boolean;
+}
+
+interface EmitMinedRequest {
+    watch: boolean;
+}
+
+interface EmitMinedResponse {
+    mined?: string;
+    watching: boolean;
+}
+/////////////////////////  </ TX > \\\\\\\\\\\\\\\\\\\\\\\\\\\

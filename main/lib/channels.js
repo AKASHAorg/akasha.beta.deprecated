@@ -14,7 +14,7 @@ const channels = {
     auth: ['manager', 'login', 'logout', 'requestEther', 'generateEthKey', 'getLocalIdentities'],
     user: ['manager', 'exists', 'registerProfile', 'getProfileData', 'getBalance', 'getIpfsImage'],
     entry: ['manager', 'publish'],
-    tx: ['addToQueue', 'listen']
+    tx: ['manager', 'addToQueue', 'emitMined']
 };
 const processes = ['server', 'client'];
 const mem = os_1.totalmem().toLocaleString();

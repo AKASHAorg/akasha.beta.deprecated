@@ -1,0 +1,44 @@
+"use strict";
+const geth_connector_1 = require('@akashaproject/geth-connector');
+const ModuleEmitter_1 = require('./event/ModuleEmitter');
+const channels_1 = require('../channels');
+const responses_1 = require('./event/responses');
+class TxIPC extends ModuleEmitter_1.default {
+    constructor() {
+        super();
+        this.MODULE_NAME = 'tx';
+        this.DEFAULT_MANAGED = ['addToQueue', 'emitMined'];
+    }
+    initListeners(webContents) {
+        this.webContents = webContents;
+        this._addToQueue()
+            ._listenMined()
+            ._manager();
+    }
+    attachEmitters() {
+        this._emitMined();
+        return true;
+    }
+    _addToQueue() {
+        this.registerListener(channels_1.default.server[this.MODULE_NAME].addToQueue, (event, data) => {
+            geth_connector_1.gethHelper.addTxToWatch(data.tx);
+            this.fireEvent(channels_1.default.client[this.MODULE_NAME].addToQueue, responses_1.mainResponse({ watching: geth_connector_1.gethHelper.watching }));
+        });
+        return this;
+    }
+    _listenMined() {
+        this.registerListener(channels_1.default.server[this.MODULE_NAME].emitMined, (event, data) => {
+            (data.watch) ? geth_connector_1.gethHelper.startTxWatch() : geth_connector_1.gethHelper.stopTxWatch();
+            this.fireEvent(channels_1.default.client[this.MODULE_NAME].emitMined, responses_1.mainResponse({ watching: geth_connector_1.gethHelper.watching }));
+        });
+        return this;
+    }
+    _emitMined() {
+        geth_connector_1.GethConnector.getInstance().on(geth_connector_1.CONSTANTS.TX_MINED, (txHash) => {
+            this.fireEvent(channels_1.default.client[this.MODULE_NAME].emitMined, responses_1.mainResponse({ mined: txHash, watching: geth_connector_1.gethHelper.watching }));
+        });
+    }
+}
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = TxIPC;
+//# sourceMappingURL=TxIPC.js.map
