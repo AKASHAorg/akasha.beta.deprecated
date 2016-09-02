@@ -27,6 +27,7 @@ export default class GethConnector extends EventEmitter {
     private _flushEvents();
     setOptions(options?: Object): Map<any, any>;
     restart(waitTime?: number): Promise<boolean>;
+    writeGenesis(pathToGenesis: string, cb: any): void;
     static getDefaultDatadir(): String;
     static getDefaultIpcPath(): String;
     web3: any;

@@ -99,4 +99,12 @@ interface AuthKeygenResponse {
     address: string;
 }
 
+interface RequestEtherRequest {
+    address: string;
+}
+
+interface RequestEtherResponse {
+    tx: string;
+}
+
 ////////////////////////// </ AUTH > \\\\\\\\\\\\\\\\\\\\\\\\

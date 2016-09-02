@@ -6,12 +6,14 @@ import IpcMainEvent = Electron.IpcMainEvent;
 import { mainResponse } from './event/responses';
 import {module as userModule} from './modules/user/index';
 import {constructed} from './contracts/index';
+import { post as POST } from 'request';
 
+const faucetToken = '8336abae5a97f017d2d0ef952a6a566d4bbed5cd22c7b524ae749673d5562b567af10937181b7bdea73edd25512fdb948b3b016034bb01c0d95f8f9beb68c914';
 class AuthIPC extends ModuleEmitter {
     constructor() {
         super();
         this.MODULE_NAME = 'auth';
-        this.DEFAULT_MANAGED = ['login', 'logout'];
+        this.DEFAULT_MANAGED = ['login', 'logout', 'requestEther'];
     }
 
     initListeners(webContents: WebContents) {
@@ -20,6 +22,7 @@ class AuthIPC extends ModuleEmitter {
             ._logout()
             ._generateEthKey()
             ._getLocalIdentities()
+            ._requestEther()
             ._manager();
     }
 
@@ -104,6 +107,31 @@ class AuthIPC extends ModuleEmitter {
                     });
             }
         );
+        return this;
+    }
+
+    private _requestEther() {
+        this.registerListener(
+            channels.server[this.MODULE_NAME].requestEther,
+            (event: any, data: RequestEtherRequest) => {
+                POST({
+                        url: 'http://138.68.78.152:1337/get/faucet',
+                        json: {address: data.address, token: faucetToken}
+                    },
+                    (err: Error, response: any, body: {tx: string}) => {
+                        let data: any;
+                        if (err) {
+                           data = {error: {message: err.message}};
+                        } else {
+                            data = body;
+                        }
+                        this.fireEvent(
+                            channels.client[this.MODULE_NAME].requestEther,
+                            mainResponse(data)
+                        );
+                    }
+                );
+            });
         return this;
     }
 }

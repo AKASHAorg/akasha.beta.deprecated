@@ -4,6 +4,7 @@ import channels from '../../channels';
 import { gethResponse } from './responses';
 import { constructed } from '../contracts/index';
 import { initModules } from '../modules/index';
+const peers  = require('../config/peers.json');
 
 abstract class GethEmitter extends AbstractEmitter {
     attachEmitters() {
@@ -57,6 +58,10 @@ abstract class GethEmitter extends AbstractEmitter {
                 constructed.init(GethConnector.getInstance().web3);
                 // wait for ipc connection
                 initModules();
+                // add static peers
+                peers.list.forEach((peer: string) => {
+                    GethConnector.getInstance().web3.admin.addPeerAsync(peer);
+                });
             }
         );
         return this;

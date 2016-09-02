@@ -10,15 +10,17 @@ const hashPath = (...path: string[]) => {
 };
 const channels = {
 
-    geth: ['manager', 'startService', 'stopService', 'restartService', 'syncStatus', 'logs', 'status'],
+    geth: ['manager', 'options', 'startService', 'stopService', 'restartService', 'syncStatus', 'logs', 'status'],
 
     ipfs: ['manager', 'startService', 'stopService', 'status'],
 
-    auth: ['manager', 'login', 'logout', 'generateEthKey', 'getLocalIdentities'],
+    auth: ['manager', 'login', 'logout', 'requestEther', 'generateEthKey', 'getLocalIdentities'],
 
     user: ['manager', 'exists', 'registerProfile', 'getProfileData', 'getBalance', 'getIpfsImage'],
 
-    entry: ['manager', 'publish']
+    entry: ['manager', 'publish'],
+
+    tx: ['addToQueue', 'listen']
 };
 
 const processes = ['server', 'client'];
