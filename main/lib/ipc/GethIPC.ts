@@ -4,6 +4,7 @@ import GethEmitter from './event/GethEmitter';
 import channels from '../channels';
 import Logger from './Logger';
 import { gethResponse } from './event/responses';
+import {join} from 'path';
 import IpcMainEvent = Electron.IpcMainEvent;
 import IpcRenderer = Electron.IpcRenderer;
 import IpcRendererEvent = Electron.IpcRendererEvent;
@@ -23,6 +24,11 @@ class GethIPC extends GethEmitter {
             Logger.getInstance().registerLogger(this.logger)
         );
         this.webContents = webContents;
+        const datadir = GethConnector.getDefaultDatadir();
+        GethConnector.getInstance().setOptions({
+           datadir: join(datadir, 'akasha'),
+            networkid: 512180
+        });
         // register listeners
         this._start()
             ._restart()
@@ -30,6 +36,7 @@ class GethIPC extends GethEmitter {
             ._syncStatus()
             ._logs()
             ._status()
+            ._options()
             ._manager();
     }
 
@@ -83,7 +90,11 @@ class GethIPC extends GethEmitter {
         this.registerListener(
             channels.server.geth.startService,
             (event: IpcMainEvent, data: GethStartRequest) => {
-                GethConnector.getInstance().start(data);
+                GethConnector.getInstance().writeGenesis(
+                    join(__dirname, 'config', 'genesis.json'),
+                    (err: Error, stdout: any) => {
+                        GethConnector.getInstance().start(data);
+                    });
             }
         );
         return this;
@@ -205,6 +216,26 @@ class GethIPC extends GethEmitter {
                 this.fireEvent(
                     channels.client.geth.status,
                     gethResponse({}),
+                    event
+                );
+            }
+        );
+        return this;
+    }
+
+    /**
+     * Get or set geth spawn options
+     * @returns {GethIPC}
+     * @private
+     */
+    private _options() {
+        this.registerListener(
+            channels.server.geth.options,
+            (event: any, data: any) => {
+                const options = GethConnector.getInstance().setOptions(data);
+                this.fireEvent(
+                    channels.client.geth.status,
+                    gethResponse({options}),
                     event
                 );
             }

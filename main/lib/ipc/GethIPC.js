@@ -4,6 +4,7 @@ const GethEmitter_1 = require('./event/GethEmitter');
 const channels_1 = require('../channels');
 const Logger_1 = require('./Logger');
 const responses_1 = require('./event/responses');
+const path_1 = require('path');
 class GethIPC extends GethEmitter_1.default {
     constructor() {
         super();
@@ -14,12 +15,18 @@ class GethIPC extends GethEmitter_1.default {
     initListeners(webContents) {
         geth_connector_1.GethConnector.getInstance().setLogger(Logger_1.default.getInstance().registerLogger(this.logger));
         this.webContents = webContents;
+        const datadir = geth_connector_1.GethConnector.getDefaultDatadir();
+        geth_connector_1.GethConnector.getInstance().setOptions({
+            datadir: path_1.join(datadir, 'akasha'),
+            networkid: 512180
+        });
         this._start()
             ._restart()
             ._stop()
             ._syncStatus()
             ._logs()
             ._status()
+            ._options()
             ._manager();
     }
     _manager() {
@@ -38,7 +45,9 @@ class GethIPC extends GethEmitter_1.default {
     }
     _start() {
         this.registerListener(channels_1.default.server.geth.startService, (event, data) => {
-            geth_connector_1.GethConnector.getInstance().start(data);
+            geth_connector_1.GethConnector.getInstance().writeGenesis(path_1.join(__dirname, 'config', 'genesis.json'), (err, stdout) => {
+                geth_connector_1.GethConnector.getInstance().start(data);
+            });
         });
         return this;
     }
@@ -101,6 +110,13 @@ class GethIPC extends GethEmitter_1.default {
     _status() {
         this.registerListener(channels_1.default.server.geth.status, (event) => {
             this.fireEvent(channels_1.default.client.geth.status, responses_1.gethResponse({}), event);
+        });
+        return this;
+    }
+    _options() {
+        this.registerListener(channels_1.default.server.geth.options, (event, data) => {
+            const options = geth_connector_1.GethConnector.getInstance().setOptions(data);
+            this.fireEvent(channels_1.default.client.geth.status, responses_1.gethResponse({ options: options }), event);
         });
         return this;
     }

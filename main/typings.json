@@ -8,8 +8,10 @@
     "rimraf": "registry:npm/rimraf#2.5.0+20160723033700"
   },
   "globalDependencies": {
+    "form-data": "registry:dt/form-data#0.0.0+20160724024111",
     "github-electron": "registry:dt/github-electron#1.2.5+20160624085047",
     "mocha": "registry:env/mocha#2.2.5+20160723033700",
+    "request": "registry:dt/request#0.0.0+20160726020908",
     "winston": "registry:dt/winston#0.0.0+20160417152829"
   }
 }
