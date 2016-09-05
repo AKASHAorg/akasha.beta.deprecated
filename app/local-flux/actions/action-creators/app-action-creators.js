@@ -50,3 +50,9 @@ export function showEntryModal (entryData) {
         entryData
     };
 }
+
+export function hideEntryModal () {
+    return {
+        type: types.HIDE_ENTRY_MODAL
+    };
+}

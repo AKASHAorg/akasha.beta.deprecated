@@ -41,7 +41,8 @@ class AppActions {
     };
     showEntryModal = (entryData) =>
         Promise.resolve(this.dispatch(appActionCreators.showEntryModal(entryData)));
-
+    hideEntryModal = () =>
+        Promise.resolve(this.dispatch(appActionCreators.hideEntryModal()));
 }
 
 export { AppActions };

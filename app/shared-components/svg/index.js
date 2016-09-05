@@ -15,10 +15,18 @@ import ToolbarProfile from './ToolbarProfile';
 import ToolbarSettings from './ToolbarSettings';
 import ToolbarVotes from './ToolbarVotes';
 import ToolbarWallet from './ToolbarWallet';
-
+import ProfileIcon from './IconProfile';
+import AddEntryIcon from './IconAddEntry';
+import SearchIcon from './IconSearch';
+import StreamsIcon from './IconStreams';
+import PortalsIcon from './IconPortals';
+import CommunityIcon from './IconCommunity';
+import PeopleIcon from './IconPeople';
+import LogoIcon from './IconLogo';
 
 export {
-  MenuAddEntry, MenuAkashaLogo, MenuCommunities, MenuEntries, MenuEthereum,
-  MenuPeople, MenuPortals, MenuSearch, MenuStreams, MenuUser, ToolbarComments,
-  ToolbarEthereum, ToolbarLogout, ToolbarProfile, ToolbarSettings, ToolbarVotes, ToolbarWallet
+    ProfileIcon, AddEntryIcon, SearchIcon, StreamsIcon, PortalsIcon, CommunityIcon, PeopleIcon,
+    LogoIcon, MenuAddEntry, MenuAkashaLogo, MenuCommunities, MenuEntries, MenuEthereum, MenuPeople,
+    MenuPortals, MenuSearch, MenuStreams, MenuUser, ToolbarComments, ToolbarEthereum, ToolbarLogout,
+    ToolbarProfile, ToolbarSettings, ToolbarVotes, ToolbarWallet
 };

@@ -4,6 +4,10 @@ import entriesDB from './db/entry';
 import debug from 'debug';
 const dbg = debug('App:EntryService:');
 
+/** * DELETE THIS *****/
+import { generateEntries } from './faker-data';
+/** ******************/
+
 class EntryService {
     constructor () {
         this.listeners = {};
@@ -72,14 +76,30 @@ class EntryService {
         });
     };
     getSortedEntries = ({ sortBy }) =>
-        entriesDB.transaction('r', entriesDB.drafts, () => {
+        new Promise((resolve, reject) => {
+            let entries = [];
             if (sortBy === 'rating') {
-                return entriesDB.drafts.where('tags').anyOf('top-rating').toArray();
+                entries = generateEntries(10);
+                dbg('getting entries by rating', entries);
+                return resolve(entries);
             }
             if (sortBy === 'top') {
-                return entriesDB.drafts.sortBy('status.created_at').toArray();
+                entries = generateEntries(6);
+                dbg('getting top entries', entries);
+                return resolve(entries);
             }
+            entries = generateEntries(15);
+            dbg('getting entries by', sortBy, entries);
+            return resolve(entries);
         });
+        // entriesDB.transaction('r', entriesDB.drafts, () => {
+        //     if (sortBy === 'rating') {
+        //         return entriesDB.drafts.where('tags').anyOf('top-rating').toArray();
+        //     }
+        //     if (sortBy === 'top') {
+        //         return entriesDB.drafts.sortBy('status.created_at').toArray();
+        //     }
+        // });
     getSavedEntries = () => {};
     getEntriesForTag = () => {};
 }

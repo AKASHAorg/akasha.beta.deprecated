@@ -1,6 +1,6 @@
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import { IconMenu, IconButton, MenuItem } from 'material-ui';
-import Logo from 'shared-components/Sidebar/IconLogo';
+import { LogoIcon } from 'shared-components/svg';
 import React from 'react';
 import { generalMessages } from 'locale-data/messages';
 import { injectIntl } from 'react-intl';
@@ -10,7 +10,7 @@ function SetupHeader ({ title, intl }) {
     return (
       <div className="col-xs-12">
         <div className="row middle-xs" >
-          <Logo className="col-xs-1 start-xs" />
+          <LogoIcon className="col-xs-1 start-xs" />
           <div className="col-xs-3" style={{ fontWeight: '300' }} >{title}</div>
           <div className="col-xs-8 end-xs">
             <IconMenu

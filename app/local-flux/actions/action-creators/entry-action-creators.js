@@ -152,3 +152,10 @@ export function publishEntrySuccess (entry) {
         entry
     };
 }
+
+export function getSortedEntries (entries) {
+    return {
+        type: types.GET_SORTED_ENTRIES,
+        entries
+    };
+}

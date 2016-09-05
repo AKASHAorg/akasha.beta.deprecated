@@ -1,17 +1,33 @@
 import React from 'react';
 import { Chip } from 'material-ui';
-import style from './tag-chip.scss';
 
-const TagChip = (props) =>
-  <Chip
-    style={style.root}
-    onTouchTap={(ev) => props.onTouchTap(ev, props.tag)}
-  >
-    {props.tag}
-  </Chip>;
+const TagChip = (props) => {
+    const tagStyle = {
+        display: 'inline-block',
+        border: '1px solid',
+        borderColor: '#DDD',
+        backgroundColor: '#FFF',
+        borderRadius: 3,
+        height: 34,
+        verticalAlign: 'middle',
+        marginRight: '4px',
+        marginBottom: '4px',
+        cursor: 'pointer',
+    };
+    return (
+      <Chip
+        style={{ ...tagStyle, ...props.style }}
+        onTouchTap={(ev) => props.onTagClick(ev, props.tag)}
+      >
+        {props.tag}
+      </Chip>
+    );
+};
 
 TagChip.propTypes = {
-    tag: React.PropTypes.string
+    tag: React.PropTypes.string,
+    style: React.PropTypes.object,
+    onTagClick: React.PropTypes.func
 };
 
 export default TagChip;

@@ -7,6 +7,7 @@ import * as setupActionCreators from './setup-action-creators';
 import * as syncActionCreators from './sync-action-creators';
 import * as validationActionCreators from './validation-action-creators';
 import * as tagActionCreators from './tag-action-creators';
+import * as commentActionCreators from './comment-action-creators';
 
 export {
     appActionCreators,
@@ -17,5 +18,6 @@ export {
     setupActionCreators,
     syncActionCreators,
     validationActionCreators,
-    tagActionCreators
+    tagActionCreators,
+    commentActionCreators
 };

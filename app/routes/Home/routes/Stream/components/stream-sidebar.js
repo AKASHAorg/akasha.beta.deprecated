@@ -1,6 +1,7 @@
 import React from 'react';
 import { Subheader, Chip, FlatButton } from 'material-ui';
 import { TagChip } from 'shared-components';
+import styles from './stream-sidebar.scss';
 
 class StreamSidebar extends React.Component {
     constructor (props) {
@@ -27,12 +28,9 @@ class StreamSidebar extends React.Component {
         ];
         return (
           <div
-            className="row center-xs"
+            className={`row center-xs ${styles.root}`}
             style={{
-                background: '#F5F5F5',
-                position: 'fixed',
-                top: 45,
-                bottom: 0
+                background: '#F5F5F5'
             }}
           >
             <div className="col-xs-12">

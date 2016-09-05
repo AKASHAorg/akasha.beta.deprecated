@@ -15,4 +15,5 @@ export {
     SyncActions,
     ValidationActions,
     EntryActions,
-    TagActions } from './actions';
+    TagActions,
+    CommentActions } from './actions';

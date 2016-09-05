@@ -127,7 +127,8 @@ class EntryActions {
     };
     getSortedEntries = ({ sortBy }) => {
         this.entryService.getSortedEntries({ sortBy }).then(result => {
-            console.log(result, 'result for sortBy', sortBy);
+            dbg(result, 'result for sortBy', sortBy);
+            this.dispatch(entryActionCreators.getSortedEntries(result));
         });
     };
     getSavedEntries = () => {

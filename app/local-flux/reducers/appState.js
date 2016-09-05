@@ -10,7 +10,7 @@ const initialState = fromJS({
     showAuthDialog: false,
     showEntry: {
         modal: false
-    }
+    },
 });
 
 const appState = createReducer(initialState, {
@@ -36,7 +36,11 @@ const appState = createReducer(initialState, {
 
     [types.HIDE_AUTH_DIALOG]: (state) =>
         state.set('showAuthDialog', false),
+    [types.SHOW_ENTRY_MODAL]: (state, action) =>
+        state.set('showEntry', { modal: true, ...action.entryData }),
 
+    [types.HIDE_ENTRY_MODAL]: (state, action) =>
+        state.set('showEntry', { modal: false })
 });
 
 export default appState;

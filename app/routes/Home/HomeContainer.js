@@ -2,31 +2,23 @@ import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { asyncConnect } from 'redux-connect';
 import { BootstrapBundleActions } from 'local-flux';
-import SideBar from 'shared-components/Sidebar/side-bar';
+import { Sidebar } from 'shared-components';
 import '../../styles/core.scss';
-import styles from './styles.css';
+import styles from './home.scss';
 import PanelLoader from './components/panel-loader-container';
+import EntryModal from './components/entry-modal';
 
 function HomeContainer ({ children }) {
     return (
-      <div style={{ height: '100%' }}>
-        <div
-          style={{ width: '64px', position: 'fixed', left: 0, top: 0, bottom: 0, zIndex: 999 }}
-        >
-          <SideBar />
+      <div className={styles.root} >
+        <div className={styles.sideBar} >
+          <Sidebar />
         </div>
-        <div
-          className={styles.panelLoader}
-          style={{ position: 'absolute', left: 64, top: 0, bottom: 0, zIndex: 990 }}
-        >
+        <div className={styles.panelLoader} >
           <PanelLoader />
         </div>
-        <div
-          className={styles.entryLoader}
-        >
-          EntryWindow
-        </div>
-        <div className="col-xs-12" style={{ paddingLeft: '64px' }} >
+        <EntryModal />
+        <div className={`col-xs-12 ${styles.childWrapper}`} >
           {children}
         </div>
       </div>

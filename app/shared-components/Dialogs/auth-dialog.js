@@ -1,11 +1,11 @@
 import React from 'react';
 import { TextField, Dialog, RaisedButton, Checkbox, SelectField, MenuItem } from 'material-ui';
-import Logo from 'shared-components/Sidebar/IconLogo';
+import { LogoIcon } from 'shared-components/svg';
 
-export default function AuthDialog(props) {
+export default function AuthDialog (props) {
     const DialogTitle = (
       <div className="row middle-xs">
-        <Logo />
+        <LogoIcon />
         <div className="col-xs-11">
           Confirm Password
         </div>

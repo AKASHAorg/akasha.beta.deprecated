@@ -1,0 +1,17 @@
+.root {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    overflow-y: auto;
+    background: #FFF;
+    z-index: 990;
+    right: 0
+}
+.entryBody {
+    h1, h2, h3 {
+        font-weight: 200;
+    }
+}
+.entryActions {
+    border-bottom: 1px solid #DDD;
+}

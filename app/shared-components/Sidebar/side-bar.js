@@ -1,14 +1,15 @@
 import React, { PropTypes, Component } from 'react';
 import { connect } from 'react-redux';
 import { AppActions, ProfileActions, EntryActions } from 'local-flux';
-import Profile from './IconProfile';
-import AddEntry from './IconAddEntry';
-import Search from './IconSearch';
-import Streams from './IconStreams';
-import Portals from './IconPortals';
-import Community from './IconCommunity';
-import People from './IconPeople';
-import Logo from './IconLogo';
+import {
+    ProfileIcon,
+    AddEntryIcon,
+    SearchIcon,
+    StreamsIcon,
+    PortalsIcon,
+    CommunityIcon,
+    PeopleIcon,
+    LogoIcon } from '../svg';
 
 class SideBar extends Component {
     componentWillMount () {
@@ -50,22 +51,25 @@ class SideBar extends Component {
         return (
           <div style={style} >
             <div style={{ flexGrow: 1, padding: '16px' }} >
-              <Profile
+              <ProfileIcon
                 onClick={() => this._handlePanelShow({ name: 'userProfile', overlay: true })}
               />
             </div>
             <div style={{ flexGrow: 1, padding: '16px' }} >
-              <AddEntry onClick={this._handleNewEntry} tooltip="Add new entry" />
-              <Search onClick={this._handleSearch} tooltip="Search" />
+              <AddEntryIcon onClick={this._handleNewEntry} tooltip="Add new entry" />
+              <SearchIcon onClick={this._handleSearch} tooltip="Search" />
             </div>
             <div style={{ flexGrow: 4, padding: '16px' }} >
-              <Streams onClick={() => this._handleNavigation('explore/stream')} tooltip="Stream" />
-              <Portals disabled tooltip="Coming Soon" />
-              <Community disabled tooltip="Coming Soon" />
-              <People onClick={this._handlePeople} tooltip="People" />
+              <StreamsIcon
+                onClick={() => this._handleNavigation('explore/stream')}
+                tooltip="Stream"
+              />
+              <PortalsIcon disabled tooltip="Coming Soon" />
+              <CommunityIcon disabled tooltip="Coming Soon" />
+              <PeopleIcon onClick={this._handlePeople} tooltip="People" />
             </div>
             <div style={{ flexGrow: 1, padding: '16px' }} >
-              <Logo
+              <LogoIcon
                 style={{ position: 'absolute', bottom: '16px', width: '32px', height: '32px' }}
               />
             </div>

@@ -85,6 +85,11 @@ const entryState = createReducer(initialState, {
             drafts: state.get('drafts').delete(draftIndex),
             entries: state.get('entries').push(new Entry(action.entry))
         });
+    },
+    [types.GET_SORTED_ENTRIES]: (state, action) => {
+        return state.merge({
+            published: action.entries
+        });
     }
 });
 

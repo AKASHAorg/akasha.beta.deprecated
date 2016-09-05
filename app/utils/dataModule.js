@@ -69,3 +69,23 @@ export const inputFieldMethods = {
         return props;
     }
 };
+
+export const calculateReadingTime = (wordCount, options = {}) => {
+    let minutes;
+    let seconds;
+    let hours = null; // hopefully not the case :)
+    options.wordsPerMinute = options.wordsPerMinute || 185;
+
+    const time = wordCount / options.wordsPerMinute;
+    minutes = Math.floor(time);
+    seconds = Math.ceil((wordCount % options.wordsPerMinute) / options.wordsPerMinute * 60);
+    if (minutes > 60) {
+        hours = Math.floor(minutes / 60);
+        minutes %= 60;
+    }
+
+    return {
+        hours,
+        minutes
+    };
+};
