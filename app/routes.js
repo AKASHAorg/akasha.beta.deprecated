@@ -53,10 +53,10 @@ export default (
 
     {/** user home after login */}
     <Route component={HomeContainer} path=":username" >
-      <IndexRedirect to="explore" />
+      <IndexRedirect to="explore/stream" />
       {/** loads articles from blockchain */}
       <Route component={StreamPageContainer}>
-        <Route component={EntryListContainer} path="/:username/explore(/:filter)(/tagName)" />
+        <Route component={EntryListContainer} path="explore(/:filter)(/:tagName)" />
       </Route>
 
       {/** create a new entry or edit existing one */}

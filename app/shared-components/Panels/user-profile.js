@@ -49,7 +49,14 @@ class UserProfilePanel extends Component {
     render () {
         const loggedProfile = this.props.profileState.get('loggedProfile');
         return (
-          <Paper style={{ width: (this.props.width || 640), zIndex: 10, height: '100%' }}>
+          <Paper
+            style={{
+                width: (this.props.width || 640),
+                zIndex: 10,
+                position: 'relative',
+                height: '100%'
+            }}
+          >
             <UserProfileHeader
               profile={loggedProfile}
               profileActions={this.props.profileActions}

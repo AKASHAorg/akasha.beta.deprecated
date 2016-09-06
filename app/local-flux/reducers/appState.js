@@ -11,6 +11,7 @@ const initialState = fromJS({
     showEntry: {
         modal: false
     },
+    confirmationDialog: null
 });
 
 const appState = createReducer(initialState, {
@@ -36,11 +37,22 @@ const appState = createReducer(initialState, {
 
     [types.HIDE_AUTH_DIALOG]: (state) =>
         state.set('showAuthDialog', false),
-    [types.SHOW_ENTRY_MODAL]: (state, action) =>
-        state.set('showEntry', { modal: true, ...action.entryData }),
 
-    [types.HIDE_ENTRY_MODAL]: (state, action) =>
-        state.set('showEntry', { modal: false })
+    [types.SHOW_ENTRY_MODAL]: (state, action) =>
+        state.set('showEntry', { modal: true, ...action.entryData, ...action.options }),
+
+    [types.HIDE_ENTRY_MODAL]: (state) =>
+        state.set('showEntry', { modal: false }),
+
+    [types.SHOW_CONFIRMATION_DIALOG]: (state, action) =>
+        state.set('confirmationDialog', {
+            action: action.confirmAction,
+            address: action.entryAddress
+        }),
+
+    [types.HIDE_CONFIRMATION_DIALOG]: (state) =>
+        state.set('confirmationDialog', null),
+
 });
 
 export default appState;

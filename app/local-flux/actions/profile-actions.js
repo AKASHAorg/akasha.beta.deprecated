@@ -68,6 +68,9 @@ class ProfileActions {
             }
             return null;
         });
+    clearLoggedProfile = () => {
+        this.profileService.clearLoggedProfile();
+    }
     /**
      * Retrieve all temporary profiles
      */

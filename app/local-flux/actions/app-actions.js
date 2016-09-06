@@ -39,10 +39,16 @@ class AppActions {
     resumeEntryPublishing = () => {
         // console.log(payload);
     };
-    showEntryModal = (entryData) =>
-        Promise.resolve(this.dispatch(appActionCreators.showEntryModal(entryData)));
+    showEntryModal = (entryData, options = {}) =>
+        Promise.resolve(this.dispatch(appActionCreators.showEntryModal(entryData, options)));
     hideEntryModal = () =>
         Promise.resolve(this.dispatch(appActionCreators.hideEntryModal()));
+    getConfirmation = (actionToConfirm, entryAddress) => {
+        this.dispatch(appActionCreators.showConfirmationDialog(actionToConfirm, entryAddress));
+    }
+    hideConfirmationDialog = () => {
+        this.dispatch(appActionCreators.hideConfirmationDialog());
+    }
 }
 
 export { AppActions };

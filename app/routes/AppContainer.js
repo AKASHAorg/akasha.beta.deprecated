@@ -4,14 +4,16 @@ import { asyncConnect } from 'redux-connect';
 import { SettingsActions, BootstrapBundleActions, AppActions, ProfileActions } from 'local-flux';
 import { getMuiTheme } from 'material-ui/styles';
 import { Snackbar } from 'material-ui';
-import AuthDialog from 'shared-components/Dialogs/auth-dialog';
+import { AuthDialog, ConfirmationDialog } from 'shared-components';
+
 import AkashaTheme from '../layouts/AkashaTheme';
 
 class App extends Component {
     constructor (props) {
         super(props);
         this.state = {
-            userPassword: ''
+            userPassword: '',
+            voteWeight: 1
         };
     }
     getChildContext () {
@@ -45,12 +47,27 @@ class App extends Component {
         const { appActions } = this.props;
         appActions.hideAuthDialog();
     };
+    _handleVoteWeightChange = (ev, index, value) => {
+        this.setState({
+            voteWeight: value
+        });
+    };
+    _handleConfirmationDialogCancel = (ev) => {
+        const { appActions } = this.props;
+        appActions.hideConfirmationDialog();
+    };
+    _handleConfirmationDialogConfirm = (ev, actionType, entryAddress) => {
+        const { voteWeight } = this.state;
+        console.log('cast', actionType, 'of', voteWeight, 'to', entryAddress);
+    };
     render () {
         const { appState } = this.props;
         const error = appState.get('error');
+        const confirmationDialog = appState.get('confirmationDialog');
         const errorMessage = error.get('code')
             ? `Error ${error.get('code')}: ${error.get('message')}` : '';
         const isAuthDialogVisible = appState.get('showAuthDialog');
+        const isConfirmationDialogVisible = confirmationDialog !== null;
         return (
           <div className="fill-height" >
             {this.props.children}
@@ -69,6 +86,14 @@ class App extends Component {
               isVisible={isAuthDialogVisible}
               onSubmit={this._handleConfirmation}
               onCancel={this._handleCancellation}
+            />
+            <ConfirmationDialog
+              isOpen={isConfirmationDialogVisible}
+              modalDetails={confirmationDialog}
+              onVoteWeightChange={this._handleVoteWeightChange}
+              voteWeight={this.state.voteWeight}
+              onCancel={this._handleConfirmationDialogCancel}
+              onConfirm={this._handleConfirmationDialogConfirm}
             />
           </div>
         );

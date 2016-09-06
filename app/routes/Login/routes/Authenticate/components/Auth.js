@@ -26,7 +26,7 @@ class Auth extends Component {
     componentWillMount () {
         const { profileActions } = this.props;
         profileActions.checkTempProfile().then(() => {
-            profileActions.checkLoggedProfile({redirect: true});
+            profileActions.clearLoggedProfile({ redirect: true });
         });
     }
     handleTouchTap = (index) => {

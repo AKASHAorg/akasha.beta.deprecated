@@ -51,7 +51,6 @@ class StreamPage extends Component {
         this.context.router.push(`/${params.username}/explore/${tab.props.value}`);
     }
     _handleFilterChange = (val) => {
-        console.log('change filter to', val);
         if (val === this.state.filter) return;
         this.setState({
             filter: val

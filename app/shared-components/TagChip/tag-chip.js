@@ -1,7 +1,7 @@
 import React from 'react';
 import { Chip } from 'material-ui';
 
-const TagChip = (props) => {
+const TagChip = ({ style, onTagClick, tag }) => {
     const tagStyle = {
         display: 'inline-block',
         border: '1px solid',
@@ -16,18 +16,18 @@ const TagChip = (props) => {
     };
     return (
       <Chip
-        style={{ ...tagStyle, ...props.style }}
-        onTouchTap={(ev) => props.onTagClick(ev, props.tag)}
+        style={{ ...tagStyle, ...style }}
+        onTouchTap={(ev) => onTagClick(ev, tag)}
       >
-        {props.tag}
+        {tag}
       </Chip>
     );
 };
 
 TagChip.propTypes = {
-    tag: React.PropTypes.string,
+    tag: React.PropTypes.string.isRequired,
     style: React.PropTypes.object,
-    onTagClick: React.PropTypes.func
+    onTagClick: React.PropTypes.func.isRequired
 };
 
 export default TagChip;

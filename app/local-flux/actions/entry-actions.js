@@ -137,5 +137,14 @@ class EntryActions {
     getEntriesForTag = ({ tagName }) => {
         this.entryService.getEntriesForTag({ tagName });
     };
+    castUpvote = (entryAddress, voteWeight) => {
+        this.entryService.castUpvote(entryAddress, voteWeight).then(result => {
+            if (result.error) {
+                return this.dispatch(entryActionCreators.castUpvoteError(result.error));
+            }
+            this.dispatch(entryActionCreators.castUpvoteSuccess(result.data));
+        });
+    };
+    castDownvote = (entryAddress, voteWeight) => {};
 }
 export { EntryActions };

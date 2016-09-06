@@ -55,6 +55,12 @@ class EntryModal extends React.Component {
         const { appActions } = this.props;
         appActions.hideEntryModal();
     }
+    _handleTagNavigation = (ev, tag) => {
+        const { profileState } = this.props;
+        const loggedProfile = profileState.get('loggedProfile');
+        this._hideEntryModal();
+        this.context.router.push(`/${loggedProfile.get('userName')}/explore/tag/${tag}`);
+    }
     render () {
         const { profileState, appState } = this.props;
         if (!appState.get('showEntry').modal) {
@@ -91,8 +97,14 @@ class EntryModal extends React.Component {
                 </section>
                 <div className={`${styles.tags} col-xs-12`}>
                   <div className="row">
-                    <TagChip tag="mathempatics" />
-                    <TagChip tag="apps" />
+                    <TagChip
+                      tag="mathempatics"
+                      onTagClick={this._handleTagNavigation}
+                    />
+                    <TagChip
+                      tag="apps"
+                      onTagClick={this._handleTagNavigation}
+                    />
                   </div>
                 </div>
                 <div className={`${styles.entryActions} col-xs-12`}>
@@ -247,6 +259,9 @@ EntryModal.propTypes = {
     appState: React.PropTypes.object,
     entryId: React.PropTypes.object,
     commentActions: React.PropTypes.object
+};
+EntryModal.contextTypes = {
+    router: React.PropTypes.object
 };
 function mapStateToProps (state) {
     return {

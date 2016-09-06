@@ -5,7 +5,7 @@ import styles from './stream-sidebar.scss';
 
 class StreamSidebar extends React.Component {
     constructor (props) {
-        super (props);
+        super(props);
     }
     _handleTagNavigation = (ev, tag) => {
         this.context.router.push(`/${this.props.params.username}/explore/tag/${tag}`);
@@ -51,7 +51,7 @@ class StreamSidebar extends React.Component {
                   <TagChip
                     key={key}
                     tag={tag}
-                    onTouchTap={this._handleTagNavigation}
+                    onTagClick={this._handleTagNavigation}
                   />
                 )}
               </div>
@@ -62,7 +62,7 @@ class StreamSidebar extends React.Component {
                 {recommendedTags.map((tag, key) =>
                   <TagChip
                     key={key}
-                    onTouchTap={this._handleTagNavigation}
+                    onTagClick={this._handleTagNavigation}
                     tag={tag}
                   />
                 )}

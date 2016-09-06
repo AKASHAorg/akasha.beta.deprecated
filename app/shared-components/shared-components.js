@@ -5,3 +5,5 @@ export CommentEditor from './CommentEditor/comment-editor';
 export Comment from './Comment/comment';
 export EntryContent from './EntryContent/entry-content';
 export EntryCard from './EntryCard/entry-card';
+export AuthDialog from './Dialogs/auth-dialog';
+export ConfirmationDialog from './Dialogs/confirmation-dialog';

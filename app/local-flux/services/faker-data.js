@@ -53,7 +53,11 @@ export function generateEntries (count) {
                 created_at: faker.date.past(),
                 updated_at: faker.date.recent(),
             },
-            tags: [faker.random.word(), faker.random.word(), faker.random.word()],
+            tags: [
+                faker.random.word().replace(/\s+/g, '-').toLowerCase(),
+                faker.random.word().replace(/\s+/g, '-').toLowerCase(),
+                faker.random.word().replace(/\s+/g, '-').toLowerCase()
+            ],
             wordCount: faker.random.number(),
             licence: {},
             upvotes: faker.random.number({ min: 0, max: 500 }),

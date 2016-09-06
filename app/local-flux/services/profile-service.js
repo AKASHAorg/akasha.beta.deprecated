@@ -127,6 +127,15 @@ class ProfileService {
             return profileDB.loggedProfile.toArray();
         });
     /**
+     * Clear already logged profile fron db
+     * this method is called on Auth page
+     */
+    clearLoggedProfile = () =>
+        profileDB.transaction('rw', profileDB.loggedProfile, () => {
+            dbg('clearing loggedProfile');
+            return profileDB.loggedProfile.clear();
+        });
+    /**
      * Create a temporary profile in indexedDB
      * @param {object} profileData - Data of the profile created
      * @param {object} currentStatus - Current status of the profile creation process
@@ -268,4 +277,4 @@ class ProfileService {
     }
 }
 
-export {ProfileService};
+export { ProfileService };

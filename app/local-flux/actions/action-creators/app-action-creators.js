@@ -56,3 +56,31 @@ export function hideEntryModal () {
         type: types.HIDE_ENTRY_MODAL
     };
 }
+
+export function showConfirmationDialog (confirmAction, entryAddress) {
+    return {
+        type: types.SHOW_CONFIRMATION_DIALOG,
+        confirmAction,
+        entryAddress
+    };
+}
+
+export function hideConfirmationDialog () {
+    return {
+        type: types.HIDE_CONFIRMATION_DIALOG
+    };
+}
+
+export function castUpvoteError (error) {
+    return {
+        type: types.CAST_UPVOTE_ERROR,
+        error
+    };
+}
+
+export function castUpvoteSuccess (data) {
+    return {
+        type: types.CAST_UPVOTE_SUCCESS,
+        data
+    };
+}
