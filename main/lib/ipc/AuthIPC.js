@@ -27,7 +27,8 @@ class AuthIPC extends ModuleEmitter_1.default {
                 .auth
                 .login(data.account, data.password, data.rememberTime)
                 .then((response) => {
-                return this.fireEvent(channels_1.default.client[this.MODULE_NAME].login, responses_1.mainResponse(response), event);
+                const response1 = responses_1.mainResponse(response);
+                return this.fireEvent(channels_1.default.client[this.MODULE_NAME].login, response1, event);
             });
         });
         return this;
@@ -37,7 +38,8 @@ class AuthIPC extends ModuleEmitter_1.default {
             index_1.module
                 .auth
                 .logout();
-            return this.fireEvent(channels_1.default.client[this.MODULE_NAME].logout, responses_1.mainResponse({ done: true }), event);
+            const response = responses_1.mainResponse({ done: true });
+            return this.fireEvent(channels_1.default.client[this.MODULE_NAME].logout, response, event);
         });
         return this;
     }
@@ -47,10 +49,12 @@ class AuthIPC extends ModuleEmitter_1.default {
                 .auth
                 .generateKey(data.password)
                 .then((address) => {
-                this.fireEvent(channels_1.default.client[this.MODULE_NAME].generateEthKey, responses_1.mainResponse({ address: address }));
+                const response = responses_1.mainResponse({ address: address });
+                this.fireEvent(channels_1.default.client[this.MODULE_NAME].generateEthKey, response);
             })
-                .catch((err) => {
-                this.fireEvent(channels_1.default.client[this.MODULE_NAME].generateEthKey, responses_1.mainResponse({ error: { message: err.message } }));
+                .catch((error) => {
+                const response = responses_1.mainResponse({ error: error });
+                this.fireEvent(channels_1.default.client[this.MODULE_NAME].generateEthKey, response);
             });
         });
         return this;
@@ -73,17 +77,13 @@ class AuthIPC extends ModuleEmitter_1.default {
     _requestEther() {
         this.registerListener(channels_1.default.server[this.MODULE_NAME].requestEther, (event, data) => {
             request_1.post({
-                url: 'http://138.68.78.152:1337/get/faucet',
-                json: { address: data.address, token: faucetToken }
-            }, (err, response, body) => {
-                let data;
-                if (err) {
-                    data = { error: { message: err.message } };
-                }
-                else {
-                    data = body;
-                }
-                this.fireEvent(channels_1.default.client[this.MODULE_NAME].requestEther, responses_1.mainResponse(data));
+                url: 'https://138.68.78.152:1337/get/faucet',
+                json: { address: data.address, token: faucetToken },
+                agentOptions: { rejectUnauthorized: false }
+            }, (error, response, body) => {
+                const data = (error) ? { error: error } : body;
+                const response1 = responses_1.mainResponse(data);
+                this.fireEvent(channels_1.default.client[this.MODULE_NAME].requestEther, response1);
             });
         });
         return this;

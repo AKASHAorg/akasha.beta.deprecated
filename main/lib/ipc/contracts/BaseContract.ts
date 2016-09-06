@@ -17,7 +17,8 @@ export default class BaseContract {
      * @returns {any}
      */
     flattenIpfs(ipfsHash: string[]) {
-        return this.gethInstance.web3.toUtf8(`${ipfsHash[0]}${ipfsHash[1]}`);
+        return this.gethInstance.web3.toUtf8(ipfsHash[0]) +
+            this.gethInstance.web3.toUtf8(ipfsHash[1]);
     }
 
     /**

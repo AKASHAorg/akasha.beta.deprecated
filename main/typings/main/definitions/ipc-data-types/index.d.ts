@@ -1,7 +1,7 @@
 // main -> renderer ipc data exchange format
 
 interface MainResponse {
-    data: Object;
+    data: any;
     error?: {
         message: string,
         fatal?: boolean
@@ -74,9 +74,11 @@ interface AuthLoginRequest {
 }
 
 // channels.client.auth.login
-interface AuthLoginResponse {
-    token: string;
-    expiration: Date;
+interface AuthLoginResponse extends MainResponse {
+    data: {
+        token: string
+        expiration: Date;
+    };
 }
 
 // channels.server.auth.logout
@@ -85,8 +87,10 @@ interface AuthLogoutRequest {
 }
 
 // channels.client.auth.logout
-interface AuthLogoutResponse {
-    done: boolean;
+interface AuthLogoutResponse extends MainResponse {
+    data: {
+        done: boolean
+    };
 }
 
 // channels.server.auth.generateEthKey
@@ -95,16 +99,20 @@ interface AuthKeygenRequest {
 }
 
 // channels.client.auth.generateEthKey
-interface AuthKeygenResponse {
-    address: string;
+interface AuthKeygenResponse extends MainResponse {
+    data: {
+        address: string
+    };
 }
 
 interface RequestEtherRequest {
     address: string;
 }
 
-interface RequestEtherResponse {
-    tx: string;
+interface RequestEtherResponse extends MainResponse {
+    data: {
+        tx: string
+    };
 }
 
 ////////////////////////// </ AUTH > \\\\\\\\\\\\\\\\\\\\\\\\
@@ -114,16 +122,35 @@ interface AddToQueueRequest {
     tx: string;
 }
 
-interface AddToQueueResponse {
-    watching: boolean;
+interface AddToQueueResponse extends MainResponse {
+    data: {
+        watching: boolean
+    };
 }
 
 interface EmitMinedRequest {
     watch: boolean;
 }
 
-interface EmitMinedResponse {
-    mined?: string;
-    watching: boolean;
+interface EmitMinedResponse extends MainResponse {
+    data: {
+        mined?: string
+        watching: boolean;
+    };
 }
 /////////////////////////  </ TX > \\\\\\\\\\\\\\\\\\\\\\\\\\\
+
+/////////////////////////  < Registry > \\\\\\\\\\\\\\\\\\\\\\\\
+
+interface ProfileExistsRequest {
+    username: string;
+}
+
+interface ProfileExistsResponse extends MainResponse {
+    data: {
+        username: string;
+        exists: boolean;
+    };
+}
+
+/////////////////////////  </ Registry > \\\\\\\\\\\\\\\\\\\\\\\\

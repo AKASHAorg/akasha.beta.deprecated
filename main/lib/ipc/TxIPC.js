@@ -8,6 +8,7 @@ class TxIPC extends ModuleEmitter_1.default {
         super();
         this.MODULE_NAME = 'tx';
         this.DEFAULT_MANAGED = ['addToQueue', 'emitMined'];
+        this.attachEmitters();
     }
     initListeners(webContents) {
         this.webContents = webContents;
@@ -21,21 +22,27 @@ class TxIPC extends ModuleEmitter_1.default {
     }
     _addToQueue() {
         this.registerListener(channels_1.default.server[this.MODULE_NAME].addToQueue, (event, data) => {
-            geth_connector_1.gethHelper.addTxToWatch(data.tx);
-            this.fireEvent(channels_1.default.client[this.MODULE_NAME].addToQueue, responses_1.mainResponse({ watching: geth_connector_1.gethHelper.watching }));
+            data.forEach((hash) => {
+                geth_connector_1.gethHelper.addTxToWatch(hash.tx, false);
+            });
+            geth_connector_1.gethHelper.startTxWatch();
+            const response = responses_1.mainResponse({ watching: geth_connector_1.gethHelper.watching });
+            this.fireEvent(channels_1.default.client[this.MODULE_NAME].addToQueue, response);
         });
         return this;
     }
     _listenMined() {
         this.registerListener(channels_1.default.server[this.MODULE_NAME].emitMined, (event, data) => {
             (data.watch) ? geth_connector_1.gethHelper.startTxWatch() : geth_connector_1.gethHelper.stopTxWatch();
-            this.fireEvent(channels_1.default.client[this.MODULE_NAME].emitMined, responses_1.mainResponse({ watching: geth_connector_1.gethHelper.watching }));
+            const response = responses_1.mainResponse({ watching: geth_connector_1.gethHelper.watching });
+            this.fireEvent(channels_1.default.client[this.MODULE_NAME].emitMined, response);
         });
         return this;
     }
     _emitMined() {
         geth_connector_1.GethConnector.getInstance().on(geth_connector_1.CONSTANTS.TX_MINED, (txHash) => {
-            this.fireEvent(channels_1.default.client[this.MODULE_NAME].emitMined, responses_1.mainResponse({ mined: txHash, watching: geth_connector_1.gethHelper.watching }));
+            const response = responses_1.mainResponse({ mined: txHash, watching: geth_connector_1.gethHelper.watching });
+            this.fireEvent(channels_1.default.client[this.MODULE_NAME].emitMined, response);
         });
     }
 }

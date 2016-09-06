@@ -13,6 +13,7 @@ const channels = {
     ipfs: ['manager', 'startService', 'stopService', 'status'],
     auth: ['manager', 'login', 'logout', 'requestEther', 'generateEthKey', 'getLocalIdentities'],
     user: ['manager', 'exists', 'registerProfile', 'getProfileData', 'getBalance', 'getIpfsImage'],
+    registry: ['manager', 'profileExists', 'registerProfile', 'getCurrentProfile', 'getByAddress'],
     entry: ['manager', 'publish'],
     tx: ['manager', 'addToQueue', 'emitMined']
 };
