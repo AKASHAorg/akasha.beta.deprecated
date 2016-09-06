@@ -18,6 +18,8 @@ const channels = {
 
     user: ['manager', 'exists', 'registerProfile', 'getProfileData', 'getBalance', 'getIpfsImage'],
 
+    registry: ['manager', 'profileExists', 'registerProfile', 'getCurrentProfile', 'getByAddress'],
+
     entry: ['manager', 'publish'],
 
     tx: ['manager', 'addToQueue', 'emitMined']

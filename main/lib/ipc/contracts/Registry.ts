@@ -26,7 +26,7 @@ export default class Registry extends BaseContract {
     }
 
     /**
-     * Find a profile by contract address
+     * Find a profile by eth address
      * @param address
      * @returns {any}
      */

@@ -34,7 +34,7 @@
       }
     },
     "xgui": {
-      "command": "electron --remote-debugging-port=1337 --debug=5858 .",
+      "command": "electron $NODE_DEBUG_OPTION --remote-debugging-port=1337 --debug=5858 .",
       "env": {
         "HOT": 1,
         "NODE_ENV": "development"

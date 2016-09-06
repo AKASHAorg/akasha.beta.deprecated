@@ -5,7 +5,8 @@ class BaseContract {
         this.gethInstance = geth_connector_1.GethConnector.getInstance();
     }
     flattenIpfs(ipfsHash) {
-        return this.gethInstance.web3.toUtf8(`${ipfsHash[0]}${ipfsHash[1]}`);
+        return this.gethInstance.web3.toUtf8(ipfsHash[0]) +
+            this.gethInstance.web3.toUtf8(ipfsHash[1]);
     }
     getContract() {
         return this.contract;
