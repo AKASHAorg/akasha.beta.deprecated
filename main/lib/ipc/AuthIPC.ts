@@ -75,14 +75,16 @@ class AuthIPC extends ModuleEmitter {
                         const response: AuthKeygenResponse = mainResponse({address});
                        this.fireEvent(
                            channels.client[this.MODULE_NAME].generateEthKey,
-                           response
+                           response,
+                           event
                        );
                     })
                     .catch((error: Error) => {
                         const response: AuthKeygenResponse = mainResponse({error});
                         this.fireEvent(
                             channels.client[this.MODULE_NAME].generateEthKey,
-                            response
+                            response,
+                            event
                         );
                     });
             }
@@ -94,20 +96,22 @@ class AuthIPC extends ModuleEmitter {
         this.registerListener(
             channels.server[this.MODULE_NAME].getLocalIdentities,
             (event: any, data: any) => {
+                let response: LocalProfilesResponse;
                 constructed
                     .instance
                     .registry
                     .getLocalProfiles()
-                    .then((list: [string[]]) => {
-                        this.fireEvent(
-                            channels.client[this.MODULE_NAME].getLocalIdentities,
-                            mainResponse(list)
-                        );
+                    .then((list: {key: string, profile: string}[]) => {
+                        response = mainResponse(list);
                     })
                     .catch((err: Error) => {
+                        response = mainResponse({error: {message: err.message}});
+                    })
+                    .finally(() => {
                         this.fireEvent(
                             channels.client[this.MODULE_NAME].getLocalIdentities,
-                            mainResponse({error: {message: err.message}})
+                            response,
+                            event
                         );
                     });
             }
@@ -129,7 +133,8 @@ class AuthIPC extends ModuleEmitter {
                         const response1: RequestEtherResponse = mainResponse(data);
                         this.fireEvent(
                             channels.client[this.MODULE_NAME].requestEther,
-                            response1
+                            response1,
+                            event
                         );
                     }
                 );

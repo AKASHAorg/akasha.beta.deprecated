@@ -3,6 +3,7 @@ import IpfsIPC from './IpfsIPC';
 import AuthIPC from './AuthIPC';
 import Logger from './Logger';
 import TxIPC from './TxIPC';
+import RegistryIPC from './RegistryIPC';
 import WebContents = Electron.WebContents;
 
 export function initModules() {
@@ -11,6 +12,7 @@ export function initModules() {
     const ipfsChannel = new IpfsIPC();
     const authChannel = new AuthIPC();
     const txChannel = new TxIPC();
+    const registryChannel = new RegistryIPC();
     return {
         initListeners: (webContents: WebContents) => {
             logger.registerLogger('akasha', { maxsize: 50 * 1024});
@@ -18,6 +20,7 @@ export function initModules() {
             ipfsChannel.initListeners(webContents);
             authChannel.initListeners(webContents);
             txChannel.initListeners(webContents);
+            registryChannel.initListeners(webContents);
         },
         logger,
         flushAll: () => {
@@ -25,6 +28,7 @@ export function initModules() {
             ipfsChannel.purgeAllListeners();
             authChannel.purgeAllListeners();
             txChannel.purgeAllListeners();
+            registryChannel.purgeAllListeners();
         }
     };
 }

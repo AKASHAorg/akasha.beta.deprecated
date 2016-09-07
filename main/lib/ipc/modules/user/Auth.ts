@@ -37,7 +37,7 @@ export default class Auth {
      * @private
      */
     private _generateRandom() {
-        return randomBytesAsync(256).then((buff: Buffer) => {
+        return randomBytesAsync(64).then((buff: Buffer) => {
             this._cipher = createCipher('aes-256-ctr', buff.toString('hex'));
             this._decipher = createDecipher('aes-256-ctr', buff.toString('hex'));
             return true;
@@ -79,7 +79,7 @@ export default class Auth {
      * @param timer
      * @returns {Bluebird<U>}
      */
-    public login(acc: string, pass: any | Uint8Array, timer?: number) {
+    public login(acc: string, pass: any | Uint8Array, timer: number = 0) {
 
         return gethHelper
             .hasKey(acc)
@@ -102,7 +102,7 @@ export default class Auth {
                 if (!unlocked) {
                     throw new Error(`invalid password`);
                 }
-                return randomBytesAsync(256);
+                return randomBytesAsync(64);
             })
             .then((buff: Buffer) => {
                 const token = GethConnector.getInstance()
@@ -113,6 +113,7 @@ export default class Auth {
                         const expiration = new Date();
                         expiration.setMinutes(expiration.getMinutes() + timer);
                         GethConnector.getInstance().web3.personal.lockAccountAsync(acc);
+                        GethConnector.getInstance().web3.eth.defaultAccount = acc;
                         this._session = {
                             expiration,
                             address: acc,
@@ -130,6 +131,7 @@ export default class Auth {
 
     public logout() {
         if (this._session) {
+            GethConnector.getInstance().web3.eth.defaultAccount = '';
             GethConnector.getInstance().web3.personal.lockAccountAsync(this._session.address);
         }
         this._flushSession();

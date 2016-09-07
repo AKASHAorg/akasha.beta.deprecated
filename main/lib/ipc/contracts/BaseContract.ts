@@ -1,4 +1,5 @@
 import { GethConnector } from '@akashaproject/geth-connector';
+import * as Promise from 'bluebird';
 
 export default class BaseContract {
     protected contract: any;
@@ -35,14 +36,20 @@ export default class BaseContract {
      * @returns {any}
      */
     extractData(method: string, ...params: any[]) {
-        return this.contract[method]
-            .request(params)
-            .params[0];
+        const payload = this.contract[method].request(...params);
+        return payload.params[0];
     }
 
     estimateGas(method: string, ...params: any[]) {
-        return this.contract[method]
-            .estimateGas(params);
+        return new Promise((resolve, reject) => {
+            this.contract[method]
+                .estimateGas(...params, (err: any, gas: number) => {
+                    if (err) {
+                        return reject(err);
+                    }
+                    return resolve(gas);
+                });
+        });
     }
 
 }

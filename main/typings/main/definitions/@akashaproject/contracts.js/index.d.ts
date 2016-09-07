@@ -12,6 +12,7 @@ declare module 'ethereumjs-util' {
     export function toBuffer(data: any): Buffer
     export function bufferToHex(data: Buffer): string
     export function pubToAddress(pubKey: string, sanitize?: boolean): Buffer
+    export function unpad(data: Buffer | string): Buffer | string
 }
 
 declare module 'spectron' {

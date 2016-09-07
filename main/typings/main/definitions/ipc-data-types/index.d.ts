@@ -8,6 +8,10 @@ interface MainResponse {
     };
 }
 
+interface AuthRequest {
+    token: string;
+}
+
 interface IPCmanager {
     channel: string;
     listen: boolean;
@@ -115,6 +119,10 @@ interface RequestEtherResponse extends MainResponse {
     };
 }
 
+interface LocalProfilesResponse extends MainResponse {
+    data: { key: string, profile: string }[];
+}
+
 ////////////////////////// </ AUTH > \\\\\\\\\\\\\\\\\\\\\\\\
 
 /////////////////////////  < TX > \\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -153,4 +161,31 @@ interface ProfileExistsResponse extends MainResponse {
     };
 }
 
+interface CurrentProfileResponse extends MainResponse {
+    data: {
+        address: string;
+    };
+}
+
+interface ProfileByAddressRequest {
+    ethAddress: string;
+}
+
+interface ProfileByAddressResponse extends MainResponse {
+    data: {
+        profileAddress: string
+    };
+}
+
+interface ProfileCreateRequest extends AuthRequest {
+    username: string;
+    ipfsHash: string;
+    gas?: number;
+}
+
+interface ProfileCreateResponse extends MainResponse {
+    data: {
+        tx: string;
+    };
+}
 /////////////////////////  </ Registry > \\\\\\\\\\\\\\\\\\\\\\\\

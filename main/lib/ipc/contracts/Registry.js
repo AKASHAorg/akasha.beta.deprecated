@@ -1,5 +1,6 @@
 "use strict";
 const Promise = require('bluebird');
+const ethereumjs_util_1 = require('ethereumjs-util');
 const BaseContract_1 = require('./BaseContract');
 class Registry extends BaseContract_1.default {
     constructor(instance) {
@@ -9,10 +10,9 @@ class Registry extends BaseContract_1.default {
         this.contract.getByAddr.callAsync = Promise.promisify(this.contract.getByAddr.call);
     }
     profileExists(username) {
-        const transformed = this.gethInstance.web3.fromUtf8(username);
         return this.contract
             .getById
-            .callAsync(transformed);
+            .callAsync(username);
     }
     getByAddress(address) {
         return this.contract
@@ -25,7 +25,7 @@ class Registry extends BaseContract_1.default {
     }
     getLocalProfiles() {
         let keyList;
-        const profileList = [[]];
+        const profileList = [];
         return this.gethInstance
             .web3
             .eth
@@ -40,9 +40,9 @@ class Registry extends BaseContract_1.default {
         })
             .then((addrList) => {
             addrList.forEach((val, index) => {
-                val = this.gethInstance.web3.toUtf8(val);
-                if (val !== '') {
-                    profileList.push([keyList[index], val]);
+                const valTr = ethereumjs_util_1.unpad(val);
+                if (valTr) {
+                    profileList.push({ key: keyList[index], profile: val });
                 }
             });
             keyList = null;
@@ -51,23 +51,25 @@ class Registry extends BaseContract_1.default {
     }
     register(username, ipfsHash, gas = 90000) {
         const usernameTr = this.gethInstance.web3.fromUtf8(username);
-        const ipfsHashTr = ipfsHash.map((v) => {
+        const ipfsHashTr = [ipfsHash.slice(0, 23), ipfsHash.slice(23)].map((v) => {
             return this.gethInstance.web3.fromUtf8(v);
         });
         return this.profileExists(usernameTr)
             .then((address) => {
-            const exists = this.gethInstance.web3.toUtf8(address);
+            const exists = ethereumjs_util_1.unpad(address);
             if (exists) {
                 throw new Error(`${username} already taken`);
             }
             if (ipfsHashTr.length !== 2) {
                 throw new Error('Expected exactly 2 ipfs slices');
             }
-            const estimatedGas = this.estimateGas('register', usernameTr, ipfsHashTr);
-            if (estimatedGas > gas) {
-                throw new Error(`Gas required: ${estimatedGas}, Gas provided: ${gas}`);
-            }
-            return this.extractData('register', usernameTr, ipfsHashTr, { gas: gas });
+            return this.estimateGas('register', usernameTr, ipfsHashTr)
+                .then((estimatedGas) => {
+                if (estimatedGas > gas) {
+                    throw new Error(`Gas required: ${estimatedGas}, Gas provided: ${gas}`);
+                }
+                return this.extractData('register', usernameTr, ipfsHashTr, { gas: gas });
+            });
         });
     }
 }

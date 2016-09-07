@@ -21,7 +21,7 @@ class Auth {
         }
     }
     _generateRandom() {
-        return randomBytesAsync(256).then((buff) => {
+        return randomBytesAsync(64).then((buff) => {
             this._cipher = crypto_1.createCipher('aes-256-ctr', buff.toString('hex'));
             this._decipher = crypto_1.createDecipher('aes-256-ctr', buff.toString('hex'));
             return true;
@@ -42,7 +42,7 @@ class Auth {
         this._encrypt(result);
         return result;
     }
-    login(acc, pass, timer) {
+    login(acc, pass, timer = 0) {
         return geth_connector_1.gethHelper
             .hasKey(acc)
             .then((found) => {
@@ -61,7 +61,7 @@ class Auth {
             if (!unlocked) {
                 throw new Error(`invalid password`);
             }
-            return randomBytesAsync(256);
+            return randomBytesAsync(64);
         })
             .then((buff) => {
             const token = geth_connector_1.GethConnector.getInstance()
@@ -72,6 +72,7 @@ class Auth {
                 const expiration = new Date();
                 expiration.setMinutes(expiration.getMinutes() + timer);
                 geth_connector_1.GethConnector.getInstance().web3.personal.lockAccountAsync(acc);
+                geth_connector_1.GethConnector.getInstance().web3.eth.defaultAccount = acc;
                 this._session = {
                     expiration: expiration,
                     address: acc,
@@ -88,6 +89,7 @@ class Auth {
     }
     logout() {
         if (this._session) {
+            geth_connector_1.GethConnector.getInstance().web3.eth.defaultAccount = '';
             geth_connector_1.GethConnector.getInstance().web3.personal.lockAccountAsync(this._session.address);
         }
         this._flushSession();

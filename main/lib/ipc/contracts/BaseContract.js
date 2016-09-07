@@ -1,5 +1,6 @@
 "use strict";
 const geth_connector_1 = require('@akashaproject/geth-connector');
+const Promise = require('bluebird');
 class BaseContract {
     constructor() {
         this.gethInstance = geth_connector_1.GethConnector.getInstance();
@@ -12,13 +13,19 @@ class BaseContract {
         return this.contract;
     }
     extractData(method, ...params) {
-        return this.contract[method]
-            .request(params)
-            .params[0];
+        const payload = this.contract[method].request(...params);
+        return payload.params[0];
     }
     estimateGas(method, ...params) {
-        return this.contract[method]
-            .estimateGas(params);
+        return new Promise((resolve, reject) => {
+            this.contract[method]
+                .estimateGas(...params, (err, gas) => {
+                if (err) {
+                    return reject(err);
+                }
+                return resolve(gas);
+            });
+        });
     }
 }
 Object.defineProperty(exports, "__esModule", { value: true });
