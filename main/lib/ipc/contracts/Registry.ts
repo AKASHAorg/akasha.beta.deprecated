@@ -1,4 +1,5 @@
 import * as Promise from 'bluebird';
+import { unpad } from 'ethereumjs-util';
 import BaseContract from './BaseContract';
 
 export default class Registry extends BaseContract {
@@ -19,10 +20,9 @@ export default class Registry extends BaseContract {
      * @returns {any}
      */
     profileExists(username: string) {
-        const transformed = this.gethInstance.web3.fromUtf8(username);
         return this.contract
             .getById
-            .callAsync(transformed);
+            .callAsync(username);
     }
 
     /**
@@ -47,11 +47,11 @@ export default class Registry extends BaseContract {
 
     /**
      *
-     * @returns {PromiseLike<TResult>|Bluebird<U>|Thenable<U>}
+     * @returns {PromiseLike<{key: string, profile: string}[]>|Thenable<{key: string, profile: string}[]>|Bluebird<{key: string, profile: string}[]>}
      */
     getLocalProfiles() {
         let keyList: string[];
-        const profileList: [string[]] = [[]];
+        const profileList: {key: string, profile: string}[] = [];
         return this.gethInstance
             .web3
             .eth
@@ -66,9 +66,9 @@ export default class Registry extends BaseContract {
             })
             .then((addrList: string[]) => {
                 addrList.forEach((val: string, index: number) => {
-                    val = this.gethInstance.web3.toUtf8(val);
-                    if (val !== '') {
-                        profileList.push([keyList[index], val]);
+                    const valTr = unpad(val);
+                    if (valTr) {
+                        profileList.push({key: keyList[index], profile: val});
                     }
                 });
                 keyList = null;
@@ -83,15 +83,14 @@ export default class Registry extends BaseContract {
      * @param gas
      * @returns {PromiseLike<TResult>|Promise<TResult>|Thenable<U>|Bluebird<U>}
      */
-    register(username: string, ipfsHash: string[], gas: number = 90000) {
+    register(username: string, ipfsHash: string, gas: number = 90000) {
         const usernameTr = this.gethInstance.web3.fromUtf8(username);
-        const ipfsHashTr = ipfsHash.map((v) => {
+        const ipfsHashTr = [ipfsHash.slice(0, 23), ipfsHash.slice(23)].map((v) => {
             return this.gethInstance.web3.fromUtf8(v);
         });
         return this.profileExists(usernameTr)
             .then((address: string) => {
-                const exists = this.gethInstance.web3.toUtf8(address);
-
+                const exists = unpad(address);
                 if (exists) {
                     throw new Error(`${username} already taken`);
                 }
@@ -100,11 +99,13 @@ export default class Registry extends BaseContract {
                     throw new Error('Expected exactly 2 ipfs slices');
                 }
 
-                const estimatedGas = this.estimateGas('register', usernameTr, ipfsHashTr);
-                if (estimatedGas > gas) {
-                    throw new Error(`Gas required: ${estimatedGas}, Gas provided: ${gas}`);
-                }
-                return this.extractData('register', usernameTr, ipfsHashTr, {gas});
+                return this.estimateGas('register', usernameTr, ipfsHashTr)
+                    .then((estimatedGas) => {
+                        if (estimatedGas > gas) {
+                            throw new Error(`Gas required: ${estimatedGas}, Gas provided: ${gas}`);
+                        }
+                        return this.extractData('register', usernameTr, ipfsHashTr, {gas});
+                    });
             });
     }
 

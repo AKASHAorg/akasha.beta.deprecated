@@ -50,26 +50,30 @@ class AuthIPC extends ModuleEmitter_1.default {
                 .generateKey(data.password)
                 .then((address) => {
                 const response = responses_1.mainResponse({ address: address });
-                this.fireEvent(channels_1.default.client[this.MODULE_NAME].generateEthKey, response);
+                this.fireEvent(channels_1.default.client[this.MODULE_NAME].generateEthKey, response, event);
             })
                 .catch((error) => {
                 const response = responses_1.mainResponse({ error: error });
-                this.fireEvent(channels_1.default.client[this.MODULE_NAME].generateEthKey, response);
+                this.fireEvent(channels_1.default.client[this.MODULE_NAME].generateEthKey, response, event);
             });
         });
         return this;
     }
     _getLocalIdentities() {
         this.registerListener(channels_1.default.server[this.MODULE_NAME].getLocalIdentities, (event, data) => {
+            let response;
             index_2.constructed
                 .instance
                 .registry
                 .getLocalProfiles()
                 .then((list) => {
-                this.fireEvent(channels_1.default.client[this.MODULE_NAME].getLocalIdentities, responses_1.mainResponse(list));
+                response = responses_1.mainResponse(list);
             })
                 .catch((err) => {
-                this.fireEvent(channels_1.default.client[this.MODULE_NAME].getLocalIdentities, responses_1.mainResponse({ error: { message: err.message } }));
+                response = responses_1.mainResponse({ error: { message: err.message } });
+            })
+                .finally(() => {
+                this.fireEvent(channels_1.default.client[this.MODULE_NAME].getLocalIdentities, response, event);
             });
         });
         return this;
@@ -83,7 +87,7 @@ class AuthIPC extends ModuleEmitter_1.default {
             }, (error, response, body) => {
                 const data = (error) ? { error: error } : body;
                 const response1 = responses_1.mainResponse(data);
-                this.fireEvent(channels_1.default.client[this.MODULE_NAME].requestEther, response1);
+                this.fireEvent(channels_1.default.client[this.MODULE_NAME].requestEther, response1, event);
             });
         });
         return this;

@@ -35,7 +35,8 @@ class TxIPC extends ModuleEmitter {
                 const response: AddToQueueResponse = mainResponse({ watching: gethHelper.watching });
                 this.fireEvent(
                     channels.client[this.MODULE_NAME].addToQueue,
-                    response
+                    response,
+                    event
                 );
             });
         return this;
@@ -49,7 +50,8 @@ class TxIPC extends ModuleEmitter {
                 const response: EmitMinedResponse = mainResponse({ watching: gethHelper.watching });
                 this.fireEvent(
                     channels.client[this.MODULE_NAME].emitMined,
-                    response
+                    response,
+                    event
                 );
             });
         return this;

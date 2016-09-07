@@ -27,7 +27,7 @@ class TxIPC extends ModuleEmitter_1.default {
             });
             geth_connector_1.gethHelper.startTxWatch();
             const response = responses_1.mainResponse({ watching: geth_connector_1.gethHelper.watching });
-            this.fireEvent(channels_1.default.client[this.MODULE_NAME].addToQueue, response);
+            this.fireEvent(channels_1.default.client[this.MODULE_NAME].addToQueue, response, event);
         });
         return this;
     }
@@ -35,7 +35,7 @@ class TxIPC extends ModuleEmitter_1.default {
         this.registerListener(channels_1.default.server[this.MODULE_NAME].emitMined, (event, data) => {
             (data.watch) ? geth_connector_1.gethHelper.startTxWatch() : geth_connector_1.gethHelper.stopTxWatch();
             const response = responses_1.mainResponse({ watching: geth_connector_1.gethHelper.watching });
-            this.fireEvent(channels_1.default.client[this.MODULE_NAME].emitMined, response);
+            this.fireEvent(channels_1.default.client[this.MODULE_NAME].emitMined, response, event);
         });
         return this;
     }
