@@ -43,8 +43,8 @@ class AppActions {
         Promise.resolve(this.dispatch(appActionCreators.showEntryModal(entryData, options)));
     hideEntryModal = () =>
         Promise.resolve(this.dispatch(appActionCreators.hideEntryModal()));
-    getConfirmation = (actionToConfirm, entryAddress) => {
-        this.dispatch(appActionCreators.showConfirmationDialog(actionToConfirm, entryAddress));
+    getConfirmation = (entity) => {
+        this.dispatch(appActionCreators.showConfirmationDialog(entity));
     }
     hideConfirmationDialog = () => {
         this.dispatch(appActionCreators.hideConfirmationDialog());

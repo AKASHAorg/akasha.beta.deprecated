@@ -67,7 +67,7 @@ const EntryCard = (props) => {
                   <div className="row middle-xs">
                     <div className="col-xs-7">
                       <IconButton
-                        onTouchTap={(ev) => onUpvote(ev, entry.get('address'))}
+                        onTouchTap={(ev) => onUpvote(ev, entry)}
                       >
                         <ThumbUpIcon />
                       </IconButton>
@@ -81,7 +81,7 @@ const EntryCard = (props) => {
                   <div className="row middle-xs">
                     <div className="col-xs-7">
                       <IconButton
-                        onTouchTap={(ev) => onDownvote(ev, entry.get('address'))}
+                        onTouchTap={(ev) => onDownvote(ev, entry)}
                       >
                         <ThumbDownIcon />
                       </IconButton>
@@ -109,7 +109,7 @@ const EntryCard = (props) => {
                   <div className="row middle-xs">
                     <div className="col-xs-7">
                       <IconButton
-                        onTouchTap={(ev) => onShare(ev, entry.get('address'))}
+                        onTouchTap={(ev) => onShare(ev, entry)}
                       >
                         <ShareIcon />
                       </IconButton>
@@ -123,7 +123,7 @@ const EntryCard = (props) => {
             </div>
             <div className="col-xs-5 end-xs">
               <IconButton
-                onTouchTap={(ev) => onBookmark(ev, entry.get('address'))}
+                onTouchTap={(ev) => onBookmark(ev, entry)}
               >
                 <BookmarkIcon />
               </IconButton>

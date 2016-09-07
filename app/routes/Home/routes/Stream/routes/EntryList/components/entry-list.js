@@ -2,7 +2,7 @@ import React from 'react';
 import TagSearch from './tag-search';
 import QuickEntryEditor from './quick-entry-editor';
 import { EntryCard } from 'shared-components';
-
+import { injectIntl } from 'react-intl'
 class EntryList extends React.Component {
     constructor (props) {
         super(props);
@@ -21,13 +21,27 @@ class EntryList extends React.Component {
         const loggedProfile = profileState.get('loggedProfile');
         this.context.router.push(`/${loggedProfile.get('userName')}/explore/tag/${tag}`);
     };
-    _handleUpvote = (ev, entryAddress) => {
+    _handleUpvote = (ev, entry) => {
         const { appActions } = this.props;
-        appActions.getConfirmation('upvote', entryAddress);
+        const authorFirstName = entry.getIn(['author', 'firstName']);
+        const authorLastName = entry.getIn(['author', 'lastName']);
+        const intl = this.props.intl;
+        appActions.getConfirmation({
+            action: 'upvote',
+            address: entry.get('address'),
+            title: entry.get('title'),
+            subtitle: `${intl.formatMessage({
+                id: 'app.general.by',
+                defaultMessage: 'by',
+                description: 'entry is published `by` someone'
+            })} ${authorFirstName} ${authorLastName}`,
+            authorName: `${authorFirstName} ${authorLastName}`,
+            disclaimer: 'disclaimer'
+        });
     };
-    _handleDownvote = (ev, entryAddress) => {
+    _handleDownvote = (ev, entry) => {
         const { appActions } = this.props;
-        appActions.getConfirmation('downvote', entryAddress);
+        appActions.getConfirmation('downvote', entry);
     };
     _handleComment = (ev, entryAddress) => {
         const { appActions, entryState } = this.props;
@@ -35,8 +49,12 @@ class EntryList extends React.Component {
           entry.get('address') === entryAddress);
         appActions.showEntryModal(entry, { section: 'comments' });
     };
-    _handleShare = (ev, entryAddress) => {};
-    _handleBookmark = (ev, entryAddress) => {};
+    _handleShare = (ev, entry) => {};
+    _handleBookmark = (ev, entry) => {
+        const { entryActions, profileState } = this.props;
+        const loggedProfile = profileState.get('loggedProfile');
+        entryActions.createSavedEntry(loggedProfile.get('userName'), entry);
+    };
     render () {
         const { params, profileState, entryState } = this.props;
         const entries = entryState.get('published');
@@ -70,9 +88,10 @@ EntryList.propTypes = {
     params: React.PropTypes.object,
     profileState: React.PropTypes.object,
     appActions: React.PropTypes.object,
-    entryState: React.PropTypes.object
+    entryState: React.PropTypes.object,
+    intl: React.PropTypes.object
 };
 EntryList.contextTypes = {
     router: React.PropTypes.object
 };
-export default EntryList;
+export default injectIntl(EntryList);

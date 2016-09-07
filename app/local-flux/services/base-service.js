@@ -16,9 +16,10 @@ class BaseService {
         this.listeners.delete(channel);
         return cb();
     };
-    createChannel = (managerChannel, channel, cb) => {
+    // open communication with a channel through channel manager
+    openChannel = (managerChannel, channel, cb) => {
         ipcRenderer.on(managerChannel, (ev, data) => {
-            if(data.error) {
+            if (data.error) {
                 const error = new Error(data.error);
                 return cb(error);
             }
@@ -26,13 +27,14 @@ class BaseService {
         });
         ipcRenderer.send(managerChannel, { listen: true });
     };
-    removeChannel = (managerChannel, channel) => {
+    // close communication with a channel through channel manager
+    closeChannel = (managerChannel, channel) => {
         this.removeListener(channel, () => {
-           ipcRenderer.send(managerChannel, { listen: false });
+            ipcRenderer.send(managerChannel, { listen: false });
         });
     };
     parseData = (data, cb) => {
-        if(data.error) {
+        if (data.error) {
             return cb(new Error(data.error));
         }
         return cb(null, data);

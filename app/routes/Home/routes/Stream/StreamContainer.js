@@ -30,14 +30,15 @@ class StreamPage extends Component {
         this._fetchEntries(nextProps, nextState);
     }
     _fetchEntries = (props, state) => {
-        const { entryActions, params } = props;
+        const { entryActions, profileState, params } = props;
+        const loggedProfile = profileState.get('loggedProfile');
         const { filter } = state;
         switch (filter) {
             case 'top':
                 entryActions.getSortedEntries({ sortBy: 'rating' });
                 break;
             case 'saved':
-                entryActions.getSavedEntries();
+                entryActions.getSavedEntries(loggedProfile.get('userName'));
                 break;
             case 'tag':
                 entryActions.getEntriesForTag({ tagName: params.tagName });
@@ -111,7 +112,8 @@ StreamPage.contextTypes = {
 
 function mapStateToProps (state) {
     return {
-        entryState: state.entryState
+        entryState: state.entryState,
+        profileState: state.profileState
     };
 }
 

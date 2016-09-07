@@ -57,11 +57,10 @@ export function hideEntryModal () {
     };
 }
 
-export function showConfirmationDialog (confirmAction, entryAddress) {
+export function showConfirmationDialog (entity) {
     return {
         type: types.SHOW_CONFIRMATION_DIALOG,
-        confirmAction,
-        entryAddress
+        entity
     };
 }
 

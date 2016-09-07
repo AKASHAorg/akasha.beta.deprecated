@@ -5,8 +5,9 @@ const dbg = debug('App:entriesDB');
 
 const entriesDB = new Dexie('entries');
 entriesDB.version(1).stores({
-    drafts: '++id,tags',
+    drafts: '++id,tags,authorUsername',
     entries: '&ipfsHash',
+    savedEntries: '++id,authorUsername'
 });
 
 entriesDB.drafts.mapToClass(getDraftClass());
@@ -20,6 +21,7 @@ entriesDB.drafts.hook('creating', (primaryKey, obj, transaction) => {
         publishing: false
     };
 });
+
 entriesDB.drafts.hook('updating', (modifications, primaryKey, obj, transaction) => {
     dbg('updating..', obj, modifications);
     return {
@@ -31,8 +33,13 @@ entriesDB.drafts.hook('updating', (modifications, primaryKey, obj, transaction) 
         }
     };
 });
+
 entriesDB.entries.hook('creating', (primaryKey, obj, transaction) => {
     dbg('creating.. ', obj);
+});
+
+entriesDB.savedEntries.hook('creating', (primaryKey, obj, transaction) => {
+    dbg('creating savedEntries ', obj);
 });
 
 entriesDB.open();

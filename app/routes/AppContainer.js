@@ -55,10 +55,16 @@ class App extends Component {
     _handleConfirmationDialogCancel = (ev) => {
         const { appActions } = this.props;
         appActions.hideConfirmationDialog();
+        this.setState({
+            voteWeight: 1
+        });
     };
     _handleConfirmationDialogConfirm = (ev, actionType, entryAddress) => {
         const { voteWeight } = this.state;
         console.log('cast', actionType, 'of', voteWeight, 'to', entryAddress);
+        this.setState({
+            voteWeight: 1
+        });
     };
     render () {
         const { appState } = this.props;

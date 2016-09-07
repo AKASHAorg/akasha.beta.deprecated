@@ -32,6 +32,7 @@ const Entry = Record({
 const initialState = fromJS({
     drafts: new List(),
     published: new List(),
+    savedEntries: new List(),
     savingDraft: false,
     draftsCount: 0,
     entriesCount: 0
@@ -40,20 +41,19 @@ const initialState = fromJS({
  * State of the entries and drafts
  */
 const entryState = createReducer(initialState, {
-    [types.SAVE_DRAFT]: (state) => {
-        return state.merge({ savingDraft: true });
-    },
+    [types.SAVE_DRAFT]: (state) =>
+        state.merge({ savingDraft: true }),
+
     [types.GET_DRAFTS_SUCCESS]: (state, action) => {
         const drafts = new List(action.drafts.map(draft => new Draft(draft)));
         return state.merge({
             drafts: state.get('drafts').concat(drafts)
         });
     },
-    [types.GET_DRAFT_SUCCESS]: (state, action) => {
-        return state.merge({
+    [types.GET_DRAFT_SUCCESS]: (state, action) =>
+        state.merge({
             drafts: state.get('drafts').push(new Draft(action.draft))
-        });
-    },
+        }),
     [types.CREATE_DRAFT_SUCCESS]: (state, action) => {
         const draft = new Draft(action.draft);
         return state.merge({
@@ -62,22 +62,22 @@ const entryState = createReducer(initialState, {
         });
     },
     [types.UPDATE_DRAFT_SUCCESS]: (state, action) => {
-        const draftIndex = state.get('drafts').findIndex(draft => {
-            return draft.id === action.draft.id;
-        });
+        const draftIndex = state.get('drafts').findIndex(draft =>
+            draft.id === action.draft.id
+        );
         return state.merge({
-            drafts: state.updateIn(['drafts', draftIndex], (record) => {
-                return record.merge(new Map(action.draft));
-            }),
+            drafts: state.updateIn(['drafts', draftIndex], (record) =>
+                record.merge(new Map(action.draft))
+            ),
             savingDraft: false
         });
     },
-    [types.GET_ENTRIES_COUNT_SUCCESS]: (state, action) => {
-        return state.set('entriesCount', action.count);
-    },
-    [types.GET_DRAFTS_COUNT_SUCCESS]: (state, action) => {
-        return state.set('draftsCount', action.count);
-    },
+    [types.GET_ENTRIES_COUNT_SUCCESS]: (state, action) =>
+        state.set('entriesCount', action.count),
+
+    [types.GET_DRAFTS_COUNT_SUCCESS]: (state, action) =>
+        state.set('draftsCount', action.count),
+
     [types.PUBLISH_ENTRY_SUCCESS]: (state, action) => {
         const draftIndex = state.get('drafts').findIndex(drft =>
             drft.get('id') === action.entry.id);
@@ -86,12 +86,19 @@ const entryState = createReducer(initialState, {
             entries: state.get('entries').push(new Entry(action.entry))
         });
     },
-    [types.GET_SORTED_ENTRIES]: (state, action) => {
-        return state.merge({
+    [types.GET_SORTED_ENTRIES]: (state, action) =>
+        state.merge({
             published: action.entries
-        });
+        }),
+
+    [types.CREATE_SAVED_ENTRY_SUCCESS]: (state, action) =>
+        state.merge({
+            savedEntries: state.get('savedEntries').push(new Entry(action.entry))
+        }),
+    [types.GET_SAVED_ENTRIES_SUCCESS]: (state, action) => {
+        const entriesList = new List(action.entries.map(entry => new Entry(entry)));
+        state.set('savedEntries', entriesList);
     }
 });
 
 export default entryState;
-

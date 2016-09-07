@@ -1,11 +1,11 @@
-import { fromJS, List, Map, Record } from 'immutable';
+import { fromJS, List, Map } from 'immutable';
 import * as types from '../constants/ProfileConstants';
 import { createReducer } from './create-reducer';
 
 const initialState = fromJS({
-    profiles: List(),
-    loggedProfile: Map(),
-    tempProfile: Map({
+    profiles: new List(),
+    loggedProfile: new Map(),
+    tempProfile: new Map({
         firstName: '',
         lastName: '',
         userName: '',
@@ -29,38 +29,38 @@ const initialState = fromJS({
 });
 
 const profileState = createReducer(initialState, {
-    [types.LOGIN_SUCCESS]: (state, action) => {
-        return state.merge({ loggedProfile: action.profileData });
-    },
-    [types.GET_PROFILES_LIST_SUCCESS]: (state, action) => {
-        return state.merge({ profiles: fromJS(action.profiles) });
-    },
-    [types.GET_PROFILES_LIST_ERROR]: (state, action) => {
-        return state.merge({ profiles: [], messages: action.message });
-    },
-    [types.GET_TEMP_PROFILE_SUCCESS]: (state, action) => {
-        return state.update('tempProfile', () => Map(action.profile[0]));
-    },
-    [types.CREATE_ETH_ADDRESS]: (state) => {
-        return state.updateIn(['tempProfile', 'currentStatus'],
+    [types.LOGIN_SUCCESS]: (state, action) =>
+        state.merge({ loggedProfile: action.profileData }),
+
+    [types.GET_PROFILES_LIST_SUCCESS]: (state, action) =>
+        state.merge({ profiles: fromJS(action.profiles) }),
+
+    [types.GET_PROFILES_LIST_ERROR]: (state, action) =>
+        state.merge({ profiles: [], messages: action.message }),
+
+    [types.GET_TEMP_PROFILE_SUCCESS]: (state, action) =>
+        state.update('tempProfile', () => new Map(action.profile[0])),
+
+    [types.CREATE_ETH_ADDRESS]: (state) =>
+        state.updateIn(['tempProfile', 'currentStatus'],
             (cStatus) => Object.assign(cStatus, { status: 'pending' })
-        );
-    },
-    [types.CREATE_ETH_ADDRESS_SUCCESS]: (state, action) => {
-        return state.mergeDeep(fromJS({
+        ),
+
+    [types.CREATE_ETH_ADDRESS_SUCCESS]: (state, action) =>
+        state.mergeDeep(fromJS({
             tempProfile: {
                 address: action.data.coinbase,
                 currentStatus: {
                     status: 'finished'
                 }
             }
-        }));
-    },
-    [types.CREATE_ETH_ADDRESS_ERROR]: (state) => {
-        return state.updateIn(['tempProfile', 'currentStatus'],
+        })),
+
+    [types.CREATE_ETH_ADDRESS_ERROR]: (state) =>
+        state.updateIn(['tempProfile', 'currentStatus'],
             (cStatus) => Object.assign(cStatus, { status: 'failed' })
-        );
-    },
+        ),
+
     [types.FUND_FROM_FAUCET]: (state) =>
         state.updateIn(['tempProfile', 'currentStatus'],
             (cStatus) => Object.assign(cStatus, { status: 'pending' })

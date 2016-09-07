@@ -45,10 +45,7 @@ const appState = createReducer(initialState, {
         state.set('showEntry', { modal: false }),
 
     [types.SHOW_CONFIRMATION_DIALOG]: (state, action) =>
-        state.set('confirmationDialog', {
-            action: action.confirmAction,
-            address: action.entryAddress
-        }),
+        state.set('confirmationDialog', action.entity),
 
     [types.HIDE_CONFIRMATION_DIALOG]: (state) =>
         state.set('confirmationDialog', null),

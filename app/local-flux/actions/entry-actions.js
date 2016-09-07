@@ -131,8 +131,20 @@ class EntryActions {
             this.dispatch(entryActionCreators.getSortedEntries(result));
         });
     };
-    getSavedEntries = () => {
-        this.entryService.getSavedEntries();
+    createSavedEntry = (userName, entry) => {
+        this.entryService.createSavedEntry(userName, entry).then(savedEntry => {
+            this.dispatch(entryActionCreators.createSavedEntrySuccess(savedEntry));
+        }).catch(reason => {
+            this.dispatch(entryActionCreators.createSavedEntryError(reason));
+        });
+    };
+    getSavedEntries = (userName) => {
+        dbg('getSavedEntries', userName);
+        this.entryService.getSavedEntries(userName).then(entries => {
+            this.dispatch(entryActionCreators.getSavedEntriesSuccess(entries));
+        }).catch(reason => {
+            this.dispatch(entryActionCreators.getSavedEntriesError(reason));
+        });
     };
     getEntriesForTag = ({ tagName }) => {
         this.entryService.getEntriesForTag({ tagName });

@@ -159,3 +159,31 @@ export function getSortedEntries (entries) {
         entries
     };
 }
+
+export function createSavedEntrySuccess (entry) {
+    return {
+        type: types.CREATE_SAVED_ENTRY_SUCCESS,
+        entry
+    };
+}
+
+export function createSavedEntryError (error) {
+    return {
+        type: types.CREATE_SAVED_ENTRY_ERROR,
+        error
+    };
+}
+
+export function getSavedEntriesSuccess (entries) {
+    return {
+        type: types.GET_SAVED_ENTRIES_SUCCESS,
+        entries
+    };
+}
+
+export function getSavedEntriesError (error) {
+    return {
+        type: types.GET_SAVED_ENTRIES_ERROR,
+        error
+    };
+}

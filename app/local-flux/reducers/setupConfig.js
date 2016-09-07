@@ -23,28 +23,28 @@ const initialState = Map({
     isAdvanced: false
 });
 
-const setupConfig =  createReducer(initialState, {
-    [types.SETUP_ADVANCED_SETTINGS]: (state, action) => {
-        return state.set('isAdvanced', action.isAdvanced);
-    },
-    [types.SETUP_GETH_DATADIR]: (state, action) => {
-        return state.updateIn(['geth', 'dataDir'], () => action.path);
-    },
-    [types.SETUP_GETH_IPCPATH]: (state, action) => {
-        return state.updateIn(['geth', 'ipcPath'], () => action.path);
-    },
-    [types.SETUP_GETH_CACHE_SIZE]: (state, action) => {
-        return state.updateIn(['geth', 'cache'], () => action.size);
-    },
-    [types.SETUP_IPFS_PATH]: (state, action) => {
-        return state.updateIn(['ipfs', 'ipfsPath'], () => action.path);
-    },
-    [types.SETUP_IPFS_API_PORT]: (state, action) => {
-        return state.updateIn(['ipfs', 'apiPort'], () => action.port);
-    },
-    [types.SETUP_IPFS_GATEWAY_PORT]: (state, action) => {
-        return state.updateIn(['ipfs', 'gatewayPort'], () => action.port);
-    },
+const setupConfig = createReducer(initialState, {
+    [types.SETUP_ADVANCED_SETTINGS]: (state, action) =>
+        state.set('isAdvanced', action.isAdvanced),
+
+    [types.SETUP_GETH_DATADIR]: (state, action) =>
+        state.updateIn(['geth', 'dataDir'], () => action.path),
+
+    [types.SETUP_GETH_IPCPATH]: (state, action) =>
+        state.updateIn(['geth', 'ipcPath'], () => action.path),
+
+    [types.SETUP_GETH_CACHE_SIZE]: (state, action) =>
+        state.updateIn(['geth', 'cache'], () => action.size),
+
+    [types.SETUP_IPFS_PATH]: (state, action) =>
+        state.updateIn(['ipfs', 'ipfsPath'], () => action.path),
+
+    [types.SETUP_IPFS_API_PORT]: (state, action) =>
+        state.updateIn(['ipfs', 'apiPort'], () => action.port),
+
+    [types.SETUP_IPFS_GATEWAY_PORT]: (state, action) =>
+        state.updateIn(['ipfs', 'gatewayPort'], () => action.port),
+
     [types.START_GETH_SUCCESS]: (state, action) => {
         if (action.data.status) {
             return state.mergeIn(['geth'], {
@@ -59,26 +59,26 @@ const setupConfig =  createReducer(initialState, {
             started: true
         });
     },
-    [types.START_GETH_ERROR]: (state, action) => {
-        return state.mergeIn(['geth'], {
+    [types.START_GETH_ERROR]: (state, action) =>
+        state.mergeIn(['geth'], {
             started: false,
             status: action.data.status
-        });
-    },
-    [types.STOP_GETH_SUCCESS]: (state, action) => {
-        return state.mergeIn(['geth'], {
+        }),
+
+    [types.STOP_GETH_SUCCESS]: (state, action) =>
+        state.mergeIn(['geth'], {
             started: false,
             status: action.data.status,
-        });
-    },
-    [types.STOP_GETH_ERROR]: (state, action) => {
-        return state.mergeIn(['geth'], {
+        }),
+
+    [types.STOP_GETH_ERROR]: (state, action) =>
+        state.mergeIn(['geth'], {
             started: true,
             status: action.data.status
-        });
-    },
-    [types.RETRY_SETUP]: (state, action) => {
-        return state.mergeDeep({
+        }),
+
+    [types.RETRY_SETUP]: (state, action) =>
+        state.mergeDeep({
             geth: {
                 status: ''
             },
@@ -86,8 +86,8 @@ const setupConfig =  createReducer(initialState, {
                 status: ''
             },
             isAdvanced: action.isAdvanced
-        });
-    }
+        }),
+
 });
 
 export default setupConfig;

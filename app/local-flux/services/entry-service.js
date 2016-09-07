@@ -100,7 +100,22 @@ class EntryService {
         //         return entriesDB.drafts.sortBy('status.created_at').toArray();
         //     }
         // });
-    getSavedEntries = () => {};
+    createSavedEntry = (userName, entry) =>
+        entriesDB.transaction('rw', entriesDB.savedEntries, () => {
+            entriesDB.savedEntries.add(entry).then(entryId => {
+                dbg('new savedEntry created with id', entryId);
+                return entry;
+            });
+        });
+
+    getSavedEntries = (userName) =>
+        entriesDB.transaction('r', entriesDB.savedEntries, () => {
+            dbg('getting saved entries for username ', userName);
+            return entriesDB.savedEntries.where('userName')
+                                         .equals(userName)
+                                         .toArray();
+        });
+
     getEntriesForTag = () => {};
 }
 
