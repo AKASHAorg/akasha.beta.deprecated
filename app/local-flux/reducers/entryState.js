@@ -26,9 +26,29 @@ const Entry = Record({
     featured_image: null,
     tags: new List(),
     address: null,
-    ipfsHash: null
+    ipfsHash: null,
+    created_at: new Date(2016, 1, 5).toString()
 });
-
+const SavedEntry = Record({
+    address: String,
+    author: {},
+    commentCount: Number,
+    content: [],
+    downvotes: Number,
+    excerpt: String,
+    id: Number,
+    licence: {},
+    shareCount: Number,
+    status: {
+        created_at: Date(),
+        updated_at: Date()
+    },
+    tags: [],
+    title: String,
+    upvotes: Number,
+    userName: String,
+    wordCount: Number
+});
 const initialState = fromJS({
     drafts: new List(),
     published: new List(),
@@ -86,18 +106,22 @@ const entryState = createReducer(initialState, {
             entries: state.get('entries').push(new Entry(action.entry))
         });
     },
-    [types.GET_SORTED_ENTRIES]: (state, action) =>
-        state.merge({
-            published: action.entries
-        }),
+
+    [types.GET_SORTED_ENTRIES]: (state, action) => {
+        const entriesList = new List(action.entries.map(entry => new Entry(entry)));
+        return state.merge({
+            published: entriesList
+        });
+    },
 
     [types.CREATE_SAVED_ENTRY_SUCCESS]: (state, action) =>
         state.merge({
-            savedEntries: state.get('savedEntries').push(new Entry(action.entry))
+            savedEntries: state.get('savedEntries').push(new SavedEntry(action.entry))
         }),
+
     [types.GET_SAVED_ENTRIES_SUCCESS]: (state, action) => {
-        const entriesList = new List(action.entries.map(entry => new Entry(entry)));
-        state.set('savedEntries', entriesList);
+        const entriesList = new List(action.entries.map(entry => new SavedEntry(entry)));
+        return state.set('savedEntries', entriesList);
     }
 });
 

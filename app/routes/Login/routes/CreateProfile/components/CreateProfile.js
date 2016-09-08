@@ -87,7 +87,7 @@ class CreateProfile extends Component {
                 message: 'Profile creation started!'
             })
         )
-            .then(() => this.context.router.push('authenticate'));
+            .then(() => this.context.router.push('new-profile-status'));
     };
     _submitForm = (ev) => {
         ev.preventDefault();
@@ -300,7 +300,6 @@ class CreateProfile extends Component {
                     <IconButton
                       title={intl.formatMessage(profileMessages.addLinkButtonTitle)}
                       onClick={this._handleAddLink}
-                      primary
                     >
                       <SvgIcon >
                         <ContentAddIcon

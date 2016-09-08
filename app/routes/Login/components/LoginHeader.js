@@ -7,6 +7,9 @@ import { injectIntl } from 'react-intl';
 
 function LoginHeader ({ title, intl }) {
     const { formatMessage } = intl;
+    const forceRefresh = () => {
+        window.location.reload();
+    };
     return (
       <div className="col-xs-12" >
         <div className="row middle-xs">
@@ -18,11 +21,13 @@ function LoginHeader ({ title, intl }) {
               iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
               targetOrigin={{ horizontal: 'right', vertical: 'top' }}
             >
-              <MenuItem primaryText={formatMessage(generalMessages.refresh)} />
+              <MenuItem
+                primaryText={formatMessage(generalMessages.refresh)}
+                onTouchTap={forceRefresh}
+              />
               <MenuItem primaryText={formatMessage(generalMessages.sendFeedback)} />
               <MenuItem primaryText={formatMessage(generalMessages.settings)} />
               <MenuItem primaryText={formatMessage(generalMessages.help)} />
-              <MenuItem primaryText={formatMessage(generalMessages.signOut)} />
             </IconMenu>
           </div>
         </div>

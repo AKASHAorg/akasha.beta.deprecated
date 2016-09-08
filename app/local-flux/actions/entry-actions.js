@@ -128,24 +128,21 @@ class EntryActions {
     getSortedEntries = ({ sortBy }) => {
         this.entryService.getSortedEntries({ sortBy }).then(result => {
             dbg(result, 'result for sortBy', sortBy);
-            this.dispatch(entryActionCreators.getSortedEntries(result));
+            return this.dispatch(entryActionCreators.getSortedEntries(result));
         });
     };
     createSavedEntry = (userName, entry) => {
-        this.entryService.createSavedEntry(userName, entry).then(savedEntry => {
-            this.dispatch(entryActionCreators.createSavedEntrySuccess(savedEntry));
-        }).catch(reason => {
-            this.dispatch(entryActionCreators.createSavedEntryError(reason));
-        });
+        this.entryService.createSavedEntry(userName, entry).then(savedEntry =>
+            this.dispatch(entryActionCreators.createSavedEntrySuccess(savedEntry))
+        ).catch(reason => this.dispatch(entryActionCreators.createSavedEntryError(reason)));
     };
-    getSavedEntries = (userName) => {
-        dbg('getSavedEntries', userName);
+    getSavedEntries = (userName) =>
         this.entryService.getSavedEntries(userName).then(entries => {
-            this.dispatch(entryActionCreators.getSavedEntriesSuccess(entries));
-        }).catch(reason => {
-            this.dispatch(entryActionCreators.getSavedEntriesError(reason));
-        });
-    };
+            dbg('getSavedEntries', entries);
+            return this.dispatch(entryActionCreators.getSavedEntriesSuccess(entries));
+        }).catch(reason => this.dispatch(entryActionCreators.getSavedEntriesError(reason))
+        );
+
     getEntriesForTag = ({ tagName }) => {
         this.entryService.getEntriesForTag({ tagName });
     };
@@ -154,7 +151,7 @@ class EntryActions {
             if (result.error) {
                 return this.dispatch(entryActionCreators.castUpvoteError(result.error));
             }
-            this.dispatch(entryActionCreators.castUpvoteSuccess(result.data));
+            return this.dispatch(entryActionCreators.castUpvoteSuccess(result.data));
         });
     };
     castDownvote = (entryAddress, voteWeight) => {};

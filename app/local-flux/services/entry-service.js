@@ -102,7 +102,7 @@ class EntryService {
         // });
     createSavedEntry = (userName, entry) =>
         entriesDB.transaction('rw', entriesDB.savedEntries, () => {
-            entriesDB.savedEntries.add(entry).then(entryId => {
+            entriesDB.savedEntries.add({ userName, ...entry.toJS() }).then(entryId => {
                 dbg('new savedEntry created with id', entryId);
                 return entry;
             });

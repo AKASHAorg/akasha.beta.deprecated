@@ -276,7 +276,7 @@ class ProfileActions {
                 const tempProfile = getState().profileState.get('tempProfile');
                 dbg('checkTempProfile', tempProfile);
                 if (tempProfile && tempProfile.size > 0) {
-                    return hashHistory.push('new-profile-status');
+                    return hashHistory.push('/authenticate/new-profile-status');
                 }
                 return this.getLocalProfiles();
             })

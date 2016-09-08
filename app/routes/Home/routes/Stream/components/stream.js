@@ -16,7 +16,7 @@ class Stream extends React.Component {
             <div className="col-xs-12">
               <div className="row center-xs">
                 <div className="col-xs-10" style={{ padding: '24px 0' }}>
-                  {this.props.children}
+                  {React.cloneElement(this.props.children, { ...this.props })}
                 </div>
               </div>
             </div>

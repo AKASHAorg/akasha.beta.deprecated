@@ -12,10 +12,10 @@ const compiler = webpack(config);
 const PORT = process.env.PORT || 3000;
 
 const wdm = webpackDevMiddleware(compiler, {
-  publicPath: config.output.publicPath,
-  stats: {
-    colors: true
-  }
+    publicPath: config.output.publicPath,
+    stats: {
+        colors: true
+    }
 });
 
 app.use(wdm);
@@ -23,18 +23,18 @@ app.use(wdm);
 app.use(webpackHotMiddleware(compiler));
 
 const server = app.listen(PORT, 'localhost', err => {
-  if (err) {
-    console.error(err);
-    return;
-  }
+    if (err) {
+        console.error(err);
+        return;
+    }
 
-  console.log(`Listening at http://localhost:${PORT}`);
+    console.log(`Listening at http://localhost:${PORT}`);
 });
 
 process.on('SIGTERM', () => {
-  console.log('Stopping dev server');
-  wdm.close();
-  server.close(() => {
-    process.exit(0);
-  });
+    console.log('Stopping dev server');
+    wdm.close();
+    server.close(() => {
+        process.exit(0);
+    });
 });

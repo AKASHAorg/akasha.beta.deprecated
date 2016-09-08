@@ -56,8 +56,14 @@ class EntryList extends React.Component {
         entryActions.createSavedEntry(loggedProfile.get('userName'), entry);
     };
     render () {
-        const { params, profileState, entryState } = this.props;
-        const entries = entryState.get('published');
+        const { params, profileState, entryState, filter } = this.props;
+        let entries = entryState.get('published').sort((a, b) =>
+            a.getIn(['status', 'created_at']) < b.getIn(['status', 'created_at']));
+        if (filter === 'saved') {
+            entries = entryState.get('savedEntries');
+        } else if (filter === 'top') {
+            entries = entryState.get('published');
+        }
         return (
           <div>
             {params.filter === 'tag' && params.tagName &&

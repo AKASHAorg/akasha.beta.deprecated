@@ -3,47 +3,52 @@
 
 const path = require('path');
 const cssnano = require('cssnano');
+const webpack = require('webpack');
 
 const webpackConfig = {
-  module: {
-    loaders: [{
-      test: /\.(js|jsx)$/,
-      loaders: ['babel-loader'],
-      exclude: /node_modules/
-    }
+    module: {
+        loaders: [{
+            test: /\.(js|jsx)$/,
+            loaders: ['babel-loader'],
+            exclude: /node_modules/
+        }
+        ]
+    },
+    output: {
+        path: path.join(__dirname, 'dist'),
+        filename: 'bundle.js',
+        libraryTarget: 'commonjs2'
+    },
+    resolve: {
+        extensions: ['', '.js', '.jsx'],
+        root: path.join(__dirname, 'app'),
+        packageMains: ['webpack', 'browser', 'web', 'browserify', ['jam', 'main'], 'main'],
+        modulesDirectories: ['node_modules', 'local-flux', 'shared-components', 'locale-data']
+    },
+    plugins: [
+        new webpack.BannerPlugin(
+          'require("source-map-support").install();',
+          { raw: true, entryOnly: false }
+        ),
+    ],
+    externals: [
+        'source-map-support'
     ]
-  },
-  output: {
-    path: path.join(__dirname, 'dist'),
-    filename: 'bundle.js',
-    libraryTarget: 'commonjs2'
-  },
-  resolve: {
-    extensions: ['', '.js', '.jsx'],
-    root: path.join(__dirname, 'app'),
-    packageMains: ['webpack', 'browser', 'web', 'browserify', ['jam', 'main'], 'main'],
-    modulesDirectories: ['node_modules', 'local-flux', 'shared-components', 'locale-data']
-  },
-  plugins: [
-
-  ],
-  externals: [
-  ]
 };
 
 webpackConfig.module.loaders.push({
-  test: /\.scss$/,
-  include: /app/,
-  loaders: [
-    "style-loader",
-    "css-loader?modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]!",
-    "sass-loader?sourceMap"
-  ]
+    test: /\.scss$/,
+    include: /app/,
+    loaders: [
+        'style-loader',
+        'css-loader?modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]!',
+        'sass-loader?sourceMap'
+    ]
 });
 
 
 webpackConfig.sassLoader = {
-  includePaths: path.join(__dirname, 'app')
+    includePaths: path.join(__dirname, 'app')
 };
 
 

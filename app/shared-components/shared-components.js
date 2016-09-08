@@ -7,3 +7,4 @@ export EntryContent from './EntryContent/entry-content';
 export EntryCard from './EntryCard/entry-card';
 export AuthDialog from './Dialogs/auth-dialog';
 export ConfirmationDialog from './Dialogs/confirmation-dialog';
+export PanelContainer from './PanelContainer/panel-container';

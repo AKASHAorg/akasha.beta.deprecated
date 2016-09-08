@@ -19,6 +19,8 @@ import PublishEntryCompleteContainer from './routes/Home/routes/NewEntry/routes/
 import StreamPageContainer from './routes/Home/routes/Stream/StreamContainer';
 import EntryListContainer from './routes/Home/routes/Stream/routes/EntryList/EntryListContainer';
 
+import requireAuth from './require-auth';
+
 export default (
   <Route component={AppContainer} path="/" > {/** displays errors and various info */}
 
@@ -52,7 +54,7 @@ export default (
     </Route>
 
     {/** user home after login */}
-    <Route component={HomeContainer} path=":username" >
+    <Route component={requireAuth(HomeContainer)} path=":username" >
       <IndexRedirect to="explore/stream" />
       {/** loads articles from blockchain */}
       <Route component={StreamPageContainer}>

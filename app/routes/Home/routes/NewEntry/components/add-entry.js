@@ -62,6 +62,7 @@ class NewEntryPage extends Component {
         const { entryActions, params } = this.props;
         const content = this.editor.getRawContent();
         const contentState = this.editor.getContent();
+        const htmlContent = this.editor.getHtmlContent();
         const title = this.editor.getTitle();
         const wordCount = this._getWordCount(contentState);
         if (params.draftId !== 'new') {

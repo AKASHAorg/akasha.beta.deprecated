@@ -1,6 +1,11 @@
 import { defineMessages } from 'react-intl';
 
 const generalMessages = defineMessages({
+    by: {
+        id: 'app.general.by',
+        description: 'entry is written `by`',
+        defaultMessage: 'by'
+    },
     privacyPolicy: {
         id: 'app.general.privacyPolicy',
         description: 'Privacy Policy',

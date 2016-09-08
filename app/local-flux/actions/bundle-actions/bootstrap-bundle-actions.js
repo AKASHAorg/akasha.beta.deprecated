@@ -50,16 +50,12 @@ class BootstrapBundleActions {
     initAuth = (getState) => {
         const promises = [];
         promises.push(this.profileActions.getTempProfile());
-        promises.push(this.profileActions.checkLoggedProfile());
         promises.push(this.tagActions.getTags({ fetchAll: true }));
         return Promise.all(promises).then(() => {
             const profileState = getState().profileState;
-            const tempProfile = getState().profileState.get('tempProfile');
-            const loggedProfile = profileState.get('loggedProfile');
+            const tempProfile = profileState.get('tempProfile');
             if (tempProfile.get('address')) {
                 dbg('temp profile is', tempProfile);
-            } else if (loggedProfile.get('address')) {
-                dbg('logged profile is', loggedProfile);
             } else {
                 this.profileActions.getLocalProfiles();
             }

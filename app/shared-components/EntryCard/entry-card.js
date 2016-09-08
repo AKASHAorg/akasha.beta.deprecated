@@ -29,7 +29,7 @@ const EntryCard = (props) => {
     } = props;
     const wordCount = entry.get('wordCount');
     const publishedDate = intl.formatRelative(
-        new Date(entry.getIn(['status', 'created_at'])).getTime()
+        new Date(entry.get('created_at')).getTime()
     );
     const readingTime = calculateReadingTime(wordCount);
     const cardSubtitle = `${publishedDate} - 

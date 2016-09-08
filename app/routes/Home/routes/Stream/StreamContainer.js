@@ -14,15 +14,15 @@ class StreamPage extends Component {
     }
     componentWillMount () {
         this._handleFilterChange(this.props.params.filter);
-    }
-    componentDidMount () {
         this._fetchEntries(this.props, this.state);
     }
+
     componentWillReceiveProps (nextProps) {
         if (nextProps.params.filter !== this.state.filter) {
             this._handleFilterChange(nextProps.params.filter);
         }
     }
+
     componentWillUpdate (nextProps, nextState) {
         if (nextState.filter === this.state.filter) {
             return;
@@ -35,16 +35,13 @@ class StreamPage extends Component {
         const { filter } = state;
         switch (filter) {
             case 'top':
-                entryActions.getSortedEntries({ sortBy: 'rating' });
-                break;
+                return entryActions.getSortedEntries({ sortBy: 'rating' });
             case 'saved':
-                entryActions.getSavedEntries(loggedProfile.get('userName'));
-                break;
+                return entryActions.getSavedEntries(loggedProfile.get('userName'));
             case 'tag':
-                entryActions.getEntriesForTag({ tagName: params.tagName });
-                break;
+                return entryActions.getEntriesForTag({ tagName: params.tagName });
             default: // 'stream'
-                entryActions.getSortedEntries({ sortBy: 'date' });
+                return entryActions.getSortedEntries({ sortBy: 'date' });
         }
     }
     _handleTabActivation = (tab) => {

@@ -2,6 +2,8 @@ import React, { Component, PropTypes } from 'react';
 import { MenuAkashaLogo } from 'shared-components/svg';
 import * as Colors from 'material-ui/styles/colors';
 import { SvgIcon } from 'material-ui';
+import { injectIntl, FormattedMessage } from 'react-intl';
+import { PanelContainer } from 'shared-components';
 
 class CreateProfileStatus extends Component {
     componentWillMount () {
@@ -10,45 +12,62 @@ class CreateProfileStatus extends Component {
             profileActions.createProfile();
         });
     }
-    
     render () {
         const { style, profileState } = this.props;
         const paraStyle = { marginTop: '20px' };
-        
+
         return (
-            <div style={style} >
-                <div className="row start-xs" >
-                    <div className="col-xs" >
-                        <SvgIcon
-                            color={Colors.lightBlack}
-                            viewBox="0 0 32 32"
-                            style={{
-                                width: '32px',
-                                height: '32px',
-                                marginRight: '10px',
-                                verticalAlign: 'middle'
-                            }}
-                        >
-                            <MenuAkashaLogo />
-                        </SvgIcon>
-                        <h1 style={{ fontWeight: '400', display: 'inline', verticalAlign: 'middle' }} >
-                            {'Registering identity...'}
-                        </h1>
-                        <p style={paraStyle} >
-                            {'Your identity is broadcasted into the Ethereum world computer network.'}
-                        </p>
-                        <p style={paraStyle} >
-                            {'This will take a few moments ...'}
-                        </p>
-                        <span style={{ marginTop: '20px', fontSize: '13px' }} >
+          <div style={style} >
+              <PanelContainer
+                showBorder
+                header={
+                  <div>
+                    <SvgIcon
+                      color={Colors.lightBlack}
+                      viewBox="0 0 32 32"
+                      style={{
+                          width: '32px',
+                          height: '32px',
+                          marginRight: '10px',
+                          verticalAlign: 'middle'
+                      }}
+                    >
+                      <MenuAkashaLogo />
+                    </SvgIcon>
+                    <h1 style={{ fontWeight: '400', display: 'inline', verticalAlign: 'middle' }} >
+                      <FormattedMessage
+                        id="app.createProfile.registeringIdentity"
+                        description="Registering identity status"
+                        defaultMessage="Registering identity"
+                      /> ...
+                    </h1>
+                  </div>
+                }
+              >
+                <div className="col-xs" >
+                  <p style={paraStyle} >
+                    <FormattedMessage
+                      id="app.createProfile.yourIdentityIsBroadcasted"
+                      description="describing that identity is broadcasted into network"
+                      defaultMessage="Your identity is broadcasted into the Ethereum world computer network."
+                    />
+                  </p>
+                  <p style={paraStyle} >
+                    <FormattedMessage
+                      id="app.createProfile.willTakeFewMinutes"
+                      description="action `will take a few moments` to complete"
+                      defaultMessage="This will take a few moments"
+                    /> ...
+                  </p>
+                  <span style={{ marginTop: '20px', fontSize: '13px' }} >
                     {/** profileState.getIn(['create', 'steps']).map((step, key) => <p key={key}>{step}</p>)*/}
-                </span>
-                        <p style={{ marginTop: '20px', color: Colors.red300 }} >
-                            {/** profileState.getIn(['create', 'err']) */}
-                        </p>
-                    </div>
+                  </span>
+                  <p style={{ marginTop: '20px', color: Colors.red300 }} >
+                      {/** profileState.getIn(['create', 'err']) */}
+                  </p>
                 </div>
-            </div>
+              </PanelContainer>
+          </div>
         );
     }
 }
@@ -56,7 +75,8 @@ class CreateProfileStatus extends Component {
 CreateProfileStatus.propTypes = {
     profileActions: PropTypes.object.isRequired,
     profileState: PropTypes.object,
-    style: PropTypes.object
+    style: PropTypes.object,
+    intl: React.PropTypes.object
 };
 
 CreateProfileStatus.contextTypes = {
@@ -74,4 +94,4 @@ CreateProfileStatus.defaultProps = {
     }
 };
 
-export default CreateProfileStatus;
+export default injectIntl(CreateProfileStatus);

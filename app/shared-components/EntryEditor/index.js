@@ -12,6 +12,7 @@ import {
     AtomicBlockUtils,
     RichUtils,
     Entity } from 'draft-js';
+import { stateToHTML } from 'draft-js-export-html';
 import { getResizedImages } from '../../utils/imageUtils';
 import clickAway from '../../utils/clickAway';
 import styles from './style.css';
@@ -59,6 +60,8 @@ class EntryEditor extends Component {
     }
     getRawContent = () => convertToRaw(this.state.editorState.getCurrentContent());
     getContent = () => this.state.editorState.getCurrentContent();
+    getHtmlContent = () => stateToHTML(this.state.editorState.getCurrentContent());
+
     getTitle = () => this.state.title;
     componentClickAway = () => {
         const selection = this.state.editorState.getSelection();
