@@ -3,8 +3,9 @@ import ModuleEmitter from './event/ModuleEmitter';
 import { unpad } from 'ethereumjs-util';
 import channels from '../channels';
 import { mainResponse } from './event/responses';
-import {constructed as contracts} from './contracts/index';
-import {module as userModule} from './modules/user/index';
+import { constructed as contracts } from './contracts/index';
+import { module as userModule } from './modules/auth/index';
+import { module as profileModule } from './modules/profile/index';
 import WebContents = Electron.WebContents;
 
 class RegistryIPC extends ModuleEmitter {
@@ -32,7 +33,10 @@ class RegistryIPC extends ModuleEmitter {
                     .registry
                     .profileExists(data.username)
                     .then((exists: boolean) => {
-                        const response: ProfileExistsResponse = mainResponse({ exists, username: data.username });
+                        const response: ProfileExistsResponse = mainResponse({
+                            exists,
+                            username: data.username
+                        });
                         this.fireEvent(
                             channels.client[this.MODULE_NAME].profileExists,
                             response,
@@ -61,10 +65,10 @@ class RegistryIPC extends ModuleEmitter {
                     .getMyProfile()
                     .then((address: string) => {
                         const addr = unpad(address);
-                        response = (addr) ? mainResponse({address}) : mainResponse({ address: addr});
+                        response = (addr) ? mainResponse({ address }) : mainResponse({ address: addr });
                     })
                     .catch((error: Error) => {
-                         response = mainResponse({ error: { message: error.message } });
+                        response = mainResponse({ error: { message: error.message } });
                     })
                     .finally(() => {
                         this.fireEvent(
@@ -88,7 +92,7 @@ class RegistryIPC extends ModuleEmitter {
                     .getByAddress(data.ethAddress)
                     .then((address: string) => {
                         const addr = unpad(address);
-                        response = mainResponse({profileAddress: addr});
+                        response = mainResponse({ profileAddress: addr });
                     })
                     .catch((error: Error) => {
                         response = mainResponse({ error: { message: error.message } });
@@ -110,14 +114,20 @@ class RegistryIPC extends ModuleEmitter {
             channels.server[this.MODULE_NAME].registerProfile,
             (event: any, data: ProfileCreateRequest) => {
                 let response: ProfileCreateResponse;
-                contracts.instance
-                    .registry
-                    .register(data.username, data.ipfsHash, data.gas)
+                profileModule
+                    .helpers
+                    .create(data.ipfs)
+                    .then((ipfsHash: string) => {
+                        console.log('ipfshash', ipfsHash);
+                        return contracts.instance
+                            .registry
+                            .register(data.username, ipfsHash, data.gas);
+                    })
                     .then((txData: any) => {
-                       return userModule.auth.signData(txData, data.token);
+                        return userModule.auth.signData(txData, data.token);
                     })
                     .then((tx: string) => {
-                       response = mainResponse({ tx });
+                        response = mainResponse({ tx });
                     })
                     .catch((error: Error) => {
                         response = mainResponse({ error: { message: error.message } });

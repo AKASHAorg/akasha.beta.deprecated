@@ -4,7 +4,8 @@ const ethereumjs_util_1 = require('ethereumjs-util');
 const channels_1 = require('../channels');
 const responses_1 = require('./event/responses');
 const index_1 = require('./contracts/index');
-const index_2 = require('./modules/user/index');
+const index_2 = require('./modules/auth/index');
+const index_3 = require('./modules/profile/index');
 class RegistryIPC extends ModuleEmitter_1.default {
     constructor() {
         super();
@@ -25,7 +26,10 @@ class RegistryIPC extends ModuleEmitter_1.default {
                 .registry
                 .profileExists(data.username)
                 .then((exists) => {
-                const response = responses_1.mainResponse({ exists: exists, username: data.username });
+                const response = responses_1.mainResponse({
+                    exists: exists,
+                    username: data.username
+                });
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].profileExists, response, event);
             })
                 .catch((error) => {
@@ -76,9 +80,15 @@ class RegistryIPC extends ModuleEmitter_1.default {
     _registerProfile() {
         this.registerListener(channels_1.default.server[this.MODULE_NAME].registerProfile, (event, data) => {
             let response;
-            index_1.constructed.instance
-                .registry
-                .register(data.username, data.ipfsHash, data.gas)
+            index_3.module
+                .helpers
+                .create(data.ipfs)
+                .then((ipfsHash) => {
+                console.log('ipfshash', ipfsHash);
+                return index_1.constructed.instance
+                    .registry
+                    .register(data.username, ipfsHash, data.gas);
+            })
                 .then((txData) => {
                 return index_2.module.auth.signData(txData, data.token);
             })

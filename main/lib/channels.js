@@ -10,9 +10,9 @@ const hashPath = (...path) => {
 };
 const channels = {
     geth: ['manager', 'options', 'startService', 'stopService', 'restartService', 'syncStatus', 'logs', 'status'],
-    ipfs: ['manager', 'startService', 'stopService', 'status'],
+    ipfs: ['manager', 'startService', 'stopService', 'status', 'resolve'],
     auth: ['manager', 'login', 'logout', 'requestEther', 'generateEthKey', 'getLocalIdentities'],
-    user: ['manager', 'exists', 'registerProfile', 'getProfileData', 'getBalance', 'getIpfsImage'],
+    profile: ['manager', 'getProfileData', 'getMyBalance'],
     registry: ['manager', 'profileExists', 'registerProfile', 'getCurrentProfile', 'getByAddress'],
     entry: ['manager', 'publish'],
     tx: ['manager', 'addToQueue', 'emitMined']

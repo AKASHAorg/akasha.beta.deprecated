@@ -44,12 +44,12 @@ describe('Auth IPC module', function(){
             .waitUntilWindowLoaded(1000)
             .executeAsync((done: any) => {
                 const ipcRenderer = require('electron').ipcRenderer;
-                ipcRenderer.on(window.Channel.client.auth.manager, (status: any) => {
+                ipcRenderer.on(window['Channel'].client.auth.manager, (status: any) => {
                     done(status);
                 });
                 ipcRenderer.send(
-                    window.Channel.server.auth.manager,
-                    {channel: window.Channel.server.auth.generateEthKey, listen: true}
+                    window['Channel'].server.auth.manager,
+                    {channel: window['Channel'].server.auth.generateEthKey, listen: true}
                     );
             })
             .then((ret: any) => {

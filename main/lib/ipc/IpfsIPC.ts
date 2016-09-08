@@ -9,7 +9,7 @@ import { ipfsResponse } from './event/responses';
 
 class IpfsIPC extends IpfsEmitter {
     public logger = 'ipfs';
-    private DEFAULT_MANAGED: string[] = ['startService', 'stopService', 'status'];
+    private DEFAULT_MANAGED: string[] = ['startService', 'stopService', 'status', 'resolve'];
 
     constructor() {
         super();
@@ -24,6 +24,7 @@ class IpfsIPC extends IpfsEmitter {
         this._start()
             ._stop()
             ._status()
+            ._resolve()
             ._manager();
     }
 
@@ -111,6 +112,38 @@ class IpfsIPC extends IpfsEmitter {
                     ipfsResponse({}),
                     event
                 );
+            }
+        );
+        return this;
+    }
+
+    /**
+     * Fetch data from ipfs hashes or links
+     * ex: QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG or
+     * QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG/someField
+     * @private
+     */
+    private _resolve() {
+        this.registerListener(
+            channels.server.ipfs.resolve,
+            (event: any, data: IpfsResolveRequest) => {
+                let response: IpfsResolveResponse;
+                IpfsConnector.getInstance()
+                    .api
+                    .resolve(data.hash)
+                    .then((source: any) => {
+                        response = ipfsResponse({ content: source, hash: data.hash } );
+                    })
+                    .catch((error: Error) => {
+                        response = ipfsResponse({ hash: data.hash }, { message: error.message });
+                    })
+                    .finally(() => {
+                        this.fireEvent(
+                            channels.client.ipfs.resolve,
+                            response,
+                            event
+                        );
+                    });
             }
         );
         return this;

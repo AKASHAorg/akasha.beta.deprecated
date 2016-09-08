@@ -4,7 +4,7 @@ import channels from '../channels';
 import WebContents = Electron.WebContents;
 import IpcMainEvent = Electron.IpcMainEvent;
 import { mainResponse } from './event/responses';
-import {module as userModule} from './modules/user/index';
+import {module as userModule} from './modules/auth/index';
 import {constructed} from './contracts/index';
 import { post as POST } from 'request';
 

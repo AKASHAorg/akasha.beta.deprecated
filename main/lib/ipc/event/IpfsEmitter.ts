@@ -1,6 +1,7 @@
 import { AbstractEmitter } from './AbstractEmitter';
 import { IpfsConnector, ipfsEvents } from '@akashaproject/ipfs-connector';
 import { ipfsResponse } from './responses';
+import { initIpfsModules } from '../modules/index';
 import channels from '../../channels';
 
 abstract class IpfsEmitter extends AbstractEmitter {
@@ -28,6 +29,7 @@ abstract class IpfsEmitter extends AbstractEmitter {
             ipfsEvents.SERVICE_STARTED,
             () => {
                 this.fireEvent(channels.client.ipfs.startService, ipfsResponse({ started: true }));
+                initIpfsModules();
             }
         );
         return this;
