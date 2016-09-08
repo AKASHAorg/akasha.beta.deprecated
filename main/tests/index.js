@@ -38,10 +38,10 @@ describe('Auth IPC module', function () {
             .waitUntilWindowLoaded(1000)
             .executeAsync((done) => {
             const ipcRenderer = require('electron').ipcRenderer;
-            ipcRenderer.on(window.Channel.client.auth.manager, (status) => {
+            ipcRenderer.on(window['Channel'].client.auth.manager, (status) => {
                 done(status);
             });
-            ipcRenderer.send(window.Channel.server.auth.manager, { channel: window.Channel.server.auth.generateEthKey, listen: true });
+            ipcRenderer.send(window['Channel'].server.auth.manager, { channel: window['Channel'].server.auth.generateEthKey, listen: true });
         })
             .then((ret) => {
             chai_1.expect(ret).not.to.be.undefined;

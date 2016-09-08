@@ -8,7 +8,7 @@ class IpfsIPC extends IpfsEmitter_1.default {
     constructor() {
         super();
         this.logger = 'ipfs';
-        this.DEFAULT_MANAGED = ['startService', 'stopService', 'status'];
+        this.DEFAULT_MANAGED = ['startService', 'stopService', 'status', 'resolve'];
         this.attachEmitters();
     }
     initListeners(webContents) {
@@ -17,6 +17,7 @@ class IpfsIPC extends IpfsEmitter_1.default {
         this._start()
             ._stop()
             ._status()
+            ._resolve()
             ._manager();
     }
     _start() {
@@ -48,6 +49,24 @@ class IpfsIPC extends IpfsEmitter_1.default {
     _status() {
         this.registerListener(channels_1.default.server.ipfs.status, (event) => {
             this.fireEvent(channels_1.default.client.ipfs.status, responses_1.ipfsResponse({}), event);
+        });
+        return this;
+    }
+    _resolve() {
+        this.registerListener(channels_1.default.server.ipfs.resolve, (event, data) => {
+            let response;
+            ipfs_connector_1.IpfsConnector.getInstance()
+                .api
+                .resolve(data.hash)
+                .then((source) => {
+                response = responses_1.ipfsResponse({ content: source, hash: data.hash });
+            })
+                .catch((error) => {
+                response = responses_1.ipfsResponse({ hash: data.hash }, { message: error.message });
+            })
+                .finally(() => {
+                this.fireEvent(channels_1.default.client.ipfs.resolve, response, event);
+            });
         });
         return this;
     }

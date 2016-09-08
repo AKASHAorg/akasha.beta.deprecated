@@ -16,6 +16,39 @@ interface IPCmanager {
     channel: string;
     listen: boolean;
 }
+/////////// ipfs models \\\\\\\\\\\\\
+interface IpfsLink {
+    '/': string;  // ex: { '/': 'QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG' }
+}
+//           320,   640,   768,  1024,   1280
+type bgKey = "xs" | "sm" | "md" | "lg" | "xl";
+
+type mediaSource = { key: bgKey, src: string, width: number, height: number };
+
+interface ProfileModel {
+    firstName: string;
+    lastName: string;
+    avatar?: string; // ipfs hash
+    backgroundImage?: mediaSource[];
+    about?: string; // ipfs hash
+    links?: { title: string, url: string, type: string, id: number }[];
+}
+
+interface EntryModel {
+    title: string;
+    tags: string [];
+    content: { data: string, html: string }; // ipfs hash
+    excerpt: string; // ipfs hash
+    featuredImage?: mediaSource[];
+    wordCount: number;
+}
+
+interface CommentModel {
+    parent?: string;
+    content: { data: string, html: string }; // ipfs hash
+    date: Date;
+}
+/////////////////// ipfs models \\\\\\\\\\\\\\\\\\\\\\\\\
 
 // Define type of `data`
 //  renderer -> channels.server.geth.start
@@ -42,6 +75,17 @@ interface IpfsStatus {
     spawned: boolean;
     started?: boolean;
     stopped?: boolean;
+}
+
+interface IpfsResolveRequest {
+    hash: string;
+}
+
+interface IpfsResolveResponse extends MainResponse {
+    data: {
+        content: any;
+        hash: string;
+    };
 }
 
 // channels.server.geth.restart
@@ -179,7 +223,7 @@ interface ProfileByAddressResponse extends MainResponse {
 
 interface ProfileCreateRequest extends AuthRequest {
     username: string;
-    ipfsHash: string;
+    ipfs: IpfsProfileCreateRequest;
     gas?: number;
 }
 
@@ -189,3 +233,14 @@ interface ProfileCreateResponse extends MainResponse {
     };
 }
 /////////////////////////  </ Registry > \\\\\\\\\\\\\\\\\\\\\\\\
+
+////////////////////////// < Profile> \\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+interface IpfsProfileCreateRequest {
+    firstName: string;
+    lastName: string;
+    avatar?: any;
+    backgroundImage?: { key: bgKey, src: any, width: number, height: number }[];
+    about?: string;
+    links?: { title: string, url: string, type: string, id: number }[];
+}
+///////////////////////// </ Profile> \\\\\\\\\\\\\\\\\\\\\\\\\\\\\
