@@ -20,16 +20,20 @@ interface IPCmanager {
 interface IpfsLink {
     '/': string;  // ex: { '/': 'QmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG' }
 }
-//           320,   640,   768,  1024,   1280
-type bgKey = "xs" | "sm" | "md" | "lg" | "xl";
 
-type mediaSource = { key: bgKey, src: string, width: number, height: number };
-
+type mediaSource = { src: string, width: number, height: number };
+type multiRes = {
+    xs?: mediaSource,
+    sm?: mediaSource,
+    md?: mediaSource,
+    lg?: mediaSource,
+    xl?: mediaSource
+};
 interface ProfileModel {
     firstName: string;
     lastName: string;
     avatar?: string; // ipfs hash
-    backgroundImage?: mediaSource[];
+    backgroundImage?: IpfsLink;
     about?: string; // ipfs hash
     links?: { title: string, url: string, type: string, id: number }[];
 }
@@ -39,7 +43,7 @@ interface EntryModel {
     tags: string [];
     content: { data: string, html: string }; // ipfs hash
     excerpt: string; // ipfs hash
-    featuredImage?: mediaSource[];
+    featuredImage?: IpfsLink;
     wordCount: number;
 }
 
@@ -235,11 +239,19 @@ interface ProfileCreateResponse extends MainResponse {
 /////////////////////////  </ Registry > \\\\\\\\\\\\\\\\\\\\\\\\
 
 ////////////////////////// < Profile> \\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+type mediaSourcePost = { src: any, width: number, height: number };
+type multiResPost = {
+    xs?: mediaSourcePost,
+    sm?: mediaSourcePost,
+    md?: mediaSourcePost,
+    lg?: mediaSourcePost,
+    xl?: mediaSourcePost
+};
 interface IpfsProfileCreateRequest {
     firstName: string;
     lastName: string;
     avatar?: any;
-    backgroundImage?: { key: bgKey, src: any, width: number, height: number }[];
+    backgroundImage?: multiResPost;
     about?: string;
     links?: { title: string, url: string, type: string, id: number }[];
 }

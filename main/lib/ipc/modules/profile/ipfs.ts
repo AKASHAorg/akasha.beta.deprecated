@@ -1,5 +1,6 @@
 import { IpfsConnector } from '@akashaproject/ipfs-connector';
 import * as Promise from 'bluebird';
+import Bluebird = require('~bluebird/bluebird');
 
 /**
  *
@@ -7,32 +8,64 @@ import * as Promise from 'bluebird';
  * @returns {Thenable<U>|PromiseLike<TResult>|Promise<TResult>|Bluebird<U>}
  */
 const create = (data: IpfsProfileCreateRequest) => {
-    const returned = Object.assign({}, data);
+    const returned: any = {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        avatar: '',
+        backgroundImage: '',
+        about: '',
+        links: data.links
+    };
     let media: any[] = [];
-    console.log('inside creation');
+    let keys: any;
     if (data.backgroundImage) {
-        media = data.backgroundImage.map((media) => {
-            return IpfsConnector.getInstance().api.add(Buffer.from(media.src));
-        });
-    }
-    if (data.avatar) {
-        media.push(
-            IpfsConnector.getInstance()
+        keys = Object.keys(data.backgroundImage).sort();
+        media = keys.map((media: string) => {
+            return IpfsConnector.getInstance()
                 .api
-                .add(Buffer.from(data.avatar))
-        );
+                .addFile(Buffer.from(data.backgroundImage[media].src));
+        });
     }
     return Promise.all(media)
         .then((hashes) => {
-            console.log('inside all creation');
-            hashes.forEach((v: string, i: number) => {
-                if (i === (hashes.length - 1)) {
-                    returned.avatar = v;
-                } else {
-                    returned.backgroundImage[i].src = v;
-                }
-            });
-            console.log('ipfs object', returned);
+            let constructed: any = {};
+            if (hashes.length) {
+                hashes.forEach((v: any, i: number) => {
+                    const dim = keys[i];
+                    constructed[dim] = {};
+                    constructed[dim]['width'] = data.backgroundImage[dim].width;
+                    constructed[dim]['height'] = data.backgroundImage[dim].height;
+                    constructed[dim]['src'] = v;
+                });
+                return IpfsConnector.getInstance().api.add(constructed).then((hash: string) => {
+                    return IpfsConnector.getInstance().api.constructObjLink(hash);
+                });
+            }
+            return Promise.resolve('');
+        }).then((hash: any) => {
+            if (hash) {
+                returned.backgroundImage = hash;
+            }
+            if (data.avatar) {
+                return IpfsConnector.getInstance()
+                    .api
+                    .addFile(Buffer.from(data.avatar));
+            }
+            return Promise.resolve('');
+        }).then((hash: any) => {
+            if (hash) {
+                returned.avatar = hash;
+            }
+            if (data.about) {
+                return IpfsConnector.getInstance()
+                    .api
+                    .addFile(Buffer.from(data.about));
+            }
+            return Promise.resolve('');
+        }).then((hash: any) => {
+            if (hash) {
+                returned.about = hash;
+            }
             return IpfsConnector.getInstance().api.add(returned);
         });
 };
@@ -65,22 +98,46 @@ const getShortProfile = (hash: string) => {
  * @returns {Bluebird<U>|Thenable<U>|Promise<TResult>|PromiseLike<TResult>}
  */
 const resolveProfile = (hash: string) => {
+    let resolved: any;
+    let keys: any;
     return getShortProfile(hash)
         .then((schema: ProfileModel) => {
-            let resolved: any = Object.assign({}, schema);
+            resolved = Object.assign({}, schema);
             const LINKS: any[] = [];
             if (schema.backgroundImage) {
-                schema.backgroundImage.forEach((media) => {
-                    LINKS.push(IpfsConnector.getInstance().api.resolve(media.src));
+                return IpfsConnector.getInstance().api.resolve(schema.backgroundImage);
+            }
+            return Promise.resolve('');
+        }).then((mediaObj: any): Bluebird<any> => {
+            let media: any;
+            if (mediaObj) {
+                keys = Object.keys(mediaObj).sort();
+                resolved.backgroundImage = mediaObj;
+                media = keys.map((media: string) => {
+                    return IpfsConnector.getInstance()
+                        .api
+                        .resolve(resolved.backgroundImage[media].src);
+                });
+                return Promise.all(media);
+            }
+            return Promise.resolve('');
+        }).then((images: any) => {
+            if (images.length) {
+                images.forEach((v: Buffer, i: number) => {
+                    resolved.backgroundImage[keys[i]].src = Uint8Array.from(v);
                 });
             }
-            return Promise.all(LINKS)
-                .then((sources: Buffer[]) => {
-                    sources.forEach((val, i) => {
-                        resolved.backgroundImage[i].src = Uint8Array.from(val);
-                    });
-                    return resolved;
-                });
+            if (resolved.about) {
+                return IpfsConnector.getInstance()
+                    .api
+                    .resolve(resolved.about);
+            }
+            return Promise.resolve('');
+        }).then((about: any) => {
+            if (about) {
+                resolved.about = Buffer.from(about).toString('utf8');
+            }
+            return resolved;
         });
 };
 
