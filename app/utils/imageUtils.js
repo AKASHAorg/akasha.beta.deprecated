@@ -1,17 +1,40 @@
 import r from 'ramda';
+import debug from 'debug';
+const dbg = debug('App:imageUtils');
+const error = debug('App:error');
 
 function imageCreator (arrayBuffer, { mimeType = 'image/png', width = 100, height = 100 } = {}) {
     const blobFile = new Blob([arrayBuffer], { type: mimeType });
     const imageUrl = window.URL.createObjectURL(blobFile);
-    const image = new Image(width, height);
-    image.onload = function onload () {
-        window.URL.revokeObjectURL(imageUrl);
-    };
-    image.src = imageUrl;
-    return image;
+    // const image = new Image(width, height);
+    // image.onload = function onload () {
+    //     window.URL.revokeObjectURL(imageUrl);
+    // };
+    // image.src = imageUrl;
+    return imageUrl;
 }
-
-
+/**
+ * Utility to extract first image from draftjs generated content;
+ * @param {object} content Draft-js generated content;
+ * @return {array} image Array of versions of an image;
+ */
+function extractImageFromContent (content) {
+    const { entityMap } = content;
+    if (!entityMap) {
+        error(`entityMap not found inside content param. 
+            Make sure you have passed the right content!`
+        );
+        return null;
+    }
+    if (entityMap.length === 0) {
+        return null;
+    }
+    const imageEntity = entityMap.filter(entity => entity.type === 'image');
+    if (imageEntity.length > 0) {
+        return imageEntity[0].data;
+    }
+    return null;
+}
 /**
  * @TODO Move this to a config file
  */
@@ -37,7 +60,7 @@ const imageWidths = [
     }
 ];
 
-function _readImageData (imagePath, canvas, ctx, options) {
+function readImageData (imagePath, canvas, ctx, options) {
     return new Promise((resolve, reject) => {
         const availableWidths = [];
         let resizeWidths = imageWidths;
@@ -129,10 +152,10 @@ function getResizedImages (imagePaths, options) {
     const promises = [];
     for (let i = imagePaths.length - 1; i >= 0; i--) {
         const path = imagePaths[i];
-        promises.push(_readImageData(path, canvas, ctx, options));
+        promises.push(readImageData(path, canvas, ctx, options));
     }
     return promises;
 }
 
 export default imageCreator;
-export { getResizedImages };
+export { getResizedImages, extractImageFromContent };

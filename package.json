@@ -5,29 +5,32 @@
   "description": "Akasha platform",
   "main": "main.js",
   "scripts": {
-    "test": "better-npm-run test",
+    "test": "cross-env NODE_ENV=test BABEL_DISABLE_CACHE=1 mocha --compilers js:babel-register --recursive --require ./test/setup.js test/**/*.spec.js",
     "test-watch": "npm test -- --watch",
+    "test-e2e": "cross-env NODE_ENV=test BABEL_DISABLE_CACHE=1 mocha --compilers js:babel-register --require ./test/setup.js ./test/e2e.js",
     "debug-ipc": "ELECTRON_RUN_AS_NODE=true node_modules/.bin/electron node_modules/node-inspector/bin/inspector.js --no-preload --web-port 8181",
-    "test-ipc": "node_modules/.bin/mocha test/spectron/spectron-main.js",
-    "test-real": "node_modules/.bin/mocha test/spectron/spectron-real.js",
-    "lint": "node node_modules/eslint/bin/eslint.js app/ electron-api/",
+    "lint": "eslint app test *.js",
     "browser": "node server.js",
-    "build": "better-npm-run build",
-    "start": "better-npm-run start",
-    "wingui": "better-npm-run wingui",
-    "xgui": "better-npm-run xgui",
-    "package": "better-npm-run package",
-    "package-all": "npm run package -- --all"
+    "hot-server": "node -r babel-register server.js",
+    "build-main": "cross-env NODE_ENV=production node -r babel-register ./node_modules/webpack/bin/webpack --config webpack.config.electron.js --progress --profile --colors",
+    "build-renderer": "cross-env NODE_ENV=production node -r babel-register ./node_modules/webpack/bin/webpack --config webpack.config.production.js --progress --profile --colors",
+    "build": "npm run build-main && npm run build-renderer",
+    "start": "cross-env NODE_ENV=production electron ./",
+    "start-hot": "cross-env HOT=1 NODE_ENV=development electron -r babel-register -r babel-polyfill ./main.js",
+    "package": "cross-env NODE_ENV=production node -r babel-register -r babel-polyfill package.js",
+    "package-all": "npm run package -- --all",
+    "postinstall": "node node_modules/fbjs-scripts/node/check-dev-engines.js package.json",
+    "dev": "concurrently --kill-others \"npm run hot-server\" \"npm run start-hot\""
   },
   "betterScripts": {
     "start": {
-      "command": "electron ./",
+      "command": "cross-env electron ./",
       "env": {
         "NODE_ENV": "production"
       }
     },
-    "wingui": {
-      "command": "node_modules\\.bin\\electron.cmd --remote-debugging-port=1337 .",
+    "start-hot": {
+      "command": "cross-env HOT=1 electron -r babel-register -r babel-polyfill ./main",
       "env": {
         "HOT": 1,
         "NODE_ENV": "development"
@@ -53,11 +56,14 @@
       }
     },
     "test": {
-      "command": "./node_modules/.bin/mocha --compilers js:babel-core/register --recursive --require ./test/setup.js test/**/*.spec.js",
+      "command": "cross-env BABEL_DISABLE_CACHE=1 mocha --compilers js:babel-register --recursive --require ./test/setup.js test/**/*.spec.js",
       "env": {
         "NODE_ENV": "test"
       }
     }
+  },
+  "bin": {
+    "electron": "./node_modules/.bin/electron"
   },
   "repository": {
     "type": "git",
@@ -80,18 +86,21 @@
     "babel-eslint": "6.1.2",
     "babel-loader": "6.2.5",
     "babel-plugin-add-module-exports": "0.2.1",
+    "babel-plugin-dev-expression": "^0.2.1",
     "babel-plugin-react-intl": "2.2.0",
     "babel-plugin-transform-runtime": "6.15.0",
     "babel-polyfill": "6.13.0",
     "babel-preset-es2015": "6.14.0",
     "babel-preset-react": "6.11.1",
     "babel-preset-react-hmre": "1.1.1",
+    "babel-preset-react-optimize": "^1.0.1",
     "babel-preset-stage-0": "6.5.0",
     "babel-register": "6.14.0",
     "babel-runtime": "6.11.6",
-    "better-npm-run": "0.0.11",
     "chai": "3.5.0",
     "co-mocha": "1.1.3",
+    "concurrently": "2.2.0",
+    "cross-env": "2.0.1",
     "css-loader": "0.25.0",
     "css-modules-require-hook": "4.0.2",
     "cssnano": "3.7.4",
@@ -110,6 +119,7 @@
     "ethereumjs-testrpc": "2.2.4",
     "express": "4.14.0",
     "extract-text-webpack-plugin": "1.0.1",
+    "faker": "^3.1.0",
     "fbjs-scripts": "0.7.1",
     "file-loader": "0.9.0",
     "minimist": "1.2.0",
@@ -122,6 +132,7 @@
     "postcss-modules-local-by-default": "1.1.1",
     "postcss-modules-scope": "1.0.2",
     "postcss-modules-values": "1.2.2",
+    "react-addons-perf": "^15.3.1",
     "react-addons-test-utils": "15.3.1",
     "redux-devtools": "3.3.1",
     "redux-devtools-dock-monitor": "1.1.1",
@@ -137,7 +148,7 @@
     "typings": "1.3.3",
     "webpack": "1.13.2",
     "webpack-dev-middleware": "1.6.1",
-    "webpack-hot-middleware": "2.12.2",
+    "webpack-hot-middleware": "2.12.1",
     "webpack-target-electron-renderer": "0.4.0"
   },
   "dependencies": {
@@ -148,6 +159,7 @@
     "debug": "2.2.0",
     "dexie": "1.4.2",
     "draft-js": "0.8.1",
+    "draft-js-export-html": "^0.4.0",
     "ethereumjs-util": "4.5.0",
     "fuse.js": "2.5.0",
     "history": "4.0.0-1",
@@ -168,10 +180,13 @@
     "react-validation-mixin": "5.4.0",
     "react-validatorjs-strategy": "0.1.10",
     "redux": "3.6.0",
+    "redux-connect": "^2.4.0",
     "redux-thunk": "2.1.0",
     "request": "2.74.0",
     "roboto-fontface": "0.6.0",
+    "source-map-support": "^0.4.2",
     "validatorjs": "3.6.0",
+    "web3": "0.17.0-alpha",
     "winston": "2.2.0"
   },
   "devEngines": {
@@ -179,6 +194,6 @@
     "npm": ">=3.x"
   },
   "engines": {
-    "electron": "1.3.3"
+    "electron": "1.3.5"
   }
 }

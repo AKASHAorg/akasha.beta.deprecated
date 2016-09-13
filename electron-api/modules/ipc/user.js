@@ -72,7 +72,7 @@ class UserService extends MainService {
     _usernameExists (event, arg) {
         const web3 = this.__getWeb3();
         const registry = new Dapple.class(web3).objects.registry;
-        registry.getById.call(web3.fromUtf8(arg.username), {
+        registry.getById.call(web3.fromUtf8(arg.userName), {
 
         }, (err, res) => {
             if (!err) {
@@ -449,7 +449,7 @@ class UserService extends MainService {
                                     { tx }); // o sa ii pasez si currentblock
                                 } else {
                                     this._sendEvent(event)(
-                                        this.clientEvent.registerProfile,
+                                        this.clientEvent.registerProfileComplete,
                                     false,
                                     error,
                                     error.message); // o sa ii pasez si currentblock
@@ -457,21 +457,21 @@ class UserService extends MainService {
                                 return false;
                             });
                     }).catch((err) => {
-                        this._sendEvent(event)(this.clientEvent.registerProfile,
+                        this._sendEvent(event)(this.clientEvent.registerProfileComplete,
                                             false,
                                             err,
                                             this.UNLOCK_COINBASE_FAIL);
                     });
             })
             .catch((err) => {
-                this._sendEvent(event)(this.clientEvent.registerProfile,
+                this._sendEvent(event)(this.clientEvent.registerProfileComplete,
                                         false,
                                         err,
                                         this.IPFS_ADD_SIGNUP_FAIL);
             });
         })
         .catch((err) => {
-            this._sendEvent(event)(this.clientEvent.registerProfile,
+            this._sendEvent(event)(this.clientEvent.registerProfileComplete,
                                     false,
                                     err,
                                     this.IPFS_ADD_SIGNUP_FAIL);
