@@ -46,8 +46,7 @@ class IpcService {
                     result.status.message = extra;
                 }
             }
-            const sender = event ? event.sender : ipcMain;
-            sender.send(name, result);
+            event.sender.send(name, result);
         };
     }
 

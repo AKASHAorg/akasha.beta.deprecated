@@ -1,0 +1,6 @@
+{
+    "name": "flux",
+    "version": "0.0.1",
+    "private": true,
+    "main": "./local-flux.js"
+}

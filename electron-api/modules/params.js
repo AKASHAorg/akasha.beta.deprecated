@@ -122,6 +122,27 @@ export const EVENTS = {
                     ] 
 
                 }
+            }`,
+            tagExists: `{
+                tag: string
+            }`,
+            addTags: `{
+                tags: array of strings
+            }`,
+            getTags: `{
+                position: int // optional
+            }`,
+            saveComment: `{
+                entryHash: string,
+                comment: JSON object
+            }`,
+            upvoteEntry: `{
+                entryHash: string,
+                weight: int
+            }`,
+            downvoteEntry: `{
+                entryHash: string,
+                weight: int
             }`
         }
     },
@@ -176,7 +197,32 @@ export const EVENTS = {
             getBalance: 'string with the sum in ETH'
         },
         entry: {
-            publish: '...'
+            publish: `{
+                same obj sent to server +,
+                ipfsHash: string
+            }`,
+            tagExists: {
+                exists: boolean,
+                tag: string
+            },
+            addTags: `{
+                tx: string,
+                tag: string
+            }`,
+            getTags: `{
+                tags: array of strings
+            }`,
+            saveComment: `{
+                entryHash: string
+            }`,
+            upvoteEntry: `{
+                entryHash: string,
+                weight: int
+            }`,
+            downvoteEntry: `{
+                entryHash: string,
+                weight: int
+            }`
         }
     }
 };

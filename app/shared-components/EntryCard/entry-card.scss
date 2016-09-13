@@ -1,0 +1,15 @@
+.entryTitle {
+    cursor: pointer;
+    span {
+        &:hover {
+            color: #909090 !important;
+        }
+    }
+}
+
+.contentText {
+    cursor: pointer;
+    &:hover {
+        color: #909090;
+    }
+}

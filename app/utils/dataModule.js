@@ -16,7 +16,7 @@ export const inputFieldMethods = {
         const parts = statePath.split('.');
         const nameSpace = parts.shift();
         const errorKey = parts[parts.length - 1];
-        const props = r.omit(['statePath', 'addValueLink'], params);
+        const props = r.omit(['statePath', 'addValueLink', 'onTextChange'], params);
         const validationErrors = this.props.getValidationMessages(errorKey);
         const state = this.state;
         let value = state[nameSpace];
@@ -58,8 +58,8 @@ export const inputFieldMethods = {
         if (statePath && params.addValueLink) {
             props.onChange = (ev) => {
                 this.setState(getNewValuePath(ev.target.value));
-                if (props.onTextChange) {
-                    props.onTextChange(ev);
+                if (params.onTextChange) {
+                    params.onTextChange(ev);
                 }
             };
         }
@@ -68,4 +68,33 @@ export const inputFieldMethods = {
         }
         return props;
     }
+};
+
+export const calculateReadingTime = (wordCount, options = {}) => {
+    let minutes;
+    let hours = null; // hopefully not the case :)
+    options.wordsPerMinute = options.wordsPerMinute || 185;
+
+    const time = wordCount / options.wordsPerMinute;
+    minutes = Math.floor(time);
+    if (minutes > 60) {
+        hours = Math.floor(minutes / 60);
+        minutes %= 60;
+    }
+
+    return {
+        hours,
+        minutes
+    };
+};
+
+export const getWordCount = (content) => {
+    const plainText = content.getPlainText('');
+    // new line, carriage return, line feed
+    const regex = /(?:\r\n|\r|\n)/g;
+    // replace above characters w/ space
+    const cleanString = plainText.replace(regex, ' ').trim();
+    // matches words according to whitespace
+    const wordArray = cleanString.match(/\S+/g);
+    return wordArray ? wordArray.length : 0;
 };

@@ -58,5 +58,20 @@ export const profileMessages = defineMessages({
         defaultMessage: `By proceeding to create your account and use AKASHA, you are agreeing to
                          our {termsLink} and {privacyLink}. If you do not agree, you cannot use
                          AKASHA.`
+    },
+    registeringIdentity: {
+        id: 'app.createProfile.registeringIdentity',
+        description: 'Registering identity status',
+        defaultMessage: 'Registering identity'
+    },
+    yourIdentityIsBroadcasted: {
+        id: 'app.createProfile.yourIdentityIsBroadcasted',
+        description: 'describing that identity is broadcasted into network',
+        defaultMessage: 'Your identity is broadcasted into the Ethereum world computer network.'
+    },
+    willTakeFewMoments: {
+        id: 'app.createProfile.willTakeFewMinutes',
+        description: 'action `will take a few moments` to complete',
+        defaultMessage: 'This will take a few moments'
     }
 });

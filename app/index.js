@@ -1,26 +1,31 @@
 import React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
+import { ReduxAsyncConnect } from 'redux-connect';
 import { IntlProvider } from 'react-intl';
 import { Router, hashHistory } from 'react-router';
 import { syncHistoryWithStore } from 'react-router-redux';
-import routes from './routes';
-import configureStore from './store/configureStore';
+
 import injectTapEventPlugin from 'react-tap-event-plugin';
+import routes from './routes';
+import configureStore from './local-flux/store/configureStore';
 import { ruMessages } from './locale-data/ru';
 import debug from 'debug';
+import ReactPerf from 'react-addons-perf';
+
 window.appDebug = debug.enable('App:*');
 // temporary
 
 const store = configureStore();
 const history = syncHistoryWithStore(hashHistory, store);
 
-injectTapEventPlugin();
+global.Perf = ReactPerf;
 
+injectTapEventPlugin();
 render(
   <Provider store={store} >
     <IntlProvider locale="en" >
-      <Router history={history} >
+      <Router history={history} render={(props) => <ReduxAsyncConnect {...props} />} >
         {routes}
       </Router>
     </IntlProvider>

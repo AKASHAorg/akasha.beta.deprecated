@@ -12,7 +12,7 @@ class MainService extends IpcService {
      */
     constructor (type) {
         super(type);
-        this.UNLOCK_INTERVAL = 2000;
+        this.UNLOCK_INTERVAL = 12000;
         this.ZERO_ADDR = '0x0000000000000000000000000000000000000000';
         this.UNLOCK_COINBASE_FAIL = 'unlock account fail, check your password';
         this.UNLOCK_COINBASE_SUCCESS = 'unlock account successful';
@@ -21,6 +21,14 @@ class MainService extends IpcService {
     _chopIpfsHash (hash) {
         const delimiter = Math.floor(hash.length / 2);
         return [hash.substring(0, delimiter), hash.substring(delimiter)];
+    }
+
+    _toBytes32Array (arrayOfStrings, toBytes32Converter) {
+        const rez = [];
+        for (const el of arrayOfStrings) {
+            rez.push(toBytes32Converter(el));
+        }
+        return rez;
     }
 
     _getIpfsAPI () {

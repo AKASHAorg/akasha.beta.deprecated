@@ -30,7 +30,13 @@ export const EVENTS = {
             getIpfsImage: 'server:user:getIpfsImage'
         },
         entry: {
-            publish: 'server:entry:publish'
+            publish: 'server:entry:publish',
+            tagExists: 'server:entry:tagExists',
+            addTags: 'server:entry:addTags',
+            getTags: 'server:entry:getTags',
+            saveComment: 'server:entry:saveComment',
+            upvoteEntry: 'server:entry:upvoteEntry',
+            downvoteEntry: 'server:entry:downvoteEntry'
         }
     },
     client: {
@@ -65,7 +71,13 @@ export const EVENTS = {
             getIpfsImage: 'client:user:getIpfsImage'
         },
         entry: {
-            publish: 'client:entry:publish'
+            publish: 'client:entry:publish',
+            tagExists: 'client:entry:tagExists',
+            addTags: 'client:entry:addTags',
+            getTags: 'client:entry:getTags',
+            saveComment: 'client:entry:saveComment',
+            upvoteEntry: 'client:entry:upvoteEntry',
+            downvoteEntry: 'client:entry:downvoteEntry'
         }
     }
 };
