@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* eslint strict: 0 */
 'use strict';
 import { app, BrowserWindow, Menu, shell } from 'electron';
@@ -292,3 +293,9 @@ app.on('ready', async () => {
         mainWindow.setMenu(menu);
     }
 });
+=======
+const main = require('./main/index');
+
+// start the app
+main.bootstrapApp();
+>>>>>>> master

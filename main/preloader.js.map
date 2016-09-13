@@ -1,0 +1,1 @@
+{"version":3,"file":"preloader.js","sourceRoot":"","sources":["preloader.ts"],"names":[],"mappings":";AAAA,2BAAoB,gBAAgB,CAAC,CAAA;AAErC,MAAM,CAAC,SAAS,CAAC,GAAG,kBAAO,CAAC","sourcesContent":["import Channel from './lib/channels';\n\nwindow['Channel'] = Channel;\n"]}
