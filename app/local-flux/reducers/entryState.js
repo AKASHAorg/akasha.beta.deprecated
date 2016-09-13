@@ -5,7 +5,8 @@ import * as types from '../constants/EntryConstants';
 const Draft = Record({
     id: null,
     content: {},
-    title: null,
+    authorUsername: null,
+    title: '',
     wordCount: 0,
     excerpt: null,
     featured_image: null,

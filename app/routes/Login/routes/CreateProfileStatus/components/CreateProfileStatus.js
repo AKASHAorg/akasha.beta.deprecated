@@ -8,7 +8,7 @@ import { PanelContainer } from 'shared-components';
 class CreateProfileStatus extends Component {
     componentWillMount () {
         const { profileActions } = this.props;
-        profileActions.getTempProfile().then(() => {
+        profileActions.checkTempProfile().then(() => {
             profileActions.createProfile();
         });
     }

@@ -81,13 +81,13 @@ class ProfileService {
     logout = (account) =>
         new Promise((resolve, reject) => {
 
-            // ipcRenderer.once(EVENTS.client.user.logout, (ev, data) => {
-            //     if (!data) {
-            //         const err = new Error('Main process can`t handle requests!');
-            //         return reject(err);
-            //     }
-            //     return resolve(data);
-            // });
+            ipcRenderer.once(EVENTS.client.user.logout, (ev, data) => {
+                if (!data) {
+                    const err = new Error('Main process can`t handle requests!');
+                    return reject(err);
+                }
+                return resolve(data);
+            });
             ipcRenderer.send(EVENTS.server.user.logout, { account });
             return resolve();
         });

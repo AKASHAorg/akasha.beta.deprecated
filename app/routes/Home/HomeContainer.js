@@ -8,21 +8,23 @@ import styles from './home.scss';
 import PanelLoader from './components/panel-loader-container';
 import EntryModal from './components/entry-modal';
 
-function HomeContainer ({ children }) {
-    return (
-      <div className={styles.root} >
-        <div className={styles.sideBar} >
-          <Sidebar />
-        </div>
-        <div className={styles.panelLoader} >
-          <PanelLoader />
-        </div>
-        <EntryModal />
-        <div className={`col-xs-12 ${styles.childWrapper}`} >
-          {children}
-        </div>
-      </div>
-    );
+class HomeContainer extends React.Component {
+    render () {
+        return (
+          <div className={styles.root} >
+            <div className={styles.sideBar} >
+              <Sidebar />
+            </div>
+            <div className={styles.panelLoader} >
+              <PanelLoader />
+            </div>
+            <EntryModal />
+            <div className={`col-xs-12 ${styles.childWrapper}`} >
+              {this.props.children}
+            </div>
+          </div>
+        );
+    }
 }
 
 HomeContainer.propTypes = {
@@ -40,7 +42,7 @@ function mapDispatchToProps () {
 export default asyncConnect([{
     promise: ({ store: { dispatch, getState } }) => {
         const bootstrapActions = new BootstrapBundleActions(dispatch);
-        Promise.resolve(bootstrapActions.initHome(getState));
+        return bootstrapActions.initHome(getState);
     }
 }])(connect(
     mapStateToProps,

@@ -32,16 +32,24 @@ class EntryService {
                 return partialDraft;
             });
         });
-    getAllDrafts = () =>
+    getAllDrafts = (userName) =>
         entriesDB.transaction('rw', entriesDB.drafts, () =>
-            entriesDB.drafts.toArray().then(drafts => {
-                dbg('getAllDrafts', drafts);
-                const convDrafts = drafts.map(draft => {
-                    return Object.assign({}, draft);
-                });
-                return convDrafts;
-            })
+            entriesDB.drafts
+                     .where('authorUsername')
+                     .equals(userName)
+                     .toArray()
+                     .then(drafts => {
+                         dbg('getAllDrafts', drafts);
+                         const convDrafts = drafts.map(draft => {
+                             return Object.assign({}, draft);
+                         });
+                         return convDrafts;
+                     })
         );
+    getDraftsCount = (userName) =>
+        entriesDB.transaction('rw', entriesDB.drafts, () =>
+            entriesDB.drafts.where('authorUsername').equals(userName).count()
+        )
     getResourceCount = (table) =>
         entriesDB.transaction('rw', entriesDB[table], () =>
             entriesDB[table].count()
@@ -79,16 +87,16 @@ class EntryService {
         new Promise((resolve, reject) => {
             let entries = [];
             if (sortBy === 'rating') {
-                entries = generateEntries(10);
+                entries = generateEntries(1);
                 dbg('getting entries by rating', entries);
                 return resolve(entries);
             }
             if (sortBy === 'top') {
-                entries = generateEntries(6);
+                entries = generateEntries(3);
                 dbg('getting top entries', entries);
                 return resolve(entries);
             }
-            entries = generateEntries(15);
+            entries = generateEntries(2);
             dbg('getting entries by', sortBy, entries);
             return resolve(entries);
         });

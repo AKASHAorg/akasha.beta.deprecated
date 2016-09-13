@@ -13,7 +13,8 @@ import ShareIcon from 'material-ui/svg-icons/social/share';
 import BookmarkIcon from 'material-ui/svg-icons/action/bookmark-border';
 import { injectIntl } from 'react-intl';
 import { TagChip } from 'shared-components';
-import { calculateReadingTime } from '../../utils/dataModule';
+import { calculateReadingTime } from 'utils/dataModule';
+import style from './entry-card.scss';
 
 const EntryCard = (props) => {
     const {
@@ -45,7 +46,8 @@ const EntryCard = (props) => {
         <CardTitle
           style={{ padding: '0 16px 8px' }}
           title={entry.get('title')}
-          onTouchTap={onContentClick}
+          onClick={onContentClick}
+          className={style.entryTitle}
         />
         <CardText style={{ padding: '0 16px 8px' }}>
           <div style={{ marginBottom: 8 }}>
@@ -57,7 +59,9 @@ const EntryCard = (props) => {
               />
             )}
           </div>
+          <div onClick={onContentClick} className={style.contentText}>
           {entry.get('excerpt')}
+          </div>
         </CardText>
         <CardActions className="col-xs-12">
           <div className="row">

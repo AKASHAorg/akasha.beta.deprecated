@@ -14,7 +14,9 @@ class Avatar extends React.Component {
             avatarScale: 1.2
         };
     }
-
+    componentWillUnmount () {
+        this._handleAvatarClear();
+    }
     getImage = () =>
         new Promise((resolve) => {
             if (this.editor && this.state.avatarImage) {

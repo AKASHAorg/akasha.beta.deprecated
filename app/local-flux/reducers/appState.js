@@ -28,7 +28,7 @@ const appState = createReducer(initialState, {
         state.set('appUpdating', action.updating),
 
     [types.SHOW_ERROR]: (state, action) =>
-        state.merge({ error: action.error }),
+        state.merge({ error: fromJS(action.error) }),
 
     [types.CLEAR_ERRORS]: () => initialState,
 

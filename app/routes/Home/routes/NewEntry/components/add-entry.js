@@ -6,6 +6,7 @@ import {
     IconButton,
     IconMenu,
     MenuItem } from 'material-ui';
+import { getWordCount } from 'utils/dataModule';
 import EntryEditor from 'shared-components/EntryEditor';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 
@@ -48,28 +49,19 @@ class NewEntryPage extends Component {
             );
         });
     };
-    _getWordCount = (content) => {
-        const plainText = content.getPlainText('');
-        // new line, carriage return, line feed
-        const regex = /(?:\r\n|\r|\n)/g;
-        // replace above characters w/ space
-        const cleanString = plainText.replace(regex, ' ').trim();
-        // matches words according to whitespace
-        const wordArray = cleanString.match(/\S+/g);
-        return wordArray ? wordArray.length : 0;
-    };
     _saveDraft = (cb) => {
-        const { entryActions, params } = this.props;
+        const { entryActions, params, profileState } = this.props;
+        const loggedProfile = profileState.get('loggedProfile');
         const content = this.editor.getRawContent();
         const contentState = this.editor.getContent();
         const htmlContent = this.editor.getHtmlContent();
         const title = this.editor.getTitle();
-        const wordCount = this._getWordCount(contentState);
+        const wordCount = getWordCount(contentState);
         if (params.draftId !== 'new') {
             const draftId = parseInt(params.draftId, 10);
             entryActions.updateDraftThrottled({ id: draftId, content, title, wordCount });
         } else {
-            entryActions.createDraft({ content, title, wordCount });
+            entryActions.createDraft(loggedProfile.get('userName'), { content, title, wordCount });
         }
         if (typeof cb === 'function') {
             cb();

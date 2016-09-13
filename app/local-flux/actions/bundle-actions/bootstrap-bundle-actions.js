@@ -63,10 +63,9 @@ class BootstrapBundleActions {
     };
     initHome = (getState) => {
         const promises = [];
-        promises.push(this.profileActions.checkLoggedProfile());
-        promises.push(this.entryActions.getDraftsCount());
-        promises.push(this.entryActions.getEntriesCount());
-        promises.push(this.tagActions.getTags());
+        const loggedProfile = getState().profileState.get('loggedProfile');
+        promises.push(this.entryActions.getDraftsCount(loggedProfile.get('userName')));
+        promises.push(this.entryActions.getEntriesCount(loggedProfile.get('userName')));
         return Promise.all(promises);
     };
     initEntryEditor = (getState, params) => {

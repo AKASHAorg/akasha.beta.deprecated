@@ -22,19 +22,18 @@ class EntryActions {
         });
         return entryActions;
     }
-    createDraft = (draft) => {
+    createDraft = (authorUsername, draft) => {
         dbg('dispatching', 'SAVE_DRAFT');
         this.dispatch(entryActionCreators.startSavingDraft());
-        return this.entryService.saveDraft(draft).then((result) => {
+        return this.entryService.saveDraft({ authorUsername, ...draft }).then((result) => {
             dbg('dispatching ', 'CREATE_DRAFT_SUCCESS', result);
             this.dispatch(entryActionCreators.createDraftSuccess(result));
             return result;
         })
             .then((savedDraft) => {
                 this.dispatch((dispatch, getState) => {
-                    const loggedProfile = getState().profileState.get('loggedProfile');
                     return hashHistory.push(
-                        `/${loggedProfile.get('userName')}/draft/${savedDraft.id}`
+                        `/${authorUsername}/draft/${savedDraft.id}`
                     );
                 });
             })
@@ -56,14 +55,14 @@ class EntryActions {
         return this.throttledUpdateDraft(draft);
     };
 
-    getDrafts = () =>
-        this.entryService.getAllDrafts().then(result => {
+    getDrafts = (userName) =>
+        this.entryService.getAllDrafts(userName).then(result => {
             dbg('dispatching', 'GET_DRAFTS_SUCCESS', result);
             return this.dispatch(entryActionCreators.getDraftsSuccess(result));
         }).catch(reason => this.dispatch(entryActionCreators.getDraftsError(reason)));
 
-    getDraftsCount = () =>
-        this.entryService.getResourceCount('drafts').then(result => {
+    getDraftsCount = (userName) =>
+        this.entryService.getDraftsCount(userName).then(result => {
             dbg('dispatching', 'GET_DRAFTS_COUNT_SUCCESS', result);
             return this.dispatch(entryActionCreators.getDraftsCountSuccess(result));
         }).catch(reason => this.dispatch(entryActionCreators.getDraftsCountError(reason)));

@@ -1,7 +1,7 @@
 import { hashHistory } from 'react-router';
 import debug from 'debug';
 import { ProfileService } from '../services';
-import { profileActionCreators } from './action-creators';
+import { profileActionCreators, appActionCreators } from './action-creators';
 
 const dbg = debug('App:ProfileActions:');
 let profileActions = null;
@@ -228,9 +228,14 @@ class ProfileActions {
         })
         .then((result) => {
             if (result.success) {
-                hashHistory.push('authenticate');
+                return hashHistory.push('authenticate');
             }
-        });
+            return Promise.reject(new Error(result.status.message));
+        })
+        .catch(reason => this.dispatch(appActionCreators.showError({
+            code: '3XX',
+            message: `Error: ${reason.message}`
+        })));
     }
      /**
      * Resumes the process of profile creation
@@ -275,10 +280,12 @@ class ProfileActions {
             this.dispatch((dispatch, getState) => {
                 const tempProfile = getState().profileState.get('tempProfile');
                 dbg('checkTempProfile', tempProfile);
-                if (tempProfile && tempProfile.size > 0) {
+                if (tempProfile.size > 0) {
                     return hashHistory.push('/authenticate/new-profile-status');
                 }
-                return this.getLocalProfiles();
+                return this.getLocalProfiles().then(() =>
+                    hashHistory.push('/authenticate')
+                );
             })
         ).catch(reason =>
             this.dispatch(profileActionCreators.checkTempProfileError(reason))

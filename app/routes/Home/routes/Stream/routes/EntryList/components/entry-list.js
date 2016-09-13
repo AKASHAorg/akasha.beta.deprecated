@@ -2,7 +2,8 @@ import React from 'react';
 import TagSearch from './tag-search';
 import QuickEntryEditor from './quick-entry-editor';
 import { EntryCard } from 'shared-components';
-import { injectIntl } from 'react-intl'
+import { injectIntl } from 'react-intl';
+
 class EntryList extends React.Component {
     constructor (props) {
         super(props);
@@ -49,12 +50,19 @@ class EntryList extends React.Component {
           entry.get('address') === entryAddress);
         appActions.showEntryModal(entry, { section: 'comments' });
     };
-    _handleShare = (ev, entry) => {};
+    _handleShare = (ev, entry) => {
+        console.log('share entry', entry);
+    };
     _handleBookmark = (ev, entry) => {
         const { entryActions, profileState } = this.props;
         const loggedProfile = profileState.get('loggedProfile');
         entryActions.createSavedEntry(loggedProfile.get('userName'), entry);
     };
+    _handleEditorFullScreen = (ev, draft) => {
+        const { entryActions, profileState } = this.props;
+        const loggedProfile = profileState.get('loggedProfile');
+        entryActions.createDraft(loggedProfile.get('userName'), draft);
+    }
     render () {
         const { params, profileState, entryState, filter } = this.props;
         let entries = entryState.get('published').sort((a, b) =>
@@ -70,7 +78,10 @@ class EntryList extends React.Component {
               <TagSearch tagName={params.tagName} />
             }
             {params.filter === 'stream' &&
-              <QuickEntryEditor loggedProfile={profileState.get('loggedProfile')} />
+              <QuickEntryEditor
+                loggedProfile={profileState.get('loggedProfile')}
+                onFullScreenClick={this._handleEditorFullScreen}
+              />
             }
             {entries && entries.map((entry, key) =>
               <EntryCard
@@ -95,6 +106,7 @@ EntryList.propTypes = {
     profileState: React.PropTypes.object,
     appActions: React.PropTypes.object,
     entryState: React.PropTypes.object,
+    entryActions: React.PropTypes.object,
     intl: React.PropTypes.object
 };
 EntryList.contextTypes = {

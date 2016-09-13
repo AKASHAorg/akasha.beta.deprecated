@@ -151,7 +151,7 @@ class EntryModal extends React.Component {
                     </div>
                   </div>
                 </div>
-                <div className="comments col-xs-12">
+                <div id="comments" className="comments col-xs-12">
                   <div className="write-comment row middle-xs" style={{ margin: '16px 0' }}>
                     <div>
                       <Avatar
@@ -235,6 +235,7 @@ class EntryModal extends React.Component {
                     stats={{ upvotes: 159, downvotes: 340, replies: 7 }}
                   >
                     <Comment
+                      id="{comment.get('address')}"
                       author={'Andra Mandrea'}
                       publishDate={'1 day ago'}
                       avatar={'https://c2.staticflickr.com/2/1268/552681861_5046590531_q.jpg'}

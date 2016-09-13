@@ -87,3 +87,14 @@ export const calculateReadingTime = (wordCount, options = {}) => {
         minutes
     };
 };
+
+export const getWordCount = (content) => {
+    const plainText = content.getPlainText('');
+    // new line, carriage return, line feed
+    const regex = /(?:\r\n|\r|\n)/g;
+    // replace above characters w/ space
+    const cleanString = plainText.replace(regex, ' ').trim();
+    // matches words according to whitespace
+    const wordArray = cleanString.match(/\S+/g);
+    return wordArray ? wordArray.length : 0;
+};

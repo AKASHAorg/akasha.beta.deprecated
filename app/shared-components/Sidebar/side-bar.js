@@ -12,12 +12,6 @@ import {
     LogoIcon } from '../svg';
 
 class SideBar extends Component {
-    componentWillMount () {
-        const { profileState, profileActions } = this.props;
-        if (profileState.get('loggedProfile').size === 0) {
-            profileActions.checkLoggedProfile({ noRedirect: true });
-        }
-    }
     _handleNewEntry = () => {
         const { entryActions, entryState, profileState, appActions } = this.props;
         const entriesCount = entryState.get('entriesCount');
@@ -26,7 +20,7 @@ class SideBar extends Component {
 
         if (entriesCount > 0 || draftsCount > 0) {
             appActions.showPanel({ name: 'newEntry', overlay: true });
-            entryActions.getDrafts();
+            entryActions.getDrafts(loggedProfile.get('userName'));
         } else {
             appActions.hidePanel();
             this.context.router.push(`/${loggedProfile.get('userName')}/draft/new`);

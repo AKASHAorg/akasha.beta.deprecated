@@ -1,8 +1,8 @@
 import React from 'react';
-import { Paper, FlatButton } from 'material-ui';
-import Avatar from 'shared-components/Avatar/avatar';
-import imageCreator from '../../../../../../../utils/imageUtils';
-import clickAway from '../../../../../../../utils/clickAway';
+import { Paper, FlatButton, Avatar } from 'material-ui';
+import imageCreator from 'utils/imageUtils';
+import clickAway from 'utils/clickAway';
+import { getWordCount } from 'utils/dataModule';
 import EntryEditor from 'shared-components/EntryEditor';
 
 class QuickEntryEditor extends React.Component {
@@ -27,6 +27,17 @@ class QuickEntryEditor extends React.Component {
             this.editor.refs.clickAwayableElement.blur();
         });
     }
+    _handlePublish = (ev) => {};
+    _handleFullScreen = (ev) => {
+        const draftContent = this.editor.refs.clickAwayableElement.getRawContent();
+        const content = this.editor.refs.clickAwayableElement.getContent();
+        const wordCount = getWordCount(content);
+        this.props.onFullScreenClick(ev, {
+            content: draftContent,
+            tags: ['quick-thoughts'],
+            wordCount
+        });
+    };
     render () {
         const { loggedProfile } = this.props;
         const { isExpanded } = this.state;
@@ -44,11 +55,10 @@ class QuickEntryEditor extends React.Component {
             >
               <div>
                 <Avatar
-                  editable={false}
-                  userName={`${loggedProfile.get('firstName')} ${loggedProfile.get('lastName')}`}
-                  image={avatarImage}
-                  radius={40}
+                  src={avatarImage}
+                  size={40}
                 />
+                  
               </div>
               <div className="col-xs-11" style={{ cursor: 'text' }} onClick={this._handleEditClick}>
                 <p
@@ -89,10 +99,10 @@ class QuickEntryEditor extends React.Component {
                 </div>
                 <div className="row">
                   <div className="col-xs-2">
-                    <FlatButton primary label="Publish" />
+                    <FlatButton primary label="Publish" onTouchTap={this._handlePublish} />
                   </div>
                   <div className="col-xs-4">
-                    <FlatButton label="Go Fullscreen" />
+                    <FlatButton label="Go Fullscreen" onTouchTap={this._handleFullScreen} />
                   </div>
                 </div>
               </div>
@@ -103,7 +113,9 @@ class QuickEntryEditor extends React.Component {
 }
 
 QuickEntryEditor.propTypes = {
-    loggedProfile: React.PropTypes.object
+    loggedProfile: React.PropTypes.object,
+    onFullScreenClick: React.PropTypes.func,
+    onPublish: React.PropTypes.func
 };
 
 export default clickAway(QuickEntryEditor);
