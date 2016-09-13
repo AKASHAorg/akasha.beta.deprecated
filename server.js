@@ -14,8 +14,7 @@ const PORT = process.env.PORT || 3000;
 const wdm = webpackDevMiddleware(compiler, {
     publicPath: config.output.publicPath,
     stats: {
-        colors: true,
-        chunks: false
+        colors: true
     }
 });
 
@@ -32,10 +31,13 @@ const server = app.listen(PORT, 'localhost', err => {
     console.log(`Listening at http://localhost:${PORT}`);
 });
 
-process.on('SIGTERM', () => {
+const stopServer = () => {
     console.log('Stopping dev server');
     wdm.close();
     server.close(() => {
         process.exit(0);
     });
-});
+};
+
+process.on('SIGTERM', stopServer);
+process.on('SIGINT', stopServer);
