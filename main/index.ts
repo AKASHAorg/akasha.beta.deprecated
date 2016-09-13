@@ -42,7 +42,7 @@ export function bootstrapApp() {
             mainWindow.loadURL(`file://${viewHtml}/app.html`);
         }
 
-        mainWindow.once('close', (ev: Event) => {
+        mainWindow.on('close', (ev: Event) => {
             ev.preventDefault();
             modules.flushAll();
             GethConnector.getInstance().stop();

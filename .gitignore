@@ -32,6 +32,7 @@ node_modules
 dist
 release
 .idea
+.vscode
 binary
 bin
 electron-api/gabi-play
