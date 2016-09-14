@@ -255,4 +255,45 @@ interface IpfsProfileCreateRequest {
     about?: string;
     links?: { title: string, url: string, type: string, id: number }[];
 }
+
+interface ProfileDataRequest {
+    profile: string; // profile contract address
+    full?: boolean; // resolve full profile from ipfs
+}
+
+interface ProfileDataResponse extends MainResponse{
+    data: {
+        firstName: string;
+        lastName: string;
+        avatar?: Uint8Array;
+        backgroundImage?: any;
+        about?: string;
+        links?: { title: string, url: string, type: string, id: number }[];
+    };
+}
+
+interface MyBalanceRequest {
+    etherBase?: string;
+    unit?: string; // ether/wei/etc
+}
+
+interface MyBalanceResponse extends MainResponse {
+    data: { value: string };
+}
+
+interface IpfsDataRequest {
+    ipfsHash: string; // ipfs profile hash
+    full?: boolean; // resolve all info
+}
+
+interface IpfsDataResponse extends MainResponse{
+    data: {
+        firstName: string;
+        lastName: string;
+        avatar?: Uint8Array;
+        backgroundImage?: any;
+        about?: string;
+        links?: { title: string, url: string, type: string, id: number }[];
+    };
+}
 ///////////////////////// </ Profile> \\\\\\\\\\\\\\\\\\\\\\\\\\\\\

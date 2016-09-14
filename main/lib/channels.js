@@ -12,7 +12,7 @@ const channels = {
     geth: ['manager', 'options', 'startService', 'stopService', 'restartService', 'syncStatus', 'logs', 'status'],
     ipfs: ['manager', 'startService', 'stopService', 'status', 'resolve'],
     auth: ['manager', 'login', 'logout', 'requestEther', 'generateEthKey', 'getLocalIdentities'],
-    profile: ['manager', 'getProfileData', 'getMyBalance'],
+    profile: ['manager', 'getProfileData', 'getMyBalance', 'getIpfs', 'unregister'],
     registry: ['manager', 'profileExists', 'registerProfile', 'getCurrentProfile', 'getByAddress'],
     entry: ['manager', 'publish'],
     tx: ['manager', 'addToQueue', 'emitMined']

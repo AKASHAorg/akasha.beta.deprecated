@@ -4,6 +4,7 @@ const geth_connector_1 = require('@akashaproject/geth-connector');
 const ipfs_connector_1 = require('@akashaproject/ipfs-connector');
 const path_1 = require('path');
 const index_1 = require('./lib/ipc/index');
+const menu_1 = require('./menu');
 function bootstrapApp() {
     const viewHtml = path_1.resolve(__dirname, '../app');
     electron_1.crashReporter.start({
@@ -43,6 +44,7 @@ function bootstrapApp() {
             ipfs_connector_1.IpfsConnector.getInstance().stop();
             setTimeout(() => electron_1.app.quit(), 300);
         });
+        menu_1.initMenu(mainWindow);
         mainWindow.webContents.on('did-finish-load', () => {
             modules.logger.registerLogger('APP');
             modules.initListeners(mainWindow.webContents);
