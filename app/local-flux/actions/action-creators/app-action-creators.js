@@ -7,10 +7,10 @@ export function showError (error) {
     };
 }
 
-export function checkForUpdates (updates) {
+export function checkForUpdates (hasUpdates) {
     return {
         type: types.CHECK_FOR_UPDATES,
-        updates
+        hasUpdates
     };
 }
 

@@ -13,6 +13,21 @@ export function getGethStatusError (err) {
         error: err
     };
 }
+
+export function getGethOptionsSuccess (data) {
+    return {
+        type: types.GET_GETH_OPTIONS_SUCCESS,
+        options: data
+    };
+}
+
+export function getGethOptionsError (error) {
+    return {
+        type: types.GET_GETH_OPTIONS_ERROR,
+        error
+    }
+}
+
 export function startGethSuccess (data) {
     return {
         type: types.START_GETH_SUCCESS,
