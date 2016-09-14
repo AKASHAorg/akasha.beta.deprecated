@@ -38,5 +38,4 @@ bin
 electron-api/gabi-play
 intl/messages
 tmp
-
-
+jsconfig.json
