@@ -35,7 +35,7 @@ class IpfsIPC extends IpfsEmitter_1.default {
     _manager() {
         this.registerListener(channels_1.default.server.ipfs.manager, (event, data) => {
             if (data.listen) {
-                if (this.getListenersCount(data.channel) > 1) {
+                if (this.getListenersCount(data.channel) >= 1) {
                     return this.fireEvent(channels_1.default.client.ipfs.manager, responses_1.ipfsResponse({}, { message: `already listening on ${data.channel}` }), event);
                 }
                 this.listenEvents(data.channel);

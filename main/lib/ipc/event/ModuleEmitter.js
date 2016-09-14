@@ -6,7 +6,7 @@ class ModuleEmitter extends AbstractEmitter_1.AbstractEmitter {
     _manager() {
         this.registerListener(channels_1.default.server[this.MODULE_NAME].manager, (event, data) => {
             if (data.listen) {
-                if (this.getListenersCount(data.channel) > 1) {
+                if (this.getListenersCount(data.channel) >= 1) {
                     return this.fireEvent(channels_1.default.client[this.MODULE_NAME].manager, responses_1.mainResponse({ error: { message: `already listening on ${data.channel}` } }), event);
                 }
                 this.listenEvents(data.channel);

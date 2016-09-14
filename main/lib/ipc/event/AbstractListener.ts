@@ -14,6 +14,9 @@ export abstract class AbstractListener {
         if (!this.listeners.get(channel)) {
             throw new Error(`Must register a listener for ${channel}`);
         }
+        if (this.getListenersCount(channel) !== 0) {
+            ipcMain.removeAllListeners(channel);
+        }
         return ipcMain.on(channel, this.listeners.get(channel));
     }
 
