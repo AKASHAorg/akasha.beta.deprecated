@@ -8,6 +8,9 @@ class AbstractListener {
         if (!this.listeners.get(channel)) {
             throw new Error(`Must register a listener for ${channel}`);
         }
+        if (this.getListenersCount(channel) !== 0) {
+            electron_1.ipcMain.removeAllListeners(channel);
+        }
         return electron_1.ipcMain.on(channel, this.listeners.get(channel));
     }
     registerListener(channel, cb) {

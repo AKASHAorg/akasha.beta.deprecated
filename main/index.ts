@@ -4,6 +4,7 @@ import { GethConnector } from '@akashaproject/geth-connector';
 import { IpfsConnector } from '@akashaproject/ipfs-connector';
 import { resolve } from 'path';
 import { initModules } from './lib/ipc/index';
+import { initMenu } from './menu';
 
 export function bootstrapApp() {
     const viewHtml = resolve(__dirname, '../app');
@@ -42,14 +43,14 @@ export function bootstrapApp() {
             mainWindow.loadURL(`file://${viewHtml}/app.html`);
         }
 
-        mainWindow.once('close', (ev: Event) => {
+        mainWindow.on('close', (ev: Event) => {
             ev.preventDefault();
             modules.flushAll();
             GethConnector.getInstance().stop();
             IpfsConnector.getInstance().stop();
             setTimeout(() => app.quit(), 300);
         });
-
+        initMenu(mainWindow);
         mainWindow.webContents.on('did-finish-load', () => {
             modules.logger.registerLogger('APP');
             modules.initListeners(mainWindow.webContents);
