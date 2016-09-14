@@ -15,7 +15,7 @@ abstract class ModuleEmitter extends AbstractEmitter {
                 channels.server[this.MODULE_NAME].manager,
                 (event: any, data: IPCmanager) => {
                     if (data.listen) {
-                        if (this.getListenersCount(data.channel) > 1) {
+                        if (this.getListenersCount(data.channel) >= 1) {
                             return this.fireEvent(
                                 channels.client[this.MODULE_NAME].manager,
                                 mainResponse({error: { message: `already listening on ${data.channel}` }}),

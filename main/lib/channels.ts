@@ -16,7 +16,7 @@ const channels = {
 
     auth: ['manager', 'login', 'logout', 'requestEther', 'generateEthKey', 'getLocalIdentities'],
 
-    profile: ['manager', 'getProfileData', 'getMyBalance'],
+    profile: ['manager', 'getProfileData', 'getMyBalance', 'getIpfs', 'unregister'],
 
     registry: ['manager', 'profileExists', 'registerProfile', 'getCurrentProfile', 'getByAddress'],
 

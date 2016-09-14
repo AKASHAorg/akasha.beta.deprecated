@@ -74,7 +74,7 @@ class IpfsIPC extends IpfsEmitter {
                 // listen on new channel
                 if (data.listen) {
                     // check if already listening on channel
-                    if (this.getListenersCount(data.channel) > 1) {
+                    if (this.getListenersCount(data.channel) >= 1) {
                         // emit error
                         return this.fireEvent(
                             channels.client.ipfs.manager,
