@@ -18,7 +18,6 @@ class SyncStatus extends Component {
     }
     componentWillMount () {
         const { eProcBundleActions } = this.props;
-        // start geth here!
         eProcBundleActions.startSync().then(() => {
             this.getSyncStatus();
         });

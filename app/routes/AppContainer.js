@@ -82,7 +82,7 @@ class App extends Component {
               action="send report"
               onActionTouchTap={this._handleSendReport}
               message={errorMessage}
-              open={(this.props.appState.get('error').size > 0)}
+              open={(!error.fatal && error.code !== 0)}
               onRequestClose={this._handleErrorClose}
             />
             <AuthDialog
