@@ -1,7 +1,0 @@
-strict digraph {
-  AkashaBase
-  destroy
-  selfdestruct
-  destroy -> selfdestruct
-}
-
