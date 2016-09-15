@@ -1,9 +1,15 @@
-import { fromJS } from 'immutable';
+import { fromJS, Record } from 'immutable';
 import * as types from '../constants/AppConstants';
 import { createReducer } from './create-reducer';
 
+const ErrorRecord = Record({
+    code: 0,
+    fatal: null,
+    message: ''
+});
+
 const initialState = fromJS({
-    error: [],
+    error: new ErrorRecord(),
     updates: null,
     appLoading: false,
     appUpdating: false,
@@ -22,13 +28,13 @@ const appState = createReducer(initialState, {
         state.merge({ appLoading: false }),
 
     [types.CHECK_FOR_UPDATES]: (state, action) =>
-        state.merge({ updates: action.updates }),
+        state.merge({ updates: action.hasUpdates }),
 
     [types.UPDATE_APP]: (state, action) =>
         state.set('appUpdating', action.updating),
 
     [types.SHOW_ERROR]: (state, action) =>
-        state.merge({ error: fromJS(action.error) }),
+        state.merge({ error: new ErrorRecord(action.error) }),
 
     [types.CLEAR_ERRORS]: () => initialState,
 

@@ -1,9 +1,12 @@
 import { ipcRenderer } from 'electron';
-import { EVENTS } from '../../../electron-api/modules/settings';
 import debug from 'debug';
+import BaseService from './base-service';
 const dbg = debug('App:GethService:');
 
-class GethService {
+/**
+ * Default managed channels: [startService, stopService, status]
+ */
+class GethService extends BaseService {
     /**
      * sends start Geth command to main process w/o options
      * @param {null | object} options
@@ -11,40 +14,104 @@ class GethService {
      */
     startGeth = (options) =>
         new Promise((resolve, reject) => {
-            dbg('Starting Geth service on channel:', EVENTS.client.geth.startService);
-            ipcRenderer.once(EVENTS.client.geth.startService, (event, data) => {
-                // no data means that something very bad happened
-                // like losing the main process
-                if (!data) {
-                    return reject('OMG! Main process doesn`t respond to us!');
+            const listenerCb = (event, response) => {
+                dbg('start geth', response);
+                if (response.error) {
+                    return reject(response.error);
                 }
-                return resolve(data);
-            });
-            ipcRenderer.send(EVENTS.server.geth.startService, options);
+                return resolve(response.data);
+            };
+            if (this._listeners.get(Channel.client.geth.startService)) {
+                return resolve();
+            }
+            this.registerListener(Channel.client.geth.startService, listenerCb, () => 
+                ipcRenderer.send(Channel.server.geth.startService, {})
+            );
         });
 
     stopGeth = () =>
         new Promise((resolve, reject) => {
-            dbg('Stopping Geth service on channel:', EVENTS.client.geth.stopService);
-            ipcRenderer.once(EVENTS.client.geth.stopService, (event, data) => {
-                // no data means that something very bad happened
-                // like losing the main process
-                if (!data) {
-                    return reject('OMG! Main process doesn`t respond to us!');
+            dbg('Stopping Geth service on channel:', Channel.client.geth.stopService);
+            const listenerCb = (event, response) => {
+                if (response.error) {
+                    return reject(response.error);
                 }
-                return resolve(data);
-            });
-            ipcRenderer.send(EVENTS.server.geth.stopService);
+                return resolve(response.data);
+            };
+            if (this._listeners.get(Channel.client.geth.stopService)) {
+                return resolve();
+            }
+            this.registerListener(Channel.client.geth.stopService, listenerCb, () => 
+                ipcRenderer.send(Channel.server.geth.stopService, {})
+            );
         });
+
     getStatus = () =>
         new Promise((resolve, reject) => {
-            const status = {
-                isRunning: false,
-                network: 'main'
+            dbg('Retrieving Geth status', Channel.client.geth.status);
+            const callback = (event, response) => {
+                dbg(response, 'geth status');
+                if (response.error) {
+                    return reject(response.error);
+                }
+                return resolve(response.data);
             };
-            dbg('Retrieving Geth status', status);
-            resolve(status);
-        })
+            if (this._listeners.get(Channel.client.geth.status)) {
+                return resolve();
+            }
+            this.registerListener(Channel.client.geth.status, callback, () => {
+                ipcRenderer.send(Channel.server.geth.status, {});
+            });
+        });
+
+    getOptions = () => {
+        const clientChannel = Channel.client.geth.options;
+        const serverChannel = Channel.server.geth.options;
+        const managerChannel = Channel.server.geth.manager;
+        return new Promise((resolve, reject) => {
+            const listenerCb = (event, response) => {
+                dbg('Requested geth options', response);
+                if (response.error) {
+                    return reject(response.error);
+                }
+                return resolve(response.data);
+            };
+            if (this._listeners.get(clientChannel)) {
+                return resolve();
+            }
+            this.openChannel({
+                manager: managerChannel,
+                serverChannel,
+                clientChannel,
+                listenerCb
+            }, () =>
+                ipcRenderer.send(serverChannel, {})
+            );
+        });
+    };
+    /**
+     * Update sync status sent by main process
+     * @param {function} cb callback
+     */
+    startUpdateSync = () => {
+        const clientChannel = Channel.client.geth.syncUpdate;
+        const serverChannel = Channel.server.geth.syncUpdate;
+        const serverManagerChannel = Channel.server.geth.manager;
+        return new Promise((resolve, reject) => {
+            const listenerCb = (ev, res) => {
+                if (res.error) {
+                    return reject(res.error);
+                }
+                return resolve(res.data);
+            };
+            if (this._listeners.get(clientChannel)) {
+                return resolve();
+            }
+            this.openChannel({ manager: serverManagerChannel, serverChannel, clientChannel, listenerCb }, () =>
+                ipcRenderer.on(clientChannel, this._listeners.get(clientChannel))
+            );
+        });
+    }
 }
 
 export { GethService };

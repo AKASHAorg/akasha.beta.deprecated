@@ -16,12 +16,15 @@ class Setup extends Component {
         };
     }
     componentWillMount () {
-        const { settingsState } = this.props;
+        const { settingsState, eProcActions } = this.props;
         const cancelRequest = settingsState.getIn(['flags', 'requestStartupChange']);
         const gethSettings = settingsState.get('geth')
         if (!cancelRequest && gethSettings) {
-            this.context.router.push('setup/sync-status');
+            return this.context.router.push('setup/sync-status');
         }
+        eProcActions.getGethOptions().then(() => {
+            console.log('options retrieved');
+        })
     }
     handleChange = (ev, value) => {
         const { setupActions, setupConfig } = this.props;

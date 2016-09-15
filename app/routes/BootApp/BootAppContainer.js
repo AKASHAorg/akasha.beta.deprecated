@@ -22,7 +22,6 @@ export default asyncConnect([{
         const bootstrapActions = new BootstrapBundleActions(dispatch);
         return Promise.resolve(bootstrapActions.bootApp(getState));
     }
-        
 }])(connect(
     mapStateToProps,
     mapDispatchToProps
