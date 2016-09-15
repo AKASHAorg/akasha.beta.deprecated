@@ -1,6 +1,5 @@
 import { createHash } from 'crypto';
 import { totalmem } from 'os';
-import set = Reflect.set;
 const hashPath = (...path: string[]) => {
     const hash = createHash('sha256');
     path.forEach((segment) => {
@@ -10,24 +9,24 @@ const hashPath = (...path: string[]) => {
 };
 const channels = {
 
+    auth: ['manager', 'login', 'logout', 'requestEther', 'generateEthKey', 'getLocalIdentities'],
+
+    entry: ['manager', 'publish'],
+
     geth: ['manager', 'options', 'startService', 'stopService', 'restartService', 'syncStatus', 'logs', 'status'],
 
     ipfs: ['manager', 'startService', 'stopService', 'status', 'resolve'],
-
-    auth: ['manager', 'login', 'logout', 'requestEther', 'generateEthKey', 'getLocalIdentities'],
 
     profile: ['manager', 'getProfileData', 'getMyBalance', 'getIpfs', 'unregister'],
 
     registry: ['manager', 'profileExists', 'registerProfile', 'getCurrentProfile', 'getByAddress'],
 
-    entry: ['manager', 'publish'],
-
-    tx: ['manager', 'addToQueue', 'emitMined']
+    tx: ['manager', 'addToQueue', 'emitMined'],
 };
 
 const processes = ['server', 'client'];
 const mem = totalmem().toLocaleString();
-const EVENTS: any = { server: {}, client: {} };
+const EVENTS: any = { client: {}, server: {} };
 Object.keys(channels).forEach((attr) => {
     channels[attr].forEach((endpoint: string) => {
         processes.forEach((proc) => {
@@ -38,5 +37,5 @@ Object.keys(channels).forEach((attr) => {
         });
     });
 });
-export default { server: EVENTS.server, client: EVENTS.client };
+export default { client: EVENTS.client, server: EVENTS.server };
 

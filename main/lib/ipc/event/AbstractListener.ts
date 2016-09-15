@@ -10,7 +10,7 @@ export abstract class AbstractListener {
      * @param channel
      * @returns {Electron.IpcMain}
      */
-    listenEvents(channel: string) {
+    public listenEvents(channel: string) {
         if (!this.listeners.get(channel)) {
             throw new Error(`Must register a listener for ${channel}`);
         }
@@ -25,7 +25,7 @@ export abstract class AbstractListener {
      * @param channel
      * @param cb
      */
-    registerListener(channel: string, cb: IpcMainEventListener): void {
+    public registerListener(channel: string, cb: IpcMainEventListener): void {
         this.listeners.set(channel, cb);
     }
 
@@ -34,7 +34,7 @@ export abstract class AbstractListener {
      * @param channel
      * @returns {boolean}
      */
-    purgeListener(channel: string) {
+    public purgeListener(channel: string) {
         if (!this.listeners.get(channel)) {
             return false;
         }
@@ -45,7 +45,7 @@ export abstract class AbstractListener {
     /**
      *
      */
-    purgeAllListeners() {
+    public purgeAllListeners() {
         this.listeners.forEach((cb, channel) => {
             return ipcMain.removeListener(channel, cb);
         });
@@ -57,7 +57,7 @@ export abstract class AbstractListener {
      * @param channel
      * @returns {Electron.IpcMain}
      */
-    stopListener(channel: string) {
+    public stopListener(channel: string) {
         return ipcMain.removeListener(channel, this.listeners.get(channel));
     }
 
@@ -66,9 +66,9 @@ export abstract class AbstractListener {
      * @param channel
      * @returns {number}
      */
-    getListenersCount(channel: string) {
+    public getListenersCount(channel: string) {
         return ipcMain.listenerCount(channel);
     }
 
-    abstract initListeners(webContents: WebContents): any;
+    public abstract initListeners(webContents: WebContents): any;
 }
