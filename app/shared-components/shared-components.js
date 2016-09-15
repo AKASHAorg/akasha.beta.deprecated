@@ -1,4 +1,4 @@
-export Sidebar from './SideBar/side-bar';
+export Sidebar from './Sidebar/side-bar';
 export Avatar from './Avatar/avatar';
 export TagChip from './TagChip/tag-chip';
 export CommentEditor from './CommentEditor/comment-editor';
