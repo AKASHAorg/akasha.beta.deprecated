@@ -1,0 +1,3 @@
+{
+    "ignore": ["**/typings/**", "**/test/**, "**/tests/**""]
+}

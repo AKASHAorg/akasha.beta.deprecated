@@ -1,5 +1,6 @@
-import * as Promise from 'bluebird';
 import BaseContract from './BaseContract';
+import * as Promise from 'bluebird';
+
 
 export default class Main extends BaseContract {
     constructor(instance: any) {
@@ -21,7 +22,7 @@ export default class Main extends BaseContract {
      * @param entryAddress
      * @returns {any}
      */
-    getVoteOf(profile: string, entryAddress: string) {
+    public getVoteOf(profile: string, entryAddress: string) {
         return this.contract
             .getVoteOf
             .callAsync(profile, entryAddress);
@@ -32,7 +33,7 @@ export default class Main extends BaseContract {
      * @param entryAddress
      * @returns {any}
      */
-    openedToVotes(entryAddress: string) {
+    public openedToVotes(entryAddress: string) {
         return this.contract
             .openedToVotes
             .callAsync(entryAddress);
@@ -43,7 +44,7 @@ export default class Main extends BaseContract {
      * @param entryAddress
      * @returns {any}
      */
-    voteEndDate(entryAddress: string) {
+    public voteEndDate(entryAddress: string) {
         return this.contract
             .voteEndDate
             .callAsync(entryAddress);
@@ -54,7 +55,7 @@ export default class Main extends BaseContract {
      * @param entryAddress
      * @returns {any}
      */
-    getScoreOfEntry(entryAddress: string) {
+    public getScoreOfEntry(entryAddress: string) {
         return this.contract
             .getScoreOfEntry
             .callAsync(entryAddress);
@@ -64,7 +65,7 @@ export default class Main extends BaseContract {
      *
      * @returns {any}
      */
-    getFundsAddress() {
+    public getFundsAddress() {
         return this.contract
             .getFundsAddress
             .callAsync();
@@ -75,7 +76,7 @@ export default class Main extends BaseContract {
      * @param entryAddress
      * @returns {any}
      */
-    getCommentsCount(entryAddress: string) {
+    public getCommentsCount(entryAddress: string) {
         return this.contract
             .getCommentsCount
             .callAsync(entryAddress);
@@ -87,7 +88,7 @@ export default class Main extends BaseContract {
      * @param commentId
      * @returns {any}
      */
-    getCommentAt(entry: string, commentId: number) {
+    public getCommentAt(entry: string, commentId: number) {
         const commentIdTr = this.gethInstance.web3.fromDecimal(commentId);
         return this.contract
             .getCommentAt
@@ -100,7 +101,7 @@ export default class Main extends BaseContract {
      * @param commentId
      * @returns {any}
      */
-    getScoreOfComment(entry: string, commentId: number) {
+    public getScoreOfComment(entry: string, commentId: number) {
         const commentIdTr = this.gethInstance.web3.fromDecimal(commentId);
         return this.contract
             .getScoreOfComment
@@ -114,7 +115,7 @@ export default class Main extends BaseContract {
      * @param gas
      * @returns {any}
      */
-    publishEntry(hash: string[], tags: string[], gas?: number) {
+    public publishEntry(hash: string[], tags: string[], gas?: number) {
         const hashTr = hash.map((v) => {
             return this.gethInstance.web3.fromUtf8(v);
         });
@@ -132,7 +133,7 @@ export default class Main extends BaseContract {
      * @param gas
      * @returns {any}
      */
-    updateEntry(hash: string[], entryAddress: string, gas?: number) {
+    public updateEntry(hash: string[], entryAddress: string, gas?: number) {
         const hashTr = hash.map((v) => {
             return this.gethInstance.web3.fromUtf8(v);
         });
@@ -147,7 +148,7 @@ export default class Main extends BaseContract {
      * @param gas
      * @returns {any}
      */
-    upVoteEntry(entryAddress: string, weight: number, gas?: number) {
+    public upVoteEntry(entryAddress: string, weight: number, gas?: number) {
         const weightTr = this.gethInstance.web3.fromDecimal(weight);
         return this.contract
             .upVoteEntryAsync(entryAddress, weightTr, {gas});
@@ -160,7 +161,7 @@ export default class Main extends BaseContract {
      * @param gas
      * @returns {any}
      */
-    downVoteEntry(entryAddress: string, weight: number, gas?: number) {
+    public downVoteEntry(entryAddress: string, weight: number, gas?: number) {
         const weightTr = this.gethInstance.web3.fromDecimal(weight);
         return this.contract
             .downVoteEntryAsync(entryAddress, weightTr, {gas});
@@ -173,7 +174,7 @@ export default class Main extends BaseContract {
      * @param gas
      * @returns {any}
      */
-    saveComment(entryAddress: string, hash: string[], gas?: number) {
+    public saveComment(entryAddress: string, hash: string[], gas?: number) {
         const hashTr = hash.map((v) => {
             return this.gethInstance.web3.fromUtf8(v);
         });
@@ -189,7 +190,7 @@ export default class Main extends BaseContract {
      * @param gas
      * @returns {any}
      */
-    updateComment(entryAddress: string, commentId: number, hash: string[], gas?: number) {
+    public updateComment(entryAddress: string, commentId: number, hash: string[], gas?: number) {
         const hashTr = hash.map((v) => {
             return this.gethInstance.web3.fromUtf8(v);
         });
@@ -206,7 +207,7 @@ export default class Main extends BaseContract {
      * @param gas
      * @returns {any}
      */
-    upVoteComment(entryAddress: string, weigth: number, commentId: number, gas?: number) {
+    public upVoteComment(entryAddress: string, weigth: number, commentId: number, gas?: number) {
         const weigthTr = this.gethInstance.web3.fromDecimal(weigth);
         const commentIdTr = this.gethInstance.web3.fromDecimal(commentId);
         return this.contract
@@ -221,7 +222,7 @@ export default class Main extends BaseContract {
      * @param gas
      * @returns {any}
      */
-    downVoteComment(entryAddress: string, weigth: number, commentId: number, gas?: number) {
+    public downVoteComment(entryAddress: string, weigth: number, commentId: number, gas?: number) {
         const weigthTr = this.gethInstance.web3.fromDecimal(weigth);
         const commentIdTr = this.gethInstance.web3.fromDecimal(commentId);
         return this.contract

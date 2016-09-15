@@ -1,6 +1,6 @@
+import BaseContract from './BaseContract';
 import * as Promise from 'bluebird';
 import { unpad } from 'ethereumjs-util';
-import BaseContract from './BaseContract';
 
 export default class Registry extends BaseContract {
     /**
@@ -19,7 +19,7 @@ export default class Registry extends BaseContract {
      * @param username
      * @returns {any}
      */
-    profileExists(username: string) {
+    public profileExists(username: string) {
         return this.contract
             .getById
             .callAsync(username);
@@ -30,7 +30,7 @@ export default class Registry extends BaseContract {
      * @param address
      * @returns {any}
      */
-    getByAddress(address: string) {
+    public getByAddress(address: string) {
         return this.contract
             .getByAddr
             .callAsync(address);
@@ -40,16 +40,16 @@ export default class Registry extends BaseContract {
      * Get curre
      * @returns {any}
      */
-    getMyProfile() {
+    public getMyProfile() {
         return this.contract
             .getMyProfileAsync();
     }
 
     /**
      *
-     * @returns {PromiseLike<{key: string, profile: string}[]>|Thenable<{key: string, profile: string}[]>|Bluebird<{key: string, profile: string}[]>}
+     * @returns {any}
      */
-    getLocalProfiles() {
+    public getLocalProfiles() {
         let keyList: string[];
         const profileList: {key: string, profile: string}[] = [];
         return this.gethInstance
@@ -58,9 +58,9 @@ export default class Registry extends BaseContract {
             .getAccountsAsync()
             .then((list: string[]) => {
                 list.sort();
-               const checkForProfile = list.map((val: string) => {
-                  return this.getByAddress(val);
-               });
+                const checkForProfile = list.map((val: string) => {
+                    return this.getByAddress(val);
+                });
                 keyList = list;
                 return Promise.all(checkForProfile);
             })
@@ -68,7 +68,7 @@ export default class Registry extends BaseContract {
                 addrList.forEach((val: string, index: number) => {
                     const valTr = unpad(val);
                     if (valTr) {
-                        profileList.push({key: keyList[index], profile: val});
+                        profileList.push({ key: keyList[index], profile: val });
                     }
                 });
                 keyList = null;
@@ -83,7 +83,7 @@ export default class Registry extends BaseContract {
      * @param gas
      * @returns {PromiseLike<TResult>|Promise<TResult>|Thenable<U>|Bluebird<U>}
      */
-    register(username: string, ipfsHash: string, gas: number = 90000) {
+    public register(username: string, ipfsHash: string, gas: number = 90000) {
         const usernameTr = this.gethInstance.web3.fromUtf8(username);
         const ipfsHashTr = [ipfsHash.slice(0, 23), ipfsHash.slice(23)].map((v) => {
             return this.gethInstance.web3.fromUtf8(v);
@@ -104,7 +104,7 @@ export default class Registry extends BaseContract {
                         if (estimatedGas > gas) {
                             throw new Error(`Gas required: ${estimatedGas}, Gas provided: ${gas}`);
                         }
-                        return this.extractData('register', usernameTr, ipfsHashTr, {gas});
+                        return this.extractData('register', usernameTr, ipfsHashTr, { gas });
                     });
             });
     }
