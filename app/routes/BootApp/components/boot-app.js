@@ -5,7 +5,9 @@ import NotificationPaper from './notification-paper';
 class BootApp extends React.Component {
     constructor (props) {
         super(props);
-        this.state = {};
+        this.state = {
+            errors: null
+        };
     }
     componentWillMount () {
         const props = this.props;
