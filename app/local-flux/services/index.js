@@ -10,3 +10,4 @@ export { EntryService } from './entry-service';
 export { AppService } from './app-service';
 export { TagService } from './tag-service';
 export { CommentService } from './comment-service';
+export { DraftService } from './draft-service';

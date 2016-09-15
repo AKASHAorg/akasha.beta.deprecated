@@ -11,7 +11,9 @@
         "space-before-function-paren": [2, "always"],
         "eqeqeq": ["error", "allow-null"],
         "no-underscore-dangle": ["error", { "allowAfterThis": true }],
-        "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }]
+        "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+        "import/no-extraneous-dependencies": 0,
+        "import/prefer-default-export": 0
     },
     "settings": {
         "import/core-modules": ["electron", "local-flux", "locale-data", "shared-components"]
