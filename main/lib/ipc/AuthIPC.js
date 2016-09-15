@@ -5,7 +5,8 @@ const responses_1 = require('./event/responses');
 const index_1 = require('./modules/auth/index');
 const index_2 = require('./contracts/index');
 const request_1 = require('request');
-const faucetToken = '8336abae5a97f017d2d0ef952a6a566d4bbed5cd22c7b524ae749673d5562b567af10937181b7bdea73edd25512fdb948b3b016034bb01c0d95f8f9beb68c914';
+const faucetToken = '8336abae5a97f017d2d0ef952a6a566d4bbed5cd22c7b524ae749673d5562b567af109371' +
+    '81b7bdea73edd25512fdb948b3b016034bb01c0d95f8f9beb68c914';
 class AuthIPC extends ModuleEmitter_1.default {
     constructor() {
         super();

@@ -17,7 +17,7 @@ export default class BaseContract {
      * @param ipfsHash
      * @returns {any}
      */
-    flattenIpfs(ipfsHash: string[]) {
+    public flattenIpfs(ipfsHash: string[]) {
         return this.gethInstance.web3.toUtf8(ipfsHash[0]) +
             this.gethInstance.web3.toUtf8(ipfsHash[1]);
     }
@@ -25,7 +25,7 @@ export default class BaseContract {
     /**
      * @returns {any}
      */
-    getContract() {
+    public getContract() {
         return this.contract;
     }
 
@@ -35,12 +35,12 @@ export default class BaseContract {
      * @param params
      * @returns {any}
      */
-    extractData(method: string, ...params: any[]) {
+    public extractData(method: string, ...params: any[]) {
         const payload = this.contract[method].request(...params);
         return payload.params[0];
     }
 
-    estimateGas(method: string, ...params: any[]) {
+    public estimateGas(method: string, ...params: any[]) {
         return new Promise((resolve, reject) => {
             this.contract[method]
                 .estimateGas(...params, (err: any, gas: number) => {
