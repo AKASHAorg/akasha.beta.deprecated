@@ -30,10 +30,7 @@ class BootstrapBundleActions {
         return Promise.all(promises);
     };
     bootApp = (getState) => {
-        const promises = [];
-        promises.push(this.appActions.checkForUpdates());
-        promises.push(this.eProcActions.getGethStatus());
-        return Promise.all(promises);
+        return this.appActions.checkForUpdates();
     };
     initSetup = (getState) => {
         // @TODO load contents for tutorials
@@ -44,6 +41,7 @@ class BootstrapBundleActions {
     initConfig = (getState) => {
         const promises = [];
         promises.push(this.settingsActions.getSettings('geth'));
+        promises.push(this.eProcActions.getGethOptions);
         promises.push(this.settingsActions.getSettings('ipfs'));
         return Promise.all(promises);
     };
