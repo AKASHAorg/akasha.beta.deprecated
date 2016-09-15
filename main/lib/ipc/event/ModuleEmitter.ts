@@ -38,7 +38,7 @@ abstract class ModuleEmitter extends AbstractEmitter {
     /**
      * @returns {boolean}
      */
-    attachEmitters() {
+    public attachEmitters() {
         return true;
     }
 }

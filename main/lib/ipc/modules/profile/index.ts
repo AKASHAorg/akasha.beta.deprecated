@@ -3,7 +3,7 @@ import profile from './ipfs';
 class Profile {
     public helpers: any;
 
-    init() {
+    public init() {
         this.helpers = profile();
     }
 }

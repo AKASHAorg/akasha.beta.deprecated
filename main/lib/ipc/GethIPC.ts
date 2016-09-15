@@ -19,7 +19,7 @@ class GethIPC extends GethEmitter {
         this.attachEmitters();
     }
 
-    initListeners(webContents: WebContents) {
+    public initListeners(webContents: WebContents) {
         GethConnector.getInstance().setLogger(
             Logger.getInstance().registerLogger(this.logger)
         );

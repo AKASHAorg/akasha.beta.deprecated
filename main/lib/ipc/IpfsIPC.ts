@@ -16,7 +16,7 @@ class IpfsIPC extends IpfsEmitter {
         this.attachEmitters();
     }
 
-    initListeners(webContents: WebContents) {
+    public initListeners(webContents: WebContents) {
         IpfsConnector.getInstance().setLogger(
           AppLogger.getInstance().registerLogger(this.logger)
         );

@@ -3,7 +3,7 @@ import Auth from './Auth';
 class User {
     public auth: Auth;
 
-    init() {
+    public init() {
         this.auth = new Auth();
     }
 }
