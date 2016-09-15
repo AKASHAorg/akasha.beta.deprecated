@@ -14,18 +14,27 @@ class GethService extends BaseService {
      */
     startGeth = (options) =>
         new Promise((resolve, reject) => {
+            const gethOptions = {};
+
+            Object.keys(options).forEach(key => {
+                if (key !== 'name' && options[key] !== '') {
+                    gethOptions[key] = options[key];
+                }
+            });
+
             const listenerCb = (event, response) => {
-                dbg('start geth', response);
+                dbg('geth status', response);
                 if (response.error) {
                     return reject(response.error);
                 }
                 return resolve(response.data);
             };
             if (this._listeners.get(Channel.client.geth.startService)) {
-                return resolve();
+                return;
             }
-            this.registerListener(Channel.client.geth.startService, listenerCb, () => 
-                ipcRenderer.send(Channel.server.geth.startService, {})
+            dbg('starting geth with options', gethOptions);
+            this.registerListener(Channel.client.geth.startService, listenerCb, () =>
+                ipcRenderer.send(Channel.server.geth.startService, gethOptions)
             );
         });
 
@@ -33,13 +42,14 @@ class GethService extends BaseService {
         new Promise((resolve, reject) => {
             dbg('Stopping Geth service on channel:', Channel.client.geth.stopService);
             const listenerCb = (event, response) => {
+                dbg('geth stop status is', response);
                 if (response.error) {
                     return reject(response.error);
                 }
                 return resolve(response.data);
             };
             if (this._listeners.get(Channel.client.geth.stopService)) {
-                return resolve();
+                return;
             }
             this.registerListener(Channel.client.geth.stopService, listenerCb, () => 
                 ipcRenderer.send(Channel.server.geth.stopService, {})
@@ -57,7 +67,7 @@ class GethService extends BaseService {
                 return resolve(response.data);
             };
             if (this._listeners.get(Channel.client.geth.status)) {
-                return resolve();
+                return;
             }
             this.registerListener(Channel.client.geth.status, callback, () => {
                 ipcRenderer.send(Channel.server.geth.status, {});
@@ -67,7 +77,9 @@ class GethService extends BaseService {
     getOptions = () => {
         const clientChannel = Channel.client.geth.options;
         const serverChannel = Channel.server.geth.options;
-        const managerChannel = Channel.server.geth.manager;
+        const serverManager = Channel.server.geth.manager;
+        const clientManager = Channel.client.geth.manager;
+
         return new Promise((resolve, reject) => {
             const listenerCb = (event, response) => {
                 dbg('Requested geth options', response);
@@ -77,10 +89,11 @@ class GethService extends BaseService {
                 return resolve(response.data);
             };
             if (this._listeners.get(clientChannel)) {
-                return resolve();
+                return;
             }
             this.openChannel({
-                manager: managerChannel,
+                serverManager,
+                clientManager,
                 serverChannel,
                 clientChannel,
                 listenerCb
@@ -96,7 +109,9 @@ class GethService extends BaseService {
     startUpdateSync = () => {
         const clientChannel = Channel.client.geth.syncUpdate;
         const serverChannel = Channel.server.geth.syncUpdate;
-        const serverManagerChannel = Channel.server.geth.manager;
+        const serverManager = Channel.server.geth.manager;
+        const clientManager = Channel.client.geth.manager;
+
         return new Promise((resolve, reject) => {
             const listenerCb = (ev, res) => {
                 if (res.error) {
@@ -107,8 +122,14 @@ class GethService extends BaseService {
             if (this._listeners.get(clientChannel)) {
                 return resolve();
             }
-            this.openChannel({ manager: serverManagerChannel, serverChannel, clientChannel, listenerCb }, () =>
-                ipcRenderer.on(clientChannel, this._listeners.get(clientChannel))
+            this.openChannel({
+                serverManager,
+                clientManager,
+                serverChannel,
+                clientChannel,
+                listenerCb
+            }, () =>
+                ipcRenderer.send(serverChannel, {})
             );
         });
     }

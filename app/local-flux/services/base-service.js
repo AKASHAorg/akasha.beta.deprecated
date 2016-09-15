@@ -1,8 +1,12 @@
 import { ipcRenderer } from 'electron';
+import debug from 'debug';
+
+const dbg = debug('App::BaseService::*');
 
 class BaseService {
     constructor () {
         this._listeners = new Map();
+        this._openChannels = new Set();
     }
     registerListener = (channel, cb, secondCallback) => {
         this._listeners.set(channel, cb);
@@ -11,16 +15,30 @@ class BaseService {
     };
     removeListener = (channel, cb) => {
         ipcRenderer.removeListener(channel, this.listeners.get(channel));
-        this.listeners.delete(channel);
+        this._listeners.delete(channel);
         return cb();
     };
     // open communication with a channel through channel manager
-    openChannel = ({ manager, serverChannel, clientChannel, listenerCb }, cb) => {
-        ipcRenderer.on(manager, (ev, data) => {
-            this.registerListener(channel, listenerCb);
-            return cb();
+    openChannel = ({ serverManager, clientManager, serverChannel, clientChannel, listenerCb }, cb) => {
+        if (this._openChannels.has(serverManager)) {
+            dbg('channel already listening', serverChannel);
+            dbg('trying to register listener for it');
+            if (this._listeners.has(clientChannel)) {
+                dbg('listener already registered for channel', clientChannel);
+                return cb();
+            }
+            dbg('registering a new listener for ', clientChannel);
+            return this.registerListener(clientChannel, listenerCb, cb);
+        }
+        dbg('open channels', this._openChannels);
+        ipcRenderer.on(clientManager, (ev, response) => {
+            if (response.data.channel === serverChannel && response.data.listen) {
+                dbg('main process now listening on', serverChannel);
+                this._openChannels.add(serverManager);
+                return this.registerListener(clientChannel, listenerCb, cb);
+            }
         });
-        ipcRenderer.send(manager, { channel: serverChannel, listen: true });
+        ipcRenderer.send(serverManager, { channel: serverChannel, listen: true });
     };
     // close communication with a channel through channel manager
     closeChannel = (manager, channel) => {

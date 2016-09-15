@@ -22,9 +22,9 @@ class Setup extends Component {
         if (!cancelRequest && gethSettings) {
             return this.context.router.push('setup/sync-status');
         }
-        eProcActions.getGethOptions().then(() => {
+        return eProcActions.getGethOptions().then(() => {
             console.log('options retrieved');
-        })
+        });
     }
     handleChange = (ev, value) => {
         const { setupActions, setupConfig } = this.props;
