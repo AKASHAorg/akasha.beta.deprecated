@@ -233,9 +233,13 @@ class GethIPC extends GethEmitter {
             channels.server.geth.options,
             (event: any, data: any) => {
                 const options = GethConnector.getInstance().setOptions(data);
+                let mapObj = Object.create(null);
+                for (let[k, v] of options) {
+                    mapObj[k] = v;
+                }
                 this.fireEvent(
                     channels.client.geth.status,
-                    gethResponse({options}),
+                    gethResponse(mapObj),
                     event
                 );
             }
