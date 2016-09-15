@@ -1,5 +1,5 @@
-import * as Promise from 'bluebird';
 import BaseContract from './BaseContract';
+import * as Promise from 'bluebird';
 
 export default class IndexedTags extends BaseContract {
     /**
@@ -19,7 +19,7 @@ export default class IndexedTags extends BaseContract {
      * @param tagId
      * @returns {any}
      */
-    isSubscribed(subscriber: string, tagId: number) {
+    public isSubscribed(subscriber: string, tagId: number) {
         const tagIdTr = this.gethInstance.web3.fromDecimal(tagId);
         return this.contract
             .isSubscribed
@@ -32,7 +32,7 @@ export default class IndexedTags extends BaseContract {
      * @param tagId
      * @returns {any}
      */
-    getSubPosition(subscriber: string, tagId: number) {
+    public getSubPosition(subscriber: string, tagId: number) {
         const tagIdTr = this.gethInstance.web3.fromDecimal(tagId);
         return this.contract
             .getSubPosition
@@ -44,7 +44,7 @@ export default class IndexedTags extends BaseContract {
      * @param gas
      * @returns {any}
      */
-    subscribe(tag: string, gas?: number) {
+    public subscribe(tag: string, gas?: number) {
         const tagTr = this.gethInstance.web3.fromUtf8(tag);
         return this.contract
             .subscribeAsync(tagTr, {gas});
@@ -57,7 +57,7 @@ export default class IndexedTags extends BaseContract {
      * @param gas
      * @returns {any}
      */
-    unsubscribe(tag: string, subPosition: number, gas?: number) {
+    public unsubscribe(tag: string, subPosition: number, gas?: number) {
         const tagTr = this.gethInstance.web3.fromUtf8(tag);
         const subPositionTr = this.gethInstance.web3.fromDecimal(subPosition);
         return this.contract

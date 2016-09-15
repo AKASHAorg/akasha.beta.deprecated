@@ -1,10 +1,10 @@
 "use strict";
-const contracts_js_1 = require('@akashaproject/contracts.js');
-const Registry_1 = require('./Registry');
-const Profile_1 = require('./Profile');
 const IndexedTags_1 = require('./IndexedTags');
 const Main_1 = require('./Main');
+const Profile_1 = require('./Profile');
+const Registry_1 = require('./Registry');
 const Tags_1 = require('./Tags');
+const contracts_js_1 = require('@akashaproject/contracts.js');
 class Contracts {
     init(web3) {
         const factory = new contracts_js_1.default.Class(web3);
