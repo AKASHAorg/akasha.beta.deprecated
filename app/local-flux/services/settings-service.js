@@ -7,10 +7,6 @@ class SettingsService {
         );
     }
     getSettings (table, query) {
-        let q = {};
-        if (query) {
-            q = query;
-        }
         return settingsDB.transaction('r', settingsDB[table], () =>
             settingsDB[table].where('name').equals(table).toArray()
         );
