@@ -9,17 +9,17 @@ const hashPath = (...path) => {
     return hash.digest('hex');
 };
 const channels = {
+    auth: ['manager', 'login', 'logout', 'requestEther', 'generateEthKey', 'getLocalIdentities'],
+    entry: ['manager', 'publish'],
     geth: ['manager', 'options', 'startService', 'stopService', 'restartService', 'syncStatus', 'logs', 'status'],
     ipfs: ['manager', 'startService', 'stopService', 'status', 'resolve'],
-    auth: ['manager', 'login', 'logout', 'requestEther', 'generateEthKey', 'getLocalIdentities'],
     profile: ['manager', 'getProfileData', 'getMyBalance', 'getIpfs', 'unregister'],
     registry: ['manager', 'profileExists', 'registerProfile', 'getCurrentProfile', 'getByAddress'],
-    entry: ['manager', 'publish'],
-    tx: ['manager', 'addToQueue', 'emitMined']
+    tx: ['manager', 'addToQueue', 'emitMined'],
 };
 const processes = ['server', 'client'];
 const mem = os_1.totalmem().toLocaleString();
-const EVENTS = { server: {}, client: {} };
+const EVENTS = { client: {}, server: {} };
 Object.keys(channels).forEach((attr) => {
     channels[attr].forEach((endpoint) => {
         processes.forEach((proc) => {
@@ -31,5 +31,5 @@ Object.keys(channels).forEach((attr) => {
     });
 });
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = { server: EVENTS.server, client: EVENTS.client };
+exports.default = { client: EVENTS.client, server: EVENTS.server };
 //# sourceMappingURL=channels.js.map

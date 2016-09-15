@@ -36,14 +36,14 @@ export function bootstrapApp() {
                 preload: resolve(__dirname, 'preloader.js')
             }
         });
-         // BrowserWindow.addDevToolsExtension('/home/marius/.config/chromium/Default/Extensions/fmkadmapgofadopljbjfkapdkoienihi/0.15.0_0');
+
         if (process.env.HOT) {
             mainWindow.loadURL(`file://${viewHtml}/hot-dev-app.html`);
         } else {
             mainWindow.loadURL(`file://${viewHtml}/app.html`);
         }
 
-        mainWindow.on('close', (ev: Event) => {
+        mainWindow.once('close', (ev: Event) => {
             ev.preventDefault();
             modules.flushAll();
             GethConnector.getInstance().stop();

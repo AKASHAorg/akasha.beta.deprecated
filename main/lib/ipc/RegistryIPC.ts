@@ -16,7 +16,7 @@ class RegistryIPC extends ModuleEmitter {
         this.DEFAULT_MANAGED = ['getCurrentProfile', 'getByAddress'];
     }
 
-    initListeners(webContents: WebContents) {
+    public initListeners(webContents: WebContents) {
         this.webContents = webContents;
         this._profileExists()
             ._getCurrentProfile()

@@ -1,5 +1,5 @@
-import * as Promise from 'bluebird';
 import BaseContract from './BaseContract';
+import * as Promise from 'bluebird';
 
 export default class Tags extends BaseContract {
 
@@ -11,7 +11,7 @@ export default class Tags extends BaseContract {
         this.contract.getTagId.callAsync = Promise.promisify(this.contract.getTagId.call);
     }
 
-    add(tag: string, gas?: number) {
+    public add(tag: string, gas?: number) {
         const tagTr = this.gethInstance.web3.fromUtf8(tag);
         return this.contract
             .exists

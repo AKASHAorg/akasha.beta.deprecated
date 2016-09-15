@@ -11,7 +11,7 @@ export abstract class AbstractEmitter extends AbstractListener {
      * @param data
      * @param event
      */
-    fireEvent(channel: string, data: MainResponse, event?: IpcRendererEvent) {
+    public fireEvent(channel: string, data: MainResponse, event?: IpcRendererEvent) {
         if (event) {
             return event.sender.send(channel, data);
         }
@@ -21,5 +21,5 @@ export abstract class AbstractEmitter extends AbstractListener {
         return this.webContents.send(channel, data);
     }
 
-    abstract attachEmitters(): any;
+    public abstract attachEmitters(): any;
 }
