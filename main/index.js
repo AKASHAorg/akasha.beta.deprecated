@@ -37,7 +37,7 @@ function bootstrapApp() {
         else {
             mainWindow.loadURL(`file://${viewHtml}/app.html`);
         }
-        mainWindow.on('close', (ev) => {
+        mainWindow.once('close', (ev) => {
             ev.preventDefault();
             modules.flushAll();
             geth_connector_1.GethConnector.getInstance().stop();
