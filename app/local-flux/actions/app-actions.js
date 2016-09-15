@@ -12,11 +12,11 @@ class AppActions {
         this.appService = new AppService();
         return appActions;
     }
-    checkForUpdates = () => {
-        this.appService.checkForUpdates().then(updates => {
-            this.dispatch(appActionCreators.checkForUpdates(updates));
-        });
-    };
+    checkForUpdates = () =>
+        this.appService.checkForUpdates().then(hasUpdates =>
+            this.dispatch(appActionCreators.checkForUpdates(hasUpdates))
+        );
+
     updateApp = () => {};
     showError = (error) => {
         this.dispatch(appActionCreators.showError(error));

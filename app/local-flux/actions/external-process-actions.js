@@ -1,8 +1,11 @@
+import debug from 'debug';
 import { GethService, IpfsService, SetupService } from '../services';
 import {
     externalProcessActionCreators,
     appActionCreators,
     syncActionCreators } from './action-creators';
+
+const dbg = debug('App::eProcActions::*');
 
 let eProcActions = null;
 /**
@@ -20,27 +23,32 @@ class EProcActions {
         this.dispatch = dispatch;
         return eProcActions;
     }
+
+    _showErrorAction = (error) =>
+        appActionCreators.showError({
+            code: error.code,
+            fatal: error.fatal,
+            message: error.message
+        })
+
     startGeth = (gethSettings) =>
         this.gethService.startGeth(gethSettings).then(gethState => {
             if (gethState.isRunning) {
                 return Promise.resolve();
             }
-            // if geth could not start return an error and alert user
-            if (!gethState.success) {
-                const error = new Error(` ${gethState.status}`);
-                return this.dispatch(externalProcessActionCreators.startGethError(error));
-            }
             return this.dispatch(
-                externalProcessActionCreators.startGethSuccess({ data: gethState })
+                externalProcessActionCreators.startGethSuccess({ gethState })
             );
         })
-        .catch(reason => this.dispatch(
-            appActionCreators.showError({
-                code: 105,
-                type: reason.type ? reason.type : 'GETH_START_ERROR',
-                message: reason.data ? reason.data.message : reason.stack
-            })
-        ));
+        .catch(reason =>
+            this.dispatch(
+                this._showErrorAction({
+                    code: 'EPA10',
+                    fatal: reason.fatal,
+                    message: reason.message || reason.stack
+                })
+            )
+        );
 
     stopGeth = () => {
         this.gethService.stopGeth().then(data => {
@@ -54,7 +62,8 @@ class EProcActions {
             this.dispatch(externalProcessActionCreators.stopGethError(reason));
         });
     };
-    getGethStatus = () => {
+
+    getGethStatus = () =>
         this.gethService.getStatus().then(data => {
             if (!data) {
                 return this.dispatch(
@@ -65,7 +74,19 @@ class EProcActions {
         }).catch(reason => {
             this.dispatch(externalProcessActionCreators.getGethStatusError(reason));
         });
-    };
+
+    getGethOptions = () =>
+        this.gethService.getOptions().then(data => {
+            dbg('geth config is', data);
+            return this.dispatch(externalProcessActionCreators.getGethOptionsSuccess(data));
+        }).catch(reason => {
+            this.dispatch(appActionCreators.showError({
+                code: 'EPA15',
+                fatal: reason.fatal,
+                message: reason.message
+            }));
+        });
+
     startIPFS = (ipfsSettings) =>
         this.ipfsService.startIPFS(ipfsSettings).then((ipfsState) => {
             if (!ipfsState.success) {
@@ -82,7 +103,7 @@ class EProcActions {
             dispatch(
                 appActionCreators.showError({
                     code: 205,
-                    type: reason.type ? reason.type : 'IPFS_START_ERROR',
+                    fatal: reason.fatal,
                     message: 'Ipfs process cannot be started!'
                 })
             );
@@ -105,6 +126,7 @@ class EProcActions {
             return this.dispatch(externalProcessActionCreators.stopIPFSSuccess(data));
         }).catch(reason => this.dispatch(externalProcessActionCreators.stopIPFSError(reason)));
     };
+
     startSync = () => this.dispatch(syncActionCreators.startSync());
     /**
      * Dispatcher for resuming sync

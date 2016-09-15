@@ -1,15 +1,13 @@
 import { ipcRenderer } from 'electron';
-import { EVENTS } from '../../../electron-api/modules/settings';
-import { Map } from 'immutable';
 
 class BaseService {
     constructor () {
         this._listeners = new Map();
-        this.eventChannels = EVENTS;
     }
-    registerListener = (channel, cb) => {
+    registerListener = (channel, cb, secondCallback) => {
         this._listeners.set(channel, cb);
         ipcRenderer.on(channel, this._listeners.get(channel));
+        secondCallback();
     };
     removeListener = (channel, cb) => {
         ipcRenderer.removeListener(channel, this.listeners.get(channel));
@@ -17,28 +15,19 @@ class BaseService {
         return cb();
     };
     // open communication with a channel through channel manager
-    openChannel = (managerChannel, channel, cb) => {
-        ipcRenderer.on(managerChannel, (ev, data) => {
-            if (data.error) {
-                const error = new Error(data.error);
-                return cb(error);
-            }
-            this.registerListener(channel, cb);
+    openChannel = ({ manager, serverChannel, clientChannel, listenerCb }, cb) => {
+        ipcRenderer.on(manager, (ev, data) => {
+            this.registerListener(channel, listenerCb);
+            return cb();
         });
-        ipcRenderer.send(managerChannel, { listen: true });
+        ipcRenderer.send(manager, { channel: serverChannel, listen: true });
     };
     // close communication with a channel through channel manager
-    closeChannel = (managerChannel, channel) => {
+    closeChannel = (manager, channel) => {
         this.removeListener(channel, () => {
-            ipcRenderer.send(managerChannel, { listen: false });
+            ipcRenderer.send(manager, { listen: false });
         });
     };
-    parseData = (data, cb) => {
-        if (data.error) {
-            return cb(new Error(data.error));
-        }
-        return cb(null, data);
-    }
 }
 
 export default BaseService;
