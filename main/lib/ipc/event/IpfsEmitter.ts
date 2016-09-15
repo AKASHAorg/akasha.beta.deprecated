@@ -6,7 +6,7 @@ import channels from '../../channels';
 
 abstract class IpfsEmitter extends AbstractEmitter {
 
-    attachEmitters() {
+    public attachEmitters() {
         this._download()
             ._catchCorrupted()
             ._catchFailed()

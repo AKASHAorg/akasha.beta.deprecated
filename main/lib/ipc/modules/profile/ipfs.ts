@@ -143,7 +143,10 @@ const resolveProfile = (hash: string) => {
 
 /**
  *
- * @returns {{create: ((data:IpfsProfileCreateRequest)=>(Bluebird<U>|Thenable<U>|Promise<TResult>|PromiseLike<TResult>)), getShortProfile: ((hash:string)=>any), resolveProfile: ((hash:string)=>(Bluebird<U>|Thenable<U>|Promise<TResult>|PromiseLike<TResult>))}}
+ * @returns {{
+ *  create: ((data:IpfsProfileCreateRequest)=>Bluebird<U>),
+  * getShortProfile: ((hash:string)=>any), resolveProfile: ((hash:string)=>any)
+  * }}
  */
 export default function init() {
     return {

@@ -7,7 +7,7 @@ import { initModules } from '../modules/index';
 const peers  = require('../config/peers.json');
 
 abstract class GethEmitter extends AbstractEmitter {
-    attachEmitters() {
+    public attachEmitters() {
         this._download()
             ._error()
             ._fatal()

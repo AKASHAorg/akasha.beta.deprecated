@@ -14,7 +14,7 @@ class ProfileIPC extends ModuleEmitter {
         this.DEFAULT_MANAGED = ['getProfileData', 'getMyBalance', 'getIpfs'];
     }
 
-    initListeners(webContents: WebContents) {
+    public initListeners(webContents: WebContents) {
         this.webContents = webContents;
         this._getMyBalance()
             ._getProfileData()

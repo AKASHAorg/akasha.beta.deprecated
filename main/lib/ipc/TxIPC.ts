@@ -12,14 +12,14 @@ class TxIPC extends ModuleEmitter {
         this.attachEmitters();
     }
 
-    initListeners(webContents: WebContents) {
+    public initListeners(webContents: WebContents) {
         this.webContents = webContents;
         this._addToQueue()
             ._listenMined()
             ._manager();
     }
 
-    attachEmitters() {
+    public attachEmitters() {
         this._emitMined();
         return true;
     }

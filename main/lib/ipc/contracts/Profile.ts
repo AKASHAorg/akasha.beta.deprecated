@@ -1,5 +1,5 @@
-import * as Promise from 'bluebird';
 import BaseContract from './BaseContract';
+import * as Promise from 'bluebird';
 
 export default class Profile extends BaseContract {
     /**
@@ -16,7 +16,7 @@ export default class Profile extends BaseContract {
      * @param address
      * @returns {"~bluebird/bluebird".Bluebird}
      */
-    getIpfs(address: string) {
+    public getIpfs(address: string) {
         return new Promise((resolve, reject) => {
             this.contract
                 .at(address)
@@ -38,7 +38,7 @@ export default class Profile extends BaseContract {
      * @param address
      * @returns {"~bluebird/bluebird".Bluebird}
      */
-    getTippingAddress(address: string) {
+    public getTippingAddress(address: string) {
         return new Promise((resolve, reject) => {
             this.contract
                 .at(address)
@@ -59,7 +59,7 @@ export default class Profile extends BaseContract {
      * @param gas
      * @returns {"~bluebird/bluebird".Bluebird}
      */
-    updateHash(hash: string[], address: string, gas?: number) {
+    public updateHash(hash: string[], address: string, gas?: number) {
         const ipfsHashTr = hash.map((v) => {
             return this.gethInstance.web3.fromUtf8(v);
         });
@@ -85,7 +85,7 @@ export default class Profile extends BaseContract {
      * @param gas
      * @returns {"~bluebird/bluebird".Bluebird}
      */
-    setTippingAddress(address: string, tippingAddress: string, gas?: number) {
+    public setTippingAddress(address: string, tippingAddress: string, gas?: number) {
         return new Promise((resolve, reject) => {
            this.contract
                .at(address)
@@ -104,7 +104,7 @@ export default class Profile extends BaseContract {
      * @param gas
      * @returns {"~bluebird/bluebird".Bluebird}
      */
-    unregister(address: string, gas?: number) {
+    public unregister(address: string, gas?: number) {
         return new Promise((resolve, reject) => {
            this.contract
                .at(address)
