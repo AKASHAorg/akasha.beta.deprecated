@@ -114,10 +114,10 @@ class Setup extends Component {
     };
     handleSubmit = () => {
         const { settingsActions, setupConfig } = this.props;
-        const { dataDir, ipcPath, cache } = setupConfig.get('geth').toJS();
+        const { datadir, ipcpath, cache } = setupConfig.get('geth').toJS();
         const { ipfsPath } = setupConfig.get('ipfs').toJS();
         const p = [];
-        p.push(settingsActions.saveSettings('geth', { dataDir, ipcPath, cache }));
+        p.push(settingsActions.saveSettings('geth', { datadir, ipcpath, cache }));
         p.push(settingsActions.saveSettings('ipfs', { ipfsPath }));
         p.push(settingsActions.saveSettings('flags', { requestStartupChange: false }));
         Promise.all(p).then(() => {
