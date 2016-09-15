@@ -10,6 +10,7 @@ import settingsState from './settingsState';
 import entryState from './entryState';
 import externalProcState from './externalProcState';
 import tagState from './tagState';
+import draftState from './draftState';
 
 const rootReducer = combineReducers({
     setupConfig,
@@ -21,6 +22,7 @@ const rootReducer = combineReducers({
     entryState,
     externalProcState,
     tagState,
+    draftState,
     reduxAsyncConnect,
     routing,
 });
