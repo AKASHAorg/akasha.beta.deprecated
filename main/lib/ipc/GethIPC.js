@@ -116,7 +116,11 @@ class GethIPC extends GethEmitter_1.default {
     _options() {
         this.registerListener(channels_1.default.server.geth.options, (event, data) => {
             const options = geth_connector_1.GethConnector.getInstance().setOptions(data);
-            this.fireEvent(channels_1.default.client.geth.status, responses_1.gethResponse({ options: options }), event);
+            let mapObj = Object.create(null);
+            for (let [k, v] of options) {
+                mapObj[k] = v;
+            }
+            this.fireEvent(channels_1.default.client.geth.status, responses_1.gethResponse(mapObj), event);
         });
         return this;
     }
