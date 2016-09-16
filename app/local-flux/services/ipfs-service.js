@@ -1,12 +1,12 @@
 import { ipcRenderer } from 'electron';
 import BaseService from './base-service';
 
+const Channel = window.Channel;
 /**
  * Ipfs process management
  * default open channels => ['startService', 'stopService', 'status', 'resolve']
  * channels => ['manager', 'startService', 'stopService', 'status', 'resolve']
  */
-
 class IpfsService extends BaseService {
     constructor () {
         super();

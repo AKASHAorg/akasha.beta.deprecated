@@ -1,6 +1,8 @@
 import { ipcRenderer } from 'electron';
 import debug from 'debug';
 import BaseService from './base-service';
+
+const Channel = window.Channel;
 const dbg = debug('App:GethService:');
 
 /**
@@ -17,7 +19,7 @@ class GethService extends BaseService {
      * @param {object} options Optional params
      * @return promise
      */
-    start = options => {
+    start = (options) => {
         const serverChannel = Channel.server.geth.startService;
         const clientChannel = Channel.client.geth.startService;
         const gethOptions = {};
@@ -41,7 +43,7 @@ class GethService extends BaseService {
                 return resolve(response.data);
             };
             dbg('starting geth with options', gethOptions);
-            this.registerListener(clientChannel, listenerCb, () =>
+            return this.registerListener(clientChannel, listenerCb, () =>
                 ipcRenderer.send(serverChannel, gethOptions)
             );
         });
@@ -64,7 +66,7 @@ class GethService extends BaseService {
                 }
                 return resolve(res.data);
             };
-            this.registerListener(clientChannel, listenerCb, () => 
+            return this.registerListener(clientChannel, listenerCb, () =>
                 ipcRenderer.send(serverChannel, {})
             );
         });
@@ -88,14 +90,14 @@ class GethService extends BaseService {
                 }
                 return resolve(res.data);
             };
-            this.openChannel({
+            return this.openChannel({
                 serverManager: this.serverManager,
                 clientManager: this.clientManager,
                 serverChannel,
                 clientChannel,
                 listenerCb
             }, () =>
-                ipcRenderer.send(serverChannel, {})
+                ipcRenderer.send(serverChannel, { timer })
             );
         });
     };
@@ -115,7 +117,7 @@ class GethService extends BaseService {
                 }
                 return resolve(res.data);
             };
-            this.openChannel({
+            return this.openChannel({
                 serverManager: this.serverManager,
                 clientManager: this.clientManager,
                 serverChannel,
@@ -154,7 +156,7 @@ class GethService extends BaseService {
                 }
                 return resolve(res.data);
             };
-            this.registerListener(clientChannel, listenerCb, () => {
+            return this.registerListener(clientChannel, listenerCb, () => {
                 ipcRenderer.send(serverChannel, {});
             });
         });
@@ -179,7 +181,7 @@ class GethService extends BaseService {
                 return resolve(res.data);
             };
 
-            this.openChannel({
+            return this.openChannel({
                 serverManager: this.serverManager,
                 clientManager: this.clientManager,
                 serverChannel,
@@ -210,7 +212,7 @@ class GethService extends BaseService {
                 return resolve(res.data);
             };
 
-            this.openChannel({
+            return this.openChannel({
                 serverManager: this.serverManager,
                 clientManager: this.clientManager,
                 serverChannel,

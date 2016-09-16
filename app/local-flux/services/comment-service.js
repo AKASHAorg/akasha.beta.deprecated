@@ -1,5 +1,4 @@
 import { ipcRenderer } from 'electron';
-import { EVENTS } from '../../../electron-api/modules/settings';
 import debug from 'debug';
 import BaseService from './base-service';
 
@@ -7,6 +6,7 @@ import BaseService from './base-service';
 import { generateComments } from './faker-data';
 /********************/
 
+const Channel = window.Channel;
 const dbg = debug('App:CommentService:');
 
 class CommentService extends BaseService {

@@ -1,20 +1,49 @@
-import { ipcRenderer } from 'electron';
-import { EVENTS } from '../../../electron-api/modules/settings';
-import entriesDB from './db/entry';
 import debug from 'debug';
+import { ipcRenderer } from 'electron';
+import entriesDB from './db/entry';
+import BaseService from './base-service';
+
+const Channel = window.Channel;
 const dbg = debug('App:EntryService:');
 
 /** * DELETE THIS *****/
 import { generateEntries } from './faker-data';
 /** ******************/
 
-class EntryService {
+/**
+ * Entry service
+ * default open channels =>
+ */
+class EntryService extends BaseService {
     constructor () {
-        this.listeners = {};
+        super();
+        this.serverManager = Channel.server.entry.manager;
+        this.clientManager = Channel.client.entry.manager;
     }
-    removeListener = (channel) => {
-        ipcRenderer.removeListener(channel, this.listeners[channel]);
-        this.listeners[channel] = null;
+    /**
+     *  Publish a new entry
+     *
+     */
+    publishEntry = (entry, profileAddress) => {
+        const serverChannel = Channel.server.entry.publish;
+        const clientChannel = Channel.client.entry.publish;
+        if (this._listeners.has(clientChannel)) return Promise.resolve();
+        return new Promise((resolve, reject) => {
+            const listenerCb = (ev, res) => {
+                dbg('publishEntry', res);
+                if (res.error) {
+                    return reject(res.error);
+                }
+                return resolve(res);
+            };
+            return this.openChannel({
+                serverManager: this.serverManager,
+                clientManager: this.clientManager,
+                serverChannel,
+                clientChannel,
+                listenerCb
+            }, () => ipcRenderer.send(serverChannel, entry));
+        });
     };
     getResourceCount = (table) =>
         entriesDB.transaction('rw', entriesDB[table], () =>
@@ -29,26 +58,6 @@ class EntryService {
                     .equals(parseInt(id, 10))
                     .first();
         });
-    publishEntry = (entry, profileAddress) => {
-        const serverChannel = EVENTS.server.entry.publish;
-        const clientChannel = EVENTS.client.entry.publish;
-        entry.account = profileAddress;
-        entry.password = "asdasdasd";
-        return new Promise((resolve, reject) => {
-            ipcRenderer.on(clientChannel, (ev, data) => {
-                dbg('publishEntry', data);
-                if (!data) {
-                    const error = new Error('Main Process Crashed');
-                    return reject(error);
-                }
-                if (!data.success) {
-                    return reject(data.status.message);
-                }
-                return resolve(data);
-            });
-            ipcRenderer.send(serverChannel, entry);
-        });
-    };
     getSortedEntries = ({ sortBy }) =>
         new Promise((resolve, reject) => {
             let entries = [];
