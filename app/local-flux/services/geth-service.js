@@ -41,7 +41,7 @@ class GethService extends BaseService {
                 return resolve(response.data);
             };
             dbg('starting geth with options', gethOptions);
-            this.registerListener(clientChannel, listenerCb, () =>
+            return this.registerListener(clientChannel, listenerCb, () =>
                 ipcRenderer.send(serverChannel, gethOptions)
             );
         });
@@ -64,7 +64,7 @@ class GethService extends BaseService {
                 }
                 return resolve(res.data);
             };
-            this.registerListener(clientChannel, listenerCb, () => 
+            return this.registerListener(clientChannel, listenerCb, () =>
                 ipcRenderer.send(serverChannel, {})
             );
         });
@@ -88,7 +88,7 @@ class GethService extends BaseService {
                 }
                 return resolve(res.data);
             };
-            this.openChannel({
+            return this.openChannel({
                 serverManager: this.serverManager,
                 clientManager: this.clientManager,
                 serverChannel,
@@ -115,7 +115,7 @@ class GethService extends BaseService {
                 }
                 return resolve(res.data);
             };
-            this.openChannel({
+            return this.openChannel({
                 serverManager: this.serverManager,
                 clientManager: this.clientManager,
                 serverChannel,
@@ -154,7 +154,7 @@ class GethService extends BaseService {
                 }
                 return resolve(res.data);
             };
-            this.registerListener(clientChannel, listenerCb, () => {
+            return this.registerListener(clientChannel, listenerCb, () => {
                 ipcRenderer.send(serverChannel, {});
             });
         });
@@ -179,7 +179,7 @@ class GethService extends BaseService {
                 return resolve(res.data);
             };
 
-            this.openChannel({
+            return this.openChannel({
                 serverManager: this.serverManager,
                 clientManager: this.clientManager,
                 serverChannel,
@@ -210,7 +210,7 @@ class GethService extends BaseService {
                 return resolve(res.data);
             };
 
-            this.openChannel({
+            return this.openChannel({
                 serverManager: this.serverManager,
                 clientManager: this.clientManager,
                 serverChannel,
