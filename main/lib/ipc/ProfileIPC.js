@@ -89,7 +89,20 @@ class ProfileIPC extends ModuleEmitter_1.default {
     }
     _unregister() {
         this.registerListener(channels_1.default.server[this.MODULE_NAME].unregister, (event, data) => {
-            console.log(process.getProcessMemoryInfo());
+            let response;
+            index_2.constructed
+                .instance
+                .profile
+                .unregister(data.profileAddress)
+                .then((tx) => {
+                response = responses_1.mainResponse({ tx: tx });
+            })
+                .catch((err) => {
+                response = responses_1.mainResponse({ error: { message: err.message } });
+            })
+                .finally(() => {
+                this.fireEvent(channels_1.default.client[this.MODULE_NAME].unregister, response, event);
+            });
         });
         return this;
     }

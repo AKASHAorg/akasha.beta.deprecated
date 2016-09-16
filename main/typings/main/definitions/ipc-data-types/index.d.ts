@@ -286,7 +286,7 @@ interface IpfsDataRequest {
     full?: boolean; // resolve all info
 }
 
-interface IpfsDataResponse extends MainResponse{
+interface IpfsDataResponse extends MainResponse {
     data: {
         firstName: string;
         lastName: string;
@@ -295,5 +295,9 @@ interface IpfsDataResponse extends MainResponse{
         about?: string;
         links?: { title: string, url: string, type: string, id: number }[];
     };
+}
+
+interface ProfileUnregisterRequest {
+    profileAddress: string;
 }
 ///////////////////////// </ Profile> \\\\\\\\\\\\\\\\\\\\\\\\\\\\\

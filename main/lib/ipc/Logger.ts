@@ -1,6 +1,7 @@
+/// <reference path="../../typings/index.d.ts" />
 import { join as pathJoin } from 'path';
 import { Logger, transports } from 'winston';
-import { W_OK, access as fsAccess, mkdir } from 'fs';
+import { constants, access as fsAccess, mkdir } from 'fs';
 import { app } from 'electron';
 
 const symbolEnforcer = Symbol();
@@ -42,7 +43,7 @@ class AppLogger {
      */
     private _setLogsFolder(path: string) {
         this.logPath = path;
-        return fsAccess(this.logPath, W_OK, (err) => {
+        return fsAccess(this.logPath, constants.W_OK, (err) => {
             if (err) {
                 mkdir(this.logPath, (error) => {
                     if (error) {
