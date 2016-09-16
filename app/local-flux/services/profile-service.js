@@ -3,6 +3,7 @@ import BaseService from './base-service';
 import profileDB from './db/profile';
 import debug from 'debug';
 
+const Channel = window.Channel;
 const dbg = debug('App:ProfileService:');
 /**
  * Profile Service.

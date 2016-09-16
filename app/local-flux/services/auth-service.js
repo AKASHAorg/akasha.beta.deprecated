@@ -1,12 +1,15 @@
 import { ipcRenderer } from 'electron';
-import BaseService from './base-service';
 import debug from 'debug';
+import BaseService from './base-service';
 import profileDB from './db/profile';
+
+const Channel = window.Channel;
 const dbg = debug('App:AuthService:');
 /**
  * Auth Service.
  * default open channels => ['login', 'logout', 'requestEther']
- * available channels => ['manager', 'login', 'logout', 'requestEther', 'generateEthKey', 'getLocalIdentities']
+ * available channels =>
+ * ['manager', 'login', 'logout', 'requestEther', 'generateEthKey', 'getLocalIdentities']
  */
 class AuthService extends BaseService {
     constructor () {
@@ -140,7 +143,7 @@ class AuthService extends BaseService {
      * Save logged profile to indexedDB database.
      * @param profileData {object}
      */
-    createLoggedProfile = (profileData) =>
+    createLoggedProfile = profileData =>
         profileDB.transaction('rw', profileDB.loggedProfile, () => {
             dbg('saving logged profile', profileData);
             if (profileData.password) {
@@ -148,12 +151,12 @@ class AuthService extends BaseService {
             }
             return profileDB.loggedProfile.add(profileData);
         });
-    updateLoggedProfile = (loggedProfile) =>
+    updateLoggedProfile = loggedProfile =>
         profileDB.transaction('rw', profileDB.loggedProfile, () => {
             dbg('updating loggedProfile', loggedProfile);
             return profileDB.loggedProfile.update(loggedProfile.address, loggedProfile);
         });
-    deleteLoggedProfile = (loggedProfile) =>
+    deleteLoggedProfile = loggedProfile =>
         profileDB.transaction('rw', profileDB.loggedProfile, () => {
             dbg('deleting loggedProfile', loggedProfile);
             return profileDB.loggedProfile.delete(loggedProfile.address);
