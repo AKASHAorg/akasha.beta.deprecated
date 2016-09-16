@@ -5,8 +5,8 @@ import { Map } from 'immutable';
 
 const initialState = Map({
     geth: Map({
-        dataDir: '',
-        ipcPath: '',
+        datadir: '',
+        ipcpath: '',
         status: '',
         cache: '',
         started: false,
@@ -28,10 +28,10 @@ const setupConfig = createReducer(initialState, {
         state.set('isAdvanced', action.isAdvanced),
 
     [types.SETUP_GETH_DATADIR]: (state, action) =>
-        state.updateIn(['geth', 'dataDir'], () => action.path),
+        state.updateIn(['geth', 'datadir'], () => action.path),
 
     [types.SETUP_GETH_IPCPATH]: (state, action) =>
-        state.updateIn(['geth', 'ipcPath'], () => action.path),
+        state.updateIn(['geth', 'ipcpath'], () => action.path),
 
     [types.SETUP_GETH_CACHE_SIZE]: (state, action) =>
         state.updateIn(['geth', 'cache'], () => action.size),
@@ -49,8 +49,8 @@ const setupConfig = createReducer(initialState, {
         if (action.data.status) {
             return state.mergeIn(['geth'], {
                 started: true,
-                dataDir: action.data.status.dataDir,
-                ipcPath: action.data.status.ipcPath,
+                datadir: action.data.status.datadir,
+                ipcpath: action.data.status.ipcpath,
                 cache: action.data.status.cache,
                 status: action.data.status
             });
