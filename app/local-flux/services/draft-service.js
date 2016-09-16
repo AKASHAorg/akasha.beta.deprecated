@@ -11,10 +11,6 @@ class DraftService {
     constructor () {
         this.listeners = {};
     }
-    removeListener = (channel) => {
-        ipcRenderer.removeListener(channel, this.listeners[channel]);
-        this.listeners[channel] = null;
-    };
     saveDraft = (partialDraft) =>
         entriesDB.transaction('rw', entriesDB.drafts, () => {
             if (partialDraft.id) {
