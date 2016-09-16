@@ -118,7 +118,6 @@ class RegistryIPC extends ModuleEmitter {
                     .helpers
                     .create(data.ipfs)
                     .then((ipfsHash: string) => {
-                        console.log('ipfshash', ipfsHash);
                         return contracts.instance
                             .registry
                             .register(data.username, ipfsHash, data.gas);

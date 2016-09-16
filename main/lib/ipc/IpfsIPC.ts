@@ -135,6 +135,7 @@ class IpfsIPC extends IpfsEmitter {
                         response = ipfsResponse({ content: source, hash: data.hash } );
                     })
                     .catch((error: Error) => {
+                        console.log(error);
                         response = ipfsResponse({ hash: data.hash }, { message: error.message });
                     })
                     .finally(() => {
