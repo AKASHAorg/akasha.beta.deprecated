@@ -1,7 +1,7 @@
 import { ipcRenderer } from 'electron';
-import { EVENTS } from '../../../electron-api/modules/settings';
-import BaseService from './base-service';
 import debug from 'debug';
+import BaseService from './base-service';
+
 const dbg = debug('App:AppService:');
 
 class AppService extends BaseService {
