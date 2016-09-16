@@ -1,5 +1,6 @@
 import { ipcRenderer } from 'electron';
 import debug from 'debug';
+import invariant from 'fbjs/lib/invariant';
 
 const dbg = debug('App::BaseService::*');
 
@@ -20,7 +21,7 @@ class BaseService {
     };
     // open communication with a channel through channel manager
     openChannel = ({ serverManager, clientManager, serverChannel, clientChannel, listenerCb }, cb) => {
-        if (this._openChannels.has(serverManager)) {
+        if (this._openChannels.has(serverChannel)) {
             dbg('channel already listening', serverChannel);
             dbg('trying to register listener for it');
             if (this._listeners.has(clientChannel)) {
@@ -31,14 +32,14 @@ class BaseService {
             return this.registerListener(clientChannel, listenerCb, cb);
         }
         dbg('open channels', this._openChannels);
-        ipcRenderer.on(clientManager, (ev, response) => {
-            if (response.data.channel === serverChannel && response.data.listen) {
-                dbg('main process now listening on', serverChannel);
-                this._openChannels.add(serverManager);
-                return this.registerListener(clientChannel, listenerCb, cb);
-            }
-        });
-        ipcRenderer.send(serverManager, { channel: serverChannel, listen: true });
+        this.registerListener(clientManager, (ev, res) => {
+            dbg('main process now listening on', res.data.channel);
+            if (res.error) return invariant(res.error, res.error.message);
+            this._openChannels.add(res.data.channel);
+            this.registerListener(clientManager, listenerCb, cb);
+        }, () =>
+            ipcRenderer.send(serverManager, { channel: serverChannel, listen: true })
+        );
     };
     // close communication with a channel through channel manager
     closeChannel = (manager, channel) => {

@@ -32,7 +32,7 @@ class EProcActions {
         })
 
     startGeth = (gethSettings) =>
-        this.gethService.startGeth(gethSettings).then(gethState => {
+        this.gethService.start(gethSettings).then(gethState => {
             if (gethState.isRunning) {
                 return Promise.resolve();
             }
@@ -51,7 +51,7 @@ class EProcActions {
         );
 
     stopGeth = () => {
-        this.gethService.stopGeth().then(data => {
+        this.gethService.stop().then(data => {
             if (!data) {
                 return this.dispatch(
                     externalProcessActionCreators.stopGethError('Main process crashed')
