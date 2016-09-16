@@ -25,7 +25,6 @@ class ExternalProcessBundleActions {
         .then(gethSettings =>
             this.eProcActions.getGethStatus().then(() => {
                 this.dispatch((dispatch, getState) => {
-                    console.log(getState());
                     const gethStatus = getState().externalProcState.get('gethStatus');
                     if (!gethStatus.get('spawned') || !gethStatus.get('starting')) {
                         return this.eProcActions.startGeth(gethSettings);
