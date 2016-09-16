@@ -1,6 +1,8 @@
 import { ipcRenderer } from 'electron';
 import debug from 'debug';
 import BaseService from './base-service';
+
+const Channel = window.Channel;
 const dbg = debug('App:TransactionService:');
 
 /**

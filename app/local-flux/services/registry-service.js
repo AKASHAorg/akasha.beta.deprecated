@@ -3,6 +3,7 @@ import debug from 'debug';
 import BaseService from './base-service';
 import profileDB from './db/profile';
 
+const Channel = window.Channel;
 const dbg = debug('App:RegistryService:');
 /**
  * Registry Service.
@@ -16,31 +17,6 @@ class RegistryService extends BaseService {
         this.serverManager = Channel.server.registry.manager;
         this.clientManager = Channel.client.registry.manager;
     }
-    /**
-     * Validate username on blockchain
-     * Request:
-     * @param username <String>
-     * Response:
-     * @param data = { username: string, exists: Boolean }
-     */
-    validateUsername = (username) => {
-        const serverChannel = Channel.server.registry.profileExists;
-        const clientChannel = Channel.client.registry.profileExists;
-        if (this._listeners.has(clientChannel)) return Promise.resolve();
-        return new Promise((resolve, reject) => {
-            const listenerCb = (ev, res) => {
-                if (res.error) return reject(res.error);
-                return resolve(res.data);
-            };
-            return this.openChannel({
-                serverManager: this.serverManager,
-                clientManager: this.clientManager,
-                serverChannel,
-                clientChannel,
-                listenerCb
-            }, () => ipcRenderer.send(serverChannel, { username }));
-        });
-    };
     /**
      * create a new profile
      * Request:

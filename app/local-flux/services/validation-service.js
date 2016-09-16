@@ -1,17 +1,38 @@
 import { ipcRenderer } from 'electron';
-import { EVENTS } from '../../../electron-api/modules/settings';
+import BaseService from './base-service';
 
-class ValidationService {
-    validateUsername = (userName) =>
-        new Promise((resolve, reject) => {
-            ipcRenderer.once(EVENTS.client.user.exists, (ev, data) => {
-                if (!data) {
-                    const error = new Error('No message from main process!');
-                    return reject(error);
-                }
-                return resolve(data);
-            });
-            ipcRenderer.send(EVENTS.server.user.exists, { userName });
+const Channel = window.Channel;
+
+class ValidationService extends BaseService {
+    constructor () {
+        super();
+        this.serverManager = Channel.server.registry.manager;
+        this.clientManager = Channel.client.registry.manager;
+    }
+    /**
+     * Validate username on blockchain
+     * Request:
+     * @param username <String>
+     * Response:
+     * @param data = { username: string, exists: Boolean }
+     */
+    validateUsername = (username) => {
+        const serverChannel = Channel.server.registry.profileExists;
+        const clientChannel = Channel.client.registry.profileExists;
+        if (this._listeners.has(clientChannel)) return Promise.resolve();
+        return new Promise((resolve, reject) => {
+            const listenerCb = (ev, res) => {
+                if (res.error) return reject(res.error);
+                return resolve(res.data);
+            };
+            return this.openChannel({
+                serverManager: this.serverManager,
+                clientManager: this.clientManager,
+                serverChannel,
+                clientChannel,
+                listenerCb
+            }, () => ipcRenderer.send(serverChannel, { username }));
         });
+    };
 }
 export { ValidationService };

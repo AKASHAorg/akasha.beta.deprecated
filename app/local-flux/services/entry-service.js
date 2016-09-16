@@ -3,6 +3,7 @@ import { ipcRenderer } from 'electron';
 import entriesDB from './db/entry';
 import BaseService from './base-service';
 
+const Channel = window.Channel;
 const dbg = debug('App:EntryService:');
 
 /** * DELETE THIS *****/

@@ -1,6 +1,8 @@
 import { ipcRenderer } from 'electron';
 import debug from 'debug';
 import BaseService from './base-service';
+
+const Channel = window.Channel;
 const dbg = debug('App:GethService:');
 
 /**
@@ -17,7 +19,7 @@ class GethService extends BaseService {
      * @param {object} options Optional params
      * @return promise
      */
-    start = options => {
+    start = (options) => {
         const serverChannel = Channel.server.geth.startService;
         const clientChannel = Channel.client.geth.startService;
         const gethOptions = {};
@@ -95,7 +97,7 @@ class GethService extends BaseService {
                 clientChannel,
                 listenerCb
             }, () =>
-                ipcRenderer.send(serverChannel, {})
+                ipcRenderer.send(serverChannel, { timer })
             );
         });
     };
