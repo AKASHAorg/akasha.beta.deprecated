@@ -133,6 +133,11 @@ const setupMessages = defineMessages({
         description: 'finding peers status',
         defaultMessage: 'Finding peers'
     },
+    downloadingGeth: {
+        id: 'app.setup.downloadingGeth',
+        description: 'message shown when Geth is downloading',
+        defaultMessage: 'Downloading Geth'
+    },
     onePeer: {
         id: 'app.setup.onePeer',
         description: 'singular form of peers',

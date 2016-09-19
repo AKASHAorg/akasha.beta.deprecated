@@ -21,10 +21,10 @@ const initialState = fromJS({
 });
 
 const appState = createReducer(initialState, {
-    '@reduxAsyncConnect/BEGIN_GLOBAL_LOAD': (state) =>
+    '@reduxAsyncConnect/BEGIN_GLOBAL_LOAD': state =>
         state.merge({ appLoading: true }),
 
-    '@reduxAsyncConnect/END_GLOBAL_LOAD': (state) =>
+    '@reduxAsyncConnect/END_GLOBAL_LOAD': state =>
         state.merge({ appLoading: false }),
 
     [types.CHECK_FOR_UPDATES]: (state, action) =>
@@ -38,22 +38,22 @@ const appState = createReducer(initialState, {
 
     [types.CLEAR_ERRORS]: () => initialState,
 
-    [types.SHOW_AUTH_DIALOG]: (state) =>
+    [types.SHOW_AUTH_DIALOG]: state =>
         state.set('showAuthDialog', true),
 
-    [types.HIDE_AUTH_DIALOG]: (state) =>
+    [types.HIDE_AUTH_DIALOG]: state =>
         state.set('showAuthDialog', false),
 
     [types.SHOW_ENTRY_MODAL]: (state, action) =>
         state.set('showEntry', { modal: true, ...action.entryData, ...action.options }),
 
-    [types.HIDE_ENTRY_MODAL]: (state) =>
+    [types.HIDE_ENTRY_MODAL]: state =>
         state.set('showEntry', { modal: false }),
 
     [types.SHOW_CONFIRMATION_DIALOG]: (state, action) =>
         state.set('confirmationDialog', action.entity),
 
-    [types.HIDE_CONFIRMATION_DIALOG]: (state) =>
+    [types.HIDE_CONFIRMATION_DIALOG]: state =>
         state.set('confirmationDialog', null),
 
 });

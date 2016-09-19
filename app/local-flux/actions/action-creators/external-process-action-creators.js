@@ -7,10 +7,10 @@ export function getGethStatusSuccess (data) {
     };
 }
 
-export function getGethStatusError (err) {
+export function getGethStatusError (error) {
     return {
         type: types.GET_GETH_STATUS_ERROR,
-        error: err
+        error
     };
 }
 
@@ -25,7 +25,7 @@ export function getGethOptionsError (error) {
     return {
         type: types.GET_GETH_OPTIONS_ERROR,
         error
-    }
+    };
 }
 
 export function startGethSuccess (data) {
@@ -35,10 +35,10 @@ export function startGethSuccess (data) {
     };
 }
 
-export function startGethError (data) {
+export function startGethError (error) {
     return {
         type: types.START_GETH_ERROR,
-        data
+        error
     };
 }
 
@@ -49,10 +49,10 @@ export function stopGethSuccess (data) {
     };
 }
 
-export function stopGethError (data) {
+export function stopGethError (error) {
     return {
         type: types.STOP_GETH_ERROR,
-        data
+        error
     };
 }
 
@@ -63,10 +63,10 @@ export function startIPFSSuccess (data) {
     };
 }
 
-export function startIPFSError (data) {
+export function startIPFSError (error) {
     return {
         type: types.START_IPFS_ERROR,
-        data
+        error
     };
 }
 
@@ -77,10 +77,10 @@ export function configIpfsSuccess (data) {
     };
 }
 
-export function configIpfsError (data) {
+export function configIpfsError (error) {
     return {
         type: types.CONFIG_IPFS_ERROR,
-        data
+        error
     };
 }
 
@@ -91,9 +91,34 @@ export function stopIPFSSuccess (data) {
     };
 }
 
-export function stopIPFSError (data) {
+export function stopIPFSError (error) {
     return {
         type: types.STOP_IPFS_ERROR,
+        error
+    };
+}
+
+export function startSync (data) {
+    return {
+        type: types.SYNC_ACTIVE,
         data
+    };
+}
+
+export function stopSync () {
+    return {
+        type: types.SYNC_STOPPED
+    };
+}
+
+export function pauseSync () {
+    return {
+        type: types.SYNC_PAUSE
+    };
+}
+
+export function resumeSync () {
+    return {
+        type: types.SYNC_RESUME
     };
 }

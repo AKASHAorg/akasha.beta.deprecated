@@ -10,7 +10,6 @@ import {
 
 function mapStateToProps (state) {
     return {
-        setupConfig: state.setupConfig,
         settingsState: state.settingsState
     };
 }
@@ -18,7 +17,6 @@ function mapStateToProps (state) {
 function mapDispatchToProps (dispatch) {
     return {
         eProcActions: new EProcActions(dispatch),
-        setupActions: new SetupActions(dispatch),
         settingsActions: new SettingsActions(dispatch),
     };
 }

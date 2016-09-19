@@ -9,8 +9,10 @@ import {
 
 function mapStateToProps (state) {
     return {
-        syncState: state.syncStatus,
-        setupConfig: state.setupConfig
+        setupConfig: state.setupConfig,
+        externalProcState: state.externalProcState,
+        gethStatus: state.externalProcState.get('gethStatus'),
+        gethSyncStatus: state.externalProcState.get('gethSyncStatus')
     };
 }
 
