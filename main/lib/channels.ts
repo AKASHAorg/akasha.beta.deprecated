@@ -14,7 +14,8 @@ const channels = {
     tags: ['manager', 'create', 'exists', 'getTagId', 'getTagAt', 'isSubscribed', 'subscribe',
         'unsubscribe', 'getSubPosition'],
 
-    entry: ['manager', 'publish'],
+    entry: ['manager', 'publish', 'update', 'upvote', 'downvote', 'isOpenedToVotes', 'getVoteOf',
+    'getVoteEndDate', 'getScore'],
 
     geth: ['manager', 'options', 'startService', 'stopService', 'restartService', 'syncStatus', 'logs', 'status'],
 
