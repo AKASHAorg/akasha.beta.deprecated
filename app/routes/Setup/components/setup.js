@@ -21,9 +21,8 @@ class Setup extends Component {
 
 Setup.propTypes = {
     eProcActions: PropTypes.object.isRequired,
-    setupActions: PropTypes.object.isRequired,
     settingsActions: PropTypes.object.isRequired,
-    setupConfig: PropTypes.object.isRequired,
+    settingsState: PropTypes.object.isRequired,
     style: PropTypes.object,
     intl: PropTypes.object,
 };

@@ -1,11 +1,11 @@
 import debug from 'debug';
-import { GethService, IpfsService, SetupService } from '../services';
+import { GethService, IpfsService } from '../services';
 import {
     externalProcessActionCreators,
     appActionCreators,
     syncActionCreators } from './action-creators';
 
-const dbg = debug('App::eProcActions::*');
+const dbg = debug('App::eProcActions:');
 
 let eProcActions = null;
 /**
@@ -19,23 +19,29 @@ class EProcActions {
         }
         this.gethService = new GethService();
         this.ipfsService = new IpfsService();
-        this.setupService = new SetupService();
         this.dispatch = dispatch;
         return eProcActions;
     }
 
-    _showErrorAction = (error) =>
+    _showErrorAction = error =>
         appActionCreators.showError({
             code: error.code,
             fatal: error.fatal,
             message: error.message
-        })
+        });
 
-    startGeth = (gethSettings) =>
-        this.gethService.start(gethSettings).then(gethState => {
-            if (gethState.isRunning) {
-                return Promise.resolve();
-            }
+    startGeth = gethSettings =>
+    this.gethService.getStatus().then((gethStatus) => {
+        dbg('attempt to start geth with status', gethStatus);
+        if (gethStatus.api || gethStatus.starting) {
+            dbg('geth already started and is usable', gethStatus);
+            return this.dispatch(
+                externalProcessActionCreators.startGethSuccess({ gethStatus })
+            );
+        }
+        dbg('starting geth with settings', gethSettings.toJS());
+        this.gethService.start(gethSettings.toJS()).then((gethState) => {
+            dbg('geth start status is', gethState);
             return this.dispatch(
                 externalProcessActionCreators.startGethSuccess({ gethState })
             );
@@ -49,37 +55,36 @@ class EProcActions {
                 })
             )
         );
+    })
 
-    stopGeth = () => {
-        this.gethService.stop().then(data => {
+
+    stopGeth = () =>
+        this.gethService.stop().then((data) => {
             if (!data) {
                 return this.dispatch(
                     externalProcessActionCreators.stopGethError('Main process crashed')
                 );
             }
             return this.dispatch(externalProcessActionCreators.stopGethSuccess(data));
-        }).catch(reason => {
+        }).catch((reason) => {
             this.dispatch(externalProcessActionCreators.stopGethError(reason));
         });
-    };
 
     getGethStatus = () =>
-        this.gethService.getStatus().then(data => {
-            if (!data) {
-                return this.dispatch(
-                    externalProcessActionCreators.getGethStatusError('Main process crashed')
-                );
-            }
+        this.gethService.getStatus().then((data) => {
+            dbg('getting geth status', data);
             return this.dispatch(externalProcessActionCreators.getGethStatusSuccess(data));
-        }).catch(reason => {
+        }).then(() => {
+            this.gethService.removeStatusListener();
+        }).catch((reason) => {
             this.dispatch(externalProcessActionCreators.getGethStatusError(reason));
         });
 
     getGethOptions = () =>
-        this.gethService.getOptions().then(data => {
+        this.gethService.getOptions().then((data) => {
             dbg('geth config is', data);
             return this.dispatch(externalProcessActionCreators.getGethOptionsSuccess(data));
-        }).catch(reason => {
+        }).catch((reason) => {
             this.dispatch(appActionCreators.showError({
                 code: 'EPA15',
                 fatal: reason.fatal,
@@ -87,7 +92,7 @@ class EProcActions {
             }));
         });
 
-    startIPFS = (ipfsSettings) =>
+    startIPFS = ipfsSettings =>
         this.ipfsService.startIPFS(ipfsSettings).then((ipfsState) => {
             if (!ipfsState.success) {
                 return this.dispatch(
@@ -109,7 +114,7 @@ class EProcActions {
             );
         }));
     configIPFS = (config) => {
-        this.ipfsService.configIpfs(config).then(data => {
+        this.ipfsService.configIpfs(config).then((data) => {
             if (!data.success) {
                 return this.dispatch(externalProcessActionCreators.configIpfsError(data.status));
             }
@@ -117,7 +122,7 @@ class EProcActions {
         }).catch(reason => this.dispatch(externalProcessActionCreators.configIpfsError(reason)));
     };
     stopIPFS = () => {
-        this.ipfsService.stopIPFS().then(data => {
+        this.ipfsService.stopIPFS().then((data) => {
             if (!data.success) {
                 return this.dispatch(
                     externalProcessActionCreators.stopIPFSError(data.status.error)

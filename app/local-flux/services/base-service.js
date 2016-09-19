@@ -9,7 +9,10 @@ const dbg = debug('App::BaseService::*');
  */
 class BaseService {
     constructor () {
+        // client channel listeners
         this._listeners = new Map();
+
+        // manager channel listeners
         this._openChannels = new Set();
     }
     /**
@@ -18,10 +21,12 @@ class BaseService {
      * @param listener <Function> the actual listener
      * @param cb <Function> callback
      */
-    registerListener = (clientChannel, listener, cb) => {
+    registerListener = (clientChannel, listener) => {
+        if (this._listeners.has(clientChannel)) {
+            return;
+        }
+        ipcRenderer.on(clientChannel, listener);
         this._listeners.set(clientChannel, listener);
-        ipcRenderer.on(clientChannel, this._listeners.get(clientChannel));
-        return cb();
     };
     /**
      * removes a listener
@@ -57,9 +62,10 @@ class BaseService {
             dbg('registering a new listener for ', clientChannel);
             return this.registerListener(clientChannel, listenerCb, cb);
         }
-        dbg('open channels', this._openChannels);
+        // dbg('open channels', this._openChannels);
         ipcRenderer.once(clientManager, (ev, res) => {
-            if (res.error) return invariant(false, res.error.message);
+            if (res.error) return dbg(`${res.error.message}, please check base-service -> openChannel method`);
+            this._openChannels.add(serverManager);
             return this.registerListener(clientChannel, listenerCb, cb);
         });
         return ipcRenderer.send(serverManager, { channel: serverChannel, listen: true });
