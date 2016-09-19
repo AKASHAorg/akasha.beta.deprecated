@@ -62,6 +62,7 @@ class IpfsIPC extends IpfsEmitter_1.default {
                 response = responses_1.ipfsResponse({ content: source, hash: data.hash });
             })
                 .catch((error) => {
+                console.log(error);
                 response = responses_1.ipfsResponse({ hash: data.hash }, { message: error.message });
             })
                 .finally(() => {

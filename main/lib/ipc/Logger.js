@@ -22,7 +22,7 @@ class AppLogger {
     }
     _setLogsFolder(path) {
         this.logPath = path;
-        return fs_1.access(this.logPath, fs_1.W_OK, (err) => {
+        return fs_1.access(this.logPath, fs_1.constants.W_OK, (err) => {
             if (err) {
                 fs_1.mkdir(this.logPath, (error) => {
                     if (error) {

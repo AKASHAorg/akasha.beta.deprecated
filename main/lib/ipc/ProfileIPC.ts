@@ -119,8 +119,25 @@ class ProfileIPC extends ModuleEmitter {
     private _unregister() {
         this.registerListener(
             channels.server[this.MODULE_NAME].unregister,
-            (event: any, data: MyBalanceRequest) => {
-                console.log(process.getProcessMemoryInfo());
+            (event: any, data: ProfileUnregisterRequest) => {
+                let response: any;
+                contracts
+                    .instance
+                    .profile
+                    .unregister(data.profileAddress)
+                    .then((tx: string) => {
+                        response = mainResponse({tx});
+                    })
+                    .catch((err: Error) => {
+                        response = mainResponse({error: {message: err.message}});
+                    })
+                    .finally(() => {
+                        this.fireEvent(
+                            channels.client[this.MODULE_NAME].unregister,
+                            response,
+                            event
+                        );
+                    });
             }
         );
         return this;

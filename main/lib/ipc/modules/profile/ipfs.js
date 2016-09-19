@@ -51,9 +51,10 @@ const create = (data) => {
             returned.avatar = hash;
         }
         if (data.about) {
+            const transformed = Buffer.from(data.about);
             return ipfs_connector_1.IpfsConnector.getInstance()
                 .api
-                .addFile(Buffer.from(data.about));
+                .add(transformed);
         }
         return Promise.resolve('');
     }).then((hash) => {
