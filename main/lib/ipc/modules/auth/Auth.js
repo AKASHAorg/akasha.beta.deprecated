@@ -79,7 +79,7 @@ class Auth {
                     vrs: ethereumjs_util_1.fromRpcSig(signedString)
                 };
                 setTimeout(() => this._flushSession(), 1000 * 60 * timer);
-                return { token: token, expiration: expiration };
+                return { token: token, expiration: expiration, account: acc };
             });
         })
             .catch((err) => {

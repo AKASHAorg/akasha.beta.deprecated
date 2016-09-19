@@ -255,12 +255,11 @@ class SyncStatus extends Component {
 SyncStatus.propTypes = {
     eProcActions: PropTypes.object.isRequired,
     eProcBundleActions: PropTypes.object.isRequired,
-    setupActions: PropTypes.object.isRequired,
     loggerActions: PropTypes.object.isRequired,
     style: PropTypes.object,
     logListStyle: PropTypes.object,
     intl: PropTypes.object,
-    setupConfig: PropTypes.object.isRequired
+    settingsState: PropTypes.object.isRequired
 };
 
 SyncStatus.contextTypes = {
