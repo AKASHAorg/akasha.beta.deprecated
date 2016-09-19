@@ -6,6 +6,7 @@ const Logger_1 = require('./Logger');
 const TxIPC_1 = require('./TxIPC');
 const RegistryIPC_1 = require('./RegistryIPC');
 const ProfileIPC_1 = require('./ProfileIPC');
+const TagsIPC_1 = require('./TagsIPC');
 function initModules() {
     const logger = Logger_1.default.getInstance();
     const ipcChannels = [
@@ -14,7 +15,8 @@ function initModules() {
         new AuthIPC_1.default(),
         new TxIPC_1.default(),
         new RegistryIPC_1.default(),
-        new ProfileIPC_1.default()
+        new ProfileIPC_1.default(),
+        new TagsIPC_1.default()
     ];
     return {
         initListeners: (webContents) => {

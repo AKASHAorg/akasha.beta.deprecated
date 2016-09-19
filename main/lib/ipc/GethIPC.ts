@@ -4,7 +4,7 @@ import GethEmitter from './event/GethEmitter';
 import channels from '../channels';
 import Logger from './Logger';
 import { gethResponse } from './event/responses';
-import {join} from 'path';
+import { join } from 'path';
 import IpcMainEvent = Electron.IpcMainEvent;
 import IpcRenderer = Electron.IpcRenderer;
 import IpcRendererEvent = Electron.IpcRendererEvent;
@@ -26,7 +26,7 @@ class GethIPC extends GethEmitter {
         this.webContents = webContents;
         const datadir = GethConnector.getDefaultDatadir();
         GethConnector.getInstance().setOptions({
-           datadir: join(datadir, 'akasha'),
+            datadir: join(datadir, 'akasha'),
             networkid: 512180
         });
         // register listeners
@@ -143,18 +143,12 @@ class GethIPC extends GethEmitter {
                     .inSync()
                     .then((state: any[]) => {
                             let response: GethSyncStatus;
-                            let knownStates: number;
-                            let pulledStates: number;
                             if (!state.length) {
                                 response = { synced: true };
                             } else {
                                 response = { synced: false, peerCount: state[0] };
                                 if (state.length === 2) {
-                                    knownStates = GethConnector.getInstance()
-                                        .web3.toDecimal(state[1].knownStates);
-                                    pulledStates = GethConnector.getInstance()
-                                        .web3.toDecimal(state[1].pulledStates);
-                                    Object.assign(response, state[1], { knownStates, pulledStates });
+                                    Object.assign(response, state[1]);
                                 }
                             }
                             this.fireEvent(
@@ -234,7 +228,7 @@ class GethIPC extends GethEmitter {
             (event: any, data: any) => {
                 const options = GethConnector.getInstance().setOptions(data);
                 let mapObj = Object.create(null);
-                for (let[k, v] of options) {
+                for (let [k, v] of options) {
                     mapObj[k] = v;
                 }
                 this.fireEvent(

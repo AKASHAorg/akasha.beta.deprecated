@@ -83,7 +83,7 @@ export default class Registry extends BaseContract {
      * @param gas
      * @returns {PromiseLike<TResult>|Promise<TResult>|Thenable<U>|Bluebird<U>}
      */
-    public register(username: string, ipfsHash: string, gas: number = 90000) {
+    public register(username: string, ipfsHash: string, gas: number = 1900000) {
         const usernameTr = this.gethInstance.web3.fromUtf8(username);
         const ipfsHashTr = [ipfsHash.slice(0, 23), ipfsHash.slice(23)].map((v) => {
             return this.gethInstance.web3.fromUtf8(v);

@@ -40,6 +40,12 @@ export default class BaseContract {
         return payload.params[0];
     }
 
+    /**
+     *
+     * @param method
+     * @param params
+     * @returns {"~bluebird/bluebird".Bluebird}
+     */
     public estimateGas(method: string, ...params: any[]) {
         return new Promise((resolve, reject) => {
             this.contract[method]

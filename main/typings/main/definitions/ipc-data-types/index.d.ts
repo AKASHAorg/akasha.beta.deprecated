@@ -261,7 +261,7 @@ interface ProfileDataRequest {
     full?: boolean; // resolve full profile from ipfs
 }
 
-interface ProfileDataResponse extends MainResponse{
+interface ProfileDataResponse extends MainResponse {
     data: {
         firstName: string;
         lastName: string;
@@ -301,3 +301,91 @@ interface ProfileUnregisterRequest {
     profileAddress: string;
 }
 ///////////////////////// </ Profile> \\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
+//////////////////////// < TAGS > \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+interface TagCreateRequest extends AuthRequest {
+    tagName: string;
+    gas?: number;
+}
+
+interface TagCreateResponse extends MainResponse {
+    data: {
+        tx: string;
+    };
+}
+
+interface TagExistsRequest {
+    tagName: string;
+}
+
+interface TagExistsResponse extends MainResponse {
+    data: {
+        exists: boolean;
+    };
+}
+
+interface TagAtIdRequest {
+    tagId: number;
+}
+
+interface TagAtIdResponse extends MainResponse {
+    data: {
+        tagName: string;
+    };
+}
+
+interface TagAtNameRequest {
+    tagName: string;
+}
+
+interface TagAtNameResponse extends MainResponse {
+    data: {
+        tagId: number;
+    };
+}
+
+interface TagSubscribeRequest extends AuthRequest {
+    tagName: string;
+    gas?: number;
+}
+
+interface TagSubscribeResponse extends MainResponse {
+    data: {
+        tx: string;
+    };
+}
+
+interface TagUnSubscribeRequest extends AuthRequest {
+    tagName: string;
+    subPosition: number;
+    gas?: number;
+}
+
+interface TagUnSubscribeResponse extends MainResponse {
+    data: {
+        tx: string;
+    };
+}
+
+interface TagGetSubPositionRequest {
+    address: string; // profile address
+    tagId: number;
+}
+
+interface TagGetSubPositionResponse  extends  MainResponse {
+    data: {
+        position: number;
+    };
+}
+
+interface TagIsSubscribedRequest {
+    address: string; // profile address
+    tagId: number;
+}
+
+interface TagIsSubscribedResponse extends MainResponse {
+    data: {
+        subscribed: boolean;
+    };
+}
+/////////////////////// </ TAGS > \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\

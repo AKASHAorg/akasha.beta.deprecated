@@ -49,7 +49,7 @@ class Registry extends BaseContract_1.default {
             return profileList;
         });
     }
-    register(username, ipfsHash, gas = 90000) {
+    register(username, ipfsHash, gas = 1900000) {
         const usernameTr = this.gethInstance.web3.fromUtf8(username);
         const ipfsHashTr = [ipfsHash.slice(0, 23), ipfsHash.slice(23)].map((v) => {
             return this.gethInstance.web3.fromUtf8(v);
