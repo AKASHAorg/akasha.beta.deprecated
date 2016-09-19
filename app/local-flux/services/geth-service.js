@@ -133,19 +133,18 @@ class GethService extends BaseService {
         const serverChannel = Channel.server.geth.status;
         const clientChannel = Channel.client.geth.status;
 
-        return new Promise((resolve, reject) => {
-            dbg('Retrieving Geth status', clientChannel);
-            const listenerCb = (event, res) => {
-                dbg(res, 'geth status');
-                if (res.error) {
-                    return reject(res.error);
-                }
-                return resolve(res.data);
-            };
-            this.registerListener(clientChannel, listenerCb);
-            ipcRenderer.send(serverChannel, {});
-        });
+        dbg('Retrieving Geth status', clientChannel);
+        this.registerListener(clientChannel, GethService.listenerCb);
+        ipcRenderer.send(serverChannel, {});
     }
+
+    static listenerCb (event, res) {
+        dbg(res, 'geth status');
+        if (res.error) {
+            return Promise.reject(res.error);
+        }
+        return Promise.resolve(res.data);
+    };
     /**
      * Retrieve options used by geth
      */

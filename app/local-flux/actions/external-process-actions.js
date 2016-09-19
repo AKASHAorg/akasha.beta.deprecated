@@ -70,16 +70,15 @@ class EProcActions {
             this.dispatch(externalProcessActionCreators.stopGethError(reason));
         });
 
-    getGethStatus = () =>
-        this.gethService.getStatus().then((data) => {
-            dbg('getting geth status', data);
-            return this.dispatch(externalProcessActionCreators.getGethStatusSuccess(data));
-        }).then(() => {
-            this.gethService.removeStatusListener();
-        }).catch((reason) => {
-            this.dispatch(externalProcessActionCreators.getGethStatusError(reason));
-        });
-
+    getGethStatus = () => {
+        // return this.gethService.getStatus()
+        // .then((data) => {
+        //     dbg('getting geth status', data);
+        //     return this.dispatch(externalProcessActionCreators.getGethStatusSuccess(data));
+        // }).catch((reason) => {
+        //     this.dispatch(externalProcessActionCreators.getGethStatusError(reason));
+        // });
+    }
     getGethOptions = () =>
         this.gethService.getOptions().then((data) => {
             dbg('geth config is', data);
