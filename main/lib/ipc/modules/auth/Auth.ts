@@ -120,7 +120,7 @@ export default class Auth {
                             vrs: fromRpcSig(signedString)
                         };
                         setTimeout(() => this._flushSession(), 1000 * 60 * timer);
-                        return { token, expiration };
+                        return { token, expiration, account: acc };
                     });
             })
             .catch((err: Error) => {
