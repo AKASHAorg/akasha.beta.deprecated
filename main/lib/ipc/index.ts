@@ -5,6 +5,7 @@ import Logger from './Logger';
 import TxIPC from './TxIPC';
 import RegistryIPC from './RegistryIPC';
 import ProfileIPC from './ProfileIPC';
+import TagsIPC from './TagsIPC';
 import WebContents = Electron.WebContents;
 
 export function initModules() {
@@ -15,7 +16,8 @@ export function initModules() {
         new AuthIPC(),
         new TxIPC(),
         new RegistryIPC(),
-        new ProfileIPC()
+        new ProfileIPC(),
+        new TagsIPC()
     ];
     return {
         initListeners: (webContents: WebContents) => {

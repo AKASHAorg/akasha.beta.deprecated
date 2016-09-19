@@ -46,8 +46,7 @@ export default class IndexedTags extends BaseContract {
      */
     public subscribe(tag: string, gas?: number) {
         const tagTr = this.gethInstance.web3.fromUtf8(tag);
-        return this.contract
-            .subscribeAsync(tagTr, {gas});
+        return this.extractData('subscribe', tagTr, { gas });
     }
 
     /**
@@ -60,7 +59,6 @@ export default class IndexedTags extends BaseContract {
     public unsubscribe(tag: string, subPosition: number, gas?: number) {
         const tagTr = this.gethInstance.web3.fromUtf8(tag);
         const subPositionTr = this.gethInstance.web3.fromDecimal(subPosition);
-        return this.contract
-            .unsubscribeAsync(tagTr, subPositionTr, {gas});
+        return this.extractData('unsubscribe', tagTr, subPositionTr, { gas });
     }
 }

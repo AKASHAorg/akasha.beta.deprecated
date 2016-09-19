@@ -11,6 +11,44 @@ export default class Tags extends BaseContract {
         this.contract.getTagId.callAsync = Promise.promisify(this.contract.getTagId.call);
     }
 
+    /**
+     *
+     * @param tag
+     * @returns {Bluebird<boolean>|any}
+     */
+    public exists(tag: string) {
+        const tagTr = this.gethInstance.web3.fromUtf8(tag);
+        return this.contract
+            .exists
+            .callAsync(tagTr);
+    }
+
+    /**
+     *
+     * @param id
+     * @returns {Bluebird<T>|any}
+     */
+    public getTagAt(id: number) {
+        return this.contract
+            .getTagAt
+            .callAsync(id);
+    }
+
+    /**
+     *
+     * @param tagName
+     */
+    public getTagId(tagName: string) {
+        const tagTr = this.gethInstance.web3.fromUtf8(tagName);
+        this.contract.getTagId.callAsync(tagTr);
+    }
+
+    /**
+     *
+     * @param tag
+     * @param gas
+     * @returns {Bluebird<U>}
+     */
     public add(tag: string, gas?: number) {
         const tagTr = this.gethInstance.web3.fromUtf8(tag);
         return this.contract
@@ -20,8 +58,7 @@ export default class Tags extends BaseContract {
                 if (found) {
                     throw new Error('Tag already exists');
                 }
-                return this.contract
-                    .addAsync(tag, {gas});
+                return this.extractData('add', tag, { gas });
             });
     }
 

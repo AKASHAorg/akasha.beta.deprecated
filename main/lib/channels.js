@@ -10,6 +10,8 @@ const hashPath = (...path) => {
 };
 const channels = {
     auth: ['manager', 'login', 'logout', 'requestEther', 'generateEthKey', 'getLocalIdentities'],
+    tags: ['manager', 'create', 'exists', 'getTagId', 'getTagAt', 'isSubscribed', 'subscribe',
+        'unsubscribe', 'getSubPosition'],
     entry: ['manager', 'publish'],
     geth: ['manager', 'options', 'startService', 'stopService', 'restartService', 'syncStatus', 'logs', 'status'],
     ipfs: ['manager', 'startService', 'stopService', 'status', 'resolve'],

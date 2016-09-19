@@ -9,6 +9,21 @@ class Tags extends BaseContract_1.default {
         this.contract.getTagAt.callAsync = Promise.promisify(this.contract.getTagAt.call);
         this.contract.getTagId.callAsync = Promise.promisify(this.contract.getTagId.call);
     }
+    exists(tag) {
+        const tagTr = this.gethInstance.web3.fromUtf8(tag);
+        return this.contract
+            .exists
+            .callAsync(tagTr);
+    }
+    getTagAt(id) {
+        return this.contract
+            .getTagAt
+            .callAsync(id);
+    }
+    getTagId(tagName) {
+        const tagTr = this.gethInstance.web3.fromUtf8(tagName);
+        this.contract.getTagId.callAsync(tagTr);
+    }
     add(tag, gas) {
         const tagTr = this.gethInstance.web3.fromUtf8(tag);
         return this.contract
@@ -18,8 +33,7 @@ class Tags extends BaseContract_1.default {
             if (found) {
                 throw new Error('Tag already exists');
             }
-            return this.contract
-                .addAsync(tag, { gas: gas });
+            return this.extractData('add', tag, { gas: gas });
         });
     }
 }
