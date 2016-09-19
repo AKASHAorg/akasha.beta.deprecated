@@ -25,8 +25,8 @@ class BaseService {
         if (this._listeners.has(clientChannel)) {
             return;
         }
-        ipcRenderer.on(clientChannel, listener);
         this._listeners.set(clientChannel, listener);
+        ipcRenderer.on(clientChannel, this._listeners.get(clientChannel));
     };
     /**
      * removes a listener
