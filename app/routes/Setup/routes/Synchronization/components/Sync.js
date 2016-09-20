@@ -5,6 +5,7 @@ import SyncProgress from 'shared-components/Loaders/SyncProgress';
 import { FormattedMessage, FormattedPlural, injectIntl } from 'react-intl';
 import { setupMessages, generalMessages } from 'locale-data/messages';
 import PanelContainer from 'shared-components/PanelContainer/panel-container';
+import { is } from 'immutable';
 
 class SyncStatus extends Component {
     constructor (props) {
@@ -17,35 +18,42 @@ class SyncStatus extends Component {
         };
     }
     componentWillMount () {
-        const { eProcBundleActions } = this.props;
-        eProcBundleActions.startSync().then(() => {
-            this.getSyncStatus();
-        });
+        this.startGeth();
     }
-    componentWillUnmount () {
-        const { eProcActions, loggerActions } = this.props;
-        eProcActions.stopSync();
-        loggerActions.stopGethLogger();
+    componentDidMount () {
+        this.startGeth();
     }
     getSyncStatus = () => {
-        const { eProcActions } = this.props;
-        eProcActions.startUpdateSync((err, updateData) => {
-            const { success, status, data } = updateData;
-            if (err) {
-                return this.setState({
-                    syncError: status.message
-                });
-            }
-            if (success && data.empty) {
-                this.finishSync();
-            } else {
-                this.setState({
-                    syncData: data
-                });
-            }
-            return null;
+        const { eProcActions, gethStatus, gethSyncStatus } = this.props;
+
+        eProcActions.getSyncStatus().then((syncData) => {
+            console.log(syncData, 'sync data');
         });
+        // eProcActions.startUpdateSync((err, updateData) => {
+        //     const { success, status, data } = updateData;
+        //     if (err) {
+        //         return this.setState({
+        //             syncError: status.message
+        //         });
+        //     }
+        //     if (success && data.empty) {
+        //         this.finishSync();
+        //     } else {
+        //         this.setState({
+        //             syncData: data
+        //         });
+        //     }
+        //     return null;
+        // });
     };
+    startGeth = () => {
+        const { eProcActions, eProcBundleActions, gethStatus } = this.props;
+        return eProcBundleActions.startGeth();
+    };
+    checkGethStatus = () => {
+        const { eProcActions } = this.props;
+        eProcActions.getGethStatus();
+    }
     finishSync = () => {
         const { eProcActions, eProcBundleActions } = this.props;
         let promises = [];
@@ -56,11 +64,11 @@ class SyncStatus extends Component {
         });
     };
     handleSync = () => {
-        const { syncState, eProcActions } = this.props;
-        if (syncState.get('actionId') === 1) {
-            return eProcActions.stopSync();
-        }
-        eProcActions.startSync();
+        const { eProcActions, externalProcState } = this.props;
+        // if (externalProcState.get('actionId') === 1) {
+        //     return eProcActions.stopSync();
+        // }
+        // eProcActions.startSync();
         return this.getSyncStatus();
     };
     handleCancel = () => {
@@ -70,9 +78,9 @@ class SyncStatus extends Component {
         });
     };
     _getActionLabels = () => {
-        const { syncState, intl } = this.props;
+        const { externalProcState, intl } = this.props;
         const labels = {};
-        switch (syncState.get('actionId')) {
+        switch (externalProcState.get('actionId')) {
             case 1:
                 labels.title = intl.formatMessage(setupMessages.synchronizing);
                 labels.action = intl.formatMessage(generalMessages.pause);
@@ -120,8 +128,7 @@ class SyncStatus extends Component {
         });
     };
     render () {
-        const { intl } = this.props;
-        const message = this.state.syncData;
+        const { intl, gethStatus, eProcActions, gethSyncStatus } = this.props;
         let blockSync;
         let blockProgress;
         let currentProgress;
@@ -129,13 +136,13 @@ class SyncStatus extends Component {
         let progressBody;
         let peerInfo;
         pageTitle = this._getActionLabels().title;
-        if (message && message.peerCount > 0 && message.highestBlock > 0) {
-            blockProgress = message;
-            currentProgress = ((blockProgress.currentBlock - blockProgress.startingBlock) /
-                (blockProgress.highestBlock - blockProgress.startingBlock)) * 100;
+        if (gethSyncStatus && gethSyncStatus.get('peerCount') > 0 && gethSyncStatus.get('highestBlock') > 0) {
+            blockProgress = gethSyncStatus;
+            currentProgress = ((blockProgress.get('currentBlock') - blockProgress.get('startingBlock')) /
+                (blockProgress.get('highestBlock') - blockProgress.get('startingBlock'))) * 100;
             peerInfo = (
               <FormattedPlural
-                value={message.peerCount}
+                value={gethSyncStatus.get('peerCount')}
                 one={intl.formatMessage(setupMessages.onePeer)}
                 few={intl.formatMessage(setupMessages.fewPeers)}
                 many={intl.formatMessage(setupMessages.manyPeers)}
@@ -145,7 +152,7 @@ class SyncStatus extends Component {
             progressBody = (
               <div>
                 <div style={{ fontWeight: 'bold', padding: '5px', fontSize: '16px' }} >
-                  {`${message.peerCount}`}&nbsp;
+                  {`${gethSyncStatus.get('peerCount')}`}&nbsp;
                   {peerInfo}&nbsp;
                   {`${intl.formatMessage(generalMessages.connected)}`}
                 </div>
@@ -154,6 +161,15 @@ class SyncStatus extends Component {
                     {blockProgress.currentBlock}
                   </strong>/
                     {blockProgress.highestBlock}
+                </div>
+              </div>
+            );
+        } else if (gethStatus.get('downloading')) {
+            peerInfo = intl.formatMessage(setupMessages.downloadingGeth);
+            progressBody = (
+              <div>
+                <div style={{ fontWeight: 'bold', padding: '5px', fontSize: '16px' }} >
+                  {peerInfo}
                 </div>
               </div>
             );
@@ -240,13 +256,11 @@ class SyncStatus extends Component {
 SyncStatus.propTypes = {
     eProcActions: PropTypes.object.isRequired,
     eProcBundleActions: PropTypes.object.isRequired,
-    setupActions: PropTypes.object.isRequired,
     loggerActions: PropTypes.object.isRequired,
     style: PropTypes.object,
     logListStyle: PropTypes.object,
-    syncState: PropTypes.object.isRequired,
     intl: PropTypes.object,
-    setupConfig: PropTypes.object.isRequired
+    settingsState: PropTypes.object.isRequired
 };
 
 SyncStatus.contextTypes = {

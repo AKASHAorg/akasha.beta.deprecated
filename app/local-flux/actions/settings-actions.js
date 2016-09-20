@@ -18,7 +18,7 @@ class SettingsActions {
             this.dispatch(settingsActionCreators.saveSettingsSuccess(settings, table))
         ).catch(reason => this.dispatch(settingsActionCreators.saveSettingsError(reason, table)));
 
-    getSettings (table) {
+    getSettings = (table) => {
         return this.settingsService.getSettings(table).then((data) => {
             if (!data) {
                 return this.dispatch(settingsActionCreators.getSettingsError('No data!', table));
@@ -28,8 +28,32 @@ class SettingsActions {
         .then(() => this.dispatch((dispatch, getState) => getState().settingsState.get(table)))
         .catch(reason => this.dispatch(settingsActionCreators.getSettingsError(reason, table)));
     }
+    retrySetup = (isAdvanced) => {
+        this.dispatch(settingsActionCreators.retrySetup(isAdvanced));
+    };
+    toggleAdvancedSettings = (isAdvanced) => {
+        this.dispatch(settingsActionCreators.toggleAdvancedSettings(isAdvanced));
+    };
+    setupGethDataDir = (path) => {
+        this.dispatch(settingsActionCreators.setupGethDataDir(path));
+    };
+    setupGethIPCPath = (path) => {
+        this.dispatch(settingsActionCreators.setupGethIPCPath(path));
+    };
+    setupGethCacheSize = (size) => {
+        this.dispatch(settingsActionCreators.setupGethCacheSize(size));
+    };
+    setupIPFSPath = (path) => {
+        this.dispatch(settingsActionCreators.setupIPFSPath(path));
+    };
+    setupIPFSApiPort = (port) => {
+        this.dispatch(settingsActionCreators.setupIPFSApiPort(port));
+    };
+    setupIPFSGatewayPort = (port) => {
+        this.dispatch(settingsActionCreators.setupIPFSGatewayPort(port));
+    }
     // save user level settings
-    saveUserSettings () {}
-    getUserSettings () {}
+    saveUserSettings = () => {}
+    getUserSettings = () => {}
 }
 export { SettingsActions };

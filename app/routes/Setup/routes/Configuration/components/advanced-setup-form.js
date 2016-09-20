@@ -7,7 +7,7 @@ const AdvancedSetupForm = (props) => {
     const {
         intl,
         cacheSizeError,
-        setupConfig,
+        settingsState,
         handleGethIpc,
         handleGethDatadir,
         handleGethCacheSize,
@@ -23,28 +23,28 @@ const AdvancedSetupForm = (props) => {
           errorText={intl.formatMessage(setupMessages.changeGethDataDir)}
           floatingLabelStyle={floatingLabelStyle}
           floatingLabelText={intl.formatMessage(setupMessages.gethDataDirPath)}
-          value={setupConfig.getIn(['geth', 'dataDir'])}
+          value={settingsState.getIn(['geth', 'dataDir'])}
           inputStyle={inputStyle}
           onClick={handleGethDatadir}
           onFocus={handleGethDatadir}
           fullWidth
         />
-        <TextField
+        {/** <TextField
           errorStyle={errorStyle}
           errorText={intl.formatMessage(setupMessages.changeGethAlreadyStarted)}
           floatingLabelStyle={floatingLabelStyle}
           floatingLabelText={intl.formatMessage(setupMessages.gethIPCPath)}
-          hintText={setupConfig.getIn(['geth', 'ipcPath'])}
+          hintText={settingsState.getIn(['geth', 'ipcPath'])}
           inputStyle={inputStyle}
           onBlur={handleGethIpc}
           fullWidth
-        />
+        /> */}
         <TextField
           errorStyle={cacheSizeError ? {color: 'red'} : errorStyle}
           errorText={cacheSizeError || intl.formatMessage(setupMessages.changeGethCacheSize)}
           floatingLabelStyle={floatingLabelStyle}
           floatingLabelText={intl.formatMessage(setupMessages.gethCacheSize)}
-          hintText={setupConfig.getIn(['geth', 'cacheSize'])}
+          hintText={settingsState.getIn(['geth', 'cacheSize'])}
           inputStyle={inputStyle}
           onBlur={handleGethCacheSize}
           type="number"
@@ -55,7 +55,7 @@ const AdvancedSetupForm = (props) => {
           errorText={'Change ipfs directory'}
           floatingLabelStyle={floatingLabelStyle}
           floatingLabelText={'IPFS Path'}
-          value={setupConfig.getIn(['ipfs', 'ipfsPath'])}
+          value={settingsState.getIn(['ipfs', 'ipfsPath'])}
           inputStyle={inputStyle}
           onClick={handleIpfsPath}
           onFocus={handleIpfsPath}
@@ -68,7 +68,7 @@ const AdvancedSetupForm = (props) => {
 AdvancedSetupForm.propTypes = {
     intl: PropTypes.object,
     cacheSizeError: PropTypes.string,
-    setupConfig: PropTypes.object,
+    settingsState: PropTypes.object,
     handleGethDatadir: PropTypes.func,
     handleGethIpc: PropTypes.func,
     handleGethCacheSize: PropTypes.func,

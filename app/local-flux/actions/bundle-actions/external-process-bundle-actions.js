@@ -13,24 +13,8 @@ class ExternalProcessBundleActions {
         return externalProcessBundleActions;
     }
     startGeth = () =>
-        this.settingsActions.getSettings('geth').then(() =>
-            this.dispatch((dispatch, getState) => {
-                const gethSettings = getState().settingsState.get('geth');
-                if (gethSettings) {
-                    return gethSettings.toJS();
-                }
-                return {};
-            })
-        )
-        .then(gethSettings =>
-            this.eProcActions.getGethStatus().then(() => {
-                this.dispatch((dispatch, getState) => {
-                    const gethStatus = getState().externalProcState.get('gethStatus');
-                    if (!gethStatus.get('spawned') || !gethStatus.get('starting')) {
-                        return this.eProcActions.startGeth(gethSettings);
-                    }
-                });
-            })
+        this.settingsActions.getSettings('geth').then(gethSettings =>
+            this.eProcActions.startGeth(gethSettings)
         );
     startIPFS = () =>
         this.settingsActions.getSettings('ipfs').then(() => {
@@ -41,7 +25,7 @@ class ExternalProcessBundleActions {
                 }
                 return {};
             });
-        }).then((ipfsSettings) => this.eProcActions.startIPFS(ipfsSettings));
+        }).then(ipfsSettings => this.eProcActions.startIPFS(ipfsSettings));
 
     startSync = () =>
         this.dispatch(() =>
@@ -54,7 +38,6 @@ class ExternalProcessBundleActions {
             this.settingsActions.saveSettings('flags', { requestStartupChange: true })
         ).then(() => {
             this.eProcActions.stopGeth();
-            this.eProcActions.stopUpdateSync();
         });
 }
 
