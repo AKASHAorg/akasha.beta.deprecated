@@ -122,8 +122,7 @@ export default class Main extends BaseContract {
         const tagsTr = tags.map((v) => {
            return this.gethInstance.web3.fromUtf8(v);
         });
-        return this.contract
-            .publishEntryAsync(hashTr, tagsTr, {gas});
+        return this.extractData('publishEntry', hashTr, tagsTr, {gas});
     }
 
     /**
@@ -137,8 +136,7 @@ export default class Main extends BaseContract {
         const hashTr = hash.map((v) => {
             return this.gethInstance.web3.fromUtf8(v);
         });
-        return this.contract
-            .updateEntryAsync(hashTr, entryAddress, {gas});
+        return this.extractData('updateEntry', hashTr, entryAddress, {gas});
     }
 
     /**
@@ -146,12 +144,12 @@ export default class Main extends BaseContract {
      * @param entryAddress
      * @param weight
      * @param gas
+     * @param value
      * @returns {any}
      */
-    public upVoteEntry(entryAddress: string, weight: number, gas?: number) {
+    public upVoteEntry(entryAddress: string, weight: number, gas?: number, value?: number) {
         const weightTr = this.gethInstance.web3.fromDecimal(weight);
-        return this.contract
-            .upVoteEntryAsync(entryAddress, weightTr, {gas});
+        return this.extractData('upVoteEntry', entryAddress, weightTr, {gas, value});
     }
 
     /**
@@ -159,12 +157,12 @@ export default class Main extends BaseContract {
      * @param entryAddress
      * @param weight
      * @param gas
+     * @param value
      * @returns {any}
      */
-    public downVoteEntry(entryAddress: string, weight: number, gas?: number) {
+    public downVoteEntry(entryAddress: string, weight: number, gas?: number, value?: number) {
         const weightTr = this.gethInstance.web3.fromDecimal(weight);
-        return this.contract
-            .downVoteEntryAsync(entryAddress, weightTr, {gas});
+        return this.extractData('downVoteEntry', entryAddress, weightTr, {gas, value});
     }
 
     /**
@@ -178,8 +176,7 @@ export default class Main extends BaseContract {
         const hashTr = hash.map((v) => {
             return this.gethInstance.web3.fromUtf8(v);
         });
-        return this.contract
-            .saveCommentAsync(entryAddress, hashTr, {gas});
+        return this.extractData('saveComment', entryAddress, hashTr, {gas});
     }
 
     /**
@@ -195,8 +192,7 @@ export default class Main extends BaseContract {
             return this.gethInstance.web3.fromUtf8(v);
         });
         const commentIdTr = this.gethInstance.web3.fromDecimal(commentId);
-        return this.contract
-            .updateCommentAsync(entryAddress, commentIdTr, hashTr, {gas});
+        return this.extractData('updateCommententryAddress', commentIdTr, hashTr, {gas});
     }
 
     /**
@@ -210,8 +206,7 @@ export default class Main extends BaseContract {
     public upVoteComment(entryAddress: string, weigth: number, commentId: number, gas?: number) {
         const weigthTr = this.gethInstance.web3.fromDecimal(weigth);
         const commentIdTr = this.gethInstance.web3.fromDecimal(commentId);
-        return this.contract
-            .upVoteCommentAsync(entryAddress, weigthTr, commentIdTr, {gas});
+        return this.extractData('upVoteComment', entryAddress, weigthTr, commentIdTr, {gas});
     }
 
     /**
@@ -225,7 +220,6 @@ export default class Main extends BaseContract {
     public downVoteComment(entryAddress: string, weigth: number, commentId: number, gas?: number) {
         const weigthTr = this.gethInstance.web3.fromDecimal(weigth);
         const commentIdTr = this.gethInstance.web3.fromDecimal(commentId);
-        return this.contract
-            .downVoteCommentAsync(entryAddress, weigthTr, commentIdTr, {gas});
+        return this.extractData('downVoteCommentAsync', entryAddress, weigthTr, commentIdTr, {gas});
     }
 }

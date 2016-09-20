@@ -392,5 +392,83 @@ interface TagIsSubscribedResponse extends MainResponse {
 
 
 ////////////////////// < ENTRY > \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+interface EntryCreateRequest extends AuthRequest {
+    hash: string;
+    tags: string[];
+    gas?: number;
+}
 
+interface EntryCreateResponse extends MainResponse {
+    data: {
+        tx: string;
+    };
+}
+
+interface EntryUpdateRequest extends AuthRequest {
+    hash: string;
+    address: string;
+    gas?: number;
+}
+
+interface EntryUpdateResponse extends MainResponse {
+    data: {
+        tx: string;
+    };
+}
+
+interface EntryUpvoteRequest extends AuthRequest {
+    address: string; // entry address
+    weight: number;
+    gas?: number;
+    value?: number;
+}
+interface EntryUpvoteResponse extends MainResponse {
+    data: {
+        tx: string;
+    };
+}
+interface EntryOpenedVotesRequest {
+    address: string; // entry address
+}
+
+interface EntryOpenedVotesResponse extends MainResponse {
+    data: {
+        address: string;
+        voting: boolean;
+    };
+}
+
+interface EntryVoteofRequest {
+    profile: string; // profile address of voter
+    address: string;  // entry address
+}
+
+interface EntryVoteofResponse extends MainResponse {
+    data: {
+        profile: string;
+        weight: number;
+    };
+}
+
+interface EntryVoteDateRequest {
+    address: string; // entry address
+}
+
+interface EntryVoteDateResponse {
+    data: {
+        address: string;
+        date: number; // unix date
+    };
+}
+
+interface EntryScoreRequest {
+    address: string; // entry address
+}
+
+interface EntryScoreResponse {
+    data: {
+        address: string;
+        score: number;
+    };
+}
 ///////////////////// </ ENTRY> \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
