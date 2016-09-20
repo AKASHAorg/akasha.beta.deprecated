@@ -11,11 +11,15 @@ const Draft = Record({
     excerpt: null,
     featured_image: null,
     tags: new List(),
+    tx: null,
     status: {
         created_at: '',
         updated_at: '',
         tagsPublished: false,
-        publishing: false
+        publishing: false,
+        transactionStatus: {
+
+        }
     }
 });
 

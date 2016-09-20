@@ -43,30 +43,29 @@ const initialState = fromJS({
 
 const eProcState = createReducer(initialState, {
     [types.START_GETH_SUCCESS]: (state, action) =>
-        state.merge({ gethStatus: new GethStatus(action.data.gethStatus) }),
+        state.merge({ gethStatus: new GethStatus(action.data.gethState) }),
 
     [types.GET_GETH_STATUS_SUCCESS]: (state, action) =>
-        state.merge({ gethStatus: new GethStatus(action.data) }),
+        state.merge({ gethStatus: new GethStatus(action.status) }),
 
     [types.GET_IPFS_STATUS_SUCCESS]: (state, action) =>
         state.merge({ ipfsStatus: new IpfsStatus(action.data) }),
 
-    [types.SYNC_ACTIVE]: (state, action) => {
-        return state.merge({
+    [types.SYNC_ACTIVE]: (state, action) =>
+        state.merge({
             gethSyncStatus: new GethSyncStatus(action.syncStatus),
             actionId: 1,
-        });
-    },
-    [types.SYNC_STOPPED]: (state, action) => {
-        return state.merge({
+        }),
+
+    [types.SYNC_STOPPED]: (state, action) =>
+        state.merge({
             actionId: 2
-        });
-    },
-    [types.SYNC_FINISHED]: (state, action) => {
-        return state.merge({
+        }),
+
+    [types.SYNC_FINISHED]: (state, action) =>
+        state.merge({
             actionId: 3
-        });
-    },
+        }),
 
 });
 

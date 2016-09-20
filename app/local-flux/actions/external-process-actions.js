@@ -2,8 +2,7 @@ import debug from 'debug';
 import { GethService, IpfsService } from '../services';
 import {
     externalProcessActionCreators,
-    appActionCreators,
-    syncActionCreators } from './action-creators';
+    appActionCreators } from './action-creators';
 
 const dbg = debug('App::eProcActions:');
 
@@ -25,70 +24,53 @@ class EProcActions {
 
     _showErrorAction = error =>
         appActionCreators.showError({
-            code: error.code,
+            code: error.code ? error.code : '000',
             fatal: error.fatal,
             message: error.message
         });
 
     startGeth = gethSettings =>
-    this.gethService.getStatus().then((gethStatus) => {
-        dbg('attempt to start geth with status', gethStatus);
-        if (gethStatus.api || gethStatus.starting) {
-            dbg('geth already started and is usable', gethStatus);
-            return this.dispatch(
-                externalProcessActionCreators.startGethSuccess({ gethStatus })
-            );
-        }
-        dbg('starting geth with settings', gethSettings.toJS());
-        this.gethService.start(gethSettings.toJS()).then((gethState) => {
-            dbg('geth start status is', gethState);
-            return this.dispatch(
-                externalProcessActionCreators.startGethSuccess({ gethState })
-            );
-        })
-        .catch(reason =>
-            this.dispatch(
-                this._showErrorAction({
-                    code: 'EPA10',
-                    fatal: reason.fatal,
-                    message: reason.message || reason.stack
-                })
-            )
-        );
-    })
-
-
-    stopGeth = () =>
-        this.gethService.stop().then((data) => {
-            if (!data) {
-                return this.dispatch(
-                    externalProcessActionCreators.stopGethError('Main process crashed')
-                );
-            }
-            return this.dispatch(externalProcessActionCreators.stopGethSuccess(data));
-        }).catch((reason) => {
-            this.dispatch(externalProcessActionCreators.stopGethError(reason));
+        this.gethService.start({
+            options: gethSettings.toJS(),
+            dispatch: this.dispatch,
+            onError: this._showErrorAction, // externalProcessActionCreators.startGethError,
+            onSuccess: externalProcessActionCreators.startGethSuccess
         });
 
-    getGethStatus = () => {
-        // return this.gethService.getStatus()
-        // .then((data) => {
-        //     dbg('getting geth status', data);
-        //     return this.dispatch(externalProcessActionCreators.getGethStatusSuccess(data));
-        // }).catch((reason) => {
-        //     this.dispatch(externalProcessActionCreators.getGethStatusError(reason));
-        // });
-    }
+    stopGeth = () =>
+        this.gethService.stop({
+            options: {},
+            dispatch: this.dispatch,
+            onError: externalProcessActionCreators.stopGethError,
+            onSuccess: externalProcessActionCreators.stopGethSuccess
+        });
+
+    getGethStatus = () =>
+        this.gethService.getStatus({
+            options: {},
+            dispatch: this.dispatch,
+            onError: externalProcessActionCreators.getGethStatusError,
+            onSuccess: externalProcessActionCreators.getGethStatusSuccess
+        });
+
     getGethOptions = () =>
-        this.gethService.getOptions().then((data) => {
-            dbg('geth config is', data);
-            return this.dispatch(externalProcessActionCreators.getGethOptionsSuccess(data));
-        }).catch((reason) => {
-            this.dispatch(appActionCreators.showError({
-                code: 'EPA15',
-                fatal: reason.fatal,
-                message: reason.message
-            }));
+        this.gethService.getOptions({
+            options: {},
+            dispatch: this.dispatch,
+            onError: appActionCreators.showError,
+            onSuccess: externalProcessActionCreators.getGethOptionsSuccess
+        });
+    /**
+     * get sync status of geth service
+     * this method will not dispatch anything to avoid redux-dev-tools overload.
+     * Should be called directly from inside component;
+     */
+    getSyncStatus = () =>
+        this.gethService.getSyncStatus({
+            options: {},
+            dispatch: this.dispatch,
+            onError: appActionCreators.showError,
+            onSuccess: externalProcessActionCreators.getSyncStatusSuccess
         });
 
     startIPFS = ipfsSettings =>
@@ -112,6 +94,7 @@ class EProcActions {
                 })
             );
         }));
+
     configIPFS = (config) => {
         this.ipfsService.configIpfs(config).then((data) => {
             if (!data.success) {
@@ -120,6 +103,7 @@ class EProcActions {
             return this.dispatch(externalProcessActionCreators.configIpfsSuccess(data));
         }).catch(reason => this.dispatch(externalProcessActionCreators.configIpfsError(reason)));
     };
+
     stopIPFS = () => {
         this.ipfsService.stopIPFS().then((data) => {
             if (!data.success) {
@@ -131,28 +115,28 @@ class EProcActions {
         }).catch(reason => this.dispatch(externalProcessActionCreators.stopIPFSError(reason)));
     };
 
-    startSync = () => this.dispatch(syncActionCreators.startSync());
+    startSync = () => this.dispatch(externalProcessActionCreators.startSync());
     /**
      * Dispatcher for resuming sync
      * @returns {function()}
      */
-    resumeSync = () => this.dispatch(syncActionCreators.resumeSync());
+    resumeSync = () =>
+        this.dispatch(externalProcessActionCreators.resumeSync());
+
     pauseSync = () => {
-        this.stopUpdateSync(() => {
-            this.dispatch(syncActionCreators.pauseSync());
-            this.eProcActions.stopGeth();
-        });
+        this.dispatch(externalProcessActionCreators.pauseSync());
+        this.stopGeth();
     };
     /**
      * Action for stopping sync
      * @returns {{type}}
      */
     stopSync = () =>
-        this.dispatch(() => this.stopUpdateSync().then(() => syncActionCreators.stopSync()));
-    startUpdateSync = (cb) => {
-        this.setupService.startUpdateSync(cb);
-    };
-    stopUpdateSync = () =>
-        this.setupService.stopUpdateSync();
+        this.stopGeth({
+            options: {},
+            dispatch: this.dispatch,
+            onError: appActionCreators.showError,
+            onSuccess: externalProcessActionCreators.stopSync
+        })
 }
 export { EProcActions };
