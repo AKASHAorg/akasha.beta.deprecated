@@ -22,9 +22,7 @@ class Setup extends Component {
         if (!cancelRequest && gethSettings) {
             return this.context.router.push('setup/sync-status');
         }
-        return eProcActions.getGethOptions().then(() => {
-            console.log('options retrieved');
-        });
+        return eProcActions.getGethOptions();
     }
     handleChange = (ev, value) => {
         const { settingsActions, settingsState } = this.props;
@@ -116,13 +114,10 @@ class Setup extends Component {
         const { settingsActions, settingsState } = this.props;
         const { datadir, ipcpath, cache } = settingsState.get('geth').toJS();
         const { ipfsPath } = settingsState.get('ipfs').toJS();
-        const p = [];
-        p.push(settingsActions.saveSettings('geth', { datadir, ipcpath, cache }));
-        p.push(settingsActions.saveSettings('ipfs', { ipfsPath }));
-        p.push(settingsActions.saveSettings('flags', { requestStartupChange: false }));
-        Promise.all(p).then(() => {
-            this.context.router.push('setup/sync-status');
-        });
+        settingsActions.saveSettings({ name: 'geth', datadir, ipcpath, cache });
+        settingsActions.saveSettings({ name: 'ipfs', ipfsPath });
+        settingsActions.saveSettings({ name: 'flags', requestStartupChange: false });
+        this.context.router.push('setup/sync-status');
     };
 
     showOpenDialog = (title, cb) => {

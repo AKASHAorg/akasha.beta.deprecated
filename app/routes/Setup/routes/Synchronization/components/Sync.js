@@ -5,6 +5,7 @@ import SyncProgress from 'shared-components/Loaders/SyncProgress';
 import { FormattedMessage, FormattedPlural, injectIntl } from 'react-intl';
 import { setupMessages, generalMessages } from 'locale-data/messages';
 import PanelContainer from 'shared-components/PanelContainer/panel-container';
+import { is } from 'immutable';
 
 class SyncStatus extends Component {
     constructor (props) {
@@ -17,42 +18,42 @@ class SyncStatus extends Component {
         };
     }
     componentWillMount () {
+        this.startGeth();
+    }
+    componentDidMount () {
+        this.startGeth();
+    }
+    getSyncStatus = () => {
+        const { eProcActions, gethStatus, gethSyncStatus } = this.props;
+
+        eProcActions.getSyncStatus().then((syncData) => {
+            console.log(syncData, 'sync data');
+        });
+        // eProcActions.startUpdateSync((err, updateData) => {
+        //     const { success, status, data } = updateData;
+        //     if (err) {
+        //         return this.setState({
+        //             syncError: status.message
+        //         });
+        //     }
+        //     if (success && data.empty) {
+        //         this.finishSync();
+        //     } else {
+        //         this.setState({
+        //             syncData: data
+        //         });
+        //     }
+        //     return null;
+        // });
+    };
+    startGeth = () => {
+        const { eProcActions, eProcBundleActions, gethStatus } = this.props;
+        return eProcBundleActions.startGeth();
+    };
+    checkGethStatus = () => {
         const { eProcActions } = this.props;
         eProcActions.getGethStatus();
     }
-    componentWillUpdate () {
-        const { eProcActions, gethStatus, gethSyncStatus } = this.props;
-        if (gethStatus.get('api') === true) {
-            this.handleSync();
-        }
-        if (!gethStatus.get('starting')) {
-            eProcActions.getGethStatus().then(() => {
-                console.log(gethStatus, 'geth status');
-            });
-        }
-    }
-    componentWillUnmount () {
-        const { eProcActions, loggerActions } = this.props;
-    }
-    getSyncStatus = () => {
-        const { eProcActions } = this.props;
-        eProcActions.startUpdateSync((err, updateData) => {
-            const { success, status, data } = updateData;
-            if (err) {
-                return this.setState({
-                    syncError: status.message
-                });
-            }
-            if (success && data.empty) {
-                this.finishSync();
-            } else {
-                this.setState({
-                    syncData: data
-                });
-            }
-            return null;
-        });
-    };
     finishSync = () => {
         const { eProcActions, eProcBundleActions } = this.props;
         let promises = [];
@@ -64,10 +65,10 @@ class SyncStatus extends Component {
     };
     handleSync = () => {
         const { eProcActions, externalProcState } = this.props;
-        if (externalProcState.get('actionId') === 1) {
-            return eProcActions.stopSync();
-        }
-        eProcActions.startSync();
+        // if (externalProcState.get('actionId') === 1) {
+        //     return eProcActions.stopSync();
+        // }
+        // eProcActions.startSync();
         return this.getSyncStatus();
     };
     handleCancel = () => {

@@ -19,7 +19,7 @@ class GethService extends BaseService {
      * @param {object} options Optional params
      * @return promise
      */
-    start = (options) => {
+    start = ({ options = {}, dispatch, onError = () => {}, onSuccess }) => {
         const serverChannel = Channel.server.geth.startService;
         const clientChannel = Channel.client.geth.startService;
         const gethOptions = {};
@@ -30,93 +30,55 @@ class GethService extends BaseService {
             }
         });
 
-        return new Promise((resolve, reject) => {
-            const listenerCb = (event, response) => {
-                dbg('geth status', response);
-                if (response.error) {
-                    return reject(response.error);
-                }
-                return resolve(response.data);
-            };
-            dbg('starting geth with options', gethOptions);
-            return this.registerListener(clientChannel, listenerCb, () =>
-                ipcRenderer.send(serverChannel, gethOptions)
-            );
-        });
+        dbg('Retrieving Geth status', clientChannel);
+
+        this.registerListener(clientChannel, this.createListener(dispatch, onError, onSuccess));
+        ipcRenderer.send(serverChannel, gethOptions);
     };
     /**
      * Stop Geth process
      */
-    stop = () => {
+    stop = ({ options = {}, dispatch, onError = () => {}, onSuccess }) => {
         const serverChannel = Channel.server.geth.stopService;
         const clientChannel = Channel.client.geth.stopService;
         dbg('Stopping Geth service on channel:', clientChannel);
-        return new Promise((resolve, reject) => {
-            const listenerCb = (event, res) => {
-                dbg('geth stop status is', res);
-                if (res.error) {
-                    return reject(res.error);
-                }
-                return resolve(res.data);
-            };
-            return this.registerListener(clientChannel, listenerCb, () =>
-                ipcRenderer.send(serverChannel, {})
-            );
-        });
+        this.registerListener(clientChannel, this.createListener(dispatch, onError, onSuccess));
+        ipcRenderer.send(serverChannel, options);
     }
     /**
      * Restart Geth
      * @params timer? <Number> milliseconds to wait before starting again
      */
-    restart = (timer = 6000) => {
+    restart = ({ options = { timer: 6000 }, dispatch, onError = () => {}, onSuccess }) => {
         const serverChannel = Channel.server.geth.restartService;
         const clientChannel = Channel.client.geth.restartService;
 
-        return new Promise((resolve, reject) => {
-            const listenerCb = (ev, res) => {
-                dbg('restarting geth', res);
-                if (res.error) {
-                    return reject(res.error);
-                }
-                return resolve(res.data);
-            };
-            return this.openChannel({
-                serverManager: this.serverManager,
-                clientManager: this.clientManager,
-                serverChannel,
-                clientChannel,
-                listenerCb
-            }, () =>
-                ipcRenderer.send(serverChannel, { timer })
+        return this.openChannel({
+            serverManager: this.serverManager,
+            clientManager: this.clientManager,
+            serverChannel,
+            clientChannel,
+            listenerCb: this.createListener(dispatch, onError, onSuccess)
+        }, () =>
+            ipcRenderer.send(serverChannel, options)
             );
-        });
     };
     /**
      *  Retrieve Geth logs
      */
-    getLogs = () => {
+    getLogs = ({ options = {}, dispatch, onError = () => {}, onSuccess }) => {
         const serverChannel = Channel.server.geth.logs;
         const clientChannel = Channel.client.geth.logs;
-        return new Promise((resolve, reject) => {
-            if (this._listeners.get(clientChannel)) {
-                return;
-            }
-            const listenerCb = (ev, res) => {
-                if (res.error) {
-                    return reject(res.error);
-                }
-                return resolve(res.data);
-            };
-            return this.openChannel({
-                serverManager: this.serverManager,
-                clientManager: this.clientManager,
-                serverChannel,
-                clientChannel,
-                listenerCb
-            }, () =>
-                ipcRenderer.send(serverChannel, {})
-            );
-        });
+
+        this.openChannel({
+            serverManager: this.serverManager,
+            clientManager: this.clientManager,
+            serverChannel,
+            clientChannel,
+            listenerCb: this.createListener(dispatch, onError, onSuccess)
+        }, () =>
+            ipcRenderer.send(serverChannel, options)
+        );
     };
     /**
      *  Get current status of geth;
@@ -129,77 +91,50 @@ class GethService extends BaseService {
      *      stopped?: boolean;
      *  }
      */
-    getStatus = () => {
+    getStatus = ({ options = {}, dispatch, onError = () => {}, onSuccess }) => {
         const serverChannel = Channel.server.geth.status;
         const clientChannel = Channel.client.geth.status;
 
         dbg('Retrieving Geth status', clientChannel);
-        this.registerListener(clientChannel, GethService.listenerCb);
-        ipcRenderer.send(serverChannel, {});
-    }
 
-    static listenerCb (event, res) {
-        dbg(res, 'geth status');
-        if (res.error) {
-            return Promise.reject(res.error);
-        }
-        return Promise.resolve(res.data);
-    };
+        this.registerListener(clientChannel, this.createListener(dispatch, onError, onSuccess));
+        ipcRenderer.send(serverChannel, options);
+    }
     /**
      * Retrieve options used by geth
      */
-    getOptions = () => {
+    getOptions = ({ options = {}, dispatch, onError = () => {}, onSuccess }) => {
         const clientChannel = Channel.client.geth.options;
         const serverChannel = Channel.server.geth.options;
 
-        return new Promise((resolve, reject) => {
-            const listenerCb = (event, res) => {
-                dbg('Requested geth options', res);
-                if (res.error) {
-                    return reject(res.error);
-                }
-                return resolve(res.data);
-            };
-
-            return this.openChannel({
-                serverManager: this.serverManager,
-                clientManager: this.clientManager,
-                serverChannel,
-                clientChannel,
-                listenerCb
-            }, () =>
-                ipcRenderer.send(serverChannel, {})
-            );
-        });
+        return this.openChannel({
+            serverManager: this.serverManager,
+            clientManager: this.clientManager,
+            serverChannel,
+            clientChannel,
+            listenerCb: this.createListener(dispatch, onError, onSuccess)
+        }, () =>
+            ipcRenderer.send(serverChannel, options)
+        );
     };
     /**
      * Update sync status sent by main process
      * @param {function} cb callback
      */
-    getSyncStatus = () => {
+    getSyncStatus = ({ options = {}, dispatch, onError = () => {}, onSuccess }) => {
         const clientChannel = Channel.client.geth.syncUpdate;
         const serverChannel = Channel.server.geth.syncUpdate;
 
-        return new Promise((resolve, reject) => {
-            const listenerCb = (ev, res) => {
-                if (res.error) {
-                    return reject(res.error);
-                }
-                return resolve(res.data);
-            };
-
-            return this.openChannel({
-                serverManager: this.serverManager,
-                clientManager: this.clientManager,
-                serverChannel,
-                clientChannel,
-                listenerCb
-            }, () =>
-                ipcRenderer.send(serverChannel, {})
-            );
-        });
+        this.openChannel({
+            serverManager: this.serverManager,
+            clientManager: this.clientManager,
+            serverChannel,
+            clientChannel,
+            listenerCb: this.createListener(dispatch, onError, onSuccess)
+        }, () =>
+            ipcRenderer.send(serverChannel, options)
+        );
     }
-    removeStatusListener = () => this.removeListener(Channel.client.geth.status);
 }
 
 export { GethService };
