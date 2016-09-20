@@ -12,7 +12,9 @@ import configureStore from './local-flux/store/configureStore';
 import { ruMessages } from './locale-data/ru';
 import debug from 'debug';
 import ReactPerf from 'react-addons-perf';
+import Promise from 'bluebird';
 
+window.Promise = Promise;
 window.appDebug = debug.enable('App:*');
 // temporary
 

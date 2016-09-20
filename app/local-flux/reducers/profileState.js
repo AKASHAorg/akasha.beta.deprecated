@@ -1,36 +1,44 @@
-import { fromJS, List, Map } from 'immutable';
+import { fromJS, List, Record } from 'immutable';
 import * as types from '../constants/ProfileConstants';
 import { createReducer } from './create-reducer';
 
+const TempProfile = Record({
+    firstName: '',
+    lastName: '',
+    userName: '',
+    password: '',
+    password2: '',
+    address: '',
+    optionalData: {
+        avatar: {},
+        backgroundImage: [],
+        about: '',
+        links: []
+    },
+    currentStatus: {
+        currentStep: '',
+        status: '',
+        message: '',
+        faucetRequested: false
+    }
+});
+
+const LoggedProfile = Record({
+    account: null,
+    token: null,
+    expiration: null
+});
+
 const initialState = fromJS({
     profiles: new List(),
-    loggedProfile: new Map(),
-    tempProfile: new Map({
-        firstName: '',
-        lastName: '',
-        userName: '',
-        password: '',
-        password2: '',
-        address: '',
-        optionalData: {
-            avatar: {},
-            backgroundImage: [],
-            about: '',
-            links: []
-        },
-        currentStatus: {
-            currentStep: '',
-            status: '',
-            message: '',
-            faucetRequested: false
-        }
-    }),
+    loggedProfile: new LoggedProfile(),
+    tempProfile: new TempProfile(),
     afterAuthAction: ''
 });
 
 const profileState = createReducer(initialState, {
     [types.LOGIN_SUCCESS]: (state, action) =>
-        state.merge({ loggedProfile: action.profileData }),
+        state.merge({ loggedProfile: new LoggedProfile(action.profile) }),
 
     [types.GET_PROFILES_LIST_SUCCESS]: (state, action) =>
         state.merge({ profiles: fromJS(action.profiles) }),
@@ -39,11 +47,11 @@ const profileState = createReducer(initialState, {
         state.merge({ profiles: [], messages: action.message }),
 
     [types.GET_TEMP_PROFILE_SUCCESS]: (state, action) =>
-        state.update('tempProfile', () => new Map(action.profile[0])),
+        state.update('tempProfile', () => new TempProfile(action.profile)),
 
-    [types.CREATE_ETH_ADDRESS]: (state) =>
+    [types.CREATE_ETH_ADDRESS]: state =>
         state.updateIn(['tempProfile', 'currentStatus'],
-            (cStatus) => Object.assign(cStatus, { status: 'pending' })
+            cStatus => Object.assign(cStatus, { status: 'pending' })
         ),
 
     [types.CREATE_ETH_ADDRESS_SUCCESS]: (state, action) =>
@@ -56,29 +64,29 @@ const profileState = createReducer(initialState, {
             }
         })),
 
-    [types.CREATE_ETH_ADDRESS_ERROR]: (state) =>
+    [types.CREATE_ETH_ADDRESS_ERROR]: state =>
         state.updateIn(['tempProfile', 'currentStatus'],
-            (cStatus) => Object.assign(cStatus, { status: 'failed' })
+            cStatus => Object.assign(cStatus, { status: 'failed' })
         ),
 
-    [types.FUND_FROM_FAUCET]: (state) =>
+    [types.FUND_FROM_FAUCET]: state =>
         state.updateIn(['tempProfile', 'currentStatus'],
-            (cStatus) => Object.assign(cStatus, { status: 'pending' })
+            cStatus => Object.assign(cStatus, { status: 'pending' })
         ),
 
-    [types.REQUEST_FUND_FROM_FAUCET_SUCCESS]: (state) =>
+    [types.REQUEST_FUND_FROM_FAUCET_SUCCESS]: state =>
         state.updateIn(['tempProfile', 'currentStatus'],
-            (cStatus) => Object.assign(cStatus, { faucetRequested: true })
+            cStatus => Object.assign(cStatus, { faucetRequested: true })
         ),
 
-    [types.FUND_FROM_FAUCET_SUCCESS]: (state) =>
+    [types.FUND_FROM_FAUCET_SUCCESS]: state =>
         state.updateIn(['tempProfile', 'currentStatus'],
-            (cStatus) => Object.assign(cStatus, { status: 'finished' })
+            cStatus => Object.assign(cStatus, { status: 'finished' })
         ),
 
-    [types.FUND_FROM_FAUCET_ERROR]: (state) =>
+    [types.FUND_FROM_FAUCET_ERROR]: state =>
         state.updateIn(['tempProfile', 'currentStatus'],
-            (cStatus) => Object.assign(cStatus, { status: 'failed' })
+            cStatus => Object.assign(cStatus, { status: 'failed' })
         ),
 
     [types.GET_PROFILE_DATA_SUCCESS]: (state, action) => {

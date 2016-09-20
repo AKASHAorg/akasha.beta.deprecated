@@ -11,7 +11,7 @@ import {
 
 function mapStateToProps (state) {
     return {
-        setupConfig: state.setupConfig
+        settingsState: state.settingsState
     };
 }
 
@@ -19,7 +19,6 @@ function mapDispatchToProps (dispatch) {
     return {
         eProcActions: new EProcActions(dispatch),
         eProcBundleActions: new ExternalProcessBundleActions(dispatch),
-        setupActions: new SetupActions(dispatch),
         settingsActions: new SettingsActions(dispatch)
     };
 }
