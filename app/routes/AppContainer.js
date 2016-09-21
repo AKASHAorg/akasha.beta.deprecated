@@ -106,12 +106,12 @@ class App extends Component {
     }
 }
 App.propTypes = {
-    appState: PropTypes.object,
-    appActions: PropTypes.object,
-    profileState: PropTypes.object,
-    profileActions: PropTypes.object,
-    settingsActions: PropTypes.object,
-    bootstrapActions: PropTypes.object,
+    appState: PropTypes.shape(),
+    appActions: PropTypes.shape(),
+    profileState: PropTypes.shape(),
+    profileActions: PropTypes.shape(),
+    settingsActions: PropTypes.shape(),
+    bootstrapActions: PropTypes.shape(),
     children: PropTypes.element
 };
 App.contextTypes = {

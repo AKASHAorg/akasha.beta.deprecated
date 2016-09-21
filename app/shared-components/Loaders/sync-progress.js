@@ -1,5 +1,5 @@
 import React from 'react';
-import CircularProgress from './CircularProgress';
+import CircularProgress from './circular-progress';
 import { MenuEthereum } from '../svg';
 
 function SyncProgress ({ innerIconStyle, value, strokeWidth }) {
