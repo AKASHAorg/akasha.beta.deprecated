@@ -33,7 +33,7 @@ class EProcActions {
         this.gethService.start({
             options: gethSettings.toJS(),
             dispatch: this.dispatch,
-            onError: this._showErrorAction, // externalProcessActionCreators.startGethError,
+            onError: externalProcessActionCreators.startGethError,
             onSuccess: externalProcessActionCreators.startGethSuccess
         });
 

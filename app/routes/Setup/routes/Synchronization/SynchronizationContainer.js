@@ -1,28 +1,34 @@
 import { connect } from 'react-redux';
 import SyncStatus from './components/Sync';
+import { asyncConnect } from 'redux-connect';
+
 import {
     LoggerActions,
     EProcActions,
-    ExternalProcessBundleActions } from 'local-flux';
+    ExternalProcessBundleActions,
+    BootstrapBundleActions } from 'local-flux';
 
 function mapStateToProps (state) {
     return {
-        settingsState: state.settingsState,
-        externalProcState: state.externalProcState,
         gethStatus: state.externalProcState.get('gethStatus'),
-        gethSyncStatus: state.externalProcState.get('gethSyncStatus')
+        gethSettings: state.settingsState.get('geth'),
+        gethSyncStatus: state.externalProcState.get('gethSyncStatus'),
+        syncActionId: state.externalProcState.get('syncActionId')
     };
 }
 
 function mapDispatchToProps (dispatch) {
     return {
         eProcActions: new EProcActions(dispatch),
-        eProcBundleActions: new ExternalProcessBundleActions(dispatch),
         loggerActions: new LoggerActions(dispatch)
     };
 }
-
-export default connect(
+export default asyncConnect([{
+    promise: ({ store: { dispatch, getState } }) => {
+        const bootstrapActions = new BootstrapBundleActions(dispatch);
+        return Promise.resolve(bootstrapActions.initSync(getState));
+    }
+}])(connect(
     mapStateToProps,
     mapDispatchToProps
-)(SyncStatus);
+)(SyncStatus));

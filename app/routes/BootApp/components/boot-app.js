@@ -10,27 +10,14 @@ class BootApp extends React.Component {
         };
     }
     componentWillMount () {
-        const props = this.props;
-        const isGethRunning = props.externalProcState.getIn(['gethStatus', 'isRunning']);
-        const gethNetwork = props.externalProcState.getIn(['gethStatus', 'network']);
-        const hasUpdates = props.appState.getIn(['updates', 'hasUpdates']);
-        if (!isGethRunning && !hasUpdates) {
+        const { appState } = this.props;
+        const hasUpdates = appState.getIn(['updates', 'hasUpdates']);
+        if (!hasUpdates) {
             return this.context.router.push('setup');
         }
-        if (isGethRunning) {
-            this.setState({
-                gethOnMain: (gethNetwork === 'main'),
-                hasUpdates
-            });
-            if (gethNetwork !== 'main' && !hasUpdates) {
-                this.context.router.push('setup');
-            }
-        }
-        if (hasUpdates) {
-            this.setState({
-                hasUpdates
-            });
-        }
+        return this.setState({
+            hasUpdates
+        });
     }
     render () {
         return (
@@ -62,22 +49,13 @@ class BootApp extends React.Component {
                 onAccept={() => {}}
               />
             }
-            {this.state.gethOnMain &&
-              <NotificationPaper
-                message="Geth is already started and it`s on main network!"
-                messageDetails="Please close other applications that are using Geth and press RETRY"
-                cancelable={false}
-                isWarning
-                acceptLabel="Retry"
-                onCancel={() => {}}
-                onAccept={() => {}}
-              />
-            }
           </div>
         );
     }
 }
-BootApp.propTypes = {};
+BootApp.propTypes = {
+    appState: React.PropTypes.shape()
+};
 BootApp.contextTypes = {
     router: React.PropTypes.object
 };

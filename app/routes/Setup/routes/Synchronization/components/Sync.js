@@ -1,10 +1,9 @@
 import React, { Component, PropTypes } from 'react';
-import SetupHeader from '../../../components/setup-header';
 import { RaisedButton } from 'material-ui';
-import SyncProgress from 'shared-components/Loaders/SyncProgress';
-import { FormattedMessage, FormattedPlural, injectIntl } from 'react-intl';
+import { FormattedMessage, injectIntl } from 'react-intl';
 import { setupMessages, generalMessages } from 'locale-data/messages';
 import PanelContainer from 'shared-components/PanelContainer/panel-container';
+import SetupHeader from '../../../components/setup-header';
 import { is } from 'immutable';
 
 class SyncStatus extends Component {
@@ -18,50 +17,46 @@ class SyncStatus extends Component {
         };
     }
     componentWillMount () {
-        this.startGeth();
+        // this.startGeth();
     }
     componentDidMount () {
-        this.startGeth();
+        // this.startGeth();
     }
-    getSyncStatus = () => {
-        const { eProcActions, gethStatus, gethSyncStatus } = this.props;
+    // getSyncStatus = () => {
+    //     const { eProcActions, gethStatus, gethSyncStatus } = this.props;
 
-        eProcActions.getSyncStatus().then((syncData) => {
-            console.log(syncData, 'sync data');
-        });
-        // eProcActions.startUpdateSync((err, updateData) => {
-        //     const { success, status, data } = updateData;
-        //     if (err) {
-        //         return this.setState({
-        //             syncError: status.message
-        //         });
-        //     }
-        //     if (success && data.empty) {
-        //         this.finishSync();
-        //     } else {
-        //         this.setState({
-        //             syncData: data
-        //         });
-        //     }
-        //     return null;
-        // });
-    };
+    //     eProcActions.getSyncStatus().then((syncData) => {
+    //         console.log(syncData, 'sync data');
+    //     });
+    //     // eProcActions.startUpdateSync((err, updateData) => {
+    //     //     const { success, status, data } = updateData;
+    //     //     if (err) {
+    //     //         return this.setState({
+    //     //             syncError: status.message
+    //     //         });
+    //     //     }
+    //     //     if (success && data.empty) {
+    //     //         this.finishSync();
+    //     //     } else {
+    //     //         this.setState({
+    //     //             syncData: data
+    //     //         });
+    //     //     }
+    //     //     return null;
+    //     // });
+    // };
     startGeth = () => {
-        const { eProcActions, eProcBundleActions, gethStatus } = this.props;
-        return eProcBundleActions.startGeth();
+        const { eProcActions, gethSettings, gethStatus } = this.props;
+        console.log(gethSettings, 'gethSettings');
+        if (!gethStatus.get('api') || !gethStatus.get('starting')) {
+            eProcActions.startGeth(gethSettings);
+        }
     };
-    checkGethStatus = () => {
-        const { eProcActions } = this.props;
-        eProcActions.getGethStatus();
-    }
     finishSync = () => {
-        const { eProcActions, eProcBundleActions } = this.props;
-        let promises = [];
-        promises.push(eProcActions.stopUpdateSync());
-        promises.push(eProcBundleActions.startIPFS());
-        Promise.all(promises).then(() => {
-            this.context.router.push('authenticate');
-        });
+        const { eProcActions } = this.props;
+        eProcActions.stopUpdateSync();
+        eProcBundleActions.startIPFS();
+        this.context.router.push('authenticate');
     };
     handleSync = () => {
         const { eProcActions, externalProcState } = this.props;
@@ -72,15 +67,14 @@ class SyncStatus extends Component {
         return this.getSyncStatus();
     };
     handleCancel = () => {
-        const { eProcBundleActions } = this.props;
-        eProcBundleActions.requestCancelSync().then(() => {
-            this.context.router.push('setup');
-        });
+        const { eProcActions } = this.props;
+        eProcActions.cancelSync();
+        this.context.router.push('setup');
     };
     _getActionLabels = () => {
-        const { externalProcState, intl } = this.props;
+        const { syncActionId, intl } = this.props;
         const labels = {};
-        switch (externalProcState.get('actionId')) {
+        switch (syncActionId) {
             case 1:
                 labels.title = intl.formatMessage(setupMessages.synchronizing);
                 labels.action = intl.formatMessage(generalMessages.pause);
@@ -129,66 +123,9 @@ class SyncStatus extends Component {
     };
     render () {
         const { intl, gethStatus, eProcActions, gethSyncStatus } = this.props;
-        let blockSync;
-        let blockProgress;
-        let currentProgress;
-        let pageTitle;
-        let progressBody;
-        let peerInfo;
-        pageTitle = this._getActionLabels().title;
-        if (gethSyncStatus && gethSyncStatus.get('peerCount') > 0 && gethSyncStatus.get('highestBlock') > 0) {
-            blockProgress = gethSyncStatus;
-            currentProgress = ((blockProgress.get('currentBlock') - blockProgress.get('startingBlock')) /
-                (blockProgress.get('highestBlock') - blockProgress.get('startingBlock'))) * 100;
-            peerInfo = (
-              <FormattedPlural
-                value={gethSyncStatus.get('peerCount')}
-                one={intl.formatMessage(setupMessages.onePeer)}
-                few={intl.formatMessage(setupMessages.fewPeers)}
-                many={intl.formatMessage(setupMessages.manyPeers)}
-                other={intl.formatMessage(setupMessages.peers)}
-              />
-            );
-            progressBody = (
-              <div>
-                <div style={{ fontWeight: 'bold', padding: '5px', fontSize: '16px' }} >
-                  {`${gethSyncStatus.get('peerCount')}`}&nbsp;
-                  {peerInfo}&nbsp;
-                  {`${intl.formatMessage(generalMessages.connected)}`}
-                </div>
-                <div style={{ fontSize: '20px' }} >
-                  <strong style={{ fontWeight: 'bold' }} >
-                    {blockProgress.currentBlock}
-                  </strong>/
-                    {blockProgress.highestBlock}
-                </div>
-              </div>
-            );
-        } else if (gethStatus.get('downloading')) {
-            peerInfo = intl.formatMessage(setupMessages.downloadingGeth);
-            progressBody = (
-              <div>
-                <div style={{ fontWeight: 'bold', padding: '5px', fontSize: '16px' }} >
-                  {peerInfo}
-                </div>
-              </div>
-            );
-        } else {
-            peerInfo = intl.formatMessage(setupMessages.findingPeers);
-            progressBody = (
-              <div>
-                <div style={{ fontWeight: 'bold', padding: '5px', fontSize: '16px' }} >
-                  {peerInfo}
-                </div>
-              </div>
-            );
-        }
-        blockSync = (
-          <div style={{ padding: '64px 0', textAlign: 'center' }} >
-            <SyncProgress value={currentProgress} />
-              {progressBody}
-          </div>
-        );
+        const pageTitle = ''; //this._getActionLabels().title;
+        console.log(gethStatus, 'gethStatus');
+
         return (
           <PanelContainer
             showBorder
@@ -226,7 +163,7 @@ class SyncStatus extends Component {
                   <FormattedMessage {...setupMessages.onSyncStart} />
                 </p>
               </div>
-              {blockSync}
+              <SyncStatus gethSyncStatus={gethSyncStatus} gethStatus={gethStatus} intl={intl} />
             </div>
               {this.state.showGethLogs &&
                 <ul style={this.props.logListStyle} className="col-xs-12">
@@ -254,13 +191,15 @@ class SyncStatus extends Component {
 }
 
 SyncStatus.propTypes = {
-    eProcActions: PropTypes.object.isRequired,
-    eProcBundleActions: PropTypes.object.isRequired,
-    loggerActions: PropTypes.object.isRequired,
-    style: PropTypes.object,
-    logListStyle: PropTypes.object,
-    intl: PropTypes.object,
-    settingsState: PropTypes.object.isRequired
+    eProcActions: PropTypes.shape().isRequired,
+    loggerActions: PropTypes.shape().isRequired,
+    style: PropTypes.shape(),
+    logListStyle: PropTypes.shape(),
+    intl: PropTypes.shape().isRequired,
+    gethSettings: PropTypes.shape().isRequired,
+    gethStatus: PropTypes.shape().isRequired,
+    gethSyncStatus: PropTypes.shape().isRequired,
+    syncActionId: PropTypes.number
 };
 
 SyncStatus.contextTypes = {

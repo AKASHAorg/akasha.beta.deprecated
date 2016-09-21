@@ -18,16 +18,11 @@ class SettingsActions {
             this.dispatch(settingsActionCreators.saveSettingsSuccess(settings, table))
         ).catch(reason => this.dispatch(settingsActionCreators.saveSettingsError(reason, table)));
 
-    getSettings = (table) => {
-        return this.settingsService.getSettings(table).then((data) => {
-            if (!data) {
-                return this.dispatch(settingsActionCreators.getSettingsError('No data!', table));
-            }
-            return this.dispatch(settingsActionCreators.getSettingsSuccess(data, table));
-        })
-        .then(() => this.dispatch((dispatch, getState) => getState().settingsState.get(table)))
-        .catch(reason => this.dispatch(settingsActionCreators.getSettingsError(reason, table)));
-    }
+    getSettings = table =>
+        this.settingsService.getSettings(table).then(data =>
+            this.dispatch(settingsActionCreators.getSettingsSuccess(data, table))
+        ).catch(reason => this.dispatch(settingsActionCreators.getSettingsError(reason, table)));
+
     retrySetup = (isAdvanced) => {
         this.dispatch(settingsActionCreators.retrySetup(isAdvanced));
     };
