@@ -30,20 +30,19 @@ class BootstrapBundleActions {
         return Promise.all(promises);
     };
     bootApp = (getState) => {
-        return this.appActions.checkForUpdates();
+        this.appActions.checkForUpdates();
     };
     initSetup = (getState) => {
         // @TODO load contents for tutorials
-        const promises = [];
-        promises.push(this.settingsActions.getSettings('flags'));
-        return Promise.all(promises);
+        this.settingsActions.getSettings('flags');
+        this.settingsActions.getSettings('geth');
+        this.settingsActions.getSettings('ipfs');
     };
     initConfig = (getState) => {
-        const promises = [];
-        promises.push(this.settingsActions.getSettings('geth'));
-        promises.push(this.eProcActions.getGethOptions);
-        promises.push(this.settingsActions.getSettings('ipfs'));
-        return Promise.all(promises);
+
+    };
+    initSync = (getState) => {
+        this.eProcActions.getGethStatus();
     };
     initAuth = (getState) => {
         const promises = [];

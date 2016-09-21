@@ -5,8 +5,7 @@ import { AppActions, BootstrapBundleActions, EProcActions } from 'local-flux';
 
 function mapStateToProps(state) {
     return {
-        appState: state.appState,
-        externalProcState: state.externalProcState
+        appState: state.appState
     };
 }
 

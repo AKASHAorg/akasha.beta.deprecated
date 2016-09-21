@@ -6,6 +6,7 @@ import { injectIntl } from 'react-intl';
 import { setupMessages, generalMessages } from 'locale-data/messages';
 import { AdvancedSetupForm } from './advanced-setup-form';
 import PanelContainer from 'shared-components/PanelContainer/panel-container';
+
 const { dialog } = remote;
 
 class Setup extends Component {
@@ -16,18 +17,17 @@ class Setup extends Component {
         };
     }
     componentWillMount () {
-        const { settingsState, eProcActions } = this.props;
-        const cancelRequest = settingsState.getIn(['flags', 'requestStartupChange']);
-        const gethSettings = settingsState.get('geth')
+        const { configFlags, gethSettings } = this.props;
+        const cancelRequest = configFlags.get('requestStartupChange');
+        console.log(gethSettings, cancelRequest, 'ready for sync');
         if (!cancelRequest && gethSettings) {
             return this.context.router.push('setup/sync-status');
         }
-        return eProcActions.getGethOptions();
     }
     handleChange = (ev, value) => {
-        const { settingsActions, settingsState } = this.props;
+        const { settingsActions, isAdvanced } = this.props;
         const show = value === 'advanced';
-        if (settingsState.get('isAdvanced') === show) {
+        if (isAdvanced === show) {
             return;
         }
         settingsActions.toggleAdvancedSettings(show);
@@ -49,24 +49,24 @@ class Setup extends Component {
         }
     };
     handleGethIpc = (ev) => {
-        const { settingsActions, settingsState } = this.props;
+        const { settingsActions, gethSettings } = this.props;
         const target = ev.target;
-        const currentIpcPath = settingsState.getIn(['geth', 'ipcPath']);
+        const currentIpcPath = gethSettings.get('ipcPath');
         if (currentIpcPath === target.value || !target.value) {
             return;
         }
         settingsActions.setupGethIPCPath(target.value);
     };
     handleGethCacheSize = (ev) => {
-        const { settingsActions, settingsState } = this.props;
+        const { settingsActions, gethSettings, intl } = this.props;
         const target = ev.target;
-        const currentCacheSize = settingsState.getIn(['geth', 'cacheSize']);
+        const currentCacheSize = gethSettings.get('cacheSize');
         if (currentCacheSize === target.value || !target.value) {
             return;
         }
         if (target.value < 512) {
             this.setState({
-                cacheSizeError: 'Cache size should not be less than 512Mb'
+                cacheSizeError: intl.formatMessage(setupMessages.gethCacheSizeError)
             });
         } else {
             this.setState({
@@ -93,27 +93,27 @@ class Setup extends Component {
         }
     };
     handleIpfsApiPort = (ev) => {
-        const { settingsActions, settingsState } = this.props;
+        const { settingsActions, ipfsSettings } = this.props;
         const target = ev.target;
-        const currentIpfsApiPort = settingsState.getIn(['ipfs', 'apiPort']);
+        const currentIpfsApiPort = ipfsSettings.get('apiPort');
         if (currentIpfsApiPort === target.value || !target.value) {
             return;
         }
         settingsActions.setupIPFSApiPort(target.value);
     };
     handleIpfsGatewayPort = (ev) => {
-        const { settingsActions, settingsState } = this.props;
+        const { settingsActions, ipfsSettings } = this.props;
         const target = ev.target;
-        const currentIpfsGatewayPort = settingsState.getIn(['ipfs', 'gatewayPort']);
+        const currentIpfsGatewayPort = ipfsSettings.get('gatewayPort');
         if (currentIpfsGatewayPort === target.value || !target.value) {
             return;
         }
         settingsActions.setupIPFSGatewayPort(target.value);
     };
     handleSubmit = () => {
-        const { settingsActions, settingsState } = this.props;
-        const { datadir, ipcpath, cache } = settingsState.get('geth').toJS();
-        const { ipfsPath } = settingsState.get('ipfs').toJS();
+        const { settingsActions, gethSettings, ipfsSettings } = this.props;
+        const { datadir, ipcpath, cache } = gethSettings.toJS();
+        const { ipfsPath } = ipfsSettings.toJS();
         settingsActions.saveSettings({ name: 'geth', datadir, ipcpath, cache });
         settingsActions.saveSettings({ name: 'ipfs', ipfsPath });
         settingsActions.saveSettings({ name: 'flags', requestStartupChange: false });
@@ -134,71 +134,15 @@ class Setup extends Component {
 
     _getLogs = () => {};
     _retrySetup = () => {
-        const { settingsActions, settingsState } = this.props;
-        settingsActions.retrySetup(settingsState.get('isAdvanced'));
+        const { settingsActions, isAdvanced } = this.props;
+        settingsActions.retrySetup(isAdvanced);
     };
 
     _sendReport = () => {};
     render () {
-        const { style, settingsState, intl } = this.props;
+        const { isAdvanced, intl, gethSettings, ipfsSettings } = this.props;
         const radioStyle = { marginTop: '10px', marginBottom: '10px' };
-        const defaultSelected = (!settingsState.get('isAdvanced')) ? 'express' : 'advanced';
-        const logListStyle = {
-            maxHeight: 500,
-            overflowY: 'scroll',
-            paddingLeft: 4,
-            overflowX: 'hidden',
-            fontFamily: 'Consolas',
-            backgroundColor: 'rgba(0,0,0,0.02)'
-        };
-        if (!settingsState.getIn(['geth', 'started'])
-            && settingsState.getIn(['geth', 'status']) === false) {
-            return (
-              <div style={style}>
-                <div className="start-xs">
-                  <div
-                    className="col-xs"
-                    style={{ flex: 1, padding: 0 }}
-                  >
-                    <SetupHeader />
-                      {settingsState.get('isAdvanced') &&
-                        <div style={{ marginTop: '24px' }}>
-                          Geth cannot start with your submitted configuration
-                          <h4>Configuration:</h4>
-                            {Object.keys(settingsState.get('geth').toJS()).map((key) => (
-                              <p key={key}>
-                                <b>{key}: </b>
-                                <b>{settingsState.get('geth').toJS()[key]}</b>
-                              </p>
-                            ))}
-                        </div>
-                      }
-                      {!settingsState.get('isAdvanced') &&
-                        <div>
-                          Ouch, Geth cannot start!
-                        </div>
-                      }
-                    <div>Logs:</div>
-                    <div>
-                      <ul style={logListStyle}>
-                        {this.state.gethLogs.map((log, key) => (
-                          <li key={key} style={{ marginBottom: '8px' }}>
-                            <abbr title="Log Level">{log.level}</abbr>
-                            <span> {new Date(log.timestamp).toLocaleString()} =></span>
-                            <p>{log.message}</p>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div>
-                      <RaisedButton label="Retry" onClick={this._retrySetup} />
-                      <RaisedButton label="Send Report" onClick={this._sendReport} />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            );
-        }
+        const defaultSelected = !isAdvanced ? 'express' : 'advanced';
         return (
           <PanelContainer
             showBorder
@@ -247,10 +191,13 @@ class Setup extends Component {
                   value={'advanced'}
                 />
               </RadioButtonGroup>
-              {settingsState.get('isAdvanced') &&
+              {isAdvanced &&
                 <AdvancedSetupForm
                   intl={intl}
-                  settingsState={settingsState}
+                  style={this.props.style}
+                  isAdvanced={isAdvanced}
+                  gethSettings={gethSettings}
+                  ipfsSettings={ipfsSettings}
                   cacheSizeError={this.state.cacheSizeError}
                   handleGethDatadir={this.handleGethDatadir}
                   handleGethIpc={this.handleGethIpc}
@@ -267,11 +214,13 @@ class Setup extends Component {
 }
 
 Setup.propTypes = {
-    eProcActions: PropTypes.object.isRequired,
-    settingsActions: PropTypes.object.isRequired,
-    settingsState: PropTypes.object.isRequired,
-    style: PropTypes.object,
-    intl: PropTypes.object,
+    settingsActions: PropTypes.shape().isRequired,
+    gethSettings: PropTypes.shape().isRequired,
+    ipfsSettings: PropTypes.shape().isRequired,
+    isAdvanced: PropTypes.bool.isRequired,
+    configFlags: PropTypes.shape().isRequired,
+    style: PropTypes.shape(),
+    intl: PropTypes.shape(),
 };
 
 Setup.contextTypes = {

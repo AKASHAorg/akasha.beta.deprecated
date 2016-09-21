@@ -25,12 +25,12 @@ const initialState = fromJS({
 });
 
 const settingsState = createReducer(initialState, {
-    [types.GET_SETTINGS_SUCCESS]: (state, action) => {
-        return state.merge({ [action.table]: fromJS(action.data[0]) });
-    },
-    [types.GET_SETTINGS_ERROR]: (state, action) => {
-        return state.merge({ [action.table]: { error: action.error }});
-    },
+    [types.GET_SETTINGS_SUCCESS]: (state, action) =>
+        state.merge({ [action.table]: fromJS(action.data[0]) }),
+
+    [types.GET_SETTINGS_ERROR]: (state, action) =>
+        state.merge({ [action.table]: { error: action.error } }),
+
     [types.SETUP_ADVANCED_SETTINGS]: (state, action) =>
         state.set('isAdvanced', action.isAdvanced),
 
@@ -51,49 +51,6 @@ const settingsState = createReducer(initialState, {
 
     [types.SETUP_IPFS_GATEWAY_PORT]: (state, action) =>
         state.updateIn(['ipfs', 'gatewayPort'], () => action.port),
-
-    [types.START_GETH_SUCCESS]: (state, action) => {
-        if (action.data.status) {
-            return state.mergeIn(['geth'], {
-                started: true,
-                datadir: action.data.status.datadir,
-                ipcpath: action.data.status.ipcpath,
-                cache: action.data.status.cache,
-                status: action.data.status
-            });
-        }
-        return state.mergeIn(['geth'], {
-            started: true
-        });
-    },
-    [types.START_GETH_ERROR]: (state, action) =>
-        state.mergeIn(['geth'], {
-            started: false,
-            status: action.data.status
-        }),
-
-    [types.STOP_GETH_SUCCESS]: (state, action) =>
-        state.mergeIn(['geth'], {
-            started: false,
-            status: action.data.status,
-        }),
-
-    [types.STOP_GETH_ERROR]: (state, action) =>
-        state.mergeIn(['geth'], {
-            started: true,
-            status: action.data.status
-        }),
-
-    [types.RETRY_SETUP]: (state, action) =>
-        state.mergeDeep({
-            geth: {
-                status: ''
-            },
-            ipfs: {
-                status: ''
-            },
-            isAdvanced: action.isAdvanced
-        }),
 });
 
 export default settingsState;
