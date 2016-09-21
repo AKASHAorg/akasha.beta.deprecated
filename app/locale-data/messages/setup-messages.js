@@ -36,6 +36,11 @@ const setupMessages = defineMessages({
         description: 'geth cache size input label',
         defaultMessage: 'Change Geth cache size (min. 512MB)'
     },
+    gethCacheSizeError: {
+        id: 'app.setup.gethCacheSizeError',
+        description: 'error shown when user sets a cache size lower than 512mb',
+        defaultMessage: 'Cache size should not be less than 512Mb'
+    },
     ipfsApiPort: {
         id: 'app.setup.ipfsApiPort',
         description: 'ipfs input field label',
@@ -79,6 +84,16 @@ const setupMessages = defineMessages({
         id: 'app.setup.advancedSetup',
         description: 'Advanced setup option checkbox',
         defaultMessage: 'Advanced'
+    },
+    downloadingGeth: {
+        id: 'app.setup.downloadingGeth',
+        description: 'message shown when geth is downloading',
+        defaultMessage: 'Downloading Geth client..'
+    },
+    startingGeth: {
+        id: 'app.setup.startingGeth',
+        description: 'message shown then Geth is starting',
+        defaultMessage: 'Starting Geth client..'
     },
     synchronizing: {
         id: 'app.setup.synchronizing',
@@ -132,11 +147,6 @@ const setupMessages = defineMessages({
         id: 'app.setup.findingPeers',
         description: 'finding peers status',
         defaultMessage: 'Finding peers'
-    },
-    downloadingGeth: {
-        id: 'app.setup.downloadingGeth',
-        description: 'message shown when Geth is downloading',
-        defaultMessage: 'Downloading Geth'
     },
     onePeer: {
         id: 'app.setup.onePeer',
