@@ -6,6 +6,8 @@ import TxIPC from './TxIPC';
 import RegistryIPC from './RegistryIPC';
 import ProfileIPC from './ProfileIPC';
 import TagsIPC from './TagsIPC';
+import EntryIPC from './EntryIPC';
+import CommentsIPC from './CommentsIPC';
 import WebContents = Electron.WebContents;
 
 export function initModules() {
@@ -17,7 +19,9 @@ export function initModules() {
         new TxIPC(),
         new RegistryIPC(),
         new ProfileIPC(),
-        new TagsIPC()
+        new TagsIPC(),
+        new EntryIPC(),
+        new CommentsIPC()
     ];
     return {
         initListeners: (webContents: WebContents) => {
