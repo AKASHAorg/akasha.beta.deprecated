@@ -90,17 +90,17 @@ class Main extends BaseContract_1.default {
             return this.gethInstance.web3.fromUtf8(v);
         });
         const commentIdTr = this.gethInstance.web3.fromDecimal(commentId);
-        return this.extractData('updateCommententryAddress', commentIdTr, hashTr, { gas: gas });
+        return this.extractData('updateComment', entryAddress, commentIdTr, hashTr, { gas: gas });
     }
-    upVoteComment(entryAddress, weigth, commentId, gas) {
+    upVoteComment(entryAddress, weigth, commentId, gas, value) {
         const weigthTr = this.gethInstance.web3.fromDecimal(weigth);
         const commentIdTr = this.gethInstance.web3.fromDecimal(commentId);
-        return this.extractData('upVoteComment', entryAddress, weigthTr, commentIdTr, { gas: gas });
+        return this.extractData('upVoteComment', entryAddress, weigthTr, commentIdTr, { gas: gas, value: value });
     }
-    downVoteComment(entryAddress, weigth, commentId, gas) {
+    downVoteComment(entryAddress, weigth, commentId, gas, value) {
         const weigthTr = this.gethInstance.web3.fromDecimal(weigth);
         const commentIdTr = this.gethInstance.web3.fromDecimal(commentId);
-        return this.extractData('downVoteCommentAsync', entryAddress, weigthTr, commentIdTr, { gas: gas });
+        return this.extractData('downVoteCommentAsync', entryAddress, weigthTr, commentIdTr, { gas: gas, value: value });
     }
 }
 Object.defineProperty(exports, "__esModule", { value: true });

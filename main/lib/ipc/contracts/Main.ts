@@ -192,7 +192,7 @@ export default class Main extends BaseContract {
             return this.gethInstance.web3.fromUtf8(v);
         });
         const commentIdTr = this.gethInstance.web3.fromDecimal(commentId);
-        return this.extractData('updateCommententryAddress', commentIdTr, hashTr, {gas});
+        return this.extractData('updateComment', entryAddress, commentIdTr, hashTr, {gas});
     }
 
     /**
@@ -201,12 +201,13 @@ export default class Main extends BaseContract {
      * @param weigth
      * @param commentId
      * @param gas
+     * @param value
      * @returns {any}
      */
-    public upVoteComment(entryAddress: string, weigth: number, commentId: number, gas?: number) {
+    public upVoteComment(entryAddress: string, weigth: number, commentId: number, gas?: number, value?: number) {
         const weigthTr = this.gethInstance.web3.fromDecimal(weigth);
         const commentIdTr = this.gethInstance.web3.fromDecimal(commentId);
-        return this.extractData('upVoteComment', entryAddress, weigthTr, commentIdTr, {gas});
+        return this.extractData('upVoteComment', entryAddress, weigthTr, commentIdTr, {gas, value});
     }
 
     /**
@@ -215,11 +216,12 @@ export default class Main extends BaseContract {
      * @param weigth
      * @param commentId
      * @param gas
+     * @param value
      * @returns {any}
      */
-    public downVoteComment(entryAddress: string, weigth: number, commentId: number, gas?: number) {
+    public downVoteComment(entryAddress: string, weigth: number, commentId: number, gas?: number, value?: number) {
         const weigthTr = this.gethInstance.web3.fromDecimal(weigth);
         const commentIdTr = this.gethInstance.web3.fromDecimal(commentId);
-        return this.extractData('downVoteCommentAsync', entryAddress, weigthTr, commentIdTr, {gas});
+        return this.extractData('downVoteCommentAsync', entryAddress, weigthTr, commentIdTr, {gas, value});
     }
 }

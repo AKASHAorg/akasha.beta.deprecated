@@ -14,6 +14,7 @@ const channels = {
         'unsubscribe', 'getSubPosition'],
     entry: ['manager', 'publish', 'update', 'upvote', 'downvote', 'isOpenedToVotes', 'getVoteOf',
         'getVoteEndDate', 'getScore'],
+    comments: ['manager', 'publish', 'update', 'upvote', 'downvote', 'getScore'],
     geth: ['manager', 'options', 'startService', 'stopService', 'restartService', 'syncStatus', 'logs', 'status'],
     ipfs: ['manager', 'startService', 'stopService', 'status', 'resolve'],
     profile: ['manager', 'getProfileData', 'getMyBalance', 'getIpfs', 'unregister'],

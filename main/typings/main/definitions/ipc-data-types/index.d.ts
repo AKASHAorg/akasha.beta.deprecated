@@ -472,3 +472,55 @@ interface EntryScoreResponse {
     };
 }
 ///////////////////// </ ENTRY> \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+
+//////////////////// < COMMENTS > \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+interface CommentPublishRequest extends  AuthRequest {
+    address: string; // entry address
+    hash: string; // ipfshash
+    gas?: number;
+}
+
+interface CommentPublishResponse extends MainResponse {
+    data: {
+        tx: string;
+    };
+}
+
+interface CommentUpdateRequest extends  AuthRequest {
+    address: string; // entry address
+    commentId: number;
+    hash: string; // ipfshash
+    gas?: number;
+}
+
+interface CommentUpdateResponse extends MainResponse {
+    data: {
+        tx: string;
+    };
+}
+
+interface CommentVoteRequest extends AuthRequest {
+    address: string; // entry address
+    weight: number;
+    commentId: number;
+    gas?: number;
+    value?: number;
+}
+
+interface CommentVoteResponse extends MainResponse {
+    data: {
+        tx: string;
+    };
+}
+
+interface CommentScoreRequest {
+    address: string; // entry address
+    commentId: number; // comment id
+}
+
+interface CommentScoreResponse extends MainResponse {
+    data: {
+        score: number;
+    }
+}
+/////////////////// </ COMMENTS > \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
