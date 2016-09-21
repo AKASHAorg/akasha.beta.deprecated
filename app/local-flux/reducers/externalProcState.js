@@ -19,12 +19,19 @@ const GethSyncStatus = Record({
     synced: false
 });
 
+const ErrorRecord = Record({
+    code: 0,
+    fatal: false,
+    message: ''
+});
+
 const IpfsStatus = Record({
     downloading: null,
     api: false,
     spawned: false,
     started: null,
-    stopped: null
+    stopped: null,
+    error: null
 });
 
 const initialState = fromJS({
@@ -44,6 +51,13 @@ const initialState = fromJS({
 const eProcState = createReducer(initialState, {
     [types.START_GETH_SUCCESS]: (state, action) =>
         state.merge({ gethStatus: new GethStatus(action.data.gethState) }),
+
+    [types.START_GETH_ERROR]: (state, action) =>
+        state.merge({
+            gethStatus: {
+                error: new ErrorRecord(action.error)
+            }
+        }),
 
     [types.GET_GETH_STATUS_SUCCESS]: (state, action) =>
         state.merge({ gethStatus: new GethStatus(action.status) }),

@@ -18,6 +18,7 @@ class BaseService {
     // create a universal listener passed to ipcRenderer.on() method;
     createListener = (dispatch, onError, onSuccess) => {
         return (ev, res) => {
+            dbg('response: ', res);
             if (res.error) {
                 return dispatch(onError(res.error));
             }
