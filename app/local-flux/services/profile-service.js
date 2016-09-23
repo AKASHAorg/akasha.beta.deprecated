@@ -1,7 +1,7 @@
 import { ipcRenderer } from 'electron';
+import debug from 'debug';
 import BaseService from './base-service';
 import profileDB from './db/profile';
-import debug from 'debug';
 
 const Channel = window.Channel;
 const dbg = debug('App:ProfileService:');
@@ -23,19 +23,11 @@ class ProfileService extends BaseService {
      * }
      * @return new Promise
      */
-    getProfileBalance = (profileAddress, unit = 'ether') => {
+    getProfileBalance = ({ options = { profile: '', unit: 'eth' }, onError = () => {}, onSuccess }) => {
         const serverChannel = Channel.server.profile.getMyBalance;
         const clientChannel = Channel.client.profile.getMyBalance;
-        if (this._listeners.has(clientChannel)) return Promise.resolve();
-        return new Promise((resolve, reject) => {
-            const listenerCb = (ev, res) => {
-                if (res.error) return reject(res.error);
-                return resolve(res.data);
-            };
-            return this.registerListener(clientChannel, listenerCb, () =>
-                ipcRenderer.send(serverChannel, { profile: profileAddress, unit })
-            );
-        });
+        this.registerListener(clientChannel, this.createListener(onError, onSuccess));
+        ipcRenderer.send(serverChannel, options);
     };
     /**
      * retrieve profile data by eth address
@@ -52,19 +44,13 @@ class ProfileService extends BaseService {
      *      links?: { title: string, url: string, type: string, id: number }[];
      * }
      */
-    getProfileData = (profile, full = false) => {
+    getProfileData = ({
+        options = { profile: '', full: false }, onError = () => {}, onSuccess
+    }) => {
         const serverChannel = Channel.server.profile.getProfileData;
         const clientChannel = Channel.client.profile.getProfileData;
-        if (this._listeners.has(clientChannel)) return Promise.resolve();
-        return new Promise((resolve, reject) => {
-            const listenerCb = (ev, res) => {
-                if (res.error) return reject(res.error);
-                return resolve(res.data);
-            };
-            return this.registerListener(clientChannel, listenerCb, () =>
-                ipcRenderer.send(serverChannel, { profile, full })
-            );
-        });
+        this.registerListener(clientChannel, this.createListener(onError, onSuccess));
+        ipcRenderer.send(serverChannel, options);
     };
     /**
      * retrieve profile data by ipfs address
@@ -74,25 +60,29 @@ class ProfileService extends BaseService {
      * Response:
      * same as `getProfileData`
      */
-    getIpfs = (ipfsHash, full = false) => {
+    getIpfs = ({
+        options = { ipfsHash: '', full: false }, onError = () => {}, onSuccess
+    }) => {
         const serverChannel = Channel.server.profile.getIpfs;
         const clientChannel = Channel.server.profile.getIpfs;
-        if (this._listeners.has(clientChannel)) return Promise.resolve();
-        return new Promise ((resolve, reject) => {
-            const listenerCb = (ev, res) => {
-                if (res.error) return reject(res.error);
-                return resolve(res.data);
-            };
-            return this.registerListener(clientChannel, listenerCb, () =>
-                ipcRenderer.send(serverChannel, { ipfsHash, full })
-            );
-        });
+
+        this.registerListener(clientChannel, this.createListener(onError, onSuccess));
+        ipcRenderer.send(serverChannel, options);
     };
     /**
      * unregister profile -> delete profile from profiles registry contract
      * @todo gather more info and implement!
      */
     unregister = () => {};
+
+    getTempProfile = ({ onError = () => {}, onSuccess }) => {
+        profileDB.transaction('rw', profileDB.tempProfile, () =>
+            profileDB.tempProfile.toArray()
+        ).then((results) => {
+            dbg('temp profiles: ', results);
+            onSuccess(results);
+        }).catch(reason => onError(reason));
+    }
 }
 
 export { ProfileService };

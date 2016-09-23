@@ -1,11 +1,12 @@
 import { connect } from 'react-redux';
-import { asyncConnect } from 'redux-connect';
+import { ProfileActions } from 'local-flux';
 import Auth from './components/Auth';
-import { ProfileActions, BootstrapBundleActions } from 'local-flux';
 
 function mapStateToProps (state) {
     return {
-        profileState: state.profileState
+        tempProfile: state.profileState.get('tempProfile'),
+        loggedProfile: state.profileState.get('loggedProfile'),
+        localProfiles: state.profileState.get('profiles')
     };
 }
 
@@ -15,12 +16,7 @@ function mapDispatchToProps (dispatch) {
     };
 }
 
-export default asyncConnect([{
-    promise: ({ store: { dispatch, getState } }) => {
-        const bootstrapActions = new BootstrapBundleActions(dispatch);
-        return Promise.resolve(bootstrapActions.initAuth(getState));
-    }
-}])(connect(
+export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(Auth));
+)(Auth);

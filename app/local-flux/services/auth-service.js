@@ -116,28 +116,19 @@ class AuthService extends BaseService {
     /**
      * Get a list of local profiles created
      */
-    getLocalIdentities = () => {
+    getLocalIdentities = ({ options = {}, onError = () => {}, onSuccess }) => {
         const serverChannel = Channel.server.auth.getLocalIdentities;
         const clientChannel = Channel.client.auth.getLocalIdentities;
-        if (this._listeners.has(clientChannel)) {
-            return Promise.resolve();
-        }
 
-        return new Promise((resolve, reject) => {
-            const listenerCb = (ev, res) => {
-                if (res.error) return reject(res.error);
-                return resolve(res.data);
-            };
-            return this.openChannel({
-                serverManager: this.serverManager,
-                clientManager: this.clientManager,
-                serverChannel,
-                clientChannel,
-                listenerCb
-            }, () =>
-                ipcRenderer.send(serverChannel, {})
-            );
-        });
+        return this.openChannel({
+            serverManager: this.serverManager,
+            clientManager: this.clientManager,
+            serverChannel,
+            clientChannel,
+            listenerCb: this.createListener(onError, onSuccess)
+        }, () =>
+            ipcRenderer.send(serverChannel, options)
+        );
     };
     /**
      * Save logged profile to indexedDB database.

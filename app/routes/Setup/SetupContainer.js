@@ -1,17 +1,14 @@
 import { connect } from 'react-redux';
-import { asyncConnect } from 'redux-connect';
-import Setup from './components/setup';
 import {
-    SetupActions,
-    SyncActions,
     SettingsActions,
     EProcActions,
-    BootstrapBundleActions,
     ExternalProcessBundleActions } from 'local-flux';
+import Setup from './components/setup';
 
 function mapStateToProps (state) {
     return {
-        settingsState: state.settingsState
+        settingsState: state.settingsState,
+        configFlags: state.settingsState.get('flags')
     };
 }
 
@@ -23,12 +20,7 @@ function mapDispatchToProps (dispatch) {
     };
 }
 
-export default asyncConnect([{
-    promise: ({ store: { dispatch, getState } }) => {
-        const bootstrapActions = new BootstrapBundleActions(dispatch);
-        return Promise.resolve(bootstrapActions.initSetup(getState));
-    }
-}])(connect(
+export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(Setup));
+)(Setup);

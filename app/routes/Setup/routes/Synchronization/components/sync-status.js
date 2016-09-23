@@ -1,5 +1,5 @@
 import React, {Component, PropTypes} from 'react';
-import { FormattedMessage, injectIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import { generalMessages, setupMessages } from 'locale-data/messages';
 import { SyncProgressLoader } from 'shared-components';
 
@@ -33,18 +33,17 @@ class SyncStatus extends Component {
             progressBody = (
               <div>
                 <div style={{ fontWeight: 'bold', padding: '5px', fontSize: '16px' }} >
-                    {peerInfo}
+                  {peerInfo}
                 </div>
                 <div style={{ fontSize: '20px' }} >
                   <strong style={{ fontWeight: 'bold' }} >
                     {blockProgress.currentBlock}
                   </strong>/
-                    {blockProgress.highestBlock}
+                  {blockProgress.highestBlock}
                 </div>
               </div>
             );
         } else if (gethStatus.get('downloading')) {
-            peerInfo = intl.formatMessage(setupMessages.downloadingGeth);
             progressBody = (
               <div>
                 <div style={{ fontWeight: 'bold', padding: '5px', fontSize: '16px' }} >
@@ -53,7 +52,6 @@ class SyncStatus extends Component {
               </div>
             );
         } else if (gethStatus.get('starting')) {
-            peerInfo = intl.formatMessage(setupMessages.startingGeth);
             progressBody = (
               <div>
                 <div style={{ fontWeight: 'bold', padding: '5px', fontSize: '16px' }} >
@@ -84,4 +82,4 @@ SyncStatus.propTypes = {
 
 };
 
-export default injectIntl(SyncStatus);
+export default SyncStatus;

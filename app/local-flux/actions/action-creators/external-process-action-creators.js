@@ -56,6 +56,20 @@ export function stopGethError (error) {
     };
 }
 
+export function getSyncStatusSuccess (data) {
+    return {
+        type: types.GET_SYNC_STATUS_SUCCESS,
+        data
+    };
+}
+
+export function getSyncStatusError (error) {
+    return {
+        type: types.GET_SYNC_STATUS_ERROR,
+        error
+    };
+}
+
 export function startIPFSSuccess (data) {
     return {
         type: types.START_IPFS_SUCCESS,

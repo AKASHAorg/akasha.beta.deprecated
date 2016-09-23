@@ -24,46 +24,30 @@ class BootstrapBundleActions {
         this.tagActions = new TagActions(this.dispatch);
         return bootstrapActions;
     }
-    initApp = (getState) => {
-        // @TODO check for newer entries
-        const promises = [];
-        return Promise.all(promises);
-    };
-    bootApp = (getState) => {
+    bootApp = () => {
         this.appActions.checkForUpdates();
     };
-    initSetup = (getState) => {
+    initSetup = () => {
         // @TODO load contents for tutorials
         this.settingsActions.getSettings('flags');
         this.settingsActions.getSettings('geth');
         this.settingsActions.getSettings('ipfs');
     };
-    initConfig = (getState) => {
+    initConfig = () => {
 
     };
-    initSync = (getState) => {
+    initSync = () => {
         this.eProcActions.getGethStatus();
     };
-    initAuth = (getState) => {
+    initAuth = () => {
         const promises = [];
         promises.push(this.profileActions.getTempProfile());
         promises.push(this.tagActions.getTags({ fetchAll: true }));
-        return Promise.all(promises).then(() => {
-            const profileState = getState().profileState;
-            const tempProfile = profileState.get('tempProfile');
-            if (tempProfile.get('address')) {
-                dbg('temp profile is', tempProfile);
-            } else {
-                this.profileActions.getLocalProfiles();
-            }
-        });
-    };
-    initHome = (getState) => {
-        const promises = [];
-        const loggedProfile = getState().profileState.get('loggedProfile');
-        promises.push(this.entryActions.getDraftsCount(loggedProfile.get('userName')));
-        promises.push(this.entryActions.getEntriesCount(loggedProfile.get('userName')));
         return Promise.all(promises);
+    };
+    initHome = () => {
+        const promises = [];
+        return Promise.all();
     };
     initEntryEditor = (getState, params) => {
         const promises = [];

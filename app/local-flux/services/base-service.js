@@ -1,6 +1,5 @@
 import { ipcRenderer } from 'electron';
 import debug from 'debug';
-import invariant from 'fbjs/lib/invariant';
 
 const dbg = debug('App::BaseService::*');
 /**
@@ -16,15 +15,14 @@ class BaseService {
         this._openChannels = new Set();
     }
     // create a universal listener passed to ipcRenderer.on() method;
-    createListener = (dispatch, onError, onSuccess) => {
-        return (ev, res) => {
+    createListener = (onError, onSuccess) =>
+        (ev, res) => {
             dbg('response: ', res);
             if (res.error) {
-                return dispatch(onError(res.error));
+                return onError(res.error);
             }
-            return dispatch(onSuccess(res.data));
+            return onSuccess(res.data);
         };
-    }
     /**
      * Register a listener on a channel and store a reference to it
      * @param clientChannel <String> the channel we are receiving responses
@@ -39,13 +37,13 @@ class BaseService {
         }
         ipcRenderer.on(clientChannel, (ev, res) => this._listeners.get(clientChannel)(ev, res));
         if (cb) return cb();
-        return {};
+        return null;
     };
     /**
      * removes a listener
      */
     removeListener = (channel, cb) => {
-        ipcRenderer.removeListener(channel, this.listeners.get(channel));
+        ipcRenderer.removeListener(channel, this._listeners.get(channel));
         this._listeners.delete(channel);
         return cb();
     };
@@ -65,14 +63,14 @@ class BaseService {
         clientChannel,
         listenerCb
     }, cb) => {
-        if (ipcRenderer.listenerCount(clientManager) > 0) {
-            dbg('channel already listening', serverManager);
-            return this.registerListener(clientChannel, listenerCb, cb);
+        if (this._openChannels.has(serverChannel)) {
+            dbg(serverChannel, 'already opened. Nothing to do!');
+            return cb();
         }
-        this._openChannels.add(clientManager);
-        // dbg('open channels', this._openChannels);
         ipcRenderer.once(clientManager, (ev, res) => {
-            if (res.error) return dbg(`${res.error.message}, please check base-service -> openChannel method`);
+            if (res.error) {
+                dbg(`${res.error.message}, please check base-service -> openChannel method`);
+            }
             dbg(serverChannel, 'is now open to communication');
             return this.registerListener(clientChannel, listenerCb, cb);
         });
@@ -82,9 +80,9 @@ class BaseService {
      * @param manager <String> manager channel => we are sending req on this
      * @param channel <String> the server channel we need to stop listen
      */
-    closeChannel = (manager, channel) => {
-        this.removeListener(channel, () => {
-            ipcRenderer.send(manager, { listen: false });
+    closeChannel = (serverManager, serverChannel, clientChannel) => {
+        this.removeListener(clientChannel, () => {
+            ipcRenderer.send(serverManager, { channel: serverChannel, listen: false });
         });
     };
 }

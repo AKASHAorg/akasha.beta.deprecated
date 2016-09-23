@@ -1,6 +1,6 @@
 import { hashHistory } from 'react-router';
 import debug from 'debug';
-import { ProfileService } from '../services';
+import { ProfileService, AuthService } from '../services';
 import { profileActionCreators, appActionCreators } from './action-creators';
 
 const dbg = debug('App:ProfileActions:');
@@ -12,11 +12,12 @@ class ProfileActions {
             profileActions = this;
         }
         this.profileService = new ProfileService();
+        this.authService = new AuthService();
         this.dispatch = dispatch;
         return profileActions;
     }
     login = (profileData, unlockInterval, isConfirmation) =>
-        this.profileService.login(profileData, unlockInterval).then(result => {
+        this.profileService.login(profileData, unlockInterval).then((result) => {
             if (!result) {
                 const error = new Error('Main process doomed');
                 return this.dispatch(profileActionCreators.loginError(error));
@@ -42,12 +43,13 @@ class ProfileActions {
                         hashHistory.push(`${profile.get('userName')}`);
                     });
                 }
+                return null;
             });
         })
         .catch(reason => profileActionCreators.loginError(reason));
 
     logout = (account) => {
-        this.profileService.logout(account).then(result => {
+        this.profileService.logout(account).then((result) => {
             this.dispatch(profileActionCreators.logoutSuccess(result));
         })
         .then(() => {
@@ -58,7 +60,7 @@ class ProfileActions {
     };
 
     checkLoggedProfile = (options = {}) =>
-        this.profileService.getLoggedProfile().then(loggedProfile => {
+        this.profileService.getLoggedProfile().then((loggedProfile) => {
             const profile = loggedProfile[0];
             if (profile) {
                 this.dispatch(profileActionCreators.loginSuccess(profile));
@@ -75,11 +77,10 @@ class ProfileActions {
      * Retrieve all temporary profiles
      */
     getTempProfile = () =>
-        this.profileService.getTempProfile().then((profile) => {
-            dbg('getTempProfile', profile);
-            return this.dispatch(profileActionCreators.getTempProfileSuccess(profile));
-        })
-        .catch(reason => this.dispatch(profileActionCreators.getTempProfileError(reason)));
+        this.profileService.getTempProfile({
+            onError: err => this.dispatch(profileActionCreators.getTempProfileError(err)),
+            onSuccess: data => this.dispatch(profileActionCreators.getTempProfileSuccess(data))
+        });
 
     createTempProfile = (profileData, currentStatus) =>
         this.profileService.createTempProfile(profileData, currentStatus).then(() => {
@@ -122,7 +123,7 @@ class ProfileActions {
      */
     createEthAddress (profilePassword) {
         this.dispatch(profileActionCreators.createEthAddress());
-        this.profileService.createEthAddress(profilePassword).then(result => {
+        this.profileService.createEthAddress(profilePassword).then((result) => {
             dbg('createEthAddress', result);
             if (!result.success) {
                 dbg(result.status.message);
@@ -143,7 +144,7 @@ class ProfileActions {
                 return newerProfile;
             })
         )
-        .then((newerProfile) =>
+        .then(newerProfile =>
             this.requestFundFromFaucet(newerProfile.get('address'))
         )
         .catch(reason => this.dispatch(profileActionCreators.createEthAddressError(reason)));
@@ -154,7 +155,7 @@ class ProfileActions {
      */
     requestFundFromFaucet (profileAddress) {
         this.dispatch(profileActionCreators.requestFund());
-        this.profileService.requestFundFromFaucet(profileAddress).then(result => {
+        this.profileService.requestFundFromFaucet(profileAddress).then((result) => {
             dbg('requestFundFromFaucet_success', result);
             if (!result.success) {
                 dbg('ERROR: ', result.status.message);
@@ -184,7 +185,7 @@ class ProfileActions {
      */
     fundFromFaucet () {
         dbg('funding from faucet');
-        this.profileService.fundFromFaucet().then(result => {
+        this.profileService.fundFromFaucet().then((result) => {
             dbg('fundFromFaucet', result);
             return this.dispatch(profileActionCreators.fundSuccess(result.data));
         })
@@ -209,7 +210,7 @@ class ProfileActions {
      * @param {object} profileData
      */
     completeProfileCreation (profileData) {
-        this.profileService.completeProfileCreation(profileData).then(result => {
+        this.profileService.completeProfileCreation(profileData).then((result) => {
             dbg('completeProfileCreation', result);
             if (!result.success) {
                 this.dispatch(
@@ -292,33 +293,37 @@ class ProfileActions {
         );
 
     getLocalProfiles = () =>
-        this.getProfilesList().then(() =>
-            this.dispatch((dispatch, getState) => {
-                const profilesHash = getState().profileState.get('profiles');
-                const hashes = profilesHash.toJS().map(el => el.ipfsHash);
-                this.getProfileData(hashes);
-            })
-        )
-        .catch(reason => console.error(reason));
+        this.dispatch((dispatch) => {
+            this.authService.getLocalIdentities({
+                onSuccess: data => this.getProfileData(data),
+                onError: err => dispatch(profileActionCreators.getLocalProfilesError(err))
+            });
+        });
+    /**
+     * profiles = [{key: string, profile: string}]
+     */
+    getProfileData = (profiles) => {
+        for (let i = profiles.length - 1; i >= 0; i - 1) {
+            this.profileService.getProfileData({
+                options: {
+                    profile: profiles[i].profile,
+                    full: false
+                },
+                onSuccess: data => this.dispatch(profileActionCreators.getProfileDataSuccess(data)),
+                onError: err => this.dispatch(profileActionCreators.getProfileDataError(err))
+            });
+        }
+    };
     /**
      * get all local profiles available
      * returns only the address and userName
      */
     getProfilesList = () =>
-        this.profileService.getProfilesList().then(profiles => {
+        this.profileService.getProfilesList().then((profiles) => {
             dbg('getProfilesList', profiles);
             return this.dispatch(profileActionCreators.getProfilesListSuccess(profiles.data));
         }).catch(reason => this.dispatch(profileActionCreators.getProfilesListError(reason)));
 
-    getProfileData = (ipfsHashes) => {
-        this.profileService.getProfileData(ipfsHashes, (err, profile) => {
-            if (err) {
-                dbg('ERROR', err);
-                this.dispatch(profileActionCreators.getProfileDataError(err));
-            }
-            return this.dispatch(profileActionCreators.getProfileDataSuccess(profile));
-        });
-    };
     requestAuthentication = (nextAction) => {
         this.dispatch(profileActionCreators.setActionAfterAuth(nextAction));
     };

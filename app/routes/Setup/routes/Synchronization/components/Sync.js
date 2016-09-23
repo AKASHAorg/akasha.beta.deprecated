@@ -1,10 +1,10 @@
 import React, { Component, PropTypes } from 'react';
 import { RaisedButton } from 'material-ui';
 import { FormattedMessage, injectIntl } from 'react-intl';
-import { setupMessages, generalMessages } from 'locale-data/messages';
-import PanelContainer from 'shared-components/PanelContainer/panel-container';
+import { setupMessages, generalMessages } from 'locale-data/messages'; /* eslint import/no-unresolved: 0 */
+import PanelContainer from 'shared-components/PanelContainer/panel-container'; /* eslint import/no-unresolved: 0 */
 import SetupHeader from '../../../components/setup-header';
-import { is } from 'immutable';
+import SyncStatusLoader from './sync-status';
 
 class SyncStatus extends Component {
     constructor (props) {
@@ -17,59 +17,43 @@ class SyncStatus extends Component {
         };
     }
     componentWillMount () {
-        // this.startGeth();
+        const { settingsActions } = this.props;
+        settingsActions.getSettings('geth');
+        settingsActions.getSettings('ipfs');
     }
     componentDidMount () {
-        // this.startGeth();
-    }
-    // getSyncStatus = () => {
-    //     const { eProcActions, gethStatus, gethSyncStatus } = this.props;
-
-    //     eProcActions.getSyncStatus().then((syncData) => {
-    //         console.log(syncData, 'sync data');
-    //     });
-    //     // eProcActions.startUpdateSync((err, updateData) => {
-    //     //     const { success, status, data } = updateData;
-    //     //     if (err) {
-    //     //         return this.setState({
-    //     //             syncError: status.message
-    //     //         });
-    //     //     }
-    //     //     if (success && data.empty) {
-    //     //         this.finishSync();
-    //     //     } else {
-    //     //         this.setState({
-    //     //             syncData: data
-    //     //         });
-    //     //     }
-    //     //     return null;
-    //     // });
-    // };
-    startGeth = () => {
         const { eProcActions, gethSettings, gethStatus } = this.props;
-        console.log(gethSettings, 'gethSettings');
         if (!gethStatus.get('api') || !gethStatus.get('starting')) {
             eProcActions.startGeth(gethSettings);
         }
-    };
+    }
+    componentWillReceiveProps = (nextProps) => {
+        const { gethStatus, eProcActions } = nextProps;
+        if (gethStatus.get('api')) {
+            console.log('ready to get sync status!');
+            eProcActions.getSyncStatus();
+        }
+    }
+    componentWillUpdate (nextProps) {
+        const { gethStatus, configflags, gethSyncStatus } = nextProps;
+        if (gethStatus.get('stopped') && configflags.requestStartupChange) {
+            return this.context.router.push('setup');
+        }
+        if (gethSyncStatus.get('synced')) {
+            return this.finishSync();
+        }
+        return null;
+    }
     finishSync = () => {
         const { eProcActions } = this.props;
-        eProcActions.stopUpdateSync();
-        eProcBundleActions.startIPFS();
+        eProcActions.finishSync();
+        eProcActions.startIPFS();
         this.context.router.push('authenticate');
     };
-    handleSync = () => {
-        const { eProcActions, externalProcState } = this.props;
-        // if (externalProcState.get('actionId') === 1) {
-        //     return eProcActions.stopSync();
-        // }
-        // eProcActions.startSync();
-        return this.getSyncStatus();
-    };
     handleCancel = () => {
-        const { eProcActions } = this.props;
-        eProcActions.cancelSync();
-        this.context.router.push('setup');
+        const { eProcActions, settingsActions } = this.props;
+        eProcActions.stopGeth();
+        settingsActions.saveSettings('flags', { requestStartupChange: true });
     };
     _getActionLabels = () => {
         const { syncActionId, intl } = this.props;
@@ -122,14 +106,26 @@ class SyncStatus extends Component {
         });
     };
     render () {
-        const { intl, gethStatus, eProcActions, gethSyncStatus } = this.props;
-        const pageTitle = ''; //this._getActionLabels().title;
-        console.log(gethStatus, 'gethStatus');
+        const {
+            intl,
+            gethStatus,
+            gethSyncStatus,
+            gethErrors } = this.props;
 
+        const pageTitle = this._getActionLabels().title;
+        let gethErrorCards;
+        if (gethErrors.size > 0) {
+            gethErrorCards = gethErrors.map((gethError, key) =>
+              <div className="errorCard" key={key}>
+                <div>{gethError.get('code')} {gethError.get('message')}</div>
+              </div>
+            );
+        }
         return (
           <PanelContainer
             showBorder
             actions={[
+            /* eslint-disable */
               <RaisedButton
                 key="cancel"
                 label={intl.formatMessage(generalMessages.cancel)}
@@ -142,14 +138,17 @@ class SyncStatus extends Component {
                 style={{ marginLeft: '12px' }}
                 onClick={this.handleSync}
               />
+            /* eslint-enable */
             ]}
             leftActions={[
+            /* eslint-disable */
               <RaisedButton
                 key="viewDetails"
                 label={this.state.showGethLogs ? 'Hide details' : 'View details'}
                 primary={this.state.showGethLogs}
                 onClick={this._handleDetails}
               />
+            /* eslint-enable */
             ]}
             header={<SetupHeader title="AKASHA" />}
           >
@@ -163,28 +162,35 @@ class SyncStatus extends Component {
                   <FormattedMessage {...setupMessages.onSyncStart} />
                 </p>
               </div>
-              <SyncStatus gethSyncStatus={gethSyncStatus} gethStatus={gethStatus} intl={intl} />
+              {gethErrorCards}
+              {!gethErrorCards &&
+                <SyncStatusLoader
+                  gethStatus={gethStatus}
+                  gethSyncStatus={gethSyncStatus}
+                  intl={intl}
+                />
+              }
             </div>
-              {this.state.showGethLogs &&
-                <ul style={this.props.logListStyle} className="col-xs-12">
-                  {this.state.gethLogs.map((log, key) => (
-                    <li
-                      key={key}
-                      style={{
-                          marginBottom: '8px',
-                          backgroundColor: (
-                            log.level === 'warn' ?
-                                'orange' : log.level === 'error' ?
-                                'red' : 'transparent')
-                      }}
-                    >
-                      <abbr title="Log Level">{log.level}</abbr>
-                      <p>{log.message}</p>
-                    </li>
-                    ))
-                    }
-                </ul>
-                }
+            {this.state.showGethLogs &&
+              <ul style={this.props.logListStyle} className="col-xs-12">
+                {this.state.gethLogs.map((log, key) => (
+                  <li
+                    key={key}
+                    style={{
+                        marginBottom: '8px',
+                        backgroundColor: (
+                           log.level === 'warn' ?
+                           'orange' : log.level === 'error' ?
+                           'red' : 'transparent')
+                    }}
+                  >
+                    <abbr title="Log Level">{log.level}</abbr>
+                    <p>{log.message}</p>
+                  </li>
+                  ))
+                  }
+              </ul>
+            }
           </PanelContainer>
         );
     }
@@ -198,7 +204,10 @@ SyncStatus.propTypes = {
     intl: PropTypes.shape().isRequired,
     gethSettings: PropTypes.shape().isRequired,
     gethStatus: PropTypes.shape().isRequired,
+    gethErrors: PropTypes.shape().isRequired,
+    ipfsErrors: PropTypes.shape().isRequired,
     gethSyncStatus: PropTypes.shape().isRequired,
+    settingsActions: PropTypes.shape(),
     syncActionId: PropTypes.number
 };
 

@@ -9,7 +9,7 @@ import PanelContainer from 'shared-components/PanelContainer/panel-container';
 
 const { dialog } = remote;
 
-class Setup extends Component {
+class Config extends Component {
     constructor (props) {
         super(props);
         this.state = {
@@ -17,9 +17,14 @@ class Setup extends Component {
         };
     }
     componentWillMount () {
-        const { configFlags, gethSettings } = this.props;
-        const cancelRequest = configFlags.get('requestStartupChange');
-        console.log(gethSettings, cancelRequest, 'ready for sync');
+        const { settingsActions } = this.props;
+        settingsActions.getSettings('flags');
+        settingsActions.getSettings('geth');
+        settingsActions.getSettings('ipfs');
+    }
+    componentWillUpdate (nextProps, nextState) {
+        const { configFlags, gethSettings } = nextProps;
+        const cancelRequest = configFlags && configFlags.get('requestStartupChange');
         if (!cancelRequest && gethSettings) {
             return this.context.router.push('setup/sync-status');
         }
@@ -114,7 +119,7 @@ class Setup extends Component {
         const { settingsActions, gethSettings, ipfsSettings } = this.props;
         const { datadir, ipcpath, cache } = gethSettings.toJS();
         const { ipfsPath } = ipfsSettings.toJS();
-        settingsActions.saveSettings({ name: 'geth', datadir, ipcpath, cache });
+        settingsActions.saveSettings({name: 'geth', datadir, ipcpath, cache });
         settingsActions.saveSettings({ name: 'ipfs', ipfsPath });
         settingsActions.saveSettings({ name: 'flags', requestStartupChange: false });
         this.context.router.push('setup/sync-status');
@@ -213,22 +218,22 @@ class Setup extends Component {
     }
 }
 
-Setup.propTypes = {
+Config.propTypes = {
     settingsActions: PropTypes.shape().isRequired,
     gethSettings: PropTypes.shape().isRequired,
     ipfsSettings: PropTypes.shape().isRequired,
     isAdvanced: PropTypes.bool.isRequired,
-    configFlags: PropTypes.shape().isRequired,
+    configFlags: PropTypes.shape(),
     style: PropTypes.shape(),
     intl: PropTypes.shape(),
 };
 
-Setup.contextTypes = {
+Config.contextTypes = {
     muiTheme: React.PropTypes.object,
     router: React.PropTypes.object
 };
 
-Setup.defaultProps = {
+Config.defaultProps = {
     style: {
         width: '100%',
         height: '100%',
@@ -238,4 +243,4 @@ Setup.defaultProps = {
     }
 };
 
-export default injectIntl(Setup);
+export default injectIntl(Config);

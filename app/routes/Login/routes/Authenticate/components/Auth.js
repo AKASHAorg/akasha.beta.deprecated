@@ -4,13 +4,11 @@ import {
     ListItem,
     FlatButton,
     RaisedButton } from 'material-ui';
-import Avatar from '../../../../../shared-components/Avatar/avatar';
-import LoginDialog from '../../../../../shared-components/Dialogs/login-dialog';
-import PanelContainer from 'shared-components/PanelContainer/panel-container';
-import LoginHeader from '../../../components/LoginHeader';
 import { hashHistory } from 'react-router';
 import { FormattedMessage, injectIntl } from 'react-intl';
-import { setupMessages, generalMessages } from 'locale-data/messages';
+import { Avatar, LoginDialog, PanelContainer } from 'shared-components';
+import { setupMessages, generalMessages } from 'locale-data/messages'; /* eslint import/no-unresolved: 0*/
+import LoginHeader from '../../../components/LoginHeader';
 
 class Auth extends Component {
     constructor (props, context) {
@@ -25,13 +23,18 @@ class Auth extends Component {
     }
     componentWillMount () {
         const { profileActions } = this.props;
-        profileActions.checkTempProfile().then(() => {
-            profileActions.clearLoggedProfile();
-        });
+        profileActions.getTempProfile();
+    }
+    componentDidMount () {
+        const { profileActions } = this.props;
+        profileActions.getLocalProfiles();
+    }
+    componentWillReceiveProps = (nextProps) => {
+        console.log(nextProps);
     }
     handleTouchTap = (index) => {
-        const { profileState } = this.props;
-        const selectedProfile = profileState.get('profiles').get(index);
+        const { localProfiles } = this.props;
+        const selectedProfile = localProfiles.get(index);
         this.setState({ openModal: true, selectedProfile });
     };
     handleModalClose = () => {
@@ -48,15 +51,14 @@ class Auth extends Component {
         profileActions.login(selectedProfile, unlockInterval, false);
     };
     _getLocalProfiles () {
-        const { profileState } = this.props;
-        const profilesList = profileState.get('profiles');
-        if (profilesList.size === 0) {
+        const { localProfiles } = this.props;
+        if (localProfiles.size === 0) {
             return <div><FormattedMessage {...setupMessages.noProfilesFound} /></div>;
         }
-        if (profilesList.first().size <= 2) {
+        if (localProfiles.first().size <= 2) {
             return <div>Finding Local Profiles</div>;
         }
-        return profileState.get('profiles').map((profile, index) => {
+        return localProfiles.map((profile, index) => {
             const profileAddress = profile.get('address');
             const optionalData = profile.get('optionalData');
             const profileName = `${profile.get('firstName')} ${profile.get('lastName')}`;
@@ -132,16 +134,27 @@ class Auth extends Component {
         const { style, intl } = this.props;
         const { openModal } = this.state;
         const modalActions = [
-            <FlatButton label="Cancel" onTouchTap={this.handleModalClose} />,
-            <FlatButton label="Submit" primary onTouchTap={this.handleLogin} />
+            /* eslint-disable */
+            <FlatButton
+              label={intl.formatMessage(generalMessages.cancel)}
+              onTouchTap={this.handleModalClose}
+            />,
+            <FlatButton
+              label={intl.formatMessage(generalMessages.submit)}
+              primary
+              onTouchTap={this.handleLogin}
+            />
+            /* eslint-enable */
         ];
         const localProfiles = this._getLocalProfiles();
         const selectedProfile = this.state.selectedProfile;
         return (
-            <PanelContainer
-              showBorder
-              header={<LoginHeader title={intl.formatMessage(setupMessages.logInTitle)} />}
-              actions={[
+          <PanelContainer
+            showBorder
+            style={style}
+            header={<LoginHeader title={intl.formatMessage(setupMessages.logInTitle)} />}
+            actions={[
+                /* eslint-disable */
                 <RaisedButton
                   key="createNewIdentity"
                   label={intl.formatMessage(generalMessages.createNewIdentityLabel)}
@@ -149,34 +162,38 @@ class Auth extends Component {
                   style={{ marginLeft: '10px' }}
                   onMouseUp={this._handleIdentityCreate}
                 />
-              ]}
-            >
-              <List className="col-xs-12">
-                {localProfiles}
-              </List>
-              {this.state.selectedProfile &&
-                <LoginDialog
-                  profile={selectedProfile}
-                  isOpen={openModal}
-                  modalActions={modalActions}
-                  title={'Log In'}
-                  onPasswordChange={this._handlePasswordChange}
-                  onKeyPress={this._handleDialogKeyPress}
-                  onUnlockTimerChange={this._handleUnlockTimerChange}
-                  onUnlockCheck={this._handleUnlockCheck}
-                  unlockTimerKey={this.state.unlockTimer}
-                  isUnlockedChecked={this.state.unlockIsChecked}
-                />
-              }
-            </PanelContainer>
+                /* eslint-enable */
+            ]}
+          >
+            <List className="col-xs-12">
+              {localProfiles}
+            </List>
+            {this.state.selectedProfile &&
+              <LoginDialog
+                profile={selectedProfile}
+                isOpen={openModal}
+                modalActions={modalActions}
+                title={'Log In'}
+                onPasswordChange={this._handlePasswordChange}
+                onKeyPress={this._handleDialogKeyPress}
+                onUnlockTimerChange={this._handleUnlockTimerChange}
+                onUnlockCheck={this._handleUnlockCheck}
+                unlockTimerKey={this.state.unlockTimer}
+                isUnlockedChecked={this.state.unlockIsChecked}
+              />
+            }
+          </PanelContainer>
         );
     }
 }
 
 Auth.propTypes = {
-    profileActions: React.PropTypes.object.isRequired,
-    profileState: React.PropTypes.object.isRequired,
-    style: React.PropTypes.object
+    profileActions: React.PropTypes.shape().isRequired,
+    tempProfile: React.PropTypes.shape().isRequired,
+    loggedProfile: React.PropTypes.shape().isRequired,
+    localProfiles: React.PropTypes.shape().isRequired,
+    style: React.PropTypes.shape(),
+    intl: React.PropTypes.shape()
 };
 
 Auth.contextTypes = {
@@ -195,5 +212,3 @@ Auth.defaultProps = {
 };
 
 export default injectIntl(Auth);
-
-
