@@ -6,16 +6,13 @@
         "removeComments": true,
         "inlineSources": true,
         "sourceMap": true,
-        "moduleResolution": "classic",
+        "moduleResolution": "node",
         "noLib": false,
         "preserveConstEnums": true,
         "suppressImplicitAnyIndexErrors": true,
-        "experimentalDecorators": true
-    },
-    "exclude": [
-        "node_modules",
-        "dist",
-        "typings/browser",
-        "typings/browser.d.ts"
-    ]
+        "experimentalDecorators": true,
+        "rootDir": "main",
+        "emitDecoratorMetadata": true,
+        "typeRoots": ["node_modules/@types"]
+    }
 }

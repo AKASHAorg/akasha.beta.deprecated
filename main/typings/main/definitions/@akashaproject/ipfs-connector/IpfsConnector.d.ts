@@ -10,7 +10,9 @@ export declare class IpfsConnector extends EventEmitter {
         args: string[];
         executable: string;
         extra: {
-            env: any;
+            env: {} & {
+                IPFS_PATH: string;
+            };
             detached: boolean;
         };
     };
@@ -36,4 +38,14 @@ export declare class IpfsConnector extends EventEmitter {
     private _pipeStd();
     stop(signal?: string): this;
     private _init();
+    getPorts(): Promise<{
+        gateway: number;
+        api: number;
+        swarm: number;
+    }>;
+    setPorts(ports: {
+        gateway?: number;
+        api?: number;
+        swarm?: number;
+    }, restart?: boolean): Promise<any>;
 }

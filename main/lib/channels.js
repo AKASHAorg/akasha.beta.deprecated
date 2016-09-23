@@ -16,7 +16,7 @@ const channels = {
         'getVoteEndDate', 'getScore'],
     comments: ['manager', 'publish', 'update', 'upvote', 'downvote', 'getScore'],
     geth: ['manager', 'options', 'startService', 'stopService', 'restartService', 'syncStatus', 'logs', 'status'],
-    ipfs: ['manager', 'startService', 'stopService', 'status', 'resolve'],
+    ipfs: ['manager', 'startService', 'stopService', 'status', 'resolve', 'getConfig', 'setPorts', 'getPorts'],
     profile: ['manager', 'getProfileData', 'getMyBalance', 'getIpfs', 'unregister'],
     registry: ['manager', 'profileExists', 'registerProfile', 'getCurrentProfile', 'getByAddress'],
     tx: ['manager', 'addToQueue', 'emitMined'],
