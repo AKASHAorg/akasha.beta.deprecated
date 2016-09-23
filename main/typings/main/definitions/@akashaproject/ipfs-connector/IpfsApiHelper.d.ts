@@ -6,7 +6,7 @@ export declare class IpfsApiHelper {
     LINK_SYMBOL: string;
     constructor(provider: any);
     add(data: Object | Buffer): any;
-    addFile(data: Buffer): any;
+    addFile(dataBuffer: Buffer): any;
     get(objectHash: string): any;
     getObject(objectHash: string): any;
     getFile(hash: string): Promise<{}>;

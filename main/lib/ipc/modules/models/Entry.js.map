@@ -1,0 +1,1 @@
+{"version":3,"file":"Entry.js","sourceRoot":"","sources":["Entry.ts"],"names":[],"mappings":";AAAA,QAAO,kBAAkB,CAAC,CAAA;AAE1B;IAII,MAAM,CAAC,OAAO,EAAE,IAAI;IAEpB,CAAC;AACL,CAAC;AAAA","sourcesContent":["import './MediaComponent';\n\nclass Entry implements MediaComponent {\n    hash: string;\n    id: string;\n\n    create(content, tags){\n\n    }\n}\n"]}

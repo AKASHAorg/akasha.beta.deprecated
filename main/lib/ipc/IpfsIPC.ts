@@ -1,11 +1,11 @@
 /// <reference path="../../typings/main.d.ts" />
 import IpfsEmitter from './event/IpfsEmitter';
-import WebContents = Electron.WebContents;
 import { IpfsConnector } from '@akashaproject/ipfs-connector';
 import AppLogger from './Logger';
 import channels from '../channels';
-import IpcMainEvent = Electron.IpcMainEvent;
 import { ipfsResponse } from './event/responses';
+import WebContents = Electron.WebContents;
+import IpcMainEvent = Electron.IpcMainEvent;
 
 class IpfsIPC extends IpfsEmitter {
     public logger = 'ipfs';
@@ -18,13 +18,16 @@ class IpfsIPC extends IpfsEmitter {
 
     public initListeners(webContents: WebContents) {
         IpfsConnector.getInstance().setLogger(
-          AppLogger.getInstance().registerLogger(this.logger)
+            AppLogger.getInstance().registerLogger(this.logger)
         );
         this.webContents = webContents;
         this._start()
             ._stop()
             ._status()
             ._resolve()
+            ._getConfig()
+            ._setPorts()
+            ._getPorts()
             ._manager();
     }
 
@@ -36,7 +39,10 @@ class IpfsIPC extends IpfsEmitter {
     private _start() {
         this.registerListener(
             channels.server.ipfs.startService,
-            (event: IpcMainEvent) => {
+            (event: IpcMainEvent, data: IpfsStartRequest) => {
+                if (data.dataDir) {
+                    IpfsConnector.getInstance().setIpfsFolder(data.dataDir);
+                }
                 IpfsConnector.getInstance().start();
             }
         );
@@ -48,7 +54,7 @@ class IpfsIPC extends IpfsEmitter {
      * @returns {IpfsIPC}
      * @private
      */
-    private _stop () {
+    private _stop() {
         this.registerListener(
             channels.server.ipfs.stopService,
             (event: IpcMainEvent, data: IpfsStopRequest) => {
@@ -132,7 +138,7 @@ class IpfsIPC extends IpfsEmitter {
                     .api
                     .resolve(data.hash)
                     .then((source: any) => {
-                        response = ipfsResponse({ content: source, hash: data.hash } );
+                        response = ipfsResponse({ content: source, hash: data.hash });
                     })
                     .catch((error: Error) => {
                         console.log(error);
@@ -141,6 +147,75 @@ class IpfsIPC extends IpfsEmitter {
                     .finally(() => {
                         this.fireEvent(
                             channels.client.ipfs.resolve,
+                            response,
+                            event
+                        );
+                    });
+            }
+        );
+        return this;
+    }
+
+    private _getConfig() {
+        this.registerListener(
+            channels.server.ipfs.getConfig,
+            (event: any) => {
+                let response: IpfsgetConfigResponse;
+                response = ipfsResponse({
+                    apiPort: IpfsConnector.getInstance().options.apiAddress.split('/').pop(),
+                    dataDir: IpfsConnector.getInstance().options.extra.env.IPFS_PATH
+                });
+                this.fireEvent(
+                    channels.client.ipfs.getConfig,
+                    response,
+                    event
+                );
+            }
+        );
+        return this;
+    }
+
+    private _setPorts() {
+        this.registerListener(
+            channels.server.ipfs.setPorts,
+            (event: any, data: IpfsSetConfigRequest) => {
+                let response: IpfsSetConfigResponse;
+                IpfsConnector.getInstance()
+                    .setPorts(data.ports, data.restart)
+                    .then(() => {
+                        response = ipfsResponse({set: true});
+                    })
+                    .catch((err: Error) => {
+                        response = ipfsResponse({}, {message: err.message});
+                    })
+                    .finally(() => {
+                        this.fireEvent(
+                            channels.client.ipfs.setPorts,
+                            response,
+                            event
+                        );
+                    });
+            }
+        );
+        return this;
+    }
+
+    private _getPorts() {
+        this.registerListener(
+            channels.server.ipfs.getPorts,
+            (event: any) => {
+                let response: IpfsGetPortsResponse;
+                IpfsConnector.getInstance()
+                    .getPorts()
+                    .then((ports) => {
+                        response = ipfsResponse(ports);
+                    })
+                    .catch((err: Error) => {
+                        response = ipfsResponse({}, {message: err.message});
+                    })
+                    .finally(() => {
+                        this.fireEvent(
+                            channels.client.ipfs.getPorts,
                             response,
                             event
                         );
