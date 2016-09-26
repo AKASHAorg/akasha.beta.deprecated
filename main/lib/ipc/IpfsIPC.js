@@ -18,10 +18,16 @@ class IpfsIPC extends IpfsEmitter_1.default {
             ._stop()
             ._status()
             ._resolve()
+            ._getConfig()
+            ._setPorts()
+            ._getPorts()
             ._manager();
     }
     _start() {
-        this.registerListener(channels_1.default.server.ipfs.startService, (event) => {
+        this.registerListener(channels_1.default.server.ipfs.startService, (event, data) => {
+            if (data.dataDir) {
+                ipfs_connector_1.IpfsConnector.getInstance().setIpfsFolder(data.dataDir);
+            }
             ipfs_connector_1.IpfsConnector.getInstance().start();
         });
         return this;
@@ -67,6 +73,51 @@ class IpfsIPC extends IpfsEmitter_1.default {
             })
                 .finally(() => {
                 this.fireEvent(channels_1.default.client.ipfs.resolve, response, event);
+            });
+        });
+        return this;
+    }
+    _getConfig() {
+        this.registerListener(channels_1.default.server.ipfs.getConfig, (event) => {
+            let response;
+            response = responses_1.ipfsResponse({
+                apiPort: ipfs_connector_1.IpfsConnector.getInstance().options.apiAddress.split('/').pop(),
+                dataDir: ipfs_connector_1.IpfsConnector.getInstance().options.extra.env.IPFS_PATH
+            });
+            this.fireEvent(channels_1.default.client.ipfs.getConfig, response, event);
+        });
+        return this;
+    }
+    _setPorts() {
+        this.registerListener(channels_1.default.server.ipfs.setPorts, (event, data) => {
+            let response;
+            ipfs_connector_1.IpfsConnector.getInstance()
+                .setPorts(data.ports, data.restart)
+                .then(() => {
+                response = responses_1.ipfsResponse({ set: true });
+            })
+                .catch((err) => {
+                response = responses_1.ipfsResponse({}, { message: err.message });
+            })
+                .finally(() => {
+                this.fireEvent(channels_1.default.client.ipfs.setPorts, response, event);
+            });
+        });
+        return this;
+    }
+    _getPorts() {
+        this.registerListener(channels_1.default.server.ipfs.getPorts, (event) => {
+            let response;
+            ipfs_connector_1.IpfsConnector.getInstance()
+                .getPorts()
+                .then((ports) => {
+                response = responses_1.ipfsResponse(ports);
+            })
+                .catch((err) => {
+                response = responses_1.ipfsResponse({}, { message: err.message });
+            })
+                .finally(() => {
+                this.fireEvent(channels_1.default.client.ipfs.getPorts, response, event);
             });
         });
         return this;

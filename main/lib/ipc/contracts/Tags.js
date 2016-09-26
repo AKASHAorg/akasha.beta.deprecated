@@ -33,7 +33,7 @@ class Tags extends BaseContract_1.default {
             if (found) {
                 throw new Error('Tag already exists');
             }
-            return this.extractData('add', tag, { gas: gas });
+            return this.extractData('add', tag, { gas });
         });
     }
 }

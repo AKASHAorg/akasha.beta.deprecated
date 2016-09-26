@@ -74,12 +74,12 @@ class Auth {
                 geth_connector_1.GethConnector.getInstance().web3.personal.lockAccountAsync(acc);
                 geth_connector_1.GethConnector.getInstance().web3.eth.defaultAccount = acc;
                 this._session = {
-                    expiration: expiration,
+                    expiration,
                     address: acc,
                     vrs: ethereumjs_util_1.fromRpcSig(signedString)
                 };
                 setTimeout(() => this._flushSession(), 1000 * 60 * timer);
-                return { token: token, expiration: expiration, account: acc };
+                return { token, expiration, account: acc };
             });
         })
             .catch((err) => {

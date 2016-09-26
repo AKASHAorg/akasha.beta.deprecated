@@ -63,44 +63,44 @@ class Main extends BaseContract_1.default {
         const tagsTr = tags.map((v) => {
             return this.gethInstance.web3.fromUtf8(v);
         });
-        return this.extractData('publishEntry', hashTr, tagsTr, { gas: gas });
+        return this.extractData('publishEntry', hashTr, tagsTr, { gas });
     }
     updateEntry(hash, entryAddress, gas) {
         const hashTr = hash.map((v) => {
             return this.gethInstance.web3.fromUtf8(v);
         });
-        return this.extractData('updateEntry', hashTr, entryAddress, { gas: gas });
+        return this.extractData('updateEntry', hashTr, entryAddress, { gas });
     }
     upVoteEntry(entryAddress, weight, gas, value) {
         const weightTr = this.gethInstance.web3.fromDecimal(weight);
-        return this.extractData('upVoteEntry', entryAddress, weightTr, { gas: gas, value: value });
+        return this.extractData('upVoteEntry', entryAddress, weightTr, { gas, value });
     }
     downVoteEntry(entryAddress, weight, gas, value) {
         const weightTr = this.gethInstance.web3.fromDecimal(weight);
-        return this.extractData('downVoteEntry', entryAddress, weightTr, { gas: gas, value: value });
+        return this.extractData('downVoteEntry', entryAddress, weightTr, { gas, value });
     }
     saveComment(entryAddress, hash, gas) {
         const hashTr = hash.map((v) => {
             return this.gethInstance.web3.fromUtf8(v);
         });
-        return this.extractData('saveComment', entryAddress, hashTr, { gas: gas });
+        return this.extractData('saveComment', entryAddress, hashTr, { gas });
     }
     updateComment(entryAddress, commentId, hash, gas) {
         const hashTr = hash.map((v) => {
             return this.gethInstance.web3.fromUtf8(v);
         });
         const commentIdTr = this.gethInstance.web3.fromDecimal(commentId);
-        return this.extractData('updateComment', entryAddress, commentIdTr, hashTr, { gas: gas });
+        return this.extractData('updateComment', entryAddress, commentIdTr, hashTr, { gas });
     }
     upVoteComment(entryAddress, weigth, commentId, gas, value) {
         const weigthTr = this.gethInstance.web3.fromDecimal(weigth);
         const commentIdTr = this.gethInstance.web3.fromDecimal(commentId);
-        return this.extractData('upVoteComment', entryAddress, weigthTr, commentIdTr, { gas: gas, value: value });
+        return this.extractData('upVoteComment', entryAddress, weigthTr, commentIdTr, { gas, value });
     }
     downVoteComment(entryAddress, weigth, commentId, gas, value) {
         const weigthTr = this.gethInstance.web3.fromDecimal(weigth);
         const commentIdTr = this.gethInstance.web3.fromDecimal(commentId);
-        return this.extractData('downVoteCommentAsync', entryAddress, weigthTr, commentIdTr, { gas: gas, value: value });
+        return this.extractData('downVoteCommentAsync', entryAddress, weigthTr, commentIdTr, { gas, value });
     }
 }
 Object.defineProperty(exports, "__esModule", { value: true });

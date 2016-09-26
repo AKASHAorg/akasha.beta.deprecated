@@ -50,11 +50,11 @@ class AuthIPC extends ModuleEmitter_1.default {
                 .auth
                 .generateKey(data.password)
                 .then((address) => {
-                const response = responses_1.mainResponse({ address: address });
+                const response = responses_1.mainResponse({ address });
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].generateEthKey, response, event);
             })
                 .catch((error) => {
-                const response = responses_1.mainResponse({ error: error });
+                const response = responses_1.mainResponse({ error });
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].generateEthKey, response, event);
             });
         });
@@ -86,7 +86,7 @@ class AuthIPC extends ModuleEmitter_1.default {
                 json: { address: data.address, token: faucetToken },
                 agentOptions: { rejectUnauthorized: false }
             }, (error, response, body) => {
-                const data = (error) ? { error: error } : body;
+                const data = (error) ? { error } : body;
                 const response1 = responses_1.mainResponse(data);
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].requestEther, response1, event);
             });

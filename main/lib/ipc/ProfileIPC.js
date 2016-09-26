@@ -95,7 +95,7 @@ class ProfileIPC extends ModuleEmitter_1.default {
                 .profile
                 .unregister(data.profileAddress)
                 .then((tx) => {
-                response = responses_1.mainResponse({ tx: tx });
+                response = responses_1.mainResponse({ tx });
             })
                 .catch((err) => {
                 response = responses_1.mainResponse({ error: { message: err.message } });

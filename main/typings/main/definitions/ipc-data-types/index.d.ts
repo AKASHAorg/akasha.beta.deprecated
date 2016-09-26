@@ -33,7 +33,7 @@ interface ProfileModel {
     firstName: string;
     lastName: string;
     avatar?: string; // ipfs hash
-    backgroundImage?: IpfsLink;
+    backgroundImage?: any;
     about?: string; // ipfs hash
     links?: { title: string, url: string, type: string, id: number }[];
 }
@@ -85,6 +85,21 @@ interface IpfsResolveRequest {
     hash: string;
 }
 
+interface IpfsStartRequest {
+    dataDir?: string;
+    ports?: {
+        gateway?: number,
+        api?: number,
+        swarm?: number
+    }
+}
+
+interface IpfsgetConfigResponse extends MainResponse {
+    data: {
+        apiPort: string;
+        dataDir: string;
+    }
+}
 interface IpfsResolveResponse extends MainResponse {
     data: {
         content: any;
@@ -92,6 +107,27 @@ interface IpfsResolveResponse extends MainResponse {
     };
 }
 
+interface IpfsSetConfigRequest {
+    ports:  {
+        gateway?: number,
+        api?: number,
+        swarm?: number
+    }
+    restart?: boolean;
+}
+interface IpfsSetConfigResponse extends MainResponse {
+    data: {
+        set: boolean
+    }
+}
+
+interface IpfsGetPortsResponse {
+    data: {
+        gateway: string,
+        api: string,
+        swarm: string
+    }
+}
 // channels.server.geth.restart
 interface GethRestartRequest {
     timer?: number;

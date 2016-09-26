@@ -22,7 +22,10 @@ export default class Registry extends BaseContract {
     public profileExists(username: string) {
         return this.contract
             .getById
-            .callAsync(username);
+            .callAsync(username)
+            .then((exists) => {
+                return !!unpad(exists);
+            });
     }
 
     /**

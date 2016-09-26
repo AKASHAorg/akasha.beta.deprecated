@@ -30,7 +30,7 @@ class CommentsIPC extends ModuleEmitter_1.default {
                 return index_2.module.auth.signData(txData, data.token);
             })
                 .then((tx) => {
-                response = responses_1.mainResponse({ tx: tx });
+                response = responses_1.mainResponse({ tx });
             })
                 .catch((err) => {
                 response = responses_1.mainResponse({ error: { message: err.message } });
@@ -51,7 +51,7 @@ class CommentsIPC extends ModuleEmitter_1.default {
                 return index_2.module.auth.signData(txData, data.token);
             })
                 .then((tx) => {
-                response = responses_1.mainResponse({ tx: tx });
+                response = responses_1.mainResponse({ tx });
             })
                 .catch((err) => {
                 response = responses_1.mainResponse({ error: { message: err.message } });
@@ -72,7 +72,7 @@ class CommentsIPC extends ModuleEmitter_1.default {
                 return index_2.module.auth.signData(txData, data.token);
             })
                 .then((tx) => {
-                response = responses_1.mainResponse({ tx: tx });
+                response = responses_1.mainResponse({ tx });
             })
                 .catch((err) => {
                 response = responses_1.mainResponse({ error: { message: err.message } });
@@ -93,7 +93,7 @@ class CommentsIPC extends ModuleEmitter_1.default {
                 return index_2.module.auth.signData(txData, data.token);
             })
                 .then((tx) => {
-                response = responses_1.mainResponse({ tx: tx });
+                response = responses_1.mainResponse({ tx });
             })
                 .catch((err) => {
                 response = responses_1.mainResponse({ error: { message: err.message } });
@@ -111,7 +111,7 @@ class CommentsIPC extends ModuleEmitter_1.default {
                 .main
                 .getScoreOfComment(data.address, data.commentId)
                 .then((score) => {
-                response = responses_1.mainResponse({ address: data.address, score: score });
+                response = responses_1.mainResponse({ address: data.address, score });
             })
                 .catch((err) => {
                 response = responses_1.mainResponse({ error: { message: err.message } });
