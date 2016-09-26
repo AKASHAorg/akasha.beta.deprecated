@@ -12,7 +12,10 @@ class Registry extends BaseContract_1.default {
     profileExists(username) {
         return this.contract
             .getById
-            .callAsync(username);
+            .callAsync(username)
+            .then((exists) => {
+            return !!ethereumjs_util_1.unpad(exists);
+        });
     }
     getByAddress(address) {
         return this.contract
@@ -68,7 +71,7 @@ class Registry extends BaseContract_1.default {
                 if (estimatedGas > gas) {
                     throw new Error(`Gas required: ${estimatedGas}, Gas provided: ${gas}`);
                 }
-                return this.extractData('register', usernameTr, ipfsHashTr, { gas: gas });
+                return this.extractData('register', usernameTr, ipfsHashTr, { gas });
             });
         });
     }

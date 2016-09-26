@@ -32,7 +32,7 @@ class TagsIPC extends ModuleEmitter_1.default {
                 return index_2.module.auth.signData(txData, data.token);
             })
                 .then((tx) => {
-                response = responses_1.mainResponse({ tx: tx });
+                response = responses_1.mainResponse({ tx });
             })
                 .catch((err) => {
                 response = responses_1.mainResponse({ error: { message: err.message } });
@@ -68,7 +68,7 @@ class TagsIPC extends ModuleEmitter_1.default {
                 .tags
                 .getTagAt(data.tagId)
                 .then((tagName) => {
-                response = responses_1.mainResponse({ tagName: tagName });
+                response = responses_1.mainResponse({ tagName });
             })
                 .catch((err) => {
                 response = responses_1.mainResponse({ error: { message: err.message } });
@@ -86,7 +86,7 @@ class TagsIPC extends ModuleEmitter_1.default {
                 .tags
                 .getTagId(data.tagName)
                 .then((tagId) => {
-                response = responses_1.mainResponse({ tagId: tagId });
+                response = responses_1.mainResponse({ tagId });
             })
                 .catch((err) => {
                 response = responses_1.mainResponse({ error: { message: err.message } });
@@ -107,7 +107,7 @@ class TagsIPC extends ModuleEmitter_1.default {
                 return index_2.module.auth.signData(txData, data.token);
             })
                 .then((tx) => {
-                response = responses_1.mainResponse({ tx: tx });
+                response = responses_1.mainResponse({ tx });
             })
                 .catch((err) => {
                 response = responses_1.mainResponse({ error: { message: err.message } });
@@ -128,7 +128,7 @@ class TagsIPC extends ModuleEmitter_1.default {
                 return index_2.module.auth.signData(txData, data.token);
             })
                 .then((tx) => {
-                response = responses_1.mainResponse({ tx: tx });
+                response = responses_1.mainResponse({ tx });
             })
                 .catch((err) => {
                 response = responses_1.mainResponse({ error: { message: err.message } });
@@ -146,7 +146,7 @@ class TagsIPC extends ModuleEmitter_1.default {
                 .indexedTags
                 .getSubPosition(data.address, data.tagId)
                 .then((position) => {
-                response = responses_1.mainResponse({ position: position });
+                response = responses_1.mainResponse({ position });
             })
                 .catch((err) => {
                 response = responses_1.mainResponse({ error: { message: err.message } });
@@ -164,7 +164,7 @@ class TagsIPC extends ModuleEmitter_1.default {
                 .indexedTags
                 .isSubscribed(data.address, data.tagId)
                 .then((subscribed) => {
-                response = responses_1.mainResponse({ subscribed: subscribed });
+                response = responses_1.mainResponse({ subscribed });
             })
                 .catch((err) => {
                 response = responses_1.mainResponse({ error: { message: err.message } });

@@ -15,11 +15,7 @@ declare module 'ethereumjs-util' {
     export function unpad(data: Buffer | string): Buffer | string
 }
 
-declare module 'spectron' {
-    export const Application: any;
-}
-
+declare var exported: any;
 declare module 'ethereumjs-testrpc' {
-    const exported: any;
     export = exported;
 }

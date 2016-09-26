@@ -125,9 +125,9 @@ const resolveProfile = (hash) => {
 };
 function init() {
     return {
-        create: create,
-        getShortProfile: getShortProfile,
-        resolveProfile: resolveProfile
+        create,
+        getShortProfile,
+        resolveProfile
     };
 }
 Object.defineProperty(exports, "__esModule", { value: true });

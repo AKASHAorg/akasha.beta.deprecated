@@ -33,7 +33,7 @@ interface ProfileModel {
     firstName: string;
     lastName: string;
     avatar?: string; // ipfs hash
-    backgroundImage?: IpfsLink;
+    backgroundImage?: any;
     about?: string; // ipfs hash
     links?: { title: string, url: string, type: string, id: number }[];
 }
