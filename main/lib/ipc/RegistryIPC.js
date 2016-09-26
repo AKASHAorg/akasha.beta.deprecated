@@ -27,7 +27,7 @@ class RegistryIPC extends ModuleEmitter_1.default {
                 .profileExists(data.username)
                 .then((exists) => {
                 const response = responses_1.mainResponse({
-                    exists: exists,
+                    exists,
                     username: data.username
                 });
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].profileExists, response, event);
@@ -47,7 +47,7 @@ class RegistryIPC extends ModuleEmitter_1.default {
                 .getMyProfile()
                 .then((address) => {
                 const addr = ethereumjs_util_1.unpad(address);
-                response = (addr) ? responses_1.mainResponse({ address: address }) : responses_1.mainResponse({ address: addr });
+                response = (addr) ? responses_1.mainResponse({ address }) : responses_1.mainResponse({ address: addr });
             })
                 .catch((error) => {
                 response = responses_1.mainResponse({ error: { message: error.message } });
@@ -92,7 +92,7 @@ class RegistryIPC extends ModuleEmitter_1.default {
                 return index_2.module.auth.signData(txData, data.token);
             })
                 .then((tx) => {
-                response = responses_1.mainResponse({ tx: tx });
+                response = responses_1.mainResponse({ tx });
             })
                 .catch((error) => {
                 response = responses_1.mainResponse({ error: { message: error.message } });

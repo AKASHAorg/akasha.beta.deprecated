@@ -42,7 +42,7 @@ class Profile extends BaseContract_1.default {
             }
             this.contract
                 .at(address)
-                .setHash(ipfsHashTr, { gas: gas }, (err, tx) => {
+                .setHash(ipfsHashTr, { gas }, (err, tx) => {
                 if (err) {
                     return reject(err);
                 }
@@ -54,7 +54,7 @@ class Profile extends BaseContract_1.default {
         return new Promise((resolve, reject) => {
             this.contract
                 .at(address)
-                .setEthAddress(tippingAddress, { gas: gas }, (err, tx) => {
+                .setEthAddress(tippingAddress, { gas }, (err, tx) => {
                 if (err) {
                     return reject(err);
                 }
@@ -66,7 +66,7 @@ class Profile extends BaseContract_1.default {
         return new Promise((resolve, reject) => {
             this.contract
                 .at(address)
-                .destroy({ gas: gas }, (err, tx) => {
+                .destroy({ gas }, (err, tx) => {
                 if (err) {
                     return reject(err);
                 }

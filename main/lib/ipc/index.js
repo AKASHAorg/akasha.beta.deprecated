@@ -29,7 +29,7 @@ function initModules() {
                 obj.initListeners(webContents);
             });
         },
-        logger: logger,
+        logger,
         flushAll: () => {
             ipcChannels.forEach((obj) => {
                 obj.purgeAllListeners();
