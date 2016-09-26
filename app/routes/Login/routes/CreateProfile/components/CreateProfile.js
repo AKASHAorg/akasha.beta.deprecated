@@ -80,8 +80,9 @@ class CreateProfile extends Component {
             }
             profileData = {...profileData, ...optionalData};
             return profileData;
-        }).then(profileData =>{
+        }).then(profileData => {
             console.log(profileData, 'profile to be registered');
+
             // profileActions.createTempProfile(profileData, {
             //     currentStep: 0,
             //     status: 'finished',
