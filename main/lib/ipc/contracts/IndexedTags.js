@@ -22,12 +22,12 @@ class IndexedTags extends BaseContract_1.default {
     }
     subscribe(tag, gas) {
         const tagTr = this.gethInstance.web3.fromUtf8(tag);
-        return this.extractData('subscribe', tagTr, { gas: gas });
+        return this.extractData('subscribe', tagTr, { gas });
     }
     unsubscribe(tag, subPosition, gas) {
         const tagTr = this.gethInstance.web3.fromUtf8(tag);
         const subPositionTr = this.gethInstance.web3.fromDecimal(subPosition);
-        return this.extractData('unsubscribe', tagTr, subPositionTr, { gas: gas });
+        return this.extractData('unsubscribe', tagTr, subPositionTr, { gas });
     }
 }
 Object.defineProperty(exports, "__esModule", { value: true });

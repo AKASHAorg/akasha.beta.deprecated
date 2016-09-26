@@ -45,17 +45,17 @@ class AppLogger {
                 new (winston_1.transports.File)({
                     filename: path_1.join(this.logPath, `${name}.error.log`),
                     level: errorLevel,
-                    maxsize: maxsize,
-                    maxFiles: maxFiles,
+                    maxsize,
+                    maxFiles,
                     name: `${name}Error`,
                     tailable: true,
                     zippedArchive: true
                 }),
                 new (winston_1.transports.File)({
                     filename: path_1.join(this.logPath, `${name}.info.log`),
-                    level: level,
-                    maxsize: maxsize,
-                    maxFiles: maxFiles,
+                    level,
+                    maxsize,
+                    maxFiles,
                     name: `${name}Info`,
                     tailable: true,
                     zippedArchive: true

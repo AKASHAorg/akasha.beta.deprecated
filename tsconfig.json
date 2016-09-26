@@ -2,7 +2,7 @@
     "compilerOptions": {
         "target": "es6",
         "module": "commonjs",
-        "noImplicitAny": true,
+        "noImplicitAny": false,
         "removeComments": true,
         "inlineSources": true,
         "sourceMap": true,
@@ -14,5 +14,6 @@
         "rootDir": "main",
         "emitDecoratorMetadata": true,
         "typeRoots": ["node_modules/@types"]
-    }
+    },
+    "exclude": ["node_modules"]
 }

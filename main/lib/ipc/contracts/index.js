@@ -13,7 +13,7 @@ class Contracts {
         const tags = new Tags_1.default(factory.objects.tags);
         const indexedTags = new IndexedTags_1.default(factory.objects.indexedTags);
         const main = new Main_1.default(factory.objects.akashaMain);
-        this.instance = { indexedTags: indexedTags, main: main, profile: profile, registry: registry, tags: tags };
+        this.instance = { indexedTags, main, profile, registry, tags };
         return this.instance;
     }
 }

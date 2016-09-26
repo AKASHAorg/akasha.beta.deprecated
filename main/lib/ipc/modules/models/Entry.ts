@@ -4,14 +4,14 @@ class Entry implements MediaComponent {
     hash: string;
     id: string;
 
-    create(content, tags){
+    create(content:any, tags: any[]){
         const constructed = {
             content,
             tags
         };
         return IpfsConnector.getInstance().api
             .add(constructed)
-            .then((hash) => {
+            .then((hash: string) => {
                 this.load(hash);
                 return this.hash;
             })
@@ -27,7 +27,7 @@ class Entry implements MediaComponent {
         }
         return IpfsConnector.getInstance().api
             .get(this.hash)
-            .then((content) => content);
+            .then((content: JSON | Buffer) => content);
     }
 
     update(setData: any) {
@@ -36,10 +36,18 @@ class Entry implements MediaComponent {
         }
         return IpfsConnector.getInstance().api
             .updateObject(this.hash, setData)
-            .then((hash) => {
+            .then((hash: string) => {
                 this.load(hash);
                 return this.hash;
             })
+    }
+
+    getShortContent() {
+        return Promise.resolve('abv');
+    }
+
+    getFullContent() {
+        return Promise.resolve('afasfasfas');
     }
 
 }

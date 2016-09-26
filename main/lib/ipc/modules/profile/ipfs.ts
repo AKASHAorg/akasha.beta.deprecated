@@ -1,6 +1,5 @@
 import { IpfsConnector } from '@akashaproject/ipfs-connector';
 import * as Promise from 'bluebird';
-import Bluebird = require('~bluebird/bluebird');
 
 /**
  *
@@ -109,7 +108,7 @@ const resolveProfile = (hash: string) => {
                 return IpfsConnector.getInstance().api.resolve(schema.backgroundImage);
             }
             return Promise.resolve('');
-        }).then((mediaObj: any): Bluebird<any> => {
+        }).then((mediaObj: any): Promise<any> => {
             let media: any;
             if (mediaObj) {
                 keys = Object.keys(mediaObj).sort();

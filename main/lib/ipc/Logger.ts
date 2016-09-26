@@ -1,4 +1,3 @@
-/// <reference path="../../typings/index.d.ts" />
 import { join as pathJoin } from 'path';
 import { Logger, transports } from 'winston';
 import { constants, access as fsAccess, mkdir } from 'fs';
