@@ -157,25 +157,19 @@ export function checkTempProfileError (error) {
         error
     };
 }
-
-export function getProfilesListSuccess (profiles) {
+export function getLocalProfilesSuccess() {}
+export function getLocalProfilesError (error) {
+    error.code = 'GLPE';
     return {
-        type: types.GET_PROFILES_LIST_SUCCESS,
-        profiles
-    };
-}
-
-export function getProfilesListError (error) {
-    return {
-        type: types.GET_PROFILES_LIST_ERROR,
+        type: types.GET_LOCAL_PROFILES_ERROR,
         error
-    };
+    }
 }
 
-export function getProfileDataSuccess (profile) {
+export function getProfileDataSuccess (data) {
     return {
         type: types.GET_PROFILE_DATA_SUCCESS,
-        profile: profile.data
+        data
     };
 }
 

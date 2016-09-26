@@ -47,7 +47,7 @@ class CreateProfile extends Component {
     };
     handleSubmit = () => {
         const { profileActions } = this.props;
-        const profileData = this.state.formValues;
+        let profileData = this.state.formValues;
         const optionalData = {};
         const profileImage = this.imageUploader.getWrappedInstance().getImage();
         const errors = this.props.errors;
@@ -78,16 +78,16 @@ class CreateProfile extends Component {
             if (uintArr) {
                 optionalData.avatar = uintArr;
             }
-            profileData.optionalData = optionalData;
+            profileData = {...profileData, ...optionalData};
             return profileData;
-        }).then(() =>
-            profileActions.createTempProfile(profileData, {
-                currentStep: 0,
-                status: 'finished',
-                message: 'Profile creation started!'
-            })
-        )
-            .then(() => this.context.router.push('new-profile-status'));
+        }).then(profileData =>{
+            console.log(profileData, 'profile to be registered');
+            // profileActions.createTempProfile(profileData, {
+            //     currentStep: 0,
+            //     status: 'finished',
+            //     message: 'Profile creation started!'
+            // })
+        })//.then(() => this.context.router.push('new-profile-status'));
     };
     _submitForm = (ev) => {
         ev.preventDefault();

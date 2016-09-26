@@ -5,7 +5,6 @@ import Auth from './components/Auth';
 function mapStateToProps (state) {
     return {
         tempProfile: state.profileState.get('tempProfile'),
-        loggedProfile: state.profileState.get('loggedProfile'),
         localProfiles: state.profileState.get('profiles')
     };
 }

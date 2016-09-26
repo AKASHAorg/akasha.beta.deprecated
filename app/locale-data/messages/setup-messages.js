@@ -90,6 +90,11 @@ const setupMessages = defineMessages({
         description: 'message shown when geth is downloading',
         defaultMessage: 'Downloading Geth client..'
     },
+    downloadingIpfs: {
+        id: 'app.setup.downloadingIpfs',
+        description: 'message shown when IPFS is downloading',
+        defaultMessage: 'Downloading IPFS client..'
+    },
     startingGeth: {
         id: 'app.setup.startingGeth',
         description: 'message shown then Geth is starting',
@@ -137,6 +142,11 @@ const setupMessages = defineMessages({
         id: 'app.setup.noProfilesFound',
         description: 'message if no local profiles found.',
         defaultMessage: 'No profiles found. Create a new identity or import an existing one.'
+    },
+    findingProfiles: {
+        id: 'app.setup.findingProfiles',
+        description: 'when we are trying to discover local profiles with akasha account',
+        defaultMessage: 'Finding profiles..'
     },
     logInTitle: {
         id: 'app.setup.logInTitle',

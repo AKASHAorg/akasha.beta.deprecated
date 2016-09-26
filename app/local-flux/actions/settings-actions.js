@@ -16,8 +16,8 @@ class SettingsActions {
     saveSettings = (table, settings) =>
         this.settingsService.saveSettings({
             options: { table, settings },
-            onSuccess: data => this.dispatch(settingsActionCreators.saveSettingsSuccess(data)),
-            onError: err => this.dispatch(settingsActionCreators.saveSettingsError(err)),
+            onSuccess: (data, table) => this.dispatch(settingsActionCreators.saveSettingsSuccess(settings, table)),
+            onError: (error, table) => this.dispatch(settingsActionCreators.saveSettingsError(error, table)),
         });
 
     getSettings = table =>

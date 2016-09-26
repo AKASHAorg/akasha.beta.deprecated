@@ -136,11 +136,11 @@ class GethService extends BaseService {
         );
     }
     closeSyncChannel = () => {
-        this.closeChannel(
-            this.serverManager,
-            Channel.server.geth.syncStatus,
-            Channel.client.geth.syncStatus
-        );
+        // this.closeChannel(
+        //     this.serverManager,
+        //     Channel.server.geth.syncStatus,
+        //     Channel.client.geth.syncStatus
+        // );
     }
 }
 

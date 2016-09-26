@@ -25,7 +25,7 @@ class Config extends Component {
     componentWillUpdate (nextProps, nextState) {
         const { configFlags, gethSettings } = nextProps;
         const cancelRequest = configFlags && configFlags.get('requestStartupChange');
-        if (!cancelRequest && gethSettings) {
+        if (!cancelRequest) {
             return this.context.router.push('setup/sync-status');
         }
     }
@@ -119,9 +119,9 @@ class Config extends Component {
         const { settingsActions, gethSettings, ipfsSettings } = this.props;
         const { datadir, ipcpath, cache } = gethSettings.toJS();
         const { ipfsPath } = ipfsSettings.toJS();
-        settingsActions.saveSettings({name: 'geth', datadir, ipcpath, cache });
-        settingsActions.saveSettings({ name: 'ipfs', ipfsPath });
-        settingsActions.saveSettings({ name: 'flags', requestStartupChange: false });
+        settingsActions.saveSettings('geth', { datadir, ipcpath, cache });
+        settingsActions.saveSettings('ipfs', { ipfsPath });
+        settingsActions.saveSettings('flags', { requestStartupChange: false });
         this.context.router.push('setup/sync-status');
     };
 

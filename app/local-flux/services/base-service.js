@@ -32,11 +32,11 @@ class BaseService {
     registerListener = (clientChannel, listener, cb) => {
         this._listeners.set(clientChannel, listener);
         if (ipcRenderer.listenerCount(clientChannel) > 0) {
-            if (cb) return cb();
-            return {};
+            if (typeof cb === 'function') return cb();
+            return null;
         }
         ipcRenderer.on(clientChannel, (ev, res) => this._listeners.get(clientChannel)(ev, res));
-        if (cb) return cb();
+        if (typeof cb === 'function') return cb();
         return null;
     };
     /**
@@ -45,7 +45,10 @@ class BaseService {
     removeListener = (channel, cb) => {
         ipcRenderer.removeListener(channel, this._listeners.get(channel));
         this._listeners.delete(channel);
-        return cb();
+        if(typeof cb === 'function') {
+            return cb();
+        }
+        return null;
     };
     /** open communication with a channel through channel manager
      * @param serverManager <String> Server manager channel -> sending on this
@@ -81,9 +84,8 @@ class BaseService {
      * @param channel <String> the server channel we need to stop listen
      */
     closeChannel = (serverManager, serverChannel, clientChannel) => {
-        this.removeListener(clientChannel, () => {
-            ipcRenderer.send(serverManager, { channel: serverChannel, listen: false });
-        });
+        ipcRenderer.send(serverManager, { channel: serverChannel, listen: false });
+        this.removeListener(clientChannel);
     };
 }
 

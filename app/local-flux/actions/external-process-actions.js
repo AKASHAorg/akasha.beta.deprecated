@@ -1,4 +1,5 @@
 import debug from 'debug';
+import throttle from 'lodash.throttle';
 import { GethService, IpfsService } from '../services';
 import {
     externalProcessActionCreators,
@@ -19,6 +20,10 @@ class EProcActions {
         this.gethService = new GethService();
         this.ipfsService = new IpfsService();
         this.dispatch = dispatch;
+        this.throttledSyncUpdate = throttle(this.getSyncStatus, 2000, {
+            trailing: true,
+            leading: true
+        });
         return eProcActions;
     }
 
@@ -67,6 +72,10 @@ class EProcActions {
                 externalProcessActionCreators.getGethOptionsSuccess(data)
             )
         });
+    startSyncThrottled = () => {
+        this.dispatch(externalProcessActionCreators.startSync());
+        this.throttledSyncUpdate();
+    }
     /**
      * get sync status of geth service
      * this method will not dispatch anything to avoid redux-dev-tools overload.
@@ -81,12 +90,14 @@ class EProcActions {
             )
         });
 
-    finishSync = () =>
+    finishSync = () => {
+        this.throttledSyncUpdate.cancel();
         this.gethService.closeSyncChannel();
+    };
 
     startIPFS = () =>
         this.dispatch((dispatch, getState) => {
-            const ipfsSettings = getState().settingsState.get('ipfs');
+            const ipfsSettings = getState().settingsState.get('ipfs').toJS();
             this.ipfsService.start({
                 options: ipfsSettings,
                 onError: err => dispatch(externalProcessActionCreators.startIPFSError(err)),

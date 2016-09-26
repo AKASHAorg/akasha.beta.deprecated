@@ -6,11 +6,12 @@ import { SyncProgressLoader } from 'shared-components';
 class SyncStatus extends Component {
 
     render () {
-        const { intl, gethSyncStatus, gethStatus } = this.props;
+        const { intl, gethSyncStatus, gethStatus, ipfsStatus } = this.props;
         let blockProgress;
         let currentProgress;
         let progressBody;
         let peerInfo;
+
         if (gethSyncStatus && gethSyncStatus.get('peerCount') > 0 && gethSyncStatus.get('highestBlock') > 0) {
             blockProgress = gethSyncStatus;
             currentProgress = ((blockProgress.get('currentBlock') - blockProgress.get('startingBlock')) /
@@ -18,7 +19,8 @@ class SyncStatus extends Component {
             peerInfo = (
               <FormattedMessage
                 id="app.setup.peerCount"
-                deafultMessage={`{peerCount, number} {peerCount, plural,
+                description="counting connected peers"
+                defaultMessage={`{peerCount, number} {peerCount, plural,
                     one {peer}
                     few {peers}
                     many {peers}
@@ -43,31 +45,43 @@ class SyncStatus extends Component {
                 </div>
               </div>
             );
-        } else if (gethStatus.get('downloading')) {
-            progressBody = (
-              <div>
-                <div style={{ fontWeight: 'bold', padding: '5px', fontSize: '16px' }} >
-                    {intl.formatMessage(setupMessages.downloadingGeth)}
-                </div>
-              </div>
-            );
-        } else if (gethStatus.get('starting')) {
-            progressBody = (
-              <div>
-                <div style={{ fontWeight: 'bold', padding: '5px', fontSize: '16px' }} >
-                  {intl.formatMessage(setupMessages.startingGeth)}
-                </div>
-              </div>
-            );
         } else {
-            peerInfo = intl.formatMessage(setupMessages.findingPeers);
-            progressBody = (
-              <div>
-                <div style={{ fontWeight: 'bold', padding: '5px', fontSize: '16px' }} >
-                  {peerInfo}
-                </div>
-              </div>
-            );
+            if (gethStatus.get('starting')) {
+                progressBody = (
+                  <div>
+                    <div style={{ fontWeight: 'bold', padding: '5px', fontSize: '16px' }} >
+                      {intl.formatMessage(setupMessages.startingGeth)}
+                    </div>
+                  </div>
+                );
+            } else if (gethStatus.get('downloading')) {
+                progressBody = (
+                  <div>
+                    <div style={{ fontWeight: 'bold', padding: '5px', fontSize: '16px' }} >
+                        {intl.formatMessage(setupMessages.downloadingGeth)}
+                    </div>
+                  </div>
+                );
+            } else if (ipfsStatus.get('downloading')) {
+                progressBody = (
+                  <div>
+                    <div>
+                      <div style={{ fontWeight: 'bold', padding: '5px', fontSize: '16px' }} >
+                        {intl.formatMessage(setupMessages.downloadingIpfs)}
+                      </div>
+                    </div>
+                  </div>
+                );
+            } else {
+              peerInfo = intl.formatMessage(setupMessages.findingPeers);
+                progressBody = (
+                  <div>
+                    <div style={{ fontWeight: 'bold', padding: '5px', fontSize: '16px' }} >
+                      {peerInfo}
+                    </div>
+                  </div>
+                );
+            }
         }
         return (
           <div style={{ padding: '64px 0', textAlign: 'center' }} >

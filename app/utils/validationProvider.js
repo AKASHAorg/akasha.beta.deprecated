@@ -39,7 +39,7 @@ export default function (Component) {
                     const statePathLens = r.lensPath(key.split('.'));
                     const value = r.view(statePathLens, state);
 
-                    validationActions[validationActionName](value, (data) => {
+                    validationActions[validationActionName](value, (err, data) => {
                         if (data.exists) {
                             this.state.errors[validationKey][0] = 'Username already registered!';
                             return;

@@ -60,8 +60,10 @@ const settingsState = createReducer(initialState, {
                 return state.merge({ ipfs: new IpfsSettings(action.data) });
             case 'userSettings':
                 return state.merge({ userSettings: new UserSettings(action.data) });
-            case 'flags':
-                return state.merge({ flags: action.data });
+            case 'flags': {
+                console.log(action, 'flags action');
+                return state.merge({ flags: action.settings });
+            }
             default:
                 return state;
         }

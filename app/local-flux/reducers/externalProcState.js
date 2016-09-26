@@ -17,7 +17,8 @@ const GethSyncStatus = Record({
     highestBlock: null,
     startingBlock: null,
     peerCount: null,
-    synced: false
+    synced: false,
+    syncing: false
 });
 
 const ErrorRecord = Record({
@@ -60,8 +61,26 @@ const eProcState = createReducer(initialState, {
             gethErrors: state.get('gethErrors').push(new ErrorRecord(action.error))
         }),
 
+    [types.STOP_GETH_SUCCESS]: (state, action) =>
+        state.merge({
+            gethStatus: new GethStatus(action.data)
+        }),
+
+    [types.STOP_GETH_ERROR]: (state, action) =>
+        state.get('gethErrors').push(new ErrorRecord(action.error)),
+
     [types.GET_GETH_STATUS_SUCCESS]: (state, action) =>
         state.merge({ gethStatus: new GethStatus(action.status) }),
+
+    [types.START_IPFS_SUCCESS]: (state, action) =>
+        state.merge({
+            ipfsStatus: new IpfsStatus(action.data)
+        }),
+
+    [types.START_IPFS_ERROR]: (state, action) =>
+        state.merge({
+            ipfsErrors: state.get('ipfsErrors').push(new ErrorRecord(action.error))
+        }),
 
     [types.GET_IPFS_STATUS_SUCCESS]: (state, action) =>
         state.merge({ ipfsStatus: new IpfsStatus(action.data) }),
@@ -71,16 +90,19 @@ const eProcState = createReducer(initialState, {
 
     [types.SYNC_ACTIVE]: state =>
         state.merge({
+            gethSyncStatus: state.get('gethSyncStatus').merge({ syncing: true }),
             actionId: 1,
         }),
 
     [types.SYNC_STOPPED]: state =>
         state.merge({
+            gethSyncStatus: state.get('gethSyncStatus').remove('syncing'), // reset to initial value
             actionId: 2
         }),
 
     [types.SYNC_FINISHED]: state =>
         state.merge({
+            gethSyncStatus: state.get('gethSyncStatus').remove('syncing'), // reset to initial value
             actionId: 3
         }),
 

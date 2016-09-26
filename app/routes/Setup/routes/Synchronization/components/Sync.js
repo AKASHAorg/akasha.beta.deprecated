@@ -27,16 +27,23 @@ class SyncStatus extends Component {
             eProcActions.startGeth(gethSettings);
         }
     }
+    componentWillUnmount () {
+        this.interval = null;
+    }
     componentWillReceiveProps = (nextProps) => {
-        const { gethStatus, eProcActions } = nextProps;
-        if (gethStatus.get('api')) {
-            console.log('ready to get sync status!');
-            eProcActions.getSyncStatus();
+        const { gethStatus, eProcActions, gethSyncStatus, ipfsStatus } = nextProps;
+        if (gethStatus.get('api') && !gethStatus.get('synced') && !gethSyncStatus.get('syncing')) {
+            eProcActions.startSyncThrottled();
+        }
+        if (gethSyncStatus.get('synced') && ipfsStatus.get('started')) {
+            this.context.router.push('authenticate');
         }
     }
     componentWillUpdate (nextProps) {
-        const { gethStatus, configflags, gethSyncStatus } = nextProps;
-        if (gethStatus.get('stopped') && configflags.requestStartupChange) {
+        const { gethSettings, gethStatus, configFlags, gethSyncStatus } = nextProps;
+        const shouldReconfigure = configFlags.get('requestStartupChange') && !gethStatus.get('api');
+
+        if (shouldReconfigure) {
             return this.context.router.push('setup');
         }
         if (gethSyncStatus.get('synced')) {
@@ -48,11 +55,11 @@ class SyncStatus extends Component {
         const { eProcActions } = this.props;
         eProcActions.finishSync();
         eProcActions.startIPFS();
-        this.context.router.push('authenticate');
     };
     handleCancel = () => {
         const { eProcActions, settingsActions } = this.props;
         eProcActions.stopGeth();
+        eProcActions.finishSync();
         settingsActions.saveSettings('flags', { requestStartupChange: true });
     };
     _getActionLabels = () => {
@@ -110,14 +117,25 @@ class SyncStatus extends Component {
             intl,
             gethStatus,
             gethSyncStatus,
-            gethErrors } = this.props;
+            gethErrors,
+            ipfsStatus,
+            ipfsErrors } = this.props;
 
         const pageTitle = this._getActionLabels().title;
         let gethErrorCards;
+        let ipfsErrorCards;
+
         if (gethErrors.size > 0) {
             gethErrorCards = gethErrors.map((gethError, key) =>
               <div className="errorCard" key={key}>
                 <div>{gethError.get('code')} {gethError.get('message')}</div>
+              </div>
+            );
+        }
+        if (ipfsErrors.size > 0) {
+            ipfsErrorCards = ipfsErrors.map((ipfsError, key) =>
+              <div className="errorCard" key={key}>
+                <div>{ipfsError.get('code')} {ipfsError.get('message')}</div>
               </div>
             );
         }
@@ -163,10 +181,12 @@ class SyncStatus extends Component {
                 </p>
               </div>
               {gethErrorCards}
+              {ipfsErrorCards}
               {!gethErrorCards &&
                 <SyncStatusLoader
                   gethStatus={gethStatus}
                   gethSyncStatus={gethSyncStatus}
+                  ipfsStatus={ipfsStatus}
                   intl={intl}
                 />
               }

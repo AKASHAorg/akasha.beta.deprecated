@@ -51,12 +51,12 @@ class Auth extends Component {
         profileActions.login(selectedProfile, unlockInterval, false);
     };
     _getLocalProfiles () {
-        const { localProfiles } = this.props;
+        const { localProfiles, intl } = this.props;
         if (localProfiles.size === 0) {
-            return <div><FormattedMessage {...setupMessages.noProfilesFound} /></div>;
+            return <div>{intl.formatMessage(setupMessages.noProfilesFound)}</div>;
         }
         if (localProfiles.first().size <= 2) {
-            return <div>Finding Local Profiles</div>;
+            return <div>{intl.formatMessage(setupMessages.findingProfiles)}</div>;
         }
         return localProfiles.map((profile, index) => {
             const profileAddress = profile.get('address');
@@ -190,7 +190,6 @@ class Auth extends Component {
 Auth.propTypes = {
     profileActions: React.PropTypes.shape().isRequired,
     tempProfile: React.PropTypes.shape().isRequired,
-    loggedProfile: React.PropTypes.shape().isRequired,
     localProfiles: React.PropTypes.shape().isRequired,
     style: React.PropTypes.shape(),
     intl: React.PropTypes.shape()

@@ -21,8 +21,14 @@ class IpfsService extends BaseService {
     start = ({ options = {}, onError = () => {}, onSuccess }) => {
         const serverChannel = Channel.server.ipfs.startService;
         const clientChannel = Channel.client.ipfs.startService;
+        const ipfsOptions = {};
+        Object.keys(options).forEach((key) => {
+            if (key !== 'name' && options[key] !== '') {
+                ipfsOptions[key] = options[key];
+            }
+        });
         this.registerListener(clientChannel, this.createListener(onError, onSuccess));
-        ipcRenderer.send(serverChannel, options);
+        ipcRenderer.send(serverChannel, ipfsOptions);
     }
     /**
      * Stop ipfs service

@@ -295,7 +295,7 @@ class ProfileActions {
     getLocalProfiles = () =>
         this.dispatch((dispatch) => {
             this.authService.getLocalIdentities({
-                onSuccess: data => this.getProfileData(data),
+                onSuccess: data => this.getProfileData(data), //console.log(data, 'local identities'),
                 onError: err => dispatch(profileActionCreators.getLocalProfilesError(err))
             });
         });
@@ -303,16 +303,25 @@ class ProfileActions {
      * profiles = [{key: string, profile: string}]
      */
     getProfileData = (profiles) => {
-        for (let i = profiles.length - 1; i >= 0; i - 1) {
-            this.profileService.getProfileData({
-                options: {
-                    profile: profiles[i].profile,
-                    full: false
-                },
-                onSuccess: data => this.dispatch(profileActionCreators.getProfileDataSuccess(data)),
-                onError: err => this.dispatch(profileActionCreators.getProfileDataError(err))
-            });
-        }
+        console.log('getting data for profiles', profiles);
+        this.profileService.getProfileData({
+            options: {
+                profile: profiles[0].profile,
+                full: false
+            },
+            onSuccess: data => this.dispatch(profileActionCreators.getProfileDataSuccess(data)),
+            onError: err => this.dispatch(profileActionCreators.getProfileDataError(err))
+        });
+        // for (let i = profiles.length - 1; i >= 0; i - 1) {
+        //     this.profileService.getProfileData({
+        //         options: {
+        //             profile: profiles[i].profile,
+        //             full: false
+        //         },
+        //         onSuccess: data => this.dispatch(profileActionCreators.getProfileDataSuccess(data)),
+        //         onError: err => this.dispatch(profileActionCreators.getProfileDataError(err))
+        //     });
+        // }
     };
     /**
      * get all local profiles available
