@@ -21,7 +21,7 @@ const channels = {
 
     geth: ['manager', 'options', 'startService', 'stopService', 'restartService', 'syncStatus', 'logs', 'status'],
 
-    ipfs: ['manager', 'startService', 'stopService', 'status', 'resolve'],
+    ipfs: ['manager', 'startService', 'stopService', 'status', 'resolve', 'getConfig', 'setPorts', 'getPorts'],
 
     profile: ['manager', 'getProfileData', 'getMyBalance', 'getIpfs', 'unregister'],
 
