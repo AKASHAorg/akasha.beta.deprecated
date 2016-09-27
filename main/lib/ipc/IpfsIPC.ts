@@ -4,6 +4,7 @@ import { IpfsConnector } from '@akashaproject/ipfs-connector';
 import AppLogger from './Logger';
 import channels from '../channels';
 import { ipfsResponse } from './event/responses';
+import * as Promise from 'bluebird';
 import WebContents = Electron.WebContents;
 import IpcMainEvent = Electron.IpcMainEvent;
 
