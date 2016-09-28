@@ -28,7 +28,7 @@ const channels = {
 
     registry: ['manager', 'profileExists', 'registerProfile', 'getCurrentProfile', 'getByAddress'],
 
-    tx: ['manager', 'addToQueue', 'emitMined', 'listenMined'],
+    tx: ['manager', 'addToQueue', 'emitMined'],
 };
 
 const processes = ['server', 'client'];
