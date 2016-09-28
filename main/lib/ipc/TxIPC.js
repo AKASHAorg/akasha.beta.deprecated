@@ -7,7 +7,7 @@ class TxIPC extends ModuleEmitter_1.default {
     constructor() {
         super();
         this.MODULE_NAME = 'tx';
-        this.DEFAULT_MANAGED = ['addToQueue', 'emitMined'];
+        this.DEFAULT_MANAGED = ['addToQueue', 'emitMined', 'listenMined'];
         this.attachEmitters();
     }
     initListeners(webContents) {

@@ -35,7 +35,12 @@ class TagsIPC extends ModuleEmitter_1.default {
                 response = responses_1.mainResponse({ tx });
             })
                 .catch((err) => {
-                response = responses_1.mainResponse({ error: { message: err.message } });
+                response = responses_1.mainResponse({
+                    error: {
+                        message: err.message,
+                        from: { tagName: data.tagName }
+                    }
+                });
             })
                 .finally(() => {
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].create, response, event);
@@ -53,7 +58,12 @@ class TagsIPC extends ModuleEmitter_1.default {
                 response = responses_1.mainResponse({ exists: found });
             })
                 .catch((err) => {
-                response = responses_1.mainResponse({ error: { message: err.message } });
+                response = responses_1.mainResponse({
+                    error: {
+                        message: err.message,
+                        from: { tagName: data.tagName }
+                    }
+                });
             })
                 .finally(() => {
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].exists, response, event);
@@ -71,7 +81,12 @@ class TagsIPC extends ModuleEmitter_1.default {
                 response = responses_1.mainResponse({ tagName });
             })
                 .catch((err) => {
-                response = responses_1.mainResponse({ error: { message: err.message } });
+                response = responses_1.mainResponse({
+                    error: {
+                        message: err.message,
+                        from: { tagId: data.tagId }
+                    }
+                });
             })
                 .finally(() => {
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].getTagAt, response, event);
@@ -89,7 +104,12 @@ class TagsIPC extends ModuleEmitter_1.default {
                 response = responses_1.mainResponse({ tagId });
             })
                 .catch((err) => {
-                response = responses_1.mainResponse({ error: { message: err.message } });
+                response = responses_1.mainResponse({
+                    error: {
+                        message: err.message,
+                        from: { tagName: data.tagName }
+                    }
+                });
             })
                 .finally(() => {
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].getTagId, response, event);
@@ -110,7 +130,12 @@ class TagsIPC extends ModuleEmitter_1.default {
                 response = responses_1.mainResponse({ tx });
             })
                 .catch((err) => {
-                response = responses_1.mainResponse({ error: { message: err.message } });
+                response = responses_1.mainResponse({
+                    error: {
+                        message: err.message,
+                        from: { tagName: data.tagName }
+                    }
+                });
             })
                 .finally(() => {
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].subscribe, response, event);
@@ -131,7 +156,12 @@ class TagsIPC extends ModuleEmitter_1.default {
                 response = responses_1.mainResponse({ tx });
             })
                 .catch((err) => {
-                response = responses_1.mainResponse({ error: { message: err.message } });
+                response = responses_1.mainResponse({
+                    error: {
+                        message: err.message,
+                        from: { tagName: data.tagName }
+                    }
+                });
             })
                 .finally(() => {
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].unsubscribe, response, event);
@@ -149,7 +179,12 @@ class TagsIPC extends ModuleEmitter_1.default {
                 response = responses_1.mainResponse({ position });
             })
                 .catch((err) => {
-                response = responses_1.mainResponse({ error: { message: err.message } });
+                response = responses_1.mainResponse({
+                    error: {
+                        message: err.message,
+                        from: { tagId: data.tagId, address: data.address }
+                    }
+                });
             })
                 .finally(() => {
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].getSubPosition, response, event);
@@ -167,7 +202,12 @@ class TagsIPC extends ModuleEmitter_1.default {
                 response = responses_1.mainResponse({ subscribed });
             })
                 .catch((err) => {
-                response = responses_1.mainResponse({ error: { message: err.message } });
+                response = responses_1.mainResponse({
+                    error: {
+                        message: err.message,
+                        from: { address: data.address, tagId: data.tagId }
+                    }
+                });
             })
                 .finally(() => {
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].isSubscribed, response, event);

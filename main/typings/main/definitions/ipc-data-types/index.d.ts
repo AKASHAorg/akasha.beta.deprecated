@@ -333,7 +333,21 @@ interface IpfsDataResponse extends MainResponse {
     };
 }
 
-interface ProfileUnregisterRequest {
+interface ProfileUnregisterRequest extends AuthRequest{
+    profileAddress: string;
+}
+
+interface ProfileFollowRequest extends AuthRequest {
+    profileAddress: string;
+}
+
+interface ProfileFollowResponse extends MainResponse {
+    data: {
+        tx: string;
+    }
+}
+
+interface GetFollowerCountRequest {
     profileAddress: string;
 }
 ///////////////////////// </ Profile> \\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -429,7 +443,7 @@ interface TagIsSubscribedResponse extends MainResponse {
 
 ////////////////////// < ENTRY > \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 interface EntryCreateRequest extends AuthRequest {
-    hash: string;
+    content: any;
     tags: string[];
     gas?: number;
 }
@@ -506,6 +520,39 @@ interface EntryScoreResponse {
         address: string;
         score: number;
     };
+}
+
+interface EntriesCountRequest {
+    profileAddress: string;
+}
+
+interface EntriesCountResponse extends MainResponse {
+    data: {
+        profileAddress: string;
+        score: number;
+    }
+}
+
+interface EntriesOfRequest extends EntriesCountRequest {
+    position: number;
+}
+
+interface EntriesOfResponse extends MainResponse {
+    data: {
+        profileAddress: string;
+        content: any;
+    }
+}
+
+interface EntryGetRequest {
+    entryAddress: string;
+}
+
+interface EntryGetResponse extends MainResponse {
+    data: {
+        entryAddress: string;
+        content: any;
+    }
 }
 ///////////////////// </ ENTRY> \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 

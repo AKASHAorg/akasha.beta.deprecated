@@ -33,46 +33,22 @@ class Profile extends BaseContract_1.default {
         });
     }
     updateHash(hash, address, gas) {
-        const ipfsHashTr = hash.map((v) => {
-            return this.gethInstance.web3.fromUtf8(v);
-        });
-        return new Promise((resolve, reject) => {
-            if (hash.length !== 2) {
-                return reject(new Error('Expected exactly 2 ipfs slices'));
-            }
-            this.contract
-                .at(address)
-                .setHash(ipfsHashTr, { gas }, (err, tx) => {
-                if (err) {
-                    return reject(err);
-                }
-                return resolve(tx);
-            });
-        });
+        const extracted = this.contract.at(address).setHash.request(hash, { gas });
+        return extracted.params[0];
     }
     setTippingAddress(address, tippingAddress, gas) {
-        return new Promise((resolve, reject) => {
-            this.contract
-                .at(address)
-                .setEthAddress(tippingAddress, { gas }, (err, tx) => {
-                if (err) {
-                    return reject(err);
-                }
-                return resolve(tx);
-            });
-        });
+        const extracted = this.contract
+            .at(address)
+            .setEthAddress
+            .request(tippingAddress, { gas });
+        return Promise.resolve(extracted.params[0]);
     }
     unregister(address, gas) {
-        return new Promise((resolve, reject) => {
-            this.contract
-                .at(address)
-                .destroy({ gas }, (err, tx) => {
-                if (err) {
-                    return reject(err);
-                }
-                return resolve(tx);
-            });
-        });
+        const extracted = this.contract
+            .at(address)
+            .destroy
+            .request({ gas });
+        return Promise.resolve(extracted.params[0]);
     }
 }
 Object.defineProperty(exports, "__esModule", { value: true });

@@ -6,6 +6,7 @@ const path_1 = require('path');
 const index_1 = require('./lib/ipc/index');
 const menu_1 = require('./menu');
 function bootstrapApp() {
+    let mainWindow = null;
     const viewHtml = path_1.resolve(__dirname, '../app');
     electron_1.crashReporter.start({
         productName: 'Akasha',
@@ -20,9 +21,19 @@ function bootstrapApp() {
         if (process.platform !== 'darwin')
             electron_1.app.quit();
     });
+    const shouldQuit = electron_1.app.makeSingleInstance((commandLine, workingDirectory) => {
+        if (mainWindow) {
+            if (mainWindow.isMinimized())
+                mainWindow.restore();
+            mainWindow.focus();
+        }
+    });
+    if (shouldQuit) {
+        electron_1.app.quit();
+    }
     electron_1.app.on('ready', () => {
         const modules = index_1.initModules();
-        const mainWindow = new electron_1.BrowserWindow({
+        mainWindow = new electron_1.BrowserWindow({
             width: 1280,
             height: 720,
             resizable: true,

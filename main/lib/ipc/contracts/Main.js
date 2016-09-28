@@ -5,6 +5,13 @@ class Main extends BaseContract_1.default {
     constructor(instance) {
         super();
         this.contract = Promise.promisifyAll(instance);
+        this.contract.getEntry.callAsync = Promise.promisify(this.contract.getEntry.call);
+        this.contract.getEntriesCount.callAsync = Promise.promisify(this.contract.getEntriesCount.call);
+        this.contract.getEntryOf.callAsync = Promise.promisify(this.contract.getEntryOf.call);
+        this.contract.getFollowingCount.callAsync = Promise.promisify(this.contract.getFollowingCount.call);
+        this.contract.getFollowersCount.callAsync = Promise.promisify(this.contract.getFollowersCount.call);
+        this.contract.getFollowingAt.callAsync = Promise.promisify(this.contract.getFollowingAt.call);
+        this.contract.getFollowerAt.callAsync = Promise.promisify(this.contract.getFollowerAt.call);
         this.contract.getVoteOf.callAsync = Promise.promisify(this.contract.getVoteOf.call);
         this.contract.openedToVotes.callAsync = Promise.promisify(this.contract.openedToVotes.call);
         this.contract.voteEndDate.callAsync = Promise.promisify(this.contract.voteEndDate.call);
@@ -39,10 +46,48 @@ class Main extends BaseContract_1.default {
             .getFundsAddress
             .callAsync();
     }
+    getEntry(address) {
+        return this.contract
+            .getEntry
+            .callAsync(address);
+    }
+    follow(address, gas) {
+        return this.extractData('follow', address, { gas });
+    }
+    getFollowingCount(address) {
+        return this.contract
+            .getFollowingCount
+            .callAsync(address);
+    }
+    getEntriesCount(address) {
+        return this.contract
+            .getEntriesCount
+            .callAsync(address);
+    }
+    getEntryOf(address, position) {
+        return this.contract
+            .getEntryOf
+            .callAsync(address, position);
+    }
+    getFollowersCount(address) {
+        return this.contract
+            .getFollowersCount
+            .callAsync(address);
+    }
     getCommentsCount(entryAddress) {
         return this.contract
             .getCommentsCount
             .callAsync(entryAddress);
+    }
+    getFollowingAt(address, position) {
+        return this.contract
+            .getFollowingAt
+            .callAsync(address, position);
+    }
+    getFollowerAt(address, position) {
+        return this.contract
+            .getFollowerAt
+            .callAsync(address, position);
     }
     getCommentAt(entry, commentId) {
         const commentIdTr = this.gethInstance.web3.fromDecimal(commentId);

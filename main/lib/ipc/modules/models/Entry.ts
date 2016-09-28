@@ -43,11 +43,20 @@ class Entry implements MediaComponent {
     }
 
     getShortContent() {
-        return Promise.resolve('abv');
+        return IpfsConnector.getInstance().api
+            .get(this.hash)
+            .then((data) => {
+                return data;
+            })
     }
 
     getFullContent() {
-        return Promise.resolve('afasfasfas');
+        return IpfsConnector.getInstance().api
+            .get(this.hash)
+            .then((data) => {
+                return data;
+            })
     }
-
 }
+
+export default Entry;
