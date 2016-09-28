@@ -1,10 +1,10 @@
 /// <reference path="../../typings/main.d.ts" />
-import {constructed as contracts} from './contracts/index';
+import { constructed as contracts } from './contracts/index';
 import ModuleEmitter from './event/ModuleEmitter';
 import channels from '../channels';
-import WebContents = Electron.WebContents;
 import { mainResponse } from './event/responses';
 import { module as userModule } from './modules/auth/index';
+import WebContents = Electron.WebContents;
 
 class TagsIPC extends ModuleEmitter {
 
@@ -48,10 +48,15 @@ class TagsIPC extends ModuleEmitter {
                         return userModule.auth.signData(txData, data.token);
                     })
                     .then((tx: string) => {
-                        response = mainResponse({tx});
+                        response = mainResponse({ tx });
                     })
                     .catch((err: Error) => {
-                        response = mainResponse({error: {message: err.message}});
+                        response = mainResponse({
+                            error: {
+                                message: err.message,
+                                from: { tagName: data.tagName }
+                            }
+                        });
                     })
                     .finally(() => {
                         this.fireEvent(
@@ -78,10 +83,15 @@ class TagsIPC extends ModuleEmitter {
                     .tags
                     .exists(data.tagName)
                     .then((found: boolean) => {
-                        response = mainResponse({exists: found});
+                        response = mainResponse({ exists: found });
                     })
                     .catch((err: Error) => {
-                        response = mainResponse({error: {message: err.message}});
+                        response = mainResponse({
+                            error: {
+                                message: err.message,
+                                from: { tagName: data.tagName }
+                            }
+                        });
                     })
                     .finally(() => {
                         this.fireEvent(
@@ -108,17 +118,23 @@ class TagsIPC extends ModuleEmitter {
                     .tags
                     .getTagAt(data.tagId)
                     .then((tagName: string) => {
-                       response = mainResponse({tagName});
+                        response = mainResponse({ tagName });
                     })
                     .catch((err: Error) => {
-                       response = mainResponse({error: {message: err.message}});
+                        response = mainResponse({
+                            error: {
+                                message: err.message,
+                                from: { tagId: data.tagId }
+                            }
+
+                        });
                     })
                     .finally(() => {
-                       this.fireEvent(
-                           channels.client[this.MODULE_NAME].getTagAt,
-                           response,
-                           event
-                       );
+                        this.fireEvent(
+                            channels.client[this.MODULE_NAME].getTagAt,
+                            response,
+                            event
+                        );
                     });
             }
         );
@@ -139,10 +155,15 @@ class TagsIPC extends ModuleEmitter {
                     .tags
                     .getTagId(data.tagName)
                     .then((tagId: string) => {
-                        response = mainResponse({tagId});
+                        response = mainResponse({ tagId });
                     })
                     .catch((err: Error) => {
-                        response = mainResponse({error: {message: err.message}});
+                        response = mainResponse({
+                            error: {
+                                message: err.message,
+                                from: { tagName: data.tagName }
+                            }
+                        });
                     })
                     .finally(() => {
                         this.fireEvent(
@@ -172,10 +193,15 @@ class TagsIPC extends ModuleEmitter {
                         return userModule.auth.signData(txData, data.token);
                     })
                     .then((tx: string) => {
-                        response = mainResponse({tx});
+                        response = mainResponse({ tx });
                     })
                     .catch((err: Error) => {
-                        response = mainResponse({error: {message: err.message}});
+                        response = mainResponse({
+                            error: {
+                                message: err.message,
+                                from: { tagName: data.tagName }
+                            }
+                        });
                     })
                     .finally(() => {
                         this.fireEvent(
@@ -205,10 +231,15 @@ class TagsIPC extends ModuleEmitter {
                         return userModule.auth.signData(txData, data.token);
                     })
                     .then((tx: string) => {
-                        response = mainResponse({tx});
+                        response = mainResponse({ tx });
                     })
                     .catch((err: Error) => {
-                        response = mainResponse({error: {message: err.message}});
+                        response = mainResponse({
+                            error: {
+                                message: err.message,
+                                from: { tagName: data.tagName }
+                            }
+                        });
                     })
                     .finally(() => {
                         this.fireEvent(
@@ -231,10 +262,15 @@ class TagsIPC extends ModuleEmitter {
                     .indexedTags
                     .getSubPosition(data.address, data.tagId)
                     .then((position: string) => {
-                        response = mainResponse({position});
+                        response = mainResponse({ position });
                     })
                     .catch((err: Error) => {
-                        response = mainResponse({error: {message: err.message}});
+                        response = mainResponse({
+                            error: {
+                                message: err.message,
+                                from: { tagId: data.tagId, address: data.address }
+                            }
+                        });
                     })
                     .finally(() => {
                         this.fireEvent(
@@ -257,10 +293,15 @@ class TagsIPC extends ModuleEmitter {
                     .indexedTags
                     .isSubscribed(data.address, data.tagId)
                     .then((subscribed: boolean) => {
-                        response = mainResponse({subscribed});
+                        response = mainResponse({ subscribed });
                     })
                     .catch((err: Error) => {
-                        response = mainResponse({error: {message: err.message}});
+                        response = mainResponse({
+                            error: {
+                                message: err.message,
+                                from: { address: data.address, tagId: data.tagId }
+                            }
+                        });
                     })
                     .finally(() => {
                         this.fireEvent(

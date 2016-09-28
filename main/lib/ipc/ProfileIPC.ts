@@ -1,7 +1,8 @@
-import {GethConnector} from '@akashaproject/geth-connector';
-import {module as profileModule} from './modules/profile/index';
+import { GethConnector } from '@akashaproject/geth-connector';
+import { module as userModule } from './modules/auth/index';
+import { module as profileModule } from './modules/profile/index';
 import ModuleEmitter from './event/ModuleEmitter';
-import {constructed as contracts} from './contracts/index';
+import { constructed as contracts } from './contracts/index';
 import channels from '../channels';
 import { mainResponse } from './event/responses';
 import WebContents = Electron.WebContents;
@@ -20,6 +21,11 @@ class ProfileIPC extends ModuleEmitter {
             ._getProfileData()
             ._getIpfs()
             ._unregister()
+            ._follow()
+            ._getFollowers()
+            ._getFollowersCount()
+            ._getFollowing()
+            ._getFollowingCount()
             ._manager();
     }
 
@@ -42,14 +48,14 @@ class ProfileIPC extends ModuleEmitter {
                         response = mainResponse(resp);
                     })
                     .catch((err: Error) => {
-                        response = mainResponse({error: { message: err.message}});
+                        response = mainResponse({ error: { message: err.message } });
                     })
                     .finally(() => {
-                       this.fireEvent(
-                           channels.client[this.MODULE_NAME].getProfileData,
-                           response,
-                           event
-                       ) ;
+                        this.fireEvent(
+                            channels.client[this.MODULE_NAME].getProfileData,
+                            response,
+                            event
+                        );
                     });
             }
         );
@@ -68,16 +74,16 @@ class ProfileIPC extends ModuleEmitter {
                     .getBalanceAsync(etherBase)
                     .then((weiAmount: string) => {
                         const unit = (data.unit) ? data.unit : 'ether';
-                        const value =  GethConnector.getInstance()
-                           .web3
-                           .fromWei(weiAmount, unit);
+                        const value = GethConnector.getInstance()
+                            .web3
+                            .fromWei(weiAmount, unit);
                         if (!etherBase) {
                             throw new Error('No ethereum address specified');
                         }
                         response = mainResponse(value);
                     })
                     .catch((err: Error) => {
-                        response = mainResponse({error: {message: err.message}});
+                        response = mainResponse({ error: { message: err.message } });
                     })
                     .finally(() => {
                         this.fireEvent(
@@ -101,8 +107,8 @@ class ProfileIPC extends ModuleEmitter {
                 chain.then((resolved: any) => {
                     response = mainResponse(resolved);
                 }).catch((err: Error) => {
-                    response = mainResponse({error: {message: err.message}});
-                    })
+                    response = mainResponse({ error: { message: err.message } });
+                })
                     .finally(() => {
                         this.fireEvent(
                             channels.client[this.MODULE_NAME].getIpfs,
@@ -125,11 +131,14 @@ class ProfileIPC extends ModuleEmitter {
                     .instance
                     .profile
                     .unregister(data.profileAddress)
+                    .then((txData) => {
+                        return userModule.auth.signData(txData, data.token);
+                    })
                     .then((tx: string) => {
-                        response = mainResponse({tx});
+                        response = mainResponse({ tx });
                     })
                     .catch((err: Error) => {
-                        response = mainResponse({error: {message: err.message}});
+                        response = mainResponse({ error: { message: err.message } });
                     })
                     .finally(() => {
                         this.fireEvent(
@@ -138,6 +147,131 @@ class ProfileIPC extends ModuleEmitter {
                             event
                         );
                     });
+            }
+        );
+        return this;
+    }
+
+    private _follow() {
+        this.registerListener(
+            channels.server[this.MODULE_NAME].follow,
+            (event: any, data: ProfileFollowRequest) => {
+                let response: ProfileFollowResponse;
+                contracts.instance
+                    .main
+                    .follow(data.profileAddress)
+                    .then((txData) => {
+                        return userModule.auth.signData(txData, data.token);
+                    })
+                    .then((tx: string) => {
+                        response = mainResponse({ tx });
+                    })
+                    .catch((err: Error) => {
+                        response = mainResponse({ error: { message: err.message } });
+                    })
+                    .finally(() => {
+                        this.fireEvent(
+                            channels.client[this.MODULE_NAME].follow,
+                            response,
+                            event
+                        );
+                    });
+            }
+        );
+        return this;
+    }
+
+    private _getFollowersCount() {
+        this.registerListener(
+            channels.server[this.MODULE_NAME].getFollowersCount,
+            (event: any, data: GetFollowerCountRequest) => {
+                let response;
+                contracts.instance.main.getFollowersCount(data.profileAddress)
+                    .then((count: any) => {
+                    response = mainResponse({count});
+                }).catch((err: Error) => {
+                    response = mainResponse({ error: { message: err.message } });
+                })
+                    .finally(() => {
+                        this.fireEvent(
+                            channels.client[this.MODULE_NAME].getFollowersCount,
+                            response,
+                            event
+                        );
+                    })
+                ;
+            }
+        );
+        return this;
+    }
+
+    private _getFollowingCount() {
+        this.registerListener(
+            channels.server[this.MODULE_NAME].getFollowingCount,
+            (event: any, data: GetFollowerCountRequest) => {
+                let response;
+                contracts.instance.main.getFollowingCount(data.profileAddress)
+                    .then((count: any) => {
+                        response = mainResponse({count});
+                    }).catch((err: Error) => {
+                    response = mainResponse({ error: { message: err.message } });
+                })
+                    .finally(() => {
+                        this.fireEvent(
+                            channels.client[this.MODULE_NAME].getFollowingCount,
+                            response,
+                            event
+                        );
+                    })
+                ;
+            }
+        );
+        return this;
+    }
+
+    private _getFollowers() {
+        this.registerListener(
+            channels.server[this.MODULE_NAME].getFollowers,
+            (event: any, data: GetFollowerCountRequest) => {
+                let response;
+                contracts.instance.main.getFollowersCount(data.profileAddress)
+                    .then((count: any) => {
+                        response = mainResponse({count});
+                    }).catch((err: Error) => {
+                    response = mainResponse({ error: { message: err.message } });
+                })
+                    .finally(() => {
+                        this.fireEvent(
+                            channels.client[this.MODULE_NAME].getFollowers,
+                            response,
+                            event
+                        );
+                    })
+                ;
+            }
+        );
+        return this;
+    }
+
+    private _getFollowing() {
+        this.registerListener(
+            channels.server[this.MODULE_NAME].getFollowers,
+            (event: any, data: GetFollowerCountRequest) => {
+                let response;
+                contracts.instance.main.getFollowingCount(data.profileAddress)
+                    .then((count: any) => {
+                        response = mainResponse({count});
+                    }).catch((err: Error) => {
+                    response = mainResponse({ error: { message: err.message } });
+                })
+                    .finally(() => {
+                        this.fireEvent(
+                            channels.client[this.MODULE_NAME].getFollowing,
+                            response,
+                            event
+                        );
+                    })
+                ;
             }
         );
         return this;

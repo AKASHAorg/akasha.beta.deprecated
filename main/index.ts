@@ -7,6 +7,7 @@ import { initModules } from './lib/ipc/index';
 import { initMenu } from './menu';
 
 export function bootstrapApp() {
+    let mainWindow = null;
     const viewHtml = resolve(__dirname, '../app');
     crashReporter.start({
         productName: 'Akasha',
@@ -23,10 +24,20 @@ export function bootstrapApp() {
         if (process.platform !== 'darwin') app.quit();
     });
 
+    const shouldQuit = app.makeSingleInstance((commandLine, workingDirectory) => {
+        if (mainWindow) {
+            if (mainWindow.isMinimized()) mainWindow.restore();
+            mainWindow.focus()
+        }
+    });
+
+    if (shouldQuit) {
+        app.quit()
+    }
 
     app.on('ready', () => {
         const modules = initModules();
-        const mainWindow = new BrowserWindow({
+        mainWindow = new BrowserWindow({
             width: 1280,
             height: 720,
             resizable: true,

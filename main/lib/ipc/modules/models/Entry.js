@@ -36,10 +36,20 @@ class Entry {
         });
     }
     getShortContent() {
-        return Promise.resolve('abv');
+        return ipfs_connector_1.IpfsConnector.getInstance().api
+            .get(this.hash)
+            .then((data) => {
+            return data;
+        });
     }
     getFullContent() {
-        return Promise.resolve('afasfasfas');
+        return ipfs_connector_1.IpfsConnector.getInstance().api
+            .get(this.hash)
+            .then((data) => {
+            return data;
+        });
     }
 }
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.default = Entry;
 //# sourceMappingURL=Entry.js.map

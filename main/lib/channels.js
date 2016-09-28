@@ -13,13 +13,14 @@ const channels = {
     tags: ['manager', 'create', 'exists', 'getTagId', 'getTagAt', 'isSubscribed', 'subscribe',
         'unsubscribe', 'getSubPosition'],
     entry: ['manager', 'publish', 'update', 'upvote', 'downvote', 'isOpenedToVotes', 'getVoteOf',
-        'getVoteEndDate', 'getScore'],
+        'getVoteEndDate', 'getScore', 'getEntriesCount', 'getEntryOf', 'getEntry'],
     comments: ['manager', 'publish', 'update', 'upvote', 'downvote', 'getScore'],
     geth: ['manager', 'options', 'startService', 'stopService', 'restartService', 'syncStatus', 'logs', 'status'],
     ipfs: ['manager', 'startService', 'stopService', 'status', 'resolve', 'getConfig', 'setPorts', 'getPorts'],
-    profile: ['manager', 'getProfileData', 'getMyBalance', 'getIpfs', 'unregister'],
+    profile: ['manager', 'getProfileData', 'getMyBalance', 'getIpfs', 'unregister', 'follow', 'getFollowersCount',
+        'getFollowingCount', 'getFollowers', 'getFollowing'],
     registry: ['manager', 'profileExists', 'registerProfile', 'getCurrentProfile', 'getByAddress'],
-    tx: ['manager', 'addToQueue', 'emitMined'],
+    tx: ['manager', 'addToQueue', 'emitMined', 'listenMined'],
 };
 const processes = ['server', 'client'];
 const mem = os_1.totalmem().toLocaleString();

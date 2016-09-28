@@ -44,7 +44,12 @@ class RegistryIPC extends ModuleEmitter {
                         );
                     })
                     .catch((error: Error) => {
-                        const response: ProfileExistsResponse = mainResponse({ error: { message: error.message } });
+                        const response: ProfileExistsResponse = mainResponse({
+                            error: {
+                                message: error.message,
+                                from: { username: data.username }
+                            }
+                        });
                         this.fireEvent(
                             channels.client[this.MODULE_NAME].profileExists,
                             response,
@@ -95,7 +100,12 @@ class RegistryIPC extends ModuleEmitter {
                         response = mainResponse({ profileAddress: addr });
                     })
                     .catch((error: Error) => {
-                        response = mainResponse({ error: { message: error.message } });
+                        response = mainResponse({
+                            error: {
+                                message: error.message,
+                                from: { ethAddress: data.ethAddress }
+                            }
+                        });
                     })
                     .finally(() => {
                         this.fireEvent(
@@ -129,7 +139,12 @@ class RegistryIPC extends ModuleEmitter {
                         response = mainResponse({ tx });
                     })
                     .catch((error: Error) => {
-                        response = mainResponse({ error: { message: error.message } });
+                        response = mainResponse({
+                            error: {
+                                message: error.message,
+                                from: { address: data.username }
+                            }
+                        });
                     })
                     .finally(() => {
                         this.fireEvent(
