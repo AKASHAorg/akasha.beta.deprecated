@@ -67,6 +67,12 @@ function bootstrapApp() {
         mainWindow.webContents.on('crashed', () => {
             modules.logger.getLogger('APP').warn('APP CRASHED');
         });
+        const openDefault = (e, url) => {
+            e.preventDefault();
+            electron_1.shell.openExternal(url);
+        };
+        mainWindow.webContents.on('will-navigate', openDefault);
+        mainWindow.webContents.on('new-window', openDefault);
         mainWindow.on('unresponsive', () => {
             modules.logger.getLogger('APP').warn('APP is unresponsive');
         });

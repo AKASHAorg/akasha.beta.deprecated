@@ -20,7 +20,7 @@ const channels = {
     profile: ['manager', 'getProfileData', 'getMyBalance', 'getIpfs', 'unregister', 'follow', 'getFollowersCount',
         'getFollowingCount', 'getFollowers', 'getFollowing'],
     registry: ['manager', 'profileExists', 'registerProfile', 'getCurrentProfile', 'getByAddress'],
-    tx: ['manager', 'addToQueue', 'emitMined', 'listenMined'],
+    tx: ['manager', 'addToQueue', 'emitMined'],
 };
 const processes = ['server', 'client'];
 const mem = os_1.totalmem().toLocaleString();
