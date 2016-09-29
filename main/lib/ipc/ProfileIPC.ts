@@ -48,7 +48,7 @@ class ProfileIPC extends ModuleEmitter {
                         response = mainResponse(resp);
                     })
                     .catch((err: Error) => {
-                        response = mainResponse({ error: { message: err.message } });
+                        response = mainResponse({ error: { message: err.message, from: data.profile } });
                     })
                     .finally(() => {
                         this.fireEvent(
@@ -232,11 +232,23 @@ class ProfileIPC extends ModuleEmitter {
     private _getFollowers() {
         this.registerListener(
             channels.server[this.MODULE_NAME].getFollowers,
-            (event: any, data: GetFollowerCountRequest) => {
-                let response;
+            (event: any, data: GetFollowersRequest) => {
+                let response: GetFollowersResponse;
                 contracts.instance.main.getFollowersCount(data.profileAddress)
                     .then((count: any) => {
-                        response = mainResponse({count});
+                        const followers = [];
+                        const start = (data.from) ? data.from : 0;
+                        const stop = (data.to) ? (data.to < count) ? data.to : count : count;
+                        for (let i = start; i < stop; i++) {
+                            followers.push(
+                                contracts.instance
+                                    .main
+                                    .getFollowerAt(data.profileAddress, i)
+                            )
+                        }
+                        return Promise.all(followers);
+                    }).then((followers: string[]) =>{
+                    response = mainResponse({followers});
                     }).catch((err: Error) => {
                     response = mainResponse({ error: { message: err.message } });
                 })
@@ -256,11 +268,24 @@ class ProfileIPC extends ModuleEmitter {
     private _getFollowing() {
         this.registerListener(
             channels.server[this.MODULE_NAME].getFollowers,
-            (event: any, data: GetFollowerCountRequest) => {
-                let response;
+            (event: any, data: GetFollowersRequest) => {
+                let response: GetFollowingResponse;
                 contracts.instance.main.getFollowingCount(data.profileAddress)
                     .then((count: any) => {
-                        response = mainResponse({count});
+                        const following = [];
+                        const start = (data.from) ? data.from : 0;
+                        const stop = (data.to) ? (data.to < count) ? data.to : count : count;
+                        for (let i = start; i < stop; i++) {
+                            following.push(
+                                contracts.instance
+                                    .main
+                                    .getFollowingAt(data.profileAddress, i)
+                            )
+                        }
+                        return Promise.all(following);
+                    })
+                    .then((following: string[]) => {
+                        response = mainResponse({following});
                     }).catch((err: Error) => {
                     response = mainResponse({ error: { message: err.message } });
                 })
