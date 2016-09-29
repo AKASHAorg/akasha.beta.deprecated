@@ -8,6 +8,7 @@ class Tags extends BaseContract_1.default {
         this.contract.exists.callAsync = Promise.promisify(this.contract.exists.call);
         this.contract.getTagAt.callAsync = Promise.promisify(this.contract.getTagAt.call);
         this.contract.getTagId.callAsync = Promise.promisify(this.contract.getTagId.call);
+        this.contract._length.callAsync = Promise.promisify(this.contract._length.call);
     }
     exists(tag) {
         const tagTr = this.gethInstance.web3.fromUtf8(tag);
@@ -19,6 +20,9 @@ class Tags extends BaseContract_1.default {
         return this.contract
             .getTagAt
             .callAsync(id);
+    }
+    getTagsCount() {
+        return this.contract._length.callAsync();
     }
     getTagId(tagName) {
         const tagTr = this.gethInstance.web3.fromUtf8(tagName);
