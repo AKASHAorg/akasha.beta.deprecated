@@ -4,6 +4,12 @@ class Entry implements MediaComponent {
     hash: string;
     id: string;
 
+    /**
+     *
+     * @param content
+     * @param tags
+     * @returns {any}
+     */
     create(content:any, tags: any[]){
         const constructed = {
             content,
@@ -17,10 +23,20 @@ class Entry implements MediaComponent {
             })
     }
 
+    /**
+     *
+     * @param hash
+     * @returns {Entry}
+     */
     load(hash: string) {
         this.hash = hash;
+        return this;
     }
 
+    /**
+     *
+     * @returns {any}
+     */
     read() {
         if(!this.hash){
             return Promise.reject('Must set hash property first');
@@ -30,6 +46,11 @@ class Entry implements MediaComponent {
             .then((content: JSON | Buffer) => content);
     }
 
+    /**
+     *
+     * @param setData
+     * @returns {any}
+     */
     update(setData: any) {
         if(!this.hash){
             return Promise.reject('Must set hash property first');
@@ -42,6 +63,10 @@ class Entry implements MediaComponent {
             })
     }
 
+    /**
+     *
+     * @returns {any}
+     */
     getShortContent() {
         return IpfsConnector.getInstance().api
             .get(this.hash)
@@ -50,6 +75,10 @@ class Entry implements MediaComponent {
             })
     }
 
+    /**
+     *
+     * @returns {any}
+     */
     getFullContent() {
         return IpfsConnector.getInstance().api
             .get(this.hash)

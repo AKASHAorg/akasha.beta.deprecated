@@ -15,6 +15,7 @@ class Entry {
     }
     load(hash) {
         this.hash = hash;
+        return this;
     }
     read() {
         if (!this.hash) {
