@@ -45,7 +45,8 @@ class ProfileIPC extends ModuleEmitter {
                         return profileModule.helpers.getShortProfile(resp);
                     })
                     .then((resp: IpfsProfileCreateRequest) => {
-                        response = mainResponse(resp);
+                        const constructed = Object.assign({}, resp, {profile: data.profile});
+                        response = mainResponse(constructed);
                     })
                     .catch((err: Error) => {
                         response = mainResponse({ error: { message: err.message, from: data.profile } });
@@ -248,9 +249,9 @@ class ProfileIPC extends ModuleEmitter {
                         }
                         return Promise.all(followers);
                     }).then((followers: string[]) =>{
-                    response = mainResponse({followers});
+                    response = mainResponse({followers, from: data.from, to: data.to, profileAddress: data.profileAddress});
                     }).catch((err: Error) => {
-                    response = mainResponse({ error: { message: err.message } });
+                    response = mainResponse({ error: { message: err.message, from: data.profileAddress } });
                 })
                     .finally(() => {
                         this.fireEvent(
@@ -285,9 +286,9 @@ class ProfileIPC extends ModuleEmitter {
                         return Promise.all(following);
                     })
                     .then((following: string[]) => {
-                        response = mainResponse({following});
+                        response = mainResponse({following, from: data.from, to: data.to, profileAddress: data.profileAddress});
                     }).catch((err: Error) => {
-                    response = mainResponse({ error: { message: err.message } });
+                    response = mainResponse({ error: { message: err.message, from: data.profileAddress } });
                 })
                     .finally(() => {
                         this.fireEvent(

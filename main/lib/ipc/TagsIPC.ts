@@ -29,6 +29,7 @@ class TagsIPC extends ModuleEmitter {
             ._isSubscribed()
             ._subscribe()
             ._unsubscribe()
+            ._getTagsFrom()
             ._manager();
     }
 
@@ -311,6 +312,45 @@ class TagsIPC extends ModuleEmitter {
                         );
                     });
             });
+        return this;
+    }
+
+    private _getTagsFrom() {
+        this.registerListener(
+            channels.server[this.MODULE_NAME].getTagsFrom,
+            (event: any, data) => {
+                let response;
+                contracts.instance
+                    .tags
+                    .getTagsCount()
+                    .then((count) => {
+                        const tags = [];
+                        const start = (data.from) ? data.from : 0;
+                        const stop = (data.to) ? (data.to < count) ? data.to : count : count;
+                        for (let i = start; i < stop; i++) {
+                            tags.push(
+                                contracts.instance
+                                    .tags
+                                    .getTagAt(i)
+                            )
+                        }
+                        return Promise.all(tags);
+                    })
+                    .then((tags) => {
+                        response = mainResponse({tags, from: data.from, to: data.to})
+                    })
+                    .catch((err: Error) => {
+                        response = mainResponse({error: {message: err.message, from: data.from }})
+                    })
+                    .finally(() => {
+                        this.fireEvent(
+                            channels.client[this.MODULE_NAME].getTagsFrom,
+                            response,
+                            event
+                        );
+                    });
+            }
+        );
         return this;
     }
 }

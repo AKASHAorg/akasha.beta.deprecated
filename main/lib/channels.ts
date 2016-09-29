@@ -12,7 +12,7 @@ const channels = {
     auth: ['login', 'logout', 'requestEther', 'generateEthKey', 'getLocalIdentities'],
 
     tags: ['create', 'exists', 'getTagId', 'getTagAt', 'isSubscribed', 'subscribe',
-        'unsubscribe', 'getSubPosition'],
+        'unsubscribe', 'getSubPosition', 'getTagsFrom'],
 
     entry: ['publish', 'update', 'upvote', 'downvote', 'isOpenedToVotes', 'getVoteOf',
     'getVoteEndDate', 'getScore', 'getEntriesCount', 'getEntryOf', 'getEntry'],

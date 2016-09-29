@@ -39,7 +39,7 @@ export abstract class AbstractListener {
             return false;
         }
         this.stopListener(channel);
-        return this.listeners.delete(channel);
+        return true;
     }
 
     /**
