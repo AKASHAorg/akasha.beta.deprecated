@@ -42,7 +42,7 @@ class ProfileIPC extends ModuleEmitter_1.default {
                 response = responses_1.mainResponse(resp);
             })
                 .catch((err) => {
-                response = responses_1.mainResponse({ error: { message: err.message } });
+                response = responses_1.mainResponse({ error: { message: err.message, from: data.profile } });
             })
                 .finally(() => {
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].getProfileData, response, event);
@@ -171,7 +171,17 @@ class ProfileIPC extends ModuleEmitter_1.default {
             let response;
             index_3.constructed.instance.main.getFollowersCount(data.profileAddress)
                 .then((count) => {
-                response = responses_1.mainResponse({ count });
+                const followers = [];
+                const start = (data.from) ? data.from : 0;
+                const stop = (data.to) ? (data.to < count) ? data.to : count : count;
+                for (let i = start; i < stop; i++) {
+                    followers.push(index_3.constructed.instance
+                        .main
+                        .getFollowerAt(data.profileAddress, i));
+                }
+                return Promise.all(followers);
+            }).then((followers) => {
+                response = responses_1.mainResponse({ followers });
             }).catch((err) => {
                 response = responses_1.mainResponse({ error: { message: err.message } });
             })
@@ -186,7 +196,18 @@ class ProfileIPC extends ModuleEmitter_1.default {
             let response;
             index_3.constructed.instance.main.getFollowingCount(data.profileAddress)
                 .then((count) => {
-                response = responses_1.mainResponse({ count });
+                const following = [];
+                const start = (data.from) ? data.from : 0;
+                const stop = (data.to) ? (data.to < count) ? data.to : count : count;
+                for (let i = start; i < stop; i++) {
+                    following.push(index_3.constructed.instance
+                        .main
+                        .getFollowingAt(data.profileAddress, i));
+                }
+                return Promise.all(following);
+            })
+                .then((following) => {
+                response = responses_1.mainResponse({ following });
             }).catch((err) => {
                 response = responses_1.mainResponse({ error: { message: err.message } });
             })

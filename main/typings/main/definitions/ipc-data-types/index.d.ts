@@ -350,6 +350,24 @@ interface ProfileFollowResponse extends MainResponse {
 interface GetFollowerCountRequest {
     profileAddress: string;
 }
+
+interface GetFollowersRequest {
+    profileAddress: string;
+    from?: number;
+    to?: number;
+}
+
+interface GetFollowersResponse extends MainResponse {
+    data: {
+        followers: string[];
+    }
+}
+
+interface GetFollowingResponse extends MainResponse {
+    data: {
+        following: string[];
+    }
+}
 ///////////////////////// </ Profile> \\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 //////////////////////// < TAGS > \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
