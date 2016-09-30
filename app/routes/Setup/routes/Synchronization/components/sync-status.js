@@ -1,6 +1,6 @@
-import React, {Component, PropTypes} from 'react';
+import React, { Component } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { generalMessages, setupMessages } from 'locale-data/messages';
+import { setupMessages } from 'locale-data/messages'; /* eslint import/no-unresolved: 0 */
 import { SyncProgressLoader } from 'shared-components';
 
 class SyncStatus extends Component {

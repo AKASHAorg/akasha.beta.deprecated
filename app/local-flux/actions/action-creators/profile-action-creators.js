@@ -1,9 +1,9 @@
 import * as types from '../../constants/ProfileConstants';
 
-export function loginSuccess (profileData) {
+export function loginSuccess (profile) {
     return {
         type: types.LOGIN_SUCCESS,
-        profileData
+        profile
     };
 }
 
@@ -90,7 +90,6 @@ export function createEthAddress () {
         type: types.CREATE_ETH_ADDRESS
     };
 }
-
 export function createEthAddressSuccess (data) {
     return {
         type: types.CREATE_ETH_ADDRESS_SUCCESS,
@@ -104,35 +103,15 @@ export function createEthAddressError (error) {
     };
 }
 
-export function requestFund () {
-    return {
-        type: types.FUND_FROM_FAUCET
-    };
-}
-
-export function requestFundSuccess (data) {
+export function requestFundFromFaucetSuccess (data) {
     return {
         type: types.REQUEST_FUND_FROM_FAUCET_SUCCESS,
         data
     };
 }
-export function requestFundError (error) {
+export function requestFundFromFaucetError (error) {
     return {
         type: types.REQUEST_FUND_FROM_FAUCET_ERROR,
-        error
-    };
-}
-
-export function fundSuccess (data) {
-    return {
-        type: types.FUND_FROM_FAUCET_SUCCESS,
-        data
-    };
-}
-
-export function fundError (error) {
-    return {
-        type: types.FUND_FROM_FAUCET_ERROR,
         error
     };
 }

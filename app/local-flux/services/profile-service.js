@@ -74,15 +74,6 @@ class ProfileService extends BaseService {
      * @todo gather more info and implement!
      */
     unregister = () => {};
-
-    getTempProfile = ({ onError = () => {}, onSuccess }) => {
-        profileDB.transaction('rw', profileDB.tempProfile, () =>
-            profileDB.tempProfile.toArray()
-        ).then((results) => {
-            dbg('temp profiles: ', results);
-            onSuccess(results);
-        }).catch(reason => onError(reason));
-    }
 }
 
 export { ProfileService };

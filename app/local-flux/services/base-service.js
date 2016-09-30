@@ -45,7 +45,7 @@ class BaseService {
     removeListener = (channel, cb) => {
         ipcRenderer.removeListener(channel, this._listeners.get(channel));
         this._listeners.delete(channel);
-        if(typeof cb === 'function') {
+        if (typeof cb === 'function') {
             return cb();
         }
         return null;

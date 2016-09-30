@@ -5,22 +5,26 @@ import { SvgIcon, IconButton, RaisedButton,
     TextField, Checkbox, Divider } from 'material-ui';
 import ContentAddIcon from 'material-ui/svg-icons/content/add';
 import CancelIcon from 'material-ui/svg-icons/navigation/cancel';
-import Avatar from '../../../../../shared-components/Avatar/avatar';
-import ImageUploader from '../../../../../shared-components/ImageUploader/image-uploader';
+import { injectIntl, FormattedMessage } from 'react-intl';
+import { Avatar, ImageUploader, PanelContainer } from 'shared-components';
+import { profileMessages, formMessages, generalMessages } from 'locale-data/messages'; /* eslint import/no-unresolved: 0*/
 import { inputFieldMethods } from '../../../../../utils/dataModule';
 import validationProvider from '../../../../../utils/validationProvider';
 import { UserValidation } from '../../../../../utils/validationSchema';
-import { injectIntl, FormattedMessage } from 'react-intl';
 import CreateProfileHeader from '../../../components/CreateProfileHeader';
-import PanelContainer from 'shared-components/PanelContainer/panel-container';
-import { profileMessages, formMessages, generalMessages } from 'locale-data/messages';
 
 class CreateProfile extends Component {
     constructor (props) {
         super(props);
         this.getProps = inputFieldMethods.getProps.bind(this);
         this.state = {
-            formValues: {},
+            formValues: {
+                firstName: '',
+                lastName: '',
+                username: '',
+                password: '',
+                password2: ''
+            },
             links: [
                 {
                     title: '',
@@ -31,26 +35,34 @@ class CreateProfile extends Component {
             ]
         };
         this.validatorTypes = new UserValidation(props.intl).getSchema();
-        this.serverValidatedFields = ['userName'];
+        this.serverValidatedFields = ['username'];
     }
     componentWillMount () {
         this.setState({ opt_details: false });
     }
     componentDidMount () {
-        if (this.firstNameInput) {
-            this.firstNameInput.focus();
+        if (this.refs.firstName) {
+            this.refs.firstName.focus();
         }
     }
-    getValidatorData = () => this.state.formValues;
+    componentWillUpdate (nextProps) {
+        const { profileState } = nextProps;
+        const tempProfile = profileState.get('tempProfile');
+        if (tempProfile && tempProfile.get('username') !== '') {
+            this.context.router.push('/authenticate/new-profile-status');
+        }
+    }
+    getValidatorData () {
+        return this.state.formValues;
+    }
     handleShowDetails = () => {
         this.setState({ opt_details: !this.state.opt_details });
     };
     handleSubmit = () => {
         const { profileActions } = this.props;
-        let profileData = this.state.formValues;
+        const profileData = this.state.formValues;
         const optionalData = {};
         const profileImage = this.imageUploader.getWrappedInstance().getImage();
-        const errors = this.props.errors;
         const userLinks = this.state.links.filter(link => link.title.length > 0);
         profileData.password = new TextEncoder('utf-8').encode(this.state.formValues.password);
         profileData.password2 = new TextEncoder('utf-8').encode(this.state.formValues.password2);
@@ -64,31 +76,30 @@ class CreateProfile extends Component {
         if (this.state.about) {
             optionalData.about = this.state.about;
         }
-        // check for remaining errors
-        Object.keys(errors).forEach(errKey => {
-            if (errors[errKey].length > 0) {
-                return;
-            }
-        });
+
         // save a temporary profile to indexedDB
         // console.log(profileData);
         // console.log('profile creation is disabled for testing purposes!!')
         // return;
-        this.avatar.getImage().then(uintArr => {
+        this.avatar.getImage().then((uintArr) => {
             if (uintArr) {
                 optionalData.avatar = uintArr;
             }
-            profileData = {...profileData, ...optionalData};
-            return profileData;
-        }).then(profileData => {
-            console.log(profileData, 'profile to be registered');
-
-            // profileActions.createTempProfile(profileData, {
-            //     currentStep: 0,
-            //     status: 'finished',
-            //     message: 'Profile creation started!'
-            // })
-        })//.then(() => this.context.router.push('new-profile-status'));
+            return { ...profileData, ...optionalData };
+        }).then((data) => {
+            let mustCorrectErrors = false;
+            Object.keys(this.state.formValues).forEach((key) => {
+                if (this.state.formValues[key] === '') {
+                    this.refs[key].focus();
+                    mustCorrectErrors = true;
+                }
+            });
+            if (mustCorrectErrors) {
+                console.log('must correct some errors!', this.state);
+            } else {
+                profileActions.createTempProfile(data);
+            }
+        });
     };
     _submitForm = (ev) => {
         ev.preventDefault();
@@ -118,9 +129,9 @@ class CreateProfile extends Component {
     _handleRemoveLink = (linkId) => {
         let links = this.state.links;
         if (this.state.links.length > 1) {
-            links = r.reject((link) => link.id === linkId, links);
+            links = r.reject(link => link.id === linkId, links);
         }
-        for (let i = 0; i < links.length; i++) {
+        for (let i = 0; i < links.length; i += 1) {
             links[i].id = i;
         }
         this.setState({
@@ -129,7 +140,7 @@ class CreateProfile extends Component {
     };
     _checkLinks = () =>
         this.state.links.every(link =>
-            Object.keys(link).forEach((key) =>
+            Object.keys(link).forEach(key =>
                 (key !== 'id' && key !== 'type' && link[key].length !== 0)
             )
         );
@@ -165,19 +176,21 @@ class CreateProfile extends Component {
         const inputStyle = { color: Colors.darkBlack };
         const firstNameProps = this.getProps({
             floatingLabelText: intl.formatMessage(formMessages.firstName),
-            ref: (firstNameInput) => { this.firstNameInput = firstNameInput; },
+            ref: 'firstName',
             floatingLabelStyle: floatLabelStyle,
             inputStyle: { inputStyle },
             style: { width: '210px', verticalAlign: 'middle' },
             statePath: 'formValues.firstName',
             required: true,
             addValueLink: true,
+            onFocus: this.props.clearValidations,
             onBlur: this.props.handleValidation('formValues.firstName')
         });
 
         const lastNameProps = this.getProps({
             floatingLabelStyle: floatLabelStyle,
             floatingLabelText: intl.formatMessage(formMessages.lastName),
+            ref: 'lastName',
             inputStyle: { inputStyle },
             style: { width: '210px', marginLeft: '20px', verticalAlign: 'middle' },
             statePath: 'formValues.lastName',
@@ -186,16 +199,17 @@ class CreateProfile extends Component {
             onBlur: this.props.handleValidation('formValues.lastName')
         });
 
-        const userNameProps = this.getProps({
+        const usernameProps = this.getProps({
             fullWidth: true,
             inputStyle: { inputStyle },
             style: { verticalAlign: 'middle' },
-            floatingLabelText: intl.formatMessage(formMessages.userName),
+            floatingLabelText: intl.formatMessage(formMessages.username),
+            ref: 'username',
             floatingLabelStyle: floatLabelStyle,
             required: true,
             addValueLink: true,
-            statePath: 'formValues.userName',
-            onTextChange: this.props.handleValidation('formValues.userName')
+            statePath: 'formValues.username',
+            onTextChange: this.props.handleValidation('formValues.username')
         });
 
         const passwordProps = this.getProps({
@@ -204,6 +218,7 @@ class CreateProfile extends Component {
             inputStyle: { inputStyle },
             style: { verticalAlign: 'middle' },
             floatingLabelText: intl.formatMessage(formMessages.password),
+            ref: 'password',
             floatingLabelStyle: floatLabelStyle,
             required: true,
             addValueLink: true,
@@ -217,6 +232,7 @@ class CreateProfile extends Component {
             inputStyle: { inputStyle },
             style: { verticalAlign: 'middle' },
             floatingLabelText: intl.formatMessage(formMessages.passwordVerify),
+            ref: 'password2',
             floatingLabelStyle: floatLabelStyle,
             required: true,
             addValueLink: true,
@@ -228,6 +244,7 @@ class CreateProfile extends Component {
           <PanelContainer
             showBorder
             actions={[
+              /* eslint-disable */
               <RaisedButton
                 key="cancel"
                 label={intl.formatMessage(generalMessages.cancel)}
@@ -243,17 +260,18 @@ class CreateProfile extends Component {
                 disabled={this.state.submitting}
                 primary
               />
+              /* eslint-enable */
             ]}
             header={<CreateProfileHeader title={profileMessages.createProfileTitle} />}
           >
             <form
               action=""
               onSubmit={this.handleSubmit}
-              ref={(profileForm) => this.profileForm = profileForm}
+              ref={(profileForm) => { this.profileForm = profileForm; }}
             >
               <TextField {...firstNameProps} />
               <TextField {...lastNameProps} />
-              <TextField {...userNameProps} />
+              <TextField {...usernameProps} />
               <TextField {...passwordProps} />
               <TextField {...password2Props} />
               <Checkbox
@@ -319,14 +337,14 @@ class CreateProfile extends Component {
                         floatingLabelText={intl.formatMessage(formMessages.title)}
                         value={link.title}
                         floatingLabelStyle={floatLabelStyle}
-                        onChange={(ev) => this._handleLinkChange('title', link.id, ev)}
+                        onChange={ev => this._handleLinkChange('title', link.id, ev)}
                       />
                       <TextField
                         fullWidth
                         floatingLabelText={intl.formatMessage(formMessages.url)}
                         value={link.url}
                         floatingLabelStyle={floatLabelStyle}
-                        onChange={(ev) => this._handleLinkChange('url', link.id, ev)}
+                        onChange={ev => this._handleLinkChange('url', link.id, ev)}
                       />
                     </div>
                     {this.state.links.length > 1 &&
@@ -334,7 +352,7 @@ class CreateProfile extends Component {
                         <IconButton
                           title={intl.formatMessage(profileMessages.removeLinkButtonTitle)}
                           style={{ marginTop: '24px' }}
-                          onClick={(ev) => this._handleRemoveLink(link.id, ev)}
+                          onClick={ev => this._handleRemoveLink(link.id, ev)}
                         >
                           <SvgIcon >
                             <CancelIcon />
@@ -358,7 +376,7 @@ class CreateProfile extends Component {
                       termsLink: (
                         <a
                           href="/terms"
-                          onClick={(ev) => this._handleModalShow(ev, 'termsOfService')}
+                          onClick={ev => this._handleModalShow(ev, 'termsOfService')}
                         >
                           {intl.formatMessage(generalMessages.termsOfService)}
                         </a>
@@ -366,7 +384,7 @@ class CreateProfile extends Component {
                       privacyLink: (
                         <a
                           href="/privacy"
-                          onClick={(ev) => this._handleModalShow(ev, 'privacyPolicy')}
+                          onClick={ev => this._handleModalShow(ev, 'privacyPolicy')}
                         >
                           {intl.formatMessage(generalMessages.privacyPolicy)}
                         </a>
@@ -381,17 +399,13 @@ class CreateProfile extends Component {
 }
 
 CreateProfile.propTypes = {
-    profileState: PropTypes.object.isRequired,
-    style: PropTypes.object,
-    validate: React.PropTypes.func,
-    errors: React.PropTypes.object,
-    isValid: React.PropTypes.func,
-    profileActions: React.PropTypes.object,
-    getValidationMessages: React.PropTypes.func,
+    style: PropTypes.shape(),
+    customValidate: React.PropTypes.func,
+    errors: React.PropTypes.shape(),
+    profileActions: React.PropTypes.shape(),
     clearValidations: React.PropTypes.func,
     handleValidation: React.PropTypes.func,
-    handleServerValidation: React.PropTypes.func,
-    intl: React.PropTypes.object
+    intl: React.PropTypes.shape()
 };
 
 CreateProfile.contextTypes = {

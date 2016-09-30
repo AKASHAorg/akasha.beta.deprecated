@@ -29,8 +29,11 @@ class Auth extends Component {
         const { profileActions } = this.props;
         profileActions.getLocalProfiles();
     }
-    componentWillReceiveProps = (nextProps) => {
-        console.log(nextProps);
+    componentWillUpdate = (nextProps) => {
+        const { tempProfile } = nextProps;
+        if (tempProfile.get('username') !== '') {
+            return this.context.router.push('/authenticate/new-profile-status');
+        }
     }
     handleTouchTap = (index) => {
         const { localProfiles } = this.props;

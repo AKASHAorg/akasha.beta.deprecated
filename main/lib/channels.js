@@ -19,7 +19,7 @@ const channels = {
     ipfs: ['manager', 'startService', 'stopService', 'status', 'resolve', 'getConfig', 'setPorts', 'getPorts'],
     profile: ['manager', 'getProfileData', 'getMyBalance', 'getIpfs', 'unregister'],
     registry: ['manager', 'profileExists', 'registerProfile', 'getCurrentProfile', 'getByAddress'],
-    tx: ['manager', 'addToQueue', 'emitMined'],
+    tx: ['manager', 'addToQueue', 'emitMined', 'listenMined'],
 };
 const processes = ['server', 'client'];
 const mem = os_1.totalmem().toLocaleString();

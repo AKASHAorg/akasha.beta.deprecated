@@ -29,21 +29,11 @@ class AuthService extends BaseService {
      *      expiration: Date -> expiration time of the token
      * }
      */
-    login = (profile, rememberTime) => {
+    login = ({ account, password, rememberTime, onSuccess, onError }) => {
         const serverChannel = Channel.server.auth.login;
         const clientChannel = Channel.client.auth.login;
-        if (this._listeners.get(clientChannel)) {
-            return Promise.resolve();
-        }
-        return new Promise((resolve, reject) => {
-            const listenerCb = (ev, res) => {
-                if (res.error) return reject(res.error);
-                return resolve(res.data);
-            };
-            return this.registerListener(clientChannel, listenerCb, () =>
-                ipcRenderer.send(serverChannel, { ...profile, rememberTime })
-            );
-        });
+        this.registerListener(clientChannel, this.createListener(onError, onSuccess));
+        ipcRenderer.send(serverChannel, { account, password, rememberTime });
     };
     /**
      *  Logout profile
@@ -74,43 +64,36 @@ class AuthService extends BaseService {
      * Response:
      * @param data: { tx: String }
      */
-    requestEther = ({ address }) => {
+    requestEther = ({ address, onSuccess, onError }) => {
         const serverChannel = Channel.server.auth.requestEther;
         const clientChannel = Channel.client.auth.requestEther;
-
-        if (this._listeners.get(clientChannel)) {
-            return Promise.resolve();
-        }
-
-        return new Promise((resolve, reject) => {
-            const listenerCb = (ev, res) => {
-                if (res.error) return reject(res.error);
-                return resolve(res.data);
-            };
-            return this.registerListener(clientChannel, listenerCb, () =>
-                ipcRenderer.send(serverChannel, { address })
-            );
-        });
+        dbg('requesting ether for address', address);
+        const successCb = (data) => {
+            if (data === 'Unauthorized' || data === 'Bad Request') {
+                return onError({ message: data, fatal: true });
+            }
+            return onSuccess(data);
+        };
+        this.registerListener(clientChannel, this.createListener(onError, successCb));
+        ipcRenderer.send(serverChannel, { address });
     };
     /**
      * Create a new eth address
      * @param {Uint8Array} profilePassword - user chosen password
      * @return new Promise
      */
-    createEthAddress = ({ password }) => {
+    createEthAddress = ({ password, onSuccess, onError }) => {
         const serverChannel = Channel.server.auth.generateEthKey;
         const clientChannel = Channel.client.auth.generateEthKey;
-        if (this._listeners.get(clientChannel)) {
-            return Promise.resolve();
-        }
-        return new Promise((resolve, reject) => {
-            const listenerCb = (ev, res) => {
-                if (res.error) return reject(res.error);
-                return resolve(res.data);
-            };
-            return this.registerListener(clientChannel, listenerCb, () =>
-                ipcRenderer.send(serverChannel, { password })
-            );
+
+        this.openChannel({
+            serverManager: this.serverManager,
+            clientManager: this.clientManager,
+            serverChannel,
+            clientChannel,
+            listenerCb: this.createListener(onError, onSuccess)
+        }, () => {
+            ipcRenderer.send(serverChannel, { password });
         });
     };
     /**

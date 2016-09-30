@@ -7,15 +7,74 @@ import { PanelContainer } from 'shared-components';
 
 class CreateProfileStatus extends Component {
     componentWillMount () {
-        const { profileActions } = this.props;
-        profileActions.checkTempProfile().then(() => {
-            profileActions.createProfile();
-        });
+        const { profileActions, transactionActions } = this.props;
+        profileActions.getTempProfile();
+        transactionActions.getMinedTransactions();
+        transactionActions.getPendingTransactions();
+    }
+    componentWillUpdate (nextProps) {
+        const { tempProfile, minedTransactions, loggedProfile, pendingTransactions } = nextProps;
+        const publishMined = minedTransactions.findIndex(transaction => transaction.tx === tempProfile.getIn(['currentStatus', 'publishTx'])) !== -1;
+        if (!publishMined) {
+            console.log('resumePublish');
+            this.resumeProfileCreation(tempProfile, minedTransactions, pendingTransactions, loggedProfile);
+        } else if (publishMined) {
+            this.context.router.push('/authenticate/new-profile-complete');
+        }
+    }
+    resumeProfileCreation (tempProfile, minedTransactions, pendingTransactions, loggedProfile) {
+        const { profileActions, transactionActions } = this.props;
+        const profileCreationStatus = tempProfile.get('currentStatus');
+        console.log(profileCreationStatus, 'creation');
+        const faucetTransactionIndex = minedTransactions.findIndex(transaction =>
+            transaction.tx === profileCreationStatus.faucetTx
+        );
+        const publishTransactionIndex = minedTransactions.findIndex(transaction =>
+            transaction.tx === profileCreationStatus.publishTx
+        );
+        const profileCreationStep = profileCreationStatus.currentStep;
+        const currentStepSuccess = profileCreationStatus.success;
+        console.log('resuming', profileCreationStep, profileCreationStatus);
+        console.log('step2', currentStepSuccess, tempProfile.get('address'), faucetTransactionIndex);
+        if (profileCreationStep === 1) {
+            if (!currentStepSuccess) {
+                profileActions.createEthAddress(tempProfile.get('password'));
+            }
+        } else if (profileCreationStep === 2 && !currentStepSuccess && tempProfile.get('address')) {
+            if (!profileCreationStatus.faucetTx) {
+                profileActions.requestFundFromFaucet(tempProfile.get('address'));
+            } else if (faucetTransactionIndex === -1) {
+                transactionActions.listenForMinedTx();
+                transactionActions.addToQueue([{ tx: tempProfile.get('faucetTx') }]);
+            }
+        } else if (profileCreationStep === 3 && faucetTransactionIndex > -1 && profileCreationStatus.faucetTx) {
+            if (!loggedProfile.get('account')) {
+                console.log('logging in');
+                return profileActions.login({
+                    account: tempProfile.get('address'),
+                    password: tempProfile.get('password'),
+                    rememberTime: 1
+                });
+            }
+            // we should have a logged profile!
+            const tokenIsValid = (new Date(loggedProfile.get('expiration')) - Date.now()) > 0;
+            // just to make sure we don`t have another profile logged in..
+            const tempIsLogged = loggedProfile.get('account') === tempProfile.get('address');
+            console.log(tempIsLogged, tokenIsValid, 'is valid!!')
+            if (tempIsLogged && tokenIsValid) {
+                return profileActions.publishProfile(loggedProfile.get('token'), tempProfile);
+            }
+        } else if (publishTransactionIndex === -1 && profileCreationStatus.publishTx) {
+            transactionActions.listenForMinedTx();
+            transactionActions.addToQueue([{ tx: tempProfile.get('publishTx') }]);
+        }
+        return null;
     }
     render () {
-        const { style, profileState } = this.props;
+        const { style, tempProfile } = this.props;
         const paraStyle = { marginTop: '20px' };
-
+        const currentStep = tempProfile.get('currentStatus').currentStep;
+        console.log(currentStep, tempProfile, 'current, temp');
         return (
           <div style={style} >
               <PanelContainer
@@ -73,8 +132,8 @@ class CreateProfileStatus extends Component {
 }
 
 CreateProfileStatus.propTypes = {
-    profileActions: PropTypes.object.isRequired,
-    profileState: PropTypes.object,
+    profileActions: PropTypes.shape().isRequired,
+    tempProfile: PropTypes.shape(),
     style: PropTypes.object,
     intl: React.PropTypes.object
 };

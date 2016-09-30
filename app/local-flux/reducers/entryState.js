@@ -30,7 +30,7 @@ const SavedEntry = Record({
     tags: [],
     title: String,
     upvotes: Number,
-    userName: String,
+    username: String,
     wordCount: Number
 });
 const initialState = fromJS({

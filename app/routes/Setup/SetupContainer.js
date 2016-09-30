@@ -1,8 +1,7 @@
 import { connect } from 'react-redux';
 import {
     SettingsActions,
-    EProcActions,
-    ExternalProcessBundleActions } from 'local-flux';
+    EProcActions, } from 'local-flux';
 import Setup from './components/setup';
 
 function mapStateToProps (state) {
@@ -15,7 +14,6 @@ function mapStateToProps (state) {
 function mapDispatchToProps (dispatch) {
     return {
         eProcActions: new EProcActions(dispatch),
-        eProcBundleActions: new ExternalProcessBundleActions(dispatch),
         settingsActions: new SettingsActions(dispatch)
     };
 }

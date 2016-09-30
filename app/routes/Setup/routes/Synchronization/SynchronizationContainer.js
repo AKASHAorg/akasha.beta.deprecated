@@ -13,6 +13,7 @@ function mapStateToProps (state) {
         ipfsErrors: state.externalProcState.get('ipfsErrors'),
         configFlags: state.settingsState.get('flags'),
         gethSettings: state.settingsState.get('geth'),
+        ipfsSettings: state.settingsState.get('ipfs'),
         gethSyncStatus: state.externalProcState.get('gethSyncStatus'),
         syncActionId: state.externalProcState.get('syncActionId')
     };

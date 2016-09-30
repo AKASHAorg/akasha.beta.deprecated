@@ -72,9 +72,12 @@ class EProcActions {
                 externalProcessActionCreators.getGethOptionsSuccess(data)
             )
         });
-    startSyncThrottled = () => {
+    startThrottledSync = () => {
         this.dispatch(externalProcessActionCreators.startSync());
         this.throttledSyncUpdate();
+    }
+    stopThrottledSync = () => {
+        this.throttledSyncUpdate.cancel();
     }
     /**
      * get sync status of geth service

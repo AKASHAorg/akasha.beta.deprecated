@@ -10,3 +10,4 @@ export LoginDialog from './Dialogs/login-dialog';
 export ConfirmationDialog from './Dialogs/confirmation-dialog';
 export PanelContainer from './PanelContainer/panel-container';
 export SyncProgressLoader from './Loaders/sync-progress';
+export ImageUploader from './ImageUploader/image-uploader';

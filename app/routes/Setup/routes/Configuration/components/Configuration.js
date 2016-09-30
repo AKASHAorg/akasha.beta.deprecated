@@ -1,11 +1,11 @@
 import React, { Component, PropTypes } from 'react';
 import { remote } from 'electron';
-import SetupHeader from '../../../components/setup-header';
 import { RadioButton, RadioButtonGroup, RaisedButton } from 'material-ui';
 import { injectIntl } from 'react-intl';
-import { setupMessages, generalMessages } from 'locale-data/messages';
+import { setupMessages, generalMessages } from 'locale-data/messages'; /* eslint import/no-unresolved: 0 */
+import PanelContainer from 'shared-components/PanelContainer/panel-container'; /* eslint import/no-unresolved: 0 */
 import { AdvancedSetupForm } from './advanced-setup-form';
-import PanelContainer from 'shared-components/PanelContainer/panel-container';
+import SetupHeader from '../../../components/setup-header';
 
 const { dialog } = remote;
 
@@ -22,12 +22,13 @@ class Config extends Component {
         settingsActions.getSettings('geth');
         settingsActions.getSettings('ipfs');
     }
-    componentWillUpdate (nextProps, nextState) {
-        const { configFlags, gethSettings } = nextProps;
+    componentWillUpdate (nextProps) {
+        const { configFlags } = nextProps;
         const cancelRequest = configFlags && configFlags.get('requestStartupChange');
         if (!cancelRequest) {
             return this.context.router.push('setup/sync-status');
         }
+        return null;
     }
     handleChange = (ev, value) => {
         const { settingsActions, isAdvanced } = this.props;
@@ -152,6 +153,7 @@ class Config extends Component {
           <PanelContainer
             showBorder
             actions={[
+              /* eslint-disable */
               <RaisedButton
                 key="next"
                 label={intl.formatMessage(generalMessages.nextButtonLabel)}
@@ -160,9 +162,10 @@ class Config extends Component {
                 style={{ marginLeft: '12px' }}
                 onClick={this.handleSubmit}
               />
+              /* eslint-enable */
             ]}
             header={
-              <SetupHeader title={"AKASHA"} />
+              <SetupHeader title={'AKASHA'} />
             }
           >
             <h1 style={{ fontWeight: '400' }} className="col-xs-12" >
@@ -170,7 +173,7 @@ class Config extends Component {
             </h1>
             <div className="col-xs-12">
               <p>
-                  {intl.formatMessage(setupMessages.akashaNextGenNetwork)}
+                {intl.formatMessage(setupMessages.akashaNextGenNetwork)}
               </p>
               <p>
                 {intl.formatMessage(setupMessages.youHaveNotHeared)}

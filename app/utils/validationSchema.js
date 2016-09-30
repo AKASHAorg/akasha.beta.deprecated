@@ -1,5 +1,5 @@
 import strategy from 'react-validatorjs-strategy';
-import { formMessages, validationMessages } from '../locale-data/messages';
+import { formMessages, validationMessages } from 'locale-data/messages'; /* eslint import/no-unresolved: 0 */
 
 class UserValidation {
     constructor (intl) {
@@ -10,7 +10,7 @@ class UserValidation {
         return strategy.createSchema({
             firstName: 'required|min:3',
             lastName: 'required|min:3',
-            userName: 'required|min:4',
+            username: 'required|min:4',
             password: 'required|min:8',
             password2: 'required|same:password'
         }, {
@@ -22,7 +22,7 @@ class UserValidation {
             validator.setAttributeNames({
                 firstName: formatMessage(formMessages.firstName),
                 lastName: formatMessage(formMessages.lastName),
-                userName: formatMessage(formMessages.userName),
+                username: formatMessage(formMessages.username),
                 password: formatMessage(formMessages.password),
                 password2: formatMessage(formMessages.passwordVerify)
             });

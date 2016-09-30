@@ -7,3 +7,4 @@ export { ValidationActions } from './validation-actions';
 export { EntryActions } from './entry-actions';
 export { TagActions } from './tag-actions';
 export { CommentActions } from './comment-actions';
+export { TransactionActions } from './transaction-actions';
