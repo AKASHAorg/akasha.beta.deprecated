@@ -6,6 +6,7 @@ import { mainResponse } from './event/responses';
 import { constructed as contracts } from './contracts/index';
 import { module as userModule } from './modules/auth/index';
 import { module as profileModule } from './modules/profile/index';
+import { profiles } from './modules/models/records';
 import WebContents = Electron.WebContents;
 
 class RegistryIPC extends ModuleEmitter {
