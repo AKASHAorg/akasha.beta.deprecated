@@ -1,4 +1,5 @@
 import { IpfsConnector } from '@akashaproject/ipfs-connector';
+import { entries } from './records';
 
 class Entry implements MediaComponent {
     hash: string;
@@ -68,9 +69,13 @@ class Entry implements MediaComponent {
      * @returns {any}
      */
     getShortContent() {
+        if(entries.records.getShort(this.hash)){
+            return Promise.resolve(entries.records.getShort(this.hash));
+        }
         return IpfsConnector.getInstance().api
             .get(this.hash)
             .then((data) => {
+                entries.records.setShort(this.hash, data);
                 return data;
             })
     }
@@ -80,9 +85,13 @@ class Entry implements MediaComponent {
      * @returns {any}
      */
     getFullContent() {
+        if(entries.records.getFull(this.hash)){
+            return Promise.resolve(entries.records.getFull(this.hash));
+        }
         return IpfsConnector.getInstance().api
             .get(this.hash)
             .then((data) => {
+                entries.records.setFull(this.hash, data);
                 return data;
             })
     }

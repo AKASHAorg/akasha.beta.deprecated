@@ -1,5 +1,6 @@
 "use strict";
 const ipfs_connector_1 = require('@akashaproject/ipfs-connector');
+const records_1 = require('../models/records');
 const Promise = require('bluebird');
 const create = (data) => {
     const returned = {
@@ -65,6 +66,9 @@ const create = (data) => {
     });
 };
 const getShortProfile = (hash) => {
+    if (records_1.profiles.records.getShort(hash)) {
+        return Promise.resolve(records_1.profiles.records.getShort(hash));
+    }
     return ipfs_connector_1.IpfsConnector.getInstance().api.get(hash)
         .then((schema) => {
         let resolved = Object.assign({}, schema);
@@ -77,12 +81,16 @@ const getShortProfile = (hash) => {
                 return resolved;
             });
         }
-        return Promise.resolve(resolved);
+        records_1.profiles.records.setShort(hash, resolved);
+        return resolved;
     });
 };
 const resolveProfile = (hash) => {
     let resolved;
     let keys;
+    if (records_1.profiles.records.getFull(hash)) {
+        return Promise.resolve(records_1.profiles.records.getFull(hash));
+    }
     return getShortProfile(hash)
         .then((schema) => {
         resolved = Object.assign({}, schema);
@@ -120,6 +128,7 @@ const resolveProfile = (hash) => {
         if (about) {
             resolved.about = Buffer.from(about).toString('utf8');
         }
+        records_1.profiles.records.setFull(hash, resolved);
         return resolved;
     });
 };
