@@ -27,26 +27,15 @@ export function logoutError (error) {
         error
     };
 }
-
-export function getTempProfileSuccess (profile) {
+export function createTempProfile () {
     return {
-        type: types.GET_TEMP_PROFILE_SUCCESS,
-        profile
+        type: types.CREATE_TEMP_PROFILE
     };
 }
-
-export function getTempProfileError (error) {
-    return {
-        type: types.GET_TEMP_PROFILE_ERROR,
-        error
-    };
-}
-
-export function createTempProfileSuccess (profileData, currentStatus) {
+export function createTempProfileSuccess (profileData) {
     return {
         type: types.CREATE_TEMP_PROFILE_SUCCESS,
-        profileData,
-        currentStatus
+        profileData
     };
 }
 
@@ -68,6 +57,20 @@ export function updateTempProfileSuccess (profileData, currentStatus) {
 export function updateTempProfileError (error) {
     return {
         type: types.UPDATE_TEMP_PROFILE_ERROR,
+        error
+    };
+}
+
+export function getTempProfileSuccess (profile) {
+    return {
+        type: types.GET_TEMP_PROFILE_SUCCESS,
+        profile
+    };
+}
+
+export function getTempProfileError (error) {
+    return {
+        type: types.GET_TEMP_PROFILE_ERROR,
         error
     };
 }
@@ -102,6 +105,11 @@ export function createEthAddressError (error) {
         error
     };
 }
+export function requestFundFromFaucet () {
+    return {
+        type: types.REQUEST_FUND_FROM_FAUCET
+    };
+}
 
 export function requestFundFromFaucetSuccess (data) {
     return {
@@ -115,7 +123,11 @@ export function requestFundFromFaucetError (error) {
         error
     };
 }
-
+export function completeProfileCreation () {
+    return {
+        type: types.COMPLETE_PROFILE_CREATION
+    };
+}
 export function completeProfileCreationSuccess (profileData) {
     return {
         type: types.COMPLETE_PROFILE_CREATION_SUCCESS,
@@ -130,19 +142,18 @@ export function completeProfileCreationError (error) {
     };
 }
 
-export function checkTempProfileError (error) {
+export function getLocalProfilesSuccess (data) {
     return {
-        type: types.CHECK_TEMP_PROFILE_ERROR,
-        error
+        type: types.GET_LOCAL_PROFILES_SUCCESS,
+        data
     };
 }
-export function getLocalProfilesSuccess() {}
 export function getLocalProfilesError (error) {
     error.code = 'GLPE';
     return {
         type: types.GET_LOCAL_PROFILES_ERROR,
         error
-    }
+    };
 }
 
 export function getProfileDataSuccess (data) {
@@ -156,12 +167,5 @@ export function getProfileDataError (error) {
     return {
         type: types.GET_PROFILE_DATA_ERROR,
         error
-    };
-}
-
-export function setActionAfterAuth (nextAction) {
-    return {
-        type: types.SET_AFTER_AUTH_ACTION,
-        nextAction,
     };
 }

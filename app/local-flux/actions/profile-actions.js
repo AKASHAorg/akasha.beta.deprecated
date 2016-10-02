@@ -61,17 +61,19 @@ class ProfileActions {
      *  Step 1:  Create temp profile
      *  Saves a temporary profile to indexedDB
      */
-    createTempProfile = (profileData, currentStatus = { currentStep: 1, success: false }) =>
+    createTempProfile = (profileData) => {
+        dbg('creating temp profile', profileData);
+        this.dispatch(profileActionCreators.createTempProfile(profileData));
         this.registryService.createTempProfile({
             profileData,
-            currentStatus,
+            currentStatus: {
+                currentStep: 0,
+                success: true
+            },
             onSuccess: (data) => {
                 dbg('createTempProfileSuccess', data);
                 this.dispatch(
-                    profileActionCreators.createTempProfileSuccess({
-                        ...profileData,
-                        currentStatus
-                    })
+                    profileActionCreators.createTempProfileSuccess(profileData)
                 );
             },
             onError: (error) => {
@@ -81,7 +83,7 @@ class ProfileActions {
                 );
             }
         });
-
+    }
     /**
      * Step 2: Create Eth address
      * Creates a new ethereum address through Auth Service
@@ -91,30 +93,17 @@ class ProfileActions {
      * @param data.address <String> Generated Ethereum address
      */
     createEthAddress = (password) => {
-        this.dispatch(profileActionCreators.createEthAddress());
-        dbg('creating eth address');
+        this.dispatch(profileActionCreators.createEthAddress()); // currentStep: 1, success: false
+        dbg('creating eth address for password', password);
         this.authService.createEthAddress({
             password,
             onSuccess: (data) => {
                 dbg('createEthAddressSuccess', data);
-                this.updateTempProfile({
-                    address: data.address,
-                    currentStatus: {
-                        currentStep: 2,
-                        success: false
-                    }
-                });
+                this.updateTempProfile(data);
                 this.dispatch(profileActionCreators.createEthAddressSuccess(data));
             },
             onError: (error) => {
                 dbg('createEthAddressError', error);
-                this.updateTempProfile({
-                    currentStatus: {
-                        currentStep: 1,
-                        success: false,
-                        error
-                    }
-                });
                 this.dispatch(profileActionCreators.createEthAddressError(error));
             }
         });
@@ -127,11 +116,14 @@ class ProfileActions {
      * Response:
      * @param data.tx <string> Transaction hash which must be watched
      */
-    requestFundFromFaucet = address =>
+    requestFundFromFaucet = (address) => {
+        dbg('requesting funds for address', address);
+        this.dispatch(profileActionCreators.requestFundFromFaucet());
         this.authService.requestEther({
             address,
             onSuccess: (data) => {
                 dbg('requestFundFromFaucetSuccess', data);
+                this.updateTempProfile(data);
                 this.dispatch(profileActionCreators.requestFundFromFaucetSuccess(data));
                 this.watchForMined();
                 this.addTxToQueue(data.tx, 'faucet');
@@ -141,7 +133,7 @@ class ProfileActions {
                 this.dispatch(profileActionCreators.requestFundFromFaucetError(error));
             }
         });
-
+    }
     /**
      *  Step 4: Send profile data for registration
      *  Finish profile publishing through Registry Service
@@ -152,11 +144,16 @@ class ProfileActions {
      *  @param data.tx <string> Transaction hash which needs to be watched for mining
      */
     publishProfile = (authToken, profileData, gas) => {
-        console.log('publishing profile');
-        const { username, firstName, lastName } = profileData;
+        dbg('publishing profile', profileData, 'with token', authToken);
+        this.dispatch(profileActionCreators.publishProfile());
+        const { username, firstName, lastName, avatar, backgroundImage, about, links } = profileData;
         const ipfs = {
             firstName,
-            lastName
+            lastName,
+            avatar,
+            backgroundImage,
+            about,
+            links
         };
         this.registryService.registerProfile({
             token: authToken,
@@ -164,12 +161,15 @@ class ProfileActions {
             ipfs,
             gas,
             onSuccess: (data) => {
-                console.log(data, 'success');
+                dbg('publishProfileSuccess', data);
+                this.updateTempProfile(data);
+                this.dispatch(profileActionCreators.publishProfileSuccess(data));
                 this.watchForMined();
                 this.addTxToQueue(data.tx, 'publish');
             },
             onError: (error) => {
-                console.log(error, 'err');
+                dbg('publishProfileError', error)
+                this.dispatch(profileActionCreators.publishProfileError(error));
             }
         });
     }

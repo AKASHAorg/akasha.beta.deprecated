@@ -1,13 +1,14 @@
 import Dexie from 'dexie';
 import { tempProfileSchema } from './schema/temp-profile';
 import debug from 'debug';
+
 const dbg = debug('App:profileDB');
 
 const profileDB = new Dexie('profiles');
 profileDB.version(1).stores({
     localProfiles: '&address, username',
     loggedProfile: '&address, username',
-    tempProfile: 'username, currentStatus'
+    tempProfile: '&username, currentStatus'
 });
 
 profileDB.tempProfile.defineClass(tempProfileSchema);

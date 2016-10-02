@@ -14,65 +14,75 @@ class CreateProfileStatus extends Component {
     }
     componentWillUpdate (nextProps) {
         const { tempProfile, minedTransactions, loggedProfile, pendingTransactions } = nextProps;
-        const publishMined = minedTransactions.findIndex(transaction => transaction.tx === tempProfile.getIn(['currentStatus', 'publishTx'])) !== -1;
+        const publishMined = this._checkTxMined(minedTransactions, tempProfile.getIn(['currentStatus', 'publishTx']));
+        const faucetMined = this._checkTxMined(minedTransactions, tempProfile.getIn(['currentStatus', 'faucetTx']));
+
         if (!publishMined) {
             console.log('resumePublish');
-            this.resumeProfileCreation(tempProfile, minedTransactions, pendingTransactions, loggedProfile);
-        } else if (publishMined) {
-            this.context.router.push('/authenticate/new-profile-complete');
+            this.resumeProfileCreation({
+                tempProfile,
+                minedTransactions,
+                pendingTransactions,
+                loggedProfile
+            });
         }
     }
-    resumeProfileCreation (tempProfile, minedTransactions, pendingTransactions, loggedProfile) {
+    _checkTxMined = (minedTransactions, transaction) =>
+        minedTransactions.findIndex(trans => trans.tx === transaction) > -1;
+
+    resumeProfileCreation = (params) => {
+        const {
+            tempProfile,
+            minedTransactions,
+            pendingTransactions,
+            loggedProfile } = params;
         const { profileActions, transactionActions } = this.props;
         const profileCreationStatus = tempProfile.get('currentStatus');
-        console.log(profileCreationStatus, 'creation');
-        const faucetTransactionIndex = minedTransactions.findIndex(transaction =>
-            transaction.tx === profileCreationStatus.faucetTx
-        );
-        const publishTransactionIndex = minedTransactions.findIndex(transaction =>
-            transaction.tx === profileCreationStatus.publishTx
-        );
-        const profileCreationStep = profileCreationStatus.currentStep;
-        const currentStepSuccess = profileCreationStatus.success;
-        console.log('resuming', profileCreationStep, profileCreationStatus);
-        console.log('step2', currentStepSuccess, tempProfile.get('address'), faucetTransactionIndex);
-        if (profileCreationStep === 1) {
-            if (!currentStepSuccess) {
-                profileActions.createEthAddress(tempProfile.get('password'));
-            }
-        } else if (profileCreationStep === 2 && !currentStepSuccess && tempProfile.get('address')) {
-            if (!profileCreationStatus.faucetTx) {
-                profileActions.requestFundFromFaucet(tempProfile.get('address'));
-            } else if (faucetTransactionIndex === -1) {
-                transactionActions.listenForMinedTx();
-                transactionActions.addToQueue([{ tx: tempProfile.get('faucetTx') }]);
-            }
-        } else if (profileCreationStep === 3 && faucetTransactionIndex > -1 && profileCreationStatus.faucetTx) {
-            if (!loggedProfile.get('account')) {
-                console.log('logging in');
-                return profileActions.login({
+        const { currentStep, success, faucetTx, publishTx } = profileCreationStatus;
+        const faucetMined = this._checkTxMined(minedTransactions, faucetTx);
+        const publishMined = this._checkTxMined(minedTransactions, publishTx);
+        const isLoggedIn = loggedProfile.get('account') && tempProfile.get('address') === loggedProfile.get('account');
+        // switch (currentStep) {
+        //     case 0:
+        //         if (!success) break;
+        //         profileActions.createEthAddress(tempProfile.get('password'));
+        //         break;
+        //     case 1:
+        //         if (!success) break;
+        //     default:
+        //         break;
+        // }
+        if (currentStep === 0 && success) {
+            // temp profile already created!
+            profileActions.createEthAddress(tempProfile.get('password'));
+        } else if (currentStep === 1 && success && tempProfile.get('address')) {
+            // temp profile created
+            // eth address created
+            profileActions.requestFundFromFaucet(tempProfile.get('address'));
+        } else if (currentStep === 2 && success && faucetMined) {
+            /** temp profile created
+             * eth address created
+             * faucet requested and transaction mined
+             **/
+            if (isLoggedIn) {
+                profileActions.publishProfile(tempProfile);
+            } else {
+                // we need to obtain auth token first
+                profileActions.login({
                     account: tempProfile.get('address'),
                     password: tempProfile.get('password'),
-                    rememberTime: 1
+                    rememberTime: 1 // does not matter here
                 });
             }
-            // we should have a logged profile!
-            const tokenIsValid = (new Date(loggedProfile.get('expiration')) - Date.now()) > 0;
-            // just to make sure we don`t have another profile logged in..
-            const tempIsLogged = loggedProfile.get('account') === tempProfile.get('address');
-            console.log(tempIsLogged, tokenIsValid, 'is valid!!')
-            if (tempIsLogged && tokenIsValid) {
-                return profileActions.publishProfile(loggedProfile.get('token'), tempProfile);
-            }
-        } else if (publishTransactionIndex === -1 && profileCreationStatus.publishTx) {
-            transactionActions.listenForMinedTx();
-            transactionActions.addToQueue([{ tx: tempProfile.get('publishTx') }]);
+        } else if (currentStep === 3 && success && publishMined) {
+            return console.log('publish!!!');
+            this.context.router.push('/authenticate/new-profile-complete');
         }
-        return null;
     }
     render () {
         const { style, tempProfile } = this.props;
         const paraStyle = { marginTop: '20px' };
+        console.log(tempProfile.get('currentStatus'), 'currentStatus');
         const currentStep = tempProfile.get('currentStatus').currentStep;
         console.log(currentStep, tempProfile, 'current, temp');
         return (

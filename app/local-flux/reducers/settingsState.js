@@ -61,7 +61,6 @@ const settingsState = createReducer(initialState, {
             case 'userSettings':
                 return state.merge({ userSettings: new UserSettings(action.data) });
             case 'flags': {
-                console.log(action, 'flags action');
                 return state.merge({ flags: action.settings });
             }
             default:

@@ -97,7 +97,7 @@ class EProcActions {
         this.throttledSyncUpdate.cancel();
         this.gethService.closeSyncChannel();
     };
-
+    // make sure to load settings before calling this one
     startIPFS = () =>
         this.dispatch((dispatch, getState) => {
             const ipfsSettings = getState().settingsState.get('ipfs').toJS();

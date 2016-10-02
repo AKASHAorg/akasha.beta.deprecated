@@ -22,12 +22,13 @@ class SyncStatus extends Component {
         settingsActions.getSettings('ipfs');
     }
     componentDidMount () {
-        const { eProcActions, gethSettings, gethStatus, ipfsStatus, ipfsSettings } = this.props;
+        const { eProcActions, gethSettings, gethStatus, ipfsStatus } = this.props;
         if (!gethStatus.get('api') || !gethStatus.get('starting')) {
             eProcActions.startGeth(gethSettings);
         }
         if (!ipfsStatus.get('started') || !ipfsStatus.get('downloading') || !ipfsStatus.get('spawned')) {
-            eProcActions.startIPFS(ipfsSettings);
+            console.log('start ipfs')
+            eProcActions.startIPFS();
         }
     }
     componentWillReceiveProps = (nextProps) => {
@@ -36,7 +37,7 @@ class SyncStatus extends Component {
             !gethStatus.get('synced') && !gethSyncStatus.get('syncing');
         const gethSynced = gethSyncStatus.get('synced');
         const ipfsStarted = ipfsStatus.get('started');
-
+        console.log(ipfsStatus, 'ipfs status');
         if (gethReadyToSync) {
             eProcActions.startThrottledSync();
         } else if (gethSynced && ipfsStarted) {

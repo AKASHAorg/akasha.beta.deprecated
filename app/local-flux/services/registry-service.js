@@ -90,7 +90,7 @@ class RegistryService extends BaseService {
      */
     createTempProfile = ({ profileData, currentStatus, onSuccess, onError }) =>
         profileDB.transaction('rw', profileDB.tempProfile, () => {
-            dbg('createTempProfile', profileData);
+            dbg('createTempProfile', { ...profileData, currentStatus });
             return profileDB.tempProfile.add({
                 ...profileData,
                 currentStatus

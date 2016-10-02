@@ -7,6 +7,8 @@ function Status () {
         currentStep: Number,
         status: String,
         error: [ErrorRecord],
+        faucetRequested: Boolean,
+        publishRequested: Boolean,
         faucetTx: null,
         publishTx: null
     };
