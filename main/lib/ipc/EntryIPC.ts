@@ -82,7 +82,12 @@ class EntryIPC extends ModuleEmitter {
                         response = mainResponse({ tx });
                     })
                     .catch((err: Error) => {
-                        response = mainResponse({ error: { message: err.message, from: { address: data.address } } });
+                        response = mainResponse({
+                            error: {
+                                message: err.message,
+                                from: { address: data.address }
+                            }
+                        });
                     })
                     .finally(() => {
                         this.fireEvent(
@@ -110,7 +115,12 @@ class EntryIPC extends ModuleEmitter {
                         response = mainResponse({ tx });
                     })
                     .catch((err: Error) => {
-                        response = mainResponse({ error: { message: err.message, from: { address: data.address } } });
+                        response = mainResponse({
+                            error: {
+                                message: err.message,
+                                from: { address: data.address }
+                            }
+                        });
                     })
                     .finally(() => {
                         this.fireEvent(
@@ -138,7 +148,12 @@ class EntryIPC extends ModuleEmitter {
                         response = mainResponse({ tx });
                     })
                     .catch((err: Error) => {
-                        response = mainResponse({ error: { message: err.message, from: { address: data.address } } });
+                        response = mainResponse({
+                            error: {
+                                message: err.message,
+                                from: { address: data.address }
+                            }
+                        });
                     })
                     .finally(() => {
                         this.fireEvent(
@@ -163,7 +178,12 @@ class EntryIPC extends ModuleEmitter {
                         response = mainResponse({ address: data.address, voting: status });
                     })
                     .catch((err: Error) => {
-                        response = mainResponse({ error: { message: err.message, from: { address: data.address } } });
+                        response = mainResponse({
+                            error: {
+                                message: err.message,
+                                from: { address: data.address }
+                            }
+                        });
                     })
                     .finally(() => {
                         this.fireEvent(
@@ -188,7 +208,12 @@ class EntryIPC extends ModuleEmitter {
                         response = mainResponse({ profile: data.profile, weight });
                     })
                     .catch((err: Error) => {
-                        response = mainResponse({ error: { message: err.message, from: { address: data.address, profile: data.profile } } });
+                        response = mainResponse({
+                            error: {
+                                message: err.message,
+                                from: { address: data.address, profile: data.profile }
+                            }
+                        });
                     })
                     .finally(() => {
                         this.fireEvent(
@@ -213,7 +238,12 @@ class EntryIPC extends ModuleEmitter {
                         response = mainResponse({ address: data.address, date: endDate });
                     })
                     .catch((err: Error) => {
-                        response = mainResponse({ error: { message: err.message, from: { address: data.address } } });
+                        response = mainResponse({
+                            error: {
+                                message: err.message,
+                                from: { address: data.address }
+                            }
+                        });
                     })
                     .finally(() => {
                         this.fireEvent(

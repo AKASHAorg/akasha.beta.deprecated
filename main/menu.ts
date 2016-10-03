@@ -4,7 +4,7 @@ import BrowserWindow = Electron.BrowserWindow;
 let menu: any;
 let template: any;
 
-const installExtensions = async () => {
+const installExtensions = async() => {
     if (process.env.NODE_ENV === 'development') {
         const installer = require('electron-devtools-installer'); // eslint-disable-line global-require
 
@@ -16,7 +16,8 @@ const installExtensions = async () => {
         for (const name of extensions) {
             try {
                 await installer.default(installer[name], forceDownload);
-            } catch (e) {} // eslint-disable-line
+            } catch (e) {
+            } // eslint-disable-line
         }
     }
 };

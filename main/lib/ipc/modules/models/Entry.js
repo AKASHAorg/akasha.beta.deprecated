@@ -3,9 +3,11 @@ const ipfs_connector_1 = require('@akashaproject/ipfs-connector');
 const records_1 = require('./records');
 class Entry {
     create(content, tags) {
+        const date = (new Date()).toJSON();
         const constructed = {
             content,
-            tags
+            tags,
+            date
         };
         return ipfs_connector_1.IpfsConnector.getInstance().api
             .add(constructed)

@@ -38,6 +38,7 @@ export default class IndexedTags extends BaseContract {
             .getSubPosition
             .callAsync(subscriber, tagIdTr);
     }
+
     /**
      * Subscribe to a tag
      * @param tag
