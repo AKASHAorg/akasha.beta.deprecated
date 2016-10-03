@@ -1,5 +1,5 @@
 import React, { PropTypes, Component } from 'react';
-import { SvgIcon, Badge } from 'material-ui';
+import { SvgIcon, Badge, Avatar } from 'material-ui';
 import { colors } from 'material-ui/styles';
 import { MenuUser } from '../svg';
 
@@ -73,15 +73,11 @@ export default class IconProfile extends Component {
           style={Object.assign(style, {borderColor:  palette.primary1Color})}
           className="user-icon"
         >
-          <SvgIcon
-            color={color}
-            hoverColor={hoverColor}
+          <Avatar
             style={iconStyle}
-            viewBox={viewBox}
-            {...other}
-          >
-            <MenuUser />
-          </SvgIcon>
+            src={'http://akasha.world/dist/images/mihai_400x401.png'}
+            size={40}
+          />
         </div>
       </Badge>
     )

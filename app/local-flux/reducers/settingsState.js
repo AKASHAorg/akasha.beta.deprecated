@@ -1,15 +1,21 @@
 import * as types from '../constants/SettingsConstants';
 import { createReducer } from './create-reducer';
-import { fromJS, Record } from 'immutable';
+import { fromJS, Record, List } from 'immutable';
+
+const ErrorRecord = Record({
+    code: null,
+    fatal: false,
+    message: ''
+});
 
 const GethSettings = Record({
-    datadir: null,
-    ipcpath: null,
-    cache: null
+    datadir: '',
+    ipcpath: '',
+    cache: '',
 });
 
 const IpfsSettings = Record({
-    ipfsPath: null
+    ipfsPath: '',
 });
 
 const UserSettings = Record ({
@@ -19,18 +25,54 @@ const UserSettings = Record ({
 const initialState = fromJS({
     geth: new GethSettings(),
     ipfs: new IpfsSettings(),
-    flags: {},
+    flags: {
+        requestStartupChange: false
+    },
+    errors: new List(),
     userSettings: new UserSettings(),
     isAdvanced: false
 });
 
 const settingsState = createReducer(initialState, {
-    [types.GET_SETTINGS_SUCCESS]: (state, action) =>
-        state.merge({ [action.table]: fromJS(action.data[0]) }),
+    [types.GET_SETTINGS_SUCCESS]: (state, action) => {
+        let data;
+        if (action.table === 'geth') {
+            data = new GethSettings(action.data[0]);
+        } else if (action.table === 'ipfs') {
+            data = new IpfsSettings(action.data[0]);
+        } else if (action.table === 'flags') {
+            data = action.data[0];
+        }
+        return state.merge({ [action.table]: data });
+    },
 
-    [types.GET_SETTINGS_ERROR]: (state, action) =>
-        state.merge({ [action.table]: { error: action.error } }),
-
+    [types.GET_SETTINGS_ERROR]: (state, action) => {
+        return state.merge({
+            errors: state.get('errors').push(new ErrorRecord(action.error))
+        });
+    },
+    [types.SAVE_SETTINGS_SUCCESS]: (state, action) => {
+        console.log('save settings action', action);
+        switch (action.table) {
+            case 'geth':
+                return state.merge({ geth: new GethSettings(action.data) });
+            case 'ipfs':
+                return state.merge({ ipfs: new IpfsSettings(action.data) });
+            case 'userSettings':
+                return state.merge({ userSettings: new UserSettings(action.data) });
+            case 'flags': {
+                return state.merge({ flags: action.settings });
+            }
+            default:
+                return state;
+        }
+    },
+    [types.SAVE_SETTINGS_ERROR]: (state, action) => {
+        console.log('save settings error', action);
+        return state.merge({
+            errors: state.get('errors').push(new ErrorRecord(action.error))
+        });
+    },
     [types.SETUP_ADVANCED_SETTINGS]: (state, action) =>
         state.set('isAdvanced', action.isAdvanced),
 

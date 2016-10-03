@@ -30,7 +30,7 @@ function initMenu(mainWindow) {
     return __awaiter(this, void 0, void 0, function* () {
         yield installExtensions();
         if (process.env.NODE_ENV === 'development') {
-            mainWindow.openDevTools();
+            // mainWindow.openDevTools();
             mainWindow.webContents.on('context-menu', (e, props) => {
                 const { x, y } = props;
                 electron_1.Menu.buildFromTemplate([{

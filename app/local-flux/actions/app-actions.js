@@ -31,9 +31,9 @@ class AppActions {
      * @param {String} panel.name
      * @param {Boolean} panel.overlay Shows clickable overlay below panel. Useful to close the panel
      */
-    changePanel = (panel) => this.showPanel(panel);
-    showPanel = (panel) => this.dispatch(appActionCreators.showPanel(panel));
-    hidePanel = (panel) => this.dispatch(appActionCreators.hidePanel(panel));
+    changePanel = panel => this.showPanel(panel);
+    showPanel = panel => this.dispatch(appActionCreators.showPanel(panel));
+    hidePanel = panel => this.dispatch(appActionCreators.hidePanel(panel));
     showAuthDialog = () => this.dispatch(appActionCreators.showAuthDialog());
     hideAuthDialog = () => this.dispatch(appActionCreators.hideAuthDialog());
     resumeEntryPublishing = () => {

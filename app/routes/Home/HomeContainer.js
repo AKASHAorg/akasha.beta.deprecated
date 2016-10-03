@@ -1,6 +1,5 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { asyncConnect } from 'redux-connect';
 import { BootstrapBundleActions } from 'local-flux';
 import { Sidebar } from 'shared-components';
 import '../../styles/core.scss';
@@ -39,12 +38,7 @@ function mapDispatchToProps () {
     return {};
 }
 
-export default asyncConnect([{
-    promise: ({ store: { dispatch, getState } }) => {
-        const bootstrapActions = new BootstrapBundleActions(dispatch);
-        return bootstrapActions.initHome(getState);
-    }
-}])(connect(
+export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(HomeContainer));
+)(HomeContainer);

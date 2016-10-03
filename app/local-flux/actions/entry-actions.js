@@ -55,14 +55,14 @@ class EntryActions {
         return this.throttledUpdateDraft(draft);
     };
 
-    getDrafts = (userName) =>
-        this.entryService.getAllDrafts(userName).then(result => {
+    getDrafts = (username) =>
+        this.entryService.getAllDrafts(username).then(result => {
             dbg('dispatching', 'GET_DRAFTS_SUCCESS', result);
             return this.dispatch(entryActionCreators.getDraftsSuccess(result));
         }).catch(reason => this.dispatch(entryActionCreators.getDraftsError(reason)));
 
-    getDraftsCount = (userName) =>
-        this.entryService.getDraftsCount(userName).then(result => {
+    getDraftsCount = (username) =>
+        this.entryService.getDraftsCount(username).then(result => {
             dbg('dispatching', 'GET_DRAFTS_COUNT_SUCCESS', result);
             return this.dispatch(entryActionCreators.getDraftsCountSuccess(result));
         }).catch(reason => this.dispatch(entryActionCreators.getDraftsCountError(reason)));
