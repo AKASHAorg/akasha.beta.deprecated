@@ -237,7 +237,12 @@ class TagsIPC extends ModuleEmitter_1.default {
                 response = responses_1.mainResponse({ tags, from: data.from, to: data.to });
             })
                 .catch((err) => {
-                response = responses_1.mainResponse({ error: { message: err.message, from: data.from } });
+                response = responses_1.mainResponse({
+                    error: {
+                        message: err.message,
+                        from: data.from
+                    }
+                });
             })
                 .finally(() => {
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].getTagsFrom, response, event);

@@ -87,9 +87,9 @@ export default class Profile extends BaseContract {
      */
     public unregister(address: string, gas?: number) {
         const extracted = this.contract
-                .at(address)
-                .destroy
-                .request({ gas });
+            .at(address)
+            .destroy
+            .request({ gas });
         return Promise.resolve(extracted.params[0]);
     }
 

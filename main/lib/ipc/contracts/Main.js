@@ -140,12 +140,18 @@ class Main extends BaseContract_1.default {
     upVoteComment(entryAddress, weigth, commentId, gas, value) {
         const weigthTr = this.gethInstance.web3.fromDecimal(weigth);
         const commentIdTr = this.gethInstance.web3.fromDecimal(commentId);
-        return this.extractData('upVoteComment', entryAddress, weigthTr, commentIdTr, { gas, value });
+        return this.extractData('upVoteComment', entryAddress, weigthTr, commentIdTr, {
+            gas,
+            value
+        });
     }
     downVoteComment(entryAddress, weigth, commentId, gas, value) {
         const weigthTr = this.gethInstance.web3.fromDecimal(weigth);
         const commentIdTr = this.gethInstance.web3.fromDecimal(commentId);
-        return this.extractData('downVoteCommentAsync', entryAddress, weigthTr, commentIdTr, { gas, value });
+        return this.extractData('downVoteCommentAsync', entryAddress, weigthTr, commentIdTr, {
+            gas,
+            value
+        });
     }
 }
 Object.defineProperty(exports, "__esModule", { value: true });

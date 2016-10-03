@@ -1,6 +1,6 @@
 import ModuleEmitter from './event/ModuleEmitter';
 import channels from '../channels';
-import {constructed as contracts} from './contracts/index';
+import { constructed as contracts } from './contracts/index';
 import { mainResponse } from './event/responses';
 import { module as userModule } from './modules/auth/index';
 import WebContents = Electron.WebContents;
@@ -21,6 +21,8 @@ class CommentsIPC extends ModuleEmitter {
             ._upvote()
             ._downvote()
             ._getScore()
+            ._getCount()
+            ._getCommentAt()
             ._manager();
     }
 
@@ -33,13 +35,13 @@ class CommentsIPC extends ModuleEmitter {
                     .main
                     .saveComment(data.address, data.hash, data.gas)
                     .then((txData: any) => {
-                       return userModule.auth.signData(txData, data.token);
+                        return userModule.auth.signData(txData, data.token);
                     })
                     .then((tx: string) => {
-                        response = mainResponse({tx});
+                        response = mainResponse({ tx });
                     })
                     .catch((err: Error) => {
-                       response = mainResponse({error: {message: err.message}});
+                        response = mainResponse({ error: { message: err.message } });
                     })
                     .finally(() => {
                         this.fireEvent(
@@ -64,10 +66,10 @@ class CommentsIPC extends ModuleEmitter {
                         return userModule.auth.signData(txData, data.token);
                     })
                     .then((tx: string) => {
-                        response = mainResponse({tx});
+                        response = mainResponse({ tx });
                     })
                     .catch((err: Error) => {
-                        response = mainResponse({error: {message: err.message}});
+                        response = mainResponse({ error: { message: err.message } });
                     })
                     .finally(() => {
                         this.fireEvent(
@@ -92,10 +94,10 @@ class CommentsIPC extends ModuleEmitter {
                         return userModule.auth.signData(txData, data.token);
                     })
                     .then((tx: string) => {
-                        response = mainResponse({tx});
+                        response = mainResponse({ tx });
                     })
                     .catch((err: Error) => {
-                        response = mainResponse({error: {message: err.message}});
+                        response = mainResponse({ error: { message: err.message } });
                     })
                     .finally(() => {
                         this.fireEvent(
@@ -120,10 +122,10 @@ class CommentsIPC extends ModuleEmitter {
                         return userModule.auth.signData(txData, data.token);
                     })
                     .then((tx: string) => {
-                        response = mainResponse({tx});
+                        response = mainResponse({ tx });
                     })
                     .catch((err: Error) => {
-                        response = mainResponse({error: {message: err.message}});
+                        response = mainResponse({ error: { message: err.message } });
                     })
                     .finally(() => {
                         this.fireEvent(
@@ -145,10 +147,10 @@ class CommentsIPC extends ModuleEmitter {
                     .main
                     .getScoreOfComment(data.address, data.commentId)
                     .then((score: number) => {
-                        response = mainResponse({address: data.address, score});
+                        response = mainResponse({ address: data.address, score });
                     })
                     .catch((err: Error) => {
-                        response = mainResponse({error: {message: err.message}});
+                        response = mainResponse({ error: { message: err.message } });
                     })
                     .finally(() => {
                         this.fireEvent(
@@ -156,6 +158,73 @@ class CommentsIPC extends ModuleEmitter {
                             response,
                             event
                         );
+                    });
+            });
+        return this;
+    }
+
+    private _getCount() {
+        this.registerListener(
+            channels.server[this.MODULE_NAME].getCount,
+            (event: any, data: GetCommentCountRequest) => {
+                let response: GetCommentCountResponse;
+                contracts.instance
+                    .main
+                    .getCommentsCount(data.address)
+                    .then((count) => {
+                        response = mainResponse({ count, address: data.address });
+                    })
+                    .catch((err: Error) => {
+                        response = mainResponse({
+                            error: {
+                                message: err.message,
+                                address: data.address
+                            }
+                        })
+                    })
+                    .finally(() => {
+                        this.fireEvent(
+                            channels.client[this.MODULE_NAME].getCount,
+                            response,
+                            event
+                        )
+                    });
+            });
+        return this;
+    }
+
+    private _getCommentAt() {
+        this.registerListener(
+            channels.server[this.MODULE_NAME].getCommentAt,
+            (event: any, data: GetCommentAtRequest) => {
+                let response: GetCommentAtResponse;
+                contracts.instance
+                    .main
+                    .getCommentAt(data.address, data.id)
+                    .then((mediaObj) => {
+                        response = mainResponse({
+                            hash: mediaObj._hash,
+                            owner: mediaObj._owner,
+                            date: mediaObj._date,
+                            address: data.address,
+                            id: data.id
+                        });
+                    })
+                    .catch((err: Error) => {
+                        response = mainResponse({
+                            error: {
+                                message: err.message,
+                                address: data.address,
+                                id: data.id
+                            }
+                        })
+                    })
+                    .finally(() => {
+                        this.fireEvent(
+                            channels.client[this.MODULE_NAME].getCommentAt,
+                            response,
+                            event
+                        )
                     });
             });
         return this;

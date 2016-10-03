@@ -22,7 +22,8 @@ const installExtensions = () => __awaiter(this, void 0, void 0, function* () {
             try {
                 yield installer.default(installer[name], forceDownload);
             }
-            catch (e) { }
+            catch (e) {
+            }
         }
     }
 });

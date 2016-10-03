@@ -31,13 +31,14 @@ class Entries {
         this._entries.get(`${this.FULL_PREFIX}${hash}`);
     }
 
-    setShort(hash, data){
+    setShort(hash, data) {
         this._entries.set(`${this.SHORT_PREFIX}${hash}`, data);
     }
 
-    getShort(hash){
+    getShort(hash) {
         this._entries.get(`${this.SHORT_PREFIX}${hash}`);
     }
+
     get records() {
         return this._entries;
     }

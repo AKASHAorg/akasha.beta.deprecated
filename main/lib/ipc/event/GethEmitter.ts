@@ -4,7 +4,7 @@ import channels from '../../channels';
 import { gethResponse } from './responses';
 import { constructed } from '../contracts/index';
 import { initModules } from '../modules/index';
-const peers  = require('../config/peers.json');
+const peers = require('../config/peers.json');
 
 abstract class GethEmitter extends AbstractEmitter {
     public attachEmitters() {

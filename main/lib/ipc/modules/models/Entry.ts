@@ -11,10 +11,12 @@ class Entry implements MediaComponent {
      * @param tags
      * @returns {any}
      */
-    create(content:any, tags: any[]){
+    create(content: any, tags: any[]) {
+        const date  = (new Date()).toJSON();
         const constructed = {
             content,
-            tags
+            tags,
+            date
         };
         return IpfsConnector.getInstance().api
             .add(constructed)
@@ -39,7 +41,7 @@ class Entry implements MediaComponent {
      * @returns {any}
      */
     read() {
-        if(!this.hash){
+        if (!this.hash) {
             return Promise.reject('Must set hash property first');
         }
         return IpfsConnector.getInstance().api
@@ -53,7 +55,7 @@ class Entry implements MediaComponent {
      * @returns {any}
      */
     update(setData: any) {
-        if(!this.hash){
+        if (!this.hash) {
             return Promise.reject('Must set hash property first');
         }
         return IpfsConnector.getInstance().api
@@ -69,7 +71,7 @@ class Entry implements MediaComponent {
      * @returns {any}
      */
     getShortContent() {
-        if(entries.records.getShort(this.hash)){
+        if (entries.records.getShort(this.hash)) {
             return Promise.resolve(entries.records.getShort(this.hash));
         }
         return IpfsConnector.getInstance().api
@@ -85,7 +87,7 @@ class Entry implements MediaComponent {
      * @returns {any}
      */
     getFullContent() {
-        if(entries.records.getFull(this.hash)){
+        if (entries.records.getFull(this.hash)) {
             return Promise.resolve(entries.records.getFull(this.hash));
         }
         return IpfsConnector.getInstance().api

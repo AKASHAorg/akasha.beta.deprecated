@@ -41,7 +41,10 @@ class TxIPC extends ModuleEmitter_1.default {
     }
     _emitMined() {
         geth_connector_1.GethConnector.getInstance().on(geth_connector_1.CONSTANTS.TX_MINED, (txHash) => {
-            const response = responses_1.mainResponse({ mined: txHash, watching: geth_connector_1.gethHelper.watching });
+            const response = responses_1.mainResponse({
+                mined: txHash,
+                watching: geth_connector_1.gethHelper.watching
+            });
             this.fireEvent(channels_1.default.client[this.MODULE_NAME].emitMined, response);
         });
     }

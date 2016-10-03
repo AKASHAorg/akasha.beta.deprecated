@@ -337,10 +337,15 @@ class TagsIPC extends ModuleEmitter {
                         return Promise.all(tags);
                     })
                     .then((tags) => {
-                        response = mainResponse({tags, from: data.from, to: data.to})
+                        response = mainResponse({ tags, from: data.from, to: data.to })
                     })
                     .catch((err: Error) => {
-                        response = mainResponse({error: {message: err.message, from: data.from }})
+                        response = mainResponse({
+                            error: {
+                                message: err.message,
+                                from: data.from
+                            }
+                        })
                     })
                     .finally(() => {
                         this.fireEvent(
