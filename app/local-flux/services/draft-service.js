@@ -27,11 +27,11 @@ class DraftService {
                 return partialDraft;
             });
         });
-    getAllDrafts = (userName) =>
+    getAllDrafts = (username) =>
         entriesDB.transaction('rw', entriesDB.drafts, () =>
             entriesDB.drafts
                      .where('authorUsername')
-                     .equals(userName)
+                     .equals(username)
                      .toArray()
                      .then(drafts => {
                          dbg('getAllDrafts', drafts);
@@ -41,9 +41,9 @@ class DraftService {
                          return convDrafts;
                      })
         );
-    getDraftsCount = (userName) =>
+    getDraftsCount = (username) =>
         entriesDB.transaction('rw', entriesDB.drafts, () =>
-            entriesDB.drafts.where('authorUsername').equals(userName).count()
+            entriesDB.drafts.where('authorUsername').equals(username).count()
         )
     // get resource by id (drafts or entries);
     getById = (table, id) =>

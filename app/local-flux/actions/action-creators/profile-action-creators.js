@@ -1,9 +1,9 @@
 import * as types from '../../constants/ProfileConstants';
 
-export function loginSuccess (profileData) {
+export function loginSuccess (profile) {
     return {
         type: types.LOGIN_SUCCESS,
-        profileData
+        profile
     };
 }
 
@@ -27,26 +27,15 @@ export function logoutError (error) {
         error
     };
 }
-
-export function getTempProfileSuccess (profile) {
+export function createTempProfile () {
     return {
-        type: types.GET_TEMP_PROFILE_SUCCESS,
-        profile
+        type: types.CREATE_TEMP_PROFILE
     };
 }
-
-export function getTempProfileError (error) {
-    return {
-        type: types.GET_TEMP_PROFILE_ERROR,
-        error
-    };
-}
-
-export function createTempProfileSuccess (profileData, currentStatus) {
+export function createTempProfileSuccess (profileData) {
     return {
         type: types.CREATE_TEMP_PROFILE_SUCCESS,
-        profileData,
-        currentStatus
+        profileData
     };
 }
 
@@ -72,6 +61,20 @@ export function updateTempProfileError (error) {
     };
 }
 
+export function getTempProfileSuccess (profile) {
+    return {
+        type: types.GET_TEMP_PROFILE_SUCCESS,
+        profile
+    };
+}
+
+export function getTempProfileError (error) {
+    return {
+        type: types.GET_TEMP_PROFILE_ERROR,
+        error
+    };
+}
+
 export function deleteTempProfileSuccess () {
     return {
         type: types.DELETE_TEMP_PROFILE_SUCCESS
@@ -90,7 +93,6 @@ export function createEthAddress () {
         type: types.CREATE_ETH_ADDRESS
     };
 }
-
 export function createEthAddressSuccess (data) {
     return {
         type: types.CREATE_ETH_ADDRESS_SUCCESS,
@@ -103,40 +105,29 @@ export function createEthAddressError (error) {
         error
     };
 }
-
-export function requestFund () {
+export function requestFundFromFaucet () {
     return {
-        type: types.FUND_FROM_FAUCET
+        type: types.REQUEST_FUND_FROM_FAUCET
     };
 }
 
-export function requestFundSuccess (data) {
+export function requestFundFromFaucetSuccess (data) {
     return {
         type: types.REQUEST_FUND_FROM_FAUCET_SUCCESS,
         data
     };
 }
-export function requestFundError (error) {
+export function requestFundFromFaucetError (error) {
     return {
         type: types.REQUEST_FUND_FROM_FAUCET_ERROR,
         error
     };
 }
-
-export function fundSuccess (data) {
+export function completeProfileCreation () {
     return {
-        type: types.FUND_FROM_FAUCET_SUCCESS,
-        data
+        type: types.COMPLETE_PROFILE_CREATION
     };
 }
-
-export function fundError (error) {
-    return {
-        type: types.FUND_FROM_FAUCET_ERROR,
-        error
-    };
-}
-
 export function completeProfileCreationSuccess (profileData) {
     return {
         type: types.COMPLETE_PROFILE_CREATION_SUCCESS,
@@ -151,31 +142,24 @@ export function completeProfileCreationError (error) {
     };
 }
 
-export function checkTempProfileError (error) {
+export function getLocalProfilesSuccess (data) {
     return {
-        type: types.CHECK_TEMP_PROFILE_ERROR,
+        type: types.GET_LOCAL_PROFILES_SUCCESS,
+        data
+    };
+}
+export function getLocalProfilesError (error) {
+    error.code = 'GLPE';
+    return {
+        type: types.GET_LOCAL_PROFILES_ERROR,
         error
     };
 }
 
-export function getProfilesListSuccess (profiles) {
-    return {
-        type: types.GET_PROFILES_LIST_SUCCESS,
-        profiles
-    };
-}
-
-export function getProfilesListError (error) {
-    return {
-        type: types.GET_PROFILES_LIST_ERROR,
-        error
-    };
-}
-
-export function getProfileDataSuccess (profile) {
+export function getProfileDataSuccess (data) {
     return {
         type: types.GET_PROFILE_DATA_SUCCESS,
-        profile: profile.data
+        data
     };
 }
 
@@ -183,12 +167,5 @@ export function getProfileDataError (error) {
     return {
         type: types.GET_PROFILE_DATA_ERROR,
         error
-    };
-}
-
-export function setActionAfterAuth (nextAction) {
-    return {
-        type: types.SET_AFTER_AUTH_ACTION,
-        nextAction,
     };
 }

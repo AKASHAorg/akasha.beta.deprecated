@@ -11,9 +11,10 @@ class ValidationActions {
         this.dispatch = dispatch;
         return validationActions;
     }
-    validateUsername = (userName, cb) => {
-        this.validationService.validateUsername(userName).then(isValid => {
-            return cb(isValid);
+    validateUsername = (username, cb) => {
+        this.validationService.validateUsername(username, {
+            onError: (err) => cb(err),
+            onSuccess: (data) => cb(null, data)
         });
     }
 }

@@ -1,10 +1,10 @@
 import React, { Component, PropTypes } from 'react';
 import { RaisedButton } from 'material-ui';
 import { FormattedMessage, injectIntl } from 'react-intl';
-import { setupMessages, generalMessages } from 'locale-data/messages';
-import PanelContainer from 'shared-components/PanelContainer/panel-container';
+import { setupMessages, generalMessages } from 'locale-data/messages'; /* eslint import/no-unresolved: 0 */
+import PanelContainer from 'shared-components/PanelContainer/panel-container'; /* eslint import/no-unresolved: 0 */
 import SetupHeader from '../../../components/setup-header';
-import { is } from 'immutable';
+import SyncStatusLoader from './sync-status';
 
 class SyncStatus extends Component {
     constructor (props) {
@@ -17,59 +17,58 @@ class SyncStatus extends Component {
         };
     }
     componentWillMount () {
-        // this.startGeth();
+        const { settingsActions } = this.props;
+        settingsActions.getSettings('geth');
+        settingsActions.getSettings('ipfs');
     }
     componentDidMount () {
-        // this.startGeth();
-    }
-    // getSyncStatus = () => {
-    //     const { eProcActions, gethStatus, gethSyncStatus } = this.props;
-
-    //     eProcActions.getSyncStatus().then((syncData) => {
-    //         console.log(syncData, 'sync data');
-    //     });
-    //     // eProcActions.startUpdateSync((err, updateData) => {
-    //     //     const { success, status, data } = updateData;
-    //     //     if (err) {
-    //     //         return this.setState({
-    //     //             syncError: status.message
-    //     //         });
-    //     //     }
-    //     //     if (success && data.empty) {
-    //     //         this.finishSync();
-    //     //     } else {
-    //     //         this.setState({
-    //     //             syncData: data
-    //     //         });
-    //     //     }
-    //     //     return null;
-    //     // });
-    // };
-    startGeth = () => {
-        const { eProcActions, gethSettings, gethStatus } = this.props;
-        console.log(gethSettings, 'gethSettings');
+        const { eProcActions, gethSettings, gethStatus, ipfsStatus } = this.props;
         if (!gethStatus.get('api') || !gethStatus.get('starting')) {
             eProcActions.startGeth(gethSettings);
         }
-    };
+        if (!ipfsStatus.get('started') || !ipfsStatus.get('downloading') || !ipfsStatus.get('spawned')) {
+            console.log('start ipfs')
+            eProcActions.startIPFS();
+        }
+    }
+    componentWillReceiveProps = (nextProps) => {
+        const { gethStatus, eProcActions, gethSyncStatus, ipfsStatus } = nextProps;
+        const gethReadyToSync = gethStatus.get('api') &&
+            !gethStatus.get('synced') && !gethSyncStatus.get('syncing');
+        const gethSynced = gethSyncStatus.get('synced');
+        const ipfsStarted = ipfsStatus.get('started');
+        console.log(ipfsStatus, 'ipfs status');
+        if (gethReadyToSync) {
+            eProcActions.startThrottledSync();
+        } else if (gethSynced && ipfsStarted) {
+            this.context.router.push('authenticate');
+        }
+    }
+    componentWillUpdate (nextProps) {
+        const { gethStatus, configFlags, gethSyncStatus } = nextProps;
+        const shouldReconfigure = configFlags.get('requestStartupChange') && !gethStatus.get('api');
+
+        if (shouldReconfigure) {
+            return this.context.router.push('setup');
+        }
+        if (gethSyncStatus.get('synced')) {
+            return this.finishSync();
+        }
+        return null;
+    }
+    componentWillUnmount () {
+        const { eProcActions } = this.props;
+        eProcActions.stopThrottledSync();
+    }
     finishSync = () => {
         const { eProcActions } = this.props;
-        eProcActions.stopUpdateSync();
-        eProcBundleActions.startIPFS();
-        this.context.router.push('authenticate');
-    };
-    handleSync = () => {
-        const { eProcActions, externalProcState } = this.props;
-        // if (externalProcState.get('actionId') === 1) {
-        //     return eProcActions.stopSync();
-        // }
-        // eProcActions.startSync();
-        return this.getSyncStatus();
+        eProcActions.finishSync();
     };
     handleCancel = () => {
-        const { eProcActions } = this.props;
-        eProcActions.cancelSync();
-        this.context.router.push('setup');
+        const { eProcActions, settingsActions } = this.props;
+        eProcActions.stopGeth();
+        eProcActions.finishSync();
+        settingsActions.saveSettings('flags', { requestStartupChange: true });
     };
     _getActionLabels = () => {
         const { syncActionId, intl } = this.props;
@@ -101,16 +100,19 @@ class SyncStatus extends Component {
         const { loggerActions } = this.props;
         if (!this.state.showGethLogs) {
             return loggerActions.startGethLogger({ continuous: true }, (err, logs) => {
-                if (err) return console.error(err);
+                if (err) {
+                    this.state.gethLogsError = [...this.state.gethLogsError, ...err];
+                    return;
+                }
                 const logData = this.state.gethLogs.slice();
                 if (logs.data.length > 1) {
                     logData.concat(logs.data);
                 } else {
                     logData.unshift(logs.data['log-geth'][0]);
                 }
-                return this.setState({
+                this.setState({
                     showGethLogs: true,
-                    gethLogs: logData.slice(0, 20)
+                    gethLogs: logData.slice(0, 20),
                 });
             });
         }
@@ -122,14 +124,39 @@ class SyncStatus extends Component {
         });
     };
     render () {
-        const { intl, gethStatus, eProcActions, gethSyncStatus } = this.props;
-        const pageTitle = ''; //this._getActionLabels().title;
-        console.log(gethStatus, 'gethStatus');
+        const {
+            style,
+            intl,
+            gethStatus,
+            gethSyncStatus,
+            gethErrors,
+            ipfsStatus,
+            ipfsErrors } = this.props;
 
+        const pageTitle = this._getActionLabels().title;
+        let gethErrorCards;
+        let ipfsErrorCards;
+
+        if (gethErrors.size > 0) {
+            gethErrorCards = gethErrors.map((gethError, key) =>
+              <div className="errorCard" key={key}>
+                <div>{gethError.get('code')} {gethError.get('message')}</div>
+              </div>
+            );
+        }
+        if (ipfsErrors.size > 0) {
+            ipfsErrorCards = ipfsErrors.map((ipfsError, key) =>
+              <div className="errorCard" key={key}>
+                <div>{ipfsError.get('code')} {ipfsError.get('message')}</div>
+              </div>
+            );
+        }
         return (
           <PanelContainer
             showBorder
+            style={style}
             actions={[
+            /* eslint-disable */
               <RaisedButton
                 key="cancel"
                 label={intl.formatMessage(generalMessages.cancel)}
@@ -142,14 +169,17 @@ class SyncStatus extends Component {
                 style={{ marginLeft: '12px' }}
                 onClick={this.handleSync}
               />
+            /* eslint-enable */
             ]}
             leftActions={[
+            /* eslint-disable */
               <RaisedButton
                 key="viewDetails"
                 label={this.state.showGethLogs ? 'Hide details' : 'View details'}
                 primary={this.state.showGethLogs}
                 onClick={this._handleDetails}
               />
+            /* eslint-enable */
             ]}
             header={<SetupHeader title="AKASHA" />}
           >
@@ -163,28 +193,37 @@ class SyncStatus extends Component {
                   <FormattedMessage {...setupMessages.onSyncStart} />
                 </p>
               </div>
-              <SyncStatus gethSyncStatus={gethSyncStatus} gethStatus={gethStatus} intl={intl} />
+              {gethErrorCards}
+              {ipfsErrorCards}
+              {!gethErrorCards && !ipfsErrorCards &&
+                <SyncStatusLoader
+                  gethStatus={gethStatus}
+                  gethSyncStatus={gethSyncStatus}
+                  ipfsStatus={ipfsStatus}
+                  intl={intl}
+                />
+              }
             </div>
-              {this.state.showGethLogs &&
-                <ul style={this.props.logListStyle} className="col-xs-12">
-                  {this.state.gethLogs.map((log, key) => (
-                    <li
-                      key={key}
-                      style={{
-                          marginBottom: '8px',
-                          backgroundColor: (
-                            log.level === 'warn' ?
-                                'orange' : log.level === 'error' ?
-                                'red' : 'transparent')
-                      }}
-                    >
-                      <abbr title="Log Level">{log.level}</abbr>
-                      <p>{log.message}</p>
-                    </li>
-                    ))
-                    }
-                </ul>
-                }
+            {this.state.showGethLogs &&
+              <ul style={this.props.logListStyle} className="col-xs-12">
+                {this.state.gethLogs.map((log, key) => (
+                  <li
+                    key={key}
+                    style={{
+                        marginBottom: '8px',
+                        backgroundColor: (
+                           log.level === 'warn' ?
+                           'orange' : log.level === 'error' ?
+                           'red' : 'transparent')
+                    }}
+                  >
+                    <abbr title="Log Level">{log.level}</abbr>
+                    <p>{log.message}</p>
+                  </li>
+                  ))
+                  }
+              </ul>
+            }
           </PanelContainer>
         );
     }
@@ -197,8 +236,13 @@ SyncStatus.propTypes = {
     logListStyle: PropTypes.shape(),
     intl: PropTypes.shape().isRequired,
     gethSettings: PropTypes.shape().isRequired,
+    ipfsSettings: PropTypes.shape().isRequired,
     gethStatus: PropTypes.shape().isRequired,
+    ipfsStatus: PropTypes.shape().isRequired,
+    gethErrors: PropTypes.shape().isRequired,
+    ipfsErrors: PropTypes.shape().isRequired,
     gethSyncStatus: PropTypes.shape().isRequired,
+    settingsActions: PropTypes.shape(),
     syncActionId: PropTypes.number
 };
 

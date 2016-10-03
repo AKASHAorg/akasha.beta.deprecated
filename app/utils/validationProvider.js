@@ -1,7 +1,9 @@
 import React from 'react';
 import validator from 'react-validation-mixin';
 import strategy from 'react-validatorjs-strategy';
+import { validationMessages } from 'locale-data/messages'
 import r from 'ramda';
+
 export default function (Component) {
     const validationClass = validator(strategy)(Component);
     return class ValidationProvider extends validationClass {
@@ -22,7 +24,7 @@ export default function (Component) {
             const validationKey = key.indexOf('.') !== -1 ? key.split('.')[1] : key;
             this.validate(validationKey, (err) => {
                 if (err) return;
-                // server validation here
+                // server validation starts here
                 const serverValidationRules = this.refs.component.serverValidatedFields;
                 if (validationKey.indexOf(serverValidationRules) !== -1) {
                     const validationActionName = `validate${
@@ -38,11 +40,20 @@ export default function (Component) {
                     const state = this.refs.component.state;
                     const statePathLens = r.lensPath(key.split('.'));
                     const value = r.view(statePathLens, state);
-
-                    validationActions[validationActionName](value, (data) => {
-                        if (data.exists) {
-                            this.state.errors[validationKey][0] = 'Username already registered!';
+                    const { intl } = this.props;
+                    validationActions[validationActionName](value, (error, data) => {
+                        if (error) {
+                            this.state.errors[validationKey][0] = error.message;
                             return;
+                        }
+                        if (data.exists) {
+                            this.state.errors[validationKey][0] =
+                                intl.formatMessage(validationMessages.usernameExists);
+                            return;
+                        }
+                        console.log('no errors!', cb);
+                        if (typeof cb === 'function') {
+                            cb();
                         }
                     });
                 }
@@ -53,11 +64,12 @@ export default function (Component) {
               <Component
                 ref="component"
                 errors={this.state.errors}
-                validate={this.customValidate}
                 isValid={this.isValid}
                 getValidationMessages={this.getValidationMessages}
                 clearValidations={this.clearValidations}
                 handleValidation={this.handleCustomValidation}
+                validate={super.validate}
+                customValidate={this.customValidate}
                 {...this.props}
               >
                 {this.props.children}

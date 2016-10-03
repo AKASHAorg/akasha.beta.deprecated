@@ -20,11 +20,11 @@ class Setup extends Component {
 }
 
 Setup.propTypes = {
-    eProcActions: PropTypes.object.isRequired,
-    settingsActions: PropTypes.object.isRequired,
-    settingsState: PropTypes.object.isRequired,
-    style: PropTypes.object,
-    intl: PropTypes.object,
+    eProcActions: PropTypes.shape().isRequired,
+    settingsActions: PropTypes.shape().isRequired,
+    settingsState: PropTypes.shape().isRequired,
+    style: PropTypes.shape(),
+    intl: PropTypes.shape(),
 };
 
 Setup.contextTypes = {

@@ -1,7 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { asyncConnect } from 'redux-connect';
-import { SettingsActions, BootstrapBundleActions, AppActions, ProfileActions } from 'local-flux';
+import { SettingsActions, AppActions, ProfileActions } from 'local-flux';
 import { getMuiTheme } from 'material-ui/styles';
 import { Snackbar } from 'material-ui';
 import { AuthDialog, ConfirmationDialog } from 'shared-components';
@@ -16,11 +15,13 @@ class App extends Component {
             voteWeight: 1
         };
     }
-    getChildContext () {
-        return {
-            muiTheme: getMuiTheme(AkashaTheme)
-        };
-    }
+    getChildContext = () => ({
+        muiTheme: getMuiTheme(AkashaTheme)
+    });
+    /**
+     * called whenever navigation occurs (1st method in lifecycle)!
+     */
+    componentWillReceiveProps = () => {}
     _handleSendReport = () => {
     };
     _handleErrorClose = () => {
@@ -52,7 +53,7 @@ class App extends Component {
             voteWeight: value
         });
     };
-    _handleConfirmationDialogCancel = (ev) => {
+    _handleConfirmationDialogCancel = () => {
         const { appActions } = this.props;
         appActions.hideConfirmationDialog();
         this.setState({
@@ -110,8 +111,6 @@ App.propTypes = {
     appActions: PropTypes.shape(),
     profileState: PropTypes.shape(),
     profileActions: PropTypes.shape(),
-    settingsActions: PropTypes.shape(),
-    bootstrapActions: PropTypes.shape(),
     children: PropTypes.element
 };
 App.contextTypes = {
@@ -135,12 +134,7 @@ function mapDispatchToProps (dispatch) {
         appActions: new AppActions(dispatch),
     };
 }
-export default asyncConnect([{
-    promise: ({ store: { dispatch, getState } }) => {
-        const bootstrapActions = new BootstrapBundleActions(dispatch);
-        return Promise.resolve(bootstrapActions.initApp(getState));
-    }
-}])(connect(
+export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(App));
+)(App);

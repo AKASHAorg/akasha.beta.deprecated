@@ -4,6 +4,7 @@ import AddPhotoIcon from 'material-ui/svg-icons/image/add-a-photo';
 import ClearIcon from 'material-ui/svg-icons/content/clear';
 import { SvgIcon, Slider } from 'material-ui';
 import { remote } from 'electron';
+
 const { dialog } = remote;
 
 class Avatar extends React.Component {
@@ -22,9 +23,9 @@ class Avatar extends React.Component {
             if (this.editor && this.state.avatarImage) {
                 const imageCanvas = this.editor.getImageScaledToCanvas();
 
-                imageCanvas.toBlob(blob => {
+                imageCanvas.toBlob((blob) => {
                     const reader = new FileReader();
-                    reader.onloadend = (ev) =>
+                    reader.onloadend = ev =>
                         resolve(new Uint8Array(ev.target.result));
                     reader.readAsArrayBuffer(blob);
                 }, 'image/jpg');
@@ -61,7 +62,7 @@ class Avatar extends React.Component {
             title: 'Select image for your avatar',
             properties: ['openFile'],
             filters: [{ name: 'Images', extensions: ['jpg', 'png'] }]
-        }, files => {
+        }, (files) => {
             if (!files) {
                 return;
             }
@@ -105,11 +106,11 @@ class Avatar extends React.Component {
             onMouseLeave={this._handleMouseLeave}
             {...other}
           >
-          {this.state.showChangeAvatar && !this.state.isNewAvatarLoaded &&
-            <div
-              style={dialogHandlerStyle}
-              onClick={this._handleDialogOpen}
-            />
+            {this.state.showChangeAvatar && !this.state.isNewAvatarLoaded &&
+              <div
+                style={dialogHandlerStyle}
+                onClick={this._handleDialogOpen}
+              />
             }
 
             {avatarImage &&
@@ -122,7 +123,7 @@ class Avatar extends React.Component {
                   }}
                   border={this.state.isNewAvatarLoaded ? 5 : 0}
                   image={avatarImage}
-                  ref={(editor) => this.editor = editor}
+                  ref={(editor) => { this.editor = editor; }}
                   width={radius || 130}
                   height={radius || 130}
                   borderRadius={100}
@@ -186,13 +187,13 @@ Avatar.propTypes = {
     editable: React.PropTypes.bool,
     userName: React.PropTypes.string,
     radius: React.PropTypes.number,
-    userInitialsStyle: React.PropTypes.object,
+    userInitialsStyle: React.PropTypes.shape(),
     backgroundColor: React.PropTypes.string,
-    avatarEmptyStyle: React.PropTypes.object,
-    avatarClearStyle: React.PropTypes.object,
-    dialogHandlerStyle: React.PropTypes.object,
-    userInitialsAlignStyle: React.PropTypes.object,
-    userInitialsWrapperStyle: React.PropTypes.object,
+    avatarEmptyStyle: React.PropTypes.shape(),
+    avatarClearStyle: React.PropTypes.shape(),
+    dialogHandlerStyle: React.PropTypes.shape(),
+    userInitialsAlignStyle: React.PropTypes.shape(),
+    userInitialsWrapperStyle: React.PropTypes.shape(),
     offsetBorder: React.PropTypes.string
 };
 Avatar.contextTypes = {

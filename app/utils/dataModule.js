@@ -16,18 +16,17 @@ export const inputFieldMethods = {
         const parts = statePath.split('.');
         const nameSpace = parts.shift();
         const errorKey = parts[parts.length - 1];
-        const props = r.omit(['statePath', 'addValueLink', 'onTextChange'], params);
+        const props = r.omit(['statePath', 'addValueLink', 'onTextChange', 'onFocus'], params);
         const validationErrors = this.props.getValidationMessages(errorKey);
         const state = this.state;
         let value = state[nameSpace];
-        parts.forEach(piece => {
+        parts.forEach((piece) => {
             value = value[piece];
         });
 
         const getNewValuePath = (newVal) => {
             const constructedObj = {};
             let internalPtr;
-
             constructedObj[nameSpace] = r.clone(state[nameSpace]) || {};
 
             // if the value should be placed right in component's
@@ -62,6 +61,9 @@ export const inputFieldMethods = {
                     params.onTextChange(ev);
                 }
             };
+        }
+        if (props.onFocus) {
+            props.onFocus();
         }
         if (validationErrors.length > 0) {
             props.errorText = validationErrors.reduce((prev, current) => `${prev}, ${current}`);

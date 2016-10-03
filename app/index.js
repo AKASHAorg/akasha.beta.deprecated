@@ -12,9 +12,7 @@ import configureStore from './local-flux/store/configureStore';
 import { ruMessages } from './locale-data/ru';
 import debug from 'debug';
 import ReactPerf from 'react-addons-perf';
-import Promise from 'bluebird';
 
-window.Promise = Promise;
 window.appDebug = debug.enable('App:*');
 // temporary
 
@@ -27,7 +25,7 @@ injectTapEventPlugin();
 render(
   <Provider store={store} >
     <IntlProvider locale="en" >
-      <Router history={history} render={(props) => <ReduxAsyncConnect {...props} />} >
+      <Router history={history} >
         {routes}
       </Router>
     </IntlProvider>
