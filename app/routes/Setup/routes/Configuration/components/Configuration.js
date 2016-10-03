@@ -1,15 +1,15 @@
 import React, { Component, PropTypes } from 'react';
 import { remote } from 'electron';
-import SetupHeader from '../../../components/setup-header';
 import { RadioButton, RadioButtonGroup, RaisedButton } from 'material-ui';
 import { injectIntl } from 'react-intl';
-import { setupMessages, generalMessages } from 'locale-data/messages';
+import { setupMessages, generalMessages } from 'locale-data/messages'; /* eslint import/no-unresolved: 0 */
+import PanelContainer from 'shared-components/PanelContainer/panel-container'; /* eslint import/no-unresolved: 0 */
 import { AdvancedSetupForm } from './advanced-setup-form';
-import PanelContainer from 'shared-components/PanelContainer/panel-container';
+import SetupHeader from '../../../components/setup-header';
 
 const { dialog } = remote;
 
-class Setup extends Component {
+class Config extends Component {
     constructor (props) {
         super(props);
         this.state = {
@@ -17,12 +17,18 @@ class Setup extends Component {
         };
     }
     componentWillMount () {
-        const { configFlags, gethSettings } = this.props;
-        const cancelRequest = configFlags.get('requestStartupChange');
-        console.log(gethSettings, cancelRequest, 'ready for sync');
-        if (!cancelRequest && gethSettings) {
+        const { settingsActions } = this.props;
+        settingsActions.getSettings('flags');
+        settingsActions.getSettings('geth');
+        settingsActions.getSettings('ipfs');
+    }
+    componentWillUpdate (nextProps) {
+        const { configFlags } = nextProps;
+        const cancelRequest = configFlags && configFlags.get('requestStartupChange');
+        if (!cancelRequest) {
             return this.context.router.push('setup/sync-status');
         }
+        return null;
     }
     handleChange = (ev, value) => {
         const { settingsActions, isAdvanced } = this.props;
@@ -114,9 +120,9 @@ class Setup extends Component {
         const { settingsActions, gethSettings, ipfsSettings } = this.props;
         const { datadir, ipcpath, cache } = gethSettings.toJS();
         const { ipfsPath } = ipfsSettings.toJS();
-        settingsActions.saveSettings({ name: 'geth', datadir, ipcpath, cache });
-        settingsActions.saveSettings({ name: 'ipfs', ipfsPath });
-        settingsActions.saveSettings({ name: 'flags', requestStartupChange: false });
+        settingsActions.saveSettings('geth', { datadir, ipcpath, cache });
+        settingsActions.saveSettings('ipfs', { ipfsPath });
+        settingsActions.saveSettings('flags', { requestStartupChange: false });
         this.context.router.push('setup/sync-status');
     };
 
@@ -147,6 +153,7 @@ class Setup extends Component {
           <PanelContainer
             showBorder
             actions={[
+              /* eslint-disable */
               <RaisedButton
                 key="next"
                 label={intl.formatMessage(generalMessages.nextButtonLabel)}
@@ -155,9 +162,10 @@ class Setup extends Component {
                 style={{ marginLeft: '12px' }}
                 onClick={this.handleSubmit}
               />
+              /* eslint-enable */
             ]}
             header={
-              <SetupHeader title={"AKASHA"} />
+              <SetupHeader title={'AKASHA'} />
             }
           >
             <h1 style={{ fontWeight: '400' }} className="col-xs-12" >
@@ -165,7 +173,7 @@ class Setup extends Component {
             </h1>
             <div className="col-xs-12">
               <p>
-                  {intl.formatMessage(setupMessages.akashaNextGenNetwork)}
+                {intl.formatMessage(setupMessages.akashaNextGenNetwork)}
               </p>
               <p>
                 {intl.formatMessage(setupMessages.youHaveNotHeared)}
@@ -213,22 +221,22 @@ class Setup extends Component {
     }
 }
 
-Setup.propTypes = {
+Config.propTypes = {
     settingsActions: PropTypes.shape().isRequired,
     gethSettings: PropTypes.shape().isRequired,
     ipfsSettings: PropTypes.shape().isRequired,
     isAdvanced: PropTypes.bool.isRequired,
-    configFlags: PropTypes.shape().isRequired,
+    configFlags: PropTypes.shape(),
     style: PropTypes.shape(),
     intl: PropTypes.shape(),
 };
 
-Setup.contextTypes = {
+Config.contextTypes = {
     muiTheme: React.PropTypes.object,
     router: React.PropTypes.object
 };
 
-Setup.defaultProps = {
+Config.defaultProps = {
     style: {
         width: '100%',
         height: '100%',
@@ -238,4 +246,4 @@ Setup.defaultProps = {
     }
 };
 
-export default injectIntl(Setup);
+export default injectIntl(Config);

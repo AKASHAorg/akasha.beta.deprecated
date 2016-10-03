@@ -7,7 +7,7 @@ const entriesDB = new Dexie('entries');
 entriesDB.version(1).stores({
     drafts: '++id,tags,authorUsername',
     entries: '&ipfsHash',
-    savedEntries: '++id,userName'
+    savedEntries: '++id,username'
 });
 
 entriesDB.drafts.mapToClass(getDraftClass());

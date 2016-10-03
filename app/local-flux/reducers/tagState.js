@@ -7,7 +7,7 @@ const initialState = fromJS({
     isLoading: false
 });
 
-const tagState =  createReducer(initialState, {
+const tagState = createReducer(initialState, {
     [types.GET_TAGS]: (state) => {
         return state.merge({
             isLoading: true,

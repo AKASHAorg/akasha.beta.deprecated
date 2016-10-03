@@ -6,6 +6,7 @@ import * as settingsActionCreators from './settings-action-creators';
 import * as validationActionCreators from './validation-action-creators';
 import * as tagActionCreators from './tag-action-creators';
 import * as commentActionCreators from './comment-action-creators';
+import * as transactionActionCreators from './transaction-action-creators';
 
 export {
     appActionCreators,
@@ -15,5 +16,6 @@ export {
     settingsActionCreators,
     validationActionCreators,
     tagActionCreators,
-    commentActionCreators
+    commentActionCreators,
+    transactionActionCreators
 };

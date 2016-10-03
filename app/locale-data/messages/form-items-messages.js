@@ -11,8 +11,8 @@ const formMessages = defineMessages({
         description: 'Placeholder for last name input',
         defaultMessage: 'Last Name'
     },
-    userName: {
-        id: 'app.userName',
+    username: {
+        id: 'app.username',
         description: 'Placeholder for last name input',
         defaultMessage: 'User Name'
     },

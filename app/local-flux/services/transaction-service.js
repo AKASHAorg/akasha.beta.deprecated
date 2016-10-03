@@ -1,6 +1,7 @@
 import { ipcRenderer } from 'electron';
 import debug from 'debug';
 import BaseService from './base-service';
+import transactionsDB from './db/transactions';
 
 const Channel = window.Channel;
 const dbg = debug('App:TransactionService:');
@@ -23,19 +24,21 @@ class TransactionService extends BaseService {
      * Response:
      * @param data = {watching: Boolean}
      */
-    addToQueue = (tx) => {
+    addToQueue = ({ tx, onError, onSuccess }) => {
         const serverChannel = Channel.server.tx.addToQueue;
         const clientChannel = Channel.client.tx.addToQueue;
-        if (this._listeners.has(clientChannel)) return Promise.resolve();
-        return new Promise((resolve, reject) => {
-            const listenerCb = (ev, res) => {
-                if (res.error) return reject(res.error);
-                return resolve(res.data);
-            };
-            return this.registerListener(clientChannel, listenerCb, () =>
-                ipcRenderer.send(serverChannel, { tx })
-            );
-        });
+        dbg('adding to queue', tx);
+
+        if (!Array.isArray(tx)) {
+            return console.error('tx param should be an array!!');
+        }
+
+        return transactionsDB.transaction('rw', transactionsDB.pending, () => {
+            return transactionsDB.pending.bulkAdd(tx);
+        }).then(() => {
+            this.registerListener(clientChannel, this.createListener(onError, onSuccess));
+            ipcRenderer.send(serverChannel, tx);
+        }).catch(reason => onError(reason));
     };
     /**
      * emit and mined event for a transaction from queue
@@ -44,19 +47,28 @@ class TransactionService extends BaseService {
      * Response:
      * @param data = { mined: String (optional, a transaction`s tx), watching: Boolean }
      */
-    emitMined = ({ watch }) => {
+    emitMined = ({ watch, onError, onSuccess }) => {
         const serverChannel = Channel.server.tx.emitMined;
         const clientChannel = Channel.client.tx.emitMined;
-        if (this._listeners.has(clientChannel)) return Promise.resolve();
-        return new Promise((resolve, reject) => {
-            const listenerCb = (ev, res) => {
-                if (res.error) return reject(res.error);
-                return resolve(res.data);
-            };
-            return this.registerListener(clientChannel, listenerCb, () =>
-                ipcRenderer.send(serverChannel, { watch })
-            );
-        });
+        const successCB = (data) => {
+            transactionsDB.transaction('rw', transactionsDB.pending, transactionsDB.mined, () => {
+                transactionsDB.pending.where('tx').equals(data.mined).delete();
+                transactionsDB.mined.add({ tx: data.mined });
+                return data;
+            })
+            .then(minedTx => onSuccess(minedTx))
+            .catch(reason => onError(reason));
+        };
+        this.registerListener(clientChannel, this.createListener(onError, successCB));
+        ipcRenderer.send(serverChannel, { watch });
+    };
+
+    getTransactions = ({ type, onSuccess, onError }) => {
+        transactionsDB.transaction('rw', transactionsDB[type], () =>
+            transactionsDB[type].toArray()
+        )
+        .then(data => onSuccess(data))
+        .catch(reason => onError(reason));
     };
 }
 

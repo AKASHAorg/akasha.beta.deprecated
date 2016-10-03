@@ -33,7 +33,7 @@ const EntryCard = (props) => {
         new Date(entry.get('created_at')).getTime()
     );
     const readingTime = calculateReadingTime(wordCount);
-    const cardSubtitle = `${publishedDate} - 
+    const cardSubtitle = `${publishedDate} -
       ${readingTime.hours ? readingTime.hours + ' hours' : ''}
       ${readingTime.minutes} minutes (${wordCount} words)`;
     return (

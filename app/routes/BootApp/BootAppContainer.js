@@ -1,9 +1,8 @@
-import BootApp from './components/boot-app';
 import { connect } from 'react-redux';
-import { asyncConnect } from 'redux-connect';
-import { AppActions, BootstrapBundleActions, EProcActions } from 'local-flux';
+import { AppActions, EProcActions } from 'local-flux';
+import BootApp from './components/boot-app';
 
-function mapStateToProps(state) {
+function mapStateToProps (state) {
     return {
         appState: state.appState
     };
@@ -12,16 +11,11 @@ function mapStateToProps(state) {
 function mapDispatchToProps (dispatch) {
     return {
         appActions: new AppActions(dispatch),
-        eProcActions: new EProcActions(dispatch),
+        eProcActions: new EProcActions(dispatch)
     };
 }
 
-export default asyncConnect([{
-    promise: ({ store: { dispatch, getState } }) => {
-        const bootstrapActions = new BootstrapBundleActions(dispatch);
-        return Promise.resolve(bootstrapActions.bootApp(getState));
-    }
-}])(connect(
+export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(BootApp));
+)(BootApp);

@@ -14,14 +14,20 @@ class SettingsActions {
     }
     // save app level settings
     saveSettings = (table, settings) =>
-        this.settingsService.saveSettings(table, settings).then(() =>
-            this.dispatch(settingsActionCreators.saveSettingsSuccess(settings, table))
-        ).catch(reason => this.dispatch(settingsActionCreators.saveSettingsError(reason, table)));
+        this.settingsService.saveSettings({
+            options: { table, settings },
+            onSuccess: (data, table) => this.dispatch(settingsActionCreators.saveSettingsSuccess(settings, table)),
+            onError: (error, table) => this.dispatch(settingsActionCreators.saveSettingsError(error, table)),
+        });
 
     getSettings = table =>
-        this.settingsService.getSettings(table).then(data =>
-            this.dispatch(settingsActionCreators.getSettingsSuccess(data, table))
-        ).catch(reason => this.dispatch(settingsActionCreators.getSettingsError(reason, table)));
+        this.dispatch((dispatch) => {
+            this.settingsService.getSettings({
+                options: { table },
+                onSuccess: data => dispatch(settingsActionCreators.getSettingsSuccess(data)),
+                onError: err => dispatch(settingsActionCreators.getSettingsError(err))
+            });
+        });
 
     retrySetup = (isAdvanced) => {
         this.dispatch(settingsActionCreators.retrySetup(isAdvanced));

@@ -8,6 +8,7 @@ export function getGethStatusSuccess (data) {
 }
 
 export function getGethStatusError (error) {
+    error.code = 'GSE'
     return {
         type: types.GET_GETH_STATUS_ERROR,
         error
@@ -22,6 +23,7 @@ export function getGethOptionsSuccess (data) {
 }
 
 export function getGethOptionsError (error) {
+    error.code = 'GGOE';
     return {
         type: types.GET_GETH_OPTIONS_ERROR,
         error
@@ -36,6 +38,7 @@ export function startGethSuccess (data) {
 }
 
 export function startGethError (error) {
+    error.code = 'SGE01'
     return {
         type: types.START_GETH_ERROR,
         error
@@ -50,8 +53,24 @@ export function stopGethSuccess (data) {
 }
 
 export function stopGethError (error) {
+    error.code = 'SGE02';
     return {
         type: types.STOP_GETH_ERROR,
+        error
+    };
+}
+
+export function getSyncStatusSuccess (data) {
+    return {
+        type: types.GET_SYNC_STATUS_SUCCESS,
+        data
+    };
+}
+
+export function getSyncStatusError (error) {
+    error.code = 'GSSE';
+    return {
+        type: types.GET_SYNC_STATUS_ERROR,
         error
     };
 }
@@ -64,6 +83,7 @@ export function startIPFSSuccess (data) {
 }
 
 export function startIPFSError (error) {
+    error.code = 'SIE01';
     return {
         type: types.START_IPFS_ERROR,
         error
@@ -78,6 +98,7 @@ export function configIpfsSuccess (data) {
 }
 
 export function configIpfsError (error) {
+    error.code = 'CIE';
     return {
         type: types.CONFIG_IPFS_ERROR,
         error
@@ -92,16 +113,16 @@ export function stopIPFSSuccess (data) {
 }
 
 export function stopIPFSError (error) {
+    error.code = 'SIE02';
     return {
         type: types.STOP_IPFS_ERROR,
         error
     };
 }
 
-export function startSync (data) {
+export function startSync () {
     return {
-        type: types.SYNC_ACTIVE,
-        data
+        type: types.SYNC_ACTIVE
     };
 }
 

@@ -1,7 +1,8 @@
-import { fromJS, Record } from 'immutable';
+import { fromJS, Record, List } from 'immutable';
 import { createReducer } from './create-reducer';
 import * as types from '../constants/external-process-constants';
 
+/* eslint new-cap: [2, {capIsNewExceptions: ["Record"]}] */
 const GethStatus = Record({
     downloading: null,
     starting: null,
@@ -16,7 +17,8 @@ const GethSyncStatus = Record({
     highestBlock: null,
     startingBlock: null,
     peerCount: null,
-    synced: false
+    synced: false,
+    syncing: false
 });
 
 const ErrorRecord = Record({
@@ -38,6 +40,8 @@ const initialState = fromJS({
     gethStatus: new GethStatus(),
     gethSyncStatus: new GethSyncStatus(),
     ipfsStatus: new IpfsStatus(),
+    gethErrors: new List(),
+    ipfsErrors: new List(),
     /**
      * syncActionId
      *      0: not started / initial
@@ -50,34 +54,55 @@ const initialState = fromJS({
 
 const eProcState = createReducer(initialState, {
     [types.START_GETH_SUCCESS]: (state, action) =>
-        state.merge({ gethStatus: new GethStatus(action.data.gethState) }),
+        state.merge({ gethStatus: state.get('gethStatus').merge(action.data) }),
 
     [types.START_GETH_ERROR]: (state, action) =>
         state.merge({
-            gethStatus: {
-                error: new ErrorRecord(action.error)
-            }
+            gethErrors: state.get('gethErrors').push(new ErrorRecord(action.error))
         }),
+
+    [types.STOP_GETH_SUCCESS]: (state, action) =>
+        state.merge({
+            gethStatus: new GethStatus(action.data)
+        }),
+
+    [types.STOP_GETH_ERROR]: (state, action) =>
+        state.get('gethErrors').push(new ErrorRecord(action.error)),
 
     [types.GET_GETH_STATUS_SUCCESS]: (state, action) =>
         state.merge({ gethStatus: new GethStatus(action.status) }),
 
+    [types.START_IPFS_SUCCESS]: (state, action) =>
+        state.merge({
+            ipfsStatus: new IpfsStatus(action.data)
+        }),
+
+    [types.START_IPFS_ERROR]: (state, action) =>
+        state.merge({
+            ipfsErrors: state.get('ipfsErrors').push(new ErrorRecord(action.error))
+        }),
+
     [types.GET_IPFS_STATUS_SUCCESS]: (state, action) =>
         state.merge({ ipfsStatus: new IpfsStatus(action.data) }),
 
-    [types.SYNC_ACTIVE]: (state, action) =>
+    [types.GET_SYNC_STATUS_SUCCESS]: (state, action) =>
+        state.merge({ gethSyncStatus: new GethSyncStatus(action.data) }),
+
+    [types.SYNC_ACTIVE]: state =>
         state.merge({
-            gethSyncStatus: new GethSyncStatus(action.syncStatus),
+            gethSyncStatus: state.get('gethSyncStatus').merge({ syncing: true }),
             actionId: 1,
         }),
 
-    [types.SYNC_STOPPED]: (state, action) =>
+    [types.SYNC_STOPPED]: state =>
         state.merge({
+            gethSyncStatus: state.get('gethSyncStatus').remove('syncing'), // reset to initial value
             actionId: 2
         }),
 
-    [types.SYNC_FINISHED]: (state, action) =>
+    [types.SYNC_FINISHED]: state =>
         state.merge({
+            gethSyncStatus: state.get('gethSyncStatus').remove('syncing'), // reset to initial value
             actionId: 3
         }),
 

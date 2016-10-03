@@ -9,6 +9,7 @@ import entryState from './entryState';
 import externalProcState from './externalProcState';
 import tagState from './tagState';
 import draftState from './draftState';
+import transactionState from './transactionState';
 
 const rootReducer = combineReducers({
     profileState,
@@ -19,6 +20,7 @@ const rootReducer = combineReducers({
     externalProcState,
     tagState,
     draftState,
+    transactionState,
     reduxAsyncConnect,
     routing,
 });
