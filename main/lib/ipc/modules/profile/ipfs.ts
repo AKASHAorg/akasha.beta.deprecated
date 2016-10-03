@@ -1,4 +1,5 @@
 import { IpfsConnector } from '@akashaproject/ipfs-connector';
+import { profiles } from '../models/records';
 import * as Promise from 'bluebird';
 
 /**
@@ -76,6 +77,9 @@ const create = (data: IpfsProfileCreateRequest) => {
  * @returns {any}
  */
 const getShortProfile = (hash: string) => {
+    if(profiles.records.getShort(hash)) {
+        return Promise.resolve(profiles.records.getShort(hash));
+    }
     return IpfsConnector.getInstance().api.get(hash)
         .then((schema: ProfileModel) => {
             let resolved: any = Object.assign({}, schema);
@@ -88,7 +92,8 @@ const getShortProfile = (hash: string) => {
                         return resolved;
                     });
             }
-            return Promise.resolve(resolved);
+            profiles.records.setShort(hash, resolved);
+            return resolved;
         });
 };
 
@@ -100,6 +105,11 @@ const getShortProfile = (hash: string) => {
 const resolveProfile = (hash: string) => {
     let resolved: any;
     let keys: any;
+
+    if(profiles.records.getFull(hash)){
+        return Promise.resolve(profiles.records.getFull(hash));
+    }
+
     return getShortProfile(hash)
         .then((schema: ProfileModel) => {
             resolved = Object.assign({}, schema);
@@ -137,6 +147,7 @@ const resolveProfile = (hash: string) => {
             if (about) {
                 resolved.about = Buffer.from(about).toString('utf8');
             }
+            profiles.records.setFull(hash, resolved);
             return resolved;
         });
 };

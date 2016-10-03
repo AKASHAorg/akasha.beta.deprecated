@@ -14,7 +14,7 @@ export default class Profile extends BaseContract {
     /**
      * Get ipfs hash for profile at address
      * @param address
-     * @returns {"~bluebird/bluebird".Bluebird}
+     * @returns {"bluebird".Bluebird}
      */
     public getIpfs(address: string) {
         return new Promise((resolve, reject) => {
@@ -36,7 +36,7 @@ export default class Profile extends BaseContract {
     /**
      * Get tipping address for a specific profile
      * @param address
-     * @returns {"~bluebird/bluebird".Bluebird}
+     * @returns {"bluebird".Bluebird}
      */
     public getTippingAddress(address: string) {
         return new Promise((resolve, reject) => {
@@ -57,25 +57,11 @@ export default class Profile extends BaseContract {
      * @param hash
      * @param address
      * @param gas
-     * @returns {"~bluebird/bluebird".Bluebird}
+     * @returns {any}
      */
     public updateHash(hash: string[], address: string, gas?: number) {
-        const ipfsHashTr = hash.map((v) => {
-            return this.gethInstance.web3.fromUtf8(v);
-        });
-        return new Promise((resolve, reject) => {
-            if (hash.length !== 2) {
-                return reject(new Error('Expected exactly 2 ipfs slices'));
-            }
-            this.contract
-                .at(address)
-                .setHash(ipfsHashTr, { gas }, (err: Error, tx: string) => {
-                    if (err) {
-                        return reject(err);
-                    }
-                    return resolve(tx);
-                });
-        });
+        const extracted = this.contract.at(address).setHash.request(hash, { gas });
+        return extracted.params[0];
     }
 
     /**
@@ -83,38 +69,28 @@ export default class Profile extends BaseContract {
      * @param address
      * @param tippingAddress
      * @param gas
-     * @returns {"~bluebird/bluebird".Bluebird}
+     * @returns {Bluebird<R>}
      */
     public setTippingAddress(address: string, tippingAddress: string, gas?: number) {
-        return new Promise((resolve, reject) => {
-           this.contract
-               .at(address)
-               .setEthAddress(tippingAddress, {gas}, (err: Error, tx: string) => {
-                   if (err) {
-                       return reject(err);
-                   }
-                   return resolve(tx);
-               });
-        });
+        const extracted = this.contract
+            .at(address)
+            .setEthAddress
+            .request(tippingAddress, { gas });
+        return Promise.resolve(extracted.params[0]);
     }
 
     /**
-     * Remove profile
+     *
      * @param address
      * @param gas
-     * @returns {"~bluebird/bluebird".Bluebird}
+     * @returns {Bluebird<R>}
      */
     public unregister(address: string, gas?: number) {
-        return new Promise((resolve, reject) => {
-           this.contract
-               .at(address)
-               .destroy({gas}, (err: Error, tx: string) => {
-                   if (err) {
-                       return reject(err);
-                   }
-                   return resolve(tx);
-               });
-        });
+        const extracted = this.contract
+                .at(address)
+                .destroy
+                .request({ gas });
+        return Promise.resolve(extracted.params[0]);
     }
 
 }

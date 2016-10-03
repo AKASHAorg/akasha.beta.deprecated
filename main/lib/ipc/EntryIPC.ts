@@ -1,8 +1,10 @@
 import ModuleEmitter from './event/ModuleEmitter';
 import channels from '../channels';
-import {constructed as contracts} from './contracts/index';
+import { constructed as contracts } from './contracts/index';
 import { mainResponse } from './event/responses';
 import { module as userModule } from './modules/auth/index';
+import { entries } from './modules/models/records';
+import IpfsEntry from './modules/models/Entry';
 import WebContents = Electron.WebContents;
 
 class EntryIPC extends ModuleEmitter {
@@ -24,6 +26,9 @@ class EntryIPC extends ModuleEmitter {
             ._getVoteOf()
             ._getVoteEndDate()
             ._getScore()
+            ._getEntriesCount()
+            ._getEntryOf()
+            ._getEntry()
             ._manager();
     }
 
@@ -32,24 +37,29 @@ class EntryIPC extends ModuleEmitter {
             channels.server[this.MODULE_NAME].create,
             (event: any, data: EntryCreateRequest) => {
                 let response: EntryCreateResponse;
-                contracts.instance
-                    .main
-                    .publishEntry(data.hash, data.tags, data.gas)
+                const entry = new IpfsEntry();
+                entry.create(data.content, data.tags)
+                    .then((hash) => {
+                        entries.records.set(`f-${hash}`, data);
+                        return contracts.instance
+                            .main
+                            .publishEntry(hash, data.tags, data.gas)
+                    })
                     .then((txData: any) => {
                         return userModule.auth.signData(txData, data.token);
                     })
                     .then((tx: string) => {
-                        response = mainResponse({tx});
+                        response = mainResponse({ tx });
                     })
                     .catch((err: Error) => {
-                       response = mainResponse({error: {message: err.message}});
+                        response = mainResponse({ error: { message: err.message } });
                     })
                     .finally(() => {
-                       this.fireEvent(
-                           channels.client[this.MODULE_NAME].create,
-                           response,
-                           event
-                       );
+                        this.fireEvent(
+                            channels.client[this.MODULE_NAME].create,
+                            response,
+                            event
+                        );
                     });
             });
         return this;
@@ -60,6 +70,8 @@ class EntryIPC extends ModuleEmitter {
             channels.server[this.MODULE_NAME].update,
             (event: any, data: EntryUpdateRequest) => {
                 let response: EntryUpdateResponse;
+                const entry = new IpfsEntry();
+                entry.load(data.hash);
                 contracts.instance
                     .main
                     .updateEntry(data.hash, data.address, data.gas)
@@ -67,10 +79,10 @@ class EntryIPC extends ModuleEmitter {
                         return userModule.auth.signData(txData, data.token);
                     })
                     .then((tx: string) => {
-                        response = mainResponse({tx});
+                        response = mainResponse({ tx });
                     })
                     .catch((err: Error) => {
-                        response = mainResponse({error: {message: err.message}});
+                        response = mainResponse({ error: { message: err.message, from: { address: data.address } } });
                     })
                     .finally(() => {
                         this.fireEvent(
@@ -95,10 +107,10 @@ class EntryIPC extends ModuleEmitter {
                         return userModule.auth.signData(txData, data.token);
                     })
                     .then((tx: string) => {
-                        response = mainResponse({tx});
+                        response = mainResponse({ tx });
                     })
                     .catch((err: Error) => {
-                        response = mainResponse({error: {message: err.message}});
+                        response = mainResponse({ error: { message: err.message, from: { address: data.address } } });
                     })
                     .finally(() => {
                         this.fireEvent(
@@ -123,10 +135,10 @@ class EntryIPC extends ModuleEmitter {
                         return userModule.auth.signData(txData, data.token);
                     })
                     .then((tx: string) => {
-                        response = mainResponse({tx});
+                        response = mainResponse({ tx });
                     })
                     .catch((err: Error) => {
-                        response = mainResponse({error: {message: err.message}});
+                        response = mainResponse({ error: { message: err.message, from: { address: data.address } } });
                     })
                     .finally(() => {
                         this.fireEvent(
@@ -148,10 +160,10 @@ class EntryIPC extends ModuleEmitter {
                     .main
                     .openedToVotes(data.address)
                     .then((status: boolean) => {
-                        response = mainResponse({address: data.address, voting: status});
+                        response = mainResponse({ address: data.address, voting: status });
                     })
                     .catch((err: Error) => {
-                        response = mainResponse({error: {message: err.message}});
+                        response = mainResponse({ error: { message: err.message, from: { address: data.address } } });
                     })
                     .finally(() => {
                         this.fireEvent(
@@ -173,10 +185,10 @@ class EntryIPC extends ModuleEmitter {
                     .main
                     .getVoteOf(data.profile, data.address)
                     .then((weight: number) => {
-                        response = mainResponse({profile: data.profile, weight});
+                        response = mainResponse({ profile: data.profile, weight });
                     })
                     .catch((err: Error) => {
-                        response = mainResponse({error: {message: err.message}});
+                        response = mainResponse({ error: { message: err.message, from: { address: data.address, profile: data.profile } } });
                     })
                     .finally(() => {
                         this.fireEvent(
@@ -198,10 +210,10 @@ class EntryIPC extends ModuleEmitter {
                     .main
                     .voteEndDate(data.address)
                     .then((endDate: number) => {
-                        response = mainResponse({address: data.address, date: endDate});
+                        response = mainResponse({ address: data.address, date: endDate });
                     })
                     .catch((err: Error) => {
-                        response = mainResponse({error: {message: err.message}});
+                        response = mainResponse({ error: { message: err.message, from: { address: data.address } } });
                     })
                     .finally(() => {
                         this.fireEvent(
@@ -223,14 +235,109 @@ class EntryIPC extends ModuleEmitter {
                     .main
                     .getScoreOfEntry(data.address)
                     .then((score: number) => {
-                        response = mainResponse({address: data.address, score});
+                        response = mainResponse({ address: data.address, score });
                     })
                     .catch((err: Error) => {
-                        response = mainResponse({error: {message: err.message}});
+                        response = mainResponse({
+                            error: {
+                                message: err.message,
+                                from: { address: data.address }
+                            }
+                        });
                     })
                     .finally(() => {
                         this.fireEvent(
                             channels.client[this.MODULE_NAME].getScore,
+                            response,
+                            event
+                        );
+                    });
+            });
+        return this;
+    }
+
+    private _getEntriesCount() {
+        this.registerListener(
+            channels.server[this.MODULE_NAME].getEntriesCount,
+            (event: any, data: EntriesCountRequest) => {
+                let response: EntriesCountResponse;
+                contracts.instance
+                    .main
+                    .getEntriesCount(data.profileAddress)
+                    .then((score: number) => {
+                        response = mainResponse({ profileAddress: data.profileAddress, score });
+                    })
+                    .catch((err: Error) => {
+                        response = mainResponse({
+                            error: {
+                                message: err.message,
+                                from: { profileAddress: data.profileAddress }
+                            }
+                        });
+                    })
+                    .finally(() => {
+                        this.fireEvent(
+                            channels.client[this.MODULE_NAME].getEntriesCount,
+                            response,
+                            event
+                        );
+                    });
+            });
+        return this;
+    }
+
+    private _getEntryOf() {
+        this.registerListener(
+            channels.server[this.MODULE_NAME].getEntryOf,
+            (event: any, data: EntriesOfRequest) => {
+                let response: EntriesOfResponse;
+                contracts.instance
+                    .main
+                    .getEntryOf(data.profileAddress, data.position)
+                    .then((content: any) => {
+                        response = mainResponse({ profileAddress: data.profileAddress, content });
+                    })
+                    .catch((err: Error) => {
+                        response = mainResponse({
+                            error: {
+                                message: err.message,
+                                from: { profileAddress: data.profileAddress }
+                            }
+                        });
+                    })
+                    .finally(() => {
+                        this.fireEvent(
+                            channels.client[this.MODULE_NAME].getEntryOf,
+                            response,
+                            event
+                        );
+                    });
+            });
+        return this;
+    }
+
+    private _getEntry() {
+        this.registerListener(
+            channels.server[this.MODULE_NAME].getEntry,
+            (event: any, data: EntryGetRequest) => {
+                let response: EntryGetResponse;
+                contracts.instance
+                    .main
+                    .getEntry(data.entryAddress)
+                    .then((content: any) => {
+                        response = mainResponse({ entryAddress: data.entryAddress, content });
+                    })
+                    .catch((err: Error) => {
+                        response = mainResponse({
+                            error: {
+                                message: err.message,
+                                from: { entryAddress: data.entryAddress }
+                            }
+                        });
+                    })
+                    .finally(() => {
+                        this.fireEvent(
+                            channels.client[this.MODULE_NAME].getEntry,
                             response,
                             event
                         );

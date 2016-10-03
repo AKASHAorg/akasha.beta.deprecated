@@ -9,6 +9,7 @@ export default class Tags extends BaseContract {
         this.contract.exists.callAsync = Promise.promisify(this.contract.exists.call);
         this.contract.getTagAt.callAsync = Promise.promisify(this.contract.getTagAt.call);
         this.contract.getTagId.callAsync = Promise.promisify(this.contract.getTagId.call);
+        this.contract._length.callAsync = Promise.promisify(this.contract._length.call);
     }
 
     /**
@@ -32,6 +33,10 @@ export default class Tags extends BaseContract {
         return this.contract
             .getTagAt
             .callAsync(id);
+    }
+
+    public getTagsCount() {
+        return this.contract._length.callAsync();
     }
 
     /**

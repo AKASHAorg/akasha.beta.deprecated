@@ -33,7 +33,12 @@ class RegistryIPC extends ModuleEmitter_1.default {
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].profileExists, response, event);
             })
                 .catch((error) => {
-                const response = responses_1.mainResponse({ error: { message: error.message } });
+                const response = responses_1.mainResponse({
+                    error: {
+                        message: error.message,
+                        from: { username: data.username }
+                    }
+                });
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].profileExists, response, event);
             });
         });
@@ -69,7 +74,12 @@ class RegistryIPC extends ModuleEmitter_1.default {
                 response = responses_1.mainResponse({ profileAddress: addr });
             })
                 .catch((error) => {
-                response = responses_1.mainResponse({ error: { message: error.message } });
+                response = responses_1.mainResponse({
+                    error: {
+                        message: error.message,
+                        from: { ethAddress: data.ethAddress }
+                    }
+                });
             })
                 .finally(() => {
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].getByAddress, response, event);
@@ -95,7 +105,12 @@ class RegistryIPC extends ModuleEmitter_1.default {
                 response = responses_1.mainResponse({ tx });
             })
                 .catch((error) => {
-                response = responses_1.mainResponse({ error: { message: error.message } });
+                response = responses_1.mainResponse({
+                    error: {
+                        message: error.message,
+                        from: { address: data.username }
+                    }
+                });
             })
                 .finally(() => {
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].registerProfile, response, event);
