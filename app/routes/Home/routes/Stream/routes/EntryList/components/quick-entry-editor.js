@@ -58,7 +58,7 @@ class QuickEntryEditor extends React.Component {
                   src={avatarImage}
                   size={40}
                 />
-                  
+
               </div>
               <div className="col-xs-11" style={{ cursor: 'text' }} onClick={this._handleEditClick}>
                 <p

@@ -83,19 +83,19 @@ class EntryService extends BaseService {
         //         return entriesDB.drafts.sortBy('status.created_at').toArray();
         //     }
         // });
-    createSavedEntry = (userName, entry) =>
+    createSavedEntry = (username, entry) =>
         entriesDB.transaction('rw', entriesDB.savedEntries, () => {
-            entriesDB.savedEntries.add({ userName, ...entry.toJS() }).then(entryId => {
+            entriesDB.savedEntries.add({ username, ...entry.toJS() }).then(entryId => {
                 dbg('new savedEntry created with id', entryId);
                 return entry;
             });
         });
 
-    getSavedEntries = (userName) =>
+    getSavedEntries = (username) =>
         entriesDB.transaction('r', entriesDB.savedEntries, () => {
-            dbg('getting saved entries for username ', userName);
-            return entriesDB.savedEntries.where('userName')
-                                         .equals(userName)
+            dbg('getting saved entries for username ', username);
+            return entriesDB.savedEntries.where('username')
+                                         .equals(username)
                                          .toArray();
         });
 

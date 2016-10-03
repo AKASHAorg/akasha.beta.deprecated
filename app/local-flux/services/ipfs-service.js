@@ -18,45 +18,26 @@ class IpfsService extends BaseService {
      * @param {object} options
      * @return promise
      */
-    start = (options) => {
+    start = ({ options = {}, onError = () => {}, onSuccess }) => {
         const serverChannel = Channel.server.ipfs.startService;
         const clientChannel = Channel.client.ipfs.startService;
-        if (this._listeners.get(clientChannel)) {
-            return Promise.resolve();
-        }
-        return new Promise((resolve, reject) => {
-            const listenerCb = (ev, res) => {
-                if (res.error) {
-                    return reject(res.error);
-                }
-                return resolve(res.data);
-            };
-            this.registerListener(clientChannel, listenerCb, () =>
-                ipcRenderer.send(serverChannel, options)
-            );
+        const ipfsOptions = {};
+        Object.keys(options).forEach((key) => {
+            if (key !== 'name' && options[key] !== '') {
+                ipfsOptions[key] = options[key];
+            }
         });
+        this.registerListener(clientChannel, this.createListener(onError, onSuccess));
+        ipcRenderer.send(serverChannel, ipfsOptions);
     }
     /**
      * Stop ipfs service
      */
-    stop = () => {
+    stop = ({ options = {}, onError = () => {}, onSuccess }) => {
         const serverChannel = Channel.server.ipfs.stopService;
         const clientChannel = Channel.client.ipfs.stopService;
-        if (this._listeners.get(clientChannel)) {
-            return Promise.resolve();
-        }
-        return new Promise((resolve, reject) => {
-            const listenerCb = (ev, res) => {
-                if (res.error) {
-                    return reject(res.error);
-                }
-                return resolve(res.data);
-            };
-
-            this.registerListener(clientChannel, listenerCb, () =>
-                ipcRenderer.send(serverChannel, {})
-            );
-        });
+        this.registerListener(clientChannel, this.createListener(onError, onSuccess));
+        ipcRenderer.send(serverChannel, options);
     }
     /**
      * get ipfs status
@@ -68,39 +49,17 @@ class IpfsService extends BaseService {
      *      stopped?: boolean;
      * }
      */
-    getStatus = () => {
+    getStatus = ({ options = {}, onError = () => {}, onSuccess }) => {
         const serverChannel = Channel.server.ipfs.status;
         const clientChannel = Channel.client.ipfs.status;
-        if (this._listeners.get(clientChannel)) {
-            return Promise.resolve();
-        }
-        return new Promise((resolve, reject) => {
-            const listenerCb = (ev, res) => {
-                if (res.error) {
-                    return reject(res.error);
-                }
-                return resolve(res.data);
-            };
-            this.registerListener(clientChannel, listenerCb, () =>
-                ipcRenderer.send(serverChannel, {})
-            );
-        });
+        this.registerListener(clientChannel, this.createListener(onError, onSuccess));
+        ipcRenderer.send(serverChannel, options);
     }
-    resolve = (ipfsHash) => {
+    resolve = ({ options = {}, onError = () => {}, onSuccess }) => {
         const serverChannel = Channel.server.ipfs.resolve;
         const clientChannel = Channel.client.ipfs.resolve;
-        if (this._listeners.get(clientChannel)) {
-            return Promise.resolve();
-        }
-        return new Promise((resolve, reject) => {
-            const listenerCb = (ev, res) => {
-                if (res.error) return reject(res.error);
-                return resolve(res.data);
-            };
-            this.registerListener(clientChannel, listenerCb, () =>
-                ipcRenderer.send(serverChannel, { hash: ipfsHash })
-            );
-        });
+        this.registerListener(clientChannel, this.createListener(onError, onSuccess));
+        ipcRenderer.send(serverChannel, options);
     }
 }
 

@@ -21,6 +21,7 @@ class RegistryService extends BaseService {
      * create a new profile
      * Request:
      * @param <object> {
+     *      token: String;
      *      username: string;
      *      ipfs: IpfsProfileCreateRequest;
      *      gas?: number;
@@ -28,23 +29,17 @@ class RegistryService extends BaseService {
      * Response:
      * @param data = { tx: string }
      */
-    registerProfile = ({ username, ipfs, gas = 90000 }) => {
+    registerProfile = ({ token, username, ipfs, gas = 1000000, onError, onSuccess }) => {
         const serverChannel = Channel.server.registry.registerProfile;
         const clientChannel = Channel.client.registry.registerProfile;
-        if (this._listeners.has(clientChannel)) return Promise.resolve();
-        return new Promise((resolve, reject) => {
-            const listenerCb = (ev, res) => {
-                if (res.error) return reject(res.error);
-                return resolve(res.data);
-            };
-            return this.openChannel({
-                serverManager: this.serverManager,
-                clientManager: this.clientManager,
-                serverChannel,
-                clientChannel,
-                listenerCb
-            }, () => ipcRenderer.send(serverChannel, { username, ipfs, gas }));
-        });
+
+        this.openChannel({
+            serverManager: this.serverManager,
+            clientManager: this.clientManager,
+            serverChannel,
+            clientChannel,
+            listenerCb: this.createListener(onError, onSuccess)
+        }, () => ipcRenderer.send(serverChannel, { token, username, ipfs, gas }));
     };
     /**
      * Get eth address of the logged profile
@@ -93,38 +88,51 @@ class RegistryService extends BaseService {
      * @param {object} profileData - Data of the profile created
      * @param {object} currentStatus - Current status of the profile creation process
      */
-    createTempProfile = (profileData, currentStatus) =>
+    createTempProfile = ({ profileData, currentStatus, onSuccess, onError }) =>
         profileDB.transaction('rw', profileDB.tempProfile, () => {
-            dbg('saveTempProfile(add)', profileData);
+            dbg('createTempProfile', { ...profileData, currentStatus });
             return profileDB.tempProfile.add({
                 ...profileData,
                 currentStatus
             });
-        });
+        }).then((data) => {
+            dbg('temp profile created!', data);
+            onSuccess(data);
+        }).catch(reason => onError(reason));
     /**
      * Update temporary profile in indexedDB
-     * @param {string} userName
+     * @param {string} username
      * @param {object} changes - Contains data of the updated profile
      * @return promise
      */
-    updateTempProfile = (userName, changes) =>
+    updateTempProfile = ({ changes, onSuccess, onError }) =>
         profileDB.transaction('rw', profileDB.tempProfile, () => {
-            dbg('updateTempProfile(update)', userName, { ...changes });
-            return profileDB.tempProfile.update(userName, { ...changes });
-        });
+            return profileDB.tempProfile.toArray().then((tmpProfile) => {
+                dbg('updating', tmpProfile, changes);
+                return profileDB.tempProfile.update(tmpProfile[0].username, changes);
+            }).then((data) => {
+                dbg('updated temp profile', data);
+                onSuccess(data);
+            });
+        })
+        .catch(reason => onError(reason));
     /**
      * Delete temporary profile. Called after profile was successfully created
      */
-    deleteTempProfile = () =>
+    deleteTempProfile = ({ onSuccess, onError }) =>
         profileDB.tempProfile.clear();
     /**
      * Get all available temporary profiles
      * @return promise
      */
-    getTempProfile = () =>
-        profileDB.transaction('r', profileDB.tempProfile, () =>
+    getTempProfile = ({ onError = () => {}, onSuccess }) => {
+        profileDB.transaction('rw', profileDB.tempProfile, () =>
             profileDB.tempProfile.toArray()
-        );
+        ).then((results) => {
+            dbg('temp profiles: ', results);
+            onSuccess(results[0]);
+        }).catch(reason => onError(reason));
+    }
 }
 
-export {RegistryService}
+export { RegistryService };
