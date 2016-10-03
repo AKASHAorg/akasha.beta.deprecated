@@ -5,7 +5,7 @@ const ipfs_connector_1 = require('@akashaproject/ipfs-connector');
 const path_1 = require('path');
 const index_1 = require('./lib/ipc/index');
 const menu_1 = require('./menu');
-function bootstrapApp () {
+function bootstrapApp() {
     let mainWindow = null;
     const viewHtml = path_1.resolve(__dirname, '../app');
     electron_1.crashReporter.start({
