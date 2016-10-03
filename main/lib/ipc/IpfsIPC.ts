@@ -187,7 +187,7 @@ class IpfsIPC extends IpfsEmitter {
                         response = ipfsResponse({set: true});
                     })
                     .catch((err: Error) => {
-                        response = ipfsResponse({}, {message: err.message});
+                        response = ipfsResponse({}, {message: err.message, from: {ports: data.ports}});
                     })
                     .finally(() => {
                         this.fireEvent(

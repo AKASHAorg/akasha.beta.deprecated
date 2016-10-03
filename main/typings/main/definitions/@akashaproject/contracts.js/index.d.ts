@@ -15,7 +15,6 @@ declare module 'ethereumjs-util' {
     export function unpad(data: Buffer | string): Buffer | string
 }
 
-declare var exported: any;
-declare module 'ethereumjs-testrpc' {
-    export = exported;
-}
+
+declare module 'ethereumjs-testrpc'
+

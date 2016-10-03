@@ -21,6 +21,7 @@ class TagsIPC extends ModuleEmitter_1.default {
             ._isSubscribed()
             ._subscribe()
             ._unsubscribe()
+            ._getTagsFrom()
             ._manager();
     }
     _create() {
@@ -35,7 +36,12 @@ class TagsIPC extends ModuleEmitter_1.default {
                 response = responses_1.mainResponse({ tx });
             })
                 .catch((err) => {
-                response = responses_1.mainResponse({ error: { message: err.message } });
+                response = responses_1.mainResponse({
+                    error: {
+                        message: err.message,
+                        from: { tagName: data.tagName }
+                    }
+                });
             })
                 .finally(() => {
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].create, response, event);
@@ -53,7 +59,12 @@ class TagsIPC extends ModuleEmitter_1.default {
                 response = responses_1.mainResponse({ exists: found });
             })
                 .catch((err) => {
-                response = responses_1.mainResponse({ error: { message: err.message } });
+                response = responses_1.mainResponse({
+                    error: {
+                        message: err.message,
+                        from: { tagName: data.tagName }
+                    }
+                });
             })
                 .finally(() => {
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].exists, response, event);
@@ -71,7 +82,12 @@ class TagsIPC extends ModuleEmitter_1.default {
                 response = responses_1.mainResponse({ tagName });
             })
                 .catch((err) => {
-                response = responses_1.mainResponse({ error: { message: err.message } });
+                response = responses_1.mainResponse({
+                    error: {
+                        message: err.message,
+                        from: { tagId: data.tagId }
+                    }
+                });
             })
                 .finally(() => {
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].getTagAt, response, event);
@@ -89,7 +105,12 @@ class TagsIPC extends ModuleEmitter_1.default {
                 response = responses_1.mainResponse({ tagId });
             })
                 .catch((err) => {
-                response = responses_1.mainResponse({ error: { message: err.message } });
+                response = responses_1.mainResponse({
+                    error: {
+                        message: err.message,
+                        from: { tagName: data.tagName }
+                    }
+                });
             })
                 .finally(() => {
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].getTagId, response, event);
@@ -110,7 +131,12 @@ class TagsIPC extends ModuleEmitter_1.default {
                 response = responses_1.mainResponse({ tx });
             })
                 .catch((err) => {
-                response = responses_1.mainResponse({ error: { message: err.message } });
+                response = responses_1.mainResponse({
+                    error: {
+                        message: err.message,
+                        from: { tagName: data.tagName }
+                    }
+                });
             })
                 .finally(() => {
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].subscribe, response, event);
@@ -131,7 +157,12 @@ class TagsIPC extends ModuleEmitter_1.default {
                 response = responses_1.mainResponse({ tx });
             })
                 .catch((err) => {
-                response = responses_1.mainResponse({ error: { message: err.message } });
+                response = responses_1.mainResponse({
+                    error: {
+                        message: err.message,
+                        from: { tagName: data.tagName }
+                    }
+                });
             })
                 .finally(() => {
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].unsubscribe, response, event);
@@ -149,7 +180,12 @@ class TagsIPC extends ModuleEmitter_1.default {
                 response = responses_1.mainResponse({ position });
             })
                 .catch((err) => {
-                response = responses_1.mainResponse({ error: { message: err.message } });
+                response = responses_1.mainResponse({
+                    error: {
+                        message: err.message,
+                        from: { tagId: data.tagId, address: data.address }
+                    }
+                });
             })
                 .finally(() => {
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].getSubPosition, response, event);
@@ -167,10 +203,44 @@ class TagsIPC extends ModuleEmitter_1.default {
                 response = responses_1.mainResponse({ subscribed });
             })
                 .catch((err) => {
-                response = responses_1.mainResponse({ error: { message: err.message } });
+                response = responses_1.mainResponse({
+                    error: {
+                        message: err.message,
+                        from: { address: data.address, tagId: data.tagId }
+                    }
+                });
             })
                 .finally(() => {
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].isSubscribed, response, event);
+            });
+        });
+        return this;
+    }
+    _getTagsFrom() {
+        this.registerListener(channels_1.default.server[this.MODULE_NAME].getTagsFrom, (event, data) => {
+            let response;
+            index_1.constructed.instance
+                .tags
+                .getTagsCount()
+                .then((count) => {
+                const tags = [];
+                const start = (data.from) ? data.from : 0;
+                const stop = (data.to) ? (data.to < count) ? data.to : count : count;
+                for (let i = start; i < stop; i++) {
+                    tags.push(index_1.constructed.instance
+                        .tags
+                        .getTagAt(i));
+                }
+                return Promise.all(tags);
+            })
+                .then((tags) => {
+                response = responses_1.mainResponse({ tags, from: data.from, to: data.to });
+            })
+                .catch((err) => {
+                response = responses_1.mainResponse({ error: { message: err.message, from: data.from } });
+            })
+                .finally(() => {
+                this.fireEvent(channels_1.default.client[this.MODULE_NAME].getTagsFrom, response, event);
             });
         });
         return this;
