@@ -3,7 +3,7 @@ const AbstractEmitter_1 = require('./AbstractEmitter');
 const channels_1 = require('../../channels');
 const responses_1 = require('./responses');
 class ModuleEmitter extends AbstractEmitter_1.AbstractEmitter {
-    _manager () {
+    _manager() {
         this.registerListener(channels_1.default.server[this.MODULE_NAME].manager, (event, data) => {
             if (data.listen) {
                 if (this.getListenersCount(data.channel) >= 1) {
@@ -19,8 +19,7 @@ class ModuleEmitter extends AbstractEmitter_1.AbstractEmitter {
         this.listenEvents(channels_1.default.server[this.MODULE_NAME].manager);
         this.DEFAULT_MANAGED.forEach((action) => this.listenEvents(channels_1.default.server[this.MODULE_NAME][action]));
     }
-
-    attachEmitters () {
+    attachEmitters() {
         return true;
     }
 }
