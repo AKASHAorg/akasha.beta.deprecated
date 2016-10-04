@@ -226,7 +226,10 @@ interface EmitMinedRequest {
 
 interface EmitMinedResponse extends MainResponse {
     data: {
-        mined?: string
+        mined?: string,
+        blockNumber?: number,
+        cumulativeGasUsed?: number,
+        hasEvents?: boolean, // akasha contract events
         watching: boolean;
     };
 }
@@ -271,6 +274,18 @@ interface ProfileCreateResponse extends MainResponse {
     data: {
         tx: string;
     };
+}
+
+interface ProfileErrorEventRequest {
+    fromBlock: string,
+    toBlock: string,
+    address: string
+}
+
+interface ProfileErrorEventResponse {
+    data: {
+        events: any[]
+    }
 }
 /////////////////////////  </ Registry > \\\\\\\\\\\\\\\\\\\\\\\\
 

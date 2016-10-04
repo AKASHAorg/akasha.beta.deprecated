@@ -6,7 +6,13 @@ import { resolve } from 'path';
 import { initModules } from './lib/ipc/index';
 import { initMenu } from './menu';
 
-
+const stopServices = () => {
+    GethConnector.getInstance().stop();
+    IpfsConnector.getInstance().stop();
+    setTimeout(() => {
+        process.exit(0);
+    }, 1000);
+};
 export function bootstrapApp() {
     let mainWindow = null;
     const viewHtml = resolve(__dirname, '../app');
@@ -61,7 +67,7 @@ export function bootstrapApp() {
             modules.flushAll();
             GethConnector.getInstance().stop();
             IpfsConnector.getInstance().stop();
-            setTimeout(() => app.quit(), 300);
+            setTimeout(() => app.quit(), 1000);
         });
         initMenu(mainWindow);
         mainWindow.webContents.on('did-finish-load', () => {
@@ -75,6 +81,7 @@ export function bootstrapApp() {
         });
 
         mainWindow.webContents.on('crashed', () => {
+            stopServices();
             modules.logger.getLogger('APP').warn('APP CRASHED');
         });
 
@@ -91,9 +98,10 @@ export function bootstrapApp() {
             modules.logger.getLogger('APP').warn('APP is unresponsive');
         });
         process.on('uncaughtException', (err: Error) => {
-            console.log(err);
             modules.logger.getLogger('APP').error(`${err.message} ${err.stack}`);
         });
+        process.on('SIGINT', stopServices);
+        process.on('SIGTERM', stopServices);
     });
 }
 
