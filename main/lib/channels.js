@@ -19,7 +19,8 @@ const channels = {
     ipfs: ['startService', 'stopService', 'status', 'resolve', 'getConfig', 'setPorts', 'getPorts'],
     profile: ['getProfileData', 'getMyBalance', 'getIpfs', 'unregister', 'follow', 'getFollowersCount',
         'getFollowingCount', 'getFollowers', 'getFollowing'],
-    registry: ['profileExists', 'registerProfile', 'getCurrentProfile', 'getByAddress'],
+    registry: ['profileExists', 'registerProfile', 'getCurrentProfile', 'getByAddress', 'getErrorEvent',
+        'getRegisteredEvent'],
     tx: ['addToQueue', 'emitMined'],
 };
 const processes = ['server', 'client'];

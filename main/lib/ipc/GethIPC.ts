@@ -25,10 +25,11 @@ class GethIPC extends GethEmitter {
         );
         this.webContents = webContents;
         const datadir = GethConnector.getDefaultDatadir();
-        GethConnector.getInstance().setOptions({
-            datadir: join(datadir, 'akasha'),
-            networkid: 512180
-        });
+            GethConnector.getInstance().setOptions({
+                datadir: join(datadir, 'akasha'),
+                ipcpath: join(datadir, 'akasha', 'geth.ipc'),
+                networkid: 512180
+            });
         // register listeners
         this._start()
             ._restart()
@@ -180,7 +181,7 @@ class GethIPC extends GethEmitter {
             channels.server.geth.logs,
             (event: any) => {
                 GethConnector.getInstance().logger.query(
-                    { start: 0, limit: 20 },
+                    { start: 0, limit: 20, order:  'desc'},
                     (err: Error, info: any) => {
                         let response: MainResponse;
                         if (err) {

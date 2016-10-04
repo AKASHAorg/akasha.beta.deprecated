@@ -75,6 +75,16 @@ class Registry extends BaseContract_1.default {
             });
         });
     }
+    getError(filter) {
+        const Error = this.contract.Error(filter);
+        Error.getAsync = Promise.promisify(Error.get);
+        return Error.getAsync();
+    }
+    getRegistered(index, filter) {
+        const Registered = this.contract.Register(index, filter);
+        Registered.getAsync = Promise.promisify(Registered.get);
+        return Registered.getAsync();
+    }
 }
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Registry;

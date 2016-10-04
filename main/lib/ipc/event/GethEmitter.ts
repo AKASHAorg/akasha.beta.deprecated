@@ -51,7 +51,7 @@ abstract class GethEmitter extends AbstractEmitter {
             }
         );
 
-        GethConnector.getInstance().once(
+        GethConnector.getInstance().on(
             CONSTANTS.IPC_CONNECTED, () => {
                 this.fireEvent(channels.client.geth.startService, gethResponse({}));
                 // inject web3 instance
