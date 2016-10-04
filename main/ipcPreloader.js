@@ -35,7 +35,7 @@ class ApiListener extends GenericApi {
     removeAllListeners() {
         electron_1.ipcRenderer.removeAllListeners(this.channel);
     }
-    get listnerCount() {
+    get listenerCount() {
         return electron_1.ipcRenderer.listenerCount(this.channel);
     }
 }

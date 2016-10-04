@@ -97,7 +97,7 @@ export default class Main extends BaseContract {
      * @returns {any}
      */
     public follow(address: string, gas?: string) {
-        return this.extractData('follow', address, {gas});
+        return this.extractData('follow', address, { gas });
     }
 
     /**
@@ -105,7 +105,7 @@ export default class Main extends BaseContract {
      * @param address
      * @returns {Bluebird<T>|any}
      */
-    public getFollowingCount(address: string){
+    public getFollowingCount(address: string) {
         return this.contract
             .getFollowingCount
             .callAsync(address)
@@ -116,13 +116,13 @@ export default class Main extends BaseContract {
      * @param address
      * @returns {any}
      */
-    public getEntriesCount(address: string){
+    public getEntriesCount(address: string) {
         return this.contract
             .getEntriesCount
             .callAsync(address);
     }
 
-    public getEntryOf(address: string, position: number){
+    public getEntryOf(address: string, position: number) {
         return this.contract
             .getEntryOf
             .callAsync(address, position);
@@ -134,7 +134,7 @@ export default class Main extends BaseContract {
      * @param address
      * @returns {Bluebird<T>|any}
      */
-    public getFollowersCount(address: string){
+    public getFollowersCount(address: string) {
         return this.contract
             .getFollowersCount
             .callAsync(address)
@@ -157,7 +157,7 @@ export default class Main extends BaseContract {
      * @param position
      * @returns {Bluebird<T>|any}
      */
-    public getFollowingAt(address: string, position: number){
+    public getFollowingAt(address: string, position: number) {
         return this.contract
             .getFollowingAt
             .callAsync(address, position);
@@ -169,7 +169,7 @@ export default class Main extends BaseContract {
      * @param position
      * @returns {any}
      */
-    public getFollowerAt(address: string, position: number){
+    public getFollowerAt(address: string, position: number) {
         return this.contract
             .getFollowerAt
             .callAsync(address, position);
@@ -213,9 +213,9 @@ export default class Main extends BaseContract {
             return this.gethInstance.web3.fromUtf8(v);
         });
         const tagsTr = tags.map((v) => {
-           return this.gethInstance.web3.fromUtf8(v);
+            return this.gethInstance.web3.fromUtf8(v);
         });
-        return this.extractData('publishEntry', hashTr, tagsTr, {gas});
+        return this.extractData('publishEntry', hashTr, tagsTr, { gas });
     }
 
 
@@ -230,7 +230,7 @@ export default class Main extends BaseContract {
         const hashTr = hash.map((v) => {
             return this.gethInstance.web3.fromUtf8(v);
         });
-        return this.extractData('updateEntry', hashTr, entryAddress, {gas});
+        return this.extractData('updateEntry', hashTr, entryAddress, { gas });
     }
 
     /**
@@ -243,7 +243,7 @@ export default class Main extends BaseContract {
      */
     public upVoteEntry(entryAddress: string, weight: number, gas?: number, value?: number) {
         const weightTr = this.gethInstance.web3.fromDecimal(weight);
-        return this.extractData('upVoteEntry', entryAddress, weightTr, {gas, value});
+        return this.extractData('upVoteEntry', entryAddress, weightTr, { gas, value });
     }
 
     /**
@@ -256,7 +256,7 @@ export default class Main extends BaseContract {
      */
     public downVoteEntry(entryAddress: string, weight: number, gas?: number, value?: number) {
         const weightTr = this.gethInstance.web3.fromDecimal(weight);
-        return this.extractData('downVoteEntry', entryAddress, weightTr, {gas, value});
+        return this.extractData('downVoteEntry', entryAddress, weightTr, { gas, value });
     }
 
     /**
@@ -270,7 +270,7 @@ export default class Main extends BaseContract {
         const hashTr = hash.map((v) => {
             return this.gethInstance.web3.fromUtf8(v);
         });
-        return this.extractData('saveComment', entryAddress, hashTr, {gas});
+        return this.extractData('saveComment', entryAddress, hashTr, { gas });
     }
 
     /**
@@ -286,7 +286,7 @@ export default class Main extends BaseContract {
             return this.gethInstance.web3.fromUtf8(v);
         });
         const commentIdTr = this.gethInstance.web3.fromDecimal(commentId);
-        return this.extractData('updateComment', entryAddress, commentIdTr, hashTr, {gas});
+        return this.extractData('updateComment', entryAddress, commentIdTr, hashTr, { gas });
     }
 
     /**
@@ -301,7 +301,10 @@ export default class Main extends BaseContract {
     public upVoteComment(entryAddress: string, weigth: number, commentId: number, gas?: number, value?: number) {
         const weigthTr = this.gethInstance.web3.fromDecimal(weigth);
         const commentIdTr = this.gethInstance.web3.fromDecimal(commentId);
-        return this.extractData('upVoteComment', entryAddress, weigthTr, commentIdTr, {gas, value});
+        return this.extractData('upVoteComment', entryAddress, weigthTr, commentIdTr, {
+            gas,
+            value
+        });
     }
 
     /**
@@ -316,6 +319,9 @@ export default class Main extends BaseContract {
     public downVoteComment(entryAddress: string, weigth: number, commentId: number, gas?: number, value?: number) {
         const weigthTr = this.gethInstance.web3.fromDecimal(weigth);
         const commentIdTr = this.gethInstance.web3.fromDecimal(commentId);
-        return this.extractData('downVoteCommentAsync', entryAddress, weigthTr, commentIdTr, {gas, value});
+        return this.extractData('downVoteCommentAsync', entryAddress, weigthTr, commentIdTr, {
+            gas,
+            value
+        });
     }
 }

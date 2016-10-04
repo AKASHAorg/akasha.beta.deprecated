@@ -18,6 +18,8 @@ class CommentsIPC extends ModuleEmitter_1.default {
             ._upvote()
             ._downvote()
             ._getScore()
+            ._getCount()
+            ._getCommentAt()
             ._manager();
     }
     _publish() {
@@ -118,6 +120,59 @@ class CommentsIPC extends ModuleEmitter_1.default {
             })
                 .finally(() => {
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].getScore, response, event);
+            });
+        });
+        return this;
+    }
+    _getCount() {
+        this.registerListener(channels_1.default.server[this.MODULE_NAME].getCount, (event, data) => {
+            let response;
+            index_1.constructed.instance
+                .main
+                .getCommentsCount(data.address)
+                .then((count) => {
+                response = responses_1.mainResponse({ count, address: data.address });
+            })
+                .catch((err) => {
+                response = responses_1.mainResponse({
+                    error: {
+                        message: err.message,
+                        address: data.address
+                    }
+                });
+            })
+                .finally(() => {
+                this.fireEvent(channels_1.default.client[this.MODULE_NAME].getCount, response, event);
+            });
+        });
+        return this;
+    }
+    _getCommentAt() {
+        this.registerListener(channels_1.default.server[this.MODULE_NAME].getCommentAt, (event, data) => {
+            let response;
+            index_1.constructed.instance
+                .main
+                .getCommentAt(data.address, data.id)
+                .then((mediaObj) => {
+                response = responses_1.mainResponse({
+                    hash: mediaObj._hash,
+                    owner: mediaObj._owner,
+                    date: mediaObj._date,
+                    address: data.address,
+                    id: data.id
+                });
+            })
+                .catch((err) => {
+                response = responses_1.mainResponse({
+                    error: {
+                        message: err.message,
+                        address: data.address,
+                        id: data.id
+                    }
+                });
+            })
+                .finally(() => {
+                this.fireEvent(channels_1.default.client[this.MODULE_NAME].getCommentAt, response, event);
             });
         });
         return this;

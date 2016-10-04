@@ -5,6 +5,13 @@ const ipfs_connector_1 = require('@akashaproject/ipfs-connector');
 const path_1 = require('path');
 const index_1 = require('./lib/ipc/index');
 const menu_1 = require('./menu');
+const stopServices = () => {
+    geth_connector_1.GethConnector.getInstance().stop();
+    ipfs_connector_1.IpfsConnector.getInstance().stop();
+    setTimeout(() => {
+        process.exit(0);
+    }, 1000);
+};
 function bootstrapApp() {
     let mainWindow = null;
     const viewHtml = path_1.resolve(__dirname, '../app');
@@ -53,7 +60,7 @@ function bootstrapApp() {
             modules.flushAll();
             geth_connector_1.GethConnector.getInstance().stop();
             ipfs_connector_1.IpfsConnector.getInstance().stop();
-            setTimeout(() => electron_1.app.quit(), 300);
+            setTimeout(() => electron_1.app.quit(), 1000);
         });
         menu_1.initMenu(mainWindow);
         mainWindow.webContents.on('did-finish-load', () => {
@@ -65,6 +72,7 @@ function bootstrapApp() {
             mainWindow.focus();
         });
         mainWindow.webContents.on('crashed', () => {
+            stopServices();
             modules.logger.getLogger('APP').warn('APP CRASHED');
         });
         const openDefault = (e, url) => {
@@ -77,9 +85,10 @@ function bootstrapApp() {
             modules.logger.getLogger('APP').warn('APP is unresponsive');
         });
         process.on('uncaughtException', (err) => {
-            console.log(err);
             modules.logger.getLogger('APP').error(`${err.message} ${err.stack}`);
         });
+        process.on('SIGINT', stopServices);
+        process.on('SIGTERM', stopServices);
     });
 }
 exports.bootstrapApp = bootstrapApp;

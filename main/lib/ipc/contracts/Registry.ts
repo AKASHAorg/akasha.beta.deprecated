@@ -112,4 +112,26 @@ export default class Registry extends BaseContract {
             });
     }
 
+    /**
+     *
+     * @param filter
+     * @returns {Bluebird<T>|any}
+     */
+    getError(filter: {fromBlock: string, toBlock: string, address: string}) {
+        const Error = this.contract.Error(filter);
+        Error.getAsync = Promise.promisify(Error.get);
+        return Error.getAsync();
+    }
+
+    /**
+     *
+     * @param index
+     * @param filter
+     */
+    getRegistered(index: {}, filter: {fromBlock: string, toBlock?: string, address?: string}) {
+        const Registered = this.contract.Register(index, filter);
+        Registered.getAsync = Promise.promisify(Registered.get);
+        return Registered.getAsync();
+    }
+
 }

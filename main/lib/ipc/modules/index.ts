@@ -1,11 +1,15 @@
-import {module as userModule} from './auth/index';
-import {module as profileModule} from './profile/index';
+import { module as userModule } from './auth/index';
+import { module as profileModule } from './profile/index';
 
 export function initModules() {
-    userModule.init();
+    if(!userModule.auth){
+        userModule.init();
+    }
 }
 
 export function initIpfsModules() {
-    profileModule.init();
+    if(!profileModule.helpers){
+        profileModule.init();
+    }
 }
 

@@ -25,7 +25,7 @@ export function initModules() {
     ];
     return {
         initListeners: (webContents: WebContents) => {
-            logger.registerLogger('akasha', { maxsize: 50 * 1024});
+            logger.registerLogger('akasha', { maxsize: 50 * 1024 });
             ipcChannels.forEach((obj: any) => {
                 obj.initListeners(webContents);
             });

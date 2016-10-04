@@ -14,12 +14,13 @@ const channels = {
         'unsubscribe', 'getSubPosition', 'getTagsFrom'],
     entry: ['publish', 'update', 'upvote', 'downvote', 'isOpenedToVotes', 'getVoteOf',
         'getVoteEndDate', 'getScore', 'getEntriesCount', 'getEntryOf', 'getEntry'],
-    comments: ['publish', 'update', 'upvote', 'downvote', 'getScore'],
+    comments: ['publish', 'update', 'upvote', 'downvote', 'getScore', 'getCount', 'getCommentAt'],
     geth: ['options', 'startService', 'stopService', 'restartService', 'syncStatus', 'logs', 'status'],
     ipfs: ['startService', 'stopService', 'status', 'resolve', 'getConfig', 'setPorts', 'getPorts'],
     profile: ['getProfileData', 'getMyBalance', 'getIpfs', 'unregister', 'follow', 'getFollowersCount',
         'getFollowingCount', 'getFollowers', 'getFollowing'],
-    registry: ['profileExists', 'registerProfile', 'getCurrentProfile', 'getByAddress'],
+    registry: ['profileExists', 'registerProfile', 'getCurrentProfile', 'getByAddress', 'getErrorEvent',
+        'getRegisteredEvent'],
     tx: ['addToQueue', 'emitMined'],
 };
 const processes = ['server', 'client'];

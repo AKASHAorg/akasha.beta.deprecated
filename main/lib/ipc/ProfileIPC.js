@@ -43,7 +43,12 @@ class ProfileIPC extends ModuleEmitter_1.default {
                 response = responses_1.mainResponse(constructed);
             })
                 .catch((err) => {
-                response = responses_1.mainResponse({ error: { message: err.message, from: data.profile } });
+                response = responses_1.mainResponse({
+                    error: {
+                        message: err.message,
+                        from: data.profile
+                    }
+                });
             })
                 .finally(() => {
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].getProfileData, response, event);
@@ -182,9 +187,19 @@ class ProfileIPC extends ModuleEmitter_1.default {
                 }
                 return Promise.all(followers);
             }).then((followers) => {
-                response = responses_1.mainResponse({ followers, from: data.from, to: data.to, profileAddress: data.profileAddress });
+                response = responses_1.mainResponse({
+                    followers,
+                    from: data.from,
+                    to: data.to,
+                    profileAddress: data.profileAddress
+                });
             }).catch((err) => {
-                response = responses_1.mainResponse({ error: { message: err.message, from: data.profileAddress } });
+                response = responses_1.mainResponse({
+                    error: {
+                        message: err.message,
+                        from: data.profileAddress
+                    }
+                });
             })
                 .finally(() => {
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].getFollowers, response, event);
@@ -208,9 +223,19 @@ class ProfileIPC extends ModuleEmitter_1.default {
                 return Promise.all(following);
             })
                 .then((following) => {
-                response = responses_1.mainResponse({ following, from: data.from, to: data.to, profileAddress: data.profileAddress });
+                response = responses_1.mainResponse({
+                    following,
+                    from: data.from,
+                    to: data.to,
+                    profileAddress: data.profileAddress
+                });
             }).catch((err) => {
-                response = responses_1.mainResponse({ error: { message: err.message, from: data.profileAddress } });
+                response = responses_1.mainResponse({
+                    error: {
+                        message: err.message,
+                        from: data.profileAddress
+                    }
+                });
             })
                 .finally(() => {
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].getFollowing, response, event);
