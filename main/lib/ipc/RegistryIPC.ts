@@ -6,7 +6,6 @@ import { mainResponse } from './event/responses';
 import { constructed as contracts } from './contracts/index';
 import { module as userModule } from './modules/auth/index';
 import { module as profileModule } from './modules/profile/index';
-import { profiles } from './modules/models/records';
 import WebContents = Electron.WebContents;
 
 class RegistryIPC extends ModuleEmitter {
@@ -23,6 +22,7 @@ class RegistryIPC extends ModuleEmitter {
             ._getCurrentProfile()
             ._getByAddress()
             ._registerProfile()
+            ._getErrorEvent()
             ._manager();
     }
 
@@ -150,6 +150,38 @@ class RegistryIPC extends ModuleEmitter {
                     .finally(() => {
                         this.fireEvent(
                             channels.client[this.MODULE_NAME].registerProfile,
+                            response,
+                            event
+                        );
+                    });
+            }
+        );
+        return this;
+    }
+
+    private _getErrorEvent(){
+        this.registerListener(
+            channels.server[this.MODULE_NAME].getErrorEvent,
+            (event: any, data: ProfileErrorEventRequest) => {
+                let response: ProfileErrorEventResponse;
+                contracts
+                    .instance
+                    .registry
+                    .getError(data)
+                    .then((events) => {
+                        response = mainResponse({ events });
+                    })
+                    .catch((error: Error) => {
+                        response = mainResponse({
+                            error: {
+                                message: error.message,
+                                from: { address: data.address }
+                            }
+                        });
+                    })
+                    .finally(() => {
+                        this.fireEvent(
+                            channels.client[this.MODULE_NAME].getErrorEvent,
                             response,
                             event
                         );

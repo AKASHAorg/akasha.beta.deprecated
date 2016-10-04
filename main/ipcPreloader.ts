@@ -50,7 +50,7 @@ export class ApiListener extends GenericApi {
         ipcRenderer.removeAllListeners(this.channel);
     }
 
-    get listnerCount() {
+    get listenerCount() {
         return ipcRenderer.listenerCount(this.channel);
     }
 }

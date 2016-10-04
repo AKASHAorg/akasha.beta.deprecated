@@ -77,7 +77,7 @@ const create = (data: IpfsProfileCreateRequest) => {
  * @returns {any}
  */
 const getShortProfile = (hash: string) => {
-    if(profiles.records.getShort(hash)) {
+    if (profiles.records.getShort(hash)) {
         return Promise.resolve(profiles.records.getShort(hash));
     }
     return IpfsConnector.getInstance().api.get(hash)
@@ -106,7 +106,7 @@ const resolveProfile = (hash: string) => {
     let resolved: any;
     let keys: any;
 
-    if(profiles.records.getFull(hash)){
+    if (profiles.records.getFull(hash)) {
         return Promise.resolve(profiles.records.getFull(hash));
     }
 

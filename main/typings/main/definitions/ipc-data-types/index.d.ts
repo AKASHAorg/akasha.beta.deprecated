@@ -49,7 +49,7 @@ interface EntryModel {
 
 interface CommentModel {
     parent?: string;
-    content: { data: string, html: string }; // ipfs hash
+    content: any; // ipfs hash
     date: Date;
 }
 /////////////////// ipfs models \\\\\\\\\\\\\\\\\\\\\\\\\
@@ -108,7 +108,7 @@ interface IpfsResolveResponse extends MainResponse {
 }
 
 interface IpfsSetConfigRequest {
-    ports:  {
+    ports: {
         gateway?: number,
         api?: number,
         swarm?: number
@@ -226,7 +226,10 @@ interface EmitMinedRequest {
 
 interface EmitMinedResponse extends MainResponse {
     data: {
-        mined?: string
+        mined?: string,
+        blockNumber?: number,
+        cumulativeGasUsed?: number,
+        hasEvents?: boolean, // akasha contract events
         watching: boolean;
     };
 }
@@ -271,6 +274,18 @@ interface ProfileCreateResponse extends MainResponse {
     data: {
         tx: string;
     };
+}
+
+interface ProfileErrorEventRequest {
+    fromBlock: string,
+    toBlock: string,
+    address: string
+}
+
+interface ProfileErrorEventResponse {
+    data: {
+        events: any[]
+    }
 }
 /////////////////////////  </ Registry > \\\\\\\\\\\\\\\\\\\\\\\\
 
@@ -333,7 +348,7 @@ interface IpfsDataResponse extends MainResponse {
     };
 }
 
-interface ProfileUnregisterRequest extends AuthRequest{
+interface ProfileUnregisterRequest extends AuthRequest {
     profileAddress: string;
 }
 
@@ -440,7 +455,7 @@ interface TagGetSubPositionRequest {
     tagId: number;
 }
 
-interface TagGetSubPositionResponse  extends  MainResponse {
+interface TagGetSubPositionResponse extends MainResponse {
     data: {
         position: number;
     };
@@ -575,7 +590,7 @@ interface EntryGetResponse extends MainResponse {
 ///////////////////// </ ENTRY> \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 //////////////////// < COMMENTS > \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-interface CommentPublishRequest extends  AuthRequest {
+interface CommentPublishRequest extends AuthRequest {
     address: string; // entry address
     hash: string; // ipfshash
     gas?: number;
@@ -587,7 +602,7 @@ interface CommentPublishResponse extends MainResponse {
     };
 }
 
-interface CommentUpdateRequest extends  AuthRequest {
+interface CommentUpdateRequest extends AuthRequest {
     address: string; // entry address
     commentId: number;
     hash: string; // ipfshash
@@ -622,6 +637,31 @@ interface CommentScoreRequest {
 interface CommentScoreResponse extends MainResponse {
     data: {
         score: number;
+    }
+}
+
+interface GetCommentCountRequest {
+    address: string; // entry address
+}
+
+interface GetCommentCountResponse extends MainResponse {
+    data: {
+        count: number,
+        address: string; // entry address
+    }
+}
+interface GetCommentAtRequest {
+    address: string; //entry address
+    id: number; // comment id
+}
+
+interface GetCommentAtResponse extends MainResponse {
+    data: {
+        hash: string; // ipfs hash
+        owner: string; // profile address
+        date: number; // post date unix timestamp
+        address: string;
+        id: number;
     }
 }
 /////////////////// </ COMMENTS > \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\

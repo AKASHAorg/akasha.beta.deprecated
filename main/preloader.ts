@@ -13,7 +13,7 @@ function injectApi() {
 
     Object.keys(Channel.server).forEach((module) => {
         Object.keys(Channel.server[module]).forEach((method) => {
-            if(method !== 'manager'){
+            if (method !== 'manager') {
                 AkashaApi.server[module][method] = new ApiRequest(
                     Channel.server[module][method],
                     Channel.server[module]['manager'],

@@ -4,7 +4,6 @@ import { IpfsConnector } from '@akashaproject/ipfs-connector';
 import AppLogger from './Logger';
 import channels from '../channels';
 import { ipfsResponse } from './event/responses';
-import * as Promise from 'bluebird';
 import WebContents = Electron.WebContents;
 import IpcMainEvent = Electron.IpcMainEvent;
 
@@ -184,10 +183,13 @@ class IpfsIPC extends IpfsEmitter {
                 IpfsConnector.getInstance()
                     .setPorts(data.ports, data.restart)
                     .then(() => {
-                        response = ipfsResponse({set: true});
+                        response = ipfsResponse({ set: true });
                     })
                     .catch((err: Error) => {
-                        response = ipfsResponse({}, {message: err.message, from: {ports: data.ports}});
+                        response = ipfsResponse({}, {
+                            message: err.message,
+                            from: { ports: data.ports }
+                        });
                     })
                     .finally(() => {
                         this.fireEvent(
@@ -212,7 +214,7 @@ class IpfsIPC extends IpfsEmitter {
                         response = ipfsResponse(ports);
                     })
                     .catch((err: Error) => {
-                        response = ipfsResponse({}, {message: err.message});
+                        response = ipfsResponse({}, { message: err.message });
                     })
                     .finally(() => {
                         this.fireEvent(

@@ -97,7 +97,10 @@ class IpfsIPC extends IpfsEmitter_1.default {
                 response = responses_1.ipfsResponse({ set: true });
             })
                 .catch((err) => {
-                response = responses_1.ipfsResponse({}, { message: err.message, from: { ports: data.ports } });
+                response = responses_1.ipfsResponse({}, {
+                    message: err.message,
+                    from: { ports: data.ports }
+                });
             })
                 .finally(() => {
                 this.fireEvent(channels_1.default.client.ipfs.setPorts, response, event);

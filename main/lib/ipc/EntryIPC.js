@@ -69,7 +69,12 @@ class EntryIPC extends ModuleEmitter_1.default {
                 response = responses_1.mainResponse({ tx });
             })
                 .catch((err) => {
-                response = responses_1.mainResponse({ error: { message: err.message, from: { address: data.address } } });
+                response = responses_1.mainResponse({
+                    error: {
+                        message: err.message,
+                        from: { address: data.address }
+                    }
+                });
             })
                 .finally(() => {
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].update, response, event);
@@ -90,7 +95,12 @@ class EntryIPC extends ModuleEmitter_1.default {
                 response = responses_1.mainResponse({ tx });
             })
                 .catch((err) => {
-                response = responses_1.mainResponse({ error: { message: err.message, from: { address: data.address } } });
+                response = responses_1.mainResponse({
+                    error: {
+                        message: err.message,
+                        from: { address: data.address }
+                    }
+                });
             })
                 .finally(() => {
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].upvote, response, event);
@@ -111,7 +121,12 @@ class EntryIPC extends ModuleEmitter_1.default {
                 response = responses_1.mainResponse({ tx });
             })
                 .catch((err) => {
-                response = responses_1.mainResponse({ error: { message: err.message, from: { address: data.address } } });
+                response = responses_1.mainResponse({
+                    error: {
+                        message: err.message,
+                        from: { address: data.address }
+                    }
+                });
             })
                 .finally(() => {
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].downvote, response, event);
@@ -129,7 +144,12 @@ class EntryIPC extends ModuleEmitter_1.default {
                 response = responses_1.mainResponse({ address: data.address, voting: status });
             })
                 .catch((err) => {
-                response = responses_1.mainResponse({ error: { message: err.message, from: { address: data.address } } });
+                response = responses_1.mainResponse({
+                    error: {
+                        message: err.message,
+                        from: { address: data.address }
+                    }
+                });
             })
                 .finally(() => {
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].isOpenedToVotes, response, event);
@@ -147,7 +167,12 @@ class EntryIPC extends ModuleEmitter_1.default {
                 response = responses_1.mainResponse({ profile: data.profile, weight });
             })
                 .catch((err) => {
-                response = responses_1.mainResponse({ error: { message: err.message, from: { address: data.address, profile: data.profile } } });
+                response = responses_1.mainResponse({
+                    error: {
+                        message: err.message,
+                        from: { address: data.address, profile: data.profile }
+                    }
+                });
             })
                 .finally(() => {
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].getVoteOf, response, event);
@@ -165,7 +190,12 @@ class EntryIPC extends ModuleEmitter_1.default {
                 response = responses_1.mainResponse({ address: data.address, date: endDate });
             })
                 .catch((err) => {
-                response = responses_1.mainResponse({ error: { message: err.message, from: { address: data.address } } });
+                response = responses_1.mainResponse({
+                    error: {
+                        message: err.message,
+                        from: { address: data.address }
+                    }
+                });
             })
                 .finally(() => {
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].getVoteEndDate, response, event);
