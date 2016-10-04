@@ -177,6 +177,16 @@ const setupMessages = defineMessages({
         id: 'app.setup.peers',
         description: 'base plural form of peer',
         defaultMessage: 'peers'
+    },
+    hideDetails: {
+        id: 'app.setup.hideDetails',
+        description: 'hide geth logs',
+        defaultMessage: 'Hide details'
+    },
+    viewDetails: {
+        id: 'app.setup.viewDetails',
+        description: 'show geth logs',
+        defaultMessage: 'View details'
     }
 });
 

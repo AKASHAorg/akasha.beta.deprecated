@@ -148,6 +148,20 @@ class EProcActions {
             options: {},
             onError: err => this.dispatch(appActionCreators.showError(err)),
             onSuccess: data => this.dispatch(externalProcessActionCreators.stopSync(data))
-        })
+        });
+
+    filterLogs = (data, timestamp) => {
+        let logs = [...data.gethError, ...data.gethInfo].filter(log => new Date(log.timestamp).getTime() > timestamp);
+        return logs;
+    }
+
+    startGethLogger = (timestamp) =>
+        this.gethService.getLogs({
+            options: {},
+            onError: err => this.dispatch(appActionCreators.showError(err)),
+            onSuccess: data => this.dispatch(externalProcessActionCreators.getGethLogs(this.filterLogs(data, timestamp)))
+        });
+
+    stopGethLogger = () => this.gethService.stopGethLogger();
 }
 export { EProcActions };
