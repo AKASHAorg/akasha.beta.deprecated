@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { RaisedButton } from 'material-ui';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import { setupMessages, generalMessages } from 'locale-data/messages'; /* eslint import/no-unresolved: 0 */
+import { hoursMinutesSeconds } from '../../../../../utils/dateFormatter';
 import PanelContainer from 'shared-components/PanelContainer/panel-container'; /* eslint import/no-unresolved: 0 */
 import SetupHeader from '../../../components/setup-header';
 import SyncStatusLoader from './sync-status';
@@ -12,7 +13,6 @@ class SyncStatus extends Component {
         this.state = {
             syncData: null,
             syncError: null,
-            gethLogs: [],
             showGethLogs: false
         };
     }
@@ -33,7 +33,7 @@ class SyncStatus extends Component {
     componentWillReceiveProps = (nextProps) => {
         const { gethStatus, eProcActions, gethSyncStatus, ipfsStatus } = nextProps;
         const gethReadyToSync = gethStatus.get('api') &&
-            !gethStatus.get('synced') && !gethSyncStatus.get('syncing');
+            !gethStatus.get('synced');
         const gethSynced = gethSyncStatus.get('synced');
         const ipfsStarted = ipfsStatus.get('started');
         if (gethReadyToSync) {
@@ -49,19 +49,14 @@ class SyncStatus extends Component {
         if (shouldReconfigure) {
             return this.context.router.push('setup');
         }
-        if (gethSyncStatus.get('synced')) {
-            return this.finishSync();
-        }
+        
         return null;
     }
     componentWillUnmount () {
         const { eProcActions } = this.props;
+        eProcActions.stopGethLogger();
         eProcActions.stopThrottledSync();
     }
-    finishSync = () => {
-        const { eProcActions } = this.props;
-        eProcActions.finishSync();
-    };
     handleCancel = () => {
         const { eProcActions, settingsActions } = this.props;
         eProcActions.stopGeth();
@@ -95,31 +90,19 @@ class SyncStatus extends Component {
         return labels;
     };
     _handleDetails = () => {
-        const { loggerActions } = this.props;
+        const { eProcActions } = this.props;
         if (!this.state.showGethLogs) {
-            return loggerActions.startGethLogger({ continuous: true }, (err, logs) => {
-                if (err) {
-                    this.state.gethLogsError = [...this.state.gethLogsError, ...err];
-                    return;
-                }
-                const logData = this.state.gethLogs.slice();
-                if (logs.data.length > 1) {
-                    logData.concat(logs.data);
-                } else {
-                    logData.unshift(logs.data['log-geth'][0]);
-                }
-                this.setState({
-                    showGethLogs: true,
-                    gethLogs: logData.slice(0, 20),
-                });
-            });
-        }
-        return loggerActions.stopGethLogger(() => {
+            const timestamp = new Date().getTime();
             this.setState({
-                showGethLogs: false,
-                gethLogs: []
+                showGethLogs: true
             });
+            return eProcActions.startGethLogger(timestamp);
+        }
+
+        this.setState({
+            showGethLogs: false
         });
+        return eProcActions.stopGethLogger();
     };
     render () {
         const {
@@ -128,6 +111,7 @@ class SyncStatus extends Component {
             gethStatus,
             gethSyncStatus,
             gethErrors,
+            gethLogs,
             ipfsStatus,
             ipfsErrors } = this.props;
 
@@ -149,6 +133,7 @@ class SyncStatus extends Component {
               </div>
             );
         }
+
         return (
           <PanelContainer
             showBorder
@@ -173,7 +158,7 @@ class SyncStatus extends Component {
             /* eslint-disable */
               <RaisedButton
                 key="viewDetails"
-                label={this.state.showGethLogs ? 'Hide details' : 'View details'}
+                label={this.state.showGethLogs ? intl.formatMessage(setupMessages.hideDetails) : intl.formatMessage(setupMessages.viewDetails)}
                 primary={this.state.showGethLogs}
                 onClick={this._handleDetails}
               />
@@ -204,19 +189,27 @@ class SyncStatus extends Component {
             </div>
             {this.state.showGethLogs &&
               <ul style={this.props.logListStyle} className="col-xs-12">
-                {this.state.gethLogs.map((log, key) => (
-                  <li
-                    key={key}
-                    style={{
-                        marginBottom: '8px',
-                        backgroundColor: (
-                           log.level === 'warn' ?
-                           'orange' : log.level === 'error' ?
-                           'red' : 'transparent')
-                    }}
-                  >
-                    <abbr title="Log Level">{log.level}</abbr>
-                    <p>{log.message}</p>
+                {gethLogs.map((log, key) => (
+                  <li key={key} style={{ marginBottom: '8px' }} >
+                    <div style={{display: 'flex'}}>
+                        <abbr
+                            title="Log Level"
+                            style={{
+                                flex: '0 0 auto',
+                                backgroundColor: (
+                                    log.get('level') === 'warn' ?
+                                    'orange' : log.get('level') === 'error' ?
+                                    'red' : log.get('level') === 'info' ? 
+                                    'lightblue' : 'transparent')
+                            }}
+                        >
+                            {log.get('level')}
+                        </abbr>
+                        <span style={{flex: '1 1 auto', textAlign: 'right'}}>
+                            {hoursMinutesSeconds(new Date(log.get('timestamp')))}
+                        </span>
+                    </div>
+                    <p>{log.get('message')}</p>
                   </li>
                   ))
                   }
@@ -238,6 +231,7 @@ SyncStatus.propTypes = {
     gethStatus: PropTypes.shape().isRequired,
     ipfsStatus: PropTypes.shape().isRequired,
     gethErrors: PropTypes.shape().isRequired,
+    gethLogs: PropTypes.shape().isRequired,
     ipfsErrors: PropTypes.shape().isRequired,
     gethSyncStatus: PropTypes.shape().isRequired,
     settingsActions: PropTypes.shape(),

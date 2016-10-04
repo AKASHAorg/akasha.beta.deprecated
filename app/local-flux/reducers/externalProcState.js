@@ -1,4 +1,4 @@
-import { fromJS, Record, List } from 'immutable';
+import { fromJS, Record, List, Map, Set } from 'immutable';
 import { createReducer } from './create-reducer';
 import * as types from '../constants/external-process-constants';
 
@@ -17,8 +17,7 @@ const GethSyncStatus = Record({
     highestBlock: null,
     startingBlock: null,
     peerCount: null,
-    synced: false,
-    syncing: false
+    synced: false
 });
 
 const ErrorRecord = Record({
@@ -41,6 +40,7 @@ const initialState = fromJS({
     gethSyncStatus: new GethSyncStatus(),
     ipfsStatus: new IpfsStatus(),
     gethErrors: new List(),
+    gethLogs: new Set(),
     ipfsErrors: new List(),
     /**
      * syncActionId
@@ -90,22 +90,27 @@ const eProcState = createReducer(initialState, {
 
     [types.SYNC_ACTIVE]: state =>
         state.merge({
-            gethSyncStatus: state.get('gethSyncStatus').merge({ syncing: true }),
-            actionId: 1,
+            actionId: 1
         }),
 
     [types.SYNC_STOPPED]: state =>
         state.merge({
-            gethSyncStatus: state.get('gethSyncStatus').remove('syncing'), // reset to initial value
             actionId: 2
         }),
 
     [types.SYNC_FINISHED]: state =>
         state.merge({
-            gethSyncStatus: state.get('gethSyncStatus').remove('syncing'), // reset to initial value
             actionId: 3
         }),
 
+    [types.GET_GETH_LOGS_SUCCESS]: (state, action) => {
+        let logs = [...action.data, ...state.get('gethLogs').toJS()];
+        let logsSet = new Set(logs)
+            .sort((first, second) => new Date(first.timestamp).getTime() < new Date(second.timestamp).getTime() ? 1 : -1)
+            .slice(0, 20);
+        logsSet = logsSet.map(log => new Map(log));
+        return state.set('gethLogs', logsSet);
+    }
 });
 
 export default eProcState;

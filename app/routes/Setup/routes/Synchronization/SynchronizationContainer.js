@@ -9,6 +9,7 @@ function mapStateToProps (state) {
     return {
         gethStatus: state.externalProcState.get('gethStatus'),
         gethErrors: state.externalProcState.get('gethErrors'),
+        gethLogs: state.externalProcState.get('gethLogs'),
         ipfsStatus: state.externalProcState.get('ipfsStatus'),
         ipfsErrors: state.externalProcState.get('ipfsErrors'),
         configFlags: state.settingsState.get('flags'),

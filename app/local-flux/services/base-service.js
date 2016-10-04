@@ -30,12 +30,12 @@ class BaseService {
      * @param cb <Function> callback
      */
     registerListener = (clientChannel, listener, cb) => {
-        this._listeners.set(clientChannel, listener);
-        if (ipcRenderer.listenerCount(clientChannel) > 0) {
+        this._listeners.set(clientChannel.channel, listener);
+        if (clientChannel.listenerCount > 0) {
             if (typeof cb === 'function') return cb();
             return null;
         }
-        ipcRenderer.on(clientChannel, (ev, res) => this._listeners.get(clientChannel)(ev, res));
+        clientChannel.on((ev, res) => this._listeners.get(clientChannel.channel)(ev, res));
         if (typeof cb === 'function') return cb();
         return null;
     };
@@ -43,8 +43,8 @@ class BaseService {
      * removes a listener
      */
     removeListener = (channel, cb) => {
-        ipcRenderer.removeListener(channel, this._listeners.get(channel));
-        this._listeners.delete(channel);
+        channel.removeListener(this._listeners.get(channel.channel));
+        this._listeners.delete(channel.channel);
         if (typeof cb === 'function') {
             return cb();
         }
@@ -66,26 +66,28 @@ class BaseService {
         clientChannel,
         listenerCb
     }, cb) => {
-        if (this._openChannels.has(serverChannel)) {
+        if (this._openChannels.has(serverChannel.channel)) {
             dbg(serverChannel, 'already opened. Nothing to do!');
             return cb();
         }
-        ipcRenderer.once(clientManager, (ev, res) => {
+        clientManager.once((ev, res) => {
             if (res.error) {
                 dbg(`${res.error.message}, please check base-service -> openChannel method`);
             }
-            dbg(serverChannel, 'is now open to communication');
+            dbg(serverChannel.channel, 'is now open to communication');
+            this._openChannels.add(serverChannel.channel);
             return this.registerListener(clientChannel, listenerCb, cb);
         });
-        return ipcRenderer.send(serverManager, { channel: serverChannel, listen: true });
+        return serverChannel.enable();
     };
     /** close communication with a channel through channel manager
      * @param manager <String> manager channel => we are sending req on this
      * @param channel <String> the server channel we need to stop listen
      */
     closeChannel = (serverManager, serverChannel, clientChannel) => {
-        ipcRenderer.send(serverManager, { channel: serverChannel, listen: false });
+        serverChannel.disable();
         this.removeListener(clientChannel);
+        this._openChannels.delete(serverChannel.channel);
     };
 }
 

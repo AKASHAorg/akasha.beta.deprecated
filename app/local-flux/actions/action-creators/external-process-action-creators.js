@@ -3,7 +3,7 @@ import * as types from '../../constants/external-process-constants';
 export function getGethStatusSuccess (data) {
     return {
         type: types.GET_GETH_STATUS_SUCCESS,
-        status: data
+        data
     };
 }
 
@@ -141,5 +141,12 @@ export function pauseSync () {
 export function resumeSync () {
     return {
         type: types.SYNC_RESUME
+    };
+}
+
+export function getGethLogs(data) {
+    return {
+        type: types.GET_GETH_LOGS_SUCCESS,
+        data
     };
 }

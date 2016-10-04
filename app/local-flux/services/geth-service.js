@@ -13,6 +13,7 @@ class GethService extends BaseService {
         super();
         this.serverManager = Channel.server.geth.manager;
         this.clientManager = Channel.client.geth.manager;
+        this.gethLoggerInterval = null;
     }
     /**
      * sends start Geth command to main process w/o options
@@ -33,7 +34,7 @@ class GethService extends BaseService {
         dbg('Retrieving Geth status', clientChannel);
 
         this.registerListener(clientChannel, this.createListener(onError, onSuccess));
-        ipcRenderer.send(serverChannel, gethOptions);
+        serverChannel.send(gethOptions);
     };
     /**
      * Stop Geth process
@@ -43,7 +44,7 @@ class GethService extends BaseService {
         const clientChannel = Channel.client.geth.stopService;
         dbg('Stopping Geth service on channel:', clientChannel);
         this.registerListener(clientChannel, this.createListener(onError, onSuccess));
-        ipcRenderer.send(serverChannel, options);
+        serverChannel.send(options);
     }
     /**
      * Restart Geth
@@ -60,8 +61,8 @@ class GethService extends BaseService {
             clientChannel,
             listenerCb: this.createListener(onError, onSuccess)
         }, () =>
-            ipcRenderer.send(serverChannel, options)
-            );
+            serverChannel.send(options)
+        );
     };
     /**
      *  Retrieve Geth logs
@@ -77,9 +78,20 @@ class GethService extends BaseService {
             clientChannel,
             listenerCb: this.createListener(onError, onSuccess)
         }, () =>
-            ipcRenderer.send(serverChannel, options)
+            this.gethLoggerInterval = setInterval(() => {
+                serverChannel.send(options);
+            }, 2000)
         );
     };
+
+    stopGethLogger = () => {
+        const serverChannel = Channel.server.geth.logs;
+        const clientChannel = Channel.client.geth.logs;
+        
+        clearInterval(this.gethLoggerInterval);
+        this.closeChannel(this.serverManager, serverChannel, clientChannel);
+    }
+
     /**
      *  Get current status of geth;
      *  @response data = {
@@ -98,7 +110,7 @@ class GethService extends BaseService {
         dbg('Retrieving Geth status', clientChannel);
 
         this.registerListener(clientChannel, this.createListener(onError, onSuccess));
-        ipcRenderer.send(serverChannel, options);
+        serverChannel.send(options);
     }
     /**
      * Retrieve options used by geth
@@ -114,7 +126,7 @@ class GethService extends BaseService {
             clientChannel,
             listenerCb: this.createListener(onError, onSuccess)
         }, () =>
-            ipcRenderer.send(serverChannel, options)
+            serverChannel.send(options)
         );
     };
     /**
@@ -132,7 +144,7 @@ class GethService extends BaseService {
             clientChannel,
             listenerCb: this.createListener(onError, onSuccess)
         }, () =>
-            ipcRenderer.send(serverChannel, options)
+            serverChannel.send(options)
         );
     }
     closeSyncChannel = () => {
