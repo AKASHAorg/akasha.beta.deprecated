@@ -27,7 +27,7 @@ const channels = {
         'getFollowingCount', 'getFollowers', 'getFollowing'],
 
     registry: ['profileExists', 'registerProfile', 'getCurrentProfile', 'getByAddress', 'getErrorEvent',
-        'getRegisteredEvent'],
+        'getRegistered'],
 
     tx: ['addToQueue', 'emitMined'],
 };

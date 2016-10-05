@@ -80,8 +80,9 @@ class Registry extends BaseContract_1.default {
         Error.getAsync = Promise.promisify(Error.get);
         return Error.getAsync();
     }
-    getRegistered(index, filter) {
-        const Registered = this.contract.Register(index, filter);
+    getRegistered(filter) {
+        const { fromBlock, toBlock, address } = filter;
+        const Registered = this.contract.Register(filter.index, { fromBlock, toBlock, address });
         Registered.getAsync = Promise.promisify(Registered.get);
         return Registered.getAsync();
     }

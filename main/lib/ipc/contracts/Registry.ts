@@ -125,11 +125,12 @@ export default class Registry extends BaseContract {
 
     /**
      *
-     * @param index
      * @param filter
+     * @returns {Bluebird<T>|any}
      */
-    getRegistered(index: {}, filter: {fromBlock: string, toBlock?: string, address?: string}) {
-        const Registered = this.contract.Register(index, filter);
+    getRegistered(filter: {index: {}, fromBlock: string, toBlock?: string, address?: string}) {
+        const {fromBlock, toBlock, address} = filter;
+        const Registered = this.contract.Register(filter.index, {fromBlock, toBlock, address});
         Registered.getAsync = Promise.promisify(Registered.get);
         return Registered.getAsync();
     }

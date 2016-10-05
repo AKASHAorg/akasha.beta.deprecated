@@ -20,7 +20,7 @@ const channels = {
     profile: ['getProfileData', 'getMyBalance', 'getIpfs', 'unregister', 'follow', 'getFollowersCount',
         'getFollowingCount', 'getFollowers', 'getFollowing'],
     registry: ['profileExists', 'registerProfile', 'getCurrentProfile', 'getByAddress', 'getErrorEvent',
-        'getRegisteredEvent'],
+        'getRegistered'],
     tx: ['addToQueue', 'emitMined'],
 };
 const processes = ['server', 'client'];

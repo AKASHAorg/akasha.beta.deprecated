@@ -19,6 +19,7 @@ class RegistryIPC extends ModuleEmitter_1.default {
             ._getByAddress()
             ._registerProfile()
             ._getErrorEvent()
+            ._getRegistered()
             ._manager();
     }
     _profileExists() {
@@ -139,6 +140,30 @@ class RegistryIPC extends ModuleEmitter_1.default {
             })
                 .finally(() => {
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].getErrorEvent, response, event);
+            });
+        });
+        return this;
+    }
+    _getRegistered() {
+        this.registerListener(channels_1.default.server[this.MODULE_NAME].getRegistered, (event, data) => {
+            let response;
+            index_1.constructed
+                .instance
+                .registry
+                .getRegistered(data)
+                .then((collection) => {
+                response = responses_1.mainResponse({ collection });
+            })
+                .catch((error) => {
+                response = responses_1.mainResponse({
+                    error: {
+                        message: error.message,
+                        from: { address: data.address }
+                    }
+                });
+            })
+                .finally(() => {
+                this.fireEvent(channels_1.default.client[this.MODULE_NAME].getRegistered, response, event);
             });
         });
         return this;
