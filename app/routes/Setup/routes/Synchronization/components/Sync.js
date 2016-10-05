@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { RaisedButton } from 'material-ui';
+import { RaisedButton, Paper, FlatButton } from 'material-ui';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import { setupMessages, generalMessages } from 'locale-data/messages'; /* eslint import/no-unresolved: 0 */
 import { hoursMinutesSeconds } from '../../../../../utils/dateFormatter';
@@ -17,29 +17,38 @@ class SyncStatus extends Component {
         };
     }
     componentWillMount () {
-        const { settingsActions } = this.props;
+        const { settingsActions, eProcActions } = this.props;
         settingsActions.getSettings('geth');
         settingsActions.getSettings('ipfs');
+        eProcActions.getGethStatus();
     }
     componentDidMount () {
-        const { eProcActions, gethSettings, gethStatus, ipfsStatus } = this.props;
-        if (!gethStatus.get('api') || !gethStatus.get('starting')) {
-            eProcActions.startGeth(gethSettings);
+        const { eProcActions, gethStatus, ipfsStatus, gethSettings } = this.props;
+        if (!gethStatus.get('spawned') && !gethStatus.get('startRequested')) {
+            eProcActions.startGeth(gethSettings.toJS());
         }
-        if (!ipfsStatus.get('started') || !ipfsStatus.get('downloading') || !ipfsStatus.get('spawned')) {
+        if (!ipfsStatus.get('started') && !ipfsStatus.get('startRequested')) {
             eProcActions.startIPFS();
         }
     }
-    componentWillReceiveProps = (nextProps) => {
-        const { gethStatus, eProcActions, gethSyncStatus, ipfsStatus } = nextProps;
-        const gethReadyToSync = gethStatus.get('api') &&
-            !gethStatus.get('synced');
+    componentWillReceiveProps (nextProps) {
+        const { gethStatus, eProcActions, gethSyncStatus, ipfsStatus, ipfsErrors, gethSettings, gethErrors } = nextProps;
         const gethSynced = gethSyncStatus.get('synced');
+        const gethReadyToSync = gethStatus.get('api') && !gethSynced;
         const ipfsStarted = ipfsStatus.get('started');
-        if (gethReadyToSync) {
-            eProcActions.startThrottledSync();
-        } else if (gethSynced && ipfsStarted) {
-            this.context.router.push('authenticate');
+        console.log(ipfsStatus, 'ipfs status');
+        if (ipfsErrors.size === 0 && gethErrors.size === 0) {
+            if (!ipfsStatus.get('started') && !ipfsStatus.get('startRequested')) {
+                eProcActions.startIPFS();
+            }
+            if (!gethStatus.get('spawned') && !gethStatus.get('startRequested')) {
+                eProcActions.startGeth(gethSettings.toJS());
+            }
+            if (gethReadyToSync) {
+                eProcActions.startThrottledSync();
+            } else if (gethSynced && ipfsStarted) {
+                this.context.router.push('authenticate');
+            }
         }
     }
     componentWillUpdate (nextProps) {
@@ -104,6 +113,10 @@ class SyncStatus extends Component {
         });
         return eProcActions.stopGethLogger();
     };
+    handleRetry = () => {
+        const { eProcActions } = this.props;
+        return eProcActions.stopIPFS();
+    };
     render () {
         const {
             style,
@@ -121,16 +134,31 @@ class SyncStatus extends Component {
 
         if (gethErrors.size > 0) {
             gethErrorCards = gethErrors.map((gethError, key) =>
-              <div className="errorCard" key={key}>
-                <div>{gethError.get('code')} {gethError.get('message')}</div>
-              </div>
+              <Paper key={key} style={{ margin: '10px 0', padding: '5px' }} >
+                <span>
+                  {gethError.get('code')}
+                </span>
+                <span style={{marginLeft: '5px'}}>
+                  {gethError.get('message')}
+                </span>
+              </Paper>
             );
         }
         if (ipfsErrors.size > 0) {
             ipfsErrorCards = ipfsErrors.map((ipfsError, key) =>
-              <div className="errorCard" key={key}>
-                <div>{ipfsError.get('code')} {ipfsError.get('message')}</div>
-              </div>
+                <Paper key={key} style={{ margin: '10px 0', padding: '5px' }} >
+                  <div style={{display: 'flex', alignItems: 'center'}}>
+                    <div style={{flex: '1 1 auto'}}>
+                      <span>
+                        {ipfsError.get('code')}
+                      </span>
+                      <span style={{margin: '0 5px'}}>
+                        {ipfsError.get('message')}
+                      </span>
+                    </div>
+                    <FlatButton style={{flex: '0 0 auto'}} label={intl.formatMessage(setupMessages.retry)} onClick={this.handleRetry}/>
+                  </div>
+                </Paper>
             );
         }
 
@@ -222,7 +250,6 @@ class SyncStatus extends Component {
 
 SyncStatus.propTypes = {
     eProcActions: PropTypes.shape().isRequired,
-    loggerActions: PropTypes.shape().isRequired,
     style: PropTypes.shape(),
     logListStyle: PropTypes.shape(),
     intl: PropTypes.shape().isRequired,

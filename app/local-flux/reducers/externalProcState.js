@@ -9,7 +9,8 @@ const GethStatus = Record({
     api: false,
     spawned: false,
     started: null,
-    stopped: null
+    stopped: null,
+    startRequested: false
 });
 
 const GethSyncStatus = Record({
@@ -32,7 +33,8 @@ const IpfsStatus = Record({
     spawned: false,
     started: null,
     stopped: null,
-    error: null
+    error: null,
+    startRequested: false
 });
 
 const initialState = fromJS({
@@ -53,12 +55,22 @@ const initialState = fromJS({
 });
 
 const eProcState = createReducer(initialState, {
+    [types.START_GETH]: state =>
+        state.merge({ 
+            gethStatus: state.get('gethStatus').merge({ startRequested: true })
+        }),
+
     [types.START_GETH_SUCCESS]: (state, action) =>
         state.merge({ gethStatus: state.get('gethStatus').merge(action.data) }),
 
     [types.START_GETH_ERROR]: (state, action) =>
         state.merge({
             gethErrors: state.get('gethErrors').push(new ErrorRecord(action.error))
+        }),
+
+    [types.STOP_GETH]: state =>
+        state.merge({ 
+            gethStatus: state.get('gethStatus').merge({ startRequested: false })
         }),
 
     [types.STOP_GETH_SUCCESS]: (state, action) =>
@@ -70,7 +82,7 @@ const eProcState = createReducer(initialState, {
         state.get('gethErrors').push(new ErrorRecord(action.error)),
 
     [types.GET_GETH_STATUS_SUCCESS]: (state, action) =>
-        state.merge({ gethStatus: new GethStatus(action.status) }),
+        state.merge({ gethStatus: state.get('gethStatus').merge(action.status) }),
 
     [types.START_IPFS_SUCCESS]: (state, action) =>
         state.merge({
@@ -78,6 +90,27 @@ const eProcState = createReducer(initialState, {
         }),
 
     [types.START_IPFS_ERROR]: (state, action) =>
+        state.merge({
+            ipfsErrors: state.get('ipfsErrors').push(new ErrorRecord(action.error))
+        }),
+
+    [types.START_IPFS]: state =>
+        state.merge({
+            ipfsStatus: state.get('ipfsStatus').merge({ startRequested: true })
+        }),
+
+    [types.STOP_IPFS]: state =>
+        state.merge({
+            ipfsStatus: state.get('ipfsStatus').merge({ startRequested: false }),
+            ipfsErrors: state.get('ipfsErrors').clear()            
+        }),
+
+    [types.STOP_IPFS_SUCCESS]: state =>
+        state.merge({
+            ipfsStatus: new IpfsStatus
+        }),
+
+    [types.STOP_IPFS_ERROR]: (state, action) =>
         state.merge({
             ipfsErrors: state.get('ipfsErrors').push(new ErrorRecord(action.error))
         }),

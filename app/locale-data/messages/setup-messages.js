@@ -187,6 +187,11 @@ const setupMessages = defineMessages({
         id: 'app.setup.viewDetails',
         description: 'show geth logs',
         defaultMessage: 'View details'
+    },
+    retry: {
+        id: 'app.setup.retry',
+        description: 'try again',
+        defaultMessage: 'Retry'
     }
 });
 
