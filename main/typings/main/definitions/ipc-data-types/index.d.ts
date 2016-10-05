@@ -282,9 +282,18 @@ interface ProfileErrorEventRequest {
     address: string
 }
 
-interface ProfileErrorEventResponse {
+interface ProfileErrorEventResponse extends MainResponse{
     data: {
         events: any[]
+    }
+}
+
+interface ProfileRegisteredEventRequest extends ProfileErrorEventRequest{
+    index: {};
+}
+interface ProfileRegisteredEventResponse extends MainResponse {
+    data: {
+        collection: any[]
     }
 }
 /////////////////////////  </ Registry > \\\\\\\\\\\\\\\\\\\\\\\\
