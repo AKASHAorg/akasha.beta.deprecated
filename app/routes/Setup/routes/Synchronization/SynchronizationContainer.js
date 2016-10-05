@@ -23,7 +23,6 @@ function mapStateToProps (state) {
 function mapDispatchToProps (dispatch) {
     return {
         eProcActions: new EProcActions(dispatch),
-        loggerActions: new LoggerActions(dispatch),
         settingsActions: new SettingsActions(dispatch)
     };
 }
