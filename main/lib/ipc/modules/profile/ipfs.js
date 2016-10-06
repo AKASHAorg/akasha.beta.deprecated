@@ -66,8 +66,8 @@ const create = (data) => {
     });
 };
 const getShortProfile = (hash) => {
-    if (records_1.profiles.records.getShort(hash)) {
-        return Promise.resolve(records_1.profiles.records.getShort(hash));
+    if (records_1.profiles.getShort(hash)) {
+        return Promise.resolve(records_1.profiles.getShort(hash));
     }
     return ipfs_connector_1.IpfsConnector.getInstance().api.get(hash)
         .then((schema) => {
@@ -81,15 +81,15 @@ const getShortProfile = (hash) => {
                 return resolved;
             });
         }
-        records_1.profiles.records.setShort(hash, resolved);
+        records_1.profiles.setShort(hash, resolved);
         return resolved;
     });
 };
 const resolveProfile = (hash) => {
     let resolved;
     let keys;
-    if (records_1.profiles.records.getFull(hash)) {
-        return Promise.resolve(records_1.profiles.records.getFull(hash));
+    if (records_1.profiles.getFull(hash)) {
+        return Promise.resolve(records_1.profiles.getFull(hash));
     }
     return getShortProfile(hash)
         .then((schema) => {
@@ -128,7 +128,7 @@ const resolveProfile = (hash) => {
         if (about) {
             resolved.about = Buffer.from(about).toString('utf8');
         }
-        records_1.profiles.records.setFull(hash, resolved);
+        records_1.profiles.setFull(hash, resolved);
         return resolved;
     });
 };
