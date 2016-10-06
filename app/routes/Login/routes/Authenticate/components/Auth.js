@@ -30,9 +30,13 @@ class Auth extends Component {
         profileActions.getLocalProfiles();
     }
     componentWillUpdate = (nextProps) => {
-        const { tempProfile } = nextProps;
+        const { profileActions, tempProfile, localProfiles } = nextProps;
         if (tempProfile.get('username') !== '') {
             return this.context.router.push('/authenticate/new-profile-status');
+        }
+        if (localProfiles.size > 0 && localProfiles.size !== this.props.localProfiles.size) {
+            console.log(localProfiles, 'localProfiles');
+            profileActions.getProfileData(localProfiles.toJS());
         }
     }
     handleTouchTap = (index) => {
