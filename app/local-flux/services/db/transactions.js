@@ -2,6 +2,11 @@ import Dexie from 'dexie';
 import debug from 'debug';
 const dbg = debug('App:transactionsDB');
 
+Dexie.Promise.on('error', (err) => {
+    console.error(err);
+    if(err.label) console.log(err.label, 'label');
+    return false;
+})
 const transactionsDB = new Dexie('transactions');
 transactionsDB.version(1).stores({
     pending: '&tx',

@@ -21,7 +21,7 @@ function imageCreator (arrayBuffer, { mimeType = 'image/png', width = 100, heigh
 function extractImageFromContent (content) {
     const { entityMap } = content;
     if (!entityMap) {
-        error(`entityMap not found inside content param. 
+        error(`entityMap not found inside content param.
             Make sure you have passed the right content!`
         );
         return null;
@@ -40,22 +40,22 @@ function extractImageFromContent (content) {
  */
 const imageWidths = [
     {
-        key: 'xlarge',
+        key: 'xxl',
         res: '1920'
     }, {
-        key: 'mlarge',
+        key: 'xl',
         res: '1280'
     }, {
-        key: 'large',
+        key: 'lg',
         res: '1024'
     }, {
-        key: 'xmed',
+        key: 'md',
         res: '768'
     }, {
-        key: 'med',
+        key: 'sm',
         res: '640'
     }, {
-        key: 'small',
+        key: 'xs',
         res: '320'
     }
 ];
@@ -68,7 +68,7 @@ function readImageData (imagePath, canvas, ctx, options) {
         const { minWidth, minHeight } = options;
         if (options.imageWidths) {
             resizeWidths = imageWidths.filter((width) => {
-                for (let i = options.imageWidths.length - 1; i >= 0; i--) {
+                for (let i = options.imageWidths.length - 1; i >= 0; i -= 1) {
                     if (width.key === options.imageWidths[i]) {
                         return true;
                     }
@@ -77,7 +77,7 @@ function readImageData (imagePath, canvas, ctx, options) {
             });
         }
         img.onload = () => {
-            const images = [];
+            const images = {};
             const imgWidth = img.width;
             const imgHeight = img.height;
             if (imgHeight < minHeight) {
@@ -100,18 +100,15 @@ function readImageData (imagePath, canvas, ctx, options) {
                 (blob) => {
                     const reader = new FileReader();
                     reader.onloadend = () => {
-                        images.push(
-                            {
-                                key: width.key,
-                                imageFile: new Uint8Array(reader.result),
-                                width: canvasWidth,
-                                height: canvasHeight
-                            }
-                        );
+                        images[width.key] = {
+                            src: new Uint8Array(reader.result),
+                            width: canvasWidth,
+                            height: canvasHeight
+                        };
                     };
                     reader.readAsArrayBuffer(blob);
                 };
-            r.forEach(width => {
+            r.forEach((width) => {
                 canvas.width = width.res;
                 canvas.height = width.res / aspectRatio;
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
