@@ -40,6 +40,17 @@ class Tags extends BaseContract_1.default {
             return this.extractData('add', tag, { gas });
         });
     }
+    getCreateError(filter) {
+        const Error = this.contract.Error(filter);
+        Error.getAsync = Promise.promisify(Error.get);
+        return Error.getAsync();
+    }
+    getTagsCreated(filter) {
+        const { fromBlock, toBlock, address } = filter;
+        const TagsCreated = this.contract.TagCreated(filter.index, { fromBlock, toBlock, address });
+        TagsCreated.getAsync = Promise.promisify(TagsCreated.get);
+        return TagsCreated.getAsync();
+    }
 }
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Tags;

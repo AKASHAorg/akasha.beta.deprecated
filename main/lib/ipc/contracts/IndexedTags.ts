@@ -62,4 +62,5 @@ export default class IndexedTags extends BaseContract {
         const subPositionTr = this.gethInstance.web3.fromDecimal(subPosition);
         return this.extractData('unsubscribe', tagTr, subPositionTr, { gas });
     }
+
 }

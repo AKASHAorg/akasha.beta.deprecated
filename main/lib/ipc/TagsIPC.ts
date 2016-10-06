@@ -30,6 +30,8 @@ class TagsIPC extends ModuleEmitter {
             ._subscribe()
             ._unsubscribe()
             ._getTagsFrom()
+            ._getCreateError()
+            ._getTagsCreated()
             ._manager();
     }
 
@@ -350,6 +352,71 @@ class TagsIPC extends ModuleEmitter {
                     .finally(() => {
                         this.fireEvent(
                             channels.client[this.MODULE_NAME].getTagsFrom,
+                            response,
+                            event
+                        );
+                    });
+            }
+        );
+        return this;
+    }
+
+    private _getCreateError() {
+        this.registerListener(
+            channels.server[this.MODULE_NAME].getCreateError,
+            (event: any, data: GenericErrorEventRequest) => {
+                let response: GenericErrorEventResponse;
+                contracts
+                    .instance
+                    .tags
+                    .getCreateError(data)
+                    .then((events) => {
+                        response = mainResponse({ events });
+                    })
+                    .catch((error: Error) => {
+                        response = mainResponse({
+                            error: {
+                                message: error.message,
+                                from: { address: data.address }
+                            }
+                        });
+                    })
+                    .finally(() => {
+                        this.fireEvent(
+                            channels.client[this.MODULE_NAME].getCreateError,
+                            response,
+                            event
+                        );
+                    });
+            }
+        );
+        return this;
+    }
+
+
+    private _getTagsCreated() {
+        this.registerListener(
+            channels.server[this.MODULE_NAME].getTagsCreated,
+            (event: any, data: GenericFromEventRequest) => {
+                let response: GenericFromEventResponse;
+                contracts
+                    .instance
+                    .tags
+                    .getTagsCreated(data)
+                    .then((collection) => {
+                        response = mainResponse({ collection });
+                    })
+                    .catch((error: Error) => {
+                        response = mainResponse({
+                            error: {
+                                message: error.message,
+                                from: { address: data.address }
+                            }
+                        });
+                    })
+                    .finally(() => {
+                        this.fireEvent(
+                            channels.client[this.MODULE_NAME].getTagsCreated,
                             response,
                             event
                         );
