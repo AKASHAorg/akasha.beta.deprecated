@@ -71,7 +71,7 @@ class CreateProfile extends Component {
             optionalData.links = userLinks;
         }
         if (profileImage) {
-            optionalData.coverImage = profileImage;
+            optionalData.backgroundImage = profileImage;
         }
         if (this.state.about) {
             optionalData.about = this.state.about;
@@ -97,6 +97,7 @@ class CreateProfile extends Component {
             if (mustCorrectErrors) {
                 console.log('must correct some errors!', this.state);
             } else {
+                delete data.password2;
                 profileActions.createTempProfile(data);
             }
         });

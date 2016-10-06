@@ -24,21 +24,38 @@ class TransactionService extends BaseService {
      * Response:
      * @param data = {watching: Boolean}
      */
-    addToQueue = ({ tx, onError, onSuccess }) => {
+    addToQueue = ({ txs, onError, onSuccess }) => {
         const serverChannel = Channel.server.tx.addToQueue;
         const clientChannel = Channel.client.tx.addToQueue;
-        dbg('adding to queue', tx);
+        dbg('adding to queue', txs);
 
-        if (!Array.isArray(tx)) {
+        if (!Array.isArray(txs)) {
             return console.error('tx param should be an array!!');
         }
-
-        return transactionsDB.transaction('rw', transactionsDB.pending, () => {
-            return transactionsDB.pending.bulkAdd(tx);
-        }).then(() => {
-            this.registerListener(clientChannel, this.createListener(onError, onSuccess));
-            ipcRenderer.send(serverChannel, tx);
-        }).catch(reason => onError(reason));
+        const successCB = (data) => {
+            console.log('add to queue data', data);
+            transactionsDB.transaction('rw', transactionsDB.pending, () => {
+                return transactionsDB
+                    .pending
+                    .where('tx')
+                    .anyOf(txs)
+                    .toArray()
+                    .then((results) => {
+                        txs.forEach((trans) => {
+                            if (!!results.find(res => res.tx === trans)) {
+                                return transactionsDB.pending.add({ tx: trans });
+                            }
+                        });
+                    });
+            })
+            .then(onSuccess)
+            .catch((reason) => {
+                console.log(reason, 'reason to fail');
+                onError(reason)
+            });
+        };
+        this.registerListener(clientChannel, this.createListener(onError, successCB));
+        ipcRenderer.send(serverChannel, txs.map(tx => ({ tx })));
     };
     /**
      * emit and mined event for a transaction from queue
@@ -51,13 +68,23 @@ class TransactionService extends BaseService {
         const serverChannel = Channel.server.tx.emitMined;
         const clientChannel = Channel.client.tx.emitMined;
         const successCB = (data) => {
-            transactionsDB.transaction('rw', transactionsDB.pending, transactionsDB.mined, () => {
-                transactionsDB.pending.where('tx').equals(data.mined).delete();
-                transactionsDB.mined.add({ tx: data.mined });
-                return data;
-            })
-            .then(minedTx => onSuccess(minedTx))
-            .catch(reason => onError(reason));
+            console.log('is this a mined tx?', data);
+            if (data && data.mined) {
+                transactionsDB.transaction('rw', transactionsDB.pending, transactionsDB.mined, () => {
+                    transactionsDB.pending.where('tx').equals(data.mined).delete();
+                    transactionsDB.mined.where('tx').equals(data.mined).toArray().then((results) => {
+                        if (!results.find(res => res.tx === data.mined)) {
+                            transactionsDB.mined.add({ tx: data.mined });
+                        }
+                    });
+                    return data;
+                })
+                .then(minedTx => {
+                    console.log(minedTx, 'minedTx saved');
+                    onSuccess(minedTx);
+                })
+                .catch(onError);
+            }
         };
         this.registerListener(clientChannel, this.createListener(onError, successCB));
         ipcRenderer.send(serverChannel, { watch });

@@ -13,12 +13,20 @@ class CreateProfileStatus extends Component {
         transactionActions.getPendingTransactions();
     }
     componentWillUpdate (nextProps) {
-        const { tempProfile, minedTransactions, loggedProfile, pendingTransactions } = nextProps;
-        const publishMined = this._checkTxMined(minedTransactions, tempProfile.getIn(['currentStatus', 'publishTx']));
-        const faucetMined = this._checkTxMined(minedTransactions, tempProfile.getIn(['currentStatus', 'faucetTx']));
+        const { profileActions, transactionActions } = this.props;
+        const {
+            tempProfile,
+            minedTransactions,
+            loggedProfile,
+            pendingTransactions,
+            errors } = nextProps;
+        const profileCreationStatus = tempProfile.get('currentStatus');
+        const { success, faucetTx, publishTx } = profileCreationStatus;
+        const publishMined = this._checkTxMined(minedTransactions, publishTx);
+        const faucetMined = this._checkTxMined(minedTransactions, faucetTx);
 
-        if (!publishMined) {
-            console.log('resumePublish');
+        if (errors.size === 0 && tempProfile.get('username')) {
+            console.log('resuming step', profileCreationStatus);
             this.resumeProfileCreation({
                 tempProfile,
                 minedTransactions,
@@ -38,53 +46,120 @@ class CreateProfileStatus extends Component {
             loggedProfile } = params;
         const { profileActions, transactionActions } = this.props;
         const profileCreationStatus = tempProfile.get('currentStatus');
-        const { currentStep, success, faucetTx, publishTx } = profileCreationStatus;
+        const {
+            currentStep,
+            success,
+            faucetTx,
+            publishTx,
+            faucetRequested,
+            publishRequested } = profileCreationStatus;
         const faucetMined = this._checkTxMined(minedTransactions, faucetTx);
         const publishMined = this._checkTxMined(minedTransactions, publishTx);
-        const isLoggedIn = loggedProfile.get('account') && tempProfile.get('address') === loggedProfile.get('account');
-        // switch (currentStep) {
-        //     case 0:
-        //         if (!success) break;
-        //         profileActions.createEthAddress(tempProfile.get('password'));
-        //         break;
-        //     case 1:
-        //         if (!success) break;
-        //     default:
-        //         break;
-        // }
-        if (currentStep === 0 && success) {
-            // temp profile already created!
-            profileActions.createEthAddress(tempProfile.get('password'));
-        } else if (currentStep === 1 && success && tempProfile.get('address')) {
-            // temp profile created
-            // eth address created
-            profileActions.requestFundFromFaucet(tempProfile.get('address'));
-        } else if (currentStep === 2 && success && faucetMined) {
-            /** temp profile created
-             * eth address created
-             * faucet requested and transaction mined
-             **/
-            if (isLoggedIn) {
-                profileActions.publishProfile(tempProfile);
-            } else {
-                // we need to obtain auth token first
-                profileActions.login({
-                    account: tempProfile.get('address'),
-                    password: tempProfile.get('password'),
-                    rememberTime: 1 // does not matter here
-                });
-            }
-        } else if (currentStep === 3 && success && publishMined) {
-            return console.log('publish!!!');
-            this.context.router.push('/authenticate/new-profile-complete');
+        const isLoggedIn = loggedProfile.get('account') &&
+            tempProfile.get('address') === loggedProfile.get('account') &&
+            (Date.parse(loggedProfile.get('expiration')) > Date.now());
+        const shouldListenFaucetTx = !faucetMined && faucetRequested && faucetTx;
+        const shouldListenPublishTx = !publishMined && publishRequested && publishTx;
+        switch(currentStep) {
+            case 0:
+                if (success && !tempProfile.get('address')) {
+                    // temp profile already created!
+                    profileActions.createEthAddress(tempProfile.get('password'));
+                    break;
+                }
+            case 1:
+                if (!faucetRequested && tempProfile.get('address')) {
+                    profileActions.requestFundFromFaucet(tempProfile.get('address'));
+                    profileActions.updateTempProfile(tempProfile.toJS());
+                }
+            case 2:
+                if (success) {
+                    if (isLoggedIn) {
+                        profileActions.publishProfile(loggedProfile.get('token'), tempProfile);
+                        break;
+                    }
+                    profileActions.login({
+                        account: tempProfile.get('address'),
+                        password: tempProfile.get('password'),
+                        rememberTime: 1 // does not matter here
+                    });
+                    break;
+                }
+                if (shouldListenFaucetTx) {
+                    // listen for faucet transactions here!!
+                    transactionActions.listenForMinedTx();
+                    transactionActions.addToQueue([faucetTx]);
+                    console.log(tempProfile.toJS(), 'tempProfile')
+                    profileActions.updateTempProfile(tempProfile.toJS());
+                    break;
+                }
+            case 3:
+                if (success) {
+                    this.context.router.push('/authenticate/new-profile-complete');
+                    break;
+                }
+                if (shouldListenPublishTx) {
+                    transactionActions.listenForMinedTx();
+                    profileActions.addTxToQueue(profileCreationStatus.get('publishTx').toJS(), 'publish');
+                    profileActions.updateTempProfile(tempProfile.toJS());
+                    break;
+                }
+            default:
+                break;
         }
+        // if (currentStep === 0) {
+        //     if (success && !tempProfile.get('address')) {
+        //         // temp profile already created!
+        //         profileActions.createEthAddress(tempProfile.get('password'));
+        //     } else {
+        //         profileActions.updateTempProfile(tempProfile.toJS());
+        //     }
+        // } else if (currentStep === 1) {
+        //     // temp profile created
+        //     // eth address created
+        //     if (!faucetRequested && tempProfile.get('address')) {
+        //         profileActions.requestFundFromFaucet(tempProfile.get('address').toJS());
+        //     }
+        // } else if (currentStep === 2) {
+        //     /** temp profile created
+        //      * eth address created
+        //      * faucet requested and transaction mined
+        //      * node_modules\.bin\_mocha tests\index.js
+        //      **/
+        //     if (success) {
+        //         if (isLoggedIn) {
+        //             console.log('PUBLIIIIIISH!!!!!!!!!!!!!!!!!!')
+        //             return profileActions.publishProfile(loggedProfile.get('token'), tempProfile);
+        //         }
+        //         return profileActions.login({
+        //             account: tempProfile.get('address'),
+        //             password: tempProfile.get('password'),
+        //             rememberTime: 1 // does not matter here
+        //         });
+        //     }
+        //     console.log(shouldListenFaucetTx, 'shouldListenFaucetTx!!!');
+        //     if (shouldListenFaucetTx) {
+        //         // listen for faucet transactions here!!
+        //         transactionActions.listenForMinedTx();
+        //         transactionActions.addToQueue([faucetTx]);
+        //         console.log(tempProfile.toJS(), 'tempProfile')
+        //         return profileActions.updateTempProfile(tempProfile.toJS());
+        //     }
+        // } else if (currentStep === 3) {
+        //     if (success) {
+        //         return this.context.router.push('/authenticate/new-profile-complete');
+        //     }
+        //     if (shouldListenPublishTx) {
+        //         transactionActions.listenForMinedTx();
+        //         profileActions.addTxToQueue(profileCreationStatus.get('publishTx').toJS(), 'publish');
+        //         return profileActions.updateTempProfile(tempProfile.toJS());
+        //     }
+        // }
     }
     render () {
         const { style, tempProfile } = this.props;
         const paraStyle = { marginTop: '20px' };
-        console.log(tempProfile.get('currentStatus'), 'currentStatus');
         const currentStep = tempProfile.get('currentStatus').currentStep;
-        console.log(currentStep, tempProfile, 'current, temp');
         return (
           <div style={style} >
               <PanelContainer
