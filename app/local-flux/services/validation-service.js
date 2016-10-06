@@ -1,4 +1,3 @@
-import { ipcRenderer } from 'electron';
 import BaseService from './base-service';
 
 const Channel = window.Channel;
@@ -26,7 +25,7 @@ class ValidationService extends BaseService {
             serverChannel,
             clientChannel,
             listenerCb: this.createListener(onError, onSuccess)
-        }, () => ipcRenderer.send(serverChannel, { username }));
+        }, () => serverChannel.send({ username }));
     };
 }
 export { ValidationService };

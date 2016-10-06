@@ -1,4 +1,3 @@
-import { ipcRenderer } from 'electron';
 import entriesDB from './db/entry';
 import debug from 'debug';
 const dbg = debug('App:DraftService:');

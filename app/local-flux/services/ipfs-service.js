@@ -28,7 +28,7 @@ class IpfsService extends BaseService {
             }
         });
         this.registerListener(clientChannel, this.createListener(onError, onSuccess));
-        ipcRenderer.send(serverChannel, ipfsOptions);
+        serverChannel.send(ipfsOptions);
     }
     /**
      * Stop ipfs service
@@ -37,7 +37,7 @@ class IpfsService extends BaseService {
         const serverChannel = Channel.server.ipfs.stopService;
         const clientChannel = Channel.client.ipfs.stopService;
         this.registerListener(clientChannel, this.createListener(onError, onSuccess));
-        ipcRenderer.send(serverChannel, options);
+        serverChannel.send(options);
     }
     /**
      * get ipfs status
@@ -53,13 +53,13 @@ class IpfsService extends BaseService {
         const serverChannel = Channel.server.ipfs.status;
         const clientChannel = Channel.client.ipfs.status;
         this.registerListener(clientChannel, this.createListener(onError, onSuccess));
-        ipcRenderer.send(serverChannel, options);
+        serverChannel.send(options);
     }
     resolve = ({ options = {}, onError = () => {}, onSuccess }) => {
         const serverChannel = Channel.server.ipfs.resolve;
         const clientChannel = Channel.client.ipfs.resolve;
         this.registerListener(clientChannel, this.createListener(onError, onSuccess));
-        ipcRenderer.send(serverChannel, options);
+        serverChannel.send(options);
     }
 }
 

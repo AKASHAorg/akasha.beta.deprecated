@@ -1,4 +1,3 @@
-import { ipcRenderer } from 'electron';
 import debug from 'debug';
 import BaseService from './base-service';
 import profileDB from './db/profile';
@@ -39,7 +38,7 @@ class RegistryService extends BaseService {
             serverChannel,
             clientChannel,
             listenerCb: this.createListener(onError, onSuccess)
-        }, () => ipcRenderer.send(serverChannel, { token, username, ipfs, gas }));
+    }, () => serverChannel.send({ token, username, ipfs, gas }));
     };
     /**
      * Get eth address of the logged profile
@@ -57,7 +56,7 @@ class RegistryService extends BaseService {
                 return resolve(res.data);
             };
             return this.registerListener(clientChannel, listenerCb, () =>
-                ipcRenderer.send(serverChannel, {})
+                serverChannel.send({})
             );
         });
     };
@@ -78,7 +77,7 @@ class RegistryService extends BaseService {
                 return resolve(res.data);
             };
             return this.registerListener(clientChannel, listenerCb, () =>
-                ipcRenderer.send(serverChannel, { ethAddress })
+                serverChannel.send({ ethAddress })
             );
         });
     }

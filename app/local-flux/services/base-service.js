@@ -1,4 +1,3 @@
-import { ipcRenderer } from 'electron';
 import debug from 'debug';
 
 const dbg = debug('App::BaseService::*');
@@ -14,7 +13,7 @@ class BaseService {
         // manager channel listeners
         this._openChannels = new Set();
     }
-    // create a universal listener passed to ipcRenderer.on() method;
+    // create a universal listener passed to clientChannel.on() method;
     createListener = (onError, onSuccess) =>
         (ev, res) => {
             dbg('response: ', res);
@@ -43,7 +42,9 @@ class BaseService {
      * removes a listener
      */
     removeListener = (channel, cb) => {
-        channel.removeListener(this._listeners.get(channel.channel));
+        if (this._listeners.get(channel.channel)) {
+            channel.removeListener(this._listeners.get(channel.channel));
+        }
         this._listeners.delete(channel.channel);
         if (typeof cb === 'function') {
             return cb();
@@ -85,9 +86,9 @@ class BaseService {
      * @param channel <String> the server channel we need to stop listen
      */
     closeChannel = (serverManager, serverChannel, clientChannel) => {
-        serverChannel.disable();
         this.removeListener(clientChannel);
         this._openChannels.delete(serverChannel.channel);
+        serverChannel.disable();
     };
 }
 

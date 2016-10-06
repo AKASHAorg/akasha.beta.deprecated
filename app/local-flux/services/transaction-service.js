@@ -1,4 +1,3 @@
-import { ipcRenderer } from 'electron';
 import debug from 'debug';
 import BaseService from './base-service';
 import transactionsDB from './db/transactions';
@@ -55,7 +54,7 @@ class TransactionService extends BaseService {
             });
         };
         this.registerListener(clientChannel, this.createListener(onError, successCB));
-        ipcRenderer.send(serverChannel, txs.map(tx => ({ tx })));
+        serverChannel.send(txs.map(tx => ({ tx })));
     };
     /**
      * emit and mined event for a transaction from queue
@@ -87,7 +86,7 @@ class TransactionService extends BaseService {
             }
         };
         this.registerListener(clientChannel, this.createListener(onError, successCB));
-        ipcRenderer.send(serverChannel, { watch });
+        serverChannel.send({ watch });
     };
 
     getTransactions = ({ type, onSuccess, onError }) => {
