@@ -12,7 +12,8 @@ const channels = {
     auth: ['login', 'logout', 'requestEther', 'generateEthKey', 'getLocalIdentities'],
 
     tags: ['create', 'exists', 'getTagId', 'getTagAt', 'isSubscribed', 'subscribe',
-        'unsubscribe', 'getSubPosition', 'getTagsFrom'],
+        'unsubscribe', 'getSubPosition', 'getTagsFrom', 'getCreateError', 'getTagsCreated',
+    'getIndexedTag', 'getIndexTagError'],
 
     entry: ['publish', 'update', 'upvote', 'downvote', 'isOpenedToVotes', 'getVoteOf',
         'getVoteEndDate', 'getScore', 'getEntriesCount', 'getEntryOf', 'getEntry'],

@@ -22,12 +22,23 @@ class IndexedTags extends BaseContract_1.default {
     }
     subscribe(tag, gas) {
         const tagTr = this.gethInstance.web3.fromUtf8(tag);
-        return this.extractData('subscribe', tagTr, { gas });
+        return Promise.resolve(this.extractData('subscribe', tagTr, { gas }));
     }
     unsubscribe(tag, subPosition, gas) {
         const tagTr = this.gethInstance.web3.fromUtf8(tag);
         const subPositionTr = this.gethInstance.web3.fromDecimal(subPosition);
         return this.extractData('unsubscribe', tagTr, subPositionTr, { gas });
+    }
+    getIndexedTag(filter) {
+        const { fromBlock, toBlock, address } = filter;
+        const IndexedTag = this.contract.IndexedTag(filter.index, { fromBlock, toBlock, address });
+        IndexedTag.getAsync = Promise.promisify(IndexedTag.get);
+        return IndexedTag.getAsync();
+    }
+    getIndexTagError(filter) {
+        const Error = this.contract.Error(filter);
+        Error.getAsync = Promise.promisify(Error.get);
+        return Error.getAsync();
     }
 }
 Object.defineProperty(exports, "__esModule", { value: true });
