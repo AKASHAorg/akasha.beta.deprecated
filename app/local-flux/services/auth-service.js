@@ -1,4 +1,3 @@
-import { ipcRenderer } from 'electron';
 import debug from 'debug';
 import BaseService from './base-service';
 import profileDB from './db/profile';
@@ -33,7 +32,7 @@ class AuthService extends BaseService {
         const serverChannel = Channel.server.auth.login;
         const clientChannel = Channel.client.auth.login;
         this.registerListener(clientChannel, this.createListener(onError, onSuccess));
-        ipcRenderer.send(serverChannel, { account, password, rememberTime });
+        serverChannel.send({ account, password, rememberTime });
     };
     /**
      *  Logout profile
@@ -53,7 +52,7 @@ class AuthService extends BaseService {
                 return resolve(res.data);
             };
             return this.registerListener(clientChannel, listenerCb, () =>
-                ipcRenderer.send(serverChannel, {})
+                serverChannel.send({})
             );
         });
     };
@@ -75,7 +74,7 @@ class AuthService extends BaseService {
             return onSuccess(data);
         };
         this.registerListener(clientChannel, this.createListener(onError, successCb));
-        ipcRenderer.send(serverChannel, { address });
+        serverChannel.send({ address });
     };
     /**
      * Create a new eth address
@@ -93,7 +92,7 @@ class AuthService extends BaseService {
             clientChannel,
             listenerCb: this.createListener(onError, onSuccess)
         }, () => {
-            ipcRenderer.send(serverChannel, { password });
+            serverChannel.send({ password });
         });
     };
     /**
@@ -110,7 +109,7 @@ class AuthService extends BaseService {
             clientChannel,
             listenerCb: this.createListener(onError, onSuccess)
         }, () =>
-            ipcRenderer.send(serverChannel, options)
+            serverChannel.send(options)
         );
     };
     /**

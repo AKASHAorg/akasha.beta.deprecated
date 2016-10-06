@@ -27,7 +27,7 @@ class ProfileService extends BaseService {
         const serverChannel = Channel.server.profile.getMyBalance;
         const clientChannel = Channel.client.profile.getMyBalance;
         this.registerListener(clientChannel, this.createListener(onError, onSuccess));
-        ipcRenderer.send(serverChannel, options);
+        serverChannel.send(options);
     };
     /**
      * retrieve profile data by eth address
@@ -50,7 +50,7 @@ class ProfileService extends BaseService {
         const serverChannel = Channel.server.profile.getProfileData;
         const clientChannel = Channel.client.profile.getProfileData;
         this.registerListener(clientChannel, this.createListener(onError, onSuccess));
-        ipcRenderer.send(serverChannel, options);
+        serverChannel.send(options);
     };
     /**
      * retrieve profile data by ipfs address
@@ -67,7 +67,7 @@ class ProfileService extends BaseService {
         const clientChannel = Channel.server.profile.getIpfs;
 
         this.registerListener(clientChannel, this.createListener(onError, onSuccess));
-        ipcRenderer.send(serverChannel, options);
+        serverChannel.send(options);
     };
     /**
      * unregister profile -> delete profile from profiles registry contract

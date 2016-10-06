@@ -1,5 +1,4 @@
 import debug from 'debug';
-import { ipcRenderer } from 'electron';
 import entriesDB from './db/entry';
 import BaseService from './base-service';
 
@@ -42,7 +41,7 @@ class EntryService extends BaseService {
                 serverChannel,
                 clientChannel,
                 listenerCb
-            }, () => ipcRenderer.send(serverChannel, entry));
+            }, () => serverChannel.send(entry));
         });
     };
     getResourceCount = (table) =>
