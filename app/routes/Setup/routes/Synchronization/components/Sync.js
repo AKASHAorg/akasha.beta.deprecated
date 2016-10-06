@@ -27,7 +27,6 @@ class SyncStatus extends Component {
             eProcActions.startGeth(gethSettings);
         }
         if (!ipfsStatus.get('started') || !ipfsStatus.get('downloading') || !ipfsStatus.get('spawned')) {
-            console.log('start ipfs')
             eProcActions.startIPFS();
         }
     }
@@ -37,7 +36,6 @@ class SyncStatus extends Component {
             !gethStatus.get('synced') && !gethSyncStatus.get('syncing');
         const gethSynced = gethSyncStatus.get('synced');
         const ipfsStarted = ipfsStatus.get('started');
-        console.log(ipfsStatus, 'ipfs status');
         if (gethReadyToSync) {
             eProcActions.startThrottledSync();
         } else if (gethSynced && ipfsStarted) {

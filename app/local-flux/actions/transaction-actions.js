@@ -19,14 +19,14 @@ class TransactionActions {
     listenForMinedTx = ({ watch = true } = {}) => {
         this.transactionService.emitMined({
             watch,
-            onSuccess: data => this.dispatch(transactionActionCreators.transactionMined(data)),
+            onSuccess: data => this.dispatch(transactionActionCreators.transactionMinedSuccess(data)),
             onError: error => this.dispatch(transactionActionCreators.transactionMinedError(error))
         });
     }
 
-    addToQueue = (tx) => {
+    addToQueue = (txs) => {
         this.transactionService.addToQueue({
-            tx,
+            txs,
             onError: error => this.dispatch(transactionActionCreators.addToQueueError(error)),
             onSuccess: data => this.dispatch(transactionActionCreators.addToQueueSuccess(data))
         });
@@ -36,11 +36,9 @@ class TransactionActions {
         this.transactionService.getTransactions({
             type: 'mined',
             onError: (error) => {
-                console.log(error, 'error');
                 this.dispatch(transactionActionCreators.getMinedTransactionsError(error.message));
             },
             onSuccess: (data) => {
-                console.log('success', data);
                 this.dispatch(transactionActionCreators.getMinedTransactionsSuccess(data));
             }
         });
@@ -50,7 +48,6 @@ class TransactionActions {
         this.transactionService.getTransactions({
             type: 'pending',
             onError: (error) => {
-                console.log(error, 'an error');
                 this.dispatch(transactionActionCreators.getPendingTransactionsError(error));
             },
             onSuccess: (data) => {
