@@ -47,7 +47,7 @@ export default class IndexedTags extends BaseContract {
      */
     public subscribe(tag: string, gas?: number) {
         const tagTr = this.gethInstance.web3.fromUtf8(tag);
-        return this.extractData('subscribe', tagTr, { gas });
+        return Promise.resolve(this.extractData('subscribe', tagTr, { gas }));
     }
 
     /**
@@ -63,4 +63,26 @@ export default class IndexedTags extends BaseContract {
         return this.extractData('unsubscribe', tagTr, subPositionTr, { gas });
     }
 
+    /**
+     *
+     * @param filter
+     * @returns {Bluebird<T>|any}
+     */
+    public getIndexedTag(filter: {index?: {tag?: string, tagId?: number}, fromBlock: string, toBlock?: string, address?: string}) {
+        const {fromBlock, toBlock, address} = filter;
+        const IndexedTag = this.contract.IndexedTag(filter.index, {fromBlock, toBlock, address});
+        IndexedTag.getAsync = Promise.promisify(IndexedTag.get);
+        return IndexedTag.getAsync();
+    }
+
+    /**
+     *
+     * @param filter
+     * @returns {Bluebird<T>|any}
+     */
+    public getIndexTagError(filter: {fromBlock: string, toBlock: string, address: string}) {
+    const Error = this.contract.Error(filter);
+    Error.getAsync = Promise.promisify(Error.get);
+    return Error.getAsync();
+    }
 }

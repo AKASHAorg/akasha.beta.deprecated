@@ -32,6 +32,8 @@ class TagsIPC extends ModuleEmitter {
             ._getTagsFrom()
             ._getCreateError()
             ._getTagsCreated()
+            ._getIndexTagError()
+            ._getIndexedTag()
             ._manager();
     }
 
@@ -48,6 +50,7 @@ class TagsIPC extends ModuleEmitter {
                 contracts.instance.tags
                     .add(data.tagName, data.gas)
                     .then((txData: any) => {
+                        console.log(txData);
                         return userModule.auth.signData(txData, data.token);
                     })
                     .then((tx: string) => {
@@ -417,6 +420,70 @@ class TagsIPC extends ModuleEmitter {
                     .finally(() => {
                         this.fireEvent(
                             channels.client[this.MODULE_NAME].getTagsCreated,
+                            response,
+                            event
+                        );
+                    });
+            }
+        );
+        return this;
+    }
+
+    private _getIndexTagError() {
+        this.registerListener(
+            channels.server[this.MODULE_NAME].getIndexTagError,
+            (event: any, data: GenericErrorEventRequest) => {
+                let response: GenericErrorEventResponse;
+                contracts
+                    .instance
+                    .indexedTags
+                    .getIndexTagError(data)
+                    .then((events) => {
+                        response = mainResponse({ events });
+                    })
+                    .catch((error: Error) => {
+                        response = mainResponse({
+                            error: {
+                                message: error.message,
+                                from: { address: data.address }
+                            }
+                        });
+                    })
+                    .finally(() => {
+                        this.fireEvent(
+                            channels.client[this.MODULE_NAME].getIndexTagError,
+                            response,
+                            event
+                        );
+                    });
+            }
+        );
+        return this;
+    }
+
+    private _getIndexedTag() {
+        this.registerListener(
+            channels.server[this.MODULE_NAME].getIndexedTag,
+            (event: any, data: GenericFromEventRequest) => {
+                let response: GenericFromEventResponse;
+                contracts
+                    .instance
+                    .indexedTags
+                    .getIndexedTag(data)
+                    .then((events) => {
+                        response = mainResponse({ events });
+                    })
+                    .catch((error: Error) => {
+                        response = mainResponse({
+                            error: {
+                                message: error.message,
+                                from: { address: data.address }
+                            }
+                        });
+                    })
+                    .finally(() => {
+                        this.fireEvent(
+                            channels.client[this.MODULE_NAME].getIndexedTag,
                             response,
                             event
                         );
