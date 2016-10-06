@@ -67,4 +67,27 @@ export default class Tags extends BaseContract {
             });
     }
 
+    /**
+     *
+     * @param filter
+     * @returns {Bluebird<T>|any}
+     */
+    public getCreateError(filter: {fromBlock: string, toBlock: string, address: string}) {
+        const Error = this.contract.Error(filter);
+        Error.getAsync = Promise.promisify(Error.get);
+        return Error.getAsync();
+    }
+
+    /**
+     *
+     * @param filter
+     * @returns {Bluebird<T>|any}
+     */
+    public getTagsCreated(filter: {index: {}, fromBlock: string, toBlock?: string, address?: string}) {
+        const {fromBlock, toBlock, address} = filter;
+        const TagsCreated = this.contract.TagCreated(filter.index, {fromBlock, toBlock, address});
+        TagsCreated.getAsync = Promise.promisify(TagsCreated.get);
+        return TagsCreated.getAsync();
+    }
+
 }

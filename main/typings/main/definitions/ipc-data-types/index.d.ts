@@ -276,26 +276,33 @@ interface ProfileCreateResponse extends MainResponse {
     };
 }
 
-interface ProfileErrorEventRequest {
+interface GenericErrorEventRequest {
     fromBlock: string,
     toBlock: string,
     address: string
 }
 
-interface ProfileErrorEventResponse extends MainResponse{
+interface GenericErrorEventResponse extends MainResponse{
     data: {
         events: any[]
     }
 }
 
-interface ProfileRegisteredEventRequest extends ProfileErrorEventRequest{
-    index: {};
-}
-interface ProfileRegisteredEventResponse extends MainResponse {
+interface ProfileErrorEventRequest extends GenericErrorEventRequest{}
+interface ProfileErrorEventResponse extends GenericErrorEventResponse{}
+
+interface GenericFromEventResponse extends MainResponse{
     data: {
         collection: any[]
     }
 }
+
+interface GenericFromEventRequest extends ProfileErrorEventRequest{
+    index: {};
+}
+
+interface ProfileRegisteredEventRequest extends GenericFromEventRequest{}
+interface ProfileRegisteredEventResponse extends GenericFromEventResponse {}
 /////////////////////////  </ Registry > \\\\\\\\\\\\\\\\\\\\\\\\
 
 ////////////////////////// < Profile> \\\\\\\\\\\\\\\\\\\\\\\\\\\\\

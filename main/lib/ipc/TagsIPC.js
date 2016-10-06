@@ -22,6 +22,8 @@ class TagsIPC extends ModuleEmitter_1.default {
             ._subscribe()
             ._unsubscribe()
             ._getTagsFrom()
+            ._getCreateError()
+            ._getTagsCreated()
             ._manager();
     }
     _create() {
@@ -246,6 +248,54 @@ class TagsIPC extends ModuleEmitter_1.default {
             })
                 .finally(() => {
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].getTagsFrom, response, event);
+            });
+        });
+        return this;
+    }
+    _getCreateError() {
+        this.registerListener(channels_1.default.server[this.MODULE_NAME].getCreateError, (event, data) => {
+            let response;
+            index_1.constructed
+                .instance
+                .tags
+                .getCreateError(data)
+                .then((events) => {
+                response = responses_1.mainResponse({ events });
+            })
+                .catch((error) => {
+                response = responses_1.mainResponse({
+                    error: {
+                        message: error.message,
+                        from: { address: data.address }
+                    }
+                });
+            })
+                .finally(() => {
+                this.fireEvent(channels_1.default.client[this.MODULE_NAME].getCreateError, response, event);
+            });
+        });
+        return this;
+    }
+    _getTagsCreated() {
+        this.registerListener(channels_1.default.server[this.MODULE_NAME].getTagsCreated, (event, data) => {
+            let response;
+            index_1.constructed
+                .instance
+                .tags
+                .getTagsCreated(data)
+                .then((collection) => {
+                response = responses_1.mainResponse({ collection });
+            })
+                .catch((error) => {
+                response = responses_1.mainResponse({
+                    error: {
+                        message: error.message,
+                        from: { address: data.address }
+                    }
+                });
+            })
+                .finally(() => {
+                this.fireEvent(channels_1.default.client[this.MODULE_NAME].getTagsCreated, response, event);
             });
         });
         return this;
