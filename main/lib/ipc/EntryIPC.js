@@ -4,7 +4,6 @@ const channels_1 = require('../channels');
 const index_1 = require('./contracts/index');
 const responses_1 = require('./event/responses');
 const index_2 = require('./modules/auth/index');
-const records_1 = require('./modules/models/records');
 const Entry_1 = require('./modules/models/Entry');
 class EntryIPC extends ModuleEmitter_1.default {
     constructor() {
@@ -34,7 +33,6 @@ class EntryIPC extends ModuleEmitter_1.default {
             const entry = new Entry_1.default();
             entry.create(data.content, data.tags)
                 .then((hash) => {
-                records_1.entries.records.set(`f-${hash}`, data);
                 return index_1.constructed.instance
                     .main
                     .publishEntry(hash, data.tags, data.gas);
