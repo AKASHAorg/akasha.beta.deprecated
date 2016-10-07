@@ -39,8 +39,15 @@ class ProfileIPC extends ModuleEmitter_1.default {
                 return index_2.module.helpers.getShortProfile(resp);
             })
                 .then((resp) => {
-                const constructed = Object.assign({}, resp, { profile: data.profile });
-                response = responses_1.mainResponse(constructed);
+                const constructed = Object.assign({ username: '' }, resp, { profile: data.profile });
+                return index_3.constructed.instance
+                    .registry
+                    .getByContract(data.profile)
+                    .then((username) => {
+                    constructed.username = username;
+                    response = responses_1.mainResponse(constructed);
+                    return response;
+                });
             })
                 .catch((err) => {
                 response = responses_1.mainResponse({

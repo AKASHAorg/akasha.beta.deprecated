@@ -45,8 +45,15 @@ class ProfileIPC extends ModuleEmitter {
                         return profileModule.helpers.getShortProfile(resp);
                     })
                     .then((resp: IpfsProfileCreateRequest) => {
-                        const constructed = Object.assign({}, resp, { profile: data.profile });
-                        response = mainResponse(constructed);
+                        const constructed = Object.assign({ username: '' }, resp, { profile: data.profile });
+                        return contracts.instance
+                            .registry
+                            .getByContract(data.profile)
+                            .then((username) => {
+                                constructed.username = username;
+                                response = mainResponse(constructed);
+                                return response;
+                            });
                     })
                     .catch((err: Error) => {
                         response = mainResponse({
