@@ -332,6 +332,7 @@ interface ProfileDataResponse extends MainResponse {
     data: {
         firstName: string;
         lastName: string;
+        username: string;
         avatar?: Uint8Array;
         backgroundImage?: any;
         about?: string;

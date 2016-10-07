@@ -125,7 +125,8 @@ class GethIPC extends GethEmitter {
         this.registerListener(
             channels.server.geth.stopService,
             (event: IpcMainEvent, data: GethStopRequest) => {
-                GethConnector.getInstance().stop(data.signal);
+                const signal = (data)? data.signal: 'SIGINT';
+                GethConnector.getInstance().stop(signal);
             }
         );
         return this;

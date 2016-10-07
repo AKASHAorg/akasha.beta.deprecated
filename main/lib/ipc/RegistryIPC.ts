@@ -144,7 +144,7 @@ class RegistryIPC extends ModuleEmitter {
                         response = mainResponse({
                             error: {
                                 message: error.message,
-                                from: { address: data.username }
+                                from: { username: data.username }
                             }
                         });
                     })

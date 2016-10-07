@@ -110,7 +110,7 @@ class RegistryIPC extends ModuleEmitter_1.default {
                 response = responses_1.mainResponse({
                     error: {
                         message: error.message,
-                        from: { address: data.username }
+                        from: { username: data.username }
                     }
                 });
             })

@@ -8,6 +8,7 @@ class Registry extends BaseContract_1.default {
         this.contract = Promise.promisifyAll(instance);
         this.contract.getById.callAsync = Promise.promisify(this.contract.getById.call);
         this.contract.getByAddr.callAsync = Promise.promisify(this.contract.getByAddr.call);
+        this.contract.getByContr.callAsync = Promise.promisify(this.contract.getByContr.call);
     }
     profileExists(username) {
         return this.contract
@@ -21,6 +22,14 @@ class Registry extends BaseContract_1.default {
         return this.contract
             .getByAddr
             .callAsync(address);
+    }
+    getByContract(address) {
+        return this.contract
+            .getByContr
+            .callAsync(address)
+            .then((username) => {
+            return this.gethInstance.web3.toUtf8(username);
+        });
     }
     getMyProfile() {
         return this.contract
