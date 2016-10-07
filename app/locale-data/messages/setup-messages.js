@@ -115,10 +115,20 @@ const setupMessages = defineMessages({
         description: 'state of block sync',
         defaultMessage: 'Synchronization completed'
     },
+    syncPaused: {
+        id: 'app.setup.syncPaused',
+        description: 'state of block sync',
+        defaultMessage: 'Syncronization is paused'
+    },
     syncResuming: {
         id: 'app.setup.syncResuming',
         description: 'state of block sync',
         defaultMessage: 'Resuming synchronization...'
+    },
+    disconnected: {
+        id: 'app.setup.disconnected',
+        description: 'disconnected',
+        defaultMessage: 'Disconnected'
     },
     beforeSyncStart: {
         id: 'app.setup.beforeSyncStart',

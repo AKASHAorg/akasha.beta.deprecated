@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { setupMessages } from 'locale-data/messages'; /* eslint import/no-unresolved: 0 */
 import { SyncProgressLoader } from 'shared-components';
@@ -6,7 +6,7 @@ import { SyncProgressLoader } from 'shared-components';
 class SyncStatus extends Component {
 
     render () {
-        const { intl, gethSyncStatus, gethStatus, ipfsStatus } = this.props;
+        const { intl, gethSyncStatus, gethStatus, ipfsStatus, syncActionId } = this.props;
         let blockProgress;
         let currentProgress;
         let progressBody;
@@ -58,7 +58,7 @@ class SyncStatus extends Component {
                 progressBody = (
                   <div>
                     <div style={{ fontWeight: 'bold', padding: '5px', fontSize: '16px' }} >
-                        {intl.formatMessage(setupMessages.downloadingGeth)}
+                      {intl.formatMessage(setupMessages.downloadingGeth)}
                     </div>
                   </div>
                 );
@@ -72,8 +72,17 @@ class SyncStatus extends Component {
                     </div>
                   </div>
                 );
+            } else if (syncActionId === 2) {
+                peerInfo = intl.formatMessage(setupMessages.disconnected);
+                progressBody = (
+                  <div>
+                    <div style={{ fontWeight: 'bold', padding: '5px', fontSize: '16px' }} >
+                      {peerInfo}
+                    </div>
+                  </div>
+                );
             } else {
-              peerInfo = intl.formatMessage(setupMessages.findingPeers);
+                peerInfo = intl.formatMessage(setupMessages.findingPeers);
                 progressBody = (
                   <div>
                     <div style={{ fontWeight: 'bold', padding: '5px', fontSize: '16px' }} >
@@ -93,7 +102,11 @@ class SyncStatus extends Component {
 }
 
 SyncStatus.propTypes = {
-
+    intl: PropTypes.shape().isRequired,
+    gethSyncStatus: PropTypes.shape().isRequired,
+    gethStatus: PropTypes.shape().isRequired,
+    ipfsStatus: PropTypes.shape().isRequired,
+    syncActionId: PropTypes.number
 };
 
 export default SyncStatus;
