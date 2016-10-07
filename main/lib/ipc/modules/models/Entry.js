@@ -40,24 +40,24 @@ class Entry {
         });
     }
     getShortContent() {
-        if (records_1.entries.records.getShort(this.hash)) {
-            return Promise.resolve(records_1.entries.records.getShort(this.hash));
+        if (records_1.entries.getShort(this.hash)) {
+            return Promise.resolve(records_1.entries.getShort(this.hash));
         }
         return ipfs_connector_1.IpfsConnector.getInstance().api
             .get(this.hash)
             .then((data) => {
-            records_1.entries.records.setShort(this.hash, data);
+            records_1.entries.setShort(this.hash, data);
             return data;
         });
     }
     getFullContent() {
-        if (records_1.entries.records.getFull(this.hash)) {
-            return Promise.resolve(records_1.entries.records.getFull(this.hash));
+        if (records_1.entries.getFull(this.hash)) {
+            return Promise.resolve(records_1.entries.getFull(this.hash));
         }
         return ipfs_connector_1.IpfsConnector.getInstance().api
             .get(this.hash)
             .then((data) => {
-            records_1.entries.records.setFull(this.hash, data);
+            records_1.entries.setFull(this.hash, data);
             return data;
         });
     }

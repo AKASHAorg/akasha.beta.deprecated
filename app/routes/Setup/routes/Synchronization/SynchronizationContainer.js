@@ -16,7 +16,8 @@ function mapStateToProps (state) {
         gethSettings: state.settingsState.get('geth'),
         ipfsSettings: state.settingsState.get('ipfs'),
         gethSyncStatus: state.externalProcState.get('gethSyncStatus'),
-        syncActionId: state.externalProcState.get('syncActionId')
+        syncActionId: state.externalProcState.get('syncActionId'),
+        gethBusyState: state.externalProcState.get('gethBusyState')
     };
 }
 

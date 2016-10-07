@@ -117,12 +117,13 @@ class Config extends Component {
         settingsActions.setupIPFSGatewayPort(target.value);
     };
     handleSubmit = () => {
-        const { settingsActions, gethSettings, ipfsSettings } = this.props;
+        const { settingsActions, gethSettings, ipfsSettings, eProcActions } = this.props;
         const { datadir, ipcpath, cache } = gethSettings.toJS();
         const { ipfsPath } = ipfsSettings.toJS();
         settingsActions.saveSettings('geth', { datadir, ipcpath, cache });
         settingsActions.saveSettings('ipfs', { ipfsPath });
         settingsActions.saveSettings('flags', { requestStartupChange: false });
+        eProcActions.startSync();
         this.context.router.push('setup/sync-status');
     };
 

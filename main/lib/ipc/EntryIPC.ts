@@ -3,7 +3,6 @@ import channels from '../channels';
 import { constructed as contracts } from './contracts/index';
 import { mainResponse } from './event/responses';
 import { module as userModule } from './modules/auth/index';
-import { entries } from './modules/models/records';
 import IpfsEntry from './modules/models/Entry';
 import WebContents = Electron.WebContents;
 
@@ -40,7 +39,6 @@ class EntryIPC extends ModuleEmitter {
                 const entry = new IpfsEntry();
                 entry.create(data.content, data.tags)
                     .then((hash) => {
-                        entries.records.set(`f-${hash}`, data);
                         return contracts.instance
                             .main
                             .publishEntry(hash, data.tags, data.gas)

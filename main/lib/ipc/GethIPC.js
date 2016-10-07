@@ -60,7 +60,8 @@ class GethIPC extends GethEmitter_1.default {
     }
     _stop() {
         this.registerListener(channels_1.default.server.geth.stopService, (event, data) => {
-            geth_connector_1.GethConnector.getInstance().stop(data.signal);
+            const signal = (data) ? data.signal : 'SIGINT';
+            geth_connector_1.GethConnector.getInstance().stop(signal);
         });
         return this;
     }
