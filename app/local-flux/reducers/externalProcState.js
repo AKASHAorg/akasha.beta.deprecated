@@ -48,16 +48,24 @@ const initialState = fromJS({
      * syncActionId
      *      0: not started / initial
      *      1: syncing
-     *      2: stopped
-     *      3: finished
+     *      2: paused
+     *      3: stopped
+     *      4: finished
      */
-    syncActionId: 0
+    syncActionId: 0,
+    /**
+     * gethBusyState is used to disable consecutive actions on geth service
+     *      false: geth is started/stopped
+     *      true: geth is starting/stopping
+     */
+    gethBusyState: false
 });
 
 const eProcState = createReducer(initialState, {
     [types.START_GETH]: state =>
-        state.merge({ 
-            gethStatus: state.get('gethStatus').merge({ startRequested: true })
+        state.merge({
+            gethStatus: state.get('gethStatus').merge({ startRequested: true }),
+            gethBusyState: true
         }),
 
     [types.START_GETH_SUCCESS]: (state, action) =>
@@ -69,8 +77,9 @@ const eProcState = createReducer(initialState, {
         }),
 
     [types.STOP_GETH]: state =>
-        state.merge({ 
-            gethStatus: state.get('gethStatus').merge({ startRequested: false })
+        state.merge({
+            gethStatus: state.get('gethStatus').merge({ startRequested: false }),
+            gethBusyState: true
         }),
 
     [types.STOP_GETH_SUCCESS]: (state, action) =>
@@ -102,12 +111,12 @@ const eProcState = createReducer(initialState, {
     [types.STOP_IPFS]: state =>
         state.merge({
             ipfsStatus: state.get('ipfsStatus').merge({ startRequested: false }),
-            ipfsErrors: state.get('ipfsErrors').clear()            
+            ipfsErrors: state.get('ipfsErrors').clear()
         }),
 
     [types.STOP_IPFS_SUCCESS]: state =>
         state.merge({
-            ipfsStatus: new IpfsStatus
+            ipfsStatus: new IpfsStatus()
         }),
 
     [types.STOP_IPFS_ERROR]: (state, action) =>
@@ -123,23 +132,41 @@ const eProcState = createReducer(initialState, {
 
     [types.SYNC_ACTIVE]: state =>
         state.merge({
-            actionId: 1
+            syncActionId: 1
         }),
 
     [types.SYNC_STOPPED]: state =>
         state.merge({
-            actionId: 2
+            syncActionId: 3,
+            gethSyncStatus: new GethSyncStatus()
+        }),
+
+    [types.SYNC_PAUSED]: state =>
+        state.merge({
+            syncActionId: 2,
+            gethSyncStatus: new GethSyncStatus()
+        }),
+
+    [types.SYNC_RESUME]: state =>
+        state.merge({
+            syncActionId: 1
+        }),
+
+    [types.RESET_GETH_BUSY]: state =>
+        state.merge({
+            gethBusyState: false
         }),
 
     [types.SYNC_FINISHED]: state =>
         state.merge({
-            actionId: 3
+            syncActionId: 4
         }),
 
     [types.GET_GETH_LOGS_SUCCESS]: (state, action) => {
-        let logs = [...action.data, ...state.get('gethLogs').toJS()];
+        const logs = [...action.data, ...state.get('gethLogs').toJS()];
         let logsSet = new Set(logs)
-            .sort((first, second) => new Date(first.timestamp).getTime() < new Date(second.timestamp).getTime() ? 1 : -1)
+            .sort((first, second) =>
+                new Date(first.timestamp).getTime() < new Date(second.timestamp).getTime() ? 1 : -1)
             .slice(0, 20);
         logsSet = logsSet.map(log => new Map(log));
         return state.set('gethLogs', logsSet);
