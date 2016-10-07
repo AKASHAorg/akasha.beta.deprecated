@@ -32,7 +32,8 @@ class SyncStatus extends Component {
         }
     }
     componentWillReceiveProps (nextProps) {
-        const { gethStatus, eProcActions, gethSyncStatus, ipfsStatus, ipfsErrors, gethSettings, gethErrors } = nextProps;
+        const { gethStatus, eProcActions, gethSyncStatus, ipfsStatus,
+            ipfsErrors, gethSettings, gethErrors, syncActionId } = nextProps;
         const gethSynced = gethSyncStatus.get('synced');
         const gethReadyToSync = gethStatus.get('api') && !gethSynced;
         const ipfsStarted = ipfsStatus.get('started');
@@ -41,37 +42,61 @@ class SyncStatus extends Component {
             if (!ipfsStatus.get('started') && !ipfsStatus.get('startRequested')) {
                 eProcActions.startIPFS();
             }
-            if (!gethStatus.get('spawned') && !gethStatus.get('startRequested')) {
+            if (!gethStatus.get('spawned') && !gethStatus.get('startRequested')
+                    && syncActionId === 0) {
                 eProcActions.startGeth(gethSettings.toJS());
             }
             if (gethReadyToSync) {
-                eProcActions.startThrottledSync();
+                if (syncActionId === 0) {
+                    eProcActions.startSync();
+                }
+                if (syncActionId !== 2 && syncActionId !== 3) {
+                    eProcActions.throttledSyncUpdate();
+                }
             } else if (gethSynced && ipfsStarted) {
                 this.context.router.push('authenticate');
             }
         }
     }
     componentWillUpdate (nextProps) {
-        const { gethStatus, configFlags, gethSyncStatus } = nextProps;
-        const shouldReconfigure = configFlags.get('requestStartupChange') && !gethStatus.get('api');
+        const { gethStatus, configFlags, gethBusyState } = nextProps;
+        const shouldReconfigure = configFlags.get('requestStartupChange') && !gethStatus.get('api')
+            && !gethBusyState;
 
         if (shouldReconfigure) {
             return this.context.router.push('setup');
         }
-        
+
         return null;
     }
     componentWillUnmount () {
         const { eProcActions } = this.props;
         eProcActions.stopGethLogger();
-        eProcActions.stopThrottledSync();
+        eProcActions.stopThrottledUpdate();
     }
     handleCancel = () => {
-        const { eProcActions, settingsActions } = this.props;
-        eProcActions.stopGeth();
-        eProcActions.finishSync();
+        const { eProcActions, settingsActions, syncActionId } = this.props;
+        if (syncActionId !== 2) {
+            eProcActions.stopSync();
+            eProcActions.finishSync();
+        }
         settingsActions.saveSettings('flags', { requestStartupChange: true });
     };
+    handlePause = () => {
+        const { syncActionId, eProcActions } = this.props;
+
+        switch (syncActionId) {
+            case 1:
+                eProcActions.stopThrottledUpdate();
+                eProcActions.pauseSync();
+                break;
+            case 2:
+                eProcActions.resumeSync();
+                break;
+            default:
+                break;
+        }
+    }
     _getActionLabels = () => {
         const { syncActionId, intl } = this.props;
         const labels = {};
@@ -81,16 +106,16 @@ class SyncStatus extends Component {
                 labels.action = intl.formatMessage(generalMessages.pause);
                 break;
             case 2:
-                labels.title = intl.formatMessage(setupMessages.syncStopped);
-                labels.action = intl.formatMessage(generalMessages.start);
+                labels.title = intl.formatMessage(setupMessages.syncPaused);
+                labels.action = intl.formatMessage(generalMessages.resume);
                 break;
             case 3:
-                labels.title = intl.formatMessage(setupMessages.syncCompleted);
-                labels.action = intl.formatMessage(generalMessages.completed);
+                labels.title = intl.formatMessage(setupMessages.syncStopped);
+                labels.action = intl.formatMessage(generalMessages.pause);
                 break;
             case 4:
-                labels.title = intl.formatMessage(setupMessages.syncResuming);
-                labels.action = intl.formatMessage(generalMessages.starting);
+                labels.title = intl.formatMessage(setupMessages.syncCompleted);
+                labels.action = intl.formatMessage(generalMessages.completed);
                 break;
             default:
                 labels.title = intl.formatMessage(setupMessages.synchronizing);
@@ -126,7 +151,9 @@ class SyncStatus extends Component {
             gethErrors,
             gethLogs,
             ipfsStatus,
-            ipfsErrors } = this.props;
+            ipfsErrors,
+            gethBusyState,
+            syncActionId } = this.props;
 
         const pageTitle = this._getActionLabels().title;
         let gethErrorCards;
@@ -138,7 +165,7 @@ class SyncStatus extends Component {
                 <span>
                   {gethError.get('code')}
                 </span>
-                <span style={{marginLeft: '5px'}}>
+                <span style={{ marginLeft: '5px' }}>
                   {gethError.get('message')}
                 </span>
               </Paper>
@@ -147,16 +174,20 @@ class SyncStatus extends Component {
         if (ipfsErrors.size > 0) {
             ipfsErrorCards = ipfsErrors.map((ipfsError, key) =>
                 <Paper key={key} style={{ margin: '10px 0', padding: '5px' }} >
-                  <div style={{display: 'flex', alignItems: 'center'}}>
-                    <div style={{flex: '1 1 auto'}}>
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <div style={{ flex: '1 1 auto' }}>
                       <span>
                         {ipfsError.get('code')}
                       </span>
-                      <span style={{margin: '0 5px'}}>
+                      <span style={{ margin: '0 5px' }}>
                         {ipfsError.get('message')}
                       </span>
                     </div>
-                    <FlatButton style={{flex: '0 0 auto'}} label={intl.formatMessage(setupMessages.retry)} onClick={this.handleRetry}/>
+                    <FlatButton
+                      style={{ flex: '0 0 auto' }}
+                      label={intl.formatMessage(setupMessages.retry)}
+                      onClick={this.handleRetry}
+                    />
                   </div>
                 </Paper>
             );
@@ -173,12 +204,14 @@ class SyncStatus extends Component {
                 label={intl.formatMessage(generalMessages.cancel)}
                 style={{ marginLeft: '12px' }}
                 onClick={this.handleCancel}
+                disabled={gethBusyState}
               />,
               <RaisedButton
                 key="pauseOrResume"
                 label={this._getActionLabels().action}
                 style={{ marginLeft: '12px' }}
-                onClick={this.handleSync}
+                onClick={this.handlePause}
+                disabled={gethBusyState}
               />
             /* eslint-enable */
             ]}
@@ -212,6 +245,7 @@ class SyncStatus extends Component {
                   gethSyncStatus={gethSyncStatus}
                   ipfsStatus={ipfsStatus}
                   intl={intl}
+                  syncActionId={syncActionId}
                 />
               }
             </div>
@@ -227,7 +261,7 @@ class SyncStatus extends Component {
                                 backgroundColor: (
                                     log.get('level') === 'warn' ?
                                     'orange' : log.get('level') === 'error' ?
-                                    'red' : log.get('level') === 'info' ? 
+                                    'red' : log.get('level') === 'info' ?
                                     'lightblue' : 'transparent')
                             }}
                         >
@@ -262,7 +296,8 @@ SyncStatus.propTypes = {
     ipfsErrors: PropTypes.shape().isRequired,
     gethSyncStatus: PropTypes.shape().isRequired,
     settingsActions: PropTypes.shape(),
-    syncActionId: PropTypes.number
+    syncActionId: PropTypes.number,
+    gethBusyState: PropTypes.bool
 };
 
 SyncStatus.contextTypes = {

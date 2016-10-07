@@ -38,8 +38,14 @@ class EProcActions {
         this.dispatch(externalProcessActionCreators.startGeth());
         this.gethService.start({
             options,
-            onError: err => this.dispatch(externalProcessActionCreators.startGethError(err)),
-            onSuccess: data => this.dispatch(externalProcessActionCreators.startGethSuccess(data))
+            onError: (err) => {
+                this.dispatch(externalProcessActionCreators.startGethError(err));
+                this.resetGethBusyState();
+            },
+            onSuccess: (data) => {
+                this.dispatch(externalProcessActionCreators.startGethSuccess(data));
+                this.resetGethBusyState();
+            }
         });
     }
 
@@ -47,8 +53,14 @@ class EProcActions {
         this.dispatch(externalProcessActionCreators.stopGeth());
         this.gethService.stop({
             options: {},
-            onError: err => this.dispatch(externalProcessActionCreators.stopGethError(err)),
-            onSuccess: data => this.dispatch(externalProcessActionCreators.stopGethSuccess(data))
+            onError: (err) => {
+                this.dispatch(externalProcessActionCreators.stopGethError(err));
+                this.resetGethBusyState();
+            },
+            onSuccess: (data) => {
+                this.dispatch(externalProcessActionCreators.stopGethSuccess(data));
+                this.resetGethBusyState();
+            }
         });
     }
 
@@ -69,11 +81,8 @@ class EProcActions {
                 externalProcessActionCreators.getGethOptionsSuccess(data)
             )
         });
-    startThrottledSync = () => {
-        this.dispatch(externalProcessActionCreators.startSync());
-        this.throttledSyncUpdate();
-    }
-    stopThrottledSync = () => {
+
+    stopThrottledUpdate = () => {
         this.throttledSyncUpdate.cancel();
     }
     /**
@@ -120,7 +129,7 @@ class EProcActions {
         this.ipfsService.stop({
             options: {},
             onError: err => this.dispatch(externalProcessActionCreators.stopIPFSError(err)),
-            onSuccess: data => this.dispatch(externalProcessActionCreators.stopIPFSSuccess(data)) 
+            onSuccess: data => this.dispatch(externalProcessActionCreators.stopIPFSSuccess(data))
         });
     };
 
@@ -129,8 +138,10 @@ class EProcActions {
      * Dispatcher for resuming sync
      * @returns {function()}
      */
-    resumeSync = () =>
+    resumeSync = () => {
         this.dispatch(externalProcessActionCreators.resumeSync());
+        this.startGeth();
+    }
 
     pauseSync = () => {
         this.dispatch(externalProcessActionCreators.pauseSync());
@@ -140,19 +151,21 @@ class EProcActions {
      * Action for stopping sync
      * @returns {{type}}
      */
-    stopSync = () =>
-        this.stopGeth({
-            options: {},
-            onError: err => this.dispatch(appActionCreators.showError(err)),
-            onSuccess: data => this.dispatch(externalProcessActionCreators.stopSync(data))
-        });
+    stopSync = () => {
+        this.dispatch(externalProcessActionCreators.stopSync());
+        this.stopGeth();
+    }
+
+    resetGethBusyState = () =>
+        setTimeout(() => this.dispatch(externalProcessActionCreators.resetGethBusy()), 2000);
 
     filterLogs = (data, timestamp) => {
-        let logs = [...data.gethError, ...data.gethInfo].filter(log => new Date(log.timestamp).getTime() > timestamp);
+        const logs = [...data.gethError, ...data.gethInfo]
+            .filter(log => new Date(log.timestamp).getTime() > timestamp);
         return logs;
     }
 
-    startGethLogger = (timestamp) =>
+    startGethLogger = timestamp =>
         this.gethService.getLogs({
             options: {},
             onError: err => this.dispatch(appActionCreators.showError(err)),
