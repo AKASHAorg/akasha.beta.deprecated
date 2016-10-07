@@ -18,6 +18,8 @@ const GethSyncStatus = Record({
     highestBlock: null,
     startingBlock: null,
     peerCount: null,
+    knownStates: null,
+    pulledStates: null,
     synced: false
 });
 
@@ -138,18 +140,28 @@ const eProcState = createReducer(initialState, {
     [types.SYNC_STOPPED]: state =>
         state.merge({
             syncActionId: 3,
-            gethSyncStatus: new GethSyncStatus()
+            gethSyncStatus: state.get('gethSyncStatus').merge({
+                peerCount: null,
+                synced: false
+            })
         }),
 
     [types.SYNC_PAUSED]: state =>
         state.merge({
             syncActionId: 2,
-            gethSyncStatus: new GethSyncStatus()
+            gethSyncStatus: state.get('gethSyncStatus').merge({
+                peerCount: null,
+                synced: false
+            })
         }),
 
     [types.SYNC_RESUME]: state =>
         state.merge({
-            syncActionId: 1
+            syncActionId: 1,
+            gethSyncStatus: state.get('gethSyncStatus').merge({
+                peerCount: null,
+                synced: false
+            })
         }),
 
     [types.RESET_GETH_BUSY]: state =>

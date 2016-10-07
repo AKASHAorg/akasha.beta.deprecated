@@ -97,13 +97,18 @@ const setupMessages = defineMessages({
     },
     startingGeth: {
         id: 'app.setup.startingGeth',
-        description: 'message shown then Geth is starting',
+        description: 'message shown when Geth is starting',
         defaultMessage: 'Starting Geth client..'
+    },
+    processing: {
+        id: 'app.setup.processing',
+        description: 'message shown when processing blocks',
+        defaultMessage: 'Processing'
     },
     synchronizing: {
         id: 'app.setup.synchronizing',
         description: 'state of block sync',
-        defaultMessage: 'Synchronising'
+        defaultMessage: 'Synchronizing'
     },
     syncStopped: {
         id: 'app.setup.syncStopped',
