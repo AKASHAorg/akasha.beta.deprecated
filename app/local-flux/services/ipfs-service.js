@@ -27,7 +27,7 @@ class IpfsService extends BaseService {
                 ipfsOptions[key] = options[key];
             }
         });
-        this.registerListener(clientChannel, this.createListener(onError, onSuccess));
+        this.registerListener(clientChannel, this.createListener(onError, onSuccess, clientChannel.channelName));
         serverChannel.send(ipfsOptions);
     }
     /**
@@ -36,7 +36,7 @@ class IpfsService extends BaseService {
     stop = ({ options = {}, onError = () => {}, onSuccess }) => {
         const serverChannel = Channel.server.ipfs.stopService;
         const clientChannel = Channel.client.ipfs.stopService;
-        this.registerListener(clientChannel, this.createListener(onError, onSuccess));
+        this.registerListener(clientChannel, this.createListener(onError, onSuccess, clientChannel.channelName));
         serverChannel.send(options);
     }
     /**
@@ -52,13 +52,13 @@ class IpfsService extends BaseService {
     getStatus = ({ options = {}, onError = () => {}, onSuccess }) => {
         const serverChannel = Channel.server.ipfs.status;
         const clientChannel = Channel.client.ipfs.status;
-        this.registerListener(clientChannel, this.createListener(onError, onSuccess));
+        this.registerListener(clientChannel, this.createListener(onError, onSuccess, clientChannel.channelName));
         serverChannel.send(options);
     }
     resolve = ({ options = {}, onError = () => {}, onSuccess }) => {
         const serverChannel = Channel.server.ipfs.resolve;
         const clientChannel = Channel.client.ipfs.resolve;
-        this.registerListener(clientChannel, this.createListener(onError, onSuccess));
+        this.registerListener(clientChannel, this.createListener(onError, onSuccess, clientChannel.channelName));
         serverChannel.send(options);
     }
 }

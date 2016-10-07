@@ -37,8 +37,8 @@ class RegistryService extends BaseService {
             clientManager: this.clientManager,
             serverChannel,
             clientChannel,
-            listenerCb: this.createListener(onError, onSuccess)
-    }, () => serverChannel.send({ token, username, ipfs, gas }));
+            listenerCb: this.createListener(onError, onSuccess, clientChannel.channelName)
+        }, () => serverChannel.send({ token, username, ipfs, gas }));
     };
     /**
      * Get eth address of the logged profile
@@ -67,9 +67,14 @@ class RegistryService extends BaseService {
      * Response:
      *  @param data = { profileAddress: String } -> profile contract address
      */
-    getByAddress = (ethAddress) => {
+    getByAddress = ({ ethAddress, onSuccess, onError }) => {
         const serverChannel = Channel.server.registry.getByAddress;
         const clientChannel = Channel.client.registry.getByAddress;
+        this.registerListener(
+            clientChannel,
+            this.createListener(onError, onSuccess, clientChannel.channelName)
+        );
+        serverChannel.send(ethAddress);
         if (this._listeners.has(clientChannel)) return Promise.resolve();
         return new Promise((resolve, reject) => {
             const listenerCb = (ev, res) => {
@@ -104,14 +109,17 @@ class RegistryService extends BaseService {
      * @param {object} changes - Contains data of the updated profile
      * @return promise
      */
-    updateTempProfile = ({ changes, onSuccess, onError }) =>
+    updateTempProfile = ({ changes, currentStatus, onSuccess, onError }) =>
         profileDB.transaction('rw', profileDB.tempProfile, () => {
             return profileDB.tempProfile.toArray().then((tmpProfile) => {
-                dbg('updating', tmpProfile, changes);
-                return profileDB.tempProfile.update(tmpProfile[0].username, changes);
+                dbg('updating', tmpProfile, { ...changes, currentStatus });
+                return profileDB.tempProfile.update(tmpProfile[0].username, {
+                    ...changes,
+                    currentStatus
+                });
             }).then((data) => {
-                dbg('updated temp profile', data);
-                onSuccess(data);
+                dbg('updated temp profile', { ...changes, currentStatus });
+                onSuccess({ ...changes, currentStatus });
             });
         })
         .catch(reason => onError(reason));
@@ -119,7 +127,12 @@ class RegistryService extends BaseService {
      * Delete temporary profile. Called after profile was successfully created
      */
     deleteTempProfile = ({ onSuccess, onError }) =>
-        profileDB.tempProfile.clear();
+        profileDB.transaction('rw', profileDB.tempProfile, () => {
+            profileDB.tempProfile.clear();
+        })
+        .then(() => onSuccess())
+        .catch(reason => onError(reason));
+
     /**
      * Get all available temporary profiles
      * @return promise

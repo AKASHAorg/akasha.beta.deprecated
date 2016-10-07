@@ -23,40 +23,36 @@ class EntryService extends BaseService {
      *  Publish a new entry
      *
      */
-    publishEntry = (entry, profileAddress) => {
+    publishEntry = ({ entry, profileAddress, onError, onSuccess }) => {
         const serverChannel = Channel.server.entry.publish;
         const clientChannel = Channel.client.entry.publish;
-        if (this._listeners.has(clientChannel)) return Promise.resolve();
-        return new Promise((resolve, reject) => {
-            const listenerCb = (ev, res) => {
-                dbg('publishEntry', res);
-                if (res.error) {
-                    return reject(res.error);
-                }
-                return resolve(res);
-            };
-            return this.openChannel({
-                serverManager: this.serverManager,
-                clientManager: this.clientManager,
-                serverChannel,
-                clientChannel,
-                listenerCb
-            }, () => serverChannel.send(entry));
-        });
+        this.openChannel({
+            serverManager: this.serverManager,
+            clientManager: this.clientManager,
+            serverChannel,
+            clientChannel,
+            listenerCb: this.createListener(onError, onSuccess, clientChannel.channelName)
+        }, () => serverChannel.send(entry));
     };
-    getResourceCount = (table) =>
+    getResourceCount = ({ table, onError, onSuccess }) =>
         entriesDB.transaction('rw', entriesDB[table], () =>
             entriesDB[table].count()
-        );
+        )
+        .then(counter => onSuccess(counter))
+        .catch(reason => onError(reason));
+
     // get resource by id (drafts or entries);
-    getById = (table, id) =>
+    getById = ({ table, id, onSuccess, onError }) =>
         entriesDB.transaction('r', entriesDB[table], () => {
             dbg('getById from', table, 'with id', id);
             return entriesDB[table]
                     .where('id')
                     .equals(parseInt(id, 10))
                     .first();
-        });
+        })
+        .then(entries => onSuccess(entries))
+        .catch(reason => onError(reason));
+
     getSortedEntries = ({ sortBy }) =>
         new Promise((resolve, reject) => {
             let entries = [];
@@ -82,21 +78,25 @@ class EntryService extends BaseService {
         //         return entriesDB.drafts.sortBy('status.created_at').toArray();
         //     }
         // });
-    createSavedEntry = (username, entry) =>
+    createSavedEntry = ({ username, entry, onError, onSuccess }) =>
         entriesDB.transaction('rw', entriesDB.savedEntries, () => {
             entriesDB.savedEntries.add({ username, ...entry.toJS() }).then(entryId => {
                 dbg('new savedEntry created with id', entryId);
                 return entry;
             });
-        });
+        })
+        .then(() => onSuccess(entry))
+        .catch(reason => onError(reason));
 
-    getSavedEntries = (username) =>
+    getSavedEntries = ({ username, onError, onSuccess }) =>
         entriesDB.transaction('r', entriesDB.savedEntries, () => {
             dbg('getting saved entries for username ', username);
             return entriesDB.savedEntries.where('username')
                                          .equals(username)
                                          .toArray();
-        });
+        })
+        .then(entries => onSuccess(entries))
+        .catch(reason => onError(reason));
 
     getEntriesForTag = () => {};
 }

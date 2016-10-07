@@ -14,9 +14,9 @@ class BaseService {
         this._openChannels = new Set();
     }
     // create a universal listener passed to clientChannel.on() method;
-    createListener = (onError, onSuccess) =>
+    createListener = (onError, onSuccess, channelName = 'notSetChannel') =>
         (ev, res) => {
-            dbg('response: ', res);
+            dbg('response on channel', channelName, 'is', res);
             if (res.error) {
                 return onError(res.error);
             }
@@ -68,14 +68,14 @@ class BaseService {
         listenerCb
     }, cb) => {
         if (this._openChannels.has(serverChannel.channel)) {
-            dbg(serverChannel, 'already opened. Nothing to do!');
+            // server channel already opened. Nothing to do!
             return cb();
         }
         clientManager.once((ev, res) => {
             if (res.error) {
                 dbg(`${res.error.message}, please check base-service -> openChannel method`);
             }
-            dbg(serverChannel.channel, 'is now open to communication');
+            dbg(serverChannel.channelName, 'is now open to communication');
             this._openChannels.add(serverChannel.channel);
             return this.registerListener(clientChannel, listenerCb, cb);
         });

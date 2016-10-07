@@ -192,6 +192,11 @@ const setupMessages = defineMessages({
         id: 'app.setup.retry',
         description: 'try again',
         defaultMessage: 'Retry'
+    },
+    identityRegistered: {
+        id: 'app.setup.identityRegistered',
+        description: 'panel title when identity registered',
+        defaultMessage: 'Identity Registered!'
     }
 });
 
