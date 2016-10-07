@@ -87,12 +87,11 @@ class Avatar extends React.Component {
               offsetBorder,
               backgroundColor,
               ...other } = this.props;
-        console.log(radius, 'the radius');
         const palette = this.context.muiTheme.palette;
         let userInitials;
         let avatarImage;
         if (this.props.userName) {
-            userInitials = userName.split(' ').map((part) => part.charAt(0)).join('');
+            userInitials = userName.split(' ').map(part => part.charAt(0)).join('');
         }
         if (this.state.avatarImage) {
             avatarImage = this.state.avatarImage;
@@ -113,7 +112,6 @@ class Avatar extends React.Component {
                 onClick={this._handleDialogOpen}
               />
             }
-
             {avatarImage &&
               <div>
                 <AvatarEditor
