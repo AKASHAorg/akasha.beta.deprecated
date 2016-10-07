@@ -12,6 +12,7 @@ export default class Registry extends BaseContract {
         this.contract = Promise.promisifyAll(instance);
         this.contract.getById.callAsync = Promise.promisify(this.contract.getById.call);
         this.contract.getByAddr.callAsync = Promise.promisify(this.contract.getByAddr.call);
+        this.contract.getByContr.callAsync = Promise.promisify(this.contract.getByContr.call);
     }
 
     /**
@@ -37,6 +38,15 @@ export default class Registry extends BaseContract {
         return this.contract
             .getByAddr
             .callAsync(address);
+    }
+
+    public getByContract(address: string){
+        return this.contract
+            .getByContr
+            .callAsync(address)
+            .then((username) => {
+                return this.gethInstance.web3.toUtf8(username);
+            });
     }
 
     /**
@@ -117,7 +127,7 @@ export default class Registry extends BaseContract {
      * @param filter
      * @returns {Bluebird<T>|any}
      */
-    getError(filter: {fromBlock: string, toBlock: string, address: string}) {
+    public getError(filter: {fromBlock: string, toBlock: string, address: string}) {
         const Error = this.contract.Error(filter);
         Error.getAsync = Promise.promisify(Error.get);
         return Error.getAsync();
@@ -128,7 +138,7 @@ export default class Registry extends BaseContract {
      * @param filter
      * @returns {Bluebird<T>|any}
      */
-    getRegistered(filter: {index: {}, fromBlock: string, toBlock?: string, address?: string}) {
+    public getRegistered(filter: {index: {}, fromBlock: string, toBlock?: string, address?: string}) {
         const {fromBlock, toBlock, address} = filter;
         const Registered = this.contract.Register(filter.index, {fromBlock, toBlock, address});
         Registered.getAsync = Promise.promisify(Registered.get);

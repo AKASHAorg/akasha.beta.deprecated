@@ -158,7 +158,7 @@ export function stopSync () {
 
 export function pauseSync () {
     return {
-        type: types.SYNC_PAUSE
+        type: types.SYNC_PAUSED
     };
 }
 
@@ -168,7 +168,13 @@ export function resumeSync () {
     };
 }
 
-export function getGethLogs(data) {
+export function resetGethBusy () {
+    return {
+        type: types.RESET_GETH_BUSY
+    }
+}
+
+export function getGethLogs (data) {
     return {
         type: types.GET_GETH_LOGS_SUCCESS,
         data

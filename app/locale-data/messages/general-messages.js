@@ -76,6 +76,11 @@ const generalMessages = defineMessages({
         description: 'pause button label',
         defaultMessage: 'Pause'
     },
+    resume: {
+        id: 'app.general.resume',
+        description: 'resume button label',
+        defaultMessage: 'Resume'
+    },
     start: {
         id: 'app.general.start',
         description: 'start button label',
