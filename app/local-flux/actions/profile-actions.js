@@ -180,8 +180,7 @@ class ProfileActions {
                     dbg('requestFundFromFaucetSuccess', data);
                     const newStatus = tempProfile.get('currentStatus').merge({
                         currentStep: 'REQUEST_FUND_FROM_FAUCET_SUCCESS',
-                        faucetTx: data.tx,
-                        faucetRequested: true
+                        faucetTx: data.tx
                     });
                     this.updateTempProfile({}, newStatus.toJS(), () => {
                         dispatch(profileActionCreators.requestFundFromFaucetSuccess(data));
@@ -235,8 +234,7 @@ class ProfileActions {
                     dbg('publishProfileSuccess', data);
                     const newStatus = tempProfile.get('currentStatus').merge({
                         currentStep: 'COMPLETE_PROFILE_CREATION_SUCCESS',
-                        publishTx: data.tx,
-                        publishRequested: true
+                        publishTx: data.tx
                     });
                     this.updateTempProfile({}, newStatus.toJS(), () => {
                         dispatch(profileActionCreators.publishProfileSuccess(data));
