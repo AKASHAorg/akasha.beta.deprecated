@@ -97,7 +97,7 @@ interface IpfsStartRequest {
 interface IpfsgetConfigResponse extends MainResponse {
     data: {
         apiPort: string;
-        dataDir: string;
+        storagePath: string;
     }
 }
 interface IpfsResolveResponse extends MainResponse {

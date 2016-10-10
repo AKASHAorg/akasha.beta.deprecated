@@ -34,7 +34,8 @@ class IpfsIPC extends IpfsEmitter_1.default {
     }
     _stop() {
         this.registerListener(channels_1.default.server.ipfs.stopService, (event, data) => {
-            ipfs_connector_1.IpfsConnector.getInstance().stop(data.signal);
+            const signal = (data) ? data.signal : 'SIGINT';
+            ipfs_connector_1.IpfsConnector.getInstance().stop(signal);
         });
         return this;
     }
@@ -82,7 +83,7 @@ class IpfsIPC extends IpfsEmitter_1.default {
             let response;
             response = responses_1.ipfsResponse({
                 apiPort: ipfs_connector_1.IpfsConnector.getInstance().options.apiAddress.split('/').pop(),
-                dataDir: ipfs_connector_1.IpfsConnector.getInstance().options.extra.env.IPFS_PATH
+                storagePath: ipfs_connector_1.IpfsConnector.getInstance().options.extra.env.IPFS_PATH
             });
             this.fireEvent(channels_1.default.client.ipfs.getConfig, response, event);
         });
