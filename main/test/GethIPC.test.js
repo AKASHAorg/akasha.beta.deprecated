@@ -33,18 +33,16 @@ describe('GethIPC', function () {
         let listenersNr = 0;
         const listenOn = [
             channels_1.default.server.geth.syncStatus,
-            channels_1.default.server.geth.logs,
-            channels_1.default.server.geth.status
+            channels_1.default.server.geth.logs
         ];
         gethChannel.callTest.set(channels_1.default.client.geth.manager, (injected) => {
-            console.log(injected);
             listenersNr++;
             if (listenersNr === listenOn.length) {
                 done();
             }
         });
         listenOn.forEach((channelName) => {
-            electron_1.ipcMain.emit(channels_1.default.server.geth.manager, { channel: channelName, listen: true });
+            electron_1.ipcMain.emit(channels_1.default.server.geth.manager, '', { channel: channelName, listen: true });
         });
     });
     it('--should #startService', function (done) {
