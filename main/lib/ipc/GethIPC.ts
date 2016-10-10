@@ -234,7 +234,7 @@ class GethIPC extends GethEmitter {
                     mapObj[k] = v;
                 }
                 this.fireEvent(
-                    channels.client.geth.status,
+                    channels.client.geth.options,
                     gethResponse(mapObj),
                     event
                 );

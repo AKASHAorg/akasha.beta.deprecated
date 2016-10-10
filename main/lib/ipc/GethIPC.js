@@ -116,7 +116,7 @@ class GethIPC extends GethEmitter_1.default {
             for (let [k, v] of options) {
                 mapObj[k] = v;
             }
-            this.fireEvent(channels_1.default.client.geth.status, responses_1.gethResponse(mapObj), event);
+            this.fireEvent(channels_1.default.client.geth.options, responses_1.gethResponse(mapObj), event);
         });
         return this;
     }

@@ -10,6 +10,7 @@ abstract class IpfsEmitter extends AbstractEmitter {
         this._download()
             ._catchCorrupted()
             ._catchFailed()
+            ._catchError()
             ._started()
             ._stopped();
     }
@@ -68,6 +69,18 @@ abstract class IpfsEmitter extends AbstractEmitter {
                 );
             }
         );
+        return this;
+    }
+
+    private _catchError() {
+        IpfsConnector.getInstance().on(
+            ipfsEvents.ERROR,
+            (message: string) => {
+                this.fireEvent(
+                    channels.client.ipfs.startService,
+                    ipfsResponse({}, {message})
+                )
+            });
         return this;
     }
 }
