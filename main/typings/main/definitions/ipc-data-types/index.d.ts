@@ -86,7 +86,7 @@ interface IpfsResolveRequest {
 }
 
 interface IpfsStartRequest {
-    dataDir?: string;
+    storagePath?: string;
     ports?: {
         gateway?: number,
         api?: number,
