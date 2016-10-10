@@ -177,10 +177,17 @@ const eProcState = createReducer(initialState, {
     [types.GET_GETH_LOGS_SUCCESS]: (state, action) => {
         const logs = [...action.data, ...state.get('gethLogs').toJS()];
         let logsSet = new Set(logs)
-            .sort((first, second) =>
-                new Date(first.timestamp).getTime() < new Date(second.timestamp).getTime() ? 1 : -1)
-            .slice(0, 20);
-        logsSet = logsSet.map(log => new Map(log));
+            .sort((first, second) => {
+                const firstTimestamp = new Date(first.timestamp).getTime();
+                const secondTimestamp = new Date(second.timestamp).getTime();
+                if (firstTimestamp < secondTimestamp) {
+                    return 1;
+                } else if (firstTimestamp > secondTimestamp) {
+                    return -1;
+                }
+                return 0;
+            });
+        logsSet = logsSet.map(log => new Map(log)).slice(0, 20);
         return state.set('gethLogs', logsSet);
     }
 });
