@@ -36,13 +36,11 @@ describe('GethIPC', function () {
         let listenersNr = 0;
         const listenOn = [
             channel.server.geth.syncStatus,
-            channel.server.geth.logs,
-            channel.server.geth.status
+            channel.server.geth.logs
         ];
         gethChannel.callTest.set(
             channel.client.geth.manager,
             (injected) => {
-                console.log(injected);
                 listenersNr++;
                 if(listenersNr === listenOn.length){
                     done()
@@ -50,7 +48,7 @@ describe('GethIPC', function () {
             }
         );
         listenOn.forEach((channelName) => {
-            ipcMain.emit(channel.server.geth.manager, {channel: channelName, listen: true});
+            ipcMain.emit(channel.server.geth.manager, '', {channel: channelName, listen: true});
         });
     });
 
