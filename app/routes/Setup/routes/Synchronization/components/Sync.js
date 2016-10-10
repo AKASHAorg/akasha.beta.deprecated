@@ -10,6 +10,7 @@ import SyncStatusLoader from './sync-status';
 class SyncStatus extends Component {
     constructor (props) {
         super(props);
+        this.logsTimestamp = null;
         this.state = {
             syncData: null,
             syncError: null,
@@ -30,6 +31,7 @@ class SyncStatus extends Component {
         if (!ipfsStatus.get('started') && !ipfsStatus.get('startRequested')) {
             eProcActions.startIPFS();
         }
+        this.logsTimestamp = new Date().getTime();
     }
     componentWillReceiveProps (nextProps) {
         const { gethStatus, eProcActions, gethSyncStatus, ipfsStatus,
@@ -126,11 +128,10 @@ class SyncStatus extends Component {
     _handleDetails = () => {
         const { eProcActions } = this.props;
         if (!this.state.showGethLogs) {
-            const timestamp = new Date().getTime();
             this.setState({
                 showGethLogs: true
             });
-            return eProcActions.startGethLogger(timestamp);
+            return eProcActions.startGethLogger(this.logsTimestamp);
         }
 
         this.setState({
@@ -227,28 +228,30 @@ class SyncStatus extends Component {
             ]}
             header={<SetupHeader title="AKASHA" />}
           >
-            <div
-              className="col-xs"
-              style={{ flex: 1, padding: 0 }}
-            >
-              <h1 style={{ fontWeight: '400' }} >{pageTitle}</h1>
-              <div>
-                <p>
-                  <FormattedMessage {...setupMessages.onSyncStart} />
-                </p>
+            {!this.state.showGethLogs &&
+              <div
+                className="col-xs"
+                style={{ flex: 1, padding: 0 }}
+              >
+                <h1 style={{ fontWeight: '400' }} >{pageTitle}</h1>
+                <div>
+                  <p>
+                    <FormattedMessage {...setupMessages.onSyncStart} />
+                  </p>
+                </div>
+                {gethErrorCards}
+                {ipfsErrorCards}
+                {!gethErrorCards && !ipfsErrorCards &&
+                  <SyncStatusLoader
+                    gethStatus={gethStatus}
+                    gethSyncStatus={gethSyncStatus}
+                    ipfsStatus={ipfsStatus}
+                    intl={intl}
+                    syncActionId={syncActionId}
+                  />
+                }
               </div>
-              {gethErrorCards}
-              {ipfsErrorCards}
-              {!gethErrorCards && !ipfsErrorCards &&
-                <SyncStatusLoader
-                  gethStatus={gethStatus}
-                  gethSyncStatus={gethSyncStatus}
-                  ipfsStatus={ipfsStatus}
-                  intl={intl}
-                  syncActionId={syncActionId}
-                />
-              }
-            </div>
+            }
             {this.state.showGethLogs &&
               <ul style={this.props.logListStyle} className="col-xs-12">
                 {gethLogs.map((log, key) => (
@@ -271,7 +274,7 @@ class SyncStatus extends Component {
                             {hoursMinutesSeconds(new Date(log.get('timestamp')))}
                         </span>
                     </div>
-                    <p>{log.get('message')}</p>
+                    <p style={{ marginTop: '7px' }}>{log.get('message')}</p>
                   </li>
                   ))
                   }
@@ -313,12 +316,9 @@ SyncStatus.defaultProps = {
         flexDirection: 'column'
     },
     logListStyle: {
-        maxHeight: 330,
-        overflowY: 'scroll',
         paddingLeft: 4,
-        overflowX: 'hidden',
         fontFamily: 'Consolas',
-        backgroundColor: 'rgba(0,0,0,0.02)'
+        listStyle: 'none'
     }
 };
 export default injectIntl(SyncStatus);
