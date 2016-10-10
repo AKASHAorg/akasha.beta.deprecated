@@ -40,8 +40,8 @@ class IpfsIPC extends IpfsEmitter {
         this.registerListener(
             channels.server.ipfs.startService,
             (event: IpcMainEvent, data: IpfsStartRequest) => {
-                if (data.dataDir) {
-                    IpfsConnector.getInstance().setIpfsFolder(data.dataDir);
+                if (data.storagePath) {
+                    IpfsConnector.getInstance().setIpfsFolder(data.storagePath);
                 }
                 IpfsConnector.getInstance().start();
             }
