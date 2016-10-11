@@ -57,17 +57,16 @@ class ProfileActions {
         this.dispatch((dispatch, getState) => {
             const updatedTempProfile = getState().profileState.get('tempProfile');
             const updatedStatus = updatedTempProfile.get('currentStatus');
-            const { currentStep, faucetTx, publishTx } = updatedStatus;
+            const { nextAction, faucetTx } = updatedStatus;
             const loggedProfile = getState().profileState.get('loggedProfile');
             const isLoggedIn = loggedProfile.get('account') === updatedTempProfile.get('address') &&
                 Date.parse(loggedProfile.get('expiration')) > Date.now();
-            const pendingTransactions = getState().transactionState.get('pending');
             const minedTransactions = getState().transactionState.get('mined');
-            dbg('resuming current step', currentStep);
-            switch (currentStep) {
+            dbg('resuming current step', nextAction);
+            switch (nextAction) {
                 case 'CREATE_TEMP_PROFILE':
                     // create eth address in this step and update temp profile;
-                    this.createEthAddress(updatedTempProfile.get('password'));
+                    this.createEthAddress();
                     break;
                 case 'CREATE_ETH_ADDRESS_SUCCESS':
                     // request from faucet in this step and update temp profile
@@ -108,13 +107,11 @@ class ProfileActions {
         this.registryService.createTempProfile({
             profileData,
             currentStatus: {
-                currentStep: 'CREATE_TEMP_PROFILE'
+                nextAction: 'createEthAddress'
             },
             onSuccess: (data) => {
                 dbg('createTempProfileSuccess', data);
-                this.dispatch(
-                    profileActionCreators.createTempProfileSuccess(profileData)
-                );
+                this.dispatch(profileActionCreators.createTempProfileSuccess(profileData));
             },
             onError: (error) => {
                 dbg('createTempProfileError', error);
@@ -132,23 +129,19 @@ class ProfileActions {
      * Response:
      * @param data.address <String> Generated Ethereum address
      */
-    createEthAddress = () => {
-        this.dispatch((dispatch, getState) => {
-            const tempProfile = getState().profileState.get('tempProfile');
-            const currentStatus = tempProfile.get('currentStatus');
-            const password = tempProfile.get('password');
-            dbg('creating eth address for password', password);
-            if (!tempProfile.get('address') && !currentStatus.get('ethAddressRequested')) {
-                this.dispatch(profileActionCreators.createEthAddress());
+    createEthAddress = (tempProfile) => {
+        const currentStatus = tempProfile.get('currentStatus');
+        const password = tempProfile.get('password');
+
+        if (!tempProfile.get('address') && !currentStatus.get('ethAddressRequested')) {
+            this.dispatch(profileActionCreators.createEthAddress());
+            this.dispatch((dispatch) => {
+                dbg('creating eth address for password', password);
                 this.authService.createEthAddress({
                     password,
                     onSuccess: (data) => {
                         dbg('createEthAddressSuccess', data);
-                        const newStatus = tempProfile.get('currentStatus').merge({
-                            currentStep: 'CREATE_ETH_ADDRESS_SUCCESS',
-                            ethAddressRequested: true
-                        });
-                        this.updateTempProfile(data, newStatus.toJS(), () => {
+                        this.updateTempProfile(data, { nextAction: 'requestFundFromFaucet' }, () => {
                             dispatch(profileActionCreators.createEthAddressSuccess(data));
                         });
                     },
@@ -157,8 +150,8 @@ class ProfileActions {
                         dispatch(profileActionCreators.createEthAddressError(error));
                     }
                 });
-            }
-        });
+            });
+        }
     }
     /**
      * Step 3: Request fund from faucet;
@@ -168,30 +161,31 @@ class ProfileActions {
      * Response:
      * @param data.tx <string> Transaction hash which must be watched
      */
-    requestFundFromFaucet = () => {
-        this.dispatch(profileActionCreators.requestFundFromFaucet());
-        this.dispatch((dispatch, getState) => {
-            const tempProfile = getState().profileState.get('tempProfile');
-            const address = tempProfile.get('address');
-            dbg('requesting funds for address', address);
-            this.authService.requestEther({
-                address,
-                onSuccess: (data) => {
-                    dbg('requestFundFromFaucetSuccess', data);
-                    const newStatus = tempProfile.get('currentStatus').merge({
-                        currentStep: 'REQUEST_FUND_FROM_FAUCET_SUCCESS',
-                        faucetTx: data.tx
-                    });
-                    this.updateTempProfile({}, newStatus.toJS(), () => {
-                        dispatch(profileActionCreators.requestFundFromFaucetSuccess(data));
-                    });
-                },
-                onError: (error) => {
-                    dbg('requestFundFromFaucetError', error);
-                    dispatch(profileActionCreators.requestFundFromFaucetError(error));
-                }
+    requestFundFromFaucet = (tempProfile) => {
+        const address = tempProfile.get('address');
+        if (address && !tempProfile.getIn(['currentStatus', 'faucetRequested'])) {
+            this.dispatch(profileActionCreators.requestFundFromFaucet());
+            this.dispatch((dispatch) => {
+                dbg('requesting funds for address', address);
+                this.authService.requestEther({
+                    address,
+                    onSuccess: (data) => {
+                        dbg('requestFundFromFaucetSuccess', data);
+                        const newStatus = tempProfile.get('currentStatus').merge({
+                            nextAction: 'listenFaucetTx',
+                            faucetTx: data.tx
+                        });
+                        this.updateTempProfile({}, newStatus.toJS(), () => {
+                            dispatch(profileActionCreators.requestFundFromFaucetSuccess(data));
+                        });
+                    },
+                    onError: (error) => {
+                        dbg('requestFundFromFaucetError', error);
+                        dispatch(profileActionCreators.requestFundFromFaucetError(error));
+                    }
+                });
             });
-        });
+        }
     }
     listenFaucetTx = () => {
         this.dispatch(profileActionCreators.listenFaucetTx());
@@ -208,47 +202,60 @@ class ProfileActions {
      *  Response:
      *  @param data.tx <string> Transaction hash which needs to be watched for mining
      */
-    publishProfile = (authToken, gas) => {
-        this.dispatch(profileActionCreators.publishProfile());
-        this.dispatch((dispatch, getState) => {
-            const tempProfile = getState().profileState.get('tempProfile');
-            const { username, firstName, lastName, avatar, about, links } = tempProfile;
-            let { backgroundImage } = tempProfile;
-            if (backgroundImage) backgroundImage = backgroundImage[0];
-            dbg('publishing profile', tempProfile, 'with token', authToken);
-            const ipfs = {
-                firstName,
-                lastName,
-                avatar,
-                backgroundImage,
-                about,
-                links
-            };
-            console.log('ipfs to send is', ipfs);
-            this.registryService.registerProfile({
-                token: authToken,
-                username,
-                ipfs,
-                gas,
-                onSuccess: (data) => {
-                    dbg('publishProfileSuccess', data);
-                    const newStatus = tempProfile.get('currentStatus').merge({
-                        currentStep: 'COMPLETE_PROFILE_CREATION_SUCCESS',
-                        publishTx: data.tx
-                    });
-                    this.updateTempProfile({}, newStatus.toJS(), () => {
-                        dispatch(profileActionCreators.publishProfileSuccess(data));
-                    });
-                },
-                onError: (error) => {
-                    dbg('publishProfileError', error);
-                    dispatch(profileActionCreators.publishProfileError(error));
-                }
+    publishProfile = (tempProfile, loggedProfile, gas) => {
+        const isLoggedIn = loggedProfile.get('account') === tempProfile.get('address') &&
+            Date.parse(loggedProfile.get('expiration')) > Date.now();
+        const { publishRequested } = tempProfile.get('currentStatus');
+        const { username, firstName, lastName, avatar, about, links, backgroundImage } = tempProfile;
+        const ipfs = {
+            firstName,
+            lastName,
+            about
+        };
+
+        if (links) {
+            ipfs.links = links;
+        }
+        if (avatar) {
+            ipfs.avatar = avatar;
+        }
+        if (backgroundImage.length > 0) {
+            ipfs.backgroundImage = backgroundImage[0];
+        }
+
+        if (isLoggedIn && !publishRequested) {
+            this.dispatch(profileActionCreators.publishProfile());
+            this.dispatch((dispatch) => {
+                this.registryService.registerProfile({
+                    token: loggedProfile.get('token'),
+                    username,
+                    ipfs,
+                    gas,
+                    onSuccess: (data) => {
+                        dbg('publishProfileSuccess', data);
+                        const newStatus = tempProfile.get('currentStatus').merge({
+                            nextAction: 'listenPublishTx',
+                            publishTx: data.tx
+                        });
+                        this.updateTempProfile({}, newStatus.toJS(), () => {
+                            dispatch(profileActionCreators.publishProfileSuccess(data));
+                        });
+                    },
+                    onError: (error) => {
+                        dbg('publishProfileError', error);
+                        dispatch(profileActionCreators.publishProfileError(error));
+                    }
+                });
             });
-        });
+        } else {
+            dbg('logging in!');
+            this.login({
+                account: tempProfile.get('address'),
+                password: tempProfile.get('password'),
+                rememberTime: 1
+            });
+        }
     }
-
-
     /**
      *  ----------- End Profile Registration --------------
      */
@@ -256,16 +263,14 @@ class ProfileActions {
      * -------------  Temp profile utilities -------------
      */
     updateTempProfile = (changes, currentStatus, cb) => {
-        console.log('updating temp profile with', changes);
         this.registryService.updateTempProfile({
             changes,
             currentStatus,
-            onSuccess: () => {
-                profileActionCreators.updateTempProfileSuccess(changes, currentStatus);
+            onSuccess: (tempProfile) => {
+                profileActionCreators.updateTempProfileSuccess(tempProfile);
                 cb();
             },
             onError: (error) => {
-                console.log('updateTempProfile error', error);
                 this.dispatch(profileActionCreators.updateTempProfileError(error));
             }
         });
@@ -279,7 +284,9 @@ class ProfileActions {
 
     getTempProfile = () =>
         this.registryService.getTempProfile({
-            onError: error => this.dispatch(profileActionCreators.getTempProfileError(error)),
+            onError: (error) => {
+                this.dispatch(profileActionCreators.getTempProfileError(error));
+            },
             onSuccess: data => this.dispatch(profileActionCreators.getTempProfileSuccess(data))
         });
     /**
@@ -311,5 +318,8 @@ class ProfileActions {
             });
         }
     };
+    clearErrors = () => {
+        this.dispatch(profileActionCreators.clearErrors());
+    }
 }
 export { ProfileActions };

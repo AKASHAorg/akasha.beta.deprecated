@@ -46,11 +46,10 @@ export function createTempProfileError (error) {
     };
 }
 
-export function updateTempProfileSuccess (profileData, status) {
+export function updateTempProfileSuccess (profileData, tempProfile) {
     return {
         type: types.UPDATE_TEMP_PROFILE_SUCCESS,
-        profileData,
-        status
+        tempProfile
     };
 }
 
@@ -180,5 +179,11 @@ export function getProfileDataError (error) {
     return {
         type: types.GET_PROFILE_DATA_ERROR,
         error
+    };
+}
+
+export function clearErrors () {
+    return {
+        type: types.CLEAR_PROFILE_ERRORS
     };
 }
