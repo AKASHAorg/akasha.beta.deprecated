@@ -77,7 +77,7 @@ exports.stopServices = (done) => {
     electron_1.ipcMain.emit(channels_1.default.server.ipfs.stopService);
     electron_1.ipcMain.emit(channels_1.default.server.geth.stopService);
 };
-exports.checktSynced = (done) => {
+exports.checkSynced = (done) => {
     let interval;
     exports.gethChannel.callTest.set(channels_1.default.client.geth.manager, (injected) => {
         return injected;

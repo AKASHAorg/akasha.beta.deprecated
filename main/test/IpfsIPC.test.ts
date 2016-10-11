@@ -1,11 +1,10 @@
 import { ipcMain } from 'electron';
-import { initLogger, IpfsIPCtest } from './helpers';
+import { initLogger, ipfsChannel } from './helpers';
 import { expect } from 'chai';
 import channel from '../lib/channels';
 
 describe('IpfsIPC', function () {
-    this.timeout(60000);
-    let ipfsChannel: IpfsIPCtest;
+    this.timeout(120000);
 
     before(function (done) {
         expect(initLogger()).to.exist;
@@ -13,7 +12,6 @@ describe('IpfsIPC', function () {
     });
 
     it('--constructs channel api', function () {
-        ipfsChannel = new IpfsIPCtest();
         expect(ipfsChannel).to.exist;
     });
 

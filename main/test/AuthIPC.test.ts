@@ -5,7 +5,7 @@ import {
     initLogger,
     startServices,
     stopServices,
-    checktSynced,
+    checkSynced,
     pwd,
     mockedAddress
 } from './helpers';
@@ -22,7 +22,7 @@ class AuthIPCtest extends AuthIPC {
     }
 }
 describe('AuthIPC', function () {
-    this.timeout(60000);
+    this.timeout(120000);
     let authChannel: AuthIPCtest;
 
     before(function (done) {
@@ -41,7 +41,7 @@ describe('AuthIPC', function () {
     });
 
     it('--waits for sync', function (done) {
-        checktSynced(done);
+        checkSynced(done);
     });
 
     it('--should add to listened channels from #manager', function (done) {
