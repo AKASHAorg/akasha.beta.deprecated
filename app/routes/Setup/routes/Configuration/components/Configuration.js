@@ -119,9 +119,9 @@ class Config extends Component {
     handleSubmit = () => {
         const { settingsActions, gethSettings, ipfsSettings, eProcActions } = this.props;
         const { datadir, ipcpath, cache } = gethSettings.toJS();
-        const { ipfsPath } = ipfsSettings.toJS();
+        const { storagePath } = ipfsSettings.toJS();
         settingsActions.saveSettings('geth', { datadir, ipcpath, cache });
-        settingsActions.saveSettings('ipfs', { ipfsPath });
+        settingsActions.saveSettings('ipfs', { storagePath });
         settingsActions.saveSettings('flags', { requestStartupChange: false });
         eProcActions.startSync();
         this.context.router.push('setup/sync-status');

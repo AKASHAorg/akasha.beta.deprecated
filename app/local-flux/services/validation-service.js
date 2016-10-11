@@ -24,7 +24,7 @@ class ValidationService extends BaseService {
             clientManager: this.clientManager,
             serverChannel,
             clientChannel,
-            listenerCb: this.createListener(onError, onSuccess)
+            listenerCb: this.createListener(onError, onSuccess, clientChannel.channelName)
         }, () => serverChannel.send({ username }));
     };
 }
