@@ -18,7 +18,8 @@ class ProfileActions {
         this.dispatch = dispatch;
         return profileActions;
     }
-    login = ({ account, password, rememberTime }) =>
+    login = ({ account, password, rememberTime }) => {
+        dbg('logging in with:', account, 'for', rememberTime, 'minutes');
         this.authService.login({
             account,
             password,
@@ -26,6 +27,7 @@ class ProfileActions {
             onSuccess: data => this.dispatch(profileActionCreators.loginSuccess(data)),
             onError: error => this.dispatch(profileActionCreators.loginError(error))
         });
+    };
 
     logout = (account) => {
         this.profileService.logout(account).then((result) => {
@@ -293,17 +295,18 @@ class ProfileActions {
      *  ----- End Temp Profile utilities ---------
      */
     getLocalProfiles = () =>
-        this.dispatch((dispatch) => {
-            this.authService.getLocalIdentities({
-                onSuccess: data => this.getProfileData(data),
-                onError: err => dispatch(profileActionCreators.getLocalProfilesError(err))
-            });
+        this.authService.getLocalIdentities({
+            onSuccess: (data) => {
+                this.dispatch(profileActionCreators.getLocalProfilesSuccess(data));
+                this.getProfileData(data);
+            },
+            onError: err => this.dispatch(profileActionCreators.getLocalProfilesError(err))
         });
     /**
      * profiles = [{key: string, profile: string}]
      */
     getProfileData = (profiles) => {
-        for (let i = profiles.length - 1; i >= 0; i--) {
+        for (let i = profiles.length - 1; i >= 0; i -= 1) {
             this.profileService.getProfileData({
                 options: {
                     profile: profiles[i].profile,

@@ -22,11 +22,12 @@ const Profile = Record({
     lastName: '',
     username: '',
     password: '',
-    address: null,
     avatar: null,
     backgroundImage: [],
     about: null,
-    links: []
+    links: [],
+    profile: null,
+    ethAddress: null
 });
 
 const TempProfile = Record({
@@ -208,7 +209,10 @@ const profileState = createReducer(initialState, {
 
     [types.GET_LOCAL_PROFILES_SUCCESS]: (state, { data }) =>
         state.merge({
-            profiles: state.get('profiles').concat(data.map(profile => new Profile(profile)))
+            profiles: state.get('profiles').concat(data.map(prf => new Profile({
+                ethAddress: prf.key,
+                profile: prf.profile
+            })))
         }),
 
     [types.GET_LOCAL_PROFILES_ERROR]: (state, { error }) =>
@@ -218,7 +222,7 @@ const profileState = createReducer(initialState, {
 
     [types.GET_PROFILE_DATA_SUCCESS]: (state, { data }) => {
         const profileIndex = state.get('profiles').findIndex(profile =>
-            profile.get('ipfsHash') === data.ipfsHash
+            profile.get('profile') === data.profile
         );
         return state.mergeDeepIn(['profiles', profileIndex], data);
     },
