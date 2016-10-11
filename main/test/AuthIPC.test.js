@@ -16,7 +16,7 @@ class AuthIPCtest extends AuthIPC_1.default {
     }
 }
 describe('AuthIPC', function () {
-    this.timeout(60000);
+    this.timeout(120000);
     let authChannel;
     before(function (done) {
         chai_1.expect(helpers_1.initLogger()).to.exist;
@@ -31,7 +31,7 @@ describe('AuthIPC', function () {
         chai_1.expect(authChannel.listeners.size).to.be.above(0);
     });
     it('--waits for sync', function (done) {
-        helpers_1.checktSynced(done);
+        helpers_1.checkSynced(done);
     });
     it('--should add to listened channels from #manager', function (done) {
         let listenersNr = 0;

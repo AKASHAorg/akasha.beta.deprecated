@@ -81,7 +81,7 @@ export const stopServices = (done) => {
 
 };
 
-export const checktSynced = (done) => {
+export const checkSynced = (done) => {
     let interval;
     gethChannel.callTest.set(
         channel.client.geth.manager,

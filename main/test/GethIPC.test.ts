@@ -1,12 +1,11 @@
 import { ipcMain } from 'electron';
-import { initLogger, GethIPCtest } from './helpers';
+import { initLogger, gethChannel } from './helpers';
 import { expect } from 'chai';
 import channel from '../lib/channels';
 
 
 describe('GethIPC', function () {
     this.timeout(60000);
-    let gethChannel: GethIPCtest;
 
     before(function (done) {
         expect(initLogger()).to.exist;
@@ -14,7 +13,6 @@ describe('GethIPC', function () {
     });
 
     it('--constructs channel api', function () {
-        gethChannel = new GethIPCtest();
         expect(gethChannel).to.exist;
     });
 
@@ -45,13 +43,14 @@ describe('GethIPC', function () {
     });
 
     it('--should #startService', function (done) {
-        gethChannel.callTest.set(channel.client.geth.startService, (injected) => {
-            expect(injected.data).to.exist;
-            expect(injected.data.error).to.not.exist;
-            if (injected.data.data.started) {
-                done();
-            }
-        });
+        gethChannel.callTest.set(channel.client.geth.startService,
+            (injected) => {
+                expect(injected.data).to.exist;
+                expect(injected.data.error).to.not.exist;
+                if (injected.data.data.started) {
+                    done();
+                }
+            });
         ipcMain.emit(channel.server.geth.startService, '', {});
     });
 
@@ -87,14 +86,14 @@ describe('GethIPC', function () {
 
     it('--should set geth starting #options', function (done) {
         const fakePath = '/fake/path';
-       gethChannel.callTest.set(channel.client.geth.options, (injected) => {
-           expect(injected.data).to.exist;
-           expect(injected.data.error).to.not.exist;
-           expect(injected.data.data.datadir).to.equal(fakePath);
-           done();
+        gethChannel.callTest.set(channel.client.geth.options, (injected) => {
+            expect(injected.data).to.exist;
+            expect(injected.data.error).to.not.exist;
+            expect(injected.data.data.datadir).to.equal(fakePath);
+            done();
 
-       });
-        ipcMain.emit(channel.server.geth.options, '', {datadir: fakePath});
+        });
+        ipcMain.emit(channel.server.geth.options, '', { datadir: fakePath });
     });
 
     after(function (done) {
