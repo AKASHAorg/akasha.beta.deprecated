@@ -117,7 +117,7 @@ class RegistryService extends BaseService {
                     ...changes,
                     currentStatus
                 });
-            }).then((data) => {
+            }).then(() => {
                 dbg('updated temp profile', { ...changes, currentStatus });
                 onSuccess({ ...changes, currentStatus });
             });
@@ -143,7 +143,10 @@ class RegistryService extends BaseService {
         ).then((results) => {
             dbg('temp profiles: ', results);
             onSuccess(results[0]);
-        }).catch(reason => onError(reason));
+        }).catch((reason) => {
+            console.error(reason);
+            onError(reason);
+        });
     }
 }
 

@@ -32,20 +32,9 @@ class TransactionService extends BaseService {
             return console.error('tx param should be an array!!');
         }
         const successCB = (data) => {
-            transactionsDB.transaction('rw', transactionsDB.pending, () => {
-                return transactionsDB
-                    .pending
-                    .where('tx')
-                    .anyOf(txs)
-                    .toArray()
-                    .then((results) => {
-                        txs.forEach((trans) => {
-                            if (!results.find(res => res.tx === trans)) {
-                                return transactionsDB.pending.add({ tx: trans });
-                            }
-                        });
-                    });
-            })
+            transactionsDB.transaction('rw', transactionsDB.pending, () =>
+                transactionsDB.pending.bulkPut(txs.map(tx => ({ tx })))
+            )
             .then(() => onSuccess(txs))
             .catch((reason) => {
                 onError(reason);
@@ -71,15 +60,11 @@ class TransactionService extends BaseService {
             if (data && data.mined) {
                 transactionsDB.transaction('rw', transactionsDB.pending, transactionsDB.mined, () => {
                     transactionsDB.pending.where('tx').equals(data.mined).delete();
-                    transactionsDB.mined.where('tx').equals(data.mined).toArray().then((results) => {
-                        if (!results.find(res => res.tx === data.mined)) {
-                            transactionsDB.mined.add({
-                                tx: data.mined,
-                                blockNumber: data.blockNumber,
-                                cumulativeGasUsed: data.cumulativeGasUsed,
-                                hasEvents: data.hasEvents
-                            });
-                        }
+                    transactionsDB.mined.put({
+                        tx: data.mined,
+                        blockNumber: data.blockNumber,
+                        cumulativeGasUsed: data.cumulativeGasUsed,
+                        hasEvents: data.hasEvents
                     });
                     return data;
                 })

@@ -28,8 +28,10 @@ const initialState = fromJS({
 const transactionState = createReducer(initialState, {
 
     [types.ADD_TO_QUEUE_SUCCESS]: (state, action) => {
+        console.log(action, 'add to queue action');
+        const txs = action.data.map(tx => new PendingTransaction({ tx }));
         const newState = state.merge({
-            pending: state.get('pending').concat(action.data)
+            pending: state.get('pending').concat(txs)
         });
         return newState;
     },
