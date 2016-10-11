@@ -9,8 +9,8 @@ const ErrorRecord = Record ({
     fatal: false
 });
 const TempProfileStatus = Record({
-    currentStep: null,
-    success: false,
+    nextAction: 'noAction',
+    ethAddressRequested: false,
     faucetRequested: false,
     publishRequested: false,
     faucetTx: null,
@@ -23,9 +23,9 @@ const Profile = Record({
     username: '',
     password: '',
     address: null,
-    avatar: {},
+    avatar: null,
     backgroundImage: [],
-    about: '',
+    about: null,
     links: []
 });
 
@@ -35,9 +35,9 @@ const TempProfile = Record({
     username: '',
     password: '',
     address: null,
-    avatar: {},
+    avatar: null,
     backgroundImage: [],
-    about: '',
+    about: null,
     links: [],
     currentStatus: new TempProfileStatus()
 });
@@ -73,47 +73,38 @@ const profileState = createReducer(initialState, {
         }),
     // start saving a new temp profile to database
     [types.CREATE_TEMP_PROFILE]: (state, { profileData }) => {
-        const currentStatus = new TempProfileStatus({
-            currentStep: 0,
-            success: false
-        });
         return state.merge({
             tempProfile: new TempProfile({
                 ...profileData,
-                currentStatus
+                currentStatus: new TempProfileStatus()
             })
         });
     },
     // temp profile saved to IndexedDB successfully
     [types.CREATE_TEMP_PROFILE_SUCCESS]: (state, { profileData }) => {
-        const currentStatus = new TempProfileStatus({
-            currentStep: 0,
-            success: true
-        });
         return state.mergeDeep({
             tempProfile: {
                 ...profileData,
-                currentStatus
+                currentStatus: state.getIn(['tempProfile', 'currentStatus']).mergeDeep({
+                    nextAction: 'createEthAddress'
+                })
             }
         });
     },
     // an error occured when saving temp profile to IndexedDb
     [types.CREATE_TEMP_PROFILE_ERROR]: (state, { error }) =>
         state.merge({
-            errors: state.get('errors').push(new ErrorRecord(error)),
-            tempProfile: state.get('tempProfile').mergeIn(['currentStatus'], new TempProfileStatus({
-                currentStep: 0,
-                success: false
-            }))
+            errors: state.get('errors').push(new ErrorRecord(error))
         }),
     // update temp profile in IndexedDB
-    [types.UPDATE_TEMP_PROFILE_SUCCESS]: (state, { profileData }) => {
-        let { currentStatus, ...other } = profileData;
-        currentStatus = { ...currentStatus, success: true };
+    [types.UPDATE_TEMP_PROFILE_SUCCESS]: (state, { tempProfile }) => {
+        console.log(types.UPDATE_TEMP_PROFILE_SUCCESS, status);
+        const { currentStatus, ...other } = tempProfile;
         const newState = state.merge({
             tempProfile: state.get('tempProfile').mergeDeep({
                 ...other,
-                currentStatus: state.getIn(['tempProfile', 'currentStatus']).merge(currentStatus)
+                currentStatus: state.getIn(['tempProfile', 'currentStatus'])
+                                    .merge(new TempProfileStatus(currentStatus))
             })
         });
         console.log(newState, 'newState');
@@ -123,22 +114,22 @@ const profileState = createReducer(initialState, {
     // error updating temp profile to IndexedDB
     [types.UPDATE_TEMP_PROFILE_ERROR]: (state, { error }) => {
         return state.merge({
-            errors: state.get('errors').push(new ErrorRecord(error)),
-            tempProfile: state.get('tempProfile').mergeIn(['currentStatus'], {
-                success: false
-            })
+            errors: state.get('errors').push(new ErrorRecord(error))
         });
     },
 
     // get saved temp profile from indexedDB
     [types.GET_TEMP_PROFILE_SUCCESS]: (state, { profile }) => {
-        const { currentStatus, ...others } = profile;
-        const newState = state.merge({
-            tempProfile: new TempProfile({
-                ...others,
-                currentStatus: new TempProfileStatus(currentStatus)
-            })
-        });
+        let newState = state;
+        if (profile) {
+            const { currentStatus, ...other } = profile;
+            newState = state.merge({
+                tempProfile: new TempProfile({
+                    ...other,
+                    currentStatus: new TempProfileStatus(currentStatus)
+                })
+            });
+        }
         return newState;
     },
 
@@ -155,21 +146,20 @@ const profileState = createReducer(initialState, {
 
     // error deleting temp profile from indexedDB.
     [types.DELETE_TEMP_PROFILE_ERROR]: (state, { error }) =>
-    state.merge({
-        errors: state.get('errors').push(new ErrorRecord(error))
-    }),
+        state.merge({
+            errors: state.get('errors').push(new ErrorRecord(error))
+        }),
 
     [types.CREATE_ETH_ADDRESS]: state =>
-        state.mergeDeepIn(['tempProfile', 'currentStatus'], new TempProfileStatus({
-            currentStep: 1,
-            success: false
-        })),
+        state.mergeDeepIn(['tempProfile', 'currentStatus'], {
+            ethAddressRequested: true
+        }),
 
     [types.CREATE_ETH_ADDRESS_SUCCESS]: (state, { data }) => {
         const newState = state.mergeIn(['tempProfile'], {
             address: data.address,
-            currentStatus: new TempProfileStatus({
-                currentStep: 1
+            currentStatus: state.getIn(['tempProfile', 'currentStatus']).merge({
+                nextAction: 'requestFundFromFaucet'
             })
         });
 
@@ -178,24 +168,20 @@ const profileState = createReducer(initialState, {
 
     [types.CREATE_ETH_ADDRESS_ERROR]: (state, { error }) =>
         state.merge({
-            tempProfile: state.get('tempProfile').mergeIn(['currentStatus'], new TempProfileStatus({
-                success: false
-            })),
             errors: state.get('errors').push(new ErrorRecord(error))
         }),
 
-    [types.REQUEST_FUND_FROM_FAUCET]: state => {
-        const newState = state.mergeDeepIn(['tempProfile', 'currentStatus'], new TempProfileStatus({
-            currentStep: 2,
+    [types.REQUEST_FUND_FROM_FAUCET]: (state) => {
+        const newState = state.mergeDeepIn(['tempProfile', 'currentStatus'], {
             faucetRequested: true
-        }));
+        });
         return newState;
     },
 
     [types.REQUEST_FUND_FROM_FAUCET_SUCCESS]: (state, { data }) => {
         const newState = state.mergeDeepIn(['tempProfile', 'currentStatus'],
             {
-                currentStep: 2,
+                nextAction: 'listenFaucetTx',
                 faucetTx: data.tx
             }
         );
@@ -204,22 +190,21 @@ const profileState = createReducer(initialState, {
 
     [types.REQUEST_FUND_FROM_FAUCET_ERROR]: (state, { error }) =>
         state.merge({
-            errors: state.get('errors').push(new ErrorRecord(error)),
-            tempProfile: state.get('tempProfile').mergeIn(['currentStatus'], {
-                success: false
-            })
+            errors: state.get('errors').push(new ErrorRecord(error))
         }),
     [types.COMPLETE_PROFILE_CREATION]: state =>
-        state.mergeDeepIn(['tempProfile', 'currentStatus'], {
-            currentStep: 3,
-            publishRequested: true,
-            success: false
+        state.mergeIn(['tempProfile', 'currentStatus'], {
+            publishRequested: true
         }),
     [types.COMPLETE_PROFILE_CREATION_SUCCESS]: (state, { profileData }) =>
-        console.log(profileData, 'complete profile creation reducer'),
+        state.mergeDeepIn(['tempProfile', 'currentStatus'], {
+            nextAction: 'listenPublishTx'
+        }),
 
     [types.COMPLETE_PROFILE_CREATION_ERROR]: (state, { error }) =>
-        console.log(error, 'complete profile creation error reducer'),
+        state.merge({
+            errors: state.get('errors').push(new ErrorRecord(error))
+        }),
 
     [types.GET_LOCAL_PROFILES_SUCCESS]: (state, { data }) =>
         state.merge({
@@ -241,6 +226,10 @@ const profileState = createReducer(initialState, {
     [types.GET_PROFILE_DATA_ERROR]: (state, { error }) =>
         state.merge({
             errors: state.get('errors').push(new ErrorRecord(error))
+        }),
+    [types.CLEAR_PROFILE_ERRORS]: state =>
+        state.merge({
+            errors: new List()
         }),
 
 });

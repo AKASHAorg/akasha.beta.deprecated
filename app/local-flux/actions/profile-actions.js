@@ -1,9 +1,7 @@
 import { hashHistory } from 'react-router';
 import debug from 'debug';
 import { ProfileService, AuthService, RegistryService, TransactionService } from '../services';
-import {
-    profileActionCreators,
-    transactionActionCreators } from './action-creators';
+import { profileActionCreators } from './action-creators';
 
 const dbg = debug('App:ProfileActions:');
 let profileActions = null;
@@ -55,6 +53,48 @@ class ProfileActions {
         this.profileService.clearLoggedProfile();
     }
 
+    resumeProfileCreation = () => {
+        this.dispatch((dispatch, getState) => {
+            const updatedTempProfile = getState().profileState.get('tempProfile');
+            const updatedStatus = updatedTempProfile.get('currentStatus');
+            const { nextAction, faucetTx } = updatedStatus;
+            const loggedProfile = getState().profileState.get('loggedProfile');
+            const isLoggedIn = loggedProfile.get('account') === updatedTempProfile.get('address') &&
+                Date.parse(loggedProfile.get('expiration')) > Date.now();
+            const minedTransactions = getState().transactionState.get('mined');
+            dbg('resuming current step', nextAction);
+            switch (nextAction) {
+                case 'CREATE_TEMP_PROFILE':
+                    // create eth address in this step and update temp profile;
+                    this.createEthAddress();
+                    break;
+                case 'CREATE_ETH_ADDRESS_SUCCESS':
+                    // request from faucet in this step and update temp profile
+                    this.requestFundFromFaucet();
+                    break;
+                case 'REQUEST_FUND_FROM_FAUCET_SUCCESS': {
+                    const isMined = minedTransactions.findIndex(trans => trans.tx === faucetTx) !== -1;
+                    if (isMined) {
+                        if (isLoggedIn) {
+                            this.publishProfile(loggedProfile.get('token'));
+                        } else {
+                            this.login({
+                                account: updatedTempProfile.get('address'),
+                                password: updatedTempProfile.get('password'),
+                                rememberTime: 1
+                            });
+                        }
+                    }
+                    break;
+                }
+                case 'COMPLETE_PROFILE_CREATION_SUCCESS': {
+                    break;
+                }
+                default:
+                    break;
+            }
+        });
+    }
     /**
      * ---------Start New Profile Registration -----------
      *
@@ -67,14 +107,11 @@ class ProfileActions {
         this.registryService.createTempProfile({
             profileData,
             currentStatus: {
-                currentStep: 0,
-                success: true
+                nextAction: 'createEthAddress'
             },
             onSuccess: (data) => {
                 dbg('createTempProfileSuccess', data);
-                this.dispatch(
-                    profileActionCreators.createTempProfileSuccess(profileData)
-                );
+                this.dispatch(profileActionCreators.createTempProfileSuccess(profileData));
             },
             onError: (error) => {
                 dbg('createTempProfileError', error);
@@ -92,21 +129,29 @@ class ProfileActions {
      * Response:
      * @param data.address <String> Generated Ethereum address
      */
-    createEthAddress = (password) => {
-        this.dispatch(profileActionCreators.createEthAddress());
-        dbg('creating eth address for password', password);
-        this.authService.createEthAddress({
-            password,
-            onSuccess: (data) => {
-                dbg('createEthAddressSuccess', data);
-                this.updateTempProfile(data);
-                this.dispatch(profileActionCreators.createEthAddressSuccess(data));
-            },
-            onError: (error) => {
-                dbg('createEthAddressError', error);
-                this.dispatch(profileActionCreators.createEthAddressError(error));
-            }
-        });
+    createEthAddress = (tempProfile) => {
+        const currentStatus = tempProfile.get('currentStatus');
+        const password = tempProfile.get('password');
+
+        if (!tempProfile.get('address') && !currentStatus.get('ethAddressRequested')) {
+            this.dispatch(profileActionCreators.createEthAddress());
+            this.dispatch((dispatch) => {
+                dbg('creating eth address for password', password);
+                this.authService.createEthAddress({
+                    password,
+                    onSuccess: (data) => {
+                        dbg('createEthAddressSuccess', data);
+                        this.updateTempProfile(data, { nextAction: 'requestFundFromFaucet' }, () => {
+                            dispatch(profileActionCreators.createEthAddressSuccess(data));
+                        });
+                    },
+                    onError: (error) => {
+                        dbg('createEthAddressError', error);
+                        dispatch(profileActionCreators.createEthAddressError(error));
+                    }
+                });
+            });
+        }
     }
     /**
      * Step 3: Request fund from faucet;
@@ -116,20 +161,37 @@ class ProfileActions {
      * Response:
      * @param data.tx <string> Transaction hash which must be watched
      */
-    requestFundFromFaucet = (address) => {
-        dbg('requesting funds for address', address);
-        this.dispatch(profileActionCreators.requestFundFromFaucet());
-        this.authService.requestEther({
-            address,
-            onSuccess: (data) => {
-                dbg('requestFundFromFaucetSuccess', data);
-                this.dispatch(profileActionCreators.requestFundFromFaucetSuccess(data));
-            },
-            onError: (error) => {
-                dbg('requestFundFromFaucetError', error);
-                this.dispatch(profileActionCreators.requestFundFromFaucetError(error));
-            }
-        });
+    requestFundFromFaucet = (tempProfile) => {
+        const address = tempProfile.get('address');
+        if (address && !tempProfile.getIn(['currentStatus', 'faucetRequested'])) {
+            this.dispatch(profileActionCreators.requestFundFromFaucet());
+            this.dispatch((dispatch) => {
+                dbg('requesting funds for address', address);
+                this.authService.requestEther({
+                    address,
+                    onSuccess: (data) => {
+                        dbg('requestFundFromFaucetSuccess', data);
+                        const newStatus = tempProfile.get('currentStatus').merge({
+                            nextAction: 'listenFaucetTx',
+                            faucetTx: data.tx
+                        });
+                        this.updateTempProfile({}, newStatus.toJS(), () => {
+                            dispatch(profileActionCreators.requestFundFromFaucetSuccess(data));
+                        });
+                    },
+                    onError: (error) => {
+                        dbg('requestFundFromFaucetError', error);
+                        dispatch(profileActionCreators.requestFundFromFaucetError(error));
+                    }
+                });
+            });
+        }
+    }
+    listenFaucetTx = () => {
+        this.dispatch(profileActionCreators.listenFaucetTx());
+    }
+    listenPublishTx = () => {
+        this.dispatch(profileActionCreators.listenPublishTx());
     }
     /**
      *  Step 4: Send profile data for registration
@@ -140,63 +202,75 @@ class ProfileActions {
      *  Response:
      *  @param data.tx <string> Transaction hash which needs to be watched for mining
      */
-    publishProfile = (authToken, profileData, gas) => {
-        dbg('publishing profile', profileData, 'with token', authToken);
-        this.dispatch(profileActionCreators.publishProfile());
-        const { username, firstName, lastName, avatar, about, links } = profileData.toJS();
-        let { backgroundImage } = profileData.toJS();
-
-        if (backgroundImage) backgroundImage = backgroundImage[0];
-
+    publishProfile = (tempProfile, loggedProfile, gas) => {
+        const isLoggedIn = loggedProfile.get('account') === tempProfile.get('address') &&
+            Date.parse(loggedProfile.get('expiration')) > Date.now();
+        const { publishRequested } = tempProfile.get('currentStatus');
+        const { username, firstName, lastName, avatar, about, links, backgroundImage } = tempProfile;
         const ipfs = {
             firstName,
             lastName,
-            avatar,
-            backgroundImage,
-            about,
-            links
+            about
         };
-        console.log('ipfs to send is', ipfs);
-        this.registryService.registerProfile({
-            token: authToken,
-            username,
-            ipfs,
-            gas,
-            onSuccess: (data) => {
-                dbg('publishProfileSuccess', data);
-                this.dispatch(profileActionCreators.publishProfileSuccess(data));
-            },
-            onError: (error) => {
-                dbg('publishProfileError', error)
-                this.dispatch(profileActionCreators.publishProfileError(error));
-            }
-        });
+
+        if (links) {
+            ipfs.links = links;
+        }
+        if (avatar) {
+            ipfs.avatar = avatar;
+        }
+        if (backgroundImage.length > 0) {
+            ipfs.backgroundImage = backgroundImage[0];
+        }
+
+        if (isLoggedIn && !publishRequested) {
+            this.dispatch(profileActionCreators.publishProfile());
+            this.dispatch((dispatch) => {
+                this.registryService.registerProfile({
+                    token: loggedProfile.get('token'),
+                    username,
+                    ipfs,
+                    gas,
+                    onSuccess: (data) => {
+                        dbg('publishProfileSuccess', data);
+                        const newStatus = tempProfile.get('currentStatus').merge({
+                            nextAction: 'listenPublishTx',
+                            publishTx: data.tx
+                        });
+                        this.updateTempProfile({}, newStatus.toJS(), () => {
+                            dispatch(profileActionCreators.publishProfileSuccess(data));
+                        });
+                    },
+                    onError: (error) => {
+                        dbg('publishProfileError', error);
+                        dispatch(profileActionCreators.publishProfileError(error));
+                    }
+                });
+            });
+        } else {
+            dbg('logging in!');
+            this.login({
+                account: tempProfile.get('address'),
+                password: tempProfile.get('password'),
+                rememberTime: 1
+            });
+        }
     }
-
-
     /**
      *  ----------- End Profile Registration --------------
      */
-    watchForMined = (identifier) => {
-        this.transactionService.emitMined({
-            onError: error => this.dispatch(transactionActionCreators.transactionMinedError(error)),
-            onSuccess: (minedTx) => {
-                this.dispatch(transactionActionCreators.transactionMinedSuccess(minedTx));
-            }
-        });
-    }
     /**
      * -------------  Temp profile utilities -------------
      */
-    updateTempProfile = changes => {
-        console.log('updating temp profile with', changes);
+    updateTempProfile = (changes, currentStatus, cb) => {
         this.registryService.updateTempProfile({
             changes,
-            onSuccess: () => {
-                this.dispatch(profileActionCreators.updateTempProfileSuccess(changes));
+            currentStatus,
+            onSuccess: (tempProfile) => {
+                profileActionCreators.updateTempProfileSuccess(tempProfile);
+                cb();
             },
             onError: (error) => {
-                console.log('updateTempProfile error', error);
                 this.dispatch(profileActionCreators.updateTempProfileError(error));
             }
         });
@@ -210,7 +284,9 @@ class ProfileActions {
 
     getTempProfile = () =>
         this.registryService.getTempProfile({
-            onError: error => this.dispatch(profileActionCreators.getTempProfileError(error)),
+            onError: (error) => {
+                this.dispatch(profileActionCreators.getTempProfileError(error));
+            },
             onSuccess: data => this.dispatch(profileActionCreators.getTempProfileSuccess(data))
         });
     /**
@@ -242,14 +318,8 @@ class ProfileActions {
             });
         }
     };
-    /**
-     * get all local profiles available
-     * returns only the address and userName
-     */
-    getProfilesList = () =>
-        this.profileService.getProfilesList().then((profiles) => {
-            dbg('getProfilesList', profiles);
-            return this.dispatch(profileActionCreators.getProfilesListSuccess(profiles.data));
-        }).catch(reason => this.dispatch(profileActionCreators.getProfilesListError(reason)));
+    clearErrors = () => {
+        this.dispatch(profileActionCreators.clearErrors());
+    }
 }
 export { ProfileActions };

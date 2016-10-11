@@ -91,7 +91,7 @@ class Avatar extends React.Component {
         let userInitials;
         let avatarImage;
         if (this.props.userName) {
-            userInitials = userName.split(' ').map((part) => part.charAt(0)).join('');
+            userInitials = userName.split(' ').map(part => part.charAt(0)).join('');
         }
         if (this.state.avatarImage) {
             avatarImage = this.state.avatarImage;
@@ -101,7 +101,7 @@ class Avatar extends React.Component {
 
         return (
           <div
-            style={{ maxWidth: (radius || 150), position: 'relative' }}
+            style={{ maxWidth: radius, position: 'relative' }}
             onMouseEnter={this._handleMouseEnter}
             onMouseLeave={this._handleMouseLeave}
             {...other}
@@ -112,20 +112,19 @@ class Avatar extends React.Component {
                 onClick={this._handleDialogOpen}
               />
             }
-
             {avatarImage &&
               <div>
                 <AvatarEditor
                   style={{
                       borderRadius: 150,
                       border: offsetBorder || 0,
-                      backgroundColor
+                      backgroundColor,
+                      width: radius,
+                      height: radius
                   }}
                   border={this.state.isNewAvatarLoaded ? 5 : 0}
                   image={avatarImage}
                   ref={(editor) => { this.editor = editor; }}
-                  width={radius || 130}
-                  height={radius || 130}
                   borderRadius={100}
                   scale={editable ? this.state.avatarScale : 1}
                 />
@@ -151,7 +150,7 @@ class Avatar extends React.Component {
               </div>
             }
             {!avatarImage &&
-              <div style={avatarEmptyStyle}>
+              <div style={{ ...avatarEmptyStyle, width: radius, height: radius }}>
                 {this.props.userName &&
                   <div
                     style={{
@@ -168,8 +167,8 @@ class Avatar extends React.Component {
                 {!userName &&
                   <SvgIcon
                     style={{
-                        width: this.props.radius,
-                        height: this.props.radius
+                        width: radius,
+                        height: radius
                     }}
                     color={palette.textColor}
                   >
@@ -203,8 +202,6 @@ Avatar.defaultProps = {
     radius: 150,
     backgroundColor: 'rgba(239, 239, 239, 1)',
     avatarEmptyStyle: {
-        width: 150,
-        height: 150,
         borderRadius: '50%',
         overflow: 'hidden',
         border: '1px solid #444'
