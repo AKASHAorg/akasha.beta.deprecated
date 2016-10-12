@@ -9,6 +9,8 @@ class GethIPC extends GethEmitter_1.default {
     constructor() {
         super();
         this.logger = 'geth';
+        this.BOOTNODE = 'enode://a7b111165e63cb608814f0ba55c0e7f779841473320ac6dbe6089d952241fb5a5a' +
+            '9bcc9406215e366ab5438d6ab11129c3247ed8354dc6e00ed9ce9305493667@138.68.78.152:30301';
         this.DEFAULT_MANAGED = ['startService', 'stopService', 'status'];
         this.attachEmitters();
     }
@@ -17,9 +19,13 @@ class GethIPC extends GethEmitter_1.default {
         this.webContents = webContents;
         const datadir = geth_connector_1.GethConnector.getDefaultDatadir();
         geth_connector_1.GethConnector.getInstance().setOptions({
+            bootnodes: this.BOOTNODE,
             datadir: path_1.join(datadir, 'akasha'),
             ipcpath: path_1.join(datadir, 'akasha', 'geth.ipc'),
-            networkid: 512180
+            networkid: 512180,
+            minerthreads: 1,
+            mine: '',
+            autodag: ''
         });
         this._start()
             ._restart()
@@ -116,7 +122,7 @@ class GethIPC extends GethEmitter_1.default {
             for (let [k, v] of options) {
                 mapObj[k] = v;
             }
-            this.fireEvent(channels_1.default.client.geth.status, responses_1.gethResponse(mapObj), event);
+            this.fireEvent(channels_1.default.client.geth.options, responses_1.gethResponse(mapObj), event);
         });
         return this;
     }

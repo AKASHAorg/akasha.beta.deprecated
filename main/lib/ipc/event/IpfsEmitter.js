@@ -9,6 +9,7 @@ class IpfsEmitter extends AbstractEmitter_1.AbstractEmitter {
         this._download()
             ._catchCorrupted()
             ._catchFailed()
+            ._catchError()
             ._started()
             ._stopped();
     }
@@ -40,6 +41,12 @@ class IpfsEmitter extends AbstractEmitter_1.AbstractEmitter {
     _catchFailed() {
         ipfs_connector_1.IpfsConnector.getInstance().on(ipfs_connector_1.ipfsEvents.SERVICE_FAILED, (err) => {
             this.fireEvent(channels_1.default.client.ipfs.startService, responses_1.ipfsResponse({}, { message: err.message, fatal: true }));
+        });
+        return this;
+    }
+    _catchError() {
+        ipfs_connector_1.IpfsConnector.getInstance().on(ipfs_connector_1.ipfsEvents.ERROR, (message) => {
+            this.fireEvent(channels_1.default.client.ipfs.startService, responses_1.ipfsResponse({}, { message }));
         });
         return this;
     }

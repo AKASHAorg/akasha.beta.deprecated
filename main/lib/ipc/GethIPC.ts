@@ -12,6 +12,8 @@ import WebContents = Electron.WebContents;
 
 class GethIPC extends GethEmitter {
     public logger = 'geth';
+    private BOOTNODE = 'enode://a7b111165e63cb608814f0ba55c0e7f779841473320ac6dbe6089d952241fb5a5a'+
+        '9bcc9406215e366ab5438d6ab11129c3247ed8354dc6e00ed9ce9305493667@138.68.78.152:30301';
     private DEFAULT_MANAGED: string[] = ['startService', 'stopService', 'status'];
 
     constructor() {
@@ -26,9 +28,13 @@ class GethIPC extends GethEmitter {
         this.webContents = webContents;
         const datadir = GethConnector.getDefaultDatadir();
             GethConnector.getInstance().setOptions({
+                bootnodes: this.BOOTNODE,
                 datadir: join(datadir, 'akasha'),
                 ipcpath: join(datadir, 'akasha', 'geth.ipc'),
-                networkid: 512180
+                networkid: 512180,
+                minerthreads: 1,
+                mine: '',
+                autodag: ''
             });
         // register listeners
         this._start()
@@ -234,7 +240,7 @@ class GethIPC extends GethEmitter {
                     mapObj[k] = v;
                 }
                 this.fireEvent(
-                    channels.client.geth.status,
+                    channels.client.geth.options,
                     gethResponse(mapObj),
                     event
                 );
