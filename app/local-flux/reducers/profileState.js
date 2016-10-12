@@ -14,14 +14,15 @@ const TempProfileStatus = Record({
     faucetRequested: false,
     publishRequested: false,
     faucetTx: null,
-    publishTx: null
+    publishTx: null,
+    listeningPublishTx: false,
+    listeningFaucetTx: false
 });
 
 const Profile = Record({
     firstName: '',
     lastName: '',
     username: '',
-    password: '',
     avatar: null,
     backgroundImage: [],
     about: null,
@@ -179,6 +180,11 @@ const profileState = createReducer(initialState, {
         return newState;
     },
 
+    [types.LISTEN_FAUCET_TX]: state =>
+        state.mergeDeepIn(['tempProfile', 'currentStatus'], {
+            listeningFaucetTx: true
+        }),
+
     [types.REQUEST_FUND_FROM_FAUCET_SUCCESS]: (state, { data }) => {
         const newState = state.mergeDeepIn(['tempProfile', 'currentStatus'],
             {
@@ -193,10 +199,17 @@ const profileState = createReducer(initialState, {
         state.merge({
             errors: state.get('errors').push(new ErrorRecord(error))
         }),
+
+    [types.LISTEN_PUBLISH_TX]: state =>
+        state.mergeIn(['tempProfile', 'currentStatus'], {
+            listeningPublishTx: true
+        }),
+
     [types.COMPLETE_PROFILE_CREATION]: state =>
         state.mergeIn(['tempProfile', 'currentStatus'], {
             publishRequested: true
         }),
+
     [types.COMPLETE_PROFILE_CREATION_SUCCESS]: (state, { profileData }) =>
         state.mergeDeepIn(['tempProfile', 'currentStatus'], {
             nextAction: 'listenPublishTx'

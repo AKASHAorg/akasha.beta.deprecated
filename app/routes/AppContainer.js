@@ -18,10 +18,6 @@ class App extends Component {
     getChildContext = () => ({
         muiTheme: getMuiTheme(AkashaTheme)
     });
-    /**
-     * called whenever navigation occurs (1st method in lifecycle)!
-     */
-    componentWillReceiveProps = () => {}
     _handleSendReport = () => {
     };
     _handleErrorClose = () => {

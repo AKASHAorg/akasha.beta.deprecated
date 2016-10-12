@@ -14,10 +14,14 @@ class CreateProfileComplete extends Component {
             profileActions.getTempProfile();
         }
     }
+    componentWillReceiveProps (nextProps) {
+        if (nextProps.tempProfile.get('username') === '') {
+            this.context.router.push('/authenticate');
+        }
+    }
     _handleFinishSetup = () => {
         const { profileActions } = this.props;
         profileActions.deleteTempProfile();
-        this.context.router.push('/authenticate');
     }
     render () {
         const { style, intl, tempProfile } = this.props;
@@ -90,7 +94,8 @@ class CreateProfileComplete extends Component {
 CreateProfileComplete.propTypes = {
     style: PropTypes.shape(),
     intl: PropTypes.shape(),
-    tempProfile: PropTypes.shape()
+    tempProfile: PropTypes.shape(),
+    profileActions: PropTypes.shape()
 };
 
 CreateProfileComplete.contextTypes = {
