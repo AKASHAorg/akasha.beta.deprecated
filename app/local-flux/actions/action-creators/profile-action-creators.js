@@ -1,5 +1,11 @@
 import * as types from '../../constants/ProfileConstants';
 
+export function login () {
+    return {
+        type: types.LOGIN
+    };
+}
+
 export function loginSuccess (profile) {
     return {
         type: types.LOGIN_SUCCESS,
@@ -132,7 +138,7 @@ export function listenFaucetTx () {
 export function listenPublishTx () {
     return {
         type: types.LISTEN_PUBLISH_TX
-    }
+    };
 }
 
 export function publishProfile () {

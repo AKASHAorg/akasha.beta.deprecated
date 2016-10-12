@@ -126,9 +126,9 @@ class RegistryService extends BaseService {
     /**
      * Delete temporary profile. Called after profile was successfully created
      */
-    deleteTempProfile = ({ onSuccess, onError }) =>
+    deleteTempProfile = ({ username, onSuccess, onError }) =>
         profileDB.transaction('rw', profileDB.tempProfile, () => {
-            profileDB.tempProfile.clear();
+            profileDB.tempProfile.delete(username);
         })
         .then(() => onSuccess())
         .catch(reason => onError(reason));
