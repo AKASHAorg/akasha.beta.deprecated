@@ -23,10 +23,12 @@ import PortalsIcon from './IconPortals';
 import CommunityIcon from './IconCommunity';
 import PeopleIcon from './IconPeople';
 import LogoIcon from './IconLogo';
+import StatusBarEthereum from './StatusBarEthereum';
+import StatusBarIpfs from './StatusBarIpfs';
 
 export {
     ProfileIcon, AddEntryIcon, SearchIcon, StreamsIcon, PortalsIcon, CommunityIcon, PeopleIcon,
     LogoIcon, MenuAddEntry, MenuAkashaLogo, MenuCommunities, MenuEntries, MenuEthereum, MenuPeople,
     MenuPortals, MenuSearch, MenuStreams, MenuUser, ToolbarComments, ToolbarEthereum, ToolbarLogout,
-    ToolbarProfile, ToolbarSettings, ToolbarVotes, ToolbarWallet
+    ToolbarProfile, ToolbarSettings, ToolbarVotes, ToolbarWallet, StatusBarEthereum, StatusBarIpfs
 };

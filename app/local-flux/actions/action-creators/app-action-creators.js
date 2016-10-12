@@ -83,3 +83,10 @@ export function castUpvoteSuccess (data) {
         data
     };
 }
+
+export function setTimestamp (timestamp) {
+    return {
+        type: types.SET_TIMESTAMP,
+        timestamp
+    };
+}

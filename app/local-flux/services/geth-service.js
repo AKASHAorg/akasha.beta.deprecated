@@ -25,7 +25,7 @@ class GethService extends BaseService {
         const gethOptions = {};
 
         Object.keys(options).forEach((key) => {
-            if (key !== 'name' && options[key] !== '') {
+            if (key !== 'name' && options[key] !== null) {
                 gethOptions[key] = options[key];
             }
         });
@@ -82,11 +82,11 @@ class GethService extends BaseService {
             serverChannel,
             clientChannel,
             listenerCb: this.createListener(onError, onSuccess, clientChannel.channelName)
-        }, () =>
+        }, () => {
             this.gethLoggerInterval = setInterval(() => {
                 serverChannel.send(options);
-            }, 2000)
-        );
+            }, 2000);
+        });
     };
 
     stopGethLogger = () => {
@@ -126,16 +126,17 @@ class GethService extends BaseService {
     getOptions = ({ options = {}, onError = () => {}, onSuccess }) => {
         const clientChannel = Channel.client.geth.options;
         const serverChannel = Channel.server.geth.options;
-
+        dbg('Get geth options');
         return this.openChannel({
             serverManager: this.serverManager,
             clientManager: this.clientManager,
             serverChannel,
             clientChannel,
             listenerCb: this.createListener(onError, onSuccess, clientChannel.channelName)
-        }, () =>
-            serverChannel.send(options)
-        );
+        }, () => {
+            dbg('send options request callback');
+            serverChannel.send(options);
+        });
     };
     /**
      * Update sync status sent by main process

@@ -2,19 +2,18 @@ import React, { Component, PropTypes } from 'react';
 import { RaisedButton, Paper, FlatButton } from 'material-ui';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import { setupMessages, generalMessages } from 'locale-data/messages'; /* eslint import/no-unresolved: 0 */
-import { hoursMinutesSeconds } from '../../../../../utils/dateFormatter';
 import PanelContainer from 'shared-components/PanelContainer/panel-container'; /* eslint import/no-unresolved: 0 */
+import { LogsList } from 'shared-components';
 import SetupHeader from '../../../components/setup-header';
 import SyncStatusLoader from './sync-status';
 
 class SyncStatus extends Component {
     constructor (props) {
         super(props);
-        this.logsTimestamp = null;
         this.state = {
-            syncData: null,
-            syncError: null,
-            showGethLogs: false
+            showGethLogs: false,
+            hasStartedGeth: false,
+            hasStartedIpfs: false
         };
     }
     componentWillMount () {
@@ -22,31 +21,23 @@ class SyncStatus extends Component {
         settingsActions.getSettings('geth');
         settingsActions.getSettings('ipfs');
         eProcActions.getGethStatus();
-    }
-    componentDidMount () {
-        const { eProcActions, gethStatus, ipfsStatus, gethSettings } = this.props;
-        if (!gethStatus.get('spawned') && !gethStatus.get('startRequested')) {
-            eProcActions.startGeth(gethSettings.toJS());
-        }
-        if (!ipfsStatus.get('started') && !ipfsStatus.get('startRequested')) {
-            eProcActions.startIPFS();
-        }
-        this.logsTimestamp = new Date().getTime();
+        eProcActions.getIpfsStatus();
     }
     componentWillReceiveProps (nextProps) {
-        const { gethStatus, eProcActions, gethSyncStatus, ipfsStatus,
-            ipfsErrors, gethSettings, gethErrors, syncActionId } = nextProps;
+        const { gethStatus, eProcActions, gethSyncStatus, ipfsStatus, ipfsErrors, gethErrors,
+            syncActionId } = nextProps;
         const gethSynced = gethSyncStatus.get('synced');
         const gethReadyToSync = gethStatus.get('api') && !gethSynced;
         const ipfsStarted = ipfsStatus.get('started');
+
+        if (!this.state.hasStartedGeth && !nextProps.fetchingGethSettings) {
+            this.startGeth();
+        }
+        if (!this.state.hasStartedIpfs && !nextProps.fetchingIpfsSettings) {
+            this.startIpfs();
+        }
+
         if (ipfsErrors.size === 0 && gethErrors.size === 0) {
-            if (!ipfsStatus.get('started') && !ipfsStatus.get('startRequested')) {
-                eProcActions.startIPFS();
-            }
-            if (!gethStatus.get('spawned') && !gethStatus.get('startRequested')
-                    && syncActionId === 0) {
-                eProcActions.startGeth(gethSettings.toJS());
-            }
             if (gethReadyToSync) {
                 if (syncActionId === 0) {
                     eProcActions.startSync();
@@ -75,6 +66,24 @@ class SyncStatus extends Component {
         eProcActions.stopGethLogger();
         eProcActions.stopThrottledUpdate();
     }
+    startGeth () {
+        const { gethStatus, gethSettings, eProcActions } = this.props;
+        if (!gethStatus.get('spawned') && !gethStatus.get('startRequested')) {
+            eProcActions.startGeth(gethSettings.toJS());
+            this.setState({
+                hasStartedGeth: true
+            });
+        }
+    }
+    startIpfs () {
+        const { ipfsStatus, eProcActions } = this.props;
+        if (!ipfsStatus.get('started') && !ipfsStatus.get('startRequested')) {
+            eProcActions.startIPFS();
+            this.setState({
+                hasStartedIpfs: true
+            });
+        }
+    }
     handleCancel = () => {
         const { eProcActions, settingsActions, syncActionId } = this.props;
         if (syncActionId !== 2) {
@@ -87,6 +96,7 @@ class SyncStatus extends Component {
         const { syncActionId, eProcActions } = this.props;
 
         switch (syncActionId) {
+            case 0:
             case 1:
                 eProcActions.stopThrottledUpdate();
                 eProcActions.pauseSync();
@@ -125,18 +135,9 @@ class SyncStatus extends Component {
         return labels;
     };
     _handleDetails = () => {
-        const { eProcActions } = this.props;
-        if (!this.state.showGethLogs) {
-            this.setState({
-                showGethLogs: true
-            });
-            return eProcActions.startGethLogger(this.logsTimestamp);
-        }
-
         this.setState({
-            showGethLogs: false
+            showGethLogs: !this.state.showGethLogs
         });
-        return eProcActions.stopGethLogger();
     };
     handleRetry = () => {
         const { eProcActions } = this.props;
@@ -153,7 +154,9 @@ class SyncStatus extends Component {
             ipfsStatus,
             ipfsErrors,
             gethBusyState,
-            syncActionId } = this.props;
+            syncActionId,
+            eProcActions,
+            timestamp } = this.props;
 
         const pageTitle = this._getActionLabels().title;
         let gethErrorCards;
@@ -252,32 +255,7 @@ class SyncStatus extends Component {
               </div>
             }
             {this.state.showGethLogs &&
-              <ul style={this.props.logListStyle} className="col-xs-12">
-                {gethLogs.map((log, key) => (
-                  <li key={key} style={{ marginBottom: '8px' }} >
-                    <div style={{display: 'flex'}}>
-                        <abbr
-                            title="Log Level"
-                            style={{
-                                flex: '0 0 auto',
-                                backgroundColor: (
-                                    log.get('level') === 'warn' ?
-                                    'orange' : log.get('level') === 'error' ?
-                                    'red' : log.get('level') === 'info' ?
-                                    'lightblue' : 'transparent')
-                            }}
-                        >
-                            {log.get('level')}
-                        </abbr>
-                        <span style={{flex: '1 1 auto', textAlign: 'right'}}>
-                            {hoursMinutesSeconds(new Date(log.get('timestamp')))}
-                        </span>
-                    </div>
-                    <p style={{ marginTop: '7px' }}>{log.get('message')}</p>
-                  </li>
-                  ))
-                  }
-              </ul>
+              <LogsList eProcActions={eProcActions} timestamp={timestamp} gethLogs={gethLogs} />
             }
           </PanelContainer>
         );
@@ -287,10 +265,10 @@ class SyncStatus extends Component {
 SyncStatus.propTypes = {
     eProcActions: PropTypes.shape().isRequired,
     style: PropTypes.shape(),
-    logListStyle: PropTypes.shape(),
     intl: PropTypes.shape().isRequired,
     gethSettings: PropTypes.shape().isRequired,
-    ipfsSettings: PropTypes.shape().isRequired,
+    fetchingGethSettings: PropTypes.bool,
+    fetchingIpfsSettings: PropTypes.bool,
     gethStatus: PropTypes.shape().isRequired,
     ipfsStatus: PropTypes.shape().isRequired,
     gethErrors: PropTypes.shape().isRequired,
@@ -299,7 +277,8 @@ SyncStatus.propTypes = {
     gethSyncStatus: PropTypes.shape().isRequired,
     settingsActions: PropTypes.shape(),
     syncActionId: PropTypes.number,
-    gethBusyState: PropTypes.bool
+    gethBusyState: PropTypes.bool,
+    timestamp: PropTypes.number
 };
 
 SyncStatus.contextTypes = {
@@ -314,10 +293,5 @@ SyncStatus.defaultProps = {
         display: 'flex',
         flexDirection: 'column'
     },
-    logListStyle: {
-        paddingLeft: 4,
-        fontFamily: 'Consolas',
-        listStyle: 'none'
-    }
 };
 export default injectIntl(SyncStatus);

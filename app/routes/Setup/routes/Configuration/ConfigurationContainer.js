@@ -7,7 +7,9 @@ import {
 function mapStateToProps (state) {
     return {
         gethSettings: state.settingsState.get('geth'),
+        defaultGethSettings: state.settingsState.get('defaultGethSettings'),
         ipfsSettings: state.settingsState.get('ipfs'),
+        defaultIpfsSettings: state.settingsState.get('defaultIpfsSettings'),
         configFlags: state.settingsState.get('flags'),
         isAdvanced: state.settingsState.get('isAdvanced'),
         userSettings: state.settingsState.get('userSettings')
