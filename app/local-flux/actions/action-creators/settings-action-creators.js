@@ -60,9 +60,9 @@ export function setupGethCacheSize (size) {
     };
 }
 
-export function setupIPFSPath (path) {
+export function setupIPFSPath (storagePath) {
     return { type: types.SETUP_IPFS_PATH,
-        path
+        storagePath
     };
 }
 

@@ -4,8 +4,7 @@ import ErrorRecord from './error-record';
 // schema for tempProfile
 function Status () {
     return {
-        currentStep: Number,
-        status: String,
+        nextAction: String,
         error: [ErrorRecord],
         faucetRequested: Boolean,
         publishRequested: Boolean,

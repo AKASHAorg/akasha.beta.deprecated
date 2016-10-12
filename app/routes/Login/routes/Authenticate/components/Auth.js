@@ -3,12 +3,14 @@ import {
     List,
     ListItem,
     FlatButton,
-    RaisedButton } from 'material-ui';
+    RaisedButton,
+    Avatar } from 'material-ui';
 import { hashHistory } from 'react-router';
 import { FormattedMessage, injectIntl } from 'react-intl';
-import { Avatar, LoginDialog, PanelContainer } from 'shared-components';
+import { LoginDialog, PanelContainer } from 'shared-components';
 import { setupMessages, generalMessages } from 'locale-data/messages'; /* eslint import/no-unresolved: 0*/
 import LoginHeader from '../../../components/LoginHeader';
+import imageCreator from 'utils/imageUtils';
 
 class Auth extends Component {
     constructor (props, context) {
@@ -30,12 +32,25 @@ class Auth extends Component {
         profileActions.getLocalProfiles();
     }
     componentWillUpdate = (nextProps) => {
-        const { profileActions, tempProfile, localProfiles } = nextProps;
-        if (tempProfile.get('username') !== '') {
-            return this.context.router.push('/authenticate/new-profile-status');
+        const {
+            profileActions,
+            tempProfile,
+            localProfiles,
+            loggedProfile,
+            loginErrors } = nextProps;
+
+        if (loginErrors.size === 0) {
+            if (this.state.selectedProfile &&
+                loggedProfile.get('account') === this.state.selectedProfile.get('ethAddress')) {
+                this.context.router.push(`/${this.state.selectedProfile.get('username')}`);
+            }
+
+            if (tempProfile.get('username') !== '') {
+                return this.context.router.push('/authenticate/new-profile-status');
+            }
         }
+
         if (localProfiles.size > 0 && localProfiles.size !== this.props.localProfiles.size) {
-            console.log(localProfiles, 'localProfiles');
             profileActions.getProfileData(localProfiles.toJS());
         }
     }
@@ -49,13 +64,16 @@ class Auth extends Component {
     };
     handleLogin = () => {
         const { profileActions } = this.props;
-        const selectedProfile = this.state.selectedProfile.toJS();
-        selectedProfile.password = this.state.password;
-        let unlockInterval = 0;
+        const selectedProfile = this.state.selectedProfile;
+        let unlockInterval = 1;
         if (this.state.unlockIsChecked) {
             unlockInterval = this.state.unlockTimer;
         }
-        profileActions.login(selectedProfile, unlockInterval, false);
+        profileActions.login({
+            account: selectedProfile.get('ethAddress'),
+            password: new TextEncoder('utf-8').encode(this.state.password),
+            rememberTime: unlockInterval
+        });
     };
     _getLocalProfiles () {
         const { localProfiles, intl } = this.props;
@@ -66,26 +84,24 @@ class Auth extends Component {
             return <div>{intl.formatMessage(setupMessages.findingProfiles)}</div>;
         }
         return localProfiles.map((profile, index) => {
-            const profileAddress = profile.get('address');
-            const optionalData = profile.get('optionalData');
+            const profileAddress = profile.get('ethAddress');
             const profileName = `${profile.get('firstName')} ${profile.get('lastName')}`;
-            const avatarProps = {
-                editable: false,
-                userName: profileName,
-                image: optionalData ?
-                    `data:image/gif;base64,${
-                        btoa(String.fromCharCode.apply(null, optionalData.get('avatar')))
-                        }` : null,
-                radius: 48,
-                className: 'col-xs-4 middle-xs',
-                userInitialsStyle: { fontSize: 18 }
-            };
+            const userInitials = profileName.match(/\b\w/g);
+            const avatarImage = profile.get('avatar') ? imageCreator(profile.get('avatar')) : null;
+            let avatar;
+            if (!avatarImage) {
+                avatar = <Avatar src={avatarImage} size={48} className="col-xs-4 middle-xs" />;
+            } else {
+                avatar = (
+                  <Avatar>
+                    {((userInitials.shift() || '') + (userInitials.pop() || '')).toUpperCase()}
+                  </Avatar>
+                );
+            }
             return (
               <ListItem
                 key={index}
-                leftAvatar={
-                  <Avatar {...avatarProps} />
-                }
+                leftAvatar={avatar}
                 primaryText={
                   <div
                     style={{
@@ -100,7 +116,7 @@ class Auth extends Component {
                 }
                 secondaryText={
                   <div style={{ marginLeft: 16 }}>
-                    {profile.get('userName')}
+                    @{profile.get('username')}
                   </div>
                 }
                 secondaryTextLines={1}
@@ -118,6 +134,8 @@ class Auth extends Component {
     };
     _handlePasswordChange = (ev) => {
         ev.preventDefault();
+        const { profileActions } = this.props;
+        profileActions.clearErrors();
         this.setState({
             password: ev.target.value
         });
@@ -187,6 +205,7 @@ class Auth extends Component {
                 onUnlockCheck={this._handleUnlockCheck}
                 unlockTimerKey={this.state.unlockTimer}
                 isUnlockedChecked={this.state.unlockIsChecked}
+                errors={this.props.loginErrors}
               />
             }
           </PanelContainer>
@@ -198,6 +217,8 @@ Auth.propTypes = {
     profileActions: React.PropTypes.shape().isRequired,
     tempProfile: React.PropTypes.shape().isRequired,
     localProfiles: React.PropTypes.shape().isRequired,
+    loggedProfile: React.PropTypes.shape().isRequired,
+    loginErrors: React.PropTypes.shape().isRequired,
     style: React.PropTypes.shape(),
     intl: React.PropTypes.shape()
 };
