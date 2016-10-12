@@ -16,6 +16,7 @@ const create = (data) => {
     if (data.backgroundImage) {
         keys = Object.keys(data.backgroundImage).sort();
         media = keys.map((media) => {
+            data.backgroundImage[media].src = new Uint8Array(data.backgroundImage[media].src);
             return ipfs_connector_1.IpfsConnector.getInstance()
                 .api
                 .addFile(Buffer.from(data.backgroundImage[media].src));
@@ -32,6 +33,7 @@ const create = (data) => {
                 constructed[dim]['height'] = data.backgroundImage[dim].height;
                 constructed[dim]['src'] = v;
             });
+            delete data.backgroundImage;
             return ipfs_connector_1.IpfsConnector.getInstance().api.add(constructed).then((hash) => {
                 return ipfs_connector_1.IpfsConnector.getInstance().api.constructObjLink(hash);
             });
@@ -42,9 +44,10 @@ const create = (data) => {
             returned.backgroundImage = hash;
         }
         if (data.avatar) {
+            data.avatar = new Uint8Array(data.avatar);
             return ipfs_connector_1.IpfsConnector.getInstance()
                 .api
-                .addFile(Buffer.from(data.avatar));
+                .add(Buffer.from(data.avatar));
         }
         return Promise.resolve('');
     }).then((hash) => {

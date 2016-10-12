@@ -16,7 +16,6 @@ describe('IpfsIPC', function () {
     });
 
     it('--can init listeneres', function () {
-        ipfsChannel.initListeners(null);
         expect(ipfsChannel.listeners.size).to.be.above(0);
     });
 

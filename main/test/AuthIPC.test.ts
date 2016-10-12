@@ -1,4 +1,3 @@
-import AuthIPC from '../lib/ipc/AuthIPC';
 import { ipcMain } from 'electron';
 import {
     fireEvent,
@@ -7,23 +6,15 @@ import {
     stopServices,
     checkSynced,
     pwd,
-    mockedAddress
+    mockedAddress,
+    authChannel
 } from './helpers';
 import { expect } from 'chai';
 import channel from '../lib/channels';
 import { setTimeout } from 'timers';
 
-class AuthIPCtest extends AuthIPC {
-    public callTest: Map<string, any> = new Map();
-
-    public fireEvent(channel, data, event) {
-        const cb = this.callTest.get(channel);
-        return cb(fireEvent(channel, data, event));
-    }
-}
 describe('AuthIPC', function () {
     this.timeout(120000);
-    let authChannel: AuthIPCtest;
 
     before(function (done) {
         expect(initLogger()).to.exist;
@@ -31,12 +22,10 @@ describe('AuthIPC', function () {
     });
 
     it('--constructs channel api', function () {
-        authChannel = new AuthIPCtest();
         expect(authChannel).to.exist;
     });
 
     it('--can init listeneres', function () {
-        authChannel.initListeners(null);
         expect(authChannel.listeners.size).to.be.above(0);
     });
 

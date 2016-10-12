@@ -17,7 +17,6 @@ describe('GethIPC', function () {
     });
 
     it('--can init listeneres', function () {
-        gethChannel.initListeners(null);
         expect(gethChannel.listeners.size).to.be.above(0);
     });
 
