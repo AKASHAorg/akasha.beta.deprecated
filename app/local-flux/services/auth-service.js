@@ -31,7 +31,10 @@ class AuthService extends BaseService {
     login = ({ account, password, rememberTime, onSuccess, onError }) => {
         const serverChannel = Channel.server.auth.login;
         const clientChannel = Channel.client.auth.login;
-        this.registerListener(clientChannel, this.createListener(onError, onSuccess));
+        this.registerListener(
+            clientChannel,
+            this.createListener(onError, onSuccess, clientChannel.channelName)
+        );
         serverChannel.send({ account, password, rememberTime });
     };
     /**
@@ -40,21 +43,14 @@ class AuthService extends BaseService {
      *      done: Boolean
      * }
      */
-    logout = () => {
+    logout = ({ onError, onSuccess }) => {
         const serverChannel = Channel.server.auth.logout;
         const clientChannel = Channel.client.auth.logout;
-        if (this._listeners.get(clientChannel)) {
-            return Promise.resolve();
-        }
-        return new Promise((resolve, reject) => {
-            const listenerCb = (ev, res) => {
-                if (res.error) return reject(res.error);
-                return resolve(res.data);
-            };
-            return this.registerListener(clientChannel, listenerCb, () =>
-                serverChannel.send({})
-            );
-        });
+        this.registerListener(
+            clientChannel,
+            this.createListener(onError, onSuccess, clientChannel.channelName)
+        );
+        serverChannel.send({});
     };
     /**
      * Sends a request to faucet
@@ -73,7 +69,10 @@ class AuthService extends BaseService {
             }
             return onSuccess(data);
         };
-        this.registerListener(clientChannel, this.createListener(onError, successCb));
+        this.registerListener(
+            clientChannel,
+            this.createListener(onError, successCb, clientChannel.channelName)
+        );
         serverChannel.send({ address });
     };
     /**
@@ -107,7 +106,7 @@ class AuthService extends BaseService {
             clientManager: this.clientManager,
             serverChannel,
             clientChannel,
-            listenerCb: this.createListener(onError, onSuccess)
+            listenerCb: this.createListener(onError, onSuccess, clientChannel.channelName)
         }, () =>
             serverChannel.send(options)
         );
@@ -116,29 +115,31 @@ class AuthService extends BaseService {
      * Save logged profile to indexedDB database.
      * @param profileData {object}
      */
-    createLoggedProfile = profileData =>
+    createLoggedProfile = ({ profileData, onSuccess, onError }) =>
         profileDB.transaction('rw', profileDB.loggedProfile, () => {
             dbg('saving logged profile', profileData);
             if (profileData.password) {
                 delete profileData.password;
             }
             return profileDB.loggedProfile.add(profileData);
-        });
-    updateLoggedProfile = loggedProfile =>
-        profileDB.transaction('rw', profileDB.loggedProfile, () => {
-            dbg('updating loggedProfile', loggedProfile);
-            return profileDB.loggedProfile.update(loggedProfile.address, loggedProfile);
-        });
-    deleteLoggedProfile = loggedProfile =>
+        })
+        .then(() => onSuccess(profileData))
+        .catch(reason => onError(reason));
+
+    deleteLoggedProfile = ({ loggedProfile, onError, onSuccess }) =>
         profileDB.transaction('rw', profileDB.loggedProfile, () => {
             dbg('deleting loggedProfile', loggedProfile);
             return profileDB.loggedProfile.delete(loggedProfile.address);
-        });
-    getLoggedProfile = () =>
+        })
+        .then(() => onSuccess(loggedProfile))
+        .catch(reason => onError(reason));
+
+    getLoggedProfile = ({ onError, onSuccess }) =>
         profileDB.transaction('r', profileDB.loggedProfile, () => {
             dbg('getLoggedProfile');
             return profileDB.loggedProfile.toArray();
-        });
+        }).then(profile => onSuccess(profile[0]))
+        .catch(reason => onError(reason));
 }
 
 export { AuthService };

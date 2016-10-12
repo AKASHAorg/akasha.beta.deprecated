@@ -4,8 +4,9 @@ import {
     TextField,
     Checkbox,
     SelectField,
-    MenuItem } from 'material-ui';
-import Avatar from '../Avatar/avatar';
+    MenuItem,
+    Avatar } from 'material-ui';
+import imageCreator from 'utils/imageUtils';
 
 const loginDialog = (props) => {
     const minute = 'min';
@@ -32,16 +33,8 @@ const loginDialog = (props) => {
         contentStyle={{ width: '50%' }}
       >
         <Avatar
-          editable={false}
-          userName={
-            `${profile.get('firstName')} ${profile.get('lastName')}`
-          }
-          image={`data:image/gif;base64,${
-            btoa(String.fromCharCode.apply(
-              null,
-              profile.getIn(['optionalData', 'avatar'])
-            ))
-          }`}
+          src={imageCreator(profile.get('avatar'))}
+          size={100}
         />
         <div className="row">
           <div className="col-xs-6">
@@ -57,8 +50,8 @@ const loginDialog = (props) => {
           <div className="col-xs-6">
             <TextField
               disabled
-              floatingLabelText="userName"
-              value={`${profile.get('userName')}`}
+              floatingLabelText="Username"
+              value={`${profile.get('username')}`}
               fullWidth
             />
           </div>
@@ -67,7 +60,7 @@ const loginDialog = (props) => {
           disabled
           fullWidth
           floatingLabelText="Ethereum address"
-          value={profile.get('address')}
+          value={profile.get('ethAddress')}
         />
         <TextField
           type="password"
@@ -75,9 +68,10 @@ const loginDialog = (props) => {
           floatingLabelText="Password"
           onKeyPress={props.onKeyPress}
           onChange={props.onPasswordChange}
+          errorText={props.errors.reduce((prev, current) => `${prev.message} ${current.message}`)}
         />
         <div className="row middle-xs">
-          <div className="col-xs-7" style={{ paddingRight: 0 }}>
+          <div className="col-xs-6" style={{ paddingRight: 0 }}>
             <Checkbox
               label="Keep account unlocked for"
               onCheck={handleUnlockCheck}
@@ -100,11 +94,14 @@ const loginDialog = (props) => {
     );
 };
 loginDialog.propTypes = {
-    profile: React.PropTypes.object.isRequired,
+    profile: React.PropTypes.shape().isRequired,
     isOpen: React.PropTypes.bool.isRequired,
     title: React.PropTypes.string.isRequired,
-    modalActions: React.PropTypes.array.isRequired,
+    modalActions: React.PropTypes.arrayOf(React.PropTypes.element).isRequired,
     onPasswordChange: React.PropTypes.func.isRequired,
-    onKeyPress: React.PropTypes.func.isRequired
+    onKeyPress: React.PropTypes.func.isRequired,
+    onUnlockCheck: React.PropTypes.func.isRequired,
+    unlockTimerKey: React.PropTypes.number.isRequired,
+    errors: React.PropTypes.shape()
 };
 export default loginDialog;

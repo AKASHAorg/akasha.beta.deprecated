@@ -46,10 +46,10 @@ export function createTempProfileError (error) {
     };
 }
 
-export function updateTempProfileSuccess (profileData) {
+export function updateTempProfileSuccess (profileData, tempProfile) {
     return {
         type: types.UPDATE_TEMP_PROFILE_SUCCESS,
-        profileData
+        tempProfile
     };
 }
 
@@ -122,6 +122,19 @@ export function requestFundFromFaucetError (error) {
         error
     };
 }
+
+export function listenFaucetTx () {
+    return {
+        type: types.LISTEN_FAUCET_TX
+    };
+}
+
+export function listenPublishTx () {
+    return {
+        type: types.LISTEN_PUBLISH_TX
+    }
+}
+
 export function publishProfile () {
     return {
         type: types.PUBLISH_PROFILE
@@ -166,5 +179,11 @@ export function getProfileDataError (error) {
     return {
         type: types.GET_PROFILE_DATA_ERROR,
         error
+    };
+}
+
+export function clearErrors () {
+    return {
+        type: types.CLEAR_PROFILE_ERRORS
     };
 }
