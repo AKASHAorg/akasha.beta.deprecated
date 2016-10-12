@@ -1,6 +1,5 @@
 import { connect } from 'react-redux';
 import {
-    LoggerActions,
     EProcActions,
     SettingsActions } from 'local-flux';
 import SyncStatus from './components/Sync';
@@ -14,10 +13,12 @@ function mapStateToProps (state) {
         ipfsErrors: state.externalProcState.get('ipfsErrors'),
         configFlags: state.settingsState.get('flags'),
         gethSettings: state.settingsState.get('geth'),
-        ipfsSettings: state.settingsState.get('ipfs'),
+        fetchingGethSettings: state.settingsState.get('fetchingGethSettings'),
+        fetchingIpfsSettings: state.settingsState.get('fetchingIpfsSettings'),
         gethSyncStatus: state.externalProcState.get('gethSyncStatus'),
         syncActionId: state.externalProcState.get('syncActionId'),
-        gethBusyState: state.externalProcState.get('gethBusyState')
+        gethBusyState: state.externalProcState.get('gethBusyState'),
+        timestamp: state.appState.get('timestamp')
     };
 }
 

@@ -2,6 +2,7 @@
 import { fromJS, Record, List, Map, Set } from 'immutable';
 import { createReducer } from './create-reducer';
 import * as types from '../constants/external-process-constants';
+import * as settingsTypes from '../constants/SettingsConstants';
 
 const GethStatus = Record({
     downloading: null,
@@ -35,7 +36,6 @@ const IpfsStatus = Record({
     spawned: false,
     started: null,
     stopped: null,
-    error: null,
     startRequested: false
 });
 
@@ -67,6 +67,7 @@ const eProcState = createReducer(initialState, {
     [types.START_GETH]: state =>
         state.merge({
             gethStatus: state.get('gethStatus').merge({ startRequested: true }),
+            gethErrors: state.get('gethErrors').clear(),
             gethBusyState: true
         }),
 
@@ -81,6 +82,7 @@ const eProcState = createReducer(initialState, {
     [types.STOP_GETH]: state =>
         state.merge({
             gethStatus: state.get('gethStatus').merge({ startRequested: false }),
+            gethErrors: state.get('gethErrors').clear(),
             gethBusyState: true
         }),
 
@@ -93,7 +95,10 @@ const eProcState = createReducer(initialState, {
         state.get('gethErrors').push(new ErrorRecord(action.error)),
 
     [types.GET_GETH_STATUS_SUCCESS]: (state, action) =>
-        state.merge({ gethStatus: state.get('gethStatus').merge(action.status) }),
+        state.merge({ gethStatus: state.get('gethStatus').merge(action.data) }),
+
+    [types.GET_IPFS_STATUS_SUCCESS]: (state, action) =>
+        state.merge({ ipfsStatus: state.get('ipfsStatus').merge(action.data) }),
 
     [types.START_IPFS_SUCCESS]: (state, action) =>
         state.merge({
@@ -102,18 +107,22 @@ const eProcState = createReducer(initialState, {
 
     [types.START_IPFS_ERROR]: (state, action) =>
         state.merge({
-            ipfsErrors: state.get('ipfsErrors').push(new ErrorRecord(action.error))
+            ipfsErrors: state.get('ipfsErrors').push(new ErrorRecord(action.error)),
+            ipfsStatus: state.get('ipfsStatus').merge(action.data)
         }),
 
     [types.START_IPFS]: state =>
         state.merge({
-            ipfsStatus: state.get('ipfsStatus').merge({ startRequested: true })
+            ipfsStatus: state.get('ipfsStatus').merge({ startRequested: true }),
+            ipfsErrors: state.get('ipfsErrors').clear(),
+            ipfsBusyState: true
         }),
 
     [types.STOP_IPFS]: state =>
         state.merge({
             ipfsStatus: state.get('ipfsStatus').merge({ startRequested: false }),
-            ipfsErrors: state.get('ipfsErrors').clear()
+            ipfsErrors: state.get('ipfsErrors').clear(),
+            ipfsBusyState: true
         }),
 
     [types.STOP_IPFS_SUCCESS]: state =>
@@ -169,6 +178,11 @@ const eProcState = createReducer(initialState, {
             gethBusyState: false
         }),
 
+    [types.RESET_IPFS_BUSY]: state =>
+        state.merge({
+            ipfsBusyState: false
+        }),
+
     [types.SYNC_FINISHED]: state =>
         state.merge({
             syncActionId: 4
@@ -189,6 +203,33 @@ const eProcState = createReducer(initialState, {
             });
         logsSet = logsSet.map(log => new Map(log)).slice(0, 20);
         return state.set('gethLogs', logsSet);
+    },
+
+    [settingsTypes.SAVE_SETTINGS]: (state, action) => {
+        if (action.table === 'geth') {
+            return state.merge({
+                gethBusyState: true
+            });
+        }
+        return state;
+    },
+
+    [settingsTypes.SAVE_SETTINGS_SUCCESS]: (state, action) => {
+        if (action.table === 'geth') {
+            return state.merge({
+                gethBusyState: false
+            });
+        }
+        return state;
+    },
+
+    [settingsTypes.SAVE_SETTINGS_ERROR]: (state, action) => {
+        if (action.table === 'geth') {
+            return state.merge({
+                gethBusyState: false
+            });
+        }
+        return state;
     }
 });
 

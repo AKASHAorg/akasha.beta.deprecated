@@ -18,7 +18,8 @@ const initialState = fromJS({
     showEntry: {
         modal: false
     },
-    confirmationDialog: null
+    confirmationDialog: null,
+    timestamp: null
 });
 
 const appState = createReducer(initialState, {
@@ -57,6 +58,8 @@ const appState = createReducer(initialState, {
     [types.HIDE_CONFIRMATION_DIALOG]: state =>
         state.set('confirmationDialog', null),
 
+    [types.SET_TIMESTAMP]: (state, action) =>
+        state.set('timestamp', action.timestamp)
 });
 
 export default appState;

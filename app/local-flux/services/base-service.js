@@ -18,7 +18,7 @@ class BaseService {
         (ev, res) => {
             dbg('response on channel', channelName, 'is', res);
             if (res.error) {
-                return onError(res.error);
+                return onError(res.error, res.data || {});
             }
             return onSuccess(res.data);
         };
@@ -79,6 +79,7 @@ class BaseService {
             this._openChannels.add(serverChannel.channel);
             return this.registerListener(clientChannel, listenerCb, cb);
         });
+        dbg(`enable channel ${serverChannel.channelName}`);
         return serverChannel.enable();
     };
     /** close communication with a channel through channel manager

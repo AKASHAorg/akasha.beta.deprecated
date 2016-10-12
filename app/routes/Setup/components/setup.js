@@ -1,12 +1,19 @@
 import React, { Component, PropTypes } from 'react';
 
 class Setup extends Component {
-    constructor (props) {
-        super(props);
-        this.state = {
-            gethLogs: []
-        };
+    componentDidMount () {
+        const { appActions, settingsActions, eProcActions } = this.props;
+        const timestamp = new Date().getTime();
+        appActions.setTimestamp(timestamp);
+        setTimeout(() => {
+            eProcActions.getGethOptions();
+            eProcActions.getIpfsConfig();
+        }, 0);
+        settingsActions.getSettings('flags');
+        settingsActions.getSettings('geth');
+        settingsActions.getSettings('ipfs');
     }
+
     render () {
         return (
           <div className="row">
@@ -20,11 +27,9 @@ class Setup extends Component {
 }
 
 Setup.propTypes = {
+    appActions: PropTypes.shape().isRequired,
     eProcActions: PropTypes.shape().isRequired,
     settingsActions: PropTypes.shape().isRequired,
-    settingsState: PropTypes.shape().isRequired,
-    style: PropTypes.shape(),
-    intl: PropTypes.shape(),
 };
 
 Setup.contextTypes = {

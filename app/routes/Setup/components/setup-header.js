@@ -1,29 +1,15 @@
-import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
-import { IconMenu, IconButton, MenuItem } from 'material-ui';
 import { LogoIcon } from 'shared-components/svg';
-import React from 'react';
-import { generalMessages } from 'locale-data/messages';
-import { injectIntl } from 'react-intl';
+import React, { PropTypes } from 'react';
+import ServiceStatusBar from '../../components/service-status-bar';
 
-function SetupHeader ({ title, intl }) {
-    const { formatMessage } = intl;
+function SetupHeader ({ title }) {
     return (
       <div className="col-xs-12">
         <div className="row middle-xs" >
           <LogoIcon className="col-xs-1 start-xs" />
           <div className="col-xs-3" style={{ fontWeight: '300' }} >{title}</div>
           <div className="col-xs-8 end-xs">
-            <IconMenu
-              anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
-              iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
-              targetOrigin={{ horizontal: 'right', vertical: 'top' }}
-            >
-              <MenuItem primaryText={formatMessage(generalMessages.refresh)} />
-              <MenuItem primaryText={formatMessage(generalMessages.sendFeedback)} />
-              <MenuItem primaryText={formatMessage(generalMessages.settings)} />
-              <MenuItem primaryText={formatMessage(generalMessages.help)} />
-              <MenuItem primaryText={formatMessage(generalMessages.signOut)} />
-            </IconMenu>
+            <ServiceStatusBar />
           </div>
         </div>
       </div>
@@ -31,16 +17,15 @@ function SetupHeader ({ title, intl }) {
 }
 
 SetupHeader.contextTypes = {
-    muiTheme: React.PropTypes.object
+    muiTheme: PropTypes.object
 };
 
 SetupHeader.propTypes = {
-    title: React.PropTypes.string.isRequired,
-    intl: React.PropTypes.object
+    title: PropTypes.string.isRequired
 };
 
 SetupHeader.defaultProps = {
     title: 'AKASHA'
 };
 
-export default injectIntl(SetupHeader);
+export default SetupHeader;
