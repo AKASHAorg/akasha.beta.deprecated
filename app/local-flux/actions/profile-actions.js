@@ -224,7 +224,7 @@ class ProfileActions {
         if (backgroundImage.length > 0) {
             ipfs.backgroundImage = backgroundImage[0];
         }
-
+        dbg('sending ipfs object', ipfs);
         if (isLoggedIn && !publishRequested) {
             this.dispatch(profileActionCreators.publishProfile());
             this.dispatch((dispatch) => {

@@ -19,11 +19,10 @@ class CreateProfileStatus extends Component {
         transactionActions.getPendingTransactions();
     }
     componentWillReceiveProps (nextProps) {
-        console.log(nextProps.tempProfile);
-        if (!nextProps.tempProfile) {
-            this.context.router.push('/authentication');
+        if (nextProps.tempProfile.get('username') === '') {
+            return this.context.router.push('/authentication');
         }
-        this.resumeProfileCreation(nextProps);
+        return this.resumeProfileCreation(nextProps);
     }
 
     getCurrentStatusDescription = () => {
@@ -76,28 +75,40 @@ class CreateProfileStatus extends Component {
             minedTransactions,
             pendingTransactions,
             errors } = props;
-        const { faucetTx, publishTx, nextAction } = tempProfile.get('currentStatus');
+
+        const {
+            faucetTx,
+            publishTx,
+            listeningPublishTx,
+            listeningFaucetTx,
+            nextAction } = tempProfile.get('currentStatus');
         const publishMinedIndex = this._checkTxIndex(minedTransactions, publishTx);
         const faucetMinedIndex = this._checkTxIndex(minedTransactions, faucetTx);
         const publishPendingIndex = this._checkTxIndex(pendingTransactions, publishTx);
         const faucetPendingIndex = this._checkTxIndex(pendingTransactions, faucetTx);
         const shouldListenFaucetTx = nextAction === 'listenFaucetTx' && faucetPendingIndex === -1 &&
-            faucetMinedIndex === -1;
+            faucetMinedIndex === -1 && !listeningFaucetTx;
         const shouldListenPublishTx = nextAction === 'listenPublishTx' &&
-            publishPendingIndex === -1 && publishMinedIndex === -1;
+            publishPendingIndex === -1 && publishMinedIndex === -1 && !listeningPublishTx;
+
         if (errors.size > 0) {
-            this.setState({
+            return this.setState({
                 errors
             });
         }
-        if (shouldListenFaucetTx) {
-            return this.addTxToQueue(faucetTx);
-        } else if (nextAction === 'listenFaucetTx' && faucetMinedIndex > -1) {
-            profileActions.publishProfile(tempProfile, loggedProfile);
-        }
 
         if (shouldListenPublishTx) {
+            profileActions.listenPublishTx();
             return this.addTxToQueue(publishTx);
+        }
+
+        if (shouldListenFaucetTx) {
+            profileActions.listenFaucetTx();
+            return this.addTxToQueue(faucetTx);
+        }
+
+        if (nextAction === 'listenFaucetTx' && faucetMinedIndex > -1) {
+            return profileActions.publishProfile(tempProfile, loggedProfile);
         }
 
         if (nextAction === 'listenPublishTx' && publishMinedIndex > -1) {
@@ -114,7 +125,7 @@ class CreateProfileStatus extends Component {
         profileActions.deleteTempProfile();
     }
     _handleStepRetry = () => {
-        const profileActions = this.props;
+        const { profileActions } = this.props;
         profileActions.clearErrors();
     }
     render () {
@@ -149,19 +160,21 @@ class CreateProfileStatus extends Component {
                 </div>
               }
               actions={[
+                  /* eslint-disable */
                   <RaisedButton
                     key="abort-register"
                     label="Abort"
                     onClick={this._handleProfileAbortion}
-                    disabled={(nextAction === 'listenPublishTx' || nextAction === 'listenFaucetTx')}
+                    disabled={(nextAction === 'listenPublishTx')}
                   />,
                   <RaisedButton
                     key="retry-step"
                     label="Retry Step"
                     onClick={this._handleStepRetry}
                     primary
-                    disabled={this.state.errors.size === 0}
+                    disabled={(this.state.errors.size === 0)}
                   />
+                  /* eslint-enable */
               ]}
             >
               <div className="col-xs">
