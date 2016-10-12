@@ -23,7 +23,7 @@ const loginDialog = (props) => {
     const handleUnlockCheck = (ev, isUnlocked) => {
         console.log('want auto unlock?', isUnlocked);
         props.onUnlockCheck(isUnlocked);
-    }
+    };
     return (
       <Dialog
         title={title}
