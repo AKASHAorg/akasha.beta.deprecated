@@ -13,7 +13,6 @@ describe('GethIPC', function () {
         chai_1.expect(helpers_1.gethChannel).to.exist;
     });
     it('--can init listeneres', function () {
-        helpers_1.gethChannel.initListeners(null);
         chai_1.expect(helpers_1.gethChannel.listeners.size).to.be.above(0);
     });
     it('--should add to listened channels from #manager', function (done) {

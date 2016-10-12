@@ -13,7 +13,6 @@ describe('IpfsIPC', function () {
         chai_1.expect(helpers_1.ipfsChannel).to.exist;
     });
     it('--can init listeneres', function () {
-        helpers_1.ipfsChannel.initListeners(null);
         chai_1.expect(helpers_1.ipfsChannel.listeners.size).to.be.above(0);
     });
     it('--should add to listened channels from #manager', function (done) {
