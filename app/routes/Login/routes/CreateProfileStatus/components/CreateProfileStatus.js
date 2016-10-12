@@ -74,7 +74,8 @@ class CreateProfileStatus extends Component {
             loggedProfile,
             minedTransactions,
             pendingTransactions,
-            errors } = props;
+            errors,
+            loginRequested } = props;
 
         const {
             faucetTx,
@@ -108,7 +109,7 @@ class CreateProfileStatus extends Component {
         }
 
         if (nextAction === 'listenFaucetTx' && faucetMinedIndex > -1) {
-            return profileActions.publishProfile(tempProfile, loggedProfile);
+            return profileActions.publishProfile(tempProfile, loggedProfile, loginRequested);
         }
 
         if (nextAction === 'listenPublishTx' && publishMinedIndex > -1) {
@@ -121,8 +122,8 @@ class CreateProfileStatus extends Component {
         return null;
     }
     _handleProfileAbortion = () => {
-        const { profileActions } = this.props;
-        profileActions.deleteTempProfile();
+        const { profileActions, tempProfile } = this.props;
+        profileActions.deleteTempProfile(tempProfile.get('username'));
     }
     _handleStepRetry = () => {
         const { profileActions } = this.props;
@@ -207,14 +208,14 @@ class CreateProfileStatus extends Component {
                     {this.getCurrentStatusDescription()}
                   </div>
                 </div>
-                <p style={{ marginTop: '20px', color: Colors.red300 }}>
-                  {this.state.errors.map(err =>
-                    <div className="error-card">
+                <div style={{ marginTop: '20px', color: Colors.red300 }}>
+                  {this.state.errors.map((err, key) =>
+                    <div className="error-card" key={key}>
                       <p>{err.code}</p>
                       <p>{err.message}</p>
                     </div>
                   )}
-                </p>
+                </div>
               </div>
             </PanelContainer>
           </div>
@@ -231,7 +232,8 @@ CreateProfileStatus.propTypes = {
     loggedProfile: PropTypes.shape(),
     pendingTransactions: PropTypes.shape(),
     transactionActions: PropTypes.shape(),
-    errors: PropTypes.shape()
+    errors: PropTypes.shape(),
+    loginRequested: PropTypes.boolean
 };
 
 CreateProfileStatus.contextTypes = {

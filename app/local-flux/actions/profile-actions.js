@@ -20,6 +20,7 @@ class ProfileActions {
     }
     login = ({ account, password, rememberTime }) => {
         dbg('logging in with:', account, 'for', rememberTime, 'minutes');
+        this.dispatch(profileActionCreators.login());
         this.authService.login({
             account,
             password,
@@ -53,49 +54,6 @@ class ProfileActions {
         });
     clearLoggedProfile = () => {
         this.profileService.clearLoggedProfile();
-    }
-
-    resumeProfileCreation = () => {
-        this.dispatch((dispatch, getState) => {
-            const updatedTempProfile = getState().profileState.get('tempProfile');
-            const updatedStatus = updatedTempProfile.get('currentStatus');
-            const { nextAction, faucetTx } = updatedStatus;
-            const loggedProfile = getState().profileState.get('loggedProfile');
-            const isLoggedIn = loggedProfile.get('account') === updatedTempProfile.get('address') &&
-                Date.parse(loggedProfile.get('expiration')) > Date.now();
-            const minedTransactions = getState().transactionState.get('mined');
-            dbg('resuming current step', nextAction);
-            switch (nextAction) {
-                case 'CREATE_TEMP_PROFILE':
-                    // create eth address in this step and update temp profile;
-                    this.createEthAddress();
-                    break;
-                case 'CREATE_ETH_ADDRESS_SUCCESS':
-                    // request from faucet in this step and update temp profile
-                    this.requestFundFromFaucet();
-                    break;
-                case 'REQUEST_FUND_FROM_FAUCET_SUCCESS': {
-                    const isMined = minedTransactions.findIndex(trans => trans.tx === faucetTx) !== -1;
-                    if (isMined) {
-                        if (isLoggedIn) {
-                            this.publishProfile(loggedProfile.get('token'));
-                        } else {
-                            this.login({
-                                account: updatedTempProfile.get('address'),
-                                password: updatedTempProfile.get('password'),
-                                rememberTime: 1
-                            });
-                        }
-                    }
-                    break;
-                }
-                case 'COMPLETE_PROFILE_CREATION_SUCCESS': {
-                    break;
-                }
-                default:
-                    break;
-            }
-        });
     }
     /**
      * ---------Start New Profile Registration -----------
@@ -204,7 +162,7 @@ class ProfileActions {
      *  Response:
      *  @param data.tx <string> Transaction hash which needs to be watched for mining
      */
-    publishProfile = (tempProfile, loggedProfile, gas) => {
+    publishProfile = (tempProfile, loggedProfile, loginRequested, gas) => {
         const isLoggedIn = loggedProfile.get('account') === tempProfile.get('address') &&
             Date.parse(loggedProfile.get('expiration')) > Date.now();
         const { publishRequested } = tempProfile.get('currentStatus');
@@ -219,12 +177,12 @@ class ProfileActions {
             ipfs.links = links;
         }
         if (avatar) {
-            ipfs.avatar = avatar;
+            ipfs.avatar = Array.from(avatar);
         }
         if (backgroundImage.length > 0) {
             ipfs.backgroundImage = backgroundImage[0];
         }
-        dbg('sending ipfs object', ipfs);
+        dbg('sending ipfs object avatar', ipfs.avatar.slice(0));
         if (isLoggedIn && !publishRequested) {
             this.dispatch(profileActionCreators.publishProfile());
             this.dispatch((dispatch) => {
@@ -249,7 +207,7 @@ class ProfileActions {
                     }
                 });
             });
-        } else {
+        } else if (!loginRequested) {
             dbg('logging in!');
             this.login({
                 account: tempProfile.get('address'),
@@ -278,8 +236,9 @@ class ProfileActions {
         });
     };
 
-    deleteTempProfile = () =>
+    deleteTempProfile = username =>
         this.registryService.deleteTempProfile({
+            username,
             onError: error => this.dispatch(profileActionCreators.deleteTempProfileError(error)),
             onSuccess: () => this.dispatch(profileActionCreators.deleteTempProfileSuccess())
         })

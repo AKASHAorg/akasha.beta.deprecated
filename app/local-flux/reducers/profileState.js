@@ -54,10 +54,15 @@ const initialState = fromJS({
     profiles: new List(),
     loggedProfile: new LoggedProfile(),
     tempProfile: new TempProfile(),
-    errors: new List()
+    errors: new List(),
+    loginRequested: false
 });
 
 const profileState = createReducer(initialState, {
+    [types.LOGIN]: state =>
+        state.merge({
+            loginRequested: true
+        }),
     [types.LOGIN_SUCCESS]: (state, { profile }) =>
         state.merge({ loggedProfile: new LoggedProfile(profile) }),
 
@@ -205,17 +210,18 @@ const profileState = createReducer(initialState, {
             listeningPublishTx: true
         }),
 
-    [types.COMPLETE_PROFILE_CREATION]: state =>
+    [types.PUBLISH_PROFILE]: state =>
         state.mergeIn(['tempProfile', 'currentStatus'], {
             publishRequested: true
         }),
 
-    [types.COMPLETE_PROFILE_CREATION_SUCCESS]: (state, { profileData }) =>
-        state.mergeDeepIn(['tempProfile', 'currentStatus'], {
+    [types.PUBLISH_PROFILE_SUCCESS]: (state, { profileData }) =>
+        state.mergeIn(['tempProfile', 'currentStatus'], {
+            publishTx: profileData.tx,
             nextAction: 'listenPublishTx'
         }),
 
-    [types.COMPLETE_PROFILE_CREATION_ERROR]: (state, { error }) =>
+    [types.PUBLISH_PROFILE_ERROR]: (state, { error }) =>
         state.merge({
             errors: state.get('errors').push(new ErrorRecord(error))
         }),
