@@ -47,7 +47,7 @@ const create = (data) => {
             data.avatar = new Uint8Array(data.avatar);
             return ipfs_connector_1.IpfsConnector.getInstance()
                 .api
-                .add(Buffer.from(data.avatar));
+                .addFile(Buffer.from(data.avatar));
         }
         return Promise.resolve('');
     }).then((hash) => {
@@ -80,7 +80,7 @@ const getShortProfile = (hash) => {
                 .api
                 .resolve(schema.avatar)
                 .then((data) => {
-                resolved.avatar = Uint8Array.from(data);
+                resolved.avatar = (Buffer.from(data)).toJSON().data;
                 return resolved;
             });
         }
