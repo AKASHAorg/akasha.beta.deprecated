@@ -44,8 +44,8 @@ class SettingsActions {
     setupGethCacheSize = (size) => {
         this.dispatch(settingsActionCreators.setupGethCacheSize(size));
     };
-    setupIPFSPath = (path) => {
-        this.dispatch(settingsActionCreators.setupIPFSPath(path));
+    setupIPFSPath = (storagePath) => {
+        this.dispatch(settingsActionCreators.setupIPFSPath(storagePath));
     };
     setupIPFSApiPort = (port) => {
         this.dispatch(settingsActionCreators.setupIPFSApiPort(port));
