@@ -20,8 +20,8 @@ class CreateProfileComplete extends Component {
         }
     }
     _handleFinishSetup = () => {
-        const { profileActions } = this.props;
-        profileActions.deleteTempProfile();
+        const { profileActions, tempProfile } = this.props;
+        profileActions.deleteTempProfile(tempProfile.get('username'));
     }
     render () {
         const { style, intl, tempProfile } = this.props;

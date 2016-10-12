@@ -49,8 +49,7 @@ class Auth extends Component {
                 return this.context.router.push('/authenticate/new-profile-status');
             }
         }
-
-        if (localProfiles.size > 0 && localProfiles.size !== this.props.localProfiles.size) {
+        if ((localProfiles.size > 0) && (localProfiles.size !== this.props.localProfiles.size)) {
             profileActions.getProfileData(localProfiles.toJS());
         }
     }
