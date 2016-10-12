@@ -21,6 +21,7 @@ const create = (data: IpfsProfileCreateRequest) => {
     if (data.backgroundImage) {
         keys = Object.keys(data.backgroundImage).sort();
         media = keys.map((media: string) => {
+            data.backgroundImage[media].src = new Uint8Array(data.backgroundImage[media].src);
             return IpfsConnector.getInstance()
                 .api
                 .addFile(Buffer.from(data.backgroundImage[media].src));
@@ -37,6 +38,8 @@ const create = (data: IpfsProfileCreateRequest) => {
                     constructed[dim]['height'] = data.backgroundImage[dim].height;
                     constructed[dim]['src'] = v;
                 });
+                // cleanup
+                delete data.backgroundImage;
                 return IpfsConnector.getInstance().api.add(constructed).then((hash: string) => {
                     return IpfsConnector.getInstance().api.constructObjLink(hash);
                 });
@@ -47,6 +50,7 @@ const create = (data: IpfsProfileCreateRequest) => {
                 returned.backgroundImage = hash;
             }
             if (data.avatar) {
+                data.avatar = new Uint8Array(data.avatar);
                 return IpfsConnector.getInstance()
                     .api
                     .addFile(Buffer.from(data.avatar));
@@ -88,7 +92,7 @@ const getShortProfile = (hash: string) => {
                     .api
                     .resolve(schema.avatar)
                     .then((data: Buffer) => {
-                        resolved.avatar = Uint8Array.from(data);
+                        resolved.avatar = (Buffer.from(data)).toJSON().data;
                         return resolved;
                     });
             }
