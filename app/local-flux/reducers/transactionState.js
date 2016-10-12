@@ -13,7 +13,10 @@ const PendingTransaction = Record ({
 });
 
 const MinedTransaction = Record({
-    tx: ''
+    tx: '',
+    blockNumber: 0,
+    cumulativeGasUsed: 0,
+    hasEvents: false
 });
 
 const initialState = fromJS({
@@ -25,8 +28,10 @@ const initialState = fromJS({
 const transactionState = createReducer(initialState, {
 
     [types.ADD_TO_QUEUE_SUCCESS]: (state, action) => {
+        console.log(action, 'add to queue action');
+        const txs = action.data.map(tx => new PendingTransaction({ tx }));
         const newState = state.merge({
-            pending: state.get('pending').concat(action.data)
+            pending: state.get('pending').concat(txs)
         });
         return newState;
     },
@@ -36,12 +41,14 @@ const transactionState = createReducer(initialState, {
             errors: state.get('errors').push(new ErrorRecord(action.error))
         }),
 
-    [types.TRANSACTION_MINED_SUCCESS]: (state, action) =>
-        state.merge({
-            mined: state.get('mined').push(new MinedTransaction(action.data.mined)),
+    [types.TRANSACTION_MINED_SUCCESS]: (state, action) => {
+        const { mined, ...other } = action.data;
+        return state.merge({
+            mined: state.get('mined').push(new MinedTransaction({ tx: mined, ...other })),
             pending: state.get('pending').filter(transaction =>
                 transaction.tx !== action.data.mined)
-        }),
+        });
+    },
 
     [types.TRANSACTION_MINED_ERROR]: (state, action) =>
         state.merge({

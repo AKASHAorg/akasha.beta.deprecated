@@ -1,91 +1,96 @@
 import React, { Component, PropTypes } from 'react';
 import { MenuAkashaLogo } from 'shared-components/svg';
+import { PanelContainer } from 'shared-components';
 import * as Colors from 'material-ui/styles/colors';
 import { SvgIcon, RaisedButton, TextField } from 'material-ui';
+import { injectIntl } from 'react-intl';
+import { setupMessages, generalMessages } from 'locale-data/messages';
+import LoginHeader from '../../../components/LoginHeader';
 
 class CreateProfileComplete extends Component {
+    componentWillMount () {
+        const { tempProfile, profileActions } = this.props;
+        if (!tempProfile.get('username')) {
+            profileActions.getTempProfile();
+        }
+    }
     _handleFinishSetup = () => {
-        const { profile } = this.props;
-        this.context.router.push(`/${profile.get('userName')}`);
+        const { profileActions } = this.props;
+        profileActions.deleteTempProfile();
+        this.context.router.push('/authenticate');
     }
     render () {
-        const { style, profile } = this.props;
+        const { style, intl, tempProfile } = this.props;
         const akashaLogoStyles = {
             width: '32px',
             height: '32px',
             marginRight: '10px',
             verticalAlign: 'middle'
         };
-        const fullName = `${profile.get('firstName')} ${profile.get('lastName')}`;
-        
+        const fullName = `${tempProfile.get('firstName')} ${tempProfile.get('lastName')}`;
+
         return (
+          <PanelContainer
+            showBorder
+            style={style}
+            header={<LoginHeader title={intl.formatMessage(setupMessages.identityRegistered)} />}
+            actions={[
+                /* eslint-disable */
+                <RaisedButton
+                  label="Backup"
+                  disabled
+                  key="backup"
+                />,
+                <RaisedButton
+                  key="enjoyAKSH"
+                  label="Enjoy AKASHA"
+                  primary
+                  style={{ marginLeft: '12px' }}
+                  onClick={this._handleFinishSetup}
+                />
+                /* eslint-enable */
+            ]}
+          >
             <div style={style} >
-                <div className="row start-xs" >
-                    <div className="col-xs" style={{ flex: 1, padding: 0 }} >
-                        <SvgIcon
-                            color={Colors.lightBlack}
-                            viewBox="0 0 32 32"
-                            style={akashaLogoStyles}
-                        >
-                            <MenuAkashaLogo />
-                        </SvgIcon>
-                        <h1 style={{ fontWeight: '400', display: 'inline', verticalAlign: 'middle' }} >
-                            {'Identity registered!'}
-                        </h1>
-                        
-                        <TextField
-                            disabled
-                            floatingLabelText="Name"
-                            style={{ width: '210px' }}
-                            value={fullName}
-                        />
-                        <TextField
-                            disabled
-                            floatingLabelText="Username"
-                            style={{ width: '210px', marginLeft: '20px' }}
-                            value={profile.get('userName')}
-                        />
-                        <TextField
-                            disabled
-                            floatingLabelText="Ethereum address"
-                            style={{ width: '100%' }}
-                            value={profile.get('address')}
-                        />
-                        
-                        <h3>{'Tips before you get started'}</h3>
-                        <p style={{ fontSize: '13px' }} >
-                            {'Since we cannot help you recover passwords, or identities make sure to:'}<br />
-                            {'1. Write down your password and keep it safe'}<br />
-                            {'2. Backup your ID now and don’t be sorry later'}<br />
-                            {'3. Don’t (ever) share your key with other people'}<br />
-                        </p>
-                    </div>
-                    
-                    <div className="row end-xs" >
-                        <div className="col-xs" style={{ position: 'absolute', bottom: 0, right: 0 }} >
-                            <RaisedButton
-                                label="Backup"
-                                disabled
-                            />
-                            <RaisedButton
-                                label="Enjoy AKASHA"
-                                primary
-                                style={{ marginLeft: '12px' }}
-                                onClick={this._handleFinishSetup}
-                            />
-                        </div>
-                    </div>
-                
+              <div className="row start-xs" >
+                <div className="col-xs" style={{ flex: 1, padding: 0 }} >
+                  <TextField
+                    disabled
+                    floatingLabelText="Name"
+                    style={{ width: '210px' }}
+                    value={fullName}
+                  />
+                  <TextField
+                    disabled
+                    floatingLabelText="Username"
+                    style={{ width: '210px', marginLeft: '20px' }}
+                    value={tempProfile.get('username')}
+                  />
+                  <TextField
+                    disabled
+                    floatingLabelText="Ethereum address"
+                    style={{ width: '100%' }}
+                    value={tempProfile.get('address')}
+                  />
+                  <h3>{'Tips before you get started'}</h3>
+                  <p style={{ fontSize: '13px' }} >
+                    {'Since we cannot help you recover passwords, or identities make sure to:'}<br />
+                    {'1. Write down your password and keep it safe'}<br />
+                    {'2. Backup your ID now and don’t be sorry later'}<br />
+                    {'3. Don’t (ever) share your key with other people'}<br />
+                  </p>
                 </div>
+              </div>
             </div>
+          </PanelContainer>
         );
     }
 }
 
 CreateProfileComplete.propTypes = {
-    actions: PropTypes.object.isRequired,
-    profile: PropTypes.object.isRequired,
-    style: PropTypes.object
+    style: PropTypes.shape(),
+    intl: PropTypes.shape(),
+    tempProfile: PropTypes.shape()
 };
 
 CreateProfileComplete.contextTypes = {
@@ -103,4 +108,4 @@ CreateProfileComplete.defaultProps = {
     }
 };
 
-export default CreateProfileComplete;
+export default injectIntl(CreateProfileComplete);
