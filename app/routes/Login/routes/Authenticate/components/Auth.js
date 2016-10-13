@@ -6,7 +6,7 @@ import {
     RaisedButton,
     Avatar } from 'material-ui';
 import { hashHistory } from 'react-router';
-import { FormattedMessage, injectIntl } from 'react-intl';
+import { injectIntl } from 'react-intl';
 import { LoginDialog, PanelContainer } from 'shared-components';
 import { setupMessages, generalMessages } from 'locale-data/messages'; /* eslint import/no-unresolved: 0*/
 import LoginHeader from '../../../components/LoginHeader';
@@ -26,6 +26,7 @@ class Auth extends Component {
     componentWillMount () {
         const { profileActions } = this.props;
         profileActions.getTempProfile();
+        profileActions.clearLoggedProfile();
     }
     componentDidMount () {
         const { profileActions } = this.props;

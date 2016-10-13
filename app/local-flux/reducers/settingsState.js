@@ -1,6 +1,7 @@
+/* eslint new-cap: ["error", { "capIsNewExceptions": ["Record"] }]*/
+import { fromJS, Record, List } from 'immutable';
 import * as types from '../constants/SettingsConstants';
 import { createReducer } from './create-reducer';
-import { fromJS, Record, List } from 'immutable';
 
 const ErrorRecord = Record({
     code: null,
@@ -18,7 +19,7 @@ const IpfsSettings = Record({
     ipfsPath: '',
 });
 
-const UserSettings = Record ({
+const UserSettings = Record({
 
 });
 
@@ -46,11 +47,11 @@ const settingsState = createReducer(initialState, {
         return state.merge({ [action.table]: data });
     },
 
-    [types.GET_SETTINGS_ERROR]: (state, action) => {
-        return state.merge({
+    [types.GET_SETTINGS_ERROR]: (state, action) =>
+        state.merge({
             errors: state.get('errors').push(new ErrorRecord(action.error))
-        });
-    },
+        }),
+
     [types.SAVE_SETTINGS_SUCCESS]: (state, action) => {
         console.log('save settings action', action);
         switch (action.table) {

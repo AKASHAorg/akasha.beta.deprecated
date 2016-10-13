@@ -14,7 +14,7 @@ export function loginSuccess (profile) {
 }
 
 export function loginError (error) {
-    error.code = 'LOGINE01'
+    error.code = 'LOGINE01';
     return {
         type: types.LOGIN_ERROR,
         error
@@ -29,7 +29,7 @@ export function logoutSuccess (result) {
 }
 
 export function logoutError (error) {
-    error.code = 'LOGOUTE01'
+    error.code = 'LOGOUTE01';
     return {
         type: types.LOGOUT_ERROR,
         error
@@ -213,13 +213,13 @@ export function getLoggedProfileError (error) {
     };
 }
 
-export function clearLoggedProfileSuccess () {
+export function deleteLoggedProfileSuccess () {
     return {
         type: types.CLEAR_LOGGED_PROFILE_SUCCESS
     };
 }
 
-export function clearLoggedProfileError (error) {
+export function deleteLoggedProfileError (error) {
     error.code = 'CLPE01';
     return {
         type: types.CLEAR_LOGGED_PROFILE_ERROR,

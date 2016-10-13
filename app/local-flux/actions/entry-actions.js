@@ -31,20 +31,20 @@ class EntryActions {
             return result;
         })
             .then((savedDraft) => {
-                this.dispatch((dispatch, getState) => {
-                    return hashHistory.push(
+                this.dispatch(() =>
+                    hashHistory.push(
                         `/${authorUsername}/draft/${savedDraft.id}`
-                    );
-                });
+                    )
+                );
             })
-            .catch(reason => {
+            .catch((reason) => {
                 dbg('dispatching', 'CREATE_DRAFT_ERROR', reason);
                 return this.dispatch(entryActionCreators.createDraftError(reason));
             });
     };
     updateDraft = (changes) => {
         this.dispatch(entryActionCreators.startSavingDraft());
-        return this.entryService.saveDraft(changes).then(savedDraft => {
+        return this.entryService.saveDraft(changes).then((savedDraft) => {
             dbg('dispatching', 'UPDATE_DRAFT_SUCCESS', savedDraft);
             return this.dispatch(entryActionCreators.updateDraftSuccess(savedDraft));
         }).catch(reason => this.dispatch(entryActionCreators.updateDraftError(reason)));
@@ -55,26 +55,26 @@ class EntryActions {
         return this.throttledUpdateDraft(draft);
     };
 
-    getDrafts = (username) =>
-        this.entryService.getAllDrafts(username).then(result => {
+    getDrafts = username =>
+        this.entryService.getAllDrafts(username).then((result) => {
             dbg('dispatching', 'GET_DRAFTS_SUCCESS', result);
             return this.dispatch(entryActionCreators.getDraftsSuccess(result));
         }).catch(reason => this.dispatch(entryActionCreators.getDraftsError(reason)));
 
-    getDraftsCount = (username) =>
-        this.entryService.getDraftsCount(username).then(result => {
+    getDraftsCount = username =>
+        this.entryService.getDraftsCount(username).then((result) => {
             dbg('dispatching', 'GET_DRAFTS_COUNT_SUCCESS', result);
             return this.dispatch(entryActionCreators.getDraftsCountSuccess(result));
         }).catch(reason => this.dispatch(entryActionCreators.getDraftsCountError(reason)));
 
     getEntriesCount = () =>
-        this.entryService.getResourceCount('entries').then(result => {
+        this.entryService.getResourceCount('entries').then((result) => {
             dbg('dispatching', 'GET_ENTRIES_COUNT_SUCCESS', result);
             return this.dispatch(entryActionCreators.getEntriesCountSuccess(result));
         }).catch(reason => this.dispatch(entryActionCreators.getEntriesCountError(reason)));
 
-    getDraftById = (id) =>
-        this.entryService.getById('drafts', id).then(result => {
+    getDraftById = id =>
+        this.entryService.getById('drafts', id).then((result) => {
             dbg('dispatching', 'GET_DRAFT_SUCCESS', result);
             this.dispatch(entryActionCreators.getDraftSuccess(result));
             return result;
@@ -82,14 +82,14 @@ class EntryActions {
 
     getTags = (startingIndex = 0) => {
         this.dispatch(entryActionCreators.getTags());
-        return this.entryService.getTags(startingIndex).then(result => {
+        return this.entryService.getTags(startingIndex).then((result) => {
             dbg('dispatching', 'GET_TAGS_SUCCESS', result);
             return this.dispatch(entryActionCreators.getTagsSuccess(result));
         }).catch(reason => this.dispatch(entryActionCreators.getTagsError(reason)));
     };
     checkTagExistence = (tag) => {
         this.dispatch(entryActionCreators.checkTagExistence());
-        return this.entryService.checkTagExistence(tag).then(result => {
+        return this.entryService.checkTagExistence(tag).then((result) => {
             dbg('dispatching', 'CHECK_TAG_EXISTENCE_SUCCESS', result);
             return this.dispatch(entryActionCreators.checkTagExistenceSuccess(result));
         }).catch(reason => this.dispatch(entryActionCreators.checkTagExistenceError(reason)));
@@ -97,27 +97,27 @@ class EntryActions {
 
     createTag = (tag) => {
         this.dispatch(entryActionCreators.createTag());
-        return this.entryService.createTag(tag).then(result => {
+        return this.entryService.createTag(tag).then((result) => {
             dbg('dispatching', 'CREATE_TAG_SUCCESS', result);
             return this.dispatch(entryActionCreators.createTagSuccess(result.tag));
         }).catch(reason => this.dispatch(entryActionCreators.createTagError(reason)));
     };
 
-    _throttleUpdateDraft = (changes) =>
-        this.entryService.saveDraft(changes).then(savedDraft => {
+    _throttleUpdateDraft = changes =>
+        this.entryService.saveDraft(changes).then((savedDraft) => {
             dbg('dispatching', 'UPDATE_DRAFT_SUCCESS');
             return this.dispatch(entryActionCreators.updateDraftSuccess(savedDraft));
         }).catch(reason =>
             this.dispatch(entryActionCreators.updateDraftError(reason))
         );
-    getProfileBalance = (profileAddress) =>
+    getProfileBalance = profileAddress =>
         this.profileService.getProfileBalance(profileAddress);
     publishEntry = (entry, profileAddress) => {
         dbg('publish entry', entry);
-        this.entryService.publishEntry(entry, profileAddress).then(response => {
+        this.entryService.publishEntry(entry, profileAddress).then((response) => {
             dbg(response, 'returned from entry publishing');
             return this.dispatch(entryActionCreators.publishEntrySuccess, response.data);
-        }).catch(reason => {
+        }).catch((reason) => {
             console.error(reason, reason.message);
         });
     };
@@ -125,7 +125,7 @@ class EntryActions {
 
     };
     getSortedEntries = ({ sortBy }) => {
-        this.entryService.getSortedEntries({ sortBy }).then(result => {
+        this.entryService.getSortedEntries({ sortBy }).then((result) => {
             dbg(result, 'result for sortBy', sortBy);
             return this.dispatch(entryActionCreators.getSortedEntries(result));
         });
@@ -135,8 +135,8 @@ class EntryActions {
             this.dispatch(entryActionCreators.createSavedEntrySuccess(savedEntry))
         ).catch(reason => this.dispatch(entryActionCreators.createSavedEntryError(reason)));
     };
-    getSavedEntries = (userName) =>
-        this.entryService.getSavedEntries(userName).then(entries => {
+    getSavedEntries = userName =>
+        this.entryService.getSavedEntries(userName).then((entries) => {
             dbg('getSavedEntries', entries);
             return this.dispatch(entryActionCreators.getSavedEntriesSuccess(entries));
         }).catch(reason => this.dispatch(entryActionCreators.getSavedEntriesError(reason))
@@ -146,7 +146,7 @@ class EntryActions {
         this.entryService.getEntriesForTag({ tagName });
     };
     castUpvote = (entryAddress, voteWeight) => {
-        this.entryService.castUpvote(entryAddress, voteWeight).then(result => {
+        this.entryService.castUpvote(entryAddress, voteWeight).then((result) => {
             if (result.error) {
                 return this.dispatch(entryActionCreators.castUpvoteError(result.error));
             }

@@ -2,12 +2,13 @@ import debug from 'debug';
 import entriesDB from './db/entry';
 import BaseService from './base-service';
 
-const Channel = window.Channel;
-const dbg = debug('App:EntryService:');
-
 /** * DELETE THIS *****/
 import { generateEntries } from './faker-data';
 /** ******************/
+
+const Channel = window.Channel;
+const dbg = debug('App:EntryService:');
+
 
 /**
  * Entry service
@@ -54,7 +55,7 @@ class EntryService extends BaseService {
         .catch(reason => onError(reason));
 
     getSortedEntries = ({ sortBy }) =>
-        new Promise((resolve, reject) => {
+        new Promise((resolve) => {
             let entries = [];
             if (sortBy === 'rating') {
                 entries = generateEntries(1);
@@ -80,7 +81,7 @@ class EntryService extends BaseService {
         // });
     createSavedEntry = ({ username, entry, onError, onSuccess }) =>
         entriesDB.transaction('rw', entriesDB.savedEntries, () => {
-            entriesDB.savedEntries.add({ username, ...entry.toJS() }).then(entryId => {
+            entriesDB.savedEntries.add({ username, ...entry.toJS() }).then((entryId) => {
                 dbg('new savedEntry created with id', entryId);
                 return entry;
             });

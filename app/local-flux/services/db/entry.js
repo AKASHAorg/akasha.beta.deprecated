@@ -1,6 +1,7 @@
 import Dexie from 'dexie';
 import debug from 'debug';
 import { getDraftClass } from './schema/draft';
+
 const dbg = debug('App:entriesDB');
 
 const entriesDB = new Dexie('entries');
@@ -12,7 +13,7 @@ entriesDB.version(1).stores({
 
 entriesDB.drafts.mapToClass(getDraftClass());
 
-entriesDB.drafts.hook('creating', (primaryKey, obj, transaction) => {
+entriesDB.drafts.hook('creating', (primaryKey, obj) => {
     dbg('creating.. ', obj);
     obj.status = {
         created_at: new Date().toString(),
@@ -22,7 +23,7 @@ entriesDB.drafts.hook('creating', (primaryKey, obj, transaction) => {
     };
 });
 
-entriesDB.drafts.hook('updating', (modifications, primaryKey, obj, transaction) => {
+entriesDB.drafts.hook('updating', (modifications, primaryKey, obj) => {
     dbg('updating..', obj, modifications);
     return {
         status: {
@@ -34,11 +35,11 @@ entriesDB.drafts.hook('updating', (modifications, primaryKey, obj, transaction) 
     };
 });
 
-entriesDB.entries.hook('creating', (primaryKey, obj, transaction) => {
+entriesDB.entries.hook('creating', (primaryKey, obj) => {
     dbg('creating.. ', obj);
 });
 
-entriesDB.savedEntries.hook('creating', (primaryKey, obj, transaction) => {
+entriesDB.savedEntries.hook('creating', (primaryKey, obj) => {
     dbg('creating savedEntries ', obj);
 });
 

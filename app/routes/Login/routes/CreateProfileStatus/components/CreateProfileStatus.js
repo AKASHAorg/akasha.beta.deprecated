@@ -20,7 +20,7 @@ class CreateProfileStatus extends Component {
     }
     componentWillReceiveProps (nextProps) {
         if (nextProps.tempProfile.get('username') === '') {
-            return this.context.router.push('/authentication');
+            return this.context.router.push('/authenticate');
         }
         return this.resumeProfileCreation(nextProps);
     }

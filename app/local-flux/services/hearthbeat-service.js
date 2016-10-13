@@ -1,4 +1,3 @@
-import { ipcRenderer } from 'electron';
 
 class HearthbeatService {
     startHearthBeat = () => {}

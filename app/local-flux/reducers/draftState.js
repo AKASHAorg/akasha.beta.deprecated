@@ -1,3 +1,4 @@
+/* eslint new-cap: ["error", { "capIsNewExceptions": ["Record"] }]*/
 import { fromJS, List, Record } from 'immutable';
 import { createReducer } from './create-reducer';
 import * as types from '../constants/DraftConstants';
@@ -32,7 +33,7 @@ const initialState = fromJS({
  * State of the entries and drafts
  */
 const draftState = createReducer(initialState, {
-    [types.SAVE_DRAFT]: (state) =>
+    [types.SAVE_DRAFT]: state =>
         state.merge({ savingDraft: true }),
 
     [types.GET_DRAFTS_SUCCESS]: (state, action) => {
@@ -53,7 +54,7 @@ const draftState = createReducer(initialState, {
             draft.id === action.draft.id
         );
         return state.merge({
-            drafts: state.updateIn(['drafts', draftIndex], (record) =>
+            drafts: state.updateIn(['drafts', draftIndex], record =>
                 record.merge(new Map(action.draft))
             ),
             savingDraft: false
