@@ -17,11 +17,9 @@ const loginDialog = (props) => {
         modalActions
     } = props;
     const handleUnlockChange = (ev, key, payload) => {
-        console.log('change to key, payload', key, payload);
         props.onUnlockTimerChange(key, payload);
     };
     const handleUnlockCheck = (ev, isUnlocked) => {
-        console.log('want auto unlock?', isUnlocked);
         props.onUnlockCheck(isUnlocked);
     };
     return (
@@ -68,7 +66,7 @@ const loginDialog = (props) => {
           floatingLabelText="Password"
           onKeyPress={props.onKeyPress}
           onChange={props.onPasswordChange}
-          errorText={props.errors.reduce((prev, current) => `${prev.message} ${current.message}`)}
+          errorText={props.errors.reduce((prev, current) => `${prev.message} ${current.message}`, '')}
         />
         <div className="row middle-xs">
           <div className="col-xs-6" style={{ paddingRight: 0 }}>

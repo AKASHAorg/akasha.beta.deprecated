@@ -1,8 +1,5 @@
-import debug from 'debug';
 import { transactionActionCreators } from './action-creators';
 import { TransactionService } from '../services';
-
-const dbg = debug('App:transactionActions');
 
 let transactionActions = null;
 
@@ -19,7 +16,9 @@ class TransactionActions {
     listenForMinedTx = ({ watch = true } = {}) => {
         this.transactionService.emitMined({
             watch,
-            onSuccess: data => this.dispatch(transactionActionCreators.transactionMinedSuccess(data)),
+            onSuccess: data => this.dispatch(
+                transactionActionCreators.transactionMinedSuccess(data)
+            ),
             onError: error => this.dispatch(transactionActionCreators.transactionMinedError(error))
         });
     }

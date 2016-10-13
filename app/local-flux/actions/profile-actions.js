@@ -151,7 +151,8 @@ class ProfileActions {
      *  Finish profile publishing through Registry Service
      *  Request:
      *  @param username <string> Profile username
-     *  @param ipfs <object> Profile data (firstName, lastName, avatar?, backgroundImage?, about?, links? )
+     *  @param ipfs <object> Profile data (firstName, lastName,
+     *      avatar?, backgroundImage?, about?, links? )
      *  Response:
      *  @param data.tx <string> Transaction hash which needs to be watched for mining
      */
@@ -159,7 +160,14 @@ class ProfileActions {
         const isLoggedIn = loggedProfile.get('account') === tempProfile.get('address') &&
             Date.parse(loggedProfile.get('expiration')) > Date.now();
         const { publishRequested } = tempProfile.get('currentStatus');
-        const { username, firstName, lastName, avatar, about, links, backgroundImage } = tempProfile;
+        const {
+            username,
+            firstName,
+            lastName,
+            avatar,
+            about,
+            links,
+            backgroundImage } = tempProfile;
         const ipfs = {
             firstName,
             lastName,
@@ -234,7 +242,7 @@ class ProfileActions {
             username,
             onError: error => this.dispatch(profileActionCreators.deleteTempProfileError(error)),
             onSuccess: () => this.dispatch(profileActionCreators.deleteTempProfileSuccess())
-        })
+        });
 
     getTempProfile = () =>
         this.registryService.getTempProfile({
@@ -273,9 +281,17 @@ class ProfileActions {
             });
         }
     };
+
+    clearLoggedProfile = () => {
+        this.authService.deleteLoggedProfile({
+            onSuccess: () => this.dispatch(profileActionCreators.deleteLoggedProfileSuccess()),
+            onError: error => this.dispatch(profileActionCreators.deleteLoggedProfileError(error))
+        });
+    };
+
     clearErrors = () => {
         this.dispatch(profileActionCreators.clearErrors());
-    }
+    };
     // this method is only called to check if there is a logged profile
     // it does not dispatch anything and is useless as an action
     //

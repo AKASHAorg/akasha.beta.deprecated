@@ -57,8 +57,8 @@ class AuthService extends BaseService {
     logout = ({ options = { profileKey: '', flush: true }, onError, onSuccess }) => {
         const serverChannel = Channel.server.auth.logout;
         const clientChannel = Channel.client.auth.logout;
-        const successCb = (data) => {
-            this.deleteLoggedProfile(profileKey).then(() => {
+        const successCb = () => {
+            this.deleteLoggedProfile(options.profileKey).then(() => {
                 onSuccess();
             }).catch(error => onError(error));
         };
@@ -145,8 +145,11 @@ class AuthService extends BaseService {
     deleteLoggedProfile = ({ profileKey, onError, onSuccess }) =>
         profileDB.transaction('rw', profileDB.loggedProfile, () => {
             dbg('deleting loggedProfile', profileKey);
-            return profileDB.loggedProfile.delete(profileKey);
-        });
+            if (profileKey) return profileDB.loggedProfile.delete(profileKey);
+            return profileDB.loggedProfile.clear();
+        })
+        .then(() => onSuccess())
+        .catch(reason => onError(reason));
 
     getLoggedProfile = ({ onError, onSuccess }) =>
         profileDB.transaction('r', profileDB.loggedProfile, () => {
