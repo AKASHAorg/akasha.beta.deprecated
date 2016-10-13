@@ -70,7 +70,7 @@ class Auth extends Component {
         }
         profileActions.login({
             account: selectedProfile.get('ethAddress'),
-            password: new TextEncoder('utf-8').encode(this.state.password),
+            password: this.state.password,
             rememberTime: unlockInterval
         });
     };
