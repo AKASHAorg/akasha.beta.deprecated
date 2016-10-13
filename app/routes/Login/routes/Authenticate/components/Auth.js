@@ -88,20 +88,27 @@ class Auth extends Component {
             const profileName = `${profile.get('firstName')} ${profile.get('lastName')}`;
             const userInitials = profileName.match(/\b\w/g);
             const avatarImage = profile.get('avatar') ? imageCreator(profile.get('avatar')) : null;
-            let avatar;
-            if (!avatarImage) {
-                avatar = <Avatar src={avatarImage} size={48} className="col-xs-4 middle-xs" />;
+            let avtr;
+            if (avatarImage) {
+                avtr = (
+                  <Avatar src={avatarImage} size={48} className="col-xs-4 middle-xs" />
+                );
             } else {
-                avatar = (
+                avtr = (
                   <Avatar>
-                    {((userInitials.shift() || '') + (userInitials.pop() || '')).toUpperCase()}
+                    {userInitials &&
+                      ((userInitials.shift() || '') + (userInitials.pop() || '')).toUpperCase()
+                    }
+                    {!userInitials && profile.get('username') &&
+                        profile.get('username')
+                    }
                   </Avatar>
                 );
             }
             return (
               <ListItem
                 key={index}
-                leftAvatar={avatar}
+                leftAvatar={avtr}
                 primaryText={
                   <div
                     style={{

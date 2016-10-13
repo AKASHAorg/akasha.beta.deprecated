@@ -14,7 +14,7 @@ class NewEntryPage extends Component {
     constructor (props) {
         super(props);
         this.state = {
-            publishable: false,
+            publishable: true,
             draftToEdit: {}
         };
     }
@@ -32,7 +32,7 @@ class NewEntryPage extends Component {
             );
             this.setState({
                 draftToEdit,
-                publishable: draftToEdit.wordCount > 1
+                publishable: true //draftToEdit.wordCount > 1
             });
         } else {
             this.setState({
@@ -57,6 +57,7 @@ class NewEntryPage extends Component {
         const htmlContent = this.editor.getHtmlContent();
         const title = this.editor.getTitle();
         const wordCount = getWordCount(contentState);
+        console.log(htmlContent, 'htmlContent');
         if (params.draftId !== 'new') {
             const draftId = parseInt(params.draftId, 10);
             entryActions.updateDraftThrottled({ id: draftId, content, title, wordCount });
