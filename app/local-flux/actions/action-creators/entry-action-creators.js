@@ -34,13 +34,6 @@ export function checkTagExistenceError (error) {
     };
 }
 
-export function publishEntrySuccess (entry) {
-    return {
-        type: types.PUBLISH_ENTRY_SUCCESS,
-        entry
-    };
-}
-
 export function getSortedEntries (entries) {
     return {
         type: types.GET_SORTED_ENTRIES,

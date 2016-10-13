@@ -229,7 +229,6 @@ const profileState = createReducer(initialState, {
         const profileIndex = state.get('profiles').findIndex(profile =>
             profile.get('profile') === data.profile
         );
-        console.log(profileIndex, data, 'wtf profileindex');
         return state.mergeDeepIn(['profiles', profileIndex], data);
     },
 

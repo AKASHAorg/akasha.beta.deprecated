@@ -47,6 +47,9 @@ class ProfileActions {
             onError: error => this.dispatch(profileActionCreators.getLoggedProfileError(error))
         });
 
+    getProfileBalance = profileAddress =>
+        this.profileService.getProfileBalance(profileAddress);
+
     /**
      * ---------Start New Profile Registration -----------
      *
@@ -266,7 +269,6 @@ class ProfileActions {
      */
     getProfileData = (profiles) => {
         for (let i = profiles.length - 1; i >= 0; i -= 1) {
-            console.log('getting profile data for:', profiles[i]);
             this.profileService.getProfileData({
                 options: {
                     profile: profiles[i].profile,

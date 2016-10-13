@@ -177,6 +177,7 @@
     "lodash.throttle": "4.1.1",
     "lru-cache": "4.0.1",
     "material-ui": "0.16.0",
+    "megadraft": "^0.3.3",
     "mkdirp": "0.5.x",
     "radium": "0.18.1",
     "ramda": "0.22.1",

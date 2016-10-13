@@ -1,4 +1,3 @@
-import { hashHistory } from 'react-router';
 import throttle from 'lodash.throttle';
 import debug from 'debug';
 import { EntryService, ProfileService } from '../services';
@@ -22,63 +21,11 @@ class EntryActions {
         });
         return entryActions;
     }
-    createDraft = (authorUsername, draft) => {
-        dbg('dispatching', 'SAVE_DRAFT');
-        this.dispatch(entryActionCreators.startSavingDraft());
-        return this.entryService.saveDraft({ authorUsername, ...draft }).then((result) => {
-            dbg('dispatching ', 'CREATE_DRAFT_SUCCESS', result);
-            this.dispatch(entryActionCreators.createDraftSuccess(result));
-            return result;
-        })
-            .then((savedDraft) => {
-                this.dispatch(() =>
-                    hashHistory.push(
-                        `/${authorUsername}/draft/${savedDraft.id}`
-                    )
-                );
-            })
-            .catch((reason) => {
-                dbg('dispatching', 'CREATE_DRAFT_ERROR', reason);
-                return this.dispatch(entryActionCreators.createDraftError(reason));
-            });
-    };
-    updateDraft = (changes) => {
-        this.dispatch(entryActionCreators.startSavingDraft());
-        return this.entryService.saveDraft(changes).then((savedDraft) => {
-            dbg('dispatching', 'UPDATE_DRAFT_SUCCESS', savedDraft);
-            return this.dispatch(entryActionCreators.updateDraftSuccess(savedDraft));
-        }).catch(reason => this.dispatch(entryActionCreators.updateDraftError(reason)));
-    };
-
-    updateDraftThrottled = (draft) => {
-        this.dispatch(entryActionCreators.startSavingDraft());
-        return this.throttledUpdateDraft(draft);
-    };
-
-    getDrafts = username =>
-        this.entryService.getAllDrafts(username).then((result) => {
-            dbg('dispatching', 'GET_DRAFTS_SUCCESS', result);
-            return this.dispatch(entryActionCreators.getDraftsSuccess(result));
-        }).catch(reason => this.dispatch(entryActionCreators.getDraftsError(reason)));
-
-    getDraftsCount = username =>
-        this.entryService.getDraftsCount(username).then((result) => {
-            dbg('dispatching', 'GET_DRAFTS_COUNT_SUCCESS', result);
-            return this.dispatch(entryActionCreators.getDraftsCountSuccess(result));
-        }).catch(reason => this.dispatch(entryActionCreators.getDraftsCountError(reason)));
-
     getEntriesCount = () =>
         this.entryService.getResourceCount('entries').then((result) => {
             dbg('dispatching', 'GET_ENTRIES_COUNT_SUCCESS', result);
             return this.dispatch(entryActionCreators.getEntriesCountSuccess(result));
         }).catch(reason => this.dispatch(entryActionCreators.getEntriesCountError(reason)));
-
-    getDraftById = id =>
-        this.entryService.getById('drafts', id).then((result) => {
-            dbg('dispatching', 'GET_DRAFT_SUCCESS', result);
-            this.dispatch(entryActionCreators.getDraftSuccess(result));
-            return result;
-        }).catch(reason => this.dispatch(entryActionCreators.getDraftError(reason)));
 
     getTags = (startingIndex = 0) => {
         this.dispatch(entryActionCreators.getTags());
@@ -87,6 +34,7 @@ class EntryActions {
             return this.dispatch(entryActionCreators.getTagsSuccess(result));
         }).catch(reason => this.dispatch(entryActionCreators.getTagsError(reason)));
     };
+
     checkTagExistence = (tag) => {
         this.dispatch(entryActionCreators.checkTagExistence());
         return this.entryService.checkTagExistence(tag).then((result) => {
@@ -103,24 +51,6 @@ class EntryActions {
         }).catch(reason => this.dispatch(entryActionCreators.createTagError(reason)));
     };
 
-    _throttleUpdateDraft = changes =>
-        this.entryService.saveDraft(changes).then((savedDraft) => {
-            dbg('dispatching', 'UPDATE_DRAFT_SUCCESS');
-            return this.dispatch(entryActionCreators.updateDraftSuccess(savedDraft));
-        }).catch(reason =>
-            this.dispatch(entryActionCreators.updateDraftError(reason))
-        );
-    getProfileBalance = profileAddress =>
-        this.profileService.getProfileBalance(profileAddress);
-    publishEntry = (entry, profileAddress) => {
-        dbg('publish entry', entry);
-        this.entryService.publishEntry(entry, profileAddress).then((response) => {
-            dbg(response, 'returned from entry publishing');
-            return this.dispatch(entryActionCreators.publishEntrySuccess, response.data);
-        }).catch((reason) => {
-            console.error(reason, reason.message);
-        });
-    };
     requestAuthentication = () => {
 
     };
