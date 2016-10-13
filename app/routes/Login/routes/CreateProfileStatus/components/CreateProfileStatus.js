@@ -56,8 +56,8 @@ class CreateProfileStatus extends Component {
     }
     finishProfilePublishing = (minedTransactions, publishMinedIndex) => {
         const hasEvents = minedTransactions.getIn([publishMinedIndex, 'hasEvents']);
-        if (hasEvents) {
-            console.log('Please check transaction events first!!!!');
+        if (!hasEvents) {
+            console.error('No events!! Create a handler for this case!!');
         }
         return this.context.router.push('/authenticate/new-profile-complete');
     }
@@ -124,6 +124,7 @@ class CreateProfileStatus extends Component {
     _handleProfileAbortion = () => {
         const { profileActions, tempProfile } = this.props;
         profileActions.deleteTempProfile(tempProfile.get('username'));
+        profileActions.clearErrors();
     }
     _handleStepRetry = () => {
         const { profileActions } = this.props;
@@ -131,8 +132,9 @@ class CreateProfileStatus extends Component {
     }
     render () {
         const { style, tempProfile } = this.props;
-        const { faucetTx, publishTx, nextAction } = tempProfile.get('currentStatus');
+        const { nextAction } = tempProfile.get('currentStatus');
         const paraStyle = { marginTop: '20px' };
+        const errors = this.state.errors;
         return (
           <div style={style} >
             <PanelContainer
@@ -167,13 +169,14 @@ class CreateProfileStatus extends Component {
                     label="Abort"
                     onClick={this._handleProfileAbortion}
                     disabled={(nextAction === 'listenPublishTx')}
+                    style={{ marginRight: 8 }}
                   />,
                   <RaisedButton
                     key="retry-step"
                     label="Retry Step"
                     onClick={this._handleStepRetry}
                     primary
-                    disabled={(this.state.errors.size === 0)}
+                    disabled={(errors.size === 0 || errors.length === 0)}
                   />
                   /* eslint-enable */
               ]}

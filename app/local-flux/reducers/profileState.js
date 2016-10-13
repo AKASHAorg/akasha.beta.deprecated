@@ -214,7 +214,7 @@ const profileState = createReducer(initialState, {
 
     [types.GET_LOCAL_PROFILES_SUCCESS]: (state, { data }) =>
         state.merge({
-            profiles: state.get('profiles').concat(data.map(prf => new Profile({
+            profiles: new List(data.map(prf => new Profile({
                 ethAddress: prf.key,
                 profile: prf.profile
             })))
@@ -229,6 +229,7 @@ const profileState = createReducer(initialState, {
         const profileIndex = state.get('profiles').findIndex(profile =>
             profile.get('profile') === data.profile
         );
+        console.log(profileIndex, data, 'wtf profileindex');
         return state.mergeDeepIn(['profiles', profileIndex], data);
     },
 

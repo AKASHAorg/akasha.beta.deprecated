@@ -258,7 +258,6 @@ class ProfileActions {
         this.authService.getLocalIdentities({
             onSuccess: (data) => {
                 this.dispatch(profileActionCreators.getLocalProfilesSuccess(data));
-                this.getProfileData(data);
             },
             onError: err => this.dispatch(profileActionCreators.getLocalProfilesError(err))
         });
@@ -267,6 +266,7 @@ class ProfileActions {
      */
     getProfileData = (profiles) => {
         for (let i = profiles.length - 1; i >= 0; i -= 1) {
+            console.log('getting profile data for:', profiles[i]);
             this.profileService.getProfileData({
                 options: {
                     profile: profiles[i].profile,
