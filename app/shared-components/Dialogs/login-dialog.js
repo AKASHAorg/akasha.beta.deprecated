@@ -66,7 +66,7 @@ const loginDialog = (props) => {
           floatingLabelText="Password"
           onKeyPress={props.onKeyPress}
           onChange={props.onPasswordChange}
-          errorText={props.errors.reduce((prev, current) => `${prev.message} ${current.message}`, '')}
+          errorText={props.errors.reduce((prev, current) => `${prev.message} ${current.message}`)}
         />
         <div className="row middle-xs">
           <div className="col-xs-6" style={{ paddingRight: 0 }}>
