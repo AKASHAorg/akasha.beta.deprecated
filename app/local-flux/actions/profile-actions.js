@@ -1,4 +1,3 @@
-import { hashHistory } from 'react-router';
 import debug from 'debug';
 import { ProfileService, AuthService, RegistryService, TransactionService } from '../services';
 import { profileActionCreators } from './action-creators';
@@ -20,6 +19,7 @@ class ProfileActions {
     }
     login = ({ account, password, rememberTime }) => {
         dbg('logging in with:', account, 'for', rememberTime, 'minutes');
+        password = new TextEncoder('utf-8').encode(password);
         this.dispatch(profileActionCreators.login());
         this.authService.login({
             account,
@@ -30,37 +30,30 @@ class ProfileActions {
         });
     };
 
-    logout = (account) => {
-        this.profileService.logout(account).then((result) => {
-            this.dispatch(profileActionCreators.logoutSuccess(result));
-        })
-        .then(() => {
-            this.profileService.removeLoggedProfile().then(() => {
-                hashHistory.push('authenticate');
-            });
-        }).catch(reason => profileActionCreators.logoutError(reason));
+    logout = (profileKey, flush) => {
+        this.authService.logout({
+            options: {
+                profileKey,
+                flush
+            },
+            onSuccess: data => this.dispatch(profileActionCreators.logoutSuccess(data)),
+            onError: error => this.dispatch(profileActionCreators.logoutError(error))
+        });
     };
 
-    checkLoggedProfile = (options = {}) =>
-        this.profileService.getLoggedProfile().then((loggedProfile) => {
-            const profile = loggedProfile[0];
-            if (profile) {
-                this.dispatch(profileActionCreators.loginSuccess(profile));
-                if (options.redirect) {
-                    return hashHistory.push(`/${profile.username}`);
-                }
-            }
-            return null;
+    getLoggedProfile = () =>
+        this.authService.getLoggedProfile({
+            onSuccess: data => this.dispatch(profileActionCreators.getLoggedProfileSuccess(data)),
+            onError: error => this.dispatch(profileActionCreators.getLoggedProfileError(error))
         });
-    clearLoggedProfile = () => {
-        this.profileService.clearLoggedProfile();
-    }
+
     /**
      * ---------Start New Profile Registration -----------
      *
      *  Step 1:  Create temp profile
      *  Saves a temporary profile to indexedDB
      */
+
     createTempProfile = (profileData) => {
         dbg('creating temp profile', profileData);
         this.dispatch(profileActionCreators.createTempProfile(profileData));
@@ -282,6 +275,26 @@ class ProfileActions {
     };
     clearErrors = () => {
         this.dispatch(profileActionCreators.clearErrors());
+    }
+    // this method is only called to check if there is a logged profile
+    // it does not dispatch anything and is useless as an action
+    //
+    checkLoggedProfile = (cb) => {
+        this.dispatch((dispatch, getState) => {
+            const loggedProfile = getState().profileState.get('loggedProfile');
+            if (loggedProfile.get('account')) {
+                return cb(null, true);
+            }
+            this.authService.getLoggedProfile({
+                onSuccess: (data) => {
+                    if (data && data.account !== '') {
+                        return cb(null, true);
+                    }
+                    return cb(null, false);
+                },
+                onError: err => cb(err, false)
+            });
+        });
     }
 }
 export { ProfileActions };

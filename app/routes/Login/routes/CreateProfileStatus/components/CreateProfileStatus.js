@@ -233,7 +233,7 @@ CreateProfileStatus.propTypes = {
     pendingTransactions: PropTypes.shape(),
     transactionActions: PropTypes.shape(),
     errors: PropTypes.shape(),
-    loginRequested: PropTypes.boolean
+    loginRequested: PropTypes.bool
 };
 
 CreateProfileStatus.contextTypes = {

@@ -14,6 +14,7 @@ export function loginSuccess (profile) {
 }
 
 export function loginError (error) {
+    error.code = 'LOGINE01'
     return {
         type: types.LOGIN_ERROR,
         error
@@ -28,6 +29,7 @@ export function logoutSuccess (result) {
 }
 
 export function logoutError (error) {
+    error.code = 'LOGOUTE01'
     return {
         type: types.LOGOUT_ERROR,
         error
@@ -46,6 +48,7 @@ export function createTempProfileSuccess (profileData) {
 }
 
 export function createTempProfileError (error) {
+    error.code = 'CTPE01';
     return {
         type: types.CREATE_TEMP_PROFILE_ERROR,
         error
@@ -60,6 +63,7 @@ export function updateTempProfileSuccess (profileData, tempProfile) {
 }
 
 export function updateTempProfileError (error) {
+    error.code = 'UTPE01';
     return {
         type: types.UPDATE_TEMP_PROFILE_ERROR,
         error
@@ -74,6 +78,7 @@ export function getTempProfileSuccess (profile) {
 }
 
 export function getTempProfileError (error) {
+    error.code = 'GTPE01';
     return {
         type: types.GET_TEMP_PROFILE_ERROR,
         error
@@ -87,6 +92,7 @@ export function deleteTempProfileSuccess () {
 }
 
 export function deleteTempProfileError (error) {
+    error.code = 'DTPE01';
     return {
         type: types.DELETE_TEMP_PROFILE_ERROR,
         error
@@ -105,6 +111,7 @@ export function createEthAddressSuccess (data) {
     };
 }
 export function createEthAddressError (error) {
+    error.code = 'CEAE01';
     return {
         type: types.CREATE_ETH_ADDRESS_ERROR,
         error
@@ -123,6 +130,7 @@ export function requestFundFromFaucetSuccess (data) {
     };
 }
 export function requestFundFromFaucetError (error) {
+    error.code = 'RFFE01';
     return {
         type: types.REQUEST_FUND_FROM_FAUCET_ERROR,
         error
@@ -154,6 +162,7 @@ export function publishProfileSuccess (profileData) {
 }
 
 export function publishProfileError (error) {
+    error.code = 'PPE01';
     return {
         type: types.PUBLISH_PROFILE_ERROR,
         error
@@ -167,7 +176,7 @@ export function getLocalProfilesSuccess (data) {
     };
 }
 export function getLocalProfilesError (error) {
-    error.code = 'GLPE';
+    error.code = 'GLPE01';
     return {
         type: types.GET_LOCAL_PROFILES_ERROR,
         error
@@ -182,8 +191,38 @@ export function getProfileDataSuccess (data) {
 }
 
 export function getProfileDataError (error) {
+    error.code = 'GPDE01';
     return {
         type: types.GET_PROFILE_DATA_ERROR,
+        error
+    };
+}
+
+export function getLoggedProfileSuccess (data) {
+    return {
+        type: types.GET_LOGGED_PROFILE_SUCCESS,
+        data
+    };
+}
+
+export function getLoggedProfileError (error) {
+    error.code = 'GLPE02';
+    return {
+        type: types.GET_LOGGED_PROFILE_ERROR,
+        error
+    };
+}
+
+export function clearLoggedProfileSuccess () {
+    return {
+        type: types.CLEAR_LOGGED_PROFILE_SUCCESS
+    };
+}
+
+export function clearLoggedProfileError (error) {
+    error.code = 'CLPE01';
+    return {
+        type: types.CLEAR_LOGGED_PROFILE_ERROR,
         error
     };
 }
