@@ -1,3 +1,4 @@
+/* eslint new-cap: ["error", { "capIsNewExceptions": ["Record"] }]*/
 import { fromJS, List, Record } from 'immutable';
 import { createReducer } from './create-reducer';
 import * as types from '../constants/EntryConstants';

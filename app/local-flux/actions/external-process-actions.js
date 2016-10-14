@@ -1,11 +1,8 @@
-import debug from 'debug';
 import throttle from 'lodash.throttle';
 import { GethService, IpfsService } from '../services';
 import {
     externalProcessActionCreators,
     appActionCreators } from './action-creators';
-
-const dbg = debug('App::eProcActions:');
 
 let eProcActions = null;
 /**

@@ -141,10 +141,8 @@ class RegistryService extends BaseService {
         profileDB.transaction('rw', profileDB.tempProfile, () =>
             profileDB.tempProfile.toArray()
         ).then((results) => {
-            dbg('temp profiles: ', results);
             onSuccess(results[0]);
         }).catch((reason) => {
-            console.error(reason);
             onError(reason);
         });
     }

@@ -31,7 +31,7 @@ class TransactionService extends BaseService {
         if (!Array.isArray(txs)) {
             return console.error('tx param should be an array!!');
         }
-        const successCB = (data) => {
+        const successCB = () => {
             transactionsDB.transaction('rw', transactionsDB.pending, () =>
                 transactionsDB.pending.bulkPut(txs.map(tx => ({ tx })))
             )
@@ -44,7 +44,7 @@ class TransactionService extends BaseService {
             clientChannel,
             this.createListener(onError, successCB, clientChannel.channelName)
         );
-        serverChannel.send(txs.map(tx => ({ tx })));
+        return serverChannel.send(txs.map(tx => ({ tx })));
     };
     /**
      * emit and mined event for a transaction from queue
@@ -68,12 +68,10 @@ class TransactionService extends BaseService {
                     });
                     return data;
                 })
-                .then(minedTx => {
-                    console.log(minedTx, 'minedTx saved');
+                .then((minedTx) => {
                     onSuccess(minedTx);
                 })
-                .catch(reason => {
-                    console.error(reason, 'emit mined failed!');
+                .catch((reason) => {
                     onError(reason);
                 });
             }

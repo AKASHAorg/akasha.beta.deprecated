@@ -64,8 +64,8 @@ class CreateProfile extends Component {
         const optionalData = {};
         const profileImage = this.imageUploader.getWrappedInstance().getImage();
         const userLinks = this.state.links.filter(link => link.title.length > 0);
-        profileData.password = new TextEncoder('utf-8').encode(this.state.formValues.password);
-        profileData.password2 = new TextEncoder('utf-8').encode(this.state.formValues.password2);
+        profileData.password = this.state.formValues.password;
+        profileData.password2 = this.state.formValues.password2;
         // optional settings
         if (userLinks.length > 0) {
             optionalData.links = userLinks;
