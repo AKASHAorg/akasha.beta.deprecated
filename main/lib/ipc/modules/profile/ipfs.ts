@@ -8,6 +8,7 @@ import * as Promise from 'bluebird';
  * @returns {Thenable<U>|PromiseLike<TResult>|Promise<TResult>|Bluebird<U>}
  */
 const create = (data: IpfsProfileCreateRequest) => {
+    console.time('creating_ipfs');
     const returned: any = {
         firstName: data.firstName,
         lastName: data.lastName,
@@ -21,10 +22,9 @@ const create = (data: IpfsProfileCreateRequest) => {
     if (data.backgroundImage) {
         keys = Object.keys(data.backgroundImage).sort();
         media = keys.map((media: string) => {
-            data.backgroundImage[media].src = new Uint8Array(data.backgroundImage[media].src);
             return IpfsConnector.getInstance()
                 .api
-                .addFile(Buffer.from(data.backgroundImage[media].src));
+                .constructObjLink(data.backgroundImage[media].src, true);
         });
     }
     return Promise.all(media)
@@ -50,10 +50,9 @@ const create = (data: IpfsProfileCreateRequest) => {
                 returned.backgroundImage = hash;
             }
             if (data.avatar) {
-                data.avatar = new Uint8Array(data.avatar);
                 return IpfsConnector.getInstance()
                     .api
-                    .addFile(Buffer.from(data.avatar));
+                    .constructObjLink(data.avatar, true);
             }
             return Promise.resolve('');
         }).then((hash: any) => {
@@ -64,13 +63,14 @@ const create = (data: IpfsProfileCreateRequest) => {
                 const transformed = Buffer.from(data.about);
                 return IpfsConnector.getInstance()
                     .api
-                    .add(transformed);
+                    .constructObjLink(transformed);
             }
             return Promise.resolve('');
         }).then((hash: any) => {
             if (hash) {
                 returned.about = hash;
             }
+            console.timeEnd('creating_ipfs');
             return IpfsConnector.getInstance().api.add(returned);
         });
 };
@@ -78,21 +78,23 @@ const create = (data: IpfsProfileCreateRequest) => {
 /**
  *
  * @param hash
+ * @param resolveAvatar
  * @returns {any}
  */
-const getShortProfile = (hash: string) => {
+const getShortProfile = (hash: string, resolveAvatar = true) => {
     if (profiles.getShort(hash)) {
         return Promise.resolve(profiles.getShort(hash));
     }
     return IpfsConnector.getInstance().api.get(hash)
         .then((schema: ProfileModel) => {
             let resolved: any = Object.assign({}, schema);
-            if (schema.avatar) {
+            console.log(resolved);
+            if (schema.avatar && resolveAvatar) {
                 return IpfsConnector.getInstance()
                     .api
-                    .resolve(schema.avatar)
+                    .resolve(`${hash}/avatar`)
                     .then((data: Buffer) => {
-                        resolved.avatar = (Buffer.from(data)).toJSON().data;
+                        resolved.avatar = Buffer.from(data);
                         return resolved;
                     });
             }
