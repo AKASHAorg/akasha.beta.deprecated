@@ -1,11 +1,6 @@
-import { ipcRenderer } from 'electron';
-import debug from 'debug';
 import Dexie from 'dexie';
 import BaseService from './base-service';
 import tagsDB from './db/tags';
-
-const Channel = window.Channel;
-const dbg = debug('App:TagService:');
 
 /** Tag Service */
 class TagService extends BaseService {
@@ -61,21 +56,20 @@ class TagService extends BaseService {
     //         ipcRenderer.send(serverChannel, tags);
     //     });
     // };
-    saveTagToDB = (tags) =>
+    saveTagToDB = tags =>
         tagsDB.transaction('rw', tagsDB.blockTags, () => {
-            tags.forEach((tag, key) => {
+            tags.forEach((tag) => {
                 tagsDB.blockTags.put({ tag });
             });
         });
-    checkExistingTags = (tags) => {
-        return tagsDB.transaction('r', tagsDB.blockTags, () => {
+    checkExistingTags = tags =>
+        tagsDB.transaction('r', tagsDB.blockTags, () => {
             const promises = [];
-            tags.forEach(tag => {
+            tags.forEach((tag) => {
                 promises.push(tagsDB.blockTags.where('tag').equalsIgnoreCase(tag).toArray());
             });
             return Dexie.Promise.all(promises).then(result => result);
         });
-    };
 }
 
 export { TagService };

@@ -39,7 +39,6 @@ class SyncStatus extends Component {
         const gethSynced = gethSyncStatus.get('synced');
         const gethReadyToSync = gethStatus.get('api') && !gethSynced;
         const ipfsStarted = ipfsStatus.get('started');
-        console.log(ipfsStatus, 'ipfs status');
         if (ipfsErrors.size === 0 && gethErrors.size === 0) {
             if (!ipfsStatus.get('started') && !ipfsStatus.get('startRequested')) {
                 eProcActions.startIPFS();

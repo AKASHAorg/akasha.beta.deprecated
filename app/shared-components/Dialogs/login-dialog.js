@@ -17,11 +17,9 @@ const loginDialog = (props) => {
         modalActions
     } = props;
     const handleUnlockChange = (ev, key, payload) => {
-        console.log('change to key, payload', key, payload);
         props.onUnlockTimerChange(key, payload);
     };
     const handleUnlockCheck = (ev, isUnlocked) => {
-        console.log('want auto unlock?', isUnlocked);
         props.onUnlockCheck(isUnlocked);
     };
     return (
