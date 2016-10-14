@@ -105,8 +105,14 @@ describe('RegistryIPC', function () {
                done();
            }
        );
-        ipcMain.emit(channel.server.registry.registerProfile, '', {token, username: 'user'+ new Date().getTime(),
-            ipfs:{firstName: 'costel', lastName: 'ionel' }});
+        ipcMain.emit(channel.server.registry.registerProfile, '', {token, username: 'TuserT'+ new Date().getTime(),
+            ipfs:{firstName: 'costel', lastName: 'ionel',
+                avatar: new Uint8Array(1000000),
+                backgroundImage: {
+                    xs: {src: new Uint8Array(1000000), width: 100, height: 100 },
+                    sm: {src: new Uint8Array(1000000), width: 200, height: 100 },
+                    md: {src: new Uint8Array(1000000), width: 300, height: 100 },
+                } }});
     });
 
     it('--should wait for registry tx', function (done) {
