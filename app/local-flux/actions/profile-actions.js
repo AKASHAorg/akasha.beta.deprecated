@@ -186,7 +186,7 @@ class ProfileActions {
         if (backgroundImage.length > 0) {
             ipfs.backgroundImage = backgroundImage[0];
         }
-        dbg('sending ipfs object avatar', ipfs.avatar.slice(0));
+        // dbg('sending ipfs object avatar', ipfs.avatar.slice(0));
         if (isLoggedIn && !publishRequested) {
             this.dispatch(profileActionCreators.publishProfile());
             this.dispatch((dispatch) => {
