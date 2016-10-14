@@ -3,6 +3,7 @@ const ipfs_connector_1 = require('@akashaproject/ipfs-connector');
 const records_1 = require('../models/records');
 const Promise = require('bluebird');
 const create = (data) => {
+    console.time('creating_ipfs');
     const returned = {
         firstName: data.firstName,
         lastName: data.lastName,
@@ -16,10 +17,9 @@ const create = (data) => {
     if (data.backgroundImage) {
         keys = Object.keys(data.backgroundImage).sort();
         media = keys.map((media) => {
-            data.backgroundImage[media].src = new Uint8Array(data.backgroundImage[media].src);
             return ipfs_connector_1.IpfsConnector.getInstance()
                 .api
-                .addFile(Buffer.from(data.backgroundImage[media].src));
+                .constructObjLink(data.backgroundImage[media].src, true);
         });
     }
     return Promise.all(media)
@@ -44,10 +44,9 @@ const create = (data) => {
             returned.backgroundImage = hash;
         }
         if (data.avatar) {
-            data.avatar = new Uint8Array(data.avatar);
             return ipfs_connector_1.IpfsConnector.getInstance()
                 .api
-                .addFile(Buffer.from(data.avatar));
+                .constructObjLink(data.avatar, true);
         }
         return Promise.resolve('');
     }).then((hash) => {
@@ -58,29 +57,31 @@ const create = (data) => {
             const transformed = Buffer.from(data.about);
             return ipfs_connector_1.IpfsConnector.getInstance()
                 .api
-                .add(transformed);
+                .constructObjLink(transformed);
         }
         return Promise.resolve('');
     }).then((hash) => {
         if (hash) {
             returned.about = hash;
         }
+        console.timeEnd('creating_ipfs');
         return ipfs_connector_1.IpfsConnector.getInstance().api.add(returned);
     });
 };
-const getShortProfile = (hash) => {
+const getShortProfile = (hash, resolveAvatar = true) => {
     if (records_1.profiles.getShort(hash)) {
         return Promise.resolve(records_1.profiles.getShort(hash));
     }
     return ipfs_connector_1.IpfsConnector.getInstance().api.get(hash)
         .then((schema) => {
         let resolved = Object.assign({}, schema);
-        if (schema.avatar) {
+        console.log(resolved);
+        if (schema.avatar && resolveAvatar) {
             return ipfs_connector_1.IpfsConnector.getInstance()
                 .api
-                .resolve(schema.avatar)
+                .resolve(`${hash}/avatar`)
                 .then((data) => {
-                resolved.avatar = (Buffer.from(data)).toJSON().data;
+                resolved.avatar = Buffer.from(data);
                 return resolved;
             });
         }
