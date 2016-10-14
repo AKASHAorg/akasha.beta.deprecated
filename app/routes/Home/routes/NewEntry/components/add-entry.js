@@ -14,7 +14,7 @@ class NewEntryPage extends Component {
     constructor (props) {
         super(props);
         this.state = {
-            publishable: true,
+            publishable: false,
             draftToEdit: {}
         };
     }

@@ -8,7 +8,7 @@ export function getGethStatusSuccess (data) {
 }
 
 export function getGethStatusError (error) {
-    error.code = 'GSE'
+    error.code = 'GSE';
     return {
         type: types.GET_GETH_STATUS_ERROR,
         error
@@ -30,7 +30,7 @@ export function getGethOptionsError (error) {
     };
 }
 
-export function startGeth() {
+export function startGeth () {
     return {
         type: types.START_GETH
     };
@@ -44,14 +44,14 @@ export function startGethSuccess (data) {
 }
 
 export function startGethError (error) {
-    error.code = 'SGE01'
+    error.code = 'SGE01';
     return {
         type: types.START_GETH_ERROR,
         error
     };
 }
 
-export function stopGeth() {
+export function stopGeth () {
     return {
         type: types.STOP_GETH
     };
@@ -87,16 +87,16 @@ export function getSyncStatusError (error) {
     };
 }
 
-export function startIPFS() {
+export function startIPFS () {
     return {
         type: types.START_IPFS
-    }
+    };
 }
 
-export function stopIPFS() {
+export function stopIPFS () {
     return {
         type: types.STOP_IPFS
-    }
+    };
 }
 
 export function startIPFSSuccess (data) {
@@ -171,7 +171,7 @@ export function resumeSync () {
 export function resetGethBusy () {
     return {
         type: types.RESET_GETH_BUSY
-    }
+    };
 }
 
 export function getGethLogs (data) {

@@ -35,6 +35,11 @@ const formMessages = defineMessages({
         id: 'app.inputField.url',
         description: 'Placeholder for url input field',
         defaultMessage: 'URL'
+    },
+    name: {
+        id: 'app.inputField.name',
+        description: 'Placeholder for name input field',
+        defaultMessage: 'Name'
     }
 });
 export { formMessages };

@@ -208,6 +208,11 @@ const setupMessages = defineMessages({
         description: 'try again',
         defaultMessage: 'Retry'
     },
+    retryStep: {
+        id: 'app.setup.retryStep',
+        description: 'retry current step',
+        defaultMessage: 'Retry Step'
+    },
     identityRegistered: {
         id: 'app.setup.identityRegistered',
         description: 'panel title when identity registered',
