@@ -3,7 +3,6 @@ import BaseService from './base-service';
 import profileDB from './db/profile';
 
 const Channel = window.Channel;
-const dbg = debug('App:RegistryService:');
 /**
  * Registry Service.
  * default open channels => ['getCurrentProfile', 'getByAddress']
@@ -93,14 +92,12 @@ class RegistryService extends BaseService {
      * @param {object} currentStatus - Current status of the profile creation process
      */
     createTempProfile = ({ profileData, currentStatus, onSuccess, onError }) =>
-        profileDB.transaction('rw', profileDB.tempProfile, () => {
-            dbg('createTempProfile', { ...profileData, currentStatus });
-            return profileDB.tempProfile.add({
+        profileDB.transaction('rw', profileDB.tempProfile, () =>
+            profileDB.tempProfile.add({
                 ...profileData,
                 currentStatus
-            });
-        }).then((data) => {
-            dbg('temp profile created!', data);
+            })
+        ).then((data) => {
             onSuccess(data);
         }).catch(reason => onError(reason));
     /**
@@ -110,18 +107,16 @@ class RegistryService extends BaseService {
      * @return promise
      */
     updateTempProfile = ({ changes, currentStatus, onSuccess, onError }) =>
-        profileDB.transaction('rw', profileDB.tempProfile, () => {
-            return profileDB.tempProfile.toArray().then((tmpProfile) => {
-                dbg('updating', tmpProfile, { ...changes, currentStatus });
-                return profileDB.tempProfile.update(tmpProfile[0].username, {
+        profileDB.transaction('rw', profileDB.tempProfile, () =>
+            profileDB.tempProfile.toArray().then(tmpProfile =>
+                profileDB.tempProfile.update(tmpProfile[0].username, {
                     ...changes,
                     currentStatus
-                });
-            }).then(() => {
-                dbg('updated temp profile', { ...changes, currentStatus });
+                })
+            ).then(() => {
                 onSuccess({ ...changes, currentStatus });
-            });
-        })
+            })
+        )
         .catch(reason => onError(reason));
     /**
      * Delete temporary profile. Called after profile was successfully created

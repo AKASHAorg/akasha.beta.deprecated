@@ -4,7 +4,7 @@ import { PanelContainer } from 'shared-components';
 import * as Colors from 'material-ui/styles/colors';
 import { SvgIcon, RaisedButton, TextField } from 'material-ui';
 import { injectIntl } from 'react-intl';
-import { setupMessages, generalMessages } from 'locale-data/messages';
+import { setupMessages, generalMessages, profileMessages, formMessages } from 'locale-data/messages';
 import LoginHeader from '../../../components/LoginHeader';
 
 class CreateProfileComplete extends Component {
@@ -41,13 +41,13 @@ class CreateProfileComplete extends Component {
             actions={[
                 /* eslint-disable */
                 <RaisedButton
-                  label="Backup"
+                  label={intl.formatMessage(generalMessages.backup)}
                   disabled
                   key="backup"
                 />,
                 <RaisedButton
                   key="enjoyAKSH"
-                  label="Enjoy AKASHA"
+                  label={intl.formatMessage(profileMessages.enjoyAkasha)}
                   primary
                   style={{ marginLeft: '12px' }}
                   onClick={this._handleFinishSetup}
@@ -60,28 +60,28 @@ class CreateProfileComplete extends Component {
                 <div className="col-xs" style={{ flex: 1, padding: 0 }} >
                   <TextField
                     disabled
-                    floatingLabelText="Name"
+                    floatingLabelText={intl.formatMessage(formMessages.name)}
                     style={{ width: '210px' }}
                     value={fullName}
                   />
                   <TextField
                     disabled
-                    floatingLabelText="Username"
+                    floatingLabelText={intl.formatMessage(formMessages.username)}
                     style={{ width: '210px', marginLeft: '20px' }}
                     value={tempProfile.get('username')}
                   />
                   <TextField
                     disabled
-                    floatingLabelText="Ethereum address"
+                    floatingLabelText={intl.formatMessage(generalMessages.etereumAddress)}
                     style={{ width: '100%' }}
                     value={tempProfile.get('address')}
                   />
-                  <h3>{'Tips before you get started'}</h3>
+                  <h3>{intl.formatMessage(profileMessages.tipsBeforeStart)}</h3>
                   <p style={{ fontSize: '13px' }} >
-                    {'Since we cannot help you recover passwords, or identities make sure to:'}<br />
-                    {'1. Write down your password and keep it safe'}<br />
-                    {'2. Backup your ID now and don’t be sorry later'}<br />
-                    {'3. Don’t (ever) share your key with other people'}<br />
+                    {intl.formatMessage(profileMessages.weCannotHelpRecover)}<br />
+                    {`1. ${intl.formatMessage(profileMessages.writePassKeepSafe)}`}<br />
+                    {`2. ${intl.formatMessage(profileMessages.backupYourId)}`}<br />
+                    {`3. ${intl.formatMessage(profileMessages.dontShareKey)}`}<br />
                   </p>
                 </div>
               </div>

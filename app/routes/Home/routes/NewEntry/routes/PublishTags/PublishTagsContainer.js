@@ -1,8 +1,6 @@
-import PublishTags from './components/publish-tags';
-import { BootstrapBundleActions } from 'local-flux';
 import { connect } from 'react-redux';
-import { asyncConnect } from 'redux-connect';
 import { ProfileActions, EntryActions, TagActions } from 'local-flux';
+import PublishTags from './components/publish-tags';
 
 function mapStateToProps (state) {
     return {
@@ -20,13 +18,8 @@ function mapDispatchToProps (dispatch) {
     };
 }
 
-export default asyncConnect([{
-    promise: ({ store: { dispatch, getState }, params }) => {
-        const bootstrapActions = new BootstrapBundleActions(dispatch);
-        // Promise.resolve(bootstrapActions.initHome(getState));
-    }
-}])(connect(
+export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(PublishTags));
+)(PublishTags);
 

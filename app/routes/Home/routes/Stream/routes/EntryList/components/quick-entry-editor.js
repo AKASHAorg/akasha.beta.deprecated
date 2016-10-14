@@ -24,7 +24,7 @@ class QuickEntryEditor extends React.Component {
         this.setState({
             isExpanded: false
         }, () => {
-            this.editor.refs.clickAwayableElement.blur();
+            // this.editor.refs.clickAwayableElement.blur();
         });
     }
     _handlePublish = (ev) => {};

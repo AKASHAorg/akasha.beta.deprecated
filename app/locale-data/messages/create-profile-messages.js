@@ -48,7 +48,7 @@ export const profileMessages = defineMessages({
     },
     keepAccUnlockedLabel: {
         id: 'app.createProfile.keepAccUnlocked',
-        description: 'Label for Keep Account Unlocked For checkbox',
+        description: 'Label for "Keep Account Unlocked For" checkbox',
         defaultMessage: 'Keep account unlocked for'
     },
     terms: {
@@ -73,5 +73,35 @@ export const profileMessages = defineMessages({
         id: 'app.createProfile.willTakeFewMinutes',
         description: 'action `will take a few moments` to complete',
         defaultMessage: 'This will take a few moments'
+    },
+    enjoyAkasha: {
+        id: 'app.createProfile.enjoyAkasha',
+        description: 'button label when register complete',
+        defaultMessage: 'Enjoy AKASHA'
+    },
+    tipsBeforeStart: {
+        id: 'app.createProfile.tipsBeforeStart',
+        description: 'Title for some tips before using AKASHA',
+        defaultMessage: 'Tips before you get started'
+    },
+    weCannotHelpRecover: {
+        id: 'app.createProfile.weCannotHelpRecover',
+        description: 'text explaining we cannot recover lost pass',
+        defaultMessage: 'Since we cannot help you recover passwords, or identities make sure to:'
+    },
+    writePassKeepSafe: {
+        id: 'app.createProfile.writePassKeepSafe',
+        description: 'a tip for storing password safely',
+        defaultMessage: 'Write down your password and keep it safe'
+    },
+    backupYourId: {
+        id: 'app.createProfile.backupYourId',
+        description: 'tip to backup your id',
+        defaultMessage: 'Backup your ID now and don’t be sorry later'
+    },
+    dontShareKey: {
+        id: 'app.createProfile.dontShareKey',
+        description: 'tip to not share the key with anyone',
+        defaultMessage: 'Don’t (ever) share your key with other people'
     }
 });

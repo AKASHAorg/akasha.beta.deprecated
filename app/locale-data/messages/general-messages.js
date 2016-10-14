@@ -100,6 +100,21 @@ const generalMessages = defineMessages({
         id: 'app.general.connected',
         description: 'connected status',
         defaultMessage: 'connected'
+    },
+    abort: {
+        id: 'app.general.abort',
+        description: 'abort button label',
+        defaultMessage: 'Abort'
+    },
+    backup: {
+        id: 'app.general.backup',
+        description: 'backup button label',
+        defaultMessage: 'Backup'
+    },
+    ethereumAddress: {
+        id: 'app.general.ethereumAddress',
+        description: 'Placeholder for ethereum address field. Not sure if Ethereum should be translated',
+        defaultMessage: 'Ethereum Address'
     }
 });
 export { generalMessages };
