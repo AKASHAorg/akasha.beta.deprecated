@@ -1,6 +1,3 @@
-import debug from 'debug';
-
-const dbg = debug('App::BaseService::*');
 /**
  * All services should extend this base services
  * it provides utilities for ipc.
@@ -16,7 +13,6 @@ class BaseService {
     // create a universal listener passed to clientChannel.on() method;
     createListener = (onError, onSuccess, channelName = 'notSetChannel') =>
         (ev, res) => {
-            dbg('response on channel', channelName, 'is', res);
             if (res.error) {
                 return onError(res.error, res.data || {});
             }
@@ -73,13 +69,11 @@ class BaseService {
         }
         clientManager.once((ev, res) => {
             if (res.error) {
-                dbg(`${res.error.message}, please check base-service -> openChannel method`);
+                console.log(res.error.message, 'please check base-service -> openChannel method');
             }
-            dbg(serverChannel.channelName, 'is now open to communication');
             this._openChannels.add(serverChannel.channel);
             return this.registerListener(clientChannel, listenerCb, cb);
         });
-        dbg(`enable channel ${serverChannel.channelName}`);
         return serverChannel.enable();
     };
     /** close communication with a channel through channel manager

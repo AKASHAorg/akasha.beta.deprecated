@@ -7,8 +7,7 @@ import { getResizedImages } from '../../utils/imageUtils';
 import clickAway from '../../utils/clickAway';
 import styles from './style.css';
 import AddCircle from 'material-ui/svg-icons/content/add-circle-outline';
-import PhotoCircle from 'material-ui/svg-icons/image/add-a-photo';
-
+import imagePlugin from './plugins/image/image-plugin';
 
 class EntryEditor extends Component {
     constructor (props) {
@@ -54,6 +53,7 @@ class EntryEditor extends Component {
                 }}
                 editorState={this.state.editorState}
                 onChange={this._handleEditorChange}
+                plugins={[imagePlugin]}
               />
             </div>
           </div>

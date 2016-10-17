@@ -71,7 +71,6 @@ class EProcActions {
         });
 
     getGethOptions = () => {
-        dbg('get geth options');
         this.gethService.getOptions({
             options: {},
             onError: err => this.dispatch(appActionCreators.showError(err)),

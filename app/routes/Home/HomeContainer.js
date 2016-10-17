@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { BootstrapBundleActions } from 'local-flux';
+import { ProfileActions } from 'local-flux';
 import { Sidebar } from 'shared-components';
 import '../../styles/core.scss';
 import styles from './home.scss';
@@ -8,6 +8,10 @@ import PanelLoader from './components/panel-loader-container';
 import EntryModal from './components/entry-modal';
 
 class HomeContainer extends React.Component {
+    componentWillMount () {
+        const { profileActions } = this.props;
+        profileActions.getLoggedProfile();
+    }
     render () {
         return (
           <div className={styles.root} >
@@ -34,8 +38,10 @@ function mapStateToProps () {
     return {};
 }
 
-function mapDispatchToProps () {
-    return {};
+function mapDispatchToProps (dispatch) {
+    return {
+        profileActions: new ProfileActions(dispatch)
+    };
 }
 
 export default connect(

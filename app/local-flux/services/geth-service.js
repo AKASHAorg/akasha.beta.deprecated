@@ -1,8 +1,6 @@
-import debug from 'debug';
 import BaseService from './base-service';
 
 const Channel = window.Channel;
-const dbg = debug('App:GethService:');
 
 /**
  * Default managed channels: [startService, stopService, status]
@@ -30,8 +28,6 @@ class GethService extends BaseService {
             }
         });
 
-        dbg('Retrieving Geth status', clientChannel);
-
         this.registerListener(
             clientChannel,
             this.createListener(onError, onSuccess, clientChannel.channelName)
@@ -44,7 +40,6 @@ class GethService extends BaseService {
     stop = ({ options = {}, onError = () => {}, onSuccess }) => {
         const serverChannel = Channel.server.geth.stopService;
         const clientChannel = Channel.client.geth.stopService;
-        dbg('Stopping Geth service on channel:', clientChannel);
         this.registerListener(
             clientChannel,
             this.createListener(onError, onSuccess, clientChannel.channelName)
@@ -112,8 +107,6 @@ class GethService extends BaseService {
         const serverChannel = Channel.server.geth.status;
         const clientChannel = Channel.client.geth.status;
 
-        dbg('Retrieving Geth status', clientChannel);
-
         this.registerListener(
             clientChannel,
             this.createListener(onError, onSuccess, clientChannel.channelName)
@@ -126,7 +119,6 @@ class GethService extends BaseService {
     getOptions = ({ options = {}, onError = () => {}, onSuccess }) => {
         const clientChannel = Channel.client.geth.options;
         const serverChannel = Channel.server.geth.options;
-        dbg('Get geth options');
         return this.openChannel({
             serverManager: this.serverManager,
             clientManager: this.clientManager,
@@ -134,7 +126,6 @@ class GethService extends BaseService {
             clientChannel,
             listenerCb: this.createListener(onError, onSuccess, clientChannel.channelName)
         }, () => {
-            dbg('send options request callback');
             serverChannel.send(options);
         });
     };
