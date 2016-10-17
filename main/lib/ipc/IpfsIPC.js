@@ -115,7 +115,11 @@ class IpfsIPC extends IpfsEmitter_1.default {
             ipfs_connector_1.IpfsConnector.getInstance()
                 .getPorts()
                 .then((ports) => {
-                response = responses_1.ipfsResponse(ports);
+                response = responses_1.ipfsResponse({
+                    apiPort: ports.api,
+                    gatewayPort: ports.gateway,
+                    swarmPort: ports.swarm
+                });
             })
                 .catch((err) => {
                 response = responses_1.ipfsResponse({}, { message: err.message });

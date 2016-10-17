@@ -13,14 +13,24 @@ class GenericApi {
 }
 export class ApiRequest extends GenericApi {
     public manager: string;
+    public idRequest = 0;
 
     constructor(channel: string, manager: string, channelName?: string) {
         super(channel, channelName);
         this.manager = manager;
     }
 
-    public send(data) {
-        ipcRenderer.send(this.channel, data);
+    public send(data: {}, hasUint8 = false) {
+        if(!hasUint8){
+            return ipcRenderer.send(this.channel, data);
+        }
+        const registeredData = Object.assign(data, {requestId: this.idRequest});
+        this.idRequest++;
+        //return this._sendChunks(registeredData);
+    }
+
+    private _sendChunks(data: any) {
+        //return ipcRenderer;
     }
 
     public enable() {

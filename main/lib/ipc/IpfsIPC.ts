@@ -212,7 +212,11 @@ class IpfsIPC extends IpfsEmitter {
                 IpfsConnector.getInstance()
                     .getPorts()
                     .then((ports) => {
-                        response = ipfsResponse(ports);
+                        response = ipfsResponse({
+                            apiPort: ports.api,
+                            gatewayPort: ports.gateway,
+                            swarmPort: ports.swarm
+                        });
                     })
                     .catch((err: Error) => {
                         response = ipfsResponse({}, { message: err.message });

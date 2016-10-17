@@ -98,21 +98,17 @@ function readImageData (imagePath, canvas, ctx, options) {
             }
             const blobCb = (width, canvasWidth, canvasHeight) =>
                 (blob) => {
-                    const reader = new FileReader();
-                    reader.onloadend = () => {
-                        images[width.key] = {
-                            src: new Uint8Array(reader.result),
-                            width: canvasWidth,
-                            height: canvasHeight
-                        };
-                    };
-                    reader.readAsArrayBuffer(blob);
+                    images[width.key] = {
+                        src: URL.createObjectURL(blob),
+                        width: canvasWidth,
+                        height: canvasHeight
+                    }
                 };
             r.forEach((width) => {
                 canvas.width = width.res;
                 canvas.height = width.res / aspectRatio;
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                canvas.toBlob(blobCb(width, canvas.width, canvas.height), 'image/jpg');
+                canvas.toBlob(blobCb(width, canvas.width, canvas.height), 'image/jpg', 0.5);
             }, availableWidths);
             resolve(images);
         };

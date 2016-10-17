@@ -123,9 +123,9 @@ interface IpfsSetConfigResponse extends MainResponse {
 
 interface IpfsGetPortsResponse {
     data: {
-        gateway: string,
-        api: string,
-        swarm: string
+        gatewayPort: string,
+        apiPort: string,
+        swarmPort: string
     }
 }
 // channels.server.geth.restart
