@@ -1,3 +1,4 @@
+/* eslint new-cap: ["error", { "capIsNewExceptions": ["Record"] }]*/
 import { fromJS, Record, List } from 'immutable';
 import * as types from '../constants/TransactionConstants';
 import { createReducer } from './create-reducer';
@@ -8,7 +9,7 @@ const ErrorRecord = Record({
     message: ''
 });
 
-const PendingTransaction = Record ({
+const PendingTransaction = Record({
     tx: ''
 });
 
@@ -28,12 +29,10 @@ const initialState = fromJS({
 const transactionState = createReducer(initialState, {
 
     [types.ADD_TO_QUEUE_SUCCESS]: (state, action) => {
-        console.log(action, 'add to queue action');
         const txs = action.data.map(tx => new PendingTransaction({ tx }));
-        const newState = state.merge({
+        return state.merge({
             pending: state.get('pending').concat(txs)
         });
-        return newState;
     },
 
     [types.ADD_TO_QUEUE_ERROR]: (state, action) =>
@@ -60,17 +59,16 @@ const transactionState = createReducer(initialState, {
             errors: state.get('errors').push(new ErrorRecord(action.error))
         }),
 
-    [types.GET_MINED_TRANSACTION_SUCCESS]: (state, action) => {
-        return state.merge({
+    [types.GET_MINED_TRANSACTION_SUCCESS]: (state, action) =>
+        state.merge({
             mined: state.get('mined').concat(action.data)
-        });
-    },
+        }),
 
-    [types.GET_PENDING_TRANSACTION_SUCCESS]: (state, action) => {
-        return state.merge({
+    [types.GET_PENDING_TRANSACTION_SUCCESS]: (state, action) =>
+        state.merge({
             pending: state.get('pending').concat(action.data)
-        });
-    },
+        }),
+
     [types.GET_PENDING_TRANSACTION_ERROR]: (state, action) => {
         state.merge({
             errors: state.get('errors').push(new ErrorRecord(action.error))

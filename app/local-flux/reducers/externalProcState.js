@@ -1,8 +1,8 @@
+/* eslint new-cap: [2, {capIsNewExceptions: ["Record"]}] */
 import { fromJS, Record, List, Map, Set } from 'immutable';
 import { createReducer } from './create-reducer';
 import * as types from '../constants/external-process-constants';
 
-/* eslint new-cap: [2, {capIsNewExceptions: ["Record"]}] */
 const GethStatus = Record({
     downloading: null,
     starting: null,

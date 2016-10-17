@@ -1,10 +1,6 @@
-import { ipcRenderer } from 'electron';
-import debug from 'debug';
 import BaseService from './base-service';
-import profileDB from './db/profile';
 
 const Channel = window.Channel;
-const dbg = debug('App:ProfileService:');
 /**
  * Profile Service.
  * default open channels => ['getProfileData', 'getMyBalance', 'getIpfs']
@@ -26,7 +22,10 @@ class ProfileService extends BaseService {
     getProfileBalance = ({ options = { profile: '', unit: 'eth' }, onError = () => {}, onSuccess }) => {
         const serverChannel = Channel.server.profile.getMyBalance;
         const clientChannel = Channel.client.profile.getMyBalance;
-        this.registerListener(clientChannel, this.createListener(onError, onSuccess, clientChannel.channelName));
+        this.registerListener(
+            clientChannel,
+            this.createListener(onError, onSuccess, clientChannel.channelName)
+        );
         serverChannel.send(options);
     };
     /**
@@ -49,7 +48,10 @@ class ProfileService extends BaseService {
     }) => {
         const serverChannel = Channel.server.profile.getProfileData;
         const clientChannel = Channel.client.profile.getProfileData;
-        this.registerListener(clientChannel, this.createListener(onError, onSuccess, clientChannel.channelName));
+        this.registerListener(
+            clientChannel,
+            this.createListener(onError, onSuccess, clientChannel.channelName)
+        );
         serverChannel.send(options);
     };
     /**
@@ -66,7 +68,10 @@ class ProfileService extends BaseService {
         const serverChannel = Channel.server.profile.getIpfs;
         const clientChannel = Channel.server.profile.getIpfs;
 
-        this.registerListener(clientChannel, this.createListener(onError, onSuccess, clientChannel.channelName));
+        this.registerListener(
+            clientChannel,
+            this.createListener(onError, onSuccess, clientChannel.channelName)
+        );
         serverChannel.send(options);
     };
     /**

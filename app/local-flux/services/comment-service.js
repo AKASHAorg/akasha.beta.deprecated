@@ -5,12 +5,11 @@ import BaseService from './base-service';
 import { generateComments } from './faker-data';
 /********************/
 
-const Channel = window.Channel;
 const dbg = debug('App:CommentService:');
 
 class CommentService extends BaseService {
     getCommentsByEntry = (entryId, options) =>
-        new Promise((resolve, reject) => {
+        new Promise((resolve) => {
             dbg('getCommentsByEntry ', entryId, options);
             return resolve(generateComments(15));
         });

@@ -10,13 +10,14 @@ const initialState = fromJS({
 });
 
 const panelState = createReducer(initialState, {
-    [types.SHOW_PANEL]: (state, action) => {
-        return state.merge({ activePanel: action.panel });
-    },
+    [types.SHOW_PANEL]: (state, action) =>
+        state.merge({ activePanel: action.panel }),
+
     [types.HIDE_PANEL]: (state, action) => {
         if (!action.panel) {
             return state.merge(initialState);
         }
+        return state;
     },
 });
 
