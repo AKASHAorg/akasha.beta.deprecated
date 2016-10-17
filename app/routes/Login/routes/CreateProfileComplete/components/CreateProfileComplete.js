@@ -72,7 +72,7 @@ class CreateProfileComplete extends Component {
                   />
                   <TextField
                     disabled
-                    floatingLabelText={intl.formatMessage(generalMessages.etereumAddress)}
+                    floatingLabelText={intl.formatMessage(generalMessages.ethereumAddress)}
                     style={{ width: '100%' }}
                     value={tempProfile.get('address')}
                   />
