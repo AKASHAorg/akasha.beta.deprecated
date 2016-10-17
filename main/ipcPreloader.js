@@ -9,10 +9,17 @@ class GenericApi {
 class ApiRequest extends GenericApi {
     constructor(channel, manager, channelName) {
         super(channel, channelName);
+        this.idRequest = 0;
         this.manager = manager;
     }
-    send(data) {
-        electron_1.ipcRenderer.send(this.channel, data);
+    send(data, hasUint8 = false) {
+        if (!hasUint8) {
+            return electron_1.ipcRenderer.send(this.channel, data);
+        }
+        const registeredData = Object.assign(data, { requestId: this.idRequest });
+        this.idRequest++;
+    }
+    _sendChunks(data) {
     }
     enable() {
         electron_1.ipcRenderer.send(this.manager, { channel: this.channel, listen: true });

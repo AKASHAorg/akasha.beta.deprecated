@@ -2,6 +2,7 @@
 const ipfs_connector_1 = require('@akashaproject/ipfs-connector');
 const records_1 = require('../models/records');
 const Promise = require('bluebird');
+const request_1 = require('request');
 const create = (data) => {
     console.time('creating_ipfs');
     const returned = {
@@ -19,7 +20,7 @@ const create = (data) => {
         media = keys.map((media) => {
             return ipfs_connector_1.IpfsConnector.getInstance()
                 .api
-                .constructObjLink(data.backgroundImage[media].src, true);
+                .constructObjLink(request_1.get({ url: data.backgroundImage[media].src, encoding: null }), true);
         });
     }
     return Promise.all(media)
