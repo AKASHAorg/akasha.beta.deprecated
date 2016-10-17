@@ -13,8 +13,8 @@ class ValidationActions {
     }
     validateUsername = (username, cb) => {
         this.validationService.validateUsername(username, {
-            onError: (err) => cb(err),
-            onSuccess: (data) => cb(null, data)
+            onError: err => cb(err),
+            onSuccess: data => cb(null, data)
         });
     }
 }

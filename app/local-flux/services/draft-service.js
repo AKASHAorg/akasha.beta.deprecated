@@ -1,19 +1,16 @@
-import entriesDB from './db/entry';
 import debug from 'debug';
-const dbg = debug('App:DraftService:');
+import entriesDB from './db/entry';
 
-/** * DELETE THIS *****/
-import { generateEntries } from './faker-data';
-/** ******************/
+const dbg = debug('App:DraftService:');
 
 class DraftService {
     constructor () {
         this.listeners = {};
     }
-    saveDraft = (partialDraft) =>
+    saveDraft = partialDraft =>
         entriesDB.transaction('rw', entriesDB.drafts, () => {
             if (partialDraft.id) {
-                return entriesDB.drafts.update(partialDraft.id, partialDraft).then(updated => {
+                return entriesDB.drafts.update(partialDraft.id, partialDraft).then((updated) => {
                     dbg('draft ', partialDraft.id, 'updated');
                     if (updated) {
                         return partialDraft;
@@ -21,26 +18,26 @@ class DraftService {
                     return null;
                 });
             }
-            return entriesDB.drafts.add(partialDraft).then(draftId => {
+            return entriesDB.drafts.add(partialDraft).then((draftId) => {
                 dbg('draft with id', draftId, 'created');
                 return partialDraft;
             });
         });
-    getAllDrafts = (username) =>
+    getAllDrafts = username =>
         entriesDB.transaction('rw', entriesDB.drafts, () =>
             entriesDB.drafts
                      .where('authorUsername')
                      .equals(username)
                      .toArray()
-                     .then(drafts => {
+                     .then((drafts) => {
                          dbg('getAllDrafts', drafts);
-                         const convDrafts = drafts.map(draft => {
-                             return Object.assign({}, draft);
-                         });
+                         const convDrafts = drafts.map(draft =>
+                             Object.assign({}, draft)
+                         );
                          return convDrafts;
                      })
         );
-    getDraftsCount = (username) =>
+    getDraftsCount = username =>
         entriesDB.transaction('rw', entriesDB.drafts, () =>
             entriesDB.drafts.where('authorUsername').equals(username).count()
         )

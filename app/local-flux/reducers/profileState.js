@@ -1,9 +1,10 @@
-import { fromJS, List, Record, Map } from 'immutable';
+/* eslint new-cap: ["error", { "capIsNewExceptions": ["Record"] }]*/
+import { fromJS, List, Record } from 'immutable';
 import * as types from '../constants/ProfileConstants';
-import * as transactionTypes from '../constants/TransactionConstants';
 import { createReducer } from './create-reducer';
 
-const ErrorRecord = Record ({
+
+const ErrorRecord = Record({
     code: null,
     message: '',
     fatal: false
@@ -71,7 +72,7 @@ const profileState = createReducer(initialState, {
             errors: state.get('errors').push(new ErrorRecord(error))
         }),
 
-    [types.LOGOUT_SUCCESS]: (state, { data }) =>
+    [types.LOGOUT_SUCCESS]: state =>
         state.setIn('loggedProfile', new LoggedProfile()),
 
     [types.LOGOUT_ERROR]: (state, { error }) =>
@@ -79,25 +80,23 @@ const profileState = createReducer(initialState, {
             errors: state.get('errors').push(new ErrorRecord(error))
         }),
     // start saving a new temp profile to database
-    [types.CREATE_TEMP_PROFILE]: (state, { profileData }) => {
-        return state.merge({
+    [types.CREATE_TEMP_PROFILE]: (state, { profileData }) =>
+        state.merge({
             tempProfile: new TempProfile({
                 ...profileData,
                 currentStatus: new TempProfileStatus()
             })
-        });
-    },
+        }),
     // temp profile saved to IndexedDB successfully
-    [types.CREATE_TEMP_PROFILE_SUCCESS]: (state, { profileData }) => {
-        return state.mergeDeep({
+    [types.CREATE_TEMP_PROFILE_SUCCESS]: (state, { profileData }) =>
+        state.mergeDeep({
             tempProfile: {
                 ...profileData,
                 currentStatus: state.getIn(['tempProfile', 'currentStatus']).mergeDeep({
                     nextAction: 'createEthAddress'
                 })
             }
-        });
-    },
+        }),
     // an error occured when saving temp profile to IndexedDb
     [types.CREATE_TEMP_PROFILE_ERROR]: (state, { error }) =>
         state.merge({
@@ -105,47 +104,41 @@ const profileState = createReducer(initialState, {
         }),
     // update temp profile in IndexedDB
     [types.UPDATE_TEMP_PROFILE_SUCCESS]: (state, { tempProfile }) => {
-        console.log(types.UPDATE_TEMP_PROFILE_SUCCESS, status);
         const { currentStatus, ...other } = tempProfile;
-        const newState = state.merge({
+        return state.merge({
             tempProfile: state.get('tempProfile').mergeDeep({
                 ...other,
                 currentStatus: state.getIn(['tempProfile', 'currentStatus'])
                                     .merge(new TempProfileStatus(currentStatus))
             })
         });
-        console.log(newState, 'newState');
-        return newState;
     },
 
     // error updating temp profile to IndexedDB
-    [types.UPDATE_TEMP_PROFILE_ERROR]: (state, { error }) => {
-        return state.merge({
+    [types.UPDATE_TEMP_PROFILE_ERROR]: (state, { error }) =>
+        state.merge({
             errors: state.get('errors').push(new ErrorRecord(error))
-        });
-    },
+        }),
 
     // get saved temp profile from indexedDB
     [types.GET_TEMP_PROFILE_SUCCESS]: (state, { profile }) => {
-        let newState = state;
         if (profile) {
             const { currentStatus, ...other } = profile;
-            newState = state.merge({
+            return state.merge({
                 tempProfile: new TempProfile({
                     ...other,
                     currentStatus: new TempProfileStatus(currentStatus)
                 })
             });
         }
-        return newState;
+        return state;
     },
 
     // error getting temp profile from indexedDB
-    [types.GET_TEMP_PROFILE_ERROR]: (state, { error }) => {
-        return state.merge({
+    [types.GET_TEMP_PROFILE_ERROR]: (state, { error }) =>
+        state.merge({
             errors: state.get('errors').push(new ErrorRecord(error))
-        });
-    },
+        }),
 
     // delete temp profile from indexedDB. Usually after profile was successfully published
     [types.DELETE_TEMP_PROFILE_SUCCESS]: state =>
@@ -162,43 +155,36 @@ const profileState = createReducer(initialState, {
             ethAddressRequested: true
         }),
 
-    [types.CREATE_ETH_ADDRESS_SUCCESS]: (state, { data }) => {
-        const newState = state.mergeIn(['tempProfile'], {
+    [types.CREATE_ETH_ADDRESS_SUCCESS]: (state, { data }) =>
+        state.mergeIn(['tempProfile'], {
             address: data.address,
             currentStatus: state.getIn(['tempProfile', 'currentStatus']).merge({
                 nextAction: 'requestFundFromFaucet'
             })
-        });
-
-        return newState;
-    },
+        }),
 
     [types.CREATE_ETH_ADDRESS_ERROR]: (state, { error }) =>
         state.merge({
             errors: state.get('errors').push(new ErrorRecord(error))
         }),
 
-    [types.REQUEST_FUND_FROM_FAUCET]: (state) => {
-        const newState = state.mergeDeepIn(['tempProfile', 'currentStatus'], {
+    [types.REQUEST_FUND_FROM_FAUCET]: state =>
+        state.mergeDeepIn(['tempProfile', 'currentStatus'], {
             faucetRequested: true
-        });
-        return newState;
-    },
+        }),
 
     [types.LISTEN_FAUCET_TX]: state =>
         state.mergeDeepIn(['tempProfile', 'currentStatus'], {
             listeningFaucetTx: true
         }),
 
-    [types.REQUEST_FUND_FROM_FAUCET_SUCCESS]: (state, { data }) => {
-        const newState = state.mergeDeepIn(['tempProfile', 'currentStatus'],
+    [types.REQUEST_FUND_FROM_FAUCET_SUCCESS]: (state, { data }) =>
+        state.mergeDeepIn(['tempProfile', 'currentStatus'],
             {
                 nextAction: 'listenFaucetTx',
                 faucetTx: data.tx
             }
-        );
-        return newState;
-    },
+        ),
 
     [types.REQUEST_FUND_FROM_FAUCET_ERROR]: (state, { error }) =>
         state.merge({
@@ -228,7 +214,7 @@ const profileState = createReducer(initialState, {
 
     [types.GET_LOCAL_PROFILES_SUCCESS]: (state, { data }) =>
         state.merge({
-            profiles: state.get('profiles').concat(data.map(prf => new Profile({
+            profiles: new List(data.map(prf => new Profile({
                 ethAddress: prf.key,
                 profile: prf.profile
             })))

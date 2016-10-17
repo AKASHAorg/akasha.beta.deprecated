@@ -6,7 +6,7 @@ import {
     RaisedButton,
     Avatar } from 'material-ui';
 import { hashHistory } from 'react-router';
-import { FormattedMessage, injectIntl } from 'react-intl';
+import { injectIntl } from 'react-intl';
 import { LoginDialog, PanelContainer } from 'shared-components';
 import { setupMessages, generalMessages } from 'locale-data/messages'; /* eslint import/no-unresolved: 0*/
 import LoginHeader from '../../../components/LoginHeader';
@@ -26,6 +26,7 @@ class Auth extends Component {
     componentWillMount () {
         const { profileActions } = this.props;
         profileActions.getTempProfile();
+        profileActions.clearLoggedProfile();
     }
     componentDidMount () {
         const { profileActions } = this.props;
@@ -70,7 +71,7 @@ class Auth extends Component {
         }
         profileActions.login({
             account: selectedProfile.get('ethAddress'),
-            password: new TextEncoder('utf-8').encode(this.state.password),
+            password: this.state.password,
             rememberTime: unlockInterval
         });
     };
@@ -87,20 +88,27 @@ class Auth extends Component {
             const profileName = `${profile.get('firstName')} ${profile.get('lastName')}`;
             const userInitials = profileName.match(/\b\w/g);
             const avatarImage = profile.get('avatar') ? imageCreator(profile.get('avatar')) : null;
-            let avatar;
-            if (!avatarImage) {
-                avatar = <Avatar src={avatarImage} size={48} className="col-xs-4 middle-xs" />;
+            let avtr;
+            if (avatarImage) {
+                avtr = (
+                  <Avatar src={avatarImage} size={48} className="col-xs-4 middle-xs" />
+                );
             } else {
-                avatar = (
+                avtr = (
                   <Avatar>
-                    {((userInitials.shift() || '') + (userInitials.pop() || '')).toUpperCase()}
+                    {userInitials &&
+                      ((userInitials.shift() || '') + (userInitials.pop() || '')).toUpperCase()
+                    }
+                    {!userInitials && profile.get('username') &&
+                        profile.get('username')
+                    }
                   </Avatar>
                 );
             }
             return (
               <ListItem
                 key={index}
-                leftAvatar={avatar}
+                leftAvatar={avtr}
                 primaryText={
                   <div
                     style={{

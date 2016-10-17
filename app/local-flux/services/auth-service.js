@@ -31,24 +31,40 @@ class AuthService extends BaseService {
     login = ({ account, password, rememberTime, onSuccess, onError }) => {
         const serverChannel = Channel.server.auth.login;
         const clientChannel = Channel.client.auth.login;
+        const successCb = (data) => {
+            profileDB.transaction('rw', profileDB.loggedProfile, () => {
+                profileDB.loggedProfile.add(data);
+                return data;
+            }).then((loggedProfile) => {
+                onSuccess(loggedProfile);
+            }).catch(error => onError(error));
+        };
         this.registerListener(
             clientChannel,
-            this.createListener(onError, onSuccess, clientChannel.channelName)
+            this.createListener(onError, successCb, clientChannel.channelName)
         );
         serverChannel.send({ account, password, rememberTime });
     };
     /**
      *  Logout profile
+     * @request flush <Boolean>
      * @response data: {
      *      done: Boolean
      * }
+     * @param options.flush <Boolean>
+     * @param options.profileKey <String> Eth key
      */
-    logout = ({ onError, onSuccess }) => {
+    logout = ({ options = { profileKey: '', flush: true }, onError, onSuccess }) => {
         const serverChannel = Channel.server.auth.logout;
         const clientChannel = Channel.client.auth.logout;
+        const successCb = () => {
+            this.deleteLoggedProfile(options.profileKey).then(() => {
+                onSuccess();
+            }).catch(error => onError(error));
+        };
         this.registerListener(
             clientChannel,
-            this.createListener(onError, onSuccess, clientChannel.channelName)
+            this.createListener(onError, successCb, clientChannel.channelName)
         );
         serverChannel.send({});
     };
@@ -126,12 +142,13 @@ class AuthService extends BaseService {
         .then(() => onSuccess(profileData))
         .catch(reason => onError(reason));
 
-    deleteLoggedProfile = ({ loggedProfile, onError, onSuccess }) =>
+    deleteLoggedProfile = ({ profileKey, onError, onSuccess }) =>
         profileDB.transaction('rw', profileDB.loggedProfile, () => {
-            dbg('deleting loggedProfile', loggedProfile);
-            return profileDB.loggedProfile.delete(loggedProfile.address);
+            dbg('deleting loggedProfile', profileKey);
+            if (profileKey) return profileDB.loggedProfile.delete(profileKey);
+            return profileDB.loggedProfile.clear();
         })
-        .then(() => onSuccess(loggedProfile))
+        .then(() => onSuccess())
         .catch(reason => onError(reason));
 
     getLoggedProfile = ({ onError, onSuccess }) =>

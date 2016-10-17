@@ -32,7 +32,10 @@ class GethService extends BaseService {
 
         dbg('Retrieving Geth status', clientChannel);
 
-        this.registerListener(clientChannel, this.createListener(onError, onSuccess, clientChannel.channelName));
+        this.registerListener(
+            clientChannel,
+            this.createListener(onError, onSuccess, clientChannel.channelName)
+        );
         serverChannel.send(gethOptions);
     };
     /**
@@ -42,7 +45,10 @@ class GethService extends BaseService {
         const serverChannel = Channel.server.geth.stopService;
         const clientChannel = Channel.client.geth.stopService;
         dbg('Stopping Geth service on channel:', clientChannel);
-        this.registerListener(clientChannel, this.createListener(onError, onSuccess, clientChannel.channelName));
+        this.registerListener(
+            clientChannel,
+            this.createListener(onError, onSuccess, clientChannel.channelName)
+        );
         serverChannel.send(options);
     }
     /**
@@ -108,7 +114,10 @@ class GethService extends BaseService {
 
         dbg('Retrieving Geth status', clientChannel);
 
-        this.registerListener(clientChannel, this.createListener(onError, onSuccess, clientChannel.channelName));
+        this.registerListener(
+            clientChannel,
+            this.createListener(onError, onSuccess, clientChannel.channelName)
+        );
         serverChannel.send(options);
     }
     /**
