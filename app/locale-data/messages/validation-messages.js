@@ -11,13 +11,13 @@ const validationMessages = defineMessages({
         id: 'app.validator.min',
         description: `When a field has less than minimum accepted number of characters.
                       Do not translate :attribute or :min!`,
-        defaultMessage: ':attribute should be at least :min characters long.'
+        defaultMessage: ':attribute must be at least :min characters long.'
     },
     max: {
         id: 'app.validator.max',
         description: `When a field has more that maximum accepted number of characters.
                         Do not translate :attribute or :max!`,
-        defaultMessage: ':attribute should not have more than :max characters.'
+        defaultMessage: ':attribute must not have more than :max characters.'
     },
     passwordNotMatching: {
         id: 'app.validator.passwordNotMatching',

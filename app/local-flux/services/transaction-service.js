@@ -1,9 +1,7 @@
-import debug from 'debug';
 import BaseService from './base-service';
 import transactionsDB from './db/transactions';
 
 const Channel = window.Channel;
-const dbg = debug('App:TransactionService:');
 
 /**
  * Transaction Service
@@ -26,7 +24,6 @@ class TransactionService extends BaseService {
     addToQueue = ({ txs, onError, onSuccess }) => {
         const serverChannel = Channel.server.tx.addToQueue;
         const clientChannel = Channel.client.tx.addToQueue;
-        dbg('adding to queue', txs);
 
         if (!Array.isArray(txs)) {
             return console.error('tx param should be an array!!');

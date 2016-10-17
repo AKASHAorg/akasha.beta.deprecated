@@ -1,9 +1,7 @@
-import debug from 'debug';
 import BaseService from './base-service';
 import profileDB from './db/profile';
 
 const Channel = window.Channel;
-const dbg = debug('App:AuthService:');
 /**
  * Auth Service.
  * default open channels => ['login', 'logout', 'requestEther']
@@ -78,7 +76,6 @@ class AuthService extends BaseService {
     requestEther = ({ address, onSuccess, onError }) => {
         const serverChannel = Channel.server.auth.requestEther;
         const clientChannel = Channel.client.auth.requestEther;
-        dbg('requesting ether for address', address);
         const successCb = (data) => {
             if (data === 'Unauthorized' || data === 'Bad Request') {
                 return onError({ message: data, fatal: true });
@@ -133,7 +130,6 @@ class AuthService extends BaseService {
      */
     createLoggedProfile = ({ profileData, onSuccess, onError }) =>
         profileDB.transaction('rw', profileDB.loggedProfile, () => {
-            dbg('saving logged profile', profileData);
             if (profileData.password) {
                 delete profileData.password;
             }
@@ -144,7 +140,6 @@ class AuthService extends BaseService {
 
     deleteLoggedProfile = ({ profileKey, onError, onSuccess }) =>
         profileDB.transaction('rw', profileDB.loggedProfile, () => {
-            dbg('deleting loggedProfile', profileKey);
             if (profileKey) return profileDB.loggedProfile.delete(profileKey);
             return profileDB.loggedProfile.clear();
         })
@@ -152,10 +147,9 @@ class AuthService extends BaseService {
         .catch(reason => onError(reason));
 
     getLoggedProfile = ({ onError, onSuccess }) =>
-        profileDB.transaction('r', profileDB.loggedProfile, () => {
-            dbg('getLoggedProfile');
-            return profileDB.loggedProfile.toArray();
-        }).then(profile => onSuccess(profile[0]))
+        profileDB.transaction('r', profileDB.loggedProfile, () =>
+            profileDB.loggedProfile.toArray()
+        ).then(profile => onSuccess(profile[0]))
         .catch(reason => onError(reason));
 }
 

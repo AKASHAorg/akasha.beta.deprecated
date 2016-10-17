@@ -32,10 +32,11 @@ class BootApp extends React.Component {
               <CircularProgress
                 style={{
                     paddingLeft: '50%',
-                    marginLeft: '-25px',
+                    marginLeft: '-40px',
                     marginTop: '22.5%'
                 }}
-                size={1.5}
+                size={80}
+                thickness={5}
               />
               <div
                 className="col-xs-12 center-xs"
