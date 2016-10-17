@@ -96,19 +96,15 @@ function readImageData (imagePath, canvas, ctx, options) {
                     availableWidths.push(resizeWidths[i]);
                 }
             }
-            const blobCb = (width, canvasWidth, canvasHeight) =>
-                (blob) => {
-                    images[width.key] = {
-                        src: URL.createObjectURL(blob),
-                        width: canvasWidth,
-                        height: canvasHeight
-                    }
-                };
             r.forEach((width) => {
                 canvas.width = width.res;
                 canvas.height = width.res / aspectRatio;
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                canvas.toBlob(blobCb(width, canvas.width, canvas.height), 'image/jpg', 0.5);
+                images[width.key] = {
+                    src: canvas.toDataURL('image/jpg', 0.5),
+                    width: canvas.width,
+                    height: canvas.height
+                }
             }, availableWidths);
             resolve(images);
         };
