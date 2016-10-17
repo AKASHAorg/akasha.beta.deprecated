@@ -119,7 +119,6 @@ class GethService extends BaseService {
     getOptions = ({ options = {}, onError = () => {}, onSuccess }) => {
         const clientChannel = Channel.client.geth.options;
         const serverChannel = Channel.server.geth.options;
-        dbg('Get geth options');
         return this.openChannel({
             serverManager: this.serverManager,
             clientManager: this.clientManager,
@@ -127,7 +126,6 @@ class GethService extends BaseService {
             clientChannel,
             listenerCb: this.createListener(onError, onSuccess, clientChannel.channelName)
         }, () => {
-            dbg('send options request callback');
             serverChannel.send(options);
         });
     };

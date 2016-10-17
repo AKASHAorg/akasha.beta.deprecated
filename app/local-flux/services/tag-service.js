@@ -12,7 +12,6 @@ class TagService extends BaseService {
     //             return this._listeners.has(clientChannel);
     //         }
     //         this._listeners[clientChannel] = (ev, response) => {
-    //             dbg('getTags', response);
     //             if (!response) {
     //                 const error = new Error('Main Process Crashed!');
     //                 return reject(error);
@@ -49,10 +48,8 @@ class TagService extends BaseService {
     //             if (!data.success) {
     //                 return reject(data.status.message);
     //             }
-    //             dbg('registerTags success', data);
     //             return resolve(data);
     //         });
-    //         dbg('registerTags send', tags);
     //         ipcRenderer.send(serverChannel, tags);
     //     });
     // };

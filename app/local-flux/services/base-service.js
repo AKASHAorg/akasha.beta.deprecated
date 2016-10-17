@@ -1,6 +1,3 @@
-import debug from 'debug';
-
-const dbg = debug('App::BaseService::*');
 /**
  * All services should extend this base services
  * it provides utilities for ipc.
@@ -77,7 +74,6 @@ class BaseService {
             this._openChannels.add(serverChannel.channel);
             return this.registerListener(clientChannel, listenerCb, cb);
         });
-        dbg(`enable channel ${serverChannel.channelName}`);
         return serverChannel.enable();
     };
     /** close communication with a channel through channel manager
