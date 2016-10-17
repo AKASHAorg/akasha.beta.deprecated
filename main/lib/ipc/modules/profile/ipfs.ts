@@ -1,8 +1,9 @@
 import { IpfsConnector } from '@akashaproject/ipfs-connector';
 import { profiles } from '../models/records';
 import * as Promise from 'bluebird';
-import { get } from 'request';
+import { get as getUrl } from 'request';
 
+const getUrlAsync = Promise.promisify(getUrl);
 /**
  *
  * @param data
@@ -23,9 +24,12 @@ const create = (data: IpfsProfileCreateRequest) => {
     if (data.backgroundImage) {
         keys = Object.keys(data.backgroundImage).sort();
         media = keys.map((media: string) => {
-            return IpfsConnector.getInstance()
-                .api
-                .constructObjLink(get({url:data.backgroundImage[media].src, encoding:null}), true);
+            return getUrlAsync({url:data.backgroundImage[media].src, encoding:null})
+                .then((buff: any) => {
+                    return IpfsConnector.getInstance()
+                        .api
+                        .constructObjLink(buff, true);
+            });
         });
     }
     return Promise.all(media)
