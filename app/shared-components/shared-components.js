@@ -11,3 +11,6 @@ export ConfirmationDialog from './Dialogs/confirmation-dialog';
 export PanelContainer from './PanelContainer/panel-container';
 export SyncProgressLoader from './Loaders/sync-progress';
 export ImageUploader from './ImageUploader/image-uploader';
+export LogsList from './LogsList/logs-list';
+export GethSettingsForm from './Forms/geth-settings-form';
+export IpfsSettingsForm from './Forms/ipfs-settings-form';

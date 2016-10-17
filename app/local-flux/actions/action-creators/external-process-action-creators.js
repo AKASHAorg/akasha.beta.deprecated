@@ -18,7 +18,7 @@ export function getGethStatusError (error) {
 export function getGethOptionsSuccess (data) {
     return {
         type: types.GET_GETH_OPTIONS_SUCCESS,
-        options: data
+        data
     };
 }
 
@@ -87,6 +87,22 @@ export function getSyncStatusError (error) {
     };
 }
 
+export function getIpfsStatusSuccess (data) {
+    return {
+        type: types.GET_IPFS_STATUS_SUCCESS,
+        data
+    };
+}
+
+export function getIpfsStatusError (error) {
+    error.code = 'ISE'
+    return {
+        type: types.GET_IPFS_STATUS_ERROR,
+        error
+    };
+}
+
+
 export function startIPFS() {
     return {
         type: types.START_IPFS
@@ -106,25 +122,41 @@ export function startIPFSSuccess (data) {
     };
 }
 
-export function startIPFSError (error) {
+export function startIPFSError (error, data) {
     error.code = 'SIE01';
     return {
         type: types.START_IPFS_ERROR,
-        error
-    };
-}
-
-export function configIpfsSuccess (data) {
-    return {
-        type: types.CONFIG_IPFS_SUCCESS,
+        error,
         data
     };
 }
 
-export function configIpfsError (error) {
+export function getIpfsConfigSuccess (data) {
+    return {
+        type: types.GET_IPFS_CONFIG_SUCCESS,
+        data
+    };
+}
+
+export function getIpfsConfigError (error) {
     error.code = 'CIE';
     return {
-        type: types.CONFIG_IPFS_ERROR,
+        type: types.GET_IPFS_CONFIG_ERROR,
+        error
+    };
+}
+
+export function getIpfsPortsSuccess (data) {
+    return {
+        type: types.GET_IPFS_PORTS_SUCCESS,
+        data
+    };
+}
+
+export function getIpfsPortsError (error) {
+    error.code = 'PIE';
+    return {
+        type: types.GET_IPFS_PORTS_ERROR,
         error
     };
 }
@@ -171,7 +203,13 @@ export function resumeSync () {
 export function resetGethBusy () {
     return {
         type: types.RESET_GETH_BUSY
-    }
+    };
+}
+
+export function resetIpfsBusy () {
+    return {
+        type: types.RESET_IPFS_BUSY
+    };
 }
 
 export function getGethLogs (data) {

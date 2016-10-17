@@ -100,6 +100,46 @@ const generalMessages = defineMessages({
         id: 'app.general.connected',
         description: 'connected status',
         defaultMessage: 'connected'
+    },
+    noErrors: {
+        id: 'app.general.noErrors',
+        description: 'placeholder for empty error list',
+        defaultMessage: 'No errors'
+    },
+    gethServiceOn: {
+        id: 'app.general.gethServiceOn',
+        description: 'geth client service is started',
+        defaultMessage: 'Geth service ON'
+    },
+    gethServiceOff: {
+        id: 'app.general.gethServiceOff',
+        description: 'geth client service is stopped',
+        defaultMessage: 'Geth service OFF'
+    },
+    ipfsServiceOn: {
+        id: 'app.general.ipfsServiceOn',
+        description: 'ipfs client service is started',
+        defaultMessage: 'IPFS service ON'
+    },
+    ipfsServiceOff: {
+        id: 'app.general.ipfsServiceOff',
+        description: 'ipfs client service is stopped',
+        defaultMessage: 'IPFS service OFF'
+    },
+    logs: {
+        id: 'app.general.logs',
+        description: 'Services logs',
+        defaultMessage: 'Logs'
+    },
+    reset: {
+        id: 'app.general.reset',
+        description: 'Reset form',
+        defaultMessage: 'Reset'
+    },
+    save: {
+        id: 'app.general.save',
+        description: 'Save changes in a form',
+        defaultMessage: 'Save'
     }
 });
 export { generalMessages };

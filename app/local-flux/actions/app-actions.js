@@ -45,10 +45,12 @@ class AppActions {
         Promise.resolve(this.dispatch(appActionCreators.hideEntryModal()));
     getConfirmation = (entity) => {
         this.dispatch(appActionCreators.showConfirmationDialog(entity));
-    }
+    };
     hideConfirmationDialog = () => {
         this.dispatch(appActionCreators.hideConfirmationDialog());
-    }
+    };
+    setTimestamp = timestamp =>
+        this.dispatch(appActionCreators.setTimestamp(timestamp));
 }
 
 export { AppActions };
