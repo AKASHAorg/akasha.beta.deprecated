@@ -72,6 +72,41 @@ class IpfsService extends BaseService {
         );
         serverChannel.send(options);
     }
+    /**
+     * Retrieve config used by ipfs
+     */
+    getConfig = ({ options = {}, onError = () => {}, onSuccess }) => {
+        const clientChannel = Channel.client.ipfs.getConfig;
+        const serverChannel = Channel.server.ipfs.getConfig;
+
+        return this.openChannel({
+            serverManager: this.serverManager,
+            clientManager: this.clientManager,
+            serverChannel,
+            clientChannel,
+            listenerCb: this.createListener(onError, onSuccess)
+        }, () =>
+            serverChannel.send(options)
+        );
+    };
+
+    /**
+     * Retrieve ports used by ipfs
+     */
+    getPorts = ({ options = {}, onError = () => {}, onSuccess }) => {
+        const clientChannel = Channel.client.ipfs.getPorts;
+        const serverChannel = Channel.server.ipfs.getPorts;
+
+        return this.openChannel({
+            serverManager: this.serverManager,
+            clientManager: this.clientManager,
+            serverChannel,
+            clientChannel,
+            listenerCb: this.createListener(onError, onSuccess)
+        }, () =>
+            serverChannel.send(options)
+        );
+    }
 }
 
 export { IpfsService };

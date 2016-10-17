@@ -1,10 +1,10 @@
 import React, { Component, PropTypes } from 'react';
 import { remote } from 'electron';
-import { RadioButton, RadioButtonGroup, RaisedButton } from 'material-ui';
+import { FlatButton, RadioButton, RadioButtonGroup, RaisedButton } from 'material-ui';
 import { injectIntl } from 'react-intl';
 import { setupMessages, generalMessages } from 'locale-data/messages'; /* eslint import/no-unresolved: 0 */
 import PanelContainer from 'shared-components/PanelContainer/panel-container'; /* eslint import/no-unresolved: 0 */
-import { AdvancedSetupForm } from './advanced-setup-form';
+import { GethSettingsForm, IpfsSettingsForm } from 'shared-components';
 import SetupHeader from '../../../components/setup-header';
 
 const { dialog } = remote;
@@ -12,16 +12,12 @@ const { dialog } = remote;
 class Config extends Component {
     constructor (props) {
         super(props);
+
         this.state = {
-            gethLogs: []
+            isDialogOpen: false
         };
     }
-    componentWillMount () {
-        const { settingsActions } = this.props;
-        settingsActions.getSettings('flags');
-        settingsActions.getSettings('geth');
-        settingsActions.getSettings('ipfs');
-    }
+
     componentWillUpdate (nextProps) {
         const { configFlags } = nextProps;
         const cancelRequest = configFlags && configFlags.get('requestStartupChange');
@@ -63,24 +59,8 @@ class Config extends Component {
         }
         settingsActions.setupGethIPCPath(target.value);
     };
-    handleGethCacheSize = (ev) => {
-        const { settingsActions, gethSettings, intl } = this.props;
-        const target = ev.target;
-        const currentCacheSize = gethSettings.get('cacheSize');
-        if (currentCacheSize === target.value || !target.value) {
-            return;
-        }
-        if (target.value < 512) {
-            this.setState({
-                cacheSizeError: intl.formatMessage(setupMessages.gethCacheSizeError)
-            });
-        } else {
-            this.setState({
-                cacheSizeError: null
-            }, () => {
-                settingsActions.setupGethCacheSize(target.value);
-            });
-        }
+    handleGethCacheSize = (event, index, value) => {
+        this.props.settingsActions.setupGethCacheSize(value);
     };
     handleIpfsPath = (ev) => {
         const { settingsActions } = this.props;
@@ -117,11 +97,19 @@ class Config extends Component {
         settingsActions.setupIPFSGatewayPort(target.value);
     };
     handleSubmit = () => {
-        const { settingsActions, gethSettings, ipfsSettings, eProcActions } = this.props;
-        const { datadir, ipcpath, cache } = gethSettings.toJS();
-        const { storagePath } = ipfsSettings.toJS();
-        settingsActions.saveSettings('geth', { datadir, ipcpath, cache });
-        settingsActions.saveSettings('ipfs', { storagePath });
+        const { settingsActions, gethSettings, defaultGethSettings, ipfsSettings,
+            defaultIpfsSettings, eProcActions, isAdvanced } = this.props;
+        let geth = gethSettings.toJS();
+        let ipfs = ipfsSettings.toJS();
+
+        if (!isAdvanced) {
+            geth = defaultGethSettings.toJS();
+            ipfs = defaultIpfsSettings.toJS();
+            settingsActions.resetSettings();
+        }
+
+        settingsActions.saveSettings('geth', geth);
+        settingsActions.saveSettings('ipfs', ipfs);
         settingsActions.saveSettings('flags', { requestStartupChange: false });
         eProcActions.startSync();
         this.context.router.push('setup/sync-status');
@@ -147,7 +135,7 @@ class Config extends Component {
 
     _sendReport = () => {};
     render () {
-        const { isAdvanced, intl, gethSettings, ipfsSettings } = this.props;
+        const { isAdvanced, intl, gethSettings, ipfsSettings, settingsActions } = this.props;
         const radioStyle = { marginTop: '10px', marginBottom: '10px' };
         const defaultSelected = !isAdvanced ? 'express' : 'advanced';
         return (
@@ -165,9 +153,7 @@ class Config extends Component {
               />
               /* eslint-enable */
             ]}
-            header={
-              <SetupHeader title={'AKASHA'} />
-            }
+            header={<SetupHeader title={'AKASHA'} />}
           >
             <h1 style={{ fontWeight: '400' }} className="col-xs-12" >
               {intl.formatMessage(setupMessages.firstTimeSetupTitle)}
@@ -201,20 +187,25 @@ class Config extends Component {
                 />
               </RadioButtonGroup>
               {isAdvanced &&
-                <AdvancedSetupForm
-                  intl={intl}
-                  style={this.props.style}
-                  isAdvanced={isAdvanced}
-                  gethSettings={gethSettings}
-                  ipfsSettings={ipfsSettings}
-                  cacheSizeError={this.state.cacheSizeError}
-                  handleGethDatadir={this.handleGethDatadir}
-                  handleGethIpc={this.handleGethIpc}
-                  handleGethCacheSize={this.handleGethCacheSize}
-                  handleIpfsPath={this.handleIpfsPath}
-                  handleIpfsApiPort={this.handleIpfsApiPort}
-                  handleIpfsGatewayPort={this.handleIpfsGatewayPort}
-                />
+                <div>
+                  <GethSettingsForm
+                    intl={intl}
+                    gethSettings={gethSettings}
+                    handleGethDatadir={this.handleGethDatadir}
+                    handleGethCacheSize={this.handleGethCacheSize}
+                  />
+                  <IpfsSettingsForm
+                    intl={intl}
+                    ipfsSettings={ipfsSettings}
+                    handleIpfsPath={this.handleIpfsPath}
+                  />
+                  <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                    <FlatButton
+                      label={intl.formatMessage(generalMessages.reset)}
+                      onClick={settingsActions.resetSettings}
+                    />
+                  </div>
+                </div>
               }
             </div>
           </PanelContainer>
@@ -225,11 +216,14 @@ class Config extends Component {
 Config.propTypes = {
     settingsActions: PropTypes.shape().isRequired,
     gethSettings: PropTypes.shape().isRequired,
+    defaultGethSettings: PropTypes.shape().isRequired,
     ipfsSettings: PropTypes.shape().isRequired,
+    defaultIpfsSettings: PropTypes.shape().isRequired,
     isAdvanced: PropTypes.bool.isRequired,
     configFlags: PropTypes.shape(),
     style: PropTypes.shape(),
     intl: PropTypes.shape(),
+    eProcActions: PropTypes.shape()
 };
 
 Config.contextTypes = {

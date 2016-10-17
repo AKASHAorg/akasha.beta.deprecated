@@ -70,7 +70,8 @@ class EProcActions {
             )
         });
 
-    getGethOptions = () =>
+    getGethOptions = () => {
+        dbg('get geth options');
         this.gethService.getOptions({
             options: {},
             onError: err => this.dispatch(appActionCreators.showError(err)),
@@ -78,6 +79,7 @@ class EProcActions {
                 externalProcessActionCreators.getGethOptionsSuccess(data)
             )
         });
+    };
 
     stopThrottledUpdate = () => {
         this.throttledSyncUpdate.cancel();
@@ -107,26 +109,56 @@ class EProcActions {
             const ipfsSettings = getState().settingsState.get('ipfs').toJS();
             this.ipfsService.start({
                 options: ipfsSettings,
-                onError: err => dispatch(externalProcessActionCreators.startIPFSError(err)),
-                onSuccess: data => dispatch(externalProcessActionCreators.startIPFSSuccess(data))
+                onError: (err, data) => {
+                    dispatch(externalProcessActionCreators.startIPFSError(err, data));
+                    this.resetIpfsBusyState();
+                },
+                onSuccess: (data) => {
+                    dispatch(externalProcessActionCreators.startIPFSSuccess(data));
+                    this.resetIpfsBusyState();
+                    this.getIpfsPorts();
+                }
             });
         });
     }
-    configIPFS = (config) => {
-        this.ipfsService.configIpfs(config).then((data) => {
-            if (!data.success) {
-                return this.dispatch(externalProcessActionCreators.configIpfsError(data.status));
-            }
-            return this.dispatch(externalProcessActionCreators.configIpfsSuccess(data));
-        }).catch(reason => this.dispatch(externalProcessActionCreators.configIpfsError(reason)));
+    getIpfsStatus = () =>
+        this.ipfsService.getStatus({
+            options: {},
+            onError: err => this.dispatch(externalProcessActionCreators.getIpfsStatusError(err)),
+            onSuccess: data => this.dispatch(
+                externalProcessActionCreators.getIpfsStatusSuccess(data)
+            )
+        });
+    getIpfsConfig = () => {
+        this.ipfsService.getConfig({
+            options: {},
+            onError: err => this.dispatch(externalProcessActionCreators.getIpfsConfigError(err)),
+            onSuccess: data => this.dispatch(
+                externalProcessActionCreators.getIpfsConfigSuccess(data)
+            )
+        });
     };
-
+    getIpfsPorts = () => {
+        this.ipfsService.getPorts({
+            options: {},
+            onError: err => this.dispatch(externalProcessActionCreators.getIpfsPortsError(err)),
+            onSuccess: data => this.dispatch(
+                externalProcessActionCreators.getIpfsPortsSuccess(data)
+            )
+        });
+    };
     stopIPFS = () => {
         this.dispatch(externalProcessActionCreators.stopIPFS());
         this.ipfsService.stop({
             options: {},
-            onError: err => this.dispatch(externalProcessActionCreators.stopIPFSError(err)),
-            onSuccess: data => this.dispatch(externalProcessActionCreators.stopIPFSSuccess(data))
+            onError: (err) => {
+                this.dispatch(externalProcessActionCreators.stopIPFSError(err));
+                this.resetIpfsBusyState();
+            },
+            onSuccess: (data) => {
+                this.dispatch(externalProcessActionCreators.stopIPFSSuccess(data));
+                this.resetIpfsBusyState();
+            }
         });
     };
 
@@ -156,6 +188,9 @@ class EProcActions {
     resetGethBusyState = () =>
         setTimeout(() => this.dispatch(externalProcessActionCreators.resetGethBusy()), 2000);
 
+    resetIpfsBusyState = () =>
+        setTimeout(() => this.dispatch(externalProcessActionCreators.resetIpfsBusy()), 2000);
+
     filterLogs = (data, timestamp) => {
         const logs = [...data.gethError, ...data.gethInfo]
             .filter(log => new Date(log.timestamp).getTime() > timestamp);
@@ -166,7 +201,8 @@ class EProcActions {
         this.gethService.getLogs({
             options: {},
             onError: err => this.dispatch(appActionCreators.showError(err)),
-            onSuccess: data => this.dispatch(externalProcessActionCreators.getGethLogs(this.filterLogs(data, timestamp)))
+            onSuccess: data =>
+                this.dispatch(externalProcessActionCreators.getGethLogs(this.filterLogs(data, timestamp)))
         });
 
     stopGethLogger = () => this.gethService.stopGethLogger();

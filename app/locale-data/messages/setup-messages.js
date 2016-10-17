@@ -26,6 +26,31 @@ const setupMessages = defineMessages({
         description: 'geth cache size input placeholder',
         defaultMessage: 'Geth cache size'
     },
+    gethNetworkId: {
+        id: 'app.setup.gethNetworkId',
+        description: 'geth network id placeholder',
+        defaultMessage: 'Geth network id'
+    },
+    gethAutodag: {
+        id: 'app.setup.gethAutodag',
+        description: 'geth autodag flag',
+        defaultMessage: 'Autodag'
+    },
+    gethFast: {
+        id: 'app.setup.gethFast',
+        description: 'geth fast flag',
+        defaultMessage: 'Fast'
+    },
+    gethMine: {
+        id: 'app.setup.gethMine',
+        description: 'geth mine flag',
+        defaultMessage: 'Mine'
+    },
+    gethMinerThreads: {
+        id: 'app.setup.gethMinerThreads',
+        description: 'number of threads used for mining',
+        defaultMessage: 'Miner threads'
+    },
     changeIfIpfsRunning: {
         id: 'app.setup.changeIfIpfsRunning',
         description: 'ipfs input field placeholder',
@@ -41,6 +66,16 @@ const setupMessages = defineMessages({
         description: 'error shown when user sets a cache size lower than 512mb',
         defaultMessage: 'Cache size should not be less than 512Mb'
     },
+    ipfsStoragePath: {
+        id: 'app.setup.ipfsStoragePath',
+        description: 'ipfs input field label',
+        defaultMessage: 'IPFS storage path'
+    },
+    changeIpfsStoragePath: {
+        id: 'app.setup.changeIpfsStoragePath',
+        description: 'ipfs input field label',
+        defaultMessage: 'Change IPFS directory'
+    },
     ipfsApiPort: {
         id: 'app.setup.ipfsApiPort',
         description: 'ipfs input field label',
@@ -50,6 +85,11 @@ const setupMessages = defineMessages({
         id: 'app.setup.ipfsGatewayPort',
         description: 'ipfs input field label',
         defaultMessage: 'IPFS gateway port'
+    },
+    ipfsSwarmPort: {
+        id: 'app.setup.ipfsSwarmPort',
+        description: 'ipfs input field label',
+        defaultMessage: 'IPFS swarm port'
     },
     firstTimeSetupTitle: {
         id: 'app.setup.firstTimeSetupTitle',
@@ -212,6 +252,18 @@ const setupMessages = defineMessages({
         id: 'app.setup.identityRegistered',
         description: 'panel title when identity registered',
         defaultMessage: 'Identity Registered!'
+    },
+    saveGethSettingsSuccess: {
+        id: 'app.setup.saveGethSettingsSuccess',
+        description: 'Geth settings successfully saved',
+        defaultMessage: `You have successfully saved your settings. You need to restart your geth
+                        client for your changes to be applied.`
+    },
+    saveIpfsSettingsSuccess: {
+        id: 'app.setup.saveIpfsSettingsSuccess',
+        description: 'IPFS settings successfully saved',
+        defaultMessage: `You have successfully saved your settings. You need to restart your IPFS
+                        client for your changes to be applied.`
     }
 });
 

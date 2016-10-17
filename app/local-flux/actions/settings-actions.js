@@ -13,7 +13,8 @@ class SettingsActions {
         return settingsActions;
     }
     // save app level settings
-    saveSettings = (table, settings) =>
+    saveSettings = (table, settings) => {
+        this.dispatch(settingsActionCreators.saveSettings(table));
         this.settingsService.saveSettings({
             options: { table, settings },
             onSuccess: (data, tabl) => this.dispatch(
@@ -23,15 +24,24 @@ class SettingsActions {
                 settingsActionCreators.saveSettingsError(error, tabl)
             ),
         });
+    };
 
-    getSettings = table =>
+    getSettings = (table) => {
+        this.dispatch(settingsActionCreators.startFetchingSettings(table));
         this.dispatch((dispatch) => {
             this.settingsService.getSettings({
                 options: { table },
-                onSuccess: data => dispatch(settingsActionCreators.getSettingsSuccess(data)),
-                onError: err => dispatch(settingsActionCreators.getSettingsError(err))
+                onSuccess: (data) => {
+                    dispatch(settingsActionCreators.getSettingsSuccess(data, table));
+                    dispatch(settingsActionCreators.finishFetchingSettings(table));
+                },
+                onError: (err) => {
+                    dispatch(settingsActionCreators.getSettingsError(err, table));
+                    dispatch(settingsActionCreators.finishFetchingSettings(table));
+                }
             });
         });
+    };
 
     retrySetup = (isAdvanced) => {
         this.dispatch(settingsActionCreators.retrySetup(isAdvanced));
@@ -56,7 +66,10 @@ class SettingsActions {
     };
     setupIPFSGatewayPort = (port) => {
         this.dispatch(settingsActionCreators.setupIPFSGatewayPort(port));
-    }
+    };
+    resetSettings = () => {
+        this.dispatch(settingsActionCreators.resetSettings());
+    };
     // save user level settings
     saveUserSettings = () => {}
     getUserSettings = () => {}

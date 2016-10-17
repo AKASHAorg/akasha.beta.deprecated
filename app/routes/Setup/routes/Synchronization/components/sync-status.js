@@ -6,6 +6,9 @@ import { SyncProgressLoader } from 'shared-components';
 class SyncStatus extends Component {
 
     renderCounter(current, total, message) {
+        if (!current || !total) {
+          return null;
+        }
         return <div style={{ fontSize: '16px' }} >
           {message &&
             <span style={{ marginRight: '10px' }}>
@@ -55,10 +58,8 @@ class SyncStatus extends Component {
                 </div>
                 {this.renderCounter(blockProgress.currentBlock, blockProgress.highestBlock,
                   synchronizingMessage)}
-                {(!!gethSyncStatus.pulledStates || !!gethSyncStatus.knownStates) &&
-                  this.renderCounter(gethSyncStatus.pulledStates, gethSyncStatus.knownStates,
-                    processingMessage)
-                }
+                {this.renderCounter(gethSyncStatus.pulledStates, gethSyncStatus.knownStates,
+                  processingMessage)}
               </div>
             );
         } else {
@@ -96,10 +97,8 @@ class SyncStatus extends Component {
                     </div>
                     {this.renderCounter(gethSyncStatus.currentBlock, gethSyncStatus.highestBlock,
                       synchronizingMessage)}
-                    {(!!gethSyncStatus.pulledStates || !!gethSyncStatus.knownStates) &&
-                      this.renderCounter(gethSyncStatus.pulledStates, gethSyncStatus.knownStates,
-                        processingMessage)
-                    }
+                    {this.renderCounter(gethSyncStatus.pulledStates, gethSyncStatus.knownStates,
+                      processingMessage)}
                   </div>
                 );
             } else {
