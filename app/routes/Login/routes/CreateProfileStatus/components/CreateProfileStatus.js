@@ -4,6 +4,7 @@ import * as Colors from 'material-ui/styles/colors';
 import { SvgIcon, RaisedButton } from 'material-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { PanelContainer } from 'shared-components';
+import { generalMessages, setupMessages } from 'locale-data/messages';
 
 class CreateProfileStatus extends Component {
     constructor (props) {
@@ -31,19 +32,49 @@ class CreateProfileStatus extends Component {
 
         switch (nextAction) {
             case 'createEthAddress':
-                description = <div>Creating local ethereum key</div>;
+                description = (
+                  <FormattedMessage
+                    id="app.createProfileStatus.createEthAddress"
+                    description="Message status when generating eth key"
+                    defaultMessage="Creating local ethereum key"
+                  />
+                );
                 break;
             case 'requestFundFromFaucet':
-                description = <div>Receiving ethers from AKASHA</div>;
+                description = (
+                  <FormattedMessage
+                    id="app.createProfileStatus.requestingEthers"
+                    description="Message status when request to faucet started"
+                    defaultMessage="Receiving ethers from AKASHA"
+                  />
+                );
                 break;
             case 'listenFaucetTx':
-                description = <div>Waiting for transaction to be mined</div>;
+                description = (
+                  <FormattedMessage
+                    id="app.createProfileStatus.waitingFaucetTransactionMined"
+                    description="Message status when waiting for faucet transaction to be mined"
+                    defaultMessage="Waiting for faucet transaction to be mined"
+                  />
+                );
                 break;
             case 'listenPublishTx':
-                description = <div>Waiting for publish transaction to be mined</div>;
+                description = (
+                  <FormattedMessage
+                    id="app.createProfileStatus.waitingPublishTransactionMined"
+                    description="Message status when waiting for publish transaction to be mined"
+                    defaultMessage="Waiting for publish transaction to be mined"
+                  />
+                );
                 break;
             default:
-                description = <div>Registering...</div>;
+                description = (
+                  <FormattedMessage
+                    id="app.createProfileStatus.registering"
+                    description="Message status when registering"
+                    defaultMessage="Registering..."
+                  />
+                );
                 break;
         }
 
@@ -131,7 +162,7 @@ class CreateProfileStatus extends Component {
         profileActions.clearErrors();
     }
     render () {
-        const { style, tempProfile } = this.props;
+        const { style, tempProfile, intl } = this.props;
         const { nextAction } = tempProfile.get('currentStatus');
         const paraStyle = { marginTop: '20px' };
         const errors = this.state.errors;
@@ -166,14 +197,14 @@ class CreateProfileStatus extends Component {
                   /* eslint-disable */
                   <RaisedButton
                     key="abort-register"
-                    label="Abort"
+                    label={intl.formatMessage(generalMessages.abort)}
                     onClick={this._handleProfileAbortion}
                     disabled={(nextAction === 'listenPublishTx')}
                     style={{ marginRight: 8 }}
                   />,
                   <RaisedButton
                     key="retry-step"
-                    label="Retry Step"
+                    label={intl.formatMessage(setupMessages.retryStep)}
                     onClick={this._handleStepRetry}
                     primary
                     disabled={(errors.size === 0 || errors.length === 0)}
@@ -198,7 +229,13 @@ class CreateProfileStatus extends Component {
                 </p>
                 <div>
                   <div style={{ display: 'inline-block', verticalAlign: 'top' }}>
-                    <h4>Current Status:</h4>
+                    <h4>
+                      <FormattedMessage
+                        id="app.createProfileStatus.currentStatus"
+                        description="text title"
+                        defaultMessage="Current Status"
+                      />:
+                    </h4>
                   </div>
                   <div
                     style={{
@@ -231,12 +268,7 @@ CreateProfileStatus.propTypes = {
     tempProfile: PropTypes.shape(),
     style: PropTypes.shape(),
     intl: PropTypes.shape(),
-    minedTransactions: PropTypes.shape(),
-    loggedProfile: PropTypes.shape(),
-    pendingTransactions: PropTypes.shape(),
     transactionActions: PropTypes.shape(),
-    errors: PropTypes.shape(),
-    loginRequested: PropTypes.bool
 };
 
 CreateProfileStatus.contextTypes = {

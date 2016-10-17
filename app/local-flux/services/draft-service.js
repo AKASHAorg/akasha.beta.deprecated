@@ -1,7 +1,5 @@
-import debug from 'debug';
 import entriesDB from './db/entry';
 
-const dbg = debug('App:DraftService:');
 
 class DraftService {
     constructor () {
@@ -11,17 +9,15 @@ class DraftService {
         entriesDB.transaction('rw', entriesDB.drafts, () => {
             if (partialDraft.id) {
                 return entriesDB.drafts.update(partialDraft.id, partialDraft).then((updated) => {
-                    dbg('draft ', partialDraft.id, 'updated');
                     if (updated) {
                         return partialDraft;
                     }
                     return null;
                 });
             }
-            return entriesDB.drafts.add(partialDraft).then((draftId) => {
-                dbg('draft with id', draftId, 'created');
-                return partialDraft;
-            });
+            return entriesDB.drafts.add(partialDraft).then(() =>
+                partialDraft
+            );
         });
     getAllDrafts = username =>
         entriesDB.transaction('rw', entriesDB.drafts, () =>
@@ -30,7 +26,6 @@ class DraftService {
                      .equals(username)
                      .toArray()
                      .then((drafts) => {
-                         dbg('getAllDrafts', drafts);
                          const convDrafts = drafts.map(draft =>
                              Object.assign({}, draft)
                          );
@@ -43,13 +38,12 @@ class DraftService {
         )
     // get resource by id (drafts or entries);
     getById = (table, id) =>
-        entriesDB.transaction('r', entriesDB[table], () => {
-            dbg('getById from', table, 'with id', id);
-            return entriesDB[table]
-                    .where('id')
-                    .equals(parseInt(id, 10))
-                    .first();
-        });
+        entriesDB.transaction('r', entriesDB[table], () =>
+            entriesDB[table]
+                .where('id')
+                .equals(parseInt(id, 10))
+                .first()
+        );
 }
 
 export { DraftService };

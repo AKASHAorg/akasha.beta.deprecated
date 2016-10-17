@@ -1,7 +1,4 @@
 import Dexie from 'dexie';
-import debug from 'debug';
-
-const dbg = debug('App:settingsDB');
 
 const settingsDB = new Dexie('settings');
 settingsDB.version(1).stores({
@@ -9,13 +6,6 @@ settingsDB.version(1).stores({
     ipfs: '&name, ipfsPath',
     flags: '&name, requestStartupChange',
     user: '&username, autoCrashReports'
-});
-
-settingsDB.geth.hook('creating', (primaryKey, obj) => {
-    dbg('creating.. ', obj);
-});
-settingsDB.ipfs.hook('creating', (primaryKey, obj) => {
-    dbg('creating.. ', obj);
 });
 
 settingsDB.open();

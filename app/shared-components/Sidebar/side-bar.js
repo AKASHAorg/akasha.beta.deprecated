@@ -1,6 +1,6 @@
 import React, { PropTypes, Component } from 'react';
 import { connect } from 'react-redux';
-import { AppActions, ProfileActions, EntryActions } from 'local-flux';
+import { AppActions, ProfileActions, EntryActions, DraftActions } from 'local-flux';
 import {
     ProfileIcon,
     AddEntryIcon,
@@ -12,24 +12,27 @@ import {
     LogoIcon } from '../svg';
 
 class SideBar extends Component {
+    componentWillMount () {
+        const { profileActions, loggedProfile } = this.props;
+        profileActions.getProfileBalance(loggedProfile.get('address'));
+    }
     _handleNewEntry = () => {
-        const { entryActions, entryState, profileState, appActions } = this.props;
+        const { draftActions, entryState, profileState, appActions } = this.props;
         const entriesCount = entryState.get('entriesCount');
         const draftsCount = entryState.get('draftsCount');
         const loggedProfile = profileState.get('loggedProfile');
 
-        if (entriesCount > 0 || draftsCount > 0) {
+        if (entriesCount > 0 && draftsCount > 0) {
             appActions.showPanel({ name: 'newEntry', overlay: true });
-            entryActions.getDrafts(loggedProfile.get('userName'));
+            draftActions.getDrafts(loggedProfile.get('userName'));
         } else {
             appActions.hidePanel();
             this.context.router.push(`/${loggedProfile.get('userName')}/draft/new`);
         }
     };
     _handleNavigation = (to) => {
-        const { profileState, appActions } = this.props;
-        const loggedUser = profileState.get('loggedProfile');
-        const basePath = loggedUser.get('userName');
+        const { appActions, loggedProfile } = this.props;
+        const basePath = loggedProfile.get('userName');
         appActions.hidePanel();
         if (!to) {
             // navigate to index route
@@ -41,7 +44,7 @@ class SideBar extends Component {
         this.props.appActions.showPanel(panelName);
     };
     render () {
-        const { style } = this.props;
+        const { style, loggedProfile } = this.props;
         return (
           <div style={style} >
             <div style={{ flexGrow: 1, padding: '16px' }} >
@@ -49,6 +52,7 @@ class SideBar extends Component {
                 onClick={() => this._handlePanelShow({ name: 'userProfile', overlay: true })}
               />
             </div>
+            <div>{`${loggedProfile.get('balance')} ETH`}</div>
             <div style={{ flexGrow: 1, padding: '16px' }} >
               <AddEntryIcon onClick={this._handleNewEntry} tooltip="Add new entry" />
               <SearchIcon onClick={this._handleSearch} tooltip="Search" />
@@ -72,16 +76,14 @@ class SideBar extends Component {
     }
 }
 SideBar.propTypes = {
-    style: PropTypes.object,
-    iconStyle: PropTypes.object,
-    innerStyle: PropTypes.object,
-    viewBox: PropTypes.string,
-    color: PropTypes.string,
-    appActions: PropTypes.object,
-    profileState: PropTypes.object,
-    profileActions: PropTypes.object,
-    entryActions: PropTypes.object,
-    entryState: PropTypes.object
+    style: PropTypes.shape(),
+    appActions: PropTypes.shape(),
+    profileState: PropTypes.shape(),
+    profileActions: PropTypes.shape(),
+    entryActions: PropTypes.shape(),
+    draftActions: PropTypes.shape(),
+    entryState: PropTypes.shape(),
+    loggedProfile: PropTypes.shape()
 };
 
 SideBar.contextTypes = {
@@ -109,11 +111,15 @@ export default connect(
     state => ({
         panelState: state.panelState,
         profileState: state.profileState,
-        entryState: state.entryState
+        entryState: state.entryState,
+        draftState: state.draftState,
+        loggedProfile: state.profileState.find(profile =>
+            profile.get('address') === state.profileState.getIn(['loggedProfile', 'profile']))
     }),
     dispatch => ({
         appActions: new AppActions(dispatch),
         profileActions: new ProfileActions(dispatch),
-        entryActions: new EntryActions(dispatch)
+        entryActions: new EntryActions(dispatch),
+        draftActions: new DraftActions(dispatch)
     })
 )(SideBar);

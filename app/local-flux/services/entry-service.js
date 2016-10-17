@@ -1,4 +1,3 @@
-import debug from 'debug';
 import entriesDB from './db/entry';
 import BaseService from './base-service';
 
@@ -7,7 +6,6 @@ import { generateEntries } from './faker-data';
 /** ******************/
 
 const Channel = window.Channel;
-const dbg = debug('App:EntryService:');
 
 
 /**
@@ -45,7 +43,6 @@ class EntryService extends BaseService {
     // get resource by id (drafts or entries);
     getById = ({ table, id, onSuccess, onError }) =>
         entriesDB.transaction('r', entriesDB[table], () => {
-            dbg('getById from', table, 'with id', id);
             return entriesDB[table]
                     .where('id')
                     .equals(parseInt(id, 10))
@@ -59,16 +56,13 @@ class EntryService extends BaseService {
             let entries = [];
             if (sortBy === 'rating') {
                 entries = generateEntries(1);
-                dbg('getting entries by rating', entries);
                 return resolve(entries);
             }
             if (sortBy === 'top') {
                 entries = generateEntries(3);
-                dbg('getting top entries', entries);
                 return resolve(entries);
             }
             entries = generateEntries(2);
-            dbg('getting entries by', sortBy, entries);
             return resolve(entries);
         });
         // entriesDB.transaction('r', entriesDB.drafts, () => {
@@ -81,21 +75,17 @@ class EntryService extends BaseService {
         // });
     createSavedEntry = ({ username, entry, onError, onSuccess }) =>
         entriesDB.transaction('rw', entriesDB.savedEntries, () => {
-            entriesDB.savedEntries.add({ username, ...entry.toJS() }).then((entryId) => {
-                dbg('new savedEntry created with id', entryId);
-                return entry;
-            });
+            entriesDB.savedEntries.add({ username, ...entry.toJS() }).then(() => entry);
         })
         .then(() => onSuccess(entry))
         .catch(reason => onError(reason));
 
     getSavedEntries = ({ username, onError, onSuccess }) =>
-        entriesDB.transaction('r', entriesDB.savedEntries, () => {
-            dbg('getting saved entries for username ', username);
-            return entriesDB.savedEntries.where('username')
-                                         .equals(username)
-                                         .toArray();
-        })
+        entriesDB.transaction('r', entriesDB.savedEntries, () =>
+            entriesDB.savedEntries.where('username')
+                .equals(username)
+                .toArray()
+        )
         .then(entries => onSuccess(entries))
         .catch(reason => onError(reason));
 
