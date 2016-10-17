@@ -1,8 +1,6 @@
-import debug from 'debug';
 import { ProfileService, AuthService, RegistryService, TransactionService } from '../services';
 import { profileActionCreators } from './action-creators';
 
-const dbg = debug('App:ProfileActions:');
 let profileActions = null;
 
 class ProfileActions {
@@ -18,7 +16,6 @@ class ProfileActions {
         return profileActions;
     }
     login = ({ account, password, rememberTime }) => {
-        dbg('logging in with:', account, 'for', rememberTime, 'minutes');
         password = new TextEncoder('utf-8').encode(password);
         this.dispatch(profileActionCreators.login());
         this.authService.login({
@@ -58,19 +55,16 @@ class ProfileActions {
      */
 
     createTempProfile = (profileData) => {
-        dbg('creating temp profile', profileData);
         this.dispatch(profileActionCreators.createTempProfile(profileData));
         this.registryService.createTempProfile({
             profileData,
             currentStatus: {
                 nextAction: 'createEthAddress'
             },
-            onSuccess: (data) => {
-                dbg('createTempProfileSuccess', data);
+            onSuccess: () => {
                 this.dispatch(profileActionCreators.createTempProfileSuccess(profileData));
             },
             onError: (error) => {
-                dbg('createTempProfileError', error);
                 this.dispatch(
                     profileActionCreators.createTempProfileError(error)
                 );
@@ -92,17 +86,14 @@ class ProfileActions {
         if (!tempProfile.get('address') && !currentStatus.get('ethAddressRequested')) {
             this.dispatch(profileActionCreators.createEthAddress());
             this.dispatch((dispatch) => {
-                dbg('creating eth address for password', password);
                 this.authService.createEthAddress({
                     password,
                     onSuccess: (data) => {
-                        dbg('createEthAddressSuccess', data);
                         this.updateTempProfile(data, { nextAction: 'requestFundFromFaucet' }, () => {
                             dispatch(profileActionCreators.createEthAddressSuccess(data));
                         });
                     },
                     onError: (error) => {
-                        dbg('createEthAddressError', error);
                         dispatch(profileActionCreators.createEthAddressError(error));
                     }
                 });
@@ -122,11 +113,9 @@ class ProfileActions {
         if (address && !tempProfile.getIn(['currentStatus', 'faucetRequested'])) {
             this.dispatch(profileActionCreators.requestFundFromFaucet());
             this.dispatch((dispatch) => {
-                dbg('requesting funds for address', address);
                 this.authService.requestEther({
                     address,
                     onSuccess: (data) => {
-                        dbg('requestFundFromFaucetSuccess', data);
                         const newStatus = tempProfile.get('currentStatus').merge({
                             nextAction: 'listenFaucetTx',
                             faucetTx: data.tx
@@ -136,7 +125,6 @@ class ProfileActions {
                         });
                     },
                     onError: (error) => {
-                        dbg('requestFundFromFaucetError', error);
                         dispatch(profileActionCreators.requestFundFromFaucetError(error));
                     }
                 });
@@ -186,7 +174,7 @@ class ProfileActions {
         if (backgroundImage.length > 0) {
             ipfs.backgroundImage = backgroundImage[0];
         }
-        // dbg('sending ipfs object avatar', ipfs.avatar.slice(0));
+
         if (isLoggedIn && !publishRequested) {
             this.dispatch(profileActionCreators.publishProfile());
             this.dispatch((dispatch) => {
@@ -196,7 +184,6 @@ class ProfileActions {
                     ipfs,
                     gas,
                     onSuccess: (data) => {
-                        dbg('publishProfileSuccess', data);
                         const newStatus = tempProfile.get('currentStatus').merge({
                             nextAction: 'listenPublishTx',
                             publishTx: data.tx
@@ -206,13 +193,11 @@ class ProfileActions {
                         });
                     },
                     onError: (error) => {
-                        dbg('publishProfileError', error);
                         dispatch(profileActionCreators.publishProfileError(error));
                     }
                 });
             });
         } else if (!loginRequested) {
-            dbg('logging in!');
             this.login({
                 account: tempProfile.get('address'),
                 password: tempProfile.get('password'),
@@ -284,6 +269,16 @@ class ProfileActions {
         }
     };
 
+    getProfileBalance = (profileKey, unit) =>
+        this.profileService.getProfileBalance({
+            options: {
+                profile: profileKey,
+                unit
+            },
+            onSuccess: data => this.dispatch(profileActionCreators.getProfileBalanceSuccess(data)),
+            onError: error => this.dispatch(profileActionCreators.getProfileBalanceError(error))
+        });
+
     clearLoggedProfile = () => {
         this.authService.deleteLoggedProfile({
             onSuccess: () => this.dispatch(profileActionCreators.deleteLoggedProfileSuccess()),
@@ -303,7 +298,7 @@ class ProfileActions {
             if (loggedProfile.get('account')) {
                 return cb(null, true);
             }
-            this.authService.getLoggedProfile({
+            return this.authService.getLoggedProfile({
                 onSuccess: (data) => {
                     if (data && data.account !== '') {
                         return cb(null, true);

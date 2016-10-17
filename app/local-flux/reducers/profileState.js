@@ -26,6 +26,7 @@ const Profile = Record({
     username: '',
     avatar: null,
     backgroundImage: [],
+    balance: 0,
     about: null,
     links: [],
     profile: null,
@@ -66,6 +67,11 @@ const profileState = createReducer(initialState, {
         }),
     [types.LOGIN_SUCCESS]: (state, { profile }) =>
         state.merge({ loggedProfile: new LoggedProfile(profile) }),
+
+    [types.GET_LOGGED_PROFILE_SUCCESS]: (state, { profile }) =>
+        state.merge({
+            loggedProfile: new LoggedProfile(profile)
+        }),
 
     [types.LOGIN_ERROR]: (state, { error }) =>
         state.merge({
@@ -236,6 +242,15 @@ const profileState = createReducer(initialState, {
         state.merge({
             errors: state.get('errors').push(new ErrorRecord(error))
         }),
+
+    [types.GET_PROFILE_BALANCE_SUCCESS]: (state, { data }) => {
+        const loggedProfileAccount = state.getIn(['loggedProfile', 'account']);
+        const profileIndex = state.get('profiles').findIndex(prf => prf.ethAddress === loggedProfileAccount);
+        return state.mergeIn(['profiles', profileIndex], {
+            balance: data.value
+        });
+    },
+
     [types.CLEAR_PROFILE_ERRORS]: state =>
         state.merge({
             errors: new List()

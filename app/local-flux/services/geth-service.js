@@ -1,8 +1,6 @@
-import debug from 'debug';
 import BaseService from './base-service';
 
 const Channel = window.Channel;
-const dbg = debug('App:GethService:');
 
 /**
  * Default managed channels: [startService, stopService, status]
@@ -30,8 +28,6 @@ class GethService extends BaseService {
             }
         });
 
-        dbg('Retrieving Geth status', clientChannel);
-
         this.registerListener(
             clientChannel,
             this.createListener(onError, onSuccess, clientChannel.channelName)
@@ -44,7 +40,6 @@ class GethService extends BaseService {
     stop = ({ options = {}, onError = () => {}, onSuccess }) => {
         const serverChannel = Channel.server.geth.stopService;
         const clientChannel = Channel.client.geth.stopService;
-        dbg('Stopping Geth service on channel:', clientChannel);
         this.registerListener(
             clientChannel,
             this.createListener(onError, onSuccess, clientChannel.channelName)
@@ -111,8 +106,6 @@ class GethService extends BaseService {
     getStatus = ({ options = {}, onError = () => {}, onSuccess }) => {
         const serverChannel = Channel.server.geth.status;
         const clientChannel = Channel.client.geth.status;
-
-        dbg('Retrieving Geth status', clientChannel);
 
         this.registerListener(
             clientChannel,

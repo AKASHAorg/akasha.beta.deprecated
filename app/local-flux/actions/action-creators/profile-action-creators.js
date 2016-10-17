@@ -227,6 +227,21 @@ export function deleteLoggedProfileError (error) {
     };
 }
 
+export function getProfileBalanceSuccess (data) {
+    return {
+        type: types.GET_PROFILE_BALANCE_SUCCESS,
+        data
+    };
+}
+
+export function getProfileBalanceError (error) {
+    error.code = 'GPBE01';
+    return {
+        types: types.GET_PROFILE_BALANCE_ERROR,
+        error
+    };
+}
+
 export function clearErrors () {
     return {
         type: types.CLEAR_PROFILE_ERRORS
