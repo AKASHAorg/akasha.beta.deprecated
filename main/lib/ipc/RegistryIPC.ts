@@ -126,16 +126,18 @@ class RegistryIPC extends ModuleEmitter {
             channels.server[this.MODULE_NAME].registerProfile,
             (event: any, data: ProfileCreateRequest) => {
                 let response: ProfileCreateResponse;
+                let newData = Object.assign({}, data);
+                data = null;
                 profileModule
                     .helpers
-                    .create(data.ipfs)
+                    .create(newData.ipfs)
                     .then((ipfsHash: string) => {
                         return contracts.instance
                             .registry
-                            .register(data.username, ipfsHash, data.gas);
+                            .register(newData.username, ipfsHash, newData.gas);
                     })
                     .then((txData: any) => {
-                        return userModule.auth.signData(txData, data.token);
+                        return userModule.auth.signData(txData, newData.token);
                     })
                     .then((tx: string) => {
                         response = mainResponse({ tx });
@@ -144,11 +146,12 @@ class RegistryIPC extends ModuleEmitter {
                         response = mainResponse({
                             error: {
                                 message: error.message,
-                                from: { username: data.username }
+                                from: { username: newData.username }
                             }
                         });
                     })
                     .finally(() => {
+                        newData = null;
                         this.fireEvent(
                             channels.client[this.MODULE_NAME].registerProfile,
                             response,

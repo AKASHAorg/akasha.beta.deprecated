@@ -23,7 +23,7 @@ const create = (data: IpfsProfileCreateRequest) => {
         media = keys.map((media: string) => {
             return IpfsConnector.getInstance()
                 .api
-                .constructObjLink(Buffer.from(data.backgroundImage[media].src, 'base64'), true);
+                .constructObjLink(Buffer.from(data.backgroundImage[media].src), true);
         });
     }
     return Promise.all(media)
@@ -51,7 +51,7 @@ const create = (data: IpfsProfileCreateRequest) => {
             if (data.avatar) {
                 return IpfsConnector.getInstance()
                     .api
-                    .constructObjLink(data.avatar, true);
+                    .constructObjLink(Buffer.from(data.avatar), true);
             }
             return Promise.resolve('');
         }).then((hash: any) => {
@@ -70,6 +70,7 @@ const create = (data: IpfsProfileCreateRequest) => {
                 returned.about = hash;
             }
             console.timeEnd('creating_ipfs');
+            console.log(returned);
             return IpfsConnector.getInstance().api.add(returned);
         });
 };
