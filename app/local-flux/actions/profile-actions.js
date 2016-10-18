@@ -15,6 +15,7 @@ class ProfileActions {
         this.dispatch = dispatch;
         return profileActions;
     }
+
     login = ({ account, password, rememberTime }) => {
         password = new TextEncoder('utf-8').encode(password);
         this.dispatch(profileActionCreators.login());
@@ -158,19 +159,19 @@ class ProfileActions {
             avatar,
             about,
             links,
-            backgroundImage } = tempProfile;
+            backgroundImage
+        } = tempProfile;
         const ipfs = {
             firstName,
             lastName,
-            about
+            about,
+            avatar
         };
 
         if (links) {
             ipfs.links = links;
         }
-        if (avatar) {
-            ipfs.avatar = Array.from(avatar);
-        }
+
         if (backgroundImage.length > 0) {
             ipfs.backgroundImage = backgroundImage[0];
         }

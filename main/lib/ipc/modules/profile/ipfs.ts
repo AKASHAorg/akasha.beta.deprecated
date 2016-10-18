@@ -7,7 +7,6 @@ import * as Promise from 'bluebird';
  * @returns {Thenable<U>|PromiseLike<TResult>|Promise<TResult>|Bluebird<U>}
  */
 const create = (data: IpfsProfileCreateRequest) => {
-    console.time('creating_ipfs');
     const returned: any = {
         firstName: data.firstName,
         lastName: data.lastName,
@@ -23,7 +22,7 @@ const create = (data: IpfsProfileCreateRequest) => {
         media = keys.map((media: string) => {
             return IpfsConnector.getInstance()
                 .api
-                .constructObjLink(Buffer.from(data.backgroundImage[media].src), true);
+                .constructObjLink(data.backgroundImage[media].src, true);
         });
     }
     return Promise.all(media)
@@ -51,7 +50,7 @@ const create = (data: IpfsProfileCreateRequest) => {
             if (data.avatar) {
                 return IpfsConnector.getInstance()
                     .api
-                    .constructObjLink(Buffer.from(data.avatar), true);
+                    .constructObjLink(data.avatar, true);
             }
             return Promise.resolve('');
         }).then((hash: any) => {
@@ -69,8 +68,6 @@ const create = (data: IpfsProfileCreateRequest) => {
             if (hash) {
                 returned.about = hash;
             }
-            console.timeEnd('creating_ipfs');
-            console.log(returned);
             return IpfsConnector.getInstance().api.add(returned);
         });
 };
@@ -88,13 +85,13 @@ const getShortProfile = (hash: string, resolveAvatar = true) => {
     return IpfsConnector.getInstance().api.get(hash)
         .then((schema: ProfileModel) => {
             let resolved: any = Object.assign({}, schema);
-            console.log(resolved);
+            console.log(schema);
             if (schema.avatar && resolveAvatar) {
                 return IpfsConnector.getInstance()
                     .api
                     .resolve(`${hash}/avatar`)
                     .then((data: Buffer) => {
-                        resolved.avatar = Buffer.from(data);
+                        resolved.avatar = data;
                         return resolved;
                     });
             }

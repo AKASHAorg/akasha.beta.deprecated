@@ -7,9 +7,9 @@ function imageCreator (arrayBuffer, { mimeType = 'image/jpg', width = 100, heigh
     const blobFile = new Blob([arrayBuffer], { type: mimeType });
     const imageUrl = window.URL.createObjectURL(blobFile);
     const image = new Image(width, height);
-    image.onload = function onload () {
-        window.URL.revokeObjectURL(imageUrl);
-    };
+    //image.onload = function onload () {
+     //   window.URL.revokeObjectURL(imageUrl);
+    //};
     image.src = imageUrl;
     return imageUrl;
 }
