@@ -3,7 +3,6 @@ const ipfs_connector_1 = require('@akashaproject/ipfs-connector');
 const records_1 = require('../models/records');
 const Promise = require('bluebird');
 const create = (data) => {
-    console.time('creating_ipfs');
     const returned = {
         firstName: data.firstName,
         lastName: data.lastName,
@@ -19,7 +18,7 @@ const create = (data) => {
         media = keys.map((media) => {
             return ipfs_connector_1.IpfsConnector.getInstance()
                 .api
-                .constructObjLink(Buffer.from(data.backgroundImage[media].src), true);
+                .constructObjLink(data.backgroundImage[media].src, true);
         });
     }
     return Promise.all(media)
@@ -46,7 +45,7 @@ const create = (data) => {
         if (data.avatar) {
             return ipfs_connector_1.IpfsConnector.getInstance()
                 .api
-                .constructObjLink(Buffer.from(data.avatar), true);
+                .constructObjLink(data.avatar, true);
         }
         return Promise.resolve('');
     }).then((hash) => {
@@ -64,8 +63,6 @@ const create = (data) => {
         if (hash) {
             returned.about = hash;
         }
-        console.timeEnd('creating_ipfs');
-        console.log(returned);
         return ipfs_connector_1.IpfsConnector.getInstance().api.add(returned);
     });
 };
@@ -76,13 +73,13 @@ const getShortProfile = (hash, resolveAvatar = true) => {
     return ipfs_connector_1.IpfsConnector.getInstance().api.get(hash)
         .then((schema) => {
         let resolved = Object.assign({}, schema);
-        console.log(resolved);
+        console.log(schema);
         if (schema.avatar && resolveAvatar) {
             return ipfs_connector_1.IpfsConnector.getInstance()
                 .api
                 .resolve(`${hash}/avatar`)
                 .then((data) => {
-                resolved.avatar = Buffer.from(data);
+                resolved.avatar = data;
                 return resolved;
             });
         }
