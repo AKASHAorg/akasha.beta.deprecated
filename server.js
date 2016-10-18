@@ -21,7 +21,7 @@ const wdm = webpackDevMiddleware(compiler, {
 
 app.use(wdm);
 
-// app.use(webpackHotMiddleware(compiler));
+app.use(webpackHotMiddleware(compiler));
 
 const server = app.listen(PORT, 'localhost', err => {
     if (err) {
