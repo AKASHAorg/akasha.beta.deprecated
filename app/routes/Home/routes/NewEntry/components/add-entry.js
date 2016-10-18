@@ -62,12 +62,12 @@ class NewEntryPage extends Component {
         console.log(content, 'rawContent');
         console.log(contentState, 'contentState');
 
-        if (params.draftId !== 'new') {
-            const draftId = parseInt(params.draftId, 10);
-            entryActions.updateDraftThrottled({ id: draftId, content, title, wordCount });
-        } else {
-            entryActions.createDraft(loggedProfile.get('userName'), { content, title, wordCount });
-        }
+        // if (params.draftId !== 'new') {
+        //     const draftId = parseInt(params.draftId, 10);
+        //     entryActions.updateDraftThrottled({ id: draftId, content, title, wordCount });
+        // } else {
+        //     entryActions.createDraft(loggedProfile.get('userName'), { content, title, wordCount });
+        // }
         if (typeof cb === 'function') {
             cb();
         }

@@ -5,7 +5,7 @@ import { SvgIcon, RaisedButton } from 'material-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { PanelContainer } from 'shared-components';
 import { generalMessages, setupMessages } from 'locale-data/messages';
-
+import { is } from 'immutable';
 class CreateProfileStatus extends Component {
     constructor (props) {
         super(props);
@@ -23,7 +23,14 @@ class CreateProfileStatus extends Component {
         if (nextProps.tempProfile.get('username') === '') {
             return this.context.router.push('/authenticate');
         }
-        return this.resumeProfileCreation(nextProps);
+        const shouldResume =
+            !is(nextProps.tempProfile.get('currentStatus'), this.props.tempProfile.get('currentStatus')) ||
+            !is(nextProps.minedTransactions, this.props.minedTransactions) ||
+            !is(nextProps.pendingTransactions, this.props.pendingTransactions) ||
+            !is(nextProps.loggedProfile, this.props.loggedProfile);
+        if (shouldResume) {
+            return this.resumeProfileCreation(nextProps);
+        }
     }
 
     getCurrentStatusDescription = () => {
