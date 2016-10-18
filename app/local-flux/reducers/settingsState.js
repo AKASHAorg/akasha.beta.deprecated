@@ -92,7 +92,6 @@ const settingsState = createReducer(initialState, {
         }),
 
     [types.SAVE_SETTINGS_SUCCESS]: (state, action) => {
-        console.log('save settings action', action);
         switch (action.table) {
             case 'geth':
                 return state.merge({
@@ -111,12 +110,12 @@ const settingsState = createReducer(initialState, {
                 return state;
         }
     },
-    [types.SAVE_SETTINGS_ERROR]: (state, action) => {
-        console.log('save settings error', action);
-        return state.merge({
+
+    [types.SAVE_SETTINGS_ERROR]: (state, action) =>
+        state.merge({
             errors: state.get('errors').push(new ErrorRecord(action.error))
-        });
-    },
+        }),
+
     [types.SETUP_ADVANCED_SETTINGS]: (state, action) =>
         state.set('isAdvanced', action.isAdvanced),
 
@@ -209,6 +208,13 @@ const settingsState = createReducer(initialState, {
         state.merge({
             ipfs: state.get('ipfs').merge({
                 ports: new Ports(action.data)
+            })
+        }),
+
+    [eProcTypes.RESET_IPFS_PORTS]: state =>
+        state.merge({
+            ipfs: state.get('ipfs').merge({
+                ports: new Ports()
             })
         })
 });

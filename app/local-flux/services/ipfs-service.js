@@ -22,7 +22,7 @@ class IpfsService extends BaseService {
         const clientChannel = Channel.client.ipfs.startService;
         const ipfsOptions = {};
         Object.keys(options).forEach((key) => {
-            if (key !== 'name' && options[key] !== '') {
+            if (key !== 'name' && key !== 'ports' && options[key] !== null) {
                 ipfsOptions[key] = options[key];
             }
         });

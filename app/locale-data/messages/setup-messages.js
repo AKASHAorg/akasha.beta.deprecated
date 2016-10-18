@@ -188,6 +188,13 @@ const setupMessages = defineMessages({
                         network. You will be able to log in and enjoy the full AKASHA experience as
                         soon as the sync is complete.`
     },
+    afterSyncFinish: {
+        id: 'app.setup.afterSyncFinish',
+        description: 'Message to show after synchronization has finished',
+        defaultMessage: `Synchronization is complete. IPFS service needs to be started in order to
+                        continue. You can start it manually from the status bar in the header or
+                        click NEXT to start it automatically.`
+    },
     initializingTitle: {
         id: 'app.setup.initializingTitle',
         description: 'Title for initializing state page',
