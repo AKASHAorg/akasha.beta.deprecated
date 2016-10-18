@@ -14,16 +14,22 @@ import {
     ToolbarGroup,
     ToolbarSeparator } from 'material-ui';
 import DeleteIcon from 'material-ui/svg-icons/action/delete';
-import {ImageSizeLarge, ImageSizeMedium, ImageSizeSmall} from 'shared-components/svg';
-export default class ImageBlock extends Component {
+import withWidth, { SMALL, MEDIUM, LARGE } from 'material-ui/utils/withWidth';
+import { ImageSizeLarge, ImageSizeMedium, ImageSizeSmall } from 'shared-components/svg';
+
+class ImageBlock extends Component {
     constructor (props) {
         super(props);
-
-        this.actions = [
-            { key: 'delete', icon: 'w', action: this.props.container.remove }
-        ];
+        this.state = {
+            previewImage: '',
+            componentWidth: null
+        };
     }
-
+    componentDidMount () {
+        const baseNode = this.baseNodeRef;
+        const containerWidth = baseNode.clientWidth();
+        console.log(baseNode, containerWidth);
+    }
     _handleCaptionChange = (event) => {
         event.stopPropagation();
         this.props.container.updateData({ caption: event.target.value });
@@ -33,20 +39,56 @@ export default class ImageBlock extends Component {
         event.stopPropagation();
         this.props.container.updateData({ rightsHolder: event.target.value });
     }
+    // this method will get the `best fit` image based on current container`s width;
+    // because we want to be efficient :)
     _getImageFile = () => {
-        return <img src="http://blog.akasha.world/content/images/Dragonv2.jpg" />;
+        /**
+         * containerWidth <enum> [1, 2, 3]
+         * 1 => smallWidth
+         * 2 => mediumWidth
+         * 3 => largeWidth
+         * Please see those attrs passed when exporting this component;
+         */
+
+        const imageFiles = this.props.data.files;
+
+        let src = '';
+        // if (containerWidth === 1) {
+        //     // remember 1 means small < 600px
+        //     Object.keys(imageFiles).forEach((imgKey) => {
+        //         if (imageFiles[imgKey].width < 600) {
+        //             src = imageFiles[imgKey].src;
+        //         }
+        //     });
+        // }
+
+        // if (containerWidth === 2) {
+        //     // 2 means medium >= 600px
+        //     Object.keys(imageFiles).forEach((imgKey) => {
+        //         if (imageFiles[imgKey].width >= 600) {
+        //             src = imageFiles[imgKey].src;
+        //         }
+        //     });
+        // }
+
+        // if (containerWidth === 3) {
+        //     // already forgot it?
+        //     // 3 means large >= 920px
+        //     Object.keys(imageFiles).forEach((imgKey) => {
+        //         if (imageFiles[imgKey].width >= 920) {
+        //             src = imageFiles[imgKey].src;
+        //         }
+        //     });
+        // }
+        // console.log(containerWidth);
+        return <img src={src} alt="" />;
     }
 
     render () {
-        const {
-          BlockContent,
-          BlockData,
-          BlockInput,
-          CommonBlock
-      } = MegadraftPlugin;
+        console.log(this.props);
         const akashaTermsLink = <a href="">AKASHA's terms</a>;
         return (
-          <Card>
+          <Card ref={(baseNode) => { this.baseNodeRef = baseNode; }}>
             <Toolbar
               style={{
                   backgroundColor: '#FFF',
@@ -86,7 +128,7 @@ export default class ImageBlock extends Component {
               </ToolbarGroup>
               <ToolbarGroup>
                 <div>
-                  <IconButton>
+                  <IconButton onClick={this.props.container.remove}>
                     <SvgIcon>
                       <DeleteIcon />
                     </SvgIcon>
@@ -152,3 +194,9 @@ ImageBlock.propTypes = {
         rightsHolder: React.PropTypes.string
     })
 };
+
+export default withWidth({
+    largeWidth: 920,
+    mediumWidth: 600,
+    smallWidth: 320
+})(ImageBlock);
