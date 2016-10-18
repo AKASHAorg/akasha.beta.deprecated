@@ -13,7 +13,11 @@ export default {
         canvasColor: Colors.white,
         borderColor: Colors.grey300,
         disabledColor: colorManipulator.fade(Colors.darkBlack, 0.3),
-        pickerHeaderColor: Colors.cyan500
+        pickerHeaderColor: Colors.cyan500,
+        accent1Color: Colors.red500,
+        accent2Color: Colors.amber500,
+        accent3Color: Colors.green500,
+        paperShadowColor: Colors.grey400
     },
     imageUploader: {
         position: 'relative',

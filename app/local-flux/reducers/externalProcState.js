@@ -109,16 +109,24 @@ const eProcState = createReducer(initialState, {
     [types.GET_IPFS_STATUS_SUCCESS]: (state, action) =>
         state.merge({ ipfsStatus: state.get('ipfsStatus').merge(action.data) }),
 
-    [types.START_IPFS_SUCCESS]: (state, action) =>
-        state.merge({
+    [types.START_IPFS_SUCCESS]: (state, action) => {
+        const ipfsStatus = action.data;
+        if (ipfsStatus.started || ipfsStatus.spawned) {
+            ipfsStatus.starting = null;
+            ipfsStatus.downloading = null;
+        }
+        return state.merge({
             ipfsStatus: new IpfsStatus(action.data)
-        }),
+        });
+    },
 
-    [types.START_IPFS_ERROR]: (state, action) =>
-        state.merge({
+    [types.START_IPFS_ERROR]: (state, action) => {
+        const ipfsStatus = Object.assign({}, new IpfsStatus().toJS(), action.data);
+        return state.merge({
             ipfsErrors: state.get('ipfsErrors').push(new ErrorRecord(action.error)),
-            ipfsStatus: state.get('ipfsStatus').merge(action.data)
-        }),
+            ipfsStatus: state.get('ipfsStatus').merge(ipfsStatus)
+        });
+    },
 
     [types.START_IPFS]: state =>
         state.merge({

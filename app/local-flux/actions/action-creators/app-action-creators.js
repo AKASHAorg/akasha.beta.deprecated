@@ -90,3 +90,9 @@ export function setTimestamp (timestamp) {
         timestamp
     };
 }
+
+export function changeTheme () {
+    return {
+        type: types.CHANGE_THEME
+    };
+}
