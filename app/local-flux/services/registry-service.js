@@ -114,7 +114,7 @@ class RegistryService extends BaseService {
                     currentStatus
                 })
             ).then(() => {
-                setTimeout(() => onSuccess({ ...changes, currentStatus }), 30000);
+                onSuccess({ ...changes, currentStatus });
             })
         )
         .catch(reason => onError(reason));

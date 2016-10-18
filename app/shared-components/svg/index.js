@@ -25,10 +25,14 @@ import PeopleIcon from './IconPeople';
 import LogoIcon from './IconLogo';
 import StatusBarEthereum from './StatusBarEthereum';
 import StatusBarIpfs from './StatusBarIpfs';
+import ImageSizeLarge from './ImageSizeLarge';
+import ImageSizeMedium from './ImageSizeMedium';
+import ImageSizeSmall from './ImageSizeSmall';
 
 export {
     ProfileIcon, AddEntryIcon, SearchIcon, StreamsIcon, PortalsIcon, CommunityIcon, PeopleIcon,
     LogoIcon, MenuAddEntry, MenuAkashaLogo, MenuCommunities, MenuEntries, MenuEthereum, MenuPeople,
     MenuPortals, MenuSearch, MenuStreams, MenuUser, ToolbarComments, ToolbarEthereum, ToolbarLogout,
-    ToolbarProfile, ToolbarSettings, ToolbarVotes, ToolbarWallet, StatusBarEthereum, StatusBarIpfs
+    ToolbarProfile, ToolbarSettings, ToolbarVotes, ToolbarWallet, StatusBarEthereum, StatusBarIpfs,
+    ImageSizeLarge, ImageSizeMedium, ImageSizeSmall
 };
