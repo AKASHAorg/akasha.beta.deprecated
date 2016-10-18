@@ -160,6 +160,12 @@ export function getIpfsPortsError (error) {
     };
 }
 
+export function resetIpfsPorts () {
+    return {
+        type: types.RESET_IPFS_PORTS
+    };
+}
+
 export function stopIPFSSuccess (data) {
     return {
         type: types.STOP_IPFS_SUCCESS,
@@ -196,6 +202,12 @@ export function pauseSync () {
 export function resumeSync () {
     return {
         type: types.SYNC_RESUME
+    };
+}
+
+export function finishSync () {
+    return {
+        type: types.SYNC_FINISHED
     };
 }
 

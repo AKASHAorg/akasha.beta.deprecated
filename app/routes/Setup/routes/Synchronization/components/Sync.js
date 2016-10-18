@@ -51,9 +51,9 @@ class SyncStatus extends Component {
         }
     }
     componentWillUpdate (nextProps) {
-        const { gethStatus, configFlags, gethBusyState } = nextProps;
+        const { gethStatus, configFlags, gethBusyState, fetchingGethSettings } = nextProps;
         const shouldReconfigure = configFlags.get('requestStartupChange') && !gethStatus.get('api')
-            && !gethBusyState;
+            && !gethBusyState && !fetchingGethSettings;
 
         if (shouldReconfigure) {
             return this.context.router.push('setup');
@@ -88,7 +88,7 @@ class SyncStatus extends Component {
         const { eProcActions, settingsActions, syncActionId } = this.props;
         if (syncActionId !== 2) {
             eProcActions.stopSync();
-            eProcActions.finishSync();
+            eProcActions.cancelSync();
         }
         settingsActions.saveSettings('flags', { requestStartupChange: true });
     };
@@ -102,7 +102,11 @@ class SyncStatus extends Component {
                 eProcActions.pauseSync();
                 break;
             case 2:
+            case 3:
                 eProcActions.resumeSync();
+                break;
+            case 4:
+                eProcActions.startIPFS();
                 break;
             default:
                 break;
@@ -122,11 +126,11 @@ class SyncStatus extends Component {
                 break;
             case 3:
                 labels.title = intl.formatMessage(setupMessages.syncStopped);
-                labels.action = intl.formatMessage(generalMessages.pause);
+                labels.action = intl.formatMessage(generalMessages.resume);
                 break;
             case 4:
                 labels.title = intl.formatMessage(setupMessages.syncCompleted);
-                labels.action = intl.formatMessage(generalMessages.completed);
+                labels.action = intl.formatMessage(generalMessages.nextButtonLabel);
                 break;
             default:
                 labels.title = intl.formatMessage(setupMessages.synchronizing);
@@ -154,6 +158,7 @@ class SyncStatus extends Component {
             ipfsStatus,
             ipfsErrors,
             gethBusyState,
+            ipfsBusyState,
             syncActionId,
             eProcActions,
             timestamp } = this.props;
@@ -207,14 +212,15 @@ class SyncStatus extends Component {
                 label={intl.formatMessage(generalMessages.cancel)}
                 style={{ marginLeft: '12px' }}
                 onClick={this.handleCancel}
-                disabled={gethBusyState}
+                disabled={gethBusyState || (ipfsBusyState && syncActionId === 4)}
               />,
               <RaisedButton
                 key="pauseOrResume"
                 label={this._getActionLabels().action}
                 style={{ marginLeft: '12px' }}
                 onClick={this.handlePause}
-                disabled={gethBusyState}
+                disabled={gethBusyState || (ipfsBusyState && syncActionId === 4)}
+                primary={syncActionId === 4}
               />
             /* eslint-enable */
             ]}
@@ -238,7 +244,10 @@ class SyncStatus extends Component {
                 <h1 style={{ fontWeight: '400' }} >{pageTitle}</h1>
                 <div>
                   <p>
-                    <FormattedMessage {...setupMessages.onSyncStart} />
+                    {syncActionId === 4 ?
+                      <FormattedMessage {...setupMessages.afterSyncFinish} /> :
+                      <FormattedMessage {...setupMessages.onSyncStart} />
+                    }
                   </p>
                 </div>
                 {gethErrorCards}
@@ -278,6 +287,7 @@ SyncStatus.propTypes = {
     settingsActions: PropTypes.shape(),
     syncActionId: PropTypes.number,
     gethBusyState: PropTypes.bool,
+    ipfsBusyState: PropTypes.bool,
     timestamp: PropTypes.number
 };
 
