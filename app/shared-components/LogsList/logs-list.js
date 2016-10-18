@@ -5,7 +5,8 @@ const listStyle = {
     paddingLeft: 4,
     fontFamily: 'Consolas',
     listStyle: 'none',
-    overflowY: 'auto'
+    overflowY: 'auto',
+    wordWrap: 'break-word'
 };
 
 class LogsList extends Component {
