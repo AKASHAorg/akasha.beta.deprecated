@@ -1,15 +1,18 @@
 import React, { PropTypes } from 'react';
 import { TextField, SelectField, MenuItem } from 'material-ui';
-import * as Colors from 'material-ui/styles/colors';
 import { setupMessages } from 'locale-data/messages';
 
-const errorStyle = { color: Colors.minBlack, overflowX: 'visible', whiteSpace: 'nowrap' };
-const floatingLabelStyle = { color: Colors.lightBlack };
-const inputStyle = { color: Colors.darkBlack };
-const selectStyle = { maxWidth: '120px' };
+const GethSettingsForm = ({ intl, gethSettings, handleGethDatadir, handleGethCacheSize }, { muiTheme }) => {
+    const errorStyle = {
+        color: muiTheme.palette.disabledColor,
+        overflowX: 'visible',
+        whiteSpace: 'nowrap'
+    };
+    const floatingLabelStyle = { color: muiTheme.palette.disabledColor, zIndex: 0 };
+    const inputStyle = { color: muiTheme.palette.textColor };
+    const selectStyle = { maxWidth: '120px' };
 
-const GethSettingsForm = ({ intl, gethSettings, handleGethDatadir, handleGethCacheSize }) =>
-    <div>
+    return <div>
       <SelectField
         errorStyle={errorStyle}
         errorText={intl.formatMessage(setupMessages.changeGethCacheSize)}
@@ -36,6 +39,7 @@ const GethSettingsForm = ({ intl, gethSettings, handleGethDatadir, handleGethCac
         fullWidth
       />
     </div>;
+};
 
 GethSettingsForm.propTypes = {
     intl: PropTypes.shape(),
@@ -43,5 +47,9 @@ GethSettingsForm.propTypes = {
     handleGethDatadir: PropTypes.func,
     handleGethCacheSize: PropTypes.func
 };
+
+GethSettingsForm.contextTypes = {
+    muiTheme: PropTypes.shape().isRequired
+}
 
 export default GethSettingsForm;

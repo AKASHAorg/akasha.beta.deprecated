@@ -1,9 +1,9 @@
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import { IconMenu, IconButton, MenuItem } from 'material-ui';
-import { LogoIcon } from 'shared-components/svg';
-import React from 'react';
+import React, { PropTypes } from 'react';
 import { generalMessages } from 'locale-data/messages';
 import { injectIntl } from 'react-intl';
+import { LogoButton } from '../../components/logo-button';
 
 function LoginHeader ({ title, intl }) {
     const { formatMessage } = intl;
@@ -13,7 +13,7 @@ function LoginHeader ({ title, intl }) {
     return (
       <div className="col-xs-12" >
         <div className="row middle-xs">
-          <LogoIcon className="col-xs-1 start-xs" />
+          <LogoButton />
           <div className="col-xs-3" style={{ fontWeight: '300' }} >{ title }</div>
           <div className="col-xs-8 end-xs">
             <IconMenu
@@ -36,12 +36,12 @@ function LoginHeader ({ title, intl }) {
 }
 
 LoginHeader.contextTypes = {
-    muiTheme: React.PropTypes.object
+    muiTheme: PropTypes.object
 };
 
 LoginHeader.propTypes = {
-    title: React.PropTypes.string.isRequired,
-    intl: React.PropTypes.object
+    title: PropTypes.string.isRequired,
+    intl: PropTypes.shape()
 };
 
 LoginHeader.defaultProps = {

@@ -22,16 +22,17 @@ class LogsList extends Component {
     }
 
     getLabelStyle (log) {
+        const { palette } = this.context.muiTheme;
         let backgroundColor;
         switch (log.get('level')) {
             case 'warn':
-                backgroundColor = 'orange';
+                backgroundColor = palette.accent2Color;
                 break;
             case 'error':
-                backgroundColor = 'red';
+                backgroundColor = palette.accent1Color;
                 break;
             case 'info':
-                backgroundColor = 'lightblue';
+                backgroundColor = palette.primary1Color;
                 break;
             default:
                 backgroundColor = 'transparent';
@@ -39,6 +40,8 @@ class LogsList extends Component {
         }
         return {
             flex: '0 0 auto',
+            padding: '0 5px',
+            color: palette.alternateTextColor,
             backgroundColor
         };
     }
@@ -72,5 +75,9 @@ LogsList.propTypes = {
     eProcActions: PropTypes.shape().isRequired,
     timestamp: PropTypes.number
 };
+
+LogsList.contextTypes = {
+    muiTheme: PropTypes.shape().isRequired
+}
 
 export default LogsList;

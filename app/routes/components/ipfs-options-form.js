@@ -6,12 +6,10 @@ import { setupMessages, generalMessages } from 'locale-data/messages';
 
 const { dialog } = remote;
 const floatingLabelStyle = {
-    color: Colors.lightBlack,
     cursor: 'default',
     overflowX: 'visible',
     whiteSpace: 'nowrap'
 };
-const inputStyle = { color: Colors.darkBlack };
 const textFieldStyle = { display: 'block', width: '120px' };
 
 class IpfsOptionsForm extends Component {
@@ -64,11 +62,14 @@ class IpfsOptionsForm extends Component {
     };
 
     render () {
+        const { palette } = this.context.muiTheme;
         const { intl, style, ipfsSettings } = this.props;
+        const inputStyle = { color: palette.textColor };
+        const labelStyle = Object.assign({}, floatingLabelStyle, { color: palette.disabledColor });
 
         return <div style={style}>
           <TextField
-            floatingLabelStyle={floatingLabelStyle}
+            floatingLabelStyle={labelStyle}
             floatingLabelText={intl.formatMessage(setupMessages.ipfsStoragePath)}
             floatingLabelFixed
             value={this.state.storagePath || ''}
@@ -78,7 +79,7 @@ class IpfsOptionsForm extends Component {
           />
           {ipfsSettings.get('ports').apiPort &&
             <TextField
-              floatingLabelStyle={floatingLabelStyle}
+              floatingLabelStyle={labelStyle}
               floatingLabelText={intl.formatMessage(setupMessages.ipfsApiPort)}
               floatingLabelFixed
               value={ipfsSettings.get('ports').apiPort || ''}
@@ -90,7 +91,7 @@ class IpfsOptionsForm extends Component {
           }
           {ipfsSettings.get('ports').gatewayPort &&
             <TextField
-              floatingLabelStyle={floatingLabelStyle}
+              floatingLabelStyle={labelStyle}
               floatingLabelText={intl.formatMessage(setupMessages.ipfsGatewayPort)}
               floatingLabelFixed
               value={ipfsSettings.get('ports').gatewayPort || ''}
@@ -102,7 +103,7 @@ class IpfsOptionsForm extends Component {
           }
           {ipfsSettings.get('ports').swarmPort &&
             <TextField
-              floatingLabelStyle={floatingLabelStyle}
+              floatingLabelStyle={labelStyle}
               floatingLabelText={intl.formatMessage(setupMessages.ipfsSwarmPort)}
               floatingLabelFixed
               value={ipfsSettings.get('ports').swarmPort || ''}
@@ -113,7 +114,7 @@ class IpfsOptionsForm extends Component {
             />
           }
           {this.state.showSuccessMessage && !this.state.isDirty &&
-            <div style={{ color: Colors.lightGreen500, marginTop: '15px' }}>
+            <div style={{ color: palette.accent3Color, marginTop: '15px' }}>
               {intl.formatMessage(setupMessages.saveIpfsSettingsSuccess)}
             </div>
           }
@@ -135,5 +136,9 @@ IpfsOptionsForm.propTypes = {
     settingsActions: PropTypes.shape().isRequired,
     style: PropTypes.shape()
 };
+
+IpfsOptionsForm.contextTypes = {
+    muiTheme: PropTypes.shape().isRequired
+}
 
 export default IpfsOptionsForm;
