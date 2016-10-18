@@ -63,7 +63,16 @@ class SyncStatus extends Component {
               </div>
             );
         } else {
-            if (gethStatus.get('starting')) {
+            if (syncActionId === 4) {
+                currentProgress = 100;
+                progressBody = (
+                  <div>
+                    <div style={statusTextStyle} >
+                      {intl.formatMessage(setupMessages.syncCompleted)}
+                    </div>
+                  </div>
+                );
+            } else if (gethStatus.get('starting')) {
                 progressBody = (
                   <div>
                     <div style={statusTextStyle} >
@@ -129,10 +138,10 @@ SyncStatus.propTypes = {
     syncActionId: PropTypes.number
 };
 
-export default SyncStatus;
-
 const statusTextStyle = {
     fontWeight: 'bold',
     padding: '5px',
     fontSize: '18px'
-}
+};
+
+export default SyncStatus;

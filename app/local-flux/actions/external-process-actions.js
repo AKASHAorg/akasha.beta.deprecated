@@ -92,12 +92,15 @@ class EProcActions {
         this.gethService.getSyncStatus({
             options: {},
             onError: err => this.dispatch(appActionCreators.showError(err)),
-            onSuccess: data => this.dispatch(
-                externalProcessActionCreators.getSyncStatusSuccess(data)
-            )
+            onSuccess: (data) => {
+                this.dispatch(externalProcessActionCreators.getSyncStatusSuccess(data));
+                if (data.synced) {
+                    this.finishSync();
+                }
+            }
         });
 
-    finishSync = () => {
+    cancelSync = () => {
         this.throttledSyncUpdate.cancel();
         this.gethService.closeSyncChannel();
     };
@@ -115,7 +118,7 @@ class EProcActions {
                 onSuccess: (data) => {
                     dispatch(externalProcessActionCreators.startIPFSSuccess(data));
                     this.resetIpfsBusyState();
-                    this.getIpfsPorts();
+                    setTimeout(this.getIpfsPorts, 1000);
                 }
             });
         });
@@ -148,6 +151,7 @@ class EProcActions {
     };
     stopIPFS = () => {
         this.dispatch(externalProcessActionCreators.stopIPFS());
+        this.dispatch(externalProcessActionCreators.resetIpfsPorts());
         this.ipfsService.stop({
             options: {},
             onError: (err) => {
@@ -182,6 +186,9 @@ class EProcActions {
     stopSync = () => {
         this.dispatch(externalProcessActionCreators.stopSync());
         this.stopGeth();
+    }
+    finishSync = () => {
+        this.dispatch(externalProcessActionCreators.finishSync());
     }
 
     resetGethBusyState = () =>

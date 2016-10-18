@@ -28,7 +28,7 @@ class IpfsOptionsForm extends Component {
     componentWillReceiveProps (nextProps) {
         const { ipfsSettings } = this.props;
         const nextIpfsSettings = nextProps.ipfsSettings;
-        if (JSON.stringify(ipfsSettings.toJS()) !== JSON.stringify(nextIpfsSettings.toJS())) {
+        if (ipfsSettings.toJS().storagePath !== nextIpfsSettings.toJS().storagePath) {
             this.setState({
                 showSuccessMessage: true
             });
@@ -76,36 +76,42 @@ class IpfsOptionsForm extends Component {
             onClick={this.handleIpfsPath}
             fullWidth
           />
-          <TextField
-            floatingLabelStyle={floatingLabelStyle}
-            floatingLabelText={intl.formatMessage(setupMessages.ipfsApiPort)}
-            floatingLabelFixed
-            value={ipfsSettings.get('ports').apiPort || ''}
-            inputStyle={inputStyle}
-            type="number"
-            style={textFieldStyle}
-            disabled
-          />
-          <TextField
-            floatingLabelStyle={floatingLabelStyle}
-            floatingLabelText={intl.formatMessage(setupMessages.ipfsGatewayPort)}
-            floatingLabelFixed
-            value={ipfsSettings.get('ports').gatewayPort || ''}
-            inputStyle={inputStyle}
-            type="number"
-            style={textFieldStyle}
-            disabled
-          />
-          <TextField
-            floatingLabelStyle={floatingLabelStyle}
-            floatingLabelText={intl.formatMessage(setupMessages.ipfsSwarmPort)}
-            floatingLabelFixed
-            value={ipfsSettings.get('ports').swarmPort || ''}
-            inputStyle={inputStyle}
-            type="number"
-            style={textFieldStyle}
-            disabled
-          />
+          {ipfsSettings.get('ports').apiPort &&
+            <TextField
+              floatingLabelStyle={floatingLabelStyle}
+              floatingLabelText={intl.formatMessage(setupMessages.ipfsApiPort)}
+              floatingLabelFixed
+              value={ipfsSettings.get('ports').apiPort || ''}
+              inputStyle={inputStyle}
+              type="number"
+              style={textFieldStyle}
+              disabled
+            />
+          }
+          {ipfsSettings.get('ports').gatewayPort &&
+            <TextField
+              floatingLabelStyle={floatingLabelStyle}
+              floatingLabelText={intl.formatMessage(setupMessages.ipfsGatewayPort)}
+              floatingLabelFixed
+              value={ipfsSettings.get('ports').gatewayPort || ''}
+              inputStyle={inputStyle}
+              type="number"
+              style={textFieldStyle}
+              disabled
+            />
+          }
+          {ipfsSettings.get('ports').swarmPort &&
+            <TextField
+              floatingLabelStyle={floatingLabelStyle}
+              floatingLabelText={intl.formatMessage(setupMessages.ipfsSwarmPort)}
+              floatingLabelFixed
+              value={ipfsSettings.get('ports').swarmPort || ''}
+              inputStyle={inputStyle}
+              type="number"
+              style={textFieldStyle}
+              disabled
+            />
+          }
           {this.state.showSuccessMessage && !this.state.isDirty &&
             <div style={{ color: Colors.lightGreen500, marginTop: '15px' }}>
               {intl.formatMessage(setupMessages.saveIpfsSettingsSuccess)}
