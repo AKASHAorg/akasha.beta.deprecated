@@ -92,16 +92,18 @@ class RegistryIPC extends ModuleEmitter_1.default {
     _registerProfile() {
         this.registerListener(channels_1.default.server[this.MODULE_NAME].registerProfile, (event, data) => {
             let response;
+            let newData = Object.assign({}, data);
+            data = null;
             index_3.module
                 .helpers
-                .create(data.ipfs)
+                .create(newData.ipfs)
                 .then((ipfsHash) => {
                 return index_1.constructed.instance
                     .registry
-                    .register(data.username, ipfsHash, data.gas);
+                    .register(newData.username, ipfsHash, newData.gas);
             })
                 .then((txData) => {
-                return index_2.module.auth.signData(txData, data.token);
+                return index_2.module.auth.signData(txData, newData.token);
             })
                 .then((tx) => {
                 response = responses_1.mainResponse({ tx });
@@ -110,11 +112,12 @@ class RegistryIPC extends ModuleEmitter_1.default {
                 response = responses_1.mainResponse({
                     error: {
                         message: error.message,
-                        from: { username: data.username }
+                        from: { username: newData.username }
                     }
                 });
             })
                 .finally(() => {
+                newData = null;
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].registerProfile, response, event);
             });
         });

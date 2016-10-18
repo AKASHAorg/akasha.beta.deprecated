@@ -19,7 +19,7 @@ const create = (data) => {
         media = keys.map((media) => {
             return ipfs_connector_1.IpfsConnector.getInstance()
                 .api
-                .constructObjLink(Buffer.from(data.backgroundImage[media].src, 'base64'), true);
+                .constructObjLink(Buffer.from(data.backgroundImage[media].src), true);
         });
     }
     return Promise.all(media)
@@ -46,7 +46,7 @@ const create = (data) => {
         if (data.avatar) {
             return ipfs_connector_1.IpfsConnector.getInstance()
                 .api
-                .constructObjLink(data.avatar, true);
+                .constructObjLink(Buffer.from(data.avatar), true);
         }
         return Promise.resolve('');
     }).then((hash) => {
@@ -65,6 +65,7 @@ const create = (data) => {
             returned.about = hash;
         }
         console.timeEnd('creating_ipfs');
+        console.log(returned);
         return ipfs_connector_1.IpfsConnector.getInstance().api.add(returned);
     });
 };

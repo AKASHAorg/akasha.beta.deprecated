@@ -34,10 +34,12 @@ class RegistryService extends BaseService {
         this.openChannel({
             serverManager: this.serverManager,
             clientManager: this.clientManager,
-            serverChannel,
-            clientChannel,
+            serverChannel: Channel.server.registry.registerProfile,
+            clientChannel: Channel.client.registry.registerProfile,
             listenerCb: this.createListener(onError, onSuccess, clientChannel.channelName)
-        }, () => serverChannel.send({ token, username, ipfs, gas }));
+        }, () => {
+            Channel.server.registry.registerProfile.send({ token, username, ipfs, gas })
+        });
     };
     /**
      * Get eth address of the logged profile
