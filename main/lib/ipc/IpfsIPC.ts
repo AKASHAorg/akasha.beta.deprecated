@@ -4,6 +4,7 @@ import { IpfsConnector } from '@akashaproject/ipfs-connector';
 import AppLogger from './Logger';
 import channels from '../channels';
 import { ipfsResponse } from './event/responses';
+import { generalSettings, BASE_URL } from './config/settings';
 import WebContents = Electron.WebContents;
 import IpcMainEvent = Electron.IpcMainEvent;
 
@@ -212,6 +213,8 @@ class IpfsIPC extends IpfsEmitter {
                 IpfsConnector.getInstance()
                     .getPorts()
                     .then((ports) => {
+                        generalSettings.set(BASE_URL, `http://127.0.0.1:${ports.gateway}/ipfs`);
+                        console.log(ports.gateway);
                         response = ipfsResponse({
                             apiPort: ports.api,
                             gatewayPort: ports.gateway,

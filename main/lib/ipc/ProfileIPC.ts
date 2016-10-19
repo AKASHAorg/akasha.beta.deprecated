@@ -4,6 +4,7 @@ import { module as profileModule } from './modules/profile/index';
 import ModuleEmitter from './event/ModuleEmitter';
 import { constructed as contracts } from './contracts/index';
 import channels from '../channels';
+import { generalSettings, BASE_URL } from './config/settings';
 import { mainResponse } from './event/responses';
 import WebContents = Electron.WebContents;
 
@@ -40,12 +41,16 @@ class ProfileIPC extends ModuleEmitter {
                     .getIpfs(data.profile)
                     .then((resp: string) => {
                         if (data.full) {
-                            return profileModule.helpers.resolveProfile(resp);
+                            return profileModule.helpers.resolveProfile(resp, data.resolveImages);
                         }
-                        return profileModule.helpers.getShortProfile(resp);
+                        return profileModule.helpers.getShortProfile(resp, data.resolveImages);
                     })
                     .then((resp: IpfsProfileCreateRequest) => {
-                        const constructed = Object.assign({ username: '' }, resp, { profile: data.profile });
+                        const constructed = Object.assign(
+                            { username: '', [BASE_URL]: generalSettings.get(BASE_URL) },
+                            resp,
+                            { profile: data.profile }
+                        );
                         return contracts.instance
                             .registry
                             .getByContract(data.profile)
@@ -115,10 +120,11 @@ class ProfileIPC extends ModuleEmitter {
             channels.server[this.MODULE_NAME].getIpfs,
             (event: any, data: IpfsDataRequest) => {
                 let response: IpfsDataResponse;
-                const chain = (data.full) ? profileModule.helpers.resolveProfile(data.ipfsHash) :
-                    profileModule.helpers.getShortProfile(data.ipfsHash);
+                const chain = (data.full) ? profileModule.helpers.resolveProfile(data.ipfsHash, data.resolveImages) :
+                    profileModule.helpers.getShortProfile(data.ipfsHash, data.resolveImages);
                 chain.then((resolved: any) => {
-                    response = mainResponse(resolved);
+                    const constructed = Object.assign({[BASE_URL]: generalSettings.get(BASE_URL)}, resolved);
+                    response = mainResponse(constructed);
                 }).catch((err: Error) => {
                     response = mainResponse({ error: { message: err.message } });
                 })

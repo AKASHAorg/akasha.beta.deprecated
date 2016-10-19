@@ -87,7 +87,7 @@ class Auth extends Component {
             const profileAddress = profile.get('ethAddress');
             const profileName = `${profile.get('firstName')} ${profile.get('lastName')}`;
             const userInitials = profileName.match(/\b\w/g);
-            const avatarImage = profile.get('avatar') ? imageCreator(profile.get('avatar')) : null;
+            const avatarImage = profile.getIn(['avatar', '/']) ? imageCreator(profile.getIn(['avatar', '/']), profile.get('baseUrl')) : null;
             let avtr;
             if (avatarImage) {
                 avtr = (

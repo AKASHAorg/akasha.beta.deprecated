@@ -4,6 +4,7 @@ const ipfs_connector_1 = require('@akashaproject/ipfs-connector');
 const Logger_1 = require('./Logger');
 const channels_1 = require('../channels');
 const responses_1 = require('./event/responses');
+const settings_1 = require('./config/settings');
 class IpfsIPC extends IpfsEmitter_1.default {
     constructor() {
         super();
@@ -115,6 +116,8 @@ class IpfsIPC extends IpfsEmitter_1.default {
             ipfs_connector_1.IpfsConnector.getInstance()
                 .getPorts()
                 .then((ports) => {
+                settings_1.generalSettings.set(settings_1.BASE_URL, `http://127.0.0.1:${ports.gateway}/ipfs`);
+                console.log(ports.gateway);
                 response = responses_1.ipfsResponse({
                     apiPort: ports.api,
                     gatewayPort: ports.gateway,

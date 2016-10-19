@@ -5,6 +5,7 @@ const index_2 = require('./modules/profile/index');
 const ModuleEmitter_1 = require('./event/ModuleEmitter');
 const index_3 = require('./contracts/index');
 const channels_1 = require('../channels');
+const settings_1 = require('./config/settings');
 const responses_1 = require('./event/responses');
 class ProfileIPC extends ModuleEmitter_1.default {
     constructor() {
@@ -34,12 +35,12 @@ class ProfileIPC extends ModuleEmitter_1.default {
                 .getIpfs(data.profile)
                 .then((resp) => {
                 if (data.full) {
-                    return index_2.module.helpers.resolveProfile(resp);
+                    return index_2.module.helpers.resolveProfile(resp, data.resolveImages);
                 }
-                return index_2.module.helpers.getShortProfile(resp);
+                return index_2.module.helpers.getShortProfile(resp, data.resolveImages);
             })
                 .then((resp) => {
-                const constructed = Object.assign({ username: '' }, resp, { profile: data.profile });
+                const constructed = Object.assign({ username: '', [settings_1.BASE_URL]: settings_1.generalSettings.get(settings_1.BASE_URL) }, resp, { profile: data.profile });
                 return index_3.constructed.instance
                     .registry
                     .getByContract(data.profile)
@@ -93,10 +94,11 @@ class ProfileIPC extends ModuleEmitter_1.default {
     _getIpfs() {
         this.registerListener(channels_1.default.server[this.MODULE_NAME].getIpfs, (event, data) => {
             let response;
-            const chain = (data.full) ? index_2.module.helpers.resolveProfile(data.ipfsHash) :
-                index_2.module.helpers.getShortProfile(data.ipfsHash);
+            const chain = (data.full) ? index_2.module.helpers.resolveProfile(data.ipfsHash, data.resolveImages) :
+                index_2.module.helpers.getShortProfile(data.ipfsHash, data.resolveImages);
             chain.then((resolved) => {
-                response = responses_1.mainResponse(resolved);
+                const constructed = Object.assign({ [settings_1.BASE_URL]: settings_1.generalSettings.get(settings_1.BASE_URL) }, resolved);
+                response = responses_1.mainResponse(constructed);
             }).catch((err) => {
                 response = responses_1.mainResponse({ error: { message: err.message } });
             })

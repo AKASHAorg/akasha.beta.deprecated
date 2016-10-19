@@ -30,7 +30,8 @@ const Profile = Record({
     about: null,
     links: [],
     profile: null,
-    ethAddress: null
+    ethAddress: null,
+    baseUrl: ''
 });
 
 const TempProfile = Record({

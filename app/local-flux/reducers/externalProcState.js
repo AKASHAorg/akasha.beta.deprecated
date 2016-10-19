@@ -3,7 +3,7 @@ import { fromJS, Record, List, Map, Set } from 'immutable';
 import { createReducer } from './create-reducer';
 import * as types from '../constants/external-process-constants';
 import * as settingsTypes from '../constants/SettingsConstants';
-import isEqual from 'lodash.isEqual';
+import R from 'ramda';
 
 const GethStatus = Record({
     downloading: null,
@@ -203,7 +203,7 @@ const eProcState = createReducer(initialState, {
         }),
 
     [types.GET_GETH_LOGS_SUCCESS]: (state, action) => {
-        if (isEqual(state.get('gethLogs').toJS(), action.data)) {
+        if (!R.symmetricDifference(action.data, state.get('gethLogs').toJS()).length) {
             return state;
         }
         const logs = [...action.data, ...state.get('gethLogs').toJS()];
