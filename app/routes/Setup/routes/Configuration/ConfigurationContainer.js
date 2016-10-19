@@ -4,7 +4,7 @@ import {
     SettingsActions,
     EProcActions } from 'local-flux';
 
-function mapStateToProps (state) {
+function mapStateToProps (state, ownProps) {
     return {
         gethSettings: state.settingsState.get('geth'),
         defaultGethSettings: state.settingsState.get('defaultGethSettings'),

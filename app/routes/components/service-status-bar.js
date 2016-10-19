@@ -11,7 +11,7 @@ import GethOptionsForm from './geth-options-form';
 import IpfsOptionsForm from './ipfs-options-form';
 
 const containerStyle = {
-    border: '2px solid gray',
+    border: '2px solid',
     borderRadius: '16px',
     lineHeight: '32px',
     height: '32px',
@@ -53,18 +53,20 @@ class ServiceStatusBar extends Component {
     }
 
     getContainerStyle (state) {
+        const { muiTheme } = this.context;
         const style = Object.assign({}, containerStyle);
         switch (state) {
             case ServiceState.stopped:
-                style.borderColor = 'red';
+                style.borderColor = muiTheme.palette.accent1Color;
                 break;
             case ServiceState.starting:
-                style.borderColor = 'orange';
+                style.borderColor = muiTheme.palette.accent2Color;
                 break;
             case ServiceState.started:
-                style.borderColor = 'green';
+                style.borderColor = muiTheme.palette.accent3Color;
                 break;
             default:
+                style.borderColor = muiTheme.palette.textColor;
                 break;
         }
 
@@ -72,11 +74,12 @@ class ServiceStatusBar extends Component {
     }
 
     getTitleButtonStyle (tab) {
+        const { palette } = this.context.muiTheme;
         return {
             border: 'none',
             outline: 'none',
-            color: this.state.activeTab === tab ? 'white' : 'rgba(255,255,255,0.7)',
-            backgroundColor: 'rgb(3, 169, 244)',
+            color: this.state.activeTab === tab ? palette.alternateTextColor : palette.disabledColor,
+            backgroundColor: palette.primary1Color,
             width: '50%',
             height: '48px',
             padding: '0px',
@@ -100,16 +103,13 @@ class ServiceStatusBar extends Component {
     }
 
     getIpfsState () {
-        const { ipfsStatus, ipfsErrors } = this.props;
+        const { ipfsStatus } = this.props;
         let ipfsState = ServiceState.stopped;
 
-        if (ipfsErrors && ipfsErrors.size > 0) {
-            ipfsState = ServiceState.error;
-        } else if (!ipfsStatus.get('spawned') && !ipfsStatus.get('starting')
-                && !ipfsStatus.get('downloading')) {
-            ipfsState = ServiceState.stopped;
-        } else if (ipfsStatus.get('spawned')) {
+        if (ipfsStatus.get('spawned')) {
             ipfsState = ServiceState.started;
+        } else if (ipfsStatus.get('starting') || ipfsStatus.get('downloading')) {
+            ipfsState = ServiceState.starting;
         }
         return ipfsState;
     }
@@ -247,8 +247,13 @@ class ServiceStatusBar extends Component {
     }
 
     renderGethTitle () {
-        const settingsBarColor = this.state.activeTab === GETH_SETTINGS ? 'red' : 'rgb(3, 169, 244)';
-        const logsBarColor = this.state.activeTab === GETH_LOGS ? 'red' : 'rgb(3, 169, 244)';
+        const { palette } = this.context.muiTheme;
+        const settingsBarColor = this.state.activeTab === GETH_SETTINGS ?
+            palette.accent1Color :
+            palette.primary1Color;
+        const logsBarColor = this.state.activeTab === GETH_LOGS ?
+            palette.accent1Color :
+            palette.primary1Color;
 
         return <div style={{ width: '100%' }}>
           <button style={this.getTitleButtonStyle(GETH_SETTINGS)} onClick={() => this.selectTab(GETH_SETTINGS)}>
@@ -289,8 +294,13 @@ class ServiceStatusBar extends Component {
     }
 
     renderIpfsTitle () {
-        const settingsBarColor = this.state.activeTab === IPFS_SETTINGS ? 'red' : 'rgb(3, 169, 244)';
-        const logsBarColor = this.state.activeTab === IPFS_LOGS ? 'red' : 'rgb(3, 169, 244)';
+        const { palette } = this.context.muiTheme;
+        const settingsBarColor = this.state.activeTab === IPFS_SETTINGS ?
+            palette.accent1Color :
+            palette.primary1Color;
+        const logsBarColor = this.state.activeTab === IPFS_LOGS ?
+            palette.accent1Color :
+            palette.primary1Color;
 
         return <div style={{ width: '100%' }}>
           <button style={this.getTitleButtonStyle(IPFS_SETTINGS)} onClick={() => this.selectTab(IPFS_SETTINGS)}>
@@ -307,7 +317,7 @@ class ServiceStatusBar extends Component {
 
 
     renderIpfsDialog () {
-        const { intl, ipfsSettings, settingsActions, ipfsStatus } = this.props;
+        const { intl, ipfsSettings, settingsActions } = this.props;
 
         return <Dialog
           title={this.renderIpfsTitle()}
@@ -330,12 +340,18 @@ class ServiceStatusBar extends Component {
     }
 
     render () {
+        const { palette } = this.context.muiTheme;
+        const iconStyle = {
+            width: '24px',
+            height: '24px',
+            color: palette.textColor
+        }
         const ethereumIcon =
-          <SvgIcon viewBox="0 0 16 16" style={{ width: '24px', height: '24px' }}>
+          <SvgIcon viewBox="0 0 16 16" style={iconStyle}>
             <StatusBarEthereum />
           </SvgIcon>;
         const ipfsIcon =
-          <SvgIcon viewBox="0 0 16 16" style={{ width: '24px', height: '24px' }}>
+          <SvgIcon viewBox="0 0 16 16" style={iconStyle}>
             <StatusBarIpfs />
           </SvgIcon>;
         return <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
@@ -380,7 +396,11 @@ ServiceStatusBar.propTypes = {
     timestamp: PropTypes.number
 };
 
-function mapStateToProps (state) {
+ServiceStatusBar.contextTypes = {
+    muiTheme: PropTypes.shape().isRequired
+}
+
+function mapStateToProps (state, ownProps) {
     return {
         gethStatus: state.externalProcState.get('gethStatus'),
         gethLogs: state.externalProcState.get('gethLogs'),

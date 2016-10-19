@@ -19,7 +19,8 @@ const initialState = fromJS({
         modal: false
     },
     confirmationDialog: null,
-    timestamp: null
+    timestamp: null,
+    theme: 'light'
 });
 
 const appState = createReducer(initialState, {
@@ -59,7 +60,15 @@ const appState = createReducer(initialState, {
         state.set('confirmationDialog', null),
 
     [types.SET_TIMESTAMP]: (state, action) =>
-        state.set('timestamp', action.timestamp)
+        state.set('timestamp', action.timestamp),
+
+    [types.CHANGE_THEME]: (state) => {
+        const newTheme = state.get('theme') === 'light' ? 'dark' : 'light';
+        return state.merge({
+            theme: newTheme,
+            themeChanging: true
+        });
+    }
 });
 
 export default appState;

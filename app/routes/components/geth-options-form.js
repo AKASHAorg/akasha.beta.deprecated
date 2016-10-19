@@ -5,12 +5,10 @@ import { setupMessages, generalMessages } from 'locale-data/messages';
 
 const checkboxStyle = { marginTop: '20px' };
 const floatingLabelStyle = {
-    color: Colors.lightBlack,
     cursor: 'default',
     overflowX: 'visible',
     whiteSpace: 'nowrap'
 };
-const inputStyle = { color: Colors.darkBlack };
 const selectStyle = { maxWidth: '120px' };
 
 class GethOptionsForm extends Component {
@@ -92,6 +90,9 @@ class GethOptionsForm extends Component {
 
     renderMiningDetails () {
         const { intl } = this.props;
+        const { palette } = this.context.muiTheme;
+        const labelStyle = Object.assign({}, floatingLabelStyle, { color: palette.disabledColor });
+
         return <div style={{ marginLeft: '50px' }}>
           <Checkbox
             label={intl.formatMessage(setupMessages.gethAutodag)}
@@ -106,7 +107,7 @@ class GethOptionsForm extends Component {
             onCheck={this.onFastChange}
           />
           <SelectField
-            floatingLabelStyle={floatingLabelStyle}
+            floatingLabelStyle={labelStyle}
             floatingLabelText={intl.formatMessage(setupMessages.gethMinerThreads)}
             value={this.state.minerThreads}
             onChange={this.onMinerThreadsChange}
@@ -120,10 +121,13 @@ class GethOptionsForm extends Component {
 
     render () {
         const { intl, gethSettings, style } = this.props;
+        const { palette } = this.context.muiTheme;
+        const inputStyle = { color: palette.textColor };
+        const labelStyle = Object.assign({}, floatingLabelStyle, { color: palette.disabledColor });
 
         return <div style={style}>
           <SelectField
-            floatingLabelStyle={floatingLabelStyle}
+            floatingLabelStyle={labelStyle}
             floatingLabelText={intl.formatMessage(setupMessages.gethCacheSize)}
             value={this.state.cache}
             onChange={this.onCacheChange}
@@ -142,7 +146,7 @@ class GethOptionsForm extends Component {
           />
           {this.state.mine && this.renderMiningDetails()}
           <TextField
-            floatingLabelStyle={floatingLabelStyle}
+            floatingLabelStyle={labelStyle}
             floatingLabelText={intl.formatMessage(setupMessages.gethDataDirPath)}
             floatingLabelFixed
             value={gethSettings.get('datadir') || ''}
@@ -151,7 +155,7 @@ class GethOptionsForm extends Component {
             disabled
           />
           <TextField
-            floatingLabelStyle={floatingLabelStyle}
+            floatingLabelStyle={labelStyle}
             floatingLabelText={intl.formatMessage(setupMessages.gethIPCPath)}
             floatingLabelFixed
             value={gethSettings.get('ipcpath') || ''}
@@ -160,7 +164,7 @@ class GethOptionsForm extends Component {
             disabled
           />
           <TextField
-            floatingLabelStyle={floatingLabelStyle}
+            floatingLabelStyle={labelStyle}
             floatingLabelText={intl.formatMessage(setupMessages.gethNetworkId)}
             floatingLabelFixed
             value={gethSettings.get('networkid') || ''}
@@ -170,7 +174,7 @@ class GethOptionsForm extends Component {
             disabled
           />
           {this.state.showSuccessMessage && !this.state.isDirty &&
-            <div style={{ color: Colors.lightGreen500, marginTop: '15px' }}>
+            <div style={{ color: palette.accent3Color, marginTop: '15px' }}>
               {intl.formatMessage(setupMessages.saveGethSettingsSuccess)}
             </div>
           }
@@ -192,5 +196,9 @@ GethOptionsForm.propTypes = {
     settingsActions: PropTypes.shape().isRequired,
     style: PropTypes.shape()
 };
+
+GethOptionsForm.contextTypes = {
+    muiTheme: PropTypes.shape().isRequired
+}
 
 export default GethOptionsForm;
