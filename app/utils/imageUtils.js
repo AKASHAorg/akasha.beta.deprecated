@@ -3,15 +3,14 @@ import debug from 'debug';
 const dbg = debug('App:imageUtils');
 const error = debug('App:error');
 
-function imageCreator (arrayBuffer, { mimeType = 'image/jpg', width = 100, height = 100 } = {}) {
-    const blobFile = new Blob([arrayBuffer], { type: mimeType });
-    const imageUrl = window.URL.createObjectURL(blobFile);
-    const image = new Image(width, height);
-    //image.onload = function onload () {
-     //   window.URL.revokeObjectURL(imageUrl);
-    //};
-    image.src = imageUrl;
-    return imageUrl;
+function imageCreator (arrayBuffer, baseUrl) {
+    console.log(arrayBuffer, baseUrl);
+    if(baseUrl && typeof arrayBuffer === 'string'){
+        return `${baseUrl}/${arrayBuffer}`;
+    }
+
+    const blobFile = new Blob([arrayBuffer], { type: 'image/jpg' });
+    return window.URL.createObjectURL(blobFile);
 }
 /**
  * Utility to extract first image from draftjs generated content;

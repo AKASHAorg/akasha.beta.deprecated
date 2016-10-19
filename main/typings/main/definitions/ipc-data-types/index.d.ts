@@ -326,6 +326,7 @@ interface IpfsProfileCreateRequest {
 interface ProfileDataRequest {
     profile: string; // profile contract address
     full?: boolean; // resolve full profile from ipfs
+    resolveImages?: boolean // resolve media to buffer
 }
 
 interface ProfileDataResponse extends MainResponse {
@@ -352,6 +353,7 @@ interface MyBalanceResponse extends MainResponse {
 interface IpfsDataRequest {
     ipfsHash: string; // ipfs profile hash
     full?: boolean; // resolve all info
+    resolveImages?: boolean
 }
 
 interface IpfsDataResponse extends MainResponse {

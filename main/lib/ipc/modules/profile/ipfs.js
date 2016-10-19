@@ -9,7 +9,7 @@ const create = (data) => {
         avatar: '',
         backgroundImage: '',
         about: '',
-        links: data.links
+        links: ''
     };
     let media = [];
     let keys;
@@ -63,17 +63,24 @@ const create = (data) => {
         if (hash) {
             returned.about = hash;
         }
+        if (data.links) {
+            return ipfs_connector_1.IpfsConnector.getInstance().api.constructObjLink(data.links);
+        }
+        return Promise.resolve('');
+    }).then((hash) => {
+        if (hash) {
+            returned.links = hash;
+        }
         return ipfs_connector_1.IpfsConnector.getInstance().api.add(returned);
     });
 };
-const getShortProfile = (hash, resolveAvatar = true) => {
+const getShortProfile = (hash, resolveAvatar = false) => {
     if (records_1.profiles.getShort(hash)) {
         return Promise.resolve(records_1.profiles.getShort(hash));
     }
     return ipfs_connector_1.IpfsConnector.getInstance().api.get(hash)
         .then((schema) => {
         let resolved = Object.assign({}, schema);
-        console.log(schema);
         if (schema.avatar && resolveAvatar) {
             return ipfs_connector_1.IpfsConnector.getInstance()
                 .api
@@ -87,13 +94,13 @@ const getShortProfile = (hash, resolveAvatar = true) => {
         return resolved;
     });
 };
-const resolveProfile = (hash) => {
+const resolveProfile = (hash, resolveImages = false) => {
     let resolved;
     let keys;
     if (records_1.profiles.getFull(hash)) {
         return Promise.resolve(records_1.profiles.getFull(hash));
     }
-    return getShortProfile(hash)
+    return getShortProfile(hash, resolveImages)
         .then((schema) => {
         resolved = Object.assign({}, schema);
         const LINKS = [];
@@ -106,18 +113,20 @@ const resolveProfile = (hash) => {
         if (mediaObj) {
             keys = Object.keys(mediaObj).sort();
             resolved.backgroundImage = mediaObj;
-            media = keys.map((media) => {
-                return ipfs_connector_1.IpfsConnector.getInstance()
-                    .api
-                    .resolve(resolved.backgroundImage[media].src);
-            });
-            return Promise.all(media);
+            if (resolveImages) {
+                media = keys.map((media) => {
+                    return ipfs_connector_1.IpfsConnector.getInstance()
+                        .api
+                        .resolve(resolved.backgroundImage[media].src);
+                });
+                return Promise.all(media);
+            }
         }
         return Promise.resolve('');
     }).then((images) => {
         if (images.length) {
             images.forEach((v, i) => {
-                resolved.backgroundImage[keys[i]].src = Uint8Array.from(v);
+                resolved.backgroundImage[keys[i]].src = v;
             });
         }
         if (resolved.about) {
@@ -129,6 +138,16 @@ const resolveProfile = (hash) => {
     }).then((about) => {
         if (about) {
             resolved.about = Buffer.from(about).toString('utf8');
+        }
+        if (resolved.links) {
+            return ipfs_connector_1.IpfsConnector.getInstance()
+                .api
+                .resolve(resolved.links);
+        }
+        return Promise.resolve('');
+    }).then((links) => {
+        if (links) {
+            resolved.links = Buffer.from(links).toString('utf8');
         }
         records_1.profiles.setFull(hash, resolved);
         return resolved;

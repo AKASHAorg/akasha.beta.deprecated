@@ -13,7 +13,7 @@ const create = (data: IpfsProfileCreateRequest) => {
         avatar: '',
         backgroundImage: '',
         about: '',
-        links: data.links
+        links: ''
     };
     let media: any[] = [];
     let keys: any;
@@ -68,6 +68,14 @@ const create = (data: IpfsProfileCreateRequest) => {
             if (hash) {
                 returned.about = hash;
             }
+            if(data.links){
+                return IpfsConnector.getInstance().api.constructObjLink(data.links)
+            }
+            return Promise.resolve('');
+        }).then((hash: any) => {
+            if(hash){
+                returned.links = hash;
+            }
             return IpfsConnector.getInstance().api.add(returned);
         });
 };
@@ -78,14 +86,13 @@ const create = (data: IpfsProfileCreateRequest) => {
  * @param resolveAvatar
  * @returns {any}
  */
-const getShortProfile = (hash: string, resolveAvatar = true) => {
+const getShortProfile = (hash: string, resolveAvatar = false) => {
     if (profiles.getShort(hash)) {
         return Promise.resolve(profiles.getShort(hash));
     }
     return IpfsConnector.getInstance().api.get(hash)
         .then((schema: ProfileModel) => {
             let resolved: any = Object.assign({}, schema);
-            console.log(schema);
             if (schema.avatar && resolveAvatar) {
                 return IpfsConnector.getInstance()
                     .api
@@ -103,9 +110,10 @@ const getShortProfile = (hash: string, resolveAvatar = true) => {
 /**
  *
  * @param hash
- * @returns {Bluebird<U>|Thenable<U>|Promise<TResult>|PromiseLike<TResult>}
+ * @param resolveImages
+ * @returns {any}
  */
-const resolveProfile = (hash: string) => {
+const resolveProfile = (hash: string, resolveImages = false) => {
     let resolved: any;
     let keys: any;
 
@@ -113,7 +121,7 @@ const resolveProfile = (hash: string) => {
         return Promise.resolve(profiles.getFull(hash));
     }
 
-    return getShortProfile(hash)
+    return getShortProfile(hash, resolveImages)
         .then((schema: ProfileModel) => {
             resolved = Object.assign({}, schema);
             const LINKS: any[] = [];
@@ -126,18 +134,20 @@ const resolveProfile = (hash: string) => {
             if (mediaObj) {
                 keys = Object.keys(mediaObj).sort();
                 resolved.backgroundImage = mediaObj;
-                media = keys.map((media: string) => {
-                    return IpfsConnector.getInstance()
-                        .api
-                        .resolve(resolved.backgroundImage[media].src);
-                });
-                return Promise.all(media);
+                if (resolveImages) {
+                    media = keys.map((media: string) => {
+                        return IpfsConnector.getInstance()
+                            .api
+                            .resolve(resolved.backgroundImage[media].src);
+                    });
+                    return Promise.all(media);
+                }
             }
             return Promise.resolve('');
         }).then((images: any) => {
             if (images.length) {
                 images.forEach((v: Buffer, i: number) => {
-                    resolved.backgroundImage[keys[i]].src = Uint8Array.from(v);
+                    resolved.backgroundImage[keys[i]].src = v;
                 });
             }
             if (resolved.about) {
@@ -150,6 +160,18 @@ const resolveProfile = (hash: string) => {
             if (about) {
                 resolved.about = Buffer.from(about).toString('utf8');
             }
+
+            if(resolved.links){
+                return IpfsConnector.getInstance()
+                    .api
+                    .resolve(resolved.links);
+            }
+            return Promise.resolve('');
+        }).then((links: any) => {
+            if(links){
+                resolved.links = Buffer.from(links).toString('utf8');
+            }
+
             profiles.setFull(hash, resolved);
             return resolved;
         });
@@ -157,10 +179,9 @@ const resolveProfile = (hash: string) => {
 
 /**
  *
- * @returns {{
- *  create: ((data:IpfsProfileCreateRequest)=>Bluebird<U>),
-  * getShortProfile: ((hash:string)=>any), resolveProfile: ((hash:string)=>any)
-  * }}
+ * @returns {{create: ((data:IpfsProfileCreateRequest)=>Bluebird<U>),
+ * getShortProfile: ((hash:string, resolveAvatar?:boolean)=>(Bluebird<R>|any)),
+ * resolveProfile: ((hash:string, resolveImages?:boolean)=>(Bluebird<R>|Bluebird<U>))}}
  */
 export default function init() {
     return {
