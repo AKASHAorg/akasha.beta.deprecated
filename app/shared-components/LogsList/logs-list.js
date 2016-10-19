@@ -48,7 +48,8 @@ class LogsList extends Component {
 
     render () {
         const { gethLogs } = this.props;
-        return <ul style={listStyle} className="col-xs-12">
+        const style = Object.assign({}, listStyle, this.props.style);
+        return <ul style={style} className="col-xs-12">
           {gethLogs.map((log, key) => (
             <li key={key} style={{ marginBottom: '8px' }} >
               <div style={{ display: 'flex' }}>
@@ -73,7 +74,8 @@ class LogsList extends Component {
 LogsList.propTypes = {
     gethLogs: PropTypes.shape().isRequired,
     eProcActions: PropTypes.shape().isRequired,
-    timestamp: PropTypes.number
+    timestamp: PropTypes.number,
+    style: PropTypes.shape()
 };
 
 LogsList.contextTypes = {

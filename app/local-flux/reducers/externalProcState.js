@@ -61,7 +61,9 @@ const initialState = fromJS({
      *      false: geth is started/stopped
      *      true: geth is starting/stopping
      */
-    gethBusyState: false
+    gethBusyState: false,
+    ipfsBusyState: false,
+    ipfsPortsRequested: false
 });
 
 const eProcState = createReducer(initialState, {
@@ -73,11 +75,12 @@ const eProcState = createReducer(initialState, {
         }),
 
     [types.START_GETH_SUCCESS]: (state, action) => {
-        const gethStatus = action.data;
-        if (gethStatus.started || gethStatus.spawned) {
-            gethStatus.starting = null;
+        const newStatus = action.data;
+        if (newStatus.started || newStatus.spawned) {
+            newStatus.starting = null;
+            newStatus.stopped = null;
         }
-        return state.merge({ gethStatus: state.get('gethStatus').merge(gethStatus) });
+        return state.merge({ gethStatus: state.get('gethStatus').merge(newStatus) });
     },
 
     [types.START_GETH_ERROR]: (state, action) =>
@@ -139,7 +142,8 @@ const eProcState = createReducer(initialState, {
         state.merge({
             ipfsStatus: state.get('ipfsStatus').merge({ startRequested: false }),
             ipfsErrors: state.get('ipfsErrors').clear(),
-            ipfsBusyState: true
+            ipfsBusyState: true,
+            ipfsPortsRequested: false
         }),
 
     [types.STOP_IPFS_SUCCESS]: state =>
@@ -154,6 +158,15 @@ const eProcState = createReducer(initialState, {
 
     [types.GET_IPFS_STATUS_SUCCESS]: (state, action) =>
         state.merge({ ipfsStatus: new IpfsStatus(action.data) }),
+
+    [types.GET_IPFS_PORTS]: state =>
+        state.set('ipfsPortsRequested', true),
+
+    [types.GET_IPFS_PORTS_SUCCESS]: state =>
+        state.set('ipfsPortsRequested', false),
+
+    [types.GET_IPFS_PORTS_ERROR]: state =>
+        state.set('ipfsPortsRequested', false),
 
     [types.GET_SYNC_STATUS_SUCCESS]: (state, action) =>
         state.merge({ gethSyncStatus: new GethSyncStatus(action.data) }),

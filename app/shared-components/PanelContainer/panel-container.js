@@ -27,7 +27,6 @@ class PanelContainer extends React.Component {
         return (
           <Paper
             style={Object.assign(rootStyle, this.props.style)}
-            zDepth={2}
           >
             <div
               className="row middle-xs"

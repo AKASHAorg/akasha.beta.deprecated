@@ -2,7 +2,7 @@ import { connect } from 'react-redux';
 import CreateProfileComplete from './components/CreateProfileComplete';
 import { ProfileActions } from 'local-flux';
 
-function mapStateToProps (state) {
+function mapStateToProps (state, ownProps) {
     return {
         tempProfile: state.profileState.get('tempProfile')
     };

@@ -4,23 +4,38 @@ import { FlatButton } from 'material-ui';
 import { LogoIcon } from 'shared-components/svg';
 import { AppActions } from 'local-flux';
 
+const buttonStyle = {
+    width: '48px',
+    height: '48px',
+    minWidth: 'initial',
+    borderRadius: '50%',
+    marginRight: '10px'
+};
+
 class LogoButton extends Component {
 
     render () {
-        const { appActions } = this.props;
+        const { appActions, logoStyle, viewBox, className } = this.props;
         return <FlatButton
-          className="col-xs-1 start-xs"
-          icon={<LogoIcon />}
+          className={className}
+          icon={<LogoIcon logoStyle={logoStyle} viewBox={viewBox} />}
           hoverColor="transparent"
           onClick={appActions.changeTheme}
-          style={{ width: 'auto', minWidth: 'initial', borderRadius: '50%' }}
+          style={buttonStyle}
         />;
     }
 }
 
 LogoButton.propTypes = {
-    appActions: PropTypes.shape().isRequired
+    appActions: PropTypes.shape().isRequired,
+    logoStyle: PropTypes.shape(),
+    viewBox: PropTypes.string,
+    className: PropTypes.string
 };
+
+function mapStateToProps (state, ownProps) {
+    return {};
+}
 
 function mapDispatchToProps (dispatch) {
     return {
@@ -28,4 +43,4 @@ function mapDispatchToProps (dispatch) {
     };
 }
 
-export default connect(null, mapDispatchToProps)(LogoButton);
+export default connect(mapStateToProps, mapDispatchToProps)(LogoButton);

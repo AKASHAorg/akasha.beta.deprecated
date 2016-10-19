@@ -6,14 +6,14 @@ import Radium from 'radium';
 
 class IconLogo extends Component {
     static defaultProps = {
-        iconStyle: { width: '32px', height: '32px' },
+        logoStyle: { width: '40px', height: '40px', position: 'relative', top: '4px' },
         viewBox: '0 0 32 32'
     };
 
     static propTypes = {
         color: PropTypes.string,
         hoverColor: PropTypes.string,
-        iconStyle: PropTypes.object,
+        logoStyle: PropTypes.shape(),
         viewBox: PropTypes.string
     };
 
@@ -36,15 +36,14 @@ class IconLogo extends Component {
     }
 
     render () {
-        const { iconStyle, viewBox, hoverColor, color, ...other } = this.props;
+        const { logoStyle, viewBox, hoverColor, color } = this.props;
         return (
           <SvgIcon
             className={'hand-icon'}
             color={color || this.context.muiTheme.palette.textColor}
             hoverColor={hoverColor || this.context.muiTheme.palette.disabledColor}
-            style={iconStyle}
+            style={logoStyle}
             viewBox={viewBox}
-            {...other}
           >
             <MenuAkashaLogo />
           </SvgIcon>

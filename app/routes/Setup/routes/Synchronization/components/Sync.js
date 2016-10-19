@@ -25,15 +25,17 @@ class SyncStatus extends Component {
     }
     componentWillReceiveProps (nextProps) {
         const { gethStatus, eProcActions, gethSyncStatus, ipfsStatus, ipfsErrors, gethErrors,
-            syncActionId } = nextProps;
+            syncActionId, ipfsPortsRequested } = nextProps;
         const gethSynced = gethSyncStatus.get('synced');
         const gethReadyToSync = gethStatus.get('api') && !gethSynced;
-        const ipfsStarted = ipfsStatus.get('started');
+        const ipfsSpawned = ipfsStatus.get('spawned');
 
-        if (!this.state.hasStartedGeth && !nextProps.fetchingGethSettings) {
+        if (!this.state.hasStartedGeth && !nextProps.fetchingGethSettings
+                && !gethStatus.get('spawned')) {
             this.startGeth();
         }
-        if (!this.state.hasStartedIpfs && !nextProps.fetchingIpfsSettings) {
+        if (!this.state.hasStartedIpfs && !nextProps.fetchingIpfsSettings
+                && !ipfsStatus.get('spawned')) {
             this.startIpfs();
         }
 
@@ -45,14 +47,14 @@ class SyncStatus extends Component {
                 if (syncActionId !== 2 && syncActionId !== 3) {
                     eProcActions.throttledSyncUpdate();
                 }
-            } else if (gethSynced && ipfsStarted) {
+            } else if (gethSynced && ipfsSpawned && !ipfsPortsRequested) {
                 this.context.router.push('authenticate');
             }
         }
     }
     componentWillUpdate (nextProps) {
         const { gethStatus, configFlags, gethBusyState, fetchingGethSettings } = nextProps;
-        const shouldReconfigure = configFlags.get('requestStartupChange') && !gethStatus.get('api')
+        const shouldReconfigure = configFlags.get('requestStartupChange') && !gethStatus.get('spawned')
             && !gethBusyState && !fetchingGethSettings;
 
         if (shouldReconfigure) {
@@ -85,10 +87,13 @@ class SyncStatus extends Component {
         }
     }
     handleCancel = () => {
-        const { eProcActions, settingsActions, syncActionId } = this.props;
-        if (syncActionId !== 2) {
+        const { eProcActions, settingsActions, gethStatus, ipfsStatus } = this.props;
+        if (gethStatus.get('spawned')) {
             eProcActions.stopSync();
             eProcActions.cancelSync();
+        }
+        if (ipfsStatus.get('spawned')) {
+            eProcActions.stopIPFS();
         }
         settingsActions.saveSettings('flags', { requestStartupChange: true });
     };
@@ -289,6 +294,7 @@ SyncStatus.propTypes = {
     syncActionId: PropTypes.number,
     gethBusyState: PropTypes.bool,
     ipfsBusyState: PropTypes.bool,
+    ipfsPortsRequested: PropTypes.bool,
     timestamp: PropTypes.number
 };
 

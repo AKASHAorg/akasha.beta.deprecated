@@ -2,7 +2,7 @@ import { connect } from 'react-redux';
 import CreateProfile from './components/CreateProfile';
 import { ProfileActions, ValidationActions } from 'local-flux';
 
-function mapStateToProps (state) {
+function mapStateToProps (state, ownProps) {
     return {
         profileState: state.profileState
     };

@@ -2,7 +2,7 @@ import { connect } from 'react-redux';
 import CreateProfileStatus from './components/CreateProfileStatus';
 import { ProfileActions, TransactionActions } from 'local-flux';
 
-function mapStateToProps (state) {
+function mapStateToProps (state, ownProps) {
     return {
         tempProfile: state.profileState.get('tempProfile'),
         loggedProfile: state.profileState.get('loggedProfile'),

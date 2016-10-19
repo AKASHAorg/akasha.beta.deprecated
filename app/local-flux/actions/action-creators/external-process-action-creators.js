@@ -145,6 +145,12 @@ export function getIpfsConfigError (error) {
     };
 }
 
+export function getIpfsPorts () {
+    return {
+        type: types.GET_IPFS_PORTS
+    };
+}
+
 export function getIpfsPortsSuccess (data) {
     return {
         type: types.GET_IPFS_PORTS_SUCCESS,
