@@ -161,7 +161,8 @@ class SyncStatus extends Component {
             ipfsBusyState,
             syncActionId,
             eProcActions,
-            timestamp } = this.props;
+            timestamp
+        } = this.props;
 
         const pageTitle = this._getActionLabels().title;
         let gethErrorCards;
@@ -292,8 +293,8 @@ SyncStatus.propTypes = {
 };
 
 SyncStatus.contextTypes = {
-    muiTheme: React.PropTypes.object,
-    router: React.PropTypes.object
+    muiTheme: React.PropTypes.shape().isRequired,
+    router: React.PropTypes.shape().isRequired
 };
 
 SyncStatus.defaultProps = {

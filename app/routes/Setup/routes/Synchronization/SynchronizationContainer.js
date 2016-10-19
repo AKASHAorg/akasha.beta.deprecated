@@ -4,7 +4,7 @@ import {
     SettingsActions } from 'local-flux';
 import SyncStatus from './components/Sync';
 
-function mapStateToProps (state) {
+function mapStateToProps (state, ownProps) {
     return {
         gethStatus: state.externalProcState.get('gethStatus'),
         gethErrors: state.externalProcState.get('gethErrors'),

@@ -5,7 +5,7 @@ import {
     EProcActions, } from 'local-flux';
 import Setup from './components/setup';
 
-function mapStateToProps (state) {
+function mapStateToProps (state, ownProps) {
     return {
         configFlags: state.settingsState.get('flags')
     };

@@ -5,19 +5,30 @@ import { getMuiTheme } from 'material-ui/styles';
 import { Snackbar } from 'material-ui';
 import { AuthDialog, ConfirmationDialog } from 'shared-components';
 
-import AkashaTheme from '../layouts/AkashaTheme';
+import lightTheme from '../layouts/AkashaTheme/lightTheme';
+import darkTheme from '../layouts/AkashaTheme/darkTheme';
 
 class App extends Component {
     constructor (props) {
         super(props);
         this.state = {
             userPassword: '',
-            voteWeight: 1
+            voteWeight: 1,
+            theme: 'light'
         };
     }
-    getChildContext = () => ({
-        muiTheme: getMuiTheme(AkashaTheme)
-    });
+    getChildContext = () => {
+        return {
+            muiTheme: getMuiTheme(this.state.theme === 'light' ? lightTheme : darkTheme)
+        };
+    };
+    componentWillReceiveProps (nextProps) {
+        if (nextProps.appState.get('theme') !== this.props.appState.get('theme')) {
+            this.setState({
+                theme: nextProps.appState.get('theme')
+            });
+        }
+    }
     _handleSendReport = () => {
     };
     _handleErrorClose = () => {

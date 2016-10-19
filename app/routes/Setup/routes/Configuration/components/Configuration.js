@@ -17,7 +17,6 @@ class Config extends Component {
             isDialogOpen: false
         };
     }
-
     componentWillUpdate (nextProps) {
         const { configFlags } = nextProps;
         const cancelRequest = configFlags && configFlags.get('requestStartupChange');
@@ -227,7 +226,7 @@ Config.propTypes = {
 };
 
 Config.contextTypes = {
-    muiTheme: React.PropTypes.object,
+    muiTheme: React.PropTypes.shape().isRequired,
     router: React.PropTypes.object
 };
 
