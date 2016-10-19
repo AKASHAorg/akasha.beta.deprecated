@@ -48,8 +48,23 @@ class ServiceStatusBar extends Component {
         this.state = {
             activeTab: null,
             isGethDialogOpen: false,
-            isIpfsDialogOpen: false
+            isIpfsDialogOpen: false,
+            gethToggled: props.gethStatus.get('spawned'),
+            ipfsToggled: props.ipfsStatus.get('spawned')
         };
+    }
+
+    componentWillReceiveProps (nextProps) {
+        if (nextProps.gethStatus.get('spawned') !== this.props.gethStatus.get('spawned')) {
+            this.setState({
+                gethToggled: nextProps.gethStatus.get('spawned')
+            });
+        }
+        if (nextProps.ipfsStatus.get('spawned') !== this.props.ipfsStatus.get('spawned')) {
+            this.setState({
+                ipfsToggled: nextProps.ipfsStatus.get('spawned')
+            });
+        }
     }
 
     getContainerStyle (state) {
@@ -93,10 +108,10 @@ class ServiceStatusBar extends Component {
         const { gethStatus } = this.props;
         let gethState = ServiceState.stopped;
 
-        if (gethStatus.get('api')) {
+        if (gethStatus.get('api') && !gethStatus.get('stopped')) {
             gethState = ServiceState.started;
         } else if (gethStatus.get('spawned') || gethStatus.get('starting')
-                || gethStatus.get('downloading')) {
+                || gethStatus.get('downloading') || gethStatus.get('api')) {
             gethState = ServiceState.starting;
         }
         return gethState;
@@ -144,7 +159,8 @@ class ServiceStatusBar extends Component {
 
     onGethToggle = () => {
         const { eProcActions, gethSettings, gethStatus } = this.props;
-        if (gethStatus.get('spawned')) {
+        const { gethToggled } = this.state;
+        if (gethToggled) {
             if (!gethStatus.get('synced')) {
                 eProcActions.pauseSync();
             } else {
@@ -156,15 +172,22 @@ class ServiceStatusBar extends Component {
             }
             eProcActions.startGeth(gethSettings.toJS());
         }
+        this.setState({
+            gethToggled: !gethToggled
+        });
     };
 
     onIpfsToggle = () => {
-        const { eProcActions, ipfsStatus } = this.props;
-        if (ipfsStatus.get('spawned')) {
+        const { eProcActions } = this.props;
+        const { ipfsToggled } = this.state;
+        if (ipfsToggled) {
             eProcActions.stopIPFS();
         } else {
             eProcActions.startIPFS();
         }
+        this.setState({
+            ipfsToggled: !ipfsToggled
+        });
     };
 
     selectTab (tab) {
@@ -174,17 +197,17 @@ class ServiceStatusBar extends Component {
     }
 
     getGethActions () {
-        const { intl, gethBusyState, gethStatus } = this.props;
+        const { intl, gethBusyState } = this.props;
         return <div style={{ display: 'flex' }}>
           <div style={{ flex: '0 0 auto', height: '36px', display: 'flex', alignItems: 'center' }}>
             <Toggle
-              label={gethStatus.get('spawned') ?
+              label={this.state.gethToggled ?
                   intl.formatMessage(generalMessages.gethServiceOn) :
                   intl.formatMessage(generalMessages.gethServiceOff)
               }
               labelPosition="right"
               labelStyle={{ textAlign: 'left', width: 'calc(100% - 44px)' }}
-              toggled={gethStatus.get('spawned')}
+              toggled={this.state.gethToggled}
               onToggle={this.onGethToggle}
               disabled={gethBusyState}
               style={toggleStyle}
@@ -200,17 +223,17 @@ class ServiceStatusBar extends Component {
     }
 
     getIpfsActions () {
-        const { intl, ipfsBusyState, ipfsStatus } = this.props;
+        const { intl, ipfsBusyState } = this.props;
         return <div style={{ display: 'flex' }}>
           <div style={{ flex: '0 0 auto', height: '36px', display: 'flex', alignItems: 'center' }}>
             <Toggle
-              label={ipfsStatus.get('spawned') ?
+              label={this.state.ipfsToggled ?
                   intl.formatMessage(generalMessages.ipfsServiceOn) :
                   intl.formatMessage(generalMessages.ipfsServiceOff)
               }
               labelPosition="right"
               labelStyle={{ textAlign: 'left', width: 'calc(100% - 44px)' }}
-              toggled={ipfsStatus.get('spawned')}
+              toggled={this.state.ipfsToggled}
               onToggle={this.onIpfsToggle}
               disabled={ipfsBusyState}
               style={toggleStyle}
@@ -229,9 +252,7 @@ class ServiceStatusBar extends Component {
         const { intl, ipfsErrors } = this.props;
 
         if (ipfsErrors.size === 0) {
-            return <div style={{ padding: '20px 0' }}>
-              {intl.formatMessage(generalMessages.noErrors)}
-            </div>;
+            return intl.formatMessage(generalMessages.noErrors);
         }
 
         return ipfsErrors.map((error, key) =>
@@ -276,7 +297,7 @@ class ServiceStatusBar extends Component {
           actions={this.getGethActions()}
           open={this.state.isGethDialogOpen}
           onRequestClose={this.closeGethDialog}
-          contentStyle={{ minHeight: '500px' }}
+          contentStyle={{ paddingBottom: '0px' }}
           titleStyle={{ padding: '0px' }}
           autoScrollBodyContent
         >
@@ -285,10 +306,16 @@ class ServiceStatusBar extends Component {
               intl={intl}
               gethSettings={gethSettings}
               settingsActions={settingsActions}
+              style={{ height: '400px' }}
             />
           }
           {this.state.activeTab === GETH_LOGS &&
-            <LogsList eProcActions={eProcActions} timestamp={timestamp} gethLogs={gethLogs} />
+            <LogsList
+              eProcActions={eProcActions}
+              timestamp={timestamp}
+              gethLogs={gethLogs}
+              style={{ height: '400px', overflowY: 'visible', margin: '0px', paddingTop: '10px' }}
+            />
           }
         </Dialog>;
     }
@@ -324,7 +351,6 @@ class ServiceStatusBar extends Component {
           actions={this.getIpfsActions()}
           open={this.state.isIpfsDialogOpen}
           onRequestClose={this.closeIpfsDialog}
-          contentStyle={{ minHeight: '500px' }}
           titleStyle={{ padding: '0px' }}
           autoScrollBodyContent
         >
@@ -333,9 +359,14 @@ class ServiceStatusBar extends Component {
               intl={intl}
               ipfsSettings={ipfsSettings}
               settingsActions={settingsActions}
+              style={{ height: '400px' }}
             />
           }
-          {this.state.activeTab === IPFS_LOGS && this.renderIpfsErrors()}
+          {this.state.activeTab === IPFS_LOGS &&
+            <div style={{ padding: '20px 0', height: '400px' }}>
+              {this.renderIpfsErrors()}
+            </div>
+          }
         </Dialog>;
     }
 

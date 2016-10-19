@@ -28,8 +28,8 @@ html, body {
   }
 }
 .caret-down {
-  width: 0; 
-  height: 0; 
+  width: 0;
+  height: 0;
   border-left: 10px solid transparent;
   border-right: 10px solid transparent;
   border-top: 10px solid;
@@ -54,12 +54,12 @@ html, body {
     width: 6px;
     background: rgba(0,0,0,0.02);
 }
- 
+
 /* Track */
 ::-webkit-scrollbar-track {
     box-shadow: 0px 3px 0px 0px #FFF, 0 -3px 0 0 #FFF;
 }
- 
+
 /* Handle */
 ::-webkit-scrollbar-thumb {
     -webkit-border-radius: 1px;

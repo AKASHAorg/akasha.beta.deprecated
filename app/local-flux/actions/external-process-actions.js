@@ -21,6 +21,7 @@ class EProcActions {
             trailing: true,
             leading: true
         });
+        this.ipfsPortsRequest = null;
         return eProcActions;
     }
 
@@ -116,9 +117,9 @@ class EProcActions {
                     this.resetIpfsBusyState();
                 },
                 onSuccess: (data) => {
+                    this.getIpfsPorts();
                     dispatch(externalProcessActionCreators.startIPFSSuccess(data));
                     this.resetIpfsBusyState();
-                    setTimeout(this.getIpfsPorts, 1000);
                 }
             });
         });
@@ -141,17 +142,23 @@ class EProcActions {
         });
     };
     getIpfsPorts = () => {
-        this.ipfsService.getPorts({
-            options: {},
-            onError: err => this.dispatch(externalProcessActionCreators.getIpfsPortsError(err)),
-            onSuccess: data => this.dispatch(
-                externalProcessActionCreators.getIpfsPortsSuccess(data)
-            )
-        });
+        this.dispatch(externalProcessActionCreators.getIpfsPorts());
+        this.ipfsPortsRequest = setTimeout(() => {
+            this.ipfsService.getPorts({
+                options: {},
+                onError: err => this.dispatch(externalProcessActionCreators.getIpfsPortsError(err)),
+                onSuccess: data => this.dispatch(
+                    externalProcessActionCreators.getIpfsPortsSuccess(data)
+                )
+            });
+        }, 1000);
     };
     stopIPFS = () => {
         this.dispatch(externalProcessActionCreators.stopIPFS());
         this.dispatch(externalProcessActionCreators.resetIpfsPorts());
+        if (this.ipfsPortsRequest) {
+            clearTimeout(this.ipfsPortsRequest);
+        }
         this.ipfsService.stop({
             options: {},
             onError: (err) => {
