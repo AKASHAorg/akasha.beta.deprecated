@@ -117,9 +117,11 @@ class EProcActions {
                     this.resetIpfsBusyState();
                 },
                 onSuccess: (data) => {
-                    this.getIpfsPorts();
-                    dispatch(externalProcessActionCreators.startIPFSSuccess(data));
-                    this.resetIpfsBusyState();
+                    if(data.started){
+                        this.getIpfsPorts();
+                        dispatch(externalProcessActionCreators.startIPFSSuccess(data));
+                        this.resetIpfsBusyState();
+                    }
                 }
             });
         });
@@ -151,7 +153,7 @@ class EProcActions {
                     externalProcessActionCreators.getIpfsPortsSuccess(data)
                 )
             });
-        }, 1000);
+        }, 2000);
     };
     stopIPFS = () => {
         this.dispatch(externalProcessActionCreators.stopIPFS());
