@@ -58,7 +58,8 @@ const initialState = fromJS({
     loggedProfile: new LoggedProfile(),
     tempProfile: new TempProfile(),
     errors: new List(),
-    loginRequested: false
+    loginRequested: false,
+    profilesFetched: false
 });
 
 const profileState = createReducer(initialState, {
@@ -224,7 +225,8 @@ const profileState = createReducer(initialState, {
             profiles: new List(data.map(prf => new Profile({
                 ethAddress: prf.key,
                 profile: prf.profile
-            })))
+            }))),
+            profilesFetched: true
         }),
 
     [types.GET_LOCAL_PROFILES_ERROR]: (state, { error }) =>

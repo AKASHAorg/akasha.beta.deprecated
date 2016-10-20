@@ -5,7 +5,7 @@ import { SvgIcon, RaisedButton } from 'material-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { PanelContainer } from 'shared-components';
 import { generalMessages, setupMessages } from 'locale-data/messages';
-
+import { is } from 'immutable';
 class CreateProfileStatus extends Component {
     constructor (props) {
         super(props);
@@ -23,11 +23,26 @@ class CreateProfileStatus extends Component {
         if (nextProps.tempProfile.get('username') === '') {
             return this.context.router.push('/authenticate');
         }
-        return this.resumeProfileCreation(nextProps);
+        if (nextProps.errors.size > 0) {
+            return this.setState({
+                errors: nextProps.errors
+            });
+        }
+        const shouldResume =
+            !is(nextProps.tempProfile.get('currentStatus'), this.props.tempProfile.get('currentStatus')) ||
+            !is(nextProps.minedTransactions, this.props.minedTransactions) ||
+            !is(nextProps.pendingTransactions, this.props.pendingTransactions) ||
+            !is(nextProps.loggedProfile, this.props.loggedProfile) ||
+            this.props.loginRequested !== nextProps.loginRequested;
+        if (shouldResume) {
+            return this.resumeProfileCreation(nextProps);
+        }
     }
 
     getCurrentStatusDescription = () => {
-        const nextAction = this.props.tempProfile.getIn(['currentStatus', 'nextAction']);
+        const { tempProfile, loginRequested } = this.props;
+        const currentStatus = this.props.tempProfile.get('currentStatus');
+        const nextAction = currentStatus.get('nextAction');
         let description = <div />;
 
         switch (nextAction) {
@@ -50,20 +65,43 @@ class CreateProfileStatus extends Component {
                 );
                 break;
             case 'listenFaucetTx':
-                description = (
-                  <FormattedMessage
-                    id="app.createProfileStatus.waitingFaucetTransactionMined"
-                    description="Message status when waiting for faucet transaction to be mined"
-                    defaultMessage="Waiting for faucet transaction to be mined"
-                  />
-                );
+                if (loginRequested) {
+                    description = (
+                      <FormattedMessage
+                        id="app.createProfileStatus.loggingIn"
+                        description="Message status when we are sending login request"
+                        defaultMessage={`Logging in with {username}`}
+                        values={{ username: <b>@{tempProfile.get('username')}</b> }}
+                      />
+                    );
+                } else if (currentStatus.get('publishRequested')) {
+                    description = (
+                      <FormattedMessage
+                        id="app.createProfileStatus.publishing"
+                        description="Message status when we are sending publish request"
+                        defaultMessage="Publishing your profile"
+                      />
+                    );
+                } else {
+                    description = (
+                      <FormattedMessage
+                        id="app.createProfileStatus.waitingFaucetTransactionMined"
+                        description="Message status when waiting for faucet transaction to be mined"
+                        defaultMessage={`Waiting for faucet transaction to be mined.
+                            Transaction id: {faucetTx}`}
+                        values={{ faucetTx: currentStatus.get('faucetTx') }}
+                      />
+                    );
+                }
                 break;
             case 'listenPublishTx':
                 description = (
                   <FormattedMessage
                     id="app.createProfileStatus.waitingPublishTransactionMined"
                     description="Message status when waiting for publish transaction to be mined"
-                    defaultMessage="Waiting for publish transaction to be mined"
+                    defaultMessage={`Waiting for publish transaction to be mined.
+                        Transaction id: {publishTx}`}
+                    values={{ publishTx: currentStatus.get('publishTx') }}
                   />
                 );
                 break;
@@ -72,12 +110,12 @@ class CreateProfileStatus extends Component {
                   <FormattedMessage
                     id="app.createProfileStatus.registering"
                     description="Message status when registering"
-                    defaultMessage="Registering..."
+                    defaultMessage={`Registering process derailed to an unknown step.
+                        Please abort current registration and try again.`}
                   />
                 );
                 break;
         }
-
         return description;
     }
     addTxToQueue = (tx) => {
@@ -123,12 +161,6 @@ class CreateProfileStatus extends Component {
         const shouldListenPublishTx = nextAction === 'listenPublishTx' &&
             publishPendingIndex === -1 && publishMinedIndex === -1 && !listeningPublishTx;
 
-        if (errors.size > 0) {
-            return this.setState({
-                errors
-            });
-        }
-
         if (shouldListenPublishTx) {
             profileActions.listenPublishTx();
             return this.addTxToQueue(publishTx);
@@ -160,6 +192,7 @@ class CreateProfileStatus extends Component {
     _handleStepRetry = () => {
         const { profileActions } = this.props;
         profileActions.clearErrors();
+        this.resumeProfileCreation(this.props);
     }
     render () {
         const { style, tempProfile, intl } = this.props;

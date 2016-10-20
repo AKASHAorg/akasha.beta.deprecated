@@ -5,11 +5,13 @@ import ErrorRecord from './error-record';
 function Status () {
     return {
         nextAction: String,
-        error: [ErrorRecord],
+        ethAddressRequested: Boolean,
         faucetRequested: Boolean,
         publishRequested: Boolean,
         faucetTx: null,
-        publishTx: null
+        publishTx: null,
+        listeningPublishTx: Boolean,
+        listeningFaucetTx: Boolean
     };
 }
 

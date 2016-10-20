@@ -58,16 +58,16 @@ class NewEntryPage extends Component {
         const title = this.editor.getTitle();
         const wordCount = getWordCount(contentState);
 
-        console.log(htmlContent, 'htmlContent');
-        console.log(content, 'rawContent');
-        console.log(contentState, 'contentState');
+        // console.log(htmlContent, 'htmlContent');
+        // console.log(content, 'rawContent');
+        // console.log(contentState, 'contentState');
 
-        if (params.draftId !== 'new') {
-            const draftId = parseInt(params.draftId, 10);
-            entryActions.updateDraftThrottled({ id: draftId, content, title, wordCount });
-        } else {
-            entryActions.createDraft(loggedProfile.get('userName'), { content, title, wordCount });
-        }
+        // if (params.draftId !== 'new') {
+        //     const draftId = parseInt(params.draftId, 10);
+        //     entryActions.updateDraftThrottled({ id: draftId, content, title, wordCount });
+        // } else {
+        //     entryActions.createDraft(loggedProfile.get('userName'), { content, title, wordCount });
+        // }
         if (typeof cb === 'function') {
             cb();
         }
@@ -130,7 +130,7 @@ class NewEntryPage extends Component {
                   padding: '24px 0'
               }}
             >
-              <div className="col-xs-6">
+              <div className="col-xs-12">
                 <EntryEditor
                   editorRef={(editor) => { this.editor = editor; }}
                   onAutosave={this._handleEditorAutosave}

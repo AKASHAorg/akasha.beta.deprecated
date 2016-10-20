@@ -1,6 +1,6 @@
 import PublishEntryPanel from './components/publish-entry-panel';
 import { connect } from 'react-redux';
-import { ProfileActions, EntryActions, EntryBundleActions } from 'local-flux';
+import { ProfileActions, EntryActions } from 'local-flux';
 
 function mapStateToProps (state) {
     return {
@@ -13,8 +13,7 @@ function mapStateToProps (state) {
 function mapDispatchToProps (dispatch) {
     return {
         profileActions: new ProfileActions(dispatch),
-        entryActions: new EntryActions(dispatch),
-        entryBundleActions: new EntryBundleActions(dispatch)
+        entryActions: new EntryActions(dispatch)
     };
 }
 

@@ -1,1 +1,75 @@
 @import '../../../node_modules/megadraft/lib/styles/megadraft.scss';
+
+/**
+ * Editor styles override
+ */
+.megadraft-editor {
+    .paragraph,
+    h2,
+    blockquote,
+    .public-DraftStyleDefault-ul,
+    .public-DraftStyleDefault-ol {
+        width: 700px;
+        display: block;
+        margin: 0 auto;
+    }
+}
+ .megadraft-editor .paragraph + .paragraph {
+     margin-top: 8px;
+ }
+
+ .megadraft-editor .public-DraftEditor-content figure {
+     margin-top: 16px;
+ }
+.megadraft-editor .sidemenu {
+    width: auto;
+}
+.megadraft-editor .sidebar__menu {
+    left: calc(50% - 400px);
+    z-index: 10;
+}
+.megadraft-editor .sidemenu__button {
+    display: inline-block;
+    color: #444;
+    border: 1px solid #444;
+    border-radius: 50%;
+    outline: none;
+    vertical-align: middle;
+    &--open {
+        transform: rotate(137deg); // 1337 looks better :))
+        &:before {
+            background-color: transparent;
+        }
+    }
+    &:before {
+        background-color: transparent;
+    }
+}
+.megadraft-editor .sidemenu__items {
+    display: inline-block;
+    vertical-align: middle;
+    overflow: hidden;
+    padding: 0;
+    max-height: 32px;
+    margin-top: 0;
+    text-align: left;
+    opacity: 0;
+    width: 0;
+    &--open {
+        opacity: 1;
+        width: auto;
+        overflow: initial;
+    }
+}
+
+.megadraft-editor .sidemenu__item {
+    margin-left: 8px;
+    input[type='file'] {
+        height: 0px;
+        width: 0px;
+        opacity: 0;
+    }
+}
+.megadraft-editor {
+    padding-top: 45px;
+}
