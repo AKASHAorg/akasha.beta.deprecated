@@ -10,7 +10,6 @@ import { injectIntl } from 'react-intl';
 import { LoginDialog, PanelContainer } from 'shared-components';
 import { setupMessages, generalMessages } from 'locale-data/messages'; /* eslint import/no-unresolved: 0*/
 import LoginHeader from '../../../components/LoginHeader';
-import imageCreator from 'utils/imageUtils';
 
 class Auth extends Component {
     constructor (props, context) {
@@ -87,11 +86,11 @@ class Auth extends Component {
             const profileAddress = profile.get('ethAddress');
             const profileName = `${profile.get('firstName')} ${profile.get('lastName')}`;
             const userInitials = profileName.match(/\b\w/g);
-            const avatarImage = profile.getIn(['avatar', '/']) ? imageCreator(profile.getIn(['avatar', '/']), profile.get('baseUrl')) : null;
+            const avatarImage = profile.get('avatar');
             let avtr;
             if (avatarImage) {
                 avtr = (
-                  <Avatar src={avatarImage} size={48} className="col-xs-4 middle-xs" />
+                  <Avatar src={avatarImage} size={48} style={{top: '12px', border: '1px solid #bcbcbc'}}/>
                 );
             } else {
                 avtr = (

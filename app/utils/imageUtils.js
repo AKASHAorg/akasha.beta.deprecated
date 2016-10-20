@@ -4,7 +4,6 @@ const dbg = debug('App:imageUtils');
 const error = debug('App:error');
 
 function imageCreator (arrayBuffer, baseUrl) {
-    console.log(arrayBuffer, baseUrl);
     if(baseUrl && typeof arrayBuffer === 'string'){
         return `${baseUrl}/${arrayBuffer}`;
     }

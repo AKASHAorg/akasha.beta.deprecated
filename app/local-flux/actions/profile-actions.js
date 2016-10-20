@@ -1,5 +1,6 @@
 import { ProfileService, AuthService, RegistryService, TransactionService } from '../services';
 import { profileActionCreators } from './action-creators';
+import imageCreator from '../../utils/imageUtils';
 
 let profileActions = null;
 
@@ -254,20 +255,23 @@ class ProfileActions {
      * profiles = [{key: string, profile: string}]
      */
     getProfileData = (profiles) => {
-        for (let i = profiles.length - 1; i >= 0; i -= 1) {
+        profiles.forEach((profileObject) => {
             this.profileService.getProfileData({
                 options: {
-                    profile: profiles[i].profile,
+                    profile: profileObject.profile,
                     full: false
                 },
                 onSuccess: (data) => {
+                    if(data.avatar){
+                        data.avatar = imageCreator(data.avatar, data.baseUrl);
+                    }
                     this.dispatch(profileActionCreators.getProfileDataSuccess(data));
                 },
                 onError: (err) => {
                     this.dispatch(profileActionCreators.getProfileDataError(err));
                 }
             });
-        }
+        })
     };
 
     getProfileBalance = (profileKey, unit) =>

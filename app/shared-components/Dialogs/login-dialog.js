@@ -1,6 +1,5 @@
 import React from 'react';
 import { Dialog, TextField, Checkbox, SelectField, MenuItem, Avatar } from 'material-ui';
-import imageCreator from 'utils/imageUtils';
 
 const loginDialog = (props) => {
     const minute = 'min';
@@ -18,7 +17,7 @@ const loginDialog = (props) => {
     };
     const profileName = `${profile.get('firstName')} ${profile.get('lastName')}`;
     const userInitials = profileName.match(/\b\w/g);
-    const avatarImage = profile.getIn(['avatar', '/']) ? imageCreator(profile.getIn(['avatar', '/']), profile.get('baseUrl')) : null;
+    const avatarImage = profile.get('avatar');
     return (
         <Dialog
             title={title}
@@ -28,7 +27,7 @@ const loginDialog = (props) => {
             contentStyle={{ width: '50%' }}
         >
             {avatarImage &&
-                <Avatar src={avatarImage} size={100} />
+                <Avatar src={avatarImage} size={100} style={{border: '1px solid #bcbcbc'}} />
             }
             {!avatarImage &&
                 <Avatar src={avatarImage} size={100} >

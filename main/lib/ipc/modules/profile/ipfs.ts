@@ -1,4 +1,4 @@
-import { IpfsConnector } from '@akashaproject/ipfs-connector';
+import { IpfsConnector, IpfsApiHelper } from '@akashaproject/ipfs-connector';
 import { profiles } from '../models/records';
 import * as Promise from 'bluebird';
 /**
@@ -93,14 +93,18 @@ const getShortProfile = (hash: string, resolveAvatar = false) => {
     return IpfsConnector.getInstance().api.get(hash)
         .then((schema: ProfileModel) => {
             let resolved: any = Object.assign({}, schema);
-            if (schema.avatar && resolveAvatar) {
-                return IpfsConnector.getInstance()
-                    .api
-                    .resolve(`${hash}/avatar`)
-                    .then((data: Buffer) => {
-                        resolved.avatar = data;
-                        return resolved;
-                    });
+            if(schema.avatar){
+                if (resolveAvatar) {
+                    return IpfsConnector.getInstance()
+                        .api
+                        .resolve(`${hash}/avatar`)
+                        .then((data: Buffer) => {
+                            resolved.avatar = data;
+                            profiles.setShort(hash, resolved);
+                            return resolved;
+                        });
+                }
+                resolved.avatar = schema.avatar[IpfsApiHelper.LINK_SYMBOL];
             }
             profiles.setShort(hash, resolved);
             return resolved;

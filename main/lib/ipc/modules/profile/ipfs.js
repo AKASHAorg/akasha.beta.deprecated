@@ -81,14 +81,18 @@ const getShortProfile = (hash, resolveAvatar = false) => {
     return ipfs_connector_1.IpfsConnector.getInstance().api.get(hash)
         .then((schema) => {
         let resolved = Object.assign({}, schema);
-        if (schema.avatar && resolveAvatar) {
-            return ipfs_connector_1.IpfsConnector.getInstance()
-                .api
-                .resolve(`${hash}/avatar`)
-                .then((data) => {
-                resolved.avatar = data;
-                return resolved;
-            });
+        if (schema.avatar) {
+            if (resolveAvatar) {
+                return ipfs_connector_1.IpfsConnector.getInstance()
+                    .api
+                    .resolve(`${hash}/avatar`)
+                    .then((data) => {
+                    resolved.avatar = data;
+                    records_1.profiles.setShort(hash, resolved);
+                    return resolved;
+                });
+            }
+            resolved.avatar = schema.avatar[ipfs_connector_1.IpfsApiHelper.LINK_SYMBOL];
         }
         records_1.profiles.setShort(hash, resolved);
         return resolved;
