@@ -250,6 +250,9 @@ class ProfileActions {
             },
             onError: err => this.dispatch(profileActionCreators.getLocalProfilesError(err))
         });
+
+    clearLocalProfiles = () =>
+        this.dispatch(profileActionCreators.clearLocalProfilesSuccess());
     /**
      * profiles = [{key: string, profile: string}]
      */

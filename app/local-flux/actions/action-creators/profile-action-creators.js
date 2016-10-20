@@ -190,6 +190,12 @@ export function getProfileDataSuccess (data) {
     };
 }
 
+export function clearLocalProfilesSuccess () {
+    return {
+        type: types.CLEAR_LOCAL_PROFILES_SUCCESS
+    }
+}
+
 export function getProfileDataError (error) {
     error.code = 'GPDE01';
     return {

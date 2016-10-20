@@ -28,6 +28,9 @@ class Auth extends Component {
         profileActions.clearLoggedProfile();
         profileActions.getLocalProfiles();
     }
+    componentWillUnmount () {
+        this.props.profileActions.clearLocalProfiles();
+    }
     componentWillReceiveProps (nextProps) {
         const {
             profileActions,
@@ -46,7 +49,7 @@ class Auth extends Component {
                 return this.context.router.push('/authenticate/new-profile-status');
             }
         }
-        if ((localProfiles.size > 0)) {
+        if ((localProfiles.size > 0) && this.props.localProfiles.size !== nextProps.localProfiles.size) {
             profileActions.getProfileData(localProfiles.toJS());
         }
         return null;
