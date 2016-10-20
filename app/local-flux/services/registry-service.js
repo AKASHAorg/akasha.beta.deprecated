@@ -1,4 +1,3 @@
-import debug from 'debug';
 import BaseService from './base-service';
 import profileDB from './db/profile';
 
