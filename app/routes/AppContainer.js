@@ -14,7 +14,7 @@ class App extends Component {
         this.state = {
             userPassword: '',
             voteWeight: 1,
-            theme: 'light'
+            theme: props.theme
         };
     }
     getChildContext = () => {
@@ -22,10 +22,13 @@ class App extends Component {
             muiTheme: getMuiTheme(this.state.theme === 'light' ? lightTheme : darkTheme)
         };
     };
+    componentWillMount () {
+        this.props.settingsActions.getSettings('general');
+    }
     componentWillReceiveProps (nextProps) {
-        if (nextProps.appState.get('theme') !== this.props.appState.get('theme')) {
+        if (nextProps.theme !== this.props.theme) {
             this.setState({
-                theme: nextProps.appState.get('theme')
+                theme: nextProps.theme
             });
         }
     }
@@ -118,6 +121,8 @@ App.propTypes = {
     appActions: PropTypes.shape(),
     profileState: PropTypes.shape(),
     profileActions: PropTypes.shape(),
+    settingsActions: PropTypes.shape(),
+    theme: PropTypes.string,
     children: PropTypes.element
 };
 App.contextTypes = {
@@ -131,7 +136,8 @@ function mapStateToProps (state) {
     return {
         appState: state.appState,
         profileState: state.profileState,
-        routeState: state.reduxAsyncConnect
+        routeState: state.reduxAsyncConnect,
+        theme: state.settingsState.get('general').get('theme')
     };
 }
 function mapDispatchToProps (dispatch) {

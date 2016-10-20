@@ -36,6 +36,10 @@ const UserSettings = Record({
 
 });
 
+const GeneralSettings = Record({
+    theme: 'light'
+});
+
 const Flags = Record({
     requestStartupChange: true
 });
@@ -48,6 +52,7 @@ const initialState = fromJS({
     flags: new Flags(),
     errors: new List(),
     userSettings: new UserSettings(),
+    general: new GeneralSettings(),
     isAdvanced: false,
     fetchingGethSettings: false,
     fetchingIpfsSettings: false
@@ -82,6 +87,8 @@ const settingsState = createReducer(initialState, {
             });
         } else if (action.table === 'flags') {
             data = new Flags(action.data);
+        } else if (action.table === 'general') {
+            data = new GeneralSettings(action.data);
         }
         return state.merge({ [action.table]: data });
     },
@@ -105,6 +112,9 @@ const settingsState = createReducer(initialState, {
                 return state.merge({ userSettings: new UserSettings(action.settings) });
             case 'flags': {
                 return state.merge({ flags: action.settings });
+            }
+            case 'general': {
+                return state.updateIn(['general', 'theme'], () => action.settings.theme);
             }
             default:
                 return state;
@@ -166,6 +176,10 @@ const settingsState = createReducer(initialState, {
             });
         }
         return state;
+    },
+
+    [types.CHANGE_THEME]: (state, action) => {
+        return state.updateIn(['general', 'theme'], () => action.theme);
     },
 
     [eProcTypes.GET_GETH_OPTIONS_SUCCESS]: (state, action) => {
