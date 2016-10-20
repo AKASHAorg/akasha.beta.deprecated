@@ -3,7 +3,7 @@ import { IconMenu, IconButton, MenuItem } from 'material-ui';
 import React, { PropTypes } from 'react';
 import { generalMessages } from 'locale-data/messages';
 import { injectIntl } from 'react-intl';
-import  LogoButton  from '../../components/logo-button';
+import LogoButton from '../../components/logo-button';
 
 function LoginHeader ({ title, intl }) {
     const { formatMessage } = intl;
@@ -12,10 +12,12 @@ function LoginHeader ({ title, intl }) {
     };
     return (
       <div className="col-xs-12" >
-        <div className="row middle-xs">
-          <LogoButton />
-          <div className="col-xs-3" style={{ fontWeight: '300' }} >{ title }</div>
-          <div className="col-xs-8 end-xs">
+        <div className="row middle-xs" style={{ display: 'flex' }}>
+          <div style={{ flex: '0 0 auto' }}>
+            <LogoButton />
+          </div>
+          <div style={{ fontWeight: '300', flex: '1 1 auto' }} >{ title }</div>
+          <div style={{ flex: '0 0 auto' }}>
             <IconMenu
               anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
               iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
