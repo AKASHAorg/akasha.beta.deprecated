@@ -214,7 +214,6 @@ class IpfsIPC extends IpfsEmitter {
                     .getPorts()
                     .then((ports) => {
                         generalSettings.set(BASE_URL, `http://127.0.0.1:${ports.gateway}/ipfs`);
-                        console.log(ports.gateway);
                         response = ipfsResponse({
                             apiPort: ports.api,
                             gatewayPort: ports.gateway,

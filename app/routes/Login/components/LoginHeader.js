@@ -3,7 +3,7 @@ import { IconMenu, IconButton, MenuItem } from 'material-ui';
 import React, { PropTypes } from 'react';
 import { generalMessages } from 'locale-data/messages';
 import { injectIntl } from 'react-intl';
-import { LogoButton } from '../../components/logo-button';
+import  LogoButton  from '../../components/logo-button';
 
 function LoginHeader ({ title, intl }) {
     const { formatMessage } = intl;
