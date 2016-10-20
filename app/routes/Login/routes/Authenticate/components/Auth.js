@@ -26,12 +26,9 @@ class Auth extends Component {
         const { profileActions } = this.props;
         profileActions.getTempProfile();
         profileActions.clearLoggedProfile();
-    }
-    componentDidMount () {
-        const { profileActions } = this.props;
         profileActions.getLocalProfiles();
     }
-    componentWillUpdate = (nextProps) => {
+    componentWillReceiveProps (nextProps) {
         const {
             profileActions,
             tempProfile,
@@ -49,9 +46,10 @@ class Auth extends Component {
                 return this.context.router.push('/authenticate/new-profile-status');
             }
         }
-        if ((localProfiles.size > 0) && (localProfiles.size !== this.props.localProfiles.size)) {
+        if ((localProfiles.size > 0)) {
             profileActions.getProfileData(localProfiles.toJS());
         }
+        return null;
     }
     handleTouchTap = (index) => {
         const { localProfiles } = this.props;
@@ -75,11 +73,11 @@ class Auth extends Component {
         });
     };
     _getLocalProfiles () {
-        const { localProfiles, intl } = this.props;
-        if (localProfiles.size === 0) {
+        const { localProfiles, profilesFetched, intl } = this.props;
+        if (localProfiles.size === 0 && profilesFetched) {
             return <div>{intl.formatMessage(setupMessages.noProfilesFound)}</div>;
         }
-        if (localProfiles.first().size <= 2) {
+        if (localProfiles.size === 0 && !profilesFetched) {
             return <div>{intl.formatMessage(setupMessages.findingProfiles)}</div>;
         }
         return localProfiles.map((profile, index) => {
@@ -224,6 +222,7 @@ Auth.propTypes = {
     profileActions: React.PropTypes.shape().isRequired,
     tempProfile: React.PropTypes.shape().isRequired,
     localProfiles: React.PropTypes.shape().isRequired,
+    profilesFetched: React.PropTypes.bool,
     loggedProfile: React.PropTypes.shape().isRequired,
     loginErrors: React.PropTypes.shape().isRequired,
     style: React.PropTypes.shape(),

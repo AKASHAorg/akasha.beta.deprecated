@@ -7,7 +7,8 @@ function mapStateToProps (state) {
         tempProfile: state.profileState.get('tempProfile'),
         localProfiles: state.profileState.get('profiles'),
         loggedProfile: state.profileState.get('loggedProfile'),
-        loginErrors: state.profileState.get('errors')
+        loginErrors: state.profileState.get('errors'),
+        profilesFetched: state.profileState.get('profilesFetched')
     };
 }
 

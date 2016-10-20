@@ -1,4 +1,3 @@
-import debug from 'debug';
 import BaseService from './base-service';
 import profileDB from './db/profile';
 
@@ -28,17 +27,18 @@ class RegistryService extends BaseService {
      * @param data = { tx: string }
      */
     registerProfile = ({ token, username, ipfs, gas = 1000000, onError, onSuccess }) => {
-        const serverChannel = Channel.server.registry.registerProfile;
-        const clientChannel = Channel.client.registry.registerProfile;
-
         this.openChannel({
             serverManager: this.serverManager,
             clientManager: this.clientManager,
             serverChannel: Channel.server.registry.registerProfile,
             clientChannel: Channel.client.registry.registerProfile,
-            listenerCb: this.createListener(onError, onSuccess, clientChannel.channelName)
+            listenerCb: this.createListener(
+                onError,
+                onSuccess,
+                Channel.client.registry.registerProfile.channelName
+            )
         }, () => {
-            Channel.server.registry.registerProfile.send({ token, username, ipfs, gas })
+            Channel.server.registry.registerProfile.send({ token, username, ipfs, gas });
         });
     };
     /**

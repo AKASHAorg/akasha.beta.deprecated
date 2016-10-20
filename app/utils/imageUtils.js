@@ -1,10 +1,35 @@
 import r from 'ramda';
-import debug from 'debug';
-const dbg = debug('App:imageUtils');
-const error = debug('App:error');
+
+/**
+ * Utility to extract best matching image key given a width
+ * @param width <number> a given width
+ * @param obj <object> images object
+ *
+ * obj = {
+ *      xs: {},
+ *      sm: {},
+ *      ...
+ * }
+ *
+ * @returns imageKey <string> a key of obj
+ */
+function findBestMatch (width, obj, initialKey) {
+    let curr = initialKey ? obj[initialKey].width : 0;
+    let imageKey = initialKey || '';
+    let diff = Math.abs(width - curr);
+    for (const key of Object.keys(obj)) {
+        const newDiff = Math.abs(width - obj[key].width);
+        if (newDiff < diff) {
+            diff = newDiff;
+            curr = obj[key].width;
+            imageKey = key;
+        }
+    }
+    return imageKey;
+}
 
 function imageCreator (arrayBuffer, baseUrl) {
-    if(baseUrl && typeof arrayBuffer === 'string'){
+    if (baseUrl && typeof arrayBuffer === 'string') {
         return `${baseUrl}/${arrayBuffer}`;
     }
 
@@ -14,12 +39,12 @@ function imageCreator (arrayBuffer, baseUrl) {
 /**
  * Utility to extract first image from draftjs generated content;
  * @param {object} content Draft-js generated content;
- * @return {array} image Array of versions of an image;
+ * @returns {array} image Array of versions of an image;
  */
 function extractImageFromContent (content) {
     const { entityMap } = content;
     if (!entityMap) {
-        error(`entityMap not found inside content param.
+        console.error(`entityMap not found inside content param.
             Make sure you have passed the right content!`
         );
         return null;
@@ -89,7 +114,7 @@ function readImageData (imagePath, canvas, ctx, options) {
             }
             const aspectRatio = imgHeight > imgWidth ? imgHeight / imgWidth : imgWidth / imgHeight;
 
-            for (let i = resizeWidths.length - 1; i >= 0; i--) {
+            for (let i = resizeWidths.length - 1; i >= 0; i -= 1) {
                 if (img.width >= resizeWidths[i].res) {
                     availableWidths.push(resizeWidths[i]);
                 }
@@ -98,10 +123,10 @@ function readImageData (imagePath, canvas, ctx, options) {
                 const reader = new FileReader();
                 reader.onloadend = () => {
                     images[width.key] = {
-                        src:  new Uint8Array(reader.result),
+                        src: new Uint8Array(reader.result),
                         width: canvasWidth,
                         height: canvasHeight
-                    }
+                    };
                 };
                 reader.readAsArrayBuffer(blob);
             };
@@ -124,7 +149,7 @@ function readImageData (imagePath, canvas, ctx, options) {
  * @param {Number} options.minHeight Minimum allowed height
  * @param {Number} options.minWidth Minimum allowed width
  * @param {Array} options.imageWidths Resize using keys in this array only
- * @return {Array} promises Array of promises for each passed path
+ * @returns {Array} promises Array of promises for each passed path
  *
  * @example
  *  const filePromises = getResizedImages([/path/to/image.jpg, /path/to/image2.png], {
@@ -145,7 +170,7 @@ function getResizedImages (imagePaths, options) {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     const promises = [];
-    for (let i = imagePaths.length - 1; i >= 0; i--) {
+    for (let i = imagePaths.length - 1; i >= 0; i -= 1) {
         const path = imagePaths[i];
         promises.push(readImageData(path, canvas, ctx, options));
     }
@@ -153,4 +178,4 @@ function getResizedImages (imagePaths, options) {
 }
 
 export default imageCreator;
-export { getResizedImages, extractImageFromContent };
+export { getResizedImages, extractImageFromContent, findBestMatch };
