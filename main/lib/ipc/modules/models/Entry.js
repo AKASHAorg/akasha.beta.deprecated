@@ -4,8 +4,14 @@ const records_1 = require('./records');
 class Entry {
     create(content, tags) {
         const date = (new Date()).toJSON();
+        const { draft, title, excerpt, featuredImage, licence, author } = content;
         const constructed = {
-            content,
+            draft,
+            title,
+            excerpt,
+            featuredImage,
+            licence,
+            author,
             tags,
             date
         };
@@ -15,6 +21,10 @@ class Entry {
             this.load(hash);
             return this.hash;
         });
+    }
+    _uploadMediaDraft() {
+    }
+    _getMediaDraft() {
     }
     load(hash) {
         this.hash = hash;

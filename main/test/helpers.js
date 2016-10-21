@@ -54,8 +54,11 @@ exports.gethChannel = new GethIPCtest();
 exports.ipfsChannel = new IpfsIPCtest();
 exports.authChannel = new AuthIPCtest();
 exports.txChannel = new TxIPCtest();
-exports.pwd = Buffer.from("abc123");
-exports.mockedAddress = '0xb9d31a9e8cbddad80eac90852543142f13bebcb3';
+exports.tagId = 2;
+exports.tagName = 'cars1477052930372';
+exports.pwd = Buffer.from("abc12345");
+exports.mockedAddress = '0x9e86b867884e8f84ea4764fed6d3e0931b48f24d';
+exports.profileAddress = '0x3543f9dedcc22d2c3be06f5223137f101df9010b';
 exports.initLogger = () => {
     return Logger_1.default.getInstance();
 };

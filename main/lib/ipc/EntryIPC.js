@@ -9,7 +9,7 @@ class EntryIPC extends ModuleEmitter_1.default {
     constructor() {
         super();
         this.MODULE_NAME = 'entry';
-        this.DEFAULT_MANAGED = ['getVoteEndDate', 'getScore'];
+        this.DEFAULT_MANAGED = ['getVoteEndDate', 'getScore', 'getEntry'];
     }
     initListeners(webContents) {
         this.webContents = webContents;
@@ -28,9 +28,9 @@ class EntryIPC extends ModuleEmitter_1.default {
             ._manager();
     }
     _publish() {
-        this.registerListener(channels_1.default.server[this.MODULE_NAME].create, (event, data) => {
+        this.registerListener(channels_1.default.server[this.MODULE_NAME].publish, (event, data) => {
             let response;
-            const entry = new Entry_1.default();
+            let entry = new Entry_1.default();
             entry.create(data.content, data.tags)
                 .then((hash) => {
                 return index_1.constructed.instance
@@ -48,6 +48,7 @@ class EntryIPC extends ModuleEmitter_1.default {
             })
                 .finally(() => {
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].create, response, event);
+                entry = null;
             });
         });
         return this;

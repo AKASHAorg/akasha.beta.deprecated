@@ -47,8 +47,11 @@ export const gethChannel = new GethIPCtest();
 export const ipfsChannel = new IpfsIPCtest();
 export const authChannel = new AuthIPCtest();
 export const txChannel = new TxIPCtest();
-export const pwd = Buffer.from("abc123");
-export const mockedAddress = '0xb9d31a9e8cbddad80eac90852543142f13bebcb3';
+export const tagId = 2;
+export const tagName = 'cars1477052930372';
+export const pwd = Buffer.from("abc12345");
+export const mockedAddress = '0x9e86b867884e8f84ea4764fed6d3e0931b48f24d';
+export const profileAddress = '0x3543f9dedcc22d2c3be06f5223137f101df9010b';
 
 export const initLogger = () => {
     return Applogger.getInstance();

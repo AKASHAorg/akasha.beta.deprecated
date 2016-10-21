@@ -12,9 +12,22 @@ class Entry implements MediaComponent {
      * @returns {any}
      */
     create(content: any, tags: any[]) {
-        const date  = (new Date()).toJSON();
+        const date = (new Date()).toJSON();
+        const {
+            draft,
+            title,
+            excerpt,
+            featuredImage,
+            licence,
+            author
+        } = content;
         const constructed = {
-            content,
+            draft,
+            title,
+            excerpt,
+            featuredImage,
+            licence,
+            author,
             tags,
             date
         };
@@ -24,6 +37,19 @@ class Entry implements MediaComponent {
                 this.load(hash);
                 return this.hash;
             })
+    }
+
+    private _uploadMediaDraft() {
+        /**
+         * filter draft object for images and upload them to ipfs
+         */
+    }
+
+    private _getMediaDraft() {
+        /**
+         * filter draft object for images and dowload them from ipfs
+         * this will be used for serving Uin8array images
+         */
     }
 
     /**
