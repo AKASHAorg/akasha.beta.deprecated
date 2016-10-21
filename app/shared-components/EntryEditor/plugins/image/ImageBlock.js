@@ -6,6 +6,7 @@ import {
     CardText,
     Checkbox,
     SelectField,
+    DropDownMenu,
     MenuItem,
     IconButton,
     TextField,
@@ -15,17 +16,72 @@ import {
     ToolbarSeparator } from 'material-ui';
 import DeleteIcon from 'material-ui/svg-icons/action/delete';
 import withWidth, { SMALL, MEDIUM, LARGE } from 'material-ui/utils/withWidth';
-import { ImageSizeLarge, ImageSizeMedium, ImageSizeSmall } from 'shared-components/svg';
-import { findBestMatch } from 'utils/imageUtils';
+import {
+  ImageSizeXS,
+  ImageSizeLarge,
+  ImageSizeMedium,
+  ImageSizeSmall,
+  ImageSizeXL,
+  ImageSizeXXL } from 'shared-components/svg';
+import imageCreator, { findBestMatch } from 'utils/imageUtils';
+
+/**
+ * @TODO: Move this to a config file;
+ */
+const variants = {
+    xs: {
+        primaryText: 'Extra Small',
+        component: <ImageSizeXS />
+    },
+    sm: {
+        primaryText: 'Small',
+        component: <ImageSizeSmall />
+    },
+    md: {
+        primaryText: 'Medium',
+        component: <ImageSizeMedium />
+    },
+    lg: {
+        primaryText: 'Large',
+        component: <ImageSizeLarge />
+    },
+    xl: {
+        primaryText: 'Extra Large',
+        component: <ImageSizeXL />
+    },
+    xxl: {
+        primaryText: 'Evolved',
+        component: <ImageSizeXXL />
+    }
+};
 
 class ImageBlock extends Component {
     constructor (props) {
         super(props);
+        const { files, media, caption, licence, termsAccepted, } = this.props.data;
+
         this.state = {
-            previewImage: this.props.data.media,
-            componentWidth: null,
-            cardWidth: '100%'
+            previewImage: media,
+            caption,
+            licence,
+            termsAccepted,
+            imageSrc: imageCreator(files[media].src),
         };
+        this.menuItems = [];
+        for (const key of Object.keys(files)) {
+            this.menuItems.push(
+              <MenuItem
+                key={`k-${key}`}
+                leftIcon={
+                  <SvgIcon>
+                    {variants[key].component}
+                  </SvgIcon>
+                }
+                value={key}
+                primaryText={variants[key].primaryKey}
+              />
+            );
+        }
     }
     componentDidMount () {
         this.setImageSrc();
@@ -47,53 +103,53 @@ class ImageBlock extends Component {
         this.props.container.updateData({ media: imageKey });
         this.setState({
             previewImage: imageKey,
-            isCardEnabled: true
+            isCardEnabled: true,
+            imageSrc: imageCreator(imageFiles[this.state.previewImage].src)
         });
     }
-    _handleCaptionChange = (event) => {
-        event.stopPropagation();
+    _handleCaptionChange = (ev) => {
+        ev.stopPropagation();
         this.props.container.updateData({ caption: event.target.value });
     }
 
-    _handleRightsHolderChange = (event) => {
-        event.stopPropagation();
-        this.props.container.updateData({ rightsHolder: event.target.value });
+    _handleLicenceChange = (ev, key, payload) => {
+        ev.stopPropagation();
+        this.props.container.updateData({ licence: payload });
     }
-    _getSizeValue = () => {
-        const imageKey = this.state.previewImage;
-        switch (imageKey) {
-            case 'xs':
-            case 'sm':
-                return 1;
-            case 'md':
-                return 2;
-            case 'lg':
-                return 3;
-            default:
-                break;
-        }
+    _handleTermsAccept = (ev, isInputChecked) => {
+        ev.stopPropagation();
+        this.props.container.updateData({ termsAccepted: isInputChecked });
     }
     _handleSizeChange = (ev, key, payload) => {
-        console.log('change size to ', key, 'key', payload, 'payload');
+        ev.stopPropagation();
+        this.setState({
+            previewImage: payload
+        });
     }
     _handleImageClick = (ev) => {
+        ev.stopPropagation();
         this.setState({
             isCardEnabled: !this.state.isCardEnabled
         });
     }
     render () {
-        console.log(this.props);
-        const { isCardEnabled } = this.state;
+        const { isCardEnabled, imageSrc, previewImage } = this.state;
+        const { files, termsAccepted, licence, caption } = this.props.data;
         const akashaTermsLink = <a href="">{'AKASHA\'s terms'}</a>;
         return (
-          <div ref={(baseNode) => { this.baseNodeRef = baseNode; }} >
+          <div
+            ref={(baseNode) => { this.baseNodeRef = baseNode; }}
+            style={{
+                width: files[previewImage].width,
+                margin: '0 auto'
+            }}
+          >
             <Card
               style={{
                   width: this.state.cardWidth,
-                  webkitUserSelect: 'none'
+                  WebkitUserSelect: 'none'
                   // boxShadow: isCardEnabled ? 'initial' : 'none'
               }}
-              onClick={(ev) => ev.preventDefault()}
             >
               <Toolbar
                 style={{
@@ -103,34 +159,43 @@ class ImageBlock extends Component {
                 }}
               >
                 <ToolbarGroup>
-                  <SelectField value={this._getSizeValue()} onChange={this._handleSizeChange}>
-                    <MenuItem
-                      leftIcon={
-                        <SvgIcon>
-                          <ImageSizeSmall />
-                        </SvgIcon>
-                      }
-                      value={1}
-                      primaryText="Small"
-                    />
-                    <MenuItem
-                      leftIcon={
-                        <SvgIcon>
-                          <ImageSizeMedium />
-                        </SvgIcon>
-                      }
-                      value={2}
-                      primaryText="Medium"
-                    />
-                    <MenuItem
-                      leftIcon={
-                        <SvgIcon>
-                          <ImageSizeLarge />
-                        </SvgIcon>
-                      }
-                      value={3}
-                      primaryText="Large"
-                    />
+                  <SelectField
+                    value={previewImage}
+                    onChange={this._handleSizeChange}
+                  >
+                    {files.xs &&
+                      <MenuItem
+                        leftIcon={
+                          <SvgIcon>
+                            <ImageSizeSmall />
+                          </SvgIcon>
+                        }
+                        value={'xs'}
+                        primaryText={'Small'}
+                      />
+                    }
+                    {files.md &&
+                      <MenuItem
+                        leftIcon={
+                          <SvgIcon>
+                            <ImageSizeMedium />
+                          </SvgIcon>
+                        }
+                        value={'md'}
+                        primaryText={'Medium'}
+                      />
+                    }
+                    {files.lg &&
+                      <MenuItem
+                        leftIcon={
+                          <SvgIcon>
+                            <ImageSizeLarge />
+                          </SvgIcon>
+                        }
+                        value={'lg'}
+                        primaryText={'Large'}
+                      />
+                    }
                   </SelectField>
                 </ToolbarGroup>
                 <ToolbarGroup>
@@ -145,50 +210,40 @@ class ImageBlock extends Component {
               </Toolbar>
               <CardMedia>
                 <img
-                  src={this.props.data.files[this.state.previewImage].src}
+                  src={imageSrc}
                   alt=""
                   onClick={this._handleImageClick}
                 />
               </CardMedia>
               <CardText>
-                <TextField hintText="Caption" multiLine fullWidth />
+                <TextField hintText="Caption" value={caption} multiLine fullWidth onChange={this._handleCaptionChange} />
                 <div className="row">
-                  <div className="col-xs-6">
+                  <div className="col-xs-4">
                     <h4>Image Licence</h4>
                   </div>
-                  <div className="col-xs-6">
-                    <SelectField value={1} onChange={this._handleLicenceChange}>
-                      <MenuItem value={1} primaryText="CC0" />
-                      <MenuItem value={2} primaryText="CC1" />
+                  <div className="col-xs-8">
+                    <SelectField value={licence} onChange={this._handleLicenceChange} fullWidth>
+                      <MenuItem value={'CC BY'} primaryText="Attribution" />
+                      <MenuItem value={'CC BY-SA'} primaryText="Attribution-ShareAlike" />
+                      <MenuItem value={'CC BY-ND'} primaryText="Attribution-NoDerivs" />
+                      <MenuItem value={'CC BY-NC'} primaryText="Attribution-NonCommercial" />
+                      <MenuItem value={'CC BY-NC-SA'} primaryText="Attribution-NonCommercial-ShareAlike" />
+                      <MenuItem value={'CC BY-NC-ND'} primaryText="Attribution-NonCommercial-NoDerivs" />
                     </SelectField>
                   </div>
                   <div className="col-xs-12">
                     <div className="row">
-                      <Checkbox className="col-xs-1" label="" />
+                      <Checkbox
+                        className="col-xs-1"
+                        label=""
+                        onCheck={this._handleTermsAccept}
+                        checked={termsAccepted}
+                      />
                       <div className="col-xs-10">I acknowledge and agree {akashaTermsLink} on using images</div>
                     </div>
                   </div>
                 </div>
               </CardText>
-              { /** <CommonBlock {...this.props} actions={this.actions}>
-                  <BlockContent>
-                  <img src={this.props.data.src} alt="" />
-                  </BlockContent>
-
-                  <BlockData>
-                  <BlockInput
-                      placeholder="Caption"
-                      value={this.props.data.caption}
-                      onChange={this._handleCaptionChange}
-                  />
-
-                  <BlockInput
-                      placeholder="Rights Holder"
-                      value={this.props.data.rightsHolder}
-                      onChange={this._handleRightsHolderChange}
-                  />
-                  </BlockData>
-              </CommonBlock>*/ }
             </Card>
           </div>
         );

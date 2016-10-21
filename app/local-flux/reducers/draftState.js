@@ -3,6 +3,12 @@ import { fromJS, List, Record } from 'immutable';
 import { createReducer } from './create-reducer';
 import * as types from '../constants/DraftConstants';
 
+const ErrorRecord = Record({
+    code: '',
+    message: null,
+    fatal: false
+});
+
 const Draft = Record({
     id: null,
     content: {},
@@ -26,6 +32,7 @@ const Draft = Record({
 
 const initialState = fromJS({
     drafts: new List(),
+    errors: new List(),
     savingDraft: false,
     draftsCount: 0,
 });
@@ -36,12 +43,6 @@ const draftState = createReducer(initialState, {
     [types.SAVE_DRAFT]: state =>
         state.merge({ savingDraft: true }),
 
-    [types.GET_DRAFTS_SUCCESS]: (state, action) => {
-        const drafts = new List(action.drafts.map(draft => new Draft(draft)));
-        return state.merge({
-            drafts: state.get('drafts').concat(drafts)
-        });
-    },
     [types.CREATE_DRAFT_SUCCESS]: (state, action) => {
         const draft = new Draft(action.draft);
         return state.merge({
@@ -49,6 +50,19 @@ const draftState = createReducer(initialState, {
             savingDraft: false
         });
     },
+
+    [types.CREATE_DRAFT_ERROR]: (state, { error }) =>
+        state.merge({
+            errors: state.get('errors').push(new ErrorRecord(error))
+        }),
+
+    [types.GET_DRAFTS_SUCCESS]: (state, action) => {
+        const drafts = new List(action.drafts.map(draft => new Draft(draft)));
+        return state.merge({
+            drafts: state.get('drafts').concat(drafts)
+        });
+    },
+
     [types.UPDATE_DRAFT_SUCCESS]: (state, action) => {
         const draftIndex = state.get('drafts').findIndex(draft =>
             draft.id === action.draft.id

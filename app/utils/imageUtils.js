@@ -64,24 +64,42 @@ function extractImageFromContent (content) {
 const imageWidths = [
     {
         key: 'xxl',
-        res: '1920'
+        res: 1920
     }, {
         key: 'xl',
-        res: '1280'
+        res: 1280
     }, {
         key: 'lg',
-        res: '1024'
+        res: 1024
     }, {
         key: 'md',
-        res: '768'
+        res: 768
     }, {
         key: 'sm',
-        res: '640'
+        res: 640
     }, {
         key: 'xs',
-        res: '320'
+        res: 320
     }
 ];
+
+function convertToBlob (canvas, widthObj) {
+    return new Promise((resolve) => {
+        const blobCb = (canvasWidth, canvasHeight) => (blob) => {
+            const reader = new FileReader();
+            reader.onloadend = () =>
+                resolve({
+                    key: widthObj.key,
+                    src: new Uint8Array(reader.result),
+                    width: canvasWidth,
+                    height: canvasHeight
+                });
+            reader.readAsArrayBuffer(blob);
+        };
+        canvas.toBlob(blobCb(canvas.width, canvas.height), 'image/jpg', '0.9');
+    });
+}
+
 
 function readImageData (imagePath, canvas, ctx, options) {
     return new Promise((resolve, reject) => {
@@ -100,7 +118,6 @@ function readImageData (imagePath, canvas, ctx, options) {
             });
         }
         img.onload = () => {
-            const images = {};
             const imgWidth = img.width;
             const imgHeight = img.height;
             if (imgHeight < minHeight) {
@@ -119,25 +136,26 @@ function readImageData (imagePath, canvas, ctx, options) {
                     availableWidths.push(resizeWidths[i]);
                 }
             }
-            const blobCb = (width, canvasWidth, canvasHeight) => (blob) => {
-                const reader = new FileReader();
-                reader.onloadend = () => {
-                    images[width.key] = {
-                        src: new Uint8Array(reader.result),
-                        width: canvasWidth,
-                        height: canvasHeight
-                    };
-                };
-                reader.readAsArrayBuffer(blob);
-            };
-
-            r.forEach((width) => {
-                canvas.width = width.res;
-                canvas.height = width.res / aspectRatio;
+            const blobsPromise = [];
+            for (let i = availableWidths.length - 1; i >= 0; i -= 1) {
+                canvas.width = availableWidths[i].res;
+                canvas.height = availableWidths[i].res / aspectRatio;
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                canvas.toBlob(blobCb(width, canvas.width, canvas.height), 'image/jpg', '0.9');
-            }, availableWidths);
-            resolve(images);
+                blobsPromise.push(convertToBlob(canvas, availableWidths[i]));
+            }
+            Promise.all(blobsPromise).then((imageArray) => {
+                // an imageArray contains an object for each available key
+                // [{key: 'sm', width: 320, ....}]
+                const imageObj = {};
+                imageArray.forEach((imgObj) => {
+                    imageObj[imgObj.key] = {
+                        src: imgObj.src,
+                        width: imgObj.width,
+                        height: imgObj.height
+                    };
+                });
+                return resolve(imageObj);
+            });
         };
         img.src = imagePath;
     });
@@ -170,7 +188,7 @@ function getResizedImages (imagePaths, options) {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     const promises = [];
-    for (let i = imagePaths.length - 1; i >= 0; i -= 1) {
+    for (let i = imagePaths.length - 1; i >= 0; i--) {
         const path = imagePaths[i];
         promises.push(readImageData(path, canvas, ctx, options));
     }

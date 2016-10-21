@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import { insertDataBlock } from 'megadraft';
-import { IconButton, SvgIcon } from 'material-ui';
+import { IconButton } from 'material-ui';
 import { getResizedImages } from 'utils/imageUtils';
 import PhotoCircle from 'material-ui/svg-icons/image/add-a-photo';
 
 export default class BlockButton extends Component {
-    triggerFileDialog = (ev) => {
+    triggerFileDialog = () => {
         console.log(this.fileInput);
         this.fileInput.click();
     }
@@ -13,11 +13,14 @@ export default class BlockButton extends Component {
         ev.persist(); // keep original event around for later use
         const file = ev.target.files;
         const filePromises = getResizedImages([file[0].path], { minWidth: 600 });
-        Promise.all(filePromises).then(results => {
+        Promise.all(filePromises).then((results) => {
             const data = {
                 files: results[0],
                 type: 'image',
-                media: this._getSuitableMedia(results[0])
+                media: this._getSuitableMedia(results[0]),
+                termsAccepted: false,
+                licence: 'CC BY-SA',
+                caption: ''
             };
             this.props.onChange(insertDataBlock(this.props.editorState, data));
         }).then(() => {
@@ -25,9 +28,11 @@ export default class BlockButton extends Component {
         });
     }
     _getSuitableMedia = (image) => {
+        console.log(image, 'img');
+        const image2 = Object.assign({}, image);
         // by default we want to display image with highest resolution
         // that`s because we like high quality :)
-        const biggestAvailableKey = Object.keys(image).reduce((prev, current) => {
+        const biggestAvailableKey = Object.keys(image2).reduce((prev, current) => {
             if (image[prev].width > image[current].width) {
                 return prev;
             }
@@ -66,6 +71,5 @@ export default class BlockButton extends Component {
 }
 BlockButton.propTypes = {
     onChange: React.PropTypes.func,
-    className: React.PropTypes.string,
     editorState: React.PropTypes.shape()
 };
