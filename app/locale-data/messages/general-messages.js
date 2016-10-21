@@ -91,11 +91,6 @@ const generalMessages = defineMessages({
         description: 'completed button label',
         defaultMessage: 'Completed'
     },
-    starting: {
-        id: 'app.general.starting',
-        description: 'starting button label',
-        defaultMessage: 'Starting...'
-    },
     connected: {
         id: 'app.general.connected',
         description: 'connected status',
@@ -155,6 +150,26 @@ const generalMessages = defineMessages({
         id: 'app.general.ethereumAddress',
         description: 'Placeholder for ethereum address field. Not sure if Ethereum should be translated',
         defaultMessage: 'Ethereum Address'
+    },
+    started: {
+        id: 'app.general.started',
+        description: 'service status',
+        defaultMessage: 'Started'
+    },
+    downloading: {
+        id: 'app.general.downloading',
+        description: 'service status',
+        defaultMessage: 'Downloading'
+    },
+    starting: {
+        id: 'app.general.starting',
+        description: 'service status',
+        defaultMessage: 'Starting'
+    },
+    stopped: {
+        id: 'app.general.stopped',
+        description: 'service status',
+        defaultMessage: 'Stopped'
     }
 });
 export { generalMessages };
