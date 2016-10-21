@@ -32,7 +32,10 @@ export default class Tags extends BaseContract {
     public getTagAt(id: number) {
         return this.contract
             .getTagAt
-            .callAsync(id);
+            .callAsync(id)
+            .then((bytes32Data) => {
+                return this.gethInstance.web3.toUtf8(bytes32Data);
+            });
     }
 
     public getTagsCount() {
@@ -45,7 +48,7 @@ export default class Tags extends BaseContract {
      */
     public getTagId(tagName: string) {
         const tagTr = this.gethInstance.web3.fromUtf8(tagName);
-        return this.contract.getTagId.callAsync(tagTr);
+        return this.contract.getTagId.callAsync(tagTr).then((bigNumber) => bigNumber.toString());
     }
 
     /**

@@ -11,7 +11,7 @@ class EntryIPC extends ModuleEmitter {
     constructor() {
         super();
         this.MODULE_NAME = 'entry';
-        this.DEFAULT_MANAGED = ['getVoteEndDate', 'getScore'];
+        this.DEFAULT_MANAGED = ['getVoteEndDate', 'getScore', 'getEntry'];
     }
 
     public initListeners(webContents: WebContents) {
@@ -33,10 +33,10 @@ class EntryIPC extends ModuleEmitter {
 
     private _publish() {
         this.registerListener(
-            channels.server[this.MODULE_NAME].create,
+            channels.server[this.MODULE_NAME].publish,
             (event: any, data: EntryCreateRequest) => {
                 let response: EntryCreateResponse;
-                const entry = new IpfsEntry();
+                let entry = new IpfsEntry();
                 entry.create(data.content, data.tags)
                     .then((hash) => {
                         return contracts.instance
@@ -58,6 +58,7 @@ class EntryIPC extends ModuleEmitter {
                             response,
                             event
                         );
+                        entry = null;
                     });
             });
         return this;
