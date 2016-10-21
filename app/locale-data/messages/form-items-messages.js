@@ -40,6 +40,12 @@ const formMessages = defineMessages({
         id: 'app.inputField.name',
         description: 'Placeholder for name input field',
         defaultMessage: 'Name'
+    },
+    submitWarningMessage: {
+        id: 'app.form.submitWarningMessage',
+        description: `message to be displayed when geth and/or IPFS are/is stopped and user cannot
+                    click Submit`,
+        defaultMessage: 'Geth and IPFS must be started'
     }
 });
 export { formMessages };

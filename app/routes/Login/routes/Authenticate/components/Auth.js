@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import {
     List,
     ListItem,
@@ -9,7 +9,7 @@ import { hashHistory } from 'react-router';
 import { injectIntl } from 'react-intl';
 import { LoginDialog, PanelContainer } from 'shared-components';
 import { setupMessages, generalMessages } from 'locale-data/messages'; /* eslint import/no-unresolved: 0*/
-import LoginHeader from '../../../components/LoginHeader';
+import PanelHeader from '../../../../components/panel-header';
 
 class Auth extends Component {
     constructor (props, context) {
@@ -27,9 +27,6 @@ class Auth extends Component {
         profileActions.getTempProfile();
         profileActions.clearLoggedProfile();
         profileActions.getLocalProfiles();
-    }
-    componentWillUnmount () {
-        this.props.profileActions.clearLocalProfiles();
     }
     componentWillReceiveProps (nextProps) {
         const {
@@ -49,10 +46,21 @@ class Auth extends Component {
                 return this.context.router.push('/authenticate/new-profile-status');
             }
         }
-        if ((localProfiles.size > 0) && this.props.localProfiles.size !== nextProps.localProfiles.size) {
+        if ((localProfiles.size > 0)
+                && this.props.localProfiles.size !== nextProps.localProfiles.size) {
             profileActions.getProfileData(localProfiles.toJS());
         }
         return null;
+    }
+    componentWillUnmount () {
+        this.props.profileActions.clearLocalProfiles();
+    }
+    getPlaceholderMessage () {
+        const { intl, gethStatus } = this.props;
+        if (!gethStatus.get('api')) {
+            return intl.formatMessage(setupMessages.gethStopped);
+        }
+        return intl.formatMessage(setupMessages.ipfsStopped);
     }
     handleTouchTap = (index) => {
         const { localProfiles } = this.props;
@@ -91,7 +99,11 @@ class Auth extends Component {
             let avtr;
             if (avatarImage) {
                 avtr = (
-                  <Avatar src={avatarImage} size={48} style={{top: '12px', border: '1px solid #bcbcbc'}}/>
+                  <Avatar
+                    src={avatarImage}
+                    size={48}
+                    style={{ top: '12px', border: '1px solid #bcbcbc' }}
+                  />
                 );
             } else {
                 avtr = (
@@ -163,7 +175,7 @@ class Auth extends Component {
         });
     };
     render () {
-        const { style, intl } = this.props;
+        const { style, intl, gethStatus, ipfsStatus } = this.props;
         const { openModal } = this.state;
         const modalActions = [
             /* eslint-disable */
@@ -185,7 +197,7 @@ class Auth extends Component {
           <PanelContainer
             showBorder
             style={style}
-            header={<LoginHeader title={intl.formatMessage(setupMessages.logInTitle)} />}
+            header={<PanelHeader title={intl.formatMessage(setupMessages.logInTitle)} />}
             actions={[
                 /* eslint-disable */
                 <RaisedButton
@@ -198,9 +210,14 @@ class Auth extends Component {
                 /* eslint-enable */
             ]}
           >
-            <List className="col-xs-12">
-              {localProfiles}
-            </List>
+            {gethStatus.get('api') && (ipfsStatus.get('started') || ipfsStatus.get('spawned')) ?
+              <List className="col-xs-12">
+                {localProfiles}
+              </List> :
+              <div>
+                {this.getPlaceholderMessage()}
+              </div>
+            }
             {this.state.selectedProfile &&
               <LoginDialog
                 profile={selectedProfile}
@@ -222,19 +239,21 @@ class Auth extends Component {
 }
 
 Auth.propTypes = {
-    profileActions: React.PropTypes.shape().isRequired,
-    tempProfile: React.PropTypes.shape().isRequired,
-    localProfiles: React.PropTypes.shape().isRequired,
-    profilesFetched: React.PropTypes.bool,
-    loggedProfile: React.PropTypes.shape().isRequired,
-    loginErrors: React.PropTypes.shape().isRequired,
-    style: React.PropTypes.shape(),
-    intl: React.PropTypes.shape()
+    profileActions: PropTypes.shape().isRequired,
+    tempProfile: PropTypes.shape().isRequired,
+    localProfiles: PropTypes.shape().isRequired,
+    profilesFetched: PropTypes.bool,
+    loggedProfile: PropTypes.shape().isRequired,
+    loginErrors: PropTypes.shape().isRequired,
+    gethStatus: PropTypes.shape().isRequired,
+    ipfsStatus: PropTypes.shape().isRequired,
+    style: PropTypes.shape(),
+    intl: PropTypes.shape()
 };
 
 Auth.contextTypes = {
-    muiTheme: React.PropTypes.object,
-    router: React.PropTypes.object
+    muiTheme: React.PropTypes.shape(),
+    router: React.PropTypes.shape()
 };
 
 Auth.defaultProps = {

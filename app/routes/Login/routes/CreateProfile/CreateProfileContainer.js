@@ -4,7 +4,9 @@ import { ProfileActions, ValidationActions } from 'local-flux';
 
 function mapStateToProps (state, ownProps) {
     return {
-        profileState: state.profileState
+        profileState: state.profileState,
+        gethStatus: state.externalProcState.get('gethStatus'),
+        ipfsStatus: state.externalProcState.get('ipfsStatus')
     };
 }
 

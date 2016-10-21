@@ -66,6 +66,12 @@ class ServiceStatusBar extends Component {
         };
     }
 
+    componentWillMount () {
+        const { eProcActions } = this.props;
+        eProcActions.getGethStatus();
+        eProcActions.getIpfsStatus();
+    }
+
     componentWillReceiveProps (nextProps) {
         const { gethSettings, ipfsSettings } = this.props;
         const nextGethSettings = nextProps.gethSettings;
