@@ -203,11 +203,7 @@ const settingsState = createReducer(initialState, {
         const initialSettings = new IpfsSettings().toJS();
 
         Object.keys(ipfsSettings).forEach((key) => {
-            if (key === 'ports') {
-                if (ipfsSettings.ports.apiPort === initialSettings.ports.apiPort) {
-                    ipfsSettings.ports.apiPort = parseInt(action.data.apiPort, 10);
-                }
-            } else if (ipfsSettings[key] === initialSettings[key]) {
+            if (key !== 'ports' && ipfsSettings[key] === initialSettings[key]) {
                 ipfsSettings[key] = action.data[key];
             }
         });
