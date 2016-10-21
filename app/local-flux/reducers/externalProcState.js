@@ -76,6 +76,9 @@ const eProcState = createReducer(initialState, {
 
     [types.START_GETH_SUCCESS]: (state, action) => {
         const newStatus = action.data;
+        if (newStatus.starting) {
+            newStatus.downloading = null;
+        }
         if (newStatus.started || newStatus.spawned) {
             newStatus.starting = null;
             newStatus.stopped = null;
@@ -115,7 +118,6 @@ const eProcState = createReducer(initialState, {
     [types.START_IPFS_SUCCESS]: (state, action) => {
         const ipfsStatus = action.data;
         if (ipfsStatus.started || ipfsStatus.spawned) {
-            ipfsStatus.starting = null;
             ipfsStatus.downloading = null;
         }
         return state.merge({

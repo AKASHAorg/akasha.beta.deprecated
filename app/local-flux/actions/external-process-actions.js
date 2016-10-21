@@ -117,11 +117,11 @@ class EProcActions {
                     this.resetIpfsBusyState();
                 },
                 onSuccess: (data) => {
-                    if(data.started){
+                    if (data.started) {
                         this.getIpfsPorts();
-                        dispatch(externalProcessActionCreators.startIPFSSuccess(data));
                         this.resetIpfsBusyState();
                     }
+                    dispatch(externalProcessActionCreators.startIPFSSuccess(data));
                 }
             });
         });

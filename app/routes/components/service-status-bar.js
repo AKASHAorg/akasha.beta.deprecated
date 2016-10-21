@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { remote } from 'electron';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { SvgIcon, FlatButton, Dialog, Toggle } from 'material-ui';
+import { SvgIcon, FlatButton, Dialog, Toggle, IconButton } from 'material-ui';
 import { StatusBarEthereum, StatusBarIpfs } from 'shared-components/svg';
 import { LogsList } from 'shared-components';
 import ServiceState from 'constants/ServiceState';
@@ -27,7 +27,9 @@ const containerStyle = {
 const buttonStyle = {
     width: '32px',
     minWidth: '32px',
-    borderRadius: '16px'
+    height: '32px',
+    borderRadius: '16px',
+    padding: '0px'
 };
 const toggleStyle = {
     display: 'block',
@@ -148,16 +150,40 @@ class ServiceStatusBar extends Component {
         return gethState;
     }
 
+    getGethTooltip () {
+        const { intl, gethStatus } = this.props;
+
+        if (gethStatus.get('api') && !gethStatus.get('stopped')) {
+            return intl.formatMessage(generalMessages.started);
+        } else if (gethStatus.get('starting') || gethStatus.get('spawned')) {
+            return intl.formatMessage(generalMessages.starting);
+        } else if (gethStatus.get('downloading')) {
+            return intl.formatMessage(generalMessages.downloading);
+        }
+        return intl.formatMessage(generalMessages.stopped);
+    }
+
     getIpfsState () {
         const { ipfsStatus } = this.props;
         let ipfsState = ServiceState.stopped;
 
-        if (ipfsStatus.get('spawned')) {
+        if (ipfsStatus.get('spawned') || ipfsStatus.get('started')) {
             ipfsState = ServiceState.started;
-        } else if (ipfsStatus.get('starting') || ipfsStatus.get('downloading')) {
+        } else if (ipfsStatus.get('downloading')) {
             ipfsState = ServiceState.starting;
         }
         return ipfsState;
+    }
+
+    getIpfsTooltip () {
+        const { intl, ipfsStatus } = this.props;
+
+        if (ipfsStatus.get('spawned') || ipfsStatus.get('started')) {
+            return intl.formatMessage(generalMessages.started);
+        } else if (ipfsStatus.get('downloading')) {
+            return intl.formatMessage(generalMessages.downloading);
+        }
+        return intl.formatMessage(generalMessages.stopped);
     }
 
     openGethDialog = () => {
@@ -528,36 +554,42 @@ class ServiceStatusBar extends Component {
         const iconStyle = {
             width: '24px',
             height: '24px',
-            color: palette.textColor
+            color: palette.textColor,
+            position: 'relative',
+            top: '4px'
         }
         const ethereumIcon =
-          <SvgIcon viewBox="0 0 16 16" style={iconStyle}>
+          <SvgIcon viewBox="0 0 16 16">
             <StatusBarEthereum />
           </SvgIcon>;
         const ipfsIcon =
-          <SvgIcon viewBox="0 0 16 16" style={iconStyle}>
+          <SvgIcon viewBox="0 0 16 16">
             <StatusBarIpfs />
           </SvgIcon>;
         return <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           {this.props.gethStatus &&
             <div style={this.getContainerStyle(this.getGethState())}>
-              <FlatButton
-                icon={ethereumIcon}
+              <IconButton
                 style={buttonStyle}
-                hoverColor="transparent"
                 onClick={this.openGethDialog}
-              />
+                tooltip={this.getGethTooltip()}
+                iconStyle={iconStyle}
+              >
+                {ethereumIcon}
+              </IconButton>
               {this.renderGethDialog()}
             </div>
           }
           {this.props.ipfsStatus &&
             <div style={this.getContainerStyle(this.getIpfsState())}>
-              <FlatButton
-                icon={ipfsIcon}
+              <IconButton
                 style={buttonStyle}
-                hoverColor="transparent"
                 onClick={this.openIpfsDialog}
-              />
+                tooltip={this.getIpfsTooltip()}
+                iconStyle={iconStyle}
+              >
+                {ipfsIcon}
+              </IconButton>
               {this.renderIpfsDialog()}
             </div>
           }
