@@ -5,7 +5,7 @@ import { injectIntl } from 'react-intl';
 import { setupMessages, generalMessages } from 'locale-data/messages'; /* eslint import/no-unresolved: 0 */
 import PanelContainer from 'shared-components/PanelContainer/panel-container'; /* eslint import/no-unresolved: 0 */
 import { GethSettingsForm, IpfsSettingsForm } from 'shared-components';
-import SetupHeader from '../../../components/setup-header';
+import PanelHeader from '../../../../components/panel-header';
 
 const { dialog } = remote;
 
@@ -152,7 +152,7 @@ class Config extends Component {
               />
               /* eslint-enable */
             ]}
-            header={<SetupHeader title={'AKASHA'} />}
+            header={<PanelHeader title={'AKASHA'} />}
           >
             <h1 style={{ fontWeight: '400' }} className="col-xs-12" >
               {intl.formatMessage(setupMessages.firstTimeSetupTitle)}

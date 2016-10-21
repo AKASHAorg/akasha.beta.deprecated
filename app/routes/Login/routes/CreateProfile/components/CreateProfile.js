@@ -5,13 +5,14 @@ import { SvgIcon, IconButton, RaisedButton,
     TextField, Checkbox, Divider } from 'material-ui';
 import ContentAddIcon from 'material-ui/svg-icons/content/add';
 import CancelIcon from 'material-ui/svg-icons/navigation/cancel';
+import ErrorIcon from 'material-ui/svg-icons/alert/error';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Avatar, ImageUploader, PanelContainer } from 'shared-components';
 import { profileMessages, formMessages, generalMessages } from 'locale-data/messages'; /* eslint import/no-unresolved: 0*/
 import { inputFieldMethods } from '../../../../../utils/dataModule';
 import validationProvider from '../../../../../utils/validationProvider';
 import { UserValidation } from '../../../../../utils/validationSchema';
-import CreateProfileHeader from '../../../components/CreateProfileHeader';
+import PanelHeader from '../../../../components/panel-header';
 
 class CreateProfile extends Component {
     constructor (props) {
@@ -171,8 +172,25 @@ class CreateProfile extends Component {
         ev.preventDefault();
         console.log('show modal ', modalName);
     };
+    renderWarningMessage () {
+        const { intl, gethStatus, ipfsStatus } = this.props;
+        const { palette } = this.context.muiTheme;
+        if (!gethStatus.get('api') || (!ipfsStatus.get('started') && !ipfsStatus.get('spawned'))) {
+            return <div
+              style={{ height: '36px', lineHeight: '36px', display: 'flex', alignItems: 'center' }}
+            >
+              <ErrorIcon style={{ color: palette.accent1Color }} />
+              <span style={{ marginLeft: '5px', color: palette.accent1Color }}>
+                {intl.formatMessage(formMessages.submitWarningMessage)}
+              </span>
+            </div>;
+        }
+        return null;
+    }
     render () {
-        const { intl } = this.props;
+        const { intl, gethStatus, ipfsStatus } = this.props;
+        const isServiceStopped = !gethStatus.get('api')
+            || (!ipfsStatus.get('started') && !ipfsStatus.get('spawned'));
         const floatLabelStyle = { color: Colors.lightBlack };
         const inputStyle = { color: Colors.darkBlack };
         const firstNameProps = this.getProps({
@@ -258,12 +276,15 @@ class CreateProfile extends Component {
                 type="submit"
                 onClick={this._submitForm}
                 style={{ marginLeft: 8 }}
-                disabled={this.state.submitting}
+                disabled={this.state.submitting || isServiceStopped}
                 primary
               />
               /* eslint-enable */
             ]}
-            header={<CreateProfileHeader title={profileMessages.createProfileTitle} />}
+            leftActions={this.renderWarningMessage()}
+            header={
+              <PanelHeader title={intl.formatMessage(profileMessages.createProfileTitle)} />
+            }
           >
             <form
               action=""
@@ -406,7 +427,9 @@ CreateProfile.propTypes = {
     profileActions: React.PropTypes.shape(),
     clearValidations: React.PropTypes.func,
     handleValidation: React.PropTypes.func,
-    intl: React.PropTypes.shape()
+    intl: React.PropTypes.shape(),
+    gethStatus: PropTypes.shape().isRequired,
+    ipfsStatus: PropTypes.shape().isRequired
 };
 
 CreateProfile.contextTypes = {

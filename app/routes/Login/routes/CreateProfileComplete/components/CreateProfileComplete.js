@@ -1,11 +1,9 @@
 import React, { Component, PropTypes } from 'react';
-import { MenuAkashaLogo } from 'shared-components/svg';
 import { PanelContainer } from 'shared-components';
-import * as Colors from 'material-ui/styles/colors';
-import { SvgIcon, RaisedButton, TextField } from 'material-ui';
+import { RaisedButton, TextField } from 'material-ui';
 import { injectIntl } from 'react-intl';
 import { setupMessages, generalMessages, profileMessages, formMessages } from 'locale-data/messages';
-import LoginHeader from '../../../components/LoginHeader';
+import PanelHeader from '../../../../components/panel-header';
 
 class CreateProfileComplete extends Component {
     componentWillMount () {
@@ -25,19 +23,13 @@ class CreateProfileComplete extends Component {
     }
     render () {
         const { style, intl, tempProfile } = this.props;
-        const akashaLogoStyles = {
-            width: '32px',
-            height: '32px',
-            marginRight: '10px',
-            verticalAlign: 'middle'
-        };
         const fullName = `${tempProfile.get('firstName')} ${tempProfile.get('lastName')}`;
 
         return (
           <PanelContainer
             showBorder
             style={style}
-            header={<LoginHeader title={intl.formatMessage(setupMessages.identityRegistered)} />}
+            header={<PanelHeader title={intl.formatMessage(setupMessages.identityRegistered)} />}
             actions={[
                 /* eslint-disable */
                 <RaisedButton

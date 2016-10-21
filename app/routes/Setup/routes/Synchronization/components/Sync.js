@@ -4,7 +4,7 @@ import { FormattedMessage, injectIntl } from 'react-intl';
 import { setupMessages, generalMessages } from 'locale-data/messages'; /* eslint import/no-unresolved: 0 */
 import PanelContainer from 'shared-components/PanelContainer/panel-container'; /* eslint import/no-unresolved: 0 */
 import { LogsList } from 'shared-components';
-import SetupHeader from '../../../components/setup-header';
+import PanelHeader from '../../../../components/panel-header';
 import SyncStatusLoader from './sync-status';
 
 class SyncStatus extends Component {
@@ -227,7 +227,7 @@ class SyncStatus extends Component {
               />
             /* eslint-enable */
             ]}
-            header={<SetupHeader title="AKASHA" />}
+            header={<PanelHeader title="AKASHA" />}
           >
             {!this.state.showGethLogs &&
               <div

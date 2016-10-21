@@ -1,11 +1,12 @@
 import React, { Component, PropTypes } from 'react';
-import { MenuAkashaLogo } from 'shared-components/svg';
 import * as Colors from 'material-ui/styles/colors';
-import { SvgIcon, RaisedButton } from 'material-ui';
+import { RaisedButton } from 'material-ui';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { PanelContainer } from 'shared-components';
-import { generalMessages, setupMessages } from 'locale-data/messages';
+import { generalMessages, setupMessages, profileMessages } from 'locale-data/messages';
 import { is } from 'immutable';
+import PanelHeader from '../../../../components/panel-header';
+
 class CreateProfileStatus extends Component {
     constructor (props) {
         super(props);
@@ -204,27 +205,7 @@ class CreateProfileStatus extends Component {
             <PanelContainer
               showBorder
               header={
-                <div>
-                  <SvgIcon
-                    color={Colors.lightBlack}
-                    viewBox="0 0 32 32"
-                    style={{
-                        width: '32px',
-                        height: '32px',
-                        marginRight: '10px',
-                        verticalAlign: 'middle'
-                    }}
-                  >
-                    <MenuAkashaLogo />
-                  </SvgIcon>
-                  <h1 style={{ fontWeight: '400', display: 'inline', verticalAlign: 'middle' }} >
-                    <FormattedMessage
-                      id="app.createProfile.registeringIdentity"
-                      description="Registering identity status"
-                      defaultMessage="Registering identity"
-                    /> ...
-                  </h1>
-                </div>
+                <PanelHeader title={intl.formatMessage(profileMessages.registeringIdentity)} />
               }
               actions={[
                   /* eslint-disable */

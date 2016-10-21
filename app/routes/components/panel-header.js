@@ -1,8 +1,8 @@
 import React, { PropTypes } from 'react';
-import ServiceStatusBar from '../../components/service-status-bar';
-import LogoButton from '../../components/logo-button';
+import ServiceStatusBar from './service-status-bar';
+import LogoButton from './logo-button';
 
-function SetupHeader ({ title }) {
+function PanelHeader ({ title }) {
     return (
       <div className="col-xs-12">
         <div className="row middle-xs" style={{ display: 'flex' }} >
@@ -18,16 +18,12 @@ function SetupHeader ({ title }) {
     );
 }
 
-SetupHeader.contextTypes = {
-    muiTheme: PropTypes.object
-};
-
-SetupHeader.propTypes = {
+PanelHeader.propTypes = {
     title: PropTypes.string.isRequired
 };
 
-SetupHeader.defaultProps = {
+PanelHeader.defaultProps = {
     title: 'AKASHA'
 };
 
-export default SetupHeader;
+export default PanelHeader;
