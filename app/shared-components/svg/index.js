@@ -28,11 +28,14 @@ import StatusBarIpfs from './StatusBarIpfs';
 import ImageSizeLarge from './ImageSizeLarge';
 import ImageSizeMedium from './ImageSizeMedium';
 import ImageSizeSmall from './ImageSizeSmall';
+import ImageSizeXL from './ImageSizeXL';
+import ImageSizeXS from './ImageSizeXS';
+import ImageSizeXXL from './ImageSizeXXL';
 
 export {
     ProfileIcon, AddEntryIcon, SearchIcon, StreamsIcon, PortalsIcon, CommunityIcon, PeopleIcon,
     LogoIcon, MenuAddEntry, MenuAkashaLogo, MenuCommunities, MenuEntries, MenuEthereum, MenuPeople,
     MenuPortals, MenuSearch, MenuStreams, MenuUser, ToolbarComments, ToolbarEthereum, ToolbarLogout,
     ToolbarProfile, ToolbarSettings, ToolbarVotes, ToolbarWallet, StatusBarEthereum, StatusBarIpfs,
-    ImageSizeLarge, ImageSizeMedium, ImageSizeSmall
+    ImageSizeLarge, ImageSizeMedium, ImageSizeSmall, ImageSizeXL, ImageSizeXS, ImageSizeXXL
 };

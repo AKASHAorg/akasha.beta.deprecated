@@ -115,7 +115,7 @@
     "cssnano": "3.7.7",
     "del": "2.2.2",
     "devtron": "1.4.0",
-    "electron": "1.4.3",
+    "electron": "1.4.4",
     "electron-debug": "1.0.1",
     "electron-devtools-installer": "^2.0.1",
     "electron-mocha": "^3.1.1",
@@ -158,6 +158,7 @@
     "webpack": "1.13.2",
     "webpack-dev-middleware": "1.8.4",
     "webpack-hot-middleware": "2.13.0",
+    "webpack-node-externals": "^1.5.4",
     "webpack-target-electron-renderer": "0.4.0"
   },
   "dependencies": {

@@ -9,52 +9,59 @@ import {
 import { getWordCount } from 'utils/dataModule';
 import EntryEditor from 'shared-components/EntryEditor';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
+import { is } from 'immutable';
 
 class NewEntryPage extends Component {
     constructor (props) {
         super(props);
         this.state = {
             publishable: true,
-            draftToEdit: {}
+            draftToEdit: {},
+            isNewDraft: false,
+            shouldBeSaved: true
         };
     }
     componentWillMount () {
-        this._setDraftToEdit(this.props);
-    }
-    componentWillReceiveProps (nextProps) {
-        this._setDraftToEdit(nextProps);
-    }
-    _setDraftToEdit = (props) => {
-        const { entryState, params } = props;
-        if (params.draftId !== 'new') {
-            const draftToEdit = entryState.get('drafts').find(draft =>
-                draft.id === parseInt(params.draftId, 10)
-            );
+        const { params, draftActions } = this.props;
+        if (params.draftId === 'new') {
             this.setState({
-                draftToEdit,
-                publishable: true //draftToEdit.wordCount > 1
+                isNewDraft: true
             });
         } else {
-            this.setState({
-                draftToEdit: {}
-            });
+            draftActions.getDraftById(params.draftId);
         }
-    };
-    _setupEntryForPublication = () => {
-        const { profileState, params } = this.props;
-        const loggedProfile = profileState.get('loggedProfile');
-        this._saveDraft(() => {
-            this.context.router.push(
-                `/${loggedProfile.get('userName')}/draft/${params.draftId}/publish`
-            );
-        });
-    };
+    }
+    componentDidMount () {
+        console.log(this.props, this.context);
+        this.context.router.setRouteLeaveHook(this.props.route, this._checkIfMustSave)
+    }
+    // componentWillReceiveProps (nextProps) {
+    //     const { draftState, draftActions, params } = this.props;
+    //     if (is(draftState, nextProps.draftState)) {
+    //         return;
+    //     }
+    //     // this.context.router.push(`${params.username}/${params.draftId}`)
+    //     this.setState({
+    //         isNewDraft: false,
+    //         draftToEdit: draftState.get('drafts').find()
+    //     }, () => {
+    //         draftActions.createDraft();
+    //     });
+    // }
+
+    _checkIfMustSave = () => {
+        if (this.state.shouldBeSaved) {
+            return 'You have unsaved changes!, Are you sure you want to leave?';
+        }
+    }
+    _handleDraftSave = () => {
+        this._saveDraft();
+    }
     _saveDraft = (cb) => {
-        const { entryActions, params, profileState } = this.props;
+        const { draftActions, params, profileState } = this.props;
         const loggedProfile = profileState.get('loggedProfile');
         const content = this.editor.getRawContent();
         const contentState = this.editor.getContent();
-        const htmlContent = this.editor.getHtmlContent();
         const title = this.editor.getTitle();
         const wordCount = getWordCount(contentState);
 
@@ -62,27 +69,26 @@ class NewEntryPage extends Component {
         // console.log(content, 'rawContent');
         // console.log(contentState, 'contentState');
 
-        // if (params.draftId !== 'new') {
-        //     const draftId = parseInt(params.draftId, 10);
-        //     entryActions.updateDraftThrottled({ id: draftId, content, title, wordCount });
-        // } else {
-        //     entryActions.createDraft(loggedProfile.get('userName'), { content, title, wordCount });
-        // }
+        if (params.draftId !== 'new') {
+            const draftId = parseInt(params.draftId, 10);
+            draftActions.updateDraftThrottled({ id: draftId, content, title, wordCount });
+        } else {
+            draftActions.createDraft(loggedProfile.get('userName'), { content, title, wordCount });
+        }
         if (typeof cb === 'function') {
             cb();
         }
     };
-    _handleEditorAutosave = () => {
-        this._saveDraft();
-    };
     _handleTitleChange = () => {};
+
     render () {
-        const { entryState } = this.props;
-        const draft = this.state.draftToEdit;
+        const { draftState } = this.props;
+        const { shouldBeSaved } = this.state;
+
         let entryTitle = 'First entry';
-        if (entryState.get('drafts').size > 1 && !entryState.get('savingDraft')) {
+        if (draftState.get('drafts').size > 1 && !draftState.get('savingDraft')) {
             entryTitle = 'New Entry';
-        } else if (entryState.get('savingDraft')) {
+        } else if (draftState.get('savingDraft')) {
             entryTitle = 'Saving draft...';
         }
         return (
@@ -100,6 +106,12 @@ class NewEntryPage extends Component {
                   label="Publish"
                   disabled={!this.state.publishable}
                   onClick={this._setupEntryForPublication}
+                />
+                <FlatButton
+                  primary
+                  label="Save"
+                  disabled={!shouldBeSaved}
+                  onClick={this._handleDraftSave}
                 />
                 <IconMenu
                   iconButtonElement={
@@ -133,11 +145,11 @@ class NewEntryPage extends Component {
               <div className="col-xs-12">
                 <EntryEditor
                   editorRef={(editor) => { this.editor = editor; }}
-                  onAutosave={this._handleEditorAutosave}
+                  onChange={this._handleEditorChange}
                   onTitleChange={this._handleTitleChange}
                   readOnly={false}
-                  content={draft.content}
-                  title={draft.title}
+                  content={'draft.content'}
+                  title={'draft.title'}
                   showTitleField
                   textHint="Write something"
                 />
@@ -145,7 +157,7 @@ class NewEntryPage extends Component {
             </div>
             {this.props.children &&
               <div className="row">
-                {React.cloneElement(this.props.children, { draft })}
+                {React.cloneElement(this.props.children, { draft: 'draft' })}
                 <div
                   style={{
                       position: 'absolute',
@@ -163,13 +175,13 @@ class NewEntryPage extends Component {
     }
 }
 NewEntryPage.propTypes = {
-    entryActions: React.PropTypes.object.isRequired,
-    entryState: React.PropTypes.object.isRequired,
-    profileState: React.PropTypes.object.isRequired,
-    params: React.PropTypes.object,
+    draftActions: React.PropTypes.shape().isRequired,
+    draftState: React.PropTypes.shape().isRequired,
+    profileState: React.PropTypes.shape().isRequired,
+    params: React.PropTypes.shape(),
     children: React.PropTypes.node
 };
 NewEntryPage.contextTypes = {
-    router: React.PropTypes.object
+    router: React.PropTypes.shape()
 };
 export default NewEntryPage;

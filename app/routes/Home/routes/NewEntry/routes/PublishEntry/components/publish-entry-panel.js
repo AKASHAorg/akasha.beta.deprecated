@@ -135,7 +135,7 @@ class PublishPanel extends React.Component {
     _checkExistingTags = (tags) => {
         const tagService = new TagService();
         tagService.checkExistingTags(tags).then(results => {
-            const existingTags = results.map(tag => {
+            const existingTags = results.map((tag) => {
                 if (tag[0] && tag[0].tag) {
                     return tag[0].tag;
                 }
