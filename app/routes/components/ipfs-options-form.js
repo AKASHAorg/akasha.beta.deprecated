@@ -1,10 +1,7 @@
 import React, { Component, PropTypes } from 'react';
-import { remote } from 'electron';
-import { TextField, FlatButton } from 'material-ui';
-import * as Colors from 'material-ui/styles/colors';
-import { setupMessages, generalMessages } from 'locale-data/messages';
+import { TextField } from 'material-ui';
+import { setupMessages } from 'locale-data/messages';
 
-const { dialog } = remote;
 const floatingLabelStyle = {
     cursor: 'default',
     overflowX: 'visible',
@@ -13,57 +10,9 @@ const floatingLabelStyle = {
 const textFieldStyle = { display: 'block', width: '120px' };
 
 class IpfsOptionsForm extends Component {
-    constructor (props) {
-        super(props);
-
-        this.state = {
-            storagePath: props.ipfsSettings.get('storagePath'),
-            showSuccessMessage: false,
-            isDirty: false
-        };
-    }
-
-    componentWillReceiveProps (nextProps) {
-        const { ipfsSettings } = this.props;
-        const nextIpfsSettings = nextProps.ipfsSettings;
-        if (ipfsSettings.toJS().storagePath !== nextIpfsSettings.toJS().storagePath) {
-            this.setState({
-                showSuccessMessage: true
-            });
-        }
-    }
-
-    handleIpfsPath = (ev) => {
-        ev.stopPropagation();
-        ev.target.blur();
-        dialog.showOpenDialog({
-            title: 'Select IPFS path',
-            buttonLabel: 'Select',
-            properties: ['openDirectory']
-        }, (paths) => {
-            if (paths) {
-                this.setState({
-                    storagePath: paths[0],
-                    isDirty: true
-                });
-            }
-        });
-    };
-
-    onSaveSettings = () => {
-        const { settingsActions } = this.props;
-        const { storagePath } = this.state;
-
-        settingsActions.saveSettings('ipfs', { storagePath });
-        this.setState({
-            showSuccessMessage: false,
-            isDirty: false
-        });
-    };
-
     render () {
         const { palette } = this.context.muiTheme;
-        const { intl, style, ipfsSettings } = this.props;
+        const { intl, style, ipfsSettings, storagePath, onIpfsStorageChange } = this.props;
         const inputStyle = { color: palette.textColor };
         const labelStyle = Object.assign({}, floatingLabelStyle, { color: palette.disabledColor });
 
@@ -72,9 +21,9 @@ class IpfsOptionsForm extends Component {
             floatingLabelStyle={labelStyle}
             floatingLabelText={intl.formatMessage(setupMessages.ipfsStoragePath)}
             floatingLabelFixed
-            value={this.state.storagePath || ''}
+            value={storagePath || ''}
             inputStyle={inputStyle}
-            onClick={this.handleIpfsPath}
+            onClick={onIpfsStorageChange}
             fullWidth
           />
           {ipfsSettings.get('ports').apiPort &&
@@ -113,19 +62,11 @@ class IpfsOptionsForm extends Component {
               disabled
             />
           }
-          {this.state.showSuccessMessage && !this.state.isDirty &&
+          {this.props.showSuccessMessage &&
             <div style={{ color: palette.accent3Color, marginTop: '15px' }}>
               {intl.formatMessage(setupMessages.saveIpfsSettingsSuccess)}
             </div>
           }
-          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <FlatButton
-              label={intl.formatMessage(generalMessages.save)}
-              primary
-              disabled={!this.state.isDirty}
-              onClick={this.onSaveSettings}
-            />
-          </div>
         </div>;
     }
 }
@@ -133,12 +74,14 @@ class IpfsOptionsForm extends Component {
 IpfsOptionsForm.propTypes = {
     intl: PropTypes.shape().isRequired,
     ipfsSettings: PropTypes.shape().isRequired,
-    settingsActions: PropTypes.shape().isRequired,
-    style: PropTypes.shape()
+    style: PropTypes.shape(),
+    onIpfsStorageChange: PropTypes.func,
+    storagePath: PropTypes.string,
+    showSuccessMessage: PropTypes.bool
 };
 
 IpfsOptionsForm.contextTypes = {
     muiTheme: PropTypes.shape().isRequired
-}
+};
 
 export default IpfsOptionsForm;

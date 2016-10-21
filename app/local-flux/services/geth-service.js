@@ -23,7 +23,7 @@ class GethService extends BaseService {
         const gethOptions = {};
 
         Object.keys(options).forEach((key) => {
-            if (key !== 'name' && options[key] !== null) {
+            if (key !== 'name' && options[key] !== null && options[key] !== false) {
                 gethOptions[key] = options[key];
             }
         });

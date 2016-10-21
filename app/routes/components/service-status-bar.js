@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import { remote } from 'electron';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { SvgIcon, FlatButton, Dialog, Toggle } from 'material-ui';
@@ -10,6 +11,7 @@ import { generalMessages } from 'locale-data/messages';
 import GethOptionsForm from './geth-options-form';
 import IpfsOptionsForm from './ipfs-options-form';
 
+const { dialog } = remote;
 const containerStyle = {
     border: '2px solid',
     borderRadius: '16px',
@@ -22,13 +24,11 @@ const containerStyle = {
     justifyContent: 'center',
     alignItems: 'center'
 };
-
 const buttonStyle = {
     width: '32px',
     minWidth: '32px',
     borderRadius: '16px'
 };
-
 const toggleStyle = {
     display: 'block',
     flex: '0 0 auto',
@@ -50,11 +50,40 @@ class ServiceStatusBar extends Component {
             isGethDialogOpen: false,
             isIpfsDialogOpen: false,
             gethToggled: props.gethStatus.get('spawned'),
-            ipfsToggled: props.ipfsStatus.get('spawned')
+            ipfsToggled: props.ipfsStatus.get('spawned'),
+            cache: props.gethSettings.get('cache'),
+            mine: props.gethSettings.get('mine') === '',
+            autoDag: props.gethSettings.get('autodag') === '',
+            fast: props.gethSettings.get('fast') === '',
+            minerThreads: props.gethSettings.get('minerthreads') || 1,
+            isGethFormDirty: false,
+            showGethSuccessMessage: false,
+            storagePath: props.ipfsSettings.get('storagePath'),
+            isIpfsFormDirty: false,
+            showIpfsSuccessMessage: false
         };
     }
 
     componentWillReceiveProps (nextProps) {
+        const { gethSettings, ipfsSettings } = this.props;
+        const nextGethSettings = nextProps.gethSettings;
+        const nextIpfsSettings = nextProps.ipfsSettings;
+        if (JSON.stringify(gethSettings.toJS()) !== JSON.stringify(nextGethSettings.toJS())) {
+            this.setState({
+                cache: nextProps.gethSettings.get('cache'),
+                mine: nextProps.gethSettings.get('mine') === '',
+                autoDag: nextProps.gethSettings.get('autodag') === '',
+                fast: nextProps.gethSettings.get('fast') === '',
+                minerThreads: nextProps.gethSettings.get('minerthreads') || 1,
+                showGethSuccessMessage: this.state.isGethDialogOpen
+            });
+        }
+        if (ipfsSettings.toJS().storagePath !== nextIpfsSettings.toJS().storagePath) {
+            this.setState({
+                storagePath: nextIpfsSettings.get('storagePath'),
+                showIpfsSuccessMessage: this.state.isIpfsDialogOpen
+            });
+        }
         if (nextProps.gethStatus.get('spawned') !== this.props.gethStatus.get('spawned')) {
             this.setState({
                 gethToggled: nextProps.gethStatus.get('spawned')
@@ -93,7 +122,9 @@ class ServiceStatusBar extends Component {
         return {
             border: 'none',
             outline: 'none',
-            color: this.state.activeTab === tab ? palette.alternateTextColor : palette.disabledColor,
+            color: this.state.activeTab === tab ?
+                palette.alternateTextColor :
+                palette.disabledColor,
             backgroundColor: palette.primary1Color,
             width: '50%',
             height: '48px',
@@ -146,14 +177,24 @@ class ServiceStatusBar extends Component {
     closeGethDialog = () => {
         this.setState({
             isGethDialogOpen: false,
-            activeTab: null
+            activeTab: null,
+            cache: this.props.gethSettings.get('cache'),
+            mine: this.props.gethSettings.get('mine') === '',
+            autoDag: this.props.gethSettings.get('autodag') === '',
+            fast: this.props.gethSettings.get('fast') === '',
+            minerThreads: this.props.gethSettings.get('minerthreads') || 1,
+            isGethFormDirty: false,
+            showGethSuccessMessage: false
         });
     }
 
     closeIpfsDialog = () => {
         this.setState({
             isIpfsDialogOpen: false,
-            activeTab: null
+            activeTab: null,
+            storagePath: this.props.ipfsSettings.get('storagePath'),
+            isIpfsFormDirty: false,
+            showIpfsSuccessMessage: false
         });
     }
 
@@ -190,6 +231,86 @@ class ServiceStatusBar extends Component {
         });
     };
 
+    onCacheChange = (event, index, value) => {
+        this.setState({
+            cache: value,
+            isGethFormDirty: true
+        });
+    }
+
+    onMineChange = () => {
+        this.setState({
+            mine: !this.state.mine,
+            isGethFormDirty: true
+        });
+    }
+
+    onAutodagChange = () => {
+        this.setState({
+            autoDag: !this.state.autoDag,
+            isGethFormDirty: true
+        });
+    }
+
+    onFastChange = () => {
+        this.setState({
+            fast: !this.state.fast,
+            isGethFormDirty: true
+        });
+    }
+
+    onMinerThreadsChange = (event, index, value) => {
+        this.setState({
+            minerThreads: value,
+            isGethFormDirty: true
+        });
+    };
+
+    onIpfsStorageChange = (ev) => {
+        ev.stopPropagation();
+        ev.target.blur();
+        dialog.showOpenDialog({
+            title: 'Select IPFS path',
+            buttonLabel: 'Select',
+            properties: ['openDirectory']
+        }, (paths) => {
+            if (paths) {
+                this.setState({
+                    storagePath: paths[0],
+                    isIpfsFormDirty: true
+                });
+            }
+        });
+    };
+
+    saveGethOptions = () => {
+        const { settingsActions } = this.props;
+        const { cache, mine, autoDag, fast, minerThreads } = this.state;
+
+        settingsActions.saveSettings('geth', {
+            cache,
+            mine: mine ? '' : false,
+            autodag: (mine && autoDag) ? '' : false,
+            fast: (mine && fast) ? '' : false,
+            minerthreads: mine ? minerThreads : null
+        });
+        this.setState({
+            isGethFormDirty: false,
+            showGethSuccessMessage: false
+        });
+    }
+
+    saveIpfsOptions = () => {
+        const { settingsActions } = this.props;
+        const { storagePath } = this.state;
+
+        settingsActions.saveSettings('ipfs', { storagePath });
+        this.setState({
+            showIpfsSuccessMessage: false,
+            isIpfsFormDirty: false
+        });
+    }
+
     selectTab (tab) {
         this.setState({
             activeTab: tab
@@ -218,6 +339,11 @@ class ServiceStatusBar extends Component {
               label={intl.formatMessage(generalMessages.cancel)}
               onClick={this.closeGethDialog}
             />
+            <FlatButton
+              label={intl.formatMessage(generalMessages.save)}
+              disabled={!this.state.isGethFormDirty}
+              onClick={this.saveGethOptions}
+            />
           </div>
         </div>;
     }
@@ -243,6 +369,11 @@ class ServiceStatusBar extends Component {
             <FlatButton
               label={intl.formatMessage(generalMessages.cancel)}
               onClick={this.closeIpfsDialog}
+            />
+            <FlatButton
+              label={intl.formatMessage(generalMessages.save)}
+              disabled={!this.state.isIpfsFormDirty}
+              onClick={this.saveIpfsOptions}
             />
           </div>
         </div>;
@@ -277,11 +408,17 @@ class ServiceStatusBar extends Component {
             palette.primary1Color;
 
         return <div style={{ width: '100%' }}>
-          <button style={this.getTitleButtonStyle(GETH_SETTINGS)} onClick={() => this.selectTab(GETH_SETTINGS)}>
+          <button
+            style={this.getTitleButtonStyle(GETH_SETTINGS)}
+            onClick={() => this.selectTab(GETH_SETTINGS)}
+          >
             <div style={{ height: '46px', lineHeight: '46px' }}>Settings</div>
             <div style={{ height: '2px', backgroundColor: settingsBarColor }} />
           </button>
-          <button style={this.getTitleButtonStyle(GETH_LOGS)} onClick={() => this.selectTab(GETH_LOGS)}>
+          <button
+            style={this.getTitleButtonStyle(GETH_LOGS)}
+            onClick={() => this.selectTab(GETH_LOGS)}
+          >
             <div style={{ height: '46px', lineHeight: '46px' }}>Logs</div>
             <div style={{ height: '2px', backgroundColor: logsBarColor }} />
           </button>
@@ -291,7 +428,8 @@ class ServiceStatusBar extends Component {
     renderGethDialog () {
         const { intl, settingsActions, gethSettings, eProcActions, timestamp,
             gethLogs } = this.props;
-
+        const { cache, mine, autoDag, fast, minerThreads, isGethFormDirty,
+            showGethSuccessMessage } = this.state;
         return <Dialog
           title={this.renderGethTitle()}
           actions={this.getGethActions()}
@@ -307,6 +445,17 @@ class ServiceStatusBar extends Component {
               gethSettings={gethSettings}
               settingsActions={settingsActions}
               style={{ height: '400px' }}
+              onMineChange={this.onMineChange}
+              onCacheChange={this.onCacheChange}
+              onAutodagChange={this.onAutodagChange}
+              onFastChange={this.onFastChange}
+              onMinerThreadsChange={this.onMinerThreadsChange}
+              cache={cache}
+              mine={mine}
+              autoDag={autoDag}
+              fast={fast}
+              minerThreads={minerThreads}
+              showSuccessMessage={showGethSuccessMessage && !isGethFormDirty}
             />
           }
           {this.state.activeTab === GETH_LOGS &&
@@ -330,7 +479,10 @@ class ServiceStatusBar extends Component {
             palette.primary1Color;
 
         return <div style={{ width: '100%' }}>
-          <button style={this.getTitleButtonStyle(IPFS_SETTINGS)} onClick={() => this.selectTab(IPFS_SETTINGS)}>
+          <button
+            style={this.getTitleButtonStyle(IPFS_SETTINGS)}
+            onClick={() => this.selectTab(IPFS_SETTINGS)}
+          >
             <div style={{ height: '46px', lineHeight: '46px' }}>Settings</div>
             <div style={{ height: '2px', backgroundColor: settingsBarColor }} />
           </button>
@@ -341,11 +493,9 @@ class ServiceStatusBar extends Component {
         </div>;
     }
 
-
-
     renderIpfsDialog () {
         const { intl, ipfsSettings, settingsActions } = this.props;
-
+        const { storagePath, showIpfsSuccessMessage, isIpfsFormDirty } = this.state;
         return <Dialog
           title={this.renderIpfsTitle()}
           actions={this.getIpfsActions()}
@@ -360,6 +510,9 @@ class ServiceStatusBar extends Component {
               ipfsSettings={ipfsSettings}
               settingsActions={settingsActions}
               style={{ height: '400px' }}
+              storagePath={storagePath}
+              onIpfsStorageChange={this.onIpfsStorageChange}
+              showSuccessMessage={showIpfsSuccessMessage && !isIpfsFormDirty}
             />
           }
           {this.state.activeTab === IPFS_LOGS &&
