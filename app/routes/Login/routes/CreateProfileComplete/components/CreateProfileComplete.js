@@ -54,19 +54,19 @@ class CreateProfileComplete extends Component {
                     disabled
                     floatingLabelText={intl.formatMessage(formMessages.name)}
                     style={{ width: '210px' }}
-                    value={fullName}
+                    value={fullName || ''}
                   />
                   <TextField
                     disabled
                     floatingLabelText={intl.formatMessage(formMessages.username)}
                     style={{ width: '210px', marginLeft: '20px' }}
-                    value={tempProfile.get('username')}
+                    value={tempProfile.get('username') || ''}
                   />
                   <TextField
                     disabled
                     floatingLabelText={intl.formatMessage(generalMessages.ethereumAddress)}
                     style={{ width: '100%' }}
-                    value={tempProfile.get('address')}
+                    value={tempProfile.get('address') || ''}
                   />
                   <h3>{intl.formatMessage(profileMessages.tipsBeforeStart)}</h3>
                   <p style={{ fontSize: '13px' }} >

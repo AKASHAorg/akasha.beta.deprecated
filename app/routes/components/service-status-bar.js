@@ -350,7 +350,7 @@ class ServiceStatusBar extends Component {
     }
 
     getGethActions () {
-        const { intl, gethBusyState } = this.props;
+        const { intl, gethBusyState, disableStopService } = this.props;
         return <div style={{ display: 'flex' }}>
           <div style={{ flex: '0 0 auto', height: '36px', display: 'flex', alignItems: 'center' }}>
             <Toggle
@@ -362,7 +362,7 @@ class ServiceStatusBar extends Component {
               labelStyle={{ textAlign: 'left', width: 'calc(100% - 44px)' }}
               toggled={this.state.gethToggled}
               onToggle={this.onGethToggle}
-              disabled={gethBusyState}
+              disabled={gethBusyState || (disableStopService && this.state.gethToggled)}
               style={toggleStyle}
             />
           </div>
@@ -381,7 +381,7 @@ class ServiceStatusBar extends Component {
     }
 
     getIpfsActions () {
-        const { intl, ipfsBusyState } = this.props;
+        const { intl, ipfsBusyState, disableStopService } = this.props;
         return <div style={{ display: 'flex' }}>
           <div style={{ flex: '0 0 auto', height: '36px', display: 'flex', alignItems: 'center' }}>
             <Toggle
@@ -393,7 +393,7 @@ class ServiceStatusBar extends Component {
               labelStyle={{ textAlign: 'left', width: 'calc(100% - 44px)' }}
               toggled={this.state.ipfsToggled}
               onToggle={this.onIpfsToggle}
-              disabled={ipfsBusyState}
+              disabled={ipfsBusyState || (disableStopService && this.state.ipfsToggled)}
               style={toggleStyle}
             />
           </div>
@@ -633,7 +633,8 @@ function mapStateToProps (state, ownProps) {
         syncActionId: state.externalProcState.get('syncActionId'),
         gethBusyState: state.externalProcState.get('gethBusyState'),
         ipfsBusyState: state.externalProcState.get('ipfsBusyState'),
-        timestamp: state.appState.get('timestamp')
+        timestamp: state.appState.get('timestamp'),
+        disableStopService: ownProps.disableStopService
     };
 }
 

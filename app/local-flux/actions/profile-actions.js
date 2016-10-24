@@ -218,7 +218,9 @@ class ProfileActions {
             currentStatus,
             onSuccess: (tempProfile) => {
                 profileActionCreators.updateTempProfileSuccess(tempProfile);
-                cb();
+                if (typeof cb === 'function') {
+                    cb();
+                }
             },
             onError: (error) => {
                 this.dispatch(profileActionCreators.updateTempProfileError(error));
@@ -243,13 +245,15 @@ class ProfileActions {
     /**
      *  ----- End Temp Profile utilities ---------
      */
-    getLocalProfiles = () =>
+    getLocalProfiles = () => {
+        this.dispatch(profileActionCreators.getLocalProfiles());
         this.authService.getLocalIdentities({
             onSuccess: (data) => {
                 this.dispatch(profileActionCreators.getLocalProfilesSuccess(data));
             },
             onError: err => this.dispatch(profileActionCreators.getLocalProfilesError(err))
         });
+    }
 
     clearLocalProfiles = () =>
         this.dispatch(profileActionCreators.clearLocalProfilesSuccess());

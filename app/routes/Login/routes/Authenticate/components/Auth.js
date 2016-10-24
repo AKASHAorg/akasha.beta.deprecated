@@ -23,10 +23,12 @@ class Auth extends Component {
         };
     }
     componentWillMount () {
-        const { profileActions } = this.props;
+        const { profileActions, gethStatus } = this.props;
         profileActions.getTempProfile();
         profileActions.clearLoggedProfile();
-        profileActions.getLocalProfiles();
+        if (gethStatus.get('api')) {
+            profileActions.getLocalProfiles();
+        }
     }
     componentWillReceiveProps (nextProps) {
         const {
@@ -34,8 +36,16 @@ class Auth extends Component {
             tempProfile,
             localProfiles,
             loggedProfile,
-            loginErrors } = nextProps;
-
+            loginErrors,
+            gethStatus,
+            ipfsStatus } = nextProps;
+        const oldIpfsStatus = this.props.ipfsStatus;
+        const ipfsStatusChanged = (ipfsStatus.get('started') && !oldIpfsStatus.get('started'))
+            || (ipfsStatus.get('spawned') && !oldIpfsStatus.get('spawned'));
+        const profilesChanged = this.props.localProfiles.size !== nextProps.localProfiles.size;
+        if (gethStatus.get('api') && !this.props.gethStatus.get('api') && !localProfiles.size) {
+            profileActions.getLocalProfiles();
+        }
         if (loginErrors.size === 0) {
             if (this.state.selectedProfile &&
                 loggedProfile.get('account') === this.state.selectedProfile.get('ethAddress')) {
@@ -46,8 +56,8 @@ class Auth extends Component {
                 return this.context.router.push('/authenticate/new-profile-status');
             }
         }
-        if ((localProfiles.size > 0)
-                && this.props.localProfiles.size !== nextProps.localProfiles.size) {
+        if ((ipfsStatus.get('started') || ipfsStatus.get('spawned')) && localProfiles.size > 0
+                && (profilesChanged || ipfsStatusChanged)) {
             profileActions.getProfileData(localProfiles.toJS());
         }
         return null;
@@ -111,6 +121,9 @@ class Auth extends Component {
             const userInitials = profileName.match(/\b\w/g);
             const avatarImage = profile.get('avatar');
             let avtr;
+            if (!profile.get('username')) {
+                return null;
+            }
             if (avatarImage) {
                 avtr = (
                   <Avatar

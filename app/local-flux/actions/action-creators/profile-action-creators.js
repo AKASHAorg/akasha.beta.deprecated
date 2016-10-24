@@ -168,7 +168,11 @@ export function publishProfileError (error) {
         error
     };
 }
-
+export function getLocalProfiles () {
+    return {
+        type: types.GET_LOCAL_PROFILES
+    };
+}
 export function getLocalProfilesSuccess (data) {
     return {
         type: types.GET_LOCAL_PROFILES_SUCCESS,
