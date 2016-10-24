@@ -6,5 +6,6 @@ export { EProcActions } from './external-process-actions';
 export { ProfileActions } from './profile-actions';
 export { SettingsActions } from './settings-actions';
 export { TagActions } from './tag-actions';
+export { TempProfileActions } from './temp-profile-actions';
 export { TransactionActions } from './transaction-actions';
 export { ValidationActions } from './validation-actions';

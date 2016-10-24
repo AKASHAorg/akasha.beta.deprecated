@@ -1,10 +1,10 @@
 import { connect } from 'react-redux';
-import { ProfileActions } from 'local-flux';
+import { ProfileActions, TempProfileActions } from 'local-flux';
 import Auth from './components/Auth';
 
 function mapStateToProps (state, ownProps) {
     return {
-        tempProfile: state.profileState.get('tempProfile'),
+        tempProfile: state.tempProfileState.get('tempProfile'),
         localProfiles: state.profileState.get('profiles'),
         loggedProfile: state.profileState.get('loggedProfile'),
         loginErrors: state.profileState.get('errors'),
@@ -14,7 +14,8 @@ function mapStateToProps (state, ownProps) {
 
 function mapDispatchToProps (dispatch) {
     return {
-        profileActions: new ProfileActions(dispatch)
+        profileActions: new ProfileActions(dispatch),
+        tempProfileActions: new TempProfileActions(dispatch)
     };
 }
 

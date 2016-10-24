@@ -9,9 +9,9 @@ import LoginHeader from '../../../components/LoginHeader';
 
 class CreateProfileComplete extends Component {
     componentWillMount () {
-        const { tempProfile, profileActions } = this.props;
+        const { tempProfile, tempProfileActions } = this.props;
         if (!tempProfile.get('username')) {
-            profileActions.getTempProfile();
+            tempProfileActions.getTempProfile();
         }
     }
     componentWillReceiveProps (nextProps) {
@@ -20,8 +20,8 @@ class CreateProfileComplete extends Component {
         }
     }
     _handleFinishSetup = () => {
-        const { profileActions, tempProfile } = this.props;
-        profileActions.deleteTempProfile(tempProfile.get('username'));
+        const { tempProfileActions, tempProfile } = this.props;
+        tempProfileActions.deleteTempProfile(tempProfile.get('username'));
     }
     render () {
         const { style, intl, tempProfile } = this.props;
@@ -95,7 +95,7 @@ CreateProfileComplete.propTypes = {
     style: PropTypes.shape(),
     intl: PropTypes.shape(),
     tempProfile: PropTypes.shape(),
-    profileActions: PropTypes.shape()
+    tempProfileActions: PropTypes.shape()
 };
 
 CreateProfileComplete.contextTypes = {

@@ -6,6 +6,7 @@ import * as externalProcessActionCreators from './external-process-action-creato
 import * as profileActionCreators from './profile-action-creators';
 import * as settingsActionCreators from './settings-action-creators';
 import * as tagActionCreators from './tag-action-creators';
+import * as tempProfileActionCreators from './temp-profile-action-creators';
 import * as transactionActionCreators from './transaction-action-creators';
 import * as validationActionCreators from './validation-action-creators';
 
@@ -18,6 +19,7 @@ export {
     profileActionCreators,
     settingsActionCreators,
     tagActionCreators,
+    tempProfileActionCreators,
     transactionActionCreators,
     validationActionCreators
 };

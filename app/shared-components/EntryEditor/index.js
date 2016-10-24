@@ -18,11 +18,11 @@ class EntryEditor extends Component {
         };
     }
     componentDidMount () {
-        if (!this.state.readOnly && this.props.title) {
-            this.titleInput.focus();
-        } else if (this.state.readOnly) {
-            this.editor.focus();
-        }
+        // if (!this.state.readOnly && this.props.title) {
+        //     this.titleInput.focus();
+        // } else if (this.state.readOnly) {
+        //     this.editor.focus();
+        // }
     }
     getRawContent = () => convertToRaw(this.state.editorState.getCurrentContent());
     getContent = () => this.state.editorState.getCurrentContent();

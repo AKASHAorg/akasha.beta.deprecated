@@ -23,15 +23,14 @@ class EntryService extends BaseService {
      *
      */
     publishEntry = ({ entry, profileAddress, onError, onSuccess }) => {
-        const serverChannel = Channel.server.entry.publish;
-        const clientChannel = Channel.client.entry.publish;
         this.openChannel({
             serverManager: this.serverManager,
             clientManager: this.clientManager,
-            serverChannel,
-            clientChannel,
-            listenerCb: this.createListener(onError, onSuccess, clientChannel.channelName)
-        }, () => serverChannel.send(entry));
+            serverChannel: Channel.server.entry.publish,
+            clientChannel: Channel.client.entry.publish,
+            listenerCb: this.createListener(onError, onSuccess)
+        });
+        Channel.server.entry.publish.send(entry);
     };
     getResourceCount = ({ table, onError, onSuccess }) =>
         entriesDB.transaction('rw', entriesDB[table], () =>

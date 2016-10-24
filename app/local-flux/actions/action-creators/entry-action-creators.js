@@ -63,7 +63,6 @@ export function getSavedEntriesSuccess (entries) {
 }
 
 export function getSavedEntriesError (error) {
-    console.error(error);
     return {
         type: types.GET_SAVED_ENTRIES_ERROR,
         error
