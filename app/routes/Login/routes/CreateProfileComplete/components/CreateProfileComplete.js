@@ -91,8 +91,8 @@ CreateProfileComplete.propTypes = {
 };
 
 CreateProfileComplete.contextTypes = {
-    muiTheme: React.PropTypes.object,
-    router: React.PropTypes.object
+    muiTheme: React.PropTypes.shape(),
+    router: React.PropTypes.shape()
 };
 
 CreateProfileComplete.defaultProps = {

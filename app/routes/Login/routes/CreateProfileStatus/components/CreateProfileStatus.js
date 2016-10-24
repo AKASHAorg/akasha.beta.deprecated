@@ -197,6 +197,7 @@ class CreateProfileStatus extends Component {
     }
     render () {
         const { style, tempProfile, intl } = this.props;
+        const { palette } = this.context.muiTheme;
         const { nextAction } = tempProfile.get('currentStatus');
         const paraStyle = { marginTop: '20px' };
         const errors = this.state.errors;
@@ -262,7 +263,7 @@ class CreateProfileStatus extends Component {
                     {this.getCurrentStatusDescription()}
                   </div>
                 </div>
-                <div style={{ marginTop: '20px', color: Colors.red300 }}>
+                <div style={{ marginTop: '20px', color: palette.accent1Color }}>
                   {this.state.errors.map((err, key) =>
                     <div className="error-card" key={key}>
                       <p>{err.code}</p>
@@ -283,11 +284,13 @@ CreateProfileStatus.propTypes = {
     style: PropTypes.shape(),
     intl: PropTypes.shape(),
     transactionActions: PropTypes.shape(),
+    gethStatus: PropTypes.shape().isRequired,
+    ipfsStatus: PropTypes.shape().isRequired
 };
 
 CreateProfileStatus.contextTypes = {
-    muiTheme: React.PropTypes.object,
-    router: React.PropTypes.object
+    muiTheme: React.PropTypes.shape(),
+    router: React.PropTypes.shape()
 };
 
 CreateProfileStatus.defaultProps = {
