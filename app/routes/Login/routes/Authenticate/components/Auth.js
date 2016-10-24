@@ -56,11 +56,27 @@ class Auth extends Component {
         this.props.profileActions.clearLocalProfiles();
     }
     getPlaceholderMessage () {
-        const { intl, gethStatus } = this.props;
+        const { intl, gethStatus, ipfsStatus, localProfiles, profilesFetched } = this.props;
+        let message;
         if (!gethStatus.get('api')) {
-            return intl.formatMessage(setupMessages.gethStopped);
+            message = intl.formatMessage(setupMessages.gethStopped);
+        } else if (!ipfsStatus.get('spawned') && !ipfsStatus.get('started')) {
+            message = intl.formatMessage(setupMessages.ipfsStopped);
+        } else if (localProfiles.size === 0 && profilesFetched) {
+            message = intl.formatMessage(setupMessages.noProfilesFound);
+        } else if (localProfiles.size === 0 && !profilesFetched) {
+            message = intl.formatMessage(setupMessages.findingProfiles);
         }
-        return intl.formatMessage(setupMessages.ipfsStopped);
+        if (message) {
+            return <div
+              style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}
+            >
+              <div style={{ maxWidth: '80%', textAlign: 'center' }}>
+                {message}
+              </div>
+            </div>;
+        }
+        return null;
     }
     handleTouchTap = (index) => {
         const { localProfiles } = this.props;
@@ -84,12 +100,10 @@ class Auth extends Component {
         });
     };
     _getLocalProfiles () {
-        const { localProfiles, profilesFetched, intl } = this.props;
-        if (localProfiles.size === 0 && profilesFetched) {
-            return <div>{intl.formatMessage(setupMessages.noProfilesFound)}</div>;
-        }
-        if (localProfiles.size === 0 && !profilesFetched) {
-            return <div>{intl.formatMessage(setupMessages.findingProfiles)}</div>;
+        const { localProfiles } = this.props;
+        const { palette } = this.context.muiTheme;
+        if (localProfiles.size === 0) {
+            return this.getPlaceholderMessage();
         }
         return localProfiles.map((profile, index) => {
             const profileAddress = profile.get('ethAddress');
@@ -102,7 +116,7 @@ class Auth extends Component {
                   <Avatar
                     src={avatarImage}
                     size={48}
-                    style={{ top: '12px', border: '1px solid #bcbcbc' }}
+                    style={{ top: '12px', border: `1px solid ${palette.paperShadowColor}` }}
                   />
                 );
             } else {
@@ -142,7 +156,7 @@ class Auth extends Component {
                 value={profileAddress}
                 onTouchTap={() => this.handleTouchTap(index)}
                 className="col-xs-12"
-                style={{ border: '1px solid #DDD', marginBottom: 8 }}
+                style={{ border: `1px solid ${palette.borderColor}`, marginBottom: 8 }}
               />
             );
         });
@@ -212,11 +226,9 @@ class Auth extends Component {
           >
             {gethStatus.get('api') && (ipfsStatus.get('started') || ipfsStatus.get('spawned')) ?
               <List className="col-xs-12">
-                {localProfiles}
+                { localProfiles }
               </List> :
-              <div>
-                {this.getPlaceholderMessage()}
-              </div>
+              <div> {this.getPlaceholderMessage()} </div>
             }
             {this.state.selectedProfile &&
               <LoginDialog

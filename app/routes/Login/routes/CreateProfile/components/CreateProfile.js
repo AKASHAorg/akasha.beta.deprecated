@@ -1,6 +1,5 @@
 import React, { Component, PropTypes } from 'react';
 import r from 'ramda';
-import * as Colors from 'material-ui/styles/colors';
 import { SvgIcon, IconButton, RaisedButton,
     TextField, Checkbox, Divider } from 'material-ui';
 import ContentAddIcon from 'material-ui/svg-icons/content/add';
@@ -189,15 +188,14 @@ class CreateProfile extends Component {
     }
     render () {
         const { intl, gethStatus, ipfsStatus } = this.props;
+        const { palette } = this.context.muiTheme;
         const isServiceStopped = !gethStatus.get('api')
             || (!ipfsStatus.get('started') && !ipfsStatus.get('spawned'));
-        const floatLabelStyle = { color: Colors.lightBlack };
-        const inputStyle = { color: Colors.darkBlack };
+        const floatLabelStyle = { color: palette.disabledColor };
         const firstNameProps = this.getProps({
             floatingLabelText: intl.formatMessage(formMessages.firstName),
             ref: 'firstName',
             floatingLabelStyle: floatLabelStyle,
-            inputStyle: { inputStyle },
             style: { width: '210px', verticalAlign: 'middle' },
             statePath: 'formValues.firstName',
             required: true,
@@ -210,7 +208,6 @@ class CreateProfile extends Component {
             floatingLabelStyle: floatLabelStyle,
             floatingLabelText: intl.formatMessage(formMessages.lastName),
             ref: 'lastName',
-            inputStyle: { inputStyle },
             style: { width: '210px', marginLeft: '20px', verticalAlign: 'middle' },
             statePath: 'formValues.lastName',
             required: true,
@@ -220,7 +217,6 @@ class CreateProfile extends Component {
 
         const usernameProps = this.getProps({
             fullWidth: true,
-            inputStyle: { inputStyle },
             style: { verticalAlign: 'middle' },
             floatingLabelText: intl.formatMessage(formMessages.username),
             ref: 'username',
@@ -234,7 +230,6 @@ class CreateProfile extends Component {
         const passwordProps = this.getProps({
             type: 'password',
             fullWidth: true,
-            inputStyle: { inputStyle },
             style: { verticalAlign: 'middle' },
             floatingLabelText: intl.formatMessage(formMessages.password),
             ref: 'password',
@@ -248,7 +243,6 @@ class CreateProfile extends Component {
         const password2Props = this.getProps({
             type: 'password',
             fullWidth: true,
-            inputStyle: { inputStyle },
             style: { verticalAlign: 'middle' },
             floatingLabelText: intl.formatMessage(formMessages.passwordVerify),
             ref: 'password2',
@@ -399,6 +393,7 @@ class CreateProfile extends Component {
                         <a
                           href="/terms"
                           onClick={ev => this._handleModalShow(ev, 'termsOfService')}
+                          style={{ color: palette.primary1Color }}
                         >
                           {intl.formatMessage(generalMessages.termsOfService)}
                         </a>
@@ -407,6 +402,7 @@ class CreateProfile extends Component {
                         <a
                           href="/privacy"
                           onClick={ev => this._handleModalShow(ev, 'privacyPolicy')}
+                          style={{ color: palette.primary1Color }}
                         >
                           {intl.formatMessage(generalMessages.privacyPolicy)}
                         </a>
@@ -433,8 +429,8 @@ CreateProfile.propTypes = {
 };
 
 CreateProfile.contextTypes = {
-    muiTheme: React.PropTypes.object,
-    router: React.PropTypes.object
+    muiTheme: React.PropTypes.shape(),
+    router: React.PropTypes.shape()
 };
 
 CreateProfile.defaultProps = {
