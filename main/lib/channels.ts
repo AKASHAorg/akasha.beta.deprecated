@@ -16,7 +16,7 @@ const channels = {
     'getIndexedTag', 'getIndexTagError'],
 
     entry: ['publish', 'update', 'upvote', 'downvote', 'isOpenedToVotes', 'getVoteOf',
-        'getVoteEndDate', 'getScore', 'getEntriesCount', 'getEntryOf', 'getEntry'],
+        'getVoteEndDate', 'getScore', 'getEntriesCount', 'getEntryOf', 'getEntry', 'getEntriesCreated'],
 
     comments: ['publish', 'update', 'upvote', 'downvote', 'getScore', 'getCount', 'getCommentAt'],
 
@@ -31,6 +31,8 @@ const channels = {
         'getRegistered'],
 
     tx: ['addToQueue', 'emitMined'],
+
+    licenses: ['getLicenceById', 'getLicenses']
 };
 
 const processes = ['server', 'client'];

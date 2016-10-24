@@ -1,6 +1,7 @@
 import { createCipher, createDecipher, randomBytes, Decipher, Cipher } from 'crypto';
 import { GethConnector, gethHelper } from '@akashaproject/geth-connector';
-import { fromRpcSig, ecrecover, toBuffer, bufferToHex, pubToAddress } from 'ethereumjs-util';
+import { fromRpcSig, ecrecover, toBuffer, bufferToHex, pubToAddress, unpad } from 'ethereumjs-util';
+import { constructed as contracts } from '../../contracts/index';
 import * as Promise from 'bluebird';
 
 const randomBytesAsync = Promise.promisify(randomBytes);
@@ -81,8 +82,15 @@ export default class Auth {
      */
     public login(acc: string, pass: any | Uint8Array, timer: number = 0) {
 
-        return gethHelper
-            .hasKey(acc)
+        return contracts.instance
+            .registry
+            .getByAddress(acc)
+            .then((address: string) => {
+                if (!unpad(address)) {
+                    throw new Error(`eth key: ${acc} has no profile attached`);
+                }
+                return gethHelper.hasKey(acc);
+            })
             .then((found) => {
                 if (!found) {
                     throw new Error(`local key for ${acc} not found`);
