@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
-import * as Colors from 'material-ui/styles/colors';
 import { RaisedButton } from 'material-ui';
+import ErrorIcon from 'material-ui/svg-icons/alert/error';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { PanelContainer } from 'shared-components';
 import { generalMessages, setupMessages, profileMessages } from 'locale-data/messages';
@@ -10,6 +10,7 @@ import PanelHeader from '../../../../components/panel-header';
 class CreateProfileStatus extends Component {
     constructor (props) {
         super(props);
+        this.isServiceRestarted = false;
         this.state = {
             errors: []
         };
@@ -29,6 +30,12 @@ class CreateProfileStatus extends Component {
                 errors: nextProps.errors
             });
         }
+        if ((nextProps.gethStatus.get('api') && !this.props.gethStatus.get('api'))
+                || (nextProps.ipfsStatus.get('started') && !this.props.ipfsStatus.get('started'))
+                || (nextProps.ipfsStatus.get('spawned') && !this.props.ipfsStatus.get('spawned'))) {
+            this.isServiceRestarted = true;
+        }
+
         const shouldResume =
             !is(nextProps.tempProfile.get('currentStatus'), this.props.tempProfile.get('currentStatus')) ||
             !is(nextProps.minedTransactions, this.props.minedTransactions) ||
@@ -191,22 +198,51 @@ class CreateProfileStatus extends Component {
         profileActions.clearErrors();
     }
     _handleStepRetry = () => {
-        const { profileActions } = this.props;
+        const { profileActions, tempProfile } = this.props;
+        const { nextAction } = tempProfile.currentStatus;
+        this.isGethRestarted = false;
         profileActions.clearErrors();
+        if (nextAction === 'listenFaucetTx') {
+            const currentStatus = tempProfile.get('currentStatus')
+                .merge({ listeningFaucetTx: false });
+            profileActions.updateTempProfile({}, currentStatus.toJS());
+        } else if (nextAction === 'listenPublishTx') {
+            const currentStatus = tempProfile.get('currentStatus')
+                .merge({ listeningPublishTx: false });
+            profileActions.updateTempProfile({}, currentStatus.toJS());
+        }
         this.resumeProfileCreation(this.props);
     }
+    renderWarningMessage () {
+        const { intl } = this.props;
+        const { palette } = this.context.muiTheme;
+
+        return <div
+          style={{ height: '36px', lineHeight: '36px', display: 'flex', alignItems: 'center' }}
+        >
+          <ErrorIcon style={{ color: palette.accent1Color }} />
+          <span style={{ marginLeft: '5px', color: palette.accent1Color }}>
+            {intl.formatMessage(generalMessages.serviceStoppedWarning)}
+          </span>
+        </div>;
+    }
     render () {
-        const { style, tempProfile, intl } = this.props;
+        const { style, tempProfile, intl, gethStatus, ipfsStatus } = this.props;
         const { palette } = this.context.muiTheme;
         const { nextAction } = tempProfile.get('currentStatus');
         const paraStyle = { marginTop: '20px' };
         const errors = this.state.errors;
+        const isServiceStopped = !gethStatus.get('api')
+            || (!ipfsStatus.get('started') && !ipfsStatus.get('spawned'));
         return (
           <div style={style} >
             <PanelContainer
               showBorder
               header={
-                <PanelHeader title={intl.formatMessage(profileMessages.registeringIdentity)} />
+                <PanelHeader
+                  title={intl.formatMessage(profileMessages.registeringIdentity)}
+                  disableStopService
+                />
               }
               actions={[
                   /* eslint-disable */
@@ -222,10 +258,12 @@ class CreateProfileStatus extends Component {
                     label={intl.formatMessage(setupMessages.retryStep)}
                     onClick={this._handleStepRetry}
                     primary
-                    disabled={(errors.size === 0 || errors.length === 0)}
+                    disabled={((errors.size === 0 || errors.length === 0)
+                        && !this.isServiceRestarted) || isServiceStopped}
                   />
                   /* eslint-enable */
               ]}
+              leftActions={isServiceStopped && this.renderWarningMessage()}
             >
               <div className="col-xs">
                 <p style={paraStyle}>

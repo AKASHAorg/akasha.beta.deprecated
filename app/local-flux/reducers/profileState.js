@@ -220,6 +220,9 @@ const profileState = createReducer(initialState, {
             errors: state.get('errors').push(new ErrorRecord(error))
         }),
 
+    [types.GET_LOCAL_PROFILES]: state =>
+        state.merge({ profilesFetched: false }),
+
     [types.GET_LOCAL_PROFILES_SUCCESS]: (state, { data }) =>
         state.merge({
             profiles: new List(data.map(prf => new Profile({
@@ -229,8 +232,8 @@ const profileState = createReducer(initialState, {
             profilesFetched: true
         }),
 
-    [types.CLEAR_LOCAL_PROFILES_SUCCESS]:
-        (state) => state.set('profiles', new List()),
+    [types.CLEAR_LOCAL_PROFILES_SUCCESS]: state =>
+        state.set('profiles', new List()),
 
     [types.GET_LOCAL_PROFILES_ERROR]: (state, { error }) =>
         state.merge({

@@ -180,7 +180,7 @@ class CreateProfile extends Component {
             >
               <ErrorIcon style={{ color: palette.accent1Color }} />
               <span style={{ marginLeft: '5px', color: palette.accent1Color }}>
-                {intl.formatMessage(formMessages.submitWarningMessage)}
+                {intl.formatMessage(generalMessages.serviceStoppedWarning)}
               </span>
             </div>;
         }
