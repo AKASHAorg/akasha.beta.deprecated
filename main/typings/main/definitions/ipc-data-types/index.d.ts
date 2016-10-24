@@ -610,6 +610,7 @@ interface EntriesOfResponse extends MainResponse {
 
 interface EntryGetRequest {
     entryAddress: string;
+    full: boolean;
 }
 
 interface EntryGetResponse extends MainResponse {

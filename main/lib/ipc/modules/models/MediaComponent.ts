@@ -4,7 +4,7 @@ interface MediaComponent {
     // key value from contract
     id: string;
 
-    create(content: any, ...others: any[]): Promise<string>;
+    create(content: any, ...others: any[]): any;
 
     read(): Promise<any>;
 

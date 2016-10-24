@@ -2,6 +2,7 @@
 const crypto_1 = require('crypto');
 const geth_connector_1 = require('@akashaproject/geth-connector');
 const ethereumjs_util_1 = require('ethereumjs-util');
+const index_1 = require('../../contracts/index');
 const Promise = require('bluebird');
 const randomBytesAsync = Promise.promisify(crypto_1.randomBytes);
 class Auth {
@@ -43,8 +44,15 @@ class Auth {
         return result;
     }
     login(acc, pass, timer = 0) {
-        return geth_connector_1.gethHelper
-            .hasKey(acc)
+        return index_1.constructed.instance
+            .registry
+            .getByAddress(acc)
+            .then((address) => {
+            if (!ethereumjs_util_1.unpad(address)) {
+                throw new Error(`eth key: ${acc} has no profile attached`);
+            }
+            return geth_connector_1.gethHelper.hasKey(acc);
+        })
             .then((found) => {
             if (!found) {
                 throw new Error(`local key for ${acc} not found`);

@@ -8,6 +8,7 @@ import ProfileIPC from './ProfileIPC';
 import TagsIPC from './TagsIPC';
 import EntryIPC from './EntryIPC';
 import CommentsIPC from './CommentsIPC';
+import LicensesIPC from './LicensesIPC';
 import WebContents = Electron.WebContents;
 
 export function initModules() {
@@ -21,7 +22,8 @@ export function initModules() {
         new ProfileIPC(),
         new TagsIPC(),
         new EntryIPC(),
-        new CommentsIPC()
+        new CommentsIPC(),
+        new LicensesIPC()
     ];
     return {
         initListeners: (webContents: WebContents) => {

@@ -4,6 +4,7 @@ const EntryIPC_1 = require('../lib/ipc/EntryIPC');
 const chai_1 = require('chai');
 const channels_1 = require('../lib/channels');
 const helpers = require('./helpers');
+const entryContent_1 = require('./fixtures/entryContent');
 class EntryIPCtest extends EntryIPC_1.default {
     constructor() {
         super(...arguments);
@@ -14,8 +15,8 @@ class EntryIPCtest extends EntryIPC_1.default {
         return cb(helpers.fireEvent(channel, data, event));
     }
 }
-describe('TagsIPC', function () {
-    this.timeout(60000);
+describe('EntryIPC', function () {
+    this.timeout(240000);
     let entryChannel;
     let token;
     before(function (done) {
@@ -43,7 +44,8 @@ describe('TagsIPC', function () {
             channels_1.default.server.entry.isOpenedToVotes,
             channels_1.default.server.entry.getVoteOf,
             channels_1.default.server.entry.getEntriesCount,
-            channels_1.default.server.entry.getEntryOf
+            channels_1.default.server.entry.getEntryOf,
+            channels_1.default.server.entry.getEntriesCreated
         ];
         entryChannel.callTest.set(channels_1.default.client.entry.manager, (injected) => {
             listenersNr++;
@@ -63,6 +65,46 @@ describe('TagsIPC', function () {
         }, (generated) => {
             token = generated;
         });
+    });
+    it.skip('--should publish an entry', function (done) {
+        const content = {
+            draft: entryContent_1.default,
+            title: 'Entry' + new Date().getTime(),
+            excerpt: 'Testing excerpt, bla bla bla, test O_O :D :D :D' + new Date().getTime(),
+            licence: Math.floor(Math.random() * 10) + 1,
+            author: helpers.profileAddress,
+            featuredImage: Buffer.alloc(200000, 33)
+        };
+        const tags = [helpers.tagName];
+        entryChannel.callTest.set(channels_1.default.client.entry.publish, (injected) => {
+            chai_1.expect(injected.data.data).to.exist;
+            chai_1.expect(injected.data.data.tx).to.exist;
+            done();
+        });
+        electron_1.ipcMain.emit(channels_1.default.server.entry.publish, '', { content, tags, token, gas: 2000000 });
+    });
+    it('--should get entries created', (done) => {
+        entryChannel.callTest.set(channels_1.default.client.entry.getEntriesCreated, (injected) => {
+            chai_1.expect(injected.data.data).to.exist;
+            chai_1.expect(injected.data.data.collection).to.exist;
+            done();
+        });
+        electron_1.ipcMain.emit(channels_1.default.server.entry.getEntriesCreated, '', { index: {}, fromBlock: 0 });
+    });
+    it('--should get an shortEntry by address', (done) => {
+        entryChannel.callTest.set(channels_1.default.client.entry.getEntry, (injected) => {
+            console.log(injected.data.data);
+            chai_1.expect(injected.data.data).to.exist;
+            done();
+        });
+        electron_1.ipcMain.emit(channels_1.default.server.entry.getEntry, '', { entryAddress: helpers.entryAddress });
+    });
+    it('--should get an fullEntry by address', (done) => {
+        entryChannel.callTest.set(channels_1.default.client.entry.getEntry, (injected) => {
+            chai_1.expect(injected.data.data).to.exist;
+            done();
+        });
+        electron_1.ipcMain.emit(channels_1.default.server.entry.getEntry, '', { entryAddress: helpers.entryAddress, full: true });
     });
     after(function (done) {
         helpers.stopServices(done);

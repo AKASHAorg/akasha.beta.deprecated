@@ -86,7 +86,14 @@ export default class Main extends BaseContract {
     public getEntry(address: string) {
         return this.contract
             .getEntry
-            .callAsync(address);
+            .callAsync(address)
+            .then((data) => {
+                return Promise.resolve({
+                    date: data[0].toString(),
+                    profile: data[1],
+                    ipfsHash: this.flattenIpfs(data[2])
+                })
+            });
     }
 
 
@@ -97,7 +104,7 @@ export default class Main extends BaseContract {
      * @returns {any}
      */
     public follow(address: string, gas?: string) {
-        return this.extractData('follow', address, { gas });
+        return Promise.resolve(this.extractData('follow', address, { gas }));
     }
 
     /**
@@ -208,14 +215,15 @@ export default class Main extends BaseContract {
      * @param gas
      * @returns {any}
      */
-    public publishEntry(hash: string[], tags: string[], gas?: number) {
-        const hashTr = hash.map((v) => {
-            return this.gethInstance.web3.fromUtf8(v);
-        });
+    public publishEntry(hash: string, tags: string[], gas?: number) {
+        const hashTr = [];
+        const offset = Math.floor(hash.length / 2);
+        hashTr.push(hash.slice(0, offset));
+        hashTr.push(hash.slice(offset));
         const tagsTr = tags.map((v) => {
             return this.gethInstance.web3.fromUtf8(v);
         });
-        return this.extractData('publishEntry', hashTr, tagsTr, { gas });
+        return Promise.resolve(this.extractData('publishEntry', hashTr, tagsTr, { gas }));
     }
 
 
@@ -230,7 +238,7 @@ export default class Main extends BaseContract {
         const hashTr = hash.map((v) => {
             return this.gethInstance.web3.fromUtf8(v);
         });
-        return this.extractData('updateEntry', hashTr, entryAddress, { gas });
+        return Promise.resolve(this.extractData('updateEntry', hashTr, entryAddress, { gas }));
     }
 
     /**
@@ -243,7 +251,7 @@ export default class Main extends BaseContract {
      */
     public upVoteEntry(entryAddress: string, weight: number, gas?: number, value?: number) {
         const weightTr = this.gethInstance.web3.fromDecimal(weight);
-        return this.extractData('upVoteEntry', entryAddress, weightTr, { gas, value });
+        return Promise.resolve(this.extractData('upVoteEntry', entryAddress, weightTr, { gas, value }));
     }
 
     /**
@@ -256,7 +264,7 @@ export default class Main extends BaseContract {
      */
     public downVoteEntry(entryAddress: string, weight: number, gas?: number, value?: number) {
         const weightTr = this.gethInstance.web3.fromDecimal(weight);
-        return this.extractData('downVoteEntry', entryAddress, weightTr, { gas, value });
+        return Promise.resolve(this.extractData('downVoteEntry', entryAddress, weightTr, { gas, value }));
     }
 
     /**
@@ -270,7 +278,7 @@ export default class Main extends BaseContract {
         const hashTr = hash.map((v) => {
             return this.gethInstance.web3.fromUtf8(v);
         });
-        return this.extractData('saveComment', entryAddress, hashTr, { gas });
+        return Promise.resolve(this.extractData('saveComment', entryAddress, hashTr, { gas }));
     }
 
     /**
@@ -286,7 +294,7 @@ export default class Main extends BaseContract {
             return this.gethInstance.web3.fromUtf8(v);
         });
         const commentIdTr = this.gethInstance.web3.fromDecimal(commentId);
-        return this.extractData('updateComment', entryAddress, commentIdTr, hashTr, { gas });
+        return Promise.resolve(this.extractData('updateComment', entryAddress, commentIdTr, hashTr, { gas }));
     }
 
     /**
@@ -301,10 +309,10 @@ export default class Main extends BaseContract {
     public upVoteComment(entryAddress: string, weigth: number, commentId: number, gas?: number, value?: number) {
         const weigthTr = this.gethInstance.web3.fromDecimal(weigth);
         const commentIdTr = this.gethInstance.web3.fromDecimal(commentId);
-        return this.extractData('upVoteComment', entryAddress, weigthTr, commentIdTr, {
+        return Promise.resolve(this.extractData('upVoteComment', entryAddress, weigthTr, commentIdTr, {
             gas,
             value
-        });
+        }));
     }
 
     /**
@@ -319,9 +327,30 @@ export default class Main extends BaseContract {
     public downVoteComment(entryAddress: string, weigth: number, commentId: number, gas?: number, value?: number) {
         const weigthTr = this.gethInstance.web3.fromDecimal(weigth);
         const commentIdTr = this.gethInstance.web3.fromDecimal(commentId);
-        return this.extractData('downVoteCommentAsync', entryAddress, weigthTr, commentIdTr, {
+        return Promise.resolve(this.extractData('downVoteCommentAsync', entryAddress, weigthTr, commentIdTr, {
             gas,
             value
-        });
+        }));
+    }
+
+    public getEntriesCreatedEvent(filter: {index: {}, fromBlock: string, toBlock?: string, address?: string}) {
+        const { fromBlock, toBlock, address } = filter;
+        const EntriesCreated = this.contract.Published(filter.index, { fromBlock, toBlock, address });
+        EntriesCreated.getAsync = Promise.promisify(EntriesCreated.get);
+        return EntriesCreated.getAsync();
+    }
+
+    public getCommentsOfEvent(filter: {index: {}, fromBlock: string, toBlock?: string, address?: string}) {
+        const { fromBlock, toBlock, address } = filter;
+        const CommentsOf = this.contract.Commented(filter.index, { fromBlock, toBlock, address });
+        CommentsOf.getAsync = Promise.promisify(CommentsOf.get);
+        return CommentsOf.getAsync();
+    }
+
+    public getVotesOfEvent(filter: {index: {}, fromBlock: string, toBlock?: string, address?: string}) {
+        const { fromBlock, toBlock, address } = filter;
+        const VotesOf = this.contract.Voted(filter.index, { fromBlock, toBlock, address });
+        VotesOf.getAsync = Promise.promisify(VotesOf.get);
+        return VotesOf.getAsync();
     }
 }

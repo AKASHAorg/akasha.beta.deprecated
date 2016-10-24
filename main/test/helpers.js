@@ -59,6 +59,7 @@ exports.tagName = 'cars1477052930372';
 exports.pwd = Buffer.from("abc12345");
 exports.mockedAddress = '0x9e86b867884e8f84ea4764fed6d3e0931b48f24d';
 exports.profileAddress = '0x3543f9dedcc22d2c3be06f5223137f101df9010b';
+exports.entryAddress = '0xc7449867e7767c6d5b257dea7740650003ee5080';
 exports.initLogger = () => {
     return Logger_1.default.getInstance();
 };
