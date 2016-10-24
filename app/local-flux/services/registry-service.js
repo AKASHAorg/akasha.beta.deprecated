@@ -47,19 +47,12 @@ class RegistryService extends BaseService {
      * Response:
      * @param data = {ethAddress: String}
      */
-    getCurrentProfile = () => {
-        const serverChannel = Channel.server.registry.getCurrentProfile;
-        const clientChannel = Channel.client.registry.getCurrentProfile;
-        if (this._listeners.has(clientChannel)) return Promise.resolve();
-        return new Promise((resolve, reject) => {
-            const listenerCb = (ev, res) => {
-                if (res.error) return reject(res.error);
-                return resolve(res.data);
-            };
-            return this.registerListener(clientChannel, listenerCb, () =>
-                serverChannel.send({})
-            );
-        });
+    getCurrentProfile = ({ onError, onSuccess }) => {
+        this.registerListener(
+            Channel.client.registry.getCurrentProfile,
+            this.createListener(onError, onSuccess)
+        );
+        Channel.server.registry.getCurrentProfile.send({});
     };
     /**
      * return contract address for a given eth address
@@ -69,23 +62,11 @@ class RegistryService extends BaseService {
      *  @param data = { profileAddress: String } -> profile contract address
      */
     getByAddress = ({ ethAddress, onSuccess, onError }) => {
-        const serverChannel = Channel.server.registry.getByAddress;
-        const clientChannel = Channel.client.registry.getByAddress;
         this.registerListener(
-            clientChannel,
-            this.createListener(onError, onSuccess, clientChannel.channelName)
+            Channel.client.registry.getByAddress,
+            this.createListener(onError, onSuccess)
         );
-        serverChannel.send(ethAddress);
-        if (this._listeners.has(clientChannel)) return Promise.resolve();
-        return new Promise((resolve, reject) => {
-            const listenerCb = (ev, res) => {
-                if (res.error) return reject(res.error);
-                return resolve(res.data);
-            };
-            return this.registerListener(clientChannel, listenerCb, () =>
-                serverChannel.send({ ethAddress })
-            );
-        });
+        Channel.server.registry.getByAddress.send(ethAddress);
     }
 
     /**

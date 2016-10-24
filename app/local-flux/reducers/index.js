@@ -8,6 +8,7 @@ import panelState from './panelState';
 import profileState from './profileState';
 import settingsState from './settingsState';
 import tagState from './tagState';
+import tempProfileState from './tempProfileState';
 import transactionState from './transactionState';
 
 const rootReducer = combineReducers({
@@ -19,6 +20,7 @@ const rootReducer = combineReducers({
     profileState,
     settingsState,
     tagState,
+    tempProfileState,
     transactionState,
     routing,
 });

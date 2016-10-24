@@ -12,6 +12,12 @@ class HomeContainer extends React.Component {
         const { profileActions } = this.props;
         profileActions.getLoggedProfile();
     }
+    componentWillReceiveProps (nextProps) {
+        const { profileActions } = this.props;
+        if (nextProps.loggedProfile && nextProps.loggedProfile.get('profile')) {
+            profileActions.getProfileData([{ profile: nextProps.loggedProfile.get('profile') }]);
+        }
+    }
     render () {
         return (
           <div className={styles.root} >
@@ -31,11 +37,14 @@ class HomeContainer extends React.Component {
 }
 
 HomeContainer.propTypes = {
-    children: PropTypes.element
+    children: PropTypes.element,
+    profileActions: PropTypes.shape()
 };
 
-function mapStateToProps () {
-    return {};
+function mapStateToProps (state) {
+    return {
+        loggedProfile: state.profileState.get('loggedProfile')
+    };
 }
 
 function mapDispatchToProps (dispatch) {

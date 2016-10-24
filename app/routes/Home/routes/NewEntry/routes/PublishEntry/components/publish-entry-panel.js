@@ -23,29 +23,27 @@ class PublishPanel extends React.Component {
             featuredImage: []
         };
     }
-    componentWillMount () {
-        this._setWorkingDraft(this.props.draft);
-    }
+    componentWillMount () {}
     componentDidMount () {
         const panelSize = ReactDOM.findDOMNode(this).getBoundingClientRect();
         this.panelSize = panelSize;
     }
-    _setWorkingDraft = (draft) => {
-        const { content } = draft;
-        let { excerpt } = draft;
-        if (!excerpt) {
-            excerpt = convertFromRaw(content).getPlainText()
-                .slice(0, 120)
-                .replace(/\r?\n|\r/g, '');
-        }
-        draft = draft.set('excerpt', excerpt);
-        if (draft.tags && draft.tags.length > 0) {
-            this._checkExistingTags(draft.tags);
-        }
-        return this.setState({
-            ...draft.toJS()
-        });
-    };
+    // _setWorkingDraft = (draft) => {
+    //     const { content } = draft;
+    //     let { excerpt } = draft;
+    //     if (!excerpt) {
+    //         excerpt = convertFromRaw(content).getPlainText()
+    //             .slice(0, 120)
+    //             .replace(/\r?\n|\r/g, '');
+    //     }
+    //     draft = draft.set('excerpt', excerpt);
+    //     if (draft.tags && draft.tags.length > 0) {
+    //         this._checkExistingTags(draft.tags);
+    //     }
+    //     return this.setState({
+    //         ...draft.toJS()
+    //     });
+    // };
     _handleLicenceDialogClose = () => {
         this.setState({
             isLicencingOpen: false
@@ -170,7 +168,8 @@ class PublishPanel extends React.Component {
                 marginLeft: '-320px',
                 position: 'absolute',
                 top: 0,
-                bottom: 0
+                bottom: 0,
+                zIndex: 16
             }}
             actions={[
               <RaisedButton

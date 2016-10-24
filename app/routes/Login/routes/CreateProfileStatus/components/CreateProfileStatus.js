@@ -14,8 +14,8 @@ class CreateProfileStatus extends Component {
         };
     }
     componentWillMount () {
-        const { profileActions, transactionActions } = this.props;
-        profileActions.getTempProfile();
+        const { tempProfileActions, transactionActions } = this.props;
+        tempProfileActions.getTempProfile();
         transactionActions.getMinedTransactions();
         transactionActions.getPendingTransactions();
     }
@@ -23,11 +23,13 @@ class CreateProfileStatus extends Component {
         if (nextProps.tempProfile.get('username') === '') {
             return this.context.router.push('/authenticate');
         }
-        if (nextProps.errors.size > 0) {
+
+        if (nextProps.profileErrors.size > 0 || nextProps.tempProfileErrors.size > 0) {
             return this.setState({
-                errors: nextProps.errors
+                errors: [...nextProps.profileErrors, ...nextProps.tempProfileErrors]
             });
         }
+
         const shouldResume =
             !is(nextProps.tempProfile.get('currentStatus'), this.props.tempProfile.get('currentStatus')) ||
             !is(nextProps.minedTransactions, this.props.minedTransactions) ||
@@ -37,6 +39,7 @@ class CreateProfileStatus extends Component {
         if (shouldResume) {
             return this.resumeProfileCreation(nextProps);
         }
+        return null;
     }
 
     getCurrentStatusDescription = () => {
@@ -138,7 +141,7 @@ class CreateProfileStatus extends Component {
     // @param props <Object> nextProps
     resumeProfileCreation (props) {
         const {
-            profileActions,
+            tempProfileActions,
             tempProfile,
             loggedProfile,
             minedTransactions,
@@ -162,17 +165,17 @@ class CreateProfileStatus extends Component {
             publishPendingIndex === -1 && publishMinedIndex === -1 && !listeningPublishTx;
 
         if (shouldListenPublishTx) {
-            profileActions.listenPublishTx();
+            tempProfileActions.listenPublishTx();
             return this.addTxToQueue(publishTx);
         }
 
         if (shouldListenFaucetTx) {
-            profileActions.listenFaucetTx();
+            tempProfileActions.listenFaucetTx();
             return this.addTxToQueue(faucetTx);
         }
 
         if (nextAction === 'listenFaucetTx' && faucetMinedIndex > -1) {
-            return profileActions.publishProfile(tempProfile, loggedProfile, loginRequested);
+            return tempProfileActions.publishProfile(tempProfile, loggedProfile, loginRequested);
         }
 
         if (nextAction === 'listenPublishTx' && publishMinedIndex > -1) {
@@ -180,17 +183,18 @@ class CreateProfileStatus extends Component {
         }
 
         if (errors.size === 0 && tempProfile.get('username')) {
-            profileActions[nextAction](tempProfile);
+            tempProfileActions[nextAction](tempProfile);
         }
         return null;
     }
     _handleProfileAbortion = () => {
-        const { profileActions, tempProfile } = this.props;
-        profileActions.deleteTempProfile(tempProfile.get('username'));
-        profileActions.clearErrors();
+        const { tempProfileActions, tempProfile } = this.props;
+        tempProfileActions.deleteTempProfile(tempProfile.get('username'));
+        tempProfileActions.clearErrors();
     }
     _handleStepRetry = () => {
-        const { profileActions } = this.props;
+        const { profileActions, tempProfileActions } = this.props;
+        tempProfileAction.clearErrors();
         profileActions.clearErrors();
         this.resumeProfileCreation(this.props);
     }
@@ -298,6 +302,7 @@ class CreateProfileStatus extends Component {
 
 CreateProfileStatus.propTypes = {
     profileActions: PropTypes.shape().isRequired,
+    tempProfileActions: PropTypes.shape().isRequired,
     tempProfile: PropTypes.shape(),
     style: PropTypes.shape(),
     intl: PropTypes.shape(),

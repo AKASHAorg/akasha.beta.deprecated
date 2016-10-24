@@ -23,8 +23,8 @@ class Auth extends Component {
         };
     }
     componentWillMount () {
-        const { profileActions } = this.props;
-        profileActions.getTempProfile();
+        const { profileActions, tempProfileActions } = this.props;
+        tempProfileActions.getTempProfile();
         profileActions.clearLoggedProfile();
         profileActions.getLocalProfiles();
     }
@@ -220,6 +220,7 @@ class Auth extends Component {
 
 Auth.propTypes = {
     profileActions: React.PropTypes.shape().isRequired,
+    tempProfileActions: React.PropTypes.shape().isRequired,
     tempProfile: React.PropTypes.shape().isRequired,
     localProfiles: React.PropTypes.shape().isRequired,
     profilesFetched: React.PropTypes.bool,

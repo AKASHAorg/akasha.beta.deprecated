@@ -46,8 +46,7 @@ class CreateProfile extends Component {
         }
     }
     componentWillUpdate (nextProps) {
-        const { profileState } = nextProps;
-        const tempProfile = profileState.get('tempProfile');
+        const { tempProfile } = nextProps;
         if (tempProfile && tempProfile.get('username') !== '') {
             this.context.router.push('/authenticate/new-profile-status');
         }
@@ -59,7 +58,7 @@ class CreateProfile extends Component {
         this.setState({ opt_details: !this.state.opt_details });
     };
     handleSubmit = () => {
-        const { profileActions } = this.props;
+        const { tempProfileActions } = this.props;
         const profileData = this.state.formValues;
         const optionalData = {};
         const profileImage = this.imageUploader.getWrappedInstance().getImage();
@@ -98,7 +97,7 @@ class CreateProfile extends Component {
                 console.log('must correct some errors!', this.state);
             } else {
                 delete data.password2;
-                profileActions.createTempProfile(data);
+                tempProfileActions.createTempProfile(data);
             }
         });
     };
@@ -403,7 +402,7 @@ CreateProfile.propTypes = {
     style: PropTypes.shape(),
     customValidate: React.PropTypes.func,
     errors: React.PropTypes.shape(),
-    profileActions: React.PropTypes.shape(),
+    tempProfileActions: React.PropTypes.shape(),
     clearValidations: React.PropTypes.func,
     handleValidation: React.PropTypes.func,
     intl: React.PropTypes.shape()

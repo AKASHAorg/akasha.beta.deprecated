@@ -11,7 +11,7 @@ import EntryEditor from 'shared-components/EntryEditor';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import { is } from 'immutable';
 
-class NewEntryPage extends Component {
+class AddEntryPage extends Component {
     constructor (props) {
         super(props);
         this.state = {
@@ -33,7 +33,7 @@ class NewEntryPage extends Component {
     }
     componentDidMount () {
         console.log(this.props, this.context);
-        this.context.router.setRouteLeaveHook(this.props.route, this._checkIfMustSave)
+        // this.context.router.setRouteLeaveHook(this.props.route, this._checkIfMustSave);
     }
     // componentWillReceiveProps (nextProps) {
     //     const { draftState, draftActions, params } = this.props;
@@ -53,34 +53,33 @@ class NewEntryPage extends Component {
         if (this.state.shouldBeSaved) {
             return 'You have unsaved changes!, Are you sure you want to leave?';
         }
+        return true;
     }
     _handleDraftSave = () => {
         this._saveDraft();
     }
     _saveDraft = (cb) => {
-        const { draftActions, params, profileState } = this.props;
-        const loggedProfile = profileState.get('loggedProfile');
+        const { draftActions, params, loggedProfile } = this.props;
         const content = this.editor.getRawContent();
         const contentState = this.editor.getContent();
         const title = this.editor.getTitle();
         const wordCount = getWordCount(contentState);
 
-        // console.log(htmlContent, 'htmlContent');
-        // console.log(content, 'rawContent');
-        // console.log(contentState, 'contentState');
-
         if (params.draftId !== 'new') {
             const draftId = parseInt(params.draftId, 10);
-            draftActions.updateDraftThrottled({ id: draftId, content, title, wordCount });
-        } else {
-            draftActions.createDraft(loggedProfile.get('userName'), { content, title, wordCount });
+            return draftActions.updateDraft({ id: draftId, content, title, wordCount });
         }
-        if (typeof cb === 'function') {
-            cb();
-        }
+
+        return draftActions
+            .createDraft(loggedProfile.get('userName'), { content, title, wordCount });
     };
     _handleTitleChange = () => {};
-
+    _setupEntryForPublication = () => {
+        const { params } = this.props;
+        this._saveDraft().then(() => {
+            this.context.router.push(`${params.username}/draft/${params.draftId}/publish`);
+        });
+    }
     render () {
         const { draftState } = this.props;
         const { shouldBeSaved } = this.state;
@@ -148,7 +147,7 @@ class NewEntryPage extends Component {
                   onChange={this._handleEditorChange}
                   onTitleChange={this._handleTitleChange}
                   readOnly={false}
-                  content={'draft.content'}
+                  content={{}}
                   title={'draft.title'}
                   showTitleField
                   textHint="Write something"
@@ -165,7 +164,7 @@ class NewEntryPage extends Component {
                       left: 0,
                       bottom: 0,
                       right: 0,
-                      zIndex: 5,
+                      zIndex: 15,
                       backgroundColor: 'rgba(255, 255, 255, 0.9)' }}
                 />
               </div>
@@ -174,14 +173,15 @@ class NewEntryPage extends Component {
         );
     }
 }
-NewEntryPage.propTypes = {
+AddEntryPage.propTypes = {
     draftActions: React.PropTypes.shape().isRequired,
     draftState: React.PropTypes.shape().isRequired,
-    profileState: React.PropTypes.shape().isRequired,
+    loggedProfile: React.PropTypes.shape(),
     params: React.PropTypes.shape(),
-    children: React.PropTypes.node
+    children: React.PropTypes.node,
+    route: React.PropTypes.shape()
 };
-NewEntryPage.contextTypes = {
+AddEntryPage.contextTypes = {
     router: React.PropTypes.shape()
 };
-export default NewEntryPage;
+export default AddEntryPage;

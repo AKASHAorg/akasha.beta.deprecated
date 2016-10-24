@@ -10,5 +10,6 @@ export {
     SetupActions,
     SyncActions,
     TagActions,
+    TempProfileActions,
     TransactionActions,
     ValidationActions } from './actions';

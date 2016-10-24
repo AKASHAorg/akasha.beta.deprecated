@@ -20,13 +20,11 @@ class ProfileService extends BaseService {
      * @return new Promise
      */
     getProfileBalance = ({ options = { profile: '', unit: 'eth' }, onError = () => {}, onSuccess }) => {
-        const serverChannel = Channel.server.profile.getMyBalance;
-        const clientChannel = Channel.client.profile.getMyBalance;
         this.registerListener(
-            clientChannel,
-            this.createListener(onError, onSuccess, clientChannel.channelName)
+            Channel.client.profile.getMyBalance,
+            this.createListener(onError, onSuccess)
         );
-        serverChannel.send(options);
+        Channel.server.profile.getMyBalance.send(options);
     };
     /**
      * retrieve profile data by eth address
@@ -46,13 +44,11 @@ class ProfileService extends BaseService {
     getProfileData = ({
         options = { profile: '', full: false }, onError = () => {}, onSuccess
     }) => {
-        const serverChannel = Channel.server.profile.getProfileData;
-        const clientChannel = Channel.client.profile.getProfileData;
         this.registerListener(
-            clientChannel,
-            this.createListener(onError, onSuccess, clientChannel.channelName)
+            Channel.client.profile.getProfileData,
+            this.createListener(onError, onSuccess)
         );
-        serverChannel.send(options);
+        Channel.server.profile.getProfileData.send(options);
     };
     /**
      * retrieve profile data by ipfs address
@@ -65,14 +61,11 @@ class ProfileService extends BaseService {
     getIpfs = ({
         options = { ipfsHash: '', full: false }, onError = () => {}, onSuccess
     }) => {
-        const serverChannel = Channel.server.profile.getIpfs;
-        const clientChannel = Channel.server.profile.getIpfs;
-
         this.registerListener(
-            clientChannel,
-            this.createListener(onError, onSuccess, clientChannel.channelName)
+            Channel.server.profile.getIpfs,
+            this.createListener(onError, onSuccess)
         );
-        serverChannel.send(options);
+        Channel.server.profile.getIpfs.send(options);
     };
     /**
      * unregister profile -> delete profile from profiles registry contract

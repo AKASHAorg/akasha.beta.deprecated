@@ -27,8 +27,6 @@ class AuthService extends BaseService {
      * }
      */
     login = ({ account, password, rememberTime, onSuccess, onError }) => {
-        const serverChannel = Channel.server.auth.login;
-        const clientChannel = Channel.client.auth.login;
         const successCb = (data) => {
             profileDB.transaction('rw', profileDB.loggedProfile, () => {
                 profileDB.loggedProfile.add(data);
@@ -38,10 +36,10 @@ class AuthService extends BaseService {
             }).catch(error => onError(error));
         };
         this.registerListener(
-            clientChannel,
-            this.createListener(onError, successCb, clientChannel.channelName)
+            Channel.client.auth.login,
+            this.createListener(onError, successCb)
         );
-        serverChannel.send({ account, password, rememberTime });
+        Channel.server.auth.login.send({ account, password, rememberTime });
     };
     /**
      *  Logout profile
@@ -53,18 +51,16 @@ class AuthService extends BaseService {
      * @param options.profileKey <String> Eth key
      */
     logout = ({ options = { profileKey: '', flush: true }, onError, onSuccess }) => {
-        const serverChannel = Channel.server.auth.logout;
-        const clientChannel = Channel.client.auth.logout;
         const successCb = () => {
             this.deleteLoggedProfile(options.profileKey).then(() => {
                 onSuccess();
             }).catch(error => onError(error));
         };
         this.registerListener(
-            clientChannel,
-            this.createListener(onError, successCb, clientChannel.channelName)
+            Channel.client.auth.logout,
+            this.createListener(onError, successCb)
         );
-        serverChannel.send({});
+        Channel.server.auth.logout.send({});
     };
     /**
      * Sends a request to faucet
@@ -74,8 +70,6 @@ class AuthService extends BaseService {
      * @param data: { tx: String }
      */
     requestEther = ({ address, onSuccess, onError }) => {
-        const serverChannel = Channel.server.auth.requestEther;
-        const clientChannel = Channel.client.auth.requestEther;
         const successCb = (data) => {
             if (data === 'Unauthorized' || data === 'Bad Request') {
                 return onError({ message: data, fatal: true });
@@ -83,10 +77,10 @@ class AuthService extends BaseService {
             return onSuccess(data);
         };
         this.registerListener(
-            clientChannel,
-            this.createListener(onError, successCb, clientChannel.channelName)
+            Channel.client.auth.requestEther,
+            this.createListener(onError, successCb)
         );
-        serverChannel.send({ address });
+        Channel.server.auth.requestEther.send({ address });
     };
     /**
      * Create a new eth address
@@ -94,34 +88,28 @@ class AuthService extends BaseService {
      * @return new Promise
      */
     createEthAddress = ({ password, onSuccess, onError }) => {
-        const serverChannel = Channel.server.auth.generateEthKey;
-        const clientChannel = Channel.client.auth.generateEthKey;
-
         this.openChannel({
             serverManager: this.serverManager,
             clientManager: this.clientManager,
-            serverChannel,
-            clientChannel,
+            serverChannel: Channel.server.auth.generateEthKey,
+            clientChannel: Channel.client.auth.generateEthKey,
             listenerCb: this.createListener(onError, onSuccess)
         }, () => {
-            serverChannel.send({ password });
+            Channel.server.auth.generateEthKey.send({ password });
         });
     };
     /**
      * Get a list of local profiles created
      */
     getLocalIdentities = ({ options = {}, onError = () => {}, onSuccess }) => {
-        const serverChannel = Channel.server.auth.getLocalIdentities;
-        const clientChannel = Channel.client.auth.getLocalIdentities;
-
         return this.openChannel({
             serverManager: this.serverManager,
             clientManager: this.clientManager,
-            serverChannel,
-            clientChannel,
-            listenerCb: this.createListener(onError, onSuccess, clientChannel.channelName)
+            serverChannel: Channel.server.auth.getLocalIdentities,
+            clientChannel: Channel.client.auth.getLocalIdentities,
+            listenerCb: this.createListener(onError, onSuccess)
         }, () =>
-            serverChannel.send(options)
+            Channel.server.auth.getLocalIdentities.send(options)
         );
     };
     /**
