@@ -29,3 +29,6 @@ export const SETUP_IPFS_GATEWAY_PORT = 'SETUP_IPFS_GATEWAY_PORT';
 
 export const RETRY_SETUP = 'RETRY_SETUP';
 export const RESET_SETTINGS = 'RESET_SETTINGS';
+
+// general
+export const CHANGE_THEME = 'CHANGE_THEME';

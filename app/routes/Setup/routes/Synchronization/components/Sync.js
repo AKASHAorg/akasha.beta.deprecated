@@ -4,7 +4,7 @@ import { FormattedMessage, injectIntl } from 'react-intl';
 import { setupMessages, generalMessages } from 'locale-data/messages'; /* eslint import/no-unresolved: 0 */
 import PanelContainer from 'shared-components/PanelContainer/panel-container'; /* eslint import/no-unresolved: 0 */
 import { LogsList } from 'shared-components';
-import SetupHeader from '../../../components/setup-header';
+import PanelHeader from '../../../../components/panel-header';
 import SyncStatusLoader from './sync-status';
 
 class SyncStatus extends Component {
@@ -98,7 +98,7 @@ class SyncStatus extends Component {
         settingsActions.saveSettings('flags', { requestStartupChange: true });
     };
     handlePause = () => {
-        const { syncActionId, eProcActions } = this.props;
+        const { syncActionId, eProcActions, ipfsStatus } = this.props;
 
         switch (syncActionId) {
             case 0:
@@ -111,7 +111,9 @@ class SyncStatus extends Component {
                 eProcActions.resumeSync();
                 break;
             case 4:
-                eProcActions.startIPFS();
+                if (!ipfsStatus.get('spawned')) {
+                    eProcActions.startIPFS();
+                }
                 break;
             default:
                 break;
@@ -152,6 +154,16 @@ class SyncStatus extends Component {
         const { eProcActions } = this.props;
         return eProcActions.stopIPFS();
     };
+    renderError (error, key) {
+        return <Paper key={key} style={{ margin: '10px 0', padding: '5px' }} >
+          <span>
+            {error.get('code')}
+          </span>
+          <span style={{ marginLeft: '5px' }}>
+            {error.get('message')}
+          </span>
+        </Paper>;
+    }
     render () {
         const {
             style,
@@ -164,6 +176,7 @@ class SyncStatus extends Component {
             ipfsErrors,
             gethBusyState,
             ipfsBusyState,
+            ipfsPortsRequested,
             syncActionId,
             eProcActions,
             timestamp
@@ -174,37 +187,10 @@ class SyncStatus extends Component {
         let ipfsErrorCards;
 
         if (gethErrors.size > 0) {
-            gethErrorCards = gethErrors.map((gethError, key) =>
-              <Paper key={key} style={{ margin: '10px 0', padding: '5px' }} >
-                <span>
-                  {gethError.get('code')}
-                </span>
-                <span style={{ marginLeft: '5px' }}>
-                  {gethError.get('message')}
-                </span>
-              </Paper>
-            );
+            gethErrorCards = gethErrors.map((gethError, key) => this.renderError(gethError, key));
         }
         if (ipfsErrors.size > 0) {
-            ipfsErrorCards = ipfsErrors.map((ipfsError, key) =>
-                <Paper key={key} style={{ margin: '10px 0', padding: '5px' }} >
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <div style={{ flex: '1 1 auto' }}>
-                      <span>
-                        {ipfsError.get('code')}
-                      </span>
-                      <span style={{ margin: '0 5px' }}>
-                        {ipfsError.get('message')}
-                      </span>
-                    </div>
-                    <FlatButton
-                      style={{ flex: '0 0 auto' }}
-                      label={intl.formatMessage(setupMessages.retry)}
-                      onClick={this.handleRetry}
-                    />
-                  </div>
-                </Paper>
-            );
+            ipfsErrorCards = ipfsErrors.map((ipfsError, key) => this.renderError(ipfsError, key));
         }
 
         return (
@@ -225,7 +211,8 @@ class SyncStatus extends Component {
                 label={this._getActionLabels().action}
                 style={{ marginLeft: '12px' }}
                 onClick={this.handlePause}
-                disabled={gethBusyState || (ipfsBusyState && syncActionId === 4)}
+                disabled={gethBusyState
+                    || ((ipfsBusyState || ipfsPortsRequested) && syncActionId === 4)}
                 primary={syncActionId === 4}
               />
             /* eslint-enable */
@@ -240,7 +227,7 @@ class SyncStatus extends Component {
               />
             /* eslint-enable */
             ]}
-            header={<SetupHeader title="AKASHA" />}
+            header={<PanelHeader title="AKASHA" />}
           >
             {!this.state.showGethLogs &&
               <div

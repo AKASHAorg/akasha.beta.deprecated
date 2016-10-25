@@ -49,7 +49,11 @@ export function logoutError (error) {
         error
     };
 }
-
+export function getLocalProfiles () {
+    return {
+        type: types.GET_LOCAL_PROFILES
+    };
+}
 export function getLocalProfilesSuccess (data) {
     return {
         type: types.GET_LOCAL_PROFILES_SUCCESS,
@@ -69,6 +73,12 @@ export function getProfileDataSuccess (data) {
         type: types.GET_PROFILE_DATA_SUCCESS,
         data
     };
+}
+
+export function clearLocalProfilesSuccess () {
+    return {
+        type: types.CLEAR_LOCAL_PROFILES_SUCCESS
+    }
 }
 
 export function getProfileDataError (error) {

@@ -1,11 +1,9 @@
 import React, { Component, PropTypes } from 'react';
-import { MenuAkashaLogo } from 'shared-components/svg';
 import { PanelContainer } from 'shared-components';
-import * as Colors from 'material-ui/styles/colors';
-import { SvgIcon, RaisedButton, TextField } from 'material-ui';
+import { RaisedButton, TextField } from 'material-ui';
 import { injectIntl } from 'react-intl';
 import { setupMessages, generalMessages, profileMessages, formMessages } from 'locale-data/messages';
-import LoginHeader from '../../../components/LoginHeader';
+import PanelHeader from '../../../../components/panel-header';
 
 class CreateProfileComplete extends Component {
     componentWillMount () {
@@ -25,19 +23,13 @@ class CreateProfileComplete extends Component {
     }
     render () {
         const { style, intl, tempProfile } = this.props;
-        const akashaLogoStyles = {
-            width: '32px',
-            height: '32px',
-            marginRight: '10px',
-            verticalAlign: 'middle'
-        };
         const fullName = `${tempProfile.get('firstName')} ${tempProfile.get('lastName')}`;
 
         return (
           <PanelContainer
             showBorder
             style={style}
-            header={<LoginHeader title={intl.formatMessage(setupMessages.identityRegistered)} />}
+            header={<PanelHeader title={intl.formatMessage(setupMessages.identityRegistered)} />}
             actions={[
                 /* eslint-disable */
                 <RaisedButton
@@ -62,19 +54,19 @@ class CreateProfileComplete extends Component {
                     disabled
                     floatingLabelText={intl.formatMessage(formMessages.name)}
                     style={{ width: '210px' }}
-                    value={fullName}
+                    value={fullName || ''}
                   />
                   <TextField
                     disabled
                     floatingLabelText={intl.formatMessage(formMessages.username)}
                     style={{ width: '210px', marginLeft: '20px' }}
-                    value={tempProfile.get('username')}
+                    value={tempProfile.get('username') || ''}
                   />
                   <TextField
                     disabled
                     floatingLabelText={intl.formatMessage(generalMessages.ethereumAddress)}
                     style={{ width: '100%' }}
-                    value={tempProfile.get('address')}
+                    value={tempProfile.get('address') || ''}
                   />
                   <h3>{intl.formatMessage(profileMessages.tipsBeforeStart)}</h3>
                   <p style={{ fontSize: '13px' }} >
@@ -99,8 +91,8 @@ CreateProfileComplete.propTypes = {
 };
 
 CreateProfileComplete.contextTypes = {
-    muiTheme: React.PropTypes.object,
-    router: React.PropTypes.object
+    muiTheme: React.PropTypes.shape(),
+    router: React.PropTypes.shape()
 };
 
 CreateProfileComplete.defaultProps = {

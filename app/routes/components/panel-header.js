@@ -1,8 +1,8 @@
 import React, { PropTypes } from 'react';
-import ServiceStatusBar from '../../components/service-status-bar';
-import LogoButton from '../../components/logo-button';
+import ServiceStatusBar from './service-status-bar';
+import LogoButton from './logo-button';
 
-function SetupHeader ({ title }) {
+function PanelHeader ({ title, disableStopService }) {
     return (
       <div className="col-xs-12">
         <div className="row middle-xs" style={{ display: 'flex' }} >
@@ -11,23 +11,20 @@ function SetupHeader ({ title }) {
           </div>
           <div style={{ fontWeight: '300', flex: '1 1 auto' }} >{title}</div>
           <div style={{ flex: '0 0 auto' }} >
-            <ServiceStatusBar />
+            <ServiceStatusBar disableStopService={disableStopService} />
           </div>
         </div>
       </div>
     );
 }
 
-SetupHeader.contextTypes = {
-    muiTheme: PropTypes.object
+PanelHeader.propTypes = {
+    title: PropTypes.string.isRequired,
+    disableStopService: PropTypes.bool
 };
 
-SetupHeader.propTypes = {
-    title: PropTypes.string.isRequired
-};
-
-SetupHeader.defaultProps = {
+PanelHeader.defaultProps = {
     title: 'AKASHA'
 };
 
-export default SetupHeader;
+export default PanelHeader;

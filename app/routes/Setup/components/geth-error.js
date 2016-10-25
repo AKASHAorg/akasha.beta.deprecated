@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { RaisedButton } from 'material-ui';
-import SetupHeader from './setup-header';
 import { injectIntl } from 'react-intl';
+import PanelHeader from '../components/setup-header';
 
 class GethError extends Component {
 
@@ -22,7 +22,7 @@ class GethError extends Component {
                     className="col-xs"
                     style={{ flex: 1, padding: 0 }}
                   >
-                    <SetupHeader />
+                    <PanelHeader />
                       {settingsState.get('isAdvanced') &&
                         <div style={{ marginTop: '24px' }}>
                           Geth cannot start with your submitted configuration

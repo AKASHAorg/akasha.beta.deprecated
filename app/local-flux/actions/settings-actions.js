@@ -71,7 +71,10 @@ class SettingsActions {
         this.dispatch(settingsActionCreators.resetSettings());
     };
     // save user level settings
-    saveUserSettings = () => {}
-    getUserSettings = () => {}
+    saveUserSettings = () => {};
+    getUserSettings = () => {};
+
+    changeTheme = (theme) =>
+        this.dispatch(settingsActionCreators.changeTheme(theme));
 }
 export { SettingsActions };

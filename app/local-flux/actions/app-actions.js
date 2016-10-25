@@ -51,9 +51,6 @@ class AppActions {
     };
     setTimestamp = timestamp =>
         this.dispatch(appActionCreators.setTimestamp(timestamp));
-
-    changeTheme = () =>
-        this.dispatch(appActionCreators.changeTheme());
 }
 
 export { AppActions };

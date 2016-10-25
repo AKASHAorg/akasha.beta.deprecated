@@ -1,5 +1,4 @@
 import * as Colors from 'material-ui/styles/colors';
-import * as colorManipulator from 'material-ui/utils/colorManipulator';
 import { spacing, zIndex } from 'material-ui/styles';
 
 export default {
@@ -7,16 +6,16 @@ export default {
     zIndex,
     fontFamily: 'Roboto, sans-serif',
     palette: {
-        primary1Color: '#03A9F4',
-        textColor: Colors.lightBlack,
+        primary1Color: '#4285f4',
+        textColor: '#4c4c4c',
         alternateTextColor: Colors.white,
         canvasColor: Colors.white,
         borderColor: Colors.grey300,
-        disabledColor: colorManipulator.fade(Colors.darkBlack, 0.3),
+        disabledColor: '#999999',
         pickerHeaderColor: Colors.cyan500,
-        accent1Color: Colors.red500,
-        accent2Color: Colors.amber500,
-        accent3Color: Colors.green500,
+        accent1Color: '#c82506',
+        accent2Color: '#de6a10',
+        accent3Color: '#70bf41',
         paperShadowColor: Colors.grey400
     },
     imageUploader: {

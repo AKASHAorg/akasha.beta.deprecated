@@ -276,6 +276,18 @@ const setupMessages = defineMessages({
         description: 'IPFS settings successfully saved',
         defaultMessage: `You have successfully saved your settings. You need to restart your IPFS
                         client for your changes to be applied.`
+    },
+    gethStopped: {
+        id: 'app.setup.gethStopped',
+        description: 'message to be displayed when geth is stopped and profiles cannot be loaded',
+        defaultMessage: `Geth service is not working. Please start it manually in order to fetch
+                        your profiles.`
+    },
+    ipfsStopped: {
+        id: 'app.setup.ipfsStopped',
+        description: 'message to be displayed when ipfs is stopped and profiles cannot be loaded',
+        defaultMessage: `IPFS service is stopped. Please start it manually in order to fetch
+                        your profiles.`
     }
 });
 

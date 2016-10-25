@@ -112,3 +112,10 @@ export function finishFetchingSettings (table) {
         table
     };
 }
+
+export function changeTheme (theme) {
+    return {
+        type: types.CHANGE_THEME,
+        theme
+    };
+}
