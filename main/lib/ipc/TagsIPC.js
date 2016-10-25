@@ -34,7 +34,6 @@ class TagsIPC extends ModuleEmitter_1.default {
             index_1.constructed.instance.tags
                 .add(data.tagName, data.gas)
                 .then((txData) => {
-                console.log(txData);
                 return index_2.module.auth.signData(txData, data.token);
             })
                 .then((tx) => {

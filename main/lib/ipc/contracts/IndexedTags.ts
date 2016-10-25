@@ -19,11 +19,10 @@ export default class IndexedTags extends BaseContract {
      * @param tagId
      * @returns {any}
      */
-    public isSubscribed(subscriber: string, tagId: number) {
-        const tagIdTr = this.gethInstance.web3.fromDecimal(tagId);
+    public isSubscribed(subscriber: string, tagId: string | number) {
         return this.contract
             .isSubscribed
-            .callAsync(subscriber, tagIdTr);
+            .callAsync(subscriber, tagId);
     }
 
     /**
@@ -32,11 +31,11 @@ export default class IndexedTags extends BaseContract {
      * @param tagId
      * @returns {any}
      */
-    public getSubPosition(subscriber: string, tagId: number) {
-        const tagIdTr = this.gethInstance.web3.fromDecimal(tagId);
+    public getSubPosition(subscriber: string, tagId: string | number) {
         return this.contract
             .getSubPosition
-            .callAsync(subscriber, tagIdTr);
+            .callAsync(subscriber, tagId)
+            .then((positionBN) => positionBN.toString());
     }
 
     /**
@@ -57,10 +56,9 @@ export default class IndexedTags extends BaseContract {
      * @param gas
      * @returns {any}
      */
-    public unsubscribe(tag: string, subPosition: number, gas?: number) {
+    public unsubscribe(tag: string, subPosition: string | number, gas?: number) {
         const tagTr = this.gethInstance.web3.fromUtf8(tag);
-        const subPositionTr = this.gethInstance.web3.fromDecimal(subPosition);
-        return this.extractData('unsubscribe', tagTr, subPositionTr, { gas });
+        return Promise.resolve(this.extractData('unsubscribe', tagTr, subPosition, { gas }));
     }
 
     /**
@@ -68,7 +66,7 @@ export default class IndexedTags extends BaseContract {
      * @param filter
      * @returns {Bluebird<T>|any}
      */
-    public getIndexedTag(filter: {index?: {tag?: string, tagId?: number}, fromBlock: string, toBlock?: string, address?: string}) {
+    public getIndexedTag(filter: {index?: {tag?: string, tagId?: number | string}, fromBlock: string, toBlock?: string, address?: string}) {
         const {fromBlock, toBlock, address} = filter;
         const IndexedTag = this.contract.IndexedTag(filter.index, {fromBlock, toBlock, address});
         IndexedTag.getAsync = Promise.promisify(IndexedTag.get);

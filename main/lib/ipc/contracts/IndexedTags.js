@@ -9,16 +9,15 @@ class IndexedTags extends BaseContract_1.default {
         this.contract.getSubPosition.callAsync = Promise.promisify(this.contract.getSubPosition.call);
     }
     isSubscribed(subscriber, tagId) {
-        const tagIdTr = this.gethInstance.web3.fromDecimal(tagId);
         return this.contract
             .isSubscribed
-            .callAsync(subscriber, tagIdTr);
+            .callAsync(subscriber, tagId);
     }
     getSubPosition(subscriber, tagId) {
-        const tagIdTr = this.gethInstance.web3.fromDecimal(tagId);
         return this.contract
             .getSubPosition
-            .callAsync(subscriber, tagIdTr);
+            .callAsync(subscriber, tagId)
+            .then((positionBN) => positionBN.toString());
     }
     subscribe(tag, gas) {
         const tagTr = this.gethInstance.web3.fromUtf8(tag);
@@ -26,8 +25,7 @@ class IndexedTags extends BaseContract_1.default {
     }
     unsubscribe(tag, subPosition, gas) {
         const tagTr = this.gethInstance.web3.fromUtf8(tag);
-        const subPositionTr = this.gethInstance.web3.fromDecimal(subPosition);
-        return this.extractData('unsubscribe', tagTr, subPositionTr, { gas });
+        return Promise.resolve(this.extractData('unsubscribe', tagTr, subPosition, { gas }));
     }
     getIndexedTag(filter) {
         const { fromBlock, toBlock, address } = filter;

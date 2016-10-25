@@ -277,9 +277,9 @@ interface ProfileCreateResponse extends MainResponse {
 }
 
 interface GenericErrorEventRequest {
-    fromBlock: string,
-    toBlock: string,
-    address: string
+    fromBlock?: string,
+    toBlock?: string,
+    address?: string
 }
 
 interface GenericErrorEventResponse extends MainResponse{
@@ -442,7 +442,7 @@ interface TagAtNameRequest {
 
 interface TagAtNameResponse extends MainResponse {
     data: {
-        tagId: number;
+        tagId: number; // bigNumber instance
     };
 }
 
@@ -459,7 +459,7 @@ interface TagSubscribeResponse extends MainResponse {
 
 interface TagUnSubscribeRequest extends AuthRequest {
     tagName: string;
-    subPosition: number;
+    subPosition: number | string;
     gas?: number;
 }
 
@@ -489,6 +489,18 @@ interface TagIsSubscribedResponse extends MainResponse {
     data: {
         subscribed: boolean;
     };
+}
+
+interface TagsFromToRequest {
+    from: number;
+    to: number;
+}
+interface TagsFromToResponse extends MainResponse{
+    data: {
+        from: number;
+        to: number;
+        tags: string[];
+    }
 }
 /////////////////////// </ TAGS > \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
@@ -581,7 +593,7 @@ interface EntriesCountRequest {
 interface EntriesCountResponse extends MainResponse {
     data: {
         profileAddress: string;
-        score: number;
+        count: number;
     }
 }
 
@@ -598,6 +610,7 @@ interface EntriesOfResponse extends MainResponse {
 
 interface EntryGetRequest {
     entryAddress: string;
+    full: boolean;
 }
 
 interface EntryGetResponse extends MainResponse {
