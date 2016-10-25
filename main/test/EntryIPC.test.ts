@@ -15,13 +15,17 @@ class EntryIPCtest extends EntryIPC {
 }
 
 describe('EntryIPC', function () {
-    this.timeout(240000);
+    this.timeout(60000);
     let entryChannel: EntryIPCtest;
     let token: string;
 
     before(function (done) {
         expect(helpers.initLogger()).to.exist;
         setTimeout(() => helpers.startServices(done), 400);
+    });
+
+    afterEach(function(done){
+       setTimeout(done, 2000);
     });
 
     it('--constructs channel api', function () {
@@ -49,7 +53,8 @@ describe('EntryIPC', function () {
             channel.server.entry.getVoteOf,
             channel.server.entry.getEntriesCount,
             channel.server.entry.getEntryOf,
-            channel.server.entry.getEntriesCreated
+            channel.server.entry.getEntriesCreated,
+            channel.server.entry.getVotesEvent
         ];
         entryChannel.callTest.set(
             channel.client.entry.manager,
@@ -112,8 +117,32 @@ describe('EntryIPC', function () {
         entryChannel.callTest.set(
             channel.client.entry.getEntry,
             (injected) => {
-                console.log(injected.data.data);
-                expect(injected.data.data).to.exist;
+                expect(injected.data.data.content).to.exist;
+                done();
+            }
+        );
+        ipcMain.emit(channel.server.entry.getEntry, '', {entryAddress: helpers.entryAddress});
+    });
+
+    it('--should get an entry of profile/position', (done) => {
+        entryChannel.callTest.set(
+            channel.client.entry.getEntryOf,
+            (injected) => {
+                expect(injected.data.data.content).to.exist;
+                done();
+            }
+        );
+        ipcMain.emit(channel.server.entry.getEntryOf, '', {profileAddress: helpers.profileAddress, position: 1});
+    });
+
+    it('--should get an shortEntry much faster', (done) => {
+        const started = new Date().getTime();
+        entryChannel.callTest.set(
+            channel.client.entry.getEntry,
+            (injected) => {
+                const finished = new Date().getTime() - started;
+                expect(finished).to.be.below(50);
+                expect(injected.data.data.content).to.exist;
                 done();
             }
         );
@@ -124,11 +153,102 @@ describe('EntryIPC', function () {
         entryChannel.callTest.set(
             channel.client.entry.getEntry,
             (injected) => {
-                expect(injected.data.data).to.exist;
+                expect(injected.data.data.content).to.exist;
                 done();
             }
         );
         ipcMain.emit(channel.server.entry.getEntry, '', {entryAddress: helpers.entryAddress, full: true});
+    });
+
+    it('--should get fullEntry much faster', (done) => {
+        const started = new Date().getTime();
+        entryChannel.callTest.set(
+            channel.client.entry.getEntry,
+            (injected) => {
+                const finished = new Date().getTime() - started;
+                expect(finished).to.be.below(50);
+                expect(injected.data.data.content).to.exist;
+                done();
+            }
+        );
+        ipcMain.emit(channel.server.entry.getEntry, '', {entryAddress: helpers.entryAddress, full: true});
+    });
+
+    it('--should get number of entries published by profile', (done) =>{
+        entryChannel.callTest.set(
+            channel.client.entry.getEntriesCount,
+            (injected) => {
+                expect(injected.data.data.count).to.exist;
+                done();
+            }
+        );
+        ipcMain.emit(channel.server.entry.getEntriesCount, '', {profileAddress: helpers.profileAddress});
+    });
+
+    it('--should get score of entry', (done) => {
+        entryChannel.callTest.set(
+            channel.client.entry.getScore,
+            (injected) => {
+                expect(injected.data.data.score).to.exist;
+                done();
+            }
+        );
+        ipcMain.emit(channel.server.entry.getScore, '', {address: helpers.entryAddress});
+    });
+
+    it('--checks if entry is opened to votes', (done) => {
+        entryChannel.callTest.set(
+            channel.client.entry.isOpenedToVotes,
+            (injected) => {
+                expect(injected.data.data.voting).to.exist;
+                done();
+            }
+        );
+        ipcMain.emit(channel.server.entry.isOpenedToVotes, '', {address: helpers.entryAddress});
+    });
+
+    it('--should upvote entry', (done) => {
+        entryChannel.callTest.set(
+            channel.client.entry.upvote,
+            (injected) => {
+                expect(injected.data.data.tx).to.exist;
+                done();
+            }
+        );
+        ipcMain.emit(channel.server.entry.upvote, '', {address: helpers.entryAddress, token, weight: 1, gas: 2000000});
+    });
+
+    it('--should downvote entry', (done) => {
+        entryChannel.callTest.set(
+            channel.client.entry.downvote,
+            (injected) => {
+                expect(injected.data.data.tx).to.exist;
+                done();
+            }
+        );
+        ipcMain.emit(channel.server.entry.downvote, '', {address: helpers.entryAddress, token, weight: 2, gas: 2000000});
+    });
+
+    it('--should get vote of', (done) => {
+        entryChannel.callTest.set(
+            channel.client.entry.getVoteOf,
+            (injected) => {
+                expect(injected.data.data.weight).to.exist;
+                done();
+            }
+        );
+        ipcMain.emit(channel.server.entry.getVoteOf, '', {address: helpers.entryAddress, profile: helpers.profileAddress});
+    });
+
+    it('--should get votes of profile from event', (done) => {
+        entryChannel.callTest.set(
+            channel.client.entry.getVotesEvent,
+            (injected) => {
+                expect(injected.data.data.collection).to.exist;
+                done();
+            }
+        );
+        ipcMain.emit(channel.server.entry.getVotesEvent, '', {index: {profile: helpers.profileAddress}, fromBlock: 0});
     });
     after(function (done) {
         helpers.stopServices(done);

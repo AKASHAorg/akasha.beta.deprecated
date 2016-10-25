@@ -165,7 +165,7 @@ class IpfsEntry {
             .then((data) => {
                 return IpfsConnector.getInstance().api.resolve(data.draft[IpfsApiHelper.LINK_SYMBOL])
                     .then((draft) => {
-                        data.draft = (draft.toJSON()).data;
+                        data.draft = draft.toString();
                         entries.setFull(this.hash, data);
                         return data;
                     });

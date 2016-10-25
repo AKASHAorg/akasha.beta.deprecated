@@ -593,7 +593,7 @@ interface EntriesCountRequest {
 interface EntriesCountResponse extends MainResponse {
     data: {
         profileAddress: string;
-        score: number;
+        count: number;
     }
 }
 

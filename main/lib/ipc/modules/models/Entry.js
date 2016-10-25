@@ -108,7 +108,7 @@ class IpfsEntry {
             .then((data) => {
             return ipfs_connector_1.IpfsConnector.getInstance().api.resolve(data.draft[ipfs_connector_1.IpfsApiHelper.LINK_SYMBOL])
                 .then((draft) => {
-                data.draft = (draft.toJSON()).data;
+                data.draft = draft.toString();
                 records_1.entries.setFull(this.hash, data);
                 return data;
             });

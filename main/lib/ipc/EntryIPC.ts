@@ -30,6 +30,7 @@ class EntryIPC extends ModuleEmitter {
             ._getEntryOf()
             ._getEntry()
             ._getEntriesCreated()
+            ._getVotesEvent()
             ._manager();
     }
 
@@ -297,8 +298,8 @@ class EntryIPC extends ModuleEmitter {
                 contracts.instance
                     .main
                     .getEntriesCount(data.profileAddress)
-                    .then((score: number) => {
-                        response = mainResponse({ profileAddress: data.profileAddress, score });
+                    .then((count: number) => {
+                        response = mainResponse({ profileAddress: data.profileAddress, count });
                     })
                     .catch((err: Error) => {
                         response = mainResponse({
@@ -324,11 +325,26 @@ class EntryIPC extends ModuleEmitter {
             channels.server[this.MODULE_NAME].getEntryOf,
             (event: any, data: EntriesOfRequest) => {
                 let response: EntriesOfResponse;
+                let entry = new IpfsEntry();
                 contracts.instance
                     .main
                     .getEntryOf(data.profileAddress, data.position)
                     .then((content: any) => {
-                        response = mainResponse({ profileAddress: data.profileAddress, content });
+                        entry.load(content.ipfsHash);
+                        return entry.getShortContent()
+                            .then((ipfsContent: any) => {
+                                return {
+                                    profileAddress: data.profileAddress,
+                                    position: data.position,
+                                    date: content.date,
+                                    profile: content.profile,
+                                    content: ipfsContent,
+                                    [BASE_URL]: generalSettings.get(BASE_URL)
+                                };
+                            })
+                    })
+                    .then((constructed: any) => {
+                        response = mainResponse(constructed);
                     })
                     .catch((err: Error) => {
                         response = mainResponse({
@@ -344,6 +360,8 @@ class EntryIPC extends ModuleEmitter {
                             response,
                             event
                         );
+                        response = null;
+                        entry = null;
                     });
             });
         return this;
@@ -433,6 +451,36 @@ class EntryIPC extends ModuleEmitter {
             });
         return this;
     }
+
+    private _getVotesEvent() {
+        this.registerListener(
+            channels.server[this.MODULE_NAME].getVotesEvent,
+            (event: any, data: GenericFromEventRequest) => {
+                let response: GenericFromEventResponse;
+                contracts.instance
+                    .main
+                    .getVotesOfEvent(data)
+                    .then((collection: any) => {
+                        response = mainResponse({ collection });
+                    })
+                    .catch((err: Error) => {
+                        response = mainResponse({
+                            error: {
+                                message: err.message
+                            }
+                        });
+                    })
+                    .finally(() => {
+                        this.fireEvent(
+                            channels.client[this.MODULE_NAME].getVotesEvent,
+                            response,
+                            event
+                        );
+                    });
+            });
+        return this;
+    }
+
 }
 
 export default EntryIPC;
