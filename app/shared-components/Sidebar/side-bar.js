@@ -17,17 +17,16 @@ class SideBar extends Component {
         profileActions.getProfileBalance(loggedProfile.get('account'));
     }
     _handleNewEntry = () => {
-        const { draftActions, entryState, profileState, appActions } = this.props;
+        const { draftActions, entryState, loggedProfile, appActions } = this.props;
         const entriesCount = entryState.get('entriesCount');
         const draftsCount = entryState.get('draftsCount');
-        const loggedProfile = profileState.get('loggedProfile');
 
         if (entriesCount > 0 && draftsCount > 0) {
             appActions.showPanel({ name: 'newEntry', overlay: true });
-            draftActions.getDrafts(loggedProfile.get('userName'));
+            draftActions.getDrafts(loggedProfile.get('username'));
         } else {
             appActions.hidePanel();
-            this.context.router.push(`/${loggedProfile.get('userName')}/draft/new`);
+            this.context.router.push(`/${loggedProfile.get('username')}/draft/new`);
         }
     };
     _handleNavigation = (to) => {

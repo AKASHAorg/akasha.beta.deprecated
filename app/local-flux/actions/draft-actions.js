@@ -19,15 +19,7 @@ class DraftActions {
         return this.draftService.saveDraft({ authorUsername, ...draft }).then((result) => {
             this.dispatch(draftActionCreators.createDraftSuccess(result));
             return result;
-        })
-            .then((savedDraft) => {
-                this.dispatch(() =>
-                    hashHistory.push(
-                        `/${authorUsername}/draft/${savedDraft.id}`
-                    )
-                );
-            })
-            .catch(reason => this.dispatch(draftActionCreators.createDraftError(reason)));
+        }).catch(reason => this.dispatch(draftActionCreators.createDraftError(reason)));
     };
 
     updateDraft = (changes) => {

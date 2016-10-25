@@ -9,7 +9,6 @@ import {
 import { getWordCount } from 'utils/dataModule';
 import EntryEditor from 'shared-components/EntryEditor';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
-import { is } from 'immutable';
 
 class AddEntryPage extends Component {
     constructor (props) {
@@ -86,7 +85,6 @@ class AddEntryPage extends Component {
     }
     _saveDraft = () => {
         const { draftActions, params, loggedProfile } = this.props;
-        console.log(loggedProfile, 'loggedProfile');
         const content = this.editor.getRawContent();
         const contentState = this.editor.getContent();
         const title = this.editor.getTitle();
@@ -98,12 +96,19 @@ class AddEntryPage extends Component {
         }
 
         return draftActions
-            .createDraftSync(loggedProfile.get('userName'), { content, title, wordCount });
+            .createDraftSync(loggedProfile.get('username'), { content, title, wordCount });
     };
     _setupEntryForPublication = () => {
         const { params } = this.props;
-        this._saveDraft().then(() => {
-            this.context.router.push(`${params.username}/draft/${params.draftId}/publish`);
+        this._saveDraft().then((draft) => {
+            let draftId = null;
+            console.log(draft, 'le draft!');
+            if (typeof draft === 'number') {
+                draftId = draft;
+            } else if (typeof draft === 'object') {
+                draftId = draft.id;
+            }
+            this.context.router.push(`/${params.username}/draft/${draftId}/publish`);
         });
     }
     _getHeaderTitle = () => {
