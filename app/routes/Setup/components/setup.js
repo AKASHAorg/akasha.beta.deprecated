@@ -11,10 +11,10 @@ class Setup extends Component {
     render () {
         return (
           <div className="row">
-            <div className="col-xs-6">
+            <div className="col-xs-5">
                {this.props.children}
             </div>
-            <div className="col-xs-6">Setup Tutorials??</div>
+            <div className="col-xs-7">Setup Tutorials??</div>
           </div>
         );
     }
