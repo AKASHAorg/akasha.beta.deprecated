@@ -8,17 +8,23 @@ import PanelLoader from './components/panel-loader-container';
 import EntryModal from './components/entry-modal';
 
 class HomeContainer extends React.Component {
-    componentWillMount () {
+    componentDidMount () {
         const { profileActions } = this.props;
         profileActions.getLoggedProfile();
     }
-    componentWillReceiveProps (nextProps) {
+    componentWillUpdate (nextProps) {
         const { profileActions } = this.props;
         if (nextProps.loggedProfile && nextProps.loggedProfile.get('profile')) {
             profileActions.getProfileData([{ profile: nextProps.loggedProfile.get('profile') }]);
         }
     }
     render () {
+        const { fetchingLoggedProfile } = this.props;
+        if (fetchingLoggedProfile) {
+            return (
+              <div>Loading profile data</div>
+            );
+        }
         return (
           <div className={styles.root} >
             <div className={styles.sideBar} >
@@ -38,12 +44,15 @@ class HomeContainer extends React.Component {
 
 HomeContainer.propTypes = {
     children: PropTypes.element,
-    profileActions: PropTypes.shape()
+    profileActions: PropTypes.shape(),
+    loggedProfile: PropTypes.shape(),
+    fetchingLoggedProfile: PropTypes.bool
 };
 
 function mapStateToProps (state) {
     return {
-        loggedProfile: state.profileState.get('loggedProfile')
+        loggedProfile: state.profileState.get('loggedProfile'),
+        fetchingLoggedProfile: state.profileState.get('fetchingLoggedProfile'),
     };
 }
 

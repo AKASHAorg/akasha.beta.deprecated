@@ -19,6 +19,7 @@ class DraftService {
                 partialDraft
             );
         });
+
     getAllDrafts = username =>
         entriesDB.transaction('rw', entriesDB.drafts, () =>
             entriesDB.drafts

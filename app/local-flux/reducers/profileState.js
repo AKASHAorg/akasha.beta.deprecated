@@ -36,6 +36,7 @@ const initialState = fromJS({
     loggedProfile: new LoggedProfile(),
     errors: new List(),
     loginRequested: false,
+    fetchingLoggedProfile: true,
     profilesFetched: false
 });
 
@@ -53,6 +54,11 @@ const profileState = createReducer(initialState, {
 
     [types.GET_CURRENT_PROFILE_ERROR]: (state, { error }) =>
         state.merge({ errors: state.get('errors').push(new ErrorRecord(error)) }),
+
+    [types.GET_LOGGED_PROFILE]: state =>
+        state.merge({
+            fetchingLoggedProfile: true
+        }),
 
     [types.GET_LOGGED_PROFILE_SUCCESS]: (state, { profile }) =>
         state.merge({
@@ -94,7 +100,8 @@ const profileState = createReducer(initialState, {
         // so this must be true
         if (profileIndex === -1) {
             return state.merge({
-                profiles: state.get('profiles').push(new Profile(data))
+                profiles: state.get('profiles').push(new Profile(data)),
+                fetchingLoggedProfile: false
             });
         }
         return state.mergeDeepIn(['profiles', profileIndex], data);

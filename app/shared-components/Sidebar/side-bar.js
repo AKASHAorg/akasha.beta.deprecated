@@ -13,8 +13,8 @@ import {
 
 class SideBar extends Component {
     componentWillMount () {
-        // const { profileActions, loggedProfile } = this.props;
-        // profileActions.getProfileBalance(loggedProfile.get('account'));
+        const { profileActions, loggedProfile } = this.props;
+        profileActions.getProfileBalance(loggedProfile.get('account'));
     }
     _handleNewEntry = () => {
         const { draftActions, entryState, profileState, appActions } = this.props;
@@ -52,7 +52,7 @@ class SideBar extends Component {
                 onClick={() => this._handlePanelShow({ name: 'userProfile', overlay: true })}
               />
             </div>
-            <div>{/* `${loggedProfile.get('balance')} ETH` */}</div>
+            <div>{`${loggedProfile.get('balance')} ETH`}</div>
             <div style={{ flexGrow: 1, padding: '16px' }} >
               <AddEntryIcon onClick={this._handleNewEntry} tooltip="Add new entry" />
               <SearchIcon onClick={this._handleSearch} tooltip="Search" />
@@ -114,7 +114,7 @@ export default connect(
         entryState: state.entryState,
         draftState: state.draftState,
         loggedProfile: state.profileState.get('profiles').find(profile =>
-            profile.get('address') === state.profileState.getIn(['loggedProfile', 'profile']))
+            profile.get('profile') === state.profileState.getIn(['loggedProfile', 'profile']))
     }),
     dispatch => ({
         appActions: new AppActions(dispatch),

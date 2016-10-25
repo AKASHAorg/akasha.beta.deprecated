@@ -18,7 +18,9 @@ class AddEntryPage extends Component {
             publishable: true,
             draftToEdit: {},
             isNewDraft: false,
-            shouldBeSaved: true
+            shouldBeSaved: true,
+            fetchingDraft: false,
+            draftMissing: false
         };
     }
     componentWillMount () {
@@ -28,12 +30,36 @@ class AddEntryPage extends Component {
                 isNewDraft: true
             });
         } else {
-            draftActions.getDraftById(params.draftId);
+            this.setState({
+                fetchingDraft: true
+            }, () => {
+                draftActions.getDraftById(params.draftId);
+            });
         }
     }
-    componentDidMount () {
-        console.log(this.props, this.context);
-        // this.context.router.setRouteLeaveHook(this.props.route, this._checkIfMustSave);
+    componentWillReceiveProps (nextProps) {
+        const { drafts, params } = nextProps;
+        const currentDraft = this._findCurrentDraft(drafts);
+
+        // logic for populating existing draft;
+        if (params.draftId !== 'new') {
+            if (this.props.drafts.size !== drafts.size) {
+                // means that the drafts are fetched;
+                this.setState({
+                    fetchingDraft: false
+                });
+                // drafts are fetched but the currentDraft was not found somehow
+                if (typeof currentDraft === 'undefined') {
+                    this.setState({
+                        draftMissing: true
+                    });
+                }
+            }
+        }
+    }
+    _findCurrentDraft = (drafts) => {
+        const { params } = this.props;
+        return drafts.find(draft => draft.id === params.draftId);
     }
     // componentWillReceiveProps (nextProps) {
     //     const { draftState, draftActions, params } = this.props;
@@ -58,8 +84,9 @@ class AddEntryPage extends Component {
     _handleDraftSave = () => {
         this._saveDraft();
     }
-    _saveDraft = (cb) => {
+    _saveDraft = () => {
         const { draftActions, params, loggedProfile } = this.props;
+        console.log(loggedProfile, 'loggedProfile');
         const content = this.editor.getRawContent();
         const contentState = this.editor.getContent();
         const title = this.editor.getTitle();
@@ -71,25 +98,33 @@ class AddEntryPage extends Component {
         }
 
         return draftActions
-            .createDraft(loggedProfile.get('userName'), { content, title, wordCount });
+            .createDraftSync(loggedProfile.get('userName'), { content, title, wordCount });
     };
-    _handleTitleChange = () => {};
     _setupEntryForPublication = () => {
         const { params } = this.props;
         this._saveDraft().then(() => {
             this.context.router.push(`${params.username}/draft/${params.draftId}/publish`);
         });
     }
+    _getHeaderTitle = () => {
+        const { drafts, savingDraft } = this.props;
+        const { fetchingDraft, draftMissing } = this.state;
+        let headerTitle = 'First entry';
+        if (fetchingDraft) {
+            headerTitle = 'Finding draft';
+        } else if (draftMissing) {
+            headerTitle = 'Draft is missing';
+        } else if (!savingDraft) {
+            headerTitle = 'New Entry';
+        } else if (savingDraft) {
+            headerTitle = 'Saving draft...';
+        }
+        return headerTitle;
+    }
     render () {
         const { draftState } = this.props;
-        const { shouldBeSaved } = this.state;
+        const { shouldBeSaved, fetchingDraft, draftMissing } = this.state;
 
-        let entryTitle = 'First entry';
-        if (draftState.get('drafts').size > 1 && !draftState.get('savingDraft')) {
-            entryTitle = 'New Entry';
-        } else if (draftState.get('savingDraft')) {
-            entryTitle = 'Saving draft...';
-        }
         return (
           <div style={{ height: '100%', position: 'relative' }}>
             <Toolbar
@@ -97,7 +132,7 @@ class AddEntryPage extends Component {
               style={{ backgroundColor: '#FFF', borderBottom: '1px solid rgb(204, 204, 204)' }}
             >
               <ToolbarGroup>
-                <h3 style={{ fontWeight: '200' }}>{entryTitle}</h3>
+                <h3 style={{ fontWeight: '200' }}>{this._getHeaderTitle()}</h3>
               </ToolbarGroup>
               <ToolbarGroup>
                 <FlatButton
@@ -141,18 +176,26 @@ class AddEntryPage extends Component {
                   padding: '24px 0'
               }}
             >
-              <div className="col-xs-12">
-                <EntryEditor
-                  editorRef={(editor) => { this.editor = editor; }}
-                  onChange={this._handleEditorChange}
-                  onTitleChange={this._handleTitleChange}
-                  readOnly={false}
-                  content={{}}
-                  title={'draft.title'}
-                  showTitleField
-                  textHint="Write something"
-                />
-              </div>
+              {fetchingDraft &&
+                <div>Preparing draft...</div>
+              }
+              {!fetchingDraft && draftMissing &&
+                <div>The draft you are looking for cannot be found!</div>
+              }
+              {!fetchingDraft && !draftMissing &&
+                <div className="col-xs-12">
+                  <EntryEditor
+                    editorRef={(editor) => { this.editor = editor; }}
+                    onChange={this._handleEditorChange}
+                    onTitleChange={this._handleTitleChange}
+                    readOnly={false}
+                    content={{}}
+                    title={'draft.title'}
+                    showTitleField
+                    textHint="Write something"
+                  />
+                </div>
+              }
             </div>
             {this.props.children &&
               <div className="row">
