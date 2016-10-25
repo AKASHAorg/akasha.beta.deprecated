@@ -107,7 +107,7 @@ StreamPage.contextTypes = {
     router: React.PropTypes.object
 };
 
-function mapStateToProps (state) {
+function mapStateToProps (state, ownProps) {
     return {
         entryState: state.entryState,
         profileState: state.profileState
