@@ -98,7 +98,7 @@ class ProfileIPC extends ModuleEmitter {
                         if (!etherBase) {
                             throw new Error('No ethereum address specified');
                         }
-                        response = mainResponse(value);
+                        response = mainResponse({value: value.toString(10), unit});
                     })
                     .catch((err: Error) => {
                         response = mainResponse({ error: { message: err.message } });

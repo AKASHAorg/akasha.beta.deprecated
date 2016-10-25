@@ -19,14 +19,17 @@ class Tags extends BaseContract_1.default {
     getTagAt(id) {
         return this.contract
             .getTagAt
-            .callAsync(id);
+            .callAsync(id)
+            .then((bytes32Data) => {
+            return this.gethInstance.web3.toUtf8(bytes32Data);
+        });
     }
     getTagsCount() {
         return this.contract._length.callAsync();
     }
     getTagId(tagName) {
         const tagTr = this.gethInstance.web3.fromUtf8(tagName);
-        return this.contract.getTagId.callAsync(tagTr);
+        return this.contract.getTagId.callAsync(tagTr).then((bigNumber) => bigNumber.toString());
     }
     add(tag, gas) {
         const tagTr = this.gethInstance.web3.fromUtf8(tag);
