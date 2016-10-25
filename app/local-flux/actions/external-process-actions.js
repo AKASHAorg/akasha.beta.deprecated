@@ -45,12 +45,10 @@ class EProcActions {
                 this.resetGethBusyState();
             }
         });
-    }
+    };
 
-    stopGeth = () => {
-        this.dispatch(externalProcessActionCreators.stopGeth());
-        this.gethService.stop({
-            options: {},
+    registerStopGethListener = () => {
+        this.gethService.registerStopListener({
             onError: (err) => {
                 this.dispatch(externalProcessActionCreators.stopGethError(err));
                 this.resetGethBusyState();
@@ -60,7 +58,12 @@ class EProcActions {
                 this.resetGethBusyState();
             }
         });
-    }
+    };
+
+    stopGeth = () => {
+        this.dispatch(externalProcessActionCreators.stopGeth());
+        this.gethService.stop({ options: {} });
+    };
 
     getGethStatus = () =>
         this.gethService.getStatus({
@@ -83,7 +86,7 @@ class EProcActions {
 
     stopThrottledUpdate = () => {
         this.throttledSyncUpdate.cancel();
-    }
+    };
     /**
      * get sync status of geth service
      * this method will not dispatch anything to avoid redux-dev-tools overload.
@@ -125,7 +128,7 @@ class EProcActions {
                 }
             });
         });
-    }
+    };
     getIpfsStatus = () =>
         this.ipfsService.getStatus({
             options: {},
@@ -155,14 +158,8 @@ class EProcActions {
             });
         }, 2000);
     };
-    stopIPFS = () => {
-        this.dispatch(externalProcessActionCreators.stopIPFS());
-        this.dispatch(externalProcessActionCreators.resetIpfsPorts());
-        if (this.ipfsPortsRequest) {
-            clearTimeout(this.ipfsPortsRequest);
-        }
-        this.ipfsService.stop({
-            options: {},
+    registerStopIpfsListener = () => {
+        this.ipfsService.registerStopListener({
             onError: (err) => {
                 this.dispatch(externalProcessActionCreators.stopIPFSError(err));
                 this.resetIpfsBusyState();
@@ -172,6 +169,14 @@ class EProcActions {
                 this.resetIpfsBusyState();
             }
         });
+    };
+    stopIPFS = () => {
+        this.dispatch(externalProcessActionCreators.stopIPFS());
+        this.dispatch(externalProcessActionCreators.resetIpfsPorts());
+        if (this.ipfsPortsRequest) {
+            clearTimeout(this.ipfsPortsRequest);
+        }
+        this.ipfsService.stop({ options: {} });
     };
 
     startSync = () => this.dispatch(externalProcessActionCreators.startSync());
