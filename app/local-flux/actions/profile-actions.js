@@ -42,15 +42,16 @@ class ProfileActions {
         });
     };
 
-    getLoggedProfile = () =>
+    getLoggedProfile = () => {
+        this.dispatch(profileActionCreators.getLoggedProfile());
         this.authService.getLoggedProfile({
             onSuccess: (data) => {
-                console.log('getLoggedProfile', data);
                 this.dispatch(profileActionCreators.getLoggedProfileSuccess(data));
                 this.getCurrentProfile();
             },
             onError: error => this.dispatch(profileActionCreators.getLoggedProfileError(error))
         });
+    }
 
     getLocalProfiles = () =>
         this.authService.getLocalIdentities({

@@ -8,10 +8,12 @@ function mapStateToProps (state) {
     const loggedProfile = profiles.find(profile =>
         profile.get('profile') === loggedProfileAddress
     );
-    console.log(loggedProfile);
     return {
         loggedProfile,
-        draftState: state.draftState
+        draftState: state.draftState,
+        drafts: state.draftState.get('drafts'),
+        savingDraft: state.draftState.get('savingDraft'),
+        errors: state.draftState.get('errors')
     };
 }
 

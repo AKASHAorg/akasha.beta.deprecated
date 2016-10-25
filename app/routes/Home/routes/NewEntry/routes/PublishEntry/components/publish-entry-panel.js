@@ -23,7 +23,11 @@ class PublishPanel extends React.Component {
             featuredImage: []
         };
     }
-    componentWillMount () {}
+    componentWillMount () {
+        const { drafts, params } = this.props;
+        const currentDraft = drafts.find(draft => draft.id === params.draftId);
+        console.log(currentDraft, params.draftId);
+    }
     componentDidMount () {
         const panelSize = ReactDOM.findDOMNode(this).getBoundingClientRect();
         this.panelSize = panelSize;
@@ -63,7 +67,7 @@ class PublishPanel extends React.Component {
         });
     };
     _publishEntry = () => {
-        const { entryActions, profileState, entryBundleActions } = this.props;
+        const { draftActions, profileState, entryBundleActions } = this.props;
         const loggedProfile = profileState.get('loggedProfile');
         this._handleDraftUpdate(null, 'featuredImage');
         const {
@@ -78,7 +82,7 @@ class PublishPanel extends React.Component {
         console.log(tagsToRegister, 'tagsToRegister')
         const draftId = parseInt(this.props.params.draftId, 10);
         const router = this.context.router;
-        entryActions.updateDraft({
+        draftactions.updateDraft({
             id: draftId,
             publishing: true
         }).then(() => {
@@ -108,13 +112,13 @@ class PublishPanel extends React.Component {
         this.setState({
             tags: currentTags
         }, () => {
-            this._handleDraftUpdate(null, 'tags')
+            this._handleDraftUpdate(null, 'tags');
         });
     };
     _handleDraftUpdate = (ev, field) => {
-        const { entryActions } = this.props;
+        const { draftActions } = this.props;
         const fieldValue = this.state[field];
-        entryActions.updateDraft({
+        draftActions.updateDraft({
             id: parseInt(this.props.params.draftId, 10),
             [field]: fieldValue
         });

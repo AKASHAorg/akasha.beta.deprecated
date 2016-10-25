@@ -123,6 +123,9 @@ export function startIPFSSuccess (data) {
 
 export function startIPFSError (error, data) {
     error.code = 'SIE01';
+    if (!error.message || error.message === '') {
+        error.message = 'Cannot start IPFS service. Application restart may require.'
+    }
     return {
         type: types.START_IPFS_ERROR,
         error,

@@ -14,7 +14,7 @@ class DraftActions {
         return draftActions;
     }
 
-    createDraft = (authorUsername, draft) => {
+    createDraftSync = (authorUsername, draft) => {
         this.dispatch(draftActionCreators.startSavingDraft());
         return this.draftService.saveDraft({ authorUsername, ...draft }).then((result) => {
             this.dispatch(draftActionCreators.createDraftSuccess(result));

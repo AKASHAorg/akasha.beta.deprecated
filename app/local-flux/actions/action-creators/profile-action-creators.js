@@ -78,7 +78,11 @@ export function getProfileDataError (error) {
         error
     };
 }
-
+export function getLoggedProfile () {
+    return {
+        type: types.GET_LOGGED_PROFILE
+    };
+}
 export function getLoggedProfileSuccess (profile) {
     return {
         type: types.GET_LOGGED_PROFILE_SUCCESS,
