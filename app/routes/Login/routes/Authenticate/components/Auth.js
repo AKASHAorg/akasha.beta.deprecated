@@ -204,6 +204,8 @@ class Auth extends Component {
     render () {
         const { style, intl, gethStatus, ipfsStatus } = this.props;
         const { openModal } = this.state;
+        const isServiceStopped = !gethStatus.get('api') || gethStatus.get('stopped')
+            || (!ipfsStatus.get('started') && !ipfsStatus.get('spawned'));
         const modalActions = [
             /* eslint-disable */
             <FlatButton
@@ -214,6 +216,7 @@ class Auth extends Component {
               label={intl.formatMessage(generalMessages.submit)}
               primary
               onTouchTap={this.handleLogin}
+              disabled={isServiceStopped}
             />
             /* eslint-enable */
         ];

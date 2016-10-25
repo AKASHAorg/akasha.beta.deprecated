@@ -23,7 +23,10 @@ class App extends Component {
         };
     };
     componentWillMount () {
-        this.props.settingsActions.getSettings('general');
+        const { eProcActions, settingsActions } = this.props;
+        eProcActions.registerStopGethListener();
+        eProcActions.registerStopIpfsListener();
+        settingsActions.getSettings('general');
     }
     componentDidMount () {
         const { appActions, eProcActions } = this.props;
