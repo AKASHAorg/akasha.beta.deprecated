@@ -27,6 +27,7 @@ class EntryIPC extends ModuleEmitter_1.default {
             ._getEntryOf()
             ._getEntry()
             ._getEntriesCreated()
+            ._getVotesEvent()
             ._manager();
     }
     _publish() {
@@ -235,8 +236,8 @@ class EntryIPC extends ModuleEmitter_1.default {
             index_1.constructed.instance
                 .main
                 .getEntriesCount(data.profileAddress)
-                .then((score) => {
-                response = responses_1.mainResponse({ profileAddress: data.profileAddress, score });
+                .then((count) => {
+                response = responses_1.mainResponse({ profileAddress: data.profileAddress, count });
             })
                 .catch((err) => {
                 response = responses_1.mainResponse({
@@ -255,11 +256,26 @@ class EntryIPC extends ModuleEmitter_1.default {
     _getEntryOf() {
         this.registerListener(channels_1.default.server[this.MODULE_NAME].getEntryOf, (event, data) => {
             let response;
+            let entry = new Entry_1.default();
             index_1.constructed.instance
                 .main
                 .getEntryOf(data.profileAddress, data.position)
                 .then((content) => {
-                response = responses_1.mainResponse({ profileAddress: data.profileAddress, content });
+                entry.load(content.ipfsHash);
+                return entry.getShortContent()
+                    .then((ipfsContent) => {
+                    return {
+                        profileAddress: data.profileAddress,
+                        position: data.position,
+                        date: content.date,
+                        profile: content.profile,
+                        content: ipfsContent,
+                        [settings_1.BASE_URL]: settings_1.generalSettings.get(settings_1.BASE_URL)
+                    };
+                });
+            })
+                .then((constructed) => {
+                response = responses_1.mainResponse(constructed);
             })
                 .catch((err) => {
                 response = responses_1.mainResponse({
@@ -271,6 +287,8 @@ class EntryIPC extends ModuleEmitter_1.default {
             })
                 .finally(() => {
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].getEntryOf, response, event);
+                response = null;
+                entry = null;
             });
         });
         return this;
@@ -342,6 +360,28 @@ class EntryIPC extends ModuleEmitter_1.default {
             })
                 .finally(() => {
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].getEntriesCreated, response, event);
+            });
+        });
+        return this;
+    }
+    _getVotesEvent() {
+        this.registerListener(channels_1.default.server[this.MODULE_NAME].getVotesEvent, (event, data) => {
+            let response;
+            index_1.constructed.instance
+                .main
+                .getVotesOfEvent(data)
+                .then((collection) => {
+                response = responses_1.mainResponse({ collection });
+            })
+                .catch((err) => {
+                response = responses_1.mainResponse({
+                    error: {
+                        message: err.message
+                    }
+                });
+            })
+                .finally(() => {
+                this.fireEvent(channels_1.default.client[this.MODULE_NAME].getVotesEvent, response, event);
             });
         });
         return this;

@@ -32,7 +32,8 @@ export default class Main extends BaseContract {
     public getVoteOf(profile: string, entryAddress: string) {
         return this.contract
             .getVoteOf
-            .callAsync(profile, entryAddress);
+            .callAsync(profile, entryAddress)
+            .then((voteCount) => voteCount.toString(10));
     }
 
     /**
@@ -65,7 +66,8 @@ export default class Main extends BaseContract {
     public getScoreOfEntry(entryAddress: string) {
         return this.contract
             .getScoreOfEntry
-            .callAsync(entryAddress);
+            .callAsync(entryAddress)
+            .then((score) => score.toString(10));
     }
 
     /**
@@ -116,6 +118,7 @@ export default class Main extends BaseContract {
         return this.contract
             .getFollowingCount
             .callAsync(address)
+            .then((count) => count.toString())
     }
 
     /**
@@ -126,13 +129,21 @@ export default class Main extends BaseContract {
     public getEntriesCount(address: string) {
         return this.contract
             .getEntriesCount
-            .callAsync(address);
+            .callAsync(address)
+            .then((count) => count.toString());
     }
 
     public getEntryOf(address: string, position: number) {
         return this.contract
             .getEntryOf
-            .callAsync(address, position);
+            .callAsync(address, position)
+            .then((data)=> {
+                return Promise.resolve({
+                    date: data[0].toString(),
+                    profile: data[1],
+                    ipfsHash: this.flattenIpfs(data[2])
+                })
+            });
     }
 
 
@@ -216,14 +227,10 @@ export default class Main extends BaseContract {
      * @returns {any}
      */
     public publishEntry(hash: string, tags: string[], gas?: number) {
-        const hashTr = [];
-        const offset = Math.floor(hash.length / 2);
-        hashTr.push(hash.slice(0, offset));
-        hashTr.push(hash.slice(offset));
         const tagsTr = tags.map((v) => {
             return this.gethInstance.web3.fromUtf8(v);
         });
-        return Promise.resolve(this.extractData('publishEntry', hashTr, tagsTr, { gas }));
+        return Promise.resolve(this.extractData('publishEntry', this.splitIpfs(hash), tagsTr, { gas }));
     }
 
 
@@ -250,8 +257,21 @@ export default class Main extends BaseContract {
      * @returns {any}
      */
     public upVoteEntry(entryAddress: string, weight: number, gas?: number, value?: number) {
-        const weightTr = this.gethInstance.web3.fromDecimal(weight);
-        return Promise.resolve(this.extractData('upVoteEntry', entryAddress, weightTr, { gas, value }));
+        if (weight < 1 || weight > 10) {
+            return Promise.reject('weight should be between 1-10');
+        }
+
+        const cost = this.gethInstance.web3.toWei(weight * weight, 'finney');
+        if (value) {
+            value = this.gethInstance.web3.toWei(value, 'ether');
+            if (cost > value) {
+                return Promise.reject(`value sent: ${value} wei is lower than min cost: ${cost} wei`);
+            }
+        }
+        return Promise.resolve(this.extractData('upVoteEntry', entryAddress, weight, {
+            gas,
+            value: (value) ? value : cost
+        }));
     }
 
     /**
@@ -263,8 +283,21 @@ export default class Main extends BaseContract {
      * @returns {any}
      */
     public downVoteEntry(entryAddress: string, weight: number, gas?: number, value?: number) {
-        const weightTr = this.gethInstance.web3.fromDecimal(weight);
-        return Promise.resolve(this.extractData('downVoteEntry', entryAddress, weightTr, { gas, value }));
+        if (weight < 1 || weight > 10) {
+            return Promise.reject('weight should be between 1-10');
+        }
+
+        const cost = this.gethInstance.web3.toWei(weight * weight, 'finney');
+        if (value) {
+            value = this.gethInstance.web3.toWei(value, 'ether');
+            if (cost > value) {
+                return Promise.reject(`value sent: ${value} wei is lower than min cost: ${cost} wei`);
+            }
+        }
+        return Promise.resolve(this.extractData('downVoteEntry', entryAddress, weight, {
+            gas,
+            value: (value) ? value : cost
+        }));
     }
 
     /**

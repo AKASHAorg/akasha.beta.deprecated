@@ -24,7 +24,8 @@ class Main extends BaseContract_1.default {
     getVoteOf(profile, entryAddress) {
         return this.contract
             .getVoteOf
-            .callAsync(profile, entryAddress);
+            .callAsync(profile, entryAddress)
+            .then((voteCount) => voteCount.toString(10));
     }
     openedToVotes(entryAddress) {
         return this.contract
@@ -39,7 +40,8 @@ class Main extends BaseContract_1.default {
     getScoreOfEntry(entryAddress) {
         return this.contract
             .getScoreOfEntry
-            .callAsync(entryAddress);
+            .callAsync(entryAddress)
+            .then((score) => score.toString(10));
     }
     getFundsAddress() {
         return this.contract
@@ -64,17 +66,26 @@ class Main extends BaseContract_1.default {
     getFollowingCount(address) {
         return this.contract
             .getFollowingCount
-            .callAsync(address);
+            .callAsync(address)
+            .then((count) => count.toString());
     }
     getEntriesCount(address) {
         return this.contract
             .getEntriesCount
-            .callAsync(address);
+            .callAsync(address)
+            .then((count) => count.toString());
     }
     getEntryOf(address, position) {
         return this.contract
             .getEntryOf
-            .callAsync(address, position);
+            .callAsync(address, position)
+            .then((data) => {
+            return Promise.resolve({
+                date: data[0].toString(),
+                profile: data[1],
+                ipfsHash: this.flattenIpfs(data[2])
+            });
+        });
     }
     getFollowersCount(address) {
         return this.contract
@@ -109,14 +120,10 @@ class Main extends BaseContract_1.default {
             .callAsync(entry, commentIdTr);
     }
     publishEntry(hash, tags, gas) {
-        const hashTr = [];
-        const offset = Math.floor(hash.length / 2);
-        hashTr.push(hash.slice(0, offset));
-        hashTr.push(hash.slice(offset));
         const tagsTr = tags.map((v) => {
             return this.gethInstance.web3.fromUtf8(v);
         });
-        return Promise.resolve(this.extractData('publishEntry', hashTr, tagsTr, { gas }));
+        return Promise.resolve(this.extractData('publishEntry', this.splitIpfs(hash), tagsTr, { gas }));
     }
     updateEntry(hash, entryAddress, gas) {
         const hashTr = hash.map((v) => {
@@ -125,12 +132,36 @@ class Main extends BaseContract_1.default {
         return Promise.resolve(this.extractData('updateEntry', hashTr, entryAddress, { gas }));
     }
     upVoteEntry(entryAddress, weight, gas, value) {
-        const weightTr = this.gethInstance.web3.fromDecimal(weight);
-        return Promise.resolve(this.extractData('upVoteEntry', entryAddress, weightTr, { gas, value }));
+        if (weight < 1 || weight > 10) {
+            return Promise.reject('weight should be between 1-10');
+        }
+        const cost = this.gethInstance.web3.toWei(weight * weight, 'finney');
+        if (value) {
+            value = this.gethInstance.web3.toWei(value, 'ether');
+            if (cost > value) {
+                return Promise.reject(`value sent: ${value} wei is lower than min cost: ${cost} wei`);
+            }
+        }
+        return Promise.resolve(this.extractData('upVoteEntry', entryAddress, weight, {
+            gas,
+            value: (value) ? value : cost
+        }));
     }
     downVoteEntry(entryAddress, weight, gas, value) {
-        const weightTr = this.gethInstance.web3.fromDecimal(weight);
-        return Promise.resolve(this.extractData('downVoteEntry', entryAddress, weightTr, { gas, value }));
+        if (weight < 1 || weight > 10) {
+            return Promise.reject('weight should be between 1-10');
+        }
+        const cost = this.gethInstance.web3.toWei(weight * weight, 'finney');
+        if (value) {
+            value = this.gethInstance.web3.toWei(value, 'ether');
+            if (cost > value) {
+                return Promise.reject(`value sent: ${value} wei is lower than min cost: ${cost} wei`);
+            }
+        }
+        return Promise.resolve(this.extractData('downVoteEntry', entryAddress, weight, {
+            gas,
+            value: (value) ? value : cost
+        }));
     }
     saveComment(entryAddress, hash, gas) {
         const hashTr = hash.map((v) => {

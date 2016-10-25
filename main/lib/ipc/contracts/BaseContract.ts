@@ -22,6 +22,11 @@ export default class BaseContract {
             this.gethInstance.web3.toUtf8(ipfsHash[1]);
     }
 
+    public splitIpfs(ipfsHash: string){
+        const offset = Math.floor(ipfsHash.length / 2);
+        return [ipfsHash.slice(0, offset), ipfsHash.slice(offset)];
+    }
+
     /**
      * @returns {any}
      */
