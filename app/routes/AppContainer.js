@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { SettingsActions, AppActions, ProfileActions } from 'local-flux';
+import { SettingsActions, AppActions, ProfileActions, EProcActions } from 'local-flux';
 import { getMuiTheme } from 'material-ui/styles';
 import { Snackbar } from 'material-ui';
 import { AuthDialog, ConfirmationDialog } from 'shared-components';
@@ -14,7 +14,7 @@ class App extends Component {
         this.state = {
             userPassword: '',
             voteWeight: 1,
-            theme: 'light'
+            theme: props.theme
         };
     }
     getChildContext = () => {
@@ -22,10 +22,25 @@ class App extends Component {
             muiTheme: getMuiTheme(this.state.theme === 'light' ? lightTheme : darkTheme)
         };
     };
+    componentWillMount () {
+        const { eProcActions, settingsActions } = this.props;
+        eProcActions.registerStopGethListener();
+        eProcActions.registerStopIpfsListener();
+        settingsActions.getSettings('general');
+    }
+    componentDidMount () {
+        const { appActions, eProcActions } = this.props;
+        const timestamp = new Date().getTime();
+        appActions.setTimestamp(timestamp);
+        setTimeout(() => {
+            eProcActions.getGethOptions();
+            eProcActions.getIpfsConfig();
+        }, 0);
+    }
     componentWillReceiveProps (nextProps) {
-        if (nextProps.appState.get('theme') !== this.props.appState.get('theme')) {
+        if (nextProps.theme !== this.props.theme) {
             this.setState({
-                theme: nextProps.appState.get('theme')
+                theme: nextProps.theme
             });
         }
     }
@@ -116,8 +131,11 @@ class App extends Component {
 App.propTypes = {
     appState: PropTypes.shape(),
     appActions: PropTypes.shape(),
+    eProcActions: PropTypes.shape(),
     profileState: PropTypes.shape(),
     profileActions: PropTypes.shape(),
+    settingsActions: PropTypes.shape(),
+    theme: PropTypes.string,
     children: PropTypes.element
 };
 App.contextTypes = {
@@ -131,7 +149,8 @@ function mapStateToProps (state) {
     return {
         appState: state.appState,
         profileState: state.profileState,
-        routeState: state.reduxAsyncConnect
+        routeState: state.reduxAsyncConnect,
+        theme: state.settingsState.get('general').get('theme')
     };
 }
 function mapDispatchToProps (dispatch) {
@@ -139,6 +158,7 @@ function mapDispatchToProps (dispatch) {
         profileActions: new ProfileActions(dispatch),
         settingsActions: new SettingsActions(dispatch),
         appActions: new AppActions(dispatch),
+        eProcActions: new EProcActions(dispatch)
     };
 }
 export default connect(

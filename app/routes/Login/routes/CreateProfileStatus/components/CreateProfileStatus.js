@@ -1,14 +1,16 @@
 import React, { Component, PropTypes } from 'react';
-import { MenuAkashaLogo } from 'shared-components/svg';
-import * as Colors from 'material-ui/styles/colors';
-import { SvgIcon, RaisedButton } from 'material-ui';
+import { RaisedButton } from 'material-ui';
+import ErrorIcon from 'material-ui/svg-icons/alert/error';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { PanelContainer } from 'shared-components';
-import { generalMessages, setupMessages } from 'locale-data/messages';
+import { generalMessages, setupMessages, profileMessages } from 'locale-data/messages';
 import { is } from 'immutable';
+import PanelHeader from '../../../../components/panel-header';
+
 class CreateProfileStatus extends Component {
     constructor (props) {
         super(props);
+        this.isServiceRestarted = false;
         this.state = {
             errors: []
         };
@@ -28,6 +30,12 @@ class CreateProfileStatus extends Component {
             return this.setState({
                 errors: [...nextProps.profileErrors, ...nextProps.tempProfileErrors]
             });
+        }
+
+        if ((nextProps.gethStatus.get('api') && !this.props.gethStatus.get('api'))
+                || (nextProps.ipfsStatus.get('started') && !this.props.ipfsStatus.get('started'))
+                || (nextProps.ipfsStatus.get('spawned') && !this.props.ipfsStatus.get('spawned'))) {
+            this.isServiceRestarted = true;
         }
 
         const shouldResume =
@@ -193,42 +201,53 @@ class CreateProfileStatus extends Component {
         tempProfileActions.clearErrors();
     }
     _handleStepRetry = () => {
-        const { profileActions, tempProfileActions } = this.props;
-        tempProfileAction.clearErrors();
+        const { profileActions, tempProfile } = this.props;
+        const { nextAction } = tempProfile.currentStatus;
+        this.isGethRestarted = false;
         profileActions.clearErrors();
+        if (nextAction === 'listenFaucetTx') {
+            const currentStatus = tempProfile.get('currentStatus')
+                .merge({ listeningFaucetTx: false });
+            profileActions.updateTempProfile({}, currentStatus.toJS());
+        } else if (nextAction === 'listenPublishTx') {
+            const currentStatus = tempProfile.get('currentStatus')
+                .merge({ listeningPublishTx: false });
+            profileActions.updateTempProfile({}, currentStatus.toJS());
+        }
         this.resumeProfileCreation(this.props);
     }
+    renderWarningMessage () {
+        const { intl } = this.props;
+        const { palette } = this.context.muiTheme;
+
+        return (
+          <div
+            style={{ height: '36px', lineHeight: '36px', display: 'flex', alignItems: 'center' }}
+          >
+            <ErrorIcon style={{ color: palette.accent1Color }} />
+            <span style={{ marginLeft: '5px', color: palette.accent1Color }}>
+              {intl.formatMessage(generalMessages.serviceStoppedWarning)}
+            </span>
+          </div>
+        );
+    }
     render () {
-        const { style, tempProfile, intl } = this.props;
+        const { style, tempProfile, intl, gethStatus, ipfsStatus } = this.props;
+        const { palette } = this.context.muiTheme;
         const { nextAction } = tempProfile.get('currentStatus');
         const paraStyle = { marginTop: '20px' };
         const errors = this.state.errors;
+        const isServiceStopped = !gethStatus.get('api')
+            || (!ipfsStatus.get('started') && !ipfsStatus.get('spawned'));
         return (
           <div style={style} >
             <PanelContainer
               showBorder
               header={
-                <div>
-                  <SvgIcon
-                    color={Colors.lightBlack}
-                    viewBox="0 0 32 32"
-                    style={{
-                        width: '32px',
-                        height: '32px',
-                        marginRight: '10px',
-                        verticalAlign: 'middle'
-                    }}
-                  >
-                    <MenuAkashaLogo />
-                  </SvgIcon>
-                  <h1 style={{ fontWeight: '400', display: 'inline', verticalAlign: 'middle' }} >
-                    <FormattedMessage
-                      id="app.createProfile.registeringIdentity"
-                      description="Registering identity status"
-                      defaultMessage="Registering identity"
-                    /> ...
-                  </h1>
-                </div>
+                <PanelHeader
+                  title={intl.formatMessage(profileMessages.registeringIdentity)}
+                  disableStopService
+                />
               }
               actions={[
                   /* eslint-disable */
@@ -244,10 +263,12 @@ class CreateProfileStatus extends Component {
                     label={intl.formatMessage(setupMessages.retryStep)}
                     onClick={this._handleStepRetry}
                     primary
-                    disabled={(errors.size === 0 || errors.length === 0)}
+                    disabled={((errors.size === 0 || errors.length === 0)
+                        && !this.isServiceRestarted) || isServiceStopped}
                   />
                   /* eslint-enable */
               ]}
+              leftActions={isServiceStopped && this.renderWarningMessage()}
             >
               <div className="col-xs">
                 <p style={paraStyle}>
@@ -285,7 +306,7 @@ class CreateProfileStatus extends Component {
                     {this.getCurrentStatusDescription()}
                   </div>
                 </div>
-                <div style={{ marginTop: '20px', color: Colors.red300 }}>
+                <div style={{ marginTop: '20px', color: palette.accent1Color }}>
                   {this.state.errors.map((err, key) =>
                     <div className="error-card" key={key}>
                       <p>{err.code}</p>
@@ -307,11 +328,17 @@ CreateProfileStatus.propTypes = {
     style: PropTypes.shape(),
     intl: PropTypes.shape(),
     transactionActions: PropTypes.shape(),
+    gethStatus: PropTypes.shape().isRequired,
+    ipfsStatus: PropTypes.shape().isRequired,
+    loginRequested: PropTypes.bool,
+    minedTransactions: PropTypes.shape(),
+    pendingTransactions: PropTypes.shape(),
+    loggedProfile: PropTypes.shape()
 };
 
 CreateProfileStatus.contextTypes = {
-    muiTheme: React.PropTypes.object,
-    router: React.PropTypes.object
+    muiTheme: React.PropTypes.shape(),
+    router: React.PropTypes.shape()
 };
 
 CreateProfileStatus.defaultProps = {

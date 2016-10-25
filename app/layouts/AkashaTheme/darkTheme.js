@@ -8,10 +8,11 @@ const darkTheme = {
     zIndex,
     fontFamily: 'Roboto, sans-serif',
     palette: Object.assign({}, darkBaseTheme.palette, {
+        primary1Color: '#4285f4',
         borderColor: Colors.grey700,
-        accent1Color: Colors.red700,
-        accent2Color: Colors.amber700,
-        accent3Color: Colors.green700,
+        accent1Color: '#c82506',
+        accent2Color: '#de6a10',
+        accent3Color: '#70bf41',
         paperShadowColor: Colors.grey800
     }),
     imageUploader: {

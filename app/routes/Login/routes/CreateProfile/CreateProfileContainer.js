@@ -4,7 +4,9 @@ import { TempProfileActions, ValidationActions } from 'local-flux';
 
 function mapStateToProps (state, ownProps) {
     return {
-        tempProfile: state.tempProfileState.get('tempProfile')
+        tempProfile: state.tempProfileState.get('tempProfile'),
+        gethStatus: state.externalProcState.get('gethStatus'),
+        ipfsStatus: state.externalProcState.get('ipfsStatus')
     };
 }
 

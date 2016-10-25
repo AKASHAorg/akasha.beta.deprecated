@@ -2,13 +2,7 @@ import React, { Component, PropTypes } from 'react';
 
 class Setup extends Component {
     componentDidMount () {
-        const { appActions, settingsActions, eProcActions } = this.props;
-        const timestamp = new Date().getTime();
-        appActions.setTimestamp(timestamp);
-        setTimeout(() => {
-            eProcActions.getGethOptions();
-            eProcActions.getIpfsConfig();
-        }, 0);
+        const { settingsActions } = this.props;
         settingsActions.getSettings('flags');
         settingsActions.getSettings('geth');
         settingsActions.getSettings('ipfs');
@@ -27,8 +21,6 @@ class Setup extends Component {
 }
 
 Setup.propTypes = {
-    appActions: PropTypes.shape().isRequired,
-    eProcActions: PropTypes.shape().isRequired,
     settingsActions: PropTypes.shape().isRequired,
 };
 

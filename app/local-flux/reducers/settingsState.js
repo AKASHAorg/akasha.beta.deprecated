@@ -36,6 +36,10 @@ const UserSettings = Record({
 
 });
 
+const GeneralSettings = Record({
+    theme: 'light'
+});
+
 const Flags = Record({
     requestStartupChange: true
 });
@@ -48,6 +52,7 @@ const initialState = fromJS({
     flags: new Flags(),
     errors: new List(),
     userSettings: new UserSettings(),
+    general: new GeneralSettings(),
     isAdvanced: false,
     fetchingGethSettings: false,
     fetchingIpfsSettings: false
@@ -82,6 +87,8 @@ const settingsState = createReducer(initialState, {
             });
         } else if (action.table === 'flags') {
             data = new Flags(action.data);
+        } else if (action.table === 'general') {
+            data = new GeneralSettings(action.data);
         }
         return state.merge({ [action.table]: data });
     },
@@ -105,6 +112,9 @@ const settingsState = createReducer(initialState, {
                 return state.merge({ userSettings: new UserSettings(action.settings) });
             case 'flags': {
                 return state.merge({ flags: action.settings });
+            }
+            case 'general': {
+                return state.updateIn(['general', 'theme'], () => action.settings.theme);
             }
             default:
                 return state;
@@ -168,6 +178,10 @@ const settingsState = createReducer(initialState, {
         return state;
     },
 
+    [types.CHANGE_THEME]: (state, action) => {
+        return state.updateIn(['general', 'theme'], () => action.theme);
+    },
+
     [eProcTypes.GET_GETH_OPTIONS_SUCCESS]: (state, action) => {
         const gethSettings = Object.assign({}, state.get('geth').toJS());
         const initialSettings = new GethSettings().toJS();
@@ -189,11 +203,7 @@ const settingsState = createReducer(initialState, {
         const initialSettings = new IpfsSettings().toJS();
 
         Object.keys(ipfsSettings).forEach((key) => {
-            if (key === 'ports') {
-                if (ipfsSettings.ports.apiPort === initialSettings.ports.apiPort) {
-                    ipfsSettings.ports.apiPort = parseInt(action.data.apiPort, 10);
-                }
-            } else if (ipfsSettings[key] === initialSettings[key]) {
+            if (key !== 'ports' && ipfsSettings[key] === initialSettings[key]) {
                 ipfsSettings[key] = action.data[key];
             }
         });

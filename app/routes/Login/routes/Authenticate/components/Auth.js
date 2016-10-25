@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import {
     List,
     ListItem,
@@ -9,7 +9,7 @@ import { hashHistory } from 'react-router';
 import { injectIntl } from 'react-intl';
 import { LoginDialog, PanelContainer } from 'shared-components';
 import { setupMessages, generalMessages } from 'locale-data/messages'; /* eslint import/no-unresolved: 0*/
-import LoginHeader from '../../../components/LoginHeader';
+import PanelHeader from '../../../../components/panel-header';
 
 class Auth extends Component {
     constructor (props, context) {
@@ -23,10 +23,12 @@ class Auth extends Component {
         };
     }
     componentWillMount () {
-        const { profileActions, tempProfileActions } = this.props;
+        const { profileActions, tempProfileActions, gethStatus } = this.props;
         tempProfileActions.getTempProfile();
         profileActions.clearLoggedProfile();
-        profileActions.getLocalProfiles();
+        if (gethStatus.get('api')) {
+            profileActions.getLocalProfiles();
+        }
     }
     componentWillReceiveProps (nextProps) {
         const {
@@ -34,8 +36,16 @@ class Auth extends Component {
             tempProfile,
             localProfiles,
             loggedProfile,
-            loginErrors } = nextProps;
-
+            loginErrors,
+            gethStatus,
+            ipfsStatus } = nextProps;
+        const oldIpfsStatus = this.props.ipfsStatus;
+        const ipfsStatusChanged = (ipfsStatus.get('started') && !oldIpfsStatus.get('started'))
+            || (ipfsStatus.get('spawned') && !oldIpfsStatus.get('spawned'));
+        const profilesChanged = this.props.localProfiles.size !== nextProps.localProfiles.size;
+        if (gethStatus.get('api') && !this.props.gethStatus.get('api') && !localProfiles.size) {
+            profileActions.getLocalProfiles();
+        }
         if (loginErrors.size === 0) {
             if (this.state.selectedProfile &&
                 loggedProfile.get('account') === this.state.selectedProfile.get('ethAddress')) {
@@ -46,8 +56,35 @@ class Auth extends Component {
                 return this.context.router.push('/authenticate/new-profile-status');
             }
         }
-        if ((localProfiles.size > 0)) {
+        if ((ipfsStatus.get('started') || ipfsStatus.get('spawned')) && localProfiles.size > 0
+                && (profilesChanged || ipfsStatusChanged)) {
             profileActions.getProfileData(localProfiles.toJS());
+        }
+        return null;
+    }
+    componentWillUnmount () {
+        this.props.profileActions.clearLocalProfiles();
+    }
+    getPlaceholderMessage () {
+        const { intl, gethStatus, ipfsStatus, localProfiles, profilesFetched } = this.props;
+        let message;
+        if (!gethStatus.get('api')) {
+            message = intl.formatMessage(setupMessages.gethStopped);
+        } else if (!ipfsStatus.get('spawned') && !ipfsStatus.get('started')) {
+            message = intl.formatMessage(setupMessages.ipfsStopped);
+        } else if (localProfiles.size === 0 && profilesFetched) {
+            message = intl.formatMessage(setupMessages.noProfilesFound);
+        } else if (localProfiles.size === 0 && !profilesFetched) {
+            message = intl.formatMessage(setupMessages.findingProfiles);
+        }
+        if (message) {
+            return <div
+              style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}
+            >
+              <div style={{ maxWidth: '80%', textAlign: 'center' }}>
+                {message}
+              </div>
+            </div>;
         }
         return null;
     }
@@ -73,12 +110,10 @@ class Auth extends Component {
         });
     };
     _getLocalProfiles () {
-        const { localProfiles, profilesFetched, intl } = this.props;
-        if (localProfiles.size === 0 && profilesFetched) {
-            return <div>{intl.formatMessage(setupMessages.noProfilesFound)}</div>;
-        }
-        if (localProfiles.size === 0 && !profilesFetched) {
-            return <div>{intl.formatMessage(setupMessages.findingProfiles)}</div>;
+        const { localProfiles } = this.props;
+        const { palette } = this.context.muiTheme;
+        if (localProfiles.size === 0) {
+            return this.getPlaceholderMessage();
         }
         return localProfiles.map((profile, index) => {
             const profileAddress = profile.get('ethAddress');
@@ -86,9 +121,16 @@ class Auth extends Component {
             const userInitials = profileName.match(/\b\w/g);
             const avatarImage = profile.get('avatar');
             let avtr;
+            if (!profile.get('username')) {
+                return null;
+            }
             if (avatarImage) {
                 avtr = (
-                  <Avatar src={avatarImage} size={48} style={{top: '12px', border: '1px solid #bcbcbc'}}/>
+                  <Avatar
+                    src={avatarImage}
+                    size={48}
+                    style={{ top: '12px', border: `1px solid ${palette.paperShadowColor}` }}
+                  />
                 );
             } else {
                 avtr = (
@@ -127,7 +169,7 @@ class Auth extends Component {
                 value={profileAddress}
                 onTouchTap={() => this.handleTouchTap(index)}
                 className="col-xs-12"
-                style={{ border: '1px solid #DDD', marginBottom: 8 }}
+                style={{ border: `1px solid ${palette.borderColor}`, marginBottom: 8 }}
               />
             );
         });
@@ -160,8 +202,10 @@ class Auth extends Component {
         });
     };
     render () {
-        const { style, intl } = this.props;
+        const { style, intl, gethStatus, ipfsStatus } = this.props;
         const { openModal } = this.state;
+        const isServiceStopped = !gethStatus.get('api') || gethStatus.get('stopped')
+            || (!ipfsStatus.get('started') && !ipfsStatus.get('spawned'));
         const modalActions = [
             /* eslint-disable */
             <FlatButton
@@ -172,6 +216,7 @@ class Auth extends Component {
               label={intl.formatMessage(generalMessages.submit)}
               primary
               onTouchTap={this.handleLogin}
+              disabled={isServiceStopped}
             />
             /* eslint-enable */
         ];
@@ -182,7 +227,7 @@ class Auth extends Component {
           <PanelContainer
             showBorder
             style={style}
-            header={<LoginHeader title={intl.formatMessage(setupMessages.logInTitle)} />}
+            header={<PanelHeader title={intl.formatMessage(setupMessages.logInTitle)} />}
             actions={[
                 /* eslint-disable */
                 <RaisedButton
@@ -195,9 +240,12 @@ class Auth extends Component {
                 /* eslint-enable */
             ]}
           >
-            <List className="col-xs-12">
-              {localProfiles}
-            </List>
+            {gethStatus.get('api') && (ipfsStatus.get('started') || ipfsStatus.get('spawned')) ?
+              <List className="col-xs-12">
+                { localProfiles }
+              </List> :
+              <div> {this.getPlaceholderMessage()} </div>
+            }
             {this.state.selectedProfile &&
               <LoginDialog
                 profile={selectedProfile}
@@ -223,16 +271,18 @@ Auth.propTypes = {
     tempProfileActions: React.PropTypes.shape().isRequired,
     tempProfile: React.PropTypes.shape().isRequired,
     localProfiles: React.PropTypes.shape().isRequired,
+    gethStatus: PropTypes.shape().isRequired,
+    ipfsStatus: PropTypes.shape().isRequired,
     profilesFetched: React.PropTypes.bool,
     loggedProfile: React.PropTypes.shape().isRequired,
     loginErrors: React.PropTypes.shape().isRequired,
     style: React.PropTypes.shape(),
-    intl: React.PropTypes.shape()
+    intl: React.PropTypes.shape(),
 };
 
 Auth.contextTypes = {
-    muiTheme: React.PropTypes.object,
-    router: React.PropTypes.object
+    muiTheme: React.PropTypes.shape(),
+    router: React.PropTypes.shape()
 };
 
 Auth.defaultProps = {

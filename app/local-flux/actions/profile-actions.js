@@ -53,19 +53,25 @@ class ProfileActions {
         });
     }
 
-    getLocalProfiles = () =>
+    getLocalProfiles = () => {
+        this.dispatch(profileActionCreators.getLocalProfiles());
         this.authService.getLocalIdentities({
             onSuccess: (data) => {
                 this.dispatch(profileActionCreators.getLocalProfilesSuccess(data));
             },
             onError: err => this.dispatch(profileActionCreators.getLocalProfilesError(err))
         });
+    }
 
-    getCurrentProfile = () =>
+    getCurrentProfile = () => {
         this.registryService.getCurrentProfile({
             onSuccess: data => this.dispatch(profileActionCreators.getCurrentProfileSuccess(data)),
             onError: err => this.dispatch(profileActionCreators.getCurrentProfileError(err))
-        })
+        });
+    }
+
+    clearLocalProfiles = () =>
+        this.dispatch(profileActionCreators.clearLocalProfilesSuccess());
     /**
      * profiles = [{key: string, profile: string}]
      */

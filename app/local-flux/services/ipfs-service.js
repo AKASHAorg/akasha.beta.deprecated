@@ -33,15 +33,20 @@ class IpfsService extends BaseService {
         serverChannel.send(ipfsOptions);
     }
     /**
-     * Stop ipfs service
+     * Register stop ipfs listener
      */
-    stop = ({ options = {}, onError = () => {}, onSuccess }) => {
-        const serverChannel = Channel.server.ipfs.stopService;
+    registerStopListener = ({ onError = () => {}, onSuccess }) => {
         const clientChannel = Channel.client.ipfs.stopService;
         this.registerListener(
             clientChannel,
             this.createListener(onError, onSuccess, clientChannel.channelName)
         );
+    }
+    /**
+     * Stop ipfs service
+     */
+    stop = ({ options = {} }) => {
+        const serverChannel = Channel.server.ipfs.stopService;
         serverChannel.send(options);
     }
     /**

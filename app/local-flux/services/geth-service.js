@@ -23,7 +23,7 @@ class GethService extends BaseService {
         const gethOptions = {};
 
         Object.keys(options).forEach((key) => {
-            if (key !== 'name' && options[key] !== null) {
+            if (key !== 'name' && options[key] !== null && options[key] !== false) {
                 gethOptions[key] = options[key];
             }
         });
@@ -35,15 +35,20 @@ class GethService extends BaseService {
         serverChannel.send(gethOptions);
     };
     /**
-     * Stop Geth process
+     * Register stop geth listener
      */
-    stop = ({ options = {}, onError = () => {}, onSuccess }) => {
-        const serverChannel = Channel.server.geth.stopService;
+    registerStopListener ({ onError = () => {}, onSuccess }) {
         const clientChannel = Channel.client.geth.stopService;
         this.registerListener(
             clientChannel,
             this.createListener(onError, onSuccess, clientChannel.channelName)
         );
+    }
+    /**
+     * Stop Geth process
+     */
+    stop = ({ options = {} }) => {
+        const serverChannel = Channel.server.geth.stopService;
         serverChannel.send(options);
     }
     /**
