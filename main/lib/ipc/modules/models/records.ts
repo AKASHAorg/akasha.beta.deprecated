@@ -28,7 +28,7 @@ class Entries {
     }
 
     getFull(hash) {
-        this._entries.get(`${this.FULL_PREFIX}${hash}`);
+        return this._entries.get(`${this.FULL_PREFIX}${hash}`);
     }
 
     setShort(hash, data) {
@@ -36,7 +36,7 @@ class Entries {
     }
 
     getShort(hash) {
-        this._entries.get(`${this.SHORT_PREFIX}${hash}`);
+        return this._entries.get(`${this.SHORT_PREFIX}${hash}`);
     }
 
     get records() {

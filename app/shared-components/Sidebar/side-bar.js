@@ -1,6 +1,5 @@
 import React, { PropTypes, Component } from 'react';
 import { connect } from 'react-redux';
-import { AppActions, ProfileActions, EntryActions, DraftActions } from 'local-flux';
 import {
     ProfileIcon,
     AddEntryIcon,
@@ -8,30 +7,29 @@ import {
     StreamsIcon,
     PortalsIcon,
     CommunityIcon,
-    PeopleIcon,
-    LogoIcon } from '../svg';
+    PeopleIcon } from '../svg';
+import LogoButton from '../../routes/components/logo-button';
 
 class SideBar extends Component {
     componentWillMount () {
-        const { profileActions, loggedProfile } = this.props;
-        profileActions.getProfileBalance(loggedProfile.get('account'));
+        const { profileActions, account } = this.props;
+        profileActions.getProfileBalance(account);
     }
     _handleNewEntry = () => {
-        const { draftActions, entryState, loggedProfile, appActions } = this.props;
-        const entriesCount = entryState.get('entriesCount');
-        const draftsCount = entryState.get('draftsCount');
+        const { draftActions, appActions, loggedProfileData, entriesCount,
+            draftsCount } = this.props;
 
         if (entriesCount > 0 && draftsCount > 0) {
             appActions.showPanel({ name: 'newEntry', overlay: true });
-            draftActions.getDrafts(loggedProfile.get('username'));
+            draftActions.getDrafts(loggedProfileData.get('username'));
         } else {
             appActions.hidePanel();
-            this.context.router.push(`/${loggedProfile.get('username')}/draft/new`);
+            this.context.router.push(`/${loggedProfileData.get('username')}/draft/new`);
         }
     };
     _handleNavigation = (to) => {
-        const { appActions, loggedProfile } = this.props;
-        const basePath = loggedProfile.get('userName');
+        const { appActions, loggedProfileData } = this.props;
+        const basePath = loggedProfileData.get('username');
         appActions.hidePanel();
         if (!to) {
             // navigate to index route
@@ -43,20 +41,24 @@ class SideBar extends Component {
         this.props.appActions.showPanel(panelName);
     };
     render () {
-        const { style, loggedProfile } = this.props;
+        const { style, loggedProfileData } = this.props;
+        const userInitials =
+            `${loggedProfileData.get('firstName')[0]}${loggedProfileData.get('lastName')[0]}`;
         return (
           <div style={style} >
-            <div style={{ flexGrow: 1, padding: '16px' }} >
+            <div style={{ flexGrow: 1, padding: '14px' }} >
               <ProfileIcon
+                avatar={loggedProfileData.get('avatar')}
+                userInitials={userInitials}
                 onClick={() => this._handlePanelShow({ name: 'userProfile', overlay: true })}
               />
             </div>
-            <div>{`${loggedProfile.get('balance')} ETH`}</div>
-            <div style={{ flexGrow: 1, padding: '16px' }} >
+            <div>{`${loggedProfileData.get('balance')} ETH`}</div>
+            <div style={{ flexGrow: 1, padding: '14px' }} >
               <AddEntryIcon onClick={this._handleNewEntry} tooltip="Add new entry" />
               <SearchIcon onClick={this._handleSearch} tooltip="Search" />
             </div>
-            <div style={{ flexGrow: 4, padding: '16px' }} >
+            <div style={{ flexGrow: 4, padding: '14px' }} >
               <StreamsIcon
                 onClick={() => this._handleNavigation('explore/stream')}
                 tooltip="Stream"
@@ -65,10 +67,8 @@ class SideBar extends Component {
               <CommunityIcon disabled tooltip="Coming Soon" />
               <PeopleIcon onClick={this._handlePeople} tooltip="People" />
             </div>
-            <div style={{ flexGrow: 1, padding: '16px' }} >
-              <LogoIcon
-                style={{ position: 'absolute', bottom: '16px', width: '32px', height: '32px' }}
-              />
+            <div style={{ flexGrow: 1, padding: '14px 8px', display: 'flex', justifyContent: 'center' }} >
+              <LogoButton />
             </div>
           </div>
         );
@@ -76,13 +76,13 @@ class SideBar extends Component {
 }
 SideBar.propTypes = {
     style: PropTypes.shape(),
+    account: PropTypes.string,
     appActions: PropTypes.shape(),
-    profileState: PropTypes.shape(),
     profileActions: PropTypes.shape(),
-    entryActions: PropTypes.shape(),
     draftActions: PropTypes.shape(),
-    entryState: PropTypes.shape(),
-    loggedProfile: PropTypes.shape()
+    entriesCount: PropTypes.number,
+    draftsCount: PropTypes.number,
+    loggedProfileData: PropTypes.shape()
 };
 
 SideBar.contextTypes = {
@@ -106,19 +106,5 @@ SideBar.defaultProps = {
     viewBox: '0 0 32 32',
     color: '#000'
 };
-export default connect(
-    state => ({
-        panelState: state.panelState,
-        profileState: state.profileState,
-        entryState: state.entryState,
-        draftState: state.draftState,
-        loggedProfile: state.profileState.get('profiles').find(profile =>
-            profile.get('profile') === state.profileState.getIn(['loggedProfile', 'profile']))
-    }),
-    dispatch => ({
-        appActions: new AppActions(dispatch),
-        profileActions: new ProfileActions(dispatch),
-        entryActions: new EntryActions(dispatch),
-        draftActions: new DraftActions(dispatch)
-    })
-)(SideBar);
+
+export default SideBar;

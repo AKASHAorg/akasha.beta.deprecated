@@ -9,6 +9,10 @@ class BaseContract {
         return this.gethInstance.web3.toUtf8(ipfsHash[0]) +
             this.gethInstance.web3.toUtf8(ipfsHash[1]);
     }
+    splitIpfs(ipfsHash) {
+        const offset = Math.floor(ipfsHash.length / 2);
+        return [ipfsHash.slice(0, offset), ipfsHash.slice(offset)];
+    }
     getContract() {
         return this.contract;
     }
