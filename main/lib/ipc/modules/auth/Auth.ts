@@ -139,7 +139,6 @@ export default class Auth {
 
     public logout() {
         if (this._session) {
-            GethConnector.getInstance().web3.eth.defaultAccount = '';
             GethConnector.getInstance().web3.personal.lockAccountAsync(this._session.address);
         }
         this._flushSession();
