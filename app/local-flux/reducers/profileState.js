@@ -71,7 +71,7 @@ const profileState = createReducer(initialState, {
         }),
 
     [types.LOGOUT_SUCCESS]: state =>
-        state.setIn('loggedProfile', new LoggedProfile()),
+        state.set('loggedProfile', new LoggedProfile()),
 
     [types.LOGOUT_ERROR]: (state, { error }) =>
         state.merge({

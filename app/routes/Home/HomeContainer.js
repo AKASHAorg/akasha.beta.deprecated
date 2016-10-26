@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { ProfileActions } from 'local-flux';
+import { AppActions, DraftActions, ProfileActions } from 'local-flux';
 import { Sidebar } from 'shared-components';
 import '../../styles/core.scss';
 import styles from './home.scss';
@@ -12,6 +12,12 @@ class HomeContainer extends React.Component {
         const { profileActions } = this.props;
         profileActions.getLoggedProfile();
     }
+    componentWillReceiveProps (nextProps) {
+        if (!nextProps.loggedProfile.get('profile') && !nextProps.fetchingLoggedProfile) {
+            console.log('navigate to authenticate');
+            this.context.router.push('/authenticate/');
+        }
+    }
     componentWillUpdate (nextProps) {
         const { profileActions } = this.props;
         if (nextProps.loggedProfile && nextProps.loggedProfile.get('profile')) {
@@ -19,19 +25,34 @@ class HomeContainer extends React.Component {
         }
     }
     render () {
-        const { fetchingLoggedProfile } = this.props;
+        const { appActions, draftActions, fetchingLoggedProfile, loggedProfileData,
+            profileActions, entriesCount, draftsCount, loggedProfile } = this.props;
+        const profileAddress = loggedProfile.get('profile');
+        const account = loggedProfile.get('account');
         if (fetchingLoggedProfile) {
             return (
               <div>Loading profile data</div>
             );
         }
+        if (!loggedProfileData) {
+            console.log('logging out');
+            return <div>Logging out...</div>;
+        }
         return (
           <div className={styles.root} >
             <div className={styles.sideBar} >
-              <Sidebar />
+              <Sidebar
+                account={account}
+                appActions={appActions}
+                draftActions={draftActions}
+                loggedProfileData={loggedProfileData}
+                profileActions={profileActions}
+                entriesCount={entriesCount}
+                draftsCount={draftsCount}
+              />
             </div>
             <div className={styles.panelLoader} >
-              <PanelLoader />
+              <PanelLoader profile={loggedProfileData} profileAddress={profileAddress} />
             </div>
             <EntryModal />
             <div className={`col-xs-12 ${styles.childWrapper}`} >
@@ -43,21 +64,37 @@ class HomeContainer extends React.Component {
 }
 
 HomeContainer.propTypes = {
+    appActions: PropTypes.shape(),
     children: PropTypes.element,
-    profileActions: PropTypes.shape(),
+    draftActions: PropTypes.shape(),
+    draftsCount: PropTypes.number,
+    entriesCount: PropTypes.number,
+    fetchingLoggedProfile: PropTypes.bool,
     loggedProfile: PropTypes.shape(),
-    fetchingLoggedProfile: PropTypes.bool
+    loggedProfileData: PropTypes.shape(),
+    profileActions: PropTypes.shape()
+};
+
+HomeContainer.contextTypes = {
+    router: PropTypes.shape(),
+    muiTheme: PropTypes.shape()
 };
 
 function mapStateToProps (state) {
     return {
-        loggedProfile: state.profileState.get('loggedProfile'),
         fetchingLoggedProfile: state.profileState.get('fetchingLoggedProfile'),
+        loggedProfile: state.profileState.get('loggedProfile'),
+        loggedProfileData: state.profileState.get('profiles').find(profile =>
+            profile.get('profile') === state.profileState.getIn(['loggedProfile', 'profile'])),
+        entriesCount: state.entryState.get('entriesCount'),
+        draftsCount: state.draftState.get('draftsCount')
     };
 }
 
 function mapDispatchToProps (dispatch) {
     return {
+        appActions: new AppActions(dispatch),
+        draftActions: new DraftActions(dispatch),
         profileActions: new ProfileActions(dispatch)
     };
 }

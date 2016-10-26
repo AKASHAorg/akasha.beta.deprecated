@@ -50,7 +50,6 @@ class TagsIPC extends ModuleEmitter {
                 contracts.instance.tags
                     .add(data.tagName, data.gas)
                     .then((txData: any) => {
-                        console.log(txData);
                         return userModule.auth.signData(txData, data.token);
                     })
                     .then((tx: string) => {
@@ -323,8 +322,8 @@ class TagsIPC extends ModuleEmitter {
     private _getTagsFrom() {
         this.registerListener(
             channels.server[this.MODULE_NAME].getTagsFrom,
-            (event: any, data) => {
-                let response;
+            (event: any, data: TagsFromToRequest) => {
+                let response: TagsFromToResponse;
                 contracts.instance
                     .tags
                     .getTagsCount()

@@ -13,11 +13,11 @@ import {
 } from '../../svg';
 
 const UserProfileHeader = (props) => {
-    const { profile } = props;
-    const profileAddress = profile.get('address');
-    const avatarImage = `data:image/gif;base64,${
-        btoa(String.fromCharCode.apply(null, profile.getIn(['optionalData', 'avatar'])))
-    }`;
+    const { profile, profileAddress } = props;
+    // const avatarImage = `data:image/gif;base64,${
+    //     btoa(String.fromCharCode.apply(null, profile.getIn(['optionalData', 'avatar'])))
+    // }`;
+    const avatarImage = profile.get('avatar');
     const svgStyle = {
         style: {
             width: '20px',
@@ -37,6 +37,7 @@ const UserProfileHeader = (props) => {
               image={avatarImage}
               editable={false}
               offsetBorder="1px solid rgba(0, 0, 0, 0.41)"
+              userInitials={`${profile.get('firstName')[0]}${profile.get('lastName')[0]}`}
             />
           </div>
           <div className="col-xs-8" style={{ marginTop: '-20px' }} >
@@ -147,8 +148,8 @@ const UserProfileHeader = (props) => {
           <div
             className="col-xs-12"
             style={{
-                fontSize: '48px',
-                fontWeight: 500,
+                fontSize: '36px',
+                fontWeight: 400,
                 textTransform: 'capitalize'
             }}
           >
@@ -156,9 +157,9 @@ const UserProfileHeader = (props) => {
           </div>
           <div
             className="col-xs-12"
-            style={{ fontSize: '28px', fontWeight: 200 }}
+            style={{ fontSize: '20px' }}
           >
-            {`@${profile.get('userName')}`}
+            {`@${profile.get('username')}`}
           </div>
         </div>
       </div>
@@ -166,18 +167,19 @@ const UserProfileHeader = (props) => {
 };
 
 UserProfileHeader.propTypes = {
-    scrollPos: PropTypes.object,
-    rootStyle: PropTypes.object,
-    profileActions: PropTypes.object,
+    rootStyle: PropTypes.shape(),
+    profileActions: PropTypes.shape(),
+    profileAddress: PropTypes.string,
+    profile: PropTypes.shape()
 };
 UserProfileHeader.defaultProps = {
     rootStyle: {
         width: '100%',
         borderBottom: '2px solid #cccccc',
-        paddingTop: '32px',
+        paddingTop: '16px',
         paddingLeft: '32px',
         paddingRight: '32px',
-        paddingBottom: '104px',
+        paddingBottom: '64px',
         backgroundColor: 'rgba(0, 0, 0, 0.03)'
     }
 };
