@@ -10,7 +10,10 @@ const Channel = window.Channel;
 
 /**
  * Entry service
- * default open channels =>
+ * channels => ['publish', 'update', 'upvote', 'downvote', 'isOpenedToVotes', 'getVoteOf',
+ *  'getVoteEndDate', 'getScore', 'getEntriesCount', 'getEntryOf', 'getEntry', 'getEntriesCreated',
+ *  'getVotesEvent']
+ * default open channels => ['getVoteEndDate', 'getScore', 'getEntry']
  */
 class EntryService extends BaseService {
     constructor () {
@@ -29,15 +32,18 @@ class EntryService extends BaseService {
             serverChannel: Channel.server.entry.publish,
             clientChannel: Channel.client.entry.publish,
             listenerCb: this.createListener(onError, onSuccess)
-        });
-        Channel.server.entry.publish.send(entry);
+        }, () => Channel.server.entry.publish.send(entry));
     };
-    getResourceCount = ({ table, onError, onSuccess }) =>
-        entriesDB.transaction('rw', entriesDB[table], () =>
-            entriesDB[table].count()
-        )
-        .then(counter => onSuccess(counter))
-        .catch(reason => onError(reason));
+
+    getEntriesCount = ({ profileAddress, onError, onSuccess }) => {
+        this.openChannel({
+            serverManager: this.serverManager,
+            clientManager: this.clientManager,
+            serverChannel: Channel.server.entry.getEntriesCount,
+            clientChannel: Channel.client.entry.getEntriesCount,
+            listenerCb: this.createListener(onError, onSuccess)
+        }, () => Channel.server.entry.getEntriesCount.send(profileAddress));
+    }
 
     // get resource by id (drafts or entries);
     getById = ({ table, id, onSuccess, onError }) =>

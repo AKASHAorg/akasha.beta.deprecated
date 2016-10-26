@@ -32,44 +32,50 @@ export function updateDraftError (error) {
 }
 
 
-// export function getDraftsSuccess (drafts) {
-//     return {
-//         type: types.GET_DRAFTS_SUCCESS,
-//         drafts
-//     };
-// }
+export function getDraftsSuccess (drafts) {
+    return {
+        type: types.GET_DRAFTS_SUCCESS,
+        drafts
+    };
+}
 
-// export function getDraftsError (error) {
-//     return {
-//         type: types.GET_DRAFTS_ERROR,
-//         error
-//     };
-// }
+export function getDraftsError (error) {
+    return {
+        type: types.GET_DRAFTS_ERROR,
+        error
+    };
+}
 
-// export function getDraftsCountSuccess (count) {
-//     return {
-//         type: types.GET_DRAFTS_COUNT_SUCCESS,
-//         count
-//     };
-// }
+export function getDraftsCount () {
+    return {
+        type: types.GET_DRAFTS_COUNT
+    };
+}
 
-// export function getDraftsCountError (error) {
-//     return {
-//         type: types.GET_DRAFTS_COUNT_ERROR,
-//         error
-//     };
-// }
+export function getDraftsCountSuccess (count) {
+    return {
+        type: types.GET_DRAFTS_COUNT_SUCCESS,
+        count
+    };
+}
 
-// export function getDraftSuccess (draft) {
-//     return {
-//         type: types.GET_DRAFT_SUCCESS,
-//         draft
-//     };
-// }
+export function getDraftsCountError (error) {
+    return {
+        type: types.GET_DRAFTS_COUNT_ERROR,
+        error
+    };
+}
 
-// export function getDraftError (error) {
-//     return {
-//         type: types.GET_DRAFT_ERROR,
-//         error
-//     };
-// }
+export function getDraftSuccess (draft) {
+    return {
+        type: types.GET_DRAFT_SUCCESS,
+        draft
+    };
+}
+
+export function getDraftError (error) {
+    return {
+        type: types.GET_DRAFT_ERROR,
+        error
+    };
+}

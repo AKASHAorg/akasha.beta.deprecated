@@ -19,9 +19,9 @@ class SideBar extends Component {
         const { draftActions, appActions, loggedProfileData, entriesCount,
             draftsCount } = this.props;
 
-        if (entriesCount > 0 && draftsCount > 0) {
+        if (entriesCount > 0 || draftsCount > 0) {
             appActions.showPanel({ name: 'newEntry', overlay: true });
-            draftActions.getDrafts(loggedProfileData.get('username'));
+            // draftActions.getDrafts(loggedProfileData.get('username'));
         } else {
             appActions.hidePanel();
             this.context.router.push(`/${loggedProfileData.get('username')}/draft/new`);
