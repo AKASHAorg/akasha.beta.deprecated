@@ -97,7 +97,6 @@ class Auth {
     }
     logout() {
         if (this._session) {
-            geth_connector_1.GethConnector.getInstance().web3.eth.defaultAccount = '';
             geth_connector_1.GethConnector.getInstance().web3.personal.lockAccountAsync(this._session.address);
         }
         this._flushSession();
