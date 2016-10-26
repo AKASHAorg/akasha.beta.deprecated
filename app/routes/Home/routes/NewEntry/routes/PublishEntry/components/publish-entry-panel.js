@@ -26,7 +26,7 @@ class PublishPanel extends React.Component {
     componentWillMount () {
         const { drafts, params } = this.props;
         const currentDraft = drafts.find(draft => draft.id === params.draftId);
-        console.log(drafts, currentDraft, params.draftId);
+        console.log(drafts, currentDraft, params.draftId, 'will mount');
     }
     componentDidMount () {
         const panelSize = ReactDOM.findDOMNode(this).getBoundingClientRect();
@@ -116,10 +116,10 @@ class PublishPanel extends React.Component {
         });
     };
     _handleDraftUpdate = (ev, field) => {
-        const { draftActions } = this.props;
+        const { draftActions, params } = this.props;
         const fieldValue = this.state[field];
         draftActions.updateDraft({
-            id: parseInt(this.props.params.draftId, 10),
+            id: parseInt(params.draftId, 10),
             [field]: fieldValue
         });
     };
@@ -148,6 +148,10 @@ class PublishPanel extends React.Component {
             });
         });
     };
+    _handleCancelButton = () => {
+        const { params } = this.props;
+        this.context.router.push(`/${params.username}/draft/${params.draftId}`);
+    }
     render () {
         const { tags } = this.state;
         let selectedLicence;

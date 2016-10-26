@@ -33,10 +33,12 @@ class DraftService {
                          return convDrafts;
                      })
         );
-    getDraftsCount = username =>
+    getDraftsCount = ({ username, onSuccess, onError }) =>
         entriesDB.transaction('rw', entriesDB.drafts, () =>
             entriesDB.drafts.where('authorUsername').equals(username).count()
         )
+        .then(counter => onSuccess(counter))
+        .catch(error => onError(error));
     // get resource by id (drafts or entries);
     getById = (table, id) =>
         entriesDB.transaction('r', entriesDB[table], () =>

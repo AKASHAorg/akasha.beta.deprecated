@@ -12,10 +12,14 @@ class EntryActions {
         this.entryService = new EntryService();
         return entryActions;
     }
-    getEntriesCount = () =>
-        this.entryService.getResourceCount('entries').then(result =>
-            this.dispatch(entryActionCreators.getEntriesCountSuccess(result))
-        ).catch(reason => this.dispatch(entryActionCreators.getEntriesCountError(reason)));
+    getEntriesCount = (profileAddress) => {
+        this.dispatch(entryActionCreators.getEntriesCount());
+        this.entryService.getEntriesCount({
+            profileAddress,
+            onSuccess: result => this.dispatch(entryActionCreators.getEntriesCountSuccess(result)),
+            onError: reason => this.dispatch(entryActionCreators.getEntriesCountError(reason))
+        });
+    }
 
     getTags = (startingIndex = 0) => {
         this.dispatch(entryActionCreators.getTags());

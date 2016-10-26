@@ -12,9 +12,13 @@ import imagePlugin from './plugins/image/image-plugin';
 class EntryEditor extends Component {
     constructor (props) {
         super(props);
-
+        const { content } = this.props;
+        let editorState = editorStateFromRaw(null);
+        if (content) {
+            editorState = editorStateFromRaw(content);
+        }
         this.state = {
-            editorState: editorStateFromRaw(null)
+            editorState
         };
     }
     componentDidMount () {

@@ -1,9 +1,15 @@
 import * as types from '../../constants/EntryConstants';
 
-export function getEntriesCountSuccess (count) {
+export function getEntriesCount () {
+    return {
+        type: types.GET_ENTRIES_COUNT
+    };
+}
+
+export function getEntriesCountSuccess (data) {
     return {
         type: types.GET_ENTRIES_COUNT_SUCCESS,
-        count
+        data
     };
 }
 
