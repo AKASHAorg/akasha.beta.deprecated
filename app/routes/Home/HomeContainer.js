@@ -24,6 +24,9 @@ class HomeContainer extends React.Component {
             profileActions.getProfileData([{ profile: nextProps.loggedProfile.get('profile') }]);
         }
     }
+    componentWillUnmount () {
+        this.props.appActions.hidePanel();
+    }
     render () {
         const { appActions, draftActions, fetchingLoggedProfile, loggedProfileData,
             profileActions, entriesCount, draftsCount, loggedProfile, activePanel } = this.props;
