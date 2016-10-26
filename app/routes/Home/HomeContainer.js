@@ -13,7 +13,7 @@ class HomeContainer extends React.Component {
         profileActions.getLoggedProfile();
     }
     componentWillReceiveProps (nextProps) {
-        if (!nextProps.loggedProfile.get('profile') && !nextProps.fetchingLoggedProfile) {
+        if (!nextProps.loggedProfile.get('profile') && !nextProps.fetchingLoggedProfile && !nextProps.loginRequested) {
             console.log('navigate to authenticate');
             this.context.router.push('/authenticate/');
         }
@@ -83,6 +83,7 @@ HomeContainer.contextTypes = {
 function mapStateToProps (state) {
     return {
         fetchingLoggedProfile: state.profileState.get('fetchingLoggedProfile'),
+        loginRequested: state.profileState.get('loginRequested'),
         loggedProfile: state.profileState.get('loggedProfile'),
         loggedProfileData: state.profileState.get('profiles').find(profile =>
             profile.get('profile') === state.profileState.getIn(['loggedProfile', 'profile'])),
