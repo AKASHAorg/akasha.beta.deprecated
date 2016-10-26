@@ -26,9 +26,7 @@ class IconProfile extends Component {
                 'visible' :
                 null
         };
-        if (avatar) {
-            Object.assign(iconStyle, { position: 'relative', top: '3px' });
-        }
+
         return (
           <Badge
             badgeContent={3}
@@ -50,7 +48,7 @@ class IconProfile extends Component {
             >
               <Avatar
                 style={avatar ?
-                    Object.assign(iconStyle, { position: 'relative', top: '3px' }) :
+                    Object.assign({}, iconStyle, { position: 'relative', top: '3px' }) :
                     iconStyle
                 }
                 image={avatar}
