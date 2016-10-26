@@ -26,7 +26,7 @@ class HomeContainer extends React.Component {
     }
     render () {
         const { appActions, draftActions, fetchingLoggedProfile, loggedProfileData,
-            profileActions, entriesCount, draftsCount, loggedProfile } = this.props;
+            profileActions, entriesCount, draftsCount, loggedProfile, activePanel } = this.props;
         const profileAddress = loggedProfile.get('profile');
         const account = loggedProfile.get('account');
         if (fetchingLoggedProfile) {
@@ -35,13 +35,13 @@ class HomeContainer extends React.Component {
             );
         }
         if (!loggedProfileData) {
-            console.log('logging out');
             return <div>Logging out...</div>;
         }
         return (
           <div className={styles.root} >
             <div className={styles.sideBar} >
               <Sidebar
+                activePanel={activePanel}
                 account={account}
                 appActions={appActions}
                 draftActions={draftActions}
@@ -64,6 +64,7 @@ class HomeContainer extends React.Component {
 }
 
 HomeContainer.propTypes = {
+    activePanel: PropTypes.string,
     appActions: PropTypes.shape(),
     children: PropTypes.element,
     draftActions: PropTypes.shape(),
@@ -80,8 +81,9 @@ HomeContainer.contextTypes = {
     muiTheme: PropTypes.shape()
 };
 
-function mapStateToProps (state) {
+function mapStateToProps (state, ownProps) {
     return {
+        activePanel: state.panelState.get('activePanel').get('name'),
         fetchingLoggedProfile: state.profileState.get('fetchingLoggedProfile'),
         loginRequested: state.profileState.get('loginRequested'),
         loggedProfile: state.profileState.get('loggedProfile'),

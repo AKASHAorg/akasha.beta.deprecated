@@ -27,7 +27,6 @@ class Auth extends Component {
         tempProfileActions.getTempProfile();
         profileActions.clearLoggedProfile();
         if (gethStatus.get('api')) {
-            console.log('get profiles on will mount');
             profileActions.getLocalProfiles();
         }
     }
@@ -50,7 +49,6 @@ class Auth extends Component {
         if (loginErrors.size === 0) {
             if (this.state.selectedProfile &&
                 loggedProfile.get('account') === this.state.selectedProfile.get('ethAddress')) {
-                console.log('navigate to home');
                 this.context.router.push(`/${this.state.selectedProfile.get('username')}`);
             }
 
