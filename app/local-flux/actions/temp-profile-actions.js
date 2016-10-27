@@ -210,6 +210,9 @@ class TempProfileActions {
             onError: error => this.dispatch(profileActionCreators.loginError(error))
         });
     };
+    clearErrors = () => {
+        this.dispatch(tempProfileActionCreators.clearErrors());
+    }
 }
 
 export { TempProfileActions };

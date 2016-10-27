@@ -70,7 +70,7 @@ const transactionState = createReducer(initialState, {
         }),
 
     [types.GET_PENDING_TRANSACTION_ERROR]: (state, action) => {
-        state.merge({
+        return state.merge({
             errors: state.get('errors').push(new ErrorRecord(action.error))
         });
     },
