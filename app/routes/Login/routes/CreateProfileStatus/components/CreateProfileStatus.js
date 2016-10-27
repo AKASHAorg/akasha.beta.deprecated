@@ -154,7 +154,8 @@ class CreateProfileStatus extends Component {
             loggedProfile,
             minedTransactions,
             pendingTransactions,
-            errors,
+            tempProfileErrors,
+            profileErrors,
             loginRequested } = props;
 
         const {
@@ -190,7 +191,8 @@ class CreateProfileStatus extends Component {
             return this.finishProfilePublishing(minedTransactions, publishMinedIndex);
         }
 
-        if (errors.size === 0 && tempProfile.get('username')) {
+        if (tempProfileErrors.size === 0 && tempProfile.get('username') &&
+            profileErrors.size === 0) {
             tempProfileActions[nextAction](tempProfile);
         }
         return null;
@@ -201,10 +203,11 @@ class CreateProfileStatus extends Component {
         tempProfileActions.clearErrors();
     }
     _handleStepRetry = () => {
-        const { profileActions, tempProfile } = this.props;
+        const { profileActions, tempProfile, tempProfileActions } = this.props;
         const { nextAction } = tempProfile.currentStatus;
         this.isGethRestarted = false;
         profileActions.clearErrors();
+        tempProfileActions.clearErrors();
         if (nextAction === 'listenFaucetTx') {
             const currentStatus = tempProfile.get('currentStatus')
                 .merge({ listeningFaucetTx: false });

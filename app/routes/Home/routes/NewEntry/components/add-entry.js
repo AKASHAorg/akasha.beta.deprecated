@@ -18,8 +18,7 @@ class AddEntryPage extends Component {
             draftToEdit: {},
             isNewDraft: false,
             shouldBeSaved: true,
-            fetchingDraft: false,
-            draftMissing: false
+            fetchingDraft: false
         };
     }
     componentWillMount () {
@@ -38,8 +37,6 @@ class AddEntryPage extends Component {
     }
     componentWillReceiveProps (nextProps) {
         const { drafts, params } = nextProps;
-        const currentDraft = this._findCurrentDraft(drafts);
-
         // logic for populating existing draft;
         if (params.draftId !== 'new') {
             if (this.props.drafts.size !== drafts.size) {
@@ -47,32 +44,13 @@ class AddEntryPage extends Component {
                 this.setState({
                     fetchingDraft: false
                 });
-                // drafts are fetched but the currentDraft was not found somehow
-                if (typeof currentDraft === 'undefined') {
-                    this.setState({
-                        draftMissing: true
-                    });
-                }
             }
         }
     }
     _findCurrentDraft = (drafts) => {
         const { params } = this.props;
-        return drafts.find(draft => draft.id === params.draftId);
+        return drafts.find(draft => draft.id === parseInt(params.draftId, 10));
     }
-    // componentWillReceiveProps (nextProps) {
-    //     const { draftState, draftActions, params } = this.props;
-    //     if (is(draftState, nextProps.draftState)) {
-    //         return;
-    //     }
-    //     // this.context.router.push(`${params.username}/${params.draftId}`)
-    //     this.setState({
-    //         isNewDraft: false,
-    //         draftToEdit: draftState.get('drafts').find()
-    //     }, () => {
-    //         draftActions.createDraft();
-    //     });
-    // }
 
     _checkIfMustSave = () => {
         if (this.state.shouldBeSaved) {
@@ -90,6 +68,7 @@ class AddEntryPage extends Component {
         const title = this.editor.getTitle();
         const wordCount = getWordCount(contentState);
 
+        console.log(parseInt(params.draftId, 10), content, title, wordCount, loggedProfile, 'updating');
         if (params.draftId !== 'new') {
             const draftId = parseInt(params.draftId, 10);
             return draftActions.updateDraft({ id: draftId, content, title, wordCount });
@@ -102,7 +81,6 @@ class AddEntryPage extends Component {
         const { params } = this.props;
         this._saveDraft().then((draft) => {
             let draftId = null;
-            console.log(draft, 'le draft!');
             if (typeof draft === 'number') {
                 draftId = draft;
             } else if (typeof draft === 'object') {
@@ -112,7 +90,7 @@ class AddEntryPage extends Component {
         });
     }
     _getHeaderTitle = () => {
-        const { drafts, savingDraft } = this.props;
+        const { savingDraft } = this.props;
         const { fetchingDraft, draftMissing } = this.state;
         let headerTitle = 'First entry';
         if (fetchingDraft) {
@@ -127,9 +105,14 @@ class AddEntryPage extends Component {
         return headerTitle;
     }
     render () {
-        const { draftState } = this.props;
+        const { drafts } = this.props;
         const { shouldBeSaved, fetchingDraft, draftMissing } = this.state;
-
+        const currentDraft = this._findCurrentDraft(drafts);
+        let initialContent = null;
+        if (currentDraft) {
+            initialContent = currentDraft.get('content');
+        }
+        console.log(initialContent, currentDraft, 'initialContent');
         return (
           <div style={{ height: '100%', position: 'relative' }}>
             <Toolbar
@@ -194,7 +177,7 @@ class AddEntryPage extends Component {
                     onChange={this._handleEditorChange}
                     onTitleChange={this._handleTitleChange}
                     readOnly={false}
-                    content={{}}
+                    content={initialContent}
                     title={'draft.title'}
                     showTitleField
                     textHint="Write something"
@@ -204,7 +187,7 @@ class AddEntryPage extends Component {
             </div>
             {this.props.children &&
               <div className="row">
-                {React.cloneElement(this.props.children, { draft: 'draft' })}
+                {React.cloneElement(this.props.children, { draft: currentDraft })}
                 <div
                   style={{
                       position: 'absolute',
@@ -223,11 +206,11 @@ class AddEntryPage extends Component {
 }
 AddEntryPage.propTypes = {
     draftActions: React.PropTypes.shape().isRequired,
-    draftState: React.PropTypes.shape().isRequired,
     loggedProfile: React.PropTypes.shape(),
     params: React.PropTypes.shape(),
     children: React.PropTypes.node,
-    route: React.PropTypes.shape()
+    drafts: React.PropTypes.shape(),
+    savingDraft: React.PropTypes.bool
 };
 AddEntryPage.contextTypes = {
     router: React.PropTypes.shape()

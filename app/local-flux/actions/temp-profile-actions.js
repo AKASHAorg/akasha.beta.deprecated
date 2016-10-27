@@ -187,7 +187,8 @@ class TempProfileActions {
     deleteTempProfile = username =>
         this.registryService.deleteTempProfile({
             username,
-            onError: error => this.dispatch(tempProfileActionCreators.deleteTempProfileError(error)),
+            onError: error =>
+                this.dispatch(tempProfileActionCreators.deleteTempProfileError(error)),
             onSuccess: () => this.dispatch(tempProfileActionCreators.deleteTempProfileSuccess())
         });
 
@@ -206,10 +207,14 @@ class TempProfileActions {
             account,
             password,
             rememberTime,
+            registering: true,
             onSuccess: data => this.dispatch(profileActionCreators.loginSuccess(data)),
             onError: error => this.dispatch(profileActionCreators.loginError(error))
         });
     };
+    clearErrors = () => {
+        this.dispatch(tempProfileActionCreators.clearErrors());
+    }
 }
 
 export { TempProfileActions };
