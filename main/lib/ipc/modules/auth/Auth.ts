@@ -73,20 +73,22 @@ export default class Auth {
         return result;
     }
 
+
     /**
      *
      * @param acc
      * @param pass
      * @param timer
-     * @returns {Bluebird<U>}
+     * @param registering
+     * @returns {any}
      */
-    public login(acc: string, pass: any | Uint8Array, timer: number = 0) {
+    public login(acc: string, pass: any | Uint8Array, timer: number = 0, registering = false) {
 
         return contracts.instance
             .registry
             .getByAddress(acc)
             .then((address: string) => {
-                if (!unpad(address)) {
+                if (!unpad(address) && !registering) {
                     throw new Error(`eth key: ${acc} has no profile attached`);
                 }
                 return gethHelper.hasKey(acc);

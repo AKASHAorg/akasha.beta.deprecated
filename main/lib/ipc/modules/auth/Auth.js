@@ -43,12 +43,12 @@ class Auth {
         this._encrypt(result);
         return result;
     }
-    login(acc, pass, timer = 0) {
+    login(acc, pass, timer = 0, registering = false) {
         return index_1.constructed.instance
             .registry
             .getByAddress(acc)
             .then((address) => {
-            if (!ethereumjs_util_1.unpad(address)) {
+            if (!ethereumjs_util_1.unpad(address) && !registering) {
                 throw new Error(`eth key: ${acc} has no profile attached`);
             }
             return geth_connector_1.gethHelper.hasKey(acc);

@@ -26,7 +26,6 @@ class PublishPanel extends React.Component {
     componentWillMount () {
         const { drafts, params } = this.props;
         const currentDraft = drafts.find(draft => draft.id === params.draftId);
-        console.log(drafts, currentDraft, params.draftId, 'will mount');
     }
     componentDidMount () {
         const panelSize = ReactDOM.findDOMNode(this).getBoundingClientRect();

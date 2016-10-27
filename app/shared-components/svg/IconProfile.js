@@ -3,46 +3,10 @@ import { Badge } from 'material-ui';
 import { colors } from 'material-ui/styles';
 import Avatar from '../Avatar/avatar';
 
-export default class IconProfile extends Component {
+class IconProfile extends Component {
 
     state = {
         muiTheme: this.context.muiTheme
-    };
-
-    static propTypes = {
-        avatar: PropTypes.string,
-        style: PropTypes.object,
-        iconStyle: PropTypes.object,
-        viewBox: PropTypes.string,
-        hoverColor: PropTypes.string,
-        color: PropTypes.string,
-        userInitials: PropTypes.string,
-        onClick: PropTypes.func
-    };
-
-    static defaultProps = {
-        style: {
-            width: '38px',
-            height: '38px',
-            borderWidth: '1px',
-            borderStyle: 'solid',
-            borderRadius: '50%',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center'
-        },
-        iconStyle: { width: '32px', height: '32px', visibility: 'visible', display: 'flex', justifyContent: 'center', alignItems: 'center' },
-        viewBox: '0 0 32 32',
-        color: colors.lightBlack,
-        hoverColor: colors.darkBlack
-    };
-
-    static contextTypes = {
-        muiTheme: React.PropTypes.object
-    };
-
-    static childContextTypes = {
-        muiTheme: React.PropTypes.object
     };
 
     getChildContext () {
@@ -52,17 +16,20 @@ export default class IconProfile extends Component {
     }
 
     render () {
-        const { avatar, style, iconStyle, userInitials, viewBox, hoverColor, color,
+        const { avatar, style, iconStyle, userInitials, activePanel, viewBox, hoverColor, color,
             ...other } = this.props;
-        const {
-            baseTheme: {
-              palette
-            }
-        } = this.state.muiTheme;
+        const { palette } = this.state.muiTheme;
+        const avatarWrapperStyle = {
+            borderColor: palette.primary1Color,
+            cursor: 'pointer',
+            visibility: activePanel === 'userProfile' ?
+                'visible' :
+                null
+        };
 
         return (
           <Badge
-            badgeContent={'99+'}
+            badgeContent={3}
             badgeStyle={{
                 top: '-6px',
                 right: '-6px',
@@ -76,13 +43,16 @@ export default class IconProfile extends Component {
             onClick={this.props.onClick}
           >
             <div
-              style={Object.assign(style, { borderColor: palette.primary1Color })}
               className="user-icon"
+              style={Object.assign({}, style, avatarWrapperStyle)}
             >
               <Avatar
-                style={iconStyle}
+                style={avatar ?
+                    Object.assign({}, iconStyle, { position: 'relative', top: '3px' }) :
+                    iconStyle
+                }
                 image={avatar}
-                radius={34}
+                radius={32}
                 userInitials={userInitials}
                 userInitialsStyle={{
                     textTransform: 'uppercase',
@@ -96,3 +66,42 @@ export default class IconProfile extends Component {
         );
     }
 }
+
+IconProfile.propTypes = {
+    activePanel: PropTypes.string,
+    avatar: PropTypes.string,
+    style: PropTypes.object,
+    iconStyle: PropTypes.object,
+    viewBox: PropTypes.string,
+    hoverColor: PropTypes.string,
+    color: PropTypes.string,
+    userInitials: PropTypes.string,
+    onClick: PropTypes.func
+};
+
+IconProfile.defaultProps = {
+    style: {
+        width: '38px',
+        height: '38px',
+        borderWidth: '1px',
+        borderStyle: 'solid',
+        borderRadius: '50%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    iconStyle: { width: '32px', height: '32px', visibility: 'visible', display: 'flex', justifyContent: 'center', alignItems: 'center' },
+    viewBox: '0 0 32 32',
+    color: colors.lightBlack,
+    hoverColor: colors.darkBlack
+};
+
+IconProfile.contextTypes = {
+    muiTheme: React.PropTypes.object
+};
+
+IconProfile.childContextTypes = {
+    muiTheme: React.PropTypes.object
+};
+
+export default IconProfile;

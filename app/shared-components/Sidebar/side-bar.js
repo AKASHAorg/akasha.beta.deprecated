@@ -21,7 +21,6 @@ class SideBar extends Component {
 
         if (entriesCount > 0 || draftsCount > 0) {
             appActions.showPanel({ name: 'newEntry', overlay: true });
-            // draftActions.getDrafts(loggedProfileData.get('username'));
         } else {
             appActions.hidePanel();
             this.context.router.push(`/${loggedProfileData.get('username')}/draft/new`);
@@ -41,19 +40,26 @@ class SideBar extends Component {
         this.props.appActions.showPanel(panelName);
     };
     render () {
-        const { style, loggedProfileData } = this.props;
+        const { style, loggedProfileData, activePanel } = this.props;
         const userInitials =
             `${loggedProfileData.get('firstName')[0]}${loggedProfileData.get('lastName')[0]}`;
+        const balance = loggedProfileData.get('balance');
         return (
           <div style={style} >
-            <div style={{ flexGrow: 1, padding: '14px' }} >
+            <div style={{ flexGrow: 0, padding: '14px 14px 5px' }} >
               <ProfileIcon
+                activePanel={activePanel}
                 avatar={loggedProfileData.get('avatar')}
                 userInitials={userInitials}
                 onClick={() => this._handlePanelShow({ name: 'userProfile', overlay: true })}
               />
             </div>
-            <div>{`${loggedProfileData.get('balance')} ETH`}</div>
+            <div style={{ flexGrow: 0, fontSize: '14px', fontFamily: 'Roboto thin' }}>
+              <div style={{ textAlign: 'center' }}>
+                {balance && balance.slice(0, 6)}
+              </div>
+              <div style={{ textAlign: 'center' }}>ETH</div>
+            </div>
             <div style={{ flexGrow: 1, padding: '14px' }} >
               <AddEntryIcon onClick={this._handleNewEntry} tooltip="Add new entry" />
               <SearchIcon onClick={this._handleSearch} tooltip="Search" />
@@ -75,6 +81,7 @@ class SideBar extends Component {
     }
 }
 SideBar.propTypes = {
+    activePanel: PropTypes.string,
     style: PropTypes.shape(),
     account: PropTypes.string,
     appActions: PropTypes.shape(),
