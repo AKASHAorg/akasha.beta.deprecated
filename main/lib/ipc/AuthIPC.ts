@@ -34,7 +34,7 @@ class AuthIPC extends ModuleEmitter {
             (event: any, data: AuthLoginRequest) => {
                 userModule
                     .auth
-                    .login(data.account, data.password, data.rememberTime)
+                    .login(data.account, data.password, data.rememberTime, data.registering)
                     .then((response: any) => {
                         const response1: AuthLoginResponse = mainResponse(response);
                         return this.fireEvent(
