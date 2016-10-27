@@ -87,7 +87,6 @@ const create = (data: IpfsProfileCreateRequest) => {
  * @returns {any}
  */
 const getShortProfile = (hash: string, resolveAvatar = false) => {
-    console.log(hash);
     if (profiles.getShort(hash)) {
         return Promise.resolve(profiles.getShort(hash));
     }

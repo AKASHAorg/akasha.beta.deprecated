@@ -75,7 +75,6 @@ const create = (data) => {
     });
 };
 const getShortProfile = (hash, resolveAvatar = false) => {
-    console.log(hash);
     if (records_1.profiles.getShort(hash)) {
         return Promise.resolve(records_1.profiles.getShort(hash));
     }
