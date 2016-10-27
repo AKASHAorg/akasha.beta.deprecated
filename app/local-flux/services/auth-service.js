@@ -26,7 +26,7 @@ class AuthService extends BaseService {
      *      expiration: Date -> expiration time of the token
      * }
      */
-    login = ({ account, password, rememberTime, onSuccess, onError }) => {
+    login = ({ account, password, rememberTime, registering = false, onSuccess, onError }) => {
         const successCb = (data) => {
             profileDB.transaction('rw', profileDB.loggedProfile, () => {
                 profileDB.loggedProfile.add(data);
@@ -39,7 +39,7 @@ class AuthService extends BaseService {
             Channel.client.auth.login,
             this.createListener(onError, successCb)
         );
-        Channel.server.auth.login.send({ account, password, rememberTime });
+        Channel.server.auth.login.send({ account, password, rememberTime, registering });
     };
     /**
      *  Logout profile
