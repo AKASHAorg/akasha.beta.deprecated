@@ -44,10 +44,9 @@ const rightIconMenu = (
   </IconMenu>
 );
 
-
 class UserProfilePanel extends Component {
     render () {
-        const loggedProfile = this.props.profileState.get('loggedProfile');
+        const { profile, profileActions, profileAddress } = this.props;
         return (
           <Paper
             style={{
@@ -58,8 +57,9 @@ class UserProfilePanel extends Component {
             }}
           >
             <UserProfileHeader
-              profile={loggedProfile}
-              profileActions={this.props.profileActions}
+              profile={profile}
+              profileActions={profileActions}
+              profileAddress={profileAddress}
             />
             <div style={{ width: '100%', marginTop: '-48px' }} >
               <div>
@@ -135,8 +135,9 @@ class UserProfilePanel extends Component {
 }
 UserProfilePanel.propTypes = {
     width: PropTypes.string,
-    profileState: PropTypes.object,
-    profileActions: PropTypes.object,
+    profile: PropTypes.shape(),
+    profileActions: PropTypes.shape(),
+    profileAddress: PropTypes.string
 };
 
 export default UserProfilePanel;

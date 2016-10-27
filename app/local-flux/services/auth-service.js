@@ -52,9 +52,7 @@ class AuthService extends BaseService {
      */
     logout = ({ options = { profileKey: '', flush: true }, onError, onSuccess }) => {
         const successCb = () => {
-            this.deleteLoggedProfile(options.profileKey).then(() => {
-                onSuccess();
-            }).catch(error => onError(error));
+            this.deleteLoggedProfile({ profileKey: options.profileKey, onError, onSuccess });
         };
         this.registerListener(
             Channel.client.auth.logout,

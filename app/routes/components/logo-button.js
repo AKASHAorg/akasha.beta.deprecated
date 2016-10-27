@@ -8,8 +8,7 @@ const buttonStyle = {
     width: '48px',
     height: '48px',
     minWidth: 'initial',
-    borderRadius: '50%',
-    marginRight: '10px'
+    borderRadius: '50%'
 };
 
 class LogoButton extends Component {

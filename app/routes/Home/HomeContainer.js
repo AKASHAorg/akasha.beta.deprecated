@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { ProfileActions } from 'local-flux';
+import { AppActions, DraftActions, ProfileActions } from 'local-flux';
 import { Sidebar } from 'shared-components';
 import '../../styles/core.scss';
 import styles from './home.scss';
@@ -12,26 +12,50 @@ class HomeContainer extends React.Component {
         const { profileActions } = this.props;
         profileActions.getLoggedProfile();
     }
+    componentWillReceiveProps (nextProps) {
+        if (!nextProps.loggedProfile.get('profile') && !nextProps.fetchingLoggedProfile && !nextProps.loginRequested) {
+            console.log('navigate to authenticate');
+            this.context.router.push('/authenticate/');
+        }
+    }
     componentWillUpdate (nextProps) {
         const { profileActions } = this.props;
         if (nextProps.loggedProfile && nextProps.loggedProfile.get('profile')) {
             profileActions.getProfileData([{ profile: nextProps.loggedProfile.get('profile') }]);
         }
     }
+    componentWillUnmount () {
+        this.props.appActions.hidePanel();
+    }
     render () {
-        const { fetchingLoggedProfile } = this.props;
+        const { appActions, draftActions, fetchingLoggedProfile, loggedProfileData,
+            profileActions, entriesCount, draftsCount, loggedProfile, activePanel } = this.props;
+        const profileAddress = loggedProfile.get('profile');
+        const account = loggedProfile.get('account');
         if (fetchingLoggedProfile) {
             return (
               <div>Loading profile data</div>
             );
         }
+        if (!loggedProfileData) {
+            return <div>Logging out...</div>;
+        }
         return (
           <div className={styles.root} >
             <div className={styles.sideBar} >
-              <Sidebar />
+              <Sidebar
+                activePanel={activePanel}
+                account={account}
+                appActions={appActions}
+                draftActions={draftActions}
+                loggedProfileData={loggedProfileData}
+                profileActions={profileActions}
+                entriesCount={entriesCount}
+                draftsCount={draftsCount}
+              />
             </div>
             <div className={styles.panelLoader} >
-              <PanelLoader />
+              <PanelLoader profile={loggedProfileData} profileAddress={profileAddress} />
             </div>
             <EntryModal />
             <div className={`col-xs-12 ${styles.childWrapper}`} >
@@ -43,21 +67,40 @@ class HomeContainer extends React.Component {
 }
 
 HomeContainer.propTypes = {
+    activePanel: PropTypes.string,
+    appActions: PropTypes.shape(),
     children: PropTypes.element,
-    profileActions: PropTypes.shape(),
+    draftActions: PropTypes.shape(),
+    draftsCount: PropTypes.number,
+    entriesCount: PropTypes.number,
+    fetchingLoggedProfile: PropTypes.bool,
     loggedProfile: PropTypes.shape(),
-    fetchingLoggedProfile: PropTypes.bool
+    loggedProfileData: PropTypes.shape(),
+    profileActions: PropTypes.shape()
 };
 
-function mapStateToProps (state) {
+HomeContainer.contextTypes = {
+    router: PropTypes.shape(),
+    muiTheme: PropTypes.shape()
+};
+
+function mapStateToProps (state, ownProps) {
     return {
-        loggedProfile: state.profileState.get('loggedProfile'),
+        activePanel: state.panelState.get('activePanel').get('name'),
         fetchingLoggedProfile: state.profileState.get('fetchingLoggedProfile'),
+        loginRequested: state.profileState.get('loginRequested'),
+        loggedProfile: state.profileState.get('loggedProfile'),
+        loggedProfileData: state.profileState.get('profiles').find(profile =>
+            profile.get('profile') === state.profileState.getIn(['loggedProfile', 'profile'])),
+        entriesCount: state.entryState.get('entriesCount'),
+        draftsCount: state.draftState.get('draftsCount')
     };
 }
 
 function mapDispatchToProps (dispatch) {
     return {
+        appActions: new AppActions(dispatch),
+        draftActions: new DraftActions(dispatch),
         profileActions: new ProfileActions(dispatch)
     };
 }

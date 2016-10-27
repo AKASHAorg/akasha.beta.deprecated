@@ -76,8 +76,8 @@ class Avatar extends React.Component {
         const {
               radius,
               editable,
-              userName,
               image,
+              userInitials,
               userInitialsStyle,
               avatarEmptyStyle,
               avatarClearStyle,
@@ -88,11 +88,8 @@ class Avatar extends React.Component {
               backgroundColor,
               ...other } = this.props;
         const palette = this.context.muiTheme.palette;
-        let userInitials;
         let avatarImage;
-        if (this.props.userName) {
-            userInitials = userName.split(' ').map(part => part.charAt(0)).join('');
-        }
+
         if (this.state.avatarImage) {
             avatarImage = this.state.avatarImage;
         } else if (image) {
@@ -151,7 +148,7 @@ class Avatar extends React.Component {
             }
             {!avatarImage &&
               <div style={{ ...avatarEmptyStyle, width: radius, height: radius }}>
-                {this.props.userName &&
+                {this.props.userInitials &&
                   <div
                     style={{
                         height: '100%',
@@ -160,11 +157,11 @@ class Avatar extends React.Component {
                   >
                     <div style={userInitialsAlignStyle} />
                     <div style={userInitialsWrapperStyle}>
-                      <h2 style={userInitialsStyle}>{userInitials}</h2>
+                      <h3 style={userInitialsStyle}>{userInitials}</h3>
                     </div>
                   </div>
                 }
-                {!userName &&
+                {!userInitials &&
                   <SvgIcon
                     style={{
                         width: radius,
@@ -184,7 +181,7 @@ class Avatar extends React.Component {
 Avatar.propTypes = {
     image: React.PropTypes.string,
     editable: React.PropTypes.bool,
-    userName: React.PropTypes.string,
+    userInitials: React.PropTypes.string,
     radius: React.PropTypes.number,
     userInitialsStyle: React.PropTypes.shape(),
     backgroundColor: React.PropTypes.string,
@@ -228,6 +225,11 @@ Avatar.defaultProps = {
         verticalAlign: 'middle',
         textAlign: 'center',
         width: '100%'
+    },
+    userInitialsStyle: {
+        textTransform: 'uppercase',
+        fontSize: '36px',
+        fontWeight: '600'
     }
 };
 export default Avatar;
