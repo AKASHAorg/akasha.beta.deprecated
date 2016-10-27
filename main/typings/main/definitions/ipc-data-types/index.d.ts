@@ -158,6 +158,7 @@ interface IpfsStopRequest {
 interface AuthLoginRequest {
     account: string;
     password: Uint8Array;
+    registering: boolean;
     rememberTime: number; // number of minutes to remember the password
 }
 
