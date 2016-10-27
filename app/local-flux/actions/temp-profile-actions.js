@@ -47,10 +47,10 @@ class TempProfileActions {
     createEthAddress = (tempProfile) => {
         const currentStatus = tempProfile.get('currentStatus');
         const password = tempProfile.get('password');
-        console.log('createEthAddress', tempProfile);
         if (!tempProfile.get('address') && !currentStatus.get('ethAddressRequested')) {
             this.dispatch(tempProfileActionCreators.createEthAddress());
             this.dispatch((dispatch) => {
+                console.log('createEthAddress', tempProfile);
                 this.authService.createEthAddress({
                     password,
                     onSuccess: (data) => {
@@ -75,10 +75,10 @@ class TempProfileActions {
      */
     requestFundFromFaucet = (tempProfile) => {
         const address = tempProfile.get('address');
+        this.dispatch(tempProfileActionCreators.requestFundFromFaucet());
         if (address && !tempProfile.getIn(['currentStatus', 'faucetRequested'])) {
-            console.log('requestFund', tempProfile);
-            this.dispatch(tempProfileActionCreators.requestFundFromFaucet());
             this.dispatch((dispatch) => {
+                console.log('requestFund', tempProfile);
                 this.authService.requestEther({
                     address,
                     onSuccess: (data) => {
@@ -141,9 +141,9 @@ class TempProfileActions {
             ipfs.backgroundImage = backgroundImage[0];
         }
         if (isLoggedIn && !publishRequested) {
-            console.log('publishProfile', tempProfile);
             this.dispatch(tempProfileActionCreators.publishProfile());
             this.dispatch((dispatch) => {
+                console.log('publishProfile', tempProfile);
                 this.registryService.registerProfile({
                     token: loggedProfile.get('token'),
                     username,
