@@ -16,7 +16,6 @@ class HomeContainer extends React.Component {
     }
     componentWillReceiveProps (nextProps) {
         if (!nextProps.loggedProfile.get('profile') && !nextProps.fetchingLoggedProfile && !nextProps.loginRequested) {
-            console.log('navigate to authenticate');
             this.context.router.push('/authenticate/');
         }
     }
@@ -27,8 +26,12 @@ class HomeContainer extends React.Component {
             entryActions.getEntriesCount(nextProps.loggedProfile.get('profile'));
         }
     }
+    componentWillUnmount () {
+        this.props.appActions.hidePanel();
+    }
     _getLoadingMessage = () => {
         const { fetchingLoggedProfile, fetchingDraftsCount, fetchingPublishedEntries } = this.props;
+
         if (fetchingLoggedProfile) {
             return 'Loading profile data';
         }
@@ -42,8 +45,8 @@ class HomeContainer extends React.Component {
     }
     render () {
         const { appActions, draftActions, fetchingLoggedProfile, loggedProfileData,
-            profileActions, entriesCount, draftsCount, loggedProfile, fetchingDraftsCount,
-            fetchingPublishedEntries, params } = this.props;
+            profileActions, entriesCount, draftsCount, loggedProfile, activePanel,
+            fetchingDraftsCount, fetchingPublishedEntries, params } = this.props;
         const profileAddress = loggedProfile.get('profile');
         const account = loggedProfile.get('account');
 
@@ -53,13 +56,13 @@ class HomeContainer extends React.Component {
             );
         }
         if (!loggedProfileData) {
-            console.log('logging out');
             return <div>Logging out...</div>;
         }
         return (
           <div className={styles.root} >
             <div className={styles.sideBar} >
               <Sidebar
+                activePanel={activePanel}
                 account={account}
                 appActions={appActions}
                 draftActions={draftActions}
@@ -86,6 +89,7 @@ class HomeContainer extends React.Component {
 }
 
 HomeContainer.propTypes = {
+    activePanel: PropTypes.string,
     appActions: PropTypes.shape(),
     children: PropTypes.element,
     draftActions: PropTypes.shape(),
@@ -106,11 +110,17 @@ HomeContainer.contextTypes = {
     muiTheme: PropTypes.shape()
 };
 
-function mapStateToProps (state) {
+HomeContainer.contextTypes = {
+    router: PropTypes.shape(),
+    muiTheme: PropTypes.shape()
+};
+
+function mapStateToProps (state, ownProps) {
     return {
         fetchingLoggedProfile: state.profileState.get('fetchingLoggedProfile'),
         fetchingDraftsCount: state.draftState.get('fetchingDraftsCount'),
         fetchingPublishedEntries: state.draftState.get('fetchingPublishedEntries'),
+        activePanel: state.panelState.get('activePanel').get('name'),
         loginRequested: state.profileState.get('loginRequested'),
         loggedProfile: state.profileState.get('loggedProfile'),
         loggedProfileData: state.profileState.get('profiles').find(profile =>

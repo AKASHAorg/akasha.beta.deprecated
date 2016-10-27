@@ -26,7 +26,7 @@ class AuthIPC extends ModuleEmitter_1.default {
         this.registerListener(channels_1.default.server[this.MODULE_NAME].login, (event, data) => {
             index_1.module
                 .auth
-                .login(data.account, data.password, data.rememberTime)
+                .login(data.account, data.password, data.rememberTime, data.registering)
                 .then((response) => {
                 const response1 = responses_1.mainResponse(response);
                 return this.fireEvent(channels_1.default.client[this.MODULE_NAME].login, response1, event);
