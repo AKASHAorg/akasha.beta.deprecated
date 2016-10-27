@@ -133,3 +133,9 @@ export function publishProfileError (error) {
         error
     };
 }
+
+export function clearErrors () {
+    return {
+        type: types.CLEAR_TEMP_PROFILE_ERRORS
+    };
+}
