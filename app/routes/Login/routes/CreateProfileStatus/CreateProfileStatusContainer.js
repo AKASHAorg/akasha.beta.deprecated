@@ -6,7 +6,7 @@ function mapStateToProps (state, ownProps) {
     return {
         tempProfile: state.tempProfileState.get('tempProfile'),
         loggedProfile: state.profileState.get('loggedProfile'),
-        loginRequested: state.profileState.get('loginRequested'),
+        loginRequested: state.tempProfileState.get('loginRequested'),
         profileErrors: state.profileState.get('errors'),
         tempProfileErrors: state.tempProfileState.get('errors'),
         minedTransactions: state.transactionState.get('mined'),

@@ -47,7 +47,7 @@ class TempProfileActions {
     createEthAddress = (tempProfile) => {
         const currentStatus = tempProfile.get('currentStatus');
         const password = tempProfile.get('password');
-
+        console.log('createEthAddress', tempProfile);
         if (!tempProfile.get('address') && !currentStatus.get('ethAddressRequested')) {
             this.dispatch(tempProfileActionCreators.createEthAddress());
             this.dispatch((dispatch) => {
@@ -76,6 +76,7 @@ class TempProfileActions {
     requestFundFromFaucet = (tempProfile) => {
         const address = tempProfile.get('address');
         if (address && !tempProfile.getIn(['currentStatus', 'faucetRequested'])) {
+            console.log('requestFund', tempProfile);
             this.dispatch(tempProfileActionCreators.requestFundFromFaucet());
             this.dispatch((dispatch) => {
                 this.authService.requestEther({
@@ -140,6 +141,7 @@ class TempProfileActions {
             ipfs.backgroundImage = backgroundImage[0];
         }
         if (isLoggedIn && !publishRequested) {
+            console.log('publishProfile', tempProfile);
             this.dispatch(tempProfileActionCreators.publishProfile());
             this.dispatch((dispatch) => {
                 this.registryService.registerProfile({
@@ -162,7 +164,7 @@ class TempProfileActions {
                 });
             });
         } else if (!loginRequested) {
-            this.login({
+            this.tempLogin({
                 account: tempProfile.get('address'),
                 password: tempProfile.get('password'),
                 rememberTime: 1
@@ -171,14 +173,18 @@ class TempProfileActions {
     }
 
     updateTempProfile = (changes, currentStatus, cb) => {
+        console.log('updateTemp', currentStatus);
         this.registryService.updateTempProfile({
             changes,
             currentStatus,
             onSuccess: (tempProfile) => {
                 tempProfileActionCreators.updateTempProfileSuccess(tempProfile);
-                cb();
+                if (typeof cb === 'function') {
+                    cb();
+                }
             },
             onError: (error) => {
+                console.error(error, 'update error');
                 this.dispatch(tempProfileActionCreators.updateTempProfileError(error));
             }
         });
@@ -195,19 +201,21 @@ class TempProfileActions {
     getTempProfile = () =>
         this.registryService.getTempProfile({
             onError: (error) => {
+                console.error(error, 'getTempProfile')
                 this.dispatch(tempProfileActionCreators.getTempProfileError(error));
             },
             onSuccess: data => this.dispatch(tempProfileActionCreators.getTempProfileSuccess(data))
         });
 
-    login = ({ account, password, rememberTime }) => {
+    tempLogin = ({ account, password, rememberTime, registering = true }) => {
         password = new TextEncoder('utf-8').encode(password);
-        this.dispatch(profileActionCreators.login());
+        console.log('tempLogin', account);
+        this.dispatch(tempProfileActionCreators.login());
         this.authService.login({
             account,
             password,
             rememberTime,
-            registering: true,
+            registering,
             onSuccess: data => this.dispatch(profileActionCreators.loginSuccess(data)),
             onError: error => this.dispatch(profileActionCreators.loginError(error))
         });
