@@ -94,10 +94,10 @@ class PanelContainer extends React.Component {
                       boxShadow: `0px -1px 3px -1px ${muiTheme.palette.paperShadowColor}`
                   }}
                 >
-                  <div className="col-xs-6 start-xs">
+                  <div className="col-xs-5 start-xs">
                       {this.props.leftActions}
                   </div>
-                  <div className="col-xs-6 end-xs">
+                  <div className="col-xs-7 end-xs">
                       {this.props.actions}
                   </div>
                 </div>

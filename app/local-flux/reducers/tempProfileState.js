@@ -164,9 +164,14 @@ const tempProfileState = createReducer(initialState, {
         }),
 
     [types.PUBLISH_PROFILE_SUCCESS]: (state, { profileData }) =>
-        state.mergeIn(['tempProfile', 'currentStatus'], {
-            publishTx: profileData.tx,
-            nextAction: 'listenPublishTx'
+        state.merge({
+            tempProfile: state.get('tempProfile').merge({
+                currentStatus: state.getIn(['tempProfile', 'currentStatus']).merge({
+                    publishTx: profileData.tx,
+                    nextAction: 'listenPublishTx'
+                })
+            }),
+            loginRequested: false
         }),
 
     [types.PUBLISH_PROFILE_ERROR]: (state, { error }) =>
@@ -175,9 +180,6 @@ const tempProfileState = createReducer(initialState, {
         }),
     [types.TEMP_LOGIN]: state =>
         state.set('loginRequested', true),
-
-    [types.TEMP_LOGIN_SUCCESS]: state =>
-        state.set('loginRequested, false'),
 
     [types.CLEAR_TEMP_PROFILE_ERRORS]: state =>
         state.merge({
