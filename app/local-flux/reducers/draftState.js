@@ -35,6 +35,7 @@ const initialState = fromJS({
     errors: new List(),
     savingDraft: false,
     draftsCount: 0,
+    fetchingDraftsCount: false
 });
 /**
  * State of the entries and drafts
@@ -63,6 +64,11 @@ const draftState = createReducer(initialState, {
         });
     },
 
+    [types.GET_DRAFT_SUCCESS]: (state, { draft }) =>
+        state.merge({
+            drafts: state.get('drafts').push(new Draft(draft))
+        }),
+
     [types.UPDATE_DRAFT_SUCCESS]: (state, action) => {
         const draftIndex = state.get('drafts').findIndex(draft =>
             draft.id === action.draft.id
@@ -75,8 +81,14 @@ const draftState = createReducer(initialState, {
         });
     },
 
+    [types.GET_DRAFTS_COUNT]: state =>
+        state.set('fetchingDraftsCount', true),
+
     [types.GET_DRAFTS_COUNT_SUCCESS]: (state, action) =>
-        state.set('draftsCount', action.count),
+        state.merge({
+            draftsCount: action.count,
+            fetchingDraftsCount: false
+        }),
 });
 
 export default draftState;

@@ -3,6 +3,11 @@ import { fromJS, List, Record } from 'immutable';
 import { createReducer } from './create-reducer';
 import * as types from '../constants/EntryConstants';
 
+const ErrorRecord = Record({
+    code: '',
+    message: null,
+    fatal: false
+});
 const Entry = Record({
     content: {},
     title: null,
@@ -35,19 +40,21 @@ const SavedEntry = Record({
     wordCount: Number
 });
 const initialState = fromJS({
-    drafts: new List(),
     published: new List(),
     savedEntries: new List(),
-    savingDraft: false,
-    draftsCount: 0,
-    entriesCount: 0
+    errors: new List(),
+    fetchingEntriesCount: false,
+    entriesCount: 0 // entries published by a logged profile
 });
 /**
  * State of the entries and drafts
  */
 const entryState = createReducer(initialState, {
-    [types.GET_ENTRIES_COUNT_SUCCESS]: (state, action) =>
-        state.set('entriesCount', action.count),
+    [types.GET_ENTRIES_COUNT]: state =>
+        state.set('fetchingEntriesCount', true),
+
+    [types.GET_ENTRIES_COUNT_SUCCESS]: (state, { data }) =>
+        state.set('entriesCount', parseInt(data.count, 10)),
 
     [types.PUBLISH_ENTRY_SUCCESS]: (state, action) => {
         const draftIndex = state.get('drafts').findIndex(drft =>
@@ -64,6 +71,15 @@ const entryState = createReducer(initialState, {
             published: entriesList
         });
     },
+
+    [types.GET_ENTRIES_COUNT]: state =>
+        state.set('fetchingEntriesCount', true),
+
+    [types.GET_ENTRIES_COUNT_SUCCESS]: (state, { count }) =>
+        state.merge({
+            entriesCount: count,
+            fetchingEntriesCount: false
+        }),
 
     [types.CREATE_SAVED_ENTRY_SUCCESS]: (state, action) =>
         state.merge({

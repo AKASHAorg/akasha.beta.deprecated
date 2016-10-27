@@ -47,11 +47,14 @@ class DraftActions {
             this.dispatch(draftActionCreators.getDraftsSuccess(result))
         ).catch(reason => this.dispatch(draftActionCreators.getDraftsError(reason)));
 
-    getDraftsCount = username =>
-        this.draftService.getDraftsCount(username).then(result =>
-            this.dispatch(draftActionCreators.getDraftsCountSuccess(result))
-        ).catch(reason => this.dispatch(draftActionCreators.getDraftsCountError(reason)));
-
+    getDraftsCount = (username) => {
+        this.dispatch(draftActionCreators.getDraftsCount());
+        this.draftService.getDraftsCount({
+            username,
+            onSuccess: result => this.dispatch(draftActionCreators.getDraftsCountSuccess(result)),
+            onError: reason => this.dispatch(draftActionCreators.getDraftsCountError(reason))
+        });
+    }
     getDraftById = id =>
         this.draftService.getById('drafts', id).then((result) => {
             this.dispatch(draftActionCreators.getDraftSuccess(result));
