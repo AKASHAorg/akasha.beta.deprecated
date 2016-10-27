@@ -1,5 +1,11 @@
 import * as types from '../../constants/TempProfileConstants';
 
+export function login () {
+    return {
+        type: types.TEMP_LOGIN
+    };
+}
+
 export function createTempProfile () {
     return {
         type: types.CREATE_TEMP_PROFILE
@@ -29,6 +35,7 @@ export function updateTempProfileSuccess (profileData, tempProfile) {
 
 export function updateTempProfileError (error) {
     error.code = 'UTPE01';
+    console.error(error, 'update temp profile error');
     return {
         type: types.UPDATE_TEMP_PROFILE_ERROR,
         error

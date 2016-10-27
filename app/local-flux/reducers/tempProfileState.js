@@ -37,6 +37,7 @@ const TempProfile = Record({
 const initialState = fromJS({
     tempProfile: new TempProfile(),
     errors: new List(),
+    loginRequested: false,
 });
 
 const tempProfileState = createReducer(initialState, {
@@ -172,6 +173,11 @@ const tempProfileState = createReducer(initialState, {
         state.merge({
             errors: state.get('errors').push(new ErrorRecord(error))
         }),
+    [types.TEMP_LOGIN]: state =>
+        state.set('loginRequested', true),
+
+    [types.TEMP_LOGIN_SUCCESS]: state =>
+        state.set('loginRequested, false'),
 
     [types.CLEAR_TEMP_PROFILE_ERRORS]: state =>
         state.merge({

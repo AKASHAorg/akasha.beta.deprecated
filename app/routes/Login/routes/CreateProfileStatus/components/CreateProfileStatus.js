@@ -211,11 +211,11 @@ class CreateProfileStatus extends Component {
         if (nextAction === 'listenFaucetTx') {
             const currentStatus = tempProfile.get('currentStatus')
                 .merge({ listeningFaucetTx: false });
-            profileActions.updateTempProfile({}, currentStatus.toJS());
+            tempProfileActions.updateTempProfile({}, currentStatus.toJS());
         } else if (nextAction === 'listenPublishTx') {
             const currentStatus = tempProfile.get('currentStatus')
                 .merge({ listeningPublishTx: false });
-            profileActions.updateTempProfile({}, currentStatus.toJS());
+            tempProfileActions.updateTempProfile({}, currentStatus.toJS());
         }
         this.resumeProfileCreation(this.props);
     }

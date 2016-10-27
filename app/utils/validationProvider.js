@@ -1,11 +1,16 @@
 import React from 'react';
 import validator from 'react-validation-mixin';
+import Validatr from 'validatorjs';
 import strategy from 'react-validatorjs-strategy';
 import { validationMessages } from 'locale-data/messages'
 import r from 'ramda';
 
 export default function (Component) {
     const validationClass = validator(strategy)(Component);
+    // Validatr.register('userNameRule', (value, requirement, attribute) => {
+    //     console.log(value, value.match(/[a-z0-9.]/g));
+    //     return value.match(/[a-z0-9.]/g);
+    // }, 'The :attribute field must be lowercase, alphanumeric with dots only.');
     return class ValidationProvider extends validationClass {
         constructor (props) {
             super(props);
