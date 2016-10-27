@@ -151,7 +151,7 @@ const resolveProfile = (hash, resolveImages = false) => {
         return Promise.resolve('');
     }).then((links) => {
         if (links) {
-            resolved.links = Buffer.from(links).toString('utf8');
+            resolved.links = links;
         }
         records_1.profiles.setFull(hash, resolved);
         return resolved;
