@@ -16,8 +16,10 @@ class CreateProfileStatus extends Component {
         };
     }
     componentWillMount () {
-        const { tempProfileActions, transactionActions } = this.props;
-        tempProfileActions.getTempProfile();
+        const { tempProfileActions, transactionActions, tempProfile } = this.props;
+        if (tempProfile.get('username') === '') {
+            tempProfileActions.getTempProfile();
+        }
         transactionActions.getMinedTransactions();
         transactionActions.getPendingTransactions();
     }
@@ -37,14 +39,8 @@ class CreateProfileStatus extends Component {
                 || (nextProps.ipfsStatus.get('spawned') && !this.props.ipfsStatus.get('spawned'))) {
             this.isServiceRestarted = true;
         }
-
-        const shouldResume =
-            !is(nextProps.tempProfile.get('currentStatus'), this.props.tempProfile.get('currentStatus')) ||
-            !is(nextProps.minedTransactions, this.props.minedTransactions) ||
-            !is(nextProps.pendingTransactions, this.props.pendingTransactions) ||
-            !is(nextProps.loggedProfile, this.props.loggedProfile) ||
-            this.props.loginRequested !== nextProps.loginRequested;
-        if (shouldResume) {
+        // make sure tempProfile loaded from DB;
+        if (nextProps.tempProfile && nextProps.tempProfile.get('username') !== '') {
             return this.resumeProfileCreation(nextProps);
         }
         return null;
