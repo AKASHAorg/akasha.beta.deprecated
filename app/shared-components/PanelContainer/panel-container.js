@@ -95,10 +95,10 @@ class PanelContainer extends React.Component {
                       zIndex: 1
                   }}
                 >
-                  <div className="col-xs-6 start-xs">
+                  <div className="col-xs-5 start-xs">
                       {this.props.leftActions}
                   </div>
-                  <div className="col-xs-6 end-xs">
+                  <div className="col-xs-7 end-xs">
                       {this.props.actions}
                   </div>
                 </div>
