@@ -47,7 +47,10 @@ const profileState = createReducer(initialState, {
         }),
 
     [types.LOGIN_SUCCESS]: (state, { profile }) =>
-        state.merge({ loggedProfile: new LoggedProfile(profile) }),
+        state.merge({
+            loggedProfile: new LoggedProfile(profile),
+            loginRequested: false
+        }),
 
     [types.GET_CURRENT_PROFILE_SUCCESS]: (state, { data }) =>
         state.merge({ loggedProfile: state.get('loggedProfile').merge({ profile: data.address }) }),
@@ -62,7 +65,7 @@ const profileState = createReducer(initialState, {
 
     [types.GET_LOGGED_PROFILE_SUCCESS]: (state, { profile }) =>
         state.merge({
-            loggedProfile: new LoggedProfile(profile)
+            loggedProfile: state.get('loggedProfile').merge(profile)
         }),
 
     [types.LOGIN_ERROR]: (state, { error }) =>
@@ -71,7 +74,7 @@ const profileState = createReducer(initialState, {
         }),
 
     [types.LOGOUT_SUCCESS]: state =>
-        state.setIn('loggedProfile', new LoggedProfile()),
+        state.set('loggedProfile', new LoggedProfile()),
 
     [types.LOGOUT_ERROR]: (state, { error }) =>
         state.merge({
