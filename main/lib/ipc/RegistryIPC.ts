@@ -71,8 +71,7 @@ class RegistryIPC extends ModuleEmitter {
                     .registry
                     .getMyProfile()
                     .then((address: string) => {
-                        const addr = unpad(address);
-                        response = (addr) ? mainResponse({ address }) : mainResponse({ address: addr });
+                        response = mainResponse({ address });
                     })
                     .catch((error: Error) => {
                         response = mainResponse({ error: { message: error.message } });

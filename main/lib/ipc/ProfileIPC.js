@@ -24,6 +24,7 @@ class ProfileIPC extends ModuleEmitter_1.default {
             ._getFollowersCount()
             ._getFollowing()
             ._getFollowingCount()
+            ._updateProfileData()
             ._manager();
     }
     _getProfileData() {
@@ -60,6 +61,46 @@ class ProfileIPC extends ModuleEmitter_1.default {
             })
                 .finally(() => {
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].getProfileData, response, event);
+            });
+        });
+        return this;
+    }
+    _updateProfileData() {
+        this.registerListener(channels_1.default.server[this.MODULE_NAME].updateProfileData, (event, data) => {
+            let response;
+            index_2.module
+                .helpers
+                .create(data.ipfs)
+                .then((ipfsHash) => {
+                return index_3.constructed.instance
+                    .registry
+                    .getMyProfile()
+                    .then((address) => {
+                    if (!address) {
+                        throw new Error('No profile found to update');
+                    }
+                    return index_3.constructed
+                        .instance
+                        .profile
+                        .updateHash(ipfsHash, address, data.gas);
+                });
+            })
+                .then((txData) => {
+                return index_1.module.auth.signData(txData, data.token);
+            })
+                .then((tx) => {
+                response = responses_1.mainResponse({ tx });
+            })
+                .catch((err) => {
+                response = responses_1.mainResponse({
+                    error: {
+                        message: err.message,
+                        from: data.ipfs
+                    }
+                });
+            })
+                .finally(() => {
+                this.fireEvent(channels_1.default.client[this.MODULE_NAME].updateProfileData, response, event);
             });
         });
         return this;

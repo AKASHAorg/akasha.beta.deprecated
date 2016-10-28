@@ -33,7 +33,10 @@ class Registry extends BaseContract_1.default {
     }
     getMyProfile() {
         return this.contract
-            .getMyProfileAsync();
+            .getMyProfileAsync()
+            .then((address) => {
+            return ethereumjs_util_1.unpad(address);
+        });
     }
     getLocalProfiles() {
         let keyList;

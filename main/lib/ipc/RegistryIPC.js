@@ -53,8 +53,7 @@ class RegistryIPC extends ModuleEmitter_1.default {
                 .registry
                 .getMyProfile()
                 .then((address) => {
-                const addr = ethereumjs_util_1.unpad(address);
-                response = (addr) ? responses_1.mainResponse({ address }) : responses_1.mainResponse({ address: addr });
+                response = responses_1.mainResponse({ address });
             })
                 .catch((error) => {
                 response = responses_1.mainResponse({ error: { message: error.message } });

@@ -277,6 +277,16 @@ interface ProfileCreateResponse extends MainResponse {
     };
 }
 
+interface ProfileUpdateRequest extends AuthRequest {
+    ipfs: IpfsProfileCreateRequest;
+    gas?: number;
+}
+interface ProfileUpdateResponse extends MainResponse {
+    data: {
+        tx: string;
+    };
+}
+
 interface GenericErrorEventRequest {
     fromBlock?: string,
     toBlock?: string,

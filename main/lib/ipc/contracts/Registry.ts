@@ -55,7 +55,10 @@ export default class Registry extends BaseContract {
      */
     public getMyProfile() {
         return this.contract
-            .getMyProfileAsync();
+            .getMyProfileAsync()
+            .then((address: string) => {
+                return unpad(address);
+            });
     }
 
     /**

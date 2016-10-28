@@ -33,8 +33,9 @@ class Profile extends BaseContract_1.default {
         });
     }
     updateHash(hash, address, gas) {
-        const extracted = this.contract.at(address).setHash.request(hash, { gas });
-        return extracted.params[0];
+        const hashTr = this.splitIpfs(hash);
+        const extracted = this.contract.at(address).setHash.request(hashTr, { gas });
+        return Promise.resolve(extracted.params[0]);
     }
     setTippingAddress(address, tippingAddress, gas) {
         const extracted = this.contract
