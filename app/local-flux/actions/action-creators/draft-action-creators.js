@@ -11,6 +11,8 @@ export function createDraftSuccess (draft) {
 }
 
 export function createDraftError (error) {
+    error.code = 'CDE';
+    console.error('createDraftError', error);
     return {
         type: types.CREATE_DRAFT_ERROR,
         error
@@ -25,6 +27,8 @@ export function updateDraftSuccess (draft) {
 }
 
 export function updateDraftError (error) {
+    error.code = 'UDE';
+    console.error(error, 'updateDraftError');
     return {
         type: types.UPDATE_DRAFT_ERROR,
         error
@@ -40,6 +44,8 @@ export function getDraftsSuccess (drafts) {
 }
 
 export function getDraftsError (error) {
+    error.code = 'GDE';
+    console.error('getDraftsError', error);
     return {
         type: types.GET_DRAFTS_ERROR,
         error
@@ -76,6 +82,36 @@ export function getDraftSuccess (draft) {
 export function getDraftError (error) {
     return {
         type: types.GET_DRAFT_ERROR,
+        error
+    };
+}
+
+export function getDraftByIdSuccess (draft) {
+    return {
+        type: types.GET_DRAFT_BY_ID_SUCCESS,
+        draft
+    };
+}
+
+export function getDraftByIdError (error) {
+    error.code = 'GDBIE';
+    console.error('getDraftByIdError', error);
+    return {
+        type: types.GET_DRAFT_BY_ID_ERROR,
+        error
+    };
+}
+
+export function getPublishingDraftsSuccess (drafts) {
+    return {
+        type: types.GET_PUBLISHING_DRAFTS_SUCCESS,
+        drafts
+    };
+}
+
+export function getPublishingDraftsError (error) {
+    return {
+        type: types.GET_PUBLISHING_DRAFTS_ERROR,
         error
     };
 }

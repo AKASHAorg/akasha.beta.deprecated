@@ -6,7 +6,6 @@ import ImageUploader from 'shared-components/ImageUploader/image-uploader';
 import LicenceDialog from 'shared-components/Dialogs/licence-dialog';
 import TagsField from 'shared-components/TagsField/tags-field';
 import licences from 'shared-components/Dialogs/licences';
-import { convertFromRaw } from 'draft-js';
 import { TagService } from 'local-flux/services';
 
 class PublishPanel extends React.Component {
@@ -15,38 +14,51 @@ class PublishPanel extends React.Component {
         this.state = {
             isLicencingOpen: false,
             title: '',
-            content: {},
+            content: null,
             excerpt: '',
             tags: [],
             existingTags: [],
-            licence: '',
+            licence: null,
             featuredImage: []
         };
     }
     componentWillMount () {
-        const { drafts, params } = this.props;
-        const currentDraft = drafts.find(draft => draft.id === params.draftId);
+        const currentDraft = this._findCurrentDraft(this.props.drafts);
+        if (!currentDraft) {
+            this.setState({
+                fetchingDraft: true
+            });
+        }
     }
     componentDidMount () {
         const panelSize = ReactDOM.findDOMNode(this).getBoundingClientRect();
         this.panelSize = panelSize;
     }
-    // _setWorkingDraft = (draft) => {
-    //     const { content } = draft;
-    //     let { excerpt } = draft;
-    //     if (!excerpt) {
-    //         excerpt = convertFromRaw(content).getPlainText()
-    //             .slice(0, 120)
-    //             .replace(/\r?\n|\r/g, '');
-    //     }
-    //     draft = draft.set('excerpt', excerpt);
-    //     if (draft.tags && draft.tags.length > 0) {
-    //         this._checkExistingTags(draft.tags);
-    //     }
-    //     return this.setState({
-    //         ...draft.toJS()
-    //     });
-    // };
+    componentWillReceiveProps (nextProps) {
+        const currentDraft = this._findCurrentDraft(nextProps.drafts);
+        console.log(currentDraft, nextProps.drafts);
+        if (currentDraft) {
+            this.setState({
+                featchingDraft: false
+            }, () => this._populateDraft(currentDraft));
+        }
+    }
+    _populateDraft = (draft) => {
+        console.log('populate', draft);
+        const { title, content, excerpt, tags, licence, featuredImage } = draft;
+        this.setState({
+            title,
+            content,
+            excerpt,
+            tags,
+            licence,
+            featuredImage
+        });
+    }
+    _findCurrentDraft = (drafts) => {
+        const { params } = this.props;
+        return drafts.find(draft => draft.id === parseInt(params.draftId, 10));
+    }
     _handleLicenceDialogClose = () => {
         this.setState({
             isLicencingOpen: false
@@ -62,13 +74,13 @@ class PublishPanel extends React.Component {
             licence: selectedLicence,
             isLicencingOpen: false
         }, () => {
-            this._handleDraftUpdate(null, 'licence');
+            // this._handleDraftUpdate(null, 'licence');
         });
     };
     _publishEntry = () => {
-        const { draftActions, profileState, entryBundleActions } = this.props;
+        const { draftActions, profileState } = this.props;
         const loggedProfile = profileState.get('loggedProfile');
-        this._handleDraftUpdate(null, 'featuredImage');
+        // this._handleDraftUpdate(null, 'featuredImage');
         const {
             title,
             content,
@@ -78,18 +90,22 @@ class PublishPanel extends React.Component {
             featuredImage,
         } = this.state;
         const tagsToRegister = tags.filter(tag => this.state.existingTags.indexOf(tag) === -1);
-        console.log(tagsToRegister, 'tagsToRegister')
         const draftId = parseInt(this.props.params.draftId, 10);
         const router = this.context.router;
-        draftactions.updateDraft({
+        draftActions.updateDraft({
             id: draftId,
-            publishing: true
-        }).then(() => {
-            if (tagsToRegister.length > 0) {
-                router.push(`/${loggedProfile.get('userName')}/draft/${draftId}/publish-tags`);
-            } else {
-                router.push(`/${loggedProfile.get('userName')}/draft/${draftId}/publish-status`);
+            title,
+            content,
+            excerpt,
+            licence,
+            featuredImage,
+            status: {
+                currentAction: 'confirmPublish',
+                mustRegisterTags: (tagsToRegister.length > 0),
+                publishingConfirmed: false
             }
+        }).then(() => {
+            router.push(`/${loggedProfile.get('userName')}/draft/${draftId}/publish-status`);
         });
     };
     _handleTagAutocomplete = (value) => {
@@ -103,7 +119,7 @@ class PublishPanel extends React.Component {
         }, () => {
             this._checkExistingTags(newTags);
         });
-        this._handleDraftUpdate(null, 'tags');
+        this._handleDraftUpdate('tags', newTags);
     };
     _handleTagDelete = (index) => {
         const currentTags = this.state.tags.slice();
@@ -111,15 +127,14 @@ class PublishPanel extends React.Component {
         this.setState({
             tags: currentTags
         }, () => {
-            this._handleDraftUpdate(null, 'tags');
+            this._handleDraftUpdate('tags', currentTags);
         });
     };
-    _handleDraftUpdate = (ev, field) => {
+    _handleDraftUpdate = (field, value) => {
         const { draftActions, params } = this.props;
-        const fieldValue = this.state[field];
         draftActions.updateDraft({
             id: parseInt(params.draftId, 10),
-            [field]: fieldValue
+            [field]: value
         });
     };
     _getFeaturedImage = () => {
@@ -135,15 +150,14 @@ class PublishPanel extends React.Component {
     };
     _checkExistingTags = (tags) => {
         const tagService = new TagService();
-        tagService.checkExistingTags(tags).then(results => {
-            const existingTags = results.map((tag) => {
-                if (tag[0] && tag[0].tag) {
-                    return tag[0].tag;
+        tags.forEach((tag) => {
+            tagService.checkExistingTags(tag, ({ data }) => {
+                const existingTags = this.state.existingTags.slice();
+                if (data.exists) {
+                    this.setState({
+                        existingTags: existingTags.push(tag)
+                    });
                 }
-                return null;
-            }).filter(tag => tag !== null);
-            this.setState({
-                existingTags
             });
         });
     };
@@ -151,18 +165,19 @@ class PublishPanel extends React.Component {
         const { params } = this.props;
         this.context.router.push(`/${params.username}/draft/${params.draftId}`);
     }
+    _getSelectedLicence = () => {
+        if (this.state.selectedLicence) {
+            return this.state.selectedLicence;
+        }
+        return {
+            mainLicence: licences.find(lic => lic.id === '1'),
+            subLicence: null,
+            isDefault: false
+        };
+    }
     render () {
         const { tags } = this.state;
-        let selectedLicence;
-        if (this.state.selectedLicence) {
-            selectedLicence = this.state.selectedLicence;
-        } else {
-            selectedLicence = {
-                mainLicence: licences.find(lic => lic.id === '1'),
-                subLicence: null,
-                isDefault: false
-            };
-        }
+        const selectedLicence = this._getSelectedLicence();
         const licenceDescription = selectedLicence.mainLicence.description.map((descr, key) =>
           <span key={key}>{descr.text}</span>
         );
@@ -179,6 +194,7 @@ class PublishPanel extends React.Component {
                 zIndex: 16
             }}
             actions={[
+                /* eslint-disable */
               <RaisedButton
                 key="cancel"
                 label="Later"
@@ -191,6 +207,7 @@ class PublishPanel extends React.Component {
                 style={{ marginLeft: 8 }}
                 onTouchTap={this._publishEntry}
               />
+              /* eslint-enable */
             ]}
           >
             <LicenceDialog
@@ -206,9 +223,9 @@ class PublishPanel extends React.Component {
                 <TextField
                   name="title"
                   fullWidth
-                  value={this.state.title}
-                  onChange={(ev) => this.setState({ title: ev.target.value })}
-                  onBlur={(ev) => this._handleDraftUpdate(ev, 'title')}
+                  value={this.state.title || ''}
+                  onChange={ev => this.setState({ title: ev.target.value })}
+                  onBlur={ev => this._handleDraftUpdate('title', ev.target.value)}
                 />
               </div>
               <div className="col-xs-12 field">
@@ -226,11 +243,10 @@ class PublishPanel extends React.Component {
                 <TagsField
                   tags={tags}
                   existingTags={this.state.existingTags}
-                  ref={(tagsField) => this.tagsField = tagsField}
+                  ref={(tagsField) => { this.tagsField = tagsField; }}
                   onRequestTagAutocomplete={this._handleTagAutocomplete}
                   onTagAdded={this._handleTagAdd}
                   onDelete={this._handleTagDelete}
-                  onBlur={(ev) => this._handleDraftUpdate(ev, 'tags')}
                   fullWidth
                 />
               </div>
@@ -241,8 +257,8 @@ class PublishPanel extends React.Component {
                   multiLine
                   fullWidth
                   value={this.state.excerpt}
-                  onChange={(ev) => this.setState({ excerpt: ev.target.value })}
-                  onBlur={(ev) => this._handleDraftUpdate(ev, 'excerpt')}
+                  onChange={ev => this.setState({ excerpt: ev.target.value })}
+                  onBlur={ev => this._handleDraftUpdate('excerpt', ev.target.value)}
                 />
               </div>
               <div className="col-xs-12 field">
@@ -270,11 +286,12 @@ class PublishPanel extends React.Component {
 }
 PublishPanel.propTypes = {
     width: React.PropTypes.string,
-    entryState: React.PropTypes.object,
-    entryActions: React.PropTypes.object,
-    draft: React.PropTypes.object
+    drafts: React.PropTypes.shape(),
+    params: React.PropTypes.shape(),
+    draftActions: React.PropTypes.shape(),
+    tagActions: React.PropTypes.shape()
 };
 PublishPanel.contextTypes = {
-    router: React.PropTypes.object
+    router: React.PropTypes.shape()
 };
 export default PublishPanel;

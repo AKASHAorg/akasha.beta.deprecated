@@ -1,9 +1,10 @@
-import PublishEntryPanel from './components/publish-entry-panel';
 import { connect } from 'react-redux';
 import { ProfileActions, EntryActions, DraftActions } from 'local-flux';
+import PublishEntryPanel from './components/publish-entry-panel';
 
 function mapStateToProps (state) {
     return {
+        loggedProfile: state.profileState.get('loggedProfile'),
         profileState: state.profileState,
         entryState: state.entryState,
         drafts: state.draftState.get('drafts'),
