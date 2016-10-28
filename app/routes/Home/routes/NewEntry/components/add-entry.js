@@ -9,6 +9,7 @@ import {
 import { getWordCount } from 'utils/dataModule';
 import EntryEditor from 'shared-components/EntryEditor';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
+import { convertFromRaw } from 'draft-js';
 
 class AddEntryPage extends Component {
     constructor (props) {
@@ -23,6 +24,7 @@ class AddEntryPage extends Component {
     }
     componentWillMount () {
         const { params, draftActions } = this.props;
+        console.log(params, 'params');
         if (params.draftId === 'new') {
             this.setState({
                 isNewDraft: true
@@ -38,8 +40,9 @@ class AddEntryPage extends Component {
     componentWillReceiveProps (nextProps) {
         const { drafts, params } = nextProps;
         // logic for populating existing draft;
-        if (params.draftId !== 'new') {
-            if (this.props.drafts.size !== drafts.size) {
+        if (!this.state.isNewDraft) {
+            console.log(drafts.size > 0);
+            if (nextProps.drafts.size > 0) {
                 // means that the drafts are fetched;
                 this.setState({
                     fetchingDraft: false
@@ -67,25 +70,25 @@ class AddEntryPage extends Component {
         const contentState = this.editor.getContent();
         const title = this.editor.getTitle();
         const wordCount = getWordCount(contentState);
+        const excerpt = contentState.getPlainText().slice(0, 120).replace(/\r?\n|\r/g, '');
 
-        console.log(parseInt(params.draftId, 10), content, title, wordCount, loggedProfile, 'updating');
         if (params.draftId !== 'new') {
             const draftId = parseInt(params.draftId, 10);
-            return draftActions.updateDraft({ id: draftId, content, title, wordCount });
+            return draftActions.updateDraft({ id: draftId, content, title, wordCount, excerpt });
         }
 
         return draftActions
-            .createDraftSync(loggedProfile.get('username'), { content, title, wordCount });
+            .createDraftSync(loggedProfile.get('username'), { content, title, wordCount, excerpt });
     };
     _setupEntryForPublication = () => {
         const { params } = this.props;
         this._saveDraft().then((draft) => {
-            let draftId = null;
+            console.log('saved draft', draft);
+            let draftId = params.draftId;
             if (typeof draft === 'number') {
                 draftId = draft;
-            } else if (typeof draft === 'object') {
-                draftId = draft.id;
             }
+            console.log(draftId, 'draftId');
             this.context.router.push(`/${params.username}/draft/${draftId}/publish`);
         });
     }
