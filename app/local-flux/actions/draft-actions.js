@@ -1,4 +1,3 @@
-import { hashHistory } from 'react-router';
 import { draftActionCreators } from './action-creators';
 import { DraftService } from '../services';
 
@@ -13,10 +12,22 @@ class DraftActions {
         this.draftService = new DraftService();
         return draftActions;
     }
-
-    createDraftSync = (authorUsername, draft) => {
+    resumeDraftPublishing = (draft) => {
+        /**
+         * Steps:
+         * 1. Verify logged profile
+         * 2. Verify balance
+         * 3. Verify tag existence
+         * 4. Publish tags
+         * 5. Listen mined tx for tags
+         * 6. Publish entry
+         * 7. Listen mined tx for entry
+         */
+        console.info('resuming draft publishing', draft);
+    }
+    createDraftSync = (username, draft) => {
         this.dispatch(draftActionCreators.startSavingDraft());
-        return this.draftService.saveDraft({ authorUsername, ...draft }).then((result) => {
+        return this.draftService.saveDraft({ username, ...draft }).then((result) => {
             this.dispatch(draftActionCreators.createDraftSuccess(result));
             return result;
         }).catch(reason => this.dispatch(draftActionCreators.createDraftError(reason)));
@@ -24,9 +35,10 @@ class DraftActions {
 
     updateDraft = (changes) => {
         this.dispatch(draftActionCreators.startSavingDraft());
-        return this.draftService.saveDraft(changes).then(savedDraft =>
-            this.dispatch(draftActionCreators.updateDraftSuccess(savedDraft))
-        ).catch(reason => this.dispatch(draftActionCreators.updateDraftError(reason)));
+        return this.draftService.saveDraft(changes).then((savedDraft) => {
+            this.dispatch(draftActionCreators.updateDraftSuccess(savedDraft));
+            return savedDraft;
+        }).catch(reason => this.dispatch(draftActionCreators.updateDraftError(reason)));
     };
 
     updateDraftThrottled = (draft) => {
@@ -55,11 +67,19 @@ class DraftActions {
             onError: reason => this.dispatch(draftActionCreators.getDraftsCountError(reason))
         });
     }
+
     getDraftById = id =>
         this.draftService.getById('drafts', id).then((result) => {
-            this.dispatch(draftActionCreators.getDraftSuccess(result));
+            this.dispatch(draftActionCreators.getDraftByIdSuccess(result));
             return result;
-        }).catch(reason => this.dispatch(draftActionCreators.getDraftError(reason)));
+        }).catch(reason => this.dispatch(draftActionCreators.getDraftByIdError(reason)));
+
+    getPublishingDrafts = username =>
+        this.draftservice.getPublishingDrafts({
+            username,
+            onSuccess: data => this.dispatch(draftActionCreators.getPublishingDraftsSuccess(data)),
+            onError: error => this.dispatch(draftActionCreators.getPublishingDraftsError(error))
+        });
 }
 
 export { DraftActions };

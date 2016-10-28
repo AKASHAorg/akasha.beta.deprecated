@@ -1,5 +1,6 @@
 import React, { PropTypes } from 'react';
 import { Paper } from 'material-ui';
+import PanelContainerHeader from './panel-container-header';
 
 class PanelContainer extends React.Component {
     constructor (props) {
@@ -11,8 +12,7 @@ class PanelContainer extends React.Component {
     _handleScroll = () => {
         const scrollTop = this.panelContent.scrollTop;
         this.setState({
-            scrollTop,
-            titleHeight: `${80 - (scrollTop / 1.5)}px`
+            scrollTop
         });
     };
     render () {
@@ -23,45 +23,21 @@ class PanelContainer extends React.Component {
             height: '100%',
             maxWidth: this.props.width
         };
+        const { scrollTop } = this.state;
+        const { header, title, subTitle, showBorder } = this.props;
         const { muiTheme } = this.context;
         return (
           <Paper
             style={Object.assign(rootStyle, this.props.style)}
           >
-            <div
-              className="row middle-xs"
-              style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  minHeight: 56,
-                  height: this.state.titleHeight,
-                  padding: '12px 24px',
-                  background: muiTheme.palette.canvasColor,
-                  margin: 0,
-                  zIndex: 10,
-                  transition: 'height 0.118s ease-in-out',
-                  boxShadow: (this.state.scrollTop > 0) ?
-                      `0px 3px 3px -1px ${muiTheme.palette.paperShadowColor}` : 'none',
-                  borderBottom: (this.props.showBorder && this.state.scrollTop === 0) ?
-                      `1px solid ${muiTheme.palette.borderColor}` : 'none'
-              }}
-            >
-              {this.props.header &&
-                 this.props.header
-              }
-              {!this.props.header &&
-                <div className="col-xs-12">
-                  <div className="row middle-xs">
-                    <h3 className="col-xs-7" style={{ fontWeight: 300 }}>{this.props.title}</h3>
-                      {this.props.subTitle &&
-                        <div className="col-xs-4 end-xs">{this.props.subTitle}</div>
-                      }
-                  </div>
-                </div>
-              }
-            </div>
+            <PanelContainerHeader
+              header={header}
+              title={title}
+              subTitle={subTitle}
+              scrollTop={scrollTop}
+              showBorder={showBorder}
+              muiTheme={muiTheme}
+            />
             <div
               className="row"
               style={{
@@ -75,34 +51,33 @@ class PanelContainer extends React.Component {
                   padding: '32px 24px',
                   margin: 0
               }}
-              ref={(panelContent) => this.panelContent = panelContent}
+              ref={(panelContent) => { this.panelContent = panelContent; }}
               onScroll={this._handleScroll}
             >
               {this.props.children}
             </div>
-              {(this.props.leftActions || this.props.actions) &&
-                <div
-                  className="row"
-                  style={{
-                      position: 'absolute',
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
-                      padding: '12px 24px',
-                      background: muiTheme.palette.canvasColor,
-                      margin: 0,
-                      boxShadow: `0px -1px 3px -1px ${muiTheme.palette.paperShadowColor}`,
-                      zIndex: 1
-                  }}
-                >
-                  <div className="col-xs-5 start-xs">
-                      {this.props.leftActions}
-                  </div>
-                  <div className="col-xs-7 end-xs">
-                      {this.props.actions}
-                  </div>
-                </div>
-              }
+            {(this.props.leftActions || this.props.actions) &&
+            <div
+              className="row"
+              style={{
+                  position: 'absolute',
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  padding: '12px 24px',
+                  background: muiTheme.palette.canvasColor,
+                  margin: 0,
+                  boxShadow: `0px -1px 3px -1px ${muiTheme.palette.paperShadowColor}`
+              }}
+            >
+              <div className="col-xs-5 start-xs">
+                {this.props.leftActions}
+              </div>
+              <div className="col-xs-7 end-xs">
+                {this.props.actions}
+              </div>
+            </div>
+            }
           </Paper>
         );
     }
@@ -118,7 +93,7 @@ PanelContainer.propTypes = {
     showBorder: PropTypes.bool,
     header: PropTypes.node,
     leftActions: PropTypes.node,
-    style: PropTypes.object,
+    style: PropTypes.shape(),
     subTitle: PropTypes.string
 };
 

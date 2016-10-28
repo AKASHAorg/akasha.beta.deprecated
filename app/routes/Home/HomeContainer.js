@@ -7,6 +7,7 @@ import styles from './home.scss';
 import PanelLoader from './components/panel-loader-container';
 import EntryModal from './components/entry-modal';
 import ProfileUpdater from './components/profile-updater';
+import PublishEntryRunner from './components/publish-entry-runner';
 
 class HomeContainer extends React.Component {
     componentDidMount () {
@@ -22,11 +23,11 @@ class HomeContainer extends React.Component {
         }
     }
     componentWillUpdate (nextProps) {
-        const { profileActions, entryActions, loggedProfile } = this.props;
-        if (nextProps.loggedProfile && nextProps.loggedProfile.get('profile')
-                && nextProps.loggedProfile.get('profile') !== loggedProfile.get('profile')) {
+        const { profileActions, entryActions, draftActions } = this.props;
+        if (nextProps.loggedProfile && nextProps.loggedProfile.get('profile')) {
             profileActions.getProfileData([{ profile: nextProps.loggedProfile.get('profile') }]);
             entryActions.getEntriesCount(nextProps.loggedProfile.get('profile'));
+            draftActions.getPublishingDrafts(nextProps.loggedProfile.get('username'));
         }
     }
     componentWillUnmount () {
@@ -101,6 +102,7 @@ class HomeContainer extends React.Component {
             <div className={`col-xs-12 ${styles.childWrapper}`} >
               {this.props.children}
             </div>
+            <PublishEntryRunner />
           </div>
         );
     }

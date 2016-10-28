@@ -1,18 +1,18 @@
-import PublishEntryStatus from './components/publish-entry-status';
 import { connect } from 'react-redux';
-import { ProfileActions, EntryActions } from 'local-flux';
+import { AppActions, DraftActions } from 'local-flux';
+import PublishEntryStatus from './components/publish-entry-status';
 
 function mapStateToProps (state) {
     return {
-        profileState: state.profileState,
-        entryState: state.entryState
+        loggedProfile: state.profileState.get('loggedProfile'),
+        drafts: state.draftState.get('drafts')
     };
 }
 
 function mapDispatchToProps (dispatch) {
     return {
-        profileActions: new ProfileActions(dispatch),
-        entryActions: new EntryActions(dispatch)
+        draftActions: new DraftActions(dispatch),
+        appActions: new AppActions(dispatch)
     };
 }
 

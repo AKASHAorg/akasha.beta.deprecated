@@ -2,34 +2,36 @@ import Dexie from 'dexie';
 import BaseService from './base-service';
 import tagsDB from './db/tags';
 
+const { Channel } = window;
 /** Tag Service */
 class TagService extends BaseService {
-    // getTags = (startingIndex = 0) => {
-    //     const serverChannel = Channel.server.entry.getTags;
-    //     const clientChannel = Channel.client.entry.getTags;
-    //     return new Promise((resolve, reject) => {
-    //         if (this._listeners.has(clientChannel)) {
-    //             return this._listeners.has(clientChannel);
-    //         }
-    //         this._listeners[clientChannel] = (ev, response) => {
-    //             if (!response) {
-    //                 const error = new Error('Main Process Crashed!');
-    //                 return reject(error);
-    //             }
-    //             if (!response.success) {
-    //                 const error = new Error(response.status.message);
-    //                 return reject(error);
-    //             }
-    //             this.saveTagToDB(response.data.tags).then(() => {
-    //                 return resolve(response.data);
-    //             }).catch(reason => {
-    //                 console.error(reason);
-    //             });
-    //         };
-    //         ipcRenderer.on(clientChannel, this._listeners[clientChannel]);
-    //         ipcRenderer.send(serverChannel, startingIndex);
-    //     });
-    // };
+    getTags = (startingIndex = 0) => {
+        const serverChannel = Channel.server.entry.getTags;
+        const clientChannel = Channel.client.entry.getTags;
+
+        return new Promise((resolve, reject) => {
+            if (this._listeners.has(clientChannel)) {
+                return this._listeners.has(clientChannel);
+            }
+            this._listeners[clientChannel] = (ev, response) => {
+                if (!response) {
+                    const error = new Error('Main Process Crashed!');
+                    return reject(error);
+                }
+                if (!response.success) {
+                    const error = new Error(response.status.message);
+                    return reject(error);
+                }
+                this.saveTagToDB(response.data.tags).then(() => {
+                    return resolve(response.data);
+                }).catch(reason => {
+                    console.error(reason);
+                });
+            };
+            ipcRenderer.on(clientChannel, this._listeners[clientChannel]);
+            ipcRenderer.send(serverChannel, startingIndex);
+        });
+    };
 
     getLocalTagsCount = () =>
         tagsDB.transaction('rw', tagsDB.blockTags, () =>
@@ -59,14 +61,12 @@ class TagService extends BaseService {
                 tagsDB.blockTags.put({ tag });
             });
         });
-    checkExistingTags = tags =>
-        tagsDB.transaction('r', tagsDB.blockTags, () => {
-            const promises = [];
-            tags.forEach((tag) => {
-                promises.push(tagsDB.blockTags.where('tag').equalsIgnoreCase(tag).toArray());
-            });
-            return Dexie.Promise.all(promises).then(result => result);
-        });
+
+    checkExistingTags = (tag, cb) => {
+        this.registerListener(Channel.client.tags.exists, (ev, res) => cb(res));
+        console.log('sending tag', tag);
+        Channel.server.tags.exists.send({ tagName: tag });
+    }
 }
 
 export { TagService };

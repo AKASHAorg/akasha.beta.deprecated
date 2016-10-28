@@ -19,14 +19,14 @@ const Draft = Record({
     featured_image: null,
     tags: new List(),
     tx: null,
+    licence: null,
     status: {
         created_at: '',
         updated_at: '',
         tagsPublished: false,
         publishing: false,
-        transactionStatus: {
-
-        }
+        publishingConfirmed: false,
+        currentAction: null
     }
 });
 
@@ -63,22 +63,24 @@ const draftState = createReducer(initialState, {
             drafts: state.get('drafts').concat(drafts)
         });
     },
-
-    [types.GET_DRAFT_SUCCESS]: (state, { draft }) =>
-        state.merge({
+    [types.GET_DRAFT_BY_ID_SUCCESS]: (state, { draft }) => {
+        const draftIndex = state.get('drafts').findIndex(drft => drft.id === draft.id);
+        if (draftIndex > -1) {
+            return state.mergeIn(['drafts', draftIndex], new Draft(draft));
+        }
+        return state.merge({
             drafts: state.get('drafts').push(new Draft(draft))
-        }),
-
+        });
+    },
     [types.UPDATE_DRAFT_SUCCESS]: (state, action) => {
         const draftIndex = state.get('drafts').findIndex(draft =>
             draft.id === action.draft.id
         );
-        return state.merge({
-            drafts: state.updateIn(['drafts', draftIndex], record =>
-                record.merge(new Map(action.draft))
-            ),
+        const newState = state.merge({
+            drafts: state.get('drafts').mergeIn([draftIndex], action.draft),
             savingDraft: false
         });
+        return newState;
     },
 
     [types.GET_DRAFTS_COUNT]: state =>
@@ -88,6 +90,16 @@ const draftState = createReducer(initialState, {
         state.merge({
             draftsCount: action.count,
             fetchingDraftsCount: false
+        }),
+
+    [types.GET_PUBLISHING_DRAFTS_SUCCESS]: (state, { drafts }) =>
+        state.merge({
+            drafts: state.get('drafts').concat(drafts.map(drft => new Draft(drft)))
+        }),
+
+    [types.GET_PUBLISHING_DRAFTS_ERROR]: (state, error) =>
+        state.merge({
+            errors: state.get('errors').push(new ErrorRecord(error))
         }),
 });
 

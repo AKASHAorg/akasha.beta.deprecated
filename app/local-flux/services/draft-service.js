@@ -7,8 +7,9 @@ class DraftService {
     }
     saveDraft = partialDraft =>
         entriesDB.transaction('rw', entriesDB.drafts, () => {
-            if (partialDraft.id) {
-                return entriesDB.drafts.update(partialDraft.id, partialDraft).then((updated) => {
+            const { id, ...other } = partialDraft;
+            if (id) {
+                return entriesDB.drafts.update(id, other).then((updated) => {
                     if (updated) {
                         return partialDraft;
                     }
@@ -23,7 +24,7 @@ class DraftService {
     getAllDrafts = username =>
         entriesDB.transaction('rw', entriesDB.drafts, () =>
             entriesDB.drafts
-                     .where('authorUsername')
+                     .where('username')
                      .equals(username)
                      .toArray()
                      .then((drafts) => {
@@ -35,7 +36,7 @@ class DraftService {
         );
     getDraftsCount = ({ username, onSuccess, onError }) =>
         entriesDB.transaction('rw', entriesDB.drafts, () =>
-            entriesDB.drafts.where('authorUsername').equals(username).count()
+            entriesDB.drafts.where('username').equals(username).count()
         )
         .then(counter => onSuccess(counter))
         .catch(error => onError(error));
