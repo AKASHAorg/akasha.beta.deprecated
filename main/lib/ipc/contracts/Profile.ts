@@ -59,9 +59,10 @@ export default class Profile extends BaseContract {
      * @param gas
      * @returns {any}
      */
-    public updateHash(hash: string[], address: string, gas?: number) {
-        const extracted = this.contract.at(address).setHash.request(hash, { gas });
-        return extracted.params[0];
+    public updateHash(hash: string, address: string, gas?: number) {
+        const hashTr = this.splitIpfs(hash);
+        const extracted = this.contract.at(address).setHash.request(hashTr, { gas });
+        return Promise.resolve(extracted.params[0]);
     }
 
     /**

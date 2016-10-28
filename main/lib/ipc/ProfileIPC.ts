@@ -27,6 +27,7 @@ class ProfileIPC extends ModuleEmitter {
             ._getFollowersCount()
             ._getFollowing()
             ._getFollowingCount()
+            ._updateProfileData()
             ._manager();
     }
 
@@ -71,6 +72,54 @@ class ProfileIPC extends ModuleEmitter {
                     .finally(() => {
                         this.fireEvent(
                             channels.client[this.MODULE_NAME].getProfileData,
+                            response,
+                            event
+                        );
+                    });
+            }
+        );
+        return this;
+    }
+
+    private _updateProfileData() {
+        this.registerListener(
+            channels.server[this.MODULE_NAME].updateProfileData,
+            (event: any, data: ProfileUpdateRequest) => {
+                let response: ProfileUpdateResponse;
+                profileModule
+                    .helpers
+                    .create(data.ipfs)
+                    .then((ipfsHash: string) => {
+                        return contracts.instance
+                            .registry
+                            .getMyProfile()
+                            .then((address: string) => {
+                                if(!address){
+                                    throw new Error('No profile found to update');
+                                }
+                                return contracts
+                                    .instance
+                                    .profile
+                                    .updateHash(ipfsHash, address, data.gas)
+                            });
+                    })
+                    .then((txData: any) => {
+                        return userModule.auth.signData(txData, data.token);
+                    })
+                    .then((tx: string) => {
+                        response = mainResponse({ tx });
+                    })
+                    .catch((err: Error) => {
+                        response = mainResponse({
+                            error: {
+                                message: err.message,
+                                from: data.ipfs
+                            }
+                        });
+                    })
+                    .finally(() => {
+                        this.fireEvent(
+                            channels.client[this.MODULE_NAME].updateProfileData,
                             response,
                             event
                         );
