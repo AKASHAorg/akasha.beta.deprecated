@@ -24,21 +24,41 @@ class DraftActions {
          * 7. Listen mined tx for entry
          */
         console.info('resuming draft publishing', draft);
-    }
-    createDraftSync = (username, draft) => {
-        this.dispatch(draftActionCreators.startSavingDraft());
-        return this.draftService.saveDraft({ username, ...draft }).then((result) => {
-            this.dispatch(draftActionCreators.createDraftSuccess(result));
-            return result;
-        }).catch(reason => this.dispatch(draftActionCreators.createDraftError(reason)));
     };
 
+    // Must return a promise and also to dispatch actions
+    createDraftSync = (profile, draft) =>
+        this.dispatch((dispatch, getState) => {
+            const flags = getState().draftState.get('flags');
+            if(!flags.get('savingDraft')) {
+                dispatch(draftActionCreators.startSavingDraft({
+                    savingDraft: true
+                }));
+                return this.draftService.saveDraft({ profile, ...draft }).then((result) => {
+                    dispatch(draftActionCreators.createDraftSuccess(result, {
+                        savingDraft: false
+                    }));
+                    return result;
+                }).catch(reason => dispatch(draftActionCreators.createDraftError(reason, {
+                    savingDraft: false
+                })));
+            }
+            return Promise.resolve();
+        });
+
     updateDraft = (changes) => {
-        this.dispatch(draftActionCreators.startSavingDraft());
-        return this.draftService.saveDraft(changes).then((savedDraft) => {
-            this.dispatch(draftActionCreators.updateDraftSuccess(savedDraft));
-            return savedDraft;
-        }).catch(reason => this.dispatch(draftActionCreators.updateDraftError(reason)));
+        this.dispatch((dispatch, getState) => {
+            const flags = getState().draftState.get('flags');
+            if(!flags.get('savingDraft')) {
+                dispatch(draftActionCreators.startSavingDraft({
+                    savingDraft: true
+                }));
+                return this.draftService.saveDraft(changes).then((savedDraft) => {
+                    dispatch(draftActionCreators.updateDraftSuccess(savedDraft));
+                    return savedDraft;
+                }).catch(reason => dispatch(draftActionCreators.updateDraftError(reason)));
+            }
+        });
     };
 
     updateDraftThrottled = (draft) => {
@@ -46,27 +66,40 @@ class DraftActions {
         return this.throttledUpdateDraft(draft);
     };
 
-    publishDraft = (entry, profileAddress) => {
-        this.draftService.publishEntry(entry, profileAddress).then(response =>
+    publishDraft = (entry, profile) => {
+        this.draftService.publishEntry(entry, profile).then(response =>
             this.dispatch(draftActionCreators.publishEntrySuccess, response.data)
         ).catch((reason) => {
             console.error(reason, reason.message);
         });
     };
 
-    getDrafts = username =>
-        this.draftService.getAllDrafts(username).then(result =>
+    getDrafts = profile =>
+        this.draftService.getAllDrafts(profile).then(result =>
             this.dispatch(draftActionCreators.getDraftsSuccess(result))
         ).catch(reason => this.dispatch(draftActionCreators.getDraftsError(reason)));
 
-    getDraftsCount = (username) => {
-        this.dispatch(draftActionCreators.getDraftsCount());
-        this.draftService.getDraftsCount({
-            username,
-            onSuccess: result => this.dispatch(draftActionCreators.getDraftsCountSuccess(result)),
-            onError: reason => this.dispatch(draftActionCreators.getDraftsCountError(reason))
+    getDraftsCount = (profile) => {
+        this.dispatch((dispatch, getState) => {
+            const flags = getState().draftState.get('flags');
+            if(!flags.get('fetchingDraftsCount') && !flags.get('draftsCountFetched')) {
+                dispatch(draftActionCreators.getDraftsCount({
+                    fetchingDraftsCount: true
+                }));
+                this.draftService.getDraftsCount({
+                    profile,
+                    onSuccess: result => dispatch(draftActionCreators.getDraftsCountSuccess(result, {
+                        fetchingDraftsCount: false,
+                        draftsCountFetched: true
+                    })),
+                    onError: reason => dispatch(draftActionCreators.getDraftsCountError(reason, {
+                        fetchingDraftsCount: false,
+                        draftsCountFetched: false
+                    }))
+                });
+            }
         });
-    }
+    };
 
     getDraftById = id =>
         this.draftService.getById('drafts', id).then((result) => {
@@ -74,12 +107,27 @@ class DraftActions {
             return result;
         }).catch(reason => this.dispatch(draftActionCreators.getDraftByIdError(reason)));
 
-    getPublishingDrafts = username =>
-        this.draftservice.getPublishingDrafts({
-            username,
-            onSuccess: data => this.dispatch(draftActionCreators.getPublishingDraftsSuccess(data)),
-            onError: error => this.dispatch(draftActionCreators.getPublishingDraftsError(error))
+    getPublishingDrafts = profile => {
+        this.dispatch((dispatch, getState) => {
+            const flags = getState().draftState.get('flags');
+            if(!flags.get('fetchingPublishingDrafts') && !flags.get('publishingDraftsFetched')) {
+                dispatch(draftActionCreators.getPublishingDrafts({
+                    fetchingPublishingDrafts: true,
+                }));
+                this.draftService.getPublishingDrafts({
+                    profile,
+                    onSuccess: data => dispatch(draftActionCreators.getPublishingDraftsSuccess(data, {
+                        fetchingPublishingDrafts: false,
+                        publishingDraftsFetched: true
+                    })),
+                    onError: error => dispatch(draftActionCreators.getPublishingDraftsError(error, {
+                        fetchingPublishingDrafts: false,
+                        publishingDraftsFetched: false
+                    }))
+                });
+            }
         });
+    };
 }
 
 export { DraftActions };

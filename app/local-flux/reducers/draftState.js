@@ -1,5 +1,5 @@
 /* eslint new-cap: ["error", { "capIsNewExceptions": ["Record"] }]*/
-import { fromJS, List, Record } from 'immutable';
+import { fromJS, List, Record, Map } from 'immutable';
 import { createReducer } from './create-reducer';
 import * as types from '../constants/DraftConstants';
 
@@ -12,7 +12,7 @@ const ErrorRecord = Record({
 const Draft = Record({
     id: null,
     content: {},
-    authorUsername: null,
+    profile: null,
     title: '',
     wordCount: 0,
     excerpt: null,
@@ -33,22 +33,27 @@ const Draft = Record({
 const initialState = fromJS({
     drafts: new List(),
     errors: new List(),
+    flags: new Map(),
     savingDraft: false,
     draftsCount: 0,
-    fetchingDraftsCount: false
+    fetchingDraftsCount: false,
+    fetchingPublishingDrafts: false,
+    fetchingDrafts: false
 });
 /**
  * State of the entries and drafts
  */
 const draftState = createReducer(initialState, {
-    [types.SAVE_DRAFT]: state =>
-        state.merge({ savingDraft: true }),
+    [types.SAVE_DRAFT]: (state, { flags }) =>
+        state.merge({
+            flags: state.get('flags').merge(flags)
+        }),
 
-    [types.CREATE_DRAFT_SUCCESS]: (state, action) => {
-        const draft = new Draft(action.draft);
+    [types.CREATE_DRAFT_SUCCESS]: (state, { draft, flags }) => {
+        const drft = new Draft(draft);
         return state.merge({
-            drafts: state.get('drafts').push(draft),
-            savingDraft: false
+            drafts: state.get('drafts').push(drft),
+            flags: state.get('flags').merge(flags)
         });
     },
 
@@ -72,34 +77,43 @@ const draftState = createReducer(initialState, {
             drafts: state.get('drafts').push(new Draft(draft))
         });
     },
-    [types.UPDATE_DRAFT_SUCCESS]: (state, action) => {
-        const draftIndex = state.get('drafts').findIndex(draft =>
-            draft.id === action.draft.id
+    [types.UPDATE_DRAFT_SUCCESS]: (state, { draft, flags}) => {
+        const draftIndex = state.get('drafts').findIndex(drft =>
+            drft.id === draft.id
         );
         const newState = state.merge({
-            drafts: state.get('drafts').mergeIn([draftIndex], action.draft),
-            savingDraft: false
+            drafts: state.get('drafts').mergeIn([draftIndex], draft),
+            flags: state.get('flags').merge(flags)
         });
         return newState;
     },
 
-    [types.GET_DRAFTS_COUNT]: state =>
-        state.set('fetchingDraftsCount', true),
-
-    [types.GET_DRAFTS_COUNT_SUCCESS]: (state, action) =>
+    [types.GET_DRAFTS_COUNT]: ( state, { flags } ) =>
         state.merge({
-            draftsCount: action.count,
-            fetchingDraftsCount: false
+            flags: state.get('flags').merge(flags)
         }),
 
-    [types.GET_PUBLISHING_DRAFTS_SUCCESS]: (state, { drafts }) =>
+    [types.GET_DRAFTS_COUNT_SUCCESS]: (state, { count, flags }) =>
         state.merge({
-            drafts: state.get('drafts').concat(drafts.map(drft => new Draft(drft)))
+            draftsCount: count,
+            flags: state.get('flags').merge(flags)
         }),
 
-    [types.GET_PUBLISHING_DRAFTS_ERROR]: (state, error) =>
+    [types.GET_PUBLISHING_DRAFTS]: (state, { flags }) =>
         state.merge({
-            errors: state.get('errors').push(new ErrorRecord(error))
+            flags: state.get('flags').merge(flags)
+        }),
+
+    [types.GET_PUBLISHING_DRAFTS_SUCCESS]: (state, { drafts, flags }) =>
+        state.merge({
+            drafts: state.get('drafts').concat(drafts.map(drft => new Draft(drft))),
+            flags: state.get('flags').merge(flags)
+        }),
+
+    [types.GET_PUBLISHING_DRAFTS_ERROR]: (state, { error, flags }) =>
+        state.merge({
+            errors: state.get('errors').push(new ErrorRecord(error)),
+            flags: state.get('flags').merge(flags)
         }),
 });
 

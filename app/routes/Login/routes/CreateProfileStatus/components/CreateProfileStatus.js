@@ -96,7 +96,7 @@ class CreateProfileStatus extends Component {
                         description="Message status when waiting for faucet transaction to be mined"
                         defaultMessage={`Waiting for faucet transaction to be mined.
                             Transaction id: {faucetTx}`}
-                        values={{ faucetTx: currentStatus.get('faucetTx') }}
+                        values={{ faucetTx: <small>{currentStatus.get('faucetTx')}</small> }}
                       />
                     );
                 }
@@ -108,7 +108,7 @@ class CreateProfileStatus extends Component {
                     description="Message status when waiting for publish transaction to be mined"
                     defaultMessage={`Waiting for publish transaction to be mined.
                         Transaction id: {publishTx}`}
-                    values={{ publishTx: currentStatus.get('publishTx') }}
+                    values={{ publishTx: <small>{currentStatus.get('publishTx')}</small> }}
                   />
                 );
                 break;

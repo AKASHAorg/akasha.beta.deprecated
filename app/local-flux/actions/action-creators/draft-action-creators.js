@@ -1,21 +1,26 @@
 import * as types from '../../constants/DraftConstants';
 
-export function startSavingDraft () {
-    return { type: types.SAVE_DRAFT };
+export function startSavingDraft (flags) {
+    return {
+        type: types.SAVE_DRAFT,
+        flags
+    };
 }
-export function createDraftSuccess (draft) {
+export function createDraftSuccess (draft, flags) {
     return {
         type: types.CREATE_DRAFT_SUCCESS,
-        draft
+        draft,
+        flags
     };
 }
 
-export function createDraftError (error) {
+export function createDraftError (error, flags) {
     error.code = 'CDE';
     console.error('createDraftError', error);
     return {
         type: types.CREATE_DRAFT_ERROR,
-        error
+        error,
+        flags
     };
 }
 
@@ -36,39 +41,44 @@ export function updateDraftError (error) {
 }
 
 
-export function getDraftsSuccess (drafts) {
+export function getDraftsSuccess (drafts, flags) {
     return {
         type: types.GET_DRAFTS_SUCCESS,
-        drafts
+        drafts,
+        flags
     };
 }
 
-export function getDraftsError (error) {
+export function getDraftsError (error, flags) {
     error.code = 'GDE';
     console.error('getDraftsError', error);
     return {
         type: types.GET_DRAFTS_ERROR,
-        error
+        error,
+        flags
     };
 }
 
-export function getDraftsCount () {
+export function getDraftsCount (flags) {
     return {
-        type: types.GET_DRAFTS_COUNT
+        type: types.GET_DRAFTS_COUNT,
+        flags
     };
 }
 
-export function getDraftsCountSuccess (count) {
+export function getDraftsCountSuccess (count, flags) {
     return {
         type: types.GET_DRAFTS_COUNT_SUCCESS,
-        count
+        count,
+        flags
     };
 }
 
-export function getDraftsCountError (error) {
+export function getDraftsCountError (error, flags) {
     return {
         type: types.GET_DRAFTS_COUNT_ERROR,
-        error
+        error,
+        flags
     };
 }
 
@@ -102,16 +112,27 @@ export function getDraftByIdError (error) {
     };
 }
 
-export function getPublishingDraftsSuccess (drafts) {
+export function getPublishingDrafts (flags) {
+    return {
+        type: types.GET_PUBLISHING_DRAFTS,
+        flags
+    }
+}
+
+export function getPublishingDraftsSuccess (drafts, flags) {
     return {
         type: types.GET_PUBLISHING_DRAFTS_SUCCESS,
-        drafts
+        drafts,
+        flags
     };
 }
 
-export function getPublishingDraftsError (error) {
+export function getPublishingDraftsError (error, drafts) {
+    error.code = 'GPDE';
+    console.error('getPublishingDraftsError', error);
     return {
         type: types.GET_PUBLISHING_DRAFTS_ERROR,
-        error
+        error,
+        drafts
     };
 }

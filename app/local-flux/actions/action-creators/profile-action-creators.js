@@ -1,37 +1,47 @@
 import * as types from '../../constants/ProfileConstants';
 
-export function login () {
+export function login (flags) {
     return {
-        type: types.LOGIN
+        type: types.LOGIN,
+        flags
     };
 }
 
-export function loginSuccess (profile) {
+export function loginSuccess (profile, flags) {
     return {
         type: types.LOGIN_SUCCESS,
-        profile
+        profile,
+        flags
     };
 }
 
-export function loginError (error) {
+export function loginError (error, flags) {
     error.code = 'LOGINE01';
     return {
         type: types.LOGIN_ERROR,
-        error
+        error,
+        flags
     };
 }
-
-export function getCurrentProfileSuccess (data) {
+export function getCurrentProfile (flags) {
+    return {
+        type: types.GET_CURRENT_PROFILE,
+        flags
+    }
+}
+export function getCurrentProfileSuccess (data, flags) {
     return {
         type: types.GET_CURRENT_PROFILE_SUCCESS,
-        data
+        data,
+        flags
     };
 }
 
-export function getCurrentProfileError (error) {
+export function getCurrentProfileError (error, flags) {
     return {
         type: types.GET_CURRENT_PROFILE_ERROR,
-        error
+        error,
+        flags
     };
 }
 
@@ -68,16 +78,18 @@ export function getLocalProfilesError (error) {
     };
 }
 
-export function getProfileDataSuccess (data) {
+export function getProfileData (flags) {
     return {
-        type: types.GET_PROFILE_DATA_SUCCESS,
-        data
-    };
+        type: types.GET_PROFILE_DATA,
+        flags
+    }
 }
 
-export function clearLocalProfilesSuccess () {
+export function getProfileDataSuccess (data, flags) {
     return {
-        type: types.CLEAR_LOCAL_PROFILES_SUCCESS
+        type: types.GET_PROFILE_DATA_SUCCESS,
+        data,
+        flags
     };
 }
 
@@ -89,107 +101,32 @@ export function getProfileDataError (error) {
     };
 }
 
-export function updateProfileData () {
+export function clearLocalProfilesSuccess () {
     return {
-        type: types.UPDATE_PROFILE_DATA
+        type: types.CLEAR_LOCAL_PROFILES_SUCCESS
     };
 }
 
-export function updateProfileDataSuccess (profileData) {
+export function getLoggedProfile (flags) {
     return {
-        type: types.UPDATE_PROFILE_DATA_SUCCESS,
-        profileData
+        type: types.GET_LOGGED_PROFILE,
+        flags
     };
 }
-
-export function updateProfileDataError (error) {
-    error.code = 'UPDE01';
-    return {
-        type: types.UPDATE_PROFILE_DATA_ERROR,
-        error
-    };
-}
-
-export function addUpdateProfileTx () {
-    return {
-        type: types.ADD_UPDATE_PROFILE_TX
-    };
-}
-
-export function addUpdateProfileTxSuccess (data) {
-    return {
-        type: types.ADD_UPDATE_PROFILE_TX_SUCCESS,
-        data
-    };
-}
-
-export function addUpdateProfileTxError (error) {
-    error.code = 'AUPTE01';
-    return {
-        type: types.ADD_UPDATE_PROFILE_TX_ERROR,
-        error
-    };
-}
-
-export function deleteUpdateProfileTx () {
-    return {
-        type: types.DELETE_UPDATE_PROFILE_TX
-    };
-}
-
-export function deleteUpdateProfileTxSuccess (tx) {
-    return {
-        type: types.DELETE_UPDATE_PROFILE_TX_SUCCESS,
-        tx
-    };
-}
-
-export function deleteUpdateProfileTxError (error) {
-    error.code = 'DUPTE01';
-    return {
-        type: types.DELETE_UPDATE_PROFILE_TX_ERROR,
-        error
-    };
-}
-
-export function getUpdateProfileTxs () {
-    return {
-        type: types.GET_UPDATE_PROFILE_TXS,
-    };
-}
-
-export function getUpdateProfileTxsSuccess (profiles) {
-    return {
-        type: types.GET_UPDATE_PROFILE_TXS_SUCCESS,
-        profiles
-    };
-}
-
-export function getUpdateProfileTxsError (error) {
-    error.code = 'GUPTE01';
-    return {
-        type: types.GET_UPDATE_PROFILE_TXS_ERROR,
-        error
-    };
-}
-
-export function getLoggedProfile () {
-    return {
-        type: types.GET_LOGGED_PROFILE
-    };
-}
-export function getLoggedProfileSuccess (profile) {
+export function getLoggedProfileSuccess (profile, flags) {
     return {
         type: types.GET_LOGGED_PROFILE_SUCCESS,
-        profile
+        profile,
+        flags
     };
 }
 
-export function getLoggedProfileError (error) {
+export function getLoggedProfileError (error, flags) {
     error.code = 'GLPE02';
     return {
         type: types.GET_LOGGED_PROFILE_ERROR,
-        error
+        error,
+        flags
     };
 }
 
