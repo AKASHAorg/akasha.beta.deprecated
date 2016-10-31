@@ -35,7 +35,10 @@ class Registry extends BaseContract_1.default {
         return this.contract
             .getMyProfileAsync()
             .then((address) => {
-            return ethereumjs_util_1.unpad(address);
+            if (ethereumjs_util_1.unpad(address)) {
+                return address;
+            }
+            throw new Error('No logged profile found');
         });
     }
     getLocalProfiles() {
