@@ -57,7 +57,10 @@ export default class Registry extends BaseContract {
         return this.contract
             .getMyProfileAsync()
             .then((address: string) => {
-                return unpad(address);
+                if(unpad(address)){
+                    return address;
+                }
+                throw new Error('No logged profile found');
             });
     }
 
