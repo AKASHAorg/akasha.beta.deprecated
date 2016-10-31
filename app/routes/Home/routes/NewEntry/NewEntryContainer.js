@@ -3,13 +3,8 @@ import { ProfileActions, DraftActions } from 'local-flux';
 import AddEntryPage from './components/add-entry';
 
 function mapStateToProps (state) {
-    const profiles = state.profileState.get('profiles');
-    const loggedProfileAddress = state.profileState.getIn(['loggedProfile', 'profile']);
-    const loggedProfile = profiles.find(profile =>
-        profile.get('profile') === loggedProfileAddress
-    );
     return {
-        loggedProfile,
+        loggedProfile: state.profileState.get('loggedProfile'),
         draftState: state.draftState,
         drafts: state.draftState.get('drafts'),
         savingDraft: state.draftState.get('savingDraft'),

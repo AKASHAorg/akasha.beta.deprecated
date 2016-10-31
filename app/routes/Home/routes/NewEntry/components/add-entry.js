@@ -33,7 +33,7 @@ class AddEntryPage extends Component {
             this.setState({
                 fetchingDraft: true
             }, () => {
-                draftActions.getDraftById(params.draftId);
+                draftActions.getDraftById(parseInt(params.draftId, 10));
             });
         }
     }
@@ -78,7 +78,7 @@ class AddEntryPage extends Component {
         }
 
         return draftActions
-            .createDraftSync(loggedProfile.get('username'), { content, title, wordCount, excerpt });
+            .createDraftSync(loggedProfile.get('profile'), { content, title, wordCount, excerpt });
     };
     _setupEntryForPublication = () => {
         const { params } = this.props;
