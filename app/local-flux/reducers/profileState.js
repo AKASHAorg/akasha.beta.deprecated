@@ -1,5 +1,5 @@
 /* eslint new-cap: ["error", { "capIsNewExceptions": ["Record"] }]*/
-import { fromJS, List, Record } from 'immutable';
+import { fromJS, List, Record, Map } from 'immutable';
 import * as types from '../constants/ProfileConstants';
 import { createReducer } from './create-reducer';
 
@@ -35,37 +35,46 @@ const initialState = fromJS({
     profiles: new List(),
     loggedProfile: new LoggedProfile(),
     errors: new List(),
-    loginRequested: false,
-    fetchingLoggedProfile: true,
-    profilesFetched: false
+    flags: new Map()
 });
 
 const profileState = createReducer(initialState, {
-    [types.LOGIN]: state =>
+    [types.LOGIN]: (state, { flags }) =>
         state.merge({
-            loginRequested: true
+            flags: state.get('flags').merge(flags)
         }),
 
-    [types.LOGIN_SUCCESS]: (state, { profile }) =>
+    [types.LOGIN_SUCCESS]: (state, { profile, flags }) =>
         state.merge({
             loggedProfile: new LoggedProfile(profile),
-            loginRequested: false
+            flags: state.get('flags').merge(flags),
+        }),
+    [types.GET_CURRENT_PROFILE]: (state, { flags }) =>
+        state.merge({
+            flags: state.get('flags').merge(flags)
         }),
 
-    [types.GET_CURRENT_PROFILE_SUCCESS]: (state, { data }) =>
-        state.merge({ loggedProfile: state.get('loggedProfile').merge({ profile: data.address }) }),
-
-    [types.GET_CURRENT_PROFILE_ERROR]: (state, { error }) =>
-        state.merge({ errors: state.get('errors').push(new ErrorRecord(error)) }),
-
-    [types.GET_LOGGED_PROFILE]: state =>
+    [types.GET_CURRENT_PROFILE_SUCCESS]: (state, { data, flags }) =>
         state.merge({
-            fetchingLoggedProfile: true
+            loggedProfile: state.get('loggedProfile').merge({ profile: data.address }),
+            flags: state.get('flags').merge(flags)
         }),
 
-    [types.GET_LOGGED_PROFILE_SUCCESS]: (state, { profile }) =>
+    [types.GET_CURRENT_PROFILE_ERROR]: (state, { error, flags }) =>
         state.merge({
-            loggedProfile: state.get('loggedProfile').merge(profile)
+            errors: state.get('errors').push(new ErrorRecord(error)),
+            flags: state.get('flags').merge(flags)
+        }),
+
+    [types.GET_LOGGED_PROFILE]: (state, { flags }) =>
+        state.merge({
+            flags: state.get('flags').merge(flags)
+        }),
+
+    [types.GET_LOGGED_PROFILE_SUCCESS]: (state, { profile, flags }) =>
+        state.merge({
+            loggedProfile: state.get('loggedProfile').merge(profile),
+            flags: state.get('flags').merge(flags)
         }),
 
     [types.LOGIN_ERROR]: (state, { error }) =>
@@ -100,8 +109,11 @@ const profileState = createReducer(initialState, {
         state.merge({
             errors: state.get('errors').push(new ErrorRecord(error))
         }),
-
-    [types.GET_PROFILE_DATA_SUCCESS]: (state, { data }) => {
+    [types.GET_PROFILE_DATA]: (state, { flags }) =>
+        state.merge({
+            flags: state.get('flags').merge(flags)
+        }),
+    [types.GET_PROFILE_DATA_SUCCESS]: (state, { data, flags }) => {
         const profileIndex = state.get('profiles').findIndex(profile =>
             profile.get('profile') === data.profile
         );
@@ -110,15 +122,19 @@ const profileState = createReducer(initialState, {
         if (profileIndex === -1) {
             return state.merge({
                 profiles: state.get('profiles').push(new Profile(data)),
-                fetchingLoggedProfile: false
+                flags: state.get('flags').merge(flags)
             });
         }
-        return state.mergeDeepIn(['profiles', profileIndex], data);
+        return state.merge({
+            profiles: state.get('profiles').mergeIn([profileIndex], data),
+            flags: state.get('flags').merge(flags)
+        });
     },
 
-    [types.GET_PROFILE_DATA_ERROR]: (state, { error }) =>
+    [types.GET_PROFILE_DATA_ERROR]: (state, { error, flags }) =>
         state.merge({
-            errors: state.get('errors').push(new ErrorRecord(error))
+            errors: state.get('errors').push(new ErrorRecord(error)),
+            flags: state.get('flags').merge(flags)
         }),
 
     [types.GET_PROFILE_BALANCE_SUCCESS]: (state, { data }) => {

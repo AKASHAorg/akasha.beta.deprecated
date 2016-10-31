@@ -21,11 +21,11 @@ class DraftService {
             );
         });
 
-    getAllDrafts = username =>
+    getAllDrafts = profile =>
         entriesDB.transaction('rw', entriesDB.drafts, () =>
             entriesDB.drafts
-                     .where('username')
-                     .equals(username)
+                     .where('profile')
+                     .equals(profile)
                      .toArray()
                      .then((drafts) => {
                          const convDrafts = drafts.map(draft =>
@@ -34,20 +34,35 @@ class DraftService {
                          return convDrafts;
                      })
         );
-    getDraftsCount = ({ username, onSuccess, onError }) =>
+    getDraftsCount = ({ profile, onSuccess, onError }) =>
         entriesDB.transaction('rw', entriesDB.drafts, () =>
-            entriesDB.drafts.where('username').equals(username).count()
+            entriesDB.drafts.where('profile').equals(profile).count()
         )
         .then(counter => onSuccess(counter))
         .catch(error => onError(error));
     // get resource by id (drafts or entries);
-    getById = (table, id) =>
+    getDraftById = (draftId) =>
         entriesDB.transaction('r', entriesDB[table], () =>
             entriesDB[table]
                 .where('id')
-                .equals(parseInt(id, 10))
+                .equals(draftId)
                 .first()
         );
+    getPublishingDrafts = ({ profile, onSuccess, onError }) =>
+        entriesDB.transaction('r', entriesDB.drafts, () => {
+            console.log(profile, 'get drafts for profileAddress');
+            return entriesDB.drafts
+                .where('profile')
+                .equals(profile)
+                .and((val) => {
+                    console.log(val, 'value');
+                    return val.status.publishing === true &&
+                        val.status.publishingConfirmed === true;
+                })
+                .toArray()
+        })
+        .then(results => onSuccess(results))
+        .catch(reason => onError(reason))
 }
 
 export { DraftService };

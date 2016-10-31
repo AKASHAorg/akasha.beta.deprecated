@@ -17,18 +17,29 @@ class ProfileActions {
     }
 
     login = ({ account, password, rememberTime }) => {
-        password = new TextEncoder('utf-8').encode(password);
-        this.dispatch(profileActionCreators.login());
-        this.authService.login({
-            account,
-            password,
-            rememberTime,
-            onSuccess: (data) => {
-                this.dispatch(profileActionCreators.loginSuccess(data));
-                this.getCurrentProfile();
-            },
-            onError: error => this.dispatch(profileActionCreators.loginError(error))
-        });
+        this.dispatch((dispatch, getState) => {
+            const flags = getState().profileState.get('flags');
+            if(!flags.get('loginRequested')) {
+                password = new TextEncoder('utf-8').encode(password);
+                dispatch(profileActionCreators.login({
+                    loginRequested: true
+                }));
+                this.authService.login({
+                    account,
+                    password,
+                    rememberTime,
+                    onSuccess: (data) => {
+                        this.dispatch(profileActionCreators.loginSuccess(data, {
+                            loginRequested: false
+                        }));
+                        this.getCurrentProfile();
+                    },
+                    onError: error => this.dispatch(profileActionCreators.loginError(error, {
+                        loginRequested: false
+                    }))
+                });
+            }
+        })
     };
 
     logout = (profileKey, flush) => {
@@ -43,15 +54,26 @@ class ProfileActions {
     };
 
     getLoggedProfile = () => {
-        this.dispatch(profileActionCreators.getLoggedProfile());
-        this.authService.getLoggedProfile({
-            onSuccess: (data) => {
-                this.dispatch(profileActionCreators.getLoggedProfileSuccess(data));
-                this.getCurrentProfile();
-            },
-            onError: error => this.dispatch(profileActionCreators.getLoggedProfileError(error))
+        this.dispatch((dispatch, getState) => {
+            const flags = getState().profileState.get('flags');
+            if(!flags.get('fetchingLoggedProfile')) {
+                dispatch(profileActionCreators.getLoggedProfile({
+                    fetchingLoggedProfile: true
+                }));
+                this.authService.getLoggedProfile({
+                    onSuccess: (data) => {
+                        dispatch(profileActionCreators.getLoggedProfileSuccess(data, {
+                            fetchingLoggedProfile: false
+                        }));
+                        this.getCurrentProfile();
+                    },
+                    onError: error => dispatch(profileActionCreators.getLoggedProfileError(error, {
+                        fetchingLoggedProfile: false
+                    }))
+                });
+            }
         });
-    }
+    };
 
     getLocalProfiles = () => {
         this.dispatch(profileActionCreators.getLocalProfiles());
@@ -61,37 +83,65 @@ class ProfileActions {
             },
             onError: err => this.dispatch(profileActionCreators.getLocalProfilesError(err))
         });
-    }
+    };
 
     getCurrentProfile = () => {
-        this.registryService.getCurrentProfile({
-            onSuccess: data => this.dispatch(profileActionCreators.getCurrentProfileSuccess(data)),
-            onError: err => this.dispatch(profileActionCreators.getCurrentProfileError(err))
-        });
-    }
+        this.dispatch((dispatch, getState) => {
+            const flags = getState().profileState.get('flags');
+            if(!flags.get('fetchingCurrentProfile') && !flags.get('currentProfileFetched')) {
+                dispatch(profileActionCreators.getCurrentProfile({
+                    fetchingCurrentProfile: true
+                }))
+                this.registryService.getCurrentProfile({
+                    onSuccess: data => dispatch(profileActionCreators.getCurrentProfileSuccess(data, {
+                        fetchingCurrentProfile: false,
+                        currentProfileFetched: true
+                    })),
+                    onError: err => dispatch(profileActionCreators.getCurrentProfileError(err, {
+                        fetchingCurrentProfile: false
+                    }))
+                });
+            }
+        })
+        
+    };
 
     clearLocalProfiles = () =>
         this.dispatch(profileActionCreators.clearLocalProfilesSuccess());
     /**
      * profiles = [{key: string, profile: string}]
      */
-    getProfileData = (profiles) => {
-        profiles.forEach((profileObject) => {
-            this.profileService.getProfileData({
-                options: {
-                    profile: profileObject.profile,
-                    full: false
-                },
-                onSuccess: (data) => {
-                    if (data.avatar) {
-                        data.avatar = imageCreator(data.avatar, data.baseUrl);
-                    }
-                    this.dispatch(profileActionCreators.getProfileDataSuccess(data));
-                },
-                onError: (err) => {
-                    this.dispatch(profileActionCreators.getProfileDataError(err));
-                }
-            });
+    getProfileData = (profiles, full = false) => {
+        this.dispatch((dispatch, getState) => {
+            const flags = getState().profileState.get('flags');
+            if(!flags.get('profileDataFetched') && !flags.get('fetchingProfileData')) {
+                dispatch(profileActionCreators.getProfileData({
+                    fetchingProfileData: true
+                }));
+                profiles.forEach((profileObject, key) => {
+                    console.log('get data for ', profileObject.profile);
+                    this.profileService.getProfileData({
+                        options: {
+                            profile: profileObject.profile,
+                            full
+                        },
+                        onSuccess: (data) => {
+                            if (data.avatar) {
+                                data.avatar = imageCreator(data.avatar, data.baseUrl);
+                            }
+                            dispatch(profileActionCreators.getProfileDataSuccess(data, {
+                                profileDataFetched: (key === profiles.length) ? true : false 
+                            }));
+                        },
+                        onError: (err) => {
+                            dispatch(profileActionCreators.getProfileDataError(err, {
+                                profileDataFetched: false,
+                                fetchingProfileData: false
+                            }));
+                        }
+                    });
+                });
+            }
         });
     };
 

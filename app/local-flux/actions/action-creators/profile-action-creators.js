@@ -1,37 +1,47 @@
 import * as types from '../../constants/ProfileConstants';
 
-export function login () {
+export function login (flags) {
     return {
-        type: types.LOGIN
+        type: types.LOGIN,
+        flags
     };
 }
 
-export function loginSuccess (profile) {
+export function loginSuccess (profile, flags) {
     return {
         type: types.LOGIN_SUCCESS,
-        profile
+        profile,
+        flags
     };
 }
 
-export function loginError (error) {
+export function loginError (error, flags) {
     error.code = 'LOGINE01';
     return {
         type: types.LOGIN_ERROR,
-        error
+        error,
+        flags
     };
 }
-
-export function getCurrentProfileSuccess (data) {
+export function getCurrentProfile (flags) {
+    return {
+        type: types.GET_CURRENT_PROFILE,
+        flags
+    }
+}
+export function getCurrentProfileSuccess (data, flags) {
     return {
         type: types.GET_CURRENT_PROFILE_SUCCESS,
-        data
+        data,
+        flags
     };
 }
 
-export function getCurrentProfileError (error) {
+export function getCurrentProfileError (error, flags) {
     return {
         type: types.GET_CURRENT_PROFILE_ERROR,
-        error
+        error,
+        flags
     };
 }
 
@@ -68,16 +78,18 @@ export function getLocalProfilesError (error) {
     };
 }
 
-export function getProfileDataSuccess (data) {
+export function getProfileData (flags) {
     return {
-        type: types.GET_PROFILE_DATA_SUCCESS,
-        data
-    };
+        type: types.GET_PROFILE_DATA,
+        flags
+    }
 }
 
-export function clearLocalProfilesSuccess () {
+export function getProfileDataSuccess (data, flags) {
     return {
-        type: types.CLEAR_LOCAL_PROFILES_SUCCESS
+        type: types.GET_PROFILE_DATA_SUCCESS,
+        data,
+        flags
     };
 }
 
@@ -88,23 +100,33 @@ export function getProfileDataError (error) {
         error
     };
 }
-export function getLoggedProfile () {
+
+export function clearLocalProfilesSuccess () {
     return {
-        type: types.GET_LOGGED_PROFILE
-    };
-}
-export function getLoggedProfileSuccess (profile) {
-    return {
-        type: types.GET_LOGGED_PROFILE_SUCCESS,
-        profile
+        type: types.CLEAR_LOCAL_PROFILES_SUCCESS
     };
 }
 
-export function getLoggedProfileError (error) {
+export function getLoggedProfile (flags) {
+    return {
+        type: types.GET_LOGGED_PROFILE,
+        flags
+    };
+}
+export function getLoggedProfileSuccess (profile, flags) {
+    return {
+        type: types.GET_LOGGED_PROFILE_SUCCESS,
+        profile,
+        flags
+    };
+}
+
+export function getLoggedProfileError (error, flags) {
     error.code = 'GLPE02';
     return {
         type: types.GET_LOGGED_PROFILE_ERROR,
-        error
+        error,
+        flags
     };
 }
 

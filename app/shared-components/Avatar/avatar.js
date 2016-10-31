@@ -111,7 +111,7 @@ class Avatar extends React.Component {
             }
             {avatarImage &&
               <div>
-                <AvatarEditor
+                {/*<AvatarEditor
                   style={{
                       borderRadius: 150,
                       border: offsetBorder || 0,
@@ -124,7 +124,7 @@ class Avatar extends React.Component {
                   ref={(editor) => { this.editor = editor; }}
                   borderRadius={100}
                   scale={editable ? this.state.avatarScale : 1}
-                />
+                />*/}
                 {editable &&
                   <div>
                     <Slider
