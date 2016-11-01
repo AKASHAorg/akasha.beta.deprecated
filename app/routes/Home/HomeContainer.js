@@ -6,6 +6,7 @@ import '../../styles/core.scss';
 import styles from './home.scss';
 import PanelLoader from './components/panel-loader-container';
 import EntryModal from './components/entry-modal';
+import ProfileUpdater from './components/profile-updater';
 
 class HomeContainer extends React.Component {
     componentDidMount () {
@@ -15,13 +16,15 @@ class HomeContainer extends React.Component {
         draftActions.getDraftsCount(username);
     }
     componentWillReceiveProps (nextProps) {
-        if (!nextProps.loggedProfile.get('profile') && !nextProps.fetchingLoggedProfile && !nextProps.loginRequested) {
+        if (!nextProps.loggedProfile.get('profile') && !nextProps.fetchingLoggedProfile
+                && !nextProps.loginRequested) {
             this.context.router.push('/authenticate/');
         }
     }
     componentWillUpdate (nextProps) {
-        const { profileActions, entryActions } = this.props;
-        if (nextProps.loggedProfile && nextProps.loggedProfile.get('profile')) {
+        const { profileActions, entryActions, loggedProfile } = this.props;
+        if (nextProps.loggedProfile && nextProps.loggedProfile.get('profile')
+                && nextProps.loggedProfile.get('profile') !== loggedProfile.get('profile')) {
             profileActions.getProfileData([{ profile: nextProps.loggedProfile.get('profile') }]);
             entryActions.getEntriesCount(nextProps.loggedProfile.get('profile'));
         }
@@ -43,10 +46,17 @@ class HomeContainer extends React.Component {
         }
         return 'Loading...';
     }
+
+    updateProfileData = (profileData) => {
+        const { profileActions, loggedProfile } = this.props;
+        profileActions.updateProfileData(profileData, loggedProfile);
+    };
+
     render () {
         const { appActions, draftActions, fetchingLoggedProfile, loggedProfileData,
             profileActions, entriesCount, draftsCount, loggedProfile, activePanel,
-            fetchingDraftsCount, fetchingPublishedEntries, params } = this.props;
+            fetchingDraftsCount, fetchingPublishedEntries, params,
+            fetchingFullLoggedProfile, loginRequested, updatingProfile } = this.props;
         const profileAddress = loggedProfile.get('profile');
         const account = loggedProfile.get('account');
 
@@ -77,9 +87,17 @@ class HomeContainer extends React.Component {
                 profile={loggedProfileData}
                 profileAddress={profileAddress}
                 params={params}
+                showPanel={appActions.showPanel}
+                hidePanel={appActions.hidePanel}
+                profileActions={profileActions}
+                fetchingFullLoggedProfile={fetchingFullLoggedProfile}
+                updateProfileData={this.updateProfileData}
+                updatingProfile={updatingProfile}
+                loginRequested={loginRequested}
               />
             </div>
             <EntryModal />
+            <ProfileUpdater />
             <div className={`col-xs-12 ${styles.childWrapper}`} >
               {this.props.children}
             </div>
@@ -96,18 +114,16 @@ HomeContainer.propTypes = {
     draftsCount: PropTypes.number,
     entriesCount: PropTypes.number,
     fetchingLoggedProfile: PropTypes.bool,
+    fetchingFullLoggedProfile: PropTypes.bool,
     fetchingDraftsCount: PropTypes.bool,
     fetchingPublishedEntries: PropTypes.bool,
+    loginRequested: PropTypes.bool,
     loggedProfile: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
+    updatingProfile: PropTypes.bool,
     profileActions: PropTypes.shape(),
     entryActions: PropTypes.shape(),
-    params: PropTypes.shape()
-};
-
-HomeContainer.contextTypes = {
-    router: PropTypes.shape(),
-    muiTheme: PropTypes.shape()
+    params: PropTypes.shape(),
 };
 
 HomeContainer.contextTypes = {
@@ -118,6 +134,7 @@ HomeContainer.contextTypes = {
 function mapStateToProps (state, ownProps) {
     return {
         fetchingLoggedProfile: state.profileState.get('fetchingLoggedProfile'),
+        fetchingFullLoggedProfile: state.profileState.get('fetchingFullLoggedProfile'),
         fetchingDraftsCount: state.draftState.get('fetchingDraftsCount'),
         fetchingPublishedEntries: state.draftState.get('fetchingPublishedEntries'),
         activePanel: state.panelState.get('activePanel').get('name'),
@@ -125,8 +142,9 @@ function mapStateToProps (state, ownProps) {
         loggedProfile: state.profileState.get('loggedProfile'),
         loggedProfileData: state.profileState.get('profiles').find(profile =>
             profile.get('profile') === state.profileState.getIn(['loggedProfile', 'profile'])),
+        updatingProfile: state.profileState.getIn(['flags', 'updatingProfile']),
         entriesCount: state.entryState.get('entriesCount'),
-        draftsCount: state.draftState.get('draftsCount')
+        draftsCount: state.draftState.get('draftsCount'),
     };
 }
 
@@ -135,7 +153,7 @@ function mapDispatchToProps (dispatch) {
         appActions: new AppActions(dispatch),
         draftActions: new DraftActions(dispatch),
         entryActions: new EntryActions(dispatch),
-        profileActions: new ProfileActions(dispatch)
+        profileActions: new ProfileActions(dispatch),
     };
 }
 

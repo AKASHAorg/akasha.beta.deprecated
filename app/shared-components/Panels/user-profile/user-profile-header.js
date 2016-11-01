@@ -13,7 +13,7 @@ import {
 } from '../../svg';
 
 const UserProfileHeader = (props) => {
-    const { profile, profileAddress } = props;
+    const { profile, profileAddress, profileActions, showPanel } = props;
     // const avatarImage = `data:image/gif;base64,${
     //     btoa(String.fromCharCode.apply(null, profile.getIn(['optionalData', 'avatar'])))
     // }`;
@@ -102,10 +102,11 @@ const UserProfileHeader = (props) => {
                 tooltip="Profile"
                 style={{ width: '40px', height: '40px' }}
                 iconStyle={svgStyle.style}
+                onTouchTap={() => { showPanel({ name: 'editProfile', overlay: true }); }}
               >
                 <SvgIcon
                   viewBox={svgStyle.viewBox}
-                  className={"hand-icon"}
+                  className="hand-icon"
                   color={svgStyle.color}
                   hoverColor={svgStyle.hoverColor}
                 >
@@ -130,7 +131,7 @@ const UserProfileHeader = (props) => {
                 tooltip="Logout"
                 style={{ width: '40px', height: '40px' }}
                 iconStyle={svgStyle.style}
-                onTouchTap={() => { props.profileActions.logout(profileAddress); }}
+                onTouchTap={() => { profileActions.logout(profileAddress); }}
               >
                 <SvgIcon
                   viewBox={svgStyle.viewBox}
@@ -170,7 +171,8 @@ UserProfileHeader.propTypes = {
     rootStyle: PropTypes.shape(),
     profileActions: PropTypes.shape(),
     profileAddress: PropTypes.string,
-    profile: PropTypes.shape()
+    profile: PropTypes.shape(),
+    showPanel: PropTypes.func
 };
 UserProfileHeader.defaultProps = {
     rootStyle: {

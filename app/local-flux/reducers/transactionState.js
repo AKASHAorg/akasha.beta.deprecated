@@ -23,7 +23,9 @@ const MinedTransaction = Record({
 const initialState = fromJS({
     pending: new List(),
     mined: new List(),
-    errors: new List()
+    errors: new List(),
+    fetchingMined: false,
+    fetchingPending: false
 });
 
 const transactionState = createReducer(initialState, {
@@ -54,26 +56,39 @@ const transactionState = createReducer(initialState, {
             errors: state.get('errors').push(new ErrorRecord(action.error))
         }),
 
+    [types.GET_MINED_TRANSACTION]: state =>
+        state.merge({
+            fetchingMined: true
+        }),
+
     [types.GET_MINED_TRANSACTION_ERROR]: (state, action) =>
         state.merge({
-            errors: state.get('errors').push(new ErrorRecord(action.error))
+            errors: state.get('errors').push(new ErrorRecord(action.error)),
+            fetchingMined: false
         }),
 
     [types.GET_MINED_TRANSACTION_SUCCESS]: (state, action) =>
         state.merge({
-            mined: state.get('mined').concat(action.data)
+            mined: state.get('mined').concat(action.data),
+            fetchingMined: false
+        }),
+
+    [types.GET_PENDING_TRANSACTION]: state =>
+        state.merge({
+            fetchingPending: true
         }),
 
     [types.GET_PENDING_TRANSACTION_SUCCESS]: (state, action) =>
         state.merge({
-            pending: state.get('pending').concat(action.data)
+            pending: state.get('pending').concat(action.data),
+            fetchingPending: false
         }),
 
-    [types.GET_PENDING_TRANSACTION_ERROR]: (state, action) => {
-        return state.merge({
-            errors: state.get('errors').push(new ErrorRecord(action.error))
-        });
-    },
+    [types.GET_PENDING_TRANSACTION_ERROR]: (state, action) =>
+        state.merge({
+            errors: state.get('errors').push(new ErrorRecord(action.error)),
+            fetchingPending: false
+        })
 });
 
 export default transactionState;

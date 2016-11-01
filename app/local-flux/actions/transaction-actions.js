@@ -32,6 +32,7 @@ class TransactionActions {
     }
 
     getMinedTransactions = () => {
+        this.dispatch(transactionActionCreators.getMinedTransactions());
         this.transactionService.getTransactions({
             type: 'mined',
             onError: (error) => {
@@ -44,6 +45,7 @@ class TransactionActions {
     }
 
     getPendingTransactions = () => {
+        this.dispatch(transactionActionCreators.getPendingTransactions());
         this.transactionService.getTransactions({
             type: 'pending',
             onError: (error) => {

@@ -3,7 +3,6 @@ import { fromJS, List, Record } from 'immutable';
 import * as types from '../constants/TempProfileConstants';
 import { createReducer } from './create-reducer';
 
-
 const ErrorRecord = Record({
     code: null,
     message: '',
@@ -50,12 +49,12 @@ const tempProfileState = createReducer(initialState, {
             })
         }),
     // temp profile saved to IndexedDB successfully
-    [types.CREATE_TEMP_PROFILE_SUCCESS]: (state, { profileData }) =>
+    [types.CREATE_TEMP_PROFILE_SUCCESS]: (state, { profileData, nextAction }) =>
         state.mergeDeep({
             tempProfile: {
                 ...profileData,
                 currentStatus: state.getIn(['tempProfile', 'currentStatus']).mergeDeep({
-                    nextAction: 'createEthAddress'
+                    nextAction
                 })
             }
         }),

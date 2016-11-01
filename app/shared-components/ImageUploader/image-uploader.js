@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PropTypes, Component } from 'react';
 import { SvgIcon, RaisedButton } from 'material-ui';
 import AddPhotoIcon from 'material-ui/svg-icons/image/add-a-photo';
 import DeleteIcon from 'material-ui/svg-icons/action/delete';
@@ -6,9 +6,10 @@ import imageCreator, { getResizedImages } from '../../utils/imageUtils';
 import { injectIntl } from 'react-intl';
 import { generalMessages } from 'locale-data/messages';
 import { remote } from 'electron';
+
 const { dialog } = remote;
 
-class ImageUploader extends React.Component {
+class ImageUploader extends Component {
     constructor (props) {
         super(props);
         this.state = {};
@@ -68,6 +69,10 @@ class ImageUploader extends React.Component {
         });
     }
     _handleClearImage = () => {
+        const { clearImage } = this.props;
+        if (clearImage) {
+            clearImage();
+        }
         this.setState({
             images: null,
             imageFile: null,
@@ -83,7 +88,8 @@ class ImageUploader extends React.Component {
             uploadButtonStyle,
             errorStyle,
             multiFiles,
-            intl
+            intl,
+            initialImageLink
         } = this.props;
         const { initialImageFile } = this.state;
         return (
@@ -110,13 +116,42 @@ class ImageUploader extends React.Component {
                 </div>
                 }
                 {!this.state.isNewImage && initialImageFile &&
-                  <img
-                    src={this.state.initialImageFile}
-                    role="presentation"
-                    style={imageStyle}
-                  />
+                  <div>
+                    <img
+                      src={this.state.initialImageFile}
+                      role="presentation"
+                      style={imageStyle}
+                    />
+                    <div style={clearImageButtonStyle}>
+                      <RaisedButton
+                        fullWidth
+                        secondary
+                        icon={<DeleteIcon />}
+                        style={{ width: '100%' }}
+                        onClick={this._handleClearImage}
+                      />
+                    </div>
+                  </div>
                 }
-                {!this.state.isNewImage && !initialImageFile &&
+                {!this.state.isNewImage && !initialImageFile && initialImageLink &&
+                  <div>
+                    <img
+                      src={initialImageLink}
+                      role="presentation"
+                      style={imageStyle}
+                    />
+                    <div style={clearImageButtonStyle}>
+                      <RaisedButton
+                        fullWidth
+                        secondary
+                        icon={<DeleteIcon />}
+                        style={{ width: '100%' }}
+                        onClick={this._handleClearImage}
+                      />
+                    </div>
+                  </div>
+                }
+                {!this.state.isNewImage && !initialImageFile && !initialImageLink &&
                   <div style={emptyContainerStyle}>
                     <SvgIcon
                       style={{ height: '42px', width: '100%' }}
@@ -176,19 +211,21 @@ ImageUploader.defaultProps = {
     }
 };
 ImageUploader.propTypes = {
-    minWidth: React.PropTypes.number,
-    minHeight: React.PropTypes.number,
-    dialogTitle: React.PropTypes.string,
-    multiFiles: React.PropTypes.bool,
-    intl: React.PropTypes.object,
-    initialImage: React.PropTypes.object,
-    uploadButtonStyle: React.PropTypes.object,
-    clearImageButtonStyle: React.PropTypes.object,
-    imageStyle: React.PropTypes.object,
-    errorStyle: React.PropTypes.object,
-    emptyContainerStyle: React.PropTypes.object
+    minWidth: PropTypes.number,
+    minHeight: PropTypes.number,
+    dialogTitle: PropTypes.string,
+    multiFiles: PropTypes.bool,
+    intl: PropTypes.shape(),
+    initialImage: PropTypes.shape(),
+    initialImageLink: PropTypes.string,
+    uploadButtonStyle: PropTypes.shape(),
+    clearImageButtonStyle: PropTypes.shape(),
+    imageStyle: PropTypes.shape(),
+    errorStyle: PropTypes.shape(),
+    emptyContainerStyle: PropTypes.shape(),
+    clearImage: PropTypes.func
 };
 ImageUploader.contextTypes = {
-    muiTheme: React.PropTypes.object
+    muiTheme: PropTypes.object
 };
 export default injectIntl(ImageUploader, { withRef: true });

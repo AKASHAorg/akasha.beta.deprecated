@@ -1,9 +1,11 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
+import { injectIntl } from 'react-intl';
 import { SettingsActions, AppActions, ProfileActions, EProcActions } from 'local-flux';
 import { getMuiTheme } from 'material-ui/styles';
 import { Snackbar } from 'material-ui';
 import { AuthDialog, ConfirmationDialog } from 'shared-components';
+import { notificationMessages } from 'locale-data/messages';
 
 import lightTheme from '../layouts/AkashaTheme/lightTheme';
 import darkTheme from '../layouts/AkashaTheme/darkTheme';
@@ -13,8 +15,11 @@ class App extends Component {
         super(props);
         this.state = {
             userPassword: '',
+            rememberPasswordChecked: false,
+            rememberTime: 5,
             voteWeight: 1,
-            theme: props.theme
+            theme: props.theme,
+            notification: ''
         };
     }
     getChildContext = () => {
@@ -38,11 +43,33 @@ class App extends Component {
         }, 0);
     }
     componentWillReceiveProps (nextProps) {
+        const { intl } = nextProps;
+        const showAuthDialog = nextProps.appState.get('showAuthDialog');
+        const notifications = nextProps.profileState.get('notifications').toJS();
         if (nextProps.theme !== this.props.theme) {
             this.setState({
                 theme: nextProps.theme
             });
         }
+        if (!showAuthDialog && this.props.appState.get('showAuthDialog')) {
+            this.setState({
+                rememberPasswordChecked: false,
+                rememberTime: 5,
+                userPassword: ''
+            });
+        }
+        const notification = Object.keys(notifications).find(key => notifications[key] === true);
+        if (notification) {
+            this.setState({
+                notification: intl.formatMessage(notificationMessages[notification])
+            });
+            nextProps.profileActions.hideNotification(notification);
+        }
+    }
+    hideNotification = () => {
+        this.setState({
+            notification: ''
+        });
     }
     _handleSendReport = () => {
     };
@@ -51,19 +78,31 @@ class App extends Component {
         appActions.clearErrors();
     };
     _handleConfirmation = () => {
-        const { profileState, profileActions, appActions } = this.props;
-        const loggedProfile = profileState.get('loggedProfile');
-        const address = loggedProfile.get('address');
-        const password = this.state.userPassword;
-        profileActions.login({ address, password }).then(() => {
-            const nextAction = profileState.get('afterAuthAction');
-            return appActions[nextAction]();
+        const { profileState, profileActions } = this.props;
+        const { rememberTime, userPassword, rememberPasswordChecked } = this.state;
+        const account = profileState.get('loggedProfile').get('account');
+        const remember = rememberPasswordChecked ? rememberTime : 1;
+        profileActions.login({
+            account, password: userPassword, rememberTime: remember, reauthenticate: true
         });
     };
-    _setUnlockInterval = () => {};
+    _setRememberPassword = () => {
+        this.setState({
+            rememberPasswordChecked: !this.state.rememberPasswordChecked
+        });
+    };
     _setPassword = (ev) => {
+        const { profileState, profileActions } = this.props;
+        if (profileState.get('errors').size > 0) {
+            profileActions.clearErrors();
+        }
         this.setState({
             userPassword: ev.target.value
+        });
+    };
+    _setRememberTime = (ev, index, value) => {
+        this.setState({
+            rememberTime: value
         });
     };
     _handleCancellation = () => {
@@ -90,7 +129,8 @@ class App extends Component {
         });
     };
     render () {
-        const { appState } = this.props;
+        const { appState, profileState } = this.props;
+        const loginErrors = profileState.get('errors');
         const error = appState.get('error');
         const confirmationDialog = appState.get('confirmationDialog');
         const errorMessage = error.get('code')
@@ -102,19 +142,25 @@ class App extends Component {
             {this.props.children}
             <Snackbar
               style={{ maxWidth: 500 }}
-              action="send report"
+              autoHideDuration={3000}
+              action=""
               onActionTouchTap={this._handleSendReport}
-              message={errorMessage}
-              open={(!error.fatal && error.code !== 0)}
-              onRequestClose={this._handleErrorClose}
+              message={this.state.notification}
+              open={!!this.state.notification}
+              onRequestClose={this.hideNotification}
             />
             <AuthDialog
               password={this.state.userPassword}
-              onUnlockCheck={this._setUnlockInterval}
               onPasswordChange={this._setPassword}
+              rememberChecked={this.state.rememberPasswordChecked}
+              onRememberPasswordCheck={this._setRememberPassword}
+              rememberTime={this.state.rememberTime}
+              onRememberTimeChange={this._setRememberTime}
               isVisible={isAuthDialogVisible}
               onSubmit={this._handleConfirmation}
               onCancel={this._handleCancellation}
+              errors={loginErrors}
+              loginRequested={profileState.get('loginRequested')}
             />
             <ConfirmationDialog
               isOpen={isConfirmationDialogVisible}
@@ -164,4 +210,4 @@ function mapDispatchToProps (dispatch) {
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(App);
+)(injectIntl(App));

@@ -163,7 +163,7 @@
   },
   "dependencies": {
     "@akashaproject/contracts.js": "1.1.6",
-    "@akashaproject/geth-connector": "1.6.8",
+    "@akashaproject/geth-connector": "1.6.9",
     "@akashaproject/ipfs-connector": "1.6.9",
     "@types/ramda": "0.0.2",
     "bluebird": "3.4.6",
