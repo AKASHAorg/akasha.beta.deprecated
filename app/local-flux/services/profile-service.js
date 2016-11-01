@@ -1,13 +1,19 @@
 import BaseService from './base-service';
+import profileDB from './db/profile';
 
 const Channel = window.Channel;
 /**
  * Profile Service.
  * default open channels => ['getProfileData', 'getMyBalance', 'getIpfs']
- * available channels => ['manager', 'getProfileData', 'getMyBalance', 'getIpfs', 'unregister']
+ * available channels => ['manager', 'getProfileData', 'getMyBalance', 'getIpfs', 'unregister',
+ *      'updateProfileData']
  */
 class ProfileService extends BaseService {
-
+    constructor () {
+        super();
+        this.serverManager = Channel.server.profile.manager;
+        this.clientManager = Channel.client.profile.manager;
+    }
     /**
      * Get ballance for a profile
      * Request:
@@ -50,6 +56,24 @@ class ProfileService extends BaseService {
         );
         Channel.server.profile.getProfileData.send(options);
     };
+
+    updateProfileData = ({ token, ipfs, gas = 2000000, onError = () => {}, onSuccess }) => {
+        const clientChannel = Channel.client.profile.updateProfileData;
+        const serverChannel = Channel.server.profile.updateProfileData;
+        this.openChannel({
+            serverManager: this.serverManager,
+            clientManager: this.clientManager,
+            serverChannel,
+            clientChannel,
+            listenerCb: this.createListener(
+                onError,
+                onSuccess,
+                clientChannel.channelName
+            )
+        }, () => {
+            serverChannel.send({ token, ipfs, gas });
+        });
+    };
     /**
      * retrieve profile data by ipfs address
      * Request:
@@ -72,6 +96,36 @@ class ProfileService extends BaseService {
      * @todo gather more info and implement!
      */
     unregister = () => {};
+
+    addUpdateProfileTx = ({ updateProfileTx, onError = () => {}, onSuccess }) => {
+        console.log('adding update profile tx', updateProfileTx);
+        profileDB.transaction('rw', profileDB.updateProfileTx, () =>
+            profileDB.updateProfileTx.put(updateProfileTx)
+        ).then((data) => {
+            console.log('add updated profile success ', data);
+            onSuccess(data);
+        }).catch((reason) => {
+            console.log('add updated profile error ', reason);
+            onError(reason);
+        });
+    };
+
+    deleteUpdateProfileTx = ({ tx, onError = () => {}, onSuccess }) => {
+        profileDB.transaction('rw', profileDB.updateProfileTx, () =>
+            profileDB.updateProfileTx.where('tx').equals(tx).delete()
+        ).then(() => {
+            console.log('delete updated profile success', tx);
+            onSuccess();
+        }).catch(reason => onError(reason));
+    }
+
+    getUpdateProfileTxs = ({ onError = () => {}, onSuccess }) => {
+        profileDB.transaction('r', profileDB.updateProfileTx, () =>
+            profileDB.updateProfileTx.toArray()
+        )
+        .then(data => onSuccess(data))
+        .catch(reason => onError(reason));
+    }
 }
 
 export { ProfileService };

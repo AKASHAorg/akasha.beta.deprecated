@@ -1,4 +1,4 @@
-import { AuthService, RegistryService } from '../services';
+import { AuthService, RegistryService, ProfileService } from '../services';
 import { tempProfileActionCreators, profileActionCreators } from './action-creators';
 
 let tempProfileActions = null;
@@ -9,6 +9,7 @@ class TempProfileActions {
             tempProfileActions = this;
         }
         this.authService = new AuthService();
+        this.profileService = new ProfileService();
         this.registryService = new RegistryService();
         this.dispatch = dispatch;
         return tempProfileActions;
@@ -19,15 +20,17 @@ class TempProfileActions {
      *  Saves a temporary profile to indexedDB
      */
 
-    createTempProfile = (profileData) => {
+    createTempProfile = (profileData, nextAction = 'createEthAddress') => {
         this.dispatch(tempProfileActionCreators.createTempProfile(profileData));
         this.registryService.createTempProfile({
             profileData,
             currentStatus: {
-                nextAction: 'createEthAddress'
+                nextAction
             },
             onSuccess: () => {
-                this.dispatch(tempProfileActionCreators.createTempProfileSuccess(profileData));
+                this.dispatch(
+                    tempProfileActionCreators.createTempProfileSuccess(profileData, nextAction)
+                );
             },
             onError: (error) => {
                 this.dispatch(
@@ -143,7 +146,7 @@ class TempProfileActions {
         if (isLoggedIn && !publishRequested) {
             this.dispatch(tempProfileActionCreators.publishProfile());
             this.dispatch((dispatch) => {
-                console.log('publishProfile', tempProfile);
+                debugger;
                 this.registryService.registerProfile({
                     token: loggedProfile.get('token'),
                     username,

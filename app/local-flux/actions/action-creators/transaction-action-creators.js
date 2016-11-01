@@ -28,6 +28,12 @@ export function addToQueueError (error) {
     };
 }
 
+export function getMinedTransactions () {
+    return {
+        type: types.GET_MINED_TRANSACTION
+    };
+}
+
 export function getMinedTransactionsError (error) {
     return {
         type: types.GET_MINED_TRANSACTION_ERROR,
@@ -39,6 +45,12 @@ export function getMinedTransactionsSuccess (data) {
     return {
         type: types.GET_MINED_TRANSACTION_SUCCESS,
         data
+    };
+}
+
+export function getPendingTransactions () {
+    return {
+        type: types.GET_PENDING_TRANSACTION
     };
 }
 

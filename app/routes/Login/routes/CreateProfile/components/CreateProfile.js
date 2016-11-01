@@ -152,7 +152,7 @@ class CreateProfile extends Component {
         const link = links[index];
         link[field] = fieldValue;
         if (field === 'url') {
-            if (field.indexOf('akasha://')) {
+            if (fieldValue.indexOf('akasha://') === 0) {
                 link.type = 'internal';
             } else {
                 link.type = 'other';

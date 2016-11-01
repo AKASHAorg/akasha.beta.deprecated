@@ -136,6 +136,11 @@ const generalMessages = defineMessages({
         description: 'Save changes in a form',
         defaultMessage: 'Save'
     },
+    update: {
+        id: 'app.general.update',
+        description: 'Update data',
+        defaultMessage: 'Update'
+    },
     abort: {
         id: 'app.general.abort',
         description: 'abort button label',
@@ -151,10 +156,10 @@ const generalMessages = defineMessages({
         description: 'Placeholder for ethereum address field. Not sure if Ethereum should be translated',
         defaultMessage: 'Ethereum Address'
     },
-    started: {
-        id: 'app.general.started',
+    running: {
+        id: 'app.general.running',
         description: 'service status',
-        defaultMessage: 'Started'
+        defaultMessage: 'Running'
     },
     downloading: {
         id: 'app.general.downloading',
