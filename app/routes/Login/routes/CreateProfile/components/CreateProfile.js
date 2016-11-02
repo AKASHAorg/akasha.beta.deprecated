@@ -112,9 +112,9 @@ class CreateProfile extends Component {
     };
     _handleAddLink = () => {
         const currentLinks = this.state.links.slice();
-        const notEmpty = this._checkLinks();
+        const isEmpty = this._checkLinks();
 
-        if (!notEmpty) {
+        if (!isEmpty) {
             currentLinks.push({
                 title: '',
                 url: '',
@@ -138,12 +138,17 @@ class CreateProfile extends Component {
             links
         });
     };
-    _checkLinks = () =>
-        this.state.links.every(link =>
-            Object.keys(link).forEach(key =>
-                (key !== 'id' && key !== 'type' && link[key].length !== 0)
-            )
-        );
+    _checkLinks = () => {
+        let isEmpty = false;
+        this.state.links.forEach((link) => {
+            Object.keys(link).forEach((key) => {
+                if (key !== 'id' && key !== 'type' && link[key].length === 0) {
+                    isEmpty = true;
+                }
+            });
+        });
+        return isEmpty;
+    }
 
     _handleLinkChange = (field, linkId, ev) => {
         const links = r.clone(this.state.links);

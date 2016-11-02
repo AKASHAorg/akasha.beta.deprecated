@@ -36,6 +36,10 @@ class SideBar extends Component {
         }
         return this.context.router.push(`${basePath}/${to}`);
     };
+    _handlePeople = () => {
+        const path = 'profile';
+        this._handleNavigation(path);
+    }
     _handlePanelShow = (panelName) => {
         this.props.appActions.showPanel(panelName);
     };

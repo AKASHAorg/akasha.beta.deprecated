@@ -38,11 +38,14 @@ class Auth extends Component {
             loggedProfile,
             loginErrors,
             gethStatus,
-            ipfsStatus } = nextProps;
+            ipfsStatus,
+            fetchingLocalProfiles } = nextProps;
         const oldIpfsStatus = this.props.ipfsStatus;
         const ipfsStatusChanged = (ipfsStatus.get('started') && !oldIpfsStatus.get('started'))
             || (ipfsStatus.get('spawned') && !oldIpfsStatus.get('spawned'));
         const profilesChanged = this.props.localProfiles.size !== nextProps.localProfiles.size;
+        const fetchingLocalProfilesChanged = !fetchingLocalProfiles &&
+            this.props.fetchingLocalProfiles;
         if (gethStatus.get('api') && !this.props.gethStatus.get('api') && !localProfiles.size) {
             profileActions.getLocalProfiles();
         }
@@ -57,7 +60,7 @@ class Auth extends Component {
             }
         }
         if ((ipfsStatus.get('started') || ipfsStatus.get('spawned')) && localProfiles.size > 0
-                && (profilesChanged || ipfsStatusChanged)) {
+                && (profilesChanged || ipfsStatusChanged || fetchingLocalProfilesChanged)) {
             profileActions.getProfileData(localProfiles.toJS());
         }
         return null;
@@ -276,6 +279,7 @@ Auth.propTypes = {
     gethStatus: PropTypes.shape().isRequired,
     ipfsStatus: PropTypes.shape().isRequired,
     profilesFetched: React.PropTypes.bool,
+    fetchingLocalProfiles: React.PropTypes.bool,
     loggedProfile: React.PropTypes.shape().isRequired,
     loginErrors: React.PropTypes.shape().isRequired,
     style: React.PropTypes.shape(),

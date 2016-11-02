@@ -14,6 +14,30 @@ export function transactionMinedError (error) {
     };
 }
 
+export function deletePendingTx (flags) {
+    return {
+        type: types.DELETE_PENDING_TX,
+        flags
+    };
+}
+
+export function deletePendingTxSuccess (tx, flags) {
+    return {
+        type: types.DELETE_PENDING_TX_SUCCESS,
+        tx,
+        flags
+    };
+}
+
+export function deletePendingTxError (error, flags) {
+    error.code = 'DPTE01';
+    return {
+        type: types.DELETE_PENDING_TX_ERROR,
+        error,
+        flags
+    };
+}
+
 export function addToQueueSuccess (data) {
     return {
         type: types.ADD_TO_QUEUE_SUCCESS,

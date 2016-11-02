@@ -68,7 +68,7 @@ class PublishEntryRunner extends Component {
         if (notListeningPendingTags.size > 0) {
             notListeningPendingTags.forEach((tagObj) => {
                 transactionActions.listenForMinedTx();
-                transactionActions.addToQueue([tagObj.tx]);
+                transactionActions.addToQueue([{ tx: tagObj.tx }]);
             });
         } else {
             this._registerDraft(draft);
