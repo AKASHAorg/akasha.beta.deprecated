@@ -111,6 +111,85 @@ export function clearLocalProfilesSuccess () {
     };
 }
 
+
+export function updateProfileData () {
+    return {
+        type: types.UPDATE_PROFILE_DATA
+    };
+}
+
+export function updateProfileDataSuccess (profileData) {
+    return {
+        type: types.UPDATE_PROFILE_DATA_SUCCESS,
+        profileData
+    };
+}
+
+export function updateProfileDataError (error) {
+    error.code = 'UPDE01';
+    return {
+        type: types.UPDATE_PROFILE_DATA_ERROR,
+        error
+    };
+}
+
+export function addUpdateProfileTx () {
+    return {
+        type: types.ADD_UPDATE_PROFILE_TX
+    };
+}
+
+export function addUpdateProfileTxSuccess (data) {
+    return {
+        type: types.ADD_UPDATE_PROFILE_TX_SUCCESS,
+        data
+    };
+}
+
+export function addUpdateProfileTxError (error) {
+    error.code = 'AUPTE01';
+    return {
+        type: types.ADD_UPDATE_PROFILE_TX_ERROR,
+        error
+    };
+}
+
+export function deleteUpdateProfileTxSuccess (tx) {
+    return {
+        type: types.DELETE_UPDATE_PROFILE_TX_SUCCESS,
+        tx
+    };
+}
+
+export function deleteUpdateProfileTxError (error) {
+    error.code = 'DUPTE01';
+    return {
+        type: types.DELETE_UPDATE_PROFILE_TX_ERROR,
+        error
+    };
+}
+
+export function getUpdateProfileTxs () {
+    return {
+        type: types.GET_UPDATE_PROFILE_TXS,
+    };
+}
+
+export function getUpdateProfileTxsSuccess (profiles) {
+    return {
+        type: types.GET_UPDATE_PROFILE_TXS_SUCCESS,
+        profiles
+    };
+}
+
+export function getUpdateProfileTxsError (error) {
+    error.code = 'GUPTE01';
+    return {
+        type: types.GET_UPDATE_PROFILE_TXS_ERROR,
+        error
+    };
+}
+
 export function getLoggedProfile (flags) {
     return {
         type: types.GET_LOGGED_PROFILE,
