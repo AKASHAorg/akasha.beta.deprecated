@@ -5,8 +5,9 @@ const Channel = window.Channel;
 /**
  * Profile Service.
  * default open channels => ['getProfileData', 'getMyBalance', 'getIpfs']
- * available channels => ['manager', 'getProfileData', 'getMyBalance', 'getIpfs', 'unregister',
- *      'updateProfileData']
+ * available channels => ['manager', 'getProfileData', 'updateProfileData', 'getMyBalance',
+ *      'getIpfs', 'unregister', 'follow', 'getFollowersCount', 'getFollowingCount',
+ *      'getFollowers', 'getFollowing']
  */
 class ProfileService extends BaseService {
     constructor () {
@@ -97,34 +98,58 @@ class ProfileService extends BaseService {
      */
     unregister = () => {};
 
-    addUpdateProfileTx = ({ updateProfileTx, onError = () => {}, onSuccess }) => {
-        console.log('adding update profile tx', updateProfileTx);
-        profileDB.transaction('rw', profileDB.updateProfileTx, () =>
-            profileDB.updateProfileTx.put(updateProfileTx)
-        ).then((data) => {
-            console.log('add updated profile success ', data);
-            onSuccess(data);
-        }).catch((reason) => {
-            console.log('add updated profile error ', reason);
-            onError(reason);
+    getFollowersCount = ({ profileAddress, onError = () => {}, onSuccess }) => {
+        const clientChannel = Channel.client.profile.getFollowersCount;
+        const serverChannel = Channel.server.profile.getFollowersCount;
+        this.openChannel({
+            serverManager: this.serverManager,
+            clientManager: this.clientManager,
+            serverChannel,
+            clientChannel,
+            listenerCb: this.createListener(
+                onError,
+                onSuccess,
+                clientChannel.channelName
+            )
+        }, () => {
+            serverChannel.send({ profileAddress });
         });
-    };
-
-    deleteUpdateProfileTx = ({ tx, onError = () => {}, onSuccess }) => {
-        profileDB.transaction('rw', profileDB.updateProfileTx, () =>
-            profileDB.updateProfileTx.where('tx').equals(tx).delete()
-        ).then(() => {
-            console.log('delete updated profile success', tx);
-            onSuccess();
-        }).catch(reason => onError(reason));
     }
 
-    getUpdateProfileTxs = ({ onError = () => {}, onSuccess }) => {
-        profileDB.transaction('r', profileDB.updateProfileTx, () =>
-            profileDB.updateProfileTx.toArray()
-        )
-        .then(data => onSuccess(data))
-        .catch(reason => onError(reason));
+    getFollowingCount = ({ profileAddress, onError = () => {}, onSuccess }) => {
+        const clientChannel = Channel.client.profile.getFollowingCount;
+        const serverChannel = Channel.server.profile.getFollowingCount;
+        this.openChannel({
+            serverManager: this.serverManager,
+            clientManager: this.clientManager,
+            serverChannel,
+            clientChannel,
+            listenerCb: this.createListener(
+                onError,
+                onSuccess,
+                clientChannel.channelName
+            )
+        }, () => {
+            serverChannel.send({ profileAddress });
+        });
+    }
+
+    follow = ({ token, profileAddress, gas = 2000000, onError = () => {}, onSuccess }) => {
+        const clientChannel = Channel.client.profile.follow;
+        const serverChannel = Channel.server.profile.follow;
+        this.openChannel({
+            serverManager: this.serverManager,
+            clientManager: this.clientManager,
+            serverChannel,
+            clientChannel,
+            listenerCb: this.createListener(
+                onError,
+                onSuccess,
+                clientChannel.channelName
+            )
+        }, () => {
+            serverChannel.send({ token, profileAddress, gas });
+        });
     }
 }
 

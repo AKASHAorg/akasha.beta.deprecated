@@ -10,34 +10,35 @@ class ProfileUpdater extends Component {
 
     componentWillReceiveProps (nextProps) {
         const { fetchingMined, fetchingPending, minedTx, pendingTx, profileActions,
-            transactionActions, loggedProfile, updatingProfile, deletingPendingTx } = nextProps;
+            transactionActions, loggedProfile, deletingPendingTx } = nextProps;
         const isNotFetching = !fetchingMined && !fetchingPending;
-        const pendingUpdateProfileTx = isNotFetching ?
+        const pendingFollowTx = isNotFetching ?
             pendingTx.toJS().filter(tx =>
-                tx.profile === loggedProfile && tx.type === 'updateProfile'
+                tx.profile === loggedProfile && tx.type === 'followProfile'
             ) :
             [];
-        if (pendingUpdateProfileTx.length) {
-            const updateTx = pendingUpdateProfileTx[0].tx;
-            const isMined = minedTx.find(mined => mined.tx === updateTx);
+        if (pendingFollowTx.length) {
+            const followTx = pendingFollowTx[0].tx;
+            const isMined = minedTx.find(mined => mined.tx === followTx);
+            const followPending = true;
             if (isMined && !deletingPendingTx) {
                 transactionActions.listenForMinedTx({ watch: false });
-                transactionActions.deletePendingTx(updateTx);
-                profileActions.getProfileData([{ profile: loggedProfile }], true);
-                profileActions.updateProfileDataSuccess();
+                transactionActions.deletePendingTx(followTx);
+                // profileActions.getFollowers( ... );
+                profileActions.followProfileSuccess(pendingFollowTx[0].profileAddress);
                 if (this.requestTimeout) {
                     clearTimeout(this.requestTimeout);
                 }
-            } else if (!updatingProfile) {
+            } else if (!followPending) {
                 profileActions.updateProfile();
                 transactionActions.listenForMinedTx();
-                transactionActions.addToQueue([{ tx: updateTx, type: 'updateProfile' }]);
+                transactionActions.addToQueue([{ tx: followTx, type: 'updateProfile' }]);
                 this.requestTimeout = setTimeout(() => {
                     const transactions = this.props.pendingTx.toJS().filter(tx =>
                         tx.profile === loggedProfile && tx.type === 'updateProfile'
                     );
                     if (transactions.length > 0) {
-                        transactionActions.deletePendingTx(updateTx);
+                        transactionActions.deletePendingTx(followTx);
                         profileActions.deleteUpdateProfileTx(transactions[0].tx);
                         transactionActions.listenForMinedTx({ watch: false });
                         profileActions.updateProfileDataError({ message: 'transaction timeout' });
@@ -64,7 +65,6 @@ ProfileUpdater.propTypes = {
     fetchingMined: PropTypes.bool,
     fetchingPending: PropTypes.bool,
     deletingPendingTx: PropTypes.bool,
-    updatingProfile: PropTypes.bool,
     minedTx: PropTypes.shape(),
     pendingTx: PropTypes.shape(),
     loggedProfile: PropTypes.string

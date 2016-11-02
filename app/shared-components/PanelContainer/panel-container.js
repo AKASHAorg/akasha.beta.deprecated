@@ -24,7 +24,8 @@ class PanelContainer extends React.Component {
             maxWidth: this.props.width
         };
         const { scrollTop } = this.state;
-        const { header, title, subTitle, showBorder } = this.props;
+        const { header, title, subTitle, showBorder, headerHeight, headerMinHeight, headerStyle,
+            contentStyle } = this.props;
         const { muiTheme } = this.context;
         return (
           <Paper
@@ -37,10 +38,13 @@ class PanelContainer extends React.Component {
               scrollTop={scrollTop}
               showBorder={showBorder}
               muiTheme={muiTheme}
+              headerHeight={headerHeight}
+              headerMinHeight={headerMinHeight}
+              headerStyle={headerStyle}
             />
             <div
               className="row"
-              style={{
+              style={Object.assign({
                   position: 'absolute',
                   top: 56,
                   bottom: 56,
@@ -50,7 +54,7 @@ class PanelContainer extends React.Component {
                   overflowX: 'hidden',
                   padding: '32px 24px',
                   margin: 0
-              }}
+              }, contentStyle)}
               ref={(panelContent) => { this.panelContent = panelContent; }}
               onScroll={this._handleScroll}
             >
@@ -83,7 +87,11 @@ class PanelContainer extends React.Component {
     }
 }
 PanelContainer.defaultProps = {
-    width: 640
+    width: 640,
+    headerHeight: 80,
+    headerMinHeight: 56,
+    headerStyle: {},
+    contentStyle: {}
 };
 PanelContainer.propTypes = {
     actions: PropTypes.node,
@@ -94,7 +102,11 @@ PanelContainer.propTypes = {
     header: PropTypes.node,
     leftActions: PropTypes.node,
     style: PropTypes.shape(),
-    subTitle: PropTypes.string
+    subTitle: PropTypes.string,
+    headerHeight: PropTypes.number,
+    headerMinHeight: PropTypes.number,
+    headerStyle: PropTypes.shape(),
+    contentStyle: PropTypes.shape()
 };
 
 PanelContainer.contextTypes = {

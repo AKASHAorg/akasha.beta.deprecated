@@ -7,8 +7,7 @@ const profileDB = new Dexie('profiles');
 profileDB.version(1).stores({
     localProfiles: '&address, username',
     loggedProfile: '&account, profile',
-    tempProfile: '&username, currentStatus',
-    updateProfileTx: '&profile, tx'
+    tempProfile: '&username, currentStatus'
 });
 
 //

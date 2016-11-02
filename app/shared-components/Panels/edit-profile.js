@@ -33,12 +33,11 @@ class EditProfile extends Component {
 
     componentWillMount () {
         const { profile, profileActions } = this.props;
-        profileActions.getFullLoggedProfile();
-        profileActions.getProfileData([{ profile: profile.get('profile'), full: true }]);
+        profileActions.getProfileData([{ profile: profile.get('profile') }], true);
     }
 
     componentWillReceiveProps (nextProps) {
-        if (!nextProps.fetchingFullLoggedProfile && this.props.fetchingFullLoggedProfile) {
+        if (!nextProps.fetchingProfileData && this.props.fetchingProfileData) {
             const { firstName, lastName, about, backgroundImage, links,
                 avatar } = nextProps.profile.toJS();
             this.setState({
@@ -88,7 +87,9 @@ class EditProfile extends Component {
             let mustCorrectErrors = false;
             Object.keys(this.state.formValues).forEach((key) => {
                 if (this.state.formValues[key] === '') {
-                    this.refs[key].focus();
+                    if (this.refs[key]) {
+                        this.refs[key].focus();
+                    }
                     mustCorrectErrors = true;
                 }
             });
@@ -123,9 +124,9 @@ class EditProfile extends Component {
 
     _handleAddLink = () => {
         const currentLinks = this.state.links.slice();
-        const notEmpty = this._checkLinks();
+        const isEmpty = this._checkLinks();
 
-        if (notEmpty) {
+        if (!isEmpty) {
             currentLinks.push({
                 title: '',
                 url: '',
@@ -152,12 +153,17 @@ class EditProfile extends Component {
         });
     };
 
-    _checkLinks = () =>
-        this.state.links.every(link =>
-            Object.keys(link).forEach(key =>
-                (key !== 'id' && key !== 'type' && link[key].length !== 0)
-            )
-        );
+    _checkLinks = () => {
+        let isEmpty = false;
+        this.state.links.forEach((link) => {
+            Object.keys(link).forEach((key) => {
+                if (key !== 'id' && key !== 'type' && link[key].length === 0) {
+                    isEmpty = true;
+                }
+            });
+        });
+        return isEmpty;
+    }
 
     _handleLinkChange = (field, linkId, ev) => {
         const links = r.clone(this.state.links);
@@ -390,7 +396,7 @@ EditProfile.propTypes = {
     profile: PropTypes.shape(),
     profileActions: PropTypes.shape(),
     showPanel: PropTypes.func,
-    fetchingFullLoggedProfile: PropTypes.bool,
+    fetchingProfileData: PropTypes.bool,
     updateProfileData: PropTypes.func,
     loginRequested: PropTypes.bool,
     updatingProfile: PropTypes.bool
