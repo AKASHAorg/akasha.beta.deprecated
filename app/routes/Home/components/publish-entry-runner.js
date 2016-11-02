@@ -22,6 +22,9 @@ class PublishEntryRunner extends Component {
         if (publishableDrafts.size > 0) {
             // show a message in a snackbar informing that publishing is in progress
             publishableDrafts.forEach((draft) => {
+                if (draft.get('status').currentAction === 'publishingTags') {
+                    this._publishDraftTags(draft);
+                }
                 this._resumeDraftPublishing(draft);
             });
         }
@@ -33,8 +36,26 @@ class PublishEntryRunner extends Component {
         });
         draftActions.updateDraft(newDraft);
     }
-    _resumeDraftPublishing = (draft) => {
+    _findPublishableTags = (tags, callbackFn) => {
         const tagService = new TagService();
+        let itProc = 0;
+        const nonExistent = [];
+        tags.forEach((tag, key, arr) => {
+            const cb = (ev, {data, error}) => {
+                console.log('checking', tag);
+                itProc += 1;
+                if(!data.exists) {
+                    nonExistent.push(tag);
+                }
+                if(itProc === arr.length) {
+                    callbackFn(nonExistent)
+                }
+            }
+            tagService.checkExistingTags(tag, cb);
+        })
+    }
+    _resumeDraftPublishing = (draft) => {
+
         const { draftActions, transactionActions, pendingTags, loggedProfile,
             pendingTransactions } = this.props;
         const draftTags = draft.get('tags');
@@ -47,18 +68,8 @@ class PublishEntryRunner extends Component {
             return this._registerDraft(draft);
         }
         // check on blockchain and register tag
-        tagsToRegister.forEach((tag) => {
-            tagService.checkExistingTags(tag, (ev, { data, error }) => {
-                if (error) {
-                    console.error(error);
-                }
-                if (!data.exists) {
-                    this._updateDraftStatus(draft, {
-                        currentAction: 'publishingTags'
-                    });
-                    this._registerTag(tag);
-                }
-            });
+        this._findPublishableTags(tagsToRegister, (notRegisteredTags) => {
+            console.log(notRegisteredTags, 'notRegisteredTags');
         });
         const notListeningPendingTags = pendingTags.filter(tagObj =>
             pendingTransactions.findIndex(tx => tx === tagObj.tx) === -1);
@@ -76,7 +87,9 @@ class PublishEntryRunner extends Component {
     }
     _verifyExpiration = expirationDate =>
         Date.parse(expirationDate) > Date.now();
+    _publishDraftTags = (draft) => {
 
+    }
     _registerDraft = (draft) => {
         const { draftActions, loggedProfile } = this.props;
         this._updateDraftStatus(draft, {
