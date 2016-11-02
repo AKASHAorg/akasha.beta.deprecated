@@ -59,15 +59,10 @@ class HomeContainer extends React.Component {
     };
 
     render () {
-<<<<<<< 2840649d89117bf7aa075b6d6e292a2a38706118
-        const { appActions, draftActions, fetchingLoggedProfile, fetchingProfileData, loggedProfileData,
-            profileActions, entriesCount, draftsCount, loggedProfile, activePanel,
-            fetchingDraftsCount, fetchingPublishedEntries, params,
+        const { appActions, draftActions, fetchingLoggedProfile, loggedProfileData,
+            profileActions, entriesCount, draftsCount, loggedProfile, activePanel, params,
             fetchingFullLoggedProfile, loginRequested, updatingProfile } = this.props;
-=======
-        const { appActions, draftActions, fetchingLoggedProfile, loggedProfileData, profileActions,
-            entriesCount, draftsCount, loggedProfile, activePanel, params } = this.props;
->>>>>>> chore(entryPublishing): Entry publishing
+
         const profileAddress = loggedProfile.get('profile');
         const account = loggedProfile.get('account');
         const loadingInProgress = !loggedProfileData || fetchingLoggedProfile;
