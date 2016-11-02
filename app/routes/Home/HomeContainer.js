@@ -9,20 +9,22 @@ import EntryModal from './components/entry-modal';
 import PublishEntryRunner from './components/publish-entry-runner';
 
 class HomeContainer extends React.Component {
+    componentWillMount () {
+        const { profileActions } = this.props;
+        profileActions.resetFlags();
+    }
     componentDidMount () {
-        const { profileActions, draftActions, params } = this.props;
-        const username = params.username;
+        const { profileActions } = this.props;
         profileActions.getLoggedProfile();
     }
-    componentWillReceiveProps (prevProps) {
+    componentWillReceiveProps (nextProps) {
         const { profileActions, entryActions, draftActions } = this.props;
-        const { loggedProfile, fetchingLoggedProfile, loginRequested } = this.props;
+        const { loggedProfile, fetchingLoggedProfile } = nextProps;
 
         if (!loggedProfile.get('account') && !fetchingLoggedProfile) {
             this.context.router.push('/authenticate/');
         }
         if (loggedProfile && loggedProfile.get('profile')) {
-            console.log(loggedProfile, 'fetch profile data');
             profileActions.getProfileData([{ profile: loggedProfile.get('profile') }]);
             draftActions.getDraftsCount(loggedProfile.get('profile'));
             entryActions.getEntriesCount(loggedProfile.get('profile'));
@@ -33,27 +35,30 @@ class HomeContainer extends React.Component {
         this.props.appActions.hidePanel();
     }
     _getLoadingMessage = () => {
-        const { fetchingLoggedProfile, fetchingDraftsCount, fetchingPublishedEntries } = this.props;
-
+        const { fetchingDraftsCount, fetchingEntriesCount, fetchingLoggedProfile,
+            fetchingProfileData } = this.props;
         if (fetchingLoggedProfile) {
+            return 'Loading profile';
+        }
+        if (fetchingProfileData) {
             return 'Loading profile data';
         }
         if (fetchingDraftsCount) {
             return 'Loading drafts';
         }
-        if (fetchingPublishedEntries) {
+        if (fetchingEntriesCount) {
             return 'Loading your published entries';
         }
         return 'Loading...';
     }
     render () {
-        const { appActions, draftActions, fetchingLoggedProfile, fetchingProfileData, loggedProfileData,
-            profileActions, entriesCount, draftsCount, loggedProfile, activePanel,
-            fetchingDraftsCount, fetchingPublishedEntries, params } = this.props;
+        const { appActions, draftActions, fetchingLoggedProfile, loggedProfileData, profileActions,
+            entriesCount, draftsCount, loggedProfile, activePanel, params } = this.props;
         const profileAddress = loggedProfile.get('profile');
         const account = loggedProfile.get('account');
+        const loadingInProgress = !loggedProfileData || fetchingLoggedProfile;
 
-        if (fetchingLoggedProfile || fetchingDraftsCount || fetchingPublishedEntries || fetchingProfileData) {
+        if (loadingInProgress) {
             return (
               <div>{this._getLoadingMessage()}</div>
             );
@@ -102,7 +107,7 @@ HomeContainer.propTypes = {
     fetchingLoggedProfile: PropTypes.bool,
     fetchingProfileData: PropTypes.bool,
     fetchingDraftsCount: PropTypes.bool,
-    fetchingPublishedEntries: PropTypes.bool,
+    fetchingEntriesCount: PropTypes.bool,
     loggedProfile: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
     profileActions: PropTypes.shape(),
@@ -121,7 +126,6 @@ function mapStateToProps (state, ownProps) {
         fetchingProfileData: state.profileState.getIn(['flags', 'fetchingProfileData']),
         fetchingDraftsCount: state.draftState.getIn(['flags', 'fetchingDraftsCount']),
         fetchingPublishingDrafts: state.draftState.getIn(['flags', 'fetchingPublishingDrafts']),
-        fetchingPublishedEntries: state.draftState.getIn(['flags', 'fetchingPublishedEntries']),
         fetchingEntriesCount: state.entryState.getIn(['flags', 'fetchingEntriesCount']),
         activePanel: state.panelState.get('activePanel').get('name'),
         loginRequested: state.profileState.getIn(['flags', 'loginRequested']),

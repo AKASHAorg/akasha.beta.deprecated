@@ -5,16 +5,20 @@ class DraftService {
     constructor () {
         this.listeners = {};
     }
+
     saveDraft = partialDraft =>
         entriesDB.transaction('rw', entriesDB.drafts, () => {
             const { id, ...other } = partialDraft;
+            console.log('updating draft in service', other);
             if (id) {
-                return entriesDB.drafts.update(id, other).then((updated) => {
-                    if (updated) {
-                        return partialDraft;
-                    }
-                    return null;
-                });
+                entriesDB.drafts.where('id').equals(id).modify(other);
+                return entriesDB.drafts.where('id').equals(id).toArray().then(results => results[0]);
+                // return entriesDB.drafts.update(id, other).then((updated) => {
+                //     if (updated) {
+                //         return partialDraft;
+                //     }
+                //     return null;
+                // });
             }
             return entriesDB.drafts.add(partialDraft).then(() =>
                 partialDraft
@@ -34,33 +38,39 @@ class DraftService {
                          return convDrafts;
                      })
         );
+
     getDraftsCount = ({ profile, onSuccess, onError }) =>
         entriesDB.transaction('rw', entriesDB.drafts, () =>
-            entriesDB.drafts.where('profile').equals(profile).count()
+            entriesDB.drafts
+                .where('profile')
+                .equals(profile)
+                .count()
         )
         .then(counter => onSuccess(counter))
         .catch(error => onError(error));
-    // get resource by id (drafts or entries);
-    getDraftById = (draftId) =>
-        entriesDB.transaction('r', entriesDB[table], () =>
-            entriesDB[table]
+
+    // get draft by id;
+    getById = ({ id, onSuccess, onError }) =>
+        entriesDB.transaction('r', entriesDB.drafts, () =>
+            entriesDB.drafts
                 .where('id')
-                .equals(draftId)
+                .equals(id)
                 .first()
-        );
+        )
+        .then(result => onSuccess(result))
+        .catch(reason => onError(reason));
+
     getPublishingDrafts = ({ profile, onSuccess, onError }) =>
-        entriesDB.transaction('r', entriesDB.drafts, () => {
-            console.log(profile, 'get drafts for profileAddress');
-            return entriesDB.drafts
+        entriesDB.transaction('r', entriesDB.drafts, () =>
+            entriesDB.drafts
                 .where('profile')
                 .equals(profile)
-                .and((val) => {
-                    console.log(val, 'value');
-                    return val.status.publishing === true &&
-                        val.status.publishingConfirmed === true;
-                })
+                .and(val =>
+                    val.status.publishing === true &&
+                        val.status.publishingConfirmed === true
+                )
                 .toArray()
-        })
+        )
         .then(results => onSuccess(results))
         .catch(reason => onError(reason))
 }

@@ -1,5 +1,5 @@
 /* eslint new-cap: ["error", { "capIsNewExceptions": ["Record"] }]*/
-import { fromJS, List, Record } from 'immutable';
+import { fromJS, List, Record, Map } from 'immutable';
 import { createReducer } from './create-reducer';
 import * as types from '../constants/EntryConstants';
 
@@ -43,6 +43,7 @@ const initialState = fromJS({
     published: new List(),
     savedEntries: new List(),
     errors: new List(),
+    flags: new Map(),
     fetchingEntriesCount: false,
     entriesCount: 0 // entries published by a logged profile
 });
@@ -50,11 +51,16 @@ const initialState = fromJS({
  * State of the entries and drafts
  */
 const entryState = createReducer(initialState, {
-    [types.GET_ENTRIES_COUNT]: state =>
-        state.set('fetchingEntriesCount', true),
+    [types.GET_ENTRIES_COUNT]: (state, { flags }) =>
+        state.merge({
+            flags: state.get('flags').merge(flags)
+        }),
 
-    [types.GET_ENTRIES_COUNT_SUCCESS]: (state, { data }) =>
-        state.set('entriesCount', parseInt(data.count, 10)),
+    [types.GET_ENTRIES_COUNT_SUCCESS]: (state, { data, flags }) =>
+        state.merge({
+            entriesCount: parseInt(data.count, 10),
+            flags: state.get('flags').merge(flags)
+        }),
 
     [types.PUBLISH_ENTRY_SUCCESS]: (state, action) => {
         const draftIndex = state.get('drafts').findIndex(drft =>
@@ -71,15 +77,6 @@ const entryState = createReducer(initialState, {
             published: entriesList
         });
     },
-
-    [types.GET_ENTRIES_COUNT]: state =>
-        state.set('fetchingEntriesCount', true),
-
-    [types.GET_ENTRIES_COUNT_SUCCESS]: (state, { count }) =>
-        state.merge({
-            entriesCount: count,
-            fetchingEntriesCount: false
-        }),
 
     [types.CREATE_SAVED_ENTRY_SUCCESS]: (state, action) =>
         state.merge({

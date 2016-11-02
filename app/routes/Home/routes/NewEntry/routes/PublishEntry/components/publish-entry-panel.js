@@ -7,6 +7,7 @@ import LicenceDialog from 'shared-components/Dialogs/licence-dialog';
 import TagsField from 'shared-components/TagsField/tags-field';
 import licences from 'shared-components/Dialogs/licences';
 import { TagService } from 'local-flux/services';
+import { convertFromRaw } from 'draft-js';
 
 class PublishPanel extends React.Component {
     constructor (props) {
@@ -19,33 +20,41 @@ class PublishPanel extends React.Component {
             tags: [],
             existingTags: [],
             licence: null,
-            featuredImage: []
+            featuredImage: {},
+            fetchingDraft: true
         };
-    }
-    componentWillMount () {
-        const currentDraft = this._findCurrentDraft(this.props.drafts);
-        if (!currentDraft) {
-            this.setState({
-                fetchingDraft: true
-            });
-        }
     }
     componentDidMount () {
         const panelSize = ReactDOM.findDOMNode(this).getBoundingClientRect();
         this.panelSize = panelSize;
     }
     componentWillReceiveProps (nextProps) {
-        const currentDraft = this._findCurrentDraft(nextProps.drafts);
-        console.log(currentDraft, nextProps.drafts);
-        if (currentDraft) {
+        const { draft, params } = nextProps;
+        const loggedProfileData = this._getLoggedProfileData();
+        console.log('will receive props', draft.getIn(['status', 'currentAction']));
+        if (draft && draft.get('status').currentAction === 'confirmPublish') {
+            this.context.router.push(`/${loggedProfileData.get('username')}/draft/${params.draftId}/publish-status`);
+        }
+        if (draft && this.state.fetchingDraft) {
             this.setState({
-                featchingDraft: false
-            }, () => this._populateDraft(currentDraft));
+                fetchingDraft: false
+            }, () => this._populateDraft(draft));
         }
     }
     _populateDraft = (draft) => {
-        console.log('populate', draft);
-        const { title, content, excerpt, tags, licence, featuredImage } = draft;
+        const { content, licence, excerpt } = draft;
+        let { title, tags, featuredImage } = draft;
+        const contentMap = convertFromRaw(content);
+        const blockMap = contentMap.getBlockMap();
+        if (!title) {
+            title = this._generateTitle(blockMap);
+        }
+        if (!featuredImage) {
+            featuredImage = this._generateFeaturedImage(blockMap);
+        }
+        if (typeof tags.toJS === 'function') {
+            tags = tags.toJS();
+        }
         this.setState({
             title,
             content,
@@ -55,6 +64,22 @@ class PublishPanel extends React.Component {
             featuredImage
         });
     }
+    _getLoggedProfileData = () => {
+        const { loggedProfile, profiles } = this.props;
+        return profiles.find(prf =>
+            prf.get('profile') === loggedProfile.get('profile'));
+    }
+    _generateTitle = blockMap =>
+        blockMap.find(block => block.text !== '').text;
+
+    _generateFeaturedImage = (blockMap) => {
+        const imageBlock = blockMap.find(block =>
+            block.type === 'atomic' && block.data.get('type') === 'image');
+
+        if (imageBlock) return imageBlock.data.get('files');
+        return {};
+    }
+
     _findCurrentDraft = (drafts) => {
         const { params } = this.props;
         return drafts.find(draft => draft.id === parseInt(params.draftId, 10));
@@ -78,9 +103,10 @@ class PublishPanel extends React.Component {
         });
     };
     _publishEntry = () => {
-        const { draftActions, profileState } = this.props;
-        const loggedProfile = profileState.get('loggedProfile');
-        // this._handleDraftUpdate(null, 'featuredImage');
+        console.log('make the publish happen!');
+        const { draftActions, profiles, loggedProfile } = this.props;
+        const loggedProfileData = profiles.find(prf =>
+            prf.get('profile') === loggedProfile.get('profile'));
         const {
             title,
             content,
@@ -91,7 +117,7 @@ class PublishPanel extends React.Component {
         } = this.state;
         const tagsToRegister = tags.filter(tag => this.state.existingTags.indexOf(tag) === -1);
         const draftId = parseInt(this.props.params.draftId, 10);
-        const router = this.context.router;
+        console.log(title, featuredImage);
         draftActions.updateDraft({
             id: draftId,
             title,
@@ -99,13 +125,14 @@ class PublishPanel extends React.Component {
             excerpt,
             licence,
             featuredImage,
+            profile: loggedProfileData.get('profile'),
             status: {
                 currentAction: 'confirmPublish',
+                tagsToRegister,
                 mustRegisterTags: (tagsToRegister.length > 0),
+                publishing: true,
                 publishingConfirmed: false
             }
-        }).then(() => {
-            router.push(`/${loggedProfile.get('userName')}/draft/${draftId}/publish-status`);
         });
     };
     _handleTagAutocomplete = (value) => {
@@ -140,9 +167,8 @@ class PublishPanel extends React.Component {
     _getFeaturedImage = () => {
         const panelSize = this.panelSize;
         if (this.state.featuredImage) {
-            const stateFeaturedImage = this.state.featuredImage.sort((a, b) => a.width - b.width);
             return {
-                files: stateFeaturedImage,
+                files: this.state.featuredImage,
                 containerSize: panelSize
             };
         }
@@ -289,7 +315,9 @@ PublishPanel.propTypes = {
     drafts: React.PropTypes.shape(),
     params: React.PropTypes.shape(),
     draftActions: React.PropTypes.shape(),
-    tagActions: React.PropTypes.shape()
+    tagActions: React.PropTypes.shape(),
+    profiles: React.PropTypes.shape(),
+    loggedProfile: React.PropTypes.shape()
 };
 PublishPanel.contextTypes = {
     router: React.PropTypes.shape()

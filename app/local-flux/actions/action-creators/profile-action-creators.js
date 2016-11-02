@@ -27,7 +27,7 @@ export function getCurrentProfile (flags) {
     return {
         type: types.GET_CURRENT_PROFILE,
         flags
-    }
+    };
 }
 export function getCurrentProfileSuccess (data, flags) {
     return {
@@ -59,22 +59,26 @@ export function logoutError (error) {
         error
     };
 }
-export function getLocalProfiles () {
+export function getLocalProfiles (flags) {
     return {
-        type: types.GET_LOCAL_PROFILES
+        type: types.GET_LOCAL_PROFILES,
+        flags
     };
 }
-export function getLocalProfilesSuccess (data) {
+export function getLocalProfilesSuccess (data, flags) {
     return {
         type: types.GET_LOCAL_PROFILES_SUCCESS,
-        data
+        data,
+        flags
     };
 }
-export function getLocalProfilesError (error) {
+
+export function getLocalProfilesError (error, flags) {
     error.code = 'GLPE01';
     return {
         type: types.GET_LOCAL_PROFILES_ERROR,
-        error
+        error,
+        flags
     };
 }
 
@@ -82,7 +86,7 @@ export function getProfileData (flags) {
     return {
         type: types.GET_PROFILE_DATA,
         flags
-    }
+    };
 }
 
 export function getProfileDataSuccess (data, flags) {
@@ -162,5 +166,11 @@ export function getProfileBalanceError (error) {
 export function clearErrors () {
     return {
         type: types.CLEAR_PROFILE_ERRORS
+    };
+}
+
+export function resetFlags () {
+    return {
+        type: types.RESET_FLAGS,
     };
 }
