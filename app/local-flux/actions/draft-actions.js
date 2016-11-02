@@ -30,7 +30,7 @@ class DraftActions {
     createDraftSync = (profile, draft) =>
         this.dispatch((dispatch, getState) => {
             const flags = getState().draftState.get('flags');
-            if(!flags.get('savingDraft')) {
+            if (!flags.get('savingDraft')) {
                 dispatch(draftActionCreators.startSavingDraft({
                     savingDraft: true
                 }));
@@ -45,21 +45,25 @@ class DraftActions {
             }
             return Promise.resolve();
         });
-
-    updateDraft = (changes) => {
+    // must return a promise.
+    updateDraft = changes =>
         this.dispatch((dispatch, getState) => {
             const flags = getState().draftState.get('flags');
-            if(!flags.get('savingDraft')) {
+            if (!flags.get('savingDraft')) {
                 dispatch(draftActionCreators.startSavingDraft({
                     savingDraft: true
                 }));
                 return this.draftService.saveDraft(changes).then((savedDraft) => {
-                    dispatch(draftActionCreators.updateDraftSuccess(savedDraft));
+                    dispatch(draftActionCreators.updateDraftSuccess(savedDraft, {
+                        savingDraft: false
+                    }));
                     return savedDraft;
-                }).catch(reason => dispatch(draftActionCreators.updateDraftError(reason)));
+                }).catch(reason => dispatch(draftActionCreators.updateDraftError(reason, {
+                    savingDraft: false
+                })));
             }
+            return Promise.resolve();
         });
-    };
 
     updateDraftThrottled = (draft) => {
         this.dispatch(draftActionCreators.startSavingDraft());
@@ -82,16 +86,17 @@ class DraftActions {
     getDraftsCount = (profile) => {
         this.dispatch((dispatch, getState) => {
             const flags = getState().draftState.get('flags');
-            if(!flags.get('fetchingDraftsCount') && !flags.get('draftsCountFetched')) {
+            if (!flags.get('fetchingDraftsCount') && !flags.get('draftsCountFetched')) {
                 dispatch(draftActionCreators.getDraftsCount({
                     fetchingDraftsCount: true
                 }));
                 this.draftService.getDraftsCount({
                     profile,
-                    onSuccess: result => dispatch(draftActionCreators.getDraftsCountSuccess(result, {
-                        fetchingDraftsCount: false,
-                        draftsCountFetched: true
-                    })),
+                    onSuccess: result =>
+                        dispatch(draftActionCreators.getDraftsCountSuccess(result, {
+                            fetchingDraftsCount: false,
+                            draftsCountFetched: true
+                        })),
                     onError: reason => dispatch(draftActionCreators.getDraftsCountError(reason, {
                         fetchingDraftsCount: false,
                         draftsCountFetched: false
@@ -102,24 +107,26 @@ class DraftActions {
     };
 
     getDraftById = id =>
-        this.draftService.getById('drafts', id).then((result) => {
-            this.dispatch(draftActionCreators.getDraftByIdSuccess(result));
-            return result;
-        }).catch(reason => this.dispatch(draftActionCreators.getDraftByIdError(reason)));
+        this.draftService.getById({
+            id,
+            onSuccess: result => this.dispatch(draftActionCreators.getDraftByIdSuccess(result)),
+            onError: error => this.dispatch(draftActionCreators.getDraftByIdError(error))
+        });
 
-    getPublishingDrafts = profile => {
+    getPublishingDrafts = (profile) => {
         this.dispatch((dispatch, getState) => {
             const flags = getState().draftState.get('flags');
-            if(!flags.get('fetchingPublishingDrafts') && !flags.get('publishingDraftsFetched')) {
+            if (!flags.get('fetchingPublishingDrafts') && !flags.get('publishingDraftsFetched')) {
                 dispatch(draftActionCreators.getPublishingDrafts({
                     fetchingPublishingDrafts: true,
                 }));
                 this.draftService.getPublishingDrafts({
                     profile,
-                    onSuccess: data => dispatch(draftActionCreators.getPublishingDraftsSuccess(data, {
-                        fetchingPublishingDrafts: false,
-                        publishingDraftsFetched: true
-                    })),
+                    onSuccess: data =>
+                        dispatch(draftActionCreators.getPublishingDraftsSuccess(data, {
+                            fetchingPublishingDrafts: false,
+                            publishingDraftsFetched: true
+                        })),
                     onError: error => dispatch(draftActionCreators.getPublishingDraftsError(error, {
                         fetchingPublishingDrafts: false,
                         publishingDraftsFetched: false

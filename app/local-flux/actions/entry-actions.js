@@ -15,12 +15,25 @@ class EntryActions {
     }
 
     getEntriesCount = (profileAddress) => {
-        console.log('getting entries count');
-        this.dispatch(entryActionCreators.getEntriesCount());
-        this.entryService.getEntriesCount({
-            profileAddress,
-            onSuccess: result => this.dispatch(entryActionCreators.getEntriesCountSuccess(result)),
-            onError: reason => this.dispatch(entryActionCreators.getEntriesCountError(reason))
+        this.dispatch((dispatch, getState) => {
+            const flags = getState().entryState.get('flags');
+            if (!flags.get('fetchingEntriesCount') && !flags.get('entriesCountFetched')) {
+                dispatch(entryActionCreators.getEntriesCount({
+                    fetchingEntriesCount: true
+                }));
+                this.entryService.getEntriesCount({
+                    profileAddress,
+                    onSuccess: result =>
+                        dispatch(entryActionCreators.getEntriesCountSuccess(result, {
+                            fetchingEntriesCount: false,
+                            entriesCountFetched: true
+                        })),
+                    onError: reason => dispatch(entryActionCreators.getEntriesCountError(reason, {
+                        fetchingEntriesCount: false,
+                        entriesCountFetched: true
+                    }))
+                });
+            }
         });
     };
 

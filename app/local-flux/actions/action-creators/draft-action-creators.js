@@ -24,19 +24,21 @@ export function createDraftError (error, flags) {
     };
 }
 
-export function updateDraftSuccess (draft) {
+export function updateDraftSuccess (draft, flags) {
     return {
         type: types.UPDATE_DRAFT_SUCCESS,
-        draft
+        draft,
+        flags
     };
 }
 
-export function updateDraftError (error) {
+export function updateDraftError (error, flags) {
     error.code = 'UDE';
     console.error(error, 'updateDraftError');
     return {
         type: types.UPDATE_DRAFT_ERROR,
-        error
+        error,
+        flags
     };
 }
 
@@ -116,7 +118,7 @@ export function getPublishingDrafts (flags) {
     return {
         type: types.GET_PUBLISHING_DRAFTS,
         flags
-    }
+    };
 }
 
 export function getPublishingDraftsSuccess (drafts, flags) {
@@ -127,12 +129,12 @@ export function getPublishingDraftsSuccess (drafts, flags) {
     };
 }
 
-export function getPublishingDraftsError (error, drafts) {
+export function getPublishingDraftsError (error, flags) {
     error.code = 'GPDE';
     console.error('getPublishingDraftsError', error);
     return {
         type: types.GET_PUBLISHING_DRAFTS_ERROR,
         error,
-        drafts
+        flags
     };
 }

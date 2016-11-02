@@ -24,31 +24,30 @@ class AddEntryPage extends Component {
     }
     componentWillMount () {
         const { params, draftActions } = this.props;
-        console.log(params, 'params');
         if (params.draftId === 'new') {
-            this.setState({
-                isNewDraft: true
-            });
-        } else {
-            this.setState({
-                fetchingDraft: true
-            }, () => {
-                draftActions.getDraftById(parseInt(params.draftId, 10));
+            return this.setState({
+                isNewDraft: true,
+                fetchingDraft: false
             });
         }
+        return this.setState({
+            fetchingDraft: true
+        }, () => {
+            draftActions.getDraftById(parseInt(params.draftId, 10));
+        });
     }
     componentWillReceiveProps (nextProps) {
         const { drafts, params } = nextProps;
         // logic for populating existing draft;
-        if (!this.state.isNewDraft) {
-            console.log(drafts.size > 0);
-            if (nextProps.drafts.size > 0) {
-                // means that the drafts are fetched;
-                this.setState({
-                    fetchingDraft: false
-                });
-            }
+        const currentDraft = drafts.find(drft => drft.get('id') === parseInt(params.draftId, 10));
+        if (this.state.isNewDraft) {
+            return this.setState({
+                fetchingDraft: false
+            });
         }
+        return this.setState({
+            fetchingDraft: (typeof currentDraft === 'undefined')
+        });
     }
     _findCurrentDraft = (drafts) => {
         const { params } = this.props;
@@ -83,39 +82,46 @@ class AddEntryPage extends Component {
     _setupEntryForPublication = () => {
         const { params } = this.props;
         this._saveDraft().then((draft) => {
-            console.log('saved draft', draft);
-            let draftId = params.draftId;
+            let draftId;
+            if (draft.id) {
+                draftId = draft.id;
+            }
             if (typeof draft === 'number') {
                 draftId = draft;
             }
-            console.log(draftId, 'draftId');
             this.context.router.push(`/${params.username}/draft/${draftId}/publish`);
         });
     }
     _getHeaderTitle = () => {
         const { savingDraft } = this.props;
-        const { fetchingDraft, draftMissing } = this.state;
+        const { fetchingDraft, draftMissing, isNewDraft } = this.state;
         let headerTitle = 'First entry';
         if (fetchingDraft) {
             headerTitle = 'Finding draft';
         } else if (draftMissing) {
             headerTitle = 'Draft is missing';
-        } else if (!savingDraft) {
+        } else if (!isNewDraft) {
             headerTitle = 'New Entry';
         } else if (savingDraft) {
             headerTitle = 'Saving draft...';
         }
         return headerTitle;
     }
+    _getInitialContent = () => {
+        const { isNewDraft, fetchingDraft } = this.state;
+        const { drafts } = this.props;
+        if (isNewDraft || fetchingDraft) {
+            return null;
+        }
+        console.log(this._findCurrentDraft(drafts).get('content'));
+        return this._findCurrentDraft(drafts).get('content');
+    }
     render () {
         const { drafts } = this.props;
         const { shouldBeSaved, fetchingDraft, draftMissing } = this.state;
         const currentDraft = this._findCurrentDraft(drafts);
-        let initialContent = null;
-        if (currentDraft) {
-            initialContent = currentDraft.get('content');
-        }
-        console.log(initialContent, currentDraft, 'initialContent');
+        const initialContent = this._getInitialContent();
+
         return (
           <div style={{ height: '100%', position: 'relative' }}>
             <Toolbar
@@ -168,7 +174,7 @@ class AddEntryPage extends Component {
               }}
             >
               {fetchingDraft &&
-                <div>Preparing draft...</div>
+                <div>Loading draft...</div>
               }
               {!fetchingDraft && draftMissing &&
                 <div>The draft you are looking for cannot be found!</div>

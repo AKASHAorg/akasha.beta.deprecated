@@ -38,7 +38,6 @@ class PublishEntryStatus extends React.Component {
         const { drafts, params } = this.props;
         const draftToPublish = drafts.find(draft =>
           draft.id === parseInt(params.draftId, 10));
-
         return (
           <PanelContainer
             showBorder
@@ -56,12 +55,12 @@ class PublishEntryStatus extends React.Component {
               {!draftToPublish &&
                 <div>Finding draft.. Please wait.</div>
               }
-              {!draftToPublish.getIn(['status', 'publishingConfirmed']) &&
+              {draftToPublish && !draftToPublish.get('status').publishingConfirmed &&
                 <div className="row">
                   <div className="col-xs-12 start-xs">
                     <h3>Confirm Publishing</h3>
                     <p>Please confirm publishing of the article
-                      <b> "{draftToPublish.get('title')}"</b>
+                      <b> &quot;{draftToPublish.get('title')}&quot;</b>
                     </p>
                     <p>Fees:</p>
                     <p>Tags fee: {this._approximateFees(draftToPublish).tagPublishingFees} ETH</p>
@@ -81,10 +80,10 @@ class PublishEntryStatus extends React.Component {
                   </div>
                 </div>
               }
-              {draftToPublish.getIn(['status', 'publishingConfirmed']) &&
+              {draftToPublish && draftToPublish.get('status').publishingConfirmed &&
                 <div className="row">
                   <div className="col-xs-12 center-xs">
-                    <CircularProgress size={1} />
+                    <CircularProgress size={80} />
                   </div>
                   <div className="col-xs-12 center-xs" style={{ paddingTop: 16 }}>
                     <h3>Status of the entry..</h3>
@@ -102,4 +101,7 @@ PublishEntryStatus.propTypes = {
     params: React.PropTypes.shape(),
     drafts: React.PropTypes.shape()
 };
+PublishEntryStatus.contextTypes = {
+    router: React.PropTypes.shape()
+}
 export default PublishEntryStatus;
