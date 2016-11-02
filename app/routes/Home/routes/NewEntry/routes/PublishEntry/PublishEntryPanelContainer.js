@@ -5,8 +5,7 @@ import PublishEntryPanel from './components/publish-entry-panel';
 function mapStateToProps (state) {
     return {
         loggedProfile: state.profileState.get('loggedProfile'),
-        profileState: state.profileState,
-        entryState: state.entryState,
+        profiles: state.profileState.get('profiles'),
         drafts: state.draftState.get('drafts'),
         tagState: state.tagState
     };

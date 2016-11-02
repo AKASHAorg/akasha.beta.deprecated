@@ -10,9 +10,12 @@ import ProfileUpdater from './components/profile-updater';
 import PublishEntryRunner from './components/publish-entry-runner';
 
 class HomeContainer extends React.Component {
+    componentWillMount () {
+        const { profileActions } = this.props;
+        profileActions.resetFlags();
+    }
     componentDidMount () {
-        const { profileActions, draftActions, params } = this.props;
-        const username = params.username;
+        const { profileActions } = this.props;
         profileActions.getLoggedProfile();
     }
     componentWillReceiveProps (nextProps) {
@@ -33,15 +36,18 @@ class HomeContainer extends React.Component {
         this.props.appActions.hidePanel();
     }
     _getLoadingMessage = () => {
-        const { fetchingLoggedProfile, fetchingDraftsCount, fetchingPublishedEntries } = this.props;
-
+        const { fetchingDraftsCount, fetchingEntriesCount, fetchingLoggedProfile,
+            fetchingProfileData } = this.props;
         if (fetchingLoggedProfile) {
+            return 'Loading profile';
+        }
+        if (fetchingProfileData) {
             return 'Loading profile data';
         }
         if (fetchingDraftsCount) {
             return 'Loading drafts';
         }
-        if (fetchingPublishedEntries) {
+        if (fetchingEntriesCount) {
             return 'Loading your published entries';
         }
         return 'Loading...';
@@ -53,14 +59,20 @@ class HomeContainer extends React.Component {
     };
 
     render () {
+<<<<<<< 2840649d89117bf7aa075b6d6e292a2a38706118
         const { appActions, draftActions, fetchingLoggedProfile, fetchingProfileData, loggedProfileData,
             profileActions, entriesCount, draftsCount, loggedProfile, activePanel,
             fetchingDraftsCount, fetchingPublishedEntries, params,
             fetchingFullLoggedProfile, loginRequested, updatingProfile } = this.props;
+=======
+        const { appActions, draftActions, fetchingLoggedProfile, loggedProfileData, profileActions,
+            entriesCount, draftsCount, loggedProfile, activePanel, params } = this.props;
+>>>>>>> chore(entryPublishing): Entry publishing
         const profileAddress = loggedProfile.get('profile');
         const account = loggedProfile.get('account');
+        const loadingInProgress = !loggedProfileData || fetchingLoggedProfile;
 
-        if (fetchingLoggedProfile || fetchingDraftsCount || fetchingPublishedEntries || fetchingProfileData) {
+        if (loadingInProgress) {
             return (
               <div>{this._getLoadingMessage()}</div>
             );
@@ -120,6 +132,7 @@ HomeContainer.propTypes = {
     fetchingDraftsCount: PropTypes.bool,
     fetchingPublishedEntries: PropTypes.bool,
     loginRequested: PropTypes.bool,
+    fetchingEntriesCount: PropTypes.bool,
     loggedProfile: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
     updatingProfile: PropTypes.bool,
@@ -134,8 +147,8 @@ function mapStateToProps (state, ownProps) {
         fetchingLoggedProfile: state.profileState.getIn(['flags', 'fetchingLoggedProfile']),
         fetchingProfileData: state.profileState.getIn(['flags', 'fetchingProfileData']),
         fetchingDraftsCount: state.draftState.getIn(['flags', 'fetchingDraftsCount']),
+        fetchingPublishedEntries: state.draftState.get('fetchingPublishedEntries'),
         fetchingPublishingDrafts: state.draftState.getIn(['flags', 'fetchingPublishingDrafts']),
-        fetchingPublishedEntries: state.draftState.getIn(['flags', 'fetchingPublishedEntries']),
         fetchingEntriesCount: state.entryState.getIn(['flags', 'fetchingEntriesCount']),
         activePanel: state.panelState.get('activePanel').get('name'),
         loginRequested: state.profileState.getIn(['flags', 'loginRequested']),

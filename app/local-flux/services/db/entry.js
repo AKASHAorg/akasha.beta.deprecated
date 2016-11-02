@@ -22,6 +22,10 @@ entriesDB.drafts.hook('creating', (primaryKey, obj) => {
 });
 
 entriesDB.drafts.hook('updating', (modifications, primaryKey, obj) => {
+    return {
+        'status.updated_at': new Date().toString(),
+        'status.created_at': obj.status.created_at
+    };
     // return {
     //     status: {
     //         created_at: obj.status.created_at,

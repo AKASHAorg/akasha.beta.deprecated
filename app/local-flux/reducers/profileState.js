@@ -117,16 +117,16 @@ const profileState = createReducer(initialState, {
             errors: state.get('errors').push(new ErrorRecord(error))
         }),
 
-    [types.GET_LOCAL_PROFILES]: state =>
-        state.merge({ profilesFetched: false }),
+    [types.GET_LOCAL_PROFILES]: (state, { flags }) =>
+        state.merge({ flags: state.get('flags').merge(flags) }),
 
-    [types.GET_LOCAL_PROFILES_SUCCESS]: (state, { data }) =>
+    [types.GET_LOCAL_PROFILES_SUCCESS]: (state, { data, flags }) =>
         state.merge({
             profiles: new List(data.map(prf => new Profile({
                 ethAddress: prf.key,
                 profile: prf.profile
             }))),
-            profilesFetched: true
+            flags: state.get('flags').merge(flags)
         }),
 
     [types.CLEAR_LOCAL_PROFILES_SUCCESS]: state =>
@@ -259,7 +259,11 @@ const profileState = createReducer(initialState, {
                 [notification]: false
             })
         });
-    }
+    },
+    [types.RESET_FLAGS]: state =>
+        state.merge({
+            flags: new Map()
+        }),
 });
 
 export default profileState;

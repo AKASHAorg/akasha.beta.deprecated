@@ -79,12 +79,25 @@ class ProfileActions {
     };
 
     getLocalProfiles = () => {
-        this.dispatch(profileActionCreators.getLocalProfiles());
-        this.authService.getLocalIdentities({
-            onSuccess: (data) => {
-                this.dispatch(profileActionCreators.getLocalProfilesSuccess(data));
-            },
-            onError: err => this.dispatch(profileActionCreators.getLocalProfilesError(err))
+        this.dispatch((dispatch, getState) => {
+            const flags = getState().profileState.get('flags');
+            if (!flags.get('fetchingLocalProfiles') && !flags.get('localProfilesFetched')) {
+                dispatch(profileActionCreators.getLocalProfiles({
+                    fetchingLocalProfiles: true
+                }));
+                this.authService.getLocalIdentities({
+                    onSuccess: (data) => {
+                        this.dispatch(profileActionCreators.getLocalProfilesSuccess(data, {
+                            fetchingLocalProfiles: false,
+                            localProfilesFetched: true
+                        }));
+                    },
+                    onError: err => this.dispatch(profileActionCreators.getLocalProfilesError(err, {
+                        fetchingLocalProfiles: false,
+                        localProfilesFetched: false
+                    }))
+                });
+            }
         });
     };
 
@@ -96,10 +109,11 @@ class ProfileActions {
                     fetchingCurrentProfile: true
                 }));
                 this.registryService.getCurrentProfile({
-                    onSuccess: data => dispatch(profileActionCreators.getCurrentProfileSuccess(data, {
-                        fetchingCurrentProfile: false,
-                        currentProfileFetched: true
-                    })),
+                    onSuccess: data =>
+                        dispatch(profileActionCreators.getCurrentProfileSuccess(data, {
+                            fetchingCurrentProfile: false,
+                            currentProfileFetched: true
+                        })),
                     onError: err => dispatch(profileActionCreators.getCurrentProfileError(err, {
                         fetchingCurrentProfile: false
                     }))
@@ -121,7 +135,6 @@ class ProfileActions {
                     fetchingProfileData: true
                 }));
                 profiles.forEach((profileObject, key) => {
-                    console.log('get data for ', profileObject.profile);
                     this.profileService.getProfileData({
                         options: {
                             profile: profileObject.profile,
@@ -132,7 +145,8 @@ class ProfileActions {
                                 data.avatar = imageCreator(data.avatar, data.baseUrl);
                             }
                             dispatch(profileActionCreators.getProfileDataSuccess(data, {
-                                profileDataFetched: key === profiles.length
+                                fetchingProfileData: false,
+                                profileDataFetched: (key === (profiles.length - 1))
                             }));
                         },
                         onError: (err) => {
@@ -259,6 +273,9 @@ class ProfileActions {
     clearErrors = () => {
         this.dispatch(profileActionCreators.clearErrors());
     };
+    resetFlags = () => {
+        this.dispatch(profileActionCreators.resetFlags());
+    }
     // this method is only called to check if there is a logged profile
     // it does not dispatch anything and is useless as an action
     //
