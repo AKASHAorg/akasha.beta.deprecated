@@ -6,6 +6,7 @@ import { mainResponse } from './event/responses';
 import { constructed as contracts } from './contracts/index';
 import { module as userModule } from './modules/auth/index';
 import { module as profileModule } from './modules/profile/index';
+import { GethConnector } from '@akashaproject/geth-connector';
 import WebContents = Electron.WebContents;
 
 class RegistryIPC extends ModuleEmitter {
@@ -22,7 +23,6 @@ class RegistryIPC extends ModuleEmitter {
             ._getCurrentProfile()
             ._getByAddress()
             ._registerProfile()
-            ._getErrorEvent()
             ._getRegistered()
             ._manager();
     }
@@ -69,7 +69,7 @@ class RegistryIPC extends ModuleEmitter {
                 let response: CurrentProfileResponse;
                 contracts.instance
                     .registry
-                    .getMyProfile()
+                    .getByAddress(GethConnector.getInstance().web3.eth.defaultAccount)
                     .then((address: string) => {
                         response = mainResponse({ address });
                     })
@@ -153,38 +153,6 @@ class RegistryIPC extends ModuleEmitter {
                         newData = null;
                         this.fireEvent(
                             channels.client[this.MODULE_NAME].registerProfile,
-                            response,
-                            event
-                        );
-                    });
-            }
-        );
-        return this;
-    }
-
-    private _getErrorEvent() {
-        this.registerListener(
-            channels.server[this.MODULE_NAME].getErrorEvent,
-            (event: any, data: ProfileErrorEventRequest) => {
-                let response: ProfileErrorEventResponse;
-                contracts
-                    .instance
-                    .registry
-                    .getError(data)
-                    .then((events) => {
-                        response = mainResponse({ events });
-                    })
-                    .catch((error: Error) => {
-                        response = mainResponse({
-                            error: {
-                                message: error.message,
-                                from: { address: data.address }
-                            }
-                        });
-                    })
-                    .finally(() => {
-                        this.fireEvent(
-                            channels.client[this.MODULE_NAME].getErrorEvent,
                             response,
                             event
                         );
