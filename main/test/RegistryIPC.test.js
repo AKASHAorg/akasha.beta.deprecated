@@ -40,7 +40,6 @@ describe('RegistryIPC', function () {
         const listenOn = [
             channels_1.default.server.registry.profileExists,
             channels_1.default.server.registry.registerProfile,
-            channels_1.default.server.registry.getErrorEvent,
             channels_1.default.server.registry.getRegistered
         ];
         registryChannel.callTest.set(channels_1.default.client.registry.manager, (injected) => {
@@ -84,6 +83,7 @@ describe('RegistryIPC', function () {
             chai_1.expect(injected.data).to.exist;
             chai_1.expect(injected.data.data.tx).to.exist;
             txPending = injected.data.data.tx;
+            console.log(txPending);
             done();
         });
         electron_1.ipcMain.emit(channels_1.default.server.registry.registerProfile, '', { token, username: 'TuserT' + new Date().getTime(),

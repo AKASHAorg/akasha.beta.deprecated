@@ -6,40 +6,22 @@ class Registry extends BaseContract_1.default {
     constructor(instance) {
         super();
         this.contract = Promise.promisifyAll(instance);
-        this.contract.getById.callAsync = Promise.promisify(this.contract.getById.call);
-        this.contract.getByAddr.callAsync = Promise.promisify(this.contract.getByAddr.call);
-        this.contract.getByContr.callAsync = Promise.promisify(this.contract.getByContr.call);
+        this.contract.addressOf.callAsync = Promise.promisify(this.contract.addressOf.call);
+        this.contract.addressOfKey.callAsync = Promise.promisify(this.contract.addressOfKey.call);
+        this.contract.isRegistered.callAsync = Promise.promisify(this.contract.isRegistered.call);
     }
-    profileExists(username) {
+    profileExists(id) {
         return this.contract
-            .getById
-            .callAsync(username)
+            .addressOf
+            .callAsync(id)
             .then((exists) => {
             return !!ethereumjs_util_1.unpad(exists);
         });
     }
     getByAddress(address) {
         return this.contract
-            .getByAddr
+            .addressOfKey
             .callAsync(address);
-    }
-    getByContract(address) {
-        return this.contract
-            .getByContr
-            .callAsync(address)
-            .then((username) => {
-            return this.gethInstance.web3.toUtf8(username);
-        });
-    }
-    getMyProfile() {
-        return this.contract
-            .getMyProfileAsync()
-            .then((address) => {
-            if (ethereumjs_util_1.unpad(address)) {
-                return address;
-            }
-            throw new Error('No logged profile found');
-        });
     }
     getLocalProfiles() {
         let keyList;
@@ -67,11 +49,9 @@ class Registry extends BaseContract_1.default {
             return profileList;
         });
     }
-    register(username, ipfsHash, gas = 1900000) {
+    register(username, ipfsHash, gas = 2000000) {
         const usernameTr = this.gethInstance.web3.fromUtf8(username);
-        const ipfsHashTr = [ipfsHash.slice(0, 23), ipfsHash.slice(23)].map((v) => {
-            return this.gethInstance.web3.fromUtf8(v);
-        });
+        const ipfsHashTr = this.splitIpfs(ipfsHash);
         return this.profileExists(usernameTr)
             .then((address) => {
             const exists = ethereumjs_util_1.unpad(address);
@@ -89,11 +69,6 @@ class Registry extends BaseContract_1.default {
                 return this.extractData('register', usernameTr, ipfsHashTr, { gas });
             });
         });
-    }
-    getError(filter) {
-        const Error = this.contract.Error(filter);
-        Error.getAsync = Promise.promisify(Error.get);
-        return Error.getAsync();
     }
     getRegistered(filter) {
         const { fromBlock, toBlock, address } = filter;

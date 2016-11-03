@@ -10,20 +10,20 @@ export default class Registry extends BaseContract {
     constructor(instance: any) {
         super();
         this.contract = Promise.promisifyAll(instance);
-        this.contract.getById.callAsync = Promise.promisify(this.contract.getById.call);
-        this.contract.getByAddr.callAsync = Promise.promisify(this.contract.getByAddr.call);
-        this.contract.getByContr.callAsync = Promise.promisify(this.contract.getByContr.call);
+        this.contract.addressOf.callAsync = Promise.promisify(this.contract.addressOf.call);
+        this.contract.addressOfKey.callAsync = Promise.promisify(this.contract.addressOfKey.call);
+        this.contract.isRegistered.callAsync = Promise.promisify(this.contract.isRegistered.call);
     }
 
     /**
      *
-     * @param username
+     * @param id
      * @returns {any}
      */
-    public profileExists(username: string) {
+    public profileExists(id: string) {
         return this.contract
-            .getById
-            .callAsync(username)
+            .addressOf
+            .callAsync(id)
             .then((exists) => {
                 return !!unpad(exists);
             });
@@ -36,32 +36,8 @@ export default class Registry extends BaseContract {
      */
     public getByAddress(address: string) {
         return this.contract
-            .getByAddr
+            .addressOfKey
             .callAsync(address);
-    }
-
-    public getByContract(address: string){
-        return this.contract
-            .getByContr
-            .callAsync(address)
-            .then((username) => {
-                return this.gethInstance.web3.toUtf8(username);
-            });
-    }
-
-    /**
-     * Get curre
-     * @returns {any}
-     */
-    public getMyProfile() {
-        return this.contract
-            .getMyProfileAsync()
-            .then((address: string) => {
-                if(unpad(address)){
-                    return address;
-                }
-                throw new Error('No logged profile found');
-            });
     }
 
     /**
@@ -102,11 +78,9 @@ export default class Registry extends BaseContract {
      * @param gas
      * @returns {PromiseLike<TResult>|Promise<TResult>|Thenable<U>|Bluebird<U>}
      */
-    public register(username: string, ipfsHash: string, gas: number = 1900000) {
+    public register(username: string, ipfsHash: string, gas: number = 2000000) {
         const usernameTr = this.gethInstance.web3.fromUtf8(username);
-        const ipfsHashTr = [ipfsHash.slice(0, 23), ipfsHash.slice(23)].map((v) => {
-            return this.gethInstance.web3.fromUtf8(v);
-        });
+        const ipfsHashTr = this.splitIpfs(ipfsHash);
         return this.profileExists(usernameTr)
             .then((address: string) => {
                 const exists = unpad(address);
@@ -126,17 +100,6 @@ export default class Registry extends BaseContract {
                         return this.extractData('register', usernameTr, ipfsHashTr, { gas });
                     });
             });
-    }
-
-    /**
-     *
-     * @param filter
-     * @returns {Bluebird<T>|any}
-     */
-    public getError(filter: {fromBlock: string, toBlock: string, address: string}) {
-        const Error = this.contract.Error(filter);
-        Error.getAsync = Promise.promisify(Error.get);
-        return Error.getAsync();
     }
 
     /**

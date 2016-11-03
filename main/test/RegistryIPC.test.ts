@@ -44,7 +44,6 @@ describe('RegistryIPC', function () {
         const listenOn = [
             channel.server.registry.profileExists,
             channel.server.registry.registerProfile,
-            channel.server.registry.getErrorEvent,
             channel.server.registry.getRegistered
         ];
         registryChannel.callTest.set(
@@ -102,6 +101,7 @@ describe('RegistryIPC', function () {
                expect(injected.data).to.exist;
                expect(injected.data.data.tx).to.exist;
                txPending = injected.data.data.tx;
+               console.log(txPending);
                done();
            }
        );

@@ -6,6 +6,7 @@ const responses_1 = require('./event/responses');
 const index_1 = require('./contracts/index');
 const index_2 = require('./modules/auth/index');
 const index_3 = require('./modules/profile/index');
+const geth_connector_1 = require('@akashaproject/geth-connector');
 class RegistryIPC extends ModuleEmitter_1.default {
     constructor() {
         super();
@@ -18,7 +19,6 @@ class RegistryIPC extends ModuleEmitter_1.default {
             ._getCurrentProfile()
             ._getByAddress()
             ._registerProfile()
-            ._getErrorEvent()
             ._getRegistered()
             ._manager();
     }
@@ -51,7 +51,7 @@ class RegistryIPC extends ModuleEmitter_1.default {
             let response;
             index_1.constructed.instance
                 .registry
-                .getMyProfile()
+                .getByAddress(geth_connector_1.GethConnector.getInstance().web3.eth.defaultAccount)
                 .then((address) => {
                 response = responses_1.mainResponse({ address });
             })
@@ -118,30 +118,6 @@ class RegistryIPC extends ModuleEmitter_1.default {
                 .finally(() => {
                 newData = null;
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].registerProfile, response, event);
-            });
-        });
-        return this;
-    }
-    _getErrorEvent() {
-        this.registerListener(channels_1.default.server[this.MODULE_NAME].getErrorEvent, (event, data) => {
-            let response;
-            index_1.constructed
-                .instance
-                .registry
-                .getError(data)
-                .then((events) => {
-                response = responses_1.mainResponse({ events });
-            })
-                .catch((error) => {
-                response = responses_1.mainResponse({
-                    error: {
-                        message: error.message,
-                        from: { address: data.address }
-                    }
-                });
-            })
-                .finally(() => {
-                this.fireEvent(channels_1.default.client[this.MODULE_NAME].getErrorEvent, response, event);
             });
         });
         return this;
