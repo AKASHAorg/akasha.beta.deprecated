@@ -85,7 +85,7 @@ describe('TagsIPC', function () {
         electron_1.ipcMain.emit(channels_1.default.server.tags.getTagId, '', { tagName: 'cars' });
     });
     it('--#getTagAt', function (done) {
-        tagsChannel.callTest.set(channels_1.default.client.tags.getTagAt, (injected) => {
+        tagsChannel.callTest.set(channels_1.default.client.tags.getTagName, (injected) => {
             chai_1.expect(injected.data.data).to.exist;
             chai_1.expect(injected.data.data.tagName).to.exist;
             done();

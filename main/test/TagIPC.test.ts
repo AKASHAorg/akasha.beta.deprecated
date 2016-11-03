@@ -101,7 +101,7 @@ describe('TagsIPC', function () {
 
     it('--#getTagAt', function (done) {
         tagsChannel.callTest.set(
-            channel.client.tags.getTagAt,
+            channel.client.tags.getTagName,
             (injected) => {
                 expect(injected.data.data).to.exist;
                 expect(injected.data.data.tagName).to.exist;
