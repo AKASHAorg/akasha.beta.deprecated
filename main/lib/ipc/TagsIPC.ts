@@ -23,17 +23,10 @@ class TagsIPC extends ModuleEmitter {
         this
             ._create()
             ._exists()
-            ._getTagAt()
+            ._getTagName()
             ._getTagId()
-            ._getSubPosition()
-            ._isSubscribed()
-            ._subscribe()
-            ._unsubscribe()
-            ._getTagsFrom()
-            ._getCreateError()
             ._getTagsCreated()
-            ._getIndexTagError()
-            ._getIndexedTag()
+            ._checkFormat()
             ._manager();
     }
 
@@ -114,14 +107,14 @@ class TagsIPC extends ModuleEmitter {
      * @returns {TagsIPC}
      * @private
      */
-    private _getTagAt() {
+    private _getTagName() {
         this.registerListener(
-            channels.server[this.MODULE_NAME].getTagAt,
+            channels.server[this.MODULE_NAME].getTagName,
             (event: any, data: TagAtIdRequest) => {
                 let response: TagAtIdResponse;
                 contracts.instance
                     .tags
-                    .getTagAt(data.tagId)
+                    .getTagName(data.tagId)
                     .then((tagName: string) => {
                         response = mainResponse({ tagName });
                     })
@@ -136,7 +129,7 @@ class TagsIPC extends ModuleEmitter {
                     })
                     .finally(() => {
                         this.fireEvent(
-                            channels.client[this.MODULE_NAME].getTagAt,
+                            channels.client[this.MODULE_NAME].getTagName,
                             response,
                             event
                         );
@@ -182,220 +175,6 @@ class TagsIPC extends ModuleEmitter {
         return this;
     }
 
-    /**
-     *
-     * @private
-     */
-    private _subscribe() {
-        this.registerListener(
-            channels.server[this.MODULE_NAME].subscribe,
-            (event: any, data: TagSubscribeRequest) => {
-                let response: TagSubscribeResponse;
-                contracts.instance
-                    .indexedTags
-                    .subscribe(data.tagName, data.gas)
-                    .then((txData: any) => {
-                        return userModule.auth.signData(txData, data.token);
-                    })
-                    .then((tx: string) => {
-                        response = mainResponse({ tx });
-                    })
-                    .catch((err: Error) => {
-                        response = mainResponse({
-                            error: {
-                                message: err.message,
-                                from: { tagName: data.tagName }
-                            }
-                        });
-                    })
-                    .finally(() => {
-                        this.fireEvent(
-                            channels.client[this.MODULE_NAME].subscribe,
-                            response,
-                            event
-                        );
-                    });
-            });
-        return this;
-    }
-
-    /**
-     *
-     * @returns {TagsIPC}
-     * @private
-     */
-    private _unsubscribe() {
-        this.registerListener(
-            channels.server[this.MODULE_NAME].unsubscribe,
-            (event: any, data: TagUnSubscribeRequest) => {
-                let response: TagUnSubscribeResponse;
-                contracts.instance
-                    .indexedTags
-                    .unsubscribe(data.tagName, data.subPosition, data.gas)
-                    .then((txData: any) => {
-                        return userModule.auth.signData(txData, data.token);
-                    })
-                    .then((tx: string) => {
-                        response = mainResponse({ tx });
-                    })
-                    .catch((err: Error) => {
-                        response = mainResponse({
-                            error: {
-                                message: err.message,
-                                from: { tagName: data.tagName }
-                            }
-                        });
-                    })
-                    .finally(() => {
-                        this.fireEvent(
-                            channels.client[this.MODULE_NAME].unsubscribe,
-                            response,
-                            event
-                        );
-                    });
-            }
-        );
-        return this;
-    }
-
-    private _getSubPosition() {
-        this.registerListener(
-            channels.server[this.MODULE_NAME].getSubPosition,
-            (event: any, data: TagGetSubPositionRequest) => {
-                let response: TagGetSubPositionResponse;
-                contracts.instance
-                    .indexedTags
-                    .getSubPosition(data.address, data.tagId)
-                    .then((position: string) => {
-                        response = mainResponse({ position });
-                    })
-                    .catch((err: Error) => {
-                        response = mainResponse({
-                            error: {
-                                message: err.message,
-                                from: { tagId: data.tagId, address: data.address }
-                            }
-                        });
-                    })
-                    .finally(() => {
-                        this.fireEvent(
-                            channels.client[this.MODULE_NAME].getSubPosition,
-                            response,
-                            event
-                        );
-                    });
-            }
-        );
-        return this;
-    }
-
-    private _isSubscribed() {
-        this.registerListener(
-            channels.server[this.MODULE_NAME].isSubscribed,
-            (event: any, data: TagIsSubscribedRequest) => {
-                let response: TagIsSubscribedResponse;
-                contracts.instance
-                    .indexedTags
-                    .isSubscribed(data.address, data.tagId)
-                    .then((subscribed: boolean) => {
-                        response = mainResponse({ subscribed });
-                    })
-                    .catch((err: Error) => {
-                        response = mainResponse({
-                            error: {
-                                message: err.message,
-                                from: { address: data.address, tagId: data.tagId }
-                            }
-                        });
-                    })
-                    .finally(() => {
-                        this.fireEvent(
-                            channels.client[this.MODULE_NAME].isSubscribed,
-                            response,
-                            event
-                        );
-                    });
-            });
-        return this;
-    }
-
-    private _getTagsFrom() {
-        this.registerListener(
-            channels.server[this.MODULE_NAME].getTagsFrom,
-            (event: any, data: TagsFromToRequest) => {
-                let response: TagsFromToResponse;
-                contracts.instance
-                    .tags
-                    .getTagsCount()
-                    .then((count) => {
-                        const tags = [];
-                        const start = (data.from) ? data.from : 0;
-                        const stop = (data.to) ? (data.to < count) ? data.to : count : count;
-                        for (let i = start; i < stop; i++) {
-                            tags.push(
-                                contracts.instance
-                                    .tags
-                                    .getTagAt(i)
-                            )
-                        }
-                        return Promise.all(tags);
-                    })
-                    .then((tags) => {
-                        response = mainResponse({ tags, from: data.from, to: data.to })
-                    })
-                    .catch((err: Error) => {
-                        response = mainResponse({
-                            error: {
-                                message: err.message,
-                                from: data.from
-                            }
-                        })
-                    })
-                    .finally(() => {
-                        this.fireEvent(
-                            channels.client[this.MODULE_NAME].getTagsFrom,
-                            response,
-                            event
-                        );
-                    });
-            }
-        );
-        return this;
-    }
-
-    private _getCreateError() {
-        this.registerListener(
-            channels.server[this.MODULE_NAME].getCreateError,
-            (event: any, data: GenericErrorEventRequest) => {
-                let response: GenericErrorEventResponse;
-                contracts
-                    .instance
-                    .tags
-                    .getCreateError(data)
-                    .then((events) => {
-                        response = mainResponse({ events });
-                    })
-                    .catch((error: Error) => {
-                        response = mainResponse({
-                            error: {
-                                message: error.message,
-                                from: { address: data.address }
-                            }
-                        });
-                    })
-                    .finally(() => {
-                        this.fireEvent(
-                            channels.client[this.MODULE_NAME].getCreateError,
-                            response,
-                            event
-                        );
-                    });
-            }
-        );
-        return this;
-    }
-
-
     private _getTagsCreated() {
         this.registerListener(
             channels.server[this.MODULE_NAME].getTagsCreated,
@@ -428,61 +207,29 @@ class TagsIPC extends ModuleEmitter {
         return this;
     }
 
-    private _getIndexTagError() {
+    private _checkFormat(){
         this.registerListener(
-            channels.server[this.MODULE_NAME].getIndexTagError,
-            (event: any, data: GenericErrorEventRequest) => {
-                let response: GenericErrorEventResponse;
+            channels.server[this.MODULE_NAME].checkFormat,
+            (event: any, data: TagAtNameRequest) => {
+                let response: any;
                 contracts
                     .instance
-                    .indexedTags
-                    .getIndexTagError(data)
-                    .then((events) => {
-                        response = mainResponse({ events });
+                    .tags
+                    .checkFormat(data.tagName)
+                    .then((status) => {
+                        response = mainResponse({ tagName: data.tagName, status});
                     })
                     .catch((error: Error) => {
                         response = mainResponse({
                             error: {
                                 message: error.message,
-                                from: { address: data.address }
+                                from: { address: data.tagName }
                             }
                         });
                     })
                     .finally(() => {
                         this.fireEvent(
-                            channels.client[this.MODULE_NAME].getIndexTagError,
-                            response,
-                            event
-                        );
-                    });
-            }
-        );
-        return this;
-    }
-
-    private _getIndexedTag() {
-        this.registerListener(
-            channels.server[this.MODULE_NAME].getIndexedTag,
-            (event: any, data: GenericFromEventRequest) => {
-                let response: GenericFromEventResponse;
-                contracts
-                    .instance
-                    .indexedTags
-                    .getIndexedTag(data)
-                    .then((events) => {
-                        response = mainResponse({ events });
-                    })
-                    .catch((error: Error) => {
-                        response = mainResponse({
-                            error: {
-                                message: error.message,
-                                from: { address: data.address }
-                            }
-                        });
-                    })
-                    .finally(() => {
-                        this.fireEvent(
-                            channels.client[this.MODULE_NAME].getIndexedTag,
+                            channels.client[this.MODULE_NAME].checkFormat,
                             response,
                             event
                         );
