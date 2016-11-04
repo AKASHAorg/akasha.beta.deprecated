@@ -13,6 +13,7 @@ export default class Registry extends BaseContract {
         this.contract.addressOf.callAsync = Promise.promisify(this.contract.addressOf.call);
         this.contract.addressOfKey.callAsync = Promise.promisify(this.contract.addressOfKey.call);
         this.contract.isRegistered.callAsync = Promise.promisify(this.contract.isRegistered.call);
+        this.contract.check_format.callAsync = Promise.promisify(this.contract.check_format.call);
     }
 
     /**
@@ -38,6 +39,12 @@ export default class Registry extends BaseContract {
         return this.contract
             .addressOfKey
             .callAsync(address);
+    }
+
+    public checkFormat(id: string){
+        return this.contract
+            .check_format
+            .callAsync(id)
     }
 
     /**
@@ -73,33 +80,32 @@ export default class Registry extends BaseContract {
 
     /**
      *
-     * @param username
+     * @param id
      * @param ipfsHash
      * @param gas
      * @returns {PromiseLike<TResult>|Promise<TResult>|Thenable<U>|Bluebird<U>}
      */
-    public register(username: string, ipfsHash: string, gas: number = 2000000) {
-        const usernameTr = this.gethInstance.web3.fromUtf8(username);
+    public register(id: string, ipfsHash: string, gas: number = 2000000) {
+        const usernameTr = this.gethInstance.web3.fromUtf8(id);
         const ipfsHashTr = this.splitIpfs(ipfsHash);
         return this.profileExists(usernameTr)
             .then((address: string) => {
                 const exists = unpad(address);
                 if (exists) {
-                    throw new Error(`${username} already taken`);
+                    throw new Error(`${id} already taken`);
                 }
 
                 if (ipfsHashTr.length !== 2) {
                     throw new Error('Expected exactly 2 ipfs slices');
                 }
+                return this.contract
+                    .check_format
+                    .callAsync(id);
+            }).then((isOK) => {
+                if(!isOK){ throw new Error(`${id} has illegal characters`);}
 
-                return this.estimateGas('register', usernameTr, ipfsHashTr)
-                    .then((estimatedGas) => {
-                        if (estimatedGas > gas) {
-                            throw new Error(`Gas required: ${estimatedGas}, Gas provided: ${gas}`);
-                        }
-                        return this.extractData('register', usernameTr, ipfsHashTr, { gas });
-                    });
-            });
+                return this.evaluateData('register', gas, usernameTr, ipfsHashTr);
+            })
     }
 
     /**

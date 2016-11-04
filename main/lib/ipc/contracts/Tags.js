@@ -29,7 +29,7 @@ class Tags extends BaseContract_1.default {
     }
     getTagId(tagName) {
         const tagTr = this.gethInstance.web3.fromUtf8(tagName);
-        return this.contract.getTagId.callAsync(tagTr).then((nr) => nr.toNumber());
+        return this.contract.getTagId.callAsync(tagTr).then((nr) => nr.toString());
     }
     getTagName(tagId) {
         return this.contract
@@ -42,6 +42,18 @@ class Tags extends BaseContract_1.default {
         return this.contract
             .check_format
             .callAsync(tagTr);
+    }
+    getFirstTag() {
+        return this.contract.getFirstTag.callAsync().then((id) => id.toString());
+    }
+    getLastTag() {
+        return this.contract.getLastTag.callAsync().then((id) => id.toString());
+    }
+    getNextTag(idTag) {
+        return this.contract.nextTag.callAsync(idTag).then((id) => id.toString());
+    }
+    getPrevTag(idTag) {
+        return this.contract.prevTag.callAsync(idTag).then((id) => id.toString());
     }
     add(tag, gas) {
         const tagTr = this.gethInstance.web3.fromUtf8(tag);
