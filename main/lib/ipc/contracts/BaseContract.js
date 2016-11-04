@@ -31,6 +31,14 @@ class BaseContract {
             });
         });
     }
+    evaluateData(method, gas, ...params) {
+        return this.estimateGas(method, ...params).then((estimatedGas) => {
+            if (estimatedGas > gas) {
+                throw new Error(`${method} GAS => { required: ${estimatedGas}, provided: ${gas} }`);
+            }
+            return this.extractData('method', ...params, { gas });
+        });
+    }
 }
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = BaseContract;

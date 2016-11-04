@@ -47,7 +47,7 @@ export default class Tags extends BaseContract {
      */
     public getTagId(tagName: string) {
         const tagTr = this.gethInstance.web3.fromUtf8(tagName);
-        return this.contract.getTagId.callAsync(tagTr).then((nr) => nr.toNumber());
+        return this.contract.getTagId.callAsync(tagTr).then((nr) => nr.toString());
     }
 
 
@@ -73,6 +73,22 @@ export default class Tags extends BaseContract {
         return this.contract
             .check_format
             .callAsync(tagTr)
+    }
+
+    public getFirstTag() {
+        return this.contract.getFirstTag.callAsync().then((id) => id.toString());
+    }
+
+    public getLastTag() {
+        return this.contract.getLastTag.callAsync().then((id) => id.toString());
+    }
+
+    public getNextTag(idTag: any) {
+        return this.contract.nextTag.callAsync(idTag).then((id) => id.toString());
+    }
+
+    public getPrevTag(idTag: any) {
+        return this.contract.prevTag.callAsync(idTag).then((id) => id.toString());
     }
 
     /**
@@ -113,5 +129,4 @@ export default class Tags extends BaseContract {
         TagsCreated.getAsync = Promise.promisify(TagsCreated.get);
         return TagsCreated.getAsync();
     }
-
 }

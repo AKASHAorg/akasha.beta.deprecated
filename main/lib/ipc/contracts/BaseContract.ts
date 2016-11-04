@@ -63,4 +63,13 @@ export default class BaseContract {
         });
     }
 
+    public evaluateData(method: string, gas: number, ...params: any[]) {
+        return this.estimateGas(method, ...params).then((estimatedGas) => {
+            if (estimatedGas > gas) {
+                throw new Error(`${method} GAS => { required: ${estimatedGas}, provided: ${gas} }`);
+            }
+            return this.extractData('method', ...params, { gas });
+        });
+    }
+
 }
