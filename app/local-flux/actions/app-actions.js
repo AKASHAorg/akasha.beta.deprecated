@@ -51,6 +51,12 @@ class AppActions {
     };
     setTimestamp = timestamp =>
         this.dispatch(appActionCreators.setTimestamp(timestamp));
+
+    showNotification = notification =>
+        this.dispatch(appActionCreators.showNotification(notification));
+
+    hideNotification = notification =>
+        this.dispatch(appActionCreators.hideNotification(notification));
 }
 
 export { AppActions };

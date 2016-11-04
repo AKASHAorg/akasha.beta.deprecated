@@ -31,7 +31,6 @@ class PublishPanel extends React.Component {
     componentWillReceiveProps (nextProps) {
         const { draft, params } = nextProps;
         const loggedProfileData = this._getLoggedProfileData();
-        console.log('will receive props', draft.getIn(['status', 'currentAction']));
         if (draft && draft.get('status').currentAction === 'confirmPublish') {
             this.context.router.push(`/${loggedProfileData.get('username')}/draft/${params.draftId}/publish-status`);
         }
@@ -103,7 +102,6 @@ class PublishPanel extends React.Component {
         });
     };
     _publishEntry = () => {
-        console.log('make the publish happen!');
         const { draftActions, profiles, loggedProfile } = this.props;
         const loggedProfileData = profiles.find(prf =>
             prf.get('profile') === loggedProfile.get('profile'));
@@ -117,7 +115,6 @@ class PublishPanel extends React.Component {
         } = this.state;
         const tagsToRegister = tags.filter(tag => this.state.existingTags.indexOf(tag) === -1);
         const draftId = parseInt(this.props.params.draftId, 10);
-        console.log(title, featuredImage);
         draftActions.updateDraft({
             id: draftId,
             title,
@@ -176,16 +173,29 @@ class PublishPanel extends React.Component {
     };
     _checkExistingTags = (tags) => {
         const tagService = new TagService();
+        let tagsPromise = Promise.resolve();
+        // const existingTags = this.state.existingTags.slice();
+        // console.log(existingTags, 'existingTags');
         tags.forEach((tag) => {
-            tagService.checkExistingTags(tag, ({ data }) => {
-                const existingTags = this.state.existingTags.slice();
-                if (data.exists) {
-                    this.setState({
-                        existingTags: existingTags.push(tag)
+            tagsPromise = tagsPromise.then(prevData =>
+                new Promise((resolve, reject) => {
+                    tagService.checkExistingTags(tag, (ev, { data, error }) => {
+                        if (error) {
+                            return reject(error);
+                        }
+                        if (prevData) {
+                            return resolve(prevData.concat([{ tag, exists: data.exists }]));
+                        }
+                        return resolve([{ tag, exists: data.exists }]);
                     });
-                }
-            });
+                })
+            );
         });
+        return tagsPromise.then(results =>
+            this.setState({
+                existingTags: results.filter(tagObj => tagObj.exists).map(tag => tag.tag)
+            })
+        );
     };
     _handleCancelButton = () => {
         const { params } = this.props;
@@ -201,12 +211,16 @@ class PublishPanel extends React.Component {
             isDefault: false
         };
     }
+    _handleTagCreateRequest = (ev, tag) => {
+        console.log('create tag', tag, 'pleaaaaseeee!!!');
+    }
     render () {
         const { tags } = this.state;
         const selectedLicence = this._getSelectedLicence();
         const licenceDescription = selectedLicence.mainLicence.description.map((descr, key) =>
           <span key={key}>{descr.text}</span>
         );
+        console.log(this.state.existingTags, 'existing');
         return (
           <PanelContainer
             showBorder
@@ -273,6 +287,7 @@ class PublishPanel extends React.Component {
                   onRequestTagAutocomplete={this._handleTagAutocomplete}
                   onTagAdded={this._handleTagAdd}
                   onDelete={this._handleTagDelete}
+                  onTagCreateRequest={this._handleTagCreateRequest}
                   fullWidth
                 />
               </div>

@@ -16,7 +16,6 @@ export function createDraftSuccess (draft, flags) {
 
 export function createDraftError (error, flags) {
     error.code = 'CDE';
-    console.error('createDraftError', error);
     return {
         type: types.CREATE_DRAFT_ERROR,
         error,
@@ -34,7 +33,6 @@ export function updateDraftSuccess (draft, flags) {
 
 export function updateDraftError (error, flags) {
     error.code = 'UDE';
-    console.error(error, 'updateDraftError');
     return {
         type: types.UPDATE_DRAFT_ERROR,
         error,
@@ -53,7 +51,6 @@ export function getDraftsSuccess (drafts, flags) {
 
 export function getDraftsError (error, flags) {
     error.code = 'GDE';
-    console.error('getDraftsError', error);
     return {
         type: types.GET_DRAFTS_ERROR,
         error,
@@ -107,9 +104,22 @@ export function getDraftByIdSuccess (draft) {
 
 export function getDraftByIdError (error) {
     error.code = 'GDBIE';
-    console.error('getDraftByIdError', error);
     return {
         type: types.GET_DRAFT_BY_ID_ERROR,
+        error
+    };
+}
+
+export function publishDraftSuccess (data) {
+    return {
+        type: types.PUBLISH_DRAFT_SUCCESS,
+        data
+    };
+}
+
+export function publishDraftError (error) {
+    return {
+        type: types.PUBLISH_DRAFT_ERROR,
         error
     };
 }
@@ -129,9 +139,24 @@ export function getPublishingDraftsSuccess (drafts, flags) {
     };
 }
 
+export function startPublishingDraft (draftId, flags) {
+    return {
+        type: types.START_PUBLISHING_DRAFT,
+        draftId,
+        flags
+    };
+}
+
+export function pausePublishingDraft (draftId, flags) {
+    return {
+        type: types.PAUSE_PUBLISHING_DRAFT,
+        draftId,
+        flags
+    };
+}
+
 export function getPublishingDraftsError (error, flags) {
     error.code = 'GPDE';
-    console.error('getPublishingDraftsError', error);
     return {
         type: types.GET_PUBLISHING_DRAFTS_ERROR,
         error,

@@ -1,5 +1,5 @@
 /* eslint new-cap: ["error", { "capIsNewExceptions": ["Record"] }]*/
-import { fromJS, Record } from 'immutable';
+import { fromJS, Record, List } from 'immutable';
 import * as types from '../constants/AppConstants';
 import * as profileTypes from '../constants/ProfileConstants';
 import { createReducer } from './create-reducer';
@@ -7,6 +7,11 @@ import { createReducer } from './create-reducer';
 const ErrorRecord = Record({
     code: 0,
     fatal: null,
+    message: ''
+});
+
+const Notification = Record({
+    type: null,
     message: ''
 });
 
@@ -20,16 +25,11 @@ const initialState = fromJS({
         modal: false
     },
     confirmationDialog: null,
-    timestamp: null
+    timestamp: null,
+    notifications: new List(),
 });
 
 const appState = createReducer(initialState, {
-    '@reduxAsyncConnect/BEGIN_GLOBAL_LOAD': state =>
-        state.merge({ appLoading: true }),
-
-    '@reduxAsyncConnect/END_GLOBAL_LOAD': state =>
-        state.merge({ appLoading: false }),
-
     [types.CHECK_FOR_UPDATES]: (state, action) =>
         state.merge({ updates: action.hasUpdates }),
 
@@ -63,7 +63,25 @@ const appState = createReducer(initialState, {
         state.set('timestamp', action.timestamp),
 
     [profileTypes.LOGIN_SUCCESS]: state =>
-        state.set('showAuthDialog', false)
+        state.set('showAuthDialog', false),
+
+    [types.SHOW_NOTIFICATION]: (state, { notification }) => {
+        if (state.get('notifications').findIndex(notif => notif.type === notification.type) > -1) {
+            return state;
+        }
+        return state.merge({
+            notifications: state.get('notifications').push(new Notification(notification))
+        });
+    },
+
+    [types.HIDE_NOTIFICATION]: (state, { notification }) => {
+        const indexToRemove = state.get('notifications').findIndex(notific =>
+            notific.type === notification.type);
+
+        return state.merge({
+            notifications: state.get('notifications').delete(indexToRemove)
+        });
+    },
 });
 
 export default appState;

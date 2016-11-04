@@ -11,7 +11,14 @@ class UserValidation {
         return strategy.createSchema({
             firstName: 'required|min:3',
             lastName: 'required|min:3',
-            username: ['required', 'min:4', 'alpha_num'],
+            /**
+             * regex: /^(?:[a-zA-Z0-9]+(?:.(?!$))?)+$/
+             *  - allow alphanumeric
+             *  - allow dots inside word
+             * username matches [ab.c, a.bc, abcd, abcdef...(32 chars)]
+             * username do not match [abc, .abc, abc., ..ab, ab.., etc]
+             */
+            username: ['required', 'min:4', 'max:32', 'regex:/^\\S(?:[a-z0-9]+(?:.(?!$))?)+$/'],
             password: 'required|min:8',
             password2: 'required|same:password'
         }, {

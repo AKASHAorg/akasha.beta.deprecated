@@ -1,5 +1,5 @@
 import { draftActionCreators } from './action-creators';
-import { DraftService } from '../services';
+import { DraftService, EntryService } from '../services';
 
 let draftActions = null;
 
@@ -10,21 +10,9 @@ class DraftActions {
         }
         this.dispatch = dispatch;
         this.draftService = new DraftService();
+        this.entryService = new EntryService();
         return draftActions;
     }
-    resumeDraftPublishing = (draft) => {
-        /**
-         * Steps:
-         * 1. Verify logged profile
-         * 2. Verify balance
-         * 3. Verify tag existence
-         * 4. Publish tags
-         * 5. Listen mined tx for tags
-         * 6. Publish entry
-         * 7. Listen mined tx for entry
-         */
-        console.info('resuming draft publishing', draft);
-    };
 
     // Must return a promise and also to dispatch actions
     createDraftSync = (profile, draft) =>
@@ -70,11 +58,24 @@ class DraftActions {
         return this.throttledUpdateDraft(draft);
     };
 
-    publishDraft = (entry, profile) => {
-        this.draftService.publishEntry(entry, profile).then(response =>
-            this.dispatch(draftActionCreators.publishEntrySuccess, response.data)
-        ).catch((reason) => {
-            console.error(reason, reason.message);
+    startPublishingDraft = (draftId) => {
+        this.dispatch(draftActionCreators.startPublishingDraft(draftId, {}));
+    }
+
+    pausePublishingDraft = (draftId) => {
+        this.dispatch(draftActionCreators.pausePublishingDraft(draftId, {}));
+    }
+
+    publishDraft = (draft, token, gas = 4000000) => {
+        this.entryService.publishEntry({
+            draft,
+            token,
+            gas,
+            onSuccess: (data) => {
+                console.log('publish draft result', data);
+                this.dispatch(draftActionCreators.publishDraftSuccess(data));
+            },
+            onError: error => this.dispatch(draftActionCreators.publishDraftError(error))
         });
     };
 

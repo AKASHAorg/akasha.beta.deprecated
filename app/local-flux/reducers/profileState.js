@@ -41,11 +41,6 @@ const Flags = Record({
     updatingProfile: false
 });
 
-const Notifications = Record({
-    updatingProfile: false,
-    profileUpdateSuccess: false
-});
-
 const initialState = fromJS({
     profiles: new List(),
     loggedProfile: new LoggedProfile(),
@@ -54,7 +49,6 @@ const initialState = fromJS({
     profilesFetched: false,
     updateProfileTx: new List(),
     // flags: new Flags(),
-    notifications: new Notifications(),
     flags: new Map()
 });
 
@@ -237,29 +231,6 @@ const profileState = createReducer(initialState, {
             flags: state.get('flags').merge({ fetchingUpdateProfileTx: false })
         }),
 
-    [types.SHOW_NOTIFICATION]: (state, { notification }) => {
-        if (state.getIn(['notifications', notification]) === undefined) {
-            return state;
-        }
-
-        return state.merge({
-            notifications: state.get('notifications').merge({
-                [notification]: true
-            })
-        });
-    },
-
-    [types.HIDE_NOTIFICATION]: (state, { notification }) => {
-        if (state.getIn(['notifications', notification]) === undefined) {
-            return state;
-        }
-
-        return state.merge({
-            notifications: state.get('notifications').merge({
-                [notification]: false
-            })
-        });
-    },
     [types.RESET_FLAGS]: state =>
         state.merge({
             flags: new Map()

@@ -45,6 +45,7 @@ class TagActions {
         });
     };
     registerTag = (tagName, token, gas = 2000000) => {
+        console.log('registering tag', tagName);
         this.dispatch(tagActionCreators.registerTag(tagName));
         this.tagService.registerTag({
             tagName,
@@ -63,7 +64,7 @@ class TagActions {
         this.tagService.savePendingTag({
             tagObj,
             onSuccess: data => this.dispatch(tagActionCreators.savePendingTagSuccess(data)),
-            onError: error => this.dispatch(tagActionCreators.savePendingTag(error))
+            onError: error => this.dispatch(tagActionCreators.savePendingTagError(error))
         });
 
 }

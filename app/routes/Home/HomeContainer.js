@@ -29,7 +29,6 @@ class HomeContainer extends React.Component {
             profileActions.getProfileData([{ profile: loggedProfile.get('profile') }]);
             draftActions.getDraftsCount(loggedProfile.get('profile'));
             entryActions.getEntriesCount(loggedProfile.get('profile'));
-            draftActions.getPublishingDrafts(loggedProfile.get('profile'));
         }
     }
     componentWillUnmount () {
@@ -134,6 +133,10 @@ HomeContainer.propTypes = {
     profileActions: PropTypes.shape(),
     entryActions: PropTypes.shape(),
     params: PropTypes.shape(),
+};
+
+HomeContainer.contextTypes = {
+    router: PropTypes.shape()
 };
 
 function mapStateToProps (state, ownProps) {

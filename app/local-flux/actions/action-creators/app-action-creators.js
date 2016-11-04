@@ -90,3 +90,17 @@ export function setTimestamp (timestamp) {
         timestamp
     };
 }
+
+export function showNotification (notification) {
+    return {
+        type: types.SHOW_NOTIFICATION,
+        notification
+    };
+}
+
+export function hideNotification (notification) {
+    return {
+        type: types.HIDE_NOTIFICATION,
+        notification
+    };
+}

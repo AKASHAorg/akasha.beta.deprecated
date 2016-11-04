@@ -8,14 +8,6 @@ class TagsField extends React.Component {
             tagString: ''
         };
     }
-    // componentWillReceiveProps (nextProps) {
-    //     console.log(nextProps);
-    //     if (nextProps.existingTags.length !== this.props.existingTags.length) {
-    //         this.setState({
-    //             existingTags: nextProps.existingTags
-    //         });
-    //     }
-    // }
     _checkTagAutocomplete = (value) => {
         this.props.onRequestTagAutocomplete(value);
     };
@@ -43,7 +35,7 @@ class TagsField extends React.Component {
     _createTag = () => {
         const currentTags = this.props.tags;
         const tag = this.state.tagString.trim().toLowerCase();
-        const ALPHANUMERIC_REGEX = /^[a-z0-9-]+$/i;
+        const ALPHANUMERIC_REGEX = /^(?:[a-zA-Z0-9]+(?:(-|_)(?!$))?)+$/;
         if (currentTags.indexOf(tag) > -1) {
             return this._createError(`Tag "${tag}" already added!`, true);
         }
@@ -54,7 +46,7 @@ class TagsField extends React.Component {
                     this.props.onTagAdded(tag);
                 }
             } else {
-                this._createError('Tags can contain only letters, numbers and dashes (-).', false);
+                this._createError('Tags can contain only letters, numbers, one dash ( - ) or one underscore ( _ ).', false);
             }
         } else if (tag.length >= 25) {
             this._createError('Tags can have maximum 24 characters.', false);
@@ -90,6 +82,7 @@ class TagsField extends React.Component {
     render () {
         const currentTags = this.props.tags;
         const tags = currentTags.map((tag, key) => {
+            console.log(this.props.existingTags, 'existingTags');
             const tagExists = this.props.existingTags.indexOf(tag) > -1;
             // console.log(tagExists, tag, this.props.existingTags, 'exists?');
             const style = {
@@ -102,16 +95,17 @@ class TagsField extends React.Component {
                 marginRight: '4px',
                 marginBottom: '4px',
             };
+            // onRequestDelete={(ev) => { this._handleDeleteTag(ev, key); }}
             return (
               <Chip
                 key={key}
-                onRequestDelete={(ev) => { this._handleDeleteTag(ev, key); }}
+
                 backgroundColor="transparent"
                 title={tagExists ? 'Tag exists in the network' : 'This tag will be added'}
                 style={style}
                 labelStyle={{ lineHeight: '32px', display: 'inline-block', verticalAlign: 'top' }}
               >
-                {tag}
+                {tag} <a href="">+</a> <a href="" onClick={(ev) => { this._handleDeleteTag(ev, key); }}>X</a>
               </Chip>
           );
         });

@@ -8,17 +8,10 @@ class DraftService {
 
     saveDraft = partialDraft =>
         entriesDB.transaction('rw', entriesDB.drafts, () => {
-            const { id, ...other } = partialDraft;
-            console.log('updating draft in service', other);
+            const { id, status, ...other } = partialDraft;
             if (id) {
-                entriesDB.drafts.where('id').equals(id).modify(other);
+                entriesDB.drafts.where('id').equals(id).modify({ status, ...other });
                 return entriesDB.drafts.where('id').equals(id).toArray().then(results => results[0]);
-                // return entriesDB.drafts.update(id, other).then((updated) => {
-                //     if (updated) {
-                //         return partialDraft;
-                //     }
-                //     return null;
-                // });
             }
             return entriesDB.drafts.add(partialDraft).then(() =>
                 partialDraft
@@ -38,7 +31,6 @@ class DraftService {
                          return convDrafts;
                      })
         );
-
     getDraftsCount = ({ profile, onSuccess, onError }) =>
         entriesDB.transaction('rw', entriesDB.drafts, () =>
             entriesDB.drafts

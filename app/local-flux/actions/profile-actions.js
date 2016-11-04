@@ -296,11 +296,5 @@ class ProfileActions {
             });
         });
     }
-
-    showNotification = notification =>
-        this.dispatch(profileActionCreators.showNotification(notification));
-
-    hideNotification = notification =>
-        this.dispatch(profileActionCreators.hideNotification(notification));
 }
 export { ProfileActions };

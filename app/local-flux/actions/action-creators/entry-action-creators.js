@@ -23,26 +23,6 @@ export function getEntriesCountError (error, flags) {
     };
 }
 
-export function checkTagExistenceSuccess (result) {
-    return {
-        type: types.CHECK_TAG_EXISTENCE_SUCCESS,
-        result
-    };
-}
-
-export function checkTagExistence () {
-    return {
-        type: types.CHECK_TAG_EXISTENCE
-    };
-}
-
-export function checkTagExistenceError (error) {
-    return {
-        type: types.CHECK_TAG_EXISTENCE_ERROR,
-        error
-    };
-}
-
 export function getSortedEntries (entries) {
     return {
         type: types.GET_SORTED_ENTRIES,

@@ -10,104 +10,168 @@ import { TagService } from 'local-flux/services';
  */
 class PublishEntryRunner extends Component {
     componentWillMount () {
-        const { tagActions, transactionActions } = this.props;
+        const { tagActions, transactionActions, loggedProfile, draftActions } = this.props;
         tagActions.getPendingTags();
         transactionActions.getPendingTransactions();
+        draftActions.getPublishingDrafts(loggedProfile.get('profile'));
     }
     componentWillReceiveProps (nextProps) {
-        const { tagActions } = this.props;
+        const { tagActions, appActions } = this.props;
         const { drafts, params, loggedProfile, loggedProfileData } = nextProps;
         const publishableDrafts = drafts.filter(draft =>
             draft.status.publishing && draft.status.publishingConfirmed);
         if (publishableDrafts.size > 0) {
-            // show a message in a snackbar informing that publishing is in progress
-            publishableDrafts.forEach((draft) => {
-                if (draft.get('status').currentAction === 'publishingTags') {
-                    this._publishDraftTags(draft);
+            return publishableDrafts.forEach((draft) => {
+                const { currentAction, started } = draft.get('status');
+                    console.log(draft.get('status').currentAction, 'currentAction');
+                // this._updateDraftStatus(draft, {
+                //     currentAction: 'registeringDraft'
+                // });
+
+                if (currentAction === 'listenDraftTx') {
+                    return this._listenDraftTx(draft);
                 }
-                this._resumeDraftPublishing(draft);
+                /**
+                 * `draftPublished` means that we have sent publishing request to main and we are waiting
+                 *  to receive tx
+                 *  this status will check if tx exists and will forward to `listenDraftTx` action
+                 */
+                if (currentAction === 'draftPublished') {
+                    return this._checkForTx();
+                }
+                /**
+                 * draft.status.started means that the user is newly logged in and it should resume
+                 * publishing manually to prevent accidental double publishing.
+                 * if currentAction is `draftPublished` or `listenDraftTx` there is no need to resume
+                 */
+                if (started) {
+                    /**
+                     * Find any unexistent tags and publish
+                     * add published tags to pending tags
+                     */
+                    if (currentAction === 'publishingTags') {
+                        return this._publishDraftTags(draft);
+                    }
+                    /**
+                     * Find any pending tags and listen for txs
+                     * remove pending tag when mined event arrived
+                     */
+                    if (currentAction === 'listenTagsTx') {
+                        return this._listenPendingTagsTx();
+                    }
+                    /**
+                     * Resume draft publishing
+                     */
+                    return this._resumeDraftPublishing(draft);
+                }
             });
         }
     }
     _updateDraftStatus = (currentDraft, statusChanges) => {
         const { draftActions } = this.props;
-        const newDraft = currentDraft.merge({
-            status: Object.assign({}, currentDraft.get('status'), statusChanges)
-        });
+        const newDraft = currentDraft.set('status',
+            Object.assign({}, currentDraft.get('status'), statusChanges));
         draftActions.updateDraft(newDraft);
     }
-    _findPublishableTags = (tags, callbackFn) => {
+    _checkForTx = () => {
+        console.log('checking for tx');
+    };
+    _findPublishableTags = (tags) => {
         const tagService = new TagService();
-        let itProc = 0;
-        const nonExistent = [];
-        tags.forEach((tag, key, arr) => {
-            const cb = (ev, {data, error}) => {
-                console.log('checking', tag);
-                itProc += 1;
-                if(!data.exists) {
-                    nonExistent.push(tag);
-                }
-                if(itProc === arr.length) {
-                    callbackFn(nonExistent)
-                }
-            }
-            tagService.checkExistingTags(tag, cb);
-        })
+        let tagsPromise = Promise.resolve();
+        tags.forEach((tag) => {
+            tagsPromise = tagsPromise.then(prevData =>
+                new Promise((resolve, reject) => {
+                    tagService.checkExistingTags(tag, (ev, { data, error }) => {
+                        if (error) {
+                            return reject(error);
+                        }
+                        if (prevData) {
+                            return resolve(prevData.concat([{ tag, exists: data.exists }]));
+                        }
+                        return resolve([{ tag, exists: data.exists }]);
+                    });
+                })
+            );
+        });
+        return tagsPromise.then(results =>
+            results.filter(res => res.exists === false)
+        );
     }
+    // only related to draft publishing
+    // should check if previous steps are completed
     _resumeDraftPublishing = (draft) => {
-
         const { draftActions, transactionActions, pendingTags, loggedProfile,
             pendingTransactions } = this.props;
         const draftTags = draft.get('tags');
         // exclude tags already in pending state
         const tagsToRegister = draftTags.filter(tag =>
             pendingTags.findIndex(tagObj => tagObj.tag === tag) === -1);
-        console.log(tagsToRegister, 'remaining tags');
         if (tagsToRegister.length === 0) {
             // no tags to publish
             return this._registerDraft(draft);
         }
         // check on blockchain and register tag
-        this._findPublishableTags(tagsToRegister, (notRegisteredTags) => {
-            console.log(notRegisteredTags, 'notRegisteredTags');
+        this._findPublishableTags(tagsToRegister).then((notRegistered) => {
+            console.log(notRegistered, 'notReg')
+            if (notRegistered.length > 0) {
+                return this._updateDraftStatus(draft, {
+                    currentAction: 'publishingTags'
+                });
+            }
         });
-        const notListeningPendingTags = pendingTags.filter(tagObj =>
-            pendingTransactions.findIndex(tx => tx === tagObj.tx) === -1);
-
-            console.log(notListeningPendingTags, 'notListeningPendingTags');
-
-        if (notListeningPendingTags.size > 0) {
-            notListeningPendingTags.forEach((tagObj) => {
-                transactionActions.listenForMinedTx();
-                transactionActions.addToQueue([tagObj.tx]);
-            });
-        } else {
-            this._registerDraft(draft);
-        }
+        this._registerDraft(draft);
     }
+
     _verifyExpiration = expirationDate =>
         Date.parse(expirationDate) > Date.now();
-    _publishDraftTags = (draft) => {
 
+    _listenPendingTagsTx = () => {
+        const { pendingTags } = this.props;
+        console.log(pendingTags);
     }
-    _registerDraft = (draft) => {
-        const { draftActions, loggedProfile } = this.props;
-        this._updateDraftStatus(draft, {
-            currentAction: 'registeringDraft'
+
+    _publishDraftTags = (draft) => {
+        console.log('publishDraftTags', draft);
+        const { tagActions, appActions, tagState, loggedProfile } = this.props;
+        this._findPublishableTags(draft.get('tags')).then(tags => {
+            if (tags.length === 0) {
+                return this._updateDraftStatus(draft, {
+                    currentAction: 'registeringDraft'
+                });
+            }
+            tags.forEach((tagObj) => {
+                if (!this._verifyExpiration(loggedProfile.get('expiration'))) {
+                    return appActions.showNotification({
+                        type: 'alertLoginRequired',
+                        message: `You must confirm your password to publish tag "${tagObj.tag}"`
+                    });
+                }
+                console.log('publishing allowed!');
+                tagActions.registerTag(tagObj.tag, loggedProfile.get('token'));
+            });
+            this.updateDraftStatus(draft, {
+                currentAction: 'listenTagsTx',
+            });
         });
-        const loginValid = this._verifyExpiration(loggedProfile.get('expiration'));
-        console.log('ready to register draft');
     }
-    _registerTag = (tag) => {
-        const { tagActions, appActions, loggedProfile } = this.props;
+
+    _registerDraft = (draft) => {
+        const { draftActions, loggedProfile, appActions } = this.props;
+        // this._updateDraftStatus(draft, {
+        //     currentAction: 'registeringDraft'
+        // });
         const loginValid = this._verifyExpiration(loggedProfile.get('expiration'));
-        if (loginValid) {
-            console.log('registering tag', tag);
-            tagActions.registerTag(tag, loggedProfile.get('token'));
-            return;
+        if (!loginValid) {
+            return appActions.showNotification({
+                type: 'alertLoginRequired',
+                message: `Please confirm  your password`
+            });
         }
-        console.log('Action Required to continue!! Please Login again!!');
-        return;
+        draftActions.publishDraft(draft, loggedProfile.get('token'));
+        this._updateDraftStatus(draft, {
+            currentAction: 'draftPublished'
+        });
     }
     render () {
         return null;

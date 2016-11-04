@@ -5,6 +5,11 @@ import tagsDB from './db/tags';
 const { Channel } = window;
 /** Tag Service */
 class TagService extends BaseService {
+    constructor () {
+        super();
+        this.serverManager = Channel.server.tags.manager;
+        this.clientManager = Channel.client.tags.manager;
+    }
     // getTags = (startingIndex = 0) => {
     //     const serverChannel = Channel.server.entry.getTags;
     //     const clientChannel = Channel.client.entry.getTags;
@@ -47,51 +52,30 @@ class TagService extends BaseService {
 
     savePendingTag = ({ tagObj, onSuccess, onError }) =>
         tagsDB.transaction('rw', tagsDB.pendingTags, () => {
-            tagsDB.pendingTags.add(tagObj);
+            tagsDB.pendingTags.put(tagObj);
             return tagsDB.pendingTags
                 .where('tag')
                 .equals(tagObj.tag)
                 .toArray()
                 .then(results => results[0]);
         }).then((result) => {
-            console.log('saved to db', result);
             onSuccess(result);
         })
         .catch(reason => onError(reason));
-    // registerTags = (tags) => {
-    //     const serverChannel = Channel.server.entry.addTags;
-    //     const clientChannel = Channel.client.entry.addTags;
-    //     return new Promise((resolve, reject) => {
-    //         ipcRenderer.on(clientChannel, (ev, data) => {
-    //             if (!data) {
-    //                 const error = new Error('Main Process Crashed');
-    //                 return reject(error);
-    //             }
-    //             if (!data.success) {
-    //                 return reject(data.status.message);
-    //             }
-    //             return resolve(data);
-    //         });
-    //         ipcRenderer.send(serverChannel, tags);
-    //     });
-    // };
-    registerTag = ({ tagName, token, gas, onSuccess, onError }) => {
-        // const successCb = ({ data }) => {
-        //     tagsDB.transaction('rw', tagsDB.pendingTags, () => {
-        //         tagsDB.pendingTags.add({ tagName, tx: data.tx });
-        //         return tagsDB.pendingTags
-        //                 .where('tagName')
-        //                 .equals(tagName)
-        //                 .toArray();
-        //     }).then(results => onSuccess(results[0]));
-        // };
 
-        this.registerListener(
-            Channel.client.tags.create,
-            this.createListener(onError, onSuccess)
-        );
-        console.log('sending', {}, 'to Main');
-        Channel.server.tags.create.send({ tagName, token, gas });
+    registerTag = ({ tagName, token, gas, onSuccess, onError }) => {
+        this.openChannel({
+            serverManager: this.serverManager,
+            clientManager: this.clientManager,
+            serverChannel: Channel.server.tags.create,
+            clientChannel: Channel.client.tags.create,
+            listenerCb: this.createListener(
+                onError,
+                onSuccess,
+            )
+        }, () => {
+            Channel.server.tags.create.send({ tagName, token, gas });
+        });
     }
 
     saveTagToDB = tags =>
@@ -102,10 +86,7 @@ class TagService extends BaseService {
         });
 
     checkExistingTags = (tag, cb) => {
-        this.registerListener(
-            Channel.client.tags.exists,
-            cb
-        );
+        Channel.client.tags.exists.on(cb);
         Channel.server.tags.exists.send({ tagName: tag });
     }
 }

@@ -3,10 +3,9 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { SettingsActions, AppActions, ProfileActions, EProcActions } from 'local-flux';
 import { getMuiTheme } from 'material-ui/styles';
-import { Snackbar } from 'material-ui';
 import { AuthDialog, ConfirmationDialog } from 'shared-components';
 import { notificationMessages } from 'locale-data/messages';
-
+import NotificationBar from './components/notification-bar';
 import lightTheme from '../layouts/AkashaTheme/lightTheme';
 import darkTheme from '../layouts/AkashaTheme/darkTheme';
 
@@ -45,7 +44,7 @@ class App extends Component {
     componentWillReceiveProps (nextProps) {
         const { intl } = nextProps;
         const showAuthDialog = nextProps.appState.get('showAuthDialog');
-        const notifications = nextProps.profileState.get('notifications').toJS();
+
         if (nextProps.theme !== this.props.theme) {
             this.setState({
                 theme: nextProps.theme
@@ -58,13 +57,7 @@ class App extends Component {
                 userPassword: ''
             });
         }
-        const notification = Object.keys(notifications).find(key => notifications[key] === true);
-        if (notification) {
-            this.setState({
-                notification: intl.formatMessage(notificationMessages[notification])
-            });
-            nextProps.profileActions.hideNotification(notification);
-        }
+
     }
     hideNotification = () => {
         this.setState({
@@ -129,7 +122,7 @@ class App extends Component {
         });
     };
     render () {
-        const { appState, profileState } = this.props;
+        const { appState, profileState, appActions } = this.props;
         const loginErrors = profileState.get('errors');
         const error = appState.get('error');
         const confirmationDialog = appState.get('confirmationDialog');
@@ -140,14 +133,9 @@ class App extends Component {
         return (
           <div className="fill-height" >
             {this.props.children}
-            <Snackbar
-              style={{ maxWidth: 500 }}
-              autoHideDuration={3000}
-              action=""
-              onActionTouchTap={this._handleSendReport}
-              message={this.state.notification}
-              open={!!this.state.notification}
-              onRequestClose={this.hideNotification}
+            <NotificationBar
+              appState={appState}
+              appActions={appActions}
             />
             <AuthDialog
               password={this.state.userPassword}
