@@ -31,6 +31,82 @@ class Entries extends BaseContract_1.default {
     claimDeposit(entryId, gas = 2000000) {
         return this.evaluateData('claimDeposit', gas, entryId);
     }
+    getProfileEntriesCount(profileAddress) {
+        return this.contract
+            .getProfileEntriesCount
+            .callAsync(profileAddress).then((result) => result.toNumber());
+    }
+    getProfileEntryFirst(profileAddress) {
+        return this.contract
+            .getProfileEntryFirst
+            .callAsync(profileAddress).then((result) => result.toString());
+    }
+    getProfileEntryLast(profileAddress) {
+        return this.contract
+            .getProfileEntryLast
+            .callAsync(profileAddress).then((result) => result.toString());
+    }
+    getProfileEntryNext(profileAddress, entryId) {
+        return this.contract
+            .getProfileEntryNext
+            .callAsync(profileAddress, entryId).then((result) => result.toString());
+    }
+    getProfileEntryPrev(profileAddress, entryId) {
+        return this.contract
+            .getProfileEntryPrev
+            .callAsync(profileAddress, entryId).then((result) => result.toString());
+    }
+    getTagEntriesCount(tagName) {
+        return this.contract
+            .getTagEntriesCount
+            .callAsync(tagName).then((result) => result.toNumber());
+    }
+    getTagEntryFirst(tagName) {
+        return this.contract
+            .getTagEntryFirst
+            .callAsync(tagName).then((result) => result.toString());
+    }
+    getTagEntryLast(tagName) {
+        return this.contract
+            .getTagEntryLast
+            .callAsync(tagName).then((result) => result.toString());
+    }
+    getTagEntryNext(tagName, entryId) {
+        return this.contract
+            .getTagEntryNext
+            .callAsync(tagName, entryId).then((result) => result.toString());
+    }
+    getTagEntryPrev(tagName, entryId) {
+        return this.contract
+            .getTagEntryPrev
+            .callAsync(tagName, entryId).then((result) => result.toString());
+    }
+    isMutable(entryId) {
+        return this.contract
+            .isEditable
+            .callAsync(entryId).then((result) => result);
+    }
+    getEntry(entryId) {
+        return this.contract
+            .getEntry
+            .callAsync(entryId).then((result) => {
+            return {
+                blockNr: result.blockNr.toNumber(),
+                publisher: result.publisher,
+                ipfsHash: this.flattenIpfs(result.ipfsHash)
+            };
+        });
+    }
+    getEntryFund(entryId) {
+        return this.contract
+            .getEntryFund
+            .callAsync(entryId).then((result) => result);
+    }
+    entryExists(entryId) {
+        return this.contract
+            .entryExists
+            .callAsync(entryId).then((result) => result);
+    }
 }
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Entries;
