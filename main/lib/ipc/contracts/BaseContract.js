@@ -11,7 +11,10 @@ class BaseContract {
     }
     splitIpfs(ipfsHash) {
         const offset = Math.floor(ipfsHash.length / 2);
-        return [ipfsHash.slice(0, offset), ipfsHash.slice(offset)];
+        return [
+            this.gethInstance.web3.fromUtf8(ipfsHash.slice(0, offset)),
+            this.gethInstance.web3.fromUtf8(ipfsHash.slice(offset))
+        ];
     }
     getContract() {
         return this.contract;
