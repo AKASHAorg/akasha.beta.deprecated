@@ -120,7 +120,19 @@ class PublishEntryRunner extends Component {
                 });
             }
         });
-        this._registerDraft(draft);
+        const notListeningPendingTags = pendingTags.filter(tagObj =>
+            pendingTransactions.findIndex(tx => tx === tagObj.tx) === -1);
+
+            console.log(notListeningPendingTags, 'notListeningPendingTags');
+
+        if (notListeningPendingTags.size > 0) {
+            notListeningPendingTags.forEach((tagObj) => {
+                transactionActions.listenForMinedTx();
+                transactionActions.addToQueue([{ tx: tagObj.tx }]);
+            });
+        } else {
+            this._registerDraft(draft);
+        }
     }
 
     _verifyExpiration = expirationDate =>

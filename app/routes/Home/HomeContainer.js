@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { AppActions, DraftActions, ProfileActions, EntryActions } from 'local-flux';
+import { AppActions, DraftActions, ProfileActions, EntryActions,
+    TransactionActions } from 'local-flux';
 import { Sidebar } from 'shared-components';
 import '../../styles/core.scss';
 import styles from './home.scss';
@@ -9,25 +10,36 @@ import EntryModal from './components/entry-modal';
 import ProfileUpdater from './components/profile-updater';
 import PublishEntryRunner from './components/publish-entry-runner';
 import TagPublisher from './components/tag-publisher';
+import FollowRunner from './components/follow-runner';
 
 class HomeContainer extends React.Component {
+    constructor (props) {
+        super(props);
+        this.dataLoaded = false;
+    }
+
     componentWillMount () {
         const { profileActions } = this.props;
         profileActions.resetFlags();
     }
     componentDidMount () {
-        const { profileActions } = this.props;
+        const { profileActions, draftActions, params } = this.props;
+        const username = params.username;
         profileActions.getLoggedProfile();
+        draftActions.getDraftsCount(username);
     }
     componentWillReceiveProps (nextProps) {
-        const { profileActions, entryActions, draftActions } = this.props;
+        const { profileActions, entryActions, draftActions, transactionActions } = this.props;
         const { loggedProfile, fetchingLoggedProfile } = nextProps;
 
         if (!loggedProfile.get('account') && !fetchingLoggedProfile) {
             this.context.router.push('/authenticate/');
         }
-        if (loggedProfile && loggedProfile.get('profile')) {
+        if (loggedProfile && loggedProfile.get('profile') && !this.dataLoaded) {
+            this.dataLoaded = true;
             profileActions.getProfileData([{ profile: loggedProfile.get('profile') }]);
+            transactionActions.getMinedTransactions();
+            transactionActions.getPendingTransactions();
             draftActions.getDraftsCount(loggedProfile.get('profile'));
             entryActions.getEntriesCount(loggedProfile.get('profile'));
         }
@@ -60,9 +72,8 @@ class HomeContainer extends React.Component {
 
     render () {
         const { appActions, draftActions, fetchingLoggedProfile, loggedProfileData,
-            profileActions, entriesCount, draftsCount, loggedProfile, activePanel, params,
-            fetchingFullLoggedProfile, loginRequested, updatingProfile } = this.props;
-
+            profileActions, entriesCount, draftsCount, loggedProfile, activePanel,
+            params, fetchingProfileData, loginRequested, updatingProfile } = this.props;
         const profileAddress = loggedProfile.get('profile');
         const account = loggedProfile.get('account');
         const loadingInProgress = !loggedProfileData || fetchingLoggedProfile;
@@ -97,17 +108,18 @@ class HomeContainer extends React.Component {
                 showPanel={appActions.showPanel}
                 hidePanel={appActions.hidePanel}
                 profileActions={profileActions}
-                fetchingFullLoggedProfile={fetchingFullLoggedProfile}
+                fetchingProfileData={fetchingProfileData}
                 updateProfileData={this.updateProfileData}
                 updatingProfile={updatingProfile}
                 loginRequested={loginRequested}
               />
             </div>
             <EntryModal />
-            <ProfileUpdater />
             <div className={`col-xs-12 ${styles.childWrapper}`} >
               {this.props.children}
             </div>
+            <ProfileUpdater />
+            <FollowRunner />
             <PublishEntryRunner />
             <TagPublisher />
           </div>
@@ -123,10 +135,8 @@ HomeContainer.propTypes = {
     draftsCount: PropTypes.number,
     entriesCount: PropTypes.number,
     fetchingLoggedProfile: PropTypes.bool,
-    fetchingFullLoggedProfile: PropTypes.bool,
     fetchingProfileData: PropTypes.bool,
     fetchingDraftsCount: PropTypes.bool,
-    fetchingPublishedEntries: PropTypes.bool,
     loginRequested: PropTypes.bool,
     fetchingEntriesCount: PropTypes.bool,
     loggedProfile: PropTypes.shape(),
@@ -134,6 +144,7 @@ HomeContainer.propTypes = {
     updatingProfile: PropTypes.bool,
     profileActions: PropTypes.shape(),
     entryActions: PropTypes.shape(),
+    transactionActions: PropTypes.shape(),
     params: PropTypes.shape(),
 };
 
@@ -143,7 +154,6 @@ HomeContainer.contextTypes = {
 
 function mapStateToProps (state, ownProps) {
     return {
-        fetchingFullLoggedProfile: state.profileState.get('fetchingFullLoggedProfile'),
         fetchingLoggedProfile: state.profileState.getIn(['flags', 'fetchingLoggedProfile']),
         fetchingProfileData: state.profileState.getIn(['flags', 'fetchingProfileData']),
         fetchingDraftsCount: state.draftState.getIn(['flags', 'fetchingDraftsCount']),
@@ -167,6 +177,7 @@ function mapDispatchToProps (dispatch) {
         draftActions: new DraftActions(dispatch),
         entryActions: new EntryActions(dispatch),
         profileActions: new ProfileActions(dispatch),
+        transactionActions: new TransactionActions(dispatch)
     };
 }
 

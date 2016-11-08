@@ -82,6 +82,12 @@ export function getLocalProfilesError (error, flags) {
     };
 }
 
+export function getProfileDataFull () {
+    return {
+        type: types.GET_PROFILE_DATA_FULL
+    };
+}
+
 export function getProfileData (flags) {
     return {
         type: types.GET_PROFILE_DATA,
@@ -133,63 +139,6 @@ export function updateProfileDataError (error) {
     };
 }
 
-export function addUpdateProfileTx () {
-    return {
-        type: types.ADD_UPDATE_PROFILE_TX
-    };
-}
-
-export function addUpdateProfileTxSuccess (data) {
-    return {
-        type: types.ADD_UPDATE_PROFILE_TX_SUCCESS,
-        data
-    };
-}
-
-export function addUpdateProfileTxError (error) {
-    error.code = 'AUPTE01';
-    return {
-        type: types.ADD_UPDATE_PROFILE_TX_ERROR,
-        error
-    };
-}
-
-export function deleteUpdateProfileTxSuccess (tx) {
-    return {
-        type: types.DELETE_UPDATE_PROFILE_TX_SUCCESS,
-        tx
-    };
-}
-
-export function deleteUpdateProfileTxError (error) {
-    error.code = 'DUPTE01';
-    return {
-        type: types.DELETE_UPDATE_PROFILE_TX_ERROR,
-        error
-    };
-}
-
-export function getUpdateProfileTxs () {
-    return {
-        type: types.GET_UPDATE_PROFILE_TXS,
-    };
-}
-
-export function getUpdateProfileTxsSuccess (profiles) {
-    return {
-        type: types.GET_UPDATE_PROFILE_TXS_SUCCESS,
-        profiles
-    };
-}
-
-export function getUpdateProfileTxsError (error) {
-    error.code = 'GUPTE01';
-    return {
-        type: types.GET_UPDATE_PROFILE_TXS_ERROR,
-        error
-    };
-}
-
 export function getLoggedProfile (flags) {
     return {
         type: types.GET_LOGGED_PROFILE,
@@ -210,12 +159,6 @@ export function getLoggedProfileError (error, flags) {
         type: types.GET_LOGGED_PROFILE_ERROR,
         error,
         flags
-    };
-}
-
-export function getFullLoggedProfile () {
-    return {
-        type: types.GET_FULL_LOGGED_PROFILE
     };
 }
 
@@ -254,8 +197,89 @@ export function clearErrors () {
     };
 }
 
+export function showNotification (notification) {
+    return {
+        type: types.SHOW_NOTIFICATION,
+        notification
+    };
+}
+
+export function hideNotification (notification) {
+    return {
+        type: types.HIDE_NOTIFICATION,
+        notification
+    };
+}
+
 export function resetFlags () {
     return {
         type: types.RESET_FLAGS,
+    };
+}
+
+export function getFollowersCount () {
+    return {
+        type: types.GET_FOLLOWERS_COUNT
+    };
+}
+
+export function getFollowersCountSuccess (profileAddress, count) {
+    return {
+        type: types.GET_FOLLOWERS_COUNT_SUCCESS,
+        profileAddress,
+        count
+    };
+}
+
+export function getFollowersCountError (error) {
+    error.code = 'GFRCE01';
+    return {
+        type: types.GET_FOLLOWERS_COUNT_ERROR,
+        error
+    };
+}
+
+export function getFollowingCount () {
+    return {
+        type: types.GET_FOLLOWING_COUNT
+    };
+}
+
+export function getFollowingCountSuccess (profileAddress, count) {
+    return {
+        type: types.GET_FOLLOWING_COUNT_SUCCESS,
+        profileAddress,
+        count
+    };
+}
+
+export function getFollowingCountError (error) {
+    error.code = 'GFGCE01';
+    return {
+        type: types.GET_FOLLOWING_COUNT_ERROR,
+        error
+    };
+}
+
+export function followProfile (flags) {
+    return {
+        type: types.FOLLOW_PROFILE,
+        flags
+    };
+}
+
+export function followProfileSuccess (flags) {
+    return {
+        type: types.FOLLOW_PROFILE_SUCCESS,
+        flags
+    };
+}
+
+export function followProfileError (error, flags) {
+    error.code = 'FPE01';
+    return {
+        type: types.FOLLOW_PROFILE_ERROR,
+        error,
+        flags
     };
 }

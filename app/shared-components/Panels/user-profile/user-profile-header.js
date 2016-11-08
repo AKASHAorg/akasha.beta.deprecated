@@ -154,7 +154,7 @@ const UserProfileHeader = (props) => {
                 textTransform: 'capitalize'
             }}
           >
-            {`${profile.get('lastName')} ${profile.get('firstName')}`}
+            {`${profile.get('firstName')} ${profile.get('lastName')}`}
           </div>
           <div
             className="col-xs-12"
