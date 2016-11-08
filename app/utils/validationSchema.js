@@ -21,7 +21,6 @@ class UserValidation {
              * akashaId do not match [abc, .abc, abc., ..ab, ab.., etc]
              */
             akashaId: ['required', 'min:4', 'max:32', 'regex:/^\\S(?:[a-z0-9]+(?:.(?!$))?)+$/'],
-
             password: 'required|min:8',
             password2: 'required|same:password'
         }, {
