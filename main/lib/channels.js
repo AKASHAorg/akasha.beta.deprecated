@@ -18,8 +18,7 @@ const channels = {
     ipfs: ['startService', 'stopService', 'status', 'resolve', 'getConfig', 'setPorts', 'getPorts'],
     profile: ['getProfileData', 'updateProfileData', 'getMyBalance', 'unregister', 'follow', 'getFollowersCount',
         'getFollowingCount', 'getFollowers', 'getFollowing'],
-    registry: ['profileExists', 'registerProfile', 'getCurrentProfile', 'getByAddress', 'getErrorEvent',
-        'getRegistered'],
+    registry: ['profileExists', 'registerProfile', 'getCurrentProfile', 'getByAddress', 'fetchRegistered'],
     tx: ['addToQueue', 'emitMined'],
     licenses: ['getLicenceById', 'getLicenses']
 };

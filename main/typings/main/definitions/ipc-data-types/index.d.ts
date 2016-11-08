@@ -239,12 +239,12 @@ interface EmitMinedResponse extends MainResponse {
 /////////////////////////  < Registry > \\\\\\\\\\\\\\\\\\\\\\\\
 
 interface ProfileExistsRequest {
-    username: string;
+    akashaId: string;
 }
 
 interface ProfileExistsResponse extends MainResponse {
     data: {
-        username: string;
+        akashaId: string;
         exists: boolean;
     };
 }
@@ -266,7 +266,7 @@ interface ProfileByAddressResponse extends MainResponse {
 }
 
 interface ProfileCreateRequest extends AuthRequest {
-    username: string;
+    akashaId: string;
     ipfs: IpfsProfileCreateRequest;
     gas?: number;
 }
@@ -344,7 +344,7 @@ interface ProfileDataResponse extends MainResponse {
     data: {
         firstName: string;
         lastName: string;
-        username: string;
+        akashaId: string;
         avatar?: Uint8Array;
         backgroundImage?: any;
         about?: string;
