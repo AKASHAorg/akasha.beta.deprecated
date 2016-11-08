@@ -67,7 +67,7 @@ export const profileMessages = defineMessages({
     yourIdentityIsBroadcasted: {
         id: 'app.profile.yourIdentityIsBroadcasted',
         description: 'describing that identity is broadcasted into network',
-        defaultMessage: 'Your identity is broadcasted into the Ethereum world computer network.'
+        defaultMessage: 'Your identity is broadcasted into the AKASHA private network.'
     },
     willTakeFewMoments: {
         id: 'app.profile.willTakeFewMinutes',

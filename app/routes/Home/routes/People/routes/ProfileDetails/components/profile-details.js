@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { Paper, RaisedButton } from 'material-ui';
+import { RaisedButton } from 'material-ui';
 import imageCreator, { findBestMatch } from 'utils/imageUtils';
 import { Avatar, PanelContainer } from 'shared-components';
 import { FormattedMessage } from 'react-intl';
@@ -11,7 +11,7 @@ const imageWrapperStyle = {
     overflow: 'hidden',
     display: 'flex',
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'center'
 };
 
 const wrapTextStyle = {
@@ -41,6 +41,8 @@ class ProfileDetails extends Component {
     renderHeader () {
         const { followProfile, followPending } = this.props;
         const profileData = this.props.profileData ? this.props.profileData.toJS() : {};
+        const followProfilePending = followPending && followPending.find(follow =>
+            follow.profileAddress === profileData.profile);
         const { backgroundImage, avatar } = profileData;
         const bestMatch = findBestMatch(400, backgroundImage);
         const imageUrl = backgroundImage[bestMatch] ?
@@ -110,8 +112,8 @@ class ProfileDetails extends Component {
               style={{ margin: '20px 0' }}
               buttonStyle={{ width: '120px' }}
               labelStyle={{ fontWeight: 300 }}
-              onClick={followProfile}
-              disabled={followPending}
+              onClick={() => followProfile()}
+              disabled={followProfilePending && followProfilePending.value}
             />
           </div>
         </div>;
@@ -142,7 +144,7 @@ class ProfileDetails extends Component {
                 </div>
               </div>
             }
-            {profileData.links && profileData.links.length &&
+            {profileData.links && !!profileData.links.length &&
               <div style={{ paddingBottom: '15px' }}>
                 <div style={{ fontSize: '16px', fontWeight: 500 }}>Links</div>
                 {profileData.links.map((link, key) =>
@@ -180,7 +182,7 @@ ProfileDetails.contextTypes = {
 ProfileDetails.propTypes = {
     profileData: PropTypes.shape(),
     followProfile: PropTypes.func,
-    followPending: PropTypes.bool
+    followPending: PropTypes.shape()
 };
 
 export default ProfileDetails;
