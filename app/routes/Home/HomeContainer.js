@@ -8,6 +8,7 @@ import PanelLoader from './components/panel-loader-container';
 import EntryModal from './components/entry-modal';
 import ProfileUpdater from './components/profile-updater';
 import PublishEntryRunner from './components/publish-entry-runner';
+import TagPublisher from './components/tag-publisher';
 
 class HomeContainer extends React.Component {
     componentWillMount () {
@@ -108,6 +109,7 @@ class HomeContainer extends React.Component {
               {this.props.children}
             </div>
             <PublishEntryRunner />
+            <TagPublisher />
           </div>
         );
     }

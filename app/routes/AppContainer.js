@@ -1,9 +1,11 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { SettingsActions, AppActions, ProfileActions, EProcActions } from 'local-flux';
+import {
+    SettingsActions, AppActions, ProfileActions, EProcActions, DraftActions,
+    TagActions } from 'local-flux';
 import { getMuiTheme } from 'material-ui/styles';
-import { AuthDialog, ConfirmationDialog } from 'shared-components';
+import { AuthDialog, ConfirmationDialog, PublishConfirmDialog } from 'shared-components';
 import { notificationMessages } from 'locale-data/messages';
 import NotificationBar from './components/notification-bar';
 import lightTheme from '../layouts/AkashaTheme/lightTheme';
@@ -21,11 +23,9 @@ class App extends Component {
             notification: ''
         };
     }
-    getChildContext = () => {
-        return {
-            muiTheme: getMuiTheme(this.state.theme === 'light' ? lightTheme : darkTheme)
-        };
-    };
+    getChildContext = () => ({
+        muiTheme: getMuiTheme(this.state.theme === 'light' ? lightTheme : darkTheme)
+    });
     componentWillMount () {
         const { eProcActions, settingsActions } = this.props;
         eProcActions.registerStopGethListener();
@@ -42,7 +42,6 @@ class App extends Component {
         }, 0);
     }
     componentWillReceiveProps (nextProps) {
-        const { intl } = nextProps;
         const showAuthDialog = nextProps.appState.get('showAuthDialog');
 
         if (nextProps.theme !== this.props.theme) {
@@ -57,7 +56,6 @@ class App extends Component {
                 userPassword: ''
             });
         }
-
     }
     hideNotification = () => {
         this.setState({
@@ -122,7 +120,8 @@ class App extends Component {
         });
     };
     render () {
-        const { appState, profileState, appActions } = this.props;
+        const { appState, profileState, appActions, draftActions, tagActions,
+            profileActions } = this.props;
         const loginErrors = profileState.get('errors');
         const error = appState.get('error');
         const confirmationDialog = appState.get('confirmationDialog');
@@ -130,6 +129,8 @@ class App extends Component {
             ? `Error ${error.get('code')}: ${error.get('message')}` : '';
         const isAuthDialogVisible = appState.get('showAuthDialog');
         const isConfirmationDialogVisible = confirmationDialog !== null;
+        const isPublishConfirmationDialogVisible = appState.get('publishConfirmDialog') !== null;
+
         return (
           <div className="fill-height" >
             {this.props.children}
@@ -158,6 +159,14 @@ class App extends Component {
               onCancel={this._handleConfirmationDialogCancel}
               onConfirm={this._handleConfirmationDialogConfirm}
             />
+            <PublishConfirmDialog
+              appActions={appActions}
+              tagActions={tagActions}
+              draftActions={draftActions}
+              profileActions={profileActions}
+              isOpen={isPublishConfirmationDialogVisible}
+              resource={appState.get('publishConfirmDialog')}
+            />
           </div>
         );
     }
@@ -169,6 +178,8 @@ App.propTypes = {
     profileState: PropTypes.shape(),
     profileActions: PropTypes.shape(),
     settingsActions: PropTypes.shape(),
+    draftActions: PropTypes.shape(),
+    tagActions: PropTypes.shape(),
     theme: PropTypes.string,
     children: PropTypes.element
 };
@@ -192,7 +203,9 @@ function mapDispatchToProps (dispatch) {
         profileActions: new ProfileActions(dispatch),
         settingsActions: new SettingsActions(dispatch),
         appActions: new AppActions(dispatch),
-        eProcActions: new EProcActions(dispatch)
+        eProcActions: new EProcActions(dispatch),
+        tagActions: new TagActions(dispatch),
+        draftActions: new DraftActions(dispatch)
     };
 }
 export default connect(

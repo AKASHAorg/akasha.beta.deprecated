@@ -11,7 +11,7 @@ import { TagService } from 'local-flux/services';
 class PublishEntryRunner extends Component {
     componentWillMount () {
         const { tagActions, transactionActions, loggedProfile, draftActions } = this.props;
-        tagActions.getPendingTags();
+        // tagActions.getPendingTags();
         transactionActions.getPendingTransactions();
         draftActions.getPublishingDrafts(loggedProfile.get('profile'));
     }

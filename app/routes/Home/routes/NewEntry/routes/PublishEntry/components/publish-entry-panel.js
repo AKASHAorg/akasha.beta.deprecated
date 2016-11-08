@@ -19,6 +19,7 @@ class PublishPanel extends React.Component {
             excerpt: '',
             tags: [],
             existingTags: [],
+            pendingTags: [],
             licence: null,
             featuredImage: {},
             fetchingDraft: true
@@ -53,6 +54,9 @@ class PublishPanel extends React.Component {
         }
         if (typeof tags.toJS === 'function') {
             tags = tags.toJS();
+        }
+        if (tags && tags.length > 0) {
+            this._checkExistingTags(tags);
         }
         this.setState({
             title,
@@ -173,6 +177,7 @@ class PublishPanel extends React.Component {
     };
     _checkExistingTags = (tags) => {
         const tagService = new TagService();
+        const { pendingTags } = this.props;
         let tagsPromise = Promise.resolve();
         // const existingTags = this.state.existingTags.slice();
         // console.log(existingTags, 'existingTags');
@@ -193,7 +198,10 @@ class PublishPanel extends React.Component {
         });
         return tagsPromise.then(results =>
             this.setState({
-                existingTags: results.filter(tagObj => tagObj.exists).map(tag => tag.tag)
+                existingTags: results.filter(tagObj => tagObj.exists).map(tag => tag.tag),
+                pendingTags: tags.filter(tag =>
+                    pendingTags.findIndex(tagObj =>
+                        tagObj.tag === tag) !== -1).map(tagObj => tagObj.tag)
             })
         );
     };
@@ -211,8 +219,22 @@ class PublishPanel extends React.Component {
             isDefault: false
         };
     }
-    _handleTagCreateRequest = (ev, tag) => {
-        console.log('create tag', tag, 'pleaaaaseeee!!!');
+    _handleTagRegisterRequest = (tag) => {
+        const { loggedProfile, tagActions } = this.props;
+        // 1. verify that tag is not in pending state
+        // 2. put tag in pending state after confirm dialog
+        // 3. check login is valid
+        // 4. send tag registration
+        // 5. add tx to queue
+        // 6. watch for mined tx
+        // 7. remove tag from pending state
+        tagActions.createPendingTag({
+            tag,
+            tx: null,
+            profile: loggedProfile.get('profile'),
+            minGas: 2000000,
+            publishConfirmed: false
+        });
     }
     render () {
         const { tags } = this.state;
@@ -287,7 +309,7 @@ class PublishPanel extends React.Component {
                   onRequestTagAutocomplete={this._handleTagAutocomplete}
                   onTagAdded={this._handleTagAdd}
                   onDelete={this._handleTagDelete}
-                  onTagCreateRequest={this._handleTagCreateRequest}
+                  onTagRegisterRequest={this._handleTagRegisterRequest}
                   fullWidth
                 />
               </div>

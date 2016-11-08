@@ -1,5 +1,7 @@
 import React from 'react';
-import { TextField, Chip } from 'material-ui';
+import { TextField, Chip, IconButton } from 'material-ui';
+import AddIcon from 'material-ui/svg-icons/content/add';
+import RemoveIcon from 'material-ui/svg-icons/navigation/close';
 
 class TagsField extends React.Component {
     constructor (props) {
@@ -55,9 +57,13 @@ class TagsField extends React.Component {
         }
         return null;
     };
+    _handleTagRegister = (ev, tag) => {
+        ev.preventDefault();
+        this.props.onTagRegisterRequest(tag);
+    }
     _handleTagDetect = (ev) => {
         const MODIFIER_CHARCODES = [13, 32, 44, 59];
-        for (let i = 0; i < MODIFIER_CHARCODES.length; i++) {
+        for (let i = 0; i < MODIFIER_CHARCODES.length; i += 1) {
             if (ev.charCode === MODIFIER_CHARCODES[i]) {
                 ev.preventDefault();
                 this._createTag();
@@ -82,7 +88,6 @@ class TagsField extends React.Component {
     render () {
         const currentTags = this.props.tags;
         const tags = currentTags.map((tag, key) => {
-            console.log(this.props.existingTags, 'existingTags');
             const tagExists = this.props.existingTags.indexOf(tag) > -1;
             // console.log(tagExists, tag, this.props.existingTags, 'exists?');
             const style = {
@@ -95,17 +100,45 @@ class TagsField extends React.Component {
                 marginRight: '4px',
                 marginBottom: '4px',
             };
-            // onRequestDelete={(ev) => { this._handleDeleteTag(ev, key); }}
+            const tagActionButtonStyle = {
+                padding: 0,
+                height: 25,
+                verticalAlign: 'middle',
+                marginLeft: 8,
+                width: 25,
+                transform: 'scale(0.7)'
+            };
             return (
               <Chip
                 key={key}
-
                 backgroundColor="transparent"
-                title={tagExists ? 'Tag exists in the network' : 'This tag will be added'}
                 style={style}
-                labelStyle={{ lineHeight: '32px', display: 'inline-block', verticalAlign: 'top' }}
+                labelStyle={{
+                    lineHeight: '32px',
+                    display: 'inline-block',
+                    verticalAlign: 'top',
+                    paddingRight: 0
+                }}
               >
-                {tag} <a href="">+</a> <a href="" onClick={(ev) => { this._handleDeleteTag(ev, key); }}>X</a>
+                <span style={{ fontWeight: 500 }}>{tag}</span>
+                {!tagExists &&
+                  <IconButton
+                    title={'Register tag'}
+                    onClick={ev => this._handleTagRegister(ev, tag)}
+                    style={tagActionButtonStyle}
+                    disableTouchRipple
+                  >
+                    <AddIcon />
+                  </IconButton>
+                }
+                <IconButton
+                  onClick={ev => this._handleDeleteTag(ev, key)}
+                  title={'Remove tag'}
+                  style={{ ...tagActionButtonStyle, marginLeft: 0 }}
+                  disableTouchRipple
+                >
+                  <RemoveIcon />
+                </IconButton>
               </Chip>
           );
         });
@@ -114,50 +147,52 @@ class TagsField extends React.Component {
             fullWidth
             id="tags"
             multiLine
-            style={{ lineHeight: 'inherit', height: 'inherit', marginBottom: '24px' }}
+            style={{ lineHeight: 'inherit', height: 'inherit', marginBottom: '16px' }}
             errorText={this.state.error}
             underlineStyle={{ bottom: '-4px' }}
+            underlineShow={(currentTags.length < 10)}
             errorStyle={{ bottom: '-18px' }}
-            disabled={currentTags >= 10}
             onChange={this._handleInputChange}
             value={this.state.tagString}
             onBlur={this._handleInputBlur}
           >
             <div>
               {tags}
-              <input
-                style={{
-                    display: 'inline-block',
-                    outline: 'inherit',
-                    border: 'inherit',
-                    verticalAlign: 'middle',
-                    height: '32px',
-                    width: '250px',
-                    opacity: (currentTags.length >= 10) ? 0 : 1
-                }}
-                type="text"
-                onChange={this._handleInputChange}
-                value={this.state.tagString}
-                placeholder={
-                    currentTags.length < 3 ?
-                    `add a tag (${3 - currentTags.length} free remaining)` :
-                    'add a tag (paid)'
-                }
-                onKeyPress={this._handleTagDetect}
-                disabled={currentTags.length >= 10}
-              />
+              {(currentTags.length < 10) &&
+                <input
+                  style={{
+                      display: 'inline-block',
+                      outline: 'inherit',
+                      border: 'inherit',
+                      verticalAlign: 'middle',
+                      height: '32px',
+                      width: '250px'
+                  }}
+                  type="text"
+                  onChange={this._handleInputChange}
+                  value={this.state.tagString}
+                  placeholder={
+                      currentTags.length < 3 ?
+                      `add a tag (${3 - currentTags.length} free remaining)` :
+                      'add a tag (paid)'
+                  }
+                  onKeyPress={this._handleTagDetect}
+                  disabled={currentTags.length >= 10}
+                />
+              }
             </div>
           </TextField>
         );
     }
 }
 TagsField.propTypes = {
-    tags: React.PropTypes.array,
+    tags: React.PropTypes.arrayOf(React.PropTypes.string),
     onTagAdded: React.PropTypes.func,
     onDelete: React.PropTypes.func,
-    existingTags: React.PropTypes.array,
+    existingTags: React.PropTypes.arrayOf(React.PropTypes.string),
     onRequestTagAutocomplete: React.PropTypes.func,
-    onBlur: React.PropTypes.func
+    onBlur: React.PropTypes.func,
+    onTagRegisterRequest: React.PropTypes.func
 };
 
 export default TagsField;

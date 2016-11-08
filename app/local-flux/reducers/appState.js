@@ -27,6 +27,7 @@ const initialState = fromJS({
     confirmationDialog: null,
     timestamp: null,
     notifications: new List(),
+    publishConfirmDialog: null
 });
 
 const appState = createReducer(initialState, {
@@ -58,6 +59,12 @@ const appState = createReducer(initialState, {
 
     [types.HIDE_CONFIRMATION_DIALOG]: state =>
         state.set('confirmationDialog', null),
+
+    [types.SHOW_PUBLISH_CONFIRM_DIALOG]: (state, { resource }) =>
+        state.set('publishConfirmDialog', resource),
+
+    [types.HIDE_PUBLISH_CONFIRM_DIALOG]: state =>
+        state.set('publishConfirmDialog', null),
 
     [types.SET_TIMESTAMP]: (state, action) =>
         state.set('timestamp', action.timestamp),
