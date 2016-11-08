@@ -19,10 +19,10 @@ export function initModules() {
         new AuthIPC(),
         new TxIPC(),
         new RegistryIPC(),
-        new ProfileIPC(),
-        // new TagsIPC(),
-        // new EntryIPC(),
-        // new CommentsIPC(),
+        //new ProfileIPC(),
+        //new TagsIPC(),
+        //new EntryIPC(),
+        //new CommentsIPC(),
         new LicensesIPC()
     ];
     return {

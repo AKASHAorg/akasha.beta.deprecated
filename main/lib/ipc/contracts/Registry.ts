@@ -38,7 +38,13 @@ export default class Registry extends BaseContract {
     public getByAddress(address: string) {
         return this.contract
             .addressOfKey
-            .callAsync(address);
+            .callAsync(address)
+            .then((profileAddress) => {
+                if(!!unpad(profileAddress)) {
+                    return profileAddress;
+                }
+                return null;
+            });
     }
 
     public checkFormat(id: string){

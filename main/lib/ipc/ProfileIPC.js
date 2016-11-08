@@ -30,28 +30,15 @@ class ProfileIPC extends ModuleEmitter_1.default {
     _getProfileData() {
         this.registerListener(channels_1.default.server[this.MODULE_NAME].getProfileData, (event, data) => {
             let response;
-            index_3.constructed
-                .instance
-                .profile
-                .getIpfs(data.profile)
-                .then((resp) => {
-                if (data.full) {
-                    return index_2.module.helpers.resolveProfile(resp, data.resolveImages);
-                }
-                return index_2.module.helpers.getShortProfile(resp, data.resolveImages);
-            })
-                .then((resp) => {
-                const constructed = Object.assign({ username: '', [settings_1.BASE_URL]: settings_1.generalSettings.get(settings_1.BASE_URL) }, resp, { profile: data.profile });
-                return index_3.constructed.instance
-                    .registry
-                    .getByContract(data.profile)
-                    .then((username) => {
-                    constructed.username = username;
-                    response = responses_1.mainResponse(constructed);
-                    return response;
-                });
-            })
-                .catch((err) => {
+            var s = Promise.coroutine(function* (data1) {
+                const ipfsHash = yield index_3.constructed.instance.profile.getIpfs(data1.profile);
+                const profile = (data1.full) ? yield index_2.module.helpers.resolveProfile(ipfsHash, data1.resolveImages) :
+                    yield index_2.module.helpers.getShortProfile(ipfsHash, data1.resolveImages);
+                const akashaId = yield index_3.constructed.instance.profile.getId(data1.profile);
+                response = responses_1.mainResponse(Object.assign({ username: akashaId, [settings_1.BASE_URL]: settings_1.generalSettings.get(settings_1.BASE_URL), profile: data1.profile }, profile));
+                return response;
+            });
+            s(data).catch((err) => {
                 response = responses_1.mainResponse({
                     error: {
                         message: err.message,

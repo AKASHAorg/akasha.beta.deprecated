@@ -36,32 +36,18 @@ class ProfileIPC extends ModuleEmitter {
             channels.server[this.MODULE_NAME].getProfileData,
             (event: any, data: ProfileDataRequest) => {
                 let response: ProfileDataResponse;
-                contracts
-                    .instance
-                    .profile
-                    .getIpfs(data.profile)
-                    .then((resp: string) => {
-                        if (data.full) {
-                            return profileModule.helpers.resolveProfile(resp, data.resolveImages);
-                        }
-                        return profileModule.helpers.getShortProfile(resp, data.resolveImages);
-                    })
-                    .then((resp: IpfsProfileCreateRequest) => {
-                        const constructed = Object.assign(
-                            { username: '', [BASE_URL]: generalSettings.get(BASE_URL) },
-                            resp,
-                            { profile: data.profile }
-                        );
-                        return contracts.instance
-                            .registry
-                            .getByContract(data.profile)
-                            .then((username) => {
-                                constructed.username = username;
-                                response = mainResponse(constructed);
-                                return response;
-                            });
-                    })
-                    .catch((err: Error) => {
+                var s = Promise.coroutine(function* (data1) {
+                    const ipfsHash = yield contracts.instance.profile.getIpfs(data1.profile);
+                    const profile = (data1.full) ? yield profileModule.helpers.resolveProfile(ipfsHash, data1.resolveImages):
+                        yield profileModule.helpers.getShortProfile(ipfsHash, data1.resolveImages);
+                    const akashaId = yield contracts.instance.profile.getId(data1.profile);
+                    response = mainResponse(Object.assign(
+                        { username: akashaId, [BASE_URL]: generalSettings.get(BASE_URL), profile: data1.profile },
+                        profile));
+                    return response;
+                });
+                // just for testing purpose
+                s(data).catch((err: Error) => {
                         response = mainResponse({
                             error: {
                                 message: err.message,

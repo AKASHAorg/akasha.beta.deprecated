@@ -22,7 +22,13 @@ class Registry extends BaseContract_1.default {
     getByAddress(address) {
         return this.contract
             .addressOfKey
-            .callAsync(address);
+            .callAsync(address)
+            .then((profileAddress) => {
+            if (!!ethereumjs_util_1.unpad(profileAddress)) {
+                return profileAddress;
+            }
+            return null;
+        });
     }
     checkFormat(id) {
         return this.contract
