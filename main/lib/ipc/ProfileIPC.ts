@@ -7,6 +7,7 @@ import channels from '../channels';
 import { generalSettings, BASE_URL } from './config/settings';
 import { mainResponse } from './event/responses';
 import WebContents = Electron.WebContents;
+import * as Promise from 'bluebird';
 
 class ProfileIPC extends ModuleEmitter {
 
@@ -20,7 +21,6 @@ class ProfileIPC extends ModuleEmitter {
         this.webContents = webContents;
         this._getMyBalance()
             ._getProfileData()
-            ._getIpfs()
             ._unregister()
             ._follow()
             ._getFollowers()
@@ -164,32 +164,6 @@ class ProfileIPC extends ModuleEmitter {
         return this;
     }
 
-    private _getIpfs() {
-        this.registerListener(
-            channels.server[this.MODULE_NAME].getIpfs,
-            (event: any, data: IpfsDataRequest) => {
-                let response: IpfsDataResponse;
-                const chain = (data.full) ? profileModule.helpers.resolveProfile(data.ipfsHash, data.resolveImages) :
-                    profileModule.helpers.getShortProfile(data.ipfsHash, data.resolveImages);
-                chain.then((resolved: any) => {
-                    const constructed = Object.assign({[BASE_URL]: generalSettings.get(BASE_URL)}, resolved);
-                    response = mainResponse(constructed);
-                }).catch((err: Error) => {
-                    response = mainResponse({ error: { message: err.message } });
-                })
-                    .finally(() => {
-                        this.fireEvent(
-                            channels.client[this.MODULE_NAME].getIpfs,
-                            response,
-                            event
-                        );
-                    })
-                ;
-            }
-        );
-        return this;
-    }
-
     private _unregister() {
         this.registerListener(
             channels.server[this.MODULE_NAME].unregister,
@@ -226,20 +200,50 @@ class ProfileIPC extends ModuleEmitter {
             (event: any, data: ProfileFollowRequest) => {
                 let response: ProfileFollowResponse;
                 contracts.instance
-                    .main
+                    .feed
                     .follow(data.profileAddress)
                     .then((txData) => {
                         return userModule.auth.signData(txData, data.token);
                     })
                     .then((tx: string) => {
-                        response = mainResponse({ tx });
+                        response = mainResponse({ tx, profileAddress: data.profileAddress });
                     })
                     .catch((err: Error) => {
-                        response = mainResponse({ error: { message: err.message } });
+                        response = mainResponse({ error: { message: err.message, profileAddress: data.profileAddress } });
                     })
                     .finally(() => {
                         this.fireEvent(
                             channels.client[this.MODULE_NAME].follow,
+                            response,
+                            event
+                        );
+                    });
+            }
+        );
+        return this;
+    }
+
+
+    private _unFollow() {
+        this.registerListener(
+            channels.server[this.MODULE_NAME].unFollow,
+            (event: any, data: ProfileFollowRequest) => {
+                let response: ProfileFollowResponse;
+                contracts.instance
+                    .feed
+                    .unFollow(data.profileAddress)
+                    .then((txData) => {
+                        return userModule.auth.signData(txData, data.token);
+                    })
+                    .then((tx: string) => {
+                        response = mainResponse({ tx, profileAddress: data.profileAddress });
+                    })
+                    .catch((err: Error) => {
+                        response = mainResponse({ error: { message: err.message, profileAddress: data.profileAddress } });
+                    })
+                    .finally(() => {
+                        this.fireEvent(
+                            channels.client[this.MODULE_NAME].unFollow,
                             response,
                             event
                         );
@@ -254,12 +258,15 @@ class ProfileIPC extends ModuleEmitter {
             channels.server[this.MODULE_NAME].getFollowersCount,
             (event: any, data: GetFollowerCountRequest) => {
                 let response;
-                contracts.instance.main.getFollowersCount(data.profileAddress)
+                 contracts
+                    .instance
+                    .feed.getFollowersCount(data.profileId)
                     .then((count: any) => {
-                        response = mainResponse({ count });
-                    }).catch((err: Error) => {
+                        response = mainResponse({ count, profileId: data.profileId });
+                    })
+                    .catch((err: Error) => {
                     response = mainResponse({ error: { message: err.message } });
-                })
+                    })
                     .finally(() => {
                         this.fireEvent(
                             channels.client[this.MODULE_NAME].getFollowersCount,
@@ -278,12 +285,15 @@ class ProfileIPC extends ModuleEmitter {
             channels.server[this.MODULE_NAME].getFollowingCount,
             (event: any, data: GetFollowerCountRequest) => {
                 let response;
-                contracts.instance.main.getFollowingCount(data.profileAddress)
+                contracts
+                    .instance
+                    .feed
+                    .getFollowingCount(data.profileId)
                     .then((count: any) => {
-                        response = mainResponse({ count });
+                        response = mainResponse({ count, profileId: data.profileId });
                     }).catch((err: Error) => {
                     response = mainResponse({ error: { message: err.message } });
-                })
+                    })
                     .finally(() => {
                         this.fireEvent(
                             channels.client[this.MODULE_NAME].getFollowingCount,

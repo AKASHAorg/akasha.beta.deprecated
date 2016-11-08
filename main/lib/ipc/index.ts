@@ -19,7 +19,7 @@ export function initModules() {
         new AuthIPC(),
         new TxIPC(),
         new RegistryIPC(),
-        // new ProfileIPC(),
+        new ProfileIPC(),
         // new TagsIPC(),
         // new EntryIPC(),
         // new CommentsIPC(),
