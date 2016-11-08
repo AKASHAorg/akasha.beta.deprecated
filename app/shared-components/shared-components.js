@@ -10,6 +10,7 @@ export ImageUploader from './ImageUploader/image-uploader';
 export LoginDialog from './Dialogs/login-dialog';
 export PanelContainer from './PanelContainer/panel-container';
 export PublishConfirmDialog from './Dialogs/publish-confirm-dialog';
+export ProfileCard from './ProfileCard/profile-card';
 export Sidebar from './Sidebar/side-bar';
 export SyncProgressLoader from './Loaders/sync-progress';
 export LogsList from './LogsList/logs-list';

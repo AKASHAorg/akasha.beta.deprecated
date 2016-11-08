@@ -108,5 +108,30 @@ export const profileMessages = defineMessages({
         id: 'app.profile.personalProfile',
         description: 'Title for edit profile panel',
         defaultMessage: 'Personal profile'
+    },
+    follow: {
+        id: 'app.profile.follow',
+        description: 'follow a profile',
+        defaultMessage: 'Follow'
+    },
+    unfollow: {
+        id: 'app.profile.unfollow',
+        description: 'unfollow a profile',
+        defaultMessage: 'Unfollow'
+    },
+    about: {
+        id: 'app.profile.about',
+        description: 'profile details label for a short description',
+        defaultMessage: 'About'
+    },
+    links: {
+        id: 'app.profile.links',
+        description: 'profile details label for external or internal links',
+        defaultMessage: 'Links'
+    },
+    showMore: {
+        id: 'app.profile.showMore',
+        description: 'label for button that loads more data',
+        defaultMessage: 'Show more'
     }
 });
