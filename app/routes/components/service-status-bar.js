@@ -160,7 +160,7 @@ class ServiceStatusBar extends Component {
         const { intl, gethStatus } = this.props;
 
         if (gethStatus.get('api') && !gethStatus.get('stopped')) {
-            return intl.formatMessage(generalMessages.started);
+            return intl.formatMessage(generalMessages.running);
         } else if (gethStatus.get('starting') || gethStatus.get('spawned')) {
             return intl.formatMessage(generalMessages.starting);
         } else if (gethStatus.get('downloading')) {
@@ -185,7 +185,7 @@ class ServiceStatusBar extends Component {
         const { intl, ipfsStatus } = this.props;
 
         if (ipfsStatus.get('spawned') || ipfsStatus.get('started')) {
-            return intl.formatMessage(generalMessages.started);
+            return intl.formatMessage(generalMessages.running);
         } else if (ipfsStatus.get('downloading')) {
             return intl.formatMessage(generalMessages.downloading);
         }

@@ -1,13 +1,20 @@
 import BaseService from './base-service';
+import profileDB from './db/profile';
 
 const Channel = window.Channel;
 /**
  * Profile Service.
  * default open channels => ['getProfileData', 'getMyBalance', 'getIpfs']
- * available channels => ['manager', 'getProfileData', 'getMyBalance', 'getIpfs', 'unregister']
+ * available channels => ['manager', 'getProfileData', 'updateProfileData', 'getMyBalance',
+ *      'getIpfs', 'unregister', 'follow', 'getFollowersCount', 'getFollowingCount',
+ *      'getFollowers', 'getFollowing']
  */
 class ProfileService extends BaseService {
-
+    constructor () {
+        super();
+        this.serverManager = Channel.server.profile.manager;
+        this.clientManager = Channel.client.profile.manager;
+    }
     /**
      * Get ballance for a profile
      * Request:
@@ -50,6 +57,24 @@ class ProfileService extends BaseService {
         );
         Channel.server.profile.getProfileData.send(options);
     };
+
+    updateProfileData = ({ token, ipfs, gas = 2000000, onError = () => {}, onSuccess }) => {
+        const clientChannel = Channel.client.profile.updateProfileData;
+        const serverChannel = Channel.server.profile.updateProfileData;
+        this.openChannel({
+            serverManager: this.serverManager,
+            clientManager: this.clientManager,
+            serverChannel,
+            clientChannel,
+            listenerCb: this.createListener(
+                onError,
+                onSuccess,
+                clientChannel.channelName
+            )
+        }, () => {
+            serverChannel.send({ token, ipfs, gas });
+        });
+    };
     /**
      * retrieve profile data by ipfs address
      * Request:
@@ -72,6 +97,60 @@ class ProfileService extends BaseService {
      * @todo gather more info and implement!
      */
     unregister = () => {};
+
+    getFollowersCount = ({ profileAddress, onError = () => {}, onSuccess }) => {
+        const clientChannel = Channel.client.profile.getFollowersCount;
+        const serverChannel = Channel.server.profile.getFollowersCount;
+        this.openChannel({
+            serverManager: this.serverManager,
+            clientManager: this.clientManager,
+            serverChannel,
+            clientChannel,
+            listenerCb: this.createListener(
+                onError,
+                onSuccess,
+                clientChannel.channelName
+            )
+        }, () => {
+            serverChannel.send({ profileAddress });
+        });
+    }
+
+    getFollowingCount = ({ profileAddress, onError = () => {}, onSuccess }) => {
+        const clientChannel = Channel.client.profile.getFollowingCount;
+        const serverChannel = Channel.server.profile.getFollowingCount;
+        this.openChannel({
+            serverManager: this.serverManager,
+            clientManager: this.clientManager,
+            serverChannel,
+            clientChannel,
+            listenerCb: this.createListener(
+                onError,
+                onSuccess,
+                clientChannel.channelName
+            )
+        }, () => {
+            serverChannel.send({ profileAddress });
+        });
+    }
+
+    follow = ({ token, profileAddress, gas = 2000000, onError = () => {}, onSuccess }) => {
+        const clientChannel = Channel.client.profile.follow;
+        const serverChannel = Channel.server.profile.follow;
+        this.openChannel({
+            serverManager: this.serverManager,
+            clientManager: this.clientManager,
+            serverChannel,
+            clientChannel,
+            listenerCb: this.createListener(
+                onError,
+                onSuccess,
+                clientChannel.channelName
+            )
+        }, () => {
+            serverChannel.send({ token, profileAddress, gas });
+        });
+    }
 }
 
 export { ProfileService };

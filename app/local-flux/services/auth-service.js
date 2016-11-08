@@ -29,7 +29,7 @@ class AuthService extends BaseService {
     login = ({ account, password, rememberTime, registering = false, onSuccess, onError }) => {
         const successCb = (data) => {
             profileDB.transaction('rw', profileDB.loggedProfile, () => {
-                profileDB.loggedProfile.add(data);
+                profileDB.loggedProfile.put(data);
                 return data;
             }).then((loggedProfile) => {
                 onSuccess(loggedProfile);

@@ -100,7 +100,6 @@ function convertToBlob (canvas, widthObj) {
     });
 }
 
-
 function readImageData (imagePath, canvas, ctx, options) {
     return new Promise((resolve, reject) => {
         const availableWidths = [];

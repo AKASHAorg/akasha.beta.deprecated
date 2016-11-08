@@ -1,115 +1,127 @@
 import React, { Component, PropTypes } from 'react';
 import r from 'ramda';
 import { SvgIcon, IconButton, RaisedButton,
-    TextField, Checkbox, Divider } from 'material-ui';
+    TextField, Divider, Paper } from 'material-ui';
 import ContentAddIcon from 'material-ui/svg-icons/content/add';
 import CancelIcon from 'material-ui/svg-icons/navigation/cancel';
-import ErrorIcon from 'material-ui/svg-icons/alert/error';
-import { injectIntl, FormattedMessage } from 'react-intl';
+import { injectIntl } from 'react-intl';
 import { Avatar, ImageUploader, PanelContainer } from 'shared-components';
 import { profileMessages, formMessages, generalMessages } from 'locale-data/messages'; /* eslint import/no-unresolved: 0*/
-import { inputFieldMethods } from '../../../../../utils/dataModule';
-import validationProvider from '../../../../../utils/validationProvider';
-import { UserValidation } from '../../../../../utils/validationSchema';
-import PanelHeader from '../../../../components/panel-header';
+import { inputFieldMethods } from 'utils/dataModule';
+import validationProvider from 'utils/validationProvider';
+import { UserValidation } from 'utils/validationSchema';
+import PanelHeader from '../../routes/components/panel-header';
+import imageCreator from '../../utils/imageUtils';
 
-class CreateProfile extends Component {
+class EditProfile extends Component {
     constructor (props) {
         super(props);
         this.getProps = inputFieldMethods.getProps.bind(this);
         this.state = {
             formValues: {
-                firstName: '',
-                lastName: '',
-                username: '',
-                password: '',
-                password2: ''
+                firstName: props.profile.get('firstName'),
+                lastName: props.profile.get('lastName')
             },
-            links: [
-                {
-                    title: '',
-                    url: '',
-                    type: '',
-                    id: 0
-                }
-            ]
+            about: '',
+            avatar: props.profile.get('avatar'),
+            backgroundImage: {},
+            links: [],
+            lastCreatedLink: ''
         };
         this.validatorTypes = new UserValidation(props.intl).getSchema();
-        this.serverValidatedFields = ['username'];
     }
+
     componentWillMount () {
-        this.setState({ opt_details: false });
+        const { profile, profileActions } = this.props;
+        profileActions.getProfileData([{ profile: profile.get('profile') }], true);
     }
-    componentDidMount () {
-        if (this.refs.firstName) {
-            this.refs.firstName.focus();
+
+    componentWillReceiveProps (nextProps) {
+        if (!nextProps.fetchingProfileData && this.props.fetchingProfileData) {
+            const { firstName, lastName, about, backgroundImage, links,
+                avatar } = nextProps.profile.toJS();
+            this.setState({
+                formValues: {
+                    firstName,
+                    lastName
+                },
+                backgroundImage,
+                about,
+                avatar,
+                links: links || []
+            });
+        }
+        if (!nextProps.loginRequested && this.props.loginRequested) {
+            this.handleSubmit();
         }
     }
-    componentWillUpdate (nextProps) {
-        const { tempProfile } = nextProps;
-        if (tempProfile && tempProfile.get('username') !== '') {
-            this.context.router.push('/authenticate/new-profile-status');
-        }
-    }
+
     getValidatorData () {
         return this.state.formValues;
     }
-    handleShowDetails = () => {
-        this.setState({ opt_details: !this.state.opt_details });
-    };
+
     handleSubmit = () => {
-        const { tempProfileActions } = this.props;
+        const { updateProfileData } = this.props;
         const profileData = this.state.formValues;
-        const optionalData = {};
         const profileImage = this.imageUploader.getWrappedInstance().getImage();
         const userLinks = this.state.links.filter(link => link.title.length > 0);
-        profileData.password = this.state.formValues.password;
-        profileData.password2 = this.state.formValues.password2;
-        // optional settings
+
         if (userLinks.length > 0) {
-            optionalData.links = userLinks;
+            profileData.links = userLinks;
         }
         if (profileImage) {
-            optionalData.backgroundImage = profileImage;
+            profileData.backgroundImage = profileImage;
+        } else {
+            profileData.backgroundImage = this.state.backgroundImage;
         }
         if (this.state.about) {
-            optionalData.about = this.state.about;
+            profileData.about = this.state.about;
         }
 
-        // save a temporary profile to indexedDB
-        // console.log(profileData);
-        // console.log('profile creation is disabled for testing purposes!!')
-        // return;
         this.avatar.getImage().then((uintArr) => {
             if (uintArr) {
-                optionalData.avatar = uintArr;
+                profileData.avatar = uintArr;
             }
-            return { ...profileData, ...optionalData };
+            return profileData;
         }).then((data) => {
             let mustCorrectErrors = false;
             Object.keys(this.state.formValues).forEach((key) => {
                 if (this.state.formValues[key] === '') {
-                    this.refs[key].focus();
+                    if (this.refs[key]) {
+                        this.refs[key].focus();
+                    }
                     mustCorrectErrors = true;
                 }
             });
             if (mustCorrectErrors) {
                 console.log('must correct some errors!', this.state);
+            } else if (!profileImage && this.state.backgroundImage) {
+                const background = this.state.backgroundImage;
+                const newImage = {};
+                Object.keys(background).forEach((key) => {
+                    newImage[key] = Object.assign({}, background[key], {
+                        src: background[key].src['/']
+                    });
+                });
+                data.backgroundImage = newImage;
+                updateProfileData(data);
             } else {
-                delete data.password2;
-                tempProfileActions.createTempProfile(data);
+                updateProfileData(data);
             }
         });
     };
+
     _submitForm = (ev) => {
         ev.preventDefault();
         this.handleSubmit();
     };
+
     _handleCancel = (ev) => {
         ev.preventDefault();
         this.profileForm.reset();
-        this.context.router.goBack();
+        this.props.showPanel({ name: 'userProfile', overlay: true });
     };
+
     _handleAddLink = () => {
         const currentLinks = this.state.links.slice();
         const isEmpty = this._checkLinks();
@@ -122,13 +134,15 @@ class CreateProfile extends Component {
                 id: currentLinks.length
             });
             this.setState({
-                links: currentLinks
+                links: currentLinks,
+                lastCreatedLink: currentLinks.length - 1
             });
         }
     };
+
     _handleRemoveLink = (linkId) => {
         let links = this.state.links;
-        if (this.state.links.length > 1) {
+        if (this.state.links.length > 0) {
             links = r.reject(link => link.id === linkId, links);
         }
         for (let i = 0; i < links.length; i += 1) {
@@ -138,6 +152,7 @@ class CreateProfile extends Component {
             links
         });
     };
+
     _checkLinks = () => {
         let isEmpty = false;
         this.state.links.forEach((link) => {
@@ -157,7 +172,7 @@ class CreateProfile extends Component {
         const link = links[index];
         link[field] = fieldValue;
         if (field === 'url') {
-            if (fieldValue.indexOf('akasha://') === 0) {
+            if (field.indexOf('akasha://')) {
                 link.type = 'internal';
             } else {
                 link.type = 'other';
@@ -166,44 +181,47 @@ class CreateProfile extends Component {
         links[index] = link;
         this.setState({ links });
     };
+
     _handleAboutChange = (ev) => {
         this.setState({
             about: ev.target.value
         });
     };
-    _handleModalShow = (ev, modalName) => {
-        ev.preventDefault();
-        console.log('show modal ', modalName);
+
+    clearAvatarImage = () => {
+        this.setState({
+            avatar: ''
+        });
     };
-    renderWarningMessage () {
-        const { intl, gethStatus, ipfsStatus } = this.props;
-        const { palette } = this.context.muiTheme;
-        if (!gethStatus.get('api') || (!ipfsStatus.get('started') && !ipfsStatus.get('spawned'))) {
-            return <div
-              style={{ height: '36px', lineHeight: '36px', display: 'flex', alignItems: 'center' }}
-            >
-              <ErrorIcon style={{ color: palette.accent1Color }} />
-              <span style={{ marginLeft: '5px', color: palette.accent1Color }}>
-                {intl.formatMessage(generalMessages.serviceStoppedWarning)}
-              </span>
-            </div>;
-        }
-        return null;
+
+    clearBackgroundImage = () => {
+        this.setState({
+            backgroundImage: {}
+        });
+    };
+
+    renderHeaderTitle () {
+        const { intl } = this.props;
+        const username = this.props.profile.get('username');
+        return <div>
+          <div style={{ fontSize: '20px' }}>{intl.formatMessage(profileMessages.personalProfile)}</div>
+          <div style={{ fontWeight: '300' }}>{`@${username}`}</div>
+        </div>;
     }
+
     render () {
-        const { intl, gethStatus, ipfsStatus } = this.props;
+        const { intl, profile, updatingProfile } = this.props;
         const { palette } = this.context.muiTheme;
-        const isServiceStopped = !gethStatus.get('api')
-            || (!ipfsStatus.get('started') && !ipfsStatus.get('spawned'));
         const floatLabelStyle = { color: palette.disabledColor };
         const firstNameProps = this.getProps({
             floatingLabelText: intl.formatMessage(formMessages.firstName),
             ref: 'firstName',
             floatingLabelStyle: floatLabelStyle,
-            style: { width: '210px', verticalAlign: 'middle' },
+            style: { verticalAlign: 'middle', flex: '1 1 auto' },
             statePath: 'formValues.firstName',
             required: true,
             addValueLink: true,
+            value: this.state.formValues.firstName,
             onFocus: this.props.clearValidations,
             onBlur: this.props.handleValidation('formValues.firstName')
         });
@@ -212,102 +230,76 @@ class CreateProfile extends Component {
             floatingLabelStyle: floatLabelStyle,
             floatingLabelText: intl.formatMessage(formMessages.lastName),
             ref: 'lastName',
-            style: { width: '210px', marginLeft: '20px', verticalAlign: 'middle' },
+            style: { flex: '1 1 auto', marginLeft: '20px', verticalAlign: 'middle' },
             statePath: 'formValues.lastName',
             required: true,
             addValueLink: true,
+            value: this.state.formValues.lastName,
             onBlur: this.props.handleValidation('formValues.lastName')
         });
-
-        const usernameProps = this.getProps({
-            fullWidth: true,
-            style: { verticalAlign: 'middle' },
-            floatingLabelText: intl.formatMessage(formMessages.username),
-            ref: 'username',
-            floatingLabelStyle: floatLabelStyle,
-            required: true,
-            addValueLink: true,
-            statePath: 'formValues.username',
-            onTextChange: this.props.handleValidation('formValues.username')
-        });
-
-        const passwordProps = this.getProps({
-            type: 'password',
-            fullWidth: true,
-            style: { verticalAlign: 'middle' },
-            floatingLabelText: intl.formatMessage(formMessages.password),
-            ref: 'password',
-            floatingLabelStyle: floatLabelStyle,
-            required: true,
-            addValueLink: true,
-            statePath: 'formValues.password',
-            onBlur: this.props.handleValidation('formValues.password')
-        });
-
-        const password2Props = this.getProps({
-            type: 'password',
-            fullWidth: true,
-            style: { verticalAlign: 'middle' },
-            floatingLabelText: intl.formatMessage(formMessages.passwordVerify),
-            ref: 'password2',
-            floatingLabelStyle: floatLabelStyle,
-            required: true,
-            addValueLink: true,
-            statePath: 'formValues.password2',
-            onBlur: this.props.handleValidation('formValues.password2')
-        });
+        const mediumImage = this.state.backgroundImage.md;
+        const backgroundImageLink = mediumImage &&
+            imageCreator(mediumImage.src['/'], profile.get('baseUrl'));
 
         return (
-          <PanelContainer
-            showBorder
-            actions={[
-              /* eslint-disable */
-              <RaisedButton
-                key="cancel"
-                label={intl.formatMessage(generalMessages.cancel)}
-                type="reset"
-                onClick={this._handleCancel}
-              />,
-              <RaisedButton
-                key="submit"
-                label={intl.formatMessage(generalMessages.submit)}
-                type="submit"
-                onClick={this._submitForm}
-                style={{ marginLeft: 8 }}
-                disabled={this.state.submitting || isServiceStopped}
-                primary
-              />
-              /* eslint-enable */
-            ]}
-            leftActions={this.renderWarningMessage()}
-            header={
-              <PanelHeader title={intl.formatMessage(profileMessages.createProfileTitle)} />
-            }
+          <Paper
+            style={{
+                width: '480px',
+                zIndex: 10,
+                position: 'relative',
+                height: '100%'
+            }}
           >
-            <form
-              action=""
-              onSubmit={this.handleSubmit}
-              ref={(profileForm) => { this.profileForm = profileForm; }}
+            <PanelContainer
+              showBorder
+              actions={[
+              /* eslint-disable */
+                <RaisedButton
+                    key="cancel"
+                    label={intl.formatMessage(generalMessages.cancel)}
+                    type="reset"
+                    onClick={this._handleCancel}
+                />,
+                <RaisedButton
+                    key="update"
+                    label={intl.formatMessage(generalMessages.update)}
+                    type="submit"
+                    onClick={this._submitForm}
+                    style={{ marginLeft: 8 }}
+                    disabled={this.state.submitting || updatingProfile}
+                    primary
+                />
+                /* eslint-enable */
+              ]}
+              header={
+                <PanelHeader
+                  title={this.renderHeaderTitle()}
+                  noLogoButton
+                  noStatusBar
+                />
+              }
             >
-              <TextField {...firstNameProps} />
-              <TextField {...lastNameProps} />
-              <TextField {...usernameProps} />
-              <TextField {...passwordProps} />
-              <TextField {...password2Props} />
-              <Checkbox
-                label={intl.formatMessage(profileMessages.optionalDetailsLabel)}
-                style={{ marginTop: '18px', marginLeft: '-4px' }}
-                checked={this.state.opt_details}
-                onCheck={this.handleShowDetails}
-              />
-              <div style={{ display: this.state.opt_details ? 'block' : 'none' }} >
+              <form
+                action=""
+                onSubmit={this.handleSubmit}
+                ref={(profileForm) => { this.profileForm = profileForm; }}
+                style={{ width: '100%' }}
+              >
+                <div style={{ display: 'flex' }}>
+                  <TextField {...firstNameProps} />
+                  <TextField {...lastNameProps} />
+                </div>
                 <h3 style={{ margin: '30px 0 10px 0' }} >
                   {intl.formatMessage(profileMessages.avatarTitle)}
                 </h3>
                 <div>
                   <Avatar
+                    radius={130}
+                    image={this.state.avatar}
                     editable
                     ref={(avatar) => { this.avatar = avatar; }}
+                    clearAvatarImage={this.clearAvatarImage}
+                    avatarScale={1}
                   />
                 </div>
                 <h3 style={{ margin: '20px 0 10px 0' }} >
@@ -317,6 +309,8 @@ class CreateProfile extends Component {
                   ref={(imageUploader) => { this.imageUploader = imageUploader; }}
                   minHeight={350}
                   minWidth={672}
+                  initialImageLink={backgroundImageLink}
+                  clearImage={this.clearBackgroundImage}
                 />
                 <h3 style={{ margin: '20px 0 0 0' }} >
                   {intl.formatMessage(profileMessages.aboutYouTitle)}
@@ -348,11 +342,11 @@ class CreateProfile extends Component {
                     </IconButton>
                   </div>
                 </div>
-                {this.state.links.map((link, key) =>
+                {!!this.state.links.length && this.state.links.map((link, key) =>
                   <div key={key} className="row">
                     <div className="col-xs-10">
                       <TextField
-                        autoFocus={(this.state.links.length - 1) === key}
+                        autoFocus={this.state.lastCreatedLink === key}
                         fullWidth
                         floatingLabelText={intl.formatMessage(formMessages.title)}
                         value={link.title}
@@ -367,7 +361,7 @@ class CreateProfile extends Component {
                         onChange={ev => this._handleLinkChange('url', link.id, ev)}
                       />
                     </div>
-                    {this.state.links.length > 1 &&
+                    {this.state.links.length > 0 &&
                       <div className="col-xs-2 center-xs">
                         <IconButton
                           title={intl.formatMessage(profileMessages.removeLinkButtonTitle)}
@@ -388,56 +382,32 @@ class CreateProfile extends Component {
                     }
                   </div>
                 )}
-              </div>
-              <small>
-                <FormattedMessage
-                  {...profileMessages.terms}
-                  values={{
-                      termsLink: (
-                        <a
-                          href="/terms"
-                          onClick={ev => this._handleModalShow(ev, 'termsOfService')}
-                          style={{ color: palette.primary1Color }}
-                        >
-                          {intl.formatMessage(generalMessages.termsOfService)}
-                        </a>
-                      ),
-                      privacyLink: (
-                        <a
-                          href="/privacy"
-                          onClick={ev => this._handleModalShow(ev, 'privacyPolicy')}
-                          style={{ color: palette.primary1Color }}
-                        >
-                          {intl.formatMessage(generalMessages.privacyPolicy)}
-                        </a>
-                      )
-                  }}
-                />
-              </small>
-            </form>
-          </PanelContainer>
+              </form>
+            </PanelContainer>
+          </Paper>
         );
     }
 }
 
-CreateProfile.propTypes = {
-    style: PropTypes.shape(),
-    customValidate: React.PropTypes.func,
-    errors: React.PropTypes.shape(),
-    tempProfileActions: React.PropTypes.shape(),
-    clearValidations: React.PropTypes.func,
-    handleValidation: React.PropTypes.func,
-    intl: React.PropTypes.shape(),
-    gethStatus: PropTypes.shape().isRequired,
-    ipfsStatus: PropTypes.shape().isRequired
+EditProfile.propTypes = {
+    clearValidations: PropTypes.func,
+    handleValidation: PropTypes.func,
+    intl: PropTypes.shape(),
+    profile: PropTypes.shape(),
+    profileActions: PropTypes.shape(),
+    showPanel: PropTypes.func,
+    fetchingProfileData: PropTypes.bool,
+    updateProfileData: PropTypes.func,
+    loginRequested: PropTypes.bool,
+    updatingProfile: PropTypes.bool
 };
 
-CreateProfile.contextTypes = {
+EditProfile.contextTypes = {
     muiTheme: React.PropTypes.shape(),
     router: React.PropTypes.shape()
 };
 
-CreateProfile.defaultProps = {
+EditProfile.defaultProps = {
     style: {
         width: '100%',
         height: '100%',
@@ -447,4 +417,4 @@ CreateProfile.defaultProps = {
     }
 };
 
-export default injectIntl(validationProvider(CreateProfile));
+export default injectIntl(validationProvider(EditProfile));

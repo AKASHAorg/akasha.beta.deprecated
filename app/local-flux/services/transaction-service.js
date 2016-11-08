@@ -30,7 +30,7 @@ class TransactionService extends BaseService {
         }
         const successCB = () => {
             transactionsDB.transaction('rw', transactionsDB.pending, () =>
-                transactionsDB.pending.bulkPut(txs.map(tx => ({ tx })))
+                transactionsDB.pending.bulkPut(txs)
             )
             .then(() => onSuccess(txs))
             .catch((reason) => {
@@ -41,24 +41,25 @@ class TransactionService extends BaseService {
             clientChannel,
             this.createListener(onError, successCB, clientChannel.channelName)
         );
-        return serverChannel.send(txs.map(tx => ({ tx })));
+        return serverChannel.send(txs);
     };
     /**
      * emit and mined event for a transaction from queue
      * Request:
      * @param watch <Boolean>
+     * @param options = { profile: <string> }
      * Response:
      * @param data = { mined: String (optional, a transaction`s tx), watching: Boolean }
      */
-    emitMined = ({ watch, onError, onSuccess }) => {
+    emitMined = ({ watch, options, onError, onSuccess }) => {
         const serverChannel = Channel.server.tx.emitMined;
         const clientChannel = Channel.client.tx.emitMined;
         const successCB = (data) => {
             if (data && data.mined) {
                 transactionsDB.transaction('rw', transactionsDB.pending, transactionsDB.mined, () => {
-                    transactionsDB.pending.where('tx').equals(data.mined).delete();
                     transactionsDB.mined.put({
                         tx: data.mined,
+                        profile: options.profile,
                         blockNumber: data.blockNumber,
                         cumulativeGasUsed: data.cumulativeGasUsed,
                         hasEvents: data.hasEvents
@@ -80,10 +81,22 @@ class TransactionService extends BaseService {
         serverChannel.send({ watch });
     };
 
-    getTransactions = ({ type, onSuccess, onError }) => {
-        transactionsDB.transaction('rw', transactionsDB[type], () =>
-            transactionsDB[type].toArray()
-        )
+    deletePendingTx = ({ tx, onError = () => {}, onSuccess }) => {
+        transactionsDB.transaction('rw', transactionsDB.pending, transactionsDB.mined, () => {
+            transactionsDB.pending.where('tx').equals(tx).delete();
+        })
+        .then(() => onSuccess(tx))
+        .catch(reason => onError(reason));
+    };
+
+    getTransactions = ({ type, options = {}, onSuccess, onError }) => {
+        transactionsDB.transaction('rw', transactionsDB[type], () => {
+            if (type !== 'pending' || !options.type) {
+                return transactionsDB[type].where('profile').equals(options.profile).toArray();
+            }
+            return transactionsDB[type].where('type+profile')
+                .equals([options.type, options.profile]).toArray();
+        })
         .then(data => onSuccess(data))
         .catch(reason => onError(reason));
     };

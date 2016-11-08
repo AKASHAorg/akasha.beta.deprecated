@@ -37,7 +37,7 @@ class StreamPage extends Component {
             case 'top':
                 return entryActions.getSortedEntries({ sortBy: 'rating' });
             case 'saved':
-                return entryActions.getSavedEntries(loggedProfile.get('userName'));
+                return entryActions.getSavedEntries(loggedProfile.get('username'));
             case 'tag':
                 return entryActions.getEntriesForTag({ tagName: params.tagName });
             default: // 'stream'

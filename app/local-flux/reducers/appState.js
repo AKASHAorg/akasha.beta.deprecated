@@ -1,6 +1,7 @@
 /* eslint new-cap: ["error", { "capIsNewExceptions": ["Record"] }]*/
 import { fromJS, Record } from 'immutable';
 import * as types from '../constants/AppConstants';
+import * as profileTypes from '../constants/ProfileConstants';
 import { createReducer } from './create-reducer';
 
 const ErrorRecord = Record({
@@ -59,7 +60,10 @@ const appState = createReducer(initialState, {
         state.set('confirmationDialog', null),
 
     [types.SET_TIMESTAMP]: (state, action) =>
-        state.set('timestamp', action.timestamp)
+        state.set('timestamp', action.timestamp),
+
+    [profileTypes.LOGIN_SUCCESS]: state =>
+        state.set('showAuthDialog', false)
 });
 
 export default appState;

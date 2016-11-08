@@ -28,7 +28,7 @@ class NewEntryFormPanel extends Component {
     componentDidMount () {
         const { draftActions, drafts, draftsCount, profile } = this.props;
         if (drafts.size !== draftsCount) {
-            draftActions.getDrafts(profile.get('username'));
+            draftActions.getDrafts(profile.get('profile'));
         }
     }
     componentWillUpdate (nextProps, nextState) {
@@ -37,8 +37,7 @@ class NewEntryFormPanel extends Component {
         const { tabsValue } = nextState;
         if (this.state.tabsValue !== tabsValue) {
             if (tabsValue === 'drafts' && drafts.size !== draftsCount) {
-                console.log('refetching drafts?');
-                draftActions.getDrafts(profile.get('username'));
+                draftActions.getDrafts(profile.get('profile'));
             }
             if (tabsValue === 'entries' && entries.size !== entriesCount) {
                 entryActions.getEntries(profile.get('profile'));
@@ -81,14 +80,13 @@ class NewEntryFormPanel extends Component {
     }
     _getTabContent = () => {
         const { entries, drafts, profile } = this.props;
-        console.log(drafts, 'drafts');
         let entities;
         switch (this.state.tabsValue) {
             case 'drafts':
-                entities = drafts.filter(drft => drft.get('authorUsername') === profile.get('username'));
+                entities = drafts.filter(drft => drft.get('profile') === profile.get('profile'));
                 break;
             case 'listed':
-                entities = entries.filter(entry => entry.get('profileAddress') === profile.get('profile'));
+                entities = entries.filter(entry => entry.get('profile') === profile.get('profile'));
                 break;
             case 'unlisted':
                 entities = entries.get('published');
@@ -134,6 +132,18 @@ class NewEntryFormPanel extends Component {
             </CardText>
             <CardText>
               <p>{card.excerpt}</p>
+              <div>
+                {card.get('status').publishing &&
+                  <div className="row middle-xs">
+                    <div className="col-xs-1 end-xs">
+                      <CircularProgress size={20} thickness={2} />
+                    </div>
+                    <div className="col-xs">
+                      Publishing...
+                    </div>
+                  </div>
+                }
+              </div>
             </CardText>
           </Card>
         );

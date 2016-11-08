@@ -156,8 +156,8 @@ class EntryModal extends React.Component {
                     <div>
                       <Avatar
                         editable={false}
-                        userName={
-                          `${loggedProfile.get('firstName')} ${loggedProfile.get('lastName')}`
+                        userInitials={
+                          `${loggedProfile.get('firstName')[0]}${loggedProfile.get('lastName')[0]}`
                         }
                         image={avatarImage}
                         radius={40}
@@ -227,7 +227,7 @@ class EntryModal extends React.Component {
                     publishDate={'3 days ago'}
                     avatar={'http://c2.staticflickr.com/2/1659/25017672329_e5b9967612_b.jpg'}
                     text={
-                      `Aww..!! It’s a perfect inspiring article for a beginner. Thanks a 
+                      `Aww..!! It’s a perfect inspiring article for a beginner. Thanks a
                       looooooooooooot for sharing it Cammi..:-)`
                     }
                     onReply={(ev) => this._handleReply(ev, comment)}

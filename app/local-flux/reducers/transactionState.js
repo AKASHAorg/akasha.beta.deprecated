@@ -1,5 +1,5 @@
 /* eslint new-cap: ["error", { "capIsNewExceptions": ["Record"] }]*/
-import { fromJS, Record, List } from 'immutable';
+import { fromJS, Record, List, Map } from 'immutable';
 import * as types from '../constants/TransactionConstants';
 import { createReducer } from './create-reducer';
 
@@ -10,11 +10,15 @@ const ErrorRecord = Record({
 });
 
 const PendingTransaction = Record({
-    tx: ''
+    tx: '',
+    type: null,
+    profile: '',
+    profileAddress: null
 });
 
 const MinedTransaction = Record({
     tx: '',
+    profile: '',
     blockNumber: 0,
     cumulativeGasUsed: 0,
     hasEvents: false
@@ -23,13 +27,16 @@ const MinedTransaction = Record({
 const initialState = fromJS({
     pending: new List(),
     mined: new List(),
-    errors: new List()
+    errors: new List(),
+    fetchingMined: false,
+    fetchingPending: false,
+    flags: new Map()
 });
 
 const transactionState = createReducer(initialState, {
 
     [types.ADD_TO_QUEUE_SUCCESS]: (state, action) => {
-        const txs = action.data.map(tx => new PendingTransaction({ tx }));
+        const txs = action.data.map(tx => new PendingTransaction(tx));
         return state.merge({
             pending: state.get('pending').concat(txs)
         });
@@ -43,9 +50,7 @@ const transactionState = createReducer(initialState, {
     [types.TRANSACTION_MINED_SUCCESS]: (state, action) => {
         const { mined, ...other } = action.data;
         return state.merge({
-            mined: state.get('mined').push(new MinedTransaction({ tx: mined, ...other })),
-            pending: state.get('pending').filter(transaction =>
-                transaction.tx !== action.data.mined)
+            mined: state.get('mined').push(new MinedTransaction({ tx: mined, ...other }))
         });
     },
 
@@ -54,26 +59,56 @@ const transactionState = createReducer(initialState, {
             errors: state.get('errors').push(new ErrorRecord(action.error))
         }),
 
+    [types.DELETE_PENDING_TX]: (state, { flags }) =>
+        state.merge({
+            flags: state.get('flags').merge(flags)
+        }),
+
+    [types.DELETE_PENDING_TX_SUCCESS]: (state, { tx, flags }) =>
+        state.merge({
+            pending: state.get('pending').filter(pending => pending.tx !== tx),
+            flags: state.get('flags').merge(flags)
+        }),
+
+    [types.DELETE_PENDING_TX_ERROR]: (state, { error, flags }) =>
+        state.merge({
+            errors: state.get('errors').push(new ErrorRecord(error)),
+            flags: state.get('flags').merge(flags)
+        }),
+
+    [types.GET_MINED_TRANSACTION]: state =>
+        state.merge({
+            fetchingMined: true
+        }),
+
     [types.GET_MINED_TRANSACTION_ERROR]: (state, action) =>
         state.merge({
-            errors: state.get('errors').push(new ErrorRecord(action.error))
+            errors: state.get('errors').push(new ErrorRecord(action.error)),
+            fetchingMined: false
         }),
 
     [types.GET_MINED_TRANSACTION_SUCCESS]: (state, action) =>
         state.merge({
-            mined: state.get('mined').concat(action.data)
+            mined: state.get('mined').concat(action.data),
+            fetchingMined: false
+        }),
+
+    [types.GET_PENDING_TRANSACTION]: state =>
+        state.merge({
+            fetchingPending: true
         }),
 
     [types.GET_PENDING_TRANSACTION_SUCCESS]: (state, action) =>
         state.merge({
-            pending: state.get('pending').concat(action.data)
+            pending: state.get('pending').concat(action.data),
+            fetchingPending: false
         }),
 
-    [types.GET_PENDING_TRANSACTION_ERROR]: (state, action) => {
-        return state.merge({
-            errors: state.get('errors').push(new ErrorRecord(action.error))
-        });
-    },
+    [types.GET_PENDING_TRANSACTION_ERROR]: (state, action) =>
+        state.merge({
+            errors: state.get('errors').push(new ErrorRecord(action.error)),
+            fetchingPending: false
+        })
 });
 
 export default transactionState;
