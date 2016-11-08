@@ -11,10 +11,11 @@ export function createTempProfile () {
         type: types.CREATE_TEMP_PROFILE
     };
 }
-export function createTempProfileSuccess (profileData) {
+export function createTempProfileSuccess (profileData, nextAction) {
     return {
         type: types.CREATE_TEMP_PROFILE_SUCCESS,
-        profileData
+        profileData,
+        nextAction
     };
 }
 

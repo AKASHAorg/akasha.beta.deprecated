@@ -11,6 +11,8 @@ function mapStateToProps (state, ownProps) {
         tempProfileErrors: state.tempProfileState.get('errors'),
         minedTransactions: state.transactionState.get('mined'),
         pendingTransactions: state.transactionState.get('pending'),
+        fetchingMinedTx: state.transactionState.get('fetchingMined'),
+        fetchingPendingTx: state.transactionState.get('fetchingPending'),
         gethStatus: state.externalProcState.get('gethStatus'),
         ipfsStatus: state.externalProcState.get('ipfsStatus')
     };

@@ -12,7 +12,7 @@ class Avatar extends React.Component {
         super(props);
         this.state = {
             avatarImage: null,
-            avatarScale: 1.2
+            avatarScale: props.avatarScale || 1.2
         };
     }
     componentWillUnmount () {
@@ -20,9 +20,8 @@ class Avatar extends React.Component {
     }
     getImage = () =>
         new Promise((resolve) => {
-            if (this.editor && this.state.avatarImage) {
+            if (this.editor) {
                 const imageCanvas = this.editor.getImageScaledToCanvas();
-
                 imageCanvas.toBlob((blob) => {
                     const reader = new FileReader();
                     reader.onloadend = ev =>
@@ -47,6 +46,10 @@ class Avatar extends React.Component {
         });
     }
     _handleAvatarClear = () => {
+        const { clearAvatarImage } = this.props;
+        if (clearAvatarImage) {
+            clearAvatarImage();
+        }
         this.setState({
             avatarImage: null,
             isNewAvatarLoaded: false
@@ -86,7 +89,7 @@ class Avatar extends React.Component {
               userInitialsWrapperStyle,
               offsetBorder,
               backgroundColor,
-              ...other } = this.props;
+              style } = this.props;
         const palette = this.context.muiTheme.palette;
         let avatarImage;
 
@@ -95,13 +98,11 @@ class Avatar extends React.Component {
         } else if (image) {
             avatarImage = image;
         }
-
         return (
           <div
-            style={{ maxWidth: radius, position: 'relative' }}
+            style={Object.assign({ maxWidth: radius, position: 'relative' }, style)}
             onMouseEnter={this._handleMouseEnter}
             onMouseLeave={this._handleMouseLeave}
-            {...other}
           >
             {this.state.showChangeAvatar && !this.state.isNewAvatarLoaded &&
               <div
@@ -111,20 +112,21 @@ class Avatar extends React.Component {
             }
             {avatarImage &&
               <div>
-                <AvatarEditor
+                {<AvatarEditor
                   style={{
                       borderRadius: 150,
                       border: offsetBorder || 0,
                       backgroundColor,
                       width: radius,
-                      height: radius
+                      height: radius,
+                      borderColor: palette.borderColor
                   }}
-                  border={this.state.isNewAvatarLoaded ? 5 : 0}
+                  border={1}
                   image={avatarImage}
                   ref={(editor) => { this.editor = editor; }}
                   borderRadius={100}
                   scale={editable ? this.state.avatarScale : 1}
-                />
+                />}
                 {editable &&
                   <div>
                     <Slider
@@ -147,7 +149,14 @@ class Avatar extends React.Component {
               </div>
             }
             {!avatarImage &&
-              <div style={{ ...avatarEmptyStyle, width: radius, height: radius }}>
+              <div
+                style={{
+                    ...avatarEmptyStyle,
+                    width: radius,
+                    height: radius,
+                    border: `1px solid ${palette.borderColor}`
+                }}
+              >
                 {this.props.userInitials &&
                   <div
                     style={{
@@ -179,6 +188,7 @@ class Avatar extends React.Component {
     }
 }
 Avatar.propTypes = {
+    avatarScale: React.PropTypes.number,
     image: React.PropTypes.string,
     editable: React.PropTypes.bool,
     userInitials: React.PropTypes.string,
@@ -190,7 +200,9 @@ Avatar.propTypes = {
     dialogHandlerStyle: React.PropTypes.shape(),
     userInitialsAlignStyle: React.PropTypes.shape(),
     userInitialsWrapperStyle: React.PropTypes.shape(),
-    offsetBorder: React.PropTypes.string
+    offsetBorder: React.PropTypes.string,
+    clearAvatarImage: React.PropTypes.func,
+    style: React.PropTypes.shape()
 };
 Avatar.contextTypes = {
     muiTheme: React.PropTypes.object
@@ -201,7 +213,6 @@ Avatar.defaultProps = {
     avatarEmptyStyle: {
         borderRadius: '50%',
         overflow: 'hidden',
-        border: '1px solid #444'
     },
     avatarClearStyle: {
         cursor: 'pointer',
