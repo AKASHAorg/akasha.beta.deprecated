@@ -5,13 +5,21 @@ import EntryContent from './entry-content';
 export function getDraftClass () {
     const Draft = Dexie.defineClass({
         id: String, // local id
-        authorUsername: String,
+        username: String,
         title: String,
         content: EntryContent,
         tags: Array,
         excerpt: String,
         featuredImage: MultiResImage,
-        status: {} // local use
+        wordCount: Number,
+        status: {
+            created_at: Date,
+            updated_at: Date,
+            publishing: Boolean,
+            tagsPublished: Boolean,
+            publishingConfirmed: Boolean,
+            currentAction: 'String'
+        } // local use
     });
     return Draft;
 }

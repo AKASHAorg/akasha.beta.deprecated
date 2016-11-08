@@ -3,7 +3,7 @@ import { getDraftClass } from './schema/draft';
 
 const entriesDB = new Dexie('entries');
 entriesDB.version(1).stores({
-    drafts: '++id,tags,authorUsername',
+    drafts: '++id,profile,status.publishingConfirmed,status.publishing',
     entries: '&ipfsHash',
     savedEntries: '++id,username'
 });
@@ -15,19 +15,25 @@ entriesDB.drafts.hook('creating', (primaryKey, obj) => {
         created_at: new Date().toString(),
         updated_at: new Date().toString(),
         tagsPublished: false,
-        publishing: false
+        publishing: false,
+        publishingConfirmed: false,
+        currentAction: null,
     };
 });
 
 entriesDB.drafts.hook('updating', (modifications, primaryKey, obj) => {
     return {
-        status: {
-            created_at: obj.status.created_at,
-            updated_at: new Date().toString(),
-            tagsPublished: obj.status.tagsPublished,
-            publishing: obj.status.publishing
-        }
+        'status.updated_at': new Date().toString(),
+        'status.created_at': obj.status.created_at
     };
+    // return {
+    //     status: {
+    //         created_at: obj.status.created_at,
+    //         updated_at: new Date().toString(),
+    //         tagsPublished: obj.status.tagsPublished,
+    //         publishing: obj.status.publishing
+    //     }
+    // };
 });
 
 entriesDB.open();

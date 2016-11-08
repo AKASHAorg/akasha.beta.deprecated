@@ -3,7 +3,6 @@ import { fromJS, List, Record } from 'immutable';
 import * as types from '../constants/TempProfileConstants';
 import { createReducer } from './create-reducer';
 
-
 const ErrorRecord = Record({
     code: null,
     message: '',
@@ -50,12 +49,12 @@ const tempProfileState = createReducer(initialState, {
             })
         }),
     // temp profile saved to IndexedDB successfully
-    [types.CREATE_TEMP_PROFILE_SUCCESS]: (state, { profileData }) =>
+    [types.CREATE_TEMP_PROFILE_SUCCESS]: (state, { profileData, nextAction }) =>
         state.mergeDeep({
             tempProfile: {
                 ...profileData,
                 currentStatus: state.getIn(['tempProfile', 'currentStatus']).mergeDeep({
-                    nextAction: 'createEthAddress'
+                    nextAction
                 })
             }
         }),
@@ -164,9 +163,14 @@ const tempProfileState = createReducer(initialState, {
         }),
 
     [types.PUBLISH_PROFILE_SUCCESS]: (state, { profileData }) =>
-        state.mergeIn(['tempProfile', 'currentStatus'], {
-            publishTx: profileData.tx,
-            nextAction: 'listenPublishTx'
+        state.merge({
+            tempProfile: state.get('tempProfile').merge({
+                currentStatus: state.getIn(['tempProfile', 'currentStatus']).merge({
+                    publishTx: profileData.tx,
+                    nextAction: 'listenPublishTx'
+                })
+            }),
+            loginRequested: false
         }),
 
     [types.PUBLISH_PROFILE_ERROR]: (state, { error }) =>
@@ -175,9 +179,6 @@ const tempProfileState = createReducer(initialState, {
         }),
     [types.TEMP_LOGIN]: state =>
         state.set('loginRequested', true),
-
-    [types.TEMP_LOGIN_SUCCESS]: state =>
-        state.set('loginRequested, false'),
 
     [types.CLEAR_TEMP_PROFILE_ERRORS]: state =>
         state.merge({

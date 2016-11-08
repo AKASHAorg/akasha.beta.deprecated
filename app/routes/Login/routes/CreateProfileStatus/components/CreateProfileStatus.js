@@ -24,6 +24,9 @@ class CreateProfileStatus extends Component {
         transactionActions.getPendingTransactions();
     }
     componentWillReceiveProps (nextProps) {
+        const { transactionActions, pendingTransactions, minedTransactions, fetchingPendingTx,
+            fetchingMinedTx } = nextProps;
+        const fetchingTransactions = fetchingPendingTx || fetchingMinedTx;
         if (nextProps.tempProfile.get('username') === '') {
             return this.context.router.push('/authenticate');
         }
@@ -33,7 +36,13 @@ class CreateProfileStatus extends Component {
                 errors: [...nextProps.profileErrors, ...nextProps.tempProfileErrors]
             });
         }
-
+        if (!fetchingTransactions && pendingTransactions.size > 0) {
+            const firstPendingTx = pendingTransactions.toJS()[0].tx;
+            const isMined = minedTransactions.find(mined => mined.tx === firstPendingTx);
+            if (isMined) {
+                transactionActions.deletePendingTx(firstPendingTx);
+            }
+        }
         if ((nextProps.gethStatus.get('api') && !this.props.gethStatus.get('api'))
                 || (nextProps.ipfsStatus.get('started') && !this.props.ipfsStatus.get('started'))
                 || (nextProps.ipfsStatus.get('spawned') && !this.props.ipfsStatus.get('spawned'))) {
@@ -77,7 +86,7 @@ class CreateProfileStatus extends Component {
                       <FormattedMessage
                         id="app.createProfileStatus.loggingIn"
                         description="Message status when we are sending login request"
-                        defaultMessage={`Logging in with {username}`}
+                        defaultMessage={'Logging in with {username}'}
                         values={{ username: <b>@{tempProfile.get('username')}</b> }}
                       />
                     );
@@ -96,7 +105,7 @@ class CreateProfileStatus extends Component {
                         description="Message status when waiting for faucet transaction to be mined"
                         defaultMessage={`Waiting for faucet transaction to be mined.
                             Transaction id: {faucetTx}`}
-                        values={{ faucetTx: currentStatus.get('faucetTx') }}
+                        values={{ faucetTx: <small>{currentStatus.get('faucetTx')}</small> }}
                       />
                     );
                 }
@@ -108,7 +117,7 @@ class CreateProfileStatus extends Component {
                     description="Message status when waiting for publish transaction to be mined"
                     defaultMessage={`Waiting for publish transaction to be mined.
                         Transaction id: {publishTx}`}
-                    values={{ publishTx: currentStatus.get('publishTx') }}
+                    values={{ publishTx: <small>{currentStatus.get('publishTx')}</small> }}
                   />
                 );
                 break;
@@ -124,19 +133,19 @@ class CreateProfileStatus extends Component {
                 break;
         }
         return description;
-    }
-    addTxToQueue = (tx) => {
+    };
+    addTxToQueue = (tx, type) => {
         const { transactionActions } = this.props;
         transactionActions.listenForMinedTx();
-        transactionActions.addToQueue([tx]);
-    }
+        transactionActions.addToQueue([{ tx, type }]);
+    };
     finishProfilePublishing = (minedTransactions, publishMinedIndex) => {
         const hasEvents = minedTransactions.getIn([publishMinedIndex, 'hasEvents']);
         if (!hasEvents) {
             console.error('No events!! Create a handler for this case!!');
         }
         return this.context.router.push('/authenticate/new-profile-complete');
-    }
+    };
     _checkTxIndex = (transactions, transaction) =>
         transactions.findIndex(trans => trans.tx === transaction);
 
@@ -171,12 +180,12 @@ class CreateProfileStatus extends Component {
 
         if (shouldListenPublishTx) {
             tempProfileActions.listenPublishTx();
-            return this.addTxToQueue(publishTx);
+            return this.addTxToQueue(publishTx, 'registerProfile');
         }
 
         if (shouldListenFaucetTx) {
             tempProfileActions.listenFaucetTx();
-            return this.addTxToQueue(faucetTx);
+            return this.addTxToQueue(faucetTx, 'faucet');
         }
 
         if (nextAction === 'listenFaucetTx' && faucetMinedIndex > -1) {
@@ -332,6 +341,8 @@ CreateProfileStatus.propTypes = {
     loginRequested: PropTypes.bool,
     minedTransactions: PropTypes.shape(),
     pendingTransactions: PropTypes.shape(),
+    fetchingMinedTx: PropTypes.bool,
+    fetchingPendingTx: PropTypes.bool,
     loggedProfile: PropTypes.shape()
 };
 

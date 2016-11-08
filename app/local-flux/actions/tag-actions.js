@@ -12,6 +12,25 @@ class TagActions {
         this.tagService = new TagService();
         return tagActions;
     }
+    // get all pending tags
+    getPendingTags = () =>
+        this.dispatch((dispatch, getState) => {
+            const flags = getState().tagState.get('flags');
+            if (!flags.get('fetchingPendingTags')) {
+                dispatch(tagActionCreators.getPendingTags({
+                    fetchingPendingTags: true
+                }));
+                this.tagService.getPendingTags({
+                    onSuccess: data => dispatch(tagActionCreators.getPendingTagsSuccess(data, {
+                        fetchingPendingTags: false
+                    })),
+                    onError: error => dispatch(tagActionCreators.getPendingTagsError(error, {
+                        fetchingPendingTags: false
+                    }))
+                });
+            }
+        });
+
     getTags = (options) => {
         this.dispatch(tagActionCreators.getTags());
         this.tagService.getLocalTagsCount().then((tagsCount) => {
@@ -25,16 +44,27 @@ class TagActions {
             });
         });
     };
-    registerTags = (tags) => {
-        this.dispatch(tagActionCreators.registerTags(tags));
-        // asuming that all checks already done?
-        return this.tagService.registerTags(tags).then((data) => {
-            if (!data) {
-                const error = new Error(data.error);
-                this.dispatch(tagActionCreators.registerTagsError(error));
-            }
-            this.dispatch(tagActionCreators.registerTagsSuccess(data.tags));
+    registerTag = (tagName, token, gas = 2000000) => {
+        this.dispatch(tagActionCreators.registerTag(tagName));
+        this.tagService.registerTag({
+            tagName,
+            token,
+            gas,
+            onSuccess: (data) => {
+                this.dispatch(tagActionCreators.registerTagSuccess(data));
+                console.log('register tag success', data);
+                // save to pending tags
+                this.savePendingTag({ tag: tagName, tx: data.tx });
+            },
+            onError: error => this.dispatch(tagActionCreators.registerTagError(error))
         });
-    }
+    };
+    savePendingTag = tagObj =>
+        this.tagService.savePendingTag({
+            tagObj,
+            onSuccess: data => this.dispatch(tagActionCreators.savePendingTagSuccess(data)),
+            onError: error => this.dispatch(tagActionCreators.savePendingTag(error))
+        });
+
 }
 export { TagActions };

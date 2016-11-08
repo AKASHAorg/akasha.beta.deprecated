@@ -1,37 +1,47 @@
 import * as types from '../../constants/ProfileConstants';
 
-export function login () {
+export function login (flags) {
     return {
-        type: types.LOGIN
+        type: types.LOGIN,
+        flags
     };
 }
 
-export function loginSuccess (profile) {
+export function loginSuccess (profile, flags) {
     return {
         type: types.LOGIN_SUCCESS,
-        profile
+        profile,
+        flags
     };
 }
 
-export function loginError (error) {
+export function loginError (error, flags) {
     error.code = 'LOGINE01';
     return {
         type: types.LOGIN_ERROR,
-        error
+        error,
+        flags
     };
 }
-
-export function getCurrentProfileSuccess (data) {
+export function getCurrentProfile (flags) {
+    return {
+        type: types.GET_CURRENT_PROFILE,
+        flags
+    };
+}
+export function getCurrentProfileSuccess (data, flags) {
     return {
         type: types.GET_CURRENT_PROFILE_SUCCESS,
-        data
+        data,
+        flags
     };
 }
 
-export function getCurrentProfileError (error) {
+export function getCurrentProfileError (error, flags) {
     return {
         type: types.GET_CURRENT_PROFILE_ERROR,
-        error
+        error,
+        flags
     };
 }
 
@@ -49,35 +59,47 @@ export function logoutError (error) {
         error
     };
 }
-export function getLocalProfiles () {
+export function getLocalProfiles (flags) {
     return {
-        type: types.GET_LOCAL_PROFILES
+        type: types.GET_LOCAL_PROFILES,
+        flags
     };
 }
-export function getLocalProfilesSuccess (data) {
+export function getLocalProfilesSuccess (data, flags) {
     return {
         type: types.GET_LOCAL_PROFILES_SUCCESS,
-        data
+        data,
+        flags
     };
 }
-export function getLocalProfilesError (error) {
+
+export function getLocalProfilesError (error, flags) {
     error.code = 'GLPE01';
     return {
         type: types.GET_LOCAL_PROFILES_ERROR,
-        error
+        error,
+        flags
     };
 }
 
-export function getProfileDataSuccess (data) {
+export function getProfileDataFull () {
+    return {
+        type: types.GET_PROFILE_DATA_FULL
+    };
+}
+
+export function getProfileData (flags) {
+    return {
+        type: types.GET_PROFILE_DATA,
+        flags
+    };
+}
+
+export function getProfileDataSuccess (data, flags) {
     return {
         type: types.GET_PROFILE_DATA_SUCCESS,
-        data
-    };
-}
-
-export function clearLocalProfilesSuccess () {
-    return {
-        type: types.CLEAR_LOCAL_PROFILES_SUCCESS
+        data,
+        flags
     };
 }
 
@@ -88,23 +110,55 @@ export function getProfileDataError (error) {
         error
     };
 }
-export function getLoggedProfile () {
+
+export function clearLocalProfilesSuccess () {
     return {
-        type: types.GET_LOGGED_PROFILE
-    };
-}
-export function getLoggedProfileSuccess (profile) {
-    return {
-        type: types.GET_LOGGED_PROFILE_SUCCESS,
-        profile
+        type: types.CLEAR_LOCAL_PROFILES_SUCCESS
     };
 }
 
-export function getLoggedProfileError (error) {
+
+export function updateProfileData () {
+    return {
+        type: types.UPDATE_PROFILE_DATA
+    };
+}
+
+export function updateProfileDataSuccess (profileData) {
+    return {
+        type: types.UPDATE_PROFILE_DATA_SUCCESS,
+        profileData
+    };
+}
+
+export function updateProfileDataError (error) {
+    error.code = 'UPDE01';
+    return {
+        type: types.UPDATE_PROFILE_DATA_ERROR,
+        error
+    };
+}
+
+export function getLoggedProfile (flags) {
+    return {
+        type: types.GET_LOGGED_PROFILE,
+        flags
+    };
+}
+export function getLoggedProfileSuccess (profile, flags) {
+    return {
+        type: types.GET_LOGGED_PROFILE_SUCCESS,
+        profile,
+        flags
+    };
+}
+
+export function getLoggedProfileError (error, flags) {
     error.code = 'GLPE02';
     return {
         type: types.GET_LOGGED_PROFILE_ERROR,
-        error
+        error,
+        flags
     };
 }
 
@@ -140,5 +194,92 @@ export function getProfileBalanceError (error) {
 export function clearErrors () {
     return {
         type: types.CLEAR_PROFILE_ERRORS
+    };
+}
+
+export function showNotification (notification) {
+    return {
+        type: types.SHOW_NOTIFICATION,
+        notification
+    };
+}
+
+export function hideNotification (notification) {
+    return {
+        type: types.HIDE_NOTIFICATION,
+        notification
+    };
+}
+
+export function resetFlags () {
+    return {
+        type: types.RESET_FLAGS,
+    };
+}
+
+export function getFollowersCount () {
+    return {
+        type: types.GET_FOLLOWERS_COUNT
+    };
+}
+
+export function getFollowersCountSuccess (profileAddress, count) {
+    return {
+        type: types.GET_FOLLOWERS_COUNT_SUCCESS,
+        profileAddress,
+        count
+    };
+}
+
+export function getFollowersCountError (error) {
+    error.code = 'GFRCE01';
+    return {
+        type: types.GET_FOLLOWERS_COUNT_ERROR,
+        error
+    };
+}
+
+export function getFollowingCount () {
+    return {
+        type: types.GET_FOLLOWING_COUNT
+    };
+}
+
+export function getFollowingCountSuccess (profileAddress, count) {
+    return {
+        type: types.GET_FOLLOWING_COUNT_SUCCESS,
+        profileAddress,
+        count
+    };
+}
+
+export function getFollowingCountError (error) {
+    error.code = 'GFGCE01';
+    return {
+        type: types.GET_FOLLOWING_COUNT_ERROR,
+        error
+    };
+}
+
+export function followProfile (flags) {
+    return {
+        type: types.FOLLOW_PROFILE,
+        flags
+    };
+}
+
+export function followProfileSuccess (flags) {
+    return {
+        type: types.FOLLOW_PROFILE_SUCCESS,
+        flags
+    };
+}
+
+export function followProfileError (error, flags) {
+    error.code = 'FPE01';
+    return {
+        type: types.FOLLOW_PROFILE_ERROR,
+        error,
+        flags
     };
 }

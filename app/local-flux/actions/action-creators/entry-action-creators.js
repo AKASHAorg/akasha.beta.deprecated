@@ -1,22 +1,25 @@
 import * as types from '../../constants/EntryConstants';
 
-export function getEntriesCount () {
+export function getEntriesCount (flags) {
     return {
-        type: types.GET_ENTRIES_COUNT
+        type: types.GET_ENTRIES_COUNT,
+        flags
     };
 }
 
-export function getEntriesCountSuccess (data) {
+export function getEntriesCountSuccess (data, flags) {
     return {
         type: types.GET_ENTRIES_COUNT_SUCCESS,
-        data
+        data,
+        flags
     };
 }
 
-export function getEntriesCountError (error) {
+export function getEntriesCountError (error, flags) {
     return {
         type: types.GET_ENTRIES_COUNT_ERROR,
-        error
+        error,
+        flags
     };
 }
 

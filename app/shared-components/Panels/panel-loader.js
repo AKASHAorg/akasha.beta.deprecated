@@ -12,6 +12,9 @@ class PanelLoader extends Component {
         const activePanel = panelState.get('activePanel');
         if (activePanel.get('name')) {
             const Panel = Panels[activePanel.get('name')];
+            if (!Panel) {
+                return null;
+            }
             return (
               <div className="panel" style={{ height: '100%' }} >
                 <Panel {...other} />

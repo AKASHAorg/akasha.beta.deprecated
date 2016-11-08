@@ -26,7 +26,7 @@ class RegistryService extends BaseService {
      * Response:
      * @param data = { tx: string }
      */
-    registerProfile = ({ token, username, ipfs, gas = 1000000, onError, onSuccess }) => {
+    registerProfile = ({ token, username, ipfs, gas = 2000000, onError, onSuccess }) => {
         this.openChannel({
             serverManager: this.serverManager,
             clientManager: this.clientManager,

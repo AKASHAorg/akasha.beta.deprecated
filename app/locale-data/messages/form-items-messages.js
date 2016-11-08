@@ -21,6 +21,16 @@ const formMessages = defineMessages({
         description: 'Placeholder for password input',
         defaultMessage: 'Password'
     },
+    confirmPassword: {
+        id: 'app.form.confirmPassword',
+        description: 'authenticate dialog title',
+        defaultMessage: 'Confirm password'
+    },
+    confirmPasswordToContinue: {
+        id: 'app.form.confirmPasswordToContinue',
+        description: 'Label for confirming password',
+        defaultMessage: 'You need to confirm your password to continue'
+    },
     passwordVerify: {
         id: 'app.passwordVerify',
         description: 'Placeholder for password verify input',
