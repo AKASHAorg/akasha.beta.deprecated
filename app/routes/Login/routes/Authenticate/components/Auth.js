@@ -46,7 +46,7 @@ class Auth extends Component {
         const profilesChanged = this.props.localProfiles.size !== nextProps.localProfiles.size;
         const fetchingLocalProfilesChanged = !fetchingLocalProfiles &&
             this.props.fetchingLocalProfiles;
-        if (gethStatus.get('api') && !this.props.gethStatus.get('api') && !localProfiles.size) {
+        if (gethStatus.get('api') && !this.props.gethStatus.get('api')) {
             profileActions.getLocalProfiles();
         }
         if (loginErrors.size === 0) {

@@ -103,11 +103,12 @@ export function getProfileDataSuccess (data, flags) {
     };
 }
 
-export function getProfileDataError (error) {
+export function getProfileDataError (error, flags) {
     error.code = 'GPDE01';
     return {
         type: types.GET_PROFILE_DATA_ERROR,
-        error
+        error,
+        flags
     };
 }
 
@@ -117,6 +118,11 @@ export function clearLocalProfilesSuccess () {
     };
 }
 
+export function clearOtherProfiles () {
+    return {
+        type: types.CLEAR_OTHER_PROFILES
+    };
+}
 
 export function updateProfileData () {
     return {
@@ -223,10 +229,10 @@ export function getFollowersCount () {
     };
 }
 
-export function getFollowersCountSuccess (profileAddress, count) {
+export function getFollowersCountSuccess (akashaId, count) {
     return {
         type: types.GET_FOLLOWERS_COUNT_SUCCESS,
-        profileAddress,
+        akashaId,
         count
     };
 }
@@ -245,10 +251,10 @@ export function getFollowingCount () {
     };
 }
 
-export function getFollowingCountSuccess (profileAddress, count) {
+export function getFollowingCountSuccess (akashaId, count) {
     return {
         type: types.GET_FOLLOWING_COUNT_SUCCESS,
-        profileAddress,
+        akashaId,
         count
     };
 }
@@ -258,6 +264,52 @@ export function getFollowingCountError (error) {
     return {
         type: types.GET_FOLLOWING_COUNT_ERROR,
         error
+    };
+}
+
+export function followersIterator (flags) {
+    return {
+        type: types.FOLLOWERS_ITERATOR,
+        flags
+    };
+}
+
+export function followersIteratorSuccess (data, flags) {
+    return {
+        type: types.FOLLOWERS_ITERATOR_SUCCESS,
+        data,
+        flags
+    };
+}
+
+export function followersIteratorError (error, flags) {
+    return {
+        type: types.FOLLOWERS_ITERATOR_ERROR,
+        error,
+        flags
+    };
+}
+
+export function followingIterator (flags) {
+    return {
+        type: types.FOLLOWING_ITERATOR,
+        flags
+    };
+}
+
+export function followingIteratorSuccess (data, flags) {
+    return {
+        type: types.FOLLOWING_ITERATOR_SUCCESS,
+        data,
+        flags
+    };
+}
+
+export function followingIteratorError (error, flags) {
+    return {
+        type: types.FOLLOWING_ITERATOR_ERROR,
+        error,
+        flags
     };
 }
 
@@ -279,6 +331,52 @@ export function followProfileError (error, flags) {
     error.code = 'FPE01';
     return {
         type: types.FOLLOW_PROFILE_ERROR,
+        error,
+        flags
+    };
+}
+
+export function unfollowProfile (flags) {
+    return {
+        type: types.UNFOLLOW_PROFILE,
+        flags
+    };
+}
+
+export function unfollowProfileSuccess (flags) {
+    return {
+        type: types.UNFOLLOW_PROFILE_SUCCESS,
+        flags
+    };
+}
+
+export function unfollowProfileError (error, flags) {
+    error.code = 'UPE01';
+    return {
+        type: types.UNFOLLOW_PROFILE_ERROR,
+        error,
+        flags
+    };
+}
+
+export function isFollower (flags) {
+    return {
+        type: types.IS_FOLLOWER,
+        flags
+    };
+}
+
+export function isFollowerSuccess (data, flags) {
+    return {
+        type: types.IS_FOLLOWER_SUCCESS,
+        data,
+        flags
+    };
+}
+export function isFollowerError (error, flags) {
+    error.code = 'IFE01';
+    return {
+        type: types.IS_FOLLOWER_ERROR,
         error,
         flags
     };

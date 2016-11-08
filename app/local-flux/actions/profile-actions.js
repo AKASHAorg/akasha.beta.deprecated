@@ -82,7 +82,7 @@ class ProfileActions {
     getLocalProfiles = () => {
         this.dispatch((dispatch, getState) => {
             const flags = getState().profileState.get('flags');
-            if (!flags.get('fetchingLocalProfiles') && !flags.get('localProfilesFetched')) {
+            if (!flags.get('fetchingLocalProfiles')) {
                 dispatch(profileActionCreators.getLocalProfiles({
                     fetchingLocalProfiles: true
                 }));
@@ -125,38 +125,39 @@ class ProfileActions {
 
     clearLocalProfiles = () =>
         this.dispatch(profileActionCreators.clearLocalProfilesSuccess());
+
+    clearOtherProfiles = () =>
+        this.dispatch(profileActionCreators.clearOtherProfiles());
+
     /**
      * profiles = [{key: string, profile: string}]
      */
     getProfileData = (profiles, full = false) => {
         this.dispatch((dispatch, getState) => {
-            const flags = getState().profileState.get('flags');
-            if (!flags.get('fetchingProfileData')) {
-                dispatch(profileActionCreators.getProfileData({
-                    fetchingProfileData: true
-                }));
-                profiles.forEach((profileObject) => {
-                    this.profileService.getProfileData({
-                        options: {
-                            profile: profileObject.profile,
-                            full
-                        },
-                        onSuccess: (data) => {
-                            if (data.avatar) {
-                                data.avatar = imageCreator(data.avatar, data.baseUrl);
-                            }
-                            dispatch(profileActionCreators.getProfileDataSuccess(data, {
-                                fetchingProfileData: false
-                            }));
-                        },
-                        onError: (err) => {
-                            dispatch(profileActionCreators.getProfileDataError(err, {
-                                fetchingProfileData: false
-                            }));
+            dispatch(profileActionCreators.getProfileData({
+                fetchingProfileData: true
+            }));
+            profiles.forEach((profileObject) => {
+                this.profileService.getProfileData({
+                    options: {
+                        profile: profileObject.profile,
+                        full
+                    },
+                    onSuccess: (data) => {
+                        if (data.avatar) {
+                            data.avatar = imageCreator(data.avatar, data.baseUrl);
                         }
-                    });
+                        dispatch(profileActionCreators.getProfileDataSuccess(data, {
+                            fetchingProfileData: false
+                        }));
+                    },
+                    onError: (err) => {
+                        dispatch(profileActionCreators.getProfileDataError(err, {
+                            fetchingProfileData: false
+                        }));
+                    }
                 });
-            }
+            });
         });
     };
 
@@ -240,7 +241,7 @@ class ProfileActions {
     };
     resetFlags = () => {
         this.dispatch(profileActionCreators.resetFlags());
-    }
+    };
     // this method is only called to check if there is a logged profile
     // it does not dispatch anything and is useless as an action
     //
@@ -260,61 +261,113 @@ class ProfileActions {
                 onError: err => cb(err, false)
             });
         });
-    }
+    };
 
-    showNotification = notification =>
-        this.dispatch(profileActionCreators.showNotification(notification));
+    showNotification = notification => null;
+        // this.dispatch(profileActionCreators.showNotification(notification));
 
     hideNotification = notification =>
         this.dispatch(profileActionCreators.hideNotification(notification));
 
-    getFollowersCount = (profileAddress) => {
+    getFollowersCount = (akashaId) => {
         this.dispatch(profileActionCreators.getFollowersCount());
         this.profileService.getFollowersCount({
-            profileAddress,
+            akashaId,
             onError: error =>
                 this.dispatch(profileActionCreators.getFollowersCountError(error)),
             onSuccess: data =>
                 this.dispatch(
-                    profileActionCreators.getFollowersCountSuccess(profileAddress, data.count)
+                    profileActionCreators.getFollowersCountSuccess(data.akashaId, data.count)
                 )
         });
-    }
+    };
 
-    getFollowingCount = (profileAddress) => {
+    getFollowingCount = (akashaId) => {
         this.dispatch(profileActionCreators.getFollowingCount());
         this.profileService.getFollowingCount({
-            profileAddress,
+            akashaId,
             onError: error =>
                 this.dispatch(profileActionCreators.getFollowingCountError(error)),
             onSuccess: data =>
                 this.dispatch(
-                    profileActionCreators.getFollowingCountSuccess(profileAddress, data.count)
+                    profileActionCreators.getFollowingCountSuccess(data.akashaId, data.count)
                 )
         });
-    }
+    };
 
-    followProfile = (loggedProfile, profileAddress, gas) => {
+    followersIterator = (akashaId, start, limit) => {
+        this.dispatch(profileActionCreators.followersIterator({
+            fetchingFollowers: true
+        }));
+        this.profileService.followersIterator({
+            akashaId,
+            start,
+            limit,
+            onError: error =>
+                this.dispatch(profileActionCreators.followersIteratorError(error, {
+                    fetchingFollowers: false
+                })),
+            onSuccess: (data) => {
+                data.collection.forEach(item => {
+                    if (item.profile.avatar) {
+                        item.profile.avatar =
+                            imageCreator(item.profile.avatar, item.profile.baseUrl);
+                    }
+                });
+                this.dispatch(profileActionCreators.followersIteratorSuccess(data, {
+                    fetchingFollowers: false
+                }));
+            }
+        });
+    };
+
+    followingIterator = (akashaId, start, limit) => {
+        this.dispatch(profileActionCreators.followingIterator({
+            fetchingFollowing: true
+        }));
+        this.profileService.followingIterator({
+            akashaId,
+            start,
+            limit,
+            onError: error =>
+                this.dispatch(profileActionCreators.followingIteratorError(error, {
+                    fetchingFollowing: false
+                })),
+            onSuccess: (data) => {
+                data.collection.forEach(item => {
+                    if (item.profile.avatar) {
+                        item.profile.avatar =
+                            imageCreator(item.profile.avatar, item.profile.baseUrl);
+                    }
+                });
+                this.dispatch(profileActionCreators.followingIteratorSuccess(data, {
+                    fetchingFollowing: false
+                }))
+            }
+        });
+    };
+
+    followProfile = (loggedProfile, akashaId, gas) => {
         const isLoggedIn = Date.parse(loggedProfile.get('expiration')) > Date.now();
         if (isLoggedIn) {
-            const flagOn = { profileAddress, value: true };
+            const flagOn = { akashaId, value: true };
             this.dispatch(profileActionCreators.followProfile({ followPending: flagOn }));
             this.dispatch((dispatch) => {
                 this.profileService.follow({
                     token: loggedProfile.get('token'),
-                    profileAddress,
+                    akashaId,
                     gas,
                     onSuccess: (data) => {
                         this.transactionActions.listenForMinedTx();
                         this.transactionActions.addToQueue([{
                             tx: data.tx,
                             type: 'followProfile',
-                            profileAddress
+                            akashaId: data.akashaId
                         }]);
                         this.showNotification('following');
                     },
                     onError: (error) => {
-                        const flagOff = { profileAddress, value: false };
+                        const flagOff = { akashaId, value: false };
                         dispatch(profileActionCreators.followProfileError(error, flagOff));
                     }
                 });
@@ -322,11 +375,67 @@ class ProfileActions {
         } else if (!isLoggedIn) {
             this.appActions.showAuthDialog();
         }
-    }
+    };
 
-    followProfileSuccess = profileAddress =>
+    followProfileSuccess = akashaId =>
         this.dispatch(profileActionCreators.followProfileSuccess({
-            followPending: { profileAddress, value: false }
+            followPending: { akashaId, value: false }
         }));
+
+    unfollowProfile = (loggedProfile, akashaId, gas) => {
+        const isLoggedIn = Date.parse(loggedProfile.get('expiration')) > Date.now();
+        if (isLoggedIn) {
+            const flagOn = { akashaId, value: true };
+            this.dispatch(profileActionCreators.unfollowProfile({ followPending: flagOn }));
+            this.dispatch((dispatch) => {
+                this.profileService.unfollow({
+                    token: loggedProfile.get('token'),
+                    akashaId,
+                    gas,
+                    onSuccess: (data) => {
+                        this.transactionActions.listenForMinedTx();
+                        this.transactionActions.addToQueue([{
+                            tx: data.tx,
+                            type: 'unfollowProfile',
+                            akashaId: data.akashaId
+                        }]);
+                        this.showNotification('unfollowing');
+                    },
+                    onError: (error) => {
+                        const flagOff = { akashaId, value: false };
+                        dispatch(profileActionCreators.unfollowProfileError(error, {
+                            followPending: flagOff
+                        }));
+                    }
+                });
+            });
+        } else if (!isLoggedIn) {
+            this.appActions.showAuthDialog();
+        }
+    };
+
+    unfollowProfileSuccess = akashaId =>
+        this.dispatch(profileActionCreators.unfollowProfileSuccess({
+            followPending: { akashaId, value: false }
+        }));
+
+    isFollower = (akashaId, following) => {
+        this.dispatch(profileActionCreators.isFollower({
+            isFollowerPending: true
+        }));
+        this.profileService.isFollower({
+            akashaId,
+            following,
+            onSuccess: data =>
+                this.dispatch(profileActionCreators.isFollowerSuccess(data, {
+                    isFollowerPending: false
+                })),
+            onError: error =>
+                this.dispatch(profileActionCreators.isFollowerError(error, {
+                    isFollowerPending: false
+                }))
+        });
+    };
+
 }
 export { ProfileActions };
