@@ -393,7 +393,7 @@ interface ProfileFollowResponse extends MainResponse {
 }
 
 interface GetFollowerCountRequest {
-    profileAddress: string;
+    profileId: string;
 }
 
 interface GetFollowersRequest {

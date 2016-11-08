@@ -7,6 +7,7 @@ const index_3 = require('./contracts/index');
 const channels_1 = require('../channels');
 const settings_1 = require('./config/settings');
 const responses_1 = require('./event/responses');
+const Promise = require('bluebird');
 class ProfileIPC extends ModuleEmitter_1.default {
     constructor() {
         super();
@@ -17,7 +18,6 @@ class ProfileIPC extends ModuleEmitter_1.default {
         this.webContents = webContents;
         this._getMyBalance()
             ._getProfileData()
-            ._getIpfs()
             ._unregister()
             ._follow()
             ._getFollowers()
@@ -132,23 +132,6 @@ class ProfileIPC extends ModuleEmitter_1.default {
         });
         return this;
     }
-    _getIpfs() {
-        this.registerListener(channels_1.default.server[this.MODULE_NAME].getIpfs, (event, data) => {
-            let response;
-            const chain = (data.full) ? index_2.module.helpers.resolveProfile(data.ipfsHash, data.resolveImages) :
-                index_2.module.helpers.getShortProfile(data.ipfsHash, data.resolveImages);
-            chain.then((resolved) => {
-                const constructed = Object.assign({ [settings_1.BASE_URL]: settings_1.generalSettings.get(settings_1.BASE_URL) }, resolved);
-                response = responses_1.mainResponse(constructed);
-            }).catch((err) => {
-                response = responses_1.mainResponse({ error: { message: err.message } });
-            })
-                .finally(() => {
-                this.fireEvent(channels_1.default.client[this.MODULE_NAME].getIpfs, response, event);
-            });
-        });
-        return this;
-    }
     _unregister() {
         this.registerListener(channels_1.default.server[this.MODULE_NAME].unregister, (event, data) => {
             let response;
@@ -175,16 +158,16 @@ class ProfileIPC extends ModuleEmitter_1.default {
         this.registerListener(channels_1.default.server[this.MODULE_NAME].follow, (event, data) => {
             let response;
             index_3.constructed.instance
-                .main
+                .feed
                 .follow(data.profileAddress)
                 .then((txData) => {
                 return index_1.module.auth.signData(txData, data.token);
             })
                 .then((tx) => {
-                response = responses_1.mainResponse({ tx });
+                response = responses_1.mainResponse({ tx, profileAddress: data.profileAddress });
             })
                 .catch((err) => {
-                response = responses_1.mainResponse({ error: { message: err.message } });
+                response = responses_1.mainResponse({ error: { message: err.message, profileAddress: data.profileAddress } });
             })
                 .finally(() => {
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].follow, response, event);
@@ -192,13 +175,37 @@ class ProfileIPC extends ModuleEmitter_1.default {
         });
         return this;
     }
+    _unFollow() {
+        this.registerListener(channels_1.default.server[this.MODULE_NAME].unFollow, (event, data) => {
+            let response;
+            index_3.constructed.instance
+                .feed
+                .unFollow(data.profileAddress)
+                .then((txData) => {
+                return index_1.module.auth.signData(txData, data.token);
+            })
+                .then((tx) => {
+                response = responses_1.mainResponse({ tx, profileAddress: data.profileAddress });
+            })
+                .catch((err) => {
+                response = responses_1.mainResponse({ error: { message: err.message, profileAddress: data.profileAddress } });
+            })
+                .finally(() => {
+                this.fireEvent(channels_1.default.client[this.MODULE_NAME].unFollow, response, event);
+            });
+        });
+        return this;
+    }
     _getFollowersCount() {
         this.registerListener(channels_1.default.server[this.MODULE_NAME].getFollowersCount, (event, data) => {
             let response;
-            index_3.constructed.instance.main.getFollowersCount(data.profileAddress)
+            index_3.constructed
+                .instance
+                .feed.getFollowersCount(data.profileId)
                 .then((count) => {
-                response = responses_1.mainResponse({ count });
-            }).catch((err) => {
+                response = responses_1.mainResponse({ count, profileId: data.profileId });
+            })
+                .catch((err) => {
                 response = responses_1.mainResponse({ error: { message: err.message } });
             })
                 .finally(() => {
@@ -210,9 +217,12 @@ class ProfileIPC extends ModuleEmitter_1.default {
     _getFollowingCount() {
         this.registerListener(channels_1.default.server[this.MODULE_NAME].getFollowingCount, (event, data) => {
             let response;
-            index_3.constructed.instance.main.getFollowingCount(data.profileAddress)
+            index_3.constructed
+                .instance
+                .feed
+                .getFollowingCount(data.profileId)
                 .then((count) => {
-                response = responses_1.mainResponse({ count });
+                response = responses_1.mainResponse({ count, profileId: data.profileId });
             }).catch((err) => {
                 response = responses_1.mainResponse({ error: { message: err.message } });
             })
