@@ -18,6 +18,8 @@ import PublishEntryStatusContainer from './routes/Home/routes/NewEntry/routes/Pu
 import PublishEntryCompleteContainer from './routes/Home/routes/NewEntry/routes/PublishEntryComplete/PublishEntryCompleteContainer';
 import StreamPageContainer from './routes/Home/routes/Stream/StreamContainer';
 import EntryListContainer from './routes/Home/routes/Stream/routes/EntryList/EntryListContainer';
+import PeoplePageContainer from './routes/Home/routes/People/PeopleContainer';
+import ProfileDetailsContainer from './routes/Home/routes/People/routes/ProfileDetails/ProfileDetailsContainer';
 
 import requireAuth from './require-auth';
 
@@ -59,6 +61,11 @@ export default (
       {/** loads articles from blockchain */}
       <Route component={StreamPageContainer}>
         <Route component={EntryListContainer} path="explore(/:filter)(/:tagName)" />
+      </Route>
+
+      {/** loads details about different profiles */}
+      <Route component={PeoplePageContainer} path="profile" >
+        <Route component={ProfileDetailsContainer} path=":profileAddress" />
       </Route>
 
       {/** create a new entry or edit existing one */}

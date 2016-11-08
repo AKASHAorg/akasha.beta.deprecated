@@ -9,6 +9,7 @@ import {
 import { getWordCount } from 'utils/dataModule';
 import EntryEditor from 'shared-components/EntryEditor';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
+import { convertFromRaw } from 'draft-js';
 
 class AddEntryPage extends Component {
     constructor (props) {
@@ -24,28 +25,29 @@ class AddEntryPage extends Component {
     componentWillMount () {
         const { params, draftActions } = this.props;
         if (params.draftId === 'new') {
-            this.setState({
-                isNewDraft: true
-            });
-        } else {
-            this.setState({
-                fetchingDraft: true
-            }, () => {
-                draftActions.getDraftById(params.draftId);
+            return this.setState({
+                isNewDraft: true,
+                fetchingDraft: false
             });
         }
+        return this.setState({
+            fetchingDraft: true
+        }, () => {
+            draftActions.getDraftById(parseInt(params.draftId, 10));
+        });
     }
     componentWillReceiveProps (nextProps) {
         const { drafts, params } = nextProps;
         // logic for populating existing draft;
-        if (params.draftId !== 'new') {
-            if (this.props.drafts.size !== drafts.size) {
-                // means that the drafts are fetched;
-                this.setState({
-                    fetchingDraft: false
-                });
-            }
+        const currentDraft = drafts.find(drft => drft.get('id') === parseInt(params.draftId, 10));
+        if (this.state.isNewDraft) {
+            return this.setState({
+                fetchingDraft: false
+            });
         }
+        return this.setState({
+            fetchingDraft: (typeof currentDraft === 'undefined')
+        });
     }
     _findCurrentDraft = (drafts) => {
         const { params } = this.props;
@@ -67,52 +69,59 @@ class AddEntryPage extends Component {
         const contentState = this.editor.getContent();
         const title = this.editor.getTitle();
         const wordCount = getWordCount(contentState);
+        const excerpt = contentState.getPlainText().slice(0, 120).replace(/\r?\n|\r/g, '');
 
-        console.log(parseInt(params.draftId, 10), content, title, wordCount, loggedProfile, 'updating');
         if (params.draftId !== 'new') {
             const draftId = parseInt(params.draftId, 10);
-            return draftActions.updateDraft({ id: draftId, content, title, wordCount });
+            return draftActions.updateDraft({ id: draftId, content, title, wordCount, excerpt });
         }
 
         return draftActions
-            .createDraftSync(loggedProfile.get('username'), { content, title, wordCount });
+            .createDraftSync(loggedProfile.get('profile'), { content, title, wordCount, excerpt });
     };
     _setupEntryForPublication = () => {
         const { params } = this.props;
         this._saveDraft().then((draft) => {
-            let draftId = null;
+            let draftId;
+            if (draft.id) {
+                draftId = draft.id;
+            }
             if (typeof draft === 'number') {
                 draftId = draft;
-            } else if (typeof draft === 'object') {
-                draftId = draft.id;
             }
             this.context.router.push(`/${params.username}/draft/${draftId}/publish`);
         });
     }
     _getHeaderTitle = () => {
         const { savingDraft } = this.props;
-        const { fetchingDraft, draftMissing } = this.state;
+        const { fetchingDraft, draftMissing, isNewDraft } = this.state;
         let headerTitle = 'First entry';
         if (fetchingDraft) {
             headerTitle = 'Finding draft';
         } else if (draftMissing) {
             headerTitle = 'Draft is missing';
-        } else if (!savingDraft) {
+        } else if (!isNewDraft) {
             headerTitle = 'New Entry';
         } else if (savingDraft) {
             headerTitle = 'Saving draft...';
         }
         return headerTitle;
     }
+    _getInitialContent = () => {
+        const { isNewDraft, fetchingDraft } = this.state;
+        const { drafts } = this.props;
+        if (isNewDraft || fetchingDraft) {
+            return null;
+        }
+        console.log(this._findCurrentDraft(drafts).get('content'));
+        return this._findCurrentDraft(drafts).get('content');
+    }
     render () {
         const { drafts } = this.props;
         const { shouldBeSaved, fetchingDraft, draftMissing } = this.state;
         const currentDraft = this._findCurrentDraft(drafts);
-        let initialContent = null;
-        if (currentDraft) {
-            initialContent = currentDraft.get('content');
-        }
-        console.log(initialContent, currentDraft, 'initialContent');
+        const initialContent = this._getInitialContent();
+
         return (
           <div style={{ height: '100%', position: 'relative' }}>
             <Toolbar
@@ -165,7 +174,7 @@ class AddEntryPage extends Component {
               }}
             >
               {fetchingDraft &&
-                <div>Preparing draft...</div>
+                <div>Loading draft...</div>
               }
               {!fetchingDraft && draftMissing &&
                 <div>The draft you are looking for cannot be found!</div>

@@ -36,6 +36,10 @@ class SideBar extends Component {
         }
         return this.context.router.push(`${basePath}/${to}`);
     };
+    _handlePeople = () => {
+        const path = 'profile';
+        this._handleNavigation(path);
+    }
     _handlePanelShow = (panelName) => {
         this.props.appActions.showPanel(panelName);
     };
@@ -54,7 +58,7 @@ class SideBar extends Component {
                 onClick={() => this._handlePanelShow({ name: 'userProfile', overlay: true })}
               />
             </div>
-            <div style={{ flexGrow: 0, fontSize: '14px', fontFamily: 'Roboto thin' }}>
+            <div style={{ flexGrow: 0, fontSize: '14px', fontWeight: '100', fontFamily: 'Roboto' }}>
               <div style={{ textAlign: 'center' }}>
                 {balance && balance.slice(0, 6)}
               </div>

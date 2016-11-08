@@ -1,13 +1,26 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { AppActions, DraftActions, ProfileActions, EntryActions } from 'local-flux';
+import { AppActions, DraftActions, ProfileActions, EntryActions,
+    TransactionActions } from 'local-flux';
 import { Sidebar } from 'shared-components';
 import '../../styles/core.scss';
 import styles from './home.scss';
 import PanelLoader from './components/panel-loader-container';
 import EntryModal from './components/entry-modal';
+import ProfileUpdater from './components/profile-updater';
+import PublishEntryRunner from './components/publish-entry-runner';
+import FollowRunner from './components/follow-runner';
 
 class HomeContainer extends React.Component {
+    constructor (props) {
+        super(props);
+        this.dataLoaded = false;
+    }
+
+    componentWillMount () {
+        const { profileActions } = this.props;
+        profileActions.resetFlags();
+    }
     componentDidMount () {
         const { profileActions, draftActions, params } = this.props;
         const username = params.username;
@@ -15,47 +28,62 @@ class HomeContainer extends React.Component {
         draftActions.getDraftsCount(username);
     }
     componentWillReceiveProps (nextProps) {
-        if (!nextProps.loggedProfile.get('profile') && !nextProps.fetchingLoggedProfile && !nextProps.loginRequested) {
+        const { profileActions, entryActions, draftActions, transactionActions } = this.props;
+        const { loggedProfile, fetchingLoggedProfile } = nextProps;
+
+        if (!loggedProfile.get('account') && !fetchingLoggedProfile) {
             this.context.router.push('/authenticate/');
         }
-    }
-    componentWillUpdate (nextProps) {
-        const { profileActions, entryActions } = this.props;
-        if (nextProps.loggedProfile && nextProps.loggedProfile.get('profile')) {
-            profileActions.getProfileData([{ profile: nextProps.loggedProfile.get('profile') }]);
-            entryActions.getEntriesCount(nextProps.loggedProfile.get('profile'));
+        if (loggedProfile && loggedProfile.get('profile') && !this.dataLoaded) {
+            this.dataLoaded = true;
+            profileActions.getProfileData([{ profile: loggedProfile.get('profile') }]);
+            transactionActions.getMinedTransactions();
+            transactionActions.getPendingTransactions();
+            draftActions.getDraftsCount(loggedProfile.get('profile'));
+            entryActions.getEntriesCount(loggedProfile.get('profile'));
+            draftActions.getPublishingDrafts(loggedProfile.get('profile'));
         }
     }
     componentWillUnmount () {
         this.props.appActions.hidePanel();
     }
     _getLoadingMessage = () => {
-        const { fetchingLoggedProfile, fetchingDraftsCount, fetchingPublishedEntries } = this.props;
-
+        const { fetchingDraftsCount, fetchingEntriesCount, fetchingLoggedProfile,
+            fetchingProfileData } = this.props;
         if (fetchingLoggedProfile) {
+            return 'Loading profile';
+        }
+        if (fetchingProfileData) {
             return 'Loading profile data';
         }
         if (fetchingDraftsCount) {
             return 'Loading drafts';
         }
-        if (fetchingPublishedEntries) {
+        if (fetchingEntriesCount) {
             return 'Loading your published entries';
         }
         return 'Loading...';
     }
+
+    updateProfileData = (profileData) => {
+        const { profileActions, loggedProfile } = this.props;
+        profileActions.updateProfileData(profileData, loggedProfile);
+    };
+
     render () {
         const { appActions, draftActions, fetchingLoggedProfile, loggedProfileData,
             profileActions, entriesCount, draftsCount, loggedProfile, activePanel,
-            fetchingDraftsCount, fetchingPublishedEntries, params } = this.props;
+            params, fetchingProfileData, loginRequested, updatingProfile } = this.props;
         const profileAddress = loggedProfile.get('profile');
         const account = loggedProfile.get('account');
+        const loadingInProgress = !loggedProfileData || fetchingLoggedProfile;
 
-        if (fetchingLoggedProfile || fetchingDraftsCount || fetchingPublishedEntries) {
+        if (loadingInProgress) {
             return (
               <div>{this._getLoadingMessage()}</div>
             );
         }
-        if (!loggedProfileData) {
+        if (!account) {
             return <div>Logging out...</div>;
         }
         return (
@@ -77,12 +105,22 @@ class HomeContainer extends React.Component {
                 profile={loggedProfileData}
                 profileAddress={profileAddress}
                 params={params}
+                showPanel={appActions.showPanel}
+                hidePanel={appActions.hidePanel}
+                profileActions={profileActions}
+                fetchingProfileData={fetchingProfileData}
+                updateProfileData={this.updateProfileData}
+                updatingProfile={updatingProfile}
+                loginRequested={loginRequested}
               />
             </div>
             <EntryModal />
             <div className={`col-xs-12 ${styles.childWrapper}`} >
               {this.props.children}
             </div>
+            <ProfileUpdater />
+            <FollowRunner />
+            <PublishEntryRunner />
           </div>
         );
     }
@@ -96,37 +134,39 @@ HomeContainer.propTypes = {
     draftsCount: PropTypes.number,
     entriesCount: PropTypes.number,
     fetchingLoggedProfile: PropTypes.bool,
+    fetchingProfileData: PropTypes.bool,
     fetchingDraftsCount: PropTypes.bool,
-    fetchingPublishedEntries: PropTypes.bool,
+    loginRequested: PropTypes.bool,
+    fetchingEntriesCount: PropTypes.bool,
     loggedProfile: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
+    updatingProfile: PropTypes.bool,
     profileActions: PropTypes.shape(),
     entryActions: PropTypes.shape(),
-    params: PropTypes.shape()
+    transactionActions: PropTypes.shape(),
+    params: PropTypes.shape(),
 };
 
 HomeContainer.contextTypes = {
-    router: PropTypes.shape(),
-    muiTheme: PropTypes.shape()
-};
-
-HomeContainer.contextTypes = {
-    router: PropTypes.shape(),
-    muiTheme: PropTypes.shape()
+    router: PropTypes.shape()
 };
 
 function mapStateToProps (state, ownProps) {
     return {
-        fetchingLoggedProfile: state.profileState.get('fetchingLoggedProfile'),
-        fetchingDraftsCount: state.draftState.get('fetchingDraftsCount'),
+        fetchingLoggedProfile: state.profileState.getIn(['flags', 'fetchingLoggedProfile']),
+        fetchingProfileData: state.profileState.getIn(['flags', 'fetchingProfileData']),
+        fetchingDraftsCount: state.draftState.getIn(['flags', 'fetchingDraftsCount']),
         fetchingPublishedEntries: state.draftState.get('fetchingPublishedEntries'),
+        fetchingPublishingDrafts: state.draftState.getIn(['flags', 'fetchingPublishingDrafts']),
+        fetchingEntriesCount: state.entryState.getIn(['flags', 'fetchingEntriesCount']),
         activePanel: state.panelState.get('activePanel').get('name'),
-        loginRequested: state.profileState.get('loginRequested'),
+        loginRequested: state.profileState.getIn(['flags', 'loginRequested']),
         loggedProfile: state.profileState.get('loggedProfile'),
         loggedProfileData: state.profileState.get('profiles').find(profile =>
             profile.get('profile') === state.profileState.getIn(['loggedProfile', 'profile'])),
+        updatingProfile: state.profileState.getIn(['flags', 'updatingProfile']),
         entriesCount: state.entryState.get('entriesCount'),
-        draftsCount: state.draftState.get('draftsCount')
+        draftsCount: state.draftState.get('draftsCount'),
     };
 }
 
@@ -135,7 +175,8 @@ function mapDispatchToProps (dispatch) {
         appActions: new AppActions(dispatch),
         draftActions: new DraftActions(dispatch),
         entryActions: new EntryActions(dispatch),
-        profileActions: new ProfileActions(dispatch)
+        profileActions: new ProfileActions(dispatch),
+        transactionActions: new TransactionActions(dispatch)
     };
 }
 

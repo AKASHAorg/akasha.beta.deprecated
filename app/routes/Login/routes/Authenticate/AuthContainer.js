@@ -9,6 +9,7 @@ function mapStateToProps (state, ownProps) {
         loggedProfile: state.profileState.get('loggedProfile'),
         loginErrors: state.profileState.get('errors'),
         profilesFetched: state.profileState.get('profilesFetched'),
+        fetchingLocalProfiles: state.profileState.get('flags').get('fetchingLocalProfiles'),
         gethStatus: state.externalProcState.get('gethStatus'),
         ipfsStatus: state.externalProcState.get('ipfsStatus')
     };

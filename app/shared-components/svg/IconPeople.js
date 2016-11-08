@@ -6,77 +6,77 @@ import { MenuPeople } from '../svg';
 
 
 export default class IconEntries extends Component {
-  state = {
-    muiTheme: this.context.muiTheme
-  };
-
-  static propTypes = {
-    style: PropTypes.object,
-    iconStyle: PropTypes.object,
-    viewBox: PropTypes.string,
-    hoverColor: PropTypes.string,
-    color: PropTypes.string
-  };
-
-  static defaultProps = {
-    style: {
-      width: '32px',
-      height: '32px',
-      borderWidth: '1px',
-      borderStyle: 'solid',
-      borderRadius: '50%'
-    },
-    iconStyle: { width: '32px', height: '32px' },
-    viewBox: '0 0 32 32',
-    color: colors.lightBlack,
-    hoverColor: colors.darkBlack
-  };
-
-  static contextTypes = {
-    muiTheme: React.PropTypes.object
-  };
-
-  static childContextTypes = {
-    muiTheme: React.PropTypes.object
-  };
-
-  getChildContext () {
-    return {
-      muiTheme: this.state.muiTheme
+    state = {
+        muiTheme: this.context.muiTheme
     };
-  }
 
-  render () {
-    let { style, iconStyle, viewBox, hoverColor, color, tooltip, ...other } = this.props;
-    const {
-      baseTheme: {
-        palette
-      }
-    } = this.state.muiTheme;
+    static propTypes = {
+        style: PropTypes.shape(),
+        iconStyle: PropTypes.shape(),
+        viewBox: PropTypes.string,
+        hoverColor: PropTypes.string,
+        color: PropTypes.string,
+        onClick: PropTypes.func
+    };
 
-    style = Object.assign(style, {
-        borderColor: colors.faintBlack,
-        ':hover': {
-          borderColor: palette.primary1Color
-        }
-      }
-    );
+    static defaultProps = {
+        style: {
+            width: '32px',
+            height: '32px',
+            borderWidth: '1px',
+            borderStyle: 'solid',
+            borderRadius: '50%'
+        },
+        iconStyle: { width: '32px', height: '32px' },
+        viewBox: '0 0 32 32',
+        color: colors.lightBlack,
+        hoverColor: colors.darkBlack
+    };
 
-    return (
-      <CircleIcon
-        tooltip = {tooltip}
-      >
-        <SvgIcon
-          color={color}
-          hoverColor={hoverColor}
-          style={iconStyle}
-          viewBox={viewBox}
-          {...other}
-        >
-          <MenuPeople />
-        </SvgIcon>
-      </CircleIcon>
-    )
-  }
+    static contextTypes = {
+        muiTheme: React.PropTypes.object
+    };
+
+    static childContextTypes = {
+        muiTheme: React.PropTypes.object
+    };
+
+    getChildContext () {
+        return {
+            muiTheme: this.state.muiTheme
+        };
+    }
+
+    render () {
+        let { style, iconStyle, viewBox, hoverColor, color, tooltip, onClick } = this.props;
+        const {
+            baseTheme: {
+                palette
+            }
+        } = this.state.muiTheme;
+
+        style = Object.assign(style, {
+            borderColor: colors.faintBlack,
+            ':hover': {
+                borderColor: palette.primary1Color
+            }
+        });
+
+        return (
+          <CircleIcon
+            tooltip={tooltip}
+            onClick={onClick}
+          >
+            <SvgIcon
+              color={color}
+              hoverColor={hoverColor}
+              style={iconStyle}
+              viewBox={viewBox}
+            >
+              <MenuPeople />
+            </SvgIcon>
+          </CircleIcon>
+        );
+    }
 }
 

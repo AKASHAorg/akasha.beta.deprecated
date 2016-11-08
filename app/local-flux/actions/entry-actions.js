@@ -4,6 +4,7 @@ import { entryActionCreators } from './action-creators';
 let entryActions = null;
 
 class EntryActions {
+
     constructor (dispatch) {
         if (!entryActions) {
             entryActions = this;
@@ -12,14 +13,29 @@ class EntryActions {
         this.entryService = new EntryService();
         return entryActions;
     }
+
     getEntriesCount = (profileAddress) => {
-        this.dispatch(entryActionCreators.getEntriesCount());
-        this.entryService.getEntriesCount({
-            profileAddress,
-            onSuccess: result => this.dispatch(entryActionCreators.getEntriesCountSuccess(result)),
-            onError: reason => this.dispatch(entryActionCreators.getEntriesCountError(reason))
+        this.dispatch((dispatch, getState) => {
+            const flags = getState().entryState.get('flags');
+            if (!flags.get('fetchingEntriesCount') && !flags.get('entriesCountFetched')) {
+                dispatch(entryActionCreators.getEntriesCount({
+                    fetchingEntriesCount: true
+                }));
+                this.entryService.getEntriesCount({
+                    profileAddress,
+                    onSuccess: result =>
+                        dispatch(entryActionCreators.getEntriesCountSuccess(result, {
+                            fetchingEntriesCount: false,
+                            entriesCountFetched: true
+                        })),
+                    onError: reason => dispatch(entryActionCreators.getEntriesCountError(reason, {
+                        fetchingEntriesCount: false,
+                        entriesCountFetched: true
+                    }))
+                });
+            }
         });
-    }
+    };
 
     getTags = (startingIndex = 0) => {
         this.dispatch(entryActionCreators.getTags());

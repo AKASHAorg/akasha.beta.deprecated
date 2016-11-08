@@ -46,11 +46,11 @@ const rightIconMenu = (
 
 class UserProfilePanel extends Component {
     render () {
-        const { profile, profileActions, profileAddress } = this.props;
+        const { profile, profileActions, profileAddress, showPanel } = this.props;
         return (
           <Paper
             style={{
-                width: (this.props.width || 640),
+                width: (this.props.width || 480),
                 zIndex: 10,
                 position: 'relative',
                 height: '100%'
@@ -60,6 +60,7 @@ class UserProfilePanel extends Component {
               profile={profile}
               profileActions={profileActions}
               profileAddress={profileAddress}
+              showPanel={showPanel}
             />
             <div style={{ width: '100%', marginTop: '-48px' }} >
               <div>
@@ -137,7 +138,8 @@ UserProfilePanel.propTypes = {
     width: PropTypes.string,
     profile: PropTypes.shape(),
     profileActions: PropTypes.shape(),
-    profileAddress: PropTypes.string
+    profileAddress: PropTypes.string,
+    showPanel: PropTypes.func
 };
 
 export default UserProfilePanel;
