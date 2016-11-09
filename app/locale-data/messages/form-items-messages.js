@@ -14,7 +14,7 @@ const formMessages = defineMessages({
     akashaId: {
         id: 'app.akashaId',
         description: 'Placeholder for last name input',
-        defaultMessage: 'User Name'
+        defaultMessage: 'Akasha ID'
     },
     password: {
         id: 'app.password',
