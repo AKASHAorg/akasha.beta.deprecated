@@ -10,7 +10,7 @@ const hashPath = (...path) => {
 };
 const channels = {
     auth: ['login', 'logout', 'requestEther', 'generateEthKey', 'getLocalIdentities'],
-    tags: ['create', 'exists', 'getTagId', 'getTagName', 'getTagsCreated', 'checkFormat'],
+    tags: ['create', 'exists', 'getTagId', 'getTagName', 'getTagsCreated', 'checkFormat', 'subscribe', 'unSubscribe', 'subsCount'],
     entry: ['publish', 'update', 'upvote', 'downvote', 'isOpenedToVotes', 'getVoteOf',
         'getVoteEndDate', 'getScore', 'getEntriesCount', 'getEntryOf', 'getEntry', 'getEntriesCreated', 'getVotesEvent'],
     comments: ['publish', 'update', 'upvote', 'downvote', 'getScore', 'getCount', 'getCommentAt'],
