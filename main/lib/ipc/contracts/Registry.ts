@@ -43,7 +43,7 @@ export default class Registry extends BaseContract {
                 if(!!unpad(profileAddress)) {
                     return profileAddress;
                 }
-                return null;
+                return '';
             });
     }
 
@@ -74,8 +74,7 @@ export default class Registry extends BaseContract {
             })
             .then((addrList: string[]) => {
                 addrList.forEach((val: string, index: number) => {
-                    const valTr = unpad(val);
-                    if (valTr) {
+                    if (val) {
                         profileList.push({ key: keyList[index], profile: val });
                     }
                 });
@@ -92,9 +91,9 @@ export default class Registry extends BaseContract {
      * @returns {PromiseLike<TResult>|Promise<TResult>|Thenable<U>|Bluebird<U>}
      */
     public register(id: string, ipfsHash: string, gas: number = 2000000) {
-        const usernameTr = this.gethInstance.web3.fromUtf8(id);
+        const idTr = this.gethInstance.web3.fromUtf8(id);
         const ipfsHashTr = this.splitIpfs(ipfsHash);
-        return this.profileExists(usernameTr)
+        return this.profileExists(idTr)
             .then((address: string) => {
                 const exists = unpad(address);
                 if (exists) {
@@ -110,8 +109,19 @@ export default class Registry extends BaseContract {
             }).then((isOK) => {
                 if(!isOK){ throw new Error(`${id} has illegal characters`);}
 
-                return this.evaluateData('register', gas, usernameTr, ipfsHashTr);
+                return this.evaluateData('register', gas, idTr, ipfsHashTr);
             })
+    }
+
+    /**
+     *
+     * @param id
+     * @param gas
+     * @returns {Bluebird<U>}
+     */
+    public unregister(id: string, gas: number = 2000000) {
+        const idTr = this.gethInstance.web3.fromUtf8(id);
+        return this.evaluateData('unregister', gas, idTr);
     }
 
     /**

@@ -11,8 +11,8 @@ class ValidationActions {
         this.dispatch = dispatch;
         return validationActions;
     }
-    validateUsername = (username, cb) => {
-        this.validationService.validateUsername(username, {
+    validateAkashaid = (akashaId, cb) => {
+        this.validationService.validateakashaId(akashaId, {
             onError: err => cb(err),
             onSuccess: data => cb(null, data)
         });

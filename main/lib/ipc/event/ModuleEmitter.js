@@ -24,6 +24,7 @@ class ModuleEmitter extends AbstractEmitter_1.AbstractEmitter {
     }
     _initMethods(methods) {
         methods.forEach((method) => {
+            console.log([this.MODULE_NAME], [method.name]);
             this.registerListener(channels_1.default.server[this.MODULE_NAME][method.name], (event, data) => {
                 let response;
                 method
@@ -36,6 +37,7 @@ class ModuleEmitter extends AbstractEmitter_1.AbstractEmitter {
                 })
                     .finally(() => {
                     this.fireEvent(channels_1.default.client[this.MODULE_NAME][method.name], response, event);
+                    response = null;
                 });
             });
         });

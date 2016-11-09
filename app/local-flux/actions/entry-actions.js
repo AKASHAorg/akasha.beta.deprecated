@@ -66,13 +66,13 @@ class EntryActions {
             this.dispatch(entryActionCreators.getSortedEntries(result))
         );
     };
-    createSavedEntry = (userName, entry) => {
-        this.entryService.createSavedEntry(userName, entry).then(savedEntry =>
+    createSavedEntry = (akashaId, entry) => {
+        this.entryService.createSavedEntry(akashaId, entry).then(savedEntry =>
             this.dispatch(entryActionCreators.createSavedEntrySuccess(savedEntry))
         ).catch(reason => this.dispatch(entryActionCreators.createSavedEntryError(reason)));
     };
-    getSavedEntries = userName =>
-        this.entryService.getSavedEntries(userName).then(entries =>
+    getSavedEntries = akashaId =>
+        this.entryService.getSavedEntries(akashaId).then(entries =>
             this.dispatch(entryActionCreators.getSavedEntriesSuccess(entries))
         ).catch(reason => this.dispatch(entryActionCreators.getSavedEntriesError(reason))
         );

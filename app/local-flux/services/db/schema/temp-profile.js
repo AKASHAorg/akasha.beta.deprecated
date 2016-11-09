@@ -18,7 +18,7 @@ function Status () {
 export const TempProfileSchema = {
     firstName: String,
     lastName: String,
-    userName: String,
+    akashaId: String,
     password: Uint8Array,
     address: String,
     avatar: Uint8Array,

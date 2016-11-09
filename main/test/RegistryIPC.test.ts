@@ -69,7 +69,7 @@ describe('RegistryIPC', function () {
                 done();
             }
         );
-        ipcMain.emit(channel.server.registry.profileExists, '', {username: 'costel'});
+        ipcMain.emit(channel.server.registry.profileExists, '', {akashaId: 'costel'});
     });
 
     it('--should register new address', function (done) {
@@ -105,7 +105,7 @@ describe('RegistryIPC', function () {
                done();
            }
        );
-        ipcMain.emit(channel.server.registry.registerProfile, '', {token, username: 'TuserT'+ new Date().getTime(),
+        ipcMain.emit(channel.server.registry.registerProfile, '', {token, akashaId: 'TuserT'+ new Date().getTime(),
             ipfs:{firstName: 'Tritza', lastName: 'Fanica' + new Date().getTime(),
                 avatar: new Uint8Array(1000000),
                 backgroundImage: {

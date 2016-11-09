@@ -78,17 +78,17 @@ class EntryService extends BaseService {
         //         return entriesDB.drafts.sortBy('status.created_at').toArray();
         //     }
         // });
-    createSavedEntry = ({ username, entry, onError, onSuccess }) =>
+    createSavedEntry = ({ akashaId, entry, onError, onSuccess }) =>
         entriesDB.transaction('rw', entriesDB.savedEntries, () => {
-            entriesDB.savedEntries.add({ username, ...entry.toJS() }).then(() => entry);
+            entriesDB.savedEntries.add({ akashaId, ...entry.toJS() }).then(() => entry);
         })
         .then(() => onSuccess(entry))
         .catch(reason => onError(reason));
 
-    getSavedEntries = ({ username, onError, onSuccess }) =>
+    getSavedEntries = ({ akashaId, onError, onSuccess }) =>
         entriesDB.transaction('r', entriesDB.savedEntries, () =>
-            entriesDB.savedEntries.where('username')
-                .equals(username)
+            entriesDB.savedEntries.where('akashaId')
+                .equals(akashaId)
                 .toArray()
         )
         .then(entries => onSuccess(entries))

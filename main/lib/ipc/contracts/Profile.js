@@ -22,36 +22,9 @@ class Profile extends BaseContract_1.default {
             profile._id.call(cb);
         }).then((id) => this.gethInstance.web3.toUtf8(id));
     }
-    getTippingAddress(address) {
-        return new Promise((resolve, reject) => {
-            this.contract
-                .at(address)
-                .getCollector
-                .call((err, data) => {
-                if (err) {
-                    return reject(err);
-                }
-                return resolve(data);
-            });
-        });
-    }
     updateHash(hash, address, gas) {
         const hashTr = this.splitIpfs(hash);
         const extracted = this.contract.at(address).setHash.request(hashTr, { gas });
-        return Promise.resolve(extracted.params[0]);
-    }
-    setTippingAddress(address, tippingAddress, gas) {
-        const extracted = this.contract
-            .at(address)
-            .setEthAddress
-            .request(tippingAddress, { gas });
-        return Promise.resolve(extracted.params[0]);
-    }
-    unregister(address, gas) {
-        const extracted = this.contract
-            .at(address)
-            .destroy
-            .request({ gas });
         return Promise.resolve(extracted.params[0]);
     }
 }

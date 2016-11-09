@@ -8,7 +8,7 @@ class StreamSidebar extends React.Component {
         super(props);
     }
     _handleTagNavigation = (ev, tag) => {
-        this.context.router.push(`/${this.props.params.username}/explore/tag/${tag}`);
+        this.context.router.push(`/${this.props.params.akashaId}/explore/tag/${tag}`);
     }
     render () {
         const followedTags = [

@@ -24,10 +24,10 @@ const validationMessages = defineMessages({
         description: 'When the password field is different than this one.',
         defaultMessage: 'Oups! Password verification is different than first one!'
     },
-    usernameExists: {
-        id: 'app.validator.usernameExists',
-        description: 'When the username chosen already registered',
-        defaultMessage: 'Username already registered!'
+    akashaIdExists: {
+        id: 'app.validator.akashaIdExists',
+        description: 'When the akashaId chosen already registered',
+        defaultMessage: 'akashaId already registered!'
     }
 });
 export { validationMessages };

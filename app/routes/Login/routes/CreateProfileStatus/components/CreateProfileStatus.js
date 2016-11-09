@@ -17,7 +17,7 @@ class CreateProfileStatus extends Component {
     }
     componentWillMount () {
         const { tempProfileActions, transactionActions, tempProfile } = this.props;
-        if (tempProfile.get('username') === '') {
+        if (tempProfile.get('akashaId') === '') {
             tempProfileActions.getTempProfile();
         }
         transactionActions.getMinedTransactions();
@@ -27,7 +27,7 @@ class CreateProfileStatus extends Component {
         const { transactionActions, pendingTransactions, minedTransactions, fetchingPendingTx,
             fetchingMinedTx } = nextProps;
         const fetchingTransactions = fetchingPendingTx || fetchingMinedTx;
-        if (nextProps.tempProfile.get('username') === '') {
+        if (nextProps.tempProfile.get('akashaId') === '') {
             return this.context.router.push('/authenticate');
         }
 
@@ -49,7 +49,7 @@ class CreateProfileStatus extends Component {
             this.isServiceRestarted = true;
         }
         // make sure tempProfile loaded from DB;
-        if (nextProps.tempProfile && nextProps.tempProfile.get('username') !== '') {
+        if (nextProps.tempProfile && nextProps.tempProfile.get('akashaId') !== '') {
             return this.resumeProfileCreation(nextProps);
         }
         return null;
@@ -86,8 +86,8 @@ class CreateProfileStatus extends Component {
                       <FormattedMessage
                         id="app.createProfileStatus.loggingIn"
                         description="Message status when we are sending login request"
-                        defaultMessage={'Logging in with {username}'}
-                        values={{ username: <b>@{tempProfile.get('username')}</b> }}
+                        defaultMessage={'Logging in with {akashaId}'}
+                        values={{ akashaId: <b>@{tempProfile.get('akashaId')}</b> }}
                       />
                     );
                 } else if (currentStatus.get('publishRequested')) {
@@ -196,7 +196,7 @@ class CreateProfileStatus extends Component {
             return this.finishProfilePublishing(minedTransactions, publishMinedIndex);
         }
 
-        if (tempProfileErrors.size === 0 && tempProfile.get('username') &&
+        if (tempProfileErrors.size === 0 && tempProfile.get('akashaId') &&
             profileErrors.size === 0) {
             tempProfileActions[nextAction](tempProfile);
         }
@@ -204,7 +204,7 @@ class CreateProfileStatus extends Component {
     }
     _handleProfileAbortion = () => {
         const { tempProfileActions, tempProfile } = this.props;
-        tempProfileActions.deleteTempProfile(tempProfile.get('username'));
+        tempProfileActions.deleteTempProfile(tempProfile.get('akashaId'));
         tempProfileActions.clearErrors();
     }
     _handleStepRetry = () => {

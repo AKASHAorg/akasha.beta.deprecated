@@ -5,9 +5,9 @@ import { loggedProfileSchema } from './schema/logged-profile';
 
 const profileDB = new Dexie('profiles');
 profileDB.version(1).stores({
-    localProfiles: '&address, username',
+    localProfiles: '&address, akashaId',
     loggedProfile: '&account, profile',
-    tempProfile: '&username, currentStatus'
+    tempProfile: '&akashaId, currentStatus'
 });
 
 //
@@ -16,13 +16,13 @@ profileDB.version(1).stores({
 // profileDB.version(2).stores({
 //     localProfiles: '&account, createdAt',
 //     loggedProfile: '&account',
-//     tempProfile: '&username, currentStatus'
+//     tempProfile: '&akashaId, currentStatus'
 // }).upgrade((transaction) => {
 //     transaction.localProfiles.toCollection().modify((profile) => {
 //         profile.account = profile.address;
 //         profile.createdAt = new Date();
 //         delete profile.address;
-//         delete profile.username;
+//         delete profile.akashaId;
 //     });
 // });
 

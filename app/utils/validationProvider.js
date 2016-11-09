@@ -7,7 +7,7 @@ import r from 'ramda';
 
 export default function (Component) {
     const validationClass = validator(strategy)(Component);
-    // Validatr.register('userNameRule', (value, requirement, attribute) => {
+    // Validatr.register('akashaIdRule', (value, requirement, attribute) => {
     //     console.log(value, value.match(/[a-z0-9.]/g));
     //     return value.match(/[a-z0-9.]/g);
     // }, 'The :attribute field must be lowercase, alphanumeric with dots only.');
@@ -53,7 +53,7 @@ export default function (Component) {
                         }
                         if (data.exists) {
                             this.state.errors[validationKey][0] =
-                                intl.formatMessage(validationMessages.usernameExists);
+                                intl.formatMessage(validationMessages.akashaIdExists);
                             return;
                         }
                         console.log('no errors!', cb);

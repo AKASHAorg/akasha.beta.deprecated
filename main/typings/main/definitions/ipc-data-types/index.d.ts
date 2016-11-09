@@ -10,6 +10,7 @@ interface MainResponse {
 
 interface AuthRequest {
     token: string;
+    gas?: number;
 }
 
 interface IPCmanager {
@@ -293,27 +294,31 @@ interface GenericErrorEventRequest {
     address?: string
 }
 
-interface GenericErrorEventResponse extends MainResponse{
+interface GenericErrorEventResponse extends MainResponse {
     data: {
         events: any[]
     }
 }
 
-interface ProfileErrorEventRequest extends GenericErrorEventRequest{}
-interface ProfileErrorEventResponse extends GenericErrorEventResponse{}
+interface ProfileErrorEventRequest extends GenericErrorEventRequest {
+}
+interface ProfileErrorEventResponse extends GenericErrorEventResponse {
+}
 
-interface GenericFromEventResponse extends MainResponse{
+interface GenericFromEventResponse extends MainResponse {
     data: {
         collection: any[]
     }
 }
 
-interface GenericFromEventRequest extends ProfileErrorEventRequest{
+interface GenericFromEventRequest extends ProfileErrorEventRequest {
     index: {};
 }
 
-interface ProfileRegisteredEventRequest extends GenericFromEventRequest{}
-interface ProfileRegisteredEventResponse extends GenericFromEventResponse {}
+interface ProfileRegisteredEventRequest extends GenericFromEventRequest {
+}
+interface ProfileRegisteredEventResponse extends GenericFromEventResponse {
+}
 /////////////////////////  </ Registry > \\\\\\\\\\\\\\\\\\\\\\\\
 
 ////////////////////////// < Profile> \\\\\\\\\\\\\\\\\\\\\\\\\\\\\
@@ -340,24 +345,22 @@ interface ProfileDataRequest {
     resolveImages?: boolean // resolve media to buffer
 }
 
-interface ProfileDataResponse extends MainResponse {
-    data: {
-        firstName: string;
-        lastName: string;
-        akashaId: string;
-        avatar?: Uint8Array;
-        backgroundImage?: any;
-        about?: string;
-        links?: { title: string, url: string, type: string, id: number }[];
-    };
+interface ProfileDataResponse {
+    firstName: string;
+    lastName: string;
+    akashaId: string;
+    avatar?: any;
+    backgroundImage?: any;
+    about?: string;
+    links?: any;
 }
 
-interface MyBalanceRequest {
+interface BalanceRequest {
     etherBase?: string;
     unit?: string; // ether/wei/etc
 }
 
-interface MyBalanceResponse extends MainResponse {
+interface BalanceResponse extends MainResponse {
     data: { value: string };
 }
 
@@ -379,7 +382,7 @@ interface IpfsDataResponse extends MainResponse {
 }
 
 interface ProfileUnregisterRequest extends AuthRequest {
-    profileAddress: string;
+    akashaId: string;
 }
 
 interface ProfileFollowRequest extends AuthRequest {
@@ -393,7 +396,7 @@ interface ProfileFollowResponse extends MainResponse {
 }
 
 interface GetFollowerCountRequest {
-    profileId: string;
+    akashaId: string;
 }
 
 interface GetFollowersRequest {
@@ -506,7 +509,7 @@ interface TagsFromToRequest {
     from: number;
     to: number;
 }
-interface TagsFromToResponse extends MainResponse{
+interface TagsFromToResponse extends MainResponse {
     data: {
         from: number;
         to: number;

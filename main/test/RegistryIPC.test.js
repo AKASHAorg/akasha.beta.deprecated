@@ -58,7 +58,7 @@ describe('RegistryIPC', function () {
             chai_1.expect(injected.data.data.exists).to.exist;
             done();
         });
-        electron_1.ipcMain.emit(channels_1.default.server.registry.profileExists, '', { username: 'costel' });
+        electron_1.ipcMain.emit(channels_1.default.server.registry.profileExists, '', { akashaId: 'costel' });
     });
     it('--should register new address', function (done) {
         helpers.getNewAddress(done, (newAddress) => {
@@ -86,7 +86,7 @@ describe('RegistryIPC', function () {
             console.log(txPending);
             done();
         });
-        electron_1.ipcMain.emit(channels_1.default.server.registry.registerProfile, '', { token, username: 'TuserT' + new Date().getTime(),
+        electron_1.ipcMain.emit(channels_1.default.server.registry.registerProfile, '', { token, akashaId: 'TuserT' + new Date().getTime(),
             ipfs: { firstName: 'Tritza', lastName: 'Fanica' + new Date().getTime(),
                 avatar: new Uint8Array(1000000),
                 backgroundImage: {
