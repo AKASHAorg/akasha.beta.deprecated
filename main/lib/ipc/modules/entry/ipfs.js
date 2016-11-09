@@ -2,7 +2,7 @@
 const ipfs_connector_1 = require('@akashaproject/ipfs-connector');
 const Promise = require('bluebird');
 const ramda_1 = require('ramda');
-const records_1 = require('./records');
+const records_1 = require('../models/records');
 exports.DRAFT_BLOCKS = 'blocks';
 exports.ATOMIC_TYPE = 'atomic';
 exports.IMAGE_TYPE = 'image';
@@ -20,7 +20,9 @@ class IpfsEntry {
         ipfsApiRequests.push(ipfs_connector_1.IpfsConnector.getInstance().api
             .constructObjLink(content.excerpt)
             .then((obj) => this.excerpt = obj));
-        return Promise.all(ipfsApiRequests).then(() => this._uploadMediaDraft()).then((draft) => {
+        return Promise.all(ipfsApiRequests)
+            .then(() => this._uploadMediaDraft())
+            .then((draft) => {
             return ipfs_connector_1.IpfsConnector.getInstance().api
                 .add({
                 draft: draft,
@@ -66,55 +68,44 @@ class IpfsEntry {
             return ipfs_connector_1.IpfsConnector.getInstance().api.constructObjLink(Buffer.from(JSON.stringify(this.draft)), true);
         });
     }
-    _getMediaDraft() {
-    }
-    load(hash) {
-        this.hash = hash;
-        return this;
-    }
-    update(setData) {
-        if (!this.hash) {
-            return Promise.reject('Must set hash property first');
-        }
-        return ipfs_connector_1.IpfsConnector.getInstance().api
-            .updateObject(this.hash, setData)
-            .then((hash) => {
-            this.load(hash);
-            return this.hash;
-        });
-    }
-    getShortContent() {
-        if (records_1.entries.getShort(this.hash)) {
-            return Promise.resolve(records_1.entries.getShort(this.hash));
-        }
-        return ipfs_connector_1.IpfsConnector.getInstance().api
-            .get(this.hash)
-            .then((data) => {
-            return ipfs_connector_1.IpfsConnector.getInstance().api.resolve(data.excerpt[ipfs_connector_1.IpfsApiHelper.LINK_SYMBOL])
-                .then((excerpt) => {
-                data.excerpt = excerpt;
-                data.featuredImage = data.featuredImage[ipfs_connector_1.IpfsApiHelper.LINK_SYMBOL];
-                records_1.entries.setShort(this.hash, data);
-                return data;
-            });
-        });
-    }
-    getFullContent() {
-        if (records_1.entries.getFull(this.hash)) {
-            return Promise.resolve(records_1.entries.getFull(this.hash));
-        }
-        return ipfs_connector_1.IpfsConnector.getInstance().api
-            .get(this.hash)
-            .then((data) => {
-            return ipfs_connector_1.IpfsConnector.getInstance().api.resolve(data.draft[ipfs_connector_1.IpfsApiHelper.LINK_SYMBOL])
-                .then((draft) => {
-                data.draft = draft.toString();
-                records_1.entries.setFull(this.hash, data);
-                return data;
-            });
-        });
-    }
 }
+function getShortContent(hash) {
+    if (records_1.entries.getShort(hash)) {
+        return Promise.resolve(records_1.entries.getShort(hash));
+    }
+    return ipfs_connector_1.IpfsConnector.getInstance().api
+        .get(hash)
+        .then((data) => {
+        return ipfs_connector_1.IpfsConnector.getInstance()
+            .api
+            .resolve(data.excerpt[ipfs_connector_1.IpfsApiHelper.LINK_SYMBOL])
+            .then((excerpt) => {
+            data.excerpt = excerpt;
+            data.featuredImage = data.featuredImage[ipfs_connector_1.IpfsApiHelper.LINK_SYMBOL];
+            records_1.entries.setShort(hash, data);
+            return data;
+        });
+    });
+}
+exports.getShortContent = getShortContent;
+function getFullContent(hash) {
+    if (records_1.entries.getFull(hash)) {
+        return Promise.resolve(records_1.entries.getFull(hash));
+    }
+    return ipfs_connector_1.IpfsConnector.getInstance().api
+        .get(hash)
+        .then((data) => {
+        return ipfs_connector_1.IpfsConnector.getInstance()
+            .api
+            .resolve(data.draft[ipfs_connector_1.IpfsApiHelper.LINK_SYMBOL])
+            .then((draft) => {
+            data.draft = draft.toString();
+            records_1.entries.setFull(hash, data);
+            return data;
+        });
+    });
+}
+exports.getFullContent = getFullContent;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = IpfsEntry;
-//# sourceMappingURL=Entry.js.map
+//# sourceMappingURL=ipfs.js.map

@@ -2,9 +2,8 @@ import ModuleEmitter from './event/ModuleEmitter';
 import channels from '../channels';
 import { constructed as contracts } from './contracts/index';
 import { mainResponse } from './event/responses';
-import { generalSettings, BASE_URL } from './config/settings';
 import { module as userModule } from './modules/auth/index';
-import IpfsEntry from './modules/models/Entry';
+import entry from './modules/entry/index';
 import WebContents = Electron.WebContents;
 
 class EntryIPC extends ModuleEmitter {
@@ -17,91 +16,17 @@ class EntryIPC extends ModuleEmitter {
 
     public initListeners(webContents: WebContents) {
         this.webContents = webContents;
+        this._initMethods(entry);
         this
-            ._publish()
             ._downvote()
-            ._update()
             ._upvote()
             ._isOpenedToVotes()
             ._getVoteOf()
             ._getVoteEndDate()
             ._getScore()
-            ._getEntriesCount()
-            ._getEntryOf()
-            ._getEntry()
             ._getEntriesCreated()
             ._getVotesEvent()
             ._manager();
-    }
-
-    private _publish() {
-        this.registerListener(
-            channels.server[this.MODULE_NAME].publish,
-            (event: any, data: EntryCreateRequest) => {
-                let response: EntryCreateResponse;
-                let entry = new IpfsEntry();
-                entry.create(data.content, data.tags)
-                    .then((hash) => {
-                        console.log('hash', hash);
-                        return contracts.instance
-                            .main
-                            .publishEntry(hash, data.tags, data.gas)
-                    })
-                    .then((txData: any) => {
-                        return userModule.auth.signData(txData, data.token);
-                    })
-                    .then((tx: string) => {
-                        response = mainResponse({ tx });
-                    })
-                    .catch((err: Error) => {
-                        console.log(err, 'error');
-                        response = mainResponse({ error: { message: err.message } });
-                    })
-                    .finally(() => {
-                        this.fireEvent(
-                            channels.client[this.MODULE_NAME].publish,
-                            response,
-                            event
-                        );
-                        entry = null;
-                    });
-            });
-        return this;
-    }
-
-    private _update() {
-        this.registerListener(
-            channels.server[this.MODULE_NAME].update,
-            (event: any, data: EntryUpdateRequest) => {
-                let response: EntryUpdateResponse;
-                const entry = new IpfsEntry();
-                entry.load(data.hash);
-                contracts.instance
-                    .main
-                    .updateEntry(data.hash, data.address, data.gas)
-                    .then((txData: any) => {
-                        return userModule.auth.signData(txData, data.token);
-                    })
-                    .then((tx: string) => {
-                        response = mainResponse({ tx });
-                    })
-                    .catch((err: Error) => {
-                        response = mainResponse({
-                            error: {
-                                message: err.message,
-                                from: { address: data.address }
-                            }
-                        });
-                    })
-                    .finally(() => {
-                        this.fireEvent(
-                            channels.client[this.MODULE_NAME].update,
-                            response,
-                            event
-                        );
-                    });
-            });
-        return this;
     }
 
     private _upvote() {
@@ -285,139 +210,6 @@ class EntryIPC extends ModuleEmitter {
                             response,
                             event
                         );
-                    });
-            });
-        return this;
-    }
-
-    private _getEntriesCount() {
-        this.registerListener(
-            channels.server[this.MODULE_NAME].getEntriesCount,
-            (event: any, data: EntriesCountRequest) => {
-                let response: EntriesCountResponse;
-                contracts.instance
-                    .main
-                    .getEntriesCount(data.profileAddress)
-                    .then((count: number) => {
-                        response = mainResponse({ profileAddress: data.profileAddress, count });
-                    })
-                    .catch((err: Error) => {
-                        response = mainResponse({
-                            error: {
-                                message: err.message,
-                                from: { profileAddress: data.profileAddress }
-                            }
-                        });
-                    })
-                    .finally(() => {
-                        this.fireEvent(
-                            channels.client[this.MODULE_NAME].getEntriesCount,
-                            response,
-                            event
-                        );
-                    });
-            });
-        return this;
-    }
-
-    private _getEntryOf() {
-        this.registerListener(
-            channels.server[this.MODULE_NAME].getEntryOf,
-            (event: any, data: EntriesOfRequest) => {
-                let response: EntriesOfResponse;
-                let entry = new IpfsEntry();
-                contracts.instance
-                    .main
-                    .getEntryOf(data.profileAddress, data.position)
-                    .then((content: any) => {
-                        entry.load(content.ipfsHash);
-                        return entry.getShortContent()
-                            .then((ipfsContent: any) => {
-                                return {
-                                    profileAddress: data.profileAddress,
-                                    position: data.position,
-                                    date: content.date,
-                                    profile: content.profile,
-                                    content: ipfsContent,
-                                    [BASE_URL]: generalSettings.get(BASE_URL)
-                                };
-                            })
-                    })
-                    .then((constructed: any) => {
-                        response = mainResponse(constructed);
-                    })
-                    .catch((err: Error) => {
-                        response = mainResponse({
-                            error: {
-                                message: err.message,
-                                from: { profileAddress: data.profileAddress }
-                            }
-                        });
-                    })
-                    .finally(() => {
-                        this.fireEvent(
-                            channels.client[this.MODULE_NAME].getEntryOf,
-                            response,
-                            event
-                        );
-                        response = null;
-                        entry = null;
-                    });
-            });
-        return this;
-    }
-
-    private _getEntry() {
-        this.registerListener(
-            channels.server[this.MODULE_NAME].getEntry,
-            (event: any, data: EntryGetRequest) => {
-                let response: EntryGetResponse;
-                let entry = new IpfsEntry();
-                contracts.instance
-                    .main
-                    .getEntry(data.entryAddress)
-                    .then((content: any) => {
-                        entry.load(content.ipfsHash);
-                        if(data.full){
-                            return entry.getFullContent()
-                                .then((ipfsContent) => {
-                                    return {
-                                        entryAddress: data.entryAddress,
-                                        date: content.date,
-                                        profile: content.profile,
-                                        content: ipfsContent,
-                                        [BASE_URL]: generalSettings.get(BASE_URL)
-                                    };
-                                })
-                        }
-                        return entry.getShortContent()
-                            .then((ipfsContent) => {
-                                return {
-                                    entryAddress: data.entryAddress,
-                                    date: content.date,
-                                    profile: content.profile,
-                                    content: ipfsContent,
-                                    [BASE_URL]: generalSettings.get(BASE_URL)
-                                };
-                            })
-                    })
-                    .then((constructed) => response = mainResponse(constructed))
-                    .catch((err: Error) => {
-                        response = mainResponse({
-                            error: {
-                                message: err.message,
-                                from: { entryAddress: data.entryAddress }
-                            }
-                        });
-                    })
-                    .finally(() => {
-                        this.fireEvent(
-                            channels.client[this.MODULE_NAME].getEntry,
-                            response,
-                            event
-                        );
-                        response = null;
-                        entry = null;
                     });
             });
         return this;

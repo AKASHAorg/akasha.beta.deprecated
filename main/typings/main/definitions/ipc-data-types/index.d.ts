@@ -533,8 +533,9 @@ interface EntryCreateResponse extends MainResponse {
 }
 
 interface EntryUpdateRequest extends AuthRequest {
-    hash: string;
-    address: string;
+    content: any;
+    tags: string[],
+    entryId: string;
     gas?: number;
 }
 
@@ -604,6 +605,10 @@ interface EntriesCountRequest {
     profileAddress: string;
 }
 
+interface EntriesCountTagRequest {
+    tagName: string;
+}
+
 interface EntriesCountResponse extends MainResponse {
     data: {
         profileAddress: string;
@@ -623,8 +628,8 @@ interface EntriesOfResponse extends MainResponse {
 }
 
 interface EntryGetRequest {
-    entryAddress: string;
-    full: boolean;
+    entryId: string;
+    full?: boolean;
 }
 
 interface EntryGetResponse extends MainResponse {
