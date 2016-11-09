@@ -185,7 +185,7 @@ class ProfileActions {
         }
         if (isLoggedIn) {
             this.updateProfile();
-            this.dispatch((dispatch) => {
+            this.dispatch(() => {
                 this.profileService.updateProfileData({
                     token: loggedProfile.get('token'),
                     ipfs,

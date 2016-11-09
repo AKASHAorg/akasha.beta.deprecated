@@ -37,10 +37,10 @@ class LicenceDialog extends React.Component {
         const selectedMainLicence = this.state.mainLicence;
         const selectedMainLicenceId = selectedMainLicence.id;
 
-        const radios = this.props.licences.filter(lic => lic.parent === null).map(licence => {
+        const radios = this.props.licences.filter(lic => lic.parent === null).map((licence) => {
             const sublicence = this.props.licences
                                 .filter(lic => lic.parent === licence.id)
-                                .map(sublic => {
+                                .map((sublic) => {
                                     const subLicence = this.state.subLicence;
                                     return (
                                       <RadioButton
@@ -110,7 +110,7 @@ class LicenceDialog extends React.Component {
                   label="done"
                   primary
                   style={{ marginLeft: 8 }}
-                  onTouchTap={(ev) =>
+                  onTouchTap={ev =>
                       this.props.onDone(ev, {
                           mainLicence: this.state.mainLicence,
                           subLicence: this.state.subLicence,

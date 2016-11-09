@@ -9,6 +9,7 @@ import PanelLoader from './components/panel-loader-container';
 import EntryModal from './components/entry-modal';
 import ProfileUpdater from './components/profile-updater';
 import PublishEntryRunner from './components/publish-entry-runner';
+import TagPublisher from './components/tag-publisher';
 import FollowRunner from './components/follow-runner';
 
 class HomeContainer extends React.Component {
@@ -41,7 +42,6 @@ class HomeContainer extends React.Component {
             transactionActions.getPendingTransactions();
             draftActions.getDraftsCount(loggedProfile.get('profile'));
             entryActions.getEntriesCount(loggedProfile.get('profile'));
-            draftActions.getPublishingDrafts(loggedProfile.get('profile'));
         }
     }
     componentWillUnmount () {
@@ -121,6 +121,7 @@ class HomeContainer extends React.Component {
             <ProfileUpdater />
             <FollowRunner />
             <PublishEntryRunner />
+            <TagPublisher />
           </div>
         );
     }

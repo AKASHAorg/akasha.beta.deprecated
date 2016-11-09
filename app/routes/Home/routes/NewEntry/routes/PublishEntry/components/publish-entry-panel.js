@@ -19,6 +19,7 @@ class PublishPanel extends React.Component {
             excerpt: '',
             tags: [],
             existingTags: [],
+            pendingTags: [],
             licence: null,
             featuredImage: {},
             fetchingDraft: true
@@ -31,7 +32,6 @@ class PublishPanel extends React.Component {
     componentWillReceiveProps (nextProps) {
         const { draft, params } = nextProps;
         const loggedProfileData = this._getLoggedProfileData();
-        console.log('will receive props', draft.getIn(['status', 'currentAction']));
         if (draft && draft.get('status').currentAction === 'confirmPublish') {
             this.context.router.push(`/${loggedProfileData.get('username')}/draft/${params.draftId}/publish-status`);
         }
@@ -54,6 +54,9 @@ class PublishPanel extends React.Component {
         }
         if (typeof tags.toJS === 'function') {
             tags = tags.toJS();
+        }
+        if (tags && tags.length > 0) {
+            this._checkExistingTags(tags);
         }
         this.setState({
             title,
@@ -103,7 +106,6 @@ class PublishPanel extends React.Component {
         });
     };
     _publishEntry = () => {
-        console.log('make the publish happen!');
         const { draftActions, profiles, loggedProfile } = this.props;
         const loggedProfileData = profiles.find(prf =>
             prf.get('profile') === loggedProfile.get('profile'));
@@ -117,7 +119,6 @@ class PublishPanel extends React.Component {
         } = this.state;
         const tagsToRegister = tags.filter(tag => this.state.existingTags.indexOf(tag) === -1);
         const draftId = parseInt(this.props.params.draftId, 10);
-        console.log(title, featuredImage);
         draftActions.updateDraft({
             id: draftId,
             title,
@@ -176,16 +177,33 @@ class PublishPanel extends React.Component {
     };
     _checkExistingTags = (tags) => {
         const tagService = new TagService();
+        const { pendingTags } = this.props;
+        let tagsPromise = Promise.resolve();
+        // const existingTags = this.state.existingTags.slice();
+        // console.log(existingTags, 'existingTags');
         tags.forEach((tag) => {
-            tagService.checkExistingTags(tag, ({ data }) => {
-                const existingTags = this.state.existingTags.slice();
-                if (data.exists) {
-                    this.setState({
-                        existingTags: existingTags.push(tag)
+            tagsPromise = tagsPromise.then(prevData =>
+                new Promise((resolve, reject) => {
+                    tagService.checkExistingTags(tag, (ev, { data, error }) => {
+                        if (error) {
+                            return reject(error);
+                        }
+                        if (prevData) {
+                            return resolve(prevData.concat([{ tag, exists: data.exists }]));
+                        }
+                        return resolve([{ tag, exists: data.exists }]);
                     });
-                }
-            });
+                })
+            );
         });
+        return tagsPromise.then(results =>
+            this.setState({
+                existingTags: results.filter(tagObj => tagObj.exists).map(tag => tag.tag),
+                pendingTags: tags.filter(tag =>
+                    pendingTags.findIndex(tagObj =>
+                        tagObj.tag === tag) !== -1).map(tagObj => tagObj.tag)
+            })
+        );
     };
     _handleCancelButton = () => {
         const { params } = this.props;
@@ -201,12 +219,30 @@ class PublishPanel extends React.Component {
             isDefault: false
         };
     }
+    _handleTagRegisterRequest = (tag) => {
+        const { loggedProfile, tagActions } = this.props;
+        // 1. verify that tag is not in pending state
+        // 2. put tag in pending state after confirm dialog
+        // 3. check login is valid
+        // 4. send tag registration
+        // 5. add tx to queue
+        // 6. watch for mined tx
+        // 7. remove tag from pending state
+        tagActions.createPendingTag({
+            tag,
+            tx: null,
+            profile: loggedProfile.get('profile'),
+            minGas: 2000000,
+            publishConfirmed: false
+        });
+    }
     render () {
         const { tags } = this.state;
         const selectedLicence = this._getSelectedLicence();
         const licenceDescription = selectedLicence.mainLicence.description.map((descr, key) =>
           <span key={key}>{descr.text}</span>
         );
+        console.log(this.state.existingTags, 'existing');
         return (
           <PanelContainer
             showBorder
@@ -273,6 +309,7 @@ class PublishPanel extends React.Component {
                   onRequestTagAutocomplete={this._handleTagAutocomplete}
                   onTagAdded={this._handleTagAdd}
                   onDelete={this._handleTagDelete}
+                  onTagRegisterRequest={this._handleTagRegisterRequest}
                   fullWidth
                 />
               </div>

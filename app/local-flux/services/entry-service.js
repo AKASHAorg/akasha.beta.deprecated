@@ -25,14 +25,34 @@ class EntryService extends BaseService {
      *  Publish a new entry
      *
      */
-    publishEntry = ({ entry, profileAddress, onError, onSuccess }) => {
+    publishEntry = ({ draft, token, gas, onError, onSuccess }) => {
+        const {
+            title,
+            featuredImage,
+            excerpt,
+            licence,
+            tags,
+            content,
+        } = draft;
         this.openChannel({
             serverManager: this.serverManager,
             clientManager: this.clientManager,
             serverChannel: Channel.server.entry.publish,
             clientChannel: Channel.client.entry.publish,
             listenerCb: this.createListener(onError, onSuccess)
-        }, () => Channel.server.entry.publish.send(entry));
+        }, () =>
+            Channel.server.entry.publish.send({
+                content: {
+                    title,
+                    featuredImage,
+                    excerpt,
+                    licence,
+                    draft: content
+                },
+                tags,
+                token,
+                gas
+            }));
     };
 
     getEntriesCount = ({ profileAddress, onError, onSuccess }) => {
@@ -47,12 +67,12 @@ class EntryService extends BaseService {
 
     // get resource by id (drafts or entries);
     getById = ({ table, id, onSuccess, onError }) =>
-        entriesDB.transaction('r', entriesDB[table], () => {
-            return entriesDB[table]
-                    .where('id')
-                    .equals(parseInt(id, 10))
-                    .first();
-        })
+        entriesDB.transaction('r', entriesDB[table], () =>
+            entriesDB[table]
+                .where('id')
+                .equals(parseInt(id, 10))
+                .first()
+        )
         .then(entries => onSuccess(entries))
         .catch(reason => onError(reason));
 
@@ -70,14 +90,7 @@ class EntryService extends BaseService {
             entries = generateEntries(2);
             return resolve(entries);
         });
-        // entriesDB.transaction('r', entriesDB.drafts, () => {
-        //     if (sortBy === 'rating') {
-        //         return entriesDB.drafts.where('tags').anyOf('top-rating').toArray();
-        //     }
-        //     if (sortBy === 'top') {
-        //         return entriesDB.drafts.sortBy('status.created_at').toArray();
-        //     }
-        // });
+
     createSavedEntry = ({ username, entry, onError, onSuccess }) =>
         entriesDB.transaction('rw', entriesDB.savedEntries, () => {
             entriesDB.savedEntries.add({ username, ...entry.toJS() }).then(() => entry);
