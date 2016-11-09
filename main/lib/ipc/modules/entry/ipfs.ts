@@ -1,13 +1,14 @@
 import { IpfsConnector, IpfsApiHelper } from '@akashaproject/ipfs-connector';
 import * as Promise from 'bluebird';
 import { isEmpty } from 'ramda';
-import { entries } from './records';
+import { entries } from '../models/records';
 
 export const DRAFT_BLOCKS = 'blocks';
 export const ATOMIC_TYPE = 'atomic';
 export const IMAGE_TYPE = 'image';
+
 class IpfsEntry {
-    hash: string;
+
     id: string;
     draft: any;
     title: string;
@@ -39,7 +40,9 @@ class IpfsEntry {
                 .constructObjLink(content.excerpt)
                 .then((obj) => this.excerpt = obj));
 
-        return Promise.all(ipfsApiRequests).then(() => this._uploadMediaDraft()).then((draft) => {
+        return Promise.all(ipfsApiRequests)
+            .then(() => this._uploadMediaDraft())
+            .then((draft) => {
             return IpfsConnector.getInstance().api
                 .add({
                     draft: draft,
@@ -96,81 +99,55 @@ class IpfsEntry {
             return IpfsConnector.getInstance().api.constructObjLink(Buffer.from(JSON.stringify(this.draft)), true);
         });
     }
-
-    private _getMediaDraft() {
-        /**
-         * filter draft object for images and dowload them from ipfs
-         * this will be used for serving Uin8array images
-         */
+}
+/**
+ *
+ * @param hash
+ * @returns {any}
+ */
+export function getShortContent(hash) {
+    if (entries.getShort(hash)) {
+        return Promise.resolve(entries.getShort(hash));
     }
+    return IpfsConnector.getInstance().api
+        .get(hash)
+        .then((data) => {
+            return IpfsConnector.getInstance()
+                .api
+                .resolve(data.excerpt[IpfsApiHelper.LINK_SYMBOL])
+                .then((excerpt) => {
+                    data.excerpt = excerpt;
+                    data.featuredImage = data.featuredImage[IpfsApiHelper.LINK_SYMBOL];
+                    entries.setShort(hash, data);
+                    return data;
+                });
+        })
+}
 
-    /**
-     *
-     * @param hash
-     * @returns {Entry}
-     */
-    load(hash: string) {
-        this.hash = hash;
-        return this;
-    }
 
-    /**
-     *
-     * @param setData
-     * @returns {any}
-     */
-    update(setData: any) {
-        if (!this.hash) {
-            return Promise.reject('Must set hash property first');
-        }
-        return IpfsConnector.getInstance().api
-            .updateObject(this.hash, setData)
-            .then((hash: string) => {
-                this.load(hash);
-                return this.hash;
-            })
+/**
+ *
+ * @param hash
+ * @returns {any}
+ */
+export function getFullContent(hash) {
+    if (entries.getFull(hash)) {
+        return Promise.resolve(entries.getFull(hash));
     }
-
-    /**
-     *
-     * @returns {any}
-     */
-    getShortContent() {
-        if (entries.getShort(this.hash)) {
-            return Promise.resolve(entries.getShort(this.hash));
-        }
-        return IpfsConnector.getInstance().api
-            .get(this.hash)
-            .then((data) => {
-                return IpfsConnector.getInstance().api.resolve(data.excerpt[IpfsApiHelper.LINK_SYMBOL])
-                    .then((excerpt) => {
-                        data.excerpt = excerpt;
-                        data.featuredImage = data.featuredImage[IpfsApiHelper.LINK_SYMBOL];
-                        entries.setShort(this.hash, data);
-                        return data;
-                    });
-            })
-    }
-
-    /**
-     *
-     * @returns {any}
-     */
-    getFullContent() {
-        if (entries.getFull(this.hash)) {
-            return Promise.resolve(entries.getFull(this.hash));
-        }
-        return IpfsConnector.getInstance().api
-            .get(this.hash)
-            .then((data) => {
-                return IpfsConnector.getInstance().api.resolve(data.draft[IpfsApiHelper.LINK_SYMBOL])
-                    .then((draft) => {
-                        data.draft = draft.toString();
-                        entries.setFull(this.hash, data);
-                        return data;
-                    });
-            })
-    }
+    return IpfsConnector.getInstance().api
+        .get(hash)
+        .then((data) => {
+            return IpfsConnector.getInstance()
+                .api
+                .resolve(data.draft[IpfsApiHelper.LINK_SYMBOL])
+                .then((draft) => {
+                    data.draft = draft.toString();
+                    entries.setFull(hash, data);
+                    return data;
+                });
+        })
 }
 
 export default IpfsEntry;
+
+
