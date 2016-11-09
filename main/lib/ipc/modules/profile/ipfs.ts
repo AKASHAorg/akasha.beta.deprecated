@@ -6,7 +6,7 @@ import * as Promise from 'bluebird';
  * @param data
  * @returns {Thenable<U>|PromiseLike<TResult>|Promise<TResult>|Bluebird<U>}
  */
-const create = (data: IpfsProfileCreateRequest) => {
+export const create = (data: IpfsProfileCreateRequest) => {
     const returned: any = {
         firstName: data.firstName,
         lastName: data.lastName,
@@ -86,7 +86,7 @@ const create = (data: IpfsProfileCreateRequest) => {
  * @param resolveAvatar
  * @returns {any}
  */
-const getShortProfile = (hash: string, resolveAvatar = false) => {
+export const getShortProfile = (hash: string, resolveAvatar = false) => {
     if (profiles.getShort(hash)) {
         return Promise.resolve(profiles.getShort(hash));
     }
@@ -117,7 +117,7 @@ const getShortProfile = (hash: string, resolveAvatar = false) => {
  * @param resolveImages
  * @returns {any}
  */
-const resolveProfile = (hash: string, resolveImages = false) => {
+export const resolveProfile = (hash: string, resolveImages = false) => {
     let resolved: any;
     let keys: any;
 
@@ -180,17 +180,3 @@ const resolveProfile = (hash: string, resolveImages = false) => {
             return resolved;
         });
 };
-
-/**
- *
- * @returns {{create: ((data:IpfsProfileCreateRequest)=>Bluebird<U>),
- * getShortProfile: ((hash:string, resolveAvatar?:boolean)=>(Bluebird<R>|any)),
- * resolveProfile: ((hash:string, resolveImages?:boolean)=>(Bluebird<R>|Bluebird<U>))}}
- */
-export default function init() {
-    return {
-        create,
-        getShortProfile,
-        resolveProfile
-    };
-}

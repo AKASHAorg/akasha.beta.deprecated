@@ -14,7 +14,7 @@ const zhMessages = {
 
     'app.firstName': '名字',
     'app.lastName': '姓',
-    'app.userName': '用戶名',
+    'app.akashaId': '用戶名',
     'app.password': '密碼',
     'app.passwordVerify': '驗證密碼',
     'app.inputField.title': '標題',

@@ -16,9 +16,9 @@ const channels = {
     comments: ['publish', 'update', 'upvote', 'downvote', 'getScore', 'getCount', 'getCommentAt'],
     geth: ['options', 'startService', 'stopService', 'restartService', 'syncStatus', 'logs', 'status'],
     ipfs: ['startService', 'stopService', 'status', 'resolve', 'getConfig', 'setPorts', 'getPorts'],
-    profile: ['getProfileData', 'updateProfileData', 'getMyBalance', 'unregister', 'follow', 'getFollowersCount',
-        'getFollowingCount', 'getFollowers', 'getFollowing'],
-    registry: ['profileExists', 'registerProfile', 'getCurrentProfile', 'getByAddress', 'fetchRegistered'],
+    profile: ['getProfileData', 'updateProfileData', 'getBalance', 'followProfile', 'unFollowProfile',
+        'getFollowersCount', 'getFollowingCount'],
+    registry: ['profileExists', 'registerProfile', 'unregister', 'getCurrentProfile', 'getByAddress', 'fetchRegistered'],
     tx: ['addToQueue', 'emitMined'],
     licenses: ['getLicenceById', 'getLicenses']
 };

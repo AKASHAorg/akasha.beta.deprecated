@@ -32,7 +32,7 @@ class PublishEntryStatus extends React.Component {
     }
     _handleCancel = () => {
         const { params } = this.props;
-        this.context.router.push(`/${params.username}/stream`);
+        this.context.router.push(`/${params.akashaId}/stream`);
     }
     render () {
         const { drafts, params } = this.props;

@@ -11,7 +11,7 @@ function generateProfile () {
         optionalData: {
             avatar: faker.internet.avatar(),
         },
-        userName: faker.internet.userName()
+        akashaId: faker.internet.akashaId()
     };
 }
 

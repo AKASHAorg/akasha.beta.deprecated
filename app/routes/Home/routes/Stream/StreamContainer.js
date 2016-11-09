@@ -37,7 +37,7 @@ class StreamPage extends Component {
             case 'top':
                 return entryActions.getSortedEntries({ sortBy: 'rating' });
             case 'saved':
-                return entryActions.getSavedEntries(loggedProfile.get('username'));
+                return entryActions.getSavedEntries(loggedProfile.get('akashaId'));
             case 'tag':
                 return entryActions.getEntriesForTag({ tagName: params.tagName });
             default: // 'stream'
@@ -46,7 +46,7 @@ class StreamPage extends Component {
     }
     _handleTabActivation = (tab) => {
         const { params } = this.props;
-        this.context.router.push(`/${params.username}/explore/${tab.props.value}`);
+        this.context.router.push(`/${params.akashaId}/explore/${tab.props.value}`);
     }
     _handleFilterChange = (val) => {
         if (val === this.state.filter) return;

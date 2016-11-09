@@ -5,7 +5,7 @@ import EntryContent from './entry-content';
 export function getDraftClass () {
     const Draft = Dexie.defineClass({
         id: String, // local id
-        username: String,
+        akashaId: String,
         title: String,
         content: EntryContent,
         tags: Array,

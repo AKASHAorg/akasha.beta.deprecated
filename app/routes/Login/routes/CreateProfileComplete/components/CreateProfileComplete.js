@@ -8,18 +8,18 @@ import PanelHeader from '../../../../components/panel-header';
 class CreateProfileComplete extends Component {
     componentWillMount () {
         const { tempProfile, tempProfileActions } = this.props;
-        if (!tempProfile.get('username')) {
+        if (!tempProfile.get('akashaId')) {
             tempProfileActions.getTempProfile();
         }
     }
     componentWillReceiveProps (nextProps) {
-        if (nextProps.tempProfile.get('username') === '') {
+        if (nextProps.tempProfile.get('akashaId') === '') {
             this.context.router.push('/authenticate');
         }
     }
     _handleFinishSetup = () => {
         const { tempProfileActions, tempProfile } = this.props;
-        tempProfileActions.deleteTempProfile(tempProfile.get('username'));
+        tempProfileActions.deleteTempProfile(tempProfile.get('akashaId'));
     }
     render () {
         const { style, intl, tempProfile } = this.props;
@@ -58,9 +58,9 @@ class CreateProfileComplete extends Component {
                   />
                   <TextField
                     disabled
-                    floatingLabelText={intl.formatMessage(formMessages.username)}
+                    floatingLabelText={intl.formatMessage(formMessages.akashaId)}
                     style={{ width: '210px', marginLeft: '20px' }}
-                    value={tempProfile.get('username') || ''}
+                    value={tempProfile.get('akashaId') || ''}
                   />
                   <TextField
                     disabled

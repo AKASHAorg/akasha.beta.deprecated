@@ -20,7 +20,7 @@ class EntryList extends React.Component {
     _navigateToTag = (ev, tag) => {
         const { profileState } = this.props;
         const loggedProfile = profileState.get('loggedProfile');
-        this.context.router.push(`/${loggedProfile.get('userName')}/explore/tag/${tag}`);
+        this.context.router.push(`/${loggedProfile.get('akashaId')}/explore/tag/${tag}`);
     };
     _handleUpvote = (ev, entry) => {
         const { appActions } = this.props;
@@ -56,12 +56,12 @@ class EntryList extends React.Component {
     _handleBookmark = (ev, entry) => {
         const { entryActions, profileState } = this.props;
         const loggedProfile = profileState.get('loggedProfile');
-        entryActions.createSavedEntry(loggedProfile.get('userName'), entry);
+        entryActions.createSavedEntry(loggedProfile.get('akashaId'), entry);
     };
     _handleEditorFullScreen = (ev, draft) => {
         const { entryActions, profileState } = this.props;
         const loggedProfile = profileState.get('loggedProfile');
-        entryActions.createDraft(loggedProfile.get('userName'), draft);
+        entryActions.createDraft(loggedProfile.get('akashaId'), draft);
     }
     render () {
         const { params, profileState, entryState, filter } = this.props;

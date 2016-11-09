@@ -50,8 +50,8 @@ const loginDialog = (props) => {
                 <div className="col-xs-6" >
                     <TextField
                         disabled
-                        floatingLabelText="Username"
-                        value={`${profile.get('username')}`}
+                        floatingLabelText="akashaId"
+                        value={`${profile.get('akashaId')}`}
                         fullWidth
                     />
                 </div>

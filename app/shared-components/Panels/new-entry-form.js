@@ -67,7 +67,7 @@ class NewEntryFormPanel extends Component {
         appActions.hidePanel();
         switch (entryType) {
             case 'drafts':
-                return router.push(`/${profile.get('username')}/draft/${entryId}`);
+                return router.push(`/${profile.get('akashaId')}/draft/${entryId}`);
             default:
                 break;
         }
@@ -76,7 +76,7 @@ class NewEntryFormPanel extends Component {
         const { router } = this.context;
         const { appActions, profile } = this.props;
         appActions.hidePanel();
-        return router.push(`/${profile.get('username')}/draft/new`);
+        return router.push(`/${profile.get('akashaId')}/draft/new`);
     }
     _getTabContent = () => {
         const { entries, drafts, profile } = this.props;

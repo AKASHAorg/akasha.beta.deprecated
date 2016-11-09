@@ -12,7 +12,7 @@ const ErrorRecord = Record({
 const Profile = Record({
     firstName: '',
     lastName: '',
-    username: '',
+    akashaId: '',
     avatar: null,
     backgroundImage: [],
     balance: 0,

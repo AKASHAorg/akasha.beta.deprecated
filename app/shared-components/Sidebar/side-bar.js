@@ -23,12 +23,12 @@ class SideBar extends Component {
             appActions.showPanel({ name: 'newEntry', overlay: true });
         } else {
             appActions.hidePanel();
-            this.context.router.push(`/${loggedProfileData.get('username')}/draft/new`);
+            this.context.router.push(`/${loggedProfileData.get('akashaId')}/draft/new`);
         }
     };
     _handleNavigation = (to) => {
         const { appActions, loggedProfileData } = this.props;
-        const basePath = loggedProfileData.get('username');
+        const basePath = loggedProfileData.get('akashaId');
         appActions.hidePanel();
         if (!to) {
             // navigate to index route

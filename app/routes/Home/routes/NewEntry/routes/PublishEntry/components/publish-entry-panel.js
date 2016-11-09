@@ -33,7 +33,7 @@ class PublishPanel extends React.Component {
         const loggedProfileData = this._getLoggedProfileData();
         console.log('will receive props', draft.getIn(['status', 'currentAction']));
         if (draft && draft.get('status').currentAction === 'confirmPublish') {
-            this.context.router.push(`/${loggedProfileData.get('username')}/draft/${params.draftId}/publish-status`);
+            this.context.router.push(`/${loggedProfileData.get('akashaId')}/draft/${params.draftId}/publish-status`);
         }
         if (draft && this.state.fetchingDraft) {
             this.setState({
@@ -189,7 +189,7 @@ class PublishPanel extends React.Component {
     };
     _handleCancelButton = () => {
         const { params } = this.props;
-        this.context.router.push(`/${params.username}/draft/${params.draftId}`);
+        this.context.router.push(`/${params.akashaId}/draft/${params.draftId}`);
     }
     _getSelectedLicence = () => {
         if (this.state.selectedLicence) {

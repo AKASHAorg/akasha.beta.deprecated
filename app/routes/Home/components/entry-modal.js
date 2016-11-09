@@ -59,7 +59,7 @@ class EntryModal extends React.Component {
         const { profileState } = this.props;
         const loggedProfile = profileState.get('loggedProfile');
         this._hideEntryModal();
-        this.context.router.push(`/${loggedProfile.get('userName')}/explore/tag/${tag}`);
+        this.context.router.push(`/${loggedProfile.get('akashaId')}/explore/tag/${tag}`);
     }
     render () {
         const { profileState, appState } = this.props;

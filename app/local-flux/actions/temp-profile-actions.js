@@ -110,7 +110,7 @@ class TempProfileActions {
      *  Step 4: Send profile data for registration
      *  Finish profile publishing through Registry Service
      *  Request:
-     *  @param username <string> Profile username
+     *  @param akashaId <string> Profile akashaId
      *  @param ipfs <object> Profile data (firstName, lastName,
      *      avatar?, backgroundImage?, about?, links? )
      *  Response:
@@ -121,7 +121,7 @@ class TempProfileActions {
             Date.parse(loggedProfile.get('expiration')) > Date.now();
         const { publishRequested } = tempProfile.get('currentStatus');
         const {
-            username,
+            akashaId,
             firstName,
             lastName,
             avatar,
@@ -149,7 +149,7 @@ class TempProfileActions {
                 debugger;
                 this.registryService.registerProfile({
                     token: loggedProfile.get('token'),
-                    username,
+                    akashaId,
                     ipfs,
                     gas,
                     onSuccess: (data) => {
@@ -193,9 +193,9 @@ class TempProfileActions {
         });
     };
 
-    deleteTempProfile = username =>
+    deleteTempProfile = akashaId =>
         this.registryService.deleteTempProfile({
-            username,
+            akashaId,
             onError: error =>
                 this.dispatch(tempProfileActionCreators.deleteTempProfileError(error)),
             onSuccess: () => this.dispatch(tempProfileActionCreators.deleteTempProfileSuccess())

@@ -27,7 +27,7 @@ class Registry extends BaseContract_1.default {
             if (!!ethereumjs_util_1.unpad(profileAddress)) {
                 return profileAddress;
             }
-            return null;
+            return '';
         });
     }
     checkFormat(id) {
@@ -52,8 +52,7 @@ class Registry extends BaseContract_1.default {
         })
             .then((addrList) => {
             addrList.forEach((val, index) => {
-                const valTr = ethereumjs_util_1.unpad(val);
-                if (valTr) {
+                if (val) {
                     profileList.push({ key: keyList[index], profile: val });
                 }
             });
@@ -62,9 +61,9 @@ class Registry extends BaseContract_1.default {
         });
     }
     register(id, ipfsHash, gas = 2000000) {
-        const usernameTr = this.gethInstance.web3.fromUtf8(id);
+        const idTr = this.gethInstance.web3.fromUtf8(id);
         const ipfsHashTr = this.splitIpfs(ipfsHash);
-        return this.profileExists(usernameTr)
+        return this.profileExists(idTr)
             .then((address) => {
             const exists = ethereumjs_util_1.unpad(address);
             if (exists) {
@@ -80,8 +79,12 @@ class Registry extends BaseContract_1.default {
             if (!isOK) {
                 throw new Error(`${id} has illegal characters`);
             }
-            return this.evaluateData('register', gas, usernameTr, ipfsHashTr);
+            return this.evaluateData('register', gas, idTr, ipfsHashTr);
         });
+    }
+    unregister(id, gas = 2000000) {
+        const idTr = this.gethInstance.web3.fromUtf8(id);
+        return this.evaluateData('unregister', gas, idTr);
     }
     getRegistered(filter) {
         const { fromBlock, toBlock, address } = filter;

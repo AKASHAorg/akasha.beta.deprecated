@@ -11,7 +11,7 @@ class UserValidation {
         return strategy.createSchema({
             firstName: 'required|min:3',
             lastName: 'required|min:3',
-            username: ['required', 'min:4', 'alpha_num'],
+            akashaId: ['required', 'min:4', 'alpha_num'],
             password: 'required|min:8',
             password2: 'required|same:password'
         }, {
@@ -24,7 +24,7 @@ class UserValidation {
             validator.setAttributeNames({
                 firstName: formatMessage(formMessages.firstName),
                 lastName: formatMessage(formMessages.lastName),
-                username: formatMessage(formMessages.username),
+                akashaId: formatMessage(formMessages.akashaId),
                 password: formatMessage(formMessages.password),
                 password2: formatMessage(formMessages.passwordVerify)
             });
