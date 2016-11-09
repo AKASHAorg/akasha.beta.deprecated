@@ -51,14 +51,16 @@ export default class Feed extends BaseContract {
         if(!tagName) {
             throw new Error('No tag provided');
         }
-        return this.evaluateData('subscribe', gas, tagName);
+        const tagNameTr = this.gethInstance.web3.fromUtf8(tagName);
+        return this.evaluateData('subscribe', gas, tagNameTr);
     }
 
     public unSubscribe(tagName: string, gas: number = 2000000) {
         if(!tagName) {
             throw new Error('No tag provided');
         }
-        return this.evaluateData('subscribe', gas, tagName);
+        const tagNameTr = this.gethInstance.web3.fromUtf8(tagName);
+        return this.evaluateData('unSubscribe', gas, tagNameTr);
     }
 
     public isFollowing(id: string) {

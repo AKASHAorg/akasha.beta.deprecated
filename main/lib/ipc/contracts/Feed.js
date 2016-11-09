@@ -41,13 +41,15 @@ class Feed extends BaseContract_1.default {
         if (!tagName) {
             throw new Error('No tag provided');
         }
-        return this.evaluateData('subscribe', gas, tagName);
+        const tagNameTr = this.gethInstance.web3.fromUtf8(tagName);
+        return this.evaluateData('subscribe', gas, tagNameTr);
     }
     unSubscribe(tagName, gas = 2000000) {
         if (!tagName) {
             throw new Error('No tag provided');
         }
-        return this.evaluateData('subscribe', gas, tagName);
+        const tagNameTr = this.gethInstance.web3.fromUtf8(tagName);
+        return this.evaluateData('unSubscribe', gas, tagNameTr);
     }
     isFollowing(id) {
         return this.contract.isFollowing.callAsync(id);
