@@ -1,6 +1,7 @@
 "use strict";
 const BaseContract_1 = require('./BaseContract');
 const Promise = require('bluebird');
+const ethereumjs_util_1 = require('ethereumjs-util');
 class Entries extends BaseContract_1.default {
     constructor(instance) {
         super();
@@ -100,7 +101,12 @@ class Entries extends BaseContract_1.default {
     getEntryFund(entryId) {
         return this.contract
             .getEntryFund
-            .callAsync(entryId).then((result) => result);
+            .callAsync(entryId).then((result) => {
+            if (!!ethereumjs_util_1.unpad(result)) {
+                return result;
+            }
+            return '';
+        });
     }
     entryExists(entryId) {
         return this.contract

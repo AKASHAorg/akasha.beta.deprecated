@@ -63,7 +63,7 @@ function bootstrapApp() {
             setTimeout(() => electron_1.app.quit(), 1000);
         });
         menu_1.initMenu(mainWindow);
-        mainWindow.webContents.once('did-finish-load', () => {
+        mainWindow.webContents.on('did-finish-load', () => {
             modules.logger.registerLogger('APP');
             modules.initListeners(mainWindow.webContents);
         });

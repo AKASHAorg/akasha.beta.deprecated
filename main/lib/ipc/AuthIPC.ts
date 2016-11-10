@@ -6,7 +6,6 @@ import { module as userModule } from './modules/auth/index';
 import { constructed } from './contracts/index';
 import { post as POST } from 'request';
 import WebContents = Electron.WebContents;
-import IpcMainEvent = Electron.IpcMainEvent;
 
 const faucetToken = '8336abae5a97f017d2d0ef952a6a566d4bbed5cd22c7b524ae749673d5562b567af109371' +
     '81b7bdea73edd25512fdb948b3b016034bb01c0d95f8f9beb68c914';

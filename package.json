@@ -82,13 +82,13 @@
   "devDependencies": {
     "@types/bluebird": "3.0.35",
     "@types/chai": "3.4.34",
-    "@types/electron": "1.4.25",
+    "@types/electron": "1.4.26",
     "@types/lru-cache": "2.5.32",
     "@types/mocha": "2.2.32",
     "@types/node": "6.0.46",
     "@types/request": "0.0.33",
     "@types/rimraf": "0.0.28",
-    "@types/winston": "0.0.29",
+    "@types/winston": "0.0.30",
     "asar": "0.12.3",
     "babel-cli": "6.18.0",
     "babel-core": "6.18.2",
@@ -115,7 +115,7 @@
     "cssnano": "3.8.0",
     "del": "2.2.2",
     "devtron": "1.4.0",
-    "electron": "1.4.5",
+    "electron": "1.4.6",
     "electron-debug": "1.1.0",
     "electron-devtools-installer": "2.0.1",
     "electron-mocha": "3.1.1",
@@ -162,23 +162,23 @@
     "webpack-target-electron-renderer": "0.4.0"
   },
   "dependencies": {
-    "@akashaproject/contracts.js": "1.2.0",
+    "@akashaproject/contracts.js": "1.2.1",
     "@akashaproject/geth-connector": "1.6.9",
     "@akashaproject/ipfs-connector": "1.6.10",
     "@types/ramda": "0.0.2",
     "bluebird": "3.4.6",
-    "debug": "2.3.0",
+    "debug": "2.3.2",
     "dexie": "1.5.1",
     "draft-js": "0.9.1",
     "draft-js-export-html": "0.5.1",
-    "ethereumjs-util": "5.0.0",
+    "ethereumjs-util": "5.0.1",
     "fuse.js": "2.5.0",
     "history": "4.4.0",
     "immutable": "3.8.1",
     "lodash.throttle": "4.1.1",
     "lru-cache": "4.0.1",
     "material-ui": "0.16.1",
-    "megadraft": "0.4.1",
+    "megadraft": "0.4.2",
     "mkdirp": "0.5.x",
     "radium": "0.18.1",
     "ramda": "0.22.1",
@@ -206,6 +206,6 @@
     "npm": ">=3.x"
   },
   "engines": {
-    "electron": "1.4.5"
+    "electron": "1.4.6"
   }
 }

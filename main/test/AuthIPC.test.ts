@@ -1,6 +1,5 @@
 import { ipcMain } from 'electron';
 import {
-    fireEvent,
     initLogger,
     startServices,
     stopServices,

@@ -2,7 +2,6 @@
 const AbstractEmitter_1 = require('./AbstractEmitter');
 const ipfs_connector_1 = require('@akashaproject/ipfs-connector');
 const responses_1 = require('./responses');
-const index_1 = require('../modules/index');
 const channels_1 = require('../../channels');
 class IpfsEmitter extends AbstractEmitter_1.AbstractEmitter {
     attachEmitters() {
@@ -22,7 +21,6 @@ class IpfsEmitter extends AbstractEmitter_1.AbstractEmitter {
     _started() {
         ipfs_connector_1.IpfsConnector.getInstance().on(ipfs_connector_1.ipfsEvents.SERVICE_STARTED, () => {
             this.fireEvent(channels_1.default.client.ipfs.startService, responses_1.ipfsResponse({ started: true }));
-            index_1.initIpfsModules();
         });
         return this;
     }

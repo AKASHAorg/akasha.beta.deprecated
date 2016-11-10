@@ -107,7 +107,6 @@ exports.resolveProfile = (hash, resolveImages = false) => {
     return exports.getShortProfile(hash, resolveImages)
         .then((schema) => {
         resolved = Object.assign({}, schema);
-        const LINKS = [];
         if (schema.backgroundImage) {
             return ipfs_connector_1.IpfsConnector.getInstance().api.resolve(schema.backgroundImage);
         }

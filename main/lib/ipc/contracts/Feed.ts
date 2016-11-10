@@ -119,23 +119,23 @@ export default class Feed extends BaseContract {
         return this.contract.getFollowersById.callAsync(id, indexId);
     }
 
-    public subsCount(idAddress: string){
-        return this.contract.subsCount.callAsync(idAddress).then((result) => result.toString());
+    public subsCount(id: string){
+        return this.contract.subsCount.callAsync(id).then((result) => result.toString());
     }
 
-    public subsFirst(idAddress: string){
-        return this.contract.subsFirst.callAsync(idAddress).then((result) => result.toString());
+    public subsFirst(id: string){
+        return this.contract.subsFirst.callAsync(id).then((result) => result.toString());
     }
 
-    public subsLast(idAddress: string){
-        return this.contract.subsLast.callAsync(idAddress).then((result) => result.toString());
+    public subsLast(id: string){
+        return this.contract.subsLast.callAsync(id).then((result) => result.toString());
     }
 
-    public subsNext(idAddress: string, tagId: string){
-        return this.contract.subsNext.callAsync(idAddress, tagId).then((result) => result.toString());
+    public subsNext(id: string, tagId: string){
+        return this.contract.subsNext.callAsync(id, tagId).then((result) => result.toString());
     }
 
-    public subsPrev(idAddress: string, tagId: string){
-        return this.contract.subsPrev.callAsync(idAddress, tagId).then((result) => result.toString());
+    public subsPrev(id: string, tagId: string){
+        return this.contract.subsPrev.callAsync(id, tagId).then((result) => result.toString());
     }
 }

@@ -8,8 +8,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 const electron_1 = require('electron');
-let menu;
-let template;
 const installExtensions = () => __awaiter(this, void 0, void 0, function* () {
     if (process.env.NODE_ENV === 'development') {
         const installer = require('electron-devtools-installer');
