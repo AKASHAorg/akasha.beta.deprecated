@@ -11,22 +11,21 @@ const channels = {
 
     auth: ['login', 'logout', 'requestEther', 'generateEthKey', 'getLocalIdentities'],
 
-    tags: ['create', 'exists', 'getTagId', 'getTagName', 'getTagsCreated', 'checkFormat', 'subscribe', 'unSubscribe', 'subsCount'],
+    tags: ['checkFormat', 'create', 'exists', 'getTagsCreated', 'subsCount', 'subscribe', 'getTagId', 'getTagName', 'unSubscribe'],
 
-    entry: ['publish', 'upvote', 'downvote', 'isOpenedToVotes', 'getVoteOf',
-        'getVoteEndDate', 'getScore', 'getProfileEntriesCount', 'getTagEntriesCount', 'getEntry', 'getEntriesCreated'
-        , 'getVotesEvent'],
+    entry: ['getProfileEntriesCount', 'getTagEntriesCount', 'getEntry', 'publish', 'update', 'canClaim', 'claim',
+        'downvote', 'getScore', 'getDepositBalance', 'upvote', 'voteCost', 'voteCount'],
 
-    comments: ['publish', 'update', 'upvote', 'downvote', 'getScore', 'getCount', 'getCommentAt'],
+    comments: ['getComment', 'comment', 'commentsCount', 'removeComment'],
 
     geth: ['options', 'startService', 'stopService', 'restartService', 'syncStatus', 'logs', 'status'],
 
     ipfs: ['startService', 'stopService', 'status', 'resolve', 'getConfig', 'setPorts', 'getPorts'],
 
-    profile: ['getProfileData', 'updateProfileData', 'getBalance', 'followProfile', 'unFollowProfile',
-        'getFollowersCount', 'getFollowingCount'],
+    profile: ['getBalance', 'followProfile', 'getFollowersCount', 'getFollowingCount', 'getProfileData',
+        'unFollowProfile', 'updateProfileData'],
 
-    registry: ['profileExists', 'registerProfile', 'unregister', 'getCurrentProfile', 'getByAddress', 'fetchRegistered'],
+    registry: ['fetchRegistered', 'getCurrentProfile', 'profileExists', 'registerProfile', 'getByAddress', 'unregister'],
 
     tx: ['addToQueue', 'emitMined'],
 

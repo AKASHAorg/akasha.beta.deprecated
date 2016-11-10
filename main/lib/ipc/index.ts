@@ -21,8 +21,8 @@ export function initModules() {
         new RegistryIPC(),
         new ProfileIPC(),
         new TagsIPC(),
-        //new EntryIPC(),
-        //new CommentsIPC(),
+        new EntryIPC(),
+        new CommentsIPC(),
         new LicensesIPC()
     ];
     return {

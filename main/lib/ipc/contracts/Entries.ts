@@ -1,5 +1,6 @@
 import BaseContract from './BaseContract';
 import * as Promise from 'bluebird';
+import { unpad } from 'ethereumjs-util';
 
 export default class Entries extends BaseContract {
     /**
@@ -57,7 +58,7 @@ export default class Entries extends BaseContract {
      * @param profileAddress
      * @returns {any}
      */
-    public getProfileEntriesCount(profileAddress: string){
+    public getProfileEntriesCount(profileAddress: string) {
         return this.contract
             .getProfileEntriesCount
             .callAsync(profileAddress).then((result) => result.toNumber());
@@ -202,7 +203,12 @@ export default class Entries extends BaseContract {
     public getEntryFund(entryId: string) {
         return this.contract
             .getEntryFund
-            .callAsync(entryId).then((result) => result);
+            .callAsync(entryId).then((result) => {
+                if (!!unpad(result)) {
+                    return result;
+                }
+                return '';
+            });
     }
 
     /**

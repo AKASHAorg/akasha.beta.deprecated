@@ -269,7 +269,6 @@ interface ProfileByAddressResponse extends MainResponse {
 interface ProfileCreateRequest extends AuthRequest {
     akashaId: string;
     ipfs: IpfsProfileCreateRequest;
-    gas?: number;
 }
 
 interface ProfileCreateResponse extends MainResponse {
@@ -280,7 +279,6 @@ interface ProfileCreateResponse extends MainResponse {
 
 interface ProfileUpdateRequest extends AuthRequest {
     ipfs: IpfsProfileCreateRequest;
-    gas?: number;
 }
 interface ProfileUpdateResponse extends MainResponse {
     data: {
@@ -421,7 +419,6 @@ interface GetFollowingResponse extends MainResponse {
 //////////////////////// < TAGS > \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 interface TagCreateRequest extends AuthRequest {
     tagName: string;
-    gas?: number;
 }
 
 interface TagCreateResponse extends MainResponse {
@@ -462,7 +459,6 @@ interface TagAtNameResponse extends MainResponse {
 
 interface TagSubscribeRequest extends AuthRequest {
     tagName: string;
-    gas?: number;
 }
 
 interface TagSubscribeResponse extends MainResponse {
@@ -474,7 +470,6 @@ interface TagSubscribeResponse extends MainResponse {
 interface TagUnSubscribeRequest extends AuthRequest {
     tagName: string;
     subPosition: number | string;
-    gas?: number;
 }
 
 interface TagUnSubscribeResponse extends MainResponse {
@@ -523,7 +518,6 @@ interface TagsFromToResponse extends MainResponse {
 interface EntryCreateRequest extends AuthRequest {
     content: any;
     tags: string[];
-    gas?: number;
 }
 
 interface EntryCreateResponse extends MainResponse {
@@ -536,7 +530,6 @@ interface EntryUpdateRequest extends AuthRequest {
     content: any;
     tags: string[],
     entryId: string;
-    gas?: number;
 }
 
 interface EntryUpdateResponse extends MainResponse {
@@ -546,10 +539,9 @@ interface EntryUpdateResponse extends MainResponse {
 }
 
 interface EntryUpvoteRequest extends AuthRequest {
-    address: string; // entry address
+    entryId: string; // entry address
     weight: number;
-    gas?: number;
-    value?: number;
+    value: number;
 }
 interface EntryUpvoteResponse extends MainResponse {
     data: {
@@ -644,7 +636,6 @@ interface EntryGetResponse extends MainResponse {
 interface CommentPublishRequest extends AuthRequest {
     address: string; // entry address
     hash: string; // ipfshash
-    gas?: number;
 }
 
 interface CommentPublishResponse extends MainResponse {
@@ -657,7 +648,6 @@ interface CommentUpdateRequest extends AuthRequest {
     address: string; // entry address
     commentId: number;
     hash: string; // ipfshash
-    gas?: number;
 }
 
 interface CommentUpdateResponse extends MainResponse {
@@ -670,7 +660,6 @@ interface CommentVoteRequest extends AuthRequest {
     address: string; // entry address
     weight: number;
     commentId: number;
-    gas?: number;
     value?: number;
 }
 

@@ -13,8 +13,9 @@ class Votes extends BaseContract_1.default {
         this.contract.getPrevVoteId.callAsync = Promise.promisify(this.contract.getPrevVoteId.call);
         this.contract.getVoteOf.callAsync = Promise.promisify(this.contract.getVoteOf.call);
         this.contract.getScore.callAsync = Promise.promisify(this.contract.getScore.call);
+        this.contract.getVoteOfProfile.callAsync = Promise.promisify(this.contract.getVoteOfProfile.call);
     }
-    upvote(entryId, weight, gas = 2000000, value) {
+    upvote(entryId, weight, value, gas = 2000000) {
         value = this.gethInstance.web3.toWei(value, 'ether');
         return Promise.resolve(this.extractData('upvote', weight, entryId, { gas, value }));
     }
@@ -63,6 +64,12 @@ class Votes extends BaseContract_1.default {
             .getVoteOf
             .callAsync(entryId, voteId)
             .then((result) => result.toString());
+    }
+    getVoteOfProfile(entryId, akashaId) {
+        return this.contract
+            .getVoteOfProfile
+            .callAsync(entryId, akashaId)
+            .then((result) => result.toNumber());
     }
     getScore(entryId) {
         return this.contract

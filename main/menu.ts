@@ -1,8 +1,4 @@
-import { app, Menu, shell } from 'electron';
-import BrowserWindow = Electron.BrowserWindow;
-
-let menu: any;
-let template: any;
+import { Menu } from 'electron';
 
 const installExtensions = async() => {
     if (process.env.NODE_ENV === 'development') {

@@ -6,8 +6,6 @@ import Logger from './Logger';
 import { gethResponse } from './event/responses';
 import { join } from 'path';
 import IpcMainEvent = Electron.IpcMainEvent;
-import IpcRenderer = Electron.IpcRenderer;
-import IpcRendererEvent = Electron.IpcRendererEvent;
 import WebContents = Electron.WebContents;
 
 class GethIPC extends GethEmitter {
@@ -31,10 +29,7 @@ class GethIPC extends GethEmitter {
                 bootnodes: this.BOOTNODE,
                 datadir: join(datadir, 'akasha'),
                 ipcpath: join(datadir, 'akasha', 'geth.ipc'),
-                networkid: 512180,
-                minerthreads: 1,
-                mine: '',
-                autodag: ''
+                networkid: 512180
             });
         // register listeners
         this._start()

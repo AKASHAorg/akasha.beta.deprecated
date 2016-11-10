@@ -7,6 +7,8 @@ const TxIPC_1 = require('./TxIPC');
 const RegistryIPC_1 = require('./RegistryIPC');
 const ProfileIPC_1 = require('./ProfileIPC');
 const TagsIPC_1 = require('./TagsIPC');
+const EntryIPC_1 = require('./EntryIPC');
+const CommentsIPC_1 = require('./CommentsIPC');
 const LicensesIPC_1 = require('./LicensesIPC');
 function initModules() {
     const logger = Logger_1.default.getInstance();
@@ -18,6 +20,8 @@ function initModules() {
         new RegistryIPC_1.default(),
         new ProfileIPC_1.default(),
         new TagsIPC_1.default(),
+        new EntryIPC_1.default(),
+        new CommentsIPC_1.default(),
         new LicensesIPC_1.default()
     ];
     return {
