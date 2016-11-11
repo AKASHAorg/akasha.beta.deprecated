@@ -39,9 +39,16 @@ const SavedEntry = Record({
     username: String,
     wordCount: Number
 });
+const Licence = Record({
+    id: null,
+    parent: null,
+    label: '',
+    description: []
+});
 const initialState = fromJS({
     published: new List(),
     savedEntries: new List(),
+    licences: new List(),
     errors: new List(),
     flags: new Map(),
     fetchingEntriesCount: false,
@@ -86,7 +93,27 @@ const entryState = createReducer(initialState, {
     [types.GET_SAVED_ENTRIES_SUCCESS]: (state, action) => {
         const entriesList = new List(action.entries.map(entry => new SavedEntry(entry)));
         return state.set('savedEntries', entriesList);
-    }
+    },
+
+    [types.GET_LICENCES_SUCCESS]: (state, { licences }) => {
+        const licencesList = new List(licences.map(licence => new Licence(licence)));
+        return state.set('licences', licencesList);
+    },
+
+    [types.GET_LICENCES_ERROR]: (state, { error }) =>
+        state.merge({
+            errors: state.get('errors').push(new ErrorRecord(error))
+        }),
+
+    [types.GET_LICENCE_BY_ID_SUCCESS]: (state, { licence }) =>
+        state.merge({
+            licences: state.get('licences').push(new Licence(licence))
+        }),
+
+    [types.GET_LICENCE_BY_ID_ERROR]: (state, { error }) =>
+        state.merge({
+            errors: state.get('errors').push(new ErrorRecord(error))
+        })
 });
 
 export default entryState;

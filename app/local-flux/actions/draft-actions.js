@@ -1,5 +1,5 @@
 import { draftActionCreators } from './action-creators';
-import { DraftService } from '../services';
+import { DraftService, EntryService } from '../services';
 
 let draftActions = null;
 
@@ -10,21 +10,9 @@ class DraftActions {
         }
         this.dispatch = dispatch;
         this.draftService = new DraftService();
+        this.entryService = new EntryService();
         return draftActions;
     }
-    resumeDraftPublishing = (draft) => {
-        /**
-         * Steps:
-         * 1. Verify logged profile
-         * 2. Verify balance
-         * 3. Verify tag existence
-         * 4. Publish tags
-         * 5. Listen mined tx for tags
-         * 6. Publish entry
-         * 7. Listen mined tx for entry
-         */
-        console.info('resuming draft publishing', draft);
-    };
 
     // Must return a promise and also to dispatch actions
     createDraftSync = (profile, draft) =>
@@ -64,17 +52,37 @@ class DraftActions {
             }
             return Promise.resolve();
         });
-
+    deleteDraft = (draftId) => {
+        this.draftService.deleteDraft({
+            draftId,
+            onSuccess: deletedId =>
+                this.dispatch(draftActionCreators.deleteDraftSuccess(deletedId)),
+            onError: error => this.dispatch(draftActionCreators.deleteDraftError(error))
+        });
+    }
     updateDraftThrottled = (draft) => {
         this.dispatch(draftActionCreators.startSavingDraft());
         return this.throttledUpdateDraft(draft);
     };
 
-    publishDraft = (entry, profile) => {
-        this.draftService.publishEntry(entry, profile).then(response =>
-            this.dispatch(draftActionCreators.publishEntrySuccess, response.data)
-        ).catch((reason) => {
-            console.error(reason, reason.message);
+    publishDraft = (draft, token, gas = 4000000) => {
+        console.log('publishDraft action');
+        this.entryService.publishEntry({
+            draft,
+            token,
+            gas,
+            onSuccess: (data) => {
+                console.log('publish draft success', data);
+                this.dispatch(draftActionCreators.publishDraftSuccess(data));
+                const newDraft = Object.assign({}, draft, data);
+                newDraft.status.currentAction = 'draftPublished';
+                console.log(newDraft, 'newly updated draft');
+                this.updateDraft(newDraft);
+            },
+            onError: (error) => {
+                console.error(error, 'publish draft error');
+                this.dispatch(draftActionCreators.publishDraftError(error));
+            }
         });
     };
 

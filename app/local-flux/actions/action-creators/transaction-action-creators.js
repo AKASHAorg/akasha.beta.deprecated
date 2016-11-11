@@ -8,6 +8,7 @@ export function transactionMinedSuccess (data) {
 }
 
 export function transactionMinedError (error) {
+    console.error(error);
     return {
         type: types.TRANSACTION_MINED_ERROR,
         error

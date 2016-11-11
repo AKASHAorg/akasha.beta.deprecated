@@ -9,10 +9,6 @@ const ErrorRecord = Record({
     message: ''
 });
 
-const PendingTag = Record({
-    tx: null,
-    tag: null
-});
 const initialState = fromJS({
     tagsCount: 0,
     pendingTags: new List(),
@@ -27,9 +23,43 @@ const tagState = createReducer(initialState, {
             flags: state.get('flags').merge(flags)
         }),
 
+    [types.CREATE_PENDING_TAG_SUCCESS]: (state, { tag }) =>
+        state.merge({
+            pendingTags: state.get('pendingTags').push(tag)
+        }),
+
+    [types.CREATE_PENDING_TAG_ERROR]: (state, { error }) =>
+        state.merge({
+            errors: state.get('errors').push(new ErrorRecord(error))
+        }),
+
+    [types.UPDATE_PENDING_TAG_SUCCESS]: (state, { tag }) => {
+        const index = state.get('pendingTags').findIndex(tagObj => tagObj.tag === tag.tag);
+        return state.merge({
+            pendingTags: state.get('pendingTags').mergeIn([index], tag)
+        });
+    },
+
+    [types.UPDATE_PENDING_TAG_ERROR]: (state, { error }) =>
+        state.merge({
+            errors: state.get('errors').push(new ErrorRecord(error))
+        }),
+
+    [types.DELETE_PENDING_TAG_SUCCESS]: (state, { tag }) => {
+        const index = state.get('pendingTags').findIndex(tagObj => tagObj.tag === tag);
+        return state.merge({
+            pendingTags: state.get('pendingTags').delete(index)
+        });
+    },
+
+    [types.DELETE_PENDING_TAG_ERROR]: (state, { error }) =>
+        state.merge({
+            errors: state.get('errors').push(new ErrorRecord(error))
+        }),
+
     [types.GET_PENDING_TAGS_SUCCESS]: (state, { data, flags }) =>
         state.merge({
-            pendingTags: state.get('pendingTags').push(data),
+            pendingTags: new List(data),
             flags: state.get('flags').merge(flags)
         }),
 
@@ -38,26 +68,23 @@ const tagState = createReducer(initialState, {
             errors: state.get('errors').push(error),
             flags: state.get('flags').merge(flags)
         }),
-    [types.SAVE_PENDING_TAG_SUCCESS]: (state, { data }) =>
-        state.merge({
-            pendingTags: state.get('pendingTags').push(new PendingTag(data))
-        }),
-    [types.SAVE_PENDING_TAG_ERROR]: (state, { error }) =>
-        state.merge({
-            errors: state.get('errors').push(new ErrorRecord(error))
-        }),
-    // [types.GET_TAGS]: state =>
-    //     state.merge({
-    //         isLoading: true,
-    //     }),
-    // [types.GET_TAGS_SUCCESS]: (state, action) =>
-    //     state.merge({
-    //         tagsCount: state.get('tagsCount') + action.tags.length,
-    //         isLoading: false
-    //     }),
-    // [types.GET_TAGS_ERROR]: (state, action) => {
-    //     return state;
+
+    // [types.CREATE_TAG_SUCCESS]: (state, { data }) => {
+    //     const pendingTagIndex = state.get('pendingTags').findIndex(tagObj => tagObj.tag === data.tag);
+    //     console.log(pendingTagIndex, 'pendingTagIndex');
+    //     return state.setIn(['pendingTags', pendingTagIndex, 'tx'], data.tx);
+    //     // state.merge({
+    //     //     pendingTags: state.get('pendingTags').setIn([pendingTagIndex, 'tx'], data.tx)
+    //     // });
     // },
+
+    [types.CREATE_TAG_ERROR]: (state, { error }) => {
+        const tagName = error.from;
+        const pendingTagIndex = state.get('pendingTags').findIndex(tagObj => tagObj.tag === tagName);
+        return state.merge({
+            pendingTags: state.get('pendingTags').mergeIn([pendingTagIndex], { error })
+        });
+    }
 });
 
 export default tagState;

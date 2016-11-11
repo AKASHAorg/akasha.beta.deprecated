@@ -19,78 +19,78 @@ const loginDialog = (props) => {
     const userInitials = profileName.match(/\b\w/g);
     const avatarImage = profile.get('avatar');
     return (
-        <Dialog
-            title={title}
-            modal
-            open={isOpen}
-            actions={modalActions}
-            contentStyle={{ width: '50%' }}
-        >
-            {avatarImage &&
-                <Avatar src={avatarImage} size={100} style={{border: '1px solid #bcbcbc'}} />
+      <Dialog
+        title={title}
+        modal
+        open={isOpen}
+        actions={modalActions}
+        contentStyle={{ width: '50%' }}
+      >
+        {avatarImage &&
+          <Avatar src={avatarImage} size={100} style={{ border: '1px solid #bcbcbc' }} />
+        }
+        {!avatarImage &&
+          <Avatar src={avatarImage} size={100} >
+            {userInitials &&
+              ((userInitials.shift() || '') + (userInitials.pop() || '')).toUpperCase()
             }
-            {!avatarImage &&
-                <Avatar src={avatarImage} size={100} >
-                    {userInitials &&
-                        ((userInitials.shift() || '') + (userInitials.pop() || '')).toUpperCase()
-                    }
-                </Avatar>
-            }
-            <div className="row" >
-                <div className="col-xs-6" >
-                    <TextField
-                        disabled
-                        fullWidth
-                        floatingLabelText="Name"
-                        value={
-                            `${profile.get('firstName')} ${profile.get('lastName')}`
-                        }
-                    />
-                </div>
-                <div className="col-xs-6" >
-                    <TextField
-                        disabled
-                        floatingLabelText="Username"
-                        value={`${profile.get('username')}`}
-                        fullWidth
-                    />
-                </div>
-            </div>
+          </Avatar>
+        }
+        <div className="row" >
+          <div className="col-xs-6" >
             <TextField
-                disabled
-                fullWidth
-                floatingLabelText="Ethereum address"
-                value={profile.get('ethAddress')}
+              disabled
+              fullWidth
+              floatingLabelText="Name"
+              value={
+                `${profile.get('firstName')} ${profile.get('lastName')}`
+              }
             />
+          </div>
+          <div className="col-xs-6" >
             <TextField
-                type="password"
-                fullWidth
-                floatingLabelText="Password"
-                onKeyPress={props.onKeyPress}
-                onChange={props.onPasswordChange}
-                errorText={props.errors.reduce((prev, current) => `${prev.message} ${current.message}`)}
+              disabled
+              floatingLabelText="Username"
+              value={`${profile.get('username')}`}
+              fullWidth
             />
-            <div className="row middle-xs" >
-                <div className="col-xs-6" style={{ paddingRight: 0 }} >
-                    <Checkbox
-                        label="Keep account unlocked for"
-                        onCheck={handleUnlockCheck}
-                    />
-                </div>
-                <div className="col-xs-3 start-xs" style={{ paddingLeft: 0 }} >
-                    <SelectField
-                        value={props.unlockTimerKey}
-                        style={{ width: 100 }}
-                        onChange={handleUnlockChange}
-                    >
-                        <MenuItem value={5} primaryText={`5 ${minute}`} />
-                        <MenuItem value={10} primaryText={`10 ${minute}`} />
-                        <MenuItem value={15} primaryText={`15 ${minute}`} />
-                        <MenuItem value={30} primaryText={`30 ${minute}`} />
-                    </SelectField>
-                </div>
-            </div>
-        </Dialog>
+          </div>
+        </div>
+        <TextField
+          disabled
+          fullWidth
+          floatingLabelText="Ethereum address"
+          value={profile.get('ethAddress')}
+        />
+        <TextField
+          type="password"
+          fullWidth
+          floatingLabelText="Password"
+          onKeyPress={props.onKeyPress}
+          onChange={props.onPasswordChange}
+          errorText={props.errors.reduce((prev, current) => `${prev.message} ${current.message}`)}
+        />
+        <div className="row middle-xs" >
+          <div className="col-xs-6" style={{ paddingRight: 0 }} >
+            <Checkbox
+              label="Remember my password for"
+              onCheck={handleUnlockCheck}
+            />
+          </div>
+          <div className="col-xs-3 start-xs" style={{ paddingLeft: 0 }} >
+            <SelectField
+              value={props.unlockTimerKey}
+              style={{ width: 100 }}
+              onChange={handleUnlockChange}
+            >
+              <MenuItem value={5} primaryText={`5 ${minute}`} />
+              <MenuItem value={10} primaryText={`10 ${minute}`} />
+              <MenuItem value={15} primaryText={`15 ${minute}`} />
+              <MenuItem value={30} primaryText={`30 ${minute}`} />
+            </SelectField>
+          </div>
+        </div>
+      </Dialog>
     );
 };
 loginDialog.propTypes = {

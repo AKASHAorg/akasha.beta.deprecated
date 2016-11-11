@@ -86,6 +86,7 @@ const draftState = createReducer(initialState, {
             drafts: state.get('drafts').push(new Draft(draft))
         });
     },
+
     [types.UPDATE_DRAFT_SUCCESS]: (state, { draft, flags }) => {
         const draftIndex = state.get('drafts').findIndex(drft =>
             drft.id === draft.id
@@ -102,6 +103,13 @@ const draftState = createReducer(initialState, {
             errors: state.get('errors').push(new ErrorRecord(error)),
             flags: state.get('flags').merge(flags)
         }),
+
+    [types.DELETE_DRAFT_SUCCESS]: (state, { draftId }) => {
+        const draftIndex = state.get('drafts').findIndex(drft => drft.id === draftId);
+        return state.merge({
+            drafts: state.get('drafts').delete(draftIndex)
+        });
+    },
 
     [types.GET_DRAFTS_COUNT]: (state, { flags }) =>
         state.merge({
