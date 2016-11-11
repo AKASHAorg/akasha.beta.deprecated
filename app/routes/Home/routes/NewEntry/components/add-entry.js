@@ -6,10 +6,9 @@ import {
     IconButton,
     IconMenu,
     MenuItem } from 'material-ui';
+import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import { getWordCount } from 'utils/dataModule';
 import EntryEditor from 'shared-components/EntryEditor';
-import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
-import { convertFromRaw } from 'draft-js';
 
 class AddEntryPage extends Component {
     constructor (props) {
@@ -37,9 +36,9 @@ class AddEntryPage extends Component {
         });
     }
     componentWillReceiveProps (nextProps) {
-        const { drafts, params } = nextProps;
+        const { drafts } = nextProps;
         // logic for populating existing draft;
-        const currentDraft = drafts.find(drft => drft.get('id') === parseInt(params.draftId, 10));
+        const currentDraft = this._findCurrentDraft(drafts);
         if (this.state.isNewDraft) {
             return this.setState({
                 fetchingDraft: false
@@ -113,7 +112,6 @@ class AddEntryPage extends Component {
         if (isNewDraft || fetchingDraft) {
             return null;
         }
-        console.log(this._findCurrentDraft(drafts).get('content'));
         return this._findCurrentDraft(drafts).get('content');
     }
     render () {

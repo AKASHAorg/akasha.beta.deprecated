@@ -33,6 +33,7 @@ export function updateDraftSuccess (draft, flags) {
 
 export function updateDraftError (error, flags) {
     error.code = 'UDE';
+    console.error(error, 'updateDraftError');
     return {
         type: types.UPDATE_DRAFT_ERROR,
         error,
@@ -40,6 +41,21 @@ export function updateDraftError (error, flags) {
     };
 }
 
+export function deleteDraftSuccess (draftId) {
+    return {
+        type: types.DELETE_DRAFT_SUCCESS,
+        draftId
+    };
+}
+
+export function deleteDraftError (error) {
+    error.code = 'DDE';
+    console.error(error);
+    return {
+        type: types.DELETE_DRAFT_ERROR,
+        error
+    };
+}
 
 export function getDraftsSuccess (drafts, flags) {
     return {
@@ -50,7 +66,7 @@ export function getDraftsSuccess (drafts, flags) {
 }
 
 export function getDraftsError (error, flags) {
-    error.code = 'GDE';
+    error.code = 'GDSE';
     return {
         type: types.GET_DRAFTS_ERROR,
         error,
@@ -74,6 +90,7 @@ export function getDraftsCountSuccess (count, flags) {
 }
 
 export function getDraftsCountError (error, flags) {
+    error.code = 'GDCE';
     return {
         type: types.GET_DRAFTS_COUNT_ERROR,
         error,
@@ -89,6 +106,8 @@ export function getDraftSuccess (draft) {
 }
 
 export function getDraftError (error) {
+    error.code = 'GDE';
+    console.error(error);
     return {
         type: types.GET_DRAFT_ERROR,
         error

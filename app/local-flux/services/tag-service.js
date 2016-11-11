@@ -1,4 +1,3 @@
-import Dexie from 'dexie';
 import BaseService from './base-service';
 import tagsDB from './db/tags';
 
@@ -18,7 +17,6 @@ class TagService extends BaseService {
 
     createPendingTag = ({ tagObj, onSuccess, onError }) =>
         tagsDB.transaction('rw', tagsDB.pendingTags, () => {
-            console.log('adding pending tag', tagObj);
             tagsDB.pendingTags.add(tagObj);
             return tagsDB.pendingTags.where('tag').equals(tagObj.tag).toArray();
         })
@@ -40,14 +38,12 @@ class TagService extends BaseService {
         .then(() => onSuccess(tagObj))
         .catch(error => onError(error));
 
-    getPendingTags = ({ profile, onSuccess, onError }) => {
-        console.log('get pending tags for profile %s', profile);
-        return tagsDB.transaction('r', tagsDB.pendingTags, () =>
+    getPendingTags = ({ profile, onSuccess, onError }) =>
+        tagsDB.transaction('r', tagsDB.pendingTags, () =>
             tagsDB.pendingTags.where('profile').equals(profile).toArray()
         )
-          .then(results => { console.log(results); onSuccess(results); })
+          .then(results => onSuccess(results))
           .catch(reason => onError(reason));
-    }
 
     registerTag = ({ tagName, token, gas, onSuccess, onError }) => {
         this.openChannel({
@@ -57,7 +53,7 @@ class TagService extends BaseService {
             clientChannel: Channel.client.tags.create,
             listenerCb: this.createListener(
                 onError,
-                onSuccess,
+                data => onSuccess({ tag: tagName, tx: data.tx }),
             )
         }, () => {
             Channel.server.tags.create.send({ tagName, token, gas });
@@ -67,6 +63,10 @@ class TagService extends BaseService {
     checkExistingTags = (tag, cb) => {
         Channel.client.tags.exists.on(cb);
         Channel.server.tags.exists.send({ tagName: tag });
+    }
+
+    removeExistsListeners = () => {
+        Channel.client.tags.exists.removeAllListeners();
     }
 }
 

@@ -18,6 +18,14 @@ class DraftService {
             );
         });
 
+    deleteDraft = ({ draftId, onSuccess, onError }) => {
+        entriesDB.transaction('rw', entriesDB.drafts, () => {
+            entriesDB.drafts.where('id').equals(draftId).delete();
+        })
+        .then(() => onSuccess(draftId))
+        .catch(reason => onError(reason));
+    }
+
     getAllDrafts = profile =>
         entriesDB.transaction('rw', entriesDB.drafts, () =>
             entriesDB.drafts
@@ -31,7 +39,7 @@ class DraftService {
                          return convDrafts;
                      })
         );
-    getDraftsCount = ({ profile, onSuccess, onError }) =>
+    getDraftsCount = ({ profile, onSuccess, onError }) => {
         entriesDB.transaction('rw', entriesDB.drafts, () =>
             entriesDB.drafts
                 .where('profile')
@@ -40,6 +48,7 @@ class DraftService {
         )
         .then(counter => onSuccess(counter))
         .catch(error => onError(error));
+    }
 
     // get draft by id;
     getById = ({ id, onSuccess, onError }) =>

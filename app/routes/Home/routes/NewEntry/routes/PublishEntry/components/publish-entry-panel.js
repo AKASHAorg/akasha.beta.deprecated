@@ -5,7 +5,6 @@ import PanelContainer from 'shared-components/PanelContainer/panel-container';
 import ImageUploader from 'shared-components/ImageUploader/image-uploader';
 import LicenceDialog from 'shared-components/Dialogs/licence-dialog';
 import TagsField from 'shared-components/TagsField/tags-field';
-import licences from 'shared-components/Dialogs/licences';
 import { TagService } from 'local-flux/services';
 import { convertFromRaw } from 'draft-js';
 
@@ -19,28 +18,40 @@ class PublishPanel extends React.Component {
             excerpt: '',
             tags: [],
             existingTags: [],
-            pendingTags: [],
             licence: null,
             featuredImage: {},
-            fetchingDraft: true
+            fetchingDraft: true,
+            validationErrors: []
         };
+    }
+    componentWillMount () {
+        const { entryActions } = this.props;
+        entryActions.getLicences();
     }
     componentDidMount () {
         const panelSize = ReactDOM.findDOMNode(this).getBoundingClientRect();
         this.panelSize = panelSize;
     }
     componentWillReceiveProps (nextProps) {
-        const { draft, params } = nextProps;
+        const { draft, params, pendingTags } = nextProps;
         const loggedProfileData = this._getLoggedProfileData();
         if (draft && draft.get('status').currentAction === 'confirmPublish') {
             this.context.router.push(`/${loggedProfileData.get('username')}/draft/${params.draftId}/publish-status`);
         }
-        if (draft && this.state.fetchingDraft) {
-            this.setState({
-                fetchingDraft: false
-            }, () => this._populateDraft(draft));
+        if (draft) {
+            if (pendingTags.size < this.props.pendingTags.size) {
+                this._checkExistingTags(draft.tags);
+            }
+            if (this.state.fetchingDraft) {
+                this.setState({
+                    fetchingDraft: false
+                }, () => {
+                    this._populateDraft(draft);
+                });
+            }
         }
     }
+
     _populateDraft = (draft) => {
         const { content, licence, excerpt } = draft;
         let { title, tags, featuredImage } = draft;
@@ -80,13 +91,9 @@ class PublishPanel extends React.Component {
             block.type === 'atomic' && block.data.get('type') === 'image');
 
         if (imageBlock) return imageBlock.data.get('files');
-        return {};
+        return null;
     }
 
-    _findCurrentDraft = (drafts) => {
-        const { params } = this.props;
-        return drafts.find(draft => draft.id === parseInt(params.draftId, 10));
-    }
     _handleLicenceDialogClose = () => {
         this.setState({
             isLicencingOpen: false
@@ -102,43 +109,80 @@ class PublishPanel extends React.Component {
             licence: selectedLicence,
             isLicencingOpen: false
         }, () => {
-            // this._handleDraftUpdate(null, 'licence');
+            this._handleDraftUpdate('licence', selectedLicence);
         });
     };
     _publishEntry = () => {
         const { draftActions, profiles, loggedProfile } = this.props;
         const loggedProfileData = profiles.find(prf =>
             prf.get('profile') === loggedProfile.get('profile'));
+
+        console.log(this.state.title, 'title to publish');
+        const draftId = parseInt(this.props.params.draftId, 10);
+        this.setState({
+            validationErrors: []
+        });
+        this._validateEntry(({ title, content, excerpt, licence, featuredImage }) => {
+            draftActions.updateDraft({
+                id: draftId,
+                title,
+                content,
+                excerpt,
+                licence,
+                featuredImage,
+                profile: loggedProfileData.get('profile'),
+                status: {
+                    currentAction: 'confirmPublish',
+                    publishing: true,
+                    publishingConfirmed: false
+                }
+            });
+        });
+    };
+    _validateEntry = (cb) => {
         const {
             title,
             content,
             excerpt,
-            tags,
             licence,
             featuredImage,
+            tags
         } = this.state;
-        const tagsToRegister = tags.filter(tag => this.state.existingTags.indexOf(tag) === -1);
-        const draftId = parseInt(this.props.params.draftId, 10);
-        draftActions.updateDraft({
-            id: draftId,
-            title,
-            content,
-            excerpt,
-            licence,
-            featuredImage,
-            profile: loggedProfileData.get('profile'),
-            status: {
-                currentAction: 'confirmPublish',
-                tagsToRegister,
-                mustRegisterTags: (tagsToRegister.length > 0),
-                publishing: true,
-                publishingConfirmed: false
-            }
-        });
-    };
-    _handleTagAutocomplete = (value) => {
-        const { tagActions } = this.props;
-    };
+        const validationErrors = this.state.validationErrors.slice();
+        if (!title || title === '') {
+            validationErrors.push({
+                field: 'title',
+                error: 'Title must not be empty'
+            });
+        }
+        if (!tags || tags.length === 0) {
+            validationErrors.push({
+                field: 'tags',
+                error: 'You must add at least 1 tag'
+            });
+        }
+        if (!licence) {
+            validationErrors.push({
+                field: 'licence',
+                error: 'Please review the licence'
+            });
+        }
+        if (!excerpt || excerpt.length < '60') {
+            validationErrors.push({
+                field: 'excerpt',
+                error: 'Please provide a longer excerpt'
+            });
+        }
+        if (validationErrors.length > 0) {
+            return this.setState({
+                validationErrors
+            });
+        }
+        return cb({ title, content, excerpt, licence, featuredImage, tags });
+    }
+    // _handleTagAutocomplete = (value) => {
+    //     const { tagActions } = this.props;
+    // };
     _handleTagAdd = (tag) => {
         const newTags = this.state.tags.slice();
         newTags.push(tag);
@@ -150,11 +194,22 @@ class PublishPanel extends React.Component {
         this._handleDraftUpdate('tags', newTags);
     };
     _handleTagDelete = (index) => {
+        const { tagActions, pendingTags } = this.props;
         const currentTags = this.state.tags.slice();
+        const tag = currentTags[index];
         currentTags.splice(index, 1);
         this.setState({
             tags: currentTags
         }, () => {
+            const pendingTag = pendingTags.find(tagObj => tagObj.tag === tag);
+            const erroredTag = pendingTags.filter(tags => typeof tags.error === 'object')
+                                         .find(tagObj => tagObj.error.from.tagName === tag);
+            if (erroredTag) {
+                tagActions.deletePendingTag({ tag: erroredTag.error.from.tagName });
+            }
+            if (!erroredTag && pendingTag) {
+                tagActions.deletePendingTag(pendingTag);
+            }
             this._handleDraftUpdate('tags', currentTags);
         });
     };
@@ -177,10 +232,7 @@ class PublishPanel extends React.Component {
     };
     _checkExistingTags = (tags) => {
         const tagService = new TagService();
-        const { pendingTags } = this.props;
         let tagsPromise = Promise.resolve();
-        // const existingTags = this.state.existingTags.slice();
-        // console.log(existingTags, 'existingTags');
         tags.forEach((tag) => {
             tagsPromise = tagsPromise.then(prevData =>
                 new Promise((resolve, reject) => {
@@ -198,10 +250,9 @@ class PublishPanel extends React.Component {
         });
         return tagsPromise.then(results =>
             this.setState({
-                existingTags: results.filter(tagObj => tagObj.exists).map(tag => tag.tag),
-                pendingTags: tags.filter(tag =>
-                    pendingTags.findIndex(tagObj =>
-                        tagObj.tag === tag) !== -1).map(tagObj => tagObj.tag)
+                existingTags: results.filter(tagObj => tagObj.exists).map(tag => tag.tag)
+            }, () => {
+                tagService.removeExistsListeners();
             })
         );
     };
@@ -210,8 +261,12 @@ class PublishPanel extends React.Component {
         this.context.router.push(`/${params.username}/draft/${params.draftId}`);
     }
     _getSelectedLicence = () => {
-        if (this.state.selectedLicence) {
-            return this.state.selectedLicence;
+        const { licences } = this.props;
+        if (this.state.licence) {
+            return this.state.licence;
+        }
+        if (licences.size === 0) {
+            return null;
         }
         return {
             mainLicence: licences.find(lic => lic.id === '1'),
@@ -236,13 +291,29 @@ class PublishPanel extends React.Component {
             publishConfirmed: false
         });
     }
+    _getLicenceMeta = () => {
+        const { licences } = this.props;
+        const { licence } = this.state;
+        if (licences.size === 0) {
+            return {
+                description: [],
+                label: 'loading licences...'
+            };
+        }
+        if (!licence) {
+            return {
+                label: licences.find(licenceObj => licenceObj.id === '1').label,
+                description: []
+            };
+        }
+        return {
+            label: licences.find(licenceObj => licenceObj.id === licence.parent).label,
+            description: licences.find(licenceObj => licenceObj.id === licence.id).description
+        };
+    }
     render () {
-        const { tags } = this.state;
-        const selectedLicence = this._getSelectedLicence();
-        const licenceDescription = selectedLicence.mainLicence.description.map((descr, key) =>
-          <span key={key}>{descr.text}</span>
-        );
-        console.log(this.state.existingTags, 'existing');
+        const { tags, validationErrors, existingTags } = this.state;
+        const { pendingTags, licences } = this.props;
         return (
           <PanelContainer
             showBorder
@@ -266,6 +337,7 @@ class PublishPanel extends React.Component {
                 key="publish"
                 label="Publish"
                 primary
+                disabled={(pendingTags.size > 0)}
                 style={{ marginLeft: 8 }}
                 onTouchTap={this._publishEntry}
               />
@@ -274,7 +346,7 @@ class PublishPanel extends React.Component {
           >
             <LicenceDialog
               isOpen={this.state.isLicencingOpen}
-              defaultSelected={selectedLicence}
+              defaultSelected={this.state.licence}
               onRequestClose={this._handleLicenceDialogClose}
               onDone={this._handleLicenceSet}
               licences={licences}
@@ -288,6 +360,10 @@ class PublishPanel extends React.Component {
                   value={this.state.title || ''}
                   onChange={ev => this.setState({ title: ev.target.value })}
                   onBlur={ev => this._handleDraftUpdate('title', ev.target.value)}
+                  errorText={
+                      validationErrors.filter(ve => ve.field === 'title')
+                            .map(err => `${err.error}`).join('')
+                  }
                 />
               </div>
               <div className="col-xs-12 field">
@@ -305,12 +381,17 @@ class PublishPanel extends React.Component {
                 <TagsField
                   tags={tags}
                   existingTags={this.state.existingTags}
+                  pendingTags={pendingTags}
                   ref={(tagsField) => { this.tagsField = tagsField; }}
                   onRequestTagAutocomplete={this._handleTagAutocomplete}
                   onTagAdded={this._handleTagAdd}
                   onDelete={this._handleTagDelete}
                   onTagRegisterRequest={this._handleTagRegisterRequest}
                   fullWidth
+                  errorText={
+                      validationErrors.filter(ve => ve.field === 'tags')
+                            .map(err => `${err.error}`).join('')
+                  }
                 />
               </div>
               <div className="col-xs-12 field">
@@ -322,6 +403,10 @@ class PublishPanel extends React.Component {
                   value={this.state.excerpt}
                   onChange={ev => this.setState({ excerpt: ev.target.value })}
                   onBlur={ev => this._handleDraftUpdate('excerpt', ev.target.value)}
+                  errorText={
+                      validationErrors.filter(ve => ve.field === 'excerpt')
+                            .map(err => `${err.error}`).join('')
+                  }
                 />
               </div>
               <div className="col-xs-12 field">
@@ -330,9 +415,11 @@ class PublishPanel extends React.Component {
                   name="licence"
                   fullWidth
                   onFocus={this._handleLicenceFocus}
-                  errorText={licenceDescription}
+                  errorText={this._getLicenceMeta().description.map((descr, key) =>
+                    <span key={key}>{descr.text}</span>
+                  )}
                   errorStyle={{ color: '#DDD' }}
-                  value={selectedLicence.mainLicence.label}
+                  value={this._getLicenceMeta().label}
                 />
               </div>
               <div className="col-xs-12 field" style={{ marginBottom: 24 }}>
@@ -348,13 +435,14 @@ class PublishPanel extends React.Component {
     }
 }
 PublishPanel.propTypes = {
-    width: React.PropTypes.string,
-    drafts: React.PropTypes.shape(),
     params: React.PropTypes.shape(),
     draftActions: React.PropTypes.shape(),
     tagActions: React.PropTypes.shape(),
     profiles: React.PropTypes.shape(),
-    loggedProfile: React.PropTypes.shape()
+    loggedProfile: React.PropTypes.shape(),
+    pendingTags: React.PropTypes.shape(),
+    entryActions: React.PropTypes.shape(),
+    licences: React.PropTypes.shape()
 };
 PublishPanel.contextTypes = {
     router: React.PropTypes.shape()

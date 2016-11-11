@@ -38,7 +38,6 @@ class TagActions {
     // get all pending tags
     getPendingTags = profile =>
         this.dispatch((dispatch, getState) => {
-            console.log('getting pending tags action for', profile);
             const flags = getState().tagState.get('flags');
             if (!flags.get('fetchingPendingTags')) {
                 dispatch(tagActionCreators.getPendingTags({
@@ -70,14 +69,13 @@ class TagActions {
         });
     };
     registerTag = (tagName, token, gas = 2000000) => {
-        console.log('registering tag', tagName);
         this.dispatch(tagActionCreators.registerTag(tagName));
         this.tagService.registerTag({
             tagName,
             token,
             gas,
             onSuccess: (data) => {
-                this.dispatch(tagActionCreators.registerTagSuccess(data));
+                this.dispatch(tagActionCreators.registerTagSuccess({ tag: tagName, tx: data.tx }));
                 console.log('register tag success', data);
                 // save to pending tags
                 this.savePendingTag({ tag: tagName, tx: data.tx });
@@ -86,10 +84,10 @@ class TagActions {
         });
     };
     savePendingTag = tagObj =>
-        this.tagService.savePendingTag({
+        this.tagService.updatePendingTag({
             tagObj,
-            onSuccess: data => this.dispatch(tagActionCreators.savePendingTagSuccess(data)),
-            onError: error => this.dispatch(tagActionCreators.savePendingTagError(error))
+            onSuccess: data => this.dispatch(tagActionCreators.updatePendingTagSuccess(data)),
+            onError: error => this.dispatch(tagActionCreators.updatePendingTagError(error))
         });
 
 }

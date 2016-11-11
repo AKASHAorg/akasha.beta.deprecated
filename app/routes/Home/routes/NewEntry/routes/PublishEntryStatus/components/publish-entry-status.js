@@ -3,36 +3,25 @@ import PanelContainer from 'shared-components/PanelContainer/panel-container';
 import { CircularProgress, RaisedButton } from 'material-ui';
 
 class PublishEntryStatus extends React.Component {
-    // componentDidMount () {
-    //     const { entryActions, entryState, profileState } = this.props;
-    //     const draftToPublish = entryState.get('drafts').find(draft =>
-    //         draft.id === parseInt(this.props.params.draftId, 10));
-    //     entryActions.publishEntry(
-    //         draftToPublish.toJS(),
-    //         profileState.get('loggedProfile').get('address')
-    //     );
-    // }
-    _handleConfirmation = () => {
-        const { draftActions, params } = this.props;
-        draftActions.updateDraft({
-            id: parseInt(params.draftId, 10),
-            status: {
-                currentAction: 'checkLogin',
-                publishing: true,
-                publishingConfirmed: true
-            }
-        });
+    componentWillReceiveProps (nextProps) {
+        const { draftActions, drafts, params } = nextProps;
+        const currentDraft = drafts.find(draft => draft.id === parseInt(params.draftId, 10));
+        console.log(currentDraft.status, 'currentDraft status');
+        if (currentDraft.status.currentAction === 'confirmPublish') {
+            draftActions.updateDraft({
+                id: parseInt(params.draftId, 10),
+                status: {
+                    currentAction: 'checkLogin',
+                    publishing: true,
+                    publishingConfirmed: true
+                }
+            });
+        }
     }
-    _approximateFees = (draft) => {
-        return {
-            tagPublishingFees: 0.2,
-            extraTagFees: 0.02,
-            entryFee: 0.01
-        };
-    }
-    _handleCancel = () => {
+    _handleReturn = () => {
         const { params } = this.props;
-        this.context.router.push(`/${params.username}/stream`);
+        const { router } = this.context;
+        router.push(`/${params.username}/explore/stream`);
     }
     render () {
         const { drafts, params } = this.props;
@@ -42,6 +31,11 @@ class PublishEntryStatus extends React.Component {
           <PanelContainer
             showBorder
             title="Publishing entry"
+            actions={[
+              /* eslint-disable */
+              <RaisedButton key="back-to-stream" label="Back to Stream" primary onClick={this._handleReturn} />
+              /* eslint-enable */
+            ]}
             style={{
                 left: '50%',
                 marginLeft: '-320px',
@@ -55,39 +49,14 @@ class PublishEntryStatus extends React.Component {
               {!draftToPublish &&
                 <div>Finding draft.. Please wait.</div>
               }
-              {draftToPublish && !draftToPublish.get('status').publishingConfirmed &&
-                <div className="row">
-                  <div className="col-xs-12 start-xs">
-                    <h3>Confirm Publishing</h3>
-                    <p>Please confirm publishing of the article
-                      <b> &quot;{draftToPublish.get('title')}&quot;</b>
-                    </p>
-                    <p>Fees:</p>
-                    <p>Tags fee: {this._approximateFees(draftToPublish).tagPublishingFees} ETH</p>
-                    <p>Extra Tag fees: {this._approximateFees(draftToPublish).extraTagFees} ETH</p>
-                    <p>
-                      Entry Publishing Fees: {this._approximateFees(draftToPublish).entryFee} ETH
-                    </p>
-                    <RaisedButton
-                      label="Cancel"
-                      onTouchTap={this._handleCancel}
-                    />
-                    <RaisedButton
-                      label="Confirm"
-                      onTouchTap={this._handleConfirmation}
-                      primary
-                    />
-                  </div>
-                </div>
-              }
-              {draftToPublish && draftToPublish.get('status').publishingConfirmed &&
-                <div className="row">
-                  <div className="col-xs-12 center-xs">
+              {draftToPublish &&
+                <div className="row" style={{ height: '100%' }}>
+                  <div className="col-xs-12 center-xs" style={{ paddingTop: 64 }}>
                     <CircularProgress size={80} />
                   </div>
-                  <div className="col-xs-12 center-xs" style={{ paddingTop: 16 }}>
-                    <h3>Status of the entry..</h3>
-                    <p>This entry is being published.</p>
+                  <div className="col-xs-12 center-xs">
+                    <h3>Publishing &quot;{draftToPublish.title}&quot;</h3>
+                    <p>This entry is being published. You`ll be notified when it`s done.</p>
                   </div>
                 </div>
               }

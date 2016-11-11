@@ -89,5 +89,20 @@ class EntryActions {
         });
     };
     castDownvote = (entryAddress, voteWeight) => {};
+    getLicences = () => {
+        this.entryService.getLicences({
+            onSuccess: ({ licenses }) =>
+                this.dispatch(entryActionCreators.getLicencesSuccess(licenses)),
+            onError: error => this.dispatch(entryActionCreators.getLicencesError(error))
+        });
+    };
+    getLicenceById = (id) => {
+        this.EntryService.getLicenceById({
+            id,
+            onSuccess: ({ license }) =>
+                this.dispatch(entryActionCreators.getLicenceByIdSuccess(license)),
+            onError: error => this.dispatch(entryActionCreators.getLicenceByIdError(error))
+        });
+    };
 }
 export { EntryActions };

@@ -52,30 +52,37 @@ class DraftActions {
             }
             return Promise.resolve();
         });
-
+    deleteDraft = (draftId) => {
+        this.draftService.deleteDraft({
+            draftId,
+            onSuccess: deletedId =>
+                this.dispatch(draftActionCreators.deleteDraftSuccess(deletedId)),
+            onError: error => this.dispatch(draftActionCreators.deleteDraftError(error))
+        });
+    }
     updateDraftThrottled = (draft) => {
         this.dispatch(draftActionCreators.startSavingDraft());
         return this.throttledUpdateDraft(draft);
     };
 
-    startPublishingDraft = (draftId) => {
-        this.dispatch(draftActionCreators.startPublishingDraft(draftId, {}));
-    }
-
-    pausePublishingDraft = (draftId) => {
-        this.dispatch(draftActionCreators.pausePublishingDraft(draftId, {}));
-    }
-
     publishDraft = (draft, token, gas = 4000000) => {
+        console.log('publishDraft action');
         this.entryService.publishEntry({
             draft,
             token,
             gas,
             onSuccess: (data) => {
-                console.log('publish draft result', data);
+                console.log('publish draft success', data);
                 this.dispatch(draftActionCreators.publishDraftSuccess(data));
+                const newDraft = Object.assign({}, draft, data);
+                newDraft.status.currentAction = 'draftPublished';
+                console.log(newDraft, 'newly updated draft');
+                this.updateDraft(newDraft);
             },
-            onError: error => this.dispatch(draftActionCreators.publishDraftError(error))
+            onError: (error) => {
+                console.error(error, 'publish draft error');
+                this.dispatch(draftActionCreators.publishDraftError(error));
+            }
         });
     };
 

@@ -1,7 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { ProfileActions, DraftActions, AppActions, TagActions, TransactionActions } from 'local-flux';
-import { TagService } from 'local-flux/services';
+import { DraftActions, AppActions, TransactionActions } from 'local-flux';
 /**
  * This component will publish entries in parallel
  * main logic of entry publishing steps will be here
@@ -10,59 +9,37 @@ import { TagService } from 'local-flux/services';
  */
 class PublishEntryRunner extends Component {
     componentWillMount () {
-        const { tagActions, transactionActions, loggedProfile, draftActions } = this.props;
-        // tagActions.getPendingTags();
+        const { transactionActions, loggedProfile, draftActions } = this.props;
         transactionActions.getPendingTransactions();
+        transactionActions.getMinedTransactions();
         draftActions.getPublishingDrafts(loggedProfile.get('profile'));
     }
     componentWillReceiveProps (nextProps) {
-        const { tagActions, appActions } = this.props;
-        const { drafts, params, loggedProfile, loggedProfileData } = nextProps;
-        const publishableDrafts = drafts.filter(draft =>
-            draft.status.publishing && draft.status.publishingConfirmed);
+        const { drafts, appActions, loggedProfile, draftActions, transactionActions,
+            minedTransactions } = nextProps;
+        let publishableDrafts = [];
+        if (drafts.size > 0) {
+            publishableDrafts = drafts.filter(draft =>
+                draft.status.publishing && draft.status.publishingConfirmed);
+        }
         if (publishableDrafts.size > 0) {
-            return publishableDrafts.forEach((draft) => {
-                const { currentAction, started } = draft.get('status');
-                    console.log(draft.get('status').currentAction, 'currentAction');
-                // this._updateDraftStatus(draft, {
-                //     currentAction: 'registeringDraft'
-                // });
-
-                if (currentAction === 'listenDraftTx') {
-                    return this._listenDraftTx(draft);
-                }
-                /**
-                 * `draftPublished` means that we have sent publishing request to main and we are waiting
-                 *  to receive tx
-                 *  this status will check if tx exists and will forward to `listenDraftTx` action
-                 */
-                if (currentAction === 'draftPublished') {
-                    return this._checkForTx();
-                }
-                /**
-                 * draft.status.started means that the user is newly logged in and it should resume
-                 * publishing manually to prevent accidental double publishing.
-                 * if currentAction is `draftPublished` or `listenDraftTx` there is no need to resume
-                 */
-                if (started) {
-                    /**
-                     * Find any unexistent tags and publish
-                     * add published tags to pending tags
-                     */
-                    if (currentAction === 'publishingTags') {
-                        return this._publishDraftTags(draft);
+            publishableDrafts.forEach((draft) => {
+                const { status } = draft;
+                if (status.currentAction === 'checkLogin' && status.publishing && status.publishingConfirmed) {
+                    const tokenIsValid = this._verifyExpiration(loggedProfile.get('expiration'));
+                    if (tokenIsValid) {
+                        return this._registerDraft(draft, loggedProfile.get('token'));
                     }
-                    /**
-                     * Find any pending tags and listen for txs
-                     * remove pending tag when mined event arrived
-                     */
-                    if (currentAction === 'listenTagsTx') {
-                        return this._listenPendingTagsTx();
-                    }
-                    /**
-                     * Resume draft publishing
-                     */
-                    return this._resumeDraftPublishing(draft);
+                    return appActions.showAuthDialog();
+                }
+                if (status.currentAction === 'draftPublished' && draft.tx) {
+                    return this._checkForTx(draft);
+                }
+                if (status.currentAction === 'listeningTx' &&
+                        minedTransactions.findIndex(minedTx => minedTx.tx === draft.tx) !== -1) {
+                    // delete draft and pendingTxs
+                    draftActions.deleteDraft(draft.id);
+                    transactionActions.deletePendingTx(draft.tx);
                 }
             });
         }
@@ -73,117 +50,21 @@ class PublishEntryRunner extends Component {
             Object.assign({}, currentDraft.get('status'), statusChanges));
         draftActions.updateDraft(newDraft);
     }
-    _checkForTx = () => {
-        console.log('checking for tx');
+    _checkForTx = (draft) => {
+        const { transactionActions } = this.props;
+        transactionActions.listenForMinedTx();
+        transactionActions.addToQueue([{ tx: draft.tx }]);
+        this._updateDraftStatus(draft, {
+            currentAction: 'listeningTx'
+        });
     };
-    _findPublishableTags = (tags) => {
-        const tagService = new TagService();
-        let tagsPromise = Promise.resolve();
-        tags.forEach((tag) => {
-            tagsPromise = tagsPromise.then(prevData =>
-                new Promise((resolve, reject) => {
-                    tagService.checkExistingTags(tag, (ev, { data, error }) => {
-                        if (error) {
-                            return reject(error);
-                        }
-                        if (prevData) {
-                            return resolve(prevData.concat([{ tag, exists: data.exists }]));
-                        }
-                        return resolve([{ tag, exists: data.exists }]);
-                    });
-                })
-            );
-        });
-        return tagsPromise.then(results =>
-            results.filter(res => res.exists === false)
-        );
-    }
-    // only related to draft publishing
-    // should check if previous steps are completed
-    _resumeDraftPublishing = (draft) => {
-        const { draftActions, transactionActions, pendingTags, loggedProfile,
-            pendingTransactions } = this.props;
-        const draftTags = draft.get('tags');
-        // exclude tags already in pending state
-        const tagsToRegister = draftTags.filter(tag =>
-            pendingTags.findIndex(tagObj => tagObj.tag === tag) === -1);
-        if (tagsToRegister.length === 0) {
-            // no tags to publish
-            return this._registerDraft(draft);
-        }
-        // check on blockchain and register tag
-        this._findPublishableTags(tagsToRegister).then((notRegistered) => {
-            console.log(notRegistered, 'notReg');
-            if (notRegistered.length > 0) {
-                return this._updateDraftStatus(draft, {
-                    currentAction: 'publishingTags'
-                });
-            }
-        });
-        const notListeningPendingTags = pendingTags.filter(tagObj =>
-            pendingTransactions.findIndex(tx => tx === tagObj.tx) === -1);
-
-        console.log(notListeningPendingTags, 'notListeningPendingTags');
-
-        if (notListeningPendingTags.size > 0) {
-            notListeningPendingTags.forEach((tagObj) => {
-                transactionActions.listenForMinedTx();
-                transactionActions.addToQueue([{ tx: tagObj.tx }]);
-            });
-        } else {
-            this._registerDraft(draft);
-        }
-    }
 
     _verifyExpiration = expirationDate =>
         Date.parse(expirationDate) > Date.now();
 
-    _listenPendingTagsTx = () => {
-        const { pendingTags } = this.props;
-        console.log(pendingTags);
-    }
-
-    _publishDraftTags = (draft) => {
-        console.log('publishDraftTags', draft);
-        const { tagActions, appActions, tagState, loggedProfile } = this.props;
-        this._findPublishableTags(draft.get('tags')).then(tags => {
-            if (tags.length === 0) {
-                return this._updateDraftStatus(draft, {
-                    currentAction: 'registeringDraft'
-                });
-            }
-            tags.forEach((tagObj) => {
-                if (!this._verifyExpiration(loggedProfile.get('expiration'))) {
-                    return appActions.showNotification({
-                        type: 'alertLoginRequired',
-                        message: `You must confirm your password to publish tag "${tagObj.tag}"`
-                    });
-                }
-                console.log('publishing allowed!');
-                tagActions.registerTag(tagObj.tag, loggedProfile.get('token'));
-            });
-            this.updateDraftStatus(draft, {
-                currentAction: 'listenTagsTx',
-            });
-        });
-    }
-
-    _registerDraft = (draft) => {
-        const { draftActions, loggedProfile, appActions } = this.props;
-        // this._updateDraftStatus(draft, {
-        //     currentAction: 'registeringDraft'
-        // });
-        const loginValid = this._verifyExpiration(loggedProfile.get('expiration'));
-        if (!loginValid) {
-            return appActions.showNotification({
-                type: 'alertLoginRequired',
-                message: `Please confirm  your password`
-            });
-        }
-        draftActions.publishDraft(draft, loggedProfile.get('token'));
-        this._updateDraftStatus(draft, {
-            currentAction: 'draftPublished'
-        });
+    _registerDraft = (draft, token) => {
+        const { draftActions } = this.props;
+        draftActions.publishDraft(draft.toJS(), token);
     }
     render () {
         return null;
@@ -192,12 +73,12 @@ class PublishEntryRunner extends Component {
 
 PublishEntryRunner.propTypes = {
     drafts: PropTypes.shape(),
-    params: PropTypes.shape(),
     draftActions: PropTypes.shape(),
     appActions: PropTypes.shape(),
-    pendingTags: PropTypes.shape(),
     loggedProfile: PropTypes.shape(),
-    pendingTransactions: PropTypes.shape(),
+    transactionActions: PropTypes.shape(),
+    minedTransactions: PropTypes.shape()
+
 };
 
 function mapStateToProps (state) {
@@ -206,17 +87,14 @@ function mapStateToProps (state) {
         loggedProfileData: state.profileState.get('profiles').find(prf =>
             prf.get('profile') === state.profileState.getIn(['loggedProfile', 'profile'])),
         drafts: state.draftState.get('drafts'),
-        pendingTags: state.tagState.get('pendingTags'),
-        pendingTransactions: state.transactionState.get('pending')
+        minedTransactions: state.transactionState.get('mined')
     };
 }
 
 function mapDispatchToProps (dispatch) {
     return {
-        profileActions: new ProfileActions(dispatch),
         draftActions: new DraftActions(dispatch),
         appActions: new AppActions(dispatch),
-        tagActions: new TagActions(dispatch),
         transactionActions: new TransactionActions(dispatch)
     };
 }

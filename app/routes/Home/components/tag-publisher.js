@@ -11,14 +11,18 @@ class TagPublisher extends Component {
         }
     }
     componentWillReceiveProps (nextProps) {
-        const { pendingTags, loggedProfile, pendingTransactions, minedTransactions } = nextProps;
+        const { pendingTags, loggedProfile, minedTransactions } = nextProps;
         const { tagActions, transactionActions, appActions, profileActions } = this.props;
         const tokenIsValid = this._checkTokenValidity(loggedProfile.get('expiration'));
-        console.log(pendingTags, 'pendingTags');
         if (pendingTags.size > 0) {
             pendingTags.forEach((tagObj) => {
+                if (tagObj.error) return;
                 if (tagObj.publishConfirmed) {
                     appActions.hidePublishConfirmDialog();
+                }
+                if (tagObj.tx &&
+                    minedTransactions.findIndex(minedTx => minedTx.tx === tagObj.tx) !== -1) {
+                    return this._deletePendingTag(tagObj);
                 }
                 if (!tagObj.publishConfirmed) {
                     appActions.showPublishConfirmDialog({
@@ -28,7 +32,7 @@ class TagPublisher extends Component {
                 } else if (!tokenIsValid) {
                     appActions.showAuthDialog();
                 } else if (!tagObj.tx) {
-                    this._registerTag(tagObj);
+                    this._registerTag(tagObj, loggedProfile);
                 } else if (tagObj.tx) {
                     this._listenTagTx(tagObj);
                 }
@@ -39,17 +43,21 @@ class TagPublisher extends Component {
     _checkTokenValidity = expDate =>
         Date.parse(expDate) > Date.now();
 
-    _registerTag = (tagObj) => {
-        const { tagActions, loggedProfile } = this.props;
-        tagActions.registerTag(tagObj.tag, loggedProfile.get('profile'), tagObj.minGas);
+    _registerTag = (tagObj, loggedProfile) => {
+        const { tagActions } = this.props;
+        tagActions.registerTag(tagObj.tag, loggedProfile.get('token'), tagObj.minGas);
     }
 
     _listenTagTx = (tagObj) => {
         const { transactionActions } = this.props;
-        transactionActions.emitMined();
+        transactionActions.listenForMinedTx();
         transactionActions.addToQueue([{ tx: tagObj.tx }]);
     }
-
+    _deletePendingTag = (tagObj) => {
+        const { tagActions, transactionActions } = this.props;
+        tagActions.deletePendingTag(tagObj);
+        transactionActions.deletePendingTx(tagObj.tx);
+    }
     render () {
         return null;
     }
@@ -68,7 +76,8 @@ function mapStateToProps (state) {
         loggedProfileData: state.profileState.get('profiles').find(prf =>
             prf.get('profile') === state.profileState.getIn(['loggedProfile', 'profile'])),
         pendingTags: state.tagState.get('pendingTags'),
-        pendingTransactions: state.transactionState.get('pending')
+        pendingTransactions: state.transactionState.get('pending'),
+        minedTransactions: state.transactionState.get('mined')
     };
 }
 

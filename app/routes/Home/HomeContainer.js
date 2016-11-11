@@ -26,7 +26,7 @@ class HomeContainer extends React.Component {
         const { profileActions, draftActions, params } = this.props;
         const username = params.username;
         profileActions.getLoggedProfile();
-        draftActions.getDraftsCount(username);
+        // draftActions.getDraftsCount(username);
     }
     componentWillReceiveProps (nextProps) {
         const { profileActions, entryActions, draftActions, transactionActions } = this.props;

@@ -57,3 +57,31 @@ export function getSavedEntriesError (error) {
         error
     };
 }
+
+export function getLicencesSuccess (licences) {
+    return {
+        type: types.GET_LICENCES_SUCCESS,
+        licences
+    };
+}
+
+export function getLicencesError (error) {
+    return {
+        type: types.GET_LICENCES_ERROR,
+        error
+    };
+}
+
+export function getLicenceByIdSuccess (licence) {
+    return {
+        type: types.GET_LICENCE_BY_ID_SUCCESS,
+        licence
+    };
+}
+
+export function getLicenceByIdError (error) {
+    return {
+        type: types.GET_LICENCE_BY_ID_ERROR,
+        error
+    };
+}

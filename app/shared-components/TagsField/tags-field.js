@@ -2,16 +2,32 @@ import React from 'react';
 import { TextField, Chip, IconButton } from 'material-ui';
 import AddIcon from 'material-ui/svg-icons/content/add';
 import RemoveIcon from 'material-ui/svg-icons/navigation/close';
+import PendingIcon from 'material-ui/svg-icons/action/schedule';
 
 class TagsField extends React.Component {
     constructor (props) {
         super(props);
         this.state = {
-            tagString: ''
+            tagString: '',
+            erroredTags: []
         };
     }
+    componentWillReceiveProps (nextProps) {
+        const { pendingTags } = nextProps;
+        const erroredTags = pendingTags.filter(tag => typeof tag.error === 'object');
+        if (erroredTags.size > 0) {
+            this.setState({
+                erroredTags: erroredTags.map(tag => ({
+                    tag: tag.error.from.tagName,
+                    message: tag.error.message
+                }))
+            });
+        }
+    }
     _checkTagAutocomplete = (value) => {
-        this.props.onRequestTagAutocomplete(value);
+        if (this.props.onRequestTagAutocomplete) {
+            this.props.onRequestTagAutocomplete(value);
+        }
     };
     _handleInputChange = (ev) => {
         if (ev.target.value.length >= 3) {
@@ -87,13 +103,34 @@ class TagsField extends React.Component {
     };
     render () {
         const currentTags = this.props.tags;
+        const { pendingTags, existingTags } = this.props;
+        const { erroredTags } = this.state;
         const tags = currentTags.map((tag, key) => {
-            const tagExists = this.props.existingTags.indexOf(tag) > -1;
-            // console.log(tagExists, tag, this.props.existingTags, 'exists?');
+            const tagExists = existingTags.indexOf(tag) > -1;
+            const tagIsPending = pendingTags.findIndex(tagObj => tagObj.tag === tag) > -1;
+            const erroredTag = erroredTags.find(tagObj => tagObj.tag === tag);
+            let borderColor;
+            if (tagIsPending) {
+                borderColor = '#ffaa0e';
+            } else if (erroredTag) {
+                borderColor = 'red';
+            } else if (tagExists) {
+                borderColor = '#74cc00';
+            } else {
+                borderColor = '#ffaa0e';
+            }
+            let erroredTagMessage;
+            if (erroredTag) {
+                if (erroredTag.error) {
+                    erroredTagMessage = erroredTag.error.message;
+                } else {
+                    erroredTagMessage = erroredTag.message;
+                }
+            }
             const style = {
                 display: 'inline-block',
                 border: '1px solid',
-                borderColor: tagExists ? '#74cc00' : '#ffaa0e',
+                borderColor,
                 borderRadius: 3,
                 height: 34,
                 verticalAlign: 'middle',
@@ -113,6 +150,7 @@ class TagsField extends React.Component {
                 key={key}
                 backgroundColor="transparent"
                 style={style}
+                title={erroredTagMessage}
                 labelStyle={{
                     lineHeight: '32px',
                     display: 'inline-block',
@@ -121,14 +159,21 @@ class TagsField extends React.Component {
                 }}
               >
                 <span style={{ fontWeight: 500 }}>{tag}</span>
-                {!tagExists &&
+                {tagIsPending &&
+                  <PendingIcon
+                    title="Registering tag"
+                    style={tagActionButtonStyle}
+                  />
+                }
+                {!tagExists && !tagIsPending &&
                   <IconButton
-                    title={'Register tag'}
                     onClick={ev => this._handleTagRegister(ev, tag)}
                     style={tagActionButtonStyle}
                     disableTouchRipple
                   >
-                    <AddIcon />
+                    {!tagIsPending && !erroredTag &&
+                      <AddIcon title={'Register tag'} />
+                    }
                   </IconButton>
                 }
                 <IconButton
@@ -190,6 +235,7 @@ TagsField.propTypes = {
     onTagAdded: React.PropTypes.func,
     onDelete: React.PropTypes.func,
     existingTags: React.PropTypes.arrayOf(React.PropTypes.string),
+    pendingTags: React.PropTypes.shape(),
     onRequestTagAutocomplete: React.PropTypes.func,
     onBlur: React.PropTypes.func,
     onTagRegisterRequest: React.PropTypes.func

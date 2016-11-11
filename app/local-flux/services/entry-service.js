@@ -26,6 +26,7 @@ class EntryService extends BaseService {
      *
      */
     publishEntry = ({ draft, token, gas, onError, onSuccess }) => {
+        console.log('publish entry service');
         const {
             title,
             featuredImage,
@@ -34,6 +35,7 @@ class EntryService extends BaseService {
             tags,
             content,
         } = draft;
+        console.log('featuredImage', featuredImage);
         this.openChannel({
             serverManager: this.serverManager,
             clientManager: this.clientManager,
@@ -44,7 +46,7 @@ class EntryService extends BaseService {
             Channel.server.entry.publish.send({
                 content: {
                     title,
-                    featuredImage,
+                    featuredImage: featuredImage ? featuredImage.files.md.src : new Uint8Array(),
                     excerpt,
                     licence,
                     draft: content
@@ -56,13 +58,14 @@ class EntryService extends BaseService {
     };
 
     getEntriesCount = ({ profileAddress, onError, onSuccess }) => {
+        console.log({ profileAddress });
         this.openChannel({
             serverManager: this.serverManager,
             clientManager: this.clientManager,
             serverChannel: Channel.server.entry.getEntriesCount,
             clientChannel: Channel.client.entry.getEntriesCount,
             listenerCb: this.createListener(onError, onSuccess)
-        }, () => Channel.server.entry.getEntriesCount.send(profileAddress));
+        }, () => Channel.server.entry.getEntriesCount.send({ profileAddress }));
     }
 
     // get resource by id (drafts or entries);
@@ -108,6 +111,25 @@ class EntryService extends BaseService {
         .catch(reason => onError(reason));
 
     getEntriesForTag = () => {};
+
+    getLicences = ({ onSuccess, onError }) => {
+        this.openChannel({
+            serverManager: Channel.server.licenses.manager,
+            clientManager: Channel.client.licenses.manager,
+            serverChannel: Channel.server.licenses.getLicenses,
+            clientChannel: Channel.client.licenses.getLicenses,
+            listenerCb: this.createListener(onError, onSuccess)
+        }, () => {
+            Channel.server.licenses.getLicenses.send();
+        });
+    };
+    getLicencesById = ({ id, onSuccess, onError }) => {
+        this.registerListener(
+            Channel.client.licenses.getLicenceById,
+            this.createListener(onError, onSuccess),
+            () => Channel.server.licenses.getLicenceById({ id })
+        );
+    }
 }
 
 export { EntryService };
