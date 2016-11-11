@@ -44,6 +44,19 @@ export function hideAuthDialog () {
     };
 }
 
+export function showPublishConfirmDialog (resource) {
+    return {
+        type: types.SHOW_PUBLISH_CONFIRM_DIALOG,
+        resource
+    };
+}
+
+export function hidePublishConfirmDialog () {
+    return {
+        type: types.HIDE_PUBLISH_CONFIRM_DIALOG
+    };
+}
+
 export function showEntryModal (entryData) {
     return {
         type: types.SHOW_ENTRY_MODAL,
@@ -88,5 +101,19 @@ export function setTimestamp (timestamp) {
     return {
         type: types.SET_TIMESTAMP,
         timestamp
+    };
+}
+
+export function showNotification (notification) {
+    return {
+        type: types.SHOW_NOTIFICATION,
+        notification
+    };
+}
+
+export function hideNotification (notification) {
+    return {
+        type: types.HIDE_NOTIFICATION,
+        notification
     };
 }

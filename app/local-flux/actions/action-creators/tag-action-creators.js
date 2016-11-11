@@ -7,6 +7,51 @@ export function getPendingTags (flags) {
     };
 }
 
+export function createPendingTagSuccess (tag) {
+    return {
+        type: types.CREATE_PENDING_TAG_SUCCESS,
+        tag
+    };
+}
+
+export function updatePendingTagSuccess (tag) {
+    return {
+        type: types.UPDATE_PENDING_TAG_SUCCESS,
+        tag
+    };
+}
+
+export function updatePendingTagError (error) {
+    console.error(error, 'updatePendingTagError')
+    return {
+        type: types.UPDATE_PENDING_TAG_ERROR,
+        error
+    };
+}
+
+export function deletePendingTagSuccess (tag) {
+    return {
+        type: types.DELETE_PENDING_TAG_SUCCESS,
+        tag
+    };
+}
+
+export function deletePendingTagError (error) {
+    console.error(error, 'delete pending tag error');
+    return {
+        type: types.DELETE_PENDING_TAG_ERROR,
+        error
+    };
+}
+
+export function createPendingTagError (error) {
+    console.error(error, 'Create pending tag error');
+    return {
+        type: types.CREATE_PENDING_TAG_ERROR,
+        error
+    };
+}
+
 export function getPendingTagsSuccess (data, flags) {
     return {
         type: types.GET_PENDING_TAGS_SUCCESS,
@@ -16,6 +61,7 @@ export function getPendingTagsSuccess (data, flags) {
 }
 
 export function getPendingTagsError (error, flags) {
+    console.error(error, 'getPendingTagsError');
     return {
         type: types.GET_PENDING_TAGS_ERROR,
         error,
