@@ -45,7 +45,7 @@ function AuthDialog (props) {
         <div className="row middle-xs">
           <div className="col-xs-7" style={{ paddingRight: 0 }}>
             <Checkbox
-              label="Keep account unlocked for"
+              label="Remember my password for"
               checked={props.rememberChecked}
               onCheck={props.onRememberPasswordCheck}
             />

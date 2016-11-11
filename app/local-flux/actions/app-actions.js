@@ -39,6 +39,16 @@ class AppActions {
     resumeEntryPublishing = () => {
         // console.log(payload);
     };
+    /**
+     * Show a confirmation dialog for every resource he wants to publish
+     * Request gas amount
+     */
+    showPublishConfirmDialog = (resource) => {
+        this.dispatch(appActionCreators.showPublishConfirmDialog(resource));
+    }
+    hidePublishConfirmDialog = () => {
+        this.dispatch(appActionCreators.hidePublishConfirmDialog());
+    }
     showEntryModal = (entryData, options = {}) =>
         Promise.resolve(this.dispatch(appActionCreators.showEntryModal(entryData, options)));
     hideEntryModal = () =>
@@ -51,6 +61,12 @@ class AppActions {
     };
     setTimestamp = timestamp =>
         this.dispatch(appActionCreators.setTimestamp(timestamp));
+
+    showNotification = notification =>
+        this.dispatch(appActionCreators.showNotification(notification));
+
+    hideNotification = notification =>
+        this.dispatch(appActionCreators.hideNotification(notification));
 }
 
 export { AppActions };

@@ -25,34 +25,57 @@ class EntryService extends BaseService {
      *  Publish a new entry
      *
      */
-    publishEntry = ({ entry, profileAddress, onError, onSuccess }) => {
+    publishEntry = ({ draft, token, gas, onError, onSuccess }) => {
+        console.log('publish entry service');
+        const {
+            title,
+            featuredImage,
+            excerpt,
+            licence,
+            tags,
+            content,
+        } = draft;
+        console.log('featuredImage', featuredImage);
         this.openChannel({
             serverManager: this.serverManager,
             clientManager: this.clientManager,
             serverChannel: Channel.server.entry.publish,
             clientChannel: Channel.client.entry.publish,
             listenerCb: this.createListener(onError, onSuccess)
-        }, () => Channel.server.entry.publish.send(entry));
+        }, () =>
+            Channel.server.entry.publish.send({
+                content: {
+                    title,
+                    featuredImage: featuredImage ? featuredImage.files.md.src : new Uint8Array(),
+                    excerpt,
+                    licence,
+                    draft: content
+                },
+                tags,
+                token,
+                gas
+            }));
     };
 
     getEntriesCount = ({ profileAddress, onError, onSuccess }) => {
+        console.log({ profileAddress });
         this.openChannel({
             serverManager: this.serverManager,
             clientManager: this.clientManager,
             serverChannel: Channel.server.entry.getEntriesCount,
             clientChannel: Channel.client.entry.getEntriesCount,
             listenerCb: this.createListener(onError, onSuccess)
-        }, () => Channel.server.entry.getEntriesCount.send(profileAddress));
+        }, () => Channel.server.entry.getEntriesCount.send({ profileAddress }));
     }
 
     // get resource by id (drafts or entries);
     getById = ({ table, id, onSuccess, onError }) =>
-        entriesDB.transaction('r', entriesDB[table], () => {
-            return entriesDB[table]
-                    .where('id')
-                    .equals(parseInt(id, 10))
-                    .first();
-        })
+        entriesDB.transaction('r', entriesDB[table], () =>
+            entriesDB[table]
+                .where('id')
+                .equals(parseInt(id, 10))
+                .first()
+        )
         .then(entries => onSuccess(entries))
         .catch(reason => onError(reason));
 
@@ -70,14 +93,7 @@ class EntryService extends BaseService {
             entries = generateEntries(2);
             return resolve(entries);
         });
-        // entriesDB.transaction('r', entriesDB.drafts, () => {
-        //     if (sortBy === 'rating') {
-        //         return entriesDB.drafts.where('tags').anyOf('top-rating').toArray();
-        //     }
-        //     if (sortBy === 'top') {
-        //         return entriesDB.drafts.sortBy('status.created_at').toArray();
-        //     }
-        // });
+
     createSavedEntry = ({ username, entry, onError, onSuccess }) =>
         entriesDB.transaction('rw', entriesDB.savedEntries, () => {
             entriesDB.savedEntries.add({ username, ...entry.toJS() }).then(() => entry);
@@ -95,6 +111,25 @@ class EntryService extends BaseService {
         .catch(reason => onError(reason));
 
     getEntriesForTag = () => {};
+
+    getLicences = ({ onSuccess, onError }) => {
+        this.openChannel({
+            serverManager: Channel.server.licenses.manager,
+            clientManager: Channel.client.licenses.manager,
+            serverChannel: Channel.server.licenses.getLicenses,
+            clientChannel: Channel.client.licenses.getLicenses,
+            listenerCb: this.createListener(onError, onSuccess)
+        }, () => {
+            Channel.server.licenses.getLicenses.send();
+        });
+    };
+    getLicencesById = ({ id, onSuccess, onError }) => {
+        this.registerListener(
+            Channel.client.licenses.getLicenceById,
+            this.createListener(onError, onSuccess),
+            () => Channel.server.licenses.getLicenceById({ id })
+        );
+    }
 }
 
 export { EntryService };

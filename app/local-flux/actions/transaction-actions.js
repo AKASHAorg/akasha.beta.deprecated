@@ -22,7 +22,8 @@ class TransactionActions {
                 onSuccess: data => this.dispatch(
                     transactionActionCreators.transactionMinedSuccess(data)
                 ),
-                onError: error => this.dispatch(transactionActionCreators.transactionMinedError(error))
+                onError: error =>
+                    this.dispatch(transactionActionCreators.transactionMinedError(error))
             });
         });
     };
@@ -66,7 +67,9 @@ class TransactionActions {
                 type: 'mined',
                 options: { profile: profileAddress },
                 onError: (error) => {
-                    this.dispatch(transactionActionCreators.getMinedTransactionsError(error.message));
+                    this.dispatch(
+                        transactionActionCreators.getMinedTransactionsError(error.message)
+                    );
                 },
                 onSuccess: (data) => {
                     this.dispatch(transactionActionCreators.getMinedTransactionsSuccess(data));
@@ -82,6 +85,7 @@ class TransactionActions {
         this.dispatch(transactionActionCreators.getPendingTransactions());
         this.dispatch((dispatch, getState) => {
             const profileAddress = getState().profileState.getIn(['loggedProfile', 'profile']) || '';
+            console.log(profileAddress, 'logged profile for pending txs');
             this.transactionService.getTransactions({
                 type: 'pending',
                 options: { ...options, profile: profileAddress },
