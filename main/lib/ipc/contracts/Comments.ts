@@ -37,7 +37,7 @@ export default class Comments extends BaseContract {
      * @param gas
      * @returns {Bluebird<U>}
      */
-    removeComment(entryId: string,  commentId: string, gas: number = 2000000) {
+    removeComment(entryId: string, commentId: string, gas: number = 2000000) {
         return this.evaluateData('removeComment', gas, entryId, commentId);
     }
 
@@ -47,7 +47,7 @@ export default class Comments extends BaseContract {
      * @param commentId
      * @returns {any}
      */
-    getComment(entryId: string,  commentId: string) {
+    getComment(entryId: string, commentId: string) {
         return this.contract
             .getComment
             .callAsync(entryId, commentId)
@@ -103,7 +103,7 @@ export default class Comments extends BaseContract {
      * @param commentId
      * @returns {any}
      */
-    getNextComment(entryId: string,  commentId: string) {
+    getNextComment(entryId: string, commentId: string) {
         return this.contract
             .getNextComment
             .callAsync(entryId, commentId)
@@ -116,7 +116,7 @@ export default class Comments extends BaseContract {
      * @param commentId
      * @returns {any}
      */
-    getPrevComment(entryId: string,  commentId: string){
+    getPrevComment(entryId: string, commentId: string) {
         return this.contract
             .getPrevComment
             .callAsync(entryId, commentId)

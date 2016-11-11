@@ -162,28 +162,44 @@ describe('EntryIPC', function () {
             chai_1.expect(injected.data.data.tx).to.exist;
             done();
         });
-        electron_1.ipcMain.emit(channels_1.default.server.entry.upvote, '', { address: helpers.entryAddress, token, weight: 1, gas: 2000000 });
+        electron_1.ipcMain.emit(channels_1.default.server.entry.upvote, '', {
+            address: helpers.entryAddress,
+            token,
+            weight: 1,
+            gas: 2000000
+        });
     });
     it('--should downvote entry', (done) => {
         entryChannel.callTest.set(channels_1.default.client.entry.downvote, (injected) => {
             chai_1.expect(injected.data.data.tx).to.exist;
             done();
         });
-        electron_1.ipcMain.emit(channels_1.default.server.entry.downvote, '', { address: helpers.entryAddress, token, weight: 2, gas: 2000000 });
+        electron_1.ipcMain.emit(channels_1.default.server.entry.downvote, '', {
+            address: helpers.entryAddress,
+            token,
+            weight: 2,
+            gas: 2000000
+        });
     });
     it('--should get vote of', (done) => {
         entryChannel.callTest.set(channels_1.default.client.entry.getVoteOf, (injected) => {
             chai_1.expect(injected.data.data.weight).to.exist;
             done();
         });
-        electron_1.ipcMain.emit(channels_1.default.server.entry.getVoteOf, '', { address: helpers.entryAddress, profile: helpers.profileAddress });
+        electron_1.ipcMain.emit(channels_1.default.server.entry.getVoteOf, '', {
+            address: helpers.entryAddress,
+            profile: helpers.profileAddress
+        });
     });
     it('--should get votes of profile from event', (done) => {
         entryChannel.callTest.set(channels_1.default.client.entry.getVotesEvent, (injected) => {
             chai_1.expect(injected.data.data.collection).to.exist;
             done();
         });
-        electron_1.ipcMain.emit(channels_1.default.server.entry.getVotesEvent, '', { index: { profile: helpers.profileAddress }, fromBlock: 0 });
+        electron_1.ipcMain.emit(channels_1.default.server.entry.getVotesEvent, '', {
+            index: { profile: helpers.profileAddress },
+            fromBlock: 0
+        });
     });
     after(function (done) {
         helpers.stopServices(done);

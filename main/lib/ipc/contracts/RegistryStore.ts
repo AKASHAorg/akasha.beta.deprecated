@@ -18,7 +18,7 @@ export default class RegistryStore extends BaseContract {
      * @param id
      * @param owner
      */
-    public canStore(id: string,  owner: string) {
+    public canStore(id: string, owner: string) {
         this.contract.can_store.callAsync(id, owner);
     }
 
@@ -27,7 +27,7 @@ export default class RegistryStore extends BaseContract {
      * @param id
      * @param owner
      */
-    public hasStore(id: string,  owner: string) {
+    public hasStore(id: string, owner: string) {
         this.contract.has_store.callAsync(id, owner);
     }
 }

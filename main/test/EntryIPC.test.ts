@@ -24,8 +24,8 @@ describe('EntryIPC', function () {
         setTimeout(() => helpers.startServices(done), 400);
     });
 
-    afterEach(function(done){
-       setTimeout(done, 2000);
+    afterEach(function (done) {
+        setTimeout(done, 2000);
     });
 
     it('--constructs channel api', function () {
@@ -98,7 +98,7 @@ describe('EntryIPC', function () {
                 done();
             }
         );
-        ipcMain.emit(channel.server.entry.publish, '', {content, tags, token, gas: 2000000});
+        ipcMain.emit(channel.server.entry.publish, '', { content, tags, token, gas: 2000000 });
     });
 
     it('--should get entries created', (done) => {
@@ -110,7 +110,7 @@ describe('EntryIPC', function () {
                 done();
             }
         );
-        ipcMain.emit(channel.server.entry.getEntriesCreated, '', {index: {}, fromBlock: 0});
+        ipcMain.emit(channel.server.entry.getEntriesCreated, '', { index: {}, fromBlock: 0 });
     });
 
     it('--should get an shortEntry by address', (done) => {
@@ -121,7 +121,7 @@ describe('EntryIPC', function () {
                 done();
             }
         );
-        ipcMain.emit(channel.server.entry.getEntry, '', {entryAddress: helpers.entryAddress});
+        ipcMain.emit(channel.server.entry.getEntry, '', { entryAddress: helpers.entryAddress });
     });
 
     it('--should get an entry of profile/position', (done) => {
@@ -132,7 +132,7 @@ describe('EntryIPC', function () {
                 done();
             }
         );
-        ipcMain.emit(channel.server.entry.getEntryOf, '', {profileAddress: helpers.profileAddress, position: 1});
+        ipcMain.emit(channel.server.entry.getEntryOf, '', { profileAddress: helpers.profileAddress, position: 1 });
     });
 
     it('--should get an shortEntry much faster', (done) => {
@@ -146,7 +146,7 @@ describe('EntryIPC', function () {
                 done();
             }
         );
-        ipcMain.emit(channel.server.entry.getEntry, '', {entryAddress: helpers.entryAddress});
+        ipcMain.emit(channel.server.entry.getEntry, '', { entryAddress: helpers.entryAddress });
     });
 
     it('--should get an fullEntry by address', (done) => {
@@ -157,7 +157,7 @@ describe('EntryIPC', function () {
                 done();
             }
         );
-        ipcMain.emit(channel.server.entry.getEntry, '', {entryAddress: helpers.entryAddress, full: true});
+        ipcMain.emit(channel.server.entry.getEntry, '', { entryAddress: helpers.entryAddress, full: true });
     });
 
     it('--should get fullEntry much faster', (done) => {
@@ -171,10 +171,10 @@ describe('EntryIPC', function () {
                 done();
             }
         );
-        ipcMain.emit(channel.server.entry.getEntry, '', {entryAddress: helpers.entryAddress, full: true});
+        ipcMain.emit(channel.server.entry.getEntry, '', { entryAddress: helpers.entryAddress, full: true });
     });
 
-    it('--should get number of entries published by profile', (done) =>{
+    it('--should get number of entries published by profile', (done) => {
         entryChannel.callTest.set(
             channel.client.entry.getEntriesCount,
             (injected) => {
@@ -182,7 +182,7 @@ describe('EntryIPC', function () {
                 done();
             }
         );
-        ipcMain.emit(channel.server.entry.getEntriesCount, '', {profileAddress: helpers.profileAddress});
+        ipcMain.emit(channel.server.entry.getEntriesCount, '', { profileAddress: helpers.profileAddress });
     });
 
     it('--should get score of entry', (done) => {
@@ -193,7 +193,7 @@ describe('EntryIPC', function () {
                 done();
             }
         );
-        ipcMain.emit(channel.server.entry.getScore, '', {address: helpers.entryAddress});
+        ipcMain.emit(channel.server.entry.getScore, '', { address: helpers.entryAddress });
     });
 
     it('--checks if entry is opened to votes', (done) => {
@@ -204,7 +204,7 @@ describe('EntryIPC', function () {
                 done();
             }
         );
-        ipcMain.emit(channel.server.entry.isOpenedToVotes, '', {address: helpers.entryAddress});
+        ipcMain.emit(channel.server.entry.isOpenedToVotes, '', { address: helpers.entryAddress });
     });
 
     it('--should upvote entry', (done) => {
@@ -215,7 +215,12 @@ describe('EntryIPC', function () {
                 done();
             }
         );
-        ipcMain.emit(channel.server.entry.upvote, '', {address: helpers.entryAddress, token, weight: 1, gas: 2000000});
+        ipcMain.emit(channel.server.entry.upvote, '', {
+            address: helpers.entryAddress,
+            token,
+            weight: 1,
+            gas: 2000000
+        });
     });
 
     it('--should downvote entry', (done) => {
@@ -226,7 +231,12 @@ describe('EntryIPC', function () {
                 done();
             }
         );
-        ipcMain.emit(channel.server.entry.downvote, '', {address: helpers.entryAddress, token, weight: 2, gas: 2000000});
+        ipcMain.emit(channel.server.entry.downvote, '', {
+            address: helpers.entryAddress,
+            token,
+            weight: 2,
+            gas: 2000000
+        });
     });
 
     it('--should get vote of', (done) => {
@@ -237,7 +247,10 @@ describe('EntryIPC', function () {
                 done();
             }
         );
-        ipcMain.emit(channel.server.entry.getVoteOf, '', {address: helpers.entryAddress, profile: helpers.profileAddress});
+        ipcMain.emit(channel.server.entry.getVoteOf, '', {
+            address: helpers.entryAddress,
+            profile: helpers.profileAddress
+        });
     });
 
     it('--should get votes of profile from event', (done) => {
@@ -248,7 +261,10 @@ describe('EntryIPC', function () {
                 done();
             }
         );
-        ipcMain.emit(channel.server.entry.getVotesEvent, '', {index: {profile: helpers.profileAddress}, fromBlock: 0});
+        ipcMain.emit(channel.server.entry.getVotesEvent, '', {
+            index: { profile: helpers.profileAddress },
+            fromBlock: 0
+        });
     });
     after(function (done) {
         helpers.stopServices(done);

@@ -76,7 +76,7 @@ abstract class IpfsEmitter extends AbstractEmitter {
             (message: string) => {
                 this.fireEvent(
                     channels.client.ipfs.startService,
-                    ipfsResponse({}, {message})
+                    ipfsResponse({}, { message })
                 )
             });
         return this;

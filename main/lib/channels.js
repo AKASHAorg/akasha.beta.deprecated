@@ -10,14 +10,16 @@ const hashPath = (...path) => {
 };
 const channels = {
     auth: ['login', 'logout', 'requestEther', 'generateEthKey', 'getLocalIdentities'],
-    tags: ['checkFormat', 'create', 'exists', 'getTagsCreated', 'subsCount', 'subscribe', 'getTagId', 'getTagName', 'unSubscribe'],
+    tags: ['checkFormat', 'create', 'tagIterator', 'tagSubIterator', 'exists', 'getTagsCreated', 'subsCount',
+        'subscribe', 'getTagId', 'getTagName', 'unSubscribe', 'isSubscribed'],
     entry: ['getProfileEntriesCount', 'getTagEntriesCount', 'getEntry', 'publish', 'update', 'canClaim', 'claim',
-        'downvote', 'getScore', 'getDepositBalance', 'upvote', 'voteCost', 'voteCount'],
+        'downvote', 'getScore', 'getDepositBalance', 'upvote', 'voteCost', 'voteCount', 'entryTagIterator',
+        'entryProfileIterator', 'votesIterator'],
     comments: ['getComment', 'comment', 'commentsCount', 'removeComment'],
     geth: ['options', 'startService', 'stopService', 'restartService', 'syncStatus', 'logs', 'status'],
     ipfs: ['startService', 'stopService', 'status', 'resolve', 'getConfig', 'setPorts', 'getPorts'],
     profile: ['getBalance', 'followProfile', 'getFollowersCount', 'getFollowingCount', 'getProfileData',
-        'unFollowProfile', 'updateProfileData'],
+        'unFollowProfile', 'updateProfileData', 'followersIterator', 'followingIterator'],
     registry: ['fetchRegistered', 'getCurrentProfile', 'profileExists', 'registerProfile', 'getByAddress', 'unregister'],
     tx: ['addToQueue', 'emitMined'],
     licenses: ['getLicenceById', 'getLicenses']

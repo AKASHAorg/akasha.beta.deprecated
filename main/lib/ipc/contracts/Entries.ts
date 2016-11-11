@@ -55,59 +55,64 @@ export default class Entries extends BaseContract {
 
     /**
      *
-     * @param profileAddress
+     * @param akashaId
      * @returns {any}
      */
-    public getProfileEntriesCount(profileAddress: string) {
+    public getProfileEntriesCount(akashaId: string) {
+        const akashaIdTr = this.gethInstance.web3.fromUtf8(akashaId);
         return this.contract
             .getProfileEntriesCount
-            .callAsync(profileAddress).then((result) => result.toNumber());
+            .callAsync(akashaIdTr).then((result) => result.toNumber());
     }
 
     /**
      *
-     * @param profileAddress
+     * @param akashaId
      * @returns {any}
      */
-    public getProfileEntryFirst(profileAddress: string) {
+    public getProfileEntryFirst(akashaId: string) {
+        const akashaIdTr = this.gethInstance.web3.fromUtf8(akashaId);
         return this.contract
             .getProfileEntryFirst
-            .callAsync(profileAddress).then((result) => result.toString());
+            .callAsync(akashaIdTr).then((result) => result.toString());
     }
 
     /**
      *
-     * @param profileAddress
+     * @param akashaId
      * @returns {any}
      */
-    public getProfileEntryLast(profileAddress: string) {
+    public getProfileEntryLast(akashaId: string) {
+        const akashaIdTr = this.gethInstance.web3.fromUtf8(akashaId);
         return this.contract
             .getProfileEntryLast
-            .callAsync(profileAddress).then((result) => result.toString());
+            .callAsync(akashaIdTr).then((result) => result.toString());
     }
 
     /**
      *
-     * @param profileAddress
+     * @param akashaId
      * @param entryId
      * @returns {any}
      */
-    public getProfileEntryNext(profileAddress: string, entryId: string) {
+    public getProfileEntryNext(akashaId: string, entryId: string) {
+        const akashaIdTr = this.gethInstance.web3.fromUtf8(akashaId);
         return this.contract
             .getProfileEntryNext
-            .callAsync(profileAddress, entryId).then((result) => result.toString());
+            .callAsync(akashaIdTr, entryId).then((result) => result.toString());
     }
 
     /**
      *
-     * @param profileAddress
+     * @param akashaId
      * @param entryId
      * @returns {any}
      */
-    public getProfileEntryPrev(profileAddress: string, entryId: string) {
+    public getProfileEntryPrev(akashaId: string, entryId: string) {
+        const akashaIdTr = this.gethInstance.web3.fromUtf8(akashaId);
         return this.contract
             .getProfileEntryPrev
-            .callAsync(profileAddress, entryId).then((result) => result.toString());
+            .callAsync(akashaIdTr, entryId).then((result) => result.toString());
     }
 
     /**

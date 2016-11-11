@@ -12,7 +12,7 @@ const execute = Promise.coroutine(function*(data: ProfileUpdateRequest) {
     const ipfsHash = yield create(data.ipfs);
     const currentProfile = yield getCurrentProfile.execute();
 
-    if(!currentProfile) {
+    if (!currentProfile) {
         throw new Error('No profile found to update');
     }
 

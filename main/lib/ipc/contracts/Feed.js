@@ -24,18 +24,21 @@ class Feed extends BaseContract_1.default {
         this.contract.subsLast.callAsync = Promise.promisify(this.contract.subsLast.call);
         this.contract.subsNext.callAsync = Promise.promisify(this.contract.subsNext.call);
         this.contract.subsPrev.callAsync = Promise.promisify(this.contract.subsPrev.call);
+        this.contract.isSubscribed.callAsync = Promise.promisify(this.contract.isSubscribed.call);
     }
     follow(id, gas = 2000000) {
         if (!id) {
             throw new Error('No Akasha ID provided');
         }
-        return this.evaluateData('follow', gas, id);
+        const idTr = this.gethInstance.web3.fromUtf8(id);
+        return this.evaluateData('follow', gas, idTr);
     }
     unFollow(id, gas = 2000000) {
         if (!id) {
             throw new Error('No Akasha ID provided');
         }
-        return this.evaluateData('unFollow', gas, id);
+        const idTr = this.gethInstance.web3.fromUtf8(id);
+        return this.evaluateData('unFollow', gas, idTr);
     }
     subscribe(tagName, gas = 2000000) {
         if (!tagName) {
@@ -52,61 +55,84 @@ class Feed extends BaseContract_1.default {
         return this.evaluateData('unSubscribe', gas, tagNameTr);
     }
     isFollowing(id) {
-        return this.contract.isFollowing.callAsync(id);
+        const idTr = this.gethInstance.web3.fromUtf8(id);
+        return this.contract.isFollowing.callAsync(idTr);
     }
     isFollower(id) {
-        return this.contract.isFollower.callAsync(id);
+        const idTr = this.gethInstance.web3.fromUtf8(id);
+        return this.contract.isFollower.callAsync(idTr);
     }
     getFollowingCount(id) {
-        return this.contract.getFollowingCount.callAsync(id).then((result) => result.toString());
+        const idTr = this.gethInstance.web3.fromUtf8(id);
+        return this.contract.getFollowingCount.callAsync(idTr).then((result) => result.toString());
     }
     getFollowingFirst(id) {
-        return this.contract.getFollowingFirst.callAsync(id).then((result) => result.toString());
+        const idTr = this.gethInstance.web3.fromUtf8(id);
+        return this.contract.getFollowingFirst.callAsync(idTr).then((result) => result.toString());
     }
     getFollowingLast(id) {
-        return this.contract.getFollowingLast.callAsync(id).then((result) => result.toString());
+        const idTr = this.gethInstance.web3.fromUtf8(id);
+        return this.contract.getFollowingLast.callAsync(idTr).then((result) => result.toString());
     }
     getFollowingNext(id, fromId) {
-        return this.contract.getFollowingNext.callAsync(id, fromId).then((result) => result.toString());
+        const idTr = this.gethInstance.web3.fromUtf8(id);
+        return this.contract.getFollowingNext.callAsync(idTr, fromId).then((result) => result.toString());
     }
     getFollowingPrev(id, fromId) {
-        return this.contract.getFollowingPrev.callAsync(id, fromId).then((result) => result.toString());
+        const idTr = this.gethInstance.web3.fromUtf8(id);
+        return this.contract.getFollowingPrev.callAsync(idTr, fromId).then((result) => result.toString());
     }
     getFollowingById(id, indexId) {
-        return this.contract.getFollowingById.callAsync(id, indexId);
+        const idTr = this.gethInstance.web3.fromUtf8(id);
+        return this.contract.getFollowingById.callAsync(idTr, indexId);
     }
     getFollowersCount(id) {
-        return this.contract.getFollowersCount.callAsync(id).then((result) => result.toString());
+        const idTr = this.gethInstance.web3.fromUtf8(id);
+        return this.contract.getFollowersCount.callAsync(idTr).then((result) => result.toString());
     }
     getFollowersFirst(id) {
-        return this.contract.getFollowersFirst.callAsync(id).then((result) => result.toString());
+        const idTr = this.gethInstance.web3.fromUtf8(id);
+        return this.contract.getFollowersFirst.callAsync(idTr).then((result) => result.toString());
     }
     getFollowersLast(id) {
-        return this.contract.getFollowersLast.callAsync(id).then((result) => result.toString());
+        const idTr = this.gethInstance.web3.fromUtf8(id);
+        return this.contract.getFollowersLast.callAsync(idTr).then((result) => result.toString());
     }
     getFollowersNext(id, fromId) {
-        return this.contract.getFollowersNext.callAsync(id, fromId).then((result) => result.toString());
+        const idTr = this.gethInstance.web3.fromUtf8(id);
+        return this.contract.getFollowersNext.callAsync(idTr, fromId).then((result) => result.toString());
     }
     getFollowersPrev(id, fromId) {
-        return this.contract.getFollowersPrev.callAsync(id, fromId).then((result) => result.toString());
+        const idTr = this.gethInstance.web3.fromUtf8(id);
+        return this.contract.getFollowersPrev.callAsync(idTr, fromId).then((result) => result.toString());
     }
     getFollowersById(id, indexId) {
-        return this.contract.getFollowersById.callAsync(id, indexId);
+        const idTr = this.gethInstance.web3.fromUtf8(id);
+        return this.contract.getFollowersById.callAsync(idTr, indexId);
     }
     subsCount(id) {
-        return this.contract.subsCount.callAsync(id).then((result) => result.toString());
+        const idTr = this.gethInstance.web3.fromUtf8(id);
+        return this.contract.subsCount.callAsync(idTr).then((result) => result.toString());
     }
     subsFirst(id) {
-        return this.contract.subsFirst.callAsync(id).then((result) => result.toString());
+        const idTr = this.gethInstance.web3.fromUtf8(id);
+        return this.contract.subsFirst.callAsync(idTr).then((result) => result.toString());
     }
     subsLast(id) {
-        return this.contract.subsLast.callAsync(id).then((result) => result.toString());
+        const idTr = this.gethInstance.web3.fromUtf8(id);
+        return this.contract.subsLast.callAsync(idTr).then((result) => result.toString());
     }
     subsNext(id, tagId) {
-        return this.contract.subsNext.callAsync(id, tagId).then((result) => result.toString());
+        const idTr = this.gethInstance.web3.fromUtf8(id);
+        return this.contract.subsNext.callAsync(idTr, tagId).then((result) => result.toString());
     }
     subsPrev(id, tagId) {
-        return this.contract.subsPrev.callAsync(id, tagId).then((result) => result.toString());
+        const idTr = this.gethInstance.web3.fromUtf8(id);
+        return this.contract.subsPrev.callAsync(idTr, tagId).then((result) => result.toString());
+    }
+    isSubscribed(id, tagName) {
+        const idTr = this.gethInstance.web3.fromUtf8(id);
+        return this.contract.isSubscribed.callAsync(idTr, tagName);
     }
 }
 Object.defineProperty(exports, "__esModule", { value: true });

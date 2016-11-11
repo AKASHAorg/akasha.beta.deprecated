@@ -6,8 +6,8 @@ import { constructed as contracts } from '../../contracts/index';
  * @type {Function}
  */
 const execute = Promise.coroutine(function*(data: EntriesCountRequest) {
-    const count =  yield contracts.instance.entries.getProfileEntriesCount(data.profileAddress);
-    return { count, profileAddress: data.profileAddress };
+    const count = yield contracts.instance.entries.getProfileEntriesCount(data.akashaId);
+    return { count, akashaId: data.akashaId };
 });
 
 export default { execute, name: 'getProfileEntriesCount' };

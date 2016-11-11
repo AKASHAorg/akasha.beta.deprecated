@@ -17,7 +17,7 @@ export default class Faucet extends BaseContract {
         return this.evaluateData('claim', gas);
     }
 
-    public getLastClaim(idAddress: string){
+    public getLastClaim(idAddress: string) {
         this.contract.getLastClaim.callAsync(idAddress).then((result) => result.toString()); // returns block number
     }
 

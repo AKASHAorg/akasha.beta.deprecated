@@ -10,7 +10,7 @@ import WebContents = Electron.WebContents;
 
 class GethIPC extends GethEmitter {
     public logger = 'geth';
-    private BOOTNODE = 'enode://a7b111165e63cb608814f0ba55c0e7f779841473320ac6dbe6089d952241fb5a5a'+
+    private BOOTNODE = 'enode://a7b111165e63cb608814f0ba55c0e7f779841473320ac6dbe6089d952241fb5a5a' +
         '9bcc9406215e366ab5438d6ab11129c3247ed8354dc6e00ed9ce9305493667@138.68.78.152:30301';
     private DEFAULT_MANAGED: string[] = ['startService', 'stopService', 'status'];
 
@@ -25,12 +25,12 @@ class GethIPC extends GethEmitter {
         );
         this.webContents = webContents;
         const datadir = GethConnector.getDefaultDatadir();
-            GethConnector.getInstance().setOptions({
-                bootnodes: this.BOOTNODE,
-                datadir: join(datadir, 'akasha'),
-                ipcpath: join(datadir, 'akasha', 'geth.ipc'),
-                networkid: 512180
-            });
+        GethConnector.getInstance().setOptions({
+            bootnodes: this.BOOTNODE,
+            datadir: join(datadir, 'akasha'),
+            ipcpath: join(datadir, 'akasha', 'geth.ipc'),
+            networkid: 512180
+        });
         // register listeners
         this._start()
             ._restart()
@@ -126,7 +126,7 @@ class GethIPC extends GethEmitter {
         this.registerListener(
             channels.server.geth.stopService,
             (event: IpcMainEvent, data: GethStopRequest) => {
-                const signal = (data)? data.signal: 'SIGINT';
+                const signal = (data) ? data.signal : 'SIGINT';
                 GethConnector.getInstance().stop(signal);
             }
         );
@@ -183,7 +183,7 @@ class GethIPC extends GethEmitter {
             channels.server.geth.logs,
             (event: any) => {
                 GethConnector.getInstance().logger.query(
-                    { start: 0, limit: 20, order:  'desc'},
+                    { start: 0, limit: 20, order: 'desc' },
                     (err: Error, info: any) => {
                         let response: MainResponse;
                         if (err) {

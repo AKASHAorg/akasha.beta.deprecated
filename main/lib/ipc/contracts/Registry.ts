@@ -40,14 +40,14 @@ export default class Registry extends BaseContract {
             .addressOfKey
             .callAsync(address)
             .then((profileAddress) => {
-                if(!!unpad(profileAddress)) {
+                if (!!unpad(profileAddress)) {
                     return profileAddress;
                 }
                 return '';
             });
     }
 
-    public checkFormat(id: string){
+    public checkFormat(id: string) {
         return this.contract
             .check_format
             .callAsync(id)
@@ -107,7 +107,9 @@ export default class Registry extends BaseContract {
                     .check_format
                     .callAsync(id);
             }).then((isOK) => {
-                if(!isOK){ throw new Error(`${id} has illegal characters`);}
+                if (!isOK) {
+                    throw new Error(`${id} has illegal characters`);
+                }
 
                 return this.evaluateData('register', gas, idTr, ipfsHashTr);
             })
@@ -130,8 +132,8 @@ export default class Registry extends BaseContract {
      * @returns {Bluebird<T>|any}
      */
     public getRegistered(filter: {index: {}, fromBlock: string, toBlock?: string, address?: string}) {
-        const {fromBlock, toBlock, address} = filter;
-        const Registered = this.contract.Register(filter.index, {fromBlock, toBlock, address});
+        const { fromBlock, toBlock, address } = filter;
+        const Registered = this.contract.Register(filter.index, { fromBlock, toBlock, address });
         Registered.getAsync = Promise.promisify(Registered.get);
         return Registered.getAsync();
     }

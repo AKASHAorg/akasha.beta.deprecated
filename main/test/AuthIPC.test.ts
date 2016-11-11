@@ -1,13 +1,5 @@
 import { ipcMain } from 'electron';
-import {
-    initLogger,
-    startServices,
-    stopServices,
-    checkSynced,
-    pwd,
-    mockedAddress,
-    authChannel
-} from './helpers';
+import { initLogger, startServices, stopServices, checkSynced, pwd, mockedAddress, authChannel } from './helpers';
 import { expect } from 'chai';
 import channel from '../lib/channels';
 import { setTimeout } from 'timers';
@@ -95,7 +87,7 @@ describe('AuthIPC', function () {
                 expect(injected.data.data.token).to.exist;
                 done();
             });
-        ipcMain.emit(channel.server.auth.login, '', {account: mockedAddress, password: pwd, rememberTime: 1})
+        ipcMain.emit(channel.server.auth.login, '', { account: mockedAddress, password: pwd, rememberTime: 1 })
     });
 
     it('--should #logout', function (done) {

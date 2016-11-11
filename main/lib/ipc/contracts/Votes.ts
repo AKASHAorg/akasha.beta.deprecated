@@ -130,7 +130,9 @@ export default class Votes extends BaseContract {
         return this.contract
             .getVoteOf
             .callAsync(entryId, voteId)
-            .then((result) => result.toString());
+            .then((result) => {
+                return { profile: result.profile, score: (result.score).toString() };
+            });
     }
 
     /**

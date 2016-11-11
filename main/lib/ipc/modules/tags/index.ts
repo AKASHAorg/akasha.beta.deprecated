@@ -7,7 +7,10 @@ import subscribeTag from './subscribe-tag';
 import tagId from './tag-id';
 import tagName from './tag-name';
 import unSubscribeTag from './unsubscribe-tag';
-
+import tagCount from './tag-count';
+import tagIterator from './tags-iterator';
+import subsIterator from './subs-iterator';
+import isSubscribed from './is-subscribed';
 
 export default [
     checkFormat,
@@ -16,7 +19,11 @@ export default [
     fetchTags,
     subsCount,
     subscribeTag,
+    tagCount,
     tagId,
     tagName,
-    unSubscribeTag
+    unSubscribeTag,
+    tagIterator,
+    subsIterator,
+    isSubscribed
 ]

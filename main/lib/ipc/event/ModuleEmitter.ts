@@ -50,6 +50,7 @@ abstract class ModuleEmitter extends AbstractEmitter {
                 channels.server[this.MODULE_NAME][method.name],
                 (event: any, data: any) => {
                     let response: any;
+                    console.time(method.name);
                     method
                         .execute(data)
                         .then((result: any) => {
@@ -64,6 +65,7 @@ abstract class ModuleEmitter extends AbstractEmitter {
                                 response,
                                 event
                             );
+                            console.timeEnd(method.name);
                             response = null;
                         });
                 }
