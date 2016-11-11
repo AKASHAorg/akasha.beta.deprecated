@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { ProfileActions, EntryActions, DraftActions } from 'local-flux';
+import { ProfileActions, EntryActions, DraftActions, TagActions } from 'local-flux';
 import PublishEntryPanel from './components/publish-entry-panel';
 
 function mapStateToProps (state) {
@@ -7,7 +7,8 @@ function mapStateToProps (state) {
         loggedProfile: state.profileState.get('loggedProfile'),
         profiles: state.profileState.get('profiles'),
         drafts: state.draftState.get('drafts'),
-        tagState: state.tagState
+        pendingTags: state.tagState.get('pendingTags'),
+        licences: state.entryState.get('licences')
     };
 }
 
@@ -16,6 +17,7 @@ function mapDispatchToProps (dispatch) {
         profileActions: new ProfileActions(dispatch),
         entryActions: new EntryActions(dispatch),
         draftActions: new DraftActions(dispatch),
+        tagActions: new TagActions(dispatch)
     };
 }
 

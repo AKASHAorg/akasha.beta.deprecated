@@ -1,7 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { ProfileActions, DraftActions, AppActions, TagActions, TransactionActions } from 'local-flux';
-import { TagService } from 'local-flux/services';
+import { DraftActions, AppActions, TransactionActions } from 'local-flux';
 /**
  * This component will publish entries in parallel
  * main logic of entry publishing steps will be here
@@ -10,91 +9,62 @@ import { TagService } from 'local-flux/services';
  */
 class PublishEntryRunner extends Component {
     componentWillMount () {
-        const { tagActions, transactionActions } = this.props;
-        tagActions.getPendingTags();
+        const { transactionActions, loggedProfile, draftActions } = this.props;
         transactionActions.getPendingTransactions();
+        transactionActions.getMinedTransactions();
+        draftActions.getPublishingDrafts(loggedProfile.get('profile'));
     }
     componentWillReceiveProps (nextProps) {
-        const { tagActions } = this.props;
-        const { drafts, params, loggedProfile, loggedProfileData } = nextProps;
-        const publishableDrafts = drafts.filter(draft =>
-            draft.status.publishing && draft.status.publishingConfirmed);
+        const { drafts, appActions, loggedProfile, draftActions, transactionActions,
+            minedTransactions } = nextProps;
+        let publishableDrafts = [];
+        if (drafts.size > 0) {
+            publishableDrafts = drafts.filter(draft =>
+                draft.status.publishing && draft.status.publishingConfirmed);
+        }
         if (publishableDrafts.size > 0) {
-            // show a message in a snackbar informing that publishing is in progress
             publishableDrafts.forEach((draft) => {
-                this._resumeDraftPublishing(draft);
+                const { status } = draft;
+                if (status.currentAction === 'checkLogin' && status.publishing && status.publishingConfirmed) {
+                    const tokenIsValid = this._verifyExpiration(loggedProfile.get('expiration'));
+                    if (tokenIsValid) {
+                        return this._registerDraft(draft, loggedProfile.get('token'));
+                    }
+                    return appActions.showAuthDialog();
+                }
+                if (status.currentAction === 'draftPublished' && draft.tx) {
+                    return this._checkForTx(draft);
+                }
+                if (status.currentAction === 'listeningTx' &&
+                        minedTransactions.findIndex(minedTx => minedTx.tx === draft.tx) !== -1) {
+                    // delete draft and pendingTxs
+                    draftActions.deleteDraft(draft.id);
+                    transactionActions.deletePendingTx(draft.tx);
+                }
             });
         }
     }
     _updateDraftStatus = (currentDraft, statusChanges) => {
         const { draftActions } = this.props;
-        const newDraft = currentDraft.merge({
-            status: Object.assign({}, currentDraft.get('status'), statusChanges)
-        });
+        const newDraft = currentDraft.set('status',
+            Object.assign({}, currentDraft.get('status'), statusChanges));
         draftActions.updateDraft(newDraft);
     }
-    _resumeDraftPublishing = (draft) => {
-        const tagService = new TagService();
-        const { draftActions, transactionActions, pendingTags, loggedProfile,
-            pendingTransactions } = this.props;
-        const draftTags = draft.get('tags');
-        // exclude tags already in pending state
-        const tagsToRegister = draftTags.filter(tag =>
-            pendingTags.findIndex(tagObj => tagObj.tag === tag) === -1);
-        console.log(tagsToRegister, 'remaining tags');
-        if (tagsToRegister.length === 0) {
-            // no tags to publish
-            return this._registerDraft(draft);
-        }
-        // check on blockchain and register tag
-        tagsToRegister.forEach((tag) => {
-            tagService.checkExistingTags(tag, (ev, { data, error }) => {
-                if (error) {
-                    console.error(error);
-                }
-                if (!data.exists) {
-                    this._updateDraftStatus(draft, {
-                        currentAction: 'publishingTags'
-                    });
-                    this._registerTag(tag);
-                }
-            });
+    _checkForTx = (draft) => {
+        const { transactionActions } = this.props;
+        transactionActions.listenForMinedTx();
+        transactionActions.addToQueue([{ tx: draft.tx }]);
+        this._updateDraftStatus(draft, {
+            currentAction: 'listeningTx'
         });
-        const notListeningPendingTags = pendingTags.filter(tagObj =>
-            pendingTransactions.findIndex(tx => tx === tagObj.tx) === -1);
+    };
 
-            console.log(notListeningPendingTags, 'notListeningPendingTags');
-
-        if (notListeningPendingTags.size > 0) {
-            notListeningPendingTags.forEach((tagObj) => {
-                transactionActions.listenForMinedTx();
-                transactionActions.addToQueue([{ tx: tagObj.tx }]);
-            });
-        } else {
-            this._registerDraft(draft);
-        }
-    }
     _verifyExpiration = expirationDate =>
         Date.parse(expirationDate) > Date.now();
 
-    _registerDraft = (draft) => {
-        const { draftActions, loggedProfile } = this.props;
-        this._updateDraftStatus(draft, {
-            currentAction: 'registeringDraft'
-        });
-        const loginValid = this._verifyExpiration(loggedProfile.get('expiration'));
-        console.log('ready to register draft');
-    }
-    _registerTag = (tag) => {
-        const { tagActions, appActions, loggedProfile } = this.props;
-        const loginValid = this._verifyExpiration(loggedProfile.get('expiration'));
-        if (loginValid) {
-            console.log('registering tag', tag);
-            tagActions.registerTag(tag, loggedProfile.get('token'));
-            return;
-        }
-        console.log('Action Required to continue!! Please Login again!!');
-        return;
+    _registerDraft = (draft, token) => {
+        const { draftActions } = this.props;
+        draftActions.publishDraft(draft.toJS(), token);
     }
     render () {
         return null;
@@ -103,12 +73,12 @@ class PublishEntryRunner extends Component {
 
 PublishEntryRunner.propTypes = {
     drafts: PropTypes.shape(),
-    params: PropTypes.shape(),
     draftActions: PropTypes.shape(),
     appActions: PropTypes.shape(),
-    pendingTags: PropTypes.shape(),
     loggedProfile: PropTypes.shape(),
-    pendingTransactions: PropTypes.shape(),
+    transactionActions: PropTypes.shape(),
+    minedTransactions: PropTypes.shape()
+
 };
 
 function mapStateToProps (state) {
@@ -117,17 +87,14 @@ function mapStateToProps (state) {
         loggedProfileData: state.profileState.get('profiles').find(prf =>
             prf.get('profile') === state.profileState.getIn(['loggedProfile', 'profile'])),
         drafts: state.draftState.get('drafts'),
-        pendingTags: state.tagState.get('pendingTags'),
-        pendingTransactions: state.transactionState.get('pending')
+        minedTransactions: state.transactionState.get('mined')
     };
 }
 
 function mapDispatchToProps (dispatch) {
     return {
-        profileActions: new ProfileActions(dispatch),
         draftActions: new DraftActions(dispatch),
         appActions: new AppActions(dispatch),
-        tagActions: new TagActions(dispatch),
         transactionActions: new TransactionActions(dispatch)
     };
 }

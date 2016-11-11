@@ -2,13 +2,13 @@ import BaseService from './base-service';
 
 class AppService extends BaseService {
     checkForUpdates = () =>
-        new Promise((resolve, reject) => {
-            return resolve({ hasUpdates: false });
-        });
+        new Promise(resolve =>
+            resolve({ hasUpdates: false })
+        );
     updateApp = () =>
-        new Promise((resolve, reject) => {
-            return resolve({ success: true });
-        })
+        new Promise(resolve =>
+            resolve({ success: true })
+        )
 }
 
 export { AppService };

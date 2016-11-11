@@ -23,26 +23,6 @@ export function getEntriesCountError (error, flags) {
     };
 }
 
-export function checkTagExistenceSuccess (result) {
-    return {
-        type: types.CHECK_TAG_EXISTENCE_SUCCESS,
-        result
-    };
-}
-
-export function checkTagExistence () {
-    return {
-        type: types.CHECK_TAG_EXISTENCE
-    };
-}
-
-export function checkTagExistenceError (error) {
-    return {
-        type: types.CHECK_TAG_EXISTENCE_ERROR,
-        error
-    };
-}
-
 export function getSortedEntries (entries) {
     return {
         type: types.GET_SORTED_ENTRIES,
@@ -74,6 +54,34 @@ export function getSavedEntriesSuccess (entries) {
 export function getSavedEntriesError (error) {
     return {
         type: types.GET_SAVED_ENTRIES_ERROR,
+        error
+    };
+}
+
+export function getLicencesSuccess (licences) {
+    return {
+        type: types.GET_LICENCES_SUCCESS,
+        licences
+    };
+}
+
+export function getLicencesError (error) {
+    return {
+        type: types.GET_LICENCES_ERROR,
+        error
+    };
+}
+
+export function getLicenceByIdSuccess (licence) {
+    return {
+        type: types.GET_LICENCE_BY_ID_SUCCESS,
+        licence
+    };
+}
+
+export function getLicenceByIdError (error) {
+    return {
+        type: types.GET_LICENCE_BY_ID_ERROR,
         error
     };
 }
