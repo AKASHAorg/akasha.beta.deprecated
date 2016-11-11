@@ -48,10 +48,11 @@ export const ipfsChannel = new IpfsIPCtest();
 export const authChannel = new AuthIPCtest();
 export const txChannel = new TxIPCtest();
 export const tagId = 2;
-export const tagName = 'cars1477052930372';
+export const tagName = 'tag-no1478868171004';
 export const pwd = Buffer.from("abc12345");
-export const mockedAddress = '0x9e86b867884e8f84ea4764fed6d3e0931b48f24d';
-export const profileAddress = '0x3543f9dedcc22d2c3be06f5223137f101df9010b';
+export const mockedAddress = '0xc7fea2aa9b1475e09f6325e3f6586170f3a1c470';
+export const akashaId = 'costelinho';
+export const profileAddress = '0x78363144f9d4373c05a29a83260c0ce1b300092a';
 export const entryAddress = '0xc7449867e7767c6d5b257dea7740650003ee5080';
 export const initLogger = () => {
     return Applogger.getInstance();
@@ -191,10 +192,10 @@ export const confirmTx = (done, tx) => {
         (injected) => {
             expect(injected.data).to.exist;
             expect(injected.data.data.mined).to.exist;
-            if(injected.data.data.mined === tx){
+            if (injected.data.data.mined === tx) {
                 done();
             }
         }
     );
-    ipcMain.emit(channel.server.tx.addToQueue, '', [{tx}]);
+    ipcMain.emit(channel.server.tx.addToQueue, '', [{ tx }]);
 };

@@ -39,8 +39,7 @@ describe('RegistryIPC', function () {
         let listenersNr = 0;
         const listenOn = [
             channels_1.default.server.registry.profileExists,
-            channels_1.default.server.registry.registerProfile,
-            channels_1.default.server.registry.getRegistered
+            channels_1.default.server.registry.registerProfile
         ];
         registryChannel.callTest.set(channels_1.default.client.registry.manager, (injected) => {
             listenersNr++;
@@ -71,7 +70,12 @@ describe('RegistryIPC', function () {
         });
     });
     it('--should get a token', function (done) {
-        helpers.getToken(done, { account: ethAddress, password: helpers.pwd, rememberTime: 2 }, (generated) => {
+        helpers.getToken(done, {
+            account: ethAddress,
+            password: helpers.pwd,
+            rememberTime: 2,
+            registering: true
+        }, (generated) => {
             token = generated;
         });
     });
@@ -80,20 +84,25 @@ describe('RegistryIPC', function () {
     });
     it('--should register new profile #registerProfile', function (done) {
         registryChannel.callTest.set(channels_1.default.client.registry.registerProfile, (injected) => {
+            console.log(injected.data);
             chai_1.expect(injected.data).to.exist;
             chai_1.expect(injected.data.data.tx).to.exist;
             txPending = injected.data.data.tx;
             console.log(txPending);
             done();
         });
-        electron_1.ipcMain.emit(channels_1.default.server.registry.registerProfile, '', { token, akashaId: 'TuserT' + new Date().getTime(),
-            ipfs: { firstName: 'Tritza', lastName: 'Fanica' + new Date().getTime(),
-                avatar: new Uint8Array(1000000),
+        electron_1.ipcMain.emit(channels_1.default.server.registry.registerProfile, '', {
+            token, akashaId: 'costelinho',
+            ipfs: {
+                firstName: 'Tritza', lastName: 'Fanica' + new Date().getTime(),
+                avatar: Buffer.alloc(100000, '1'),
                 backgroundImage: {
-                    xs: { src: new Uint8Array(1000000), width: 100, height: 100 },
-                    sm: { src: new Uint8Array(1000000), width: 200, height: 100 },
-                    md: { src: new Uint8Array(1000000), width: 300, height: 100 },
-                } } });
+                    xs: { src: Buffer.alloc(100000, '1'), width: 100, height: 100 },
+                    sm: { src: Buffer.alloc(100000, '1'), width: 200, height: 100 },
+                    md: { src: Buffer.alloc(100000, '1'), width: 300, height: 100 },
+                }
+            }
+        });
     });
     it('--should wait for registry tx', function (done) {
         helpers.confirmTx(done, txPending);

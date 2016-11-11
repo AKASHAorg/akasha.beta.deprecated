@@ -44,7 +44,7 @@ export function bootstrapApp() {
     }
 
     app.on('ready', () => {
-        const modules = initModules();
+        let modules = initModules();
         mainWindow = new BrowserWindow({
             width: 1280,
             height: 720,
@@ -70,7 +70,7 @@ export function bootstrapApp() {
             setTimeout(() => app.quit(), 1000);
         });
         initMenu(mainWindow);
-        mainWindow.webContents.on('did-finish-load', () => {
+        mainWindow.webContents.once('did-finish-load', () => {
             modules.logger.registerLogger('APP');
             modules.initListeners(mainWindow.webContents);
         });

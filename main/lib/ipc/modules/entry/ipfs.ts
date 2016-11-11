@@ -43,16 +43,16 @@ class IpfsEntry {
         return Promise.all(ipfsApiRequests)
             .then(() => this._uploadMediaDraft())
             .then((draft) => {
-            return IpfsConnector.getInstance().api
-                .add({
-                    draft: draft,
-                    excerpt: this.excerpt,
-                    featuredImage: this.featuredImage,
-                    licence: this.licence,
-                    tags: this.tags,
-                    title: this.title
-                })
-        });
+                return IpfsConnector.getInstance().api
+                    .add({
+                        draft: draft,
+                        excerpt: this.excerpt,
+                        featuredImage: this.featuredImage,
+                        licence: this.licence,
+                        tags: this.tags,
+                        title: this.title
+                    })
+            });
     }
 
     private _filterForImages() {

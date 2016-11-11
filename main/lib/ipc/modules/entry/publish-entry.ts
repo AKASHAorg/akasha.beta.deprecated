@@ -7,7 +7,7 @@ import { constructed as contracts } from '../../contracts/index';
  * Create a new Entry
  * @type {Function}
  */
-const execute = Promise.coroutine(function* (data: EntryCreateRequest) {
+const execute = Promise.coroutine(function*(data: EntryCreateRequest) {
     const ipfsEntry = new IpfsEntry();
     const hash = yield ipfsEntry.create(data.content, data.tags);
     const txData = yield contracts.instance.entries.publish(hash, data.tags, data.gas);
@@ -15,4 +15,4 @@ const execute = Promise.coroutine(function* (data: EntryCreateRequest) {
     return { tx };
 });
 
-export default {execute, name: 'publish'};
+export default { execute, name: 'publish' };

@@ -594,7 +594,7 @@ interface EntryScoreResponse {
 }
 
 interface EntriesCountRequest {
-    profileAddress: string;
+    akashaId: string;
 }
 
 interface EntriesCountTagRequest {
@@ -603,7 +603,7 @@ interface EntriesCountTagRequest {
 
 interface EntriesCountResponse extends MainResponse {
     data: {
-        profileAddress: string;
+        akashaId: string;
         count: number;
     }
 }

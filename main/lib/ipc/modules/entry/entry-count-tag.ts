@@ -6,7 +6,7 @@ import { constructed as contracts } from '../../contracts/index';
  * @type {Function}
  */
 const execute = Promise.coroutine(function*(data: EntriesCountTagRequest) {
-    const count =  yield contracts.instance.entries.getTagEntriesCount(data.tagName);
+    const count = yield contracts.instance.entries.getTagEntriesCount(data.tagName);
     return { count, tagName: data.tagName };
 });
 

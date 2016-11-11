@@ -17,7 +17,8 @@ describe('TagsIPC', function () {
     this.timeout(60000);
     let tagsChannel: TagsIPCtest;
     let token: string;
-
+    let txPending: string;
+    let tagName: string;
     before(function (done) {
         expect(helpers.initLogger()).to.exist;
         setTimeout(() => helpers.startServices(done), 400);
@@ -42,16 +43,12 @@ describe('TagsIPC', function () {
         const listenOn = [
             channel.server.tags.create,
             channel.server.tags.getTagId,
-            channel.server.tags.getTagAt,
-            channel.server.tags.isSubscribed,
+            channel.server.tags.getTagName,
             channel.server.tags.subscribe,
-            channel.server.tags.unsubscribe,
-            channel.server.tags.getSubPosition,
-            channel.server.tags.getTagsFrom,
-            channel.server.tags.getCreateError,
-            channel.server.tags.getTagsCreated,
-            channel.server.tags.getIndexedTag,
-            channel.server.tags.getIndexTagError
+            channel.server.tags.unSubscribe,
+            channel.server.tags.getTagCount,
+            channel.server.tags.subsCount,
+            channel.server.tags.getTagsCreated
         ];
         tagsChannel.callTest.set(
             channel.client.tags.manager,
@@ -79,27 +76,35 @@ describe('TagsIPC', function () {
         tagsChannel.callTest.set(
             channel.client.tags.create,
             (injected) => {
+                console.log(injected.data);
                 expect(injected.data.data).to.exist;
                 expect(injected.data.data.tx).to.exist;
+                txPending = injected.data.data.tx;
                 done();
             }
         );
-        ipcMain.emit(channel.server.tags.create, '', { token, tagName: 'cars' + new Date().getTime(), gas: 2000000 });
+        tagName = 'tag-no' + new Date().getTime();
+        ipcMain.emit(channel.server.tags.create, '', { token, tagName: tagName, gas: 2000000 });
+    });
+
+    it('--should wait for creating tag tx', function (done) {
+        helpers.confirmTx(done, txPending);
     });
 
     it('--#getTagId', function (done) {
         tagsChannel.callTest.set(
             channel.client.tags.getTagId,
             (injected) => {
+                console.log(injected.data.data);
                 expect(injected.data.data).to.exist;
                 expect(injected.data.data.tagId).to.exist;
                 done();
             }
         );
-        ipcMain.emit(channel.server.tags.getTagId, '', { tagName: 'cars' });
+        ipcMain.emit(channel.server.tags.getTagId, '', { tagName: 'tag-no1478868259923' });
     });
 
-    it('--#getTagAt', function (done) {
+    it('--#getTagName', function (done) {
         tagsChannel.callTest.set(
             channel.client.tags.getTagName,
             (injected) => {
@@ -108,22 +113,21 @@ describe('TagsIPC', function () {
                 done();
             }
         );
-        ipcMain.emit(channel.server.tags.getTagAt, '', { tagId: '2' });
+        ipcMain.emit(channel.server.tags.getTagName, '', { tagId: '2' });
     });
-
-    it('--#getTagAt', function (done) {
+    it('--#getTagCount', function (done) {
         tagsChannel.callTest.set(
-            channel.client.tags.getTagAt,
+            channel.client.tags.getTagCount,
             (injected) => {
+                console.log(injected.data.data);
                 expect(injected.data.data).to.exist;
-                expect(injected.data.data.tagName).to.exist;
+                expect(injected.data.data.count).to.exist;
                 done();
             }
         );
-        ipcMain.emit(channel.server.tags.getTagAt, '', { tagId: 2 });
+        ipcMain.emit(channel.server.tags.getTagCount, '', {});
     });
-
-    it('--#isSubscribed', function (done) {
+    it.skip('--#isSubscribed', function (done) {
         tagsChannel.callTest.set(
             channel.client.tags.isSubscribed,
             (injected) => {
@@ -139,27 +143,34 @@ describe('TagsIPC', function () {
         tagsChannel.callTest.set(
             channel.client.tags.subscribe,
             (injected) => {
+                console.log(injected.data);
                 expect(injected.data.data).to.exist;
                 expect(injected.data.data.tx).to.exist;
+                txPending = injected.data.data.tx;
                 done();
             }
         );
-        ipcMain.emit(channel.server.tags.subscribe, '', { tagName: helpers.tagName, token, gas: 2000000 });
+        ipcMain.emit(channel.server.tags.subscribe, '', { tagName: tagName, token, gas: 2000000 });
     });
 
-    it('--#getSubPosition', function (done) {
+    it('--should wait for subscribe tag tx', function (done) {
+        helpers.confirmTx(done, txPending);
+    });
+
+    it('--gets #subsCount', function (done) {
         tagsChannel.callTest.set(
-            channel.client.tags.getSubPosition,
+            channel.client.tags.subsCount,
             (injected) => {
+                console.log(injected.data);
                 expect(injected.data.data).to.exist;
-                expect(injected.data.data.position).to.exist;
+                expect(injected.data.data.count).to.exist;
                 done();
             }
         );
-        ipcMain.emit(channel.server.tags.getSubPosition, '', { tagId: helpers.tagId, address: helpers.profileAddress });
+        ipcMain.emit(channel.server.tags.subsCount, '', { akashaId: helpers.akashaId });
     });
 
-    it('--#unsubscribe', function (done) {
+    it.skip('--#unsubscribe', function (done) {
         tagsChannel.callTest.set(
             channel.client.tags.unsubscribe,
             (injected) => {
@@ -175,65 +186,7 @@ describe('TagsIPC', function () {
             gas: 2000000
         });
     });
-    it('--#getTagsFrom', function (done) {
-        tagsChannel.callTest.set(
-            channel.client.tags.getTagsFrom,
-            (injected) => {
-                expect(injected.data.data).to.exist;
-                expect(injected.data.data.tags).to.exist;
-                done();
-            }
-        );
-        ipcMain.emit(channel.server.tags.getTagsFrom, '', { from: 0, to: 10 });
-    });
 
-    it('--#getCreateError', function (done) {
-        tagsChannel.callTest.set(
-            channel.client.tags.getCreateError,
-            (injected) => {
-                expect(injected.data.data).to.exist;
-                expect(injected.data.data.events).to.exist;
-                done();
-            }
-        );
-        ipcMain.emit(channel.server.tags.getCreateError, '', { fromBlock: 0, address: helpers.profileAddress });
-    });
-
-    it('--#getTagsCreated', function (done) {
-        tagsChannel.callTest.set(
-            channel.client.tags.getTagsCreated,
-            (injected) => {
-                expect(injected.data.data).to.exist;
-                expect(injected.data.data.collection).to.exist;
-                done();
-            }
-        );
-        ipcMain.emit(channel.server.tags.getTagsCreated, '', { fromBlock: 0, address: helpers.profileAddress });
-    });
-
-    it('--#getIndexedTag', function (done) {
-        tagsChannel.callTest.set(
-            channel.client.tags.getIndexedTag,
-            (injected) => {
-                expect(injected.data.data).to.exist;
-                expect(injected.data.data.events).to.exist;
-                done();
-            }
-        );
-        ipcMain.emit(channel.server.tags.getIndexedTag, '', { fromBlock: 0, address: helpers.profileAddress });
-    });
-
-    it('--#getIndexTagError', function (done) {
-        tagsChannel.callTest.set(
-            channel.client.tags.getIndexTagError,
-            (injected) => {
-                expect(injected.data.data).to.exist;
-                expect(injected.data.data.events).to.exist;
-                done();
-            }
-        );
-        ipcMain.emit(channel.server.tags.getIndexTagError, '', { fromBlock: 0, address: helpers.profileAddress });
-    });
     after(function (done) {
         helpers.stopServices(done);
     });

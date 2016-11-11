@@ -1,5 +1,7 @@
 import entryCountProfile from './entry-count-profile';
 import entryCountTag from './entry-count-tag';
+import entryTagIterator from './entry-tag-iterator';
+import entryProfileIterator from './entry-profile-iterator';
 import getEntry from './get-entry';
 import publishEntry from './publish-entry';
 import updateEntry from './update-entry';
@@ -11,6 +13,7 @@ import getDepositBalance from './get-deposit-balance';
 import upVoteEntry from './upvote-entry';
 import voteCost from './vote-cost';
 import voteCount from './vote-count';
+import votesIterator from './votes-iterator';
 
 
 export default [
@@ -26,5 +29,8 @@ export default [
     getDepositBalance,
     upVoteEntry,
     voteCost,
-    voteCount
+    voteCount,
+    entryTagIterator,
+    entryProfileIterator,
+    votesIterator
 ]

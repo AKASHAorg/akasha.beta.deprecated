@@ -32,30 +32,35 @@ class Entries extends BaseContract_1.default {
     claimDeposit(entryId, gas = 2000000) {
         return this.evaluateData('claimDeposit', gas, entryId);
     }
-    getProfileEntriesCount(profileAddress) {
+    getProfileEntriesCount(akashaId) {
+        const akashaIdTr = this.gethInstance.web3.fromUtf8(akashaId);
         return this.contract
             .getProfileEntriesCount
-            .callAsync(profileAddress).then((result) => result.toNumber());
+            .callAsync(akashaIdTr).then((result) => result.toNumber());
     }
-    getProfileEntryFirst(profileAddress) {
+    getProfileEntryFirst(akashaId) {
+        const akashaIdTr = this.gethInstance.web3.fromUtf8(akashaId);
         return this.contract
             .getProfileEntryFirst
-            .callAsync(profileAddress).then((result) => result.toString());
+            .callAsync(akashaIdTr).then((result) => result.toString());
     }
-    getProfileEntryLast(profileAddress) {
+    getProfileEntryLast(akashaId) {
+        const akashaIdTr = this.gethInstance.web3.fromUtf8(akashaId);
         return this.contract
             .getProfileEntryLast
-            .callAsync(profileAddress).then((result) => result.toString());
+            .callAsync(akashaIdTr).then((result) => result.toString());
     }
-    getProfileEntryNext(profileAddress, entryId) {
+    getProfileEntryNext(akashaId, entryId) {
+        const akashaIdTr = this.gethInstance.web3.fromUtf8(akashaId);
         return this.contract
             .getProfileEntryNext
-            .callAsync(profileAddress, entryId).then((result) => result.toString());
+            .callAsync(akashaIdTr, entryId).then((result) => result.toString());
     }
-    getProfileEntryPrev(profileAddress, entryId) {
+    getProfileEntryPrev(akashaId, entryId) {
+        const akashaIdTr = this.gethInstance.web3.fromUtf8(akashaId);
         return this.contract
             .getProfileEntryPrev
-            .callAsync(profileAddress, entryId).then((result) => result.toString());
+            .callAsync(akashaIdTr, entryId).then((result) => result.toString());
     }
     getTagEntriesCount(tagName) {
         return this.contract

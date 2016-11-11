@@ -59,7 +59,7 @@ class IpfsIPC extends IpfsEmitter {
         this.registerListener(
             channels.server.ipfs.stopService,
             (event: IpcMainEvent, data: IpfsStopRequest) => {
-                const signal = (data)? data.signal: 'SIGINT';
+                const signal = (data) ? data.signal : 'SIGINT';
                 IpfsConnector.getInstance().stop(signal);
             }
         );

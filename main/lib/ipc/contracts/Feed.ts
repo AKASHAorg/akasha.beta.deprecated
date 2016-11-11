@@ -31,24 +31,27 @@ export default class Feed extends BaseContract {
         this.contract.subsLast.callAsync = Promise.promisify(this.contract.subsLast.call);
         this.contract.subsNext.callAsync = Promise.promisify(this.contract.subsNext.call);
         this.contract.subsPrev.callAsync = Promise.promisify(this.contract.subsPrev.call);
+        this.contract.isSubscribed.callAsync = Promise.promisify(this.contract.isSubscribed.call);
     }
 
     public follow(id: string, gas: number = 2000000) {
-        if(!id) {
+        if (!id) {
             throw new Error('No Akasha ID provided');
         }
-        return this.evaluateData('follow', gas, id);
+        const idTr = this.gethInstance.web3.fromUtf8(id);
+        return this.evaluateData('follow', gas, idTr);
     }
 
     public unFollow(id: string, gas: number = 2000000) {
-        if(!id) {
+        if (!id) {
             throw new Error('No Akasha ID provided');
         }
-        return this.evaluateData('unFollow', gas, id);
+        const idTr = this.gethInstance.web3.fromUtf8(id);
+        return this.evaluateData('unFollow', gas, idTr);
     }
 
     public subscribe(tagName: string, gas: number = 2000000) {
-        if(!tagName) {
+        if (!tagName) {
             throw new Error('No tag provided');
         }
         const tagNameTr = this.gethInstance.web3.fromUtf8(tagName);
@@ -56,7 +59,7 @@ export default class Feed extends BaseContract {
     }
 
     public unSubscribe(tagName: string, gas: number = 2000000) {
-        if(!tagName) {
+        if (!tagName) {
             throw new Error('No tag provided');
         }
         const tagNameTr = this.gethInstance.web3.fromUtf8(tagName);
@@ -64,78 +67,102 @@ export default class Feed extends BaseContract {
     }
 
     public isFollowing(id: string) {
-        return this.contract.isFollowing.callAsync(id);
+        const idTr = this.gethInstance.web3.fromUtf8(id);
+        return this.contract.isFollowing.callAsync(idTr);
     }
 
     public isFollower(id: string) {
-        return this.contract.isFollower.callAsync(id);
+        const idTr = this.gethInstance.web3.fromUtf8(id);
+        return this.contract.isFollower.callAsync(idTr);
     }
 
     public getFollowingCount(id: string) {
-        return this.contract.getFollowingCount.callAsync(id).then((result) => result.toString());
+        const idTr = this.gethInstance.web3.fromUtf8(id);
+        return this.contract.getFollowingCount.callAsync(idTr).then((result) => result.toString());
     }
 
     public getFollowingFirst(id: string) {
-        return this.contract.getFollowingFirst.callAsync(id).then((result) => result.toString());
+        const idTr = this.gethInstance.web3.fromUtf8(id);
+        return this.contract.getFollowingFirst.callAsync(idTr).then((result) => result.toString());
     }
 
     public getFollowingLast(id: string) {
-        return this.contract.getFollowingLast.callAsync(id).then((result) => result.toString());
+        const idTr = this.gethInstance.web3.fromUtf8(id);
+        return this.contract.getFollowingLast.callAsync(idTr).then((result) => result.toString());
     }
 
     public getFollowingNext(id: string, fromId: string) {
-        return this.contract.getFollowingNext.callAsync(id, fromId).then((result) => result.toString());
+        const idTr = this.gethInstance.web3.fromUtf8(id);
+        return this.contract.getFollowingNext.callAsync(idTr, fromId).then((result) => result.toString());
     }
 
     public getFollowingPrev(id: string, fromId: string) {
-        return this.contract.getFollowingPrev.callAsync(id, fromId).then((result) => result.toString());
+        const idTr = this.gethInstance.web3.fromUtf8(id);
+        return this.contract.getFollowingPrev.callAsync(idTr, fromId).then((result) => result.toString());
     }
 
     public getFollowingById(id: string, indexId: string) {
-        return this.contract.getFollowingById.callAsync(id, indexId);
+        const idTr = this.gethInstance.web3.fromUtf8(id);
+        return this.contract.getFollowingById.callAsync(idTr, indexId);
     }
 
     public getFollowersCount(id: string) {
-        return this.contract.getFollowersCount.callAsync(id).then((result) => result.toString());
+        const idTr = this.gethInstance.web3.fromUtf8(id);
+        return this.contract.getFollowersCount.callAsync(idTr).then((result) => result.toString());
     }
 
     public getFollowersFirst(id: string) {
-        return this.contract.getFollowersFirst.callAsync(id).then((result) => result.toString());
+        const idTr = this.gethInstance.web3.fromUtf8(id);
+        return this.contract.getFollowersFirst.callAsync(idTr).then((result) => result.toString());
     }
 
     public getFollowersLast(id: string) {
-        return this.contract.getFollowersLast.callAsync(id).then((result) => result.toString());
+        const idTr = this.gethInstance.web3.fromUtf8(id);
+        return this.contract.getFollowersLast.callAsync(idTr).then((result) => result.toString());
     }
 
     public getFollowersNext(id: string, fromId: string) {
-        return this.contract.getFollowersNext.callAsync(id, fromId).then((result) => result.toString());
+        const idTr = this.gethInstance.web3.fromUtf8(id);
+        return this.contract.getFollowersNext.callAsync(idTr, fromId).then((result) => result.toString());
     }
 
     public getFollowersPrev(id: string, fromId: string) {
-        return this.contract.getFollowersPrev.callAsync(id, fromId).then((result) => result.toString());
+        const idTr = this.gethInstance.web3.fromUtf8(id);
+        return this.contract.getFollowersPrev.callAsync(idTr, fromId).then((result) => result.toString());
     }
 
     public getFollowersById(id: string, indexId: string) {
-        return this.contract.getFollowersById.callAsync(id, indexId);
+        const idTr = this.gethInstance.web3.fromUtf8(id);
+        return this.contract.getFollowersById.callAsync(idTr, indexId);
     }
 
-    public subsCount(id: string){
-        return this.contract.subsCount.callAsync(id).then((result) => result.toString());
+    public subsCount(id: string) {
+        const idTr = this.gethInstance.web3.fromUtf8(id);
+        return this.contract.subsCount.callAsync(idTr).then((result) => result.toString());
     }
 
-    public subsFirst(id: string){
-        return this.contract.subsFirst.callAsync(id).then((result) => result.toString());
+    public subsFirst(id: string) {
+        const idTr = this.gethInstance.web3.fromUtf8(id);
+        return this.contract.subsFirst.callAsync(idTr).then((result) => result.toString());
     }
 
-    public subsLast(id: string){
-        return this.contract.subsLast.callAsync(id).then((result) => result.toString());
+    public subsLast(id: string) {
+        const idTr = this.gethInstance.web3.fromUtf8(id);
+        return this.contract.subsLast.callAsync(idTr).then((result) => result.toString());
     }
 
-    public subsNext(id: string, tagId: string){
-        return this.contract.subsNext.callAsync(id, tagId).then((result) => result.toString());
+    public subsNext(id: string, tagId: string) {
+        const idTr = this.gethInstance.web3.fromUtf8(id);
+        return this.contract.subsNext.callAsync(idTr, tagId).then((result) => result.toString());
     }
 
-    public subsPrev(id: string, tagId: string){
-        return this.contract.subsPrev.callAsync(id, tagId).then((result) => result.toString());
+    public subsPrev(id: string, tagId: string) {
+        const idTr = this.gethInstance.web3.fromUtf8(id);
+        return this.contract.subsPrev.callAsync(idTr, tagId).then((result) => result.toString());
+    }
+
+    public isSubscribed(id: string, tagName: string) {
+        const idTr = this.gethInstance.web3.fromUtf8(id);
+        return this.contract.isSubscribed.callAsync(idTr, tagName);
     }
 }

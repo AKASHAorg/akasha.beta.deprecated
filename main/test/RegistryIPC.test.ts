@@ -43,8 +43,7 @@ describe('RegistryIPC', function () {
         let listenersNr = 0;
         const listenOn = [
             channel.server.registry.profileExists,
-            channel.server.registry.registerProfile,
-            channel.server.registry.getRegistered
+            channel.server.registry.registerProfile
         ];
         registryChannel.callTest.set(
             channel.client.registry.manager,
@@ -69,50 +68,60 @@ describe('RegistryIPC', function () {
                 done();
             }
         );
-        ipcMain.emit(channel.server.registry.profileExists, '', {akashaId: 'costel'});
+        ipcMain.emit(channel.server.registry.profileExists, '', { akashaId: 'costel' });
     });
 
     it('--should register new address', function (done) {
-       helpers.getNewAddress(done, (newAddress) => {
-           ethAddress = newAddress;
-       });
+        helpers.getNewAddress(done, (newAddress) => {
+            ethAddress = newAddress;
+        });
     });
 
     it('--should get aethers', function (done) {
-       helpers.getAethers(done, ethAddress, (tx) => {
-           txPending = tx;
-       });
+        helpers.getAethers(done, ethAddress, (tx) => {
+            txPending = tx;
+        });
     });
 
-    it('--should get a token', function (done){
-        helpers.getToken(done, {account: ethAddress, password: helpers.pwd, rememberTime: 2}, (generated: string) => {
+    it('--should get a token', function (done) {
+        helpers.getToken(done, {
+            account: ethAddress,
+            password: helpers.pwd,
+            rememberTime: 2,
+            registering: true
+        }, (generated: string) => {
             token = generated;
         });
     });
 
     it('--should wait for #pendingTx', function (done) {
-       helpers.confirmTx(done, txPending);
+        helpers.confirmTx(done, txPending);
     });
 
-    it('--should register new profile #registerProfile', function(done) {
-       registryChannel.callTest.set(
-           channel.client.registry.registerProfile,
-           (injected) => {
-               expect(injected.data).to.exist;
-               expect(injected.data.data.tx).to.exist;
-               txPending = injected.data.data.tx;
-               console.log(txPending);
-               done();
-           }
-       );
-        ipcMain.emit(channel.server.registry.registerProfile, '', {token, akashaId: 'TuserT'+ new Date().getTime(),
-            ipfs:{firstName: 'Tritza', lastName: 'Fanica' + new Date().getTime(),
-                avatar: new Uint8Array(1000000),
+    it('--should register new profile #registerProfile', function (done) {
+        registryChannel.callTest.set(
+            channel.client.registry.registerProfile,
+            (injected) => {
+                console.log(injected.data);
+                expect(injected.data).to.exist;
+                expect(injected.data.data.tx).to.exist;
+                txPending = injected.data.data.tx;
+                console.log(txPending);
+                done();
+            }
+        );
+        ipcMain.emit(channel.server.registry.registerProfile, '', {
+            token, akashaId: 'costelinho',
+            ipfs: {
+                firstName: 'Tritza', lastName: 'Fanica' + new Date().getTime(),
+                avatar: Buffer.alloc(100000, '1'),
                 backgroundImage: {
-                    xs: {src: new Uint8Array(1000000), width: 100, height: 100 },
-                    sm: {src: new Uint8Array(1000000), width: 200, height: 100 },
-                    md: {src: new Uint8Array(1000000), width: 300, height: 100 },
-                } }});
+                    xs: { src: Buffer.alloc(100000, '1'), width: 100, height: 100 },
+                    sm: { src: Buffer.alloc(100000, '1'), width: 200, height: 100 },
+                    md: { src: Buffer.alloc(100000, '1'), width: 300, height: 100 },
+                }
+            }
+        });
     });
 
     it('--should wait for registry tx', function (done) {

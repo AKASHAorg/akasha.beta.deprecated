@@ -111,7 +111,7 @@ export default class Tags extends BaseContract {
                     .callAsync(tagTr);
             })
             .then((hasFormat) => {
-                if(!hasFormat){
+                if (!hasFormat) {
                     throw new Error('Provided Tag has illegal characters');
                 }
                 return this.extractData('add', tagTr, { gas });

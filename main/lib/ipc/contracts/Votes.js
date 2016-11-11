@@ -63,7 +63,9 @@ class Votes extends BaseContract_1.default {
         return this.contract
             .getVoteOf
             .callAsync(entryId, voteId)
-            .then((result) => result.toString());
+            .then((result) => {
+            return { profile: result.profile, score: (result.score).toString() };
+        });
     }
     getVoteOfProfile(entryId, akashaId) {
         return this.contract

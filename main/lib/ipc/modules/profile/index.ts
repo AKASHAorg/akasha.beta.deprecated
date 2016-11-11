@@ -5,6 +5,8 @@ import followingCount from './following-count';
 import profileData from './profile-data';
 import unfollowProfile from './unfollow-profile';
 import updateProfile from './update-profile';
+import followersIterator from './followers-iterator';
+import followingIterator from './following-iterator';
 
 export default [
     currentBalance,
@@ -13,5 +15,7 @@ export default [
     followingCount,
     profileData,
     unfollowProfile,
-    updateProfile
+    updateProfile,
+    followersIterator,
+    followingIterator
 ];
