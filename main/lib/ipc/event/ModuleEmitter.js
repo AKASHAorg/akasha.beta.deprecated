@@ -22,6 +22,28 @@ class ModuleEmitter extends AbstractEmitter_1.AbstractEmitter {
     attachEmitters() {
         return true;
     }
+    _initMethods(methods) {
+        methods.forEach((method) => {
+            console.log([this.MODULE_NAME], [method.name]);
+            this.registerListener(channels_1.default.server[this.MODULE_NAME][method.name], (event, data) => {
+                let response;
+                console.time(method.name);
+                method
+                    .execute(data)
+                    .then((result) => {
+                    response = responses_1.mainResponse(result);
+                })
+                    .catch((err) => {
+                    response = responses_1.mainResponse({ error: { message: err.message }, from: data });
+                })
+                    .finally(() => {
+                    this.fireEvent(channels_1.default.client[this.MODULE_NAME][method.name], response, event);
+                    console.timeEnd(method.name);
+                    response = null;
+                });
+            });
+        });
+    }
 }
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ModuleEmitter;

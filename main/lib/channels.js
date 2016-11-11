@@ -10,18 +10,17 @@ const hashPath = (...path) => {
 };
 const channels = {
     auth: ['login', 'logout', 'requestEther', 'generateEthKey', 'getLocalIdentities'],
-    tags: ['create', 'exists', 'getTagId', 'getTagAt', 'isSubscribed', 'subscribe',
-        'unsubscribe', 'getSubPosition', 'getTagsFrom', 'getCreateError', 'getTagsCreated',
-        'getIndexedTag', 'getIndexTagError'],
-    entry: ['publish', 'update', 'upvote', 'downvote', 'isOpenedToVotes', 'getVoteOf',
-        'getVoteEndDate', 'getScore', 'getEntriesCount', 'getEntryOf', 'getEntry', 'getEntriesCreated', 'getVotesEvent'],
-    comments: ['publish', 'update', 'upvote', 'downvote', 'getScore', 'getCount', 'getCommentAt'],
+    tags: ['checkFormat', 'create', 'tagIterator', 'tagSubIterator', 'exists', 'getTagsCreated', 'subsCount',
+        'subscribe', 'getTagId', 'getTagName', 'unSubscribe', 'isSubscribed'],
+    entry: ['getProfileEntriesCount', 'getTagEntriesCount', 'getEntry', 'publish', 'update', 'canClaim', 'claim',
+        'downvote', 'getScore', 'getDepositBalance', 'upvote', 'voteCost', 'voteCount', 'entryTagIterator',
+        'entryProfileIterator', 'votesIterator'],
+    comments: ['getComment', 'comment', 'commentsCount', 'removeComment'],
     geth: ['options', 'startService', 'stopService', 'restartService', 'syncStatus', 'logs', 'status'],
     ipfs: ['startService', 'stopService', 'status', 'resolve', 'getConfig', 'setPorts', 'getPorts'],
-    profile: ['getProfileData', 'updateProfileData', 'getMyBalance', 'getIpfs', 'unregister', 'follow', 'getFollowersCount',
-        'getFollowingCount', 'getFollowers', 'getFollowing'],
-    registry: ['profileExists', 'registerProfile', 'getCurrentProfile', 'getByAddress', 'getErrorEvent',
-        'getRegistered'],
+    profile: ['getBalance', 'followProfile', 'getFollowersCount', 'getFollowingCount', 'getProfileData',
+        'unFollowProfile', 'updateProfileData', 'followersIterator', 'followingIterator'],
+    registry: ['fetchRegistered', 'getCurrentProfile', 'profileExists', 'registerProfile', 'getByAddress', 'unregister'],
     tx: ['addToQueue', 'emitMined'],
     licenses: ['getLicenceById', 'getLicenses']
 };

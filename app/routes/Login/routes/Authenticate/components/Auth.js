@@ -52,10 +52,10 @@ class Auth extends Component {
         if (loginErrors.size === 0) {
             if (this.state.selectedProfile &&
                 loggedProfile.get('account') === this.state.selectedProfile.get('ethAddress')) {
-                this.context.router.push(`/${this.state.selectedProfile.get('username')}`);
+                this.context.router.push(`/${this.state.selectedProfile.get('akashaId')}`);
             }
 
-            if (tempProfile.get('username') !== '') {
+            if (tempProfile.get('akashaId') !== '') {
                 return this.context.router.push('/authenticate/new-profile-status');
             }
         }
@@ -124,7 +124,7 @@ class Auth extends Component {
             const userInitials = profileName.match(/\b\w/g);
             const avatarImage = profile.get('avatar');
             let avtr;
-            if (!profile.get('username')) {
+            if (!profile.get('akashaId')) {
                 return null;
             }
             if (avatarImage) {
@@ -141,8 +141,8 @@ class Auth extends Component {
                     {userInitials &&
                       ((userInitials.shift() || '') + (userInitials.pop() || '')).toUpperCase()
                     }
-                    {!userInitials && profile.get('username') &&
-                        profile.get('username')
+                    {!userInitials && profile.get('akashaId') &&
+                        profile.get('akashaId')
                     }
                   </Avatar>
                 );
@@ -165,7 +165,7 @@ class Auth extends Component {
                 }
                 secondaryText={
                   <div style={{ marginLeft: 16 }}>
-                    @{profile.get('username')}
+                    @{profile.get('akashaId')}
                   </div>
                 }
                 secondaryTextLines={1}

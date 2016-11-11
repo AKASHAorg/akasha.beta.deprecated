@@ -220,7 +220,7 @@ class ProfileActions {
     getProfileBalance = (profileKey, unit) =>
         this.profileService.getProfileBalance({
             options: {
-                profile: profileKey,
+                etherBase: profileKey,
                 unit
             },
             onSuccess: data => this.dispatch(profileActionCreators.getProfileBalanceSuccess(data)),

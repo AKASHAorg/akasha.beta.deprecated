@@ -6,7 +6,7 @@ class Comment implements MediaComponent {
     id: string;
 
     create(data: CommentModel) {
-        const date  = (new Date()).toJSON();
+        const date = (new Date()).toJSON();
         const constructed = {
             content: data.content,
             date,

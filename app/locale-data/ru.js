@@ -20,7 +20,7 @@ const ruMessages = {
      */
     'app.firstName': 'Имя',
     'app.lastName': 'Фамилия',
-    'app.userName': 'Имя пользователя',
+    'app.akashaId': 'Имя пользователя',
     'app.password': 'пароль',
     'app.passwordVerify': 'подтвердите пароль',
     'app.inputField.title': 'заглавие',

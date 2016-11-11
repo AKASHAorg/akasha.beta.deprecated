@@ -98,7 +98,7 @@ class ProfileDetails extends Component {
             <div>
               <div style={{ display: 'flex', flexWrap: 'wrap', fontSize: '16px', fontWeight: 300 }}>
                 <span style={{ display: 'inline-block', maxWidth: '340px', ...wrapTextStyle }}>
-                  {`@${profileData.username}`}
+                  {`@${profileData.akashaId}`}
                   <span style={{ margin: '0 5px' }}>-</span>
                 </span>
                 {followers}

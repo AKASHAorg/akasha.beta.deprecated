@@ -6,8 +6,10 @@ export const LicencesList = [
         parent: null,
         label: 'All rights reserved',
         description: [
-            { icon: 'copyright-1', text: 'Others cannot copy, distribute, or perform your work without your' +
-            ' permission (or as permitted by fair use).' },
+            {
+                icon: 'copyright-1', text: 'Others cannot copy, distribute, or perform your work without your' +
+            ' permission (or as permitted by fair use).'
+            },
         ]
     }, {
         id: '2',

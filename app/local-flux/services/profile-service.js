@@ -26,12 +26,12 @@ class ProfileService extends BaseService {
      * }
      * @return new Promise
      */
-    getProfileBalance = ({ options = { profile: '', unit: 'eth' }, onError = () => {}, onSuccess }) => {
+    getProfileBalance = ({ options = { etherBase: '', unit: 'eth' }, onError = () => {}, onSuccess }) => {
         this.registerListener(
-            Channel.client.profile.getMyBalance,
+            Channel.client.profile.getBalance,
             this.createListener(onError, onSuccess)
         );
-        Channel.server.profile.getMyBalance.send(options);
+        Channel.server.profile.getBalance.send(options);
     };
     /**
      * retrieve profile data by eth address

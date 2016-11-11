@@ -88,7 +88,7 @@ class AddEntryPage extends Component {
             if (typeof draft === 'number') {
                 draftId = draft;
             }
-            this.context.router.push(`/${params.username}/draft/${draftId}/publish`);
+            this.context.router.push(`/${params.akashaId}/draft/${draftId}/publish`);
         });
     }
     _getHeaderTitle = () => {

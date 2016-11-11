@@ -56,7 +56,7 @@ export default (
     </Route>
 
     {/** user home after login */}
-    <Route component={requireAuth(HomeContainer)} path=":username" >
+    <Route component={requireAuth(HomeContainer)} path=":akashaId" >
       <IndexRedirect to="explore/stream" />
       {/** loads articles from blockchain */}
       <Route component={StreamPageContainer}>

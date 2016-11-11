@@ -46,7 +46,7 @@ class EntryService extends BaseService {
             Channel.server.entry.publish.send({
                 content: {
                     title,
-                    featuredImage: featuredImage ? featuredImage.files.md.src : new Uint8Array(),
+                    featuredImage: new Uint8Array(20000), // please fix me
                     excerpt,
                     licence,
                     draft: content
@@ -57,15 +57,15 @@ class EntryService extends BaseService {
             }));
     };
 
-    getEntriesCount = ({ profileAddress, onError, onSuccess }) => {
-        console.log({ profileAddress });
+    getEntriesCount = ({ akashaId, onError, onSuccess }) => {
+        console.log({ akashaId });
         this.openChannel({
             serverManager: this.serverManager,
             clientManager: this.clientManager,
-            serverChannel: Channel.server.entry.getEntriesCount,
-            clientChannel: Channel.client.entry.getEntriesCount,
+            serverChannel: Channel.server.entry.getProfileEntriesCount,
+            clientChannel: Channel.client.entry.getProfileEntriesCount,
             listenerCb: this.createListener(onError, onSuccess)
-        }, () => Channel.server.entry.getEntriesCount.send({ profileAddress }));
+        }, () => Channel.server.entry.getProfileEntriesCount.send({ akashaId }));
     }
 
     // get resource by id (drafts or entries);
@@ -76,8 +76,8 @@ class EntryService extends BaseService {
                 .equals(parseInt(id, 10))
                 .first()
         )
-        .then(entries => onSuccess(entries))
-        .catch(reason => onError(reason));
+            .then(entries => onSuccess(entries))
+            .catch(reason => onError(reason));
 
     getSortedEntries = ({ sortBy }) =>
         new Promise((resolve) => {
@@ -94,21 +94,21 @@ class EntryService extends BaseService {
             return resolve(entries);
         });
 
-    createSavedEntry = ({ username, entry, onError, onSuccess }) =>
+    createSavedEntry = ({ akashaId, entry, onError, onSuccess }) =>
         entriesDB.transaction('rw', entriesDB.savedEntries, () => {
-            entriesDB.savedEntries.add({ username, ...entry.toJS() }).then(() => entry);
+            entriesDB.savedEntries.add({ akashaId, ...entry.toJS() }).then(() => entry);
         })
-        .then(() => onSuccess(entry))
-        .catch(reason => onError(reason));
+            .then(() => onSuccess(entry))
+            .catch(reason => onError(reason));
 
-    getSavedEntries = ({ username, onError, onSuccess }) =>
+    getSavedEntries = ({ akashaId, onError, onSuccess }) =>
         entriesDB.transaction('r', entriesDB.savedEntries, () =>
-            entriesDB.savedEntries.where('username')
-                .equals(username)
+            entriesDB.savedEntries.where('akashaId')
+                .equals(akashaId)
                 .toArray()
         )
-        .then(entries => onSuccess(entries))
-        .catch(reason => onError(reason));
+            .then(entries => onSuccess(entries))
+            .catch(reason => onError(reason));
 
     getEntriesForTag = () => {};
 

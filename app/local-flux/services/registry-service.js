@@ -19,14 +19,14 @@ class RegistryService extends BaseService {
      * Request:
      * @param <object> {
      *      token: String;
-     *      username: string;
+     *      akashaId: string;
      *      ipfs: IpfsProfileCreateRequest;
      *      gas?: number;
      * }
      * Response:
      * @param data = { tx: string }
      */
-    registerProfile = ({ token, username, ipfs, gas = 2000000, onError, onSuccess }) => {
+    registerProfile = ({ token, akashaId, ipfs, gas = 2000000, onError, onSuccess }) => {
         this.openChannel({
             serverManager: this.serverManager,
             clientManager: this.clientManager,
@@ -38,7 +38,7 @@ class RegistryService extends BaseService {
                 Channel.client.registry.registerProfile.channelName
             )
         }, () => {
-            Channel.server.registry.registerProfile.send({ token, username, ipfs, gas });
+            Channel.server.registry.registerProfile.send({ token, akashaId, ipfs, gas });
         });
     };
     /**
@@ -85,14 +85,14 @@ class RegistryService extends BaseService {
         }).catch(reason => onError(reason));
     /**
      * Update temporary profile in indexedDB
-     * @param {string} username
+     * @param {string} akashaId
      * @param {object} changes - Contains data of the updated profile
      * @return promise
      */
     updateTempProfile = ({ changes, currentStatus, onSuccess, onError }) =>
         profileDB.transaction('rw', profileDB.tempProfile, () =>
             profileDB.tempProfile.toArray().then(tmpProfile =>
-                profileDB.tempProfile.update(tmpProfile[0].username, {
+                profileDB.tempProfile.update(tmpProfile[0].akashaId, {
                     ...changes,
                     currentStatus
                 })
@@ -104,9 +104,9 @@ class RegistryService extends BaseService {
     /**
      * Delete temporary profile. Called after profile was successfully created
      */
-    deleteTempProfile = ({ username, onSuccess, onError }) =>
+    deleteTempProfile = ({ akashaId, onSuccess, onError }) =>
         profileDB.transaction('rw', profileDB.tempProfile, () => {
-            profileDB.tempProfile.delete(username);
+            profileDB.tempProfile.delete(akashaId);
         })
         .then(() => onSuccess())
         .catch(reason => onError(reason));

@@ -1,10 +1,12 @@
 import strategy from 'react-validatorjs-strategy';
-import { formMessages, validationMessages } from 'locale-data/messages'; /* eslint import/no-unresolved: 0 */
+import { formMessages, validationMessages } from 'locale-data/messages';
+/* eslint import/no-unresolved: 0 */
 
 class UserValidation {
     constructor (intl) {
         this.intl = intl;
     }
+
     getSchema () {
         const { formatMessage } = this.intl;
 
@@ -15,10 +17,11 @@ class UserValidation {
              * regex: /^(?:[a-zA-Z0-9]+(?:.(?!$))?)+$/
              *  - allow alphanumeric
              *  - allow dots inside word
-             * username matches [ab.c, a.bc, abcd, abcdef...(32 chars)]
-             * username do not match [abc, .abc, abc., ..ab, ab.., etc]
+             * akashaId matches [ab.c, a.bc, abcd, abcdef...(32 chars)]
+             * akashaId do not match [abc, .abc, abc., ..ab, ab.., etc]
              */
-            username: ['required', 'min:4', 'max:32', 'regex:/^\\S(?:[a-z0-9]+(?:.(?!$))?)+$/'],
+            akashaId: ['required', 'min:4', 'max:32', 'regex:/^\\S(?:[a-z0-9]+(?:.(?!$))?)+$/'],
+
             password: 'required|min:8',
             password2: 'required|same:password'
         }, {
@@ -31,7 +34,7 @@ class UserValidation {
             validator.setAttributeNames({
                 firstName: formatMessage(formMessages.firstName),
                 lastName: formatMessage(formMessages.lastName),
-                username: formatMessage(formMessages.username),
+                akashaId: formatMessage(formMessages.akashaId),
                 password: formatMessage(formMessages.password),
                 password2: formatMessage(formMessages.passwordVerify)
             });

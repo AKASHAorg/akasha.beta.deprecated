@@ -21,7 +21,7 @@ export default function requireAuthentication (Component) {
         }
     }
     const mapStateToProps = state => ({
-        username: state.profileState.getIn(['loggedProfile', 'userName']),
+        akashaId: state.profileState.getIn(['loggedProfile', 'akashaId']),
         isAuth: (state.profileState.get('loggedProfile').size > 0)
     });
     const mapDispatchToProps = dispatch => ({
