@@ -42,5 +42,35 @@ abstract class ModuleEmitter extends AbstractEmitter {
     public attachEmitters() {
         return true;
     }
+
+    protected _initMethods(methods) {
+        methods.forEach((method) => {
+            console.log([this.MODULE_NAME], [method.name]);
+            this.registerListener(
+                channels.server[this.MODULE_NAME][method.name],
+                (event: any, data: any) => {
+                    let response: any;
+                    console.time(method.name);
+                    method
+                        .execute(data)
+                        .then((result: any) => {
+                            response = mainResponse(result);
+                        })
+                        .catch((err: Error) => {
+                            response = mainResponse({ error: { message: err.message }, from: data });
+                        })
+                        .finally(() => {
+                            this.fireEvent(
+                                channels.client[this.MODULE_NAME][method.name],
+                                response,
+                                event
+                            );
+                            console.timeEnd(method.name);
+                            response = null;
+                        });
+                }
+            )
+        });
+    }
 }
 export default ModuleEmitter;

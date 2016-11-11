@@ -9,13 +9,13 @@ class ValidationService extends BaseService {
         this.clientManager = Channel.client.registry.manager;
     }
     /**
-     * Validate username on blockchain
+     * Validate akashaId on blockchain
      * Request:
-     * @param username <String>
+     * @param akashaId <String>
      * Response:
-     * @param data = { username: string, exists: Boolean }
+     * @param data = { akashaId: string, exists: Boolean }
      */
-    validateUsername = (username, { onError, onSuccess }) => {
+    validateakashaId = (akashaId, { onError, onSuccess }) => {
         const serverChannel = Channel.server.registry.profileExists;
         const clientChannel = Channel.client.registry.profileExists;
 
@@ -25,7 +25,7 @@ class ValidationService extends BaseService {
             serverChannel,
             clientChannel,
             listenerCb: this.createListener(onError, onSuccess, clientChannel.channelName)
-        }, () => serverChannel.send({ username }));
+        }, () => serverChannel.send({ akashaId }));
     };
 }
 export { ValidationService };

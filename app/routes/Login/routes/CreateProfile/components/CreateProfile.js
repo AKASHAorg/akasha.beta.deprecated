@@ -21,7 +21,7 @@ class CreateProfile extends Component {
             formValues: {
                 firstName: '',
                 lastName: '',
-                username: '',
+                akashaId: '',
                 password: '',
                 password2: ''
             },
@@ -35,7 +35,7 @@ class CreateProfile extends Component {
             ]
         };
         this.validatorTypes = new UserValidation(props.intl).getSchema();
-        this.serverValidatedFields = ['username'];
+        this.serverValidatedFields = ['akashaId'];
     }
     componentWillMount () {
         this.setState({ opt_details: false });
@@ -47,7 +47,7 @@ class CreateProfile extends Component {
     }
     componentWillUpdate (nextProps) {
         const { tempProfile } = nextProps;
-        if (tempProfile && tempProfile.get('username') !== '') {
+        if (tempProfile && tempProfile.get('akashaId') !== '') {
             this.context.router.push('/authenticate/new-profile-status');
         }
     }
@@ -219,16 +219,16 @@ class CreateProfile extends Component {
             onBlur: this.props.handleValidation('formValues.lastName')
         });
 
-        const usernameProps = this.getProps({
+        const akashaIdProps = this.getProps({
             fullWidth: true,
             style: { verticalAlign: 'middle' },
-            floatingLabelText: intl.formatMessage(formMessages.username),
-            ref: 'username',
+            floatingLabelText: intl.formatMessage(formMessages.akashaId),
+            ref: 'akashaId',
             floatingLabelStyle: floatLabelStyle,
             required: true,
             addValueLink: true,
-            statePath: 'formValues.username',
-            onTextChange: this.props.handleValidation('formValues.username')
+            statePath: 'formValues.akashaId',
+            onTextChange: this.props.handleValidation('formValues.akashaId')
         });
 
         const passwordProps = this.getProps({
@@ -291,7 +291,7 @@ class CreateProfile extends Component {
             >
               <TextField {...firstNameProps} />
               <TextField {...lastNameProps} />
-              <TextField {...usernameProps} />
+              <TextField {...akashaIdProps} />
               <TextField {...passwordProps} />
               <TextField {...password2Props} />
               <Checkbox

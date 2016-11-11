@@ -3,6 +3,7 @@
         "target": "es6",
         "module": "commonjs",
         "noImplicitAny": false,
+        "noUnusedLocals": true,
         "removeComments": true,
         "inlineSources": true,
         "sourceMap": true,

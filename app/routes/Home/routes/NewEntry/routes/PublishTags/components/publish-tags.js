@@ -40,7 +40,7 @@ class PublishTags extends React.Component {
                 existingTags.indexOf(tag) === -1);
             if (tagsToPublish.length === 0) {
                 this.context.router.push(
-                    `/${params.username}/draft/${params.draftId}/publish-status`
+                    `/${params.akashaId}/draft/${params.draftId}/publish-status`
                 );
             }
         });

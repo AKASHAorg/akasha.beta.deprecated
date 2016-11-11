@@ -21,47 +21,47 @@ class PublishEntryStatus extends React.Component {
     _handleReturn = () => {
         const { params } = this.props;
         const { router } = this.context;
-        router.push(`/${params.username}/explore/stream`);
+        router.push(`/${params.akashaId}/explore/stream`);
     }
     render () {
         const { drafts, params } = this.props;
         const draftToPublish = drafts.find(draft =>
-          draft.id === parseInt(params.draftId, 10));
+        draft.id === parseInt(params.draftId, 10));
         return (
-          <PanelContainer
-            showBorder
-            title="Publishing entry"
-            actions={[
-              /* eslint-disable */
-              <RaisedButton key="back-to-stream" label="Back to Stream" primary onClick={this._handleReturn} />
-              /* eslint-enable */
-            ]}
-            style={{
-                left: '50%',
-                marginLeft: '-320px',
-                position: 'absolute',
-                top: 0,
-                bottom: 0,
-                zIndex: 16
-            }}
-          >
-            <div className="col-xs-12" style={{ paddingTop: 32 }}>
-              {!draftToPublish &&
-                <div>Finding draft.. Please wait.</div>
-              }
-              {draftToPublish &&
-                <div className="row" style={{ height: '100%' }}>
-                  <div className="col-xs-12 center-xs" style={{ paddingTop: 64 }}>
-                    <CircularProgress size={80} />
-                  </div>
-                  <div className="col-xs-12 center-xs">
-                    <h3>Publishing &quot;{draftToPublish.title}&quot;</h3>
-                    <p>This entry is being published. You`ll be notified when it`s done.</p>
-                  </div>
+            <PanelContainer
+                showBorder
+                title="Publishing entry"
+                actions={[
+                    /* eslint-disable */
+                    <RaisedButton key="back-to-stream" label="Back to Stream" primary onClick={this._handleReturn} />
+                    /* eslint-enable */
+                ]}
+                style={{
+                    left: '50%',
+                    marginLeft: '-320px',
+                    position: 'absolute',
+                    top: 0,
+                    bottom: 0,
+                    zIndex: 16
+                }}
+            >
+                <div className="col-xs-12" style={{ paddingTop: 32 }}>
+                    {!draftToPublish &&
+                    <div>Finding draft.. Please wait.</div>
+                    }
+                    {draftToPublish &&
+                    <div className="row" style={{ height: '100%' }}>
+                        <div className="col-xs-12 center-xs" style={{ paddingTop: 64 }}>
+                            <CircularProgress size={80} />
+                        </div>
+                        <div className="col-xs-12 center-xs">
+                            <h3>Publishing &quot;{draftToPublish.title}&quot;</h3>
+                            <p>This entry is being published. You`ll be notified when it`s done.</p>
+                        </div>
+                    </div>
+                    }
                 </div>
-              }
-            </div>
-          </PanelContainer>
+            </PanelContainer>
         );
     }
 }

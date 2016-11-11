@@ -9,6 +9,7 @@ class Registry extends BaseContract_1.default {
         this.contract.addressOf.callAsync = Promise.promisify(this.contract.addressOf.call);
         this.contract.addressOfKey.callAsync = Promise.promisify(this.contract.addressOfKey.call);
         this.contract.isRegistered.callAsync = Promise.promisify(this.contract.isRegistered.call);
+        this.contract.check_format.callAsync = Promise.promisify(this.contract.check_format.call);
     }
     profileExists(id) {
         return this.contract
@@ -21,7 +22,18 @@ class Registry extends BaseContract_1.default {
     getByAddress(address) {
         return this.contract
             .addressOfKey
-            .callAsync(address);
+            .callAsync(address)
+            .then((profileAddress) => {
+            if (!!ethereumjs_util_1.unpad(profileAddress)) {
+                return profileAddress;
+            }
+            return '';
+        });
+    }
+    checkFormat(id) {
+        return this.contract
+            .check_format
+            .callAsync(id);
     }
     getLocalProfiles() {
         let keyList;
@@ -40,8 +52,7 @@ class Registry extends BaseContract_1.default {
         })
             .then((addrList) => {
             addrList.forEach((val, index) => {
-                const valTr = ethereumjs_util_1.unpad(val);
-                if (valTr) {
+                if (val) {
                     profileList.push({ key: keyList[index], profile: val });
                 }
             });
@@ -49,26 +60,31 @@ class Registry extends BaseContract_1.default {
             return profileList;
         });
     }
-    register(username, ipfsHash, gas = 2000000) {
-        const usernameTr = this.gethInstance.web3.fromUtf8(username);
+    register(id, ipfsHash, gas = 2000000) {
+        const idTr = this.gethInstance.web3.fromUtf8(id);
         const ipfsHashTr = this.splitIpfs(ipfsHash);
-        return this.profileExists(usernameTr)
+        return this.profileExists(idTr)
             .then((address) => {
             const exists = ethereumjs_util_1.unpad(address);
             if (exists) {
-                throw new Error(`${username} already taken`);
+                throw new Error(`${id} already taken`);
             }
             if (ipfsHashTr.length !== 2) {
                 throw new Error('Expected exactly 2 ipfs slices');
             }
-            return this.estimateGas('register', usernameTr, ipfsHashTr)
-                .then((estimatedGas) => {
-                if (estimatedGas > gas) {
-                    throw new Error(`Gas required: ${estimatedGas}, Gas provided: ${gas}`);
-                }
-                return this.extractData('register', usernameTr, ipfsHashTr, { gas });
-            });
+            return this.contract
+                .check_format
+                .callAsync(id);
+        }).then((isOK) => {
+            if (!isOK) {
+                throw new Error(`${id} has illegal characters`);
+            }
+            return this.evaluateData('register', gas, idTr, ipfsHashTr);
         });
+    }
+    unregister(id, gas = 2000000) {
+        const idTr = this.gethInstance.web3.fromUtf8(id);
+        return this.evaluateData('unregister', gas, idTr);
     }
     getRegistered(filter) {
         const { fromBlock, toBlock, address } = filter;

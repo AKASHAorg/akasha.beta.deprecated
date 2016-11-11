@@ -202,10 +202,10 @@ class EditProfile extends Component {
 
     renderHeaderTitle () {
         const { intl } = this.props;
-        const username = this.props.profile.get('username');
+        const akashaId = this.props.profile.get('akashaId');
         return <div>
           <div style={{ fontSize: '20px' }}>{intl.formatMessage(profileMessages.personalProfile)}</div>
-          <div style={{ fontWeight: '300' }}>{`@${username}`}</div>
+          <div style={{ fontWeight: '300' }}>{`@${akashaId}`}</div>
         </div>;
     }
 

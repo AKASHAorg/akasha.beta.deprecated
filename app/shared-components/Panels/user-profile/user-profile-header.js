@@ -160,7 +160,7 @@ const UserProfileHeader = (props) => {
             className="col-xs-12"
             style={{ fontSize: '20px' }}
           >
-            {`@${profile.get('username')}`}
+            {`@${profile.get('akashaId')}`}
           </div>
         </div>
       </div>

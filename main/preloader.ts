@@ -1,6 +1,5 @@
 import Channel from './lib/channels';
 import { ApiRequest, ApiListener } from './ipcPreloader';
-import IpcRendererEventListener = Electron.IpcRendererEventListener;
 
 function injectApi() {
     const AkashaApi = Object.assign({}, Channel);

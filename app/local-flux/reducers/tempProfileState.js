@@ -23,7 +23,7 @@ const TempProfileStatus = Record({
 const TempProfile = Record({
     firstName: '',
     lastName: '',
-    username: '',
+    akashaId: '',
     password: '',
     address: null,
     avatar: null,

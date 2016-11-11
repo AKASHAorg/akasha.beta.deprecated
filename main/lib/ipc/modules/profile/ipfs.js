@@ -2,7 +2,7 @@
 const ipfs_connector_1 = require('@akashaproject/ipfs-connector');
 const records_1 = require('../models/records');
 const Promise = require('bluebird');
-const create = (data) => {
+exports.create = (data) => {
     const returned = {
         firstName: data.firstName,
         lastName: data.lastName,
@@ -74,7 +74,7 @@ const create = (data) => {
         return ipfs_connector_1.IpfsConnector.getInstance().api.add(returned);
     });
 };
-const getShortProfile = (hash, resolveAvatar = false) => {
+exports.getShortProfile = (hash, resolveAvatar = false) => {
     if (records_1.profiles.getShort(hash)) {
         return Promise.resolve(records_1.profiles.getShort(hash));
     }
@@ -98,16 +98,15 @@ const getShortProfile = (hash, resolveAvatar = false) => {
         return resolved;
     });
 };
-const resolveProfile = (hash, resolveImages = false) => {
+exports.resolveProfile = (hash, resolveImages = false) => {
     let resolved;
     let keys;
     if (records_1.profiles.getFull(hash)) {
         return Promise.resolve(records_1.profiles.getFull(hash));
     }
-    return getShortProfile(hash, resolveImages)
+    return exports.getShortProfile(hash, resolveImages)
         .then((schema) => {
         resolved = Object.assign({}, schema);
-        const LINKS = [];
         if (schema.backgroundImage) {
             return ipfs_connector_1.IpfsConnector.getInstance().api.resolve(schema.backgroundImage);
         }
@@ -157,13 +156,4 @@ const resolveProfile = (hash, resolveImages = false) => {
         return resolved;
     });
 };
-function init() {
-    return {
-        create,
-        getShortProfile,
-        resolveProfile
-    };
-}
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = init;
 //# sourceMappingURL=ipfs.js.map

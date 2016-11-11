@@ -39,7 +39,7 @@ function bootstrapApp() {
         electron_1.app.quit();
     }
     electron_1.app.on('ready', () => {
-        const modules = index_1.initModules();
+        let modules = index_1.initModules();
         mainWindow = new electron_1.BrowserWindow({
             width: 1280,
             height: 720,
@@ -63,7 +63,7 @@ function bootstrapApp() {
             setTimeout(() => electron_1.app.quit(), 1000);
         });
         menu_1.initMenu(mainWindow);
-        mainWindow.webContents.on('did-finish-load', () => {
+        mainWindow.webContents.once('did-finish-load', () => {
             modules.logger.registerLogger('APP');
             modules.initListeners(mainWindow.webContents);
         });

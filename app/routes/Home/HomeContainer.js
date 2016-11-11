@@ -23,10 +23,8 @@ class HomeContainer extends React.Component {
         profileActions.resetFlags();
     }
     componentDidMount () {
-        const { profileActions, draftActions, params } = this.props;
-        const username = params.username;
+        const { profileActions } = this.props;
         profileActions.getLoggedProfile();
-        // draftActions.getDraftsCount(username);
     }
     componentWillReceiveProps (nextProps) {
         const { profileActions, entryActions, draftActions, transactionActions } = this.props;
@@ -80,49 +78,49 @@ class HomeContainer extends React.Component {
 
         if (loadingInProgress) {
             return (
-              <div>{this._getLoadingMessage()}</div>
+                <div>{this._getLoadingMessage()}</div>
             );
         }
         if (!account) {
             return <div>Logging out...</div>;
         }
         return (
-          <div className={styles.root} >
-            <div className={styles.sideBar} >
-              <Sidebar
-                activePanel={activePanel}
-                account={account}
-                appActions={appActions}
-                draftActions={draftActions}
-                loggedProfileData={loggedProfileData}
-                profileActions={profileActions}
-                entriesCount={entriesCount}
-                draftsCount={draftsCount}
-              />
+            <div className={styles.root} >
+                <div className={styles.sideBar} >
+                    <Sidebar
+                        activePanel={activePanel}
+                        account={account}
+                        appActions={appActions}
+                        draftActions={draftActions}
+                        loggedProfileData={loggedProfileData}
+                        profileActions={profileActions}
+                        entriesCount={entriesCount}
+                        draftsCount={draftsCount}
+                    />
+                </div>
+                <div className={styles.panelLoader} >
+                    <PanelLoader
+                        profile={loggedProfileData}
+                        profileAddress={profileAddress}
+                        params={params}
+                        showPanel={appActions.showPanel}
+                        hidePanel={appActions.hidePanel}
+                        profileActions={profileActions}
+                        fetchingProfileData={fetchingProfileData}
+                        updateProfileData={this.updateProfileData}
+                        updatingProfile={updatingProfile}
+                        loginRequested={loginRequested}
+                    />
+                </div>
+                <EntryModal />
+                <div className={`col-xs-12 ${styles.childWrapper}`} >
+                    {this.props.children}
+                </div>
+                <ProfileUpdater />
+                <FollowRunner />
+                <PublishEntryRunner />
+                <TagPublisher />
             </div>
-            <div className={styles.panelLoader} >
-              <PanelLoader
-                profile={loggedProfileData}
-                profileAddress={profileAddress}
-                params={params}
-                showPanel={appActions.showPanel}
-                hidePanel={appActions.hidePanel}
-                profileActions={profileActions}
-                fetchingProfileData={fetchingProfileData}
-                updateProfileData={this.updateProfileData}
-                updatingProfile={updatingProfile}
-                loginRequested={loginRequested}
-              />
-            </div>
-            <EntryModal />
-            <div className={`col-xs-12 ${styles.childWrapper}`} >
-              {this.props.children}
-            </div>
-            <ProfileUpdater />
-            <FollowRunner />
-            <PublishEntryRunner />
-            <TagPublisher />
-          </div>
         );
     }
 }
@@ -164,7 +162,7 @@ function mapStateToProps (state, ownProps) {
         loginRequested: state.profileState.getIn(['flags', 'loginRequested']),
         loggedProfile: state.profileState.get('loggedProfile'),
         loggedProfileData: state.profileState.get('profiles').find(profile =>
-            profile.get('profile') === state.profileState.getIn(['loggedProfile', 'profile'])),
+        profile.get('profile') === state.profileState.getIn(['loggedProfile', 'profile'])),
         updatingProfile: state.profileState.getIn(['flags', 'updatingProfile']),
         entriesCount: state.entryState.get('entriesCount'),
         draftsCount: state.draftState.get('draftsCount'),

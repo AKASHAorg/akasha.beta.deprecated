@@ -24,5 +24,6 @@ declare module 'ethereumjs-util' {
 
 
 declare module 'ethereumjs-testrpc'
-declare module 'spectron';
+declare module 'spectron'
+;
 

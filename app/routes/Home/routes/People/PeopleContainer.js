@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 class PeopleContainer extends Component {
 
     navigate = () => {
-        const basePath = this.props.loggedProfileData.get('username');
+        const basePath = this.props.loggedProfileData.get('akashaId');
         this.context.router.push(`/${basePath}/profile/0xc06e2c18565d356b2e85e02eef1d2c26854bb976`);
     }
 

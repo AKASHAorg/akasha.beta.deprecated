@@ -1,6 +1,6 @@
 import { join as pathJoin } from 'path';
 import { Logger, transports } from 'winston';
-import { constants, access as fsAccess, mkdir } from 'fs';
+import { access as fsAccess, mkdir, constants } from 'fs';
 import { app } from 'electron';
 
 const symbolEnforcer = Symbol();
