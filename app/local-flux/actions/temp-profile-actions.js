@@ -146,7 +146,6 @@ class TempProfileActions {
         if (isLoggedIn && !publishRequested) {
             this.dispatch(tempProfileActionCreators.publishProfile());
             this.dispatch((dispatch) => {
-                debugger;
                 this.registryService.registerProfile({
                     token: loggedProfile.get('token'),
                     akashaId,
