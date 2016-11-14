@@ -54,13 +54,15 @@ class Feed extends BaseContract_1.default {
         const tagNameTr = this.gethInstance.web3.fromUtf8(tagName);
         return this.evaluateData('unSubscribe', gas, tagNameTr);
     }
-    isFollowing(id) {
+    isFollowing(follower, id) {
         const idTr = this.gethInstance.web3.fromUtf8(id);
-        return this.contract.isFollowing.callAsync(idTr);
+        const followerTr = this.gethInstance.web3.fromUtf8(follower);
+        return this.contract.isFollowing.callAsync(followerTr, idTr);
     }
-    isFollower(id) {
+    isFollower(id, following) {
         const idTr = this.gethInstance.web3.fromUtf8(id);
-        return this.contract.isFollower.callAsync(idTr);
+        const followingTr = this.gethInstance.web3.fromUtf8(following);
+        return this.contract.isFollower.callAsync(idTr, followingTr);
     }
     getFollowingCount(id) {
         const idTr = this.gethInstance.web3.fromUtf8(id);
