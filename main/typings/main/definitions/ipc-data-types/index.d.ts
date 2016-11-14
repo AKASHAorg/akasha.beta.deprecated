@@ -384,7 +384,7 @@ interface ProfileUnregisterRequest extends AuthRequest {
 }
 
 interface ProfileFollowRequest extends AuthRequest {
-    profileAddress: string;
+    akashaId: string;
 }
 
 interface ProfileFollowResponse extends MainResponse {
