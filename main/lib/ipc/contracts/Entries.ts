@@ -62,7 +62,7 @@ export default class Entries extends BaseContract {
         const akashaIdTr = this.gethInstance.web3.fromUtf8(akashaId);
         return this.contract
             .getProfileEntriesCount
-            .callAsync(akashaIdTr).then((result) => result.toNumber());
+            .callAsync(akashaIdTr).then((result) => result.toString());
     }
 
     /**
