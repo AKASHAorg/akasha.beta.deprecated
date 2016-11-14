@@ -22,7 +22,7 @@ class EntryActions {
                     fetchingEntriesCount: true
                 }));
                 this.entryService.getEntriesCount({
-                    akashaId: 'costelinho',
+                    akashaId,
                     onSuccess: result =>
                         dispatch(entryActionCreators.getEntriesCountSuccess(result, {
                             fetchingEntriesCount: false,
