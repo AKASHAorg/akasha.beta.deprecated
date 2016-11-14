@@ -36,6 +36,9 @@ class BaseContract {
     }
     evaluateData(method, gas, ...params) {
         return this.estimateGas(method, ...params).then((estimatedGas) => {
+            if (estimatedGas > gas) {
+                throw new Error(`${method} GAS => { required: ${estimatedGas}, provided: ${gas} }`);
+            }
             console.log('estimated gas for', method, estimatedGas);
             return this.extractData(method, ...params, { gas });
         });
