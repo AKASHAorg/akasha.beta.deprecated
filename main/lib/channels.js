@@ -19,7 +19,7 @@ const channels = {
     geth: ['options', 'startService', 'stopService', 'restartService', 'syncStatus', 'logs', 'status'],
     ipfs: ['startService', 'stopService', 'status', 'resolve', 'getConfig', 'setPorts', 'getPorts'],
     profile: ['getBalance', 'followProfile', 'getFollowersCount', 'getFollowingCount', 'getProfileData',
-        'unFollowProfile', 'updateProfileData', 'followersIterator', 'followingIterator'],
+        'unFollowProfile', 'updateProfileData', 'followersIterator', 'followingIterator', 'isFollower', 'isFollowing'],
     registry: ['fetchRegistered', 'getCurrentProfile', 'profileExists', 'registerProfile', 'getByAddress', 'unregister'],
     tx: ['addToQueue', 'emitMined'],
     licenses: ['getLicenceById', 'getLicenses']
