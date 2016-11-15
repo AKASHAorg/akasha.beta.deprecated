@@ -10,7 +10,7 @@ const execute = Promise.coroutine(function* (data) {
     let profileId = yield index_1.constructed.instance.feed.getFollowersById(data.akashaId, currentId);
     let profile = yield profile_data_1.default.execute({ profile: profileId });
     const maxResults = (data.limit) ? data.limit : 10;
-    const results = [{ profile, address: profileId }];
+    const results = [{ profile, address: profileId, index: currentId }];
     let counter = 1;
     while (counter < maxResults) {
         currentId = yield index_1.constructed.instance.feed.getFollowersNext(data.akashaId, currentId);
@@ -19,7 +19,7 @@ const execute = Promise.coroutine(function* (data) {
         }
         profileId = yield index_1.constructed.instance.feed.getFollowersById(data.akashaId, currentId);
         profile = yield profile_data_1.default.execute({ profile: profileId });
-        results.push({ profile, address: profileId });
+        results.push({ profile, address: profileId, index: currentId });
         counter++;
     }
     return { collection: results, akashaId: data.akashaId };

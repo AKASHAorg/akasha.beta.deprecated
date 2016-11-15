@@ -14,6 +14,7 @@ import upVoteEntry from './upvote-entry';
 import voteCost from './vote-cost';
 import voteCount from './vote-count';
 import votesIterator from './votes-iterator';
+import getEntriesStream from './entry-stream';
 
 
 export default [
@@ -27,6 +28,7 @@ export default [
     downVoteEntry,
     entryScore,
     getDepositBalance,
+    getEntriesStream,
     upVoteEntry,
     voteCost,
     voteCount,

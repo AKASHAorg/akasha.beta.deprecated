@@ -13,7 +13,7 @@ const execute = Promise.coroutine(function*(data: {start?: number, limit?: numbe
     let profileId = yield contracts.instance.feed.getFollowersById(data.akashaId, currentId);
     let profile = yield profileData.execute({ profile: profileId });
     const maxResults = (data.limit) ? data.limit : 10;
-    const results = [{ profile, address: profileId }];
+    const results = [{ profile, address: profileId, index: currentId }];
     let counter = 1;
     while (counter < maxResults) {
         currentId = yield contracts.instance.feed.getFollowersNext(data.akashaId, currentId);
@@ -22,7 +22,7 @@ const execute = Promise.coroutine(function*(data: {start?: number, limit?: numbe
         }
         profileId = yield contracts.instance.feed.getFollowersById(data.akashaId, currentId);
         profile = yield profileData.execute({ profile: profileId });
-        results.push({ profile, address: profileId });
+        results.push({ profile, address: profileId, index: currentId });
         counter++;
     }
     return { collection: results, akashaId: data.akashaId };
