@@ -15,6 +15,7 @@ const upvote_entry_1 = require('./upvote-entry');
 const vote_cost_1 = require('./vote-cost');
 const vote_count_1 = require('./vote-count');
 const votes_iterator_1 = require('./votes-iterator');
+const entry_stream_1 = require('./entry-stream');
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = [
     entry_count_profile_1.default,
@@ -27,6 +28,7 @@ exports.default = [
     downvote_entry_1.default,
     entry_score_1.default,
     get_deposit_balance_1.default,
+    entry_stream_1.default,
     upvote_entry_1.default,
     vote_cost_1.default,
     vote_count_1.default,

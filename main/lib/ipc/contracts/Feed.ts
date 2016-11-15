@@ -66,14 +66,16 @@ export default class Feed extends BaseContract {
         return this.evaluateData('unSubscribe', gas, tagNameTr);
     }
 
-    public isFollowing(id: string) {
+    public isFollowing(follower: string, id: string) {
         const idTr = this.gethInstance.web3.fromUtf8(id);
-        return this.contract.isFollowing.callAsync(idTr);
+        const followerTr = this.gethInstance.web3.fromUtf8(follower);
+        return this.contract.isFollowing.callAsync(followerTr, idTr);
     }
 
-    public isFollower(id: string) {
+    public isFollower(id: string, following: string) {
         const idTr = this.gethInstance.web3.fromUtf8(id);
-        return this.contract.isFollower.callAsync(idTr);
+        const followingTr = this.gethInstance.web3.fromUtf8(following);
+        return this.contract.isFollower.callAsync(idTr, followingTr);
     }
 
     public getFollowingCount(id: string) {
