@@ -16,7 +16,7 @@ const channels = {
 
     entry: ['getProfileEntriesCount', 'getTagEntriesCount', 'getEntry', 'publish', 'update', 'canClaim', 'claim',
         'downvote', 'getScore', 'getDepositBalance', 'upvote', 'voteCost', 'voteCount', 'entryTagIterator',
-        'entryProfileIterator', 'votesIterator'],
+        'entryProfileIterator', 'votesIterator', 'getEntriesStream'],
 
     comments: ['getComment', 'comment', 'commentsCount', 'removeComment'],
 

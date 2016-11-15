@@ -14,7 +14,7 @@ const channels = {
         'subscribe', 'getTagId', 'getTagName', 'unSubscribe', 'isSubscribed'],
     entry: ['getProfileEntriesCount', 'getTagEntriesCount', 'getEntry', 'publish', 'update', 'canClaim', 'claim',
         'downvote', 'getScore', 'getDepositBalance', 'upvote', 'voteCost', 'voteCount', 'entryTagIterator',
-        'entryProfileIterator', 'votesIterator'],
+        'entryProfileIterator', 'votesIterator', 'getEntriesStream'],
     comments: ['getComment', 'comment', 'commentsCount', 'removeComment'],
     geth: ['options', 'startService', 'stopService', 'restartService', 'syncStatus', 'logs', 'status'],
     ipfs: ['startService', 'stopService', 'status', 'resolve', 'getConfig', 'setPorts', 'getPorts'],

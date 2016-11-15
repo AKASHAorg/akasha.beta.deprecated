@@ -10,6 +10,9 @@ const execute = Promise.coroutine(function* (data) {
     const subbedTags = [];
     fCount = parseInt(fCount);
     sCount = parseInt(sCount);
+    if (!fCount && !sCount) {
+        return { profiles: [], tags: [], akashaId: data.akashaId };
+    }
     let currentFollow = yield index_1.constructed.instance.feed.getFollowingFirst(data.akashaId);
     let profileId = yield index_1.constructed.instance.profile.getId(currentFollow);
     followedProfiles.push({ profileAddress: currentFollow, akashaId: profileId });
