@@ -4,5 +4,6 @@
 export const LoggedProfileSchema = {
     account: String,
     token: String,
-    expiration: Date
+    expiration: Date,
+    akashaId: String
 };

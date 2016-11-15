@@ -134,15 +134,24 @@ class ImageBlock extends Component {
     }
     render () {
         const { isCardEnabled, imageSrc, previewImage } = this.state;
-        const { files, termsAccepted, licence, caption } = this.props.data;
-        const akashaTermsLink = <a href="">{'AKASHA\'s terms'}</a>;
+        const { files, termsAccepted, caption } = this.props.data;
+        let baseNodeStyle = {
+            width: files[previewImage].width,
+            margin: previewImage !== 'xs' ? '0 auto' : 'initial',
+        };
+        console.log(this.baseNodeRef);
+        if (previewImage === 'xs') {
+            baseNodeStyle = Object.assign({}, baseNodeStyle, {
+                float: 'left',
+                marginRight: 48,
+                // DIRTYHACK!! GET RID OF THIS!!!
+                marginLeft: this.baseNodeRef.parentNode.parentNode.previousSibling.offsetLeft
+            });
+        }
         return (
           <div
             ref={(baseNode) => { this.baseNodeRef = baseNode; }}
-            style={{
-                width: files[previewImage].width,
-                margin: '0 auto'
-            }}
+            style={baseNodeStyle}
           >
             <Card
               style={{
@@ -217,32 +226,6 @@ class ImageBlock extends Component {
               </CardMedia>
               <CardText>
                 <TextField hintText="Caption" value={caption} multiLine fullWidth onChange={this._handleCaptionChange} />
-                <div className="row">
-                  <div className="col-xs-4">
-                    <h4>Image Licence</h4>
-                  </div>
-                  <div className="col-xs-8">
-                    <SelectField value={licence} onChange={this._handleLicenceChange} fullWidth>
-                      <MenuItem value={'CC BY'} primaryText="Attribution" />
-                      <MenuItem value={'CC BY-SA'} primaryText="Attribution-ShareAlike" />
-                      <MenuItem value={'CC BY-ND'} primaryText="Attribution-NoDerivs" />
-                      <MenuItem value={'CC BY-NC'} primaryText="Attribution-NonCommercial" />
-                      <MenuItem value={'CC BY-NC-SA'} primaryText="Attribution-NonCommercial-ShareAlike" />
-                      <MenuItem value={'CC BY-NC-ND'} primaryText="Attribution-NonCommercial-NoDerivs" />
-                    </SelectField>
-                  </div>
-                  <div className="col-xs-12">
-                    <div className="row">
-                      <Checkbox
-                        className="col-xs-1"
-                        label=""
-                        onCheck={this._handleTermsAccept}
-                        checked={termsAccepted}
-                      />
-                      <div className="col-xs-10">I acknowledge and agree {akashaTermsLink} on using images</div>
-                    </div>
-                  </div>
-                </div>
               </CardText>
             </Card>
           </div>

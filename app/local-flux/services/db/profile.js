@@ -6,7 +6,7 @@ import { loggedProfileSchema } from './schema/logged-profile';
 const profileDB = new Dexie('profiles');
 profileDB.version(1).stores({
     localProfiles: '&address, akashaId',
-    loggedProfile: '&account, profile',
+    loggedProfile: '&account, profile, akashaId',
     tempProfile: '&akashaId, currentStatus'
 });
 

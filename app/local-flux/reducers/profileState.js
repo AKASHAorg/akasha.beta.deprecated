@@ -31,7 +31,8 @@ const LoggedProfile = Record({
     account: null,
     token: null,
     expiration: null,
-    profile: null
+    profile: null,
+    akashaId: null
 });
 
 const Notifications = Record({

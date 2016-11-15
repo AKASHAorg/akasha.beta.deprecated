@@ -26,11 +26,11 @@ class AuthService extends BaseService {
      *      expiration: Date -> expiration time of the token
      * }
      */
-    login = ({ account, password, rememberTime, registering = false, onSuccess, onError }) => {
+    login = ({ account, password, rememberTime, akashaId, registering = false, onSuccess, onError }) => {
         const successCb = (data) => {
             profileDB.transaction('rw', profileDB.loggedProfile, () => {
-                profileDB.loggedProfile.put(data);
-                return data;
+                profileDB.loggedProfile.put({ akashaId, ...data });
+                return { akashaId, ...data };
             }).then((loggedProfile) => {
                 onSuccess(loggedProfile);
             }).catch(error => onError(error));

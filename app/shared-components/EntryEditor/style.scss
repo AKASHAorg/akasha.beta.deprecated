@@ -4,6 +4,21 @@
     height: inherit;
     text-align: initial
 }
+.title {
+    width: 100%;
+}
+
+.titleInner {
+    width: 700px;
+    margin: 0 auto;
+}
+.inputField {
+    width: 100%;
+    border: none;
+    outline: none;
+    font-size: 24px;
+    line-height: 1.4;
+}
 .DraftEditor-root {
     position: relative;
     font-size: 21px;

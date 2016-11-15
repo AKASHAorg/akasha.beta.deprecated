@@ -34,6 +34,7 @@ class EntryService extends BaseService {
             licence,
             tags,
             content,
+            wordCount
         } = draft;
         console.log('featuredImage', featuredImage);
         this.openChannel({
@@ -49,7 +50,8 @@ class EntryService extends BaseService {
                     featuredImage: new Uint8Array(20000), // please fix me
                     excerpt,
                     licence,
-                    draft: content
+                    draft: content,
+                    wordCount
                 },
                 tags,
                 token,
@@ -66,6 +68,16 @@ class EntryService extends BaseService {
             clientChannel: Channel.client.entry.getProfileEntriesCount,
             listenerCb: this.createListener(onError, onSuccess)
         }, () => Channel.server.entry.getProfileEntriesCount.send({ akashaId }));
+    }
+
+    getProfileEntries = ({ akashaId, onSuccess, onError }) => {
+        this.openChannel({
+            serverManager: this.serverManager,
+            clientManager: this.clientManager,
+            serverChannel: Channel.server.entry.entryProfileIterator,
+            clientChannel: Channel.client.entry.entryProfileIterator,
+            listenerCb: this.createListener(onError, onSuccess)
+        }, () => Channel.server.entry.entryProfileIterator.send({ akashaId }));
     }
 
     // get resource by id (drafts or entries);

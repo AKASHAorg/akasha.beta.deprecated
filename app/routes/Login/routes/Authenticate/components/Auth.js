@@ -109,7 +109,8 @@ class Auth extends Component {
         profileActions.login({
             account: selectedProfile.get('ethAddress'),
             password: this.state.password,
-            rememberTime: unlockInterval
+            rememberTime: unlockInterval,
+            akashaId: selectedProfile.get('akashaId')
         });
     };
     _getLocalProfiles () {
