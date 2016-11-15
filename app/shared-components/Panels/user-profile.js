@@ -1,4 +1,4 @@
-import React, { PropTypes, Component } from 'react';
+import React, { PropTypes, PureComponent } from 'react';
 import radium from 'radium';
 import { colors } from 'material-ui/styles';
 import {
@@ -44,9 +44,9 @@ const rightIconMenu = (
   </IconMenu>
 );
 
-class UserProfilePanel extends Component {
+class UserProfilePanel extends PureComponent {
     render () {
-        const { profile, profileActions, profileAddress, showPanel } = this.props;
+        const { loggedProfileData, profileActions, profileAddress, showPanel } = this.props;
         return (
           <Paper
             style={{
@@ -57,7 +57,7 @@ class UserProfilePanel extends Component {
             }}
           >
             <UserProfileHeader
-              profile={profile}
+              profile={loggedProfileData}
               profileActions={profileActions}
               profileAddress={profileAddress}
               showPanel={showPanel}
@@ -136,7 +136,7 @@ class UserProfilePanel extends Component {
 }
 UserProfilePanel.propTypes = {
     width: PropTypes.string,
-    profile: PropTypes.shape(),
+    loggedProfileData: PropTypes.shape(),
     profileActions: PropTypes.shape(),
     profileAddress: PropTypes.string,
     showPanel: PropTypes.func

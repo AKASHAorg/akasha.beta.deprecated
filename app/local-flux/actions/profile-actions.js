@@ -19,7 +19,7 @@ class ProfileActions {
         return profileActions;
     }
 
-    login = ({ account, password, rememberTime }) => {
+    login = ({ account, password, rememberTime, akashaId }) => {
         this.dispatch((dispatch, getState) => {
             const flags = getState().profileState.get('flags');
             if (!flags.get('loginRequested')) {
@@ -31,6 +31,7 @@ class ProfileActions {
                     account,
                     password,
                     rememberTime,
+                    akashaId,
                     onSuccess: (data) => {
                         this.dispatch(profileActionCreators.loginSuccess(data, {
                             loginRequested: false

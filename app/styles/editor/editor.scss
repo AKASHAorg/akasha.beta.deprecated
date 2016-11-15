@@ -13,6 +13,13 @@
         display: block;
         margin: 0 auto;
     }
+    .public-DraftEditorPlaceholder-root {
+        width: 100%;
+        .public-DraftEditorPlaceholder-inner{
+            width: 700px;
+            margin: 0 auto;
+        }
+    }
 }
  .megadraft-editor .paragraph + .paragraph {
      margin-top: 8px;
@@ -58,12 +65,16 @@
     &--open {
         opacity: 1;
         width: auto;
+        display: inline-block;
+        list-style: none;
+        padding: 0;
         overflow: initial;
     }
 }
 
 .megadraft-editor .sidemenu__item {
     margin-left: 8px;
+    max-width: 32px;
     input[type='file'] {
         height: 0px;
         width: 0px;
@@ -71,5 +82,5 @@
     }
 }
 .megadraft-editor {
-    padding-top: 45px;
+    padding-top: 16px;
 }
