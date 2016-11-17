@@ -40,7 +40,7 @@ class ProfileActivity extends Component {
         }
         if (followingSize !== this.props.profileData.get('following').size &&
                 this.state.activeTab === 'following') {
-            this.lastFollowerIndex = profileData.get('following').size > 0 ?
+            this.lastFollowingIndex = profileData.get('following').size > 0 ?
                 profileData.get('following').last().get('index') :
                 0;
         }
@@ -56,7 +56,7 @@ class ProfileActivity extends Component {
                 case 'followers':
                     if (!this.state.followersRequested) {
                         profileActions.followersIterator(
-                            profileData.akashaId, this.lastFollowerIndex, 6
+                            profileData.akashaId, this.lastFollowerIndex, 3
                         );
                         this.setState({
                             followersRequested: true
@@ -66,7 +66,7 @@ class ProfileActivity extends Component {
                 case 'following':
                     if (!this.state.followingRequested) {
                         profileActions.followingIterator(
-                            profileData.akashaId, this.lastFollowingIndex, 6
+                            profileData.akashaId, this.lastFollowingIndex, 3
                         );
                         this.setState({
                             followingRequested: true
@@ -108,9 +108,9 @@ class ProfileActivity extends Component {
     }
 
     renderFollowers () {
-        const { fetchingFollowers, profileData, profileActions, fetchingProfileData, followPending,
-            followProfile, unfollowProfile, selectProfile, loggedProfileData, isFollower,
-            isFollowerPending, intl } = this.props;
+        const { fetchingFollowers, profileData, profileActions, followPending, followProfile,
+            unfollowProfile, selectProfile, loggedProfileData, isFollowerPending,
+            intl } = this.props;
         const followers = profileData.get('followers').toJS();
 
         if (!followers.length && fetchingFollowers) {
@@ -153,7 +153,7 @@ class ProfileActivity extends Component {
     }
 
     renderFollowing () {
-        const { fetchingFollowing, profileData, profileActions, fetchingProfileData, followPending,
+        const { fetchingFollowing, profileData, profileActions, followPending,
             followProfile, unfollowProfile, selectProfile, loggedProfileData, isFollower,
             isFollowerPending, intl } = this.props;
         const followings = profileData.get('following').toJS();
@@ -270,12 +270,9 @@ class ProfileActivity extends Component {
 ProfileActivity.propTypes = {
     loggedProfileData: PropTypes.shape(),
     profileActions: PropTypes.shape(),
-    getEntriesCount: PropTypes.func,
     profileData: PropTypes.shape(),
-    profiles: PropTypes.shape(),
     fetchingFollowers: PropTypes.bool,
     fetchingFollowing: PropTypes.bool,
-    fetchingProfileData: PropTypes.bool,
     followPending: PropTypes.shape(),
     isFollowerPending: PropTypes.bool,
     followProfile: PropTypes.func.isRequired,
