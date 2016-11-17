@@ -6,10 +6,15 @@ const execute = Promise.coroutine(function* (data) {
     if (currentId === '0') {
         return { collection: [] };
     }
-    let currentName = yield index_1.constructed.instance.tags.getTagName(currentId);
+    let currentName;
     const maxResults = (data.limit) ? data.limit : 10;
-    const results = [{ tagId: currentId, tagName: currentName }];
-    let counter = 1;
+    const results = [];
+    let counter = 0;
+    if (!data.start) {
+        currentName = yield index_1.constructed.instance.tags.getTagName(currentId);
+        results.push({ tagId: currentId, tagName: currentName });
+        counter = 1;
+    }
     while (counter < maxResults) {
         currentId = yield index_1.constructed.instance.tags.getNextTag(currentId);
         if (currentId === '0') {

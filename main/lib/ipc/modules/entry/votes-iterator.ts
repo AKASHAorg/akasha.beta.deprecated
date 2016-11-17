@@ -10,13 +10,19 @@ const execute = Promise.coroutine(function*(data: {start?: number, limit?: numbe
     if (currentId === '0') {
         return { collection: [] };
     }
-    let row = yield contracts.instance.votes.getVoteOf(data.entryId, currentId);
-    let akashaId = yield contracts.instance.profile.getId(row.profile);
+    let row;
+    let akashaId;
     const maxResults = (data.limit) ? data.limit : 30;
-    const results = [{ akashaId: akashaId, score: row.score }];
-    let counter = 1;
+    const results = [];
+    let counter = 0;
+    if (!data.start) {
+        row = yield contracts.instance.votes.getVoteOf(data.entryId, currentId);
+        akashaId = yield contracts.instance.profile.getId(row.profile);
+        results.push({ akashaId: akashaId, score: row.score });
+        counter = 1;
+    }
     while (counter < maxResults) {
-        currentId = yield contracts.instance.tags.getNextVoteId(data.entryId, currentId);
+        currentId = yield contracts.instance.votes.getNextVoteId(data.entryId, currentId);
         if (currentId === '0') {
             break;
         }

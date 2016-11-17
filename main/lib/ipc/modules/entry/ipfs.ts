@@ -16,6 +16,7 @@ class IpfsEntry {
     licence: string;
     featuredImage: any;
     tags: any[];
+    wordCount: number;
 
     /**
      *
@@ -30,6 +31,7 @@ class IpfsEntry {
         this.title = content.title;
         this.licence = content.licence;
         this.tags = tags;
+        this.wordCount = content.wordCount;
         ipfsApiRequests.push(
             IpfsConnector.getInstance().api
                 .constructObjLink(content.featuredImage, true)
@@ -50,7 +52,8 @@ class IpfsEntry {
                         featuredImage: this.featuredImage,
                         licence: this.licence,
                         tags: this.tags,
-                        title: this.title
+                        title: this.title,
+                        wordCount: this.wordCount
                     })
             });
     }
