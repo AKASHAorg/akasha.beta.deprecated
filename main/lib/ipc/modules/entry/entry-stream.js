@@ -9,24 +9,31 @@ const execute = Promise.coroutine(function* (data) {
     let sCount = yield subs_count_1.default.execute({ akashaId: data.akashaId });
     const followedProfiles = [];
     const subbedTags = [];
-    fCount = parseInt(fCount);
-    sCount = parseInt(sCount);
+    fCount = parseInt(fCount.count);
+    sCount = parseInt(sCount.count);
     if (!fCount && !sCount) {
         return { profiles: [], tags: [{ tagName: exports.DEFAULT_TAG }], akashaId: data.akashaId };
     }
     let currentFollow = yield index_1.constructed.instance.feed.getFollowingFirst(data.akashaId);
-    let profileId = yield index_1.constructed.instance.profile.getId(currentFollow);
-    followedProfiles.push({ profileAddress: currentFollow, akashaId: profileId });
-    while (fCount) {
+    let profileAddress = yield index_1.constructed.instance.feed.getFollowingById(data.akashaId, currentFollow);
+    let profileId = yield index_1.constructed.instance.profile.getId(profileAddress);
+    followedProfiles.push({ profileAddress: profileAddress, akashaId: profileId });
+    while (fCount > 1) {
         currentFollow = yield index_1.constructed.instance.feed.getFollowingNext(data.akashaId, currentFollow);
-        profileId = yield index_1.constructed.instance.profile.getId(currentFollow);
-        followedProfiles.push({ profileAddress: currentFollow, akashaId: profileId });
+        profileAddress = yield index_1.constructed.instance.feed.getFollowingById(data.akashaId, currentFollow);
+        profileId = yield index_1.constructed.instance.profile.getId(profileAddress);
+        followedProfiles.push({ profileAddress: profileAddress, akashaId: profileId });
         fCount--;
     }
     let currentSub = yield index_1.constructed.instance.feed.subsFirst(data.akashaId);
     let tagName = yield index_1.constructed.instance.tags.getTagName(currentSub);
-    subbedTags.push({ tagId: currentSub, tagName: tagName });
-    while (sCount) {
+    if (!tagName) {
+        subbedTags.push({ tagName: exports.DEFAULT_TAG, tagId: 'dont use :)' });
+    }
+    else {
+        subbedTags.push({ tagId: currentSub, tagName: tagName });
+    }
+    while (sCount > 1) {
         currentSub = yield index_1.constructed.instance.feed.subsNext(data.akashaId, currentSub);
         tagName = yield index_1.constructed.instance.tags.getTagName(currentSub);
         subbedTags.push({ tagId: currentSub, tagName: tagName });
