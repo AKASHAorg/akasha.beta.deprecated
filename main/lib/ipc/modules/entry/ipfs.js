@@ -15,9 +15,14 @@ class IpfsEntry {
         this.licence = content.licence;
         this.tags = tags;
         this.wordCount = content.wordCount;
-        ipfsApiRequests.push(ipfs_connector_1.IpfsConnector.getInstance().api
-            .constructObjLink(content.featuredImage, true)
-            .then((obj) => this.featuredImage = obj));
+        if (content.featuredImage) {
+            ipfsApiRequests.push(ipfs_connector_1.IpfsConnector.getInstance().api
+                .constructObjLink(content.featuredImage, true)
+                .then((obj) => this.featuredImage = obj));
+        }
+        else {
+            this.featuredImage = { [ipfs_connector_1.IpfsApiHelper.LINK_SYMBOL]: '' };
+        }
         ipfsApiRequests.push(ipfs_connector_1.IpfsConnector.getInstance().api
             .constructObjLink(content.excerpt)
             .then((obj) => this.excerpt = obj));
