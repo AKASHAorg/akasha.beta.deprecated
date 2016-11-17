@@ -5,7 +5,7 @@ class PeopleContainer extends Component {
 
     navigate = () => {
         const basePath = this.props.loggedProfileData.get('akashaId');
-        this.context.router.push(`/${basePath}/profile/0xff15c07913a106851c72f2e80c5b4e8d90dd95fe`);
+        this.context.router.push(`/${basePath}/profile/0x286176fea8526ffcd7555b0909aced0d223103cb`);
     }
 
     render () {

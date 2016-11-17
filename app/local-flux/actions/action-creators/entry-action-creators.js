@@ -29,6 +29,27 @@ export function getSortedEntries (entries) {
         entries
     };
 }
+export function getProfileEntries (flags) {
+    return {
+        type: types.GET_PROFILE_ENTRIES,
+        flags
+    };
+}
+export function getProfileEntriesSuccess (data, flags) {
+    return {
+        type: types.GET_PROFILE_ENTRIES_SUCCESS,
+        data,
+        flags
+    };
+}
+
+export function getProfileEntriesError (error, flags) {
+    return {
+        type: types.GET_PROFILE_ENTRIES_ERROR,
+        error,
+        flags
+    };
+}
 
 export function createSavedEntrySuccess (entry) {
     return {

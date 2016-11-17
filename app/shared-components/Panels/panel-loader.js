@@ -29,12 +29,10 @@ class PanelLoader extends Component {
 }
 PanelLoader.propTypes = {
     children: PropTypes.element,
-    panelState: PropTypes.object,
-    profileState: PropTypes.object,
-    entryState: PropTypes.object,
-    appActions: PropTypes.object
+    panelState: PropTypes.shape(),
+    appActions: PropTypes.shape()
 };
 PanelLoader.contextTypes = {
-    muiTheme: PropTypes.object
+    muiTheme: PropTypes.shape()
 };
 export default PanelLoader;

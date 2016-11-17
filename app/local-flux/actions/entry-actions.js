@@ -17,7 +17,7 @@ class EntryActions {
     getEntriesCount = (akashaId) => {
         this.dispatch((dispatch, getState) => {
             const flags = getState().entryState.get('flags');
-            if (!flags.get('fetchingEntriesCount') && !flags.get('entriesCountFetched')) {
+            if (!flags.get('fetchingEntriesCount')) {
                 dispatch(entryActionCreators.getEntriesCount({
                     fetchingEntriesCount: true
                 }));
@@ -76,6 +76,30 @@ class EntryActions {
             this.dispatch(entryActionCreators.getSavedEntriesSuccess(entries))
         ).catch(reason => this.dispatch(entryActionCreators.getSavedEntriesError(reason))
         );
+
+    getProfileEntries = (akashaId, startId, limit = 5) =>
+        this.dispatch((dispatch, getState) => {
+            const flags = getState().entryState.get('flags');
+            if (!flags.get('profileEntriesFetched') || !flags.get('fetchingProfileEntries')) {
+                dispatch(entryActionCreators.getProfileEntries({
+                    fetchingEntriesCount: true
+                }));
+                this.entryService.getProfileEntries({
+                    akashaId,
+                    startId,
+                    limit,
+                    onSuccess: data =>
+                        dispatch(entryActionCreators.getProfileEntriesSuccess(data, {
+                            profileEntriesFetched: true
+                        })),
+                    onError: error =>
+                        dispatch(entryActionCreators.getProfileEntriesError(error, {
+                            fetchingEntriesCount: false,
+                            profileEntriesFetched: true
+                        }))
+                });
+            }
+        });
 
     getEntriesForTag = ({ tagName }) => {
         this.entryService.getEntriesForTag({ tagName });

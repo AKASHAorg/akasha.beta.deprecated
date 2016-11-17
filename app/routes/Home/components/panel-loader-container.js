@@ -4,11 +4,14 @@ import { AppActions, ProfileActions, EntryActions, DraftActions } from 'local-fl
 
 function mapStateToProps (state) {
     return {
+        fetchingProfileData: state.profileState.getIn(['flags', 'fetchingProfileData']),
+        loginRequested: state.profileState.getIn(['flags', 'loginRequested']),
         panelState: state.panelState,
+        loggedProfile: state.profileState.get('loggedProfile'),
         entries: state.entryState.get('published'),
         drafts: state.draftState.get('drafts'),
         draftsCount: state.draftState.get('draftsCount'),
-        entriesCount: state.entryState.get('entriesCount')
+        entriesCount: state.entryState.get('entriesCount'),
     };
 }
 

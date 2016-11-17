@@ -83,7 +83,7 @@ class EntryList extends React.Component {
                 onFullScreenClick={this._handleEditorFullScreen}
               />
             }
-            {entries && entries.map((entry, key) =>
+            {/* entries && entries.map((entry, key) =>
               <EntryCard
                 entry={entry}
                 key={key}
@@ -95,7 +95,7 @@ class EntryList extends React.Component {
                 onShare={this._handleShare}
                 onBookmark={this._handleBookmark}
               />
-            )}
+            )*/}
           </div>
         );
     }

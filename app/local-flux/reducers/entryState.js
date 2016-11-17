@@ -1,4 +1,4 @@
-/* eslint new-cap: ["error", { "capIsNewExceptions": ["Record"] }]*/
+/* eslint new-cap: ["error", { "capIsNewExceptions": ["Record", "EntryContent", "EntryEth"] }]*/
 import { fromJS, List, Record, Map } from 'immutable';
 import { createReducer } from './create-reducer';
 import * as types from '../constants/EntryConstants';
@@ -8,16 +8,30 @@ const ErrorRecord = Record({
     message: null,
     fatal: false
 });
-const Entry = Record({
-    content: {},
-    title: null,
-    wordCount: 0,
+
+const EntryContent = Record({
+    draft: {},
     excerpt: null,
-    featured_image: null,
-    tags: new List(),
-    address: null,
+    featuredImage: null,
+    licence: {},
+    tags: [],
+    title: ''
+});
+
+const EntryEth = Record({
+    blockNr: null,
     ipfsHash: null,
-    created_at: new Date(2016, 1, 5).toString()
+    publisher: null
+});
+
+const Entry = Record({
+    akashaId: null,
+    active: null,
+    baseUrl: '',
+    content: EntryContent(),
+    entryEth: EntryEth(),
+    entryId: null,
+    score: null
 });
 const SavedEntry = Record({
     address: String,
@@ -94,6 +108,24 @@ const entryState = createReducer(initialState, {
         const entriesList = new List(action.entries.map(entry => new SavedEntry(entry)));
         return state.set('savedEntries', entriesList);
     },
+
+    [types.GET_PROFILE_ENTRIES]: (state, flags) =>
+        state.merge({
+            flags: state.get('flags').merge(flags)
+        }),
+
+    [types.GET_PROFILE_ENTRIES_SUCCESS]: (state, { data, flags }) =>
+        state.merge({
+            published: state.get('published').concat(data.collection.map(item =>
+                new Entry({ akashaId: data.akashaId, ...item.content }))),
+            flags: state.get('flags').merge(flags)
+        }),
+
+    [types.GET_PROFILE_ENTRIES_ERROR]: (state, { error, flags }) =>
+        state.merge({
+            errors: state.get('errors').push(new ErrorRecord(error)),
+            flags: state.get('flags').merge(flags)
+        }),
 
     [types.GET_LICENCES_SUCCESS]: (state, { licences }) => {
         const licencesList = new List(licences.map(licence => new Licence(licence)));
