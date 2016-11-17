@@ -1,1 +1,1 @@
-{"version":3,"file":"index.js","sourceRoot":"","sources":["index.ts"],"names":[],"mappings":";AAAA;kBAAe,EAAE,CAAC","sourcesContent":["export default [];\n"]}
+{"version":3,"file":"index.js","sourceRoot":"","sources":["index.ts"],"names":[],"mappings":";AAAA,uBAAiB,QAAQ,CAAC,CAAA;AAC1B,6BAAsB,cAAc,CAAC,CAAA;AAErC;kBAAe,CAAC,cAAI,EAAE,oBAAS,CAAC,CAAC","sourcesContent":["import feed from './feed';\nimport setFilter from './set-filter';\n\nexport default [feed, setFilter];\n"]}
