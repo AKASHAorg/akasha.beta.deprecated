@@ -29,7 +29,7 @@ const execute = Promise.coroutine(function*(data: {start?: number, limit?: numbe
         }
         profileId = yield contracts.instance.feed.getFollowingById(data.akashaId, currentId);
         profile = yield profileData.execute({ profile: profileId });
-        results.push({ profile, address: profileId });
+        results.push({ profile, address: profileId, index: currentId });
         counter++;
     }
     return { collection: results, akashaId: data.akashaId, limit: maxResults };
