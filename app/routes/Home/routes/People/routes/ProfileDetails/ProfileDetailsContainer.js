@@ -34,6 +34,11 @@ class ProfileDetailsContainer extends Component {
         }
     }
 
+    componentWillUnmount () {
+        const { profileActions, profileData } = this.props;
+        profileActions.clearFollowers(profileData.get('akashaId'));
+    }
+
     followProfile = (akashaId, logged) => {
         const { profileActions } = this.props;
         const loggedProfile = logged || this.props.loggedProfile;
@@ -53,11 +58,12 @@ class ProfileDetailsContainer extends Component {
     }
 
     render () {
-        const { profileActions, entryActions, profileData, profiles, fetchingFullProfileData,
+        const { profileActions, entryActions, profileData, profiles,
             followPending, fetchingFollowers, fetchingFollowing, fetchingProfileData,
             loggedProfileData, isFollowerPending } = this.props;
 
-        if (fetchingFullProfileData || !profileData) {
+        if (fetchingProfileData || !profileData ||
+                profileData.get('backgroundImage')['/'] !== undefined) {
             return <div>Fetching data</div>;
         }
 
@@ -69,6 +75,7 @@ class ProfileDetailsContainer extends Component {
             isFollowerPending={isFollowerPending}
             isFollower={isFollower}
             profileData={profileData}
+            fetchingProfileData={fetchingProfileData}
             followProfile={this.followProfile}
             unfollowProfile={this.unfollowProfile}
             followPending={followPending}
@@ -81,7 +88,6 @@ class ProfileDetailsContainer extends Component {
             profiles={profiles}
             fetchingFollowers={fetchingFollowers}
             fetchingFollowing={fetchingFollowing}
-            fetchingProfileData={fetchingProfileData}
             followPending={followPending}
             followProfile={this.followProfile}
             unfollowProfile={this.unfollowProfile}
@@ -98,7 +104,6 @@ ProfileDetailsContainer.propTypes = {
     profileData: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
     profiles: PropTypes.shape(),
-    fetchingFullProfileData: PropTypes.bool,
     fetchingFollowers: PropTypes.bool,
     fetchingFollowing: PropTypes.bool,
     fetchingProfileData: PropTypes.bool,
@@ -124,7 +129,6 @@ function mapStateToProps (state, ownProps) {
         profiles: state.profileState.get('profiles'),
         loggedProfileData: state.profileState.get('profiles').find(profile =>
             profile.get('profile') === state.profileState.getIn(['loggedProfile', 'profile'])),
-        fetchingFullProfileData: state.profileState.get('fetchingFullProfileData'),
         fetchingFollowers: state.profileState.getIn(['flags', 'fetchingFollowers']),
         fetchingFollowing: state.profileState.getIn(['flags', 'fetchingFollowing']),
         fetchingProfileData: state.profileState.getIn(['flags', 'fetchingProfileData']),

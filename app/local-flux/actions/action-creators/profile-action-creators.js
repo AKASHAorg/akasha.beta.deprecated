@@ -82,12 +82,6 @@ export function getLocalProfilesError (error, flags) {
     };
 }
 
-export function getProfileDataFull () {
-    return {
-        type: types.GET_PROFILE_DATA_FULL
-    };
-}
-
 export function getProfileData (flags) {
     return {
         type: types.GET_PROFILE_DATA,
@@ -379,5 +373,19 @@ export function isFollowerError (error, flags) {
         type: types.IS_FOLLOWER_ERROR,
         error,
         flags
+    };
+}
+
+export function clearFollowers (akashaId) {
+    return {
+        type: types.CLEAR_FOLLOWERS,
+        akashaId
+    };
+}
+
+export function clearFollowing (akashaId) {
+    return {
+        type: types.CLEAR_FOLLOWING,
+        akashaId
     };
 }

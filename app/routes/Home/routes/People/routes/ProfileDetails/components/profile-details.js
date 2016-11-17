@@ -41,8 +41,10 @@ class ProfileDetails extends Component {
 
     renderHeader () {
         const { isFollowerPending, isFollower, followProfile, unfollowProfile, loggedAddress,
-            followPending, intl } = this.props;
-        const profileData = this.props.profileData ? this.props.profileData.toJS() : {};
+            followPending, fetchingProfileData, intl } = this.props;
+        const profileData = this.props.profileData && !fetchingProfileData ?
+            this.props.profileData.toJS() :
+            {};
         const followProfilePending = followPending && followPending.find(follow =>
             follow.akashaId === profileData.akashaId);
         const { backgroundImage, avatar, profile } = profileData;
@@ -198,6 +200,7 @@ ProfileDetails.contextTypes = {
 ProfileDetails.propTypes = {
     loggedAddress: PropTypes.string,
     profileData: PropTypes.shape(),
+    fetchingProfileData: PropTypes.bool,
     followProfile: PropTypes.func,
     unfollowProfile: PropTypes.func,
     followPending: PropTypes.shape(),

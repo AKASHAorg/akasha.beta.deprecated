@@ -437,5 +437,11 @@ class ProfileActions {
         });
     };
 
+    clearFollowers = akashaId =>
+        this.dispatch(profileActionCreators.clearFollowers(akashaId));
+
+    clearFollowing = akashaId =>
+        this.dispatch(profileActionCreators.clearFollowing(akashaId));
+
 }
 export { ProfileActions };
