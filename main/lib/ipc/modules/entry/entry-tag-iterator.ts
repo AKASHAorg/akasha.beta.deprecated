@@ -10,10 +10,16 @@ const execute = Promise.coroutine(function*(data: {start?: number, limit?: numbe
     if (currentId === '0') {
         return { collection: [], tagName: data.tagName };
     }
-    let entry = yield getEntry.execute({ entryId: currentId });
+    let entry;
     const maxResults = (data.limit) ? data.limit : 5;
-    const results = [{ entryId: currentId, content: entry }];
-    let counter = 1;
+    const results = [];
+    let counter = 0;
+    if (!data.start) {
+        entry = yield getEntry.execute({ entryId: currentId });
+        results.push({ entryId: currentId, content: entry });
+        counter = 1;
+    }
+
     while (counter < maxResults) {
         currentId = yield contracts.instance.entries.getTagEntryNext(data.tagName, currentId);
         if (currentId === '0') {
