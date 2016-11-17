@@ -36,6 +36,7 @@ class ProfileUpdater extends Component {
                 transactionActions.listenForMinedTx({ watch: false });
                 transactionActions.deletePendingTx(followTx);
                 profileActions.isFollower(loggedAkashaId, akashaId);
+                profileActions.getProfileData([{ profile: loggedProfile }], true);
                 if (profileAddress) {
                     profileActions.getProfileData([{ profile: profileAddress }], true);
                 }
@@ -72,6 +73,7 @@ class ProfileUpdater extends Component {
                 transactionActions.listenForMinedTx({ watch: false });
                 transactionActions.deletePendingTx(unfollowTx);
                 profileActions.isFollower(loggedAkashaId, akashaId);
+                profileActions.getProfileData([{ profile: loggedProfile }], true);
                 if (profileAddress) {
                     profileActions.getProfileData([{ profile: profileAddress }], true);
                 }
