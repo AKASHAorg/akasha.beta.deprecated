@@ -133,5 +133,25 @@ export const profileMessages = defineMessages({
         id: 'app.profile.showMore',
         description: 'label for button that loads more data',
         defaultMessage: 'Show more'
+    },
+    followers: {
+        id: 'app.profile.followers',
+        description: 'Label for followers tab',
+        defaultMessage: 'Followers'
+    },
+    following: {
+        id: 'app.profile.following',
+        description: 'Label for following tab',
+        defaultMessage: 'Following'
+    },
+    allEntries: {
+        id: 'app.profile.allEntries',
+        description: 'Label for all entries tab',
+        defaultMessage: 'All entries'
+    },
+    interestingPeople: {
+        id: 'app.profile.interestingPeople',
+        description: 'Label for interesting people tab',
+        defaultMessage: 'Interesting people'
     }
 });
