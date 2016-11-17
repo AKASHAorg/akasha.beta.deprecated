@@ -23,7 +23,7 @@ const execute = Promise.coroutine(function* (data) {
         if (currentId === '0') {
             break;
         }
-        profileId = yield index_1.constructed.instance.feed.getFollowersById(data.akashaId, currentId);
+        profileId = yield index_1.constructed.instance.feed.getFollowingById(data.akashaId, currentId);
         profile = yield profile_data_1.default.execute({ profile: profileId });
         results.push({ profile, address: profileId });
         counter++;
