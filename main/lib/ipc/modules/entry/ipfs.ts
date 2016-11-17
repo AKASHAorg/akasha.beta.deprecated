@@ -32,10 +32,14 @@ class IpfsEntry {
         this.licence = content.licence;
         this.tags = tags;
         this.wordCount = content.wordCount;
-        ipfsApiRequests.push(
-            IpfsConnector.getInstance().api
-                .constructObjLink(content.featuredImage, true)
-                .then((obj) => this.featuredImage = obj));
+        if (content.featuredImage) {
+            ipfsApiRequests.push(
+                IpfsConnector.getInstance().api
+                    .constructObjLink(content.featuredImage, true)
+                    .then((obj) => this.featuredImage = obj));
+        } else {
+            this.featuredImage = { [IpfsApiHelper.LINK_SYMBOL]: '' };
+        }
 
         ipfsApiRequests.push(
             IpfsConnector.getInstance().api
