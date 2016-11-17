@@ -131,6 +131,16 @@ const generalMessages = defineMessages({
         description: 'Reset form',
         defaultMessage: 'Reset'
     },
+    delete: {
+        id: 'app.general.delete',
+        description: 'Delete something button label',
+        defaultMessage: 'Delete'
+    },
+    edit: {
+        id: 'app.general.edit',
+        description: 'Edit something button label',
+        defaultMessage: 'Edit'
+    },
     save: {
         id: 'app.general.save',
         description: 'Save changes in a form',

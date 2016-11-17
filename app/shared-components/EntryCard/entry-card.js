@@ -18,7 +18,14 @@ import style from './entry-card.scss';
 
 const EntryCard = (props) => {
     const {
-      entry,
+      headerTitle,
+      publishedDate,
+      wordCount,
+      excerpt,
+      title,
+      headerActions,
+      cardActions,
+      onTitleClick,
       onContentClick,
       onTagClick,
       onUpvote,
@@ -28,43 +35,41 @@ const EntryCard = (props) => {
       onBookmark,
       intl
     } = props;
-    const wordCount = entry.get('wordCount');
-    const publishedDate = intl.formatRelative(
-        new Date(entry.get('created_at')).getTime()
-    );
     const readingTime = calculateReadingTime(wordCount);
     const cardSubtitle = `${publishedDate} -
       ${readingTime.hours ? readingTime.hours + ' hours' : ''}
       ${readingTime.minutes} minutes (${wordCount} words)`;
     return (
       <Card className="start-xs" style={{ marginBottom: 16 }}>
-        <CardHeader
-          title={`${entry.getIn(['author', 'firstName'])} ${entry.getIn(['author', 'lastName'])}`}
-          subtitle={`${cardSubtitle}`}
-          avatar={entry.getIn(['author', 'optionalData', 'avatar'])}
-        />
-        <CardTitle
-          style={{ padding: '0 16px 8px' }}
-          title={entry.get('title')}
-          onClick={onContentClick}
-          className={style.entryTitle}
-        />
-        <CardText style={{ padding: '0 16px 8px' }}>
-          <div style={{ marginBottom: 8 }}>
-            {entry.get('tags').map((tag, key) =>
-              <TagChip
-                key={key}
-                onTagClick={onTagClick}
-                tag={tag}
-              />
-            )}
+        <div className="row" style={{ padding: '4px 16px' }}>
+          <div className="col-xs-12">
+            <div className="row middle-xs">
+              <div className="col-xs-9 start-xs">
+                <h4 style={{ margin: '8px 0' }}>{headerTitle}</h4>
+                <h5 style={{ margin: '8px 0' }}>
+                  {cardSubtitle}
+                </h5>
+              </div>
+              <div className="col-xs-3 end-xs">
+                {headerActions}
+              </div>
+            </div>
           </div>
-          <div onClick={onContentClick} className={style.contentText}>
-          {entry.get('excerpt')}
-          </div>
+        </div>
+        <CardText>
+          <h2
+            onClick={ev => onTitleClick(ev)}
+            style={{ cursor: 'pointer' }}
+          >
+            {title}
+          </h2>
+        </CardText>
+        <CardText>
+          <p>{excerpt}</p>
         </CardText>
         <CardActions className="col-xs-12">
-          <div className="row">
+          {cardActions}
+          {/* <div className="row">
             <div className="col-xs-7">
               <div className="row">
                 <div className="col-xs-3">
@@ -132,7 +137,7 @@ const EntryCard = (props) => {
                 <BookmarkIcon />
               </IconButton>
             </div>
-          </div>
+          </div> */}
         </CardActions>
       </Card>
     );

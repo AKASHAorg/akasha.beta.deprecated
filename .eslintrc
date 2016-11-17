@@ -20,7 +20,7 @@
     },
     "settings": {
         "import/core-modules": ["electron", "local-flux", "locale-data", "shared-components"],
-        "import/external-module-folders": ["node_modules", "local-flux", "shared-components", "locale-data"],
+        "import/external-module-folders": ["node_modules", "local-flux", "shared-components", "locale-data"]
     },
     "parser": "babel-eslint",
     "env": {

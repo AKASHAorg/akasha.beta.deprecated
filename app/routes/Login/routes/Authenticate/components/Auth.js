@@ -46,7 +46,7 @@ class Auth extends Component {
         const profilesChanged = this.props.localProfiles.size !== nextProps.localProfiles.size;
         const fetchingLocalProfilesChanged = !fetchingLocalProfiles &&
             this.props.fetchingLocalProfiles;
-        if (gethStatus.get('api') && !this.props.gethStatus.get('api') && !localProfiles.size) {
+        if (gethStatus.get('api') && !this.props.gethStatus.get('api')) {
             profileActions.getLocalProfiles();
         }
         if (loginErrors.size === 0) {
@@ -69,15 +69,15 @@ class Auth extends Component {
         this.props.profileActions.clearLocalProfiles();
     }
     getPlaceholderMessage () {
-        const { intl, gethStatus, ipfsStatus, localProfiles, profilesFetched } = this.props;
+        const { intl, gethStatus, ipfsStatus, localProfiles, localProfilesFetched } = this.props;
         let message;
         if (!gethStatus.get('api')) {
             message = intl.formatMessage(setupMessages.gethStopped);
         } else if (!ipfsStatus.get('spawned') && !ipfsStatus.get('started')) {
             message = intl.formatMessage(setupMessages.ipfsStopped);
-        } else if (localProfiles.size === 0 && profilesFetched) {
+        } else if (localProfiles.size === 0 && localProfilesFetched) {
             message = intl.formatMessage(setupMessages.noProfilesFound);
-        } else if (localProfiles.size === 0 && !profilesFetched) {
+        } else if (localProfiles.size === 0 && !localProfilesFetched) {
             message = intl.formatMessage(setupMessages.findingProfiles);
         }
         if (message) {
@@ -109,7 +109,8 @@ class Auth extends Component {
         profileActions.login({
             account: selectedProfile.get('ethAddress'),
             password: this.state.password,
-            rememberTime: unlockInterval
+            rememberTime: unlockInterval,
+            akashaId: selectedProfile.get('akashaId')
         });
     };
     _getLocalProfiles () {
@@ -278,7 +279,7 @@ Auth.propTypes = {
     localProfiles: React.PropTypes.shape().isRequired,
     gethStatus: PropTypes.shape().isRequired,
     ipfsStatus: PropTypes.shape().isRequired,
-    profilesFetched: React.PropTypes.bool,
+    localProfilesFetched: React.PropTypes.bool,
     fetchingLocalProfiles: React.PropTypes.bool,
     loggedProfile: React.PropTypes.shape().isRequired,
     loginErrors: React.PropTypes.shape().isRequired,

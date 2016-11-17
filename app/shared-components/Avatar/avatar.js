@@ -98,9 +98,12 @@ class Avatar extends React.Component {
         } else if (image) {
             avatarImage = image;
         }
+        if (!avatarImage) {
+            this.editor = null;
+        }
         return (
           <div
-            style={Object.assign({ maxWidth: radius, position: 'relative' }, style)}
+            style={Object.assign({ maxWidth: radius, maxHeight: radius, position: 'relative' }, style)}
             onMouseEnter={this._handleMouseEnter}
             onMouseLeave={this._handleMouseLeave}
           >
@@ -161,7 +164,10 @@ class Avatar extends React.Component {
                   <div
                     style={{
                         height: '100%',
-                        backgroundColor: this.props.backgroundColor
+                        backgroundColor: this.props.backgroundColor,
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center'
                     }}
                   >
                     <div style={userInitialsAlignStyle} />

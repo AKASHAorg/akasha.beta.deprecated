@@ -7,14 +7,15 @@ import {
     SelectField,
     MenuItem,
     Card,
-    CardHeader,
     CardText,
     IconMenu,
     IconButton,
     CircularProgress } from 'material-ui';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
-import { injectIntl, FormattedRelative, FormattedMessage } from 'react-intl';
+import { entryMessages, generalMessages } from 'locale-data/messages';
+import { injectIntl, FormattedRelative } from 'react-intl';
 import SearchBar from '../SearchBar/search-bar';
+import EntryCard from '../EntryCard/entry-card';
 
 class NewEntryFormPanel extends Component {
     constructor (props) {
@@ -26,21 +27,24 @@ class NewEntryFormPanel extends Component {
         };
     }
     componentDidMount () {
-        const { draftActions, drafts, draftsCount, profile } = this.props;
+        const { draftActions, drafts, draftsCount, loggedProfile } = this.props;
         if (drafts.size !== draftsCount) {
-            draftActions.getDrafts(profile.get('profile'));
+            draftActions.getDrafts(loggedProfile.get('profile'));
         }
     }
     componentWillUpdate (nextProps, nextState) {
         const { draftActions, entryActions, drafts, draftsCount, entriesCount, entries,
-            profile } = this.props;
+            loggedProfile } = this.props;
         const { tabsValue } = nextState;
+        const profileEntries = entries.filter(entry => entry.get('address') === loggedProfile.get('profile'));
+        console.log('try to get', tabsValue, entriesCount, profileEntries);
         if (this.state.tabsValue !== tabsValue) {
             if (tabsValue === 'drafts' && drafts.size !== draftsCount) {
-                draftActions.getDrafts(profile.get('profile'));
+                draftActions.getDrafts(loggedProfile.get('profile'));
             }
-            if (tabsValue === 'entries' && entries.size !== entriesCount) {
-                entryActions.getEntries(profile.get('profile'));
+            if (tabsValue === 'listed' && profileEntries.size < entriesCount) {
+                console.log('start entries request!!');
+                entryActions.getProfileEntries(loggedProfile.get('akashaId'));
             }
         }
     }
@@ -63,92 +67,112 @@ class NewEntryFormPanel extends Component {
     _handleEntryEdit = (ev, entryId) => {
         const entryType = this.state.tabsValue;
         const { router } = this.context;
-        const { appActions, profile } = this.props;
+        const { appActions, loggedProfile } = this.props;
         appActions.hidePanel();
         switch (entryType) {
             case 'drafts':
-                return router.push(`/${profile.get('akashaId')}/draft/${entryId}`);
+                router.push(`/${loggedProfile.get('akashaId')}/draft/${entryId}`);
+                break;
             default:
                 break;
         }
     }
     _handleNewEntry = () => {
         const { router } = this.context;
-        const { appActions, profile } = this.props;
+        const { appActions, loggedProfile } = this.props;
         appActions.hidePanel();
-        return router.push(`/${profile.get('akashaId')}/draft/new`);
+        return router.push(`/${loggedProfile.get('akashaId')}/draft/new`);
     }
     _getTabContent = () => {
-        const { entries, drafts, profile } = this.props;
+        const { entries, drafts, loggedProfile, intl } = this.props;
         let entities;
         switch (this.state.tabsValue) {
             case 'drafts':
-                entities = drafts.filter(drft => drft.get('profile') === profile.get('profile'));
+                entities = drafts.filter(drft => drft.get('profile') === loggedProfile.get('profile'));
                 break;
             case 'listed':
-                entities = entries.filter(entry => entry.get('profile') === profile.get('profile'));
+                entities = entries.filter(entry =>
+                  (entry.get('akashaId') === loggedProfile.get('akashaId')) && entry.get('active'))
+                  .map((entry, key) =>
+                    <EntryCard
+                      key={key}
+                      headerTitle={`Listed`}
+                      publishedDate={`published ${entry.get('entryEth').blockNr} blocks ago`}
+                      headerActions={
+                        <IconMenu iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}>
+                          <MenuItem
+                            primaryText={intl.formatMessage(generalMessages.edit)}
+                            onClick={ev => this._handleEntryEdit(ev, entry.get('entryId'))}
+                          />
+                          <MenuItem primaryText={intl.formatMessage(generalMessages.delete)} />
+                        </IconMenu>}
+                      title={entry.get('content').title}
+                      excerpt={entry.get('content').excerpt}
+                      wordCount={610}
+                    />);
                 break;
             case 'unlisted':
-                entities = entries.get('published');
+                entities = entries.filter(entry =>
+                  (entry.get('akashaId') === loggedProfile.get('akashaId')) && !entry.get('active'));
                 break;
             default:
                 break;
         }
-        const entryCards = entities.map((card, key) =>
-          <Card key={key} style={{ marginBottom: 8 }}>
-            <CardHeader
-              title="Draft"
-              subtitle={
-                <FormattedMessage
-                  id="app.entryForm.draftCardSubtitle"
-                  description="subtitle showing last updated time and words number on draft card in new entry panel"
-                  defaultMessage="{lastUpdate} - {wordCount} words so far"
-                  values={{
-                      lastUpdate: <FormattedRelative value={card.get('status').updated_at} />,
-                      wordCount: card.get('wordCount')
-                  }}
-                />
-              }
-            >
-              <div style={{ width: '55%', display: 'inline-block', textAlign: 'right' }}>
-                <IconMenu iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}>
-                  <MenuItem
-                    primaryText="Edit"
-                    onClick={ev => this._handleEntryEdit(ev, card.id)}
-                  />
-                  <MenuItem primaryText="Publish" />
-                  <MenuItem primaryText="Delete" />
-                </IconMenu>
-              </div>
-            </CardHeader>
-            <CardText>
-              <h2
-                onClick={ev => this._handleEntryEdit(ev, card.id)}
-                style={{ cursor: 'pointer' }}
-              >
-                {card.title && card.title}
-                {!card.title && 'No Title'}
-              </h2>
-            </CardText>
-            <CardText>
-              <p>{card.excerpt}</p>
-              <div>
-                {card.get('status').publishing &&
-                  <div className="row middle-xs">
-                    <div className="col-xs-1 end-xs">
-                      <CircularProgress size={20} thickness={2} />
-                    </div>
-                    <div className="col-xs">
-                      Publishing...
-                    </div>
-                  </div>
-                }
-              </div>
-            </CardText>
-          </Card>
-        );
+
+        // const entryCards = entities.map((card, key) =>
+        //   <Card key={key} style={{ marginBottom: 8 }}>
+        //     <div className="row" style={{ padding: '4px 16px' }}>
+        //       <div className="col-xs-12">
+        //         <div className="row middle-xs">
+        //           <div className="col-xs start-xs">
+        //             <h4 style={{ margin: '8px 0' }}>{intl.formatMessage(entryMessages.draft)}</h4>
+        //             <h5 style={{ margin: '8px 0' }}>
+        //               {intl.formatMessage(entryMessages.draftCardSubtitle, {
+        //                   lastUpdate: <FormattedRelative value={card.get('status').updated_at} />,
+        //                   wordCount: card.get('wordCount')
+        //               })}
+        //             </h5>
+        //           </div>
+        //           <div className="col-xs end-xs">
+        //             <IconMenu iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}>
+        //               <MenuItem
+        //                 primaryText={intl.formatMessage(generalMessages.edit)}
+        //                 onClick={ev => this._handleEntryEdit(ev, card.id)}
+        //               />
+        //               <MenuItem primaryText={intl.formatMessage(generalMessages.delete)} />
+        //             </IconMenu>
+        //           </div>
+        //         </div>
+        //       </div>
+        //     </div>
+        //     <CardText>
+        //       <h2
+        //         onClick={ev => this._handleEntryEdit(ev, card.id)}
+        //         style={{ cursor: 'pointer' }}
+        //       >
+        //         {card.title && card.title}
+        //         {!card.title && 'No Title'}
+        //       </h2>
+        //     </CardText>
+        //     <CardText>
+        //       <p>{card.excerpt}</p>
+        //       <div>
+        //         {card.get('status').publishing &&
+        //           <div className="row middle-xs">
+        //             <div className="col-xs-1 end-xs">
+        //               <CircularProgress size={20} thickness={2} />
+        //             </div>
+        //             <div className="col-xs">
+        //               Publishing...
+        //             </div>
+        //           </div>
+        //         }
+        //       </div>
+        //     </CardText>
+        //   </Card>
+        // );
         return (
-          <div>{entryCards}</div>
+          <div>{entities}</div>
         );
     }
     render () {
@@ -156,6 +180,7 @@ class NewEntryFormPanel extends Component {
             backgroundColor: '#FFF',
             color: '#444'
         };
+        console.log(this.props.entries, 'entries in render');
         return (
           <Paper style={this.props.rootStyle}>
             <div
@@ -250,9 +275,10 @@ NewEntryFormPanel.propTypes = {
     entryActions: PropTypes.shape(),
     appActions: PropTypes.shape(),
     draftActions: PropTypes.shape(),
-    profile: PropTypes.shape(),
+    loggedProfile: PropTypes.shape(),
     draftsCount: PropTypes.number,
-    entriesCount: PropTypes.number
+    entriesCount: PropTypes.number,
+    intl: PropTypes.shape()
 };
 NewEntryFormPanel.contextTypes = {
     router: PropTypes.shape()

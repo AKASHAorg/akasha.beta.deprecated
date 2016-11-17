@@ -13,7 +13,7 @@ const PendingTransaction = Record({
     tx: '',
     type: null,
     profile: '',
-    profileAddress: null
+    akashaId: null
 });
 
 const MinedTransaction = Record({

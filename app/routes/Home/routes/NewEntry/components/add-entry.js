@@ -68,7 +68,7 @@ class AddEntryPage extends Component {
         const contentState = this.editor.getContent();
         const title = this.editor.getTitle();
         const wordCount = getWordCount(contentState);
-        const excerpt = contentState.getPlainText().slice(0, 120).replace(/\r?\n|\r/g, '');
+        const excerpt = contentState.getPlainText().slice(0, 160).replace(/\r?\n|\r/g, '');
 
         if (params.draftId !== 'new') {
             const draftId = parseInt(params.draftId, 10);
@@ -119,7 +119,7 @@ class AddEntryPage extends Component {
         const { shouldBeSaved, fetchingDraft, draftMissing } = this.state;
         const currentDraft = this._findCurrentDraft(drafts);
         const initialContent = this._getInitialContent();
-
+        const draftTitle = currentDraft ? currentDraft.title : '';
         return (
           <div style={{ height: '100%', position: 'relative' }}>
             <Toolbar
@@ -182,12 +182,11 @@ class AddEntryPage extends Component {
                   <EntryEditor
                     editorRef={(editor) => { this.editor = editor; }}
                     onChange={this._handleEditorChange}
-                    onTitleChange={this._handleTitleChange}
                     readOnly={false}
                     content={initialContent}
-                    title={'draft.title'}
-                    showTitleField
-                    textHint="Write something"
+                    title={draftTitle}
+                    showTitle
+                    placeHolder="Write something"
                   />
                 </div>
               }

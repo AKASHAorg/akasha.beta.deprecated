@@ -5,7 +5,7 @@ import { AppActions, DraftActions, ProfileActions, EntryActions,
 import { Sidebar } from 'shared-components';
 import '../../styles/core.scss';
 import styles from './home.scss';
-import PanelLoader from './components/panel-loader-container';
+import PanelLoaderContainer from './components/panel-loader-container';
 import EntryModal from './components/entry-modal';
 import ProfileUpdater from './components/profile-updater';
 import PublishEntryRunner from './components/publish-entry-runner';
@@ -39,7 +39,7 @@ class HomeContainer extends React.Component {
             transactionActions.getMinedTransactions();
             transactionActions.getPendingTransactions();
             draftActions.getDraftsCount(loggedProfile.get('profile'));
-            entryActions.getEntriesCount(loggedProfile.get('profile'));
+            entryActions.getEntriesCount(loggedProfile.get('akashaId'));
         }
     }
     componentWillUnmount () {
@@ -71,56 +71,53 @@ class HomeContainer extends React.Component {
     render () {
         const { appActions, draftActions, fetchingLoggedProfile, loggedProfileData,
             profileActions, entriesCount, draftsCount, loggedProfile, activePanel,
-            params, fetchingProfileData, loginRequested, updatingProfile } = this.props;
+            params, loginRequested, updatingProfile, entries } = this.props;
         const profileAddress = loggedProfile.get('profile');
         const account = loggedProfile.get('account');
         const loadingInProgress = !loggedProfileData || fetchingLoggedProfile;
 
         if (loadingInProgress) {
             return (
-                <div>{this._getLoadingMessage()}</div>
+              <div>{this._getLoadingMessage()}</div>
             );
         }
         if (!account) {
             return <div>Logging out...</div>;
         }
         return (
-            <div className={styles.root} >
-                <div className={styles.sideBar} >
-                    <Sidebar
-                        activePanel={activePanel}
-                        account={account}
-                        appActions={appActions}
-                        draftActions={draftActions}
-                        loggedProfileData={loggedProfileData}
-                        profileActions={profileActions}
-                        entriesCount={entriesCount}
-                        draftsCount={draftsCount}
-                    />
-                </div>
-                <div className={styles.panelLoader} >
-                    <PanelLoader
-                        profile={loggedProfileData}
-                        profileAddress={profileAddress}
-                        params={params}
-                        showPanel={appActions.showPanel}
-                        hidePanel={appActions.hidePanel}
-                        profileActions={profileActions}
-                        fetchingProfileData={fetchingProfileData}
-                        updateProfileData={this.updateProfileData}
-                        updatingProfile={updatingProfile}
-                        loginRequested={loginRequested}
-                    />
-                </div>
-                <EntryModal />
-                <div className={`col-xs-12 ${styles.childWrapper}`} >
-                    {this.props.children}
-                </div>
-                <ProfileUpdater />
-                <FollowRunner />
-                <PublishEntryRunner />
-                <TagPublisher />
+          <div className={styles.root} >
+            <div className={styles.sideBar} >
+              <Sidebar
+                activePanel={activePanel}
+                account={account}
+                appActions={appActions}
+                draftActions={draftActions}
+                loggedProfileData={loggedProfileData}
+                profileActions={profileActions}
+                entriesCount={entriesCount}
+                draftsCount={draftsCount}
+              />
             </div>
+            <div className={styles.panelLoader} >
+              <PanelLoaderContainer
+                loggedProfileData={loggedProfileData}
+                profileAddress={profileAddress}
+                params={params}
+                showPanel={appActions.showPanel}
+                hidePanel={appActions.hidePanel}
+                updateProfileData={this.updateProfileData}
+                updatingProfile={updatingProfile}
+              />
+            </div>
+            <EntryModal />
+            <div className={`col-xs-12 ${styles.childWrapper}`} >
+              {this.props.children}
+            </div>
+            <ProfileUpdater />
+            <FollowRunner />
+            <PublishEntryRunner />
+            <TagPublisher />
+          </div>
         );
     }
 }
@@ -144,6 +141,7 @@ HomeContainer.propTypes = {
     entryActions: PropTypes.shape(),
     transactionActions: PropTypes.shape(),
     params: PropTypes.shape(),
+    entries: PropTypes.shape()
 };
 
 HomeContainer.contextTypes = {
