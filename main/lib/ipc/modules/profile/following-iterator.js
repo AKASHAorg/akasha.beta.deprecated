@@ -25,7 +25,7 @@ const execute = Promise.coroutine(function* (data) {
         }
         profileId = yield index_1.constructed.instance.feed.getFollowingById(data.akashaId, currentId);
         profile = yield profile_data_1.default.execute({ profile: profileId });
-        results.push({ profile, address: profileId });
+        results.push({ profile, address: profileId, index: currentId });
         counter++;
     }
     return { collection: results, akashaId: data.akashaId, limit: maxResults };
