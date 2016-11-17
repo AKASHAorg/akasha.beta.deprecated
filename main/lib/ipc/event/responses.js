@@ -13,7 +13,7 @@ exports.ipfsResponse = (data, error) => {
 };
 exports.mainResponse = (rawData) => {
     if (rawData.error) {
-        return { data: {}, error: rawData.error };
+        return { data: {}, error: { message: rawData.error.message, from: rawData.from } };
     }
     return { data: rawData };
 };
