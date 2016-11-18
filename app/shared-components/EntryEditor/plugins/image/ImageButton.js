@@ -9,7 +9,8 @@ export default class BlockButton extends Component {
         super(props);
         this.state = {
             dialogOpen: false,
-            licence: 'CC BY'
+            licence: 'CC BY',
+            error: ''
         };
     }
     triggerFileDialog = () => {
@@ -31,7 +32,7 @@ export default class BlockButton extends Component {
     }
     _handleImageAdd = (ev, files) => {
         ev.persist(); // keep original event around for later use
-        const filePromises = getResizedImages([files[0].path], { minWidth: 600 });
+        const filePromises = getResizedImages([files[0].path], { minWidth: 320 });
         Promise.all(filePromises).then((results) => {
             const data = {
                 files: results[0],
@@ -46,6 +47,10 @@ export default class BlockButton extends Component {
             this.fileInput.files = null;
             this.setState({
                 dialogOpen: false
+            });
+        }).catch((reason) => {
+            this.setState({
+                errors: reason.message
             });
         });
     }
@@ -120,6 +125,13 @@ export default class BlockButton extends Component {
                   />
                 </div>
               </div>
+              {this.state.errors &&
+                <div className="row">
+                  <div className="col-xs-12">
+                    <p>{this.state.error}</p>
+                  </div>
+                </div>
+              }
               <div className="row">
                 <div className="col-xs-4">
                   <h4>Image Licence</h4>

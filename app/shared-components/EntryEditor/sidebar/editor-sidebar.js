@@ -70,7 +70,11 @@ export class SideMenu extends Component {
             open: false
         };
     }
-
+    componentWillUnmount () {
+        this.setState({
+            open: false
+        });
+    }
     onChange = (editorState) => {
         this.props.onChange(editorState);
     }
@@ -115,22 +119,31 @@ export default class SideBar extends Component {
             sidebarVisible: false
         };
     }
-    componentDidUpdate () {
-        this.updateSidebarPosition();
-    }
     shouldComponentUpdate (nextProps, nextState) {
         return (nextState.top !== this.state.top) ||
             (nextState.sidebarVisible !== this.state.sidebarVisible) ||
             (nextState.left !== this.state.left) ||
             (nextProps.editorState !== this.props.editorState);
     }
+    componentDidUpdate () {
+        this.updateSidebarPosition();
+    }
+    componentWillUnmount () {
+        this.setState({
+            sidebarVisible: false
+        });
+    }
     onChange = (editorState) => {
         this.props.onChange(editorState);
         this.updateSidebarPosition();
     }
     getSelectedBlockElement = () => {
+        const { editorState } = this.props;
         const selection = window.getSelection();
-        if ((selection.rangeCount === 0) || (selection.anchorOffset > 0)) {
+        const startKey = editorState.getSelection().getStartKey();
+        const hasText = editorState.getCurrentContent().getBlockForKey(startKey).text !== '';
+        console.log(hasText);
+        if ((selection.rangeCount === 0) || (selection.anchorOffset > 0) || hasText) {
             this.setState({
                 sidebarVisible: false
             });
@@ -162,7 +175,7 @@ export default class SideBar extends Component {
             (container.getBoundingClientRect().top + 16) - document.documentElement.clientTop;
         const left = element.offsetLeft - 50;
         let top = element.getBoundingClientRect().top - containerTop;
-        top = Math.max(0, Math.floor(top));
+        top = Math.floor(top) + 4;
 
         if ((this.state.top !== top)) {
             this.setState({
@@ -191,8 +204,11 @@ export default class SideBar extends Component {
             return null;
         }
         return (
-          <div ref={(container) => { this.container = container; }} className="sidebar">
-            <div style={{ top: `${this.state.top}px`, left: `${this.state.left}px` }} className="sidebar__menu">
+          <div
+            ref={(container) => { this.container = container; }}
+            className={`sidebar ${isVisible ? 'visible' : 'hidden'}`}
+          >
+            <div style={{ top: `${this.state.top}px`, left: `${this.state.left}px`, zIndex: 9 }} className="sidebar__menu">
               <ul className="sidebar__sidemenu-wrapper">
                 <SideMenu
                   sidebarVisible={isVisible}

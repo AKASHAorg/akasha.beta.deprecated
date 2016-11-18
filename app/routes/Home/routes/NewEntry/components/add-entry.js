@@ -139,15 +139,15 @@ class AddEntryPage extends Component {
               <ToolbarGroup>
                 <FlatButton
                   primary
-                  label="Publish"
-                  disabled={!this.state.publishable}
-                  onClick={this._setupEntryForPublication}
-                />
-                <FlatButton
-                  primary
                   label="Save"
                   disabled={savingDraft}
                   onClick={this._handleDraftSave}
+                />
+                <FlatButton
+                  primary
+                  label="Publish"
+                  disabled={!this.state.publishable}
+                  onClick={this._setupEntryForPublication}
                 />
                 <IconMenu
                   iconButtonElement={
