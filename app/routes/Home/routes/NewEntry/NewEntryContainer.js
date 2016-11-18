@@ -11,7 +11,7 @@ function mapStateToProps (state) {
         errors: state.draftState.get('errors')
     };
 }
-
+/* eslint-disable no-unused-vars */
 function mapDispatchToProps (dispatch) {
     return {
         profileActions: new ProfileActions(dispatch),

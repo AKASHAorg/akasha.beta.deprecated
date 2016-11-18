@@ -11,7 +11,7 @@ function mapStateToProps (state) {
         licences: state.entryState.get('licences')
     };
 }
-
+/* eslint-disable no-unused-vars */
 function mapDispatchToProps (dispatch) {
     return {
         profileActions: new ProfileActions(dispatch),
