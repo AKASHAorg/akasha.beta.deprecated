@@ -27,7 +27,7 @@ const execute = Promise.coroutine(function* (data) {
         results.push({ akashaId: akashaId, score: row.score });
         counter++;
     }
-    return { collection: results, entryId: data.entryId };
+    return { collection: results, entryId: data.entryId, limit: maxResults };
 });
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = { execute, name: 'votesIterator' };

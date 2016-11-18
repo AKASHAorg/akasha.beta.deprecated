@@ -31,7 +31,7 @@ const execute = Promise.coroutine(function*(data: {start?: number, limit?: numbe
         results.push({ akashaId: akashaId, score: row.score });
         counter++;
     }
-    return { collection: results, entryId: data.entryId };
+    return { collection: results, entryId: data.entryId, limit: maxResults };
 });
 
 export default { execute, name: 'votesIterator' };

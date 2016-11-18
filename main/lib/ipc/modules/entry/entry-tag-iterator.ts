@@ -29,7 +29,7 @@ const execute = Promise.coroutine(function*(data: {start?: number, limit?: numbe
         results.push({ entryId: currentId, content: entry });
         counter++;
     }
-    return { collection: results, tagName: data.tagName };
+    return { collection: results, tagName: data.tagName, limit: maxResults };
 });
 
 export default { execute, name: 'entryTagIterator' };
