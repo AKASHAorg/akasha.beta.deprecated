@@ -63,9 +63,8 @@ export default (
       </Route>
 
       {/** loads details about different profiles */}
-      <Route component={PeoplePageContainer} path="profile" >
-        <Route component={ProfileDetailsContainer} path=":profileAddress" />
-      </Route>
+      <Route component={PeoplePageContainer} path="people" />
+      <Route component={ProfileDetailsContainer} path="profile/:profileAddress" />
 
       {/** create a new entry or edit existing one */}
       <Route component={NewEntryContainer} path="draft/:draftId" >

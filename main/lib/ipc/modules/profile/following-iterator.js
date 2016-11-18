@@ -7,22 +7,28 @@ const execute = Promise.coroutine(function* (data) {
     if (currentId === '0') {
         return { collection: [], akashaId: data.akashaId };
     }
-    let profileId = yield index_1.constructed.instance.feed.getFollowingById(data.akashaId, currentId);
-    let profile = yield profile_data_1.default.execute({ profile: profileId });
+    let profileId;
+    let profile;
+    let counter = 0;
+    const results = [];
     const maxResults = (data.limit) ? data.limit : 10;
-    const results = [{ profile, address: profileId }];
-    let counter = 1;
+    if (!data.start) {
+        profileId = yield index_1.constructed.instance.feed.getFollowingById(data.akashaId, currentId);
+        profile = yield profile_data_1.default.execute({ profile: profileId });
+        results.push({ profile, address: profileId, index: currentId });
+        counter = 1;
+    }
     while (counter < maxResults) {
         currentId = yield index_1.constructed.instance.feed.getFollowingNext(data.akashaId, currentId);
         if (currentId === '0') {
             break;
         }
-        profileId = yield index_1.constructed.instance.feed.getFollowersById(data.akashaId, currentId);
+        profileId = yield index_1.constructed.instance.feed.getFollowingById(data.akashaId, currentId);
         profile = yield profile_data_1.default.execute({ profile: profileId });
-        results.push({ profile, address: profileId });
+        results.push({ profile, address: profileId, index: currentId });
         counter++;
     }
-    return { collection: results, akashaId: data.akashaId };
+    return { collection: results, akashaId: data.akashaId, limit: maxResults };
 });
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = { execute, name: 'followingIterator' };

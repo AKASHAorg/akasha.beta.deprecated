@@ -10,10 +10,16 @@ const execute = Promise.coroutine(function*(data: {start?: number, limit?: numbe
     if (currentId === '0') {
         return { collection: [], akashaId: data.akashaId };
     }
-    let entry = yield getEntry.execute({ entryId: currentId });
+    let entry;
     const maxResults = (data.limit) ? data.limit : 5;
-    const results = [{ entryId: currentId, content: entry }];
-    let counter = 1;
+    const results = [];
+    let counter = 0;
+    if (!data.start) {
+        entry = yield getEntry.execute({ entryId: currentId });
+        results.push({ entryId: currentId, content: entry });
+        counter = 1;
+    }
+
     while (counter < maxResults) {
         currentId = yield contracts.instance.entries.getProfileEntryNext(data.akashaId, currentId);
         if (currentId === '0') {
@@ -23,7 +29,7 @@ const execute = Promise.coroutine(function*(data: {start?: number, limit?: numbe
         results.push({ entryId: currentId, content: entry });
         counter++;
     }
-    return { collection: results, akashaId: data.akashaId };
+    return { collection: results, akashaId: data.akashaId, limit: maxResults };
 });
 
 export default { execute, name: 'entryProfileIterator' };

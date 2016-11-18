@@ -228,7 +228,7 @@ class CreateProfile extends Component {
             required: true,
             addValueLink: true,
             statePath: 'formValues.akashaId',
-            onTextChange: this.props.handleValidation('formValues.akashaId')
+            onBlur: this.props.handleValidation('formValues.akashaId')
         });
 
         const passwordProps = this.getProps({

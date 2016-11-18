@@ -17,7 +17,7 @@ class EntryActions {
     getEntriesCount = (akashaId) => {
         this.dispatch((dispatch, getState) => {
             const flags = getState().entryState.get('flags');
-            if (!flags.get('fetchingEntriesCount') && !flags.get('entriesCountFetched')) {
+            if (!flags.get('fetchingEntriesCount')) {
                 dispatch(entryActionCreators.getEntriesCount({
                     fetchingEntriesCount: true
                 }));

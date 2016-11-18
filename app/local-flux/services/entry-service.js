@@ -65,7 +65,7 @@ class EntryService extends BaseService {
             clientChannel: Channel.client.entry.getProfileEntriesCount,
             listenerCb: this.createListener(onError, onSuccess)
         }, () => Channel.server.entry.getProfileEntriesCount.send({ akashaId }));
-    }
+    };
 
     getProfileEntries = ({ akashaId, onSuccess, onError }) => {
         this.openChannel({

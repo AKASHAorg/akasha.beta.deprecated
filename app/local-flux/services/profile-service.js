@@ -98,7 +98,7 @@ class ProfileService extends BaseService {
      */
     unregister = () => {};
 
-    getFollowersCount = ({ profileAddress, onError = () => {}, onSuccess }) => {
+    getFollowersCount = ({ akashaId, onError = () => {}, onSuccess }) => {
         const clientChannel = Channel.client.profile.getFollowersCount;
         const serverChannel = Channel.server.profile.getFollowersCount;
         this.openChannel({
@@ -112,11 +112,11 @@ class ProfileService extends BaseService {
                 clientChannel.channelName
             )
         }, () => {
-            serverChannel.send({ profileAddress });
+            serverChannel.send({ akashaId });
         });
-    }
+    };
 
-    getFollowingCount = ({ profileAddress, onError = () => {}, onSuccess }) => {
+    getFollowingCount = ({ akashaId, onError = () => {}, onSuccess }) => {
         const clientChannel = Channel.client.profile.getFollowingCount;
         const serverChannel = Channel.server.profile.getFollowingCount;
         this.openChannel({
@@ -130,13 +130,13 @@ class ProfileService extends BaseService {
                 clientChannel.channelName
             )
         }, () => {
-            serverChannel.send({ profileAddress });
+            serverChannel.send({ akashaId });
         });
-    }
+    };
 
-    follow = ({ token, profileAddress, gas = 2000000, onError = () => {}, onSuccess }) => {
-        const clientChannel = Channel.client.profile.follow;
-        const serverChannel = Channel.server.profile.follow;
+    followersIterator = ({ akashaId, start, limit, onError = () => {}, onSuccess }) => {
+        const clientChannel = Channel.client.profile.followersIterator;
+        const serverChannel = Channel.server.profile.followersIterator;
         this.openChannel({
             serverManager: this.serverManager,
             clientManager: this.clientManager,
@@ -148,9 +148,81 @@ class ProfileService extends BaseService {
                 clientChannel.channelName
             )
         }, () => {
-            serverChannel.send({ token, profileAddress, gas });
+            serverChannel.send({ akashaId, start, limit });
         });
-    }
+    };
+
+    followingIterator = ({ akashaId, start, limit, onError = () => {}, onSuccess }) => {
+        const clientChannel = Channel.client.profile.followingIterator;
+        const serverChannel = Channel.server.profile.followingIterator;
+        this.openChannel({
+            serverManager: this.serverManager,
+            clientManager: this.clientManager,
+            serverChannel,
+            clientChannel,
+            listenerCb: this.createListener(
+                onError,
+                onSuccess,
+                clientChannel.channelName
+            )
+        }, () => {
+            serverChannel.send({ akashaId, start, limit });
+        });
+    };
+
+    follow = ({ token, akashaId, gas = 2000000, onError = () => {}, onSuccess }) => {
+        const clientChannel = Channel.client.profile.followProfile;
+        const serverChannel = Channel.server.profile.followProfile;
+        this.openChannel({
+            serverManager: this.serverManager,
+            clientManager: this.clientManager,
+            serverChannel,
+            clientChannel,
+            listenerCb: this.createListener(
+                onError,
+                onSuccess,
+                clientChannel.channelName
+            )
+        }, () => {
+            serverChannel.send({ token, akashaId, gas });
+        });
+    };
+
+    unfollow = ({ token, akashaId, gas = 2000000, onError = () => {}, onSuccess }) => {
+        const clientChannel = Channel.client.profile.unFollowProfile;
+        const serverChannel = Channel.server.profile.unFollowProfile;
+        this.openChannel({
+            serverManager: this.serverManager,
+            clientManager: this.clientManager,
+            serverChannel,
+            clientChannel,
+            listenerCb: this.createListener(
+                onError,
+                onSuccess,
+                clientChannel.channelName
+            )
+        }, () => {
+            serverChannel.send({ token, akashaId, gas });
+        });
+    };
+
+    isFollower = ({ akashaId, following, onError = () => {}, onSuccess }) => {
+        const clientChannel = Channel.client.profile.isFollower;
+        const serverChannel = Channel.server.profile.isFollower;
+        this.openChannel({
+            serverManager: this.serverManager,
+            clientManager: this.clientManager,
+            serverChannel,
+            clientChannel,
+            listenerCb: this.createListener(
+                onError,
+                onSuccess,
+                clientChannel.channelName
+            )
+        }, () => {
+            serverChannel.send({ akashaId, following });
+        });
+    };
 }
 
 export { ProfileService };

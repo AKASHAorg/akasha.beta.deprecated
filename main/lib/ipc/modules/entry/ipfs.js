@@ -14,9 +14,15 @@ class IpfsEntry {
         this.title = content.title;
         this.licence = content.licence;
         this.tags = tags;
-        ipfsApiRequests.push(ipfs_connector_1.IpfsConnector.getInstance().api
-            .constructObjLink(content.featuredImage, true)
-            .then((obj) => this.featuredImage = obj));
+        this.wordCount = content.wordCount;
+        if (content.featuredImage) {
+            ipfsApiRequests.push(ipfs_connector_1.IpfsConnector.getInstance().api
+                .constructObjLink(content.featuredImage, true)
+                .then((obj) => this.featuredImage = obj));
+        }
+        else {
+            this.featuredImage = { [ipfs_connector_1.IpfsApiHelper.LINK_SYMBOL]: '' };
+        }
         ipfsApiRequests.push(ipfs_connector_1.IpfsConnector.getInstance().api
             .constructObjLink(content.excerpt)
             .then((obj) => this.excerpt = obj));
@@ -30,7 +36,8 @@ class IpfsEntry {
                 featuredImage: this.featuredImage,
                 licence: this.licence,
                 tags: this.tags,
-                title: this.title
+                title: this.title,
+                wordCount: this.wordCount
             });
         });
     }
