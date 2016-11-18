@@ -1,8 +1,9 @@
 import React, { Component, PropTypes } from 'react';
-import { Paper, RaisedButton } from 'material-ui';
+import { RaisedButton } from 'material-ui';
+import { profileMessages } from 'locale-data/messages'
 import imageCreator, { findBestMatch } from 'utils/imageUtils';
 import { Avatar, PanelContainer } from 'shared-components';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, injectIntl } from 'react-intl';
 
 // Remember to update height and width values inside getBackgroundImageStyle method
 const imageWrapperStyle = {
@@ -11,7 +12,7 @@ const imageWrapperStyle = {
     overflow: 'hidden',
     display: 'flex',
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'center'
 };
 
 const wrapTextStyle = {
@@ -39,9 +40,15 @@ class ProfileDetails extends Component {
     }
 
     renderHeader () {
-        const { followProfile, followPending } = this.props;
-        const profileData = this.props.profileData ? this.props.profileData.toJS() : {};
-        const { backgroundImage, avatar } = profileData;
+        const { isFollowerPending, isFollower, followProfile, unfollowProfile, loggedAddress,
+            followPending, fetchingProfileData, intl } = this.props;
+        const profileData = this.props.profileData && !fetchingProfileData ?
+            this.props.profileData.toJS() :
+            {};
+        const followProfilePending = followPending && followPending.find(follow =>
+            follow.akashaId === profileData.akashaId);
+        const { backgroundImage, avatar, profile } = profileData;
+        const isOwnProfile = profile === loggedAddress;
         const bestMatch = findBestMatch(400, backgroundImage);
         const imageUrl = backgroundImage[bestMatch] ?
             imageCreator(backgroundImage[bestMatch].src['/'], profileData.baseUrl) :
@@ -57,7 +64,7 @@ class ProfileDetails extends Component {
             many {followers}
             other {followers}
           }`}
-          values={{ followersCount: 1 }}
+          values={{ followersCount: profileData.followersCount || 0 }}
         />;
 
         return <div>
@@ -105,19 +112,28 @@ class ProfileDetails extends Component {
               </div>
             </div>
             <RaisedButton
-              label="Follow"
+              label={!isFollowerPending && isFollower ?
+                  intl.formatMessage(profileMessages.unfollow) :
+                  intl.formatMessage(profileMessages.follow)
+              }
               primary
               style={{ margin: '20px 0' }}
               buttonStyle={{ width: '120px' }}
               labelStyle={{ fontWeight: 300 }}
-              onClick={followProfile}
-              disabled={followPending}
+              onClick={() => isFollower ?
+                  unfollowProfile(profileData.akashaId) :
+                  followProfile(profileData.akashaId)
+              }
+              disabled={isOwnProfile || isFollowerPending ||
+                  (followProfilePending && followProfilePending.value)
+              }
             />
           </div>
         </div>;
     }
 
     render () {
+        const { intl } = this.props;
         const profileData = this.props.profileData ? this.props.profileData.toJS() : {};
 
         return <PanelContainer
@@ -136,15 +152,19 @@ class ProfileDetails extends Component {
           >
             {profileData.about &&
               <div style={{ paddingBottom: '15px' }}>
-                <div style={{ fontSize: '16px', fontWeight: 500 }}>About</div>
+                <div style={{ fontSize: '16px', fontWeight: 500 }}>
+                  {intl.formatMessage(profileMessages.about)}
+                </div>
                 <div style={{ fontSize: '16px', fontWeight: 300 }}>
                   {profileData.about}
                 </div>
               </div>
             }
-            {profileData.links && profileData.links.length &&
+            {profileData.links && !!profileData.links.length &&
               <div style={{ paddingBottom: '15px' }}>
-                <div style={{ fontSize: '16px', fontWeight: 500 }}>Links</div>
+                <div style={{ fontSize: '16px', fontWeight: 500 }}>
+                  {intl.formatMessage(profileMessages.links)}
+                </div>
                 {profileData.links.map((link, key) =>
                   <div key={key} style={{ display: 'flex', fontSize: '16px', fontWeight: 300 }}>
                     <span
@@ -178,9 +198,14 @@ ProfileDetails.contextTypes = {
 };
 
 ProfileDetails.propTypes = {
+    loggedAddress: PropTypes.string,
     profileData: PropTypes.shape(),
+    fetchingProfileData: PropTypes.bool,
     followProfile: PropTypes.func,
-    followPending: PropTypes.bool
+    unfollowProfile: PropTypes.func,
+    followPending: PropTypes.shape(),
+    isFollowerPending: PropTypes.bool,
+    isFollower: PropTypes.bool
 };
 
-export default ProfileDetails;
+export default injectIntl(ProfileDetails);

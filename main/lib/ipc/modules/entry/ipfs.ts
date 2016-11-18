@@ -16,6 +16,7 @@ class IpfsEntry {
     licence: string;
     featuredImage: any;
     tags: any[];
+    wordCount: number;
 
     /**
      *
@@ -30,10 +31,15 @@ class IpfsEntry {
         this.title = content.title;
         this.licence = content.licence;
         this.tags = tags;
-        ipfsApiRequests.push(
-            IpfsConnector.getInstance().api
-                .constructObjLink(content.featuredImage, true)
-                .then((obj) => this.featuredImage = obj));
+        this.wordCount = content.wordCount;
+        if (content.featuredImage) {
+            ipfsApiRequests.push(
+                IpfsConnector.getInstance().api
+                    .constructObjLink(content.featuredImage, true)
+                    .then((obj) => this.featuredImage = obj));
+        } else {
+            this.featuredImage = { [IpfsApiHelper.LINK_SYMBOL]: '' };
+        }
 
         ipfsApiRequests.push(
             IpfsConnector.getInstance().api
@@ -50,7 +56,8 @@ class IpfsEntry {
                         featuredImage: this.featuredImage,
                         licence: this.licence,
                         tags: this.tags,
-                        title: this.title
+                        title: this.title,
+                        wordCount: this.wordCount
                     })
             });
     }

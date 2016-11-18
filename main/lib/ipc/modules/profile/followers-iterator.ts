@@ -10,11 +10,17 @@ const execute = Promise.coroutine(function*(data: {start?: number, limit?: numbe
     if (currentId === '0') {
         return { collection: [], akashaId: data.akashaId };
     }
-    let profileId = yield contracts.instance.feed.getFollowersById(data.akashaId, currentId);
-    let profile = yield profileData.execute({ profile: profileId });
+    let profileId;
+    let profile;
+    let counter = 0;
+    const results = [];
     const maxResults = (data.limit) ? data.limit : 10;
-    const results = [{ profile, address: profileId, index: currentId }];
-    let counter = 1;
+    if(!data.start) {
+        profileId = yield contracts.instance.feed.getFollowersById(data.akashaId, currentId);
+        profile = yield profileData.execute({ profile: profileId });
+        results.push({ profile, address: profileId, index: currentId });
+        counter = 1;
+    }
     while (counter < maxResults) {
         currentId = yield contracts.instance.feed.getFollowersNext(data.akashaId, currentId);
         if (currentId === '0') {
@@ -25,7 +31,7 @@ const execute = Promise.coroutine(function*(data: {start?: number, limit?: numbe
         results.push({ profile, address: profileId, index: currentId });
         counter++;
     }
-    return { collection: results, akashaId: data.akashaId };
+    return { collection: results, akashaId: data.akashaId, limit: maxResults };
 });
 
 export default { execute, name: 'followersIterator' };

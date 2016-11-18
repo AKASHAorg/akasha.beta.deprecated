@@ -5,6 +5,7 @@ interface MainResponse {
     error?: {
         message: string,
         fatal?: boolean
+        from?: any;
     };
 }
 

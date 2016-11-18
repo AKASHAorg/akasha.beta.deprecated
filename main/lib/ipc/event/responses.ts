@@ -32,7 +32,7 @@ export const ipfsResponse = (data: Object, error?: {message: string, fatal?: boo
  */
 export const mainResponse = (rawData: any): MainResponse => {
     if (rawData.error) {
-        return { data: {}, error: rawData.error };
+        return { data: {}, error: { message: rawData.error.message, from: rawData.from } };
     }
     return { data: rawData };
 };

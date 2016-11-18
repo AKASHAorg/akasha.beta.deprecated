@@ -6,13 +6,19 @@ const execute = Promise.coroutine(function* (data) {
     if (currentId === '0') {
         return { collection: [] };
     }
-    let row = yield index_1.constructed.instance.votes.getVoteOf(data.entryId, currentId);
-    let akashaId = yield index_1.constructed.instance.profile.getId(row.profile);
+    let row;
+    let akashaId;
     const maxResults = (data.limit) ? data.limit : 30;
-    const results = [{ akashaId: akashaId, score: row.score }];
-    let counter = 1;
+    const results = [];
+    let counter = 0;
+    if (!data.start) {
+        row = yield index_1.constructed.instance.votes.getVoteOf(data.entryId, currentId);
+        akashaId = yield index_1.constructed.instance.profile.getId(row.profile);
+        results.push({ akashaId: akashaId, score: row.score });
+        counter = 1;
+    }
     while (counter < maxResults) {
-        currentId = yield index_1.constructed.instance.tags.getNextVoteId(data.entryId, currentId);
+        currentId = yield index_1.constructed.instance.votes.getNextVoteId(data.entryId, currentId);
         if (currentId === '0') {
             break;
         }
@@ -21,7 +27,7 @@ const execute = Promise.coroutine(function* (data) {
         results.push({ akashaId: akashaId, score: row.score });
         counter++;
     }
-    return { collection: results, entryId: data.entryId };
+    return { collection: results, entryId: data.entryId, limit: maxResults };
 });
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = { execute, name: 'votesIterator' };

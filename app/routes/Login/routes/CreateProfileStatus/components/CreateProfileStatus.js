@@ -283,7 +283,7 @@ class CreateProfileStatus extends Component {
                   <FormattedMessage
                     id="app.createProfile.yourIdentityIsBroadcasted"
                     description="describing that identity is broadcasted into network"
-                    defaultMessage="Your identity is broadcasted into the Ethereum world computer network."
+                    defaultMessage="Your identity is broadcasted into the AKASHA private network."
                   />
                 </p>
                 <p style={paraStyle}>
