@@ -36,9 +36,6 @@ class AppActions {
     hidePanel = panel => this.dispatch(appActionCreators.hidePanel(panel));
     showAuthDialog = () => this.dispatch(appActionCreators.showAuthDialog());
     hideAuthDialog = () => this.dispatch(appActionCreators.hideAuthDialog());
-    resumeEntryPublishing = () => {
-        // console.log(payload);
-    };
     /**
      * Show a confirmation dialog for every resource he wants to publish
      * Request gas amount

@@ -24,6 +24,7 @@ import {
   ImageSizeXL,
   ImageSizeXXL } from 'shared-components/svg';
 import imageCreator, { findBestMatch } from 'utils/imageUtils';
+import clickAway from 'utils/clickAway';
 
 /**
  * @TODO: Move this to a config file;
@@ -65,7 +66,8 @@ class ImageBlock extends Component {
             caption,
             licence,
             termsAccepted,
-            imageSrc: imageCreator(files[media].src),
+            imageSrc: media ? imageCreator(files[media].src) : null,
+            isCardEnabled: false
         };
         this.menuItems = [];
         for (const key of Object.keys(files)) {
@@ -96,56 +98,65 @@ class ImageBlock extends Component {
          * 3 => largeWidth
          * Please see those attrs passed when exporting this component;
          */
+        let imageKey = this.state.previewImage;
         const baseNode = this.baseNodeRef;
         const containerWidth = baseNode.parentNode.clientWidth;
         const imageFiles = this.props.data.files;
-        const imageKey = findBestMatch(containerWidth, imageFiles, this.state.previewImage);
+
+        if (!imageKey && imageKey === '') {
+            imageKey = findBestMatch(containerWidth, imageFiles, this.state.previewImage);
+        }
+
         this.props.container.updateData({ media: imageKey });
         this.setState({
             previewImage: imageKey,
-            isCardEnabled: true,
-            imageSrc: imageCreator(imageFiles[this.state.previewImage].src)
+            imageSrc: imageCreator(imageFiles[imageKey].src)
         });
     }
-    _handleCaptionChange = (ev) => {
-        ev.stopPropagation();
-        this.props.container.updateData({ caption: event.target.value });
+    componentClickAway = () => {
+        if (this.state.isCardEnabled) {
+            this.setState({
+                isCardEnabled: false
+            }, () => {
+                this.props.blockProps.setReadOnly(false);
+            });
+        }
     }
 
-    _handleLicenceChange = (ev, key, payload) => {
+    _handleCaptionChange = (ev) => {
         ev.stopPropagation();
-        this.props.container.updateData({ licence: payload });
+        this.props.container.updateData({ caption: ev.target.value });
     }
-    _handleTermsAccept = (ev, isInputChecked) => {
-        ev.stopPropagation();
-        this.props.container.updateData({ termsAccepted: isInputChecked });
-    }
+
     _handleSizeChange = (ev, key, payload) => {
         ev.stopPropagation();
         this.setState({
             previewImage: payload
         });
+        this.props.container.updateData({ media: payload });
     }
     _handleImageClick = (ev) => {
         ev.stopPropagation();
         this.setState({
-            isCardEnabled: !this.state.isCardEnabled
+            isCardEnabled: true
+        }, () => {
+            this.props.blockProps.setReadOnly(true);
         });
     }
     render () {
         const { isCardEnabled, imageSrc, previewImage } = this.state;
-        const { files, termsAccepted, caption } = this.props.data;
+        const { files, caption } = this.props.data;
         let baseNodeStyle = {
             width: files[previewImage].width,
             margin: previewImage !== 'xs' ? '0 auto' : 'initial',
         };
-        console.log(this.baseNodeRef);
         if (previewImage === 'xs') {
             baseNodeStyle = Object.assign({}, baseNodeStyle, {
                 float: 'left',
                 marginRight: 48,
-                // DIRTYHACK!! GET RID OF THIS!!!
-                marginLeft: this.baseNodeRef.parentNode.parentNode.previousSibling.offsetLeft
+                // @TODO: DIRTYHACK!! GET RID OF THIS!!!
+                marginLeft: this.baseNodeRef ?
+                  this.baseNodeRef.parentNode.parentNode.previousSibling.offsetLeft : 0
             });
         }
         return (
@@ -153,18 +164,17 @@ class ImageBlock extends Component {
             ref={(baseNode) => { this.baseNodeRef = baseNode; }}
             style={baseNodeStyle}
           >
-            <Card
+            <div
               style={{
                   width: this.state.cardWidth,
                   WebkitUserSelect: 'none'
-                  // boxShadow: isCardEnabled ? 'initial' : 'none'
               }}
             >
               <Toolbar
                 style={{
                     backgroundColor: '#FFF',
-                    boxShadow: '1px, 1px, 1px, #DDD'
-                    // opacity: (this.state.isCardEnabled ? 1 : 0)
+                    opacity: (isCardEnabled ? 1 : 0),
+                    visibility: isCardEnabled ? 'visible' : 'hidden'
                 }}
               >
                 <ToolbarGroup>
@@ -207,27 +217,43 @@ class ImageBlock extends Component {
                     }
                   </SelectField>
                 </ToolbarGroup>
-                <ToolbarGroup>
-                  <div>
-                    <IconButton onClick={this.props.container.remove}>
-                      <SvgIcon>
-                        <DeleteIcon />
-                      </SvgIcon>
-                    </IconButton>
-                  </div>
-                </ToolbarGroup>
               </Toolbar>
-              <CardMedia>
+              <CardMedia
+                style={{
+                    boxShadow: isCardEnabled ? '0 0 0 3px #4285f4' : 'none'
+                }}
+                onClick={this._handleImageClick}
+              >
                 <img
                   src={imageSrc}
                   alt=""
-                  onClick={this._handleImageClick}
                 />
               </CardMedia>
-              <CardText>
-                <TextField hintText="Caption" value={caption} multiLine fullWidth onChange={this._handleCaptionChange} />
+              <CardText style={{ padding: 0, marginTop: 8 }}>
+                <TextField
+                  hintText="image caption"
+                  hintStyle={{
+                      textAlign: 'center',
+                      color: isCardEnabled ? '#4285f4' : '#DDD',
+                      left: 0,
+                      right: 0,
+                      top: 0
+                  }}
+                  style={{ padding: '0 16px' }}
+                  value={caption}
+                  textareaStyle={{
+                      textAlign: 'center',
+                      margin: 0,
+                      fontSize: 14,
+                      color: 'rgba(0,0,0,0.8)'
+                  }}
+                  multiLine
+                  fullWidth
+                  underlineShow={false}
+                  onChange={this._handleCaptionChange}
+                />
               </CardText>
-            </Card>
+            </div>
           </div>
         );
     }
@@ -242,11 +268,12 @@ ImageBlock.propTypes = {
         caption: React.PropTypes.string,
         rightsHolder: React.PropTypes.string,
         media: React.PropTypes.string,
-    })
+    }),
+    blockProps: React.PropTypes.shape()
 };
 
 export default withWidth({
     largeWidth: 920,
     mediumWidth: 600,
     smallWidth: 320
-})(ImageBlock);
+})(clickAway(ImageBlock));

@@ -24,7 +24,9 @@ const Profile = Record({
     followersCount: null,
     followingCount: null,
     followers: [],
-    following: []
+    following: [],
+    entriesCount: 0,
+    subscriptionsCount: 0
 });
 
 const LoggedProfile = Record({

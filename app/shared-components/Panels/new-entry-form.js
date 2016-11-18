@@ -37,13 +37,11 @@ class NewEntryFormPanel extends Component {
             loggedProfile } = this.props;
         const { tabsValue } = nextState;
         const profileEntries = entries.filter(entry => entry.get('address') === loggedProfile.get('profile'));
-        console.log('try to get', tabsValue, entriesCount, profileEntries);
         if (this.state.tabsValue !== tabsValue) {
             if (tabsValue === 'drafts' && drafts.size !== draftsCount) {
                 draftActions.getDrafts(loggedProfile.get('profile'));
             }
             if (tabsValue === 'listed' && profileEntries.size < entriesCount) {
-                console.log('start entries request!!');
                 entryActions.getProfileEntries(loggedProfile.get('akashaId'));
             }
         }
@@ -64,7 +62,7 @@ class NewEntryFormPanel extends Component {
             sortByValue: payload
         });
     }
-    _handleEntryEdit = (ev, entryId) => {
+    _handleDraftEdit = (ev, entryId) => {
         const entryType = this.state.tabsValue;
         const { router } = this.context;
         const { appActions, loggedProfile } = this.props;
@@ -77,6 +75,10 @@ class NewEntryFormPanel extends Component {
                 break;
         }
     }
+    _handleDraftDelete = (ev, draftId) => {
+        const { draftActions } = this.props;
+        draftActions.deleteDraft(draftId);
+    }
     _handleNewEntry = () => {
         const { router } = this.context;
         const { appActions, loggedProfile } = this.props;
@@ -88,7 +90,33 @@ class NewEntryFormPanel extends Component {
         let entities;
         switch (this.state.tabsValue) {
             case 'drafts':
-                entities = drafts.filter(drft => drft.get('profile') === loggedProfile.get('profile'));
+                entities = drafts.filter(drft =>
+                    drft.get('profile') === loggedProfile.get('profile'))
+                    .map((draft, key) =>
+                      <EntryCard
+                        key={key}
+                        headerTitle={'Draft'}
+                        publishedDate={`Last update ${draft.get('status').updated_at}`}
+                        headerActions={
+                          <IconMenu iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}>
+                            <MenuItem
+                              primaryText={intl.formatMessage(generalMessages.edit)}
+                              onClick={ev => this._handleDraftEdit(ev, draft.get('id'))}
+                              disabled
+                            />
+                            <MenuItem
+                              primaryText={intl.formatMessage(generalMessages.delete)}
+                              disabled
+                              onClick={ev => this._handleDraftDelete(ev, draft.get('id'))}
+                            />
+                          </IconMenu>
+                        }
+                        title={draft.get('title')}
+                        excerpt={draft.get('excerpt')}
+                        wordCount={draft.get('wordCount')}
+                        onTitleClick={ev => this._handleDraftEdit(ev, draft.get('id'))}
+                      />
+                    );
                 break;
             case 'listed':
                 entities = entries.filter(entry =>
@@ -103,8 +131,12 @@ class NewEntryFormPanel extends Component {
                           <MenuItem
                             primaryText={intl.formatMessage(generalMessages.edit)}
                             onClick={ev => this._handleEntryEdit(ev, entry.get('entryId'))}
+                            disabled
                           />
-                          <MenuItem primaryText={intl.formatMessage(generalMessages.delete)} />
+                          <MenuItem
+                            primaryText={intl.formatMessage(generalMessages.delete)}
+                            disabled
+                          />
                         </IconMenu>}
                       title={entry.get('content').title}
                       excerpt={entry.get('content').excerpt}
@@ -118,59 +150,6 @@ class NewEntryFormPanel extends Component {
             default:
                 break;
         }
-
-        // const entryCards = entities.map((card, key) =>
-        //   <Card key={key} style={{ marginBottom: 8 }}>
-        //     <div className="row" style={{ padding: '4px 16px' }}>
-        //       <div className="col-xs-12">
-        //         <div className="row middle-xs">
-        //           <div className="col-xs start-xs">
-        //             <h4 style={{ margin: '8px 0' }}>{intl.formatMessage(entryMessages.draft)}</h4>
-        //             <h5 style={{ margin: '8px 0' }}>
-        //               {intl.formatMessage(entryMessages.draftCardSubtitle, {
-        //                   lastUpdate: <FormattedRelative value={card.get('status').updated_at} />,
-        //                   wordCount: card.get('wordCount')
-        //               })}
-        //             </h5>
-        //           </div>
-        //           <div className="col-xs end-xs">
-        //             <IconMenu iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}>
-        //               <MenuItem
-        //                 primaryText={intl.formatMessage(generalMessages.edit)}
-        //                 onClick={ev => this._handleEntryEdit(ev, card.id)}
-        //               />
-        //               <MenuItem primaryText={intl.formatMessage(generalMessages.delete)} />
-        //             </IconMenu>
-        //           </div>
-        //         </div>
-        //       </div>
-        //     </div>
-        //     <CardText>
-        //       <h2
-        //         onClick={ev => this._handleEntryEdit(ev, card.id)}
-        //         style={{ cursor: 'pointer' }}
-        //       >
-        //         {card.title && card.title}
-        //         {!card.title && 'No Title'}
-        //       </h2>
-        //     </CardText>
-        //     <CardText>
-        //       <p>{card.excerpt}</p>
-        //       <div>
-        //         {card.get('status').publishing &&
-        //           <div className="row middle-xs">
-        //             <div className="col-xs-1 end-xs">
-        //               <CircularProgress size={20} thickness={2} />
-        //             </div>
-        //             <div className="col-xs">
-        //               Publishing...
-        //             </div>
-        //           </div>
-        //         }
-        //       </div>
-        //     </CardText>
-        //   </Card>
-        // );
         return (
           <div>{entities}</div>
         );
@@ -180,7 +159,6 @@ class NewEntryFormPanel extends Component {
             backgroundColor: '#FFF',
             color: '#444'
         };
-        console.log(this.props.entries, 'entries in render');
         return (
           <Paper style={this.props.rootStyle}>
             <div
@@ -188,7 +166,7 @@ class NewEntryFormPanel extends Component {
               style={{
                   borderBottom: '1px solid #DDD',
                   padding: '12px 24px 0',
-                  margin: 0
+                  margin: 0,
               }}
             >
               <div className="col-xs-8">
@@ -214,6 +192,8 @@ class NewEntryFormPanel extends Component {
                   position: 'absolute',
                   top: 61,
                   bottom: 0,
+                  right: 0,
+                  left: 0,
                   overflowY: 'auto'
               }}
             >
@@ -252,7 +232,7 @@ class NewEntryFormPanel extends Component {
                   </div>
                 </div>
               </div>
-              <div className="col-xs-12">
+              <div className="col-xs-12" style={{ height: 'calc(100% - 56px)' }}>
                 {/** this.state.isTabLoading &&
                   <div className="center-xs" style={{ paddingTop: '12.5%' }}>
                     <CircularProgress />
@@ -286,9 +266,10 @@ NewEntryFormPanel.contextTypes = {
 NewEntryFormPanel.defaultProps = {
     rootStyle: {
         height: '100%',
-        width: 640,
+        width: 480,
         zIndex: 10,
-        position: 'relative'
+        position: 'relative',
+        borderRadius: 0
     }
 };
 export default injectIntl(NewEntryFormPanel);

@@ -128,8 +128,7 @@ function readImageData (imagePath, canvas, ctx, options) {
                     `Image width is smaller than minimum allowed of ${minWidth} pixels`
                 );
             }
-            const aspectRatio = imgHeight > imgWidth ? imgHeight / imgWidth : imgWidth / imgHeight;
-
+            const aspectRatio = imgWidth / imgHeight;
             for (let i = resizeWidths.length - 1; i >= 0; i -= 1) {
                 if (img.width >= resizeWidths[i].res) {
                     availableWidths.push(resizeWidths[i]);

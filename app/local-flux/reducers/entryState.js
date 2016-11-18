@@ -83,14 +83,10 @@ const entryState = createReducer(initialState, {
             flags: state.get('flags').merge(flags)
         }),
 
-    [types.PUBLISH_ENTRY_SUCCESS]: (state, action) => {
-        const draftIndex = state.get('drafts').findIndex(drft =>
-            drft.get('id') === action.entry.id);
-        return state.merge({
-            drafts: state.get('drafts').delete(draftIndex),
+    [types.PUBLISH_ENTRY_SUCCESS]: (state, action) =>
+        state.merge({
             entries: state.get('entries').push(new Entry(action.entry))
-        });
-    },
+        }),
 
     [types.GET_SORTED_ENTRIES]: (state, action) => {
         const entriesList = new List(action.entries.map(entry => new Entry(entry)));

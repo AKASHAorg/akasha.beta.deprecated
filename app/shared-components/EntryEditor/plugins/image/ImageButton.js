@@ -36,7 +36,7 @@ export default class BlockButton extends Component {
             const data = {
                 files: results[0],
                 type: 'image',
-                media: this._getSuitableMedia(results[0]),
+                media: 'md',
                 termsAccepted: true,
                 licence: this.state.licence,
                 caption: ''

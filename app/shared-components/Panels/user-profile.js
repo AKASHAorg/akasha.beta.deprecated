@@ -53,7 +53,8 @@ class UserProfilePanel extends PureComponent {
                 width: (this.props.width || 480),
                 zIndex: 10,
                 position: 'relative',
-                height: '100%'
+                height: '100%',
+                borderRadius: 0
             }}
           >
             <UserProfileHeader
