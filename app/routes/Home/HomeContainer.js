@@ -157,7 +157,7 @@ HomeContainer.propTypes = {
 HomeContainer.contextTypes = {
     router: PropTypes.shape()
 };
-
+/* eslint-disable no-unused-vars */
 function mapStateToProps (state, ownProps) {
     return {
         fetchingLoggedProfile: state.profileState.getIn(['flags', 'fetchingLoggedProfile']),

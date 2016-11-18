@@ -28,7 +28,7 @@ class StreamSidebar extends React.Component {
         ];
         return (
           <div
-            className={`row center-xs ${styles.root}`}
+            className={'row center-xs'}
             style={{
                 background: '#F5F5F5'
             }}

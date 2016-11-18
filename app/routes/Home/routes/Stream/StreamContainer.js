@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import TheStream from './components/stream';
 import StreamMenu from './components/stream-menu';
 import StreamSidebar from './components/stream-sidebar';
+import styles from './stream-container.scss';
 
 class StreamPage extends Component {
     constructor (props) {
@@ -56,16 +57,9 @@ class StreamPage extends Component {
     };
     render () {
         return (
-          <div style={{ height: '100%' }}>
+          <div className={`${styles.root}`}>
             <div
-              style={{
-                  zIndex: 10,
-                  position: 'fixed',
-                  top: 0,
-                  left: 64,
-                  right: 0,
-                  height: 56
-              }}
+              className={`${styles.streamPageInner}`}
             >
               <StreamMenu
                 activeTab={this.state.filter}
@@ -74,18 +68,18 @@ class StreamPage extends Component {
                 onActive={this._handleTabActivation}
               />
             </div>
-            <div className="row" style={{ marginTop: 45, height: '100%' }}>
-              <div className="col-xs-12" style={{ height: '100%' }}>
-                <div className="row" style={{ height: '100%' }}>
-                  <div className="col-xs-8" style={{ height: '100%', position: 'relative' }}>
+            <div className={`row ${styles.streamPageContent}`} >
+              <div className={`col-xs-12 ${styles.streamPageContentInner}`} >
+                <div className={`row ${styles.content}`} >
+                  <div className={`col-xs-8 ${styles.theStream}`} >
                     <TheStream
                       filter={this.state.filter}
                       {...this.props}
                     />
                   </div>
                   <div
-                    className="col-xs-4"
-                    style={{ backgroundColor: '#F5F5F5', minHeight: '100%' }}
+                    className={`col-xs-4 ${styles.streamSidebarWrapper}`}
+                    style={{ backgroundColor: '#F5F5F5' }}
                   >
                     <StreamSidebar params={this.props.params} />
                   </div>
@@ -98,15 +92,15 @@ class StreamPage extends Component {
 }
 
 StreamPage.propTypes = {
-    entryActions: React.PropTypes.object,
-    children: React.PropTypes.node,
-    params: React.PropTypes.object
+    entryActions: React.PropTypes.shape(),
+    params: React.PropTypes.shape(),
+    profileState: React.PropTypes.shape()
 };
 
 StreamPage.contextTypes = {
     router: React.PropTypes.object
 };
-
+/* eslint-disable no-unused-vars */
 function mapStateToProps (state, ownProps) {
     return {
         entryState: state.entryState,
