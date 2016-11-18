@@ -9,7 +9,7 @@ class PublishTags extends React.Component {
             tagsToPublish: []
         };
     }
-    componentWillMount() {
+    componentWillMount () {
         const { profileState, tagActions, entryState, params} = this.props;
         const loggedProfile = profileState.get('loggedProfile');
         const draft = entryState.get('drafts').find(drft =>

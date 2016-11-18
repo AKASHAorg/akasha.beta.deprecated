@@ -16,7 +16,7 @@ class PanelLoader extends Component {
                 return null;
             }
             return (
-              <div className="panel" style={{ height: '100%' }} >
+              <div className="panel" style={{ height: '100%', position: 'fixed' }} >
                 <Panel {...other} />
                 {activePanel.get('overlay') &&
                   <div className="overlay" onClick={this._handleOverlayClick} />

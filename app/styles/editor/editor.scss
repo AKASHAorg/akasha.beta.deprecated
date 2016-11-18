@@ -11,7 +11,10 @@
     .public-DraftStyleDefault-ol {
         width: 700px;
         display: block;
-        margin: 0 auto;
+        margin: 8px auto;
+        font-family: 'Roboto', Open Sans, sans-serif;
+        line-height: 1.6;
+        letter-spacing: 0.005em;
     }
     .public-DraftEditorPlaceholder-root {
         width: 100%;
@@ -21,18 +24,24 @@
         }
     }
 }
+.megadraft-editor {
+    h2 {
+        margin-top: 24px;
+    }
+}
  .megadraft-editor .paragraph + .paragraph {
-     margin-top: 8px;
+    margin-top: 24px;
  }
 
  .megadraft-editor .public-DraftEditor-content figure {
-     margin-top: 16px;
+    margin: 0;
+    margin-top: 32px;
+    margin-bottom: 32px;
  }
 .megadraft-editor .sidemenu {
     width: auto;
 }
 .megadraft-editor .sidebar__menu {
-    left: calc(50% - 400px);
     z-index: 10;
 }
 .megadraft-editor .sidemenu__button {
@@ -81,6 +90,6 @@
         opacity: 0;
     }
 }
-.megadraft-editor {
+/*.megadraft-editor {
     padding-top: 16px;
-}
+}*/

@@ -1,12 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { TextField, RaisedButton } from 'material-ui';
+import { injectIntl } from 'react-intl';
 import PanelContainer from 'shared-components/PanelContainer/panel-container';
 import ImageUploader from 'shared-components/ImageUploader/image-uploader';
 import LicenceDialog from 'shared-components/Dialogs/licence-dialog';
 import TagsField from 'shared-components/TagsField/tags-field';
 import { TagService } from 'local-flux/services';
 import { convertFromRaw } from 'draft-js';
+import { findBestMatch } from 'utils/imageUtils';
 
 class PublishPanel extends React.Component {
     constructor (props) {
@@ -93,7 +95,12 @@ class PublishPanel extends React.Component {
         if (imageBlock) return imageBlock.data.get('files');
         return null;
     }
-
+    _findImageSource = (imageFiles) => {
+        // @TODO move this to a config file
+        const recommendedFeaturedImageWidth = '640';
+        const imageObject = findBestMatch(recommendedFeaturedImageWidth, imageFiles);
+        return imageObject.src;
+    }
     _handleLicenceDialogClose = () => {
         this.setState({
             isLicencingOpen: false
@@ -117,12 +124,14 @@ class PublishPanel extends React.Component {
         const loggedProfileData = profiles.find(prf =>
             prf.get('profile') === loggedProfile.get('profile'));
 
-        console.log(this.state.title, 'title to publish');
         const draftId = parseInt(this.props.params.draftId, 10);
         this.setState({
             validationErrors: []
         });
         this._validateEntry(({ title, content, excerpt, licence, featuredImage }) => {
+            if (featuredImage) {
+                featuredImage = this._findImageSource(featuredImage);
+            }
             draftActions.updateDraft({
                 id: draftId,
                 title,
@@ -178,6 +187,7 @@ class PublishPanel extends React.Component {
                 validationErrors
             });
         }
+        console.log(validationErrors, 'draft has errors?');
         return cb({ title, content, excerpt, licence, featuredImage, tags });
     }
     // _handleTagAutocomplete = (value) => {
@@ -321,7 +331,7 @@ class PublishPanel extends React.Component {
             style={{
                 left: '50%',
                 marginLeft: '-320px',
-                position: 'absolute',
+                position: 'fixed',
                 top: 0,
                 bottom: 0,
                 zIndex: 16
@@ -442,9 +452,10 @@ PublishPanel.propTypes = {
     loggedProfile: React.PropTypes.shape(),
     pendingTags: React.PropTypes.shape(),
     entryActions: React.PropTypes.shape(),
-    licences: React.PropTypes.shape()
+    licences: React.PropTypes.shape(),
+    intl: React.PropTypes.shape()
 };
 PublishPanel.contextTypes = {
     router: React.PropTypes.shape()
 };
-export default PublishPanel;
+export default injectIntl(PublishPanel);

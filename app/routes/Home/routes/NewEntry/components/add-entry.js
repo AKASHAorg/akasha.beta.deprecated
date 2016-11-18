@@ -17,7 +17,6 @@ class AddEntryPage extends Component {
             publishable: true,
             draftToEdit: {},
             isNewDraft: false,
-            shouldBeSaved: true,
             fetchingDraft: false
         };
     }
@@ -95,14 +94,14 @@ class AddEntryPage extends Component {
         const { savingDraft } = this.props;
         const { fetchingDraft, draftMissing, isNewDraft } = this.state;
         let headerTitle = 'First entry';
-        if (fetchingDraft) {
+        if (savingDraft) {
+            headerTitle = 'Saving draft...';
+        } else if (fetchingDraft) {
             headerTitle = 'Finding draft';
         } else if (draftMissing) {
             headerTitle = 'Draft is missing';
         } else if (!isNewDraft) {
             headerTitle = 'New Entry';
-        } else if (savingDraft) {
-            headerTitle = 'Saving draft...';
         }
         return headerTitle;
     }
@@ -115,16 +114,24 @@ class AddEntryPage extends Component {
         return this._findCurrentDraft(drafts).get('content');
     }
     render () {
-        const { drafts } = this.props;
-        const { shouldBeSaved, fetchingDraft, draftMissing } = this.state;
+        const { drafts, savingDraft } = this.props;
+        const { fetchingDraft, draftMissing } = this.state;
         const currentDraft = this._findCurrentDraft(drafts);
         const initialContent = this._getInitialContent();
         const draftTitle = currentDraft ? currentDraft.title : '';
         return (
-          <div style={{ height: '100%', position: 'relative' }}>
+          <div>
             <Toolbar
               className="row"
-              style={{ backgroundColor: '#FFF', borderBottom: '1px solid rgb(204, 204, 204)' }}
+              style={{
+                  backgroundColor: '#FFF',
+                  borderBottom: '1px solid rgb(204, 204, 204)',
+                  position: 'fixed',
+                  left: 64,
+                  right: 0,
+                  top: 0,
+                  zIndex: 10
+              }}
             >
               <ToolbarGroup>
                 <h3 style={{ fontWeight: '200' }}>{this._getHeaderTitle()}</h3>
@@ -139,7 +146,7 @@ class AddEntryPage extends Component {
                 <FlatButton
                   primary
                   label="Save"
-                  disabled={!shouldBeSaved}
+                  disabled={savingDraft}
                   onClick={this._handleDraftSave}
                 />
                 <IconMenu
@@ -161,14 +168,7 @@ class AddEntryPage extends Component {
             <div
               className="row center-xs"
               style={{
-                  marginTop: '32px',
-                  position: 'absolute',
-                  left: 0,
-                  right: 0,
-                  top: 24,
-                  bottom: 0,
-                  overflowY: 'auto',
-                  padding: '24px 0'
+                  marginTop: 56
               }}
             >
               {fetchingDraft &&
@@ -196,7 +196,8 @@ class AddEntryPage extends Component {
                 {React.cloneElement(this.props.children, { draft: currentDraft })}
                 <div
                   style={{
-                      position: 'absolute',
+                      position: 'fixed',
+                      overflow: 'hidden',
                       top: 0,
                       left: 0,
                       bottom: 0,

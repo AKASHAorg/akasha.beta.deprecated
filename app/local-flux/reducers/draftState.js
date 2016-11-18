@@ -1,5 +1,5 @@
 /* eslint new-cap: ["error", { "capIsNewExceptions": ["Record"] }]*/
-import { fromJS, List, Record, Map } from 'immutable';
+import { fromJS, List, Record, Map, Set } from 'immutable';
 import { createReducer } from './create-reducer';
 import * as types from '../constants/DraftConstants';
 
@@ -70,6 +70,18 @@ const draftState = createReducer(initialState, {
             flags: state.get('flags').merge(flags)
         });
     },
+    [types.PUBLISH_ENTRY_SUCCESS]: (state, action) => {
+        const draftIndex = state.get('drafts').findIndex(drft =>
+            drft.get('id') === action.entry.id);
+        return state.merge({
+            drafts: state.get('drafts').delete(draftIndex)
+        });
+    },
+
+    [types.PUBLISH_ENTRY_ERROR]: (state, { error }) =>
+        state.merge({
+            errors: state.get('errors').push(new ErrorRecord(error))
+        }),
 
     [types.GET_DRAFTS_ERROR]: (state, { error, flags }) =>
         state.merge({
@@ -91,7 +103,6 @@ const draftState = createReducer(initialState, {
         const draftIndex = state.get('drafts').findIndex(drft =>
             drft.id === draft.id
         );
-        console.log('updating draft in reducer', draft);
         return state.merge({
             drafts: state.get('drafts').mergeIn([draftIndex], new Draft(draft)),
             flags: state.get('flags').merge(flags)
@@ -129,7 +140,7 @@ const draftState = createReducer(initialState, {
 
     [types.GET_PUBLISHING_DRAFTS_SUCCESS]: (state, { drafts, flags }) =>
         state.merge({
-            drafts: new List(drafts.map(drft => new Draft(drft))),
+            drafts: state.get('drafts').toSet().union(new Set(drafts.map(drft => new Draft(drft)))).toList(),
             flags: state.get('flags').merge(flags)
         }),
 

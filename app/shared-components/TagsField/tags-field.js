@@ -18,7 +18,7 @@ class TagsField extends React.Component {
         if (erroredTags.size > 0) {
             this.setState({
                 erroredTags: erroredTags.map(tag => ({
-                    tag: tag.error.from.tagName,
+                    tag: tag.error.from ? tag.error.from.tagName : '',
                     message: tag.error.message
                 }))
             });

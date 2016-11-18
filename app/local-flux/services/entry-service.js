@@ -26,7 +26,6 @@ class EntryService extends BaseService {
      *
      */
     publishEntry = ({ draft, token, gas, onError, onSuccess }) => {
-        console.log('publish entry service');
         const {
             title,
             featuredImage,
@@ -36,7 +35,6 @@ class EntryService extends BaseService {
             content,
             wordCount
         } = draft;
-        console.log('featuredImage', featuredImage);
         this.openChannel({
             serverManager: this.serverManager,
             clientManager: this.clientManager,
@@ -47,7 +45,7 @@ class EntryService extends BaseService {
             Channel.server.entry.publish.send({
                 content: {
                     title,
-                    featuredImage: new Uint8Array(20000), // please fix me
+                    featuredImage,
                     excerpt,
                     licence,
                     draft: content,
@@ -60,7 +58,6 @@ class EntryService extends BaseService {
     };
 
     getEntriesCount = ({ akashaId, onError, onSuccess }) => {
-        console.log({ akashaId });
         this.openChannel({
             serverManager: this.serverManager,
             clientManager: this.clientManager,

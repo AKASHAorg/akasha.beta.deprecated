@@ -65,7 +65,7 @@ class EntryEditor extends Component {
               {showTitle &&
                 <div className={styles.title}>
                   <div className={styles.titleInner}>
-                    <input
+                    <textarea
                       type="text"
                       className={styles.inputField}
                       placeholder={`Write a title`}

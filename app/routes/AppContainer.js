@@ -6,7 +6,6 @@ import {
     TagActions } from 'local-flux';
 import { getMuiTheme } from 'material-ui/styles';
 import { AuthDialog, ConfirmationDialog, PublishConfirmDialog } from 'shared-components';
-import { notificationMessages } from 'locale-data/messages';
 import NotificationBar from './components/notification-bar';
 import lightTheme from '../layouts/AkashaTheme/lightTheme';
 import darkTheme from '../layouts/AkashaTheme/darkTheme';

@@ -30,6 +30,16 @@ class HomeContainer extends React.Component {
         const { profileActions, entryActions, draftActions, transactionActions } = this.props;
         const { loggedProfile, fetchingLoggedProfile } = nextProps;
 
+        // action to modify status of a draft to stop publishing it :)
+        // draftActions.updateDraft({
+        //     id: 2,
+        //     status: {
+        //         currentAction: null,
+        //         publishing: false,
+        //         publishConfirmed: false
+        //     }
+        // });
+
         if (!loggedProfile.get('account') && !fetchingLoggedProfile) {
             this.context.router.push('/authenticate/');
         }

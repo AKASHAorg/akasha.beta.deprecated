@@ -7,7 +7,7 @@ function mapStateToProps (state) {
         loggedProfile: state.profileState.get('loggedProfile'),
         draftState: state.draftState,
         drafts: state.draftState.get('drafts'),
-        savingDraft: state.draftState.get('savingDraft'),
+        savingDraft: state.draftState.getIn(['flags', 'savingDraft']),
         errors: state.draftState.get('errors')
     };
 }

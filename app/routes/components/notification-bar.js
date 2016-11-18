@@ -26,7 +26,7 @@ class NotificationBar extends Component {
             case 'alertLoginRequired':
                 return 'Confirm';
             default:
-                return 'Show';
+                return 'Dismiss';
         }
     }
     _handleActionTouchTap = (ev, notification) => {
@@ -40,15 +40,18 @@ class NotificationBar extends Component {
                 appActions.showAuthDialog();
                 return this._hideNotification('clickAway', notification);
             default:
-                return null;
+                return this._hideNotification('clickAway', notification);
         }
     }
     _hideNotification = (reason, notification) => {
+        const { appActions } = this.props;
         const notifications = this.state.notifications;
         console.log('hiding', notification);
         this.setState({
             notifications: notifications.delete(notifications.findIndex(notific =>
                 notific.type === notification.type))
+        }, () => {
+            appActions.hideNotification(notification);
         });
     }
 
