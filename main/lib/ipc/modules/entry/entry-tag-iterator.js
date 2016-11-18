@@ -25,7 +25,7 @@ const execute = Promise.coroutine(function* (data) {
         results.push({ entryId: currentId, content: entry });
         counter++;
     }
-    return { collection: results, tagName: data.tagName };
+    return { collection: results, tagName: data.tagName, limit: maxResults };
 });
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = { execute, name: 'entryTagIterator' };

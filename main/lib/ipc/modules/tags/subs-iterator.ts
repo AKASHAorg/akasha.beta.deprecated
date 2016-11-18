@@ -28,7 +28,7 @@ const execute = Promise.coroutine(function*(data: {start?: number, limit?: numbe
         results.push({ tagId: currentId, tagName: currentName });
         counter++;
     }
-    return { collection: results, akashaId: data.akashaId };
+    return { collection: results, akashaId: data.akashaId, limit: maxResults };
 });
 
 export default { execute, name: 'tagSubIterator' };
