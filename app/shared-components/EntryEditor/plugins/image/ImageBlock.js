@@ -25,6 +25,8 @@ import {
   ImageSizeXXL } from 'shared-components/svg';
 import imageCreator, { findBestMatch } from 'utils/imageUtils';
 import clickAway from 'utils/clickAway';
+import styles from './image-block.scss';
+
 
 /**
  * @TODO: Move this to a config file;
@@ -143,38 +145,52 @@ class ImageBlock extends Component {
             this.props.blockProps.setReadOnly(true);
         });
     }
-    render () {
-        const { isCardEnabled, imageSrc, previewImage } = this.state;
-        const { files, caption } = this.props.data;
-        let baseNodeStyle = {
-            width: files[previewImage].width,
-            margin: previewImage !== 'xs' ? '0 auto' : 'initial',
-        };
+    _getBaseNodeStyle = () => {
+        const { previewImage } = this.state;
         if (previewImage === 'xs') {
-            baseNodeStyle = Object.assign({}, baseNodeStyle, {
+            if (this.baseNodeRef) this.baseNodeRef.parentNode.parentNode.style.float = 'left';
+            return {
+                width: 320,
                 float: 'left',
                 marginRight: 48,
                 // @TODO: DIRTYHACK!! GET RID OF THIS!!!
                 marginLeft: this.baseNodeRef ?
                   this.baseNodeRef.parentNode.parentNode.previousSibling.offsetLeft : 0
-            });
+            };
         }
+        if (previewImage === 'md') {
+            return {
+                margin: '0 auto',
+                width: 700
+            };
+        }
+        if (previewImage === 'lg') {
+            return {
+                margin: '0 auto',
+                width: '100%'
+            };
+        }
+        return {};
+    }
+    render () {
+        const { isCardEnabled, imageSrc, previewImage } = this.state;
+        const { files, caption } = this.props.data;
+        const baseNodeStyle = this._getBaseNodeStyle();
+
         return (
           <div
             ref={(baseNode) => { this.baseNodeRef = baseNode; }}
             style={baseNodeStyle}
           >
             <div
-              style={{
-                  width: this.state.cardWidth,
-                  WebkitUserSelect: 'none'
-              }}
+              className={`${styles.rootInner}`}
             >
               <Toolbar
+                className={`${styles.toolbar}`}
                 style={{
                     backgroundColor: '#FFF',
                     opacity: (isCardEnabled ? 1 : 0),
-                    visibility: isCardEnabled ? 'visible' : 'hidden'
+                    top: (isCardEnabled ? -64 : 0)
                 }}
               >
                 <ToolbarGroup>
@@ -231,6 +247,7 @@ class ImageBlock extends Component {
               </CardMedia>
               <CardText style={{ padding: 0, marginTop: 8 }}>
                 <TextField
+                  className={`${styles.caption}`}
                   hintText="image caption"
                   hintStyle={{
                       textAlign: 'center',
@@ -239,7 +256,6 @@ class ImageBlock extends Component {
                       right: 0,
                       top: 0
                   }}
-                  style={{ padding: '0 16px' }}
                   value={caption}
                   textareaStyle={{
                       textAlign: 'center',

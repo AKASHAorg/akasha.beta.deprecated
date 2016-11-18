@@ -3,6 +3,9 @@
 /**
  * Editor styles override
  */
+ .megadraft-editor .DraftEditor-root {
+     font-size: 20px;
+ }
 .megadraft-editor {
     .paragraph,
     h2,
@@ -27,6 +30,8 @@
 .megadraft-editor {
     h2 {
         margin-top: 24px;
+        font-size: 32px;
+        font-weight: 300;
     }
 }
  .megadraft-editor .paragraph + .paragraph {
@@ -35,8 +40,8 @@
 
  .megadraft-editor .public-DraftEditor-content figure {
     margin: 0;
-    margin-top: 32px;
-    margin-bottom: 32px;
+    margin-top: 8px;
+    margin-bottom: 0;
  }
 .megadraft-editor .sidemenu {
     width: auto;
