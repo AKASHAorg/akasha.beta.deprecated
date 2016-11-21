@@ -55,7 +55,8 @@ class ModuleEmitter extends AbstractEmitter_1.AbstractEmitter {
             }
             this.registerListener(channels_1.default.server[this.MODULE_NAME][method.name], (event, data) => {
                 let response;
-                console.time(method.name);
+                const stamp = method.name + ' ' + (new Date()).getTime();
+                console.time(stamp);
                 method
                     .execute(data)
                     .then((result) => {
@@ -66,7 +67,7 @@ class ModuleEmitter extends AbstractEmitter_1.AbstractEmitter {
                 })
                     .finally(() => {
                     this.fireEvent(channels_1.default.client[this.MODULE_NAME][method.name], response, event);
-                    console.timeEnd(method.name);
+                    console.timeEnd(stamp);
                     response = null;
                 });
             });

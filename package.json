@@ -125,7 +125,7 @@
     "eslint-config-airbnb": "13.0.0",
     "eslint-plugin-babel": "4.0.0",
     "eslint-plugin-import": "2.2.0",
-    "eslint-plugin-jsx-a11y": "3.0.1",
+    "eslint-plugin-jsx-a11y": "^2.2.3",
     "eslint-plugin-react": "6.7.1",
     "ethereumjs-testrpc": "3.0.2",
     "express": "4.14.0",
@@ -163,7 +163,7 @@
   },
   "dependencies": {
     "@akashaproject/contracts.js": "1.2.6",
-    "@akashaproject/geth-connector": "1.6.9",
+    "@akashaproject/geth-connector": "1.6.11",
     "@akashaproject/ipfs-connector": "1.6.10",
     "@types/ramda": "0.0.2",
     "bluebird": "3.4.6",
