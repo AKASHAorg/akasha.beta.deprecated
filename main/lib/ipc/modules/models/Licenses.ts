@@ -23,7 +23,7 @@ export const LicencesList = [
         parent: null,
         label: 'No rights reserved',
         description: [
-            { icon: 'copyright-3', text: 'You will not have any rights.' }
+            { icon: 'CCZERO', text: 'You will not have any rights.' }
         ]
     }, {
         id: '4',
@@ -31,7 +31,7 @@ export const LicencesList = [
         label: 'Attribution',
         description: [
             {
-                icon: 'copyright-4',
+                icon: 'CCBY',
                 text: `Others can distribute, remix, and build upon your 
                         work as long as they credit you.`
             }
@@ -42,12 +42,12 @@ export const LicencesList = [
         label: 'Attribution, no derivatives',
         description: [
             {
-                icon: 'copyright-5-0',
+                icon: 'CCBY',
                 text: `Others can distribute, remix, and build upon your work 
                         as long as they credit you.`
             },
             {
-                icon: 'copyright-5-1',
+                icon: 'CCND',
                 text: 'no derivatives licence description'
             }
         ]
@@ -57,12 +57,12 @@ export const LicencesList = [
         label: 'Attribution, share-alike',
         description: [
             {
-                icon: 'copyright-6-0',
+                icon: 'CCBY',
                 text: `Others can distribute, remix, and build upon your work as
                          long as they credit you.`
             },
             {
-                icon: 'copyright-6-1',
+                icon: 'CCSA',
                 text: 'Others must distribute derivatives of your work under the same license.'
             }
         ]
@@ -72,7 +72,12 @@ export const LicencesList = [
         label: 'Attribution, non-commercial',
         description: [
             {
-                icon: 'copyright-7',
+                icon: 'CCBY',
+                text: `Others can distribute, remix, and build upon your work as
+                         long as they credit you`
+            },
+            {
+                icon: 'CCNC',
                 text: 'Others can use your work for non-commercial purposes only. '
             }
         ]
@@ -82,8 +87,17 @@ export const LicencesList = [
         label: 'Attribution, non-commercial, no-derivatives',
         description: [
             {
-                icon: 'copyright-8',
+                icon: 'CCBY',
+                text: `Others can distribute, remix, and build upon your work as
+                         long as they credit you`
+            },
+            {
+                icon: 'CCNC',
                 text: 'Others can use your work for non-commercial purposes only. '
+            },
+            {
+                icon: 'CCND',
+                text: 'no derivatives licence description'
             }
         ]
     }, {
@@ -92,11 +106,16 @@ export const LicencesList = [
         label: 'Attribution, non-commercial, share-alike',
         description: [
             {
-                icon: 'copyright-9-0',
+                icon: 'CCBY',
+                text: `Others can distribute, remix, and build upon your work as
+                         long as they credit you`
+            },
+            {
+                icon: 'CCNC',
                 text: 'Others can use your work for non-commercial purposes only. '
             },
             {
-                icon: 'copyright-9-1',
+                icon: 'CCSA',
                 text: 'Others must distribute derivatives of your work under the same license.'
             }
         ]
@@ -106,7 +125,7 @@ export const LicencesList = [
         label: 'Creative Commons copyright waiver',
         description: [
             {
-                icon: 'copyright-10',
+                icon: 'CCZERO',
                 text: 'You waive all your copyright and related rights in this work, worldwide.'
             }
         ]
@@ -115,7 +134,7 @@ export const LicencesList = [
         parent: '3',
         label: 'Public Domain',
         description: [
-            { icon: 'copyright-11', text: 'Public domain licence description' }
+            { icon: 'CCPD', text: 'Public domain licence description' }
         ]
     }
 ];
