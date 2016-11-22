@@ -5,6 +5,7 @@ import channels from '../channels';
 import Logger from './Logger';
 import { gethResponse } from './event/responses';
 import { join } from 'path';
+import { app } from 'electron';
 import IpcMainEvent = Electron.IpcMainEvent;
 import WebContents = Electron.WebContents;
 
@@ -23,6 +24,7 @@ class GethIPC extends GethEmitter {
         GethConnector.getInstance().setLogger(
             Logger.getInstance().registerLogger(this.logger)
         );
+        GethConnector.getInstance().setBinPath(app.getPath('userData'));
         this.webContents = webContents;
         const datadir = GethConnector.getDefaultDatadir();
         GethConnector.getInstance().setOptions({

@@ -5,6 +5,7 @@ const channels_1 = require('../channels');
 const Logger_1 = require('./Logger');
 const responses_1 = require('./event/responses');
 const path_1 = require('path');
+const electron_1 = require('electron');
 class GethIPC extends GethEmitter_1.default {
     constructor() {
         super();
@@ -16,6 +17,7 @@ class GethIPC extends GethEmitter_1.default {
     }
     initListeners(webContents) {
         geth_connector_1.GethConnector.getInstance().setLogger(Logger_1.default.getInstance().registerLogger(this.logger));
+        geth_connector_1.GethConnector.getInstance().setBinPath(electron_1.app.getPath('userData'));
         this.webContents = webContents;
         const datadir = geth_connector_1.GethConnector.getDefaultDatadir();
         geth_connector_1.GethConnector.getInstance().setOptions({
