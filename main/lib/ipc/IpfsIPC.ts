@@ -5,6 +5,7 @@ import AppLogger from './Logger';
 import channels from '../channels';
 import { ipfsResponse } from './event/responses';
 import { generalSettings, BASE_URL } from './config/settings';
+import { app } from 'electron';
 import WebContents = Electron.WebContents;
 import IpcMainEvent = Electron.IpcMainEvent;
 
@@ -21,6 +22,7 @@ class IpfsIPC extends IpfsEmitter {
         IpfsConnector.getInstance().setLogger(
             AppLogger.getInstance().registerLogger(this.logger)
         );
+        IpfsConnector.getInstance().setBinPath(app.getPath('userData'));
         this.webContents = webContents;
         this._start()
             ._stop()
