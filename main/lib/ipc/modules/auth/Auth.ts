@@ -65,9 +65,10 @@ export default class Auth {
      * @private
      */
     private _read(token: any) {
-        if (!this.isLogged(token)) {
+        // until geth will handle properly eth_sign ...
+/*        if (!this.isLogged(token)) {
             throw new Error('Token is not valid');
-        }
+        }*/
         const result = Buffer.concat([this._decipher.update(this._encrypted), this._decipher.final()]);
         this._encrypt(result);
         return result;
@@ -166,6 +167,7 @@ export default class Auth {
         try {
             pubKey = bufferToHex(ecrecover(toBuffer(token), v, r, s));
             ethAddr = pubToAddress(pubKey);
+            console.log(bufferToHex(ethAddr), this._session.address);
             return bufferToHex(ethAddr) === this._session.address;
         } catch (err) {
             return false;
