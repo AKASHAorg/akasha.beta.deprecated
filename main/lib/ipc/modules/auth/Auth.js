@@ -36,9 +36,6 @@ class Auth {
         });
     }
     _read(token) {
-        if (!this.isLogged(token)) {
-            throw new Error('Token is not valid');
-        }
         const result = Buffer.concat([this._decipher.update(this._encrypted), this._decipher.final()]);
         this._encrypt(result);
         return result;
@@ -115,6 +112,7 @@ class Auth {
         try {
             pubKey = ethereumjs_util_1.bufferToHex(ethereumjs_util_1.ecrecover(ethereumjs_util_1.toBuffer(token), v, r, s));
             ethAddr = ethereumjs_util_1.pubToAddress(pubKey);
+            console.log(ethereumjs_util_1.bufferToHex(ethAddr), this._session.address);
             return ethereumjs_util_1.bufferToHex(ethAddr) === this._session.address;
         }
         catch (err) {
