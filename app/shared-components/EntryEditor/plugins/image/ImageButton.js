@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { insertDataBlock } from 'megadraft';
-import { IconButton, Dialog, FlatButton, RaisedButton, SelectField, MenuItem, Checkbox } from 'material-ui';
-import { getResizedImages } from 'utils/imageUtils';
+import { IconButton, Dialog, FlatButton, RaisedButton, SelectField, MenuItem } from 'material-ui';
+import { getResizedImages } from 'utils/imageUtils'; // eslint-disable-line import/no-unresolved, import/extensions
 import PhotoCircle from 'material-ui/svg-icons/image/add-a-photo';
 
 export default class BlockButton extends Component {
@@ -21,7 +21,7 @@ export default class BlockButton extends Component {
     _triggerFileBrowser = () => {
         this.fileInput.click();
     }
-    _handleDialogClose = (ev) => {
+    _handleDialogClose = () => {
         this.setState({
             dialogOpen: false
         });
@@ -70,10 +70,9 @@ export default class BlockButton extends Component {
         });
     }
     _getSuitableMedia = (image) => {
-        const image2 = Object.assign({}, image);
         // by default we want to display image with highest resolution
         // that`s because we like high quality :)
-        const biggestAvailableKey = Object.keys(image2).reduce((prev, current) => {
+        const biggestAvailableKey = Object.keys(image).reduce((prev, current) => {
             if (image[prev].width > image[current].width) {
                 return prev;
             }
@@ -147,7 +146,9 @@ export default class BlockButton extends Component {
                   </SelectField>
                 </div>
                 <div className="col-xs-12">
-                  <small>By adding this image I acknowledge and agree {akashaTermsLink} on using images</small>
+                  <small>
+                    By adding this image I acknowledge and agree {akashaTermsLink} on using images
+                  </small>
                 </div>
               </div>
             </Dialog>
