@@ -59,6 +59,11 @@ const Licence = Record({
     label: '',
     description: []
 });
+const EntriesStream = Record({
+    akashaId: null,
+    profiles: new List(),
+    tags: new List()
+});
 const initialState = fromJS({
     published: new List(),
     savedEntries: new List(),
@@ -66,6 +71,12 @@ const initialState = fromJS({
     errors: new List(),
     flags: new Map(),
     fetchingEntriesCount: false,
+    entriesStream: new EntriesStream(),
+    tagEntries: new List(), // entries published with the selected tag
+    savedEntries: new List(),
+    moreTagEntries: false,
+    moreSavedEntries: false,
+    tagEntriesCount: new Map(),
     entriesCount: 0 // entries published by a logged profile
 });
 /**
@@ -141,6 +152,70 @@ const entryState = createReducer(initialState, {
     [types.GET_LICENCE_BY_ID_ERROR]: (state, { error }) =>
         state.merge({
             errors: state.get('errors').push(new ErrorRecord(error))
+        }),
+
+    [types.GET_ENTRIES_STREAM]: (state, { flags }) =>
+        state.merge({
+            flags: state.get('flags').merge(flags)
+        }),
+
+    [types.GET_ENTRIES_STREAM_SUCCESS]: (state, { data, flags }) =>
+        state.merge({
+            entriesStream: new EntriesStream(fromJS(data)),
+            flags: state.get('flags').merge(flags)
+        }),
+
+    [types.GET_ENTRIES_STREAM_ERROR]: (state, { error, flags }) =>
+        state.merge({
+            errors: state.get('errors').push(new ErrorRecord(error)),
+            flags: state.get('flags').merge(flags)
+        }),
+
+    [types.ENTRY_TAG_ITERATOR]: (state, { flags }) =>
+        state.merge({
+            flags: state.get('flags').merge(flags)
+        }),
+
+    [types.ENTRY_TAG_ITERATOR_SUCCESS]: (state, { data, flags }) => {
+        const moreTagEntries = data.limit === data.collection.length;
+        const newTagEntries = moreTagEntries ?
+            fromJS(data.collection.slice(0, -1)) :
+            fromJS(data.collection);
+        return state.merge({
+            tagEntries: state.get('tagEntries').concat(newTagEntries),
+            moreTagEntries,
+            flags: state.get('flags').merge(flags)
+        })
+    },
+
+    [types.ENTRY_TAG_ITERATOR_ERROR]: (state, { error, flags }) =>
+        state.merge({
+            errors: state.get('errors').push(new ErrorRecord(error)),
+            flags: state.get('flags').merge(flags)
+        }),
+
+    [types.GET_TAG_ENTRIES_COUNT]: (state, { flags }) =>
+        state.merge({
+            flags: state.get('flags').merge(flags)
+        }),
+
+    [types.GET_TAG_ENTRIES_COUNT_SUCCESS]: (state, { data, flags }) => {
+        return state.merge({
+            tagEntriesCount: state.get('tagEntriesCount').merge(fromJS(data)),
+            flags: state.get('flags').merge(flags)
+        })
+    },
+
+    [types.GET_TAG_ENTRIES_COUNT_ERROR]: (state, { error, flags }) =>
+        state.merge({
+            errors: state.get('errors').push(new ErrorRecord(error)),
+            flags: state.get('flags').merge(flags)
+        }),
+
+
+    [types.CLEAR_TAG_ENTRIES]: state =>
+        state.merge({
+            tagEntries: new List()
         })
 });
 

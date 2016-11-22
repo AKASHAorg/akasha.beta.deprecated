@@ -1,6 +1,6 @@
 import { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { ProfileActions, AppActions, TagActions, TransactionActions } from 'local-flux';
+import { AppActions, EntryActions, TagActions, TransactionActions } from 'local-flux';
 
 class TagPublisher extends Component {
     constructor () {
@@ -17,10 +17,13 @@ class TagPublisher extends Component {
         }
     }
     componentWillReceiveProps (nextProps) {
-        const { pendingTags, loggedProfile, minedTransactions } = nextProps;
-        const { appActions } = this.props;
+        const { pendingTags, loggedProfile, minedTx, appActions } = nextProps;
         const { registerRequestedTags, listeningTags } = this.state;
         const tokenIsValid = this._checkTokenValidity(loggedProfile.get('expiration'));
+
+        this.launchActions(nextProps);
+        this.listenForMinedTx(nextProps);
+
         if (pendingTags.size === 0) return;
         for (let i = pendingTags.size - 1; i >= 0; i -= 1) {
             const tagObj = pendingTags.get(i);
@@ -52,6 +55,66 @@ class TagPublisher extends Component {
             }
         }
     }
+
+    launchActions = (nextProps) => {
+        const { pendingActions, appActions, tagActions } = nextProps;
+        const actions = pendingActions.filter(action =>
+            action.get('status') === 'readyToPublish');
+        if (actions.size > 0) {
+            actions.forEach(action => {
+                const actionType = action.get('type');
+                switch (actionType) {
+                    case 'subscribeTag':
+                        appActions.updatePendingAction(action.merge({
+                            status: 'publishing'
+                        }));
+                        tagActions.subscribeTag(
+                            action.getIn(['payload', 'tagName']), action.get('gas')
+                        );
+                        break;
+                    case 'unsubscribeTag':
+                        appActions.updatePendingAction(action.merge({
+                            status: 'publishing'
+                        }));
+                        tagActions.unsubscribeTag(
+                            action.getIn(['payload', 'tagName']), action.get('gas')
+                        );
+                        break;
+                    default:
+                        break;
+                }
+            });
+        }
+    };
+
+    listenForMinedTx = (nextProps) => {
+        const { minedTx, pendingTx, fetchingMined, fetchingPending, deletingPendingTx, appActions,
+            entryActions, transactionActions, tagActions, loggedProfile,
+            pendingActions } = nextProps;
+        const isNotFetching = !fetchingMined && !fetchingPending;
+        const pendingSubsTxs = isNotFetching ?
+            pendingTx.toJS().filter(tx =>
+                tx.profile === loggedProfile.get('profile') && (tx.type === 'subscribeTag' ||
+                    tx.type === 'unsubscribeTag')
+            ) :
+            [];
+
+        pendingSubsTxs.forEach((tx) => {
+            const isMined = minedTx.find(mined => mined.tx === tx.tx);
+            if (isMined && !deletingPendingTx) {
+                const correspondingAction = pendingActions.find(action =>
+                    action.get('type') === tx.type && action.get('status') === 'publishing');
+                transactionActions.listenForMinedTx({ watch: false });
+                transactionActions.deletePendingTx(tx.tx);
+                tx.type === 'subscribeTag' ?
+                    tagActions.subscribeTagSuccess(tx.tagName) :
+                    tagActions.unsubscribeTagSuccess(tx.tagName)
+                appActions.deletePendingAction(correspondingAction.get('id'));
+                entryActions.getEntriesStream(loggedProfile.get('akashaId'));
+            }
+        });
+    };
+
     _checkTokenValidity = expDate =>
         Date.parse(expDate) > Date.now();
 
@@ -82,8 +145,8 @@ class TagPublisher extends Component {
         //     seen: false
         // });
         appActions.showNotification({
-            type: 'info',
-            message: `Tag ${tagObj.tag} published successfully`
+            id: 'tagPublishedSuccessfully',
+            values: { tagName: tagObj.tag }
         });
         listeningTags = listeningTags.splice(listeningTags.indexOf(tagObj.tag), 1);
         this.setState({
@@ -99,30 +162,39 @@ class TagPublisher extends Component {
 }
 
 TagPublisher.propTypes = {
+    fetchingMined: PropTypes.bool,
+    fetchingPending: PropTypes.bool,
+    deletingPendingTx: PropTypes.bool,
+    pendingActions: PropTypes.shape(),
     pendingTags: PropTypes.shape(),
     tagActions: PropTypes.shape(),
     loggedProfile: PropTypes.shape(),
     transactionActions: PropTypes.shape(),
-    appActions: PropTypes.shape()
+    appActions: PropTypes.shape(),
+    entryActions: PropTypes.shape()
 };
 
 function mapStateToProps (state) {
     return {
+        fetchingMined: state.transactionState.get('fetchingMined'),
+        fetchingPending: state.transactionState.get('fetchingPending'),
+        deletingPendingTx: state.transactionState.getIn(['flags', 'deletingPendingTx']),
         loggedProfile: state.profileState.get('loggedProfile'),
         loggedProfileData: state.profileState.get('profiles').find(prf =>
             prf.get('profile') === state.profileState.getIn(['loggedProfile', 'profile'])),
+        pendingActions: state.appState.get('pendingActions'),
         pendingTags: state.tagState.get('pendingTags'),
-        pendingTransactions: state.transactionState.get('pending'),
-        minedTransactions: state.transactionState.get('mined')
+        pendingTx: state.transactionState.get('pending'),
+        minedTx: state.transactionState.get('mined')
     };
 }
 
 function mapDispatchToProps (dispatch) {
     return {
         appActions: new AppActions(dispatch),
+        entryActions: new EntryActions(dispatch),
         tagActions: new TagActions(dispatch),
         transactionActions: new TransactionActions(dispatch),
-        profileActions: new ProfileActions(dispatch)
     };
 }
 

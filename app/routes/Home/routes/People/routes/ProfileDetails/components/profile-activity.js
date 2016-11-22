@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { Tab, Tabs, Paper, FlatButton } from 'material-ui';
 import { ProfileCard } from 'shared-components';
 import { injectIntl } from 'react-intl';
-import { profileMessages } from 'locale-data/messages'
+import { generalMessages } from 'locale-data/messages'
 
 class ProfileActivity extends Component {
     constructor (props) {
@@ -142,7 +142,7 @@ class ProfileActivity extends Component {
           {profileData.get('moreFollowers') &&
             <div style={{ display: 'flex', justifyContent: 'center' }}>
               <FlatButton
-                label={intl.formatMessage(profileMessages.showMore)}
+                label={intl.formatMessage(generalMessages.showMore)}
                 onClick={this.showMoreFollowers}
                 style={{ margin: '10px' }}
                 primary
@@ -187,7 +187,7 @@ class ProfileActivity extends Component {
           {profileData.get('moreFollowing') &&
             <div style={{ display: 'flex', justifyContent: 'center' }}>
               <FlatButton
-                label={intl.formatMessage(profileMessages.showMore)}
+                label={intl.formatMessage(generalMessages.showMore)}
                 onClick={this.showMoreFollowing}
                 style={{ margin: '10px' }}
                 primary

@@ -1,6 +1,7 @@
 /* eslint new-cap: ["error", { "capIsNewExceptions": ["Record"] }]*/
 import { fromJS, List, Record, Map } from 'immutable';
 import * as types from '../constants/ProfileConstants';
+import * as tagTypes from '../constants/TagConstants';
 import { createReducer } from './create-reducer';
 
 const ErrorRecord = Record({
@@ -41,20 +42,11 @@ const LoggedProfile = Record({
     akashaId: null
 });
 
-const Notifications = Record({
-    updatingProfile: false,
-    profileUpdateSuccess: false,
-    following: false,
-    followProfileSuccess: false,
-    unfollowProfileSuccess: false
-});
-
 const initialState = fromJS({
     profiles: new List(),
     loggedProfile: new LoggedProfile(),
     errors: new List(),
     fetchingFullLoggedProfile: false,
-    notifications: new Notifications(),
     flags: new Map()
 });
 
@@ -102,6 +94,11 @@ const profileState = createReducer(initialState, {
         state.merge({
             loggedProfile: state.get('loggedProfile').merge(profile),
             flags: state.get('flags').merge(flags)
+        }),
+
+    [types.CLEAR_LOGGED_PROFILE_SUCCESS]: state =>
+        state.merge({
+            loggedProfile: new LoggedProfile()
         }),
 
     [types.LOGOUT_SUCCESS]: state =>
@@ -186,35 +183,8 @@ const profileState = createReducer(initialState, {
 
     [types.UPDATE_PROFILE_DATA_SUCCESS]: state =>
         state.merge({
-            flags: state.get('flags').merge({ updatingProfile: false }),
-            notifications: state.get('notifications').merge({
-                profileUpdateSuccess: true
-            })
+            flags: state.get('flags').merge({ updatingProfile: false })
         }),
-
-    [types.SHOW_NOTIFICATION]: (state, { notification }) => {
-        if (state.getIn(['notifications', notification]) === undefined) {
-            return state;
-        }
-
-        return state.merge({
-            notifications: state.get('notifications').merge({
-                [notification]: true
-            })
-        });
-    },
-
-    [types.HIDE_NOTIFICATION]: (state, { notification }) => {
-        if (state.getIn(['notifications', notification]) === undefined) {
-            return state;
-        }
-
-        return state.merge({
-            notifications: state.get('notifications').merge({
-                [notification]: false
-            })
-        });
-    },
 
     [types.RESET_FLAGS]: state =>
         state.merge({
@@ -370,10 +340,7 @@ const profileState = createReducer(initialState, {
 
         if (profileIndex === -1) {
             return state.merge({
-                flags: state.get('flags').mergeIn(['followPending', index], flags.followPending),
-                notifications: state.get('notifications').merge({
-                    followProfileSuccess: true
-                })
+                flags: state.get('flags').mergeIn(['followPending', index], flags.followPending)
             });
         }
         return state.merge({
@@ -381,10 +348,7 @@ const profileState = createReducer(initialState, {
                 followers: state.getIn(['profiles', profileIndex, 'followers'])
                     .insert(0, fromJS({ profile: loggedProfileData }))
             }),
-            flags: state.get('flags').mergeIn(['followPending', index], flags.followPending),
-            notifications: state.get('notifications').merge({
-                followProfileSuccess: true
-            })
+            flags: state.get('flags').mergeIn(['followPending', index], flags.followPending)
         });
     },
 
@@ -436,10 +400,7 @@ const profileState = createReducer(initialState, {
                     following: state.getIn(['profiles', loggedProfileIndex, 'following'])
                         .filter(following => following.getIn(['profile', 'akashaId']) !== akashaId)
                 }),
-                flags: state.get('flags').mergeIn(['followPending', index], flags.followPending),
-                notifications: state.get('notifications').merge({
-                    unfollowProfileSuccess: true
-                })
+                flags: state.get('flags').mergeIn(['followPending', index], flags.followPending)
             });
         }
         return state.merge({
@@ -448,10 +409,7 @@ const profileState = createReducer(initialState, {
                     follower.getIn(['profile', 'akashaId']) !== loggedProfileData.get('akashaId')
                 )
             }),
-            flags: state.get('flags').mergeIn(['followPending', index], flags.followPending),
-            notifications: state.get('notifications').merge({
-                unfollowProfileSuccess: true
-            })
+            flags: state.get('flags').mergeIn(['followPending', index], flags.followPending)
         });
     },
 
@@ -495,6 +453,27 @@ const profileState = createReducer(initialState, {
         return state.merge({
             profiles: state.get('profiles').mergeIn([profileIndex], {
                 following: new List()
+            })
+        });
+    },
+
+    [tagTypes.SUBSCRIBE_TAG_SUCCESS]: state => {
+        const profileIndex = state.get('profiles').findIndex(prf =>
+            prf.get('profile') === state.getIn(['loggedProfile', 'profile']));
+        return state.merge({
+            profiles: state.get('profiles').mergeIn([profileIndex], {
+                subscriptionsCount:
+                    parseInt(state.getIn(['profiles', profileIndex, 'subscriptionsCount']), 10) + 1
+            })
+        });
+    },
+    [tagTypes.UNSUBSCRIBE_TAG_SUCCESS]: state => {
+        const profileIndex = state.get('profiles').findIndex(prf =>
+            prf.get('profile') === state.getIn(['loggedProfile', 'profile']));
+        return state.merge({
+            profiles: state.get('profiles').mergeIn([profileIndex], {
+                subscriptionsCount:
+                    parseInt(state.getIn(['profiles', profileIndex, 'subscriptionsCount']), 10) - 1
             })
         });
     }

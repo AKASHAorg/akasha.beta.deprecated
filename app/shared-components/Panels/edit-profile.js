@@ -19,11 +19,11 @@ class EditProfile extends Component {
         this.getProps = inputFieldMethods.getProps.bind(this);
         this.state = {
             formValues: {
-                firstName: props.profile.get('firstName'),
-                lastName: props.profile.get('lastName')
+                firstName: props.loggedProfileData.get('firstName'),
+                lastName: props.loggedProfileData.get('lastName')
             },
             about: '',
-            avatar: props.profile.get('avatar'),
+            avatar: props.loggedProfileData.get('avatar'),
             backgroundImage: {},
             links: [],
             lastCreatedLink: ''
@@ -32,14 +32,14 @@ class EditProfile extends Component {
     }
 
     componentWillMount () {
-        const { profile, profileActions } = this.props;
-        profileActions.getProfileData([{ profile: profile.get('profile') }], true);
+        const { loggedProfileData, profileActions } = this.props;
+        profileActions.getProfileData([{ profile: loggedProfileData.get('profile') }], true);
     }
 
     componentWillReceiveProps (nextProps) {
         if (!nextProps.fetchingProfileData && this.props.fetchingProfileData) {
             const { firstName, lastName, about, backgroundImage, links,
-                avatar } = nextProps.profile.toJS();
+                avatar } = nextProps.loggedProfileData.toJS();
             this.setState({
                 formValues: {
                     firstName,
@@ -202,7 +202,7 @@ class EditProfile extends Component {
 
     renderHeaderTitle () {
         const { intl } = this.props;
-        const akashaId = this.props.profile.get('akashaId');
+        const akashaId = this.props.loggedProfileData.get('akashaId');
         return <div>
           <div style={{ fontSize: '20px' }}>{intl.formatMessage(profileMessages.personalProfile)}</div>
           <div style={{ fontWeight: '300' }}>{`@${akashaId}`}</div>
@@ -210,7 +210,7 @@ class EditProfile extends Component {
     }
 
     render () {
-        const { intl, profile, updatingProfile } = this.props;
+        const { intl, loggedProfileData, updatingProfile } = this.props;
         const { palette } = this.context.muiTheme;
         const floatLabelStyle = { color: palette.disabledColor };
         const firstNameProps = this.getProps({
@@ -239,7 +239,7 @@ class EditProfile extends Component {
         });
         const mediumImage = this.state.backgroundImage.md;
         const backgroundImageLink = mediumImage &&
-            imageCreator(mediumImage.src['/'], profile.get('baseUrl'));
+            imageCreator(mediumImage.src['/'], loggedProfileData.get('baseUrl'));
 
         return (
           <Paper
@@ -393,7 +393,7 @@ EditProfile.propTypes = {
     clearValidations: PropTypes.func,
     handleValidation: PropTypes.func,
     intl: PropTypes.shape(),
-    profile: PropTypes.shape(),
+    loggedProfileData: PropTypes.shape(),
     profileActions: PropTypes.shape(),
     showPanel: PropTypes.func,
     fetchingProfileData: PropTypes.bool,

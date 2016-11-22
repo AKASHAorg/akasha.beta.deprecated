@@ -122,3 +122,131 @@ export function registerTagError (error) {
         error
     };
 }
+
+export function getSelectedTag (flags) {
+    return {
+        type: types.GET_SELECTED_TAG,
+        flags
+    };
+}
+
+export function getSelectedTagSuccess (data, flags) {
+    return {
+        type: types.GET_SELECTED_TAG_SUCCESS,
+        data,
+        flags
+    };
+}
+
+export function getSelectedTagError (error, flags) {
+    error.code = 'GSTE01';
+    return {
+        type: types.GET_SELECTED_TAG_ERROR,
+        error,
+        flags
+    };
+}
+
+export function saveTag (flags) {
+    return {
+        type: types.SAVE_TAG,
+        flags
+    };
+}
+
+export function saveTagSuccess (data, flags) {
+    return {
+        type: types.SAVE_TAG_SUCCESS,
+        data,
+        flags
+    };
+}
+
+export function saveTagError (error, flags) {
+    error.code = 'STE01';
+    return {
+        type: types.SAVE_TAG_ERROR,
+        error,
+        flags
+    };
+}
+
+export function tagIterator (flags) {
+    return {
+        type: types.TAG_ITERATOR,
+        flags
+    };
+}
+
+export function tagIteratorSuccess (data, flags) {
+    return {
+        type: types.TAG_ITERATOR_SUCCESS,
+        data,
+        flags
+    };
+}
+
+export function tagIteratorError (error, flags) {
+    error.code = 'TIE01';
+    return {
+        type: types.TAG_ITERATOR_ERROR,
+        error,
+        flags
+    };
+}
+
+export function clearNewestTags () {
+    return {
+        type: types.CLEAR_NEWEST_TAGS
+    };
+}
+
+export function clearSelectedTag () {
+    return {
+        type: types.CLEAR_SELECTED_TAG
+    };
+}
+
+export function subscribeTag (flags) {
+    return {
+        type: types.SUBSCRIBE_TAG,
+        flags
+    };
+}
+
+export function subscribeTagSuccess (flags) {
+    return {
+        type: types.SUBSCRIBE_TAG_SUCCESS,
+        flags
+    };
+}
+
+export function subscribeTagError (error, flags) {
+    return {
+        type: types.SUBSCRIBE_TAG_ERROR,
+        error,
+        flags
+    };
+}
+
+export function unsubscribeTag (flags) {
+    return {
+        type: types.UNSUBSCRIBE_TAG,
+        flags
+    };
+}
+
+export function unsubscribeTagSuccess (flags) {
+    return {
+        type: types.UNSUBSCRIBE_TAG_SUCCESS,
+        flags
+    };
+}
+
+export function unsubscribeTagError (error, flags) {
+    return {
+        type: types.UNSUBSCRIBE_TAG_ERROR,
+        error,
+        flags
+    };
+}

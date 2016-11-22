@@ -1,12 +1,13 @@
 import React from 'react';
 import { Chip } from 'material-ui';
 
-const TagChip = ({ style, onTagClick, tag }) => {
+const TagChip = ({ style, onTagClick, tag, selectedTag }, { muiTheme }) => {
+    const { palette } = muiTheme;
     const tagStyle = {
         display: 'inline-block',
         border: '1px solid',
-        borderColor: '#DDD',
-        backgroundColor: '#FFF',
+        borderColor: tag === selectedTag ? palette.primary1Color : palette.borderColor,
+        backgroundColor: palette.canvasColor,
         borderRadius: 3,
         height: 34,
         verticalAlign: 'middle',
@@ -17,7 +18,10 @@ const TagChip = ({ style, onTagClick, tag }) => {
     return (
       <Chip
         style={{ ...tagStyle, ...style }}
-        onTouchTap={(ev) => onTagClick(ev, tag)}
+        onTouchTap={tag !== selectedTag ?
+            (ev) => onTagClick(ev, tag) :
+            () => null
+        }
       >
         {tag}
       </Chip>
@@ -26,8 +30,13 @@ const TagChip = ({ style, onTagClick, tag }) => {
 
 TagChip.propTypes = {
     tag: React.PropTypes.string.isRequired,
+    selectedTag: React.PropTypes.string,
     style: React.PropTypes.object,
     onTagClick: React.PropTypes.func.isRequired
+};
+
+TagChip.contextTypes = {
+    muiTheme: React.PropTypes.shape()
 };
 
 export default TagChip;

@@ -78,9 +78,9 @@ class TagsField extends React.Component {
         this.props.onTagRegisterRequest(tag);
     }
     _handleTagDetect = (ev) => {
-        const MODIFIER_CHARCODES = [13, 32, 44, 59];
-        for (let i = 0; i < MODIFIER_CHARCODES.length; i += 1) {
-            if (ev.charCode === MODIFIER_CHARCODES[i]) {
+        const MODIFIER_KEYS = ['Enter', ' ', ',', ';'];
+        for (let i = 0; i < MODIFIER_KEYS.length; i += 1) {
+            if (ev.key === MODIFIER_KEYS[i]) {
                 ev.preventDefault();
                 this._createTag();
                 this.setState({

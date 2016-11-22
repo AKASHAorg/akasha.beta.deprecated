@@ -193,7 +193,7 @@ class Auth extends Component {
         });
     };
     _handleDialogKeyPress = (ev) => {
-        if (ev.charCode === 13) {
+        if (ev.key === 'Enter') {
             this.handleLogin();
         }
     };

@@ -56,10 +56,10 @@ export default (
 
     {/** user home after login */}
     <Route component={requireAuth(HomeContainer)} path=":akashaId" >
-      <IndexRedirect to="explore/stream" />
+      <IndexRedirect to="explore/tag" />
       {/** loads articles from blockchain */}
       <Route component={StreamPageContainer}>
-        <Route component={EntryListContainer} path="explore(/:filter)(/:tagName)" />
+        <Route component={EntryListContainer} path="explore(/:filter)" />
       </Route>
 
       {/** loads details about different profiles */}

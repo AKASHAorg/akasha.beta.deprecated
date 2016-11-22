@@ -169,6 +169,7 @@ class TempProfileActions {
             this.tempLogin({
                 account: tempProfile.get('address'),
                 password: tempProfile.get('password'),
+                akashaId: tempProfile.get('akashaId'),
                 rememberTime: 1
             });
         }
@@ -209,7 +210,7 @@ class TempProfileActions {
             onSuccess: data => this.dispatch(tempProfileActionCreators.getTempProfileSuccess(data))
         });
 
-    tempLogin = ({ account, password, rememberTime, registering = true }) => {
+    tempLogin = ({ account, password, rememberTime, akashaId, registering = true }) => {
         password = new TextEncoder('utf-8').encode(password);
         console.log('tempLogin', account);
         this.dispatch(tempProfileActionCreators.login());
@@ -217,6 +218,7 @@ class TempProfileActions {
             account,
             password,
             rememberTime,
+            akashaId,
             registering,
             onSuccess: data => this.dispatch(profileActionCreators.loginSuccess(data)),
             onError: error => this.dispatch(profileActionCreators.loginError(error))

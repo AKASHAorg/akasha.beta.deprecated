@@ -1,5 +1,7 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
+import { injectIntl } from 'react-intl';
 import { Dialog, FlatButton, RaisedButton, TextField, IconButton } from 'material-ui';
+import { confirmMessages } from 'locale-data/messages';
 import InfoIcon from 'material-ui/svg-icons/action/info-outline';
 
 class PublishConfirmDialog extends Component {
@@ -9,44 +11,49 @@ class PublishConfirmDialog extends Component {
             gasError: null
         };
     }
-    _handleGasChange = (ev) => {
-        const { minGas } = this.props.resource;
-        const amount = ev.target.value;
-        if (minGas < amount) {
-            return this.setState({
-                gasError: `You cannot set gas amount lower than ${minGas}`
+
+    componentWillReceiveProps (nextProps) {
+        const { isOpen, resource } = nextProps;
+        if (isOpen && !this.props.isOpen) {
+            this.setState({
+                gasAmount: resource.get('gas')
             });
         }
+    }
+
+    _handleGasChange = (ev) => {
+        // const { gas } = this.props.resource;
+        const amount = ev.target.value;
+        // if (minGas < amount) {
+        //     return this.setState({
+        //         gasError: `You cannot set gas amount lower than ${minGas}`
+        //     });
+        // }
         return this.setState({
             gasAmount: amount
         });
     }
     _handleConfirm = () => {
-        const { resource, tagActions, appActions } = this.props;
-        if (this.state.gas) {
-            resource.minGas = this.state.gasAmount;
-        }
-        if (resource.type === 'tag') {
-            resource.publishConfirmed = true;
-            tagActions.updatePendingTag(resource);
-        }
+        const { resource, appActions } = this.props;
+        const updatedResource = resource.toJS();
+        updatedResource.gas = this.state.gasAmount || resource.get('gas');
+        updatedResource.status = 'checkAuth';
+        appActions.hidePublishConfirmDialog();
+        appActions.updatePendingAction(updatedResource);
     }
     _handleAbort = () => {
-        const { resource, tagActions, appActions } = this.props;
-        if (resource.type === 'tag') {
-            tagActions.deletePendingTag(resource);
-            appActions.hidePublishConfirmDialog();
-        }
+        const { resource, appActions } = this.props;
+        appActions.deletePendingAction(resource.get('id'));
+        appActions.hidePublishConfirmDialog();
+    }
+    onSubmit = (ev) => {
+        ev.preventDefault();
+        this._handleConfirm();
     }
     render () {
         const { resource, intl, isOpen } = this.props;
-        let type;
-        let minGas;
-        let tag;
-        if (resource) {
-            type = resource.type;
-            minGas = resource.minGas;
-            tag = resource.tag;
+        if (!resource) {
+            return null;
         }
         const dialogActions = [
           /*eslint-disable*/
@@ -67,38 +74,49 @@ class PublishConfirmDialog extends Component {
             contentStyle={{ width: 420, maxWidth: 'none' }}
             modal
             title={
-              <div style={{ fontSize: 24 }}>{`Confirm ${type} publishing`}</div>
+              <div style={{ fontSize: 24 }}>
+                {intl.formatMessage(confirmMessages[resource.get('titleId')])}
+              </div>
             }
             open={isOpen}
             actions={dialogActions}
           >
-            {type === 'tag' &&
-              <p>Are you sure you want to publish tag &quot;{tag}&quot;?</p>
-            }
-            <div className="row middle-xs">
-              <TextField
-                defaultValue={minGas}
-                floatingLabelFixed
-                floatingLabelText={'Maximum amount of gas to use'}
-                fullWidth
-                className="col-xs-10"
-                value={this.state.gasAmount}
-                onChange={this._handleGasChange}
-              />
-              <IconButton
-                className="col-xs-2 custom-title"
-                style={{ marginTop: 24 }}
-                title={
-                    `Gas to be used by this transaction.
-Unused gas will be returned.`
-                }
-              >
-                <InfoIcon />
-              </IconButton>
-            </div>
+            <p>
+              {intl.formatMessage(
+                  confirmMessages[resource.get('messageId')], resource.get('payload')
+              )}
+            </p>
+            <form onSubmit={this.onSubmit}>
+              <div className="row middle-xs">
+                <TextField
+                  floatingLabelFixed
+                  floatingLabelText={'Maximum amount of gas to use'}
+                  fullWidth
+                  className="col-xs-10"
+                  value={this.state.gasAmount}
+                  onChange={this._handleGasChange}
+                />
+                <IconButton
+                  className="col-xs-2 custom-title"
+                  style={{ marginTop: 24 }}
+                  title={
+                      `Gas to be used by this transaction.
+  Unused gas will be returned.`
+                  }
+                >
+                  <InfoIcon />
+                </IconButton>
+              </div>
+            </form>
           </Dialog>
         );
     }
 }
 
-export default PublishConfirmDialog;
+PublishConfirmDialog.propTypes = {
+    isOpen: PropTypes.bool,
+    resource: PropTypes.shape(),
+    intl: PropTypes.shape()
+};
+
+export default injectIntl(PublishConfirmDialog);
