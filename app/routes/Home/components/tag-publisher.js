@@ -13,7 +13,6 @@ class TagPublisher extends Component {
     componentWillMount () {
         const { tagActions, loggedProfile } = this.props;
         if (loggedProfile.get('profile')) {
-            console.log(loggedProfile.get('profile'), 'has profile. getting pending tags');
             tagActions.getPendingTags(loggedProfile.get('profile'));
         }
     }
@@ -22,7 +21,6 @@ class TagPublisher extends Component {
         const { appActions } = this.props;
         const { registerRequestedTags, listeningTags } = this.state;
         const tokenIsValid = this._checkTokenValidity(loggedProfile.get('expiration'));
-        console.log(registerRequestedTags, 'registerRequestedTags');
         if (pendingTags.size > 0) {
             pendingTags.forEach((tagObj) => {
                 if (tagObj.error) return;

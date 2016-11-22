@@ -159,12 +159,14 @@ class ImageBlock extends Component {
             };
         }
         if (previewImage === 'md') {
+            if (this.baseNodeRef) this.baseNodeRef.parentNode.parentNode.style.float = 'none';
             return {
                 margin: '0 auto',
                 width: 700
             };
         }
         if (previewImage === 'lg') {
+            if (this.baseNodeRef) this.baseNodeRef.parentNode.parentNode.style.float = 'none';
             return {
                 margin: '0 auto',
                 width: '100%'

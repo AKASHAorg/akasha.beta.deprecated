@@ -3,9 +3,12 @@ import {
     Dialog,
     RaisedButton,
     RadioButton,
-    Checkbox,
     Divider,
-    FontIcon } from 'material-ui';
+    SvgIcon } from 'material-ui';
+import { CreativeCommonsBY, CreativeCommonsCC, CreativeCommonsNCEU, CreativeCommonsNCJP,
+  CreativeCommonsNC, CreativeCommonsND, CreativeCommonsREMIX, CreativeCommonsSHARE,
+  CreativeCommonsZERO, CreativeCommonsPD, CreativeCommonsSA
+} from 'shared-components/svg';
 
 class LicenceDialog extends React.Component {
     constructor (props) {
@@ -41,6 +44,19 @@ class LicenceDialog extends React.Component {
     render () {
         const { licences } = this.props;
         const { defaultLicence } = this.state;
+        const licenceIcons = {
+            CCBY: CreativeCommonsBY,
+            CCCC: CreativeCommonsCC,
+            CCNCEU: CreativeCommonsNCEU,
+            CCNCJP: CreativeCommonsNCJP,
+            CCNC: CreativeCommonsNC,
+            CCND: CreativeCommonsND,
+            CCREMIX: CreativeCommonsREMIX,
+            CCSHARE: CreativeCommonsSHARE,
+            CCZERO: CreativeCommonsZERO,
+            CCPD: CreativeCommonsPD,
+            CCSA: CreativeCommonsSA
+        };
         let selectedMainLicence;
         if (licences.size === 0) {
             return <div>Loading licences</div>;
@@ -74,7 +90,7 @@ class LicenceDialog extends React.Component {
                   style={{ marginTop: 16 }}
                   checked={
                     (selectedMainLicenceId === licence.id) ||
-                    (defaultLicence && defaultLicence.parent === licence.id)
+                    !!(defaultLicence && (defaultLicence.parent === licence.id))
                   }
                   onCheck={(ev, val) => this._handleMainLicenceCheck(ev, val)}
                 />
@@ -100,10 +116,10 @@ class LicenceDialog extends React.Component {
                 licences.find(lic => lic.id === defaultLicence.id)
                   .description
                   .map((licDescription, key) =>
-                    <small key={key} className="row middle-xs" style={{ marginTop: 8 }}>
-                      <FontIcon className="material-icons" style={{ fontSize: 18 }}>
-                        {licDescription.icon}
-                      </FontIcon>
+                    <small key={key} className="row top-xs" style={{ marginTop: 8 }}>
+                      <SvgIcon className="material-icons" style={{ fontSize: 18 }}>
+                        {licenceIcons[licDescription.icon]}
+                      </SvgIcon>
                       <div className="col-xs-11">
                         {licDescription.text}
                       </div>

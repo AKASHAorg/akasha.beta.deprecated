@@ -31,11 +31,29 @@ import ImageSizeSmall from './ImageSizeSmall';
 import ImageSizeXL from './ImageSizeXL';
 import ImageSizeXS from './ImageSizeXS';
 import ImageSizeXXL from './ImageSizeXXL';
+import AddImage from './add-image';
+import CreativeCommonsBY from './creative-commons-by';
+import CreativeCommonsCC from './creative-commons-cc';
+import CreativeCommonsNCEU from './creative-commons-nc-eu';
+import CreativeCommonsNCJP from './creative-commons-nc-jp';
+import CreativeCommonsNC from './creative-commons-nc';
+import CreativeCommonsND from './creative-commons-nd';
+import CreativeCommonsREMIX from './creative-commons-remix';
+import CreativeCommonsSHARE from './creative-commons-share';
+import CreativeCommonsZERO from './creative-commons-zero';
+import CreativeCommonsPD from './creative-commons-pd';
+import CreativeCommonsSA from './creative-commons-sa';
 
 export {
-    ProfileIcon, AddEntryIcon, SearchIcon, StreamsIcon, PortalsIcon, CommunityIcon, PeopleIcon,
-    LogoIcon, MenuAddEntry, MenuAkashaLogo, MenuCommunities, MenuEntries, MenuEthereum, MenuPeople,
-    MenuPortals, MenuSearch, MenuStreams, MenuUser, ToolbarComments, ToolbarEthereum, ToolbarLogout,
-    ToolbarProfile, ToolbarSettings, ToolbarVotes, ToolbarWallet, StatusBarEthereum, StatusBarIpfs,
-    ImageSizeLarge, ImageSizeMedium, ImageSizeSmall, ImageSizeXL, ImageSizeXS, ImageSizeXXL
+    ProfileIcon, AddEntryIcon, SearchIcon, StreamsIcon, PortalsIcon,
+    CommunityIcon, PeopleIcon, LogoIcon, MenuAddEntry, MenuAkashaLogo,
+    MenuCommunities, MenuEntries, MenuEthereum, MenuPeople, MenuPortals,
+    MenuSearch, MenuStreams, MenuUser, ToolbarComments, ToolbarEthereum,
+    ToolbarLogout, ToolbarProfile, ToolbarSettings, ToolbarVotes, ToolbarWallet,
+    StatusBarEthereum, StatusBarIpfs, ImageSizeLarge, ImageSizeMedium,
+    ImageSizeSmall, ImageSizeXL, ImageSizeXS, ImageSizeXXL, AddImage,
+    CreativeCommonsBY, CreativeCommonsCC, CreativeCommonsNCEU,
+    CreativeCommonsNCJP, CreativeCommonsNC, CreativeCommonsND,
+    CreativeCommonsREMIX, CreativeCommonsSHARE, CreativeCommonsZERO,
+    CreativeCommonsPD, CreativeCommonsSA
 };

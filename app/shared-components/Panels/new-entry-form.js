@@ -6,14 +6,12 @@ import {
     Tab,
     SelectField,
     MenuItem,
-    Card,
-    CardText,
     IconMenu,
     IconButton,
     CircularProgress } from 'material-ui';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import { entryMessages, generalMessages } from 'locale-data/messages';
-import { injectIntl, FormattedRelative } from 'react-intl';
+import { injectIntl } from 'react-intl';
 import SearchBar from '../SearchBar/search-bar';
 import EntryCard from '../EntryCard/entry-card';
 
