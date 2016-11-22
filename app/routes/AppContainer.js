@@ -67,13 +67,15 @@ class App extends Component {
         const { appActions } = this.props;
         appActions.clearErrors();
     };
-    _handleConfirmation = () => {
+    _handleConfirmation = (ev) => {
         const { profileState, profileActions } = this.props;
         const { rememberTime, userPassword, rememberPasswordChecked } = this.state;
         const account = profileState.get('loggedProfile').get('account');
+        const akashaId = profileState.get('loggedProfile').get('akashaId');
         const remember = rememberPasswordChecked ? rememberTime : 1;
+        ev.preventDefault();
         profileActions.login({
-            account, password: userPassword, rememberTime: remember, reauthenticate: true
+            account, password: userPassword, rememberTime: remember, akashaId, reauthenticate: true
         });
     };
     _setRememberPassword = () => {
@@ -96,9 +98,11 @@ class App extends Component {
         });
     };
     _handleCancellation = () => {
-        const { appActions } = this.props;
+        const { appActions, appState } = this.props;
+        appActions.deletePendingAction(appState.get('showAuthDialog'));
         appActions.hideAuthDialog();
     };
+
     _handleVoteWeightChange = (ev, index, value) => {
         this.setState({
             voteWeight: value
@@ -126,7 +130,7 @@ class App extends Component {
         const confirmationDialog = appState.get('confirmationDialog');
         const errorMessage = error.get('code')
             ? `Error ${error.get('code')}: ${error.get('message')}` : '';
-        const isAuthDialogVisible = appState.get('showAuthDialog');
+        const isAuthDialogVisible = !!appState.get('showAuthDialog');
         const isConfirmationDialogVisible = confirmationDialog !== null;
         const isPublishConfirmationDialogVisible = appState.get('publishConfirmDialog') !== null;
 

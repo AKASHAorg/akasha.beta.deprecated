@@ -1,56 +1,68 @@
-import React from 'react';
-import { TextField, Chip, SelectField, MenuItem } from 'material-ui';
+import React, { PropTypes } from 'react';
+import { injectIntl, FormattedMessage } from 'react-intl';
+import { TextField, RaisedButton, SelectField, MenuItem } from 'material-ui';
+import { tagMessages } from 'locale-data/messages';
 
-const tagStyle = {
-    display: 'inline-block',
-    border: '1px solid',
-    borderColor: '#DDD',
-    backgroundColor: '#FFF',
-    borderRadius: 3,
+const buttonStyle = {
     height: 34,
-    verticalAlign: 'middle',
-    marginRight: '4px',
-    marginBottom: '4px',
     position: 'absolute',
-    right: 0,
-    top: 25,
-    cursor: 'pointer'
+    right: 8,
+    top: 25
 };
-const TagSearch = (props) =>
-  <div className="row" style={{ paddingBottom: 24 }}>
+const TagSearch = (props) => {
+  const { tagName, tagEntriesCount, subscriptions, subscribeTag, unsubscribeTag,
+      subscribePending, intl } = props;
+  const isSubscribed = subscriptions && !!subscriptions.find(tag => tag.get('tagName') === tagName);
+  const isPending = subscribePending && subscribePending.value;
+  return <div className="row" style={{ paddingBottom: 24 }}>
     <div className="col-xs-12" style={{ position: 'relative' }}>
       <TextField
         fullWidth
         hintText="Type a tag"
         floatingLabelText="TAGGED IN"
-        value={props.tagName.toUpperCase()}
+        value={tagName.toUpperCase()}
       />
-      <Chip style={tagStyle}>Following</Chip>
+      <RaisedButton
+        label={isSubscribed ?
+            intl.formatMessage(tagMessages.unsubscribe) :
+            intl.formatMessage(tagMessages.subscribe)
+        }
+        primary={!isSubscribed}
+        style={buttonStyle}
+        onClick={isSubscribed ? unsubscribeTag : subscribeTag}
+        disabled={isPending}
+      />
     </div>
-    <div className="col-xs-12">
-      <div className="row middle-xs">
-        <div className="col-xs-4">
-          <div className="row middle-xs">
-            <span className="col-xs-3">Show:</span>
-            <SelectField className="col-xs-7">
-              <MenuItem label="All entries" />
-            </SelectField></div>
-        </div>
-        <div className="col-xs-4">
-          <div className="row middle-xs">
-            <span className="col-xs-4">Sort by:</span>
-            <SelectField className="col-xs-6">
-              <MenuItem label="Latest" />
-            </SelectField>
-          </div>
-        </div>
-        <div className="col-xs-4 end-xs">321 followers</div>
+    <div
+      className="col-xs-12"
+      style={{
+          display: 'flex', justifyContent: 'space-between', paddingTop: '10px'
+      }}
+    >
+      <div>
+        <FormattedMessage
+          id="app.profile.entriesCount"
+          description="counting a profile's entries"
+          defaultMessage={`{entriesCount, number} {entriesCount, plural,
+                one {entry}
+                few {entries}
+                many {entries}
+                other {entries}
+              }`}
+          values={{ entriesCount: tagEntriesCount.get('count') }}
+        />
       </div>
+      <div>Sorted by latest</div>
     </div>
   </div>;
+}
 
 TagSearch.propTypes = {
-    tagName: React.PropTypes.string,
-    onChange: React.PropTypes.func
+    tagName: PropTypes.string,
+    tagEntriesCount: PropTypes.shape(),
+    subscriptions: PropTypes.shape(),
+    subscribeTag: PropTypes.func,
+    unsubscribeTag: PropTypes.func,
+    subscribePending: PropTypes.shape()
 };
-export default TagSearch;
+export default injectIntl(TagSearch);

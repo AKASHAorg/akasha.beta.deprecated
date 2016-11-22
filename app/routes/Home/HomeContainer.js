@@ -1,12 +1,13 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { AppActions, DraftActions, ProfileActions, EntryActions,
-    TransactionActions } from 'local-flux';
+    TransactionActions, TagActions } from 'local-flux';
 import { Sidebar } from 'shared-components';
 import '../../styles/core.scss';
 import styles from './home.scss';
 import PanelLoaderContainer from './components/panel-loader-container';
 import EntryModal from './components/entry-modal';
+import CommonRunner from './components/common-runner';
 import ProfileUpdater from './components/profile-updater';
 import PublishEntryRunner from './components/publish-entry-runner';
 import TagPublisher from './components/tag-publisher';
@@ -27,7 +28,8 @@ class HomeContainer extends React.Component {
         profileActions.getLoggedProfile();
     }
     componentWillReceiveProps (nextProps) {
-        const { profileActions, entryActions, draftActions, transactionActions } = this.props;
+        const { profileActions, entryActions, draftActions, tagActions,
+            transactionActions } = this.props;
         const { loggedProfile, fetchingLoggedProfile } = nextProps;
 
         // action to modify status of a draft to stop publishing it :)
@@ -50,10 +52,12 @@ class HomeContainer extends React.Component {
             transactionActions.getPendingTransactions();
             draftActions.getDraftsCount(loggedProfile.get('profile'));
             entryActions.getEntriesCount(loggedProfile.get('akashaId'));
+            tagActions.getSelectedTag(loggedProfile.get('akashaId'));
         }
     }
     componentWillUnmount () {
         this.props.appActions.hidePanel();
+        this.props.tagActions.clearSelectedTag();
     }
     _getLoadingMessage = () => {
         const { fetchingDraftsCount, fetchingEntriesCount, fetchingLoggedProfile,
@@ -123,6 +127,7 @@ class HomeContainer extends React.Component {
             <div className={`col-xs-12 ${styles.childWrapper}`} >
               {this.props.children}
             </div>
+            <CommonRunner />
             <ProfileUpdater />
             <FollowRunner />
             <PublishEntryRunner />
@@ -170,7 +175,7 @@ function mapStateToProps (state, ownProps) {
         loginRequested: state.profileState.getIn(['flags', 'loginRequested']),
         loggedProfile: state.profileState.get('loggedProfile'),
         loggedProfileData: state.profileState.get('profiles').find(profile =>
-        profile.get('profile') === state.profileState.getIn(['loggedProfile', 'profile'])),
+            profile.get('profile') === state.profileState.getIn(['loggedProfile', 'profile'])),
         updatingProfile: state.profileState.getIn(['flags', 'updatingProfile']),
         entriesCount: state.entryState.get('entriesCount'),
         draftsCount: state.draftState.get('draftsCount'),
@@ -183,6 +188,7 @@ function mapDispatchToProps (dispatch) {
         draftActions: new DraftActions(dispatch),
         entryActions: new EntryActions(dispatch),
         profileActions: new ProfileActions(dispatch),
+        tagActions: new TagActions(dispatch),
         transactionActions: new TransactionActions(dispatch)
     };
 }

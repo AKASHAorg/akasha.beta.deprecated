@@ -39,7 +39,7 @@ class EntryEditor extends Component {
         });
     };
     _handleKeyPress = (ev) => {
-        if (ev.charCode === 13) {
+        if (ev.key === 'Enter') {
             this.editor.focus();
         }
     }

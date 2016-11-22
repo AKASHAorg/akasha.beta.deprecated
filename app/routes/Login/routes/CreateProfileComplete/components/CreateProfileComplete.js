@@ -18,7 +18,8 @@ class CreateProfileComplete extends Component {
         }
     }
     _handleFinishSetup = () => {
-        const { tempProfileActions, tempProfile } = this.props;
+        const { tempProfileActions, profileActions, tempProfile } = this.props;
+        profileActions.clearLoggedProfile();
         tempProfileActions.deleteTempProfile(tempProfile.get('akashaId'));
     }
     render () {
@@ -87,7 +88,8 @@ CreateProfileComplete.propTypes = {
     style: PropTypes.shape(),
     intl: PropTypes.shape(),
     tempProfile: PropTypes.shape(),
-    tempProfileActions: PropTypes.shape()
+    tempProfileActions: PropTypes.shape(),
+    profileActions: PropTypes.shape()
 };
 
 CreateProfileComplete.contextTypes = {
