@@ -128,7 +128,7 @@ class TempProfileActions {
             about,
             links,
             backgroundImage
-        } = tempProfile;
+        } = tempProfile.toJS();
         const ipfs = {
             firstName,
             lastName,
