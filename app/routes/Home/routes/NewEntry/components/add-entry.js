@@ -7,8 +7,8 @@ import {
     IconMenu,
     MenuItem } from 'material-ui';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
-import { getWordCount } from 'utils/dataModule';
-import EntryEditor from 'shared-components/EntryEditor';
+import { getWordCount } from 'utils/dataModule'; // eslint-disable-line import/no-unresolved, import/extensions
+import EntryEditor from 'shared-components/EntryEditor'; // eslint-disable-line import/no-unresolved, import/extensions
 
 class AddEntryPage extends Component {
     constructor (props) {

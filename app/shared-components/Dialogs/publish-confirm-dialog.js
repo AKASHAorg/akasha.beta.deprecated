@@ -28,7 +28,6 @@ class PublishConfirmDialog extends Component {
         }
         if (resource.type === 'tag') {
             resource.publishConfirmed = true;
-            console.log(resource, 'the resource');
             tagActions.updatePendingTag(resource);
         }
     }

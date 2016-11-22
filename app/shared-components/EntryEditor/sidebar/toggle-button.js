@@ -13,8 +13,9 @@ const ToggleButton = (props) => {
             visibility: 'visible'
         };
     }
+    const toggle = props.toggle.bind(this);
     return (
-      <IconButton type="button" style={style} onClick={props.toggle}>
+      <IconButton type="button" style={style} onTouchTap={toggle}>
         <AddCircle />
       </IconButton>
     );

@@ -1,30 +1,23 @@
 import React, { Component } from 'react';
-import { MegadraftPlugin } from 'megadraft';
 import {
-    Card,
     CardMedia,
     CardText,
-    Checkbox,
     SelectField,
-    DropDownMenu,
     MenuItem,
-    IconButton,
     TextField,
     SvgIcon,
     Toolbar,
-    ToolbarGroup,
-    ToolbarSeparator } from 'material-ui';
-import DeleteIcon from 'material-ui/svg-icons/action/delete';
-import withWidth, { SMALL, MEDIUM, LARGE } from 'material-ui/utils/withWidth';
+    ToolbarGroup } from 'material-ui';
+import withWidth from 'material-ui/utils/withWidth';
 import {
   ImageSizeXS,
   ImageSizeLarge,
   ImageSizeMedium,
   ImageSizeSmall,
   ImageSizeXL,
-  ImageSizeXXL } from 'shared-components/svg';
-import imageCreator, { findBestMatch } from 'utils/imageUtils';
-import clickAway from 'utils/clickAway';
+  ImageSizeXXL } from 'shared-components/svg'; // eslint-disable-line import/no-unresolved, import/extensions
+import imageCreator, { findBestMatch } from 'utils/imageUtils'; // eslint-disable-line import/no-unresolved, import/extensions
+import clickAway from 'utils/clickAway'; // eslint-disable-line import/no-unresolved, import/extensions
 import styles from './image-block.scss';
 
 
@@ -61,8 +54,8 @@ const variants = {
 class ImageBlock extends Component {
     constructor (props) {
         super(props);
-        const { files, media, caption, licence, termsAccepted, } = this.props.data;
-
+        const { files, media, caption, licence, termsAccepted } = this.props.data;
+        console.log(licence, 'a licence');
         this.state = {
             previewImage: media,
             caption,
@@ -72,7 +65,8 @@ class ImageBlock extends Component {
             isCardEnabled: false
         };
         this.menuItems = [];
-        for (const key of Object.keys(files)) {
+        for (let i = Object.keys(files).length - 1; i >= 0; i -= 1) {
+            const key = Object.keys(files)[i];
             this.menuItems.push(
               <MenuItem
                 key={`k-${key}`}
@@ -286,6 +280,8 @@ ImageBlock.propTypes = {
         caption: React.PropTypes.string,
         rightsHolder: React.PropTypes.string,
         media: React.PropTypes.string,
+        licence: React.PropTypes.string,
+        termsAccepted: React.PropTypes.bool
     }),
     blockProps: React.PropTypes.shape()
 };

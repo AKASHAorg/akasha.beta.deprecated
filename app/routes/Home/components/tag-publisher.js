@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react';
+import { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { ProfileActions, AppActions, TagActions, TransactionActions } from 'local-flux';
 
@@ -21,36 +21,36 @@ class TagPublisher extends Component {
         const { appActions } = this.props;
         const { registerRequestedTags, listeningTags } = this.state;
         const tokenIsValid = this._checkTokenValidity(loggedProfile.get('expiration'));
-        if (pendingTags.size > 0) {
-            pendingTags.forEach((tagObj) => {
-                if (tagObj.error) return;
-                if (tagObj.publishConfirmed) {
-                    appActions.hidePublishConfirmDialog();
-                }
-                if (tagObj.tx &&
-                    minedTransactions.findIndex(minedTx => minedTx.tx === tagObj.tx) !== -1) {
-                    this._deletePendingTag(tagObj);
-                    return;
-                }
-                if (tagObj.tx && listeningTags.indexOf(tagObj.tag) === -1) {
-                    this._listenTagTx(tagObj);
-                    listeningTags.push(tagObj.tag);
-                    return;
-                }
-                if (!tagObj.publishConfirmed && !tagObj.tx) {
-                    appActions.showPublishConfirmDialog({
-                        type: 'tag',
-                        ...tagObj
-                    });
-                } else if (!tokenIsValid && registerRequestedTags.indexOf(tagObj.tag) === -1) {
-                    appActions.showAuthDialog();
-                } else if (!tagObj.tx && tokenIsValid && registerRequestedTags.indexOf(tagObj.tag) === -1) {
-                    this._registerTag(tagObj, loggedProfile);
-                    registerRequestedTags.push(tagObj.tag);
-                }
-            });
+        if (pendingTags.size === 0) return;
+        for (let i = pendingTags.size - 1; i >= 0; i -= 1) {
+            const tagObj = pendingTags.get(i);
+            if (tagObj.error) { continue; } // eslint-disable-line no-continue
+            if (tagObj.publishConfirmed) {
+                appActions.hidePublishConfirmDialog();
+            }
+            if (tagObj.tx &&
+                minedTransactions.findIndex(minedTx => minedTx.tx === tagObj.tx) !== -1) {
+                this._deletePendingTag(tagObj);
+                continue; // eslint-disable-line no-continue
+            }
+            if (tagObj.tx && listeningTags.indexOf(tagObj.tag) === -1) {
+                this._listenTagTx(tagObj);
+                listeningTags.push(tagObj.tag);
+                continue; // eslint-disable-line no-continue
+            }
+            if (!tagObj.publishConfirmed && !tagObj.tx) {
+                appActions.showPublishConfirmDialog({
+                    type: 'tag',
+                    ...tagObj
+                });
+            } else if (!tokenIsValid && registerRequestedTags.indexOf(tagObj.tag) === -1) {
+                appActions.showAuthDialog();
+            } else if (!tagObj.tx && tokenIsValid &&
+                registerRequestedTags.indexOf(tagObj.tag) === -1) {
+                this._registerTag(tagObj, loggedProfile);
+                registerRequestedTags.push(tagObj.tag);
+            }
         }
-        return null;
     }
     _checkTokenValidity = expDate =>
         Date.parse(expDate) > Date.now();

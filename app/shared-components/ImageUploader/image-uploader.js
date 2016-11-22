@@ -1,13 +1,10 @@
 import React, { PropTypes, Component } from 'react';
 import { SvgIcon, RaisedButton } from 'material-ui';
-import AddPhotoIcon from 'material-ui/svg-icons/image/add-a-photo';
-import DeleteIcon from 'material-ui/svg-icons/action/delete';
 import { injectIntl } from 'react-intl';
-import { generalMessages } from 'locale-data/messages';
-import { remote } from 'electron';
-import imageCreator, { getResizedImages } from '../../utils/imageUtils';
-
-const { dialog } = remote;
+import DeleteIcon from 'material-ui/svg-icons/action/delete';
+import { AddImage } from 'shared-components/svg'; // eslint-disable-line import/no-unresolved, import/extensions
+import { generalMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
+import imageCreator, { getResizedImages, findBestMatch } from '../../utils/imageUtils';
 
 class ImageUploader extends Component {
     constructor (props) {
@@ -30,7 +27,7 @@ class ImageUploader extends Component {
         }
     }
     componentWillUnmount = () => {
-        window.URL.revokeObjectURL(this.state.initialImageFile);
+        // window.URL.revokeObjectURL(this.state.initialImageFile);
     }
     getImage = () => {
         if (this.state.isNewImage) {
@@ -39,38 +36,42 @@ class ImageUploader extends Component {
         return this.props.initialImage;
     }
     _handleDialogOpen = () => {
-        const multiselection = this.props.multiFiles ? 'multiSelections' : '';
-        dialog.showOpenDialog({
-            title: this.props.dialogTitle,
-            properties: ['openFile', multiselection],
-            filters: [{ name: 'Images', extensions: ['jpg', 'png', 'gif'] }]
-        }, (files) => {
-            if (!files) {
-                return;
-            }
-            this.setState({
-                imageFile: files,
+        const filePaths = Array.from(this.fileInput.files).map(file => file.path);
+        console.info('uploaded image size',
+            Array.from(this.fileInput.files).map(file => `${Math.round(file.size / 1024)} KB`)
+        );
+        if (filePaths.length === 0) {
+            return this.setState({
+                imageFile: null,
                 isNewImage: true
-            }, () => {
-                const {
-                    minWidth,
-                    minHeight
-                } = this.props;
-                const imageFiles = this.state.imageFile;
-                const outputFiles = getResizedImages(imageFiles, { minWidth, minHeight });
-
-                Promise.all(outputFiles).then((results) => {
-                    this.setState({
-                        images: results
-                    });
-                })
-                .catch((err) => {
-                    this.setState({
-                        error: err
-                    });
-                });
             });
+        }
+        const filePromises = getResizedImages(filePaths, {
+            minWidth: this.props.minWidth,
+            minHeight: this.props.minHeight
         });
+        return Promise.all(filePromises)
+            .then(results =>
+                this.setState({
+                    imageFile: results,
+                    isNewImage: true
+                }, () => {
+                    this.fileInput.value = '';
+                })
+            ).catch(err =>
+                this.setState({
+                    error: err
+                })
+            );
+    }
+    _getImageSrc = (imageObj) => {
+        const containerWidth = this.container.getBoundingClientRect().width;
+        const bestKey = findBestMatch(containerWidth, imageObj);
+        const imageSrc = imageCreator(imageObj[bestKey].src);
+
+        console.info(`showing "${bestKey}" image with width "${imageObj[bestKey].width}px" and height "${imageObj[bestKey].height}px"`);
+
+        return imageSrc;
     }
     _handleClearImage = () => {
         const { clearImage } = this.props;
@@ -81,6 +82,7 @@ class ImageUploader extends Component {
             images: null,
             imageFile: null,
             isNewImage: false,
+            initialImageFile: null,
             error: null
         });
     }
@@ -97,16 +99,19 @@ class ImageUploader extends Component {
         } = this.props;
         const { initialImageFile } = this.state;
         return (
-          <div style={this.context.muiTheme.imageUploader}>
+          <div
+            ref={(container) => { this.container = container }}
+            style={this.context.muiTheme.imageUploader}
+          >
             {this.state.isNewImage &&
               <div>
                 {multiFiles &&
                    this.state.imageFile.map((image, key) =>
-                     <img src={image} key={key} style={imageStyle} role="presentation" />
+                     <img src={this._getImageSrc(image)} key={key} style={imageStyle} role="presentation" />
                    )
                 }
                 {!multiFiles &&
-                  <img src={this.state.imageFile[0]} style={imageStyle} role="presentation" />
+                  <img src={this._getImageSrc(this.state.imageFile[0])} style={imageStyle} role="presentation" />
                 }
                 <div style={clearImageButtonStyle}>
                   <RaisedButton
@@ -159,16 +164,23 @@ class ImageUploader extends Component {
               <div style={emptyContainerStyle}>
                 <SvgIcon
                   style={{ height: '42px', width: '100%' }}
+                  viewBox="0 0 36 36"
                   color={this.context.muiTheme.palette.textColor}
                 >
-                  <AddPhotoIcon viewBox="0 0 24 24" />
+                  <AddImage />
                 </SvgIcon>
                 <text style={{ display: 'block' }}>
                   {intl.formatMessage(generalMessages.addImage)}
                 </text>
               </div>
               }
-            <div style={uploadButtonStyle} onClick={this._handleDialogOpen} />
+            <input
+              ref={(fileInput) => { this.fileInput = fileInput; }}
+              type="file"
+              style={uploadButtonStyle}
+              onChange={this._handleDialogOpen}
+              multiple={multiFiles}
+            />
             {this.state.error &&
               <div style={errorStyle}>{this.state.error}</div>
             }
@@ -184,7 +196,9 @@ ImageUploader.defaultProps = {
         right: 0,
         bottom: 0,
         zIndex: 1,
-        cursor: 'pointer'
+        cursor: 'pointer',
+        opacity: 0,
+        width: '100%'
     },
     clearImageButtonStyle: {
         position: 'absolute',
@@ -217,7 +231,6 @@ ImageUploader.defaultProps = {
 ImageUploader.propTypes = {
     minWidth: PropTypes.number,
     minHeight: PropTypes.number,
-    dialogTitle: PropTypes.string,
     multiFiles: PropTypes.bool,
     intl: PropTypes.shape(),
     initialImage: PropTypes.shape(),

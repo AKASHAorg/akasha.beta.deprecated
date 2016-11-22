@@ -8,7 +8,7 @@ import {
 import { CreativeCommonsBY, CreativeCommonsCC, CreativeCommonsNCEU, CreativeCommonsNCJP,
   CreativeCommonsNC, CreativeCommonsND, CreativeCommonsREMIX, CreativeCommonsSHARE,
   CreativeCommonsZERO, CreativeCommonsPD, CreativeCommonsSA
-} from 'shared-components/svg';
+} from 'shared-components/svg'; // eslint-disable-line import/no-unresolved, import/extensions
 
 class LicenceDialog extends React.Component {
     constructor (props) {
@@ -118,7 +118,7 @@ class LicenceDialog extends React.Component {
                   .map((licDescription, key) =>
                     <small key={key} className="row top-xs" style={{ marginTop: 8 }}>
                       <SvgIcon className="material-icons" style={{ fontSize: 18 }}>
-                        {licenceIcons[licDescription.icon]}
+                        {React.createElement(licenceIcons[licDescription.icon])}
                       </SvgIcon>
                       <div className="col-xs-11">
                         {licDescription.text}

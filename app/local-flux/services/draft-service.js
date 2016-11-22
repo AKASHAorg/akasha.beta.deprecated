@@ -11,7 +11,7 @@ class DraftService {
             const { id, status, ...other } = partialDraft;
             if (id) {
                 entriesDB.drafts.where('id').equals(id).modify({ status, ...other });
-                return entriesDB.drafts.where('id').equals(id).toArray().then(results => results[0]);
+                return partialDraft;
             }
             return entriesDB.drafts.add(partialDraft).then(() =>
                 partialDraft

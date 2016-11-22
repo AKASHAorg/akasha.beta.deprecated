@@ -33,14 +33,15 @@ class SideBar extends Component {
         const selection = window.getSelection();
         const startKey = editorState.getSelection().getStartKey();
         const hasText = editorState.getCurrentContent().getBlockForKey(startKey).text !== '';
-        if ((selection.rangeCount === 0) || (selection.anchorOffset > 0) || hasText) {
+
+        if ((selection.anchorOffset > 0) || hasText) {
             this.setState({
                 sidebarVisible: false
             });
             return null;
         }
         let node = selection.anchorNode;
-        if (node.nodeType === 3) { // if it is text node take the parent
+        if (node && (node.nodeType === 3)) { // if it is text node take the parent
             node = node.parentNode;
         }
         return node;

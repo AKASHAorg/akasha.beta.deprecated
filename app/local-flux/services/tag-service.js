@@ -17,18 +17,16 @@ class TagService extends BaseService {
 
     createPendingTag = ({ tagObj, onSuccess, onError }) =>
         tagsDB.transaction('rw', tagsDB.pendingTags, () => {
-            tagsDB.pendingTags.add(tagObj);
-            return tagsDB.pendingTags.where('tag').equals(tagObj.tag).toArray();
+            return tagsDB.pendingTags.add(tagObj);
         })
-        .then(savedTag => onSuccess(savedTag[0]))
+        .then(() => onSuccess(tagObj))
         .catch(reason => onError(reason));
 
     updatePendingTag = ({ tagObj, onSuccess, onError }) =>
         tagsDB.transaction('rw', tagsDB.pendingTags, () => {
-            tagsDB.pendingTags.update(tagObj.tag, tagObj);
-            return tagsDB.pendingTags.where('tag').equals(tagObj.tag).toArray();
+            return tagsDB.pendingTags.update(tagObj.tag, tagObj);
         })
-        .then(results => onSuccess(results[0]))
+        .then(() => onSuccess(tagObj))
         .catch(error => onError(error));
 
     deletePendingTag = ({ tagObj, onSuccess, onError }) =>
@@ -53,7 +51,10 @@ class TagService extends BaseService {
             clientChannel: Channel.client.tags.create,
             listenerCb: this.createListener(
                 onError,
-                data => onSuccess({ tag: tagName, tx: data.tx }),
+                (data) => {
+                    console.log(data, 'tag publish data');
+                    onSuccess({ tag: tagName, tx: data.tx });
+                },
             )
         }, () => {
             Channel.server.tags.create.send({ tagName, token, gas });
