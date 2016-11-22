@@ -1,117 +1,8 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
-import { IconButton } from 'material-ui';
-import AddCircle from 'material-ui/svg-icons/content/add-circle-outline';
 import 'setimmediate';
+import SideMenu from './side-menu';
 
-class BlockStyles extends Component {
-    onChange = (editorState) => {
-        this.props.onChange(editorState);
-        this.props.toggle();
-    }
-    render () {
-        const className = this.props.open ? 'sidemenu__items--open' : 'sidemenu__items';
-
-        return (
-          <ul className={className}>
-            {this.props.plugins.map((item) => {
-                const Button = item.buttonComponent;
-                return (
-                  <li key={item.type} className="sidemenu__item">
-                    <Button
-                      className="sidemenu__button"
-                      editorState={this.props.editorState}
-                      onChange={this.onChange}
-                    />
-                  </li>
-                );
-            })}
-          </ul>
-        );
-    }
-}
-BlockStyles.propTypes = {
-    onChange: React.PropTypes.func,
-    open: React.PropTypes.bool,
-    plugins: React.PropTypes.arrayOf(React.PropTypes.shape()),
-    editorState: React.PropTypes.shape()
-};
-
-export class ToggleButton extends Component {
-    render () {
-        let style = {
-            opacity: 0,
-            visibility: 'hidden'
-        };
-        if (this.props.open || this.props.isVisible) {
-            style = {
-                opacity: 1,
-                visibility: 'visible'
-            };
-        }
-        return (
-          <IconButton type="button" style={style} onClick={this.props.toggle}>
-            <AddCircle />
-          </IconButton>
-        );
-    }
-}
-ToggleButton.propTypes = {
-    open: React.PropTypes.bool,
-    isVisible: React.PropTypes.bool,
-    toggle: React.PropTypes.func
-};
-
-
-export class SideMenu extends Component {
-    constructor (props) {
-        super(props);
-        this.state = {
-            open: false
-        };
-    }
-    componentWillUnmount () {
-        this.setState({
-            open: false
-        });
-    }
-    onChange = (editorState) => {
-        this.props.onChange(editorState);
-    }
-
-    toggle = () => {
-        this.setState({
-            open: !this.state.open
-        });
-    }
-
-    render () {
-        return (
-          <li className="sidemenu">
-            <ToggleButton
-              toggle={this.toggle}
-              open={this.state.open}
-              isVisible={this.props.sidebarVisible}
-            />
-            <BlockStyles
-              editorState={this.props.editorState}
-              plugins={this.props.plugins}
-              open={this.state.open}
-              onChange={this.onChange}
-              toggle={this.toggle}
-            />
-          </li>
-        );
-    }
-}
-SideMenu.propTypes = {
-    sidebarVisible: React.PropTypes.bool,
-    plugins: React.PropTypes.arrayOf(React.PropTypes.shape()),
-    editorState: React.PropTypes.shape(),
-    onChange: React.PropTypes.func
-};
-
-export default class SideBar extends Component {
+class SideBar extends Component {
     constructor (props) {
         super(props);
         this.state = {
@@ -142,7 +33,6 @@ export default class SideBar extends Component {
         const selection = window.getSelection();
         const startKey = editorState.getSelection().getStartKey();
         const hasText = editorState.getCurrentContent().getBlockForKey(startKey).text !== '';
-        console.log(hasText);
         if ((selection.rangeCount === 0) || (selection.anchorOffset > 0) || hasText) {
             this.setState({
                 sidebarVisible: false
@@ -157,12 +47,11 @@ export default class SideBar extends Component {
     }
     getValidSidebarPlugins () {
         const plugins = [];
-        for (const plugin of this.props.plugins) {
-            if (!plugin.buttonComponent || typeof plugin.buttonComponent !== 'function') {
-                continue;
+        this.props.plugins.forEach((plugin) => {
+            if (plugin.buttonComponent || typeof plugin.buttonComponent === 'function') {
+                plugins.push(plugin);
             }
-            plugins.push(plugin);
-        }
+        });
         return plugins;
     }
     setBarPosition () {
@@ -228,3 +117,5 @@ SideBar.propTypes = {
     readOnly: React.PropTypes.bool,
     plugins: React.PropTypes.arrayOf(React.PropTypes.shape())
 };
+
+export default SideBar;

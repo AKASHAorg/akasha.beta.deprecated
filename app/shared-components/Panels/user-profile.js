@@ -1,5 +1,4 @@
 import React, { PropTypes, PureComponent } from 'react';
-import radium from 'radium';
 import { colors } from 'material-ui/styles';
 import {
   Paper,

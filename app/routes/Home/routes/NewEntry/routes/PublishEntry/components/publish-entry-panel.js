@@ -33,6 +33,7 @@ class PublishPanel extends React.Component {
     componentDidMount () {
         const panelSize = ReactDOM.findDOMNode(this).getBoundingClientRect();
         this.panelSize = panelSize;
+        document.body.style.overflow = 'hidden';
     }
     componentWillReceiveProps (nextProps) {
         const { draft, params, pendingTags } = nextProps;
@@ -53,7 +54,9 @@ class PublishPanel extends React.Component {
             }
         }
     }
-
+    componentWillUnmount () {
+        document.body.style.overflow = 'initial';
+    }
     _populateDraft = (draft) => {
         const { content, licence, excerpt } = draft;
         let { title, tags, featuredImage } = draft;
@@ -187,7 +190,6 @@ class PublishPanel extends React.Component {
                 validationErrors
             });
         }
-        console.log(validationErrors, 'draft has errors?');
         return cb({ title, content, excerpt, licence, featuredImage, tags });
     }
     // _handleTagAutocomplete = (value) => {
@@ -390,7 +392,7 @@ class PublishPanel extends React.Component {
                 <small>Tags</small>
                 <TagsField
                   tags={tags}
-                  existingTags={this.state.existingTags}
+                  existingTags={existingTags}
                   pendingTags={pendingTags}
                   ref={(tagsField) => { this.tagsField = tagsField; }}
                   onRequestTagAutocomplete={this._handleTagAutocomplete}

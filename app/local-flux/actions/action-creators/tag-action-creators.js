@@ -22,7 +22,7 @@ export function updatePendingTagSuccess (tag) {
 }
 
 export function updatePendingTagError (error) {
-    console.error(error, 'updatePendingTagError')
+    console.error(error, 'updatePendingTagError');
     return {
         type: types.UPDATE_PENDING_TAG_ERROR,
         error
