@@ -32,7 +32,7 @@ class TagPublisher extends Component {
                 appActions.hidePublishConfirmDialog();
             }
             if (tagObj.tx &&
-                minedTransactions.findIndex(minedTx => minedTx.tx === tagObj.tx) !== -1) {
+                minedTx.findIndex(tx => tx.tx === tagObj.tx) !== -1) {
                 this._deletePendingTag(tagObj);
                 continue; // eslint-disable-line no-continue
             }
@@ -61,7 +61,7 @@ class TagPublisher extends Component {
         const actions = pendingActions.filter(action =>
             action.get('status') === 'readyToPublish');
         if (actions.size > 0) {
-            actions.forEach(action => {
+            actions.forEach((action) => {
                 const actionType = action.get('type');
                 switch (actionType) {
                     case 'subscribeTag':
@@ -106,9 +106,11 @@ class TagPublisher extends Component {
                     action.get('type') === tx.type && action.get('status') === 'publishing');
                 transactionActions.listenForMinedTx({ watch: false });
                 transactionActions.deletePendingTx(tx.tx);
-                tx.type === 'subscribeTag' ?
-                    tagActions.subscribeTagSuccess(tx.tagName) :
-                    tagActions.unsubscribeTagSuccess(tx.tagName)
+                if (tx.type === 'subscribeTag') {
+                    tagActions.subscribeTagSuccess(tx.tagName);
+                } else {
+                    tagActions.unsubscribeTagSuccess(tx.tagName);
+                }
                 appActions.deletePendingAction(correspondingAction.get('id'));
                 entryActions.getEntriesStream(loggedProfile.get('akashaId'));
             }

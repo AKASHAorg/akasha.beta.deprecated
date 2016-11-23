@@ -220,8 +220,10 @@ const profileState = createReducer(initialState, {
         const profileIndex = state.get('profiles').findIndex(profile =>
             profile.get('akashaId') === data.akashaId
         );
-        const followersList = new List(data.collection.map(follower => fromJS(follower)));
         const moreFollowers = data.limit === data.collection.length;
+        const followersList = moreFollowers ?
+            fromJS(data.collection.slice(0, -1)) :
+            fromJS(data.collection);
         if (profileIndex === -1) {
             return state.merge({
                 profiles: state.get('profiles').push(new Profile({
@@ -235,7 +237,7 @@ const profileState = createReducer(initialState, {
         return state.merge({
             profiles: state.get('profiles').mergeIn([profileIndex], {
                 followers: state.getIn(['profiles', profileIndex, 'followers'])
-                    .concat(followersList).toSet().toList(),
+                    .concat(followersList),
                 moreFollowers
             }),
             flags: state.get('flags').merge(flags)
@@ -257,8 +259,10 @@ const profileState = createReducer(initialState, {
         const profileIndex = state.get('profiles').findIndex(profile =>
             profile.get('akashaId') === data.akashaId
         );
-        const followingList = new List(data.collection.map(following => fromJS(following)));
         const moreFollowing = data.limit === data.collection.length;
+        const followingList = moreFollowing ?
+            fromJS(data.collection.slice(0, -1)) :
+            fromJS(data.collection);
         if (profileIndex === -1) {
             return state.merge({
                 profiles: state.get('profiles').push(new Profile({
@@ -272,7 +276,7 @@ const profileState = createReducer(initialState, {
         return state.merge({
             profiles: state.get('profiles').mergeIn([profileIndex], {
                 following: state.getIn(['profiles', profileIndex, 'following'])
-                    .concat(followingList).toSet().toList(),
+                    .concat(followingList),
                 moreFollowing
             }),
             flags: state.get('flags').merge(flags)

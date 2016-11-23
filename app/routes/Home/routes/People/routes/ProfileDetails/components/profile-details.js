@@ -41,8 +41,8 @@ class ProfileDetails extends Component {
 
     renderHeader () {
         const { isFollowerPending, isFollower, followProfile, unfollowProfile, loggedAddress,
-            followPending, fetchingProfileData, intl } = this.props;
-        const profileData = this.props.profileData && !fetchingProfileData ?
+            followPending, intl } = this.props;
+        const profileData = this.props.profileData ?
             this.props.profileData.toJS() :
             {};
         const followProfilePending = followPending && followPending.find(follow =>
@@ -200,12 +200,12 @@ ProfileDetails.contextTypes = {
 ProfileDetails.propTypes = {
     loggedAddress: PropTypes.string,
     profileData: PropTypes.shape(),
-    fetchingProfileData: PropTypes.bool,
     followProfile: PropTypes.func,
     unfollowProfile: PropTypes.func,
     followPending: PropTypes.shape(),
     isFollowerPending: PropTypes.bool,
-    isFollower: PropTypes.bool
+    isFollower: PropTypes.bool,
+    intl: PropTypes.shape()
 };
 
 export default injectIntl(ProfileDetails);

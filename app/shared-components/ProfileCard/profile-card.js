@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Paper, FlatButton } from 'material-ui';
 import { Avatar } from 'shared-components';
-import { profileMessages } from 'locale-data/messages'
+import { profileMessages } from 'locale-data/messages';
 
 class ProfileCard extends Component {
 
@@ -22,10 +22,10 @@ class ProfileCard extends Component {
         if (!profileData) {
             return null;
         }
-        const { profile, avatar, akashaId, firstName, lastName, entriesCount, followersCount,
+        const { avatar, akashaId, firstName, lastName, entriesCount, followersCount,
             followingCount } = profileData;
         const isOwnProfile = akashaId === loggedProfileData.get('akashaId');
-        const isFollower = loggedProfileData.getIn(['isFollower', akashaId])
+        const isFollower = loggedProfileData.getIn(['isFollower', akashaId]);
         const entriesCountMessage = <FormattedMessage
           id="app.profile.entriesCount"
           description="counting a profile's entries"
@@ -137,10 +137,12 @@ ProfileCard.propTypes = {
     profileData: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
     followProfile: PropTypes.func,
+    unfollowProfile: PropTypes.func,
     followPending: PropTypes.shape(),
     isFollowerPending: PropTypes.bool,
     isFollowerAction: PropTypes.func.isRequired,
-    selectProfile: PropTypes.func.isRequired
+    selectProfile: PropTypes.func.isRequired,
+    intl: PropTypes.shape()
 };
 
 ProfileCard.contextTypes = {
