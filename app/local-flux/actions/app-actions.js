@@ -1,3 +1,4 @@
+import R from 'ramda';
 import { appActionCreators } from './action-creators';
 import { AppService } from '../services';
 
@@ -10,6 +11,7 @@ class AppActions {
         }
         this.dispatch = dispatch;
         this.appService = new AppService();
+        this.pendingActionId = 1;
         return appActions;
     }
     checkForUpdates = () =>
@@ -34,7 +36,7 @@ class AppActions {
     changePanel = panel => this.showPanel(panel);
     showPanel = panel => this.dispatch(appActionCreators.showPanel(panel));
     hidePanel = panel => this.dispatch(appActionCreators.hidePanel(panel));
-    showAuthDialog = () => this.dispatch(appActionCreators.showAuthDialog());
+    showAuthDialog = (actionId) => this.dispatch(appActionCreators.showAuthDialog(actionId));
     hideAuthDialog = () => this.dispatch(appActionCreators.hideAuthDialog());
     /**
      * Show a confirmation dialog for every resource he wants to publish
@@ -58,6 +60,18 @@ class AppActions {
     };
     setTimestamp = timestamp =>
         this.dispatch(appActionCreators.setTimestamp(timestamp));
+
+    addPendingAction = data => {
+        data.id = this.pendingActionId;
+        this.pendingActionId++;
+        this.dispatch(appActionCreators.addPendingAction(data));
+    };
+
+    updatePendingAction = data =>
+        this.dispatch(appActionCreators.updatePendingAction(data));
+
+    deletePendingAction = actionId =>
+        this.dispatch(appActionCreators.deletePendingAction(actionId));
 
     showNotification = notification =>
         this.dispatch(appActionCreators.showNotification(notification));

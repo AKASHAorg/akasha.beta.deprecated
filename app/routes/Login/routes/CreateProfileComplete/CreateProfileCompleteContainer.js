@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import CreateProfileComplete from './components/CreateProfileComplete';
-import { TempProfileActions } from 'local-flux';
+import { ProfileActions, TempProfileActions } from 'local-flux';
 
 function mapStateToProps (state, ownProps) {
     return {
@@ -10,6 +10,7 @@ function mapStateToProps (state, ownProps) {
 
 function mapDispatchToProps (dispatch) {
     return {
+        profileActions: new ProfileActions(dispatch),
         tempProfileActions: new TempProfileActions(dispatch)
     };
 }

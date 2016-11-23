@@ -119,7 +119,28 @@ class EntryService extends BaseService {
             .then(entries => onSuccess(entries))
             .catch(reason => onError(reason));
 
-    getEntriesForTag = () => {};
+    entryTagIterator = ({ tagName, start, limit, onError = () => {}, onSuccess }) => {
+        this.openChannel({
+            serverManager: this.serverManager,
+            clientManager: this.clientManager,
+            serverChannel: Channel.server.entry.entryTagIterator,
+            clientChannel: Channel.client.entry.entryTagIterator,
+            listenerCb: this.createListener(onError, onSuccess)
+        }, () => {
+            Channel.server.entry.entryTagIterator.send({ tagName, start, limit });
+        });
+    };
+
+    getTagEntriesCount = ({ tagName, onError = () => {}, onSuccess }) =>
+        this.openChannel({
+            serverManager: this.serverManager,
+            clientManager: this.clientManager,
+            serverChannel: Channel.server.entry.getTagEntriesCount,
+            clientChannel: Channel.client.entry.getTagEntriesCount,
+            listenerCb: this.createListener(onError, onSuccess)
+        }, () => {
+            Channel.server.entry.getTagEntriesCount.send({ tagName });
+        });
 
     getLicences = ({ onSuccess, onError }) => {
         this.openChannel({
@@ -132,12 +153,25 @@ class EntryService extends BaseService {
             Channel.server.licenses.getLicenses.send();
         });
     };
+
     getLicencesById = ({ id, onSuccess, onError }) => {
         this.registerListener(
             Channel.client.licenses.getLicenceById,
             this.createListener(onError, onSuccess),
             () => Channel.server.licenses.getLicenceById({ id })
         );
+    };
+
+    getEntriesStream = ({ akashaId, onError = () => {}, onSuccess }) => {
+        this.openChannel({
+            serverManager: this.serverManager,
+            clientManager: this.clientManager,
+            serverChannel: Channel.server.entry.getEntriesStream,
+            clientChannel: Channel.client.entry.getEntriesStream,
+            listenerCb: this.createListener(onError, onSuccess)
+        }, () => {
+            Channel.server.entry.getEntriesStream.send({ akashaId });
+        });
     }
 }
 

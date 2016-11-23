@@ -129,11 +129,6 @@ export const profileMessages = defineMessages({
         description: 'profile details label for external or internal links',
         defaultMessage: 'Links'
     },
-    showMore: {
-        id: 'app.profile.showMore',
-        description: 'label for button that loads more data',
-        defaultMessage: 'Show more'
-    },
     followers: {
         id: 'app.profile.followers',
         description: 'Label for followers tab',

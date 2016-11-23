@@ -1,8 +1,10 @@
-export { profileMessages } from './profile-messages';
+export { akashaTerms } from './akasha-terms-161006';
+export { confirmMessages } from './confirm-messages';
+export { entryMessages } from './entry-messages';
 export { formMessages } from './form-items-messages';
 export { generalMessages } from './general-messages';
-export { setupMessages } from './setup-messages';
-export { validationMessages } from './validation-messages';
 export { notificationMessages } from './notification-messages';
-export { entryMessages } from './entry-messages';
-export { akashaTerms } from './akasha-terms-161006';
+export { profileMessages } from './profile-messages';
+export { setupMessages } from './setup-messages';
+export { tagMessages } from './tag-messages';
+export { validationMessages } from './validation-messages';

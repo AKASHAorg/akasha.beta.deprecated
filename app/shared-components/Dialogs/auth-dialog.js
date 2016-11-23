@@ -32,37 +32,39 @@ function AuthDialog (props) {
         title={dialogTitle}
         open={props.isVisible}
       >
-        <small>{intl.formatMessage(formMessages.confirmPasswordToContinue)}</small>
-        <TextField
-          fullWidth
-          floatingLabelText={intl.formatMessage(formMessages.password)}
-          autoFocus
-          onChange={props.onPasswordChange}
-          type="password"
-          value={props.password}
-          errorText={!!loginErrors.length && loginErrors[0].message}
-        />
-        <div className="row middle-xs">
-          <div className="col-xs-7" style={{ paddingRight: 0 }}>
-            <Checkbox
-              label="Remember my password for"
-              checked={props.rememberChecked}
-              onCheck={props.onRememberPasswordCheck}
-            />
+        <form onSubmit={props.onSubmit}>
+          <small>{intl.formatMessage(formMessages.confirmPasswordToContinue)}</small>
+          <TextField
+            fullWidth
+            floatingLabelText={intl.formatMessage(formMessages.password)}
+            autoFocus
+            onChange={props.onPasswordChange}
+            type="password"
+            value={props.password}
+            errorText={!!loginErrors.length && loginErrors[0].message}
+          />
+          <div className="row middle-xs">
+            <div className="col-xs-7" style={{ paddingRight: 0 }}>
+              <Checkbox
+                label="Remember my password for"
+                checked={props.rememberChecked}
+                onCheck={props.onRememberPasswordCheck}
+              />
+            </div>
+            <div className="col-xs-3 start-xs" style={{ paddingLeft: 0 }}>
+              <SelectField
+                value={props.rememberTime}
+                style={{ width: 100 }}
+                onChange={props.onRememberTimeChange}
+              >
+                <MenuItem value={5} primaryText={`5 ${minute}`} />
+                <MenuItem value={10} primaryText={`10 ${minute}`} />
+                <MenuItem value={15} primaryText={`15 ${minute}`} />
+                <MenuItem value={30} primaryText={`30 ${minute}`} />
+              </SelectField>
+            </div>
           </div>
-          <div className="col-xs-3 start-xs" style={{ paddingLeft: 0 }}>
-            <SelectField
-              value={props.rememberTime}
-              style={{ width: 100 }}
-              onChange={props.onRememberTimeChange}
-            >
-              <MenuItem value={5} primaryText={`5 ${minute}`} />
-              <MenuItem value={10} primaryText={`10 ${minute}`} />
-              <MenuItem value={15} primaryText={`15 ${minute}`} />
-              <MenuItem value={30} primaryText={`30 ${minute}`} />
-            </SelectField>
-          </div>
-        </div>
+        </form>
       </Dialog>
     );
 }

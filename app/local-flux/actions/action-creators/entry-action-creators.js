@@ -106,3 +106,81 @@ export function getLicenceByIdError (error) {
         error
     };
 }
+
+export function getEntriesStream (flags) {
+    return {
+        type: types.GET_ENTRIES_STREAM,
+        flags
+    };
+}
+
+export function getEntriesStreamSuccess (data, flags) {
+    return {
+        type: types.GET_ENTRIES_STREAM_SUCCESS,
+        data,
+        flags
+    };
+}
+
+export function getEntriesStreamError (error, flags) {
+    error.code = 'GESE01';
+    return {
+        type: types.GET_ENTRIES_STREAM_ERROR,
+        error,
+        flags
+    };
+}
+
+export function entryTagIterator (flags) {
+    return {
+        type: types.ENTRY_TAG_ITERATOR,
+        flags
+    };
+}
+
+export function entryTagIteratorSuccess (data, flags) {
+    return {
+        type: types.ENTRY_TAG_ITERATOR_SUCCESS,
+        data,
+        flags
+    };
+}
+
+export function entryTagIteratorError (error, flags) {
+    error.code = 'ETIE01';
+    return {
+        type: types.ENTRY_TAG_ITERATOR_ERROR,
+        error,
+        flags
+    };
+}
+
+export function getTagEntriesCount (flags) {
+    return {
+        type: types.GET_TAG_ENTRIES_COUNT,
+        flags
+    };
+}
+
+export function getTagEntriesCountSuccess (data, flags) {
+    return {
+        type: types.GET_TAG_ENTRIES_COUNT_SUCCESS,
+        data,
+        flags
+    };
+}
+
+export function getTagEntriesCountError (error, flags) {
+    error.code = 'GTECE01';
+    return {
+        type: types.GET_TAG_ENTRIES_COUNT_ERROR,
+        error,
+        flags
+    };
+}
+
+export function clearTagEntries () {
+    return {
+        type: types.CLEAR_TAG_ENTRIES
+    };
+}

@@ -1,14 +1,34 @@
-import React from 'react';
-import TagSearch from './tag-search';
-import QuickEntryEditor from './quick-entry-editor';
-import { EntryCard } from 'shared-components';
+import React, { Component, PropTypes } from 'react';
 import { injectIntl } from 'react-intl';
+import { FlatButton } from 'material-ui';
+import { EntryCard } from 'shared-components';
+import QuickEntryEditor from './quick-entry-editor';
+import TagSearch from './tag-search';
+import { generalMessages } from 'locale-data/messages';
 
-class EntryList extends React.Component {
+const LIMIT = 6;
+
+class EntryList extends Component {
     constructor (props) {
         super(props);
+
+        this.lastTagEntryIndex = 0;
         this.state = {};
     }
+
+    componentWillReceiveProps (nextProps) {
+        const { tagEntries, selectedTag } = nextProps;
+        if (selectedTag !== this.props.selectedTag) {
+            this.lastTagEntryIndex = 0;
+            return;
+        }
+        if (tagEntries.size !== this.props.tagEntries.size) {
+            this.lastTagEntryIndex = tagEntries.size > 0 ?
+                tagEntries.last().get('entryId') :
+                0;
+        }
+    }
+
     _navigateToEntry = (ev, entryData) => {
         ev.preventDefault();
         const { appActions } = this.props;
@@ -18,9 +38,8 @@ class EntryList extends React.Component {
         });
     };
     _navigateToTag = (ev, tag) => {
-        const { profileState } = this.props;
-        const loggedProfile = profileState.get('loggedProfile');
-        this.context.router.push(`/${loggedProfile.get('akashaId')}/explore/tag/${tag}`);
+        const { loggedProfileData } = this.props;
+        this.context.router.push(`/${loggedProfileData.get('akashaId')}/explore/tag/${tag}`);
     };
     _handleUpvote = (ev, entry) => {
         const { appActions } = this.props;
@@ -54,36 +73,62 @@ class EntryList extends React.Component {
         console.log('share entry', entry);
     };
     _handleBookmark = (ev, entry) => {
-        const { entryActions, profileState } = this.props;
-        const loggedProfile = profileState.get('loggedProfile');
-        entryActions.createSavedEntry(loggedProfile.get('akashaId'), entry);
+        const { entryActions, loggedProfileData } = this.props;
+        entryActions.createSavedEntry(loggedProfileData.get('akashaId'), entry);
     };
     _handleEditorFullScreen = (ev, draft) => {
-        const { entryActions, profileState } = this.props;
-        const loggedProfile = profileState.get('loggedProfile');
-        entryActions.createDraft(loggedProfile.get('akashaId'), draft);
-    }
+        const { entryActions, loggedProfileData } = this.props;
+        entryActions.createDraft(loggedProfileData.get('akashaId'), draft);
+    };
+
+    showMoreTagEntries = () => {
+        const { entryActions, selectedTag } = this.props;
+        entryActions.entryTagIterator(selectedTag, this.lastTagEntryIndex, LIMIT);
+    };
+
+    subscribeTag = () => {
+        const { selectedTag, tagActions } = this.props;
+        tagActions.addSubscribeTagAction(selectedTag);
+    };
+
+    unsubscribeTag = () => {
+        const { selectedTag, tagActions } = this.props;
+        tagActions.addUnsubscribeTagAction(selectedTag);
+    };
+
     render () {
-        const { params, profileState, entryState, filter } = this.props;
-        let entries = entryState.get('published').sort((a, b) =>
-            a.getIn(['status', 'created_at']) < b.getIn(['status', 'created_at']));
-        if (filter === 'saved') {
-            entries = entryState.get('savedEntries');
-        } else if (filter === 'top') {
-            entries = entryState.get('published');
-        }
+        const { loggedProfileData, selectedTag, tagEntries, savedEntries, moreTagEntries,
+            moreSavedEntries, tagEntriesCount, entriesStream, subscribePending, params,
+            intl } = this.props;
+        const entries = params.filter === 'tag' ? tagEntries : savedEntries;
+        const moreEntries = params.filter === 'tag' ? moreTagEntries : moreSavedEntries;
+        const showMoreEntries = params.filter === 'tag' ?
+            this.showMoreTagEntries :
+            this.showMoreSavedEntries;
+        const subscriptions = parseInt(loggedProfileData.get('subscriptionsCount'), 10) > 0 ?
+            entriesStream.get('tags') :
+            null;
+        const subscribePendingFlag = subscribePending && subscribePending.find(subs =>
+            subs.tagName === selectedTag);
         return (
           <div>
-            {params.filter === 'tag' && params.tagName &&
-              <TagSearch tagName={params.tagName} />
+            {params.filter === 'tag' && selectedTag &&
+              <TagSearch
+                tagName={selectedTag}
+                tagEntriesCount={tagEntriesCount}
+                subscriptions={subscriptions}
+                subscribeTag={this.subscribeTag}
+                unsubscribeTag={this.unsubscribeTag}
+                subscribePending={subscribePendingFlag}
+              />
             }
-            {params.filter === 'stream' &&
+            {/* params.filter === 'bookmarks' &&
               <QuickEntryEditor
                 loggedProfile={profileState.get('loggedProfile')}
                 onFullScreenClick={this._handleEditorFullScreen}
               />
-            }
-            {/* entries && entries.map((entry, key) =>
+            */ }
+            {entries && entries.map((entry, key) =>
               <EntryCard
                 entry={entry}
                 key={key}
@@ -95,21 +140,35 @@ class EntryList extends React.Component {
                 onShare={this._handleShare}
                 onBookmark={this._handleBookmark}
               />
-            )*/}
+            )}
+            {moreEntries &&
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <FlatButton
+                  label={intl.formatMessage(generalMessages.showMore)}
+                  onClick={showMoreEntries}
+                  labelStyle={{ fontSize: '12px' }}
+                  primary
+                />
+              </div>
+            }
           </div>
         );
     }
 }
 
 EntryList.propTypes = {
-    params: React.PropTypes.object,
-    profileState: React.PropTypes.object,
-    appActions: React.PropTypes.object,
-    entryState: React.PropTypes.object,
-    entryActions: React.PropTypes.object,
-    intl: React.PropTypes.object
+    loggedProfileData: PropTypes.shape(),
+    tagEntries: PropTypes.shape(),
+    savedEntries: PropTypes.shape(),
+    moreTagEntries: PropTypes.bool,
+    moreSavedEntries: PropTypes.bool,
+    entriesStream: PropTypes.shape(),
+    selectedTag: PropTypes.string,
+    subscribePending: PropTypes.shape(),
+    tagActions: PropTypes.shape(),
+    intl: PropTypes.shape()
 };
 EntryList.contextTypes = {
-    router: React.PropTypes.object
+    router: PropTypes.object
 };
 export default injectIntl(EntryList);

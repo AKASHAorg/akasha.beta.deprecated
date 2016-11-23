@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { Paper, Tabs, Tab, FlatButton } from 'material-ui';
 import { injectIntl } from 'react-intl';
-import { profileMessages } from 'locale-data/messages'
+import { profileMessages, generalMessages } from 'locale-data/messages'
 import { ProfileActions } from 'local-flux';
 import { ProfileCard } from 'shared-components';
 
@@ -157,7 +157,7 @@ class PeopleContainer extends Component {
           {loggedProfileData.get('moreFollowers') &&
             <div style={{ display: 'flex', justifyContent: 'center' }}>
               <FlatButton
-                label={intl.formatMessage(profileMessages.showMore)}
+                label={intl.formatMessage(generalMessages.showMore)}
                 onClick={this.showMoreFollowers}
                 style={{ margin: '10px' }}
                 primary
@@ -199,7 +199,7 @@ class PeopleContainer extends Component {
           {loggedProfileData.get('moreFollowing') &&
             <div style={{ display: 'flex', justifyContent: 'center' }}>
               <FlatButton
-                label={intl.formatMessage(profileMessages.showMore)}
+                label={intl.formatMessage(generalMessages.showMore)}
                 onClick={this.showMoreFollowing}
                 style={{ margin: '10px' }}
                 primary
