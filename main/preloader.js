@@ -17,5 +17,5 @@ function injectApi() {
     });
     return AkashaApi;
 }
-global['Channel'] = injectApi();
+window['Channel'] = injectApi();
 //# sourceMappingURL=preloader.js.map

@@ -161,8 +161,7 @@
         "webpack": "1.13.3",
         "webpack-dev-middleware": "1.8.4",
         "webpack-hot-middleware": "2.13.2",
-        "webpack-node-externals": "^1.5.4",
-        "webpack-target-electron-renderer": "0.4.0"
+        "webpack-node-externals": "^1.5.4"
     },
     "dependencies": {
         "@akashaproject/contracts.js": "1.2.6",
@@ -174,7 +173,6 @@
         "dexie": "1.5.1",
         "draft-js": "0.9.1",
         "draft-js-export-html": "0.5.2",
-        "electron-squirrel-startup": "^1.0.0",
         "ethereumjs-util": "5.0.1",
         "fuse.js": "2.5.0",
         "history": "4.4.0",
@@ -214,7 +212,7 @@
     },
     "build": {
         "appId": "org.develar.ElectronReact",
-        "category": "public.app-category.tools",
+        "category": "public.app-category.network",
         "dmg": {
             "contents": [
                 {
