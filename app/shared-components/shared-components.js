@@ -17,3 +17,4 @@ export LogsList from './LogsList/logs-list';
 export GethSettingsForm from './Forms/geth-settings-form';
 export IpfsSettingsForm from './Forms/ipfs-settings-form';
 export TagChip from './TagChip/tag-chip';
+export Tutorials from './Tutorials/tutorials';
