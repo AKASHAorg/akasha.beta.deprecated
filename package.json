@@ -88,7 +88,7 @@
         "@types/electron": "1.4.27",
         "@types/lru-cache": "2.5.32",
         "@types/mocha": "2.2.33",
-        "@types/node": "6.0.50",
+        "@types/node": "6.0.51",
         "@types/request": "0.0.34",
         "@types/rimraf": "0.0.28",
         "@types/winston": "0.0.32",
@@ -164,7 +164,7 @@
         "webpack-node-externals": "^1.5.4"
     },
     "dependencies": {
-        "@akashaproject/contracts.js": "1.2.6",
+        "@akashaproject/contracts.js": "1.2.7",
         "@akashaproject/geth-connector": "1.6.11",
         "@akashaproject/ipfs-connector": "1.6.12",
         "@types/ramda": "0.0.2",
