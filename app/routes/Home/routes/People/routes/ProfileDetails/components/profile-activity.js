@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { Tab, Tabs, Paper, FlatButton } from 'material-ui';
 import { ProfileCard } from 'shared-components';
 import { injectIntl } from 'react-intl';
-import { generalMessages } from 'locale-data/messages'
+import { generalMessages } from 'locale-data/messages';
 
 class ProfileActivity extends Component {
     constructor (props) {
@@ -11,24 +11,18 @@ class ProfileActivity extends Component {
         this.lastFollowerIndex = 0;
         this.lastFollowingIndex = 0;
         this.state = {
-            activeTab: 'entries',
-            followersRequested: false,
-            followingRequested: false
+            activeTab: 'entries'
         };
     }
 
     componentWillReceiveProps (nextProps) {
-        const { profileData, profileActions, fetchingFollowers } = nextProps;
-        const followersCount = parseInt(profileData.get('followersCount'), 10);
+        const { profileData } = nextProps;
         const followersSize = profileData.get('followers').size;
-        const followingCount = parseInt(profileData.get('followingCount'), 10);
         const followingSize = profileData.get('following').size;
 
         if (profileData.get('profile') !== this.props.profileData.get('profile')) {
             this.setState({
-                activeTab: 'entries',
-                followersRequested: false,
-                followingRequested: false
+                activeTab: 'entries'
             });
         }
 
@@ -52,31 +46,31 @@ class ProfileActivity extends Component {
             switch (nextState.activeTab) {
                 case 'entries':
                     // TODO should fetch entries
+                    profileActions.clearFollowing(profileData.akashaId);
+                    profileActions.clearFollowers(profileData.akashaId);
                     break;
                 case 'followers':
-                    if (!this.state.followersRequested) {
-                        profileActions.followersIterator(
-                            profileData.akashaId, this.lastFollowerIndex, 3
-                        );
-                        this.setState({
-                            followersRequested: true
-                        });
-                    }
+                    profileActions.clearFollowing(profileData.akashaId);
+                    profileActions.followersIterator(
+                        profileData.akashaId, this.lastFollowerIndex, 7
+                    );
                     break;
                 case 'following':
-                    if (!this.state.followingRequested) {
-                        profileActions.followingIterator(
-                            profileData.akashaId, this.lastFollowingIndex, 3
-                        );
-                        this.setState({
-                            followingRequested: true
-                        });
-                    }
+                    profileActions.clearFollowers(profileData.akashaId);
+                    profileActions.followingIterator(
+                        profileData.akashaId, this.lastFollowingIndex, 7
+                    );
                     break;
                 default:
                     break;
             }
         }
+    }
+
+    componentWillUnmount () {
+        const { profileActions, profileData } = this.props;
+        profileActions.clearFollowing(profileData.akashaId);
+        profileActions.clearFollowers(profileData.akashaId);
     }
 
     getTabStyle = (tab) => {
@@ -88,6 +82,8 @@ class ProfileActivity extends Component {
     };
 
     handleChangeTab = (tab) => {
+        this.lastFollowerIndex = 0;
+        this.lastFollowingIndex = 0;
         this.setState({
             activeTab: tab
         });
@@ -95,12 +91,12 @@ class ProfileActivity extends Component {
 
     showMoreFollowers = () => {
         const { profileActions, profileData } = this.props;
-        profileActions.followersIterator(profileData.akashaId, this.lastFollowerIndex, 3);
+        profileActions.followersIterator(profileData.akashaId, this.lastFollowerIndex, 7);
     }
 
     showMoreFollowing = () => {
         const { profileActions, profileData } = this.props;
-        profileActions.followingIterator(profileData.akashaId, this.lastFollowingIndex, 3);
+        profileActions.followingIterator(profileData.akashaId, this.lastFollowingIndex, 7);
     }
 
     renderEntries () {
@@ -154,7 +150,7 @@ class ProfileActivity extends Component {
 
     renderFollowing () {
         const { fetchingFollowing, profileData, profileActions, followPending,
-            followProfile, unfollowProfile, selectProfile, loggedProfileData, isFollower,
+            followProfile, unfollowProfile, selectProfile, loggedProfileData,
             isFollowerPending, intl } = this.props;
         const followings = profileData.get('following').toJS();
 
@@ -199,7 +195,7 @@ class ProfileActivity extends Component {
 
     render () {
         const { profileData } = this.props;
-        const { entriesCount, followersCount, followingCount, subscriptionsCount } = profileData;
+        const { entriesCount, followersCount, followingCount } = profileData;
 
         return <div style={{ flex: '1 1 auto' }}>
           <Paper>
@@ -214,7 +210,7 @@ class ProfileActivity extends Component {
                   <span>
                     All entries
                     {entriesCount !== null &&
-                      <span style={{ marginLeft: '5px'}}>({entriesCount})</span>
+                      <span style={{ marginLeft: '5px' }}>({entriesCount})</span>
                     }
                   </span>
                 }
@@ -226,7 +222,7 @@ class ProfileActivity extends Component {
                   <span>
                     Followers
                     {followersCount !== null &&
-                      <span style={{ marginLeft: '5px'}}>({followersCount})</span>}
+                      <span style={{ marginLeft: '5px' }}>({followersCount})</span>}
                   </span>
                 }
                 style={this.getTabStyle('followers')}
@@ -237,7 +233,7 @@ class ProfileActivity extends Component {
                   <span>
                     Following
                     {followingCount !== null &&
-                      <span style={{ marginLeft: '5px'}}>({followingCount})</span>}
+                      <span style={{ marginLeft: '5px' }}>({followingCount})</span>}
                   </span>
                 }
                 style={this.getTabStyle('following')}
@@ -277,7 +273,8 @@ ProfileActivity.propTypes = {
     isFollowerPending: PropTypes.bool,
     followProfile: PropTypes.func.isRequired,
     unfollowProfile: PropTypes.func.isRequired,
-    selectProfile: PropTypes.func.isRequired
+    selectProfile: PropTypes.func.isRequired,
+    intl: PropTypes.shape()
 };
 
 ProfileActivity.contextTypes = {

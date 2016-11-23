@@ -39,16 +39,14 @@ class ProfileDetailsContainer extends Component {
         profileActions.clearFollowers(profileData.get('akashaId'));
     }
 
-    followProfile = (akashaId, logged) => {
+    followProfile = (akashaId) => {
         const { profileActions } = this.props;
-        const loggedProfile = logged || this.props.loggedProfile;
-        profileActions.followProfile(loggedProfile, akashaId);
+        profileActions.addFollowProfileAction(akashaId);
     }
 
-    unfollowProfile = (akashaId, logged) => {
+    unfollowProfile = (akashaId) => {
         const { profileActions } = this.props;
-        const loggedProfile = logged || this.props.loggedProfile;
-        profileActions.unfollowProfile(loggedProfile, akashaId);
+        profileActions.addUnfollowProfileAction(akashaId);
     }
 
     selectProfile = (address) => {
@@ -62,12 +60,12 @@ class ProfileDetailsContainer extends Component {
             followPending, fetchingFollowers, fetchingFollowing, fetchingProfileData,
             loggedProfileData, isFollowerPending } = this.props;
 
-        if (fetchingProfileData || !profileData ||
+        if (!profileData ||
                 profileData.get('backgroundImage')['/'] !== undefined) {
             return <div>Fetching data</div>;
         }
 
-        const isFollower = loggedProfileData.getIn(['isFollower', profileData.get('akashaId')])
+        const isFollower = loggedProfileData.getIn(['isFollower', profileData.get('akashaId')]);
 
         return <div style={{ display: 'flex', height: '100%' }}>
           <ProfileDetails

@@ -263,9 +263,6 @@ class ProfileActions {
         });
     };
 
-    showNotification = notification => null;
-        // this.dispatch(profileActionCreators.showNotification(notification));
-
     hideNotification = notification =>
         this.dispatch(profileActionCreators.hideNotification(notification));
 
@@ -347,77 +344,101 @@ class ProfileActions {
         });
     };
 
-    followProfile = (loggedProfile, akashaId, gas) => {
-        const isLoggedIn = Date.parse(loggedProfile.get('expiration')) > Date.now();
-        if (isLoggedIn) {
-            const flagOn = { akashaId, value: true };
-            this.dispatch(profileActionCreators.followProfile({ followPending: flagOn }));
-            this.dispatch((dispatch) => {
-                this.profileService.follow({
-                    token: loggedProfile.get('token'),
-                    akashaId,
-                    gas,
-                    onSuccess: (data) => {
-                        this.transactionActions.listenForMinedTx();
-                        this.transactionActions.addToQueue([{
-                            tx: data.tx,
-                            type: 'followProfile',
-                            akashaId: data.akashaId
-                        }]);
-                        this.showNotification('following');
-                    },
-                    onError: (error) => {
-                        const flagOff = { akashaId, value: false };
-                        dispatch(profileActionCreators.followProfileError(error, flagOff));
-                    }
-                });
-            });
-        } else if (!isLoggedIn) {
-            this.appActions.showAuthDialog();
-        }
+    addFollowProfileAction = (akashaId) => {
+        this.appActions.addPendingAction({
+            type: 'followProfile',
+            payload: { akashaId },
+            titleId: 'followProfileTitle',
+            messageId: 'followProfile',
+            gas: 2000000,
+            status: 'needConfirmation'
+        });
     };
 
-    followProfileSuccess = akashaId =>
+    addUnfollowProfileAction = (akashaId) => {
+        this.appActions.addPendingAction({
+            type: 'unfollowProfile',
+            payload: { akashaId },
+            titleId: 'unfollowProfileTitle',
+            messageId: 'unfollowProfile',
+            gas: 2000000,
+            status: 'needConfirmation'
+        });
+    };
+
+    followProfile = (akashaId, gas) =>
+        this.dispatch((dispatch, getState) => {
+            const loggedProfile = getState().profileState.get('loggedProfile');
+            const flagOn = { akashaId, value: true };
+            const flagOff = { akashaId, value: false };
+            this.dispatch(profileActionCreators.followProfile({ followPending: flagOn }));
+            this.profileService.follow({
+                token: loggedProfile.get('token'),
+                akashaId,
+                gas,
+                onSuccess: (data) => {
+                    this.transactionActions.listenForMinedTx();
+                    this.transactionActions.addToQueue([{
+                        tx: data.tx,
+                        type: 'followProfile',
+                        akashaId: data.akashaId
+                    }]);
+                    this.appActions.showNotification({
+                        id: 'followingProfile',
+                        values: { akashaId: data.akashaId }
+                    });
+                },
+                onError: (error) =>
+                    dispatch(profileActionCreators.followProfileError(error, flagOff))
+            });
+        });
+
+    followProfileSuccess = (akashaId) => {
         this.dispatch(profileActionCreators.followProfileSuccess({
             followPending: { akashaId, value: false }
         }));
-
-    unfollowProfile = (loggedProfile, akashaId, gas) => {
-        const isLoggedIn = Date.parse(loggedProfile.get('expiration')) > Date.now();
-        if (isLoggedIn) {
-            const flagOn = { akashaId, value: true };
-            this.dispatch(profileActionCreators.unfollowProfile({ followPending: flagOn }));
-            this.dispatch((dispatch) => {
-                this.profileService.unfollow({
-                    token: loggedProfile.get('token'),
-                    akashaId,
-                    gas,
-                    onSuccess: (data) => {
-                        this.transactionActions.listenForMinedTx();
-                        this.transactionActions.addToQueue([{
-                            tx: data.tx,
-                            type: 'unfollowProfile',
-                            akashaId: data.akashaId
-                        }]);
-                        this.showNotification('unfollowing');
-                    },
-                    onError: (error) => {
-                        const flagOff = { akashaId, value: false };
-                        dispatch(profileActionCreators.unfollowProfileError(error, {
-                            followPending: flagOff
-                        }));
-                    }
-                });
-            });
-        } else if (!isLoggedIn) {
-            this.appActions.showAuthDialog();
-        }
+        this.appActions.showNotification({
+            id: 'followProfileSuccess',
+            values: { akashaId }
+        });
     };
 
-    unfollowProfileSuccess = akashaId =>
+    unfollowProfile = (akashaId, gas) =>
+        this.dispatch((dispatch, getState) => {
+            const loggedProfile = getState().profileState.get('loggedProfile');
+            const flagOn = { akashaId, value: true };
+            const flagOff = { akashaId, value: false };
+            this.dispatch(profileActionCreators.unfollowProfile({ followPending: flagOn }));
+            this.profileService.unfollow({
+                token: loggedProfile.get('token'),
+                akashaId,
+                gas,
+                onSuccess: (data) => {
+                    this.transactionActions.listenForMinedTx();
+                    this.transactionActions.addToQueue([{
+                        tx: data.tx,
+                        type: 'unfollowProfile',
+                        akashaId: data.akashaId
+                    }]);
+                    this.appActions.showNotification({
+                        id: 'unfollowingProfile',
+                        values: { akashaId: data.akashaId }
+                    });
+                },
+                onError: (error) =>
+                    dispatch(profileActionCreators.unfollowProfileError(error, flagOff))
+            });
+        });
+
+    unfollowProfileSuccess = (akashaId) => {
         this.dispatch(profileActionCreators.unfollowProfileSuccess({
             followPending: { akashaId, value: false }
         }));
+        this.appActions.showNotification({
+            id: 'unfollowProfileSuccess',
+            values: { akashaId }
+        });
+    };
 
     isFollower = (akashaId, following) => {
         this.dispatch(profileActionCreators.isFollower({

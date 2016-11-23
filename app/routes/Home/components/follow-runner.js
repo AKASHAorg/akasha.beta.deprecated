@@ -2,116 +2,89 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { AppActions, TransactionActions, ProfileActions } from 'local-flux';
 
-class ProfileUpdater extends Component {
-    constructor (props) {
-        super(props);
-        this.followRequestTimeout = null;
-        this.unfollowRequestTimeout = null;
-    }
+class FollowRunner extends Component {
 
     componentWillReceiveProps (nextProps) {
-        const { fetchingMined, fetchingPending, minedTx, pendingTx, profileActions,
-            transactionActions, loggedProfileData, deletingPendingTx, profiles } = nextProps;
+        this.launchActions(nextProps);
+        this.listenForMinedTx(nextProps);
+    }
+
+    launchActions = (nextProps) => {
+        const { pendingActions, appActions, profileActions } = nextProps;
+        const actions = pendingActions.filter(action =>
+            action.get('status') === 'readyToPublish');
+        if (actions.size > 0) {
+            actions.forEach((action) => {
+                const actionType = action.get('type');
+                switch (actionType) {
+                    case 'followProfile':
+                        appActions.updatePendingAction(action.merge({
+                            status: 'publishing'
+                        }));
+                        profileActions.followProfile(
+                            action.getIn(['payload', 'akashaId']), action.get('gas')
+                        );
+                        break;
+                    case 'unfollowProfile':
+                        appActions.updatePendingAction(action.merge({
+                            status: 'publishing'
+                        }));
+                        profileActions.unfollowProfile(
+                            action.getIn(['payload', 'akashaId']), action.get('gas')
+                        );
+                        break;
+                    default:
+                        break;
+                }
+            });
+        }
+    };
+
+    listenForMinedTx = (nextProps) => {
+        const { minedTx, pendingTx, fetchingMined, fetchingPending, deletingPendingTx, appActions,
+            profileActions, transactionActions, loggedProfileData, pendingActions,
+            profiles } = nextProps;
         const isNotFetching = !fetchingMined && !fetchingPending;
-        const loggedProfile = loggedProfileData.get('profile');
-        const loggedAkashaId = loggedProfileData.get('akashaId');
-        const pendingFollowTx = isNotFetching ?
+        const pendingFollowTxs = isNotFetching ?
             pendingTx.toJS().filter(tx =>
-                tx.profile === loggedProfile && tx.type === 'followProfile'
+                tx.profile === loggedProfileData.get('profile') && (tx.type === 'followProfile' ||
+                    tx.type === 'unfollowProfile')
             ) :
             [];
-        const pendingUnfollowTx = isNotFetching ?
-            pendingTx.toJS().filter(tx =>
-                tx.profile === loggedProfile && tx.type === 'unfollowProfile'
-            ) :
-            [];
-        if (pendingFollowTx.length) {
-            const followTx = pendingFollowTx[0].tx;
-            const isMined = minedTx.find(mined => mined.tx === followTx);
-            const followPending = true;
+
+        pendingFollowTxs.forEach((tx) => {
+            const isMined = minedTx.find(mined => mined.tx === tx.tx);
             if (isMined && !deletingPendingTx) {
-                const akashaId = pendingFollowTx[0].akashaId;
-                const profile = profiles.find(prf => prf.get('akashaId') === akashaId);
+                const loggedProfile = loggedProfileData.get('profile');
+                const loggedAkashaId = loggedProfileData.get('akashaId');
+                const profile = profiles.find(prf => prf.get('akashaId') === tx.akashaId);
                 const profileAddress = profile ? profile.get('profile') : null;
+                const correspondingAction = pendingActions.find(action =>
+                    action.get('type') === tx.type && action.get('status') === 'publishing');
                 transactionActions.listenForMinedTx({ watch: false });
-                transactionActions.deletePendingTx(followTx);
-                profileActions.isFollower(loggedAkashaId, akashaId);
+                transactionActions.deletePendingTx(tx.tx);
+                if (tx.type === 'followProfile') {
+                    profileActions.followProfileSuccess(tx.akashaId);
+                } else {
+                    profileActions.unfollowProfileSuccess(tx.akashaId);
+                }
                 profileActions.getProfileData([{ profile: loggedProfile }], true);
                 if (profileAddress) {
                     profileActions.getProfileData([{ profile: profileAddress }], true);
                 }
-                profileActions.followProfileSuccess(pendingFollowTx[0].akashaId);
-                if (this.followRequestTimeout) {
-                    clearTimeout(this.followRequestTimeout);
-                }
-            } else if (!followPending) {
-                // profileActions.updateProfile();
-                // transactionActions.listenForMinedTx();
-                // transactionActions.addToQueue([{ tx: followTx, type: 'updateProfile' }]);
-                // this.followRequestTimeout = setTimeout(() => {
-                //     const transactions = this.props.pendingTx.toJS().filter(tx =>
-                //         tx.profile === loggedProfile && tx.type === 'updateProfile'
-                //     );
-                //     if (transactions.length > 0) {
-                //         transactionActions.deletePendingTx(followTx);
-                //         profileActions.deleteUpdateProfileTx(transactions[0].tx);
-                //         transactionActions.listenForMinedTx({ watch: false });
-                //         profileActions.updateProfileDataError({ message: 'transaction timeout' });
-                //     }
-                // }, 120000);
+                profileActions.isFollower(loggedAkashaId, tx.akashaId);
+                appActions.deletePendingAction(correspondingAction.get('id'));
             }
-        }
-
-        if (pendingUnfollowTx.length) {
-            const unfollowTx = pendingUnfollowTx[0].tx;
-            const isMined = minedTx.find(mined => mined.tx === unfollowTx);
-            const unfollowPending = true;
-            if (isMined && !deletingPendingTx) {
-                const akashaId = pendingUnfollowTx[0].akashaId;
-                const profile = profiles.find(prf => prf.get('akashaId') === akashaId);
-                const profileAddress = profile ? profile.get('profile') : null;
-                transactionActions.listenForMinedTx({ watch: false });
-                transactionActions.deletePendingTx(unfollowTx);
-                profileActions.isFollower(loggedAkashaId, akashaId);
-                profileActions.getProfileData([{ profile: loggedProfile }], true);
-                if (profileAddress) {
-                    profileActions.getProfileData([{ profile: profileAddress }], true);
-                }
-                profileActions.unfollowProfileSuccess(akashaId);
-                if (this.unfollowRequestTimeout) {
-                    clearTimeout(this.unfollowRequestTimeout);
-                }
-            } else if (!unfollowPending) {
-                // profileActions.updateProfile();
-                // transactionActions.listenForMinedTx();
-                // transactionActions.addToQueue([{ tx: followTx, type: 'updateProfile' }]);
-                // this.unfollowRequestTimeout = setTimeout(() => {
-                //     const transactions = this.props.pendingTx.toJS().filter(tx =>
-                //         tx.profile === loggedProfile && tx.type === 'updateProfile'
-                //     );
-                //     if (transactions.length > 0) {
-                //         transactionActions.deletePendingTx(followTx);
-                //         profileActions.deleteUpdateProfileTx(transactions[0].tx);
-                //         transactionActions.listenForMinedTx({ watch: false });
-                //         profileActions.updateProfileDataError({ message: 'transaction timeout' });
-                //     }
-                // }, 120000);
-            }
-        }
-    }
-
-    componentWillUnmount () {
-        if (this.requestTimeout) {
-            clearTimeout(this.requestTimeout);
-        }
-    }
+        });
+    };
 
     render () {
         return null;
     }
 }
 
-ProfileUpdater.propTypes = {
+FollowRunner.propTypes = {
+    appActions: PropTypes.shape(),
     profileActions: PropTypes.shape(),
     transactionActions: PropTypes.shape(),
     fetchingMined: PropTypes.bool,
@@ -119,6 +92,7 @@ ProfileUpdater.propTypes = {
     deletingPendingTx: PropTypes.bool,
     minedTx: PropTypes.shape(),
     pendingTx: PropTypes.shape(),
+    pendingActions: PropTypes.shape(),
     loggedProfile: PropTypes.string
 };
 
@@ -132,6 +106,7 @@ function mapStateToProps (state, ownProps) {
         pendingTx: state.transactionState.get('pending'),
         loggedProfileData: state.profileState.get('profiles').find(profile =>
             profile.get('profile') === state.profileState.getIn(['loggedProfile', 'profile'])),
+        pendingActions: state.appState.get('pendingActions'),
         profiles: state.profileState.get('profiles')
     };
 }
@@ -144,4 +119,4 @@ function mapDispatchToProps (dispatch) {
     };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(ProfileUpdater);
+export default connect(mapStateToProps, mapDispatchToProps)(FollowRunner);

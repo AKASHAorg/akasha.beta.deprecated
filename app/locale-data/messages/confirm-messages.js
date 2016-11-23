@@ -30,6 +30,26 @@ const confirmMessages = defineMessages({
         id: 'app.confirm.unsubscribeTag',
         description: 'confirm dialog message for unsubscribing from a tag',
         defaultMessage: 'Are you sure you want to unsubscribe from tag \"{tagName}\"?'
+    },
+    followProfileTitle: {
+        id: 'app.confirm.followProfileTitle',
+        description: 'confirm dialog title for following a profile',
+        defaultMessage: 'Confirm follow profile'
+    },
+    followProfile: {
+        id: 'app.confirm.followProfile',
+        description: 'confirm dialog message for following a profile',
+        defaultMessage: 'Are you sure you want to follow \"{akashaId}\"?'
+    },
+    unfollowProfileTitle: {
+        id: 'app.confirm.unfollowProfileTitle',
+        description: 'confirm dialog title for unfollowing a profile',
+        defaultMessage: 'Confirm unfollow profile'
+    },
+    unfollowProfile: {
+        id: 'app.confirm.unfollowProfile',
+        description: 'confirm dialog message for unfollowing a profile',
+        defaultMessage: 'Are you sure you want to unfollow \"{akashaId}\"?'
     }
 });
 export { confirmMessages };

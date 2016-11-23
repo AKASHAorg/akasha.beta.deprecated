@@ -11,15 +11,25 @@ const notificationMessages = defineMessages({
         description: 'Notification to be displayed when update profile transaction was mined',
         defaultMessage: 'Your profile was successfully updated'
     },
-    following: {
-        id: 'app.notification.following',
-        description: 'Notification to be displayed when following transaction is sent',
-        defaultMessage: 'Follow request was sent'
+    followingProfile: {
+        id: 'app.notification.followingProfile',
+        description: 'Notification to be displayed when follow transaction is sent',
+        defaultMessage: 'Following {akashaId} ...'
     },
     followProfileSuccess: {
         id: 'app.notification.followProfileSuccess',
-        description: 'Notification to be displayed when following transaction was mined',
-        defaultMessage: 'Follow request was successfull'
+        description: 'Notification to be displayed when follow transaction was mined',
+        defaultMessage: 'You are now following {akashaId}'
+    },
+    unfollowingProfile: {
+        id: 'app.notification.unfollowingProfile',
+        description: 'Notification to be displayed when unfollow transaction is sent',
+        defaultMessage: 'Unfollowing {akashaId} ...'
+    },
+    unfollowProfileSuccess: {
+        id: 'app.notification.unfollowProfileSuccess',
+        description: 'Notification to be displayed when unfollow transaction was mined',
+        defaultMessage: 'You are not following {akashaId} anymore'
     },
     tagPublishedSuccessfully: {
         id: 'app.notification.tagPublishedSuccessfully',
@@ -29,7 +39,7 @@ const notificationMessages = defineMessages({
     subscribingTag: {
         id: 'app.notification.subscribingTag',
         description: 'Notification to be displayed when subscribe tag transaction is sent',
-        defaultMessage: 'Subscribing to \"{tagName}\"'
+        defaultMessage: 'Subscribing to \"{tagName}\" ...'
     },
     tagSubscribedSuccessfully: {
         id: 'app.notification.tagSubscribedSuccessfully',
@@ -39,7 +49,7 @@ const notificationMessages = defineMessages({
     unsubscribingTag: {
         id: 'app.notification.unsubscribingTag',
         description: 'Notification to be displayed when unsubscribe tag transaction is sent',
-        defaultMessage: 'Unsubscribing from \"{tagName}\"'
+        defaultMessage: 'Unsubscribing from \"{tagName}\" ...'
     },
     tagUnsubscribedSuccessfully: {
         id: 'app.notification.tagUnsubscribedSuccessfully',

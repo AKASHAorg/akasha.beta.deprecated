@@ -14,24 +14,20 @@ class PeopleContainer extends Component {
         this.lastFollowerIndex = 0;
         this.lastFollowingIndex = 0;
         this.state = {
-            activeTab: 'followers',
-            followersRequested: false,
-            followingRequested: false
+            activeTab: 'followers'
         };
     }
 
     componentWillMount () {
         const { profileActions, loggedProfileData } = this.props;
         profileActions.followersIterator(
-            loggedProfileData.akashaId, this.lastFollowerIndex, 3
+            loggedProfileData.akashaId, this.lastFollowerIndex, 9
         );
     }
 
     componentWillReceiveProps (nextProps) {
-        const { loggedProfileData, profileActions, fetchingFollowers } = nextProps;
-        const followersCount = parseInt(loggedProfileData.get('followersCount'), 10);
+        const { loggedProfileData } = nextProps;
         const followersSize = loggedProfileData.get('followers').size;
-        const followingCount = parseInt(loggedProfileData.get('followingCount'), 10);
         const followingSize = loggedProfileData.get('following').size;
 
         if (followersSize !== this.props.loggedProfileData.get('followers').size &&
@@ -55,20 +51,14 @@ class PeopleContainer extends Component {
                 case 'followers':
                     profileActions.clearFollowing(loggedProfileData.akashaId);
                     profileActions.followersIterator(
-                        loggedProfileData.akashaId, this.lastFollowerIndex, 3
+                        loggedProfileData.akashaId, this.lastFollowerIndex, 9
                     );
-                    this.setState({
-                        followersRequested: true
-                    });
                     break;
                 case 'following':
                     profileActions.clearFollowers(loggedProfileData.akashaId);
                     profileActions.followingIterator(
-                        loggedProfileData.akashaId, this.lastFollowingIndex, 3
+                        loggedProfileData.akashaId, this.lastFollowingIndex, 9
                     );
-                    this.setState({
-                        followingRequested: true
-                    });
                     break;
                 default:
                     break;
@@ -79,6 +69,7 @@ class PeopleContainer extends Component {
     componentWillUnmount () {
         const { profileActions, loggedProfileData } = this.props;
         profileActions.clearFollowers(loggedProfileData.akashaId);
+        profileActions.clearFollowing(loggedProfileData.akashaId);
     }
 
     getTabStyle = (tab) => {
@@ -93,20 +84,18 @@ class PeopleContainer extends Component {
         this.lastFollowerIndex = 0;
         this.lastFollowingIndex = 0;
         this.setState({
-            activeTab: tab,
-            followersRequested: false,
-            followingRequested: false
+            activeTab: tab
         });
     }
 
     followProfile = (akashaId) => {
-        const { profileActions, loggedProfile } = this.props;
-        profileActions.followProfile(loggedProfile, akashaId);
+        const { profileActions } = this.props;
+        profileActions.addFollowProfileAction(akashaId);
     };
 
     unfollowProfile = (akashaId) => {
-        const { profileActions, loggedProfile } = this.props;
-        profileActions.unfollowProfile(loggedProfile, akashaId);
+        const { profileActions } = this.props;
+        profileActions.addUnfollowProfileAction(akashaId);
     };
 
     selectProfile = (address) => {
@@ -117,12 +106,12 @@ class PeopleContainer extends Component {
 
     showMoreFollowers = () => {
         const { profileActions, loggedProfileData } = this.props;
-        profileActions.followersIterator(loggedProfileData.akashaId, this.lastFollowerIndex, 3);
+        profileActions.followersIterator(loggedProfileData.akashaId, this.lastFollowerIndex, 9);
     };
 
     showMoreFollowing = () => {
         const { profileActions, loggedProfileData } = this.props;
-        profileActions.followingIterator(loggedProfileData.akashaId, this.lastFollowingIndex, 3);
+        profileActions.followingIterator(loggedProfileData.akashaId, this.lastFollowingIndex, 9);
     };
 
     renderFollowers () {
@@ -273,14 +262,14 @@ class PeopleContainer extends Component {
 
 PeopleContainer.propTypes = {
     loggedProfileData: PropTypes.shape(),
-    loggedProfile: PropTypes.shape(),
     fetchingFollowers: PropTypes.bool,
     fetchingFollowing: PropTypes.bool,
     isFollowerPending: PropTypes.bool,
     followPending: PropTypes.shape(),
     profileActions: PropTypes.shape(),
     params: PropTypes.shape(),
-    children: PropTypes.element
+    children: PropTypes.element,
+    intl: PropTypes.shape()
 };
 
 PeopleContainer.contextTypes = {
@@ -292,7 +281,6 @@ function mapStateToProps (state, ownProps) {
     return {
         loggedProfileData: state.profileState.get('profiles').find(profile =>
             profile.get('profile') === state.profileState.getIn(['loggedProfile', 'profile'])),
-        loggedProfile: state.profileState.get('loggedProfile'),
         fetchingFollowers: state.profileState.getIn(['flags', 'fetchingFollowers']),
         fetchingFollowing: state.profileState.getIn(['flags', 'fetchingFollowing']),
         isFollowerPending: state.profileState.getIn(['flags', 'isFollowerPending']),
