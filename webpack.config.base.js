@@ -16,8 +16,7 @@ const webpackConfig = {
     },
     output: {
         path: path.join(__dirname, 'dist'),
-        filename: 'bundle.js',
-        libraryTarget: 'commonjs2'
+        filename: 'bundle.js'
     },
     resolve: {
         extensions: ['', '.js', '.jsx'],
@@ -25,15 +24,8 @@ const webpackConfig = {
         packageMains: ['webpack', 'browser', 'web', 'browserify', ['jam', 'main'], 'main'],
         modulesDirectories: ['node_modules', 'constants', 'local-flux', 'shared-components', 'locale-data', 'utils']
     },
-    plugins: [
-        new webpack.BannerPlugin(
-          'require("source-map-support").install();',
-          { raw: true, entryOnly: false }
-        ),
-    ],
-    externals: [
-        'source-map-support'
-    ]
+    plugins: [],
+    externals: [new webpack.ExternalsPlugin('commonjs2', ['electron'])]
 };
 
 webpackConfig.module.loaders.push({

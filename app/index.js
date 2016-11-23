@@ -14,7 +14,7 @@ import ReactPerf from 'react-addons-perf';
 const store = configureStore();
 const history = syncHistoryWithStore(hashHistory, store);
 
-global.Perf = ReactPerf;
+window['Perf'] = ReactPerf;
 
 injectTapEventPlugin();
 render(
