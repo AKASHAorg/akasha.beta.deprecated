@@ -1,20 +1,21 @@
 import React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
-import { IntlProvider } from 'react-intl';
+import { IntlProvider, addLocaleData } from 'react-intl';
 import { Router, hashHistory } from 'react-router';
 import { syncHistoryWithStore } from 'react-router-redux';
-
+import en from 'react-intl/locale-data/en';
 import injectTapEventPlugin from 'react-tap-event-plugin';
+// import ReactPerf from 'react-addons-perf';
 import routes from './routes';
 import configureStore from './local-flux/store/configureStore';
 import { ruMessages } from './locale-data/ru';
-import ReactPerf from 'react-addons-perf';
 
+addLocaleData([...en]);
 const store = configureStore();
 const history = syncHistoryWithStore(hashHistory, store);
 
-global.Perf = ReactPerf;
+// global.Perf = ReactPerf;
 
 injectTapEventPlugin();
 render(
