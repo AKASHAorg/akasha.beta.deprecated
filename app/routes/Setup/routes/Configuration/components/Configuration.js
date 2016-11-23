@@ -33,20 +33,10 @@ class Config extends Component {
         }
         settingsActions.toggleAdvancedSettings(show);
     };
-    handleGethDatadir = (ev) => {
-        ev.target.blur();
-        ev.preventDefault();
+    handleGethDatadir = (gethDataDir) => {
         const { settingsActions } = this.props;
-        if (!this.state.isDialogOpen) {
-            this.showOpenDialog('geth data directory', (paths) => {
-                this.setState({
-                    isDialogOpen: false
-                }, () => {
-                    if (paths) {
-                        settingsActions.setupGethDataDir(paths[0]);
-                    }
-                });
-            });
+        if (gethDataDir) {
+            settingsActions.setupGethDataDir(gethDataDir);
         }
     };
     handleGethIpc = (ev) => {
@@ -61,20 +51,10 @@ class Config extends Component {
     handleGethCacheSize = (event, index, value) => {
         this.props.settingsActions.setupGethCacheSize(value);
     };
-    handleIpfsPath = (ev) => {
+    handleIpfsPath = (ipfsPath) => {
         const { settingsActions } = this.props;
-        ev.target.blur();
-        ev.stopPropagation();
-        if (!this.state.isDialogOpen) {
-            this.showOpenDialog('ipfs path', (paths) => {
-                this.setState({
-                    isDialogOpen: false
-                }, () => {
-                    if (paths) {
-                        settingsActions.setupIPFSPath(paths[0]);
-                    }
-                });
-            });
+        if (ipfsPath) {
+            settingsActions.setupIPFSPath(ipfsPath);
         }
     };
     handleIpfsApiPort = (ev) => {

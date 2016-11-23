@@ -3,9 +3,6 @@ import AvatarEditor from 'react-avatar-editor/dist';
 import AddPhotoIcon from 'material-ui/svg-icons/image/add-a-photo';
 import ClearIcon from 'material-ui/svg-icons/content/clear';
 import { SvgIcon, Slider } from 'material-ui';
-import { remote } from 'electron';
-
-const { dialog } = remote;
 
 class Avatar extends React.Component {
     constructor (props) {
@@ -60,19 +57,11 @@ class Avatar extends React.Component {
             avatarScale: sliderValue
         });
     }
-    _handleDialogOpen = () => {
-        dialog.showOpenDialog({
-            title: 'Select image for your avatar',
-            properties: ['openFile'],
-            filters: [{ name: 'Images', extensions: ['jpg', 'png'] }]
-        }, (files) => {
-            if (!files) {
-                return;
-            }
-            this.setState({
-                avatarImage: files[0],
-                isNewAvatarLoaded: true
-            });
+    _handleImageAdd = () => {
+        const files = this.fileInput.files[0].path;
+        this.setState({
+            avatarImage: files,
+            isNewAvatarLoaded: true
         });
     }
     render () {
@@ -108,9 +97,11 @@ class Avatar extends React.Component {
             onMouseLeave={this._handleMouseLeave}
           >
             {this.state.showChangeAvatar && !this.state.isNewAvatarLoaded &&
-              <div
+              <input
+                ref={(fileInput) => { this.fileInput = fileInput; }}
                 style={dialogHandlerStyle}
-                onClick={this._handleDialogOpen}
+                type="file"
+                onChange={this._handleImageAdd}
               />
             }
             {avatarImage &&
@@ -190,7 +181,7 @@ class Avatar extends React.Component {
               </div>
             }
           </div>
-          );
+        );
     }
 }
 Avatar.propTypes = {
@@ -230,7 +221,8 @@ Avatar.defaultProps = {
         height: '100%',
         width: '100%',
         position: 'absolute',
-        cursor: 'pointer'
+        cursor: 'pointer',
+        opacity: 0
     },
     userInitialsAlignStyle: {
         height: '100%',

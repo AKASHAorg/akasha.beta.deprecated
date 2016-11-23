@@ -1,4 +1,6 @@
 import React, { PropTypes } from 'react';
+import { Tutorials } from 'shared-components';
+import { connect } from 'react-redux';
 import '../../styles/core.scss';
 
 // Note: Stateless/function shared-components *will not* hot reload!
@@ -10,27 +12,47 @@ import '../../styles/core.scss';
 //
 // LoginLayout is a pure function of its props, so we can
 // define it with a plain javascript function...
-const style = {
-    padding: '28px',
-    display: 'flex',
-    flexDirection: 'column',
-    position: 'relative',
-    width: '500px'
-};
-function LoginLayout ({ children }) {
+const LoginLayout = (props) => {
+    const { children, theme } = props;
     return (
       <div
-        className="row"
+        className="col-xs-12"
+        style={{
+            padding: 0
+        }}
       >
-        <div className="col-xs-5">
-        {children}
+        <div className="col-xs-5" style={{ padding: 0 }}>
+          {children}
+        </div>
+        <div
+          className="col-xs-7"
+          style={{
+              backgroundColor: theme === 'light' ? '#f3f3f3' : '#252525',
+              padding: 0
+          }}
+        >
+          <Tutorials theme={theme} />
         </div>
       </div>
     );
-}
-
-LoginLayout.propTypes = {
-    children: PropTypes.element
 };
 
-export default LoginLayout;
+LoginLayout.propTypes = {
+    children: PropTypes.element,
+    theme: PropTypes.string
+};
+
+function mapStateToProps (state, ownProps) {
+    return {
+        theme: state.settingsState.getIn(['general', 'theme'])
+    };
+}
+
+function mapDispatchToProps () {
+    return {};
+}
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(LoginLayout);
