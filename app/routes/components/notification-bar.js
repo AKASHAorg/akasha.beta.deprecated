@@ -1,5 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { Snackbar } from 'material-ui';
+import { injectIntl } from 'react-intl';
+import { notificationMessages } from 'locale-data/messages';
 
 class NotificationBar extends Component {
     constructor (props) {
@@ -49,21 +51,28 @@ class NotificationBar extends Component {
         console.log('hiding', notification);
         this.setState({
             notifications: notifications.delete(notifications.findIndex(notific =>
-                notific.type === notification.type))
+                notific.id === notification.id))
         }, () => {
             appActions.hideNotification(notification);
         });
     }
 
     render () {
+        const { intl } = this.props;
         const { notifications } = this.state;
+        const message = notifications.first() ?
+            intl.formatMessage(
+                notificationMessages[notifications.first().get('id')],
+                notifications.first().get('values')
+            ) :
+            '';
         return (
           <Snackbar
             style={{ maxWidth: 500 }}
             autoHideDuration={this._getAutoHideDuration(notifications.first())}
             action={this._getActionLabel(notifications.first())}
             onActionTouchTap={ev => this._handleActionTouchTap(ev, notifications.first())}
-            message={notifications.first() ? notifications.first().get('message') : ''}
+            message={message}
             open={!!notifications.first()}
             onRequestClose={reason => this._hideNotification(reason, notifications.first())}
           />
@@ -73,7 +82,8 @@ class NotificationBar extends Component {
 
 NotificationBar.propTypes = {
     appState: PropTypes.shape(),
-    appActions: PropTypes.shape()
+    appActions: PropTypes.shape(),
+    intl: PropTypes.shape()
 };
 
-export default NotificationBar;
+export default injectIntl(NotificationBar);

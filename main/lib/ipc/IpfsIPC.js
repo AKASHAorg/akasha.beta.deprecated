@@ -5,6 +5,7 @@ const Logger_1 = require('./Logger');
 const channels_1 = require('../channels');
 const responses_1 = require('./event/responses');
 const settings_1 = require('./config/settings');
+const electron_1 = require('electron');
 class IpfsIPC extends IpfsEmitter_1.default {
     constructor() {
         super();
@@ -14,6 +15,7 @@ class IpfsIPC extends IpfsEmitter_1.default {
     }
     initListeners(webContents) {
         ipfs_connector_1.IpfsConnector.getInstance().setLogger(Logger_1.default.getInstance().registerLogger(this.logger));
+        ipfs_connector_1.IpfsConnector.getInstance().setBinPath(electron_1.app.getPath('userData'));
         this.webContents = webContents;
         this._start()
             ._stop()

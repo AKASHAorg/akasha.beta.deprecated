@@ -32,9 +32,10 @@ export function hidePanel (panel) {
     };
 }
 
-export function showAuthDialog () {
+export function showAuthDialog (actionId) {
     return {
-        type: types.SHOW_AUTH_DIALOG
+        type: types.SHOW_AUTH_DIALOG,
+        actionId
     };
 }
 
@@ -115,5 +116,26 @@ export function hideNotification (notification) {
     return {
         type: types.HIDE_NOTIFICATION,
         notification
+    };
+}
+
+export function addPendingAction (data) {
+    return {
+        type: types.ADD_PENDING_ACTION,
+        data
+    };
+}
+
+export function updatePendingAction (data) {
+    return {
+        type: types.UPDATE_PENDING_ACTION,
+        data
+    };
+}
+
+export function deletePendingAction (actionId) {
+    return {
+        type: types.DELETE_PENDING_ACTION,
+        actionId
     };
 }

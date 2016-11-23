@@ -65,7 +65,7 @@ class ProfileUpdater extends Component {
         if (pendingUnfollowTx.length) {
             const unfollowTx = pendingUnfollowTx[0].tx;
             const isMined = minedTx.find(mined => mined.tx === unfollowTx);
-            const followPending = true;
+            const unfollowPending = true;
             if (isMined && !deletingPendingTx) {
                 const akashaId = pendingUnfollowTx[0].akashaId;
                 const profile = profiles.find(prf => prf.get('akashaId') === akashaId);
@@ -81,7 +81,7 @@ class ProfileUpdater extends Component {
                 if (this.unfollowRequestTimeout) {
                     clearTimeout(this.unfollowRequestTimeout);
                 }
-            } else if (!followPending) {
+            } else if (!unfollowPending) {
                 // profileActions.updateProfile();
                 // transactionActions.listenForMinedTx();
                 // transactionActions.addToQueue([{ tx: followTx, type: 'updateProfile' }]);

@@ -70,7 +70,7 @@ class SideBar extends Component {
             </div>
             <div style={{ flexGrow: 4, padding: '14px' }} >
               <StreamsIcon
-                onClick={() => this._handleNavigation('explore/stream')}
+                onClick={() => this._handleNavigation('explore/tag')}
                 tooltip="Stream"
               />
               <PortalsIcon disabled tooltip="Coming Soon" />

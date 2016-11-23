@@ -82,7 +82,7 @@ class EntryActions {
             const flags = getState().entryState.get('flags');
             if (!flags.get('profileEntriesFetched') || !flags.get('fetchingProfileEntries')) {
                 dispatch(entryActionCreators.getProfileEntries({
-                    fetchingEntriesCount: true
+                    fetchingProfileEntries: true
                 }));
                 this.entryService.getProfileEntries({
                     akashaId,
@@ -90,20 +90,45 @@ class EntryActions {
                     limit,
                     onSuccess: data =>
                         dispatch(entryActionCreators.getProfileEntriesSuccess(data, {
-                            profileEntriesFetched: true
+                            fetchingProfileEntries: true
                         })),
                     onError: error =>
                         dispatch(entryActionCreators.getProfileEntriesError(error, {
-                            fetchingEntriesCount: false,
+                            fetchingProfileEntries: false,
                             profileEntriesFetched: true
                         }))
                 });
             }
         });
 
-    getEntriesForTag = ({ tagName }) => {
-        this.entryService.getEntriesForTag({ tagName });
+    entryTagIterator = (tagName, start, limit) => {
+        this.dispatch(entryActionCreators.entryTagIterator({ fetchingEntriesForTag: true }));
+        this.entryService.entryTagIterator({
+            tagName,
+            start,
+            limit,
+            onSuccess: data => this.dispatch(entryActionCreators.entryTagIteratorSuccess(data, {
+                fetchingEntriesForTag: false
+            })),
+            onError: error => this.dispatch(entryActionCreators.entryTagIteratorError(error, {
+                fetchingEntriesForTag: false
+            }))
+        });
     };
+
+    getTagEntriesCount = (tagName) => {
+        this.dispatch(entryActionCreators.getTagEntriesCount({ fetchingTagEntriesCount: true }));
+        this.entryService.getTagEntriesCount({
+            tagName,
+            onSuccess: data => this.dispatch(entryActionCreators.getTagEntriesCountSuccess(data, {
+                fetchingTagEntriesCount: false
+            })),
+            onError: error => this.dispatch(entryActionCreators.getTagEntriesCountError(error, {
+                fetchingTagEntriesCount: false
+            }))
+        })
+    }
+
     castUpvote = (entryAddress, voteWeight) => {
         this.entryService.castUpvote(entryAddress, voteWeight).then((result) => {
             if (result.error) {
@@ -121,12 +146,30 @@ class EntryActions {
         });
     };
     getLicenceById = (id) => {
-        this.EntryService.getLicenceById({
+        this.entryService.getLicenceById({
             id,
             onSuccess: ({ license }) =>
                 this.dispatch(entryActionCreators.getLicenceByIdSuccess(license)),
             onError: error => this.dispatch(entryActionCreators.getLicenceByIdError(error))
         });
     };
+
+    getEntriesStream = (akashaId) => {
+        this.dispatch(entryActionCreators.getEntriesStream({ fetchingEntriesStream: true }));
+        this.entryService.getEntriesStream({
+            akashaId,
+            onSuccess: data =>
+                this.dispatch(entryActionCreators.getEntriesStreamSuccess(data, {
+                    fetchingEntriesStream: false
+                })),
+            onError: error =>
+                this.dispatch(entryActionCreators.getEntriesStreamError(error, {
+                    fetchingEntriesStream: false
+                }))
+        });
+    };
+
+    clearTagEntries = () =>
+        this.dispatch(entryActionCreators.clearTagEntries());
 }
 export { EntryActions };
