@@ -50,6 +50,16 @@ const confirmMessages = defineMessages({
         id: 'app.confirm.unfollowProfile',
         description: 'confirm dialog message for unfollowing a profile',
         defaultMessage: 'Are you sure you want to unfollow \"{akashaId}\"?'
+    },
+    updateProfileTitle: {
+        id: 'app.confirm.updateProfileTitle',
+        description: 'confirm dialog title for updating your profile',
+        defaultMessage: 'Confirm profile update'
+    },
+    updateProfile: {
+        id: 'app.confirm.updateProfile',
+        description: 'confirm dialog message for updating your profile',
+        defaultMessage: 'Are you sure you want to update your profile?'
     }
 });
 export { confirmMessages };

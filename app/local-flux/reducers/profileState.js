@@ -176,14 +176,20 @@ const profileState = createReducer(initialState, {
             errors: new List()
         }),
 
-    [types.UPDATE_PROFILE_DATA]: state =>
+    [types.UPDATE_PROFILE_DATA]: (state, { flags }) =>
         state.merge({
-            flags: state.get('flags').merge({ updatingProfile: true })
+            flags: state.get('flags').merge(flags)
         }),
 
-    [types.UPDATE_PROFILE_DATA_SUCCESS]: state =>
+    [types.UPDATE_PROFILE_DATA_ERROR]: (state, { error, flags }) =>
         state.merge({
-            flags: state.get('flags').merge({ updatingProfile: false })
+            errors: state.get('errors').push(new ErrorRecord(error)),
+            flags: state.get('flags').merge(flags)
+        }),
+
+    [types.UPDATE_PROFILE_DATA_SUCCESS]: (state, { flags }) =>
+        state.merge({
+            flags: state.get('flags').merge(flags)
         }),
 
     [types.RESET_FLAGS]: state =>

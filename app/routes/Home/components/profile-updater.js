@@ -3,55 +3,53 @@ import { connect } from 'react-redux';
 import { AppActions, TransactionActions, ProfileActions } from 'local-flux';
 
 class ProfileUpdater extends Component {
-    constructor (props) {
-        super(props);
-        this.requestTimeout = null;
-    }
 
     componentWillReceiveProps (nextProps) {
-        const { fetchingMined, fetchingPending, minedTx, pendingTx, profileActions,
-            transactionActions, loggedProfile, updatingProfile, deletingPendingTx } = nextProps;
+        this.launchActions(nextProps);
+        this.listenForMinedTx(nextProps);
+    }
+
+    launchActions = (nextProps) => {
+        const { pendingActions, appActions, profileActions } = nextProps;
+        const actions = pendingActions.filter(action =>
+            action.get('status') === 'readyToPublish' && action.get('type') === 'updateProfile');
+        if (actions.size > 0) {
+            actions.forEach((action) => {
+                appActions.updatePendingAction(action.merge({
+                    status: 'publishing'
+                }));
+                profileActions.updateProfileData(
+                    action.getIn(['payload', 'profileData']), action.get('gas')
+                );
+            });
+        }
+    };
+
+    listenForMinedTx = (nextProps) => {
+        const { minedTx, pendingTx, fetchingMined, fetchingPending, deletingPendingTx, appActions,
+            profileActions, transactionActions, loggedProfile, pendingActions } = nextProps;
         const isNotFetching = !fetchingMined && !fetchingPending;
-        const pendingUpdateProfileTx = isNotFetching ?
+        const pendingFollowTxs = isNotFetching ?
             pendingTx.toJS().filter(tx =>
                 tx.profile === loggedProfile && tx.type === 'updateProfile'
             ) :
             [];
-        if (pendingUpdateProfileTx.length) {
-            const updateTx = pendingUpdateProfileTx[0].tx;
-            const isMined = minedTx.find(mined => mined.tx === updateTx);
-            if (isMined && !deletingPendingTx) {
-                transactionActions.listenForMinedTx({ watch: false });
-                transactionActions.deletePendingTx(updateTx);
-                profileActions.getProfileData([{ profile: loggedProfile }], true);
-                profileActions.updateProfileDataSuccess();
-                if (this.requestTimeout) {
-                    clearTimeout(this.requestTimeout);
-                }
-            } else if (!updatingProfile) {
-                profileActions.updateProfile();
-                transactionActions.listenForMinedTx();
-                transactionActions.addToQueue([{ tx: updateTx, type: 'updateProfile' }]);
-                this.requestTimeout = setTimeout(() => {
-                    const transactions = this.props.pendingTx.toJS().filter(tx =>
-                        tx.profile === loggedProfile && tx.type === 'updateProfile'
-                    );
-                    if (transactions.length > 0) {
-                        transactionActions.deletePendingTx(updateTx);
-                        profileActions.deleteUpdateProfileTx(transactions[0].tx);
-                        transactionActions.listenForMinedTx({ watch: false });
-                        profileActions.updateProfileDataError({ message: 'transaction timeout' });
-                    }
-                }, 120000);
-            }
-        }
-    }
 
-    componentWillUnmount () {
-        if (this.requestTimeout) {
-            clearTimeout(this.requestTimeout);
-        }
-    }
+        pendingFollowTxs.forEach((tx) => {
+            const isMined = minedTx.find(mined => mined.tx === tx.tx);
+            if (isMined && !deletingPendingTx) {
+                const correspondingAction = pendingActions.find(action =>
+                    action.get('type') === tx.type && action.get('status') === 'publishing');
+                transactionActions.listenForMinedTx({ watch: false });
+                transactionActions.deletePendingTx(tx.tx);
+                profileActions.updateProfileDataSuccess();
+                profileActions.getProfileData([{ profile: loggedProfile }], true);
+                if (correspondingAction) {
+                    appActions.deletePendingAction(correspondingAction.get('id'));
+                }
+            }
+        });
+    };
 
     render () {
         return null;
@@ -59,12 +57,13 @@ class ProfileUpdater extends Component {
 }
 
 ProfileUpdater.propTypes = {
+    appActions: PropTypes.shape(),
     profileActions: PropTypes.shape(),
     transactionActions: PropTypes.shape(),
+    pendingActions: PropTypes.shape(),
     fetchingMined: PropTypes.bool,
     fetchingPending: PropTypes.bool,
     deletingPendingTx: PropTypes.bool,
-    updatingProfile: PropTypes.bool,
     minedTx: PropTypes.shape(),
     pendingTx: PropTypes.shape(),
     loggedProfile: PropTypes.string
@@ -75,9 +74,10 @@ function mapStateToProps (state, ownProps) {
         fetchingMined: state.transactionState.get('fetchingMined'),
         fetchingPending: state.transactionState.get('fetchingPending'),
         updatingProfile: state.profileState.getIn(['flags', 'updatingProfile']),
-        deletingPendingTx: state.profileState.getIn(['flags', 'deletingPendingTx']),
+        deletingPendingTx: state.transactionState.getIn(['flags', 'deletingPendingTx']),
         minedTx: state.transactionState.get('mined'),
         pendingTx: state.transactionState.get('pending'),
+        pendingActions: state.appState.get('pendingActions'),
         loggedProfile: state.profileState.getIn(['loggedProfile', 'profile'])
     };
 }
