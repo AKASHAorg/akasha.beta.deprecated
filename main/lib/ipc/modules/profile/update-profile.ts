@@ -11,12 +11,16 @@ import { module as userModule } from '../auth/index';
 const execute = Promise.coroutine(function*(data: ProfileUpdateRequest) {
     const ipfsHash = yield create(data.ipfs);
     const currentProfile = yield getCurrentProfile.execute();
-
-    if (!currentProfile) {
+    if (!currentProfile.profileAddress) {
         throw new Error('No profile found to update');
     }
 
-    const txData = yield contracts.instance.profile.updateHash(ipfsHash, currentProfile, data.gas);
+    const txData = yield contracts.instance.profile
+        .updateHash(
+        ipfsHash,
+        currentProfile.profileAddress,
+        data.gas
+    );
     const tx = yield userModule.auth.signData(txData, data.token);
     return { tx };
 });
