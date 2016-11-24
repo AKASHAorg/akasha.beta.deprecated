@@ -238,7 +238,10 @@
             "package.json"
         ],
         "win": {
-            "target": "nsis"
+            "target": [
+                "nsis",
+                "zip"
+                ]
         },
         "linux": {
             "target": [
