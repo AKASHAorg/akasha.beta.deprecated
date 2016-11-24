@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { AppActions, DraftActions, ProfileActions, EntryActions,
-    TransactionActions, TagActions } from 'local-flux';
+    TransactionActions, TagActions, EProcActions } from 'local-flux';
 import { Sidebar } from 'shared-components';
 import '../../styles/core.scss';
 import styles from './home.scss';
@@ -17,11 +17,15 @@ class HomeContainer extends React.Component {
     constructor (props) {
         super(props);
         this.dataLoaded = false;
+        this.interval = null;
     }
 
     componentWillMount () {
-        const { profileActions } = this.props;
+        const { profileActions, eProcActions } = this.props;
         profileActions.resetFlags();
+        this.interval = setInterval(() => {
+            eProcActions.getGethStatus();
+        }, 30000);
     }
     componentDidMount () {
         const { profileActions } = this.props;
@@ -58,6 +62,7 @@ class HomeContainer extends React.Component {
     componentWillUnmount () {
         this.props.appActions.hidePanel();
         this.props.tagActions.clearSelectedTag();
+        clearInterval(this.interval);
     }
     _getLoadingMessage = () => {
         const { fetchingDraftsCount, fetchingEntriesCount, fetchingLoggedProfile,
@@ -138,9 +143,12 @@ class HomeContainer extends React.Component {
 }
 
 HomeContainer.propTypes = {
-    activePanel: PropTypes.string,
     appActions: PropTypes.shape(),
+    entryActions: PropTypes.shape(),
+    eProcActions: PropTypes.shape(),
+    profileActions: PropTypes.shape(),
     tagActions: PropTypes.shape(),
+    activePanel: PropTypes.string,
     children: PropTypes.element,
     draftActions: PropTypes.shape(),
     draftsCount: PropTypes.number,
@@ -152,8 +160,6 @@ HomeContainer.propTypes = {
     loggedProfile: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
     updatingProfile: PropTypes.bool,
-    profileActions: PropTypes.shape(),
-    entryActions: PropTypes.shape(),
     transactionActions: PropTypes.shape(),
     params: PropTypes.shape()
 };
@@ -186,6 +192,7 @@ function mapDispatchToProps (dispatch) {
         appActions: new AppActions(dispatch),
         draftActions: new DraftActions(dispatch),
         entryActions: new EntryActions(dispatch),
+        eProcActions: new EProcActions(dispatch),
         profileActions: new ProfileActions(dispatch),
         tagActions: new TagActions(dispatch),
         transactionActions: new TransactionActions(dispatch)
