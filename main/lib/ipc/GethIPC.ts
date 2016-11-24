@@ -212,11 +212,32 @@ class GethIPC extends GethEmitter {
         this.registerListener(
             channels.server.geth.status,
             (event: any) => {
-                this.fireEvent(
-                    channels.client.geth.status,
-                    gethResponse({}),
-                    event
-                );
+                if (!GethConnector.getInstance().serviceStatus.api) {
+                    this.fireEvent(
+                        channels.client.geth.status,
+                        gethResponse({}),
+                        event
+                    );
+                    return null;
+                }
+                let response;
+                GethConnector.getInstance()
+                    .web3
+                    .eth
+                    .getBlockNumberAsync()
+                    .then((blockNr) => {
+                        response = gethResponse({ blockNr });
+                    })
+                    .catch((err) => {
+                        response = gethResponse({}, { message: err.message })
+                    })
+                    .finally(() => {
+                        this.fireEvent(
+                            channels.client.geth.status,
+                            response,
+                            event
+                        );
+                    })
             }
         );
         return this;

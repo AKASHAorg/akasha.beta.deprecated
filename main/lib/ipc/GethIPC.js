@@ -110,7 +110,24 @@ class GethIPC extends GethEmitter_1.default {
     }
     _status() {
         this.registerListener(channels_1.default.server.geth.status, (event) => {
-            this.fireEvent(channels_1.default.client.geth.status, responses_1.gethResponse({}), event);
+            if (!geth_connector_1.GethConnector.getInstance().serviceStatus.api) {
+                this.fireEvent(channels_1.default.client.geth.status, responses_1.gethResponse({}), event);
+                return null;
+            }
+            let response;
+            geth_connector_1.GethConnector.getInstance()
+                .web3
+                .eth
+                .getBlockNumberAsync()
+                .then((blockNr) => {
+                response = responses_1.gethResponse({ blockNr });
+            })
+                .catch((err) => {
+                response = responses_1.gethResponse({}, { message: err.message });
+            })
+                .finally(() => {
+                this.fireEvent(channels_1.default.client.geth.status, response, event);
+            });
         });
         return this;
     }
