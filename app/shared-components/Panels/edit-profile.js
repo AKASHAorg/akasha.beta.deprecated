@@ -6,10 +6,10 @@ import ContentAddIcon from 'material-ui/svg-icons/content/add';
 import CancelIcon from 'material-ui/svg-icons/navigation/cancel';
 import { injectIntl } from 'react-intl';
 import { Avatar, ImageUploader, PanelContainer } from 'shared-components';
-import { profileMessages, formMessages, generalMessages } from 'locale-data/messages'; /* eslint import/no-unresolved: 0*/
-import { inputFieldMethods } from 'utils/dataModule';
-import validationProvider from 'utils/validationProvider';
-import { UserValidation } from 'utils/validationSchema';
+import { profileMessages, formMessages, generalMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
+import { inputFieldMethods } from 'utils/dataModule'; // eslint-disable-line import/no-unresolved, import/extensions
+import validationProvider from 'utils/validationProvider'; // eslint-disable-line import/no-unresolved, import/extensions
+import { UserValidation } from 'utils/validationSchema'; // eslint-disable-line import/no-unresolved, import/extensions
 import PanelHeader from '../../routes/components/panel-header';
 import imageCreator from '../../utils/imageUtils';
 
@@ -48,7 +48,7 @@ class EditProfile extends Component {
                 backgroundImage,
                 about,
                 avatar,
-                links: links || []
+                links: []
             });
         }
         if (!nextProps.loginRequested && this.props.loginRequested) {
