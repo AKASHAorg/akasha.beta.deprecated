@@ -14,7 +14,7 @@ const ToggleButton = (props) => {
         };
     }
     return (
-      <IconButton type="button" style={style}>
+      <IconButton type="button" style={style} onClick={props.toggle}>
         <AddCircle />
       </IconButton>
     );

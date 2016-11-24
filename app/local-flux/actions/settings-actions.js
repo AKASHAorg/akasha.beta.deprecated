@@ -74,7 +74,7 @@ class SettingsActions {
     saveUserSettings = () => {};
     getUserSettings = () => {};
 
-    changeTheme = (theme) =>
+    changeTheme = theme =>
         this.dispatch(settingsActionCreators.changeTheme(theme));
 }
 export { SettingsActions };

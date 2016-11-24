@@ -18,7 +18,8 @@ const LoginLayout = (props) => {
       <div
         className="col-xs-12"
         style={{
-            padding: 0
+            padding: 0,
+            overflow: 'hidden'
         }}
       >
         <div className="col-xs-5" style={{ padding: 0 }}>

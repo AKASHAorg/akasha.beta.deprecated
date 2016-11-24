@@ -1,12 +1,12 @@
 import { defineMessages } from 'react-intl';
 
 const confirmMessages = defineMessages({
-    publishTagTitle: {
+    registerTagTitle: {
         id: 'app.confirm.publishTagTitle',
         description: 'confirm dialog title for publishing a tag',
         defaultMessage: 'Confirm tag publishing'
     },
-    publishTag: {
+    registerTag: {
         id: 'app.confirm.publishTag',
         description: 'confirm dialog message for publishing a tag',
         defaultMessage: 'Are you sure you want to publish tag \"{tagName}\"?'

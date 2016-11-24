@@ -126,7 +126,7 @@ class EntryActions {
             onError: error => this.dispatch(entryActionCreators.getTagEntriesCountError(error, {
                 fetchingTagEntriesCount: false
             }))
-        })
+        });
     }
 
     castUpvote = (entryAddress, voteWeight) => {
@@ -137,7 +137,6 @@ class EntryActions {
             return this.dispatch(entryActionCreators.castUpvoteSuccess(result.data));
         });
     };
-    castDownvote = (entryAddress, voteWeight) => {};
     getLicences = () => {
         this.entryService.getLicences({
             onSuccess: ({ licenses }) =>

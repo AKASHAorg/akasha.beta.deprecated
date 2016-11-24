@@ -1,14 +1,14 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import { TextField, RaisedButton } from 'material-ui';
 import { injectIntl } from 'react-intl';
+/* eslint import/no-unresolved: 0, import/extensions: 0 */
 import PanelContainer from 'shared-components/PanelContainer/panel-container';
 import ImageUploader from 'shared-components/ImageUploader/image-uploader';
 import LicenceDialog from 'shared-components/Dialogs/licence-dialog';
 import TagsField from 'shared-components/TagsField/tags-field';
 import { TagService } from 'local-flux/services';
-import { convertFromRaw } from 'draft-js';
 import { findBestMatch } from 'utils/imageUtils';
+import { convertFromRaw } from 'draft-js';
 
 class PublishPanel extends React.Component {
     constructor (props) {
@@ -31,8 +31,6 @@ class PublishPanel extends React.Component {
         entryActions.getLicences();
     }
     componentDidMount () {
-        const panelSize = ReactDOM.findDOMNode(this).getBoundingClientRect();
-        this.panelSize = panelSize;
         document.body.style.overflow = 'hidden';
     }
     componentWillReceiveProps (nextProps) {
@@ -286,8 +284,8 @@ class PublishPanel extends React.Component {
             isDefault: false
         };
     }
-    _handleTagRegisterRequest = (tag) => {
-        const { loggedProfile, tagActions } = this.props;
+    _handleTagRegisterRequest = (tagName) => {
+        const { tagActions } = this.props;
         // 1. verify that tag is not in pending state
         // 2. put tag in pending state after confirm dialog
         // 3. check login is valid
@@ -295,13 +293,7 @@ class PublishPanel extends React.Component {
         // 5. add tx to queue
         // 6. watch for mined tx
         // 7. remove tag from pending state
-        tagActions.createPendingTag({
-            tag,
-            tx: null,
-            profile: loggedProfile.get('profile'),
-            minGas: 2000000,
-            publishConfirmed: false
-        });
+        tagActions.addRegisterTagAction(tagName);
     }
     _getLicenceMeta = () => {
         const { licences } = this.props;
@@ -327,122 +319,124 @@ class PublishPanel extends React.Component {
         const { tags, validationErrors, existingTags } = this.state;
         const { pendingTags, licences } = this.props;
         return (
-          <PanelContainer
-            showBorder
-            title="Publish a New Entry"
-            style={{
-                left: '50%',
-                marginLeft: '-320px',
-                position: 'fixed',
-                top: 0,
-                bottom: 0,
-                zIndex: 16
-            }}
-            actions={[
-                /* eslint-disable */
-              <RaisedButton
-                key="cancel"
-                label="Later"
-                onTouchTap={this._handleCancelButton}
-              />,
-              <RaisedButton
-                key="publish"
-                label="Publish"
-                primary
-                disabled={(pendingTags.size > 0)}
-                style={{ marginLeft: 8 }}
-                onTouchTap={this._publishEntry}
+          <div ref={(container) => { this.container = container; }} className="mdfckr-container">
+            <PanelContainer
+              showBorder
+              title="Publish a New Entry"
+              style={{
+                  left: '50%',
+                  marginLeft: '-320px',
+                  position: 'fixed',
+                  top: 0,
+                  bottom: 0,
+                  zIndex: 16
+              }}
+              actions={[
+                  /* eslint-disable */
+                <RaisedButton
+                  key="cancel"
+                  label="Later"
+                  onTouchTap={this._handleCancelButton}
+                />,
+                <RaisedButton
+                  key="publish"
+                  label="Publish"
+                  primary
+                  disabled={(pendingTags.size > 0)}
+                  style={{ marginLeft: 8 }}
+                  onTouchTap={this._publishEntry}
+                />
+                /* eslint-enable */
+              ]}
+            >
+              <LicenceDialog
+                isOpen={this.state.isLicencingOpen}
+                defaultSelected={this.state.licence}
+                onRequestClose={this._handleLicenceDialogClose}
+                onDone={this._handleLicenceSet}
+                licences={licences}
               />
-              /* eslint-enable */
-            ]}
-          >
-            <LicenceDialog
-              isOpen={this.state.isLicencingOpen}
-              defaultSelected={this.state.licence}
-              onRequestClose={this._handleLicenceDialogClose}
-              onDone={this._handleLicenceSet}
-              licences={licences}
-            />
-            <div className="col-xs-12">
-              <div className="col-xs-12 field">
-                <small>Title shown in preview</small>
-                <TextField
-                  name="title"
-                  fullWidth
-                  value={this.state.title || ''}
-                  onChange={ev => this.setState({ title: ev.target.value })}
-                  onBlur={ev => this._handleDraftUpdate('title', ev.target.value)}
-                  errorText={
-                      validationErrors.filter(ve => ve.field === 'title')
-                            .map(err => `${err.error}`).join('')
-                  }
-                />
+              <div className="col-xs-12">
+                <div className="col-xs-12 field">
+                  <small>Title shown in preview</small>
+                  <TextField
+                    name="title"
+                    fullWidth
+                    value={this.state.title || ''}
+                    onChange={ev => this.setState({ title: ev.target.value })}
+                    onBlur={ev => this._handleDraftUpdate('title', ev.target.value)}
+                    errorText={
+                        validationErrors.filter(ve => ve.field === 'title')
+                              .map(err => `${err.error}`).join('')
+                    }
+                  />
+                </div>
+                <div className="col-xs-12 field">
+                  <small>Featured Image</small>
+                  <ImageUploader
+                    ref={(featuredImageUploader) => {
+                        this.featuredImageUploader = featuredImageUploader;
+                    }}
+                    dialogTitle={'Add a featured image'}
+                    initialImage={this._getFeaturedImage()}
+                  />
+                </div>
+                <div className="col-xs-12 field">
+                  <small>Tags</small>
+                  <TagsField
+                    tags={tags}
+                    existingTags={existingTags}
+                    pendingTags={pendingTags}
+                    ref={(tagsField) => { this.tagsField = tagsField; }}
+                    onRequestTagAutocomplete={this._handleTagAutocomplete}
+                    onTagAdded={this._handleTagAdd}
+                    onDelete={this._handleTagDelete}
+                    onTagRegisterRequest={this._handleTagRegisterRequest}
+                    fullWidth
+                    errorText={
+                        validationErrors.filter(ve => ve.field === 'tags')
+                              .map(err => `${err.error}`).join('')
+                    }
+                  />
+                </div>
+                <div className="col-xs-12 field">
+                  <small>Excerpt shown in preview</small>
+                  <TextField
+                    name="excerpt"
+                    multiLine
+                    fullWidth
+                    value={this.state.excerpt}
+                    onChange={ev => this.setState({ excerpt: ev.target.value })}
+                    onBlur={ev => this._handleDraftUpdate('excerpt', ev.target.value)}
+                    errorText={
+                        validationErrors.filter(ve => ve.field === 'excerpt')
+                              .map(err => `${err.error}`).join('')
+                    }
+                  />
+                </div>
+                <div className="col-xs-12 field">
+                  <small>Licence</small>
+                  <TextField
+                    name="licence"
+                    fullWidth
+                    onFocus={this._handleLicenceFocus}
+                    errorText={this._getLicenceMeta().description.map((descr, key) =>
+                      <span key={key}>{descr.text}</span>
+                    )}
+                    errorStyle={{ color: '#DDD' }}
+                    value={this._getLicenceMeta().label}
+                  />
+                </div>
+                <div className="col-xs-12 field" style={{ marginBottom: 24 }}>
+                  <small>
+                    By proceeding to publish this entry, you agree with the
+                    <b> 0.005 ETH</b> fee which will be deducted from your
+                    <b> 0.02 ETH</b> balance.
+                  </small>
+                </div>
               </div>
-              <div className="col-xs-12 field">
-                <small>Featured Image</small>
-                <ImageUploader
-                  ref={(featuredImageUploader) => {
-                      this.featuredImageUploader = featuredImageUploader;
-                  }}
-                  dialogTitle={'Add a featured image'}
-                  initialImage={this._getFeaturedImage()}
-                />
-              </div>
-              <div className="col-xs-12 field">
-                <small>Tags</small>
-                <TagsField
-                  tags={tags}
-                  existingTags={existingTags}
-                  pendingTags={pendingTags}
-                  ref={(tagsField) => { this.tagsField = tagsField; }}
-                  onRequestTagAutocomplete={this._handleTagAutocomplete}
-                  onTagAdded={this._handleTagAdd}
-                  onDelete={this._handleTagDelete}
-                  onTagRegisterRequest={this._handleTagRegisterRequest}
-                  fullWidth
-                  errorText={
-                      validationErrors.filter(ve => ve.field === 'tags')
-                            .map(err => `${err.error}`).join('')
-                  }
-                />
-              </div>
-              <div className="col-xs-12 field">
-                <small>Excerpt shown in preview</small>
-                <TextField
-                  name="excerpt"
-                  multiLine
-                  fullWidth
-                  value={this.state.excerpt}
-                  onChange={ev => this.setState({ excerpt: ev.target.value })}
-                  onBlur={ev => this._handleDraftUpdate('excerpt', ev.target.value)}
-                  errorText={
-                      validationErrors.filter(ve => ve.field === 'excerpt')
-                            .map(err => `${err.error}`).join('')
-                  }
-                />
-              </div>
-              <div className="col-xs-12 field">
-                <small>Licence</small>
-                <TextField
-                  name="licence"
-                  fullWidth
-                  onFocus={this._handleLicenceFocus}
-                  errorText={this._getLicenceMeta().description.map((descr, key) =>
-                    <span key={key}>{descr.text}</span>
-                  )}
-                  errorStyle={{ color: '#DDD' }}
-                  value={this._getLicenceMeta().label}
-                />
-              </div>
-              <div className="col-xs-12 field" style={{ marginBottom: 24 }}>
-                <small>
-                  By proceeding to publish this entry, you agree with the
-                  <b> 0.005 ETH</b> fee which will be deducted from your
-                  <b> 0.02 ETH</b> balance.
-                </small>
-              </div>
-            </div>
-          </PanelContainer>
+            </PanelContainer>
+          </div>
         );
     }
 }

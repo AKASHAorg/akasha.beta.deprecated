@@ -204,7 +204,7 @@ class TempProfileActions {
     getTempProfile = () =>
         this.registryService.getTempProfile({
             onError: (error) => {
-                console.error(error, 'getTempProfile')
+                console.error(error, 'getTempProfile');
                 this.dispatch(tempProfileActionCreators.getTempProfileError(error));
             },
             onSuccess: data => this.dispatch(tempProfileActionCreators.getTempProfileSuccess(data))

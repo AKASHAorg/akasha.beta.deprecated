@@ -1,6 +1,6 @@
+import { AppActions, TransactionActions } from 'local-flux';
 import { tagActionCreators } from './action-creators';
 import { TagService } from '../services';
-import { AppActions, TransactionActions } from 'local-flux';
 
 let tagActions = null;
 
@@ -15,12 +15,14 @@ class TagActions {
         this.tagService = new TagService();
         return tagActions;
     }
-    createPendingTag = (tagObj = {}) => {
-        this.tagService.createPendingTag({
-            tagObj,
-            onSuccess: pendingTag =>
-                this.dispatch(tagActionCreators.createPendingTagSuccess(pendingTag)),
-            onError: error => this.dispatch(tagActionCreators.createPendingTagError(error))
+    addRegisterTagAction = (tagName) => {
+        this.appActions.addPendingAction({
+            type: 'registerTag',
+            payload: { tagName },
+            titleId: 'registerTagTitle',
+            messageId: 'registerTag',
+            gas: 2000000,
+            status: 'needConfirmation'
         });
     }
     updatePendingTag = (tagObj) => {
@@ -71,19 +73,42 @@ class TagActions {
             });
         });
     };
-    registerTag = (tagName, token, gas = 2000000) => {
-        this.dispatch(tagActionCreators.registerTag(tagName));
-        this.tagService.registerTag({
-            tagName,
-            token,
-            gas,
-            onSuccess: (data) => {
-                this.dispatch(tagActionCreators.registerTagSuccess({ tag: tagName, tx: data.tx }));
-                console.log('register tag success', data);
-                // save to pending tags
-                this.savePendingTag({ tag: tagName, tx: data.tx });
-            },
-            onError: error => this.dispatch(tagActionCreators.registerTagError(error))
+    registerTag = (tagName, gas = 2000000) => {
+        this.dispatch((dispatch, getState) => {
+            const loggedProfile = getState().profileState.get('loggedProfile');
+            const token = loggedProfile.get('token');
+            const flagOn = { tagName, value: true };
+            const flagOff = { tagName, value: false };
+            dispatch(tagActionCreators.registerTag({ registerPending: flagOn }));
+            this.tagService.registerTag({
+                tagName,
+                token,
+                gas,
+                onSuccess: (data) => {
+                    this.transactionActions.listenForMinedTx();
+                    this.transactionActions.addToQueue([{
+                        tx: data.tx,
+                        type: 'registerTag',
+                        tagName: data.tag
+                    }]);
+                    this.appActions.showNotification({
+                        id: 'registeringTag',
+                        values: { tagName: data.tag }
+                    });
+                },
+                onError: error => dispatch(tagActionCreators.registerTagError(error, {
+                    registerPending: flagOff
+                }))
+            });
+        });
+    };
+    registerTagSuccess = (tagName) => {
+        this.dispatch(tagActionCreators.registerTagSuccess({
+            registerPending: { tagName, value: false }
+        }));
+        this.appActions.showNotification({
+            id: 'tagRegisteredSuccessfully',
+            values: { tagName }
         });
     };
     savePendingTag = tagObj =>
@@ -93,8 +118,8 @@ class TagActions {
             onError: error => this.dispatch(tagActionCreators.updatePendingTagError(error))
         });
 
-    getSelectedTag = akashaId => {
-        this.dispatch(tagActionCreators.getSelectedTag({ fetchingSelectedTag: true }))
+    getSelectedTag = (akashaId) => {
+        this.dispatch(tagActionCreators.getSelectedTag({ fetchingSelectedTag: true }));
         this.tagService.getSelectedTag({
             akashaId,
             onSuccess: data => this.dispatch(tagActionCreators.getSelectedTagSuccess(data, {
@@ -106,7 +131,7 @@ class TagActions {
         });
     };
 
-    saveTag = (tagName) =>
+    saveTag = tagName =>
         this.dispatch((dispatch, getState) => {
             const akashaId = getState().profileState.getIn(['loggedProfile', 'akashaId']);
             this.dispatch(tagActionCreators.saveTag({ savingTag: true }));

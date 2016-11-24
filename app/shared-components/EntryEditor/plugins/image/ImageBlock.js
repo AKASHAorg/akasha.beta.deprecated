@@ -34,7 +34,7 @@ const variants = {
         component: <ImageSizeSmall />
     },
     md: {
-        primaryText: 'Medium',
+        primaryText: 'Normal',
         component: <ImageSizeMedium />
     },
     lg: {
@@ -137,7 +137,15 @@ class ImageBlock extends Component {
             isCardEnabled: true
         }, () => {
             this.props.blockProps.setReadOnly(true);
+            window.addEventListener('keyup', this._removeImageContainer);
         });
+    }
+    _removeImageContainer = (ev) => {
+        if (ev.key === 'Delete' || ev.key === 'Backspace') {
+            this.props.container.remove();
+            this.props.blockProps.setReadOnly(false);
+            window.removeEventListener('keyup', this._removeImageContainer);
+        }
     }
     _getBaseNodeStyle = () => {
         const { previewImage } = this.state;
@@ -177,6 +185,7 @@ class ImageBlock extends Component {
           <div
             ref={(baseNode) => { this.baseNodeRef = baseNode; }}
             style={baseNodeStyle}
+            onKeyUp={this._removeImageContainer}
           >
             <div
               className={`${styles.rootInner}`}

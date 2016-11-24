@@ -17,6 +17,7 @@ export function loginSuccess (profile, flags) {
 
 export function loginError (error, flags) {
     error.code = 'LOGINE01';
+    console.error(error);
     return {
         type: types.LOGIN_ERROR,
         error,

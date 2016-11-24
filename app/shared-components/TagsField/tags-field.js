@@ -107,7 +107,7 @@ class TagsField extends React.Component {
         const { erroredTags } = this.state;
         const tags = currentTags.map((tag, key) => {
             const tagExists = existingTags.indexOf(tag) > -1;
-            const tagIsPending = pendingTags.findIndex(tagObj => tagObj.tag === tag) > -1;
+            const tagIsPending = pendingTags.toJS().find(tagObj => tagObj.payload.tagName === tag);
             const erroredTag = erroredTags.find(tagObj => tagObj.tag === tag);
             let borderColor;
             if (tagIsPending) {

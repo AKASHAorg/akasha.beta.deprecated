@@ -133,7 +133,7 @@ class ProfileActions {
      * profiles = [{key: string, profile: string}]
      */
     getProfileData = (profiles, full = false) => {
-        this.dispatch((dispatch, getState) => {
+        this.dispatch((dispatch) => {
             dispatch(profileActionCreators.getProfileData({
                 fetchingProfileData: true
             }));
@@ -305,7 +305,7 @@ class ProfileActions {
                     fetchingFollowers: false
                 })),
             onSuccess: (data) => {
-                data.collection.forEach(item => {
+                data.collection.forEach((item) => {
                     if (item.profile.avatar) {
                         item.profile.avatar =
                             imageCreator(item.profile.avatar, item.profile.baseUrl);
@@ -331,7 +331,7 @@ class ProfileActions {
                     fetchingFollowing: false
                 })),
             onSuccess: (data) => {
-                data.collection.forEach(item => {
+                data.collection.forEach((item) => {
                     if (item.profile.avatar) {
                         item.profile.avatar =
                             imageCreator(item.profile.avatar, item.profile.baseUrl);
@@ -339,7 +339,7 @@ class ProfileActions {
                 });
                 this.dispatch(profileActionCreators.followingIteratorSuccess(data, {
                     fetchingFollowing: false
-                }))
+                }));
             }
         });
     };
@@ -388,7 +388,7 @@ class ProfileActions {
                         values: { akashaId: data.akashaId }
                     });
                 },
-                onError: (error) =>
+                onError: error =>
                     dispatch(profileActionCreators.followProfileError(error, flagOff))
             });
         });
@@ -425,7 +425,7 @@ class ProfileActions {
                         values: { akashaId: data.akashaId }
                     });
                 },
-                onError: (error) =>
+                onError: error =>
                     dispatch(profileActionCreators.unfollowProfileError(error, flagOff))
             });
         });

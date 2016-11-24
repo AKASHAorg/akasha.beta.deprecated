@@ -7,28 +7,28 @@ class Tutorials extends Component {
             currentSlide: 0
         };
         this.slides = [{
-            title: 'AKASHA - The Language of Freedom',
+            title: 'The Language of Freedom',
             content: `With AKASHA your thoughts and ideas will echo throughout humanity's existence,
                 thanks to a planetary-scale network immune to censorship by design. The information
                 lives and spreads across the network without relying on a particular entity,
                 not even us.`,
             icon: 'intro_akasha.png'
         }, {
-            title: 'ethereum - Powered By Ethereum',
+            title: 'Powered By Ethereum',
             content: `Ethereum allowed us to build a new kind of application that removes the need
                 to blindly trust server administrators. Thanks to its transparent properties we
                 have strong authentication, identity, verifiability, voting and
                 micro-transactions.`,
             icon: 'intro_ethereum.png'
         }, {
-            title: 'IPFS - Enhanced By The Inter-Planetary File System',
+            title: 'Enhanced By The Inter-Planetary File System',
             content: `Thanks to the Inter-Planetary File System (IPFS) we removed also the need
                 for servers to distribute and store your content. This allows users to circumvent
                 traditional censorship blockades and empowers people with real freedom of
                 expression.`,
             icon: 'intro_ipfs.png'
         }, {
-            title: 'world - Towards A Better Web In Service Of Humanity',
+            title: 'Towards A Better Web In Service Of Humanity',
             content: `The future isn't some place where we are going to go but a place we get to
                 create. We deserve a better web and we now have the tools to make it happen.
                 Together we can create a world where freedom of expression on the web is a right,

@@ -222,7 +222,9 @@ class EProcActions {
             options: {},
             onError: err => this.dispatch(appActionCreators.showError(err)),
             onSuccess: data =>
-                this.dispatch(externalProcessActionCreators.getGethLogs(this.filterLogs(data, timestamp)))
+                this.dispatch(externalProcessActionCreators.getGethLogs(
+                    this.filterLogs(data, timestamp)
+                ))
         });
 
     stopGethLogger = () => this.gethService.stopGethLogger();

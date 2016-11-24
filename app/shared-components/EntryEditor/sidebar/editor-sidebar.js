@@ -31,10 +31,8 @@ class SideBar extends Component {
     getSelectedBlockElement = () => {
         const { editorState } = this.props;
         const selection = window.getSelection();
-        const editorSelection = editorState.getSelection();
         const startKey = editorState.getSelection().getStartKey();
         const hasText = editorState.getCurrentContent().getBlockForKey(startKey).text !== '';
-        // if it is text node take the parent
         if (selection.rangeCount === 0 || hasText) {
             this.setState({
                 sidebarVisible: false
@@ -43,11 +41,12 @@ class SideBar extends Component {
         }
         let node = selection.getRangeAt(0).startContainer;
         do {
-            if (node.getAttribute && node.getAttribute('data-block') == 'true') {
+            if (node.getAttribute && node.getAttribute('data-block') === 'true') {
                 return node;
             }
             node = node.parentNode;
         } while (node != null);
+        return null;
     }
     getValidSidebarPlugins () {
         const plugins = [];
@@ -68,7 +67,7 @@ class SideBar extends Component {
             (container.getBoundingClientRect().top + 16) - document.documentElement.clientTop;
         const left = element.offsetLeft - 50;
         let top = element.getBoundingClientRect().top - containerTop;
-        top = Math.floor(top) + 4;
+        top = Math.floor(top) + 8;
 
         if ((this.state.top !== top)) {
             this.setState({
@@ -99,7 +98,7 @@ class SideBar extends Component {
         return (
           <div
             ref={(container) => { this.container = container; }}
-            className={`sidebar ${isVisible ? 'visible' : 'hidden'}`}
+
           >
             <div style={{ top: `${this.state.top}px`, left: `${this.state.left}px`, zIndex: 9 }} className="sidebar__menu">
               <ul className="sidebar__sidemenu-wrapper">

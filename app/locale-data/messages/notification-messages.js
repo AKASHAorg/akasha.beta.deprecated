@@ -31,30 +31,35 @@ const notificationMessages = defineMessages({
         description: 'Notification to be displayed when unfollow transaction was mined',
         defaultMessage: 'You are not following {akashaId} anymore'
     },
-    tagPublishedSuccessfully: {
-        id: 'app.notification.tagPublishedSuccessfully',
-        description: 'Notification to be displayed when a tag was published',
-        defaultMessage: 'Tag {tagName} published successfully'
+    registeringTag: {
+        id: 'app.notification.registeringTag',
+        description: 'Notification snackbar to display when a tag is registering',
+        defaultMessage: 'Registering "{tagName}" tag.'
+    },
+    tagRegisteredSuccessfully: {
+        id: 'app.notification.tagRegisteredSuccessfully',
+        description: 'Notification to be displayed when a tag was registered',
+        defaultMessage: 'Tag "{tagName}" successfully registered.'
     },
     subscribingTag: {
         id: 'app.notification.subscribingTag',
         description: 'Notification to be displayed when subscribe tag transaction is sent',
-        defaultMessage: 'Subscribing to \"{tagName}\" ...'
+        defaultMessage: 'Subscribing to "{tagName}" ...'
     },
     tagSubscribedSuccessfully: {
         id: 'app.notification.tagSubscribedSuccessfully',
         description: 'Notification to be displayed when a user subscribed to a tag',
-        defaultMessage: 'You successfully subscribed to tag \"{tagName}\"'
+        defaultMessage: 'You successfully subscribed to tag "{tagName}"'
     },
     unsubscribingTag: {
         id: 'app.notification.unsubscribingTag',
         description: 'Notification to be displayed when unsubscribe tag transaction is sent',
-        defaultMessage: 'Unsubscribing from \"{tagName}\" ...'
+        defaultMessage: 'Unsubscribing from "{tagName}" ...'
     },
     tagUnsubscribedSuccessfully: {
         id: 'app.notification.tagUnsubscribedSuccessfully',
         description: 'Notification to be displayed when a user unsubscribed from a tag',
-        defaultMessage: 'You successfully unsubscribed from tag \"{tagName}\"'
+        defaultMessage: 'You successfully unsubscribed from tag "{tagName}"'
     }
 });
 export { notificationMessages };
