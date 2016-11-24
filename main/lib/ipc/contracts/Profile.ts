@@ -15,7 +15,7 @@ export default class Profile extends BaseContract {
     /**
      * Get ipfs hash for profile at address
      * @param address
-     * @returns {"bluebird".Bluebird}
+     * @returns {Bluebird<U>}
      */
     public getIpfs(address: string) {
         const profile = this.contract.at(address);
