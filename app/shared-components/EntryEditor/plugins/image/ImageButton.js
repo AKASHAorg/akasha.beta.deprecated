@@ -13,9 +13,11 @@ export default class BlockButton extends Component {
             error: ''
         };
     }
-    triggerFileDialog = () => {
+    triggerFileDialog = (ev) => {
         this.setState({
             dialogOpen: true
+        }, () => {
+            if (this.props.onClick) this.props.onClick(ev);
         });
     }
     _triggerFileBrowser = () => {

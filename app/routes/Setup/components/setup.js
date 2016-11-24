@@ -12,7 +12,7 @@ class Setup extends Component {
     render () {
         const { theme } = this.props;
         return (
-          <div className="col-xs-12" style={{ padding: 0 }}>
+          <div className="col-xs-12" style={{ padding: 0, overflow: 'hidden' }}>
             <div
               className="col-xs-5"
               style={{

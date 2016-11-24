@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 
 class BlockStyles extends Component {
-    onClick = () => {
-        if (this.props.open) this.props.toggle();
-    }
     onChange = (editorState) => {
         this.props.onChange(editorState);
+    }
+    handleClick = (ev) => {
+        if (this.props.open) this.props.toggle(ev);
     }
     render () {
         const className = this.props.open ? 'sidemenu__items--open' : 'sidemenu__items';
@@ -20,6 +20,7 @@ class BlockStyles extends Component {
                       className="sidemenu__button"
                       editorState={this.props.editorState}
                       onChange={this.onChange}
+                      onClick={this.handleClick}
                     />
                   </li>
                 );

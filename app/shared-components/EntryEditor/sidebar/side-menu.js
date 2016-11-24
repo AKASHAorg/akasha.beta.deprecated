@@ -19,8 +19,7 @@ class SideMenu extends Component {
     }
 
     toggle = (ev) => {
-        ev.preventDefault();
-        console.log(this.state, 'state');
+        console.log(this.state, 'toggle state');
         this.setState({
             open: !this.state.open
         });
