@@ -7,10 +7,11 @@ const index_2 = require('../auth/index');
 const execute = Promise.coroutine(function* (data) {
     const ipfsHash = yield ipfs_1.create(data.ipfs);
     const currentProfile = yield current_profile_1.default.execute();
-    if (!currentProfile) {
+    if (!currentProfile.profileAddress) {
         throw new Error('No profile found to update');
     }
-    const txData = yield index_1.constructed.instance.profile.updateHash(ipfsHash, currentProfile, data.gas);
+    const txData = yield index_1.constructed.instance.profile
+        .updateHash(ipfsHash, currentProfile.profileAddress, data.gas);
     const tx = yield index_2.module.auth.signData(txData, data.token);
     return { tx };
 });
