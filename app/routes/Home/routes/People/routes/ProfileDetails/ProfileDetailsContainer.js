@@ -36,7 +36,9 @@ class ProfileDetailsContainer extends Component {
 
     componentWillUnmount () {
         const { profileActions, profileData } = this.props;
-        profileActions.clearFollowers(profileData.get('akashaId'));
+        if (profileData) {
+            profileActions.clearFollowers(profileData.get('akashaId'));
+        }
     }
 
     followProfile = (akashaId) => {
