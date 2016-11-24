@@ -17,43 +17,19 @@ class EditProfile extends Component {
     constructor (props) {
         super(props);
         this.getProps = inputFieldMethods.getProps.bind(this);
+        const profileData = props.loggedProfileData.toJS();
         this.state = {
             formValues: {
-                firstName: props.loggedProfileData.get('firstName'),
-                lastName: props.loggedProfileData.get('lastName')
+                firstName: profileData.firstName,
+                lastName: profileData.lastName
             },
-            about: '',
-            avatar: props.loggedProfileData.get('avatar'),
-            backgroundImage: {},
-            links: [],
+            about: profileData.about,
+            avatar: profileData.avatar,
+            backgroundImage: profileData.backgroundImage,
+            links: profileData.links || [],
             lastCreatedLink: ''
         };
         this.validatorTypes = new UserValidation(props.intl).getSchema();
-    }
-
-    componentWillMount () {
-        const { loggedProfileData, profileActions } = this.props;
-        profileActions.getProfileData([{ profile: loggedProfileData.get('profile') }], true);
-    }
-
-    componentWillReceiveProps (nextProps) {
-        if (!nextProps.fetchingProfileData && this.props.fetchingProfileData) {
-            const { firstName, lastName, about, backgroundImage, links,
-                avatar } = nextProps.loggedProfileData.toJS();
-            this.setState({
-                formValues: {
-                    firstName,
-                    lastName
-                },
-                backgroundImage,
-                about,
-                avatar,
-                links: []
-            });
-        }
-        if (!nextProps.loginRequested && this.props.loginRequested) {
-            this.handleSubmit();
-        }
     }
 
     getValidatorData () {
@@ -62,7 +38,7 @@ class EditProfile extends Component {
 
     handleSubmit = () => {
         const { updateProfileData } = this.props;
-        const profileData = this.state.formValues;
+        const profileData = Object.assign({}, this.state.formValues);
         const profileImage = this.imageUploader.getWrappedInstance().getImage();
         const userLinks = this.state.links.filter(link => link.title.length > 0);
 

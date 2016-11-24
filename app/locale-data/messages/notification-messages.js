@@ -4,7 +4,7 @@ const notificationMessages = defineMessages({
     updatingProfile: {
         id: 'app.notification.updatingProfile',
         description: 'Notification to be displayed when update profile transaction is sent',
-        defaultMessage: 'Your profile is updating...'
+        defaultMessage: 'Your profile is updating ...'
     },
     profileUpdateSuccess: {
         id: 'app.notification.profileUpdateSuccess',

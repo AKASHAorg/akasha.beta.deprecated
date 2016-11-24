@@ -71,6 +71,8 @@ class ProfileCard extends Component {
         const actionsStyle = {
             display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '0 0 10px'
         };
+        const profileName = `${firstName} ${lastName}`;
+        const userInitials = profileName.match(/\b\w/g).reduce((prev, current) => prev + current, '');
 
         return (
           <Paper
@@ -86,7 +88,7 @@ class ProfileCard extends Component {
                 <Avatar
                   image={avatar}
                   radius={80}
-                  userInitials={`${firstName[0]} ${lastName[0]}`}
+                  userInitials={userInitials}
                   userInitialsStyle={{
                       textTransform: 'uppercase',
                       fontSize: '32px',

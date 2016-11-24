@@ -119,24 +119,26 @@ export function clearOtherProfiles () {
     };
 }
 
-export function updateProfileData () {
+export function updateProfileData (flags) {
     return {
-        type: types.UPDATE_PROFILE_DATA
+        type: types.UPDATE_PROFILE_DATA,
+        flags
     };
 }
 
-export function updateProfileDataSuccess (profileData) {
+export function updateProfileDataSuccess (flags) {
     return {
         type: types.UPDATE_PROFILE_DATA_SUCCESS,
-        profileData
+        flags
     };
 }
 
-export function updateProfileDataError (error) {
+export function updateProfileDataError (error, flags) {
     error.code = 'UPDE01';
     return {
         type: types.UPDATE_PROFILE_DATA_ERROR,
-        error
+        error,
+        flags
     };
 }
 

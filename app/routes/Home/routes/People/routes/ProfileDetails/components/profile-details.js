@@ -53,8 +53,8 @@ class ProfileDetails extends Component {
         const imageUrl = backgroundImage[bestMatch] ?
             imageCreator(backgroundImage[bestMatch].src['/'], profileData.baseUrl) :
             '';
-        const userInitials =
-            `${profileData.firstName[0]}${profileData.lastName[0]}`;
+        const profileName = `${profileData.get('firstName')} ${profileData.get('lastName')}`;
+        const userInitials = profileName.match(/\b\w/g).reduce((prev, current) => prev + current, '');
         const followers = <FormattedMessage
           id="app.profile.followersCount"
           description="counting a profile's followers"

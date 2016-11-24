@@ -47,7 +47,7 @@ class HomeContainer extends React.Component {
         }
         if (loggedProfile && loggedProfile.get('profile') && !this.dataLoaded) {
             this.dataLoaded = true;
-            profileActions.getProfileData([{ profile: loggedProfile.get('profile') }]);
+            profileActions.getProfileData([{ profile: loggedProfile.get('profile') }], true);
             transactionActions.getMinedTransactions();
             transactionActions.getPendingTransactions();
             draftActions.getDraftsCount(loggedProfile.get('profile'));
@@ -79,13 +79,13 @@ class HomeContainer extends React.Component {
 
     updateProfileData = (profileData) => {
         const { profileActions, loggedProfile } = this.props;
-        profileActions.updateProfileData(profileData, loggedProfile);
+        profileActions.addUpdateProfileDataAction(profileData, loggedProfile);
     };
 
     render () {
         const { appActions, draftActions, fetchingLoggedProfile, loggedProfileData,
             profileActions, entriesCount, draftsCount, loggedProfile, activePanel,
-            params, loginRequested, updatingProfile, entries } = this.props;
+            params, updatingProfile } = this.props;
         const profileAddress = loggedProfile.get('profile');
         const account = loggedProfile.get('account');
         const loadingInProgress = !loggedProfileData || fetchingLoggedProfile;
@@ -140,6 +140,7 @@ class HomeContainer extends React.Component {
 HomeContainer.propTypes = {
     activePanel: PropTypes.string,
     appActions: PropTypes.shape(),
+    tagActions: PropTypes.shape(),
     children: PropTypes.element,
     draftActions: PropTypes.shape(),
     draftsCount: PropTypes.number,
@@ -147,7 +148,6 @@ HomeContainer.propTypes = {
     fetchingLoggedProfile: PropTypes.bool,
     fetchingProfileData: PropTypes.bool,
     fetchingDraftsCount: PropTypes.bool,
-    loginRequested: PropTypes.bool,
     fetchingEntriesCount: PropTypes.bool,
     loggedProfile: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
@@ -155,8 +155,7 @@ HomeContainer.propTypes = {
     profileActions: PropTypes.shape(),
     entryActions: PropTypes.shape(),
     transactionActions: PropTypes.shape(),
-    params: PropTypes.shape(),
-    entries: PropTypes.shape()
+    params: PropTypes.shape()
 };
 
 HomeContainer.contextTypes = {
