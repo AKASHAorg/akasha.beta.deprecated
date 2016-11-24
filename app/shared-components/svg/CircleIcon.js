@@ -1,7 +1,5 @@
 import React, { PropTypes } from 'react';
 import { IconButton } from 'material-ui';
-import radium from 'radium';
-
 
 function CircleIcon ({ children, disabled, tooltip, onClick }) {
     const style = {
@@ -13,9 +11,6 @@ function CircleIcon ({ children, disabled, tooltip, onClick }) {
         borderWidth: '1px',
         borderStyle: 'solid',
         borderColor: 'rgba(0, 0, 0, 0.117647)',
-        ':hover': {
-            borderColor: '#EEE'
-        },
         borderRadius: '50%'
     };
     return (
@@ -40,4 +35,4 @@ CircleIcon.propTypes = {
 };
 
 
-export default radium(CircleIcon);
+export default CircleIcon;

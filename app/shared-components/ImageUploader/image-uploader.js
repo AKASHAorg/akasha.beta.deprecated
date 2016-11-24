@@ -26,8 +26,8 @@ class ImageUploader extends Component {
             }
         }
     }
-    componentWillUnmount = () => {
-        // window.URL.revokeObjectURL(this.state.initialImageFile);
+    shouldComponentUpdate (nextProps, nextState) {
+        return nextState.imageFile !== this.state.imageFile;
     }
     getImage = () => {
         if (this.state.isNewImage) {

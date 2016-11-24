@@ -42,6 +42,7 @@ export default class BlockButton extends Component {
                 licence: this.state.licence,
                 caption: ''
             };
+            console.log(data, 'image data 2 add');
             this.props.onChange(insertDataBlock(this.props.editorState, data));
         }).then(() => {
             this.fileInput.files = null;
@@ -49,6 +50,7 @@ export default class BlockButton extends Component {
                 dialogOpen: false
             });
         }).catch((reason) => {
+            console.error(reason);
             this.setState({
                 errors: reason.message
             });
