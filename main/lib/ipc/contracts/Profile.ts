@@ -54,7 +54,8 @@ export default class Profile extends BaseContract {
      */
     public updateHash(hash: string, address: string, gas?: number) {
         const hashTr = this.splitIpfs(hash);
-        const extracted = this.contract.at(address).setHash.request(hashTr, { gas });
+        const profile = this.contract.at(address);
+        const extracted = profile.setHash.request(hashTr, { gas });
         return Promise.resolve(extracted.params[0]);
     }
 
