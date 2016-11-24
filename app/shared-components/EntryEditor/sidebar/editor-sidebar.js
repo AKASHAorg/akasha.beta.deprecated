@@ -31,20 +31,23 @@ class SideBar extends Component {
     getSelectedBlockElement = () => {
         const { editorState } = this.props;
         const selection = window.getSelection();
+        const editorSelection = editorState.getSelection();
         const startKey = editorState.getSelection().getStartKey();
         const hasText = editorState.getCurrentContent().getBlockForKey(startKey).text !== '';
-
-        if ((selection.anchorOffset > 0) || hasText) {
+        // if it is text node take the parent
+        if (selection.rangeCount === 0 || hasText) {
             this.setState({
                 sidebarVisible: false
             });
             return null;
         }
-        let node = selection.anchorNode;
-        if (node && (node.nodeType === 3)) { // if it is text node take the parent
+        let node = selection.getRangeAt(0).startContainer;
+        do {
+            if (node.getAttribute && node.getAttribute('data-block') == 'true') {
+                return node;
+            }
             node = node.parentNode;
-        }
-        return node;
+        } while (node != null);
     }
     getValidSidebarPlugins () {
         const plugins = [];
