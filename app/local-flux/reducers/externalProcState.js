@@ -12,7 +12,8 @@ const GethStatus = Record({
     spawned: false,
     started: null,
     stopped: null,
-    startRequested: false
+    startRequested: false,
+    blockNr: null
 });
 
 const GethSyncStatus = Record({
