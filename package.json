@@ -246,6 +246,7 @@
         "linux": {
             "target": [
                 "deb",
+                "snap",
                 "AppImage"
             ]
         }
