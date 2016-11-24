@@ -28,6 +28,8 @@ const UserProfileHeader = (props) => {
         hoverColor: colors.lightBlack,
         viewBox: '0 0 20 20'
     };
+    const profileName = `${profile.get('firstName')} ${profile.get('lastName')}`;
+    const userInitials = profileName.match(/\b\w/g).reduce((prev, current) => prev + current, '');
     return (
       <div style={props.rootStyle} >
         <div className="row top-xs" >
@@ -37,7 +39,7 @@ const UserProfileHeader = (props) => {
               image={avatarImage}
               editable={false}
               offsetBorder="1px solid rgba(0, 0, 0, 0.41)"
-              userInitials={`${profile.get('firstName')[0]}${profile.get('lastName')[0]}`}
+              userInitials={userInitials}
             />
           </div>
           <div className="col-xs-8" style={{ marginTop: '-20px' }} >

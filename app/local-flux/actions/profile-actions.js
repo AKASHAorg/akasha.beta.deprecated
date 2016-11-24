@@ -133,50 +133,36 @@ class ProfileActions {
      * profiles = [{key: string, profile: string}]
      */
     getProfileData = (profiles, full = false) => {
-        this.dispatch((dispatch, getState) => {
-            dispatch(profileActionCreators.getProfileData({
-                fetchingProfileData: true
-            }));
-            profiles.forEach((profileObject) => {
-                this.profileService.getProfileData({
-                    options: {
-                        profile: profileObject.profile,
-                        full
-                    },
-                    onSuccess: (data) => {
-                        if (data.avatar) {
-                            data.avatar = imageCreator(data.avatar, data.baseUrl);
-                        }
-                        dispatch(profileActionCreators.getProfileDataSuccess(data, {
-                            fetchingProfileData: false
-                        }));
-                    },
-                    onError: (err) => {
-                        dispatch(profileActionCreators.getProfileDataError(err, {
-                            fetchingProfileData: false
-                        }));
+        this.dispatch(profileActionCreators.getProfileData({
+            fetchingProfileData: true
+        }));
+        profiles.forEach((profileObject) => {
+            this.profileService.getProfileData({
+                options: {
+                    profile: profileObject.profile,
+                    full
+                },
+                onSuccess: (data) => {
+                    if (data.avatar) {
+                        data.avatar = imageCreator(data.avatar, data.baseUrl);
                     }
-                });
+                    this.dispatch(profileActionCreators.getProfileDataSuccess(data, {
+                        fetchingProfileData: false
+                    }));
+                },
+                onError: (err) => {
+                    this.dispatch(profileActionCreators.getProfileDataError(err, {
+                        fetchingProfileData: false
+                    }));
+                }
             });
         });
     };
 
-    updateProfileData = (updatedProfile, loggedProfile, gas) => {
-        const isLoggedIn = Date.parse(loggedProfile.get('expiration')) > Date.now();
-        const {
-            firstName,
-            lastName,
-            avatar,
-            about,
-            links,
-            backgroundImage
-        } = updatedProfile;
-        const ipfs = {
-            firstName,
-            lastName,
-            about,
-            avatar
-        };
+    updateProfileData = (updatedProfile, gas) => {
+        const { firstName, lastName, avatar, about, links,
+            backgroundImage } = updatedProfile.toJS();
+        const ipfs = { firstName, lastName, about, avatar };
 
         if (links) {
             ipfs.links = links;
@@ -185,39 +171,43 @@ class ProfileActions {
         if (backgroundImage) {
             ipfs.backgroundImage = backgroundImage.length ? backgroundImage[0] : backgroundImage;
         }
-        if (isLoggedIn) {
-            this.updateProfile();
-            this.dispatch(() => {
-                this.profileService.updateProfileData({
-                    token: loggedProfile.get('token'),
-                    ipfs,
-                    gas,
-                    onSuccess: (data) => {
-                        this.transactionActions.listenForMinedTx();
-                        this.transactionActions.addToQueue([{
-                            tx: data.tx,
-                            type: 'updateProfile'
-                        }]);
-                        this.showNotification('updatingProfile');
-                    },
-                    onError: (error) => {
-                        this.updateProfileDataError(error);
-                    }
-                });
+        this.dispatch(profileActionCreators.updateProfileData({
+            updatingProfile: true
+        }));
+        this.dispatch((dispatch, getState) => {
+            const loggedProfile = getState().profileState.get('loggedProfile');
+            this.profileService.updateProfileData({
+                token: loggedProfile.get('token'),
+                ipfs,
+                gas,
+                onSuccess: (data) => {
+                    this.transactionActions.listenForMinedTx();
+                    this.transactionActions.addToQueue([{
+                        tx: data.tx,
+                        type: 'updateProfile'
+                    }]);
+                    this.appActions.showNotification({
+                        id: 'updatingProfile',
+                        values: {}
+                    });
+                },
+                onError: error =>
+                    dispatch(profileActionCreators.updateProfileDataError(error, {
+                        updatingProfile: false
+                    }))
             });
-        } else if (!isLoggedIn) {
-            this.appActions.showAuthDialog();
-        }
+        });
     };
 
-    updateProfile = () =>
-        this.dispatch(profileActionCreators.updateProfileData());
-
-    updateProfileDataSuccess = () =>
-        this.dispatch(profileActionCreators.updateProfileDataSuccess());
-
-    updateProfileDataError = error =>
-        this.dispatch(profileActionCreators.updateProfileDataError(error));
+    updateProfileDataSuccess = () => {
+        this.dispatch(profileActionCreators.updateProfileDataSuccess({
+            updatingProfile: false
+        }));
+        this.appActions.showNotification({
+            id: 'profileUpdateSuccess',
+            values: { }
+        });
+    };
 
     getProfileBalance = (profileKey, unit) =>
         this.profileService.getProfileBalance({
@@ -343,6 +333,17 @@ class ProfileActions {
             }
         });
     };
+
+    addUpdateProfileDataAction = (profileData) => {
+        this.appActions.addPendingAction({
+            type: 'updateProfile',
+            payload: { profileData },
+            titleId: 'updateProfileTitle',
+            messageId: 'updateProfile',
+            gas: 2000000,
+            status: 'needConfirmation'
+        });
+    }
 
     addFollowProfileAction = (akashaId) => {
         this.appActions.addPendingAction({
