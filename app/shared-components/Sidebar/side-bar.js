@@ -45,8 +45,8 @@ class SideBar extends Component {
     };
     render () {
         const { style, loggedProfileData, activePanel } = this.props;
-        const userInitials =
-            `${loggedProfileData.get('firstName')[0]}${loggedProfileData.get('lastName')[0]}`;
+        const profileName = `${loggedProfileData.get('firstName')} ${loggedProfileData.get('lastName')}`;
+        const userInitials = profileName.match(/\b\w/g).reduce((prev, current) => prev + current, '');
         const balance = loggedProfileData.get('balance');
         return (
           <div style={style} >

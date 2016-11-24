@@ -31,7 +31,7 @@ class ImageUploader extends Component {
     }
     getImage = () => {
         if (this.state.isNewImage) {
-            return this.state.images;
+            return this.state.imageFile;
         }
         return this.props.initialImage;
     }
@@ -79,7 +79,6 @@ class ImageUploader extends Component {
             clearImage();
         }
         this.setState({
-            images: null,
             imageFile: null,
             isNewImage: false,
             initialImageFile: null,
