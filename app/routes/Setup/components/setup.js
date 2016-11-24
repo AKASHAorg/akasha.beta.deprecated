@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import { Tutorials } from 'shared-components';
 
 class Setup extends Component {
     componentDidMount () {
@@ -9,12 +10,26 @@ class Setup extends Component {
     }
 
     render () {
+        const { theme } = this.props;
         return (
-          <div className="row">
-            <div className="col-xs-5">
-               {this.props.children}
+          <div className="col-xs-12" style={{ padding: 0 }}>
+            <div
+              className="col-xs-5"
+              style={{
+                  padding: 0
+              }}
+            >
+              {this.props.children}
             </div>
-            <div className="col-xs-7">Setup Tutorials??</div>
+            <div
+              className="col-xs-7"
+              style={{
+                  backgroundColor: theme === 'light' ? '#f3f3f3' : '#252525',
+                  padding: 0
+              }}
+            >
+              <Tutorials theme={theme} />
+            </div>
           </div>
         );
     }
@@ -22,6 +37,8 @@ class Setup extends Component {
 
 Setup.propTypes = {
     settingsActions: PropTypes.shape().isRequired,
+    children: PropTypes.element,
+    theme: PropTypes.string
 };
 
 Setup.contextTypes = {

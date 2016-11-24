@@ -2,7 +2,6 @@ import React, { PropTypes, Component } from 'react';
 import { SvgIcon } from 'material-ui';
 import { getMuiTheme } from 'material-ui/styles';
 import { MenuAkashaLogo } from '../svg';
-import Radium from 'radium';
 
 class IconLogo extends Component {
     static defaultProps = {
@@ -51,4 +50,4 @@ class IconLogo extends Component {
     }
 }
 
-export default Radium(IconLogo);
+export default IconLogo;

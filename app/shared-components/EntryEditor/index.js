@@ -43,15 +43,21 @@ class EntryEditor extends Component {
             this.editor.focus();
         }
     }
-    _renderSidebar = ({ plugins, editorState, onChange }) =>
-      <EditorSidebar
-        plugins={plugins}
-        editorState={editorState}
-        onChange={onChange}
-      />;
+    _renderSidebar = ({ plugins, editorState, onChange }) => {
+        const { showSidebar, readOnly } = this.props;
+        if (showSidebar && !readOnly) {
+            return (
+              <EditorSidebar
+                plugins={plugins}
+                editorState={editorState}
+                onChange={onChange}
+              />);
+        }
+        return null;
+    };
 
     render () {
-        const { showTitle, textHint } = this.props;
+        const { showTitle, titlePlaceholder, editorPlaceholder } = this.props;
         return (
           <div className="editor" style={{ textAlign: 'left' }}>
             <div>
@@ -61,7 +67,7 @@ class EntryEditor extends Component {
                     <textarea
                       type="text"
                       className={styles.inputField}
-                      placeholder={textHint}
+                      placeholder={titlePlaceholder}
                       onChange={this._handleTitleChange}
                       value={this.state.title}
                       onKeyPress={this._handleKeyPress}
@@ -80,22 +86,31 @@ class EntryEditor extends Component {
                 editorState={this.state.editorState}
                 onChange={this._handleEditorChange}
                 plugins={[imagePlugin]}
-                placeholder="write something"
+                placeholder={editorPlaceholder}
               />
             </div>
           </div>
         );
     }
 }
+EntryEditor.defaultProps = {
+    showSidebar: true,
+    showTitle: true,
+    readOnly: false,
+    editorPlaceholder: 'write something',
+    titlePlaceholder: 'write a title'
+};
 
 EntryEditor.propTypes = {
     title: PropTypes.string,
     editorRef: PropTypes.func,
     readOnly: PropTypes.bool,
     content: PropTypes.shape(),
-    textHint: PropTypes.string,
     showTitle: PropTypes.bool,
-    onAutosave: PropTypes.func
+    onAutosave: PropTypes.func,
+    editorPlaceholder: PropTypes.string,
+    titlePlaceholder: PropTypes.string,
+    showSidebar: PropTypes.bool
 };
 
 export default EntryEditor;
