@@ -66,7 +66,6 @@ const EntriesStream = Record({
 });
 const initialState = fromJS({
     published: new List(),
-    savedEntries: new List(),
     licences: new List(),
     errors: new List(),
     flags: new Map(),

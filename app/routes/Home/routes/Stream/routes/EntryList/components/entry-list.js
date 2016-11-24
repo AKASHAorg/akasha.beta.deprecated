@@ -96,9 +96,20 @@ class EntryList extends Component {
         tagActions.addUnsubscribeTagAction(selectedTag);
     };
 
+    selectProfile = (address) => {
+        const { router } = this.context;
+        const loggedAkashaId = this.props.loggedProfileData.get('akashaId');
+        router.push(`/${loggedAkashaId}/profile/${address}`);
+    }
+
+    selectTag = (tag) => {
+        const { tagActions } = this.props;
+        tagActions.saveTag(tag);
+    }
+
     render () {
         const { loggedProfileData, selectedTag, tagEntries, savedEntries, moreTagEntries,
-            moreSavedEntries, tagEntriesCount, entriesStream, subscribePending, params,
+            moreSavedEntries, tagEntriesCount, entriesStream, subscribePending, params, blockNr,
             intl } = this.props;
         const entries = params.filter === 'tag' ? tagEntries : savedEntries;
         const moreEntries = params.filter === 'tag' ? moreTagEntries : moreSavedEntries;
@@ -132,13 +143,17 @@ class EntryList extends Component {
               <EntryCard
                 entry={entry}
                 key={key}
-                onContentClick={(ev) => this._navigateToEntry(ev, entry)}
+                onContentClick={ev => this._navigateToEntry(ev, entry)}
                 onTagClick={this._navigateToTag}
                 onUpvote={this._handleUpvote}
                 onDownvote={this._handleDownvote}
                 onComment={this._handleComment}
                 onShare={this._handleShare}
                 onBookmark={this._handleBookmark}
+                blockNr={blockNr}
+                selectProfile={this.selectProfile}
+                selectTag={this.selectTag}
+                selectedTag={selectedTag}
               />
             )}
             {moreEntries &&
@@ -165,10 +180,14 @@ EntryList.propTypes = {
     entriesStream: PropTypes.shape(),
     selectedTag: PropTypes.string,
     subscribePending: PropTypes.shape(),
+    entryActions: PropTypes.shape(),
     tagActions: PropTypes.shape(),
+    tagEntriesCount: PropTypes.shape(),
+    blockNr: PropTypes.number,
+    params: PropTypes.shape(),
     intl: PropTypes.shape()
 };
 EntryList.contextTypes = {
-    router: PropTypes.object
+    router: PropTypes.shape()
 };
 export default injectIntl(EntryList);

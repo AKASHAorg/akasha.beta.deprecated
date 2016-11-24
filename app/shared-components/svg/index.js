@@ -43,6 +43,12 @@ import CreativeCommonsSHARE from './creative-commons-share';
 import CreativeCommonsZERO from './creative-commons-zero';
 import CreativeCommonsPD from './creative-commons-pd';
 import CreativeCommonsSA from './creative-commons-sa';
+import EntryBookmarkOff from './entry-star-off';
+import EntryBookmarkOn from './entry-star-on';
+import EntryComment from './entry-comment';
+import EntryCommentReply from './entry-comment-reply';
+import EntryDownvote from './entry-downvote';
+import EntryUpvote from './entry-upvote';
 
 export {
     ProfileIcon, AddEntryIcon, SearchIcon, StreamsIcon, PortalsIcon,
@@ -55,5 +61,6 @@ export {
     CreativeCommonsBY, CreativeCommonsCC, CreativeCommonsNCEU,
     CreativeCommonsNCJP, CreativeCommonsNC, CreativeCommonsND,
     CreativeCommonsREMIX, CreativeCommonsSHARE, CreativeCommonsZERO,
-    CreativeCommonsPD, CreativeCommonsSA
+    CreativeCommonsPD, CreativeCommonsSA, EntryUpvote, EntryDownvote, EntryComment,
+    EntryCommentReply, EntryBookmarkOn, EntryBookmarkOff
 };

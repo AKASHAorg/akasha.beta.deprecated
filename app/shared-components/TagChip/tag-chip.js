@@ -4,13 +4,14 @@ import { Chip } from 'material-ui';
 const TagChip = ({ style, onTagClick, tag, selectedTag }, { muiTheme }) => {
     const { palette } = muiTheme;
     const tagStyle = {
-        display: 'inline-block',
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
         border: '1px solid',
         borderColor: tag === selectedTag ? palette.primary1Color : palette.borderColor,
         backgroundColor: palette.canvasColor,
         borderRadius: 3,
         height: 34,
-        verticalAlign: 'middle',
         marginRight: '4px',
         marginBottom: '4px',
         cursor: 'pointer',
@@ -31,7 +32,7 @@ const TagChip = ({ style, onTagClick, tag, selectedTag }, { muiTheme }) => {
 TagChip.propTypes = {
     tag: React.PropTypes.string.isRequired,
     selectedTag: React.PropTypes.string,
-    style: React.PropTypes.object,
+    style: React.PropTypes.shape(),
     onTagClick: React.PropTypes.func.isRequired
 };
 

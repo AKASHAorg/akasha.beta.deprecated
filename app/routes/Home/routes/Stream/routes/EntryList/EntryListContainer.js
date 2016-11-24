@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { ProfileActions, EntryActions, AppActions, TagActions } from 'local-flux';
+import { EntryActions, AppActions, TagActions } from 'local-flux';
 import EntryList from './components/entry-list';
 
 function mapStateToProps (state) {
@@ -13,14 +13,14 @@ function mapStateToProps (state) {
         entriesStream: state.entryState.get('entriesStream'),
         selectedTag: state.tagState.get('selectedTag'),
         subscribePending: state.tagState.getIn(['flags', 'subscribePending']),
-        tagEntriesCount: state.entryState.get('tagEntriesCount')
+        tagEntriesCount: state.entryState.get('tagEntriesCount'),
+        blockNr: state.externalProcState.getIn(['gethStatus', 'blockNr'])
     };
 }
 
 function mapDispatchToProps (dispatch) {
     return {
         appActions: new AppActions(dispatch),
-        profileActions: new ProfileActions(dispatch),
         entryActions: new EntryActions(dispatch),
         tagActions: new TagActions(dispatch)
     };

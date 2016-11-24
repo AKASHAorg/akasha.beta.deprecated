@@ -53,8 +53,8 @@ class ProfileDetailsContainer extends Component {
 
     selectProfile = (address) => {
         const { router } = this.context;
-        const basePath = this.props.loggedProfileData.get('akashaId');
-        router.push(`/${basePath}/profile/${address}`);
+        const loggedAkashaId = this.props.loggedProfileData.get('akashaId');
+        router.push(`/${loggedAkashaId}/profile/${address}`);
     }
 
     render () {
