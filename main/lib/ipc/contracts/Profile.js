@@ -24,7 +24,8 @@ class Profile extends BaseContract_1.default {
     }
     updateHash(hash, address, gas) {
         const hashTr = this.splitIpfs(hash);
-        const extracted = this.contract.at(address).setHash.request(hashTr, { gas });
+        const profile = this.contract.at(address);
+        const extracted = profile.setHash.request(hashTr, { gas });
         return Promise.resolve(extracted.params[0]);
     }
 }
