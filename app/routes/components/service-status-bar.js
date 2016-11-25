@@ -1,5 +1,4 @@
 import React, { Component, PropTypes } from 'react';
-import { remote } from 'electron';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { SvgIcon, FlatButton, Dialog, Toggle, IconButton } from 'material-ui';
@@ -11,7 +10,6 @@ import { generalMessages } from 'locale-data/messages';
 import GethOptionsForm from './geth-options-form';
 import IpfsOptionsForm from './ipfs-options-form';
 
-const { dialog } = remote;
 const containerStyle = {
     border: '2px solid',
     borderRadius: '16px',
@@ -301,18 +299,16 @@ class ServiceStatusBar extends Component {
     onIpfsStorageChange = (ev) => {
         ev.stopPropagation();
         ev.target.blur();
-        dialog.showOpenDialog({
-            title: 'Select IPFS path',
-            buttonLabel: 'Select',
-            properties: ['openDirectory']
-        }, (paths) => {
-            if (paths) {
-                this.setState({
-                    storagePath: paths[0],
-                    isIpfsFormDirty: true
-                });
-            }
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.webkitdirectory = true;
+        input.addEventListener('change', (e) => {
+            this.setState({
+                storagePath: e.target.files[0].path,
+                isIpfsFormDirty: true
+            });
         });
+        input.click();
     };
 
     saveGethOptions = () => {

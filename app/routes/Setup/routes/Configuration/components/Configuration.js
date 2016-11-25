@@ -1,13 +1,10 @@
 import React, { Component, PropTypes } from 'react';
-import { remote } from 'electron';
 import { FlatButton, RadioButton, RadioButtonGroup, RaisedButton } from 'material-ui';
 import { injectIntl } from 'react-intl';
 import { setupMessages, generalMessages } from 'locale-data/messages'; /* eslint import/no-unresolved: 0 */
 import PanelContainer from 'shared-components/PanelContainer/panel-container'; /* eslint import/no-unresolved: 0 */
 import { GethSettingsForm, IpfsSettingsForm } from 'shared-components';
 import PanelHeader from '../../../../components/panel-header';
-
-const { dialog } = remote;
 
 class Config extends Component {
     constructor (props) {
@@ -92,18 +89,6 @@ class Config extends Component {
         settingsActions.saveSettings('flags', { requestStartupChange: false });
         eProcActions.startSync();
         this.context.router.push('setup/sync-status');
-    };
-
-    showOpenDialog = (title, cb) => {
-        this.setState({
-            isDialogOpen: true
-        }, () => {
-            dialog.showOpenDialog({
-                title: `Select ${title}`,
-                buttonLabel: 'Select',
-                properties: ['openDirectory']
-            }, cb);
-        });
     };
 
     _getLogs = () => {};
