@@ -5,12 +5,12 @@ let transactionActions = null;
 
 class TransactionActions {
     constructor (dispatch) {
-        if (!transactionActions) {
-            transactionActions = this;
+        if (transactionActions) {
+            return transactionActions;
         }
         this.dispatch = dispatch;
         this.transactionService = new TransactionService();
-        return transactionActions;
+        transactionActions = this;
     }
 
     listenForMinedTx = ({ watch = true } = {}) => {

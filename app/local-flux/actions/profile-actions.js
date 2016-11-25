@@ -7,8 +7,8 @@ let profileActions = null;
 
 class ProfileActions {
     constructor (dispatch) {
-        if (!profileActions) {
-            profileActions = this;
+        if (profileActions) {
+           return profileActions;
         }
         this.appActions = new AppActions(dispatch);
         this.transactionActions = new TransactionActions(dispatch);
@@ -16,7 +16,7 @@ class ProfileActions {
         this.authService = new AuthService();
         this.registryService = new RegistryService();
         this.dispatch = dispatch;
-        return profileActions;
+        profileActions = this;
     }
 
     login = ({ account, password, rememberTime, akashaId }) => {

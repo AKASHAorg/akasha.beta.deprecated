@@ -3,6 +3,7 @@ export { CommentActions } from './comment-actions';
 export { DraftActions } from './draft-actions';
 export { EntryActions } from './entry-actions';
 export { EProcActions } from './external-process-actions';
+export { NotificationsActions } from './notifications-actions';
 export { ProfileActions } from './profile-actions';
 export { SettingsActions } from './settings-actions';
 export { TagActions } from './tag-actions';

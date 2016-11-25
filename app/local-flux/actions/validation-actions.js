@@ -4,12 +4,12 @@ let validationActions = null;
 
 class ValidationActions {
     constructor (dispatch) {
-        if (!validationActions) {
-            validationActions = this;
+        if (validationActions) {
+            return validationActions;
         }
         this.validationService = new ValidationService();
         this.dispatch = dispatch;
-        return validationActions;
+        validationActions = this;
     }
     validateAkashaid = (akashaId, cb) => {
         this.validationService.validateakashaId(akashaId, {

@@ -5,13 +5,13 @@ let draftActions = null;
 
 class DraftActions {
     constructor (dispatch) {
-        if (!draftActions) {
-            draftActions = this;
+        if (draftActions) {
+            return draftActions;
         }
         this.dispatch = dispatch;
         this.draftService = new DraftService();
         this.entryService = new EntryService();
-        return draftActions;
+        draftActions = this;
     }
 
     // Must return a promise and also to dispatch actions

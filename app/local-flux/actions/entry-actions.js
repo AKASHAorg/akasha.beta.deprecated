@@ -6,12 +6,12 @@ let entryActions = null;
 class EntryActions {
 
     constructor (dispatch) {
-        if (!entryActions) {
-            entryActions = this;
+        if (entryActions) {
+            return entryActions;
         }
         this.dispatch = dispatch;
         this.entryService = new EntryService();
-        return entryActions;
+        entryActions = this;
     }
 
     getEntriesCount = (akashaId) => {

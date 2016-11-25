@@ -5,12 +5,12 @@ let commentActions = null;
 
 class CommentActions {
     constructor (dispatch) {
-        if (!commentActions) {
-            commentActions = this;
+        if (commentActions) {
+            return commentActions;
         }
         this.dispatch = dispatch;
         this.commentService = new CommentService();
-        return commentActions;
+        commentActions = this;
     }
     getCommentsByEntry (entryId, options) {
         return this.commentService.getCommentsByEntry(entryId, options).then(comments =>

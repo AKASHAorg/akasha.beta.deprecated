@@ -5,14 +5,14 @@ let tempProfileActions = null;
 
 class TempProfileActions {
     constructor (dispatch) {
-        if (!tempProfileActions) {
-            tempProfileActions = this;
+        if (tempProfileActions) {
+            return tempProfileActions;
         }
         this.authService = new AuthService();
         this.profileService = new ProfileService();
         this.registryService = new RegistryService();
         this.dispatch = dispatch;
-        return tempProfileActions;
+        tempProfileActions = this;
     }
     /**
      *

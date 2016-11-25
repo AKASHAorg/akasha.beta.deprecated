@@ -5,12 +5,12 @@ let settingsActions = null;
 
 class SettingsActions {
     constructor (dispatch) {
-        if (!settingsActions) {
-            settingsActions = this;
+        if (settingsActions) {
+            return settingsActions;
         }
         this.settingsService = new SettingsService();
         this.dispatch = dispatch;
-        return settingsActions;
+        settingsActions = this;
     }
     // save app level settings
     saveSettings = (table, settings) => {
