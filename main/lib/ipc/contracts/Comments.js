@@ -14,7 +14,7 @@ class Comments extends BaseContract_1.default {
     }
     comment(entryId, hash, gas = 2000000, parent) {
         const hashTr = this.splitIpfs(hash);
-        return this.evaluateData('comment', gas, hashTr, entryId, parent);
+        return this.evaluateData('comment', gas, entryId, hashTr, parent);
     }
     removeComment(entryId, commentId, gas = 2000000) {
         return this.evaluateData('removeComment', gas, entryId, commentId);

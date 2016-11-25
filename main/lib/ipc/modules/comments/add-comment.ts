@@ -9,7 +9,7 @@ import { constructed as contracts } from '../../contracts/index';
  */
 const execute = Promise.coroutine(function*(data: any) {
     const hash = yield create(data.content);
-    const txData = yield contracts.instance.comments.comment(hash, data.entryId, data.gas, data.parent);
+    const txData = yield contracts.instance.comments.comment(data.entryId, hash, data.gas, data.parent);
     const tx = yield userModule.auth.signData(txData, data.token);
     return { tx };
 });
