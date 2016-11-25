@@ -65,6 +65,26 @@ const notificationMessages = defineMessages({
         id: 'app.notification.publishingEntry',
         description: 'Notification for when entry is publishing',
         defaultMessage: 'Publishing "{title}".'
+    },
+    upvotingEntry: {
+        id: 'app.notification.upvotingEntry',
+        description: 'Notification to be displayed when entry upvote transaction is sent',
+        defaultMessage: 'Upvoting {entryTitle} ...'
+    },
+    upvoteEntrySuccess: {
+        id: 'app.notification.upvoteEntrySuccess',
+        description: 'Notification to be displayed when upvote entry transaction was mined',
+        defaultMessage: 'You successfully upvoted {entryTitle}'
+    },
+    downvotingEntry: {
+        id: 'app.notification.downvotingEntry',
+        description: 'Notification to be displayed when entry downvote transaction is sent',
+        defaultMessage: 'Downvoting {entryTitle} ...'
+    },
+    downvoteEntrySuccess: {
+        id: 'app.notification.downvoteEntrySuccess',
+        description: 'Notification to be displayed when downvote entry transaction was mined',
+        defaultMessage: 'You successfully downvoted {entryTitle}'
     }
 });
 export { notificationMessages };

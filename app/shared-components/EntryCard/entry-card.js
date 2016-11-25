@@ -23,8 +23,32 @@ class EntryCard extends Component {
         selectTag(tag);
     }
 
+    upvote = () => {
+        const { entry, handleUpvote } = this.props;
+        const firstName = entry.getIn(['entryEth', 'publisher', 'firstName']);
+        const lastName = entry.getIn(['entryEth', 'publisher', 'lastName']);
+        const payload = {
+            publisherName: `${firstName} ${lastName}`,
+            entryTitle: entry.getIn(['content', 'title']),
+            entryId: entry.get('entryId')
+        };
+        handleUpvote(payload);
+    }
+
+    downvote = () => {
+        const { entry, handleDownvote } = this.props;
+        const firstName = entry.getIn(['entryEth', 'publisher', 'firstName']);
+        const lastName = entry.getIn(['entryEth', 'publisher', 'lastName']);
+        const payload = {
+            publisherName: `${firstName} ${lastName}`,
+            entryTitle: entry.getIn(['content', 'title']),
+            entryId: entry.get('entryId')
+        };
+        handleDownvote(payload);
+    }
+
     render () {
-        const { entry, blockNr, selectedTag, intl } = this.props;
+        const { entry, blockNr, selectedTag, voteEntryPending, intl } = this.props;
         const content = entry.get('content');
         const blockNumberDiff = blockNr - entry.getIn(['entryEth', 'blockNr']);
         const publisher = entry.getIn(['entryEth', 'publisher']);
@@ -117,8 +141,9 @@ class EntryCard extends Component {
               <div style={{ display: 'flex', alignItems: 'center' }} >
                 <div>
                   <IconButton
-                    onTouchTap={() => null}
+                    onTouchTap={this.upvote}
                     iconStyle={{ width: '20px', height: '20px' }}
+                    disabled={!entry.get('active') || (voteEntryPending && voteEntryPending.value)}
                   >
                     <SvgIcon viewBox="0 0 20 20">
                       <EntryUpvote />
@@ -131,8 +156,9 @@ class EntryCard extends Component {
                 </div>
                 <div>
                   <IconButton
-                    onTouchTap={() => null}
+                    onTouchTap={this.downvote}
                     iconStyle={{ width: '20px', height: '20px' }}
+                    disabled={!entry.get('active') || (voteEntryPending && voteEntryPending.value)}
                   >
                     <SvgIcon viewBox="0 0 20 20">
                       <EntryDownvote />
@@ -149,7 +175,9 @@ class EntryCard extends Component {
                       <EntryComment />
                     </SvgIcon>
                   </IconButton>
-                  {entry.get('commentCount')}
+                </div>
+                <div style={{ fontSize: '16px', paddingRight: '5px' }}>
+                  {entry.get('commentsCount')}
                 </div>
                 <div style={{ flex: '1 1 auto', textAlign: 'right' }}>
                   <IconButton
@@ -172,8 +200,11 @@ EntryCard.propTypes = {
     entry: PropTypes.shape(),
     blockNr: PropTypes.number,
     selectedTag: PropTypes.string,
+    handleUpvote: PropTypes.func,
+    handleDownvote: PropTypes.func,
     selectProfile: PropTypes.func,
     selectTag: PropTypes.func,
+    voteEntryPending: PropTypes.shape(),
     intl: PropTypes.shape()
 };
 export default injectIntl(EntryCard);

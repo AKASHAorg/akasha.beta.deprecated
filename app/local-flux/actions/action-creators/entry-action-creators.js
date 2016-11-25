@@ -184,3 +184,116 @@ export function clearTagEntries () {
         type: types.CLEAR_TAG_ENTRIES
     };
 }
+
+export function voteCost (flags) {
+    return {
+        type: types.VOTE_COST,
+        flags
+    };
+}
+
+export function voteCostSuccess (data, flags) {
+    return {
+        type: types.VOTE_COST_SUCCESS,
+        data,
+        flags
+    };
+}
+
+export function voteCostError (error, flags) {
+    return {
+        type: types.VOTE_COST_ERROR,
+        error,
+        flags
+    };
+}
+
+export function upvote (flags) {
+    return {
+        type: types.UPVOTE,
+        flags
+    };
+}
+
+export function upvoteSuccess (flags) {
+    return {
+        type: types.UPVOTE_SUCCESS,
+        flags
+    };
+}
+
+export function upvoteError (error, flags) {
+    return {
+        type: types.UPVOTE_ERROR,
+        error,
+        flags
+    };
+}
+
+export function downvote (flags) {
+    return {
+        type: types.DOWNVOTE,
+        flags
+    };
+}
+
+export function downvoteSuccess (flags) {
+    return {
+        type: types.DOWNVOTE_SUCCESS,
+        flags
+    };
+}
+
+export function downvoteError (error, flags) {
+    return {
+        type: types.DOWNVOTE_ERROR,
+        error,
+        flags
+    };
+}
+
+export function getEntry (flags) {
+    return {
+        type: types.GET_ENTRY,
+        flags
+    };
+}
+
+export function getEntrySuccess (data, flags) {
+    return {
+        type: types.GET_ENTRY_SUCCESS,
+        data,
+        flags
+    };
+}
+
+export function getEntryError (error, flags) {
+    return {
+        type: types.GET_ENTRY_ERROR,
+        error,
+        flags
+    };
+}
+
+export function getScore (flags) {
+    return {
+        type: types.GET_SCORE,
+        flags
+    };
+}
+
+export function getScoreSuccess (data, flags) {
+    return {
+        type: types.GET_SCORE_SUCCESS,
+        data,
+        flags
+    };
+}
+
+export function getScoreError (error, flags) {
+    return {
+        type: types.GET_SCORE_ERROR,
+        error,
+        flags
+    };
+}

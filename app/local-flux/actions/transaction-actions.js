@@ -1,5 +1,5 @@
-import { transactionActionCreators } from './action-creators';
-import { TransactionService } from '../services';
+import { profileActionCreators, transactionActionCreators } from './action-creators';
+import { ProfileService, TransactionService } from '../services';
 
 let transactionActions = null;
 
@@ -9,6 +9,7 @@ class TransactionActions {
             return transactionActions;
         }
         this.dispatch = dispatch;
+        this.profileService = new ProfileService();
         this.transactionService = new TransactionService();
         transactionActions = this;
     }
@@ -19,9 +20,19 @@ class TransactionActions {
             this.transactionService.emitMined({
                 watch,
                 options: { profile: profileAddress },
-                onSuccess: data => this.dispatch(
-                    transactionActionCreators.transactionMinedSuccess(data)
-                ),
+                onSuccess: (data) => {
+                    this.dispatch(transactionActionCreators.transactionMinedSuccess(data));
+                    const profileKey = getState().profileState.getIn(['loggedProfile', 'account']);
+                    this.profileService.getProfileBalance({
+                        options: {
+                            etherBase: profileKey
+                        },
+                        onSuccess: balance =>
+                            this.dispatch(profileActionCreators.getProfileBalanceSuccess(balance)),
+                        onError: error =>
+                            this.dispatch(profileActionCreators.getProfileBalanceError(error))
+                    });
+                },
                 onError: error =>
                     this.dispatch(transactionActionCreators.transactionMinedError(error))
             });
@@ -85,7 +96,6 @@ class TransactionActions {
         this.dispatch(transactionActionCreators.getPendingTransactions());
         this.dispatch((dispatch, getState) => {
             const profileAddress = getState().profileState.getIn(['loggedProfile', 'profile']) || '';
-            console.log(profileAddress, 'logged profile for pending txs');
             this.transactionService.getTransactions({
                 type: 'pending',
                 options: { ...options, profile: profileAddress },

@@ -7,6 +7,8 @@ class CommonRunner extends Component {
     componentWillReceiveProps (nextProps) {
         const { pendingActions, publishConfirmDialog, showAuthDialog, appActions,
             loggedProfile } = nextProps;
+        const unconfirmedWeightActions = pendingActions.filter(action =>
+            action.get('status') === 'needWeightConfirmation');
         const unconfirmedActions = pendingActions.filter(action =>
             action.get('status') === 'needConfirmation');
         const confirmedActions = pendingActions.filter(action =>
@@ -14,7 +16,9 @@ class CommonRunner extends Component {
         if (!!publishConfirmDialog || !!showAuthDialog) {
             return;
         }
-        if (unconfirmedActions.size > 0) {
+        if (unconfirmedWeightActions.size > 0) {
+            appActions.showWeightConfirmDialog(unconfirmedWeightActions.first());
+        } else if (unconfirmedActions.size > 0) {
             appActions.showPublishConfirmDialog(unconfirmedActions.first());
         } else if (confirmedActions.size > 0) {
             const isLoggedIn = Date.parse(loggedProfile.get('expiration')) > Date.now();

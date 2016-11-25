@@ -12,8 +12,8 @@ import LogoButton from '../../routes/components/logo-button';
 
 class SideBar extends Component {
     componentWillMount () {
-        const { profileActions, account } = this.props;
-        profileActions.getProfileBalance(account);
+        const { profileActions } = this.props;
+        profileActions.getProfileBalance();
     }
     _handleNewEntry = () => {
         const { draftActions, appActions, loggedProfileData, entriesCount,
@@ -87,7 +87,6 @@ class SideBar extends Component {
 SideBar.propTypes = {
     activePanel: PropTypes.string,
     style: PropTypes.shape(),
-    account: PropTypes.string,
     appActions: PropTypes.shape(),
     profileActions: PropTypes.shape(),
     draftActions: PropTypes.shape(),

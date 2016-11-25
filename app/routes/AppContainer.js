@@ -5,7 +5,7 @@ import {
     SettingsActions, AppActions, ProfileActions, EProcActions, DraftActions,
     TagActions } from 'local-flux';
 import { getMuiTheme } from 'material-ui/styles';
-import { AuthDialog, ConfirmationDialog, PublishConfirmDialog } from 'shared-components';
+import { AuthDialog, WeightConfirmDialog, PublishConfirmDialog } from 'shared-components';
 import NotificationBar from './components/notification-bar';
 import lightTheme from '../layouts/AkashaTheme/lightTheme';
 import darkTheme from '../layouts/AkashaTheme/darkTheme';
@@ -17,7 +17,6 @@ class App extends Component {
             userPassword: '',
             rememberPasswordChecked: false,
             rememberTime: 5,
-            voteWeight: 1,
             theme: props.theme,
             notification: ''
         };
@@ -68,10 +67,10 @@ class App extends Component {
         appActions.clearErrors();
     };
     _handleConfirmation = (ev) => {
-        const { profileState, profileActions } = this.props;
+        const { loggedProfile, profileActions } = this.props;
         const { rememberTime, userPassword, rememberPasswordChecked } = this.state;
-        const account = profileState.get('loggedProfile').get('account');
-        const akashaId = profileState.get('loggedProfile').get('akashaId');
+        const account = loggedProfile.get('account');
+        const akashaId = loggedProfile.get('akashaId');
         const remember = rememberPasswordChecked ? rememberTime : 1;
         ev.preventDefault();
         profileActions.login({
@@ -84,8 +83,8 @@ class App extends Component {
         });
     };
     _setPassword = (ev) => {
-        const { profileState, profileActions } = this.props;
-        if (profileState.get('errors').size > 0) {
+        const { loginErrors, profileActions } = this.props;
+        if (loginErrors.size > 0) {
             profileActions.clearErrors();
         }
         this.setState({
@@ -103,35 +102,29 @@ class App extends Component {
         appActions.hideAuthDialog();
     };
 
-    _handleVoteWeightChange = (ev, index, value) => {
-        this.setState({
-            voteWeight: value
-        });
-    };
-    _handleConfirmationDialogCancel = () => {
-        const { appActions } = this.props;
-        appActions.hideConfirmationDialog();
-        this.setState({
-            voteWeight: 1
-        });
-    };
-    _handleConfirmationDialogConfirm = (ev, actionType, entryAddress) => {
-        const { voteWeight } = this.state;
-        console.log('cast', actionType, 'of', voteWeight, 'to', entryAddress);
-        this.setState({
-            voteWeight: 1
-        });
-    };
+    // _handleConfirmationDialogCancel = () => {
+    //     const { appActions } = this.props;
+    //     appActions.hideConfirmationDialog();
+    //     this.setState({
+    //         voteWeight: 1
+    //     });
+    // };
+    // _handleConfirmationDialogConfirm = (ev, actionType, entryAddress) => {
+    //     const { voteWeight } = this.state;
+    //     console.log('cast', actionType, 'of', voteWeight, 'to', entryAddress);
+    //     this.setState({
+    //         voteWeight: 1
+    //     });
+    // };
     render () {
-        const { appState, profileState, appActions, draftActions, tagActions,
-            profileActions } = this.props;
-        const loginErrors = profileState.get('errors');
+        const { appState, loginErrors, appActions, draftActions, tagActions,
+            profileActions, voteCost, loggedProfileData, loginRequested } = this.props;
+        const loggedProfileBalance = loggedProfileData && loggedProfileData.get('balance');
         const error = appState.get('error');
-        const confirmationDialog = appState.get('confirmationDialog');
         const errorMessage = error.get('code')
             ? `Error ${error.get('code')}: ${error.get('message')}` : '';
         const isAuthDialogVisible = !!appState.get('showAuthDialog');
-        const isConfirmationDialogVisible = confirmationDialog !== null;
+        const isWeightConfirmationDialogVisible = appState.get('weightConfirmDialog') !== null;
         const isPublishConfirmationDialogVisible = appState.get('publishConfirmDialog') !== null;
 
         return (
@@ -152,15 +145,18 @@ class App extends Component {
               onSubmit={this._handleConfirmation}
               onCancel={this._handleCancellation}
               errors={loginErrors}
-              loginRequested={profileState.get('loginRequested')}
+              loginRequested={loginRequested}
             />
-            <ConfirmationDialog
-              isOpen={isConfirmationDialogVisible}
-              modalDetails={confirmationDialog}
+            <WeightConfirmDialog
+              isOpen={isWeightConfirmationDialogVisible}
               onVoteWeightChange={this._handleVoteWeightChange}
               voteWeight={this.state.voteWeight}
               onCancel={this._handleConfirmationDialogCancel}
               onConfirm={this._handleConfirmationDialogConfirm}
+              resource={appState.get('weightConfirmDialog')}
+              balance={loggedProfileBalance}
+              appActions={appActions}
+              voteCost={voteCost}
             />
             <PublishConfirmDialog
               appActions={appActions}
@@ -178,11 +174,15 @@ App.propTypes = {
     appState: PropTypes.shape(),
     appActions: PropTypes.shape(),
     eProcActions: PropTypes.shape(),
-    profileState: PropTypes.shape(),
+    loginErrors: PropTypes.shape(),
+    loggedProfile: PropTypes.shape(),
+    loggedProfileData: PropTypes.shape(),
+    loginRequested: PropTypes.bool,
     profileActions: PropTypes.shape(),
     settingsActions: PropTypes.shape(),
     draftActions: PropTypes.shape(),
     tagActions: PropTypes.shape(),
+    voteCost: PropTypes.shape(),
     theme: PropTypes.string,
     children: PropTypes.element
 };
@@ -196,7 +196,12 @@ App.childContextTypes = {
 function mapStateToProps (state) {
     return {
         appState: state.appState,
-        profileState: state.profileState,
+        loginErrors: state.profileState.get('errors'),
+        loggedProfile: state.profileState.get('loggedProfile'),
+        loggedProfileData: state.profileState.get('profiles').find(prf =>
+            prf.get('profile') === state.profileState.getIn(['loggedProfile', 'profile'])),
+        loginRequested: state.profileState.get('loginRequested'),
+        voteCost: state.entryState.get('voteCost'),
         routeState: state.reduxAsyncConnect,
         theme: state.settingsState.get('general').get('theme')
     };

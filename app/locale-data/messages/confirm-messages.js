@@ -1,6 +1,16 @@
 import { defineMessages } from 'react-intl';
 
 const confirmMessages = defineMessages({
+    gasInputLabel: {
+        id: 'app.confirm.gasInputLabel',
+        description: 'label for gas amount input',
+        defaultMessage: 'Maximum amount of gas to use'
+    },
+    gasInputDisclaimer: {
+        id: 'app.confirm.gasInputDisclaimer',
+        description: 'disclaimer for gas amount input',
+        defaultMessage: `Gas to be used by this transaction. Unused gas will be returned.`
+    },
     registerTagTitle: {
         id: 'app.confirm.publishTagTitle',
         description: 'confirm dialog title for publishing a tag',
@@ -64,12 +74,28 @@ const confirmMessages = defineMessages({
     publishEntryTitle: {
         id: 'app.confirm.publishEntryTitle',
         description: 'confirm dialog title for entry publishing',
-        defaultMessage: 'Publish Entry'
+        defaultMessage: 'Publish entry'
     },
     publishEntry: {
         id: 'app.confirm.publishEntry',
         description: 'confirm dialog message for entry publishing',
         defaultMessage: 'Are you sure you want to publish "{title}"?'
+    },
+    voteWeightDisclaimer: {
+        id: 'app.confirm.voteWeightDisclaimer',
+        description: 'disclaimer for choosing an entry vote weight',
+        defaultMessage: '{publisherName} will receive {eth} ETH from your +{voteWeight} vote'
+    },
+    voteFeeAgreement: {
+        id: 'app.confirm.feeAgreement',
+        description: 'disclaimer for the cost of the vote',
+        defaultMessage: `By proceeding to vote this entry, you agree with the {fee} ETH fee
+                which will be deducted from your {balance} ETH balance.`
+    },
+    voteTitle: {
+        id: 'app.confirm.voteTitle',
+        description: 'confirm dialog title for voting an entry',
+        defaultMessage: 'Vote'
     }
 });
 export { confirmMessages };

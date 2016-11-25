@@ -41,21 +41,18 @@ class AppActions {
      * Show a confirmation dialog for every resource he wants to publish
      * Request gas amount
      */
-    showPublishConfirmDialog = (resource) => {
+    showPublishConfirmDialog = resource =>
         this.dispatch(appActionCreators.showPublishConfirmDialog(resource));
-    }
-    hidePublishConfirmDialog = () => {
+    hidePublishConfirmDialog = () =>
         this.dispatch(appActionCreators.hidePublishConfirmDialog());
-    }
     showEntryModal = (entryData, options = {}) =>
         Promise.resolve(this.dispatch(appActionCreators.showEntryModal(entryData, options)));
     hideEntryModal = () =>
         Promise.resolve(this.dispatch(appActionCreators.hideEntryModal()));
-    getConfirmation = (entity) => {
-        this.dispatch(appActionCreators.showConfirmationDialog(entity));
-    };
-    hideConfirmationDialog = () => {
-        this.dispatch(appActionCreators.hideConfirmationDialog());
+    showWeightConfirmDialog = resource =>
+        this.dispatch(appActionCreators.showWeightConfirmDialog(resource));
+    hideWeightConfirmDialog = () => {
+        this.dispatch(appActionCreators.hideWeightConfirmDialog());
     };
     setTimestamp = timestamp =>
         this.dispatch(appActionCreators.setTimestamp(timestamp));

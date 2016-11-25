@@ -209,14 +209,19 @@ class ProfileActions {
         });
     };
 
-    getProfileBalance = (profileKey, unit) =>
-        this.profileService.getProfileBalance({
-            options: {
-                etherBase: profileKey,
-                unit
-            },
-            onSuccess: data => this.dispatch(profileActionCreators.getProfileBalanceSuccess(data)),
-            onError: error => this.dispatch(profileActionCreators.getProfileBalanceError(error))
+    getProfileBalance = unit =>
+        this.dispatch((dispatch, getState) => {
+            const profileKey = getState().profileState.getIn(['loggedProfile', 'account']);
+            this.profileService.getProfileBalance({
+                options: {
+                    etherBase: profileKey,
+                    unit
+                },
+                onSuccess: data =>
+                    this.dispatch(profileActionCreators.getProfileBalanceSuccess(data)),
+                onError: error =>
+                    this.dispatch(profileActionCreators.getProfileBalanceError(error))
+            });
         });
 
     clearLoggedProfile = () => {

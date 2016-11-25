@@ -50,6 +50,21 @@ const formMessages = defineMessages({
         id: 'app.inputField.name',
         description: 'Placeholder for name input field',
         defaultMessage: 'Name'
+    },
+    gasAmountError: {
+        id: 'app.form.gasAmountError',
+        description: 'Error displayed when gas amount is not between limits',
+        defaultMessage: 'Gas amount must be between {min} and {max}'
+    },
+    voteWeightError: {
+        id: 'app.form.voteWeightError',
+        description: 'Error displayed when vote weight is not between limits',
+        defaultMessage: 'Vote weight must be between 1 and 10'
+    },
+    notEnoughFunds: {
+        id: 'app.form.notEnoughFunds',
+        description: 'Error displayed when a user does not have enough funds for an action',
+        defaultMessage: 'You don\'t have enough funds in your balance'
     }
 });
 export { formMessages };
