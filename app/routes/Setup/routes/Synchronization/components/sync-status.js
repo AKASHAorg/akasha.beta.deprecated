@@ -110,12 +110,20 @@ class SyncStatus extends Component {
                       processingMessage)}
                   </div>
                 );
-            } else {
+            } else if (gethSyncStatus.get('peerCount') === 0) {
                 peerInfo = intl.formatMessage(setupMessages.findingPeers);
                 progressBody = (
                   <div>
                     <div style={statusTextStyle} >
                       {peerInfo}
+                    </div>
+                  </div>
+                );
+            } else {
+                progressBody = (
+                  <div>
+                    <div style={statusTextStyle} >
+                      {intl.formatMessage(setupMessages.waitingForBlock)}
                     </div>
                   </div>
                 );
