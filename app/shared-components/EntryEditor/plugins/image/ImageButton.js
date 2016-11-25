@@ -44,15 +44,14 @@ export default class BlockButton extends Component {
                 licence: this.state.licence,
                 caption: ''
             };
-            console.log(data, 'image data 2 add');
             this.props.onChange(insertDataBlock(this.props.editorState, data));
         }).then(() => {
-            this.fileInput.files = null;
+            this.fileInput.value = '';
             this.setState({
-                dialogOpen: false
+                dialogOpen: false,
+                fileName: ''
             });
         }).catch((reason) => {
-            console.error(reason);
             this.setState({
                 errors: reason.message
             });
@@ -61,9 +60,10 @@ export default class BlockButton extends Component {
     /**
      * Selects an image from disk
      */
-    _handleImageSelect = (ev) => {
-        const files = ev.target.files;
+    _handleImageSelect = () => {
+        const files = this.fileInput.files;
         const fileName = files[0].name;
+        console.log(files);
         this.setState({
             fileName
         });

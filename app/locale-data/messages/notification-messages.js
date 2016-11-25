@@ -60,6 +60,11 @@ const notificationMessages = defineMessages({
         id: 'app.notification.tagUnsubscribedSuccessfully',
         description: 'Notification to be displayed when a user unsubscribed from a tag',
         defaultMessage: 'You successfully unsubscribed from tag "{tagName}"'
+    },
+    publishingEntry: {
+        id: 'app.notification.publishingEntry',
+        description: 'Notification for when entry is publishing',
+        defaultMessage: 'Publishing "{title}".'
     }
 });
 export { notificationMessages };

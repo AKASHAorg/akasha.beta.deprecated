@@ -3,13 +3,6 @@ import { connect } from 'react-redux';
 import { AppActions, EntryActions, TagActions, TransactionActions } from 'local-flux';
 
 class TagPublisher extends Component {
-    constructor () {
-        super();
-        this.state = {
-            registerRequestedTags: [],
-            listeningTags: []
-        };
-    }
     componentWillReceiveProps (nextProps) {
         this.launchActions(nextProps);
         this.listenForMinedTx(nextProps);
@@ -74,11 +67,12 @@ class TagPublisher extends Component {
                 // example: for action.type = 'registerTag', success action
                 // should be registerTagSuccess()
                 if (typeof tagActions[`${tx.type}Success`] !== 'function') {
-                    return console.error(`There is no action "${tx.type}Success" in tagActions!! Please implement "${tx.type}Success" action!!`);
+                    console.error(`There is no action "${tx.type}Success" in tagActions!! Please implement "${tx.type}Success" action!!`);
+                } else {
+                    tagActions[`${tx.type}Success`](tx.tagName);
+                    appActions.deletePendingAction(correspondingAction.get('id'));
+                    entryActions.getEntriesStream(loggedProfile.get('akashaId'));
                 }
-                tagActions[`${tx.type}Success`](tx.tagName);
-                appActions.deletePendingAction(correspondingAction.get('id'));
-                entryActions.getEntriesStream(loggedProfile.get('akashaId'));
             }
         });
     };
@@ -92,7 +86,6 @@ TagPublisher.propTypes = {
     fetchingPending: PropTypes.bool,
     deletingPendingTx: PropTypes.bool,
     pendingActions: PropTypes.shape(),
-    pendingTags: PropTypes.shape(),
     tagActions: PropTypes.shape(),
     loggedProfile: PropTypes.shape(),
     transactionActions: PropTypes.shape(),

@@ -46,7 +46,7 @@ class SideBar extends Component {
             }
             node = node.parentNode;
         } while (node != null);
-        return null;
+        // return null;
     }
     getValidSidebarPlugins () {
         const plugins = [];

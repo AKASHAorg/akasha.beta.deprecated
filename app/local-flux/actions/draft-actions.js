@@ -1,16 +1,19 @@
+import { AppActions, TransactionActions } from 'local-flux';
 import { draftActionCreators } from './action-creators';
 import { DraftService, EntryService } from '../services';
 
 let draftActions = null;
 
 class DraftActions {
-    constructor (dispatch) {
+    constructor (dispatch) { // eslint-disable-line consistent-return
         if (draftActions) {
             return draftActions;
         }
         this.dispatch = dispatch;
         this.draftService = new DraftService();
         this.entryService = new EntryService();
+        this.transactionActions = new TransactionActions(dispatch);
+        this.appActions = new AppActions(dispatch);
         draftActions = this;
     }
 
@@ -65,24 +68,33 @@ class DraftActions {
         return this.throttledUpdateDraft(draft);
     };
 
-    publishDraft = (draft, token, gas = 4000000) => {
-        console.log('publishDraft action');
-        this.entryService.publishEntry({
-            draft,
-            token,
-            gas,
-            onSuccess: (data) => {
-                console.log('publish draft success', data);
-                this.dispatch(draftActionCreators.publishDraftSuccess(data));
-                const newDraft = Object.assign({}, draft, data);
-                newDraft.status.currentAction = 'draftPublished';
-                console.log(newDraft, 'newly updated draft');
-                this.updateDraft(newDraft);
-            },
-            onError: (error) => {
-                console.error(error, 'publish draft error');
-                this.dispatch(draftActionCreators.publishDraftError(error));
-            }
+    publishDraft = (draft, gas = 4000000) => {
+        this.dispatch((dispatch, getState) => {
+            const loggedProfile = getState().profileState.get('loggedProfile');
+            const token = loggedProfile.get('token');
+            const flagOn = { draftId: draft.get('id'), value: true };
+            const flagOff = { draftId: draft.get('id'), value: false };
+            dispatch(draftActionCreators.publishDraft({ publishPending: flagOn }));
+            this.entryService.publishEntry({
+                draft: draft.toJS(),
+                token,
+                gas,
+                onSuccess: (data) => {
+                    this.transactionActions.listenForMinedTx();
+                    this.transactionActions.addToQueue({
+                        tx: data.tx,
+                        type: 'publishEntry',
+                        draftId: draft.get('id')
+                    });
+                    this.appActions.showNotification({
+                        id: 'publishingEntry',
+                        values: { title: draft.get('title') }
+                    });
+                },
+                onError: error => dispatch(draftActionCreators.publishDraftError(error, {
+                    publishPending: flagOff
+                }))
+            });
         });
     };
 

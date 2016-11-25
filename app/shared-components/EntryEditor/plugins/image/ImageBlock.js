@@ -115,6 +115,7 @@ class ImageBlock extends Component {
                 isCardEnabled: false
             }, () => {
                 this.props.blockProps.setReadOnly(false);
+                // window.removeEventListener('keyup', this._removeImageContainer);
             });
         }
     }
@@ -137,14 +138,14 @@ class ImageBlock extends Component {
             isCardEnabled: true
         }, () => {
             this.props.blockProps.setReadOnly(true);
-            window.addEventListener('keyup', this._removeImageContainer);
+            // window.addEventListener('keyup', this._removeImageContainer);
         });
     }
     _removeImageContainer = (ev) => {
         if (ev.key === 'Delete' || ev.key === 'Backspace') {
             this.props.container.remove();
             this.props.blockProps.setReadOnly(false);
-            window.removeEventListener('keyup', this._removeImageContainer);
+            // window.removeEventListener('keyup', this._removeImageContainer);
         }
     }
     _getBaseNodeStyle = () => {
@@ -185,7 +186,6 @@ class ImageBlock extends Component {
           <div
             ref={(baseNode) => { this.baseNodeRef = baseNode; }}
             style={baseNodeStyle}
-            onKeyUp={this._removeImageContainer}
           >
             <div
               className={`${styles.rootInner}`}
