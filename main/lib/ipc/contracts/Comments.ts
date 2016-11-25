@@ -25,9 +25,9 @@ export default class Comments extends BaseContract {
      * @param parent
      * @returns {Bluebird<U>}
      */
-    comment(entryId: string, hash, gas: number = 2000000, parent?: string) {
+    comment(entryId: string, hash: string, gas: number = 2000000, parent?: string) {
         const hashTr = this.splitIpfs(hash);
-        return this.evaluateData('comment', gas, hashTr, entryId, parent);
+        return this.evaluateData('comment', gas, entryId, hashTr, parent);
     }
 
     /**

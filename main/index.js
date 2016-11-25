@@ -43,6 +43,8 @@ function bootstrapApp() {
         mainWindow = new electron_1.BrowserWindow({
             width: 1280,
             height: 720,
+            minHeight: 720,
+            minWidth: 1280,
             resizable: true,
             show: false,
             webPreferences: {
