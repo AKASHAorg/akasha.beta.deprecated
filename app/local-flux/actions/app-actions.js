@@ -5,13 +5,13 @@ let appActions = null;
 
 class AppActions {
     constructor (dispatch) {
-        if (!appActions) {
-            appActions = this;
+        if (appActions) {
+           return appActions;
         }
         this.dispatch = dispatch;
         this.appService = new AppService();
         this.pendingActionId = 1;
-        return appActions;
+        appActions = this;
     }
     checkForUpdates = () =>
         this.appService.checkForUpdates().then(hasUpdates =>

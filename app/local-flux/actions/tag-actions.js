@@ -6,14 +6,14 @@ let tagActions = null;
 
 class TagActions {
     constructor (dispatch) {
-        if (!tagActions) {
-            tagActions = this;
+        if (tagActions) {
+            return tagActions;
         }
         this.dispatch = dispatch;
         this.appActions = new AppActions(dispatch);
         this.transactionActions = new TransactionActions(dispatch);
         this.tagService = new TagService();
-        return tagActions;
+        tagActions = this;
     }
     addRegisterTagAction = (tagName) => {
         this.appActions.addPendingAction({

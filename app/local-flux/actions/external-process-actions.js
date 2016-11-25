@@ -11,8 +11,8 @@ let eProcActions = null;
  */
 class EProcActions {
     constructor (dispatch) {
-        if (!eProcActions) {
-            eProcActions = this;
+        if (eProcActions) {
+            return eProcActions;
         }
         this.gethService = new GethService();
         this.ipfsService = new IpfsService();
@@ -22,7 +22,7 @@ class EProcActions {
             leading: true
         });
         this.ipfsPortsRequest = null;
-        return eProcActions;
+        eProcActions = this;
     }
 
     _showErrorAction = error =>
