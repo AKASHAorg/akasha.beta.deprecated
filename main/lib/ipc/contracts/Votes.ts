@@ -41,7 +41,7 @@ export default class Votes extends BaseContract {
      * @param value
      * @returns {Bluebird<R>}
      */
-    downvote(entryId: string, weight: number, gas: number = 2000000, value: string) {
+    downvote(entryId: string, weight: number, value: string, gas: number = 2000000) {
         value = this.gethInstance.web3.toWei(value, 'ether');
         return Promise.resolve(this.extractData('downvote', weight, entryId, { gas, value }));
     }
