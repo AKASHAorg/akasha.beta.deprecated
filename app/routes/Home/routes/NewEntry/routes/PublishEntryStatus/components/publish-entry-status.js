@@ -7,26 +7,23 @@ class PublishEntryStatus extends React.Component {
         document.body.style.overflow = 'hidden';
     }
     componentWillReceiveProps (nextProps) {
-        const { draftActions, drafts, params } = nextProps;
+        const { appActions, drafts, params } = nextProps;
+        // const currentDraft = drafts.find(draft => draft.id === parseInt(params.draftId, 10));
+        // const prevDraft = this.props.drafts.find(draft =>
+        //     draft.id === parseInt(params.draftId, 10));
+        // if (prevDraft && !currentDraft) {
+        //     if ((prevDraft.status.currentAction === 'draftPublished')) {
+        //         this.context.router.push(`/${params.akashaId}/explore/stream`);
+        //     }
+        // }
+    }
+    shouldComponentUpdate (nextProps) {
+        const { drafts, params } = nextProps;
         const currentDraft = drafts.find(draft => draft.id === parseInt(params.draftId, 10));
-        const prevDraft = this.props.drafts.find(draft =>
-            draft.id === parseInt(params.draftId, 10));
-        console.log(prevDraft, 'prevDraft');
-        if (prevDraft && !currentDraft) {
-            if ((prevDraft.status.currentAction === 'draftPublished')) {
-                this.context.router.push(`/${params.akashaId}/explore/stream`);
-            }
-        }
-        if (currentDraft && currentDraft.status.currentAction === 'confirmPublish') {
-            draftActions.updateDraft({
-                id: parseInt(params.draftId, 10),
-                status: {
-                    currentAction: 'checkLogin',
-                    publishing: true,
-                    publishingConfirmed: true
-                }
-            });
-        }
+        const prevCurrentDraft = this.props.drafts.find(draft =>
+            draft.id === parseInt(params.draftId, 10)
+        );
+        return prevCurrentDraft !== currentDraft;
     }
     componentWillUnmount () {
         document.body.style.overflow = 'initial';
@@ -72,8 +69,8 @@ class PublishEntryStatus extends React.Component {
                     <p>Current Action: {draftToPublish.get('status').currentAction}</p>
                     <p>This entry is being published. You`ll be notified when it`s done.</p>
                     {(draftErrors.size > 0) &&
-                        draftErrors.map(err =>
-                          <div>Error {err.get('code') && err.get('code')}: {err.get('message')}</div>
+                        draftErrors.map((err, key) =>
+                          <div key={key}>Error {err.get('code') && err.get('code')}: {err.get('message')}</div>
                         )
                     }
                   </div>

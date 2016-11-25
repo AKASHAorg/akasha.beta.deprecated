@@ -62,16 +62,29 @@ class AddEntryPage extends Component {
         this._saveDraft();
     }
     _saveDraft = () => {
-        const { draftActions, params, loggedProfile } = this.props;
+        const { draftActions, params, loggedProfile, drafts } = this.props;
         const content = this.editor.getRawContent();
         const contentState = this.editor.getContent();
         const title = this.editor.getTitle();
         const wordCount = getWordCount(contentState);
         const excerpt = contentState.getPlainText().slice(0, 160).replace(/\r?\n|\r/g, '');
+        const currentDraft = this._findCurrentDraft(drafts);
+        const { tags, licence, profile, featuredImage, status } = currentDraft;
 
         if (params.draftId !== 'new') {
             const draftId = parseInt(params.draftId, 10);
-            return draftActions.updateDraft({ id: draftId, content, title, wordCount, excerpt });
+            return draftActions.updateDraft({
+                id: draftId,
+                content,
+                tags,
+                licence,
+                profile,
+                featuredImage,
+                status,
+                title,
+                wordCount,
+                excerpt
+            });
         }
 
         return draftActions

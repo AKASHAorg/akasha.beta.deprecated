@@ -9,7 +9,7 @@ const confirmMessages = defineMessages({
     registerTag: {
         id: 'app.confirm.publishTag',
         description: 'confirm dialog message for publishing a tag',
-        defaultMessage: 'Are you sure you want to publish tag \"{tagName}\"?'
+        defaultMessage: 'Are you sure you want to publish tag "{tagName}"?'
     },
     subscribeTagTitle: {
         id: 'app.confirm.subscribeTagTitle',
@@ -19,7 +19,7 @@ const confirmMessages = defineMessages({
     subscribeTag: {
         id: 'app.confirm.subscribeTag',
         description: 'confirm dialog message for subscribing to a tag',
-        defaultMessage: 'Are you sure you want to subscribe to tag \"{tagName}\"?'
+        defaultMessage: 'Are you sure you want to subscribe to tag "{tagName}"?'
     },
     unsubscribeTagTitle: {
         id: 'app.confirm.unsubscribeTagTitle',
@@ -29,7 +29,7 @@ const confirmMessages = defineMessages({
     unsubscribeTag: {
         id: 'app.confirm.unsubscribeTag',
         description: 'confirm dialog message for unsubscribing from a tag',
-        defaultMessage: 'Are you sure you want to unsubscribe from tag \"{tagName}\"?'
+        defaultMessage: 'Are you sure you want to unsubscribe from tag "{tagName}"?'
     },
     followProfileTitle: {
         id: 'app.confirm.followProfileTitle',
@@ -39,7 +39,7 @@ const confirmMessages = defineMessages({
     followProfile: {
         id: 'app.confirm.followProfile',
         description: 'confirm dialog message for following a profile',
-        defaultMessage: 'Are you sure you want to follow \"{akashaId}\"?'
+        defaultMessage: 'Are you sure you want to follow "{akashaId}"?'
     },
     unfollowProfileTitle: {
         id: 'app.confirm.unfollowProfileTitle',
@@ -49,7 +49,7 @@ const confirmMessages = defineMessages({
     unfollowProfile: {
         id: 'app.confirm.unfollowProfile',
         description: 'confirm dialog message for unfollowing a profile',
-        defaultMessage: 'Are you sure you want to unfollow \"{akashaId}\"?'
+        defaultMessage: 'Are you sure you want to unfollow "{akashaId}"?'
     },
     updateProfileTitle: {
         id: 'app.confirm.updateProfileTitle',
@@ -60,6 +60,16 @@ const confirmMessages = defineMessages({
         id: 'app.confirm.updateProfile',
         description: 'confirm dialog message for updating your profile',
         defaultMessage: 'Are you sure you want to update your profile?'
+    },
+    publishEntryTitle: {
+        id: 'app.confirm.publishEntryTitle',
+        description: 'confirm dialog title for entry publishing',
+        defaultMessage: 'Publish Entry'
+    },
+    publishEntry: {
+        id: 'app.confirm.publishEntry',
+        description: 'confirm dialog message for entry publishing',
+        defaultMessage: 'Are you sure you want to publish "{title}"?'
     }
 });
 export { confirmMessages };

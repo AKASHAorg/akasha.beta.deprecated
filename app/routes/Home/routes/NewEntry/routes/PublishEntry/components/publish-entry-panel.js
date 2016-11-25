@@ -31,23 +31,20 @@ class PublishPanel extends React.Component {
         entryActions.getLicences();
     }
     componentDidMount () {
+        this.panelSize = this.container.getBoundingClientRect();
         document.body.style.overflow = 'hidden';
     }
     componentWillReceiveProps (nextProps) {
-        const { draft, params, pendingTags } = nextProps;
+        const { draft, params } = nextProps;
         const loggedProfileData = this._getLoggedProfileData();
-        if (draft && draft.get('status').currentAction === 'confirmPublish') {
+        if (draft && draft.get('status').publishing) {
             this.context.router.push(`/${loggedProfileData.get('akashaId')}/draft/${params.draftId}/publish-status`);
-        }
-        if (draft) {
-            if (pendingTags.size < this.props.pendingTags.size) {
-                this._checkExistingTags(draft.tags);
-            }
+        } else if (draft && !draft.get('status').publishing) {
+            console.log(draft, 'draaaaaft!!!');
+            this._populateDraft(draft);
             if (this.state.fetchingDraft) {
                 this.setState({
                     fetchingDraft: false
-                }, () => {
-                    this._populateDraft(draft);
                 });
             }
         }
@@ -70,7 +67,10 @@ class PublishPanel extends React.Component {
             tags = tags.toJS();
         }
         if (tags && tags.length > 0) {
-            this._checkExistingTags(tags);
+            console.log('checking tags');
+            if (!this.state.checkingTags) {
+                this._checkExistingTags(tags);
+            }
         }
         this.setState({
             title,
@@ -92,7 +92,6 @@ class PublishPanel extends React.Component {
     _generateFeaturedImage = (blockMap) => {
         const imageBlock = blockMap.find(block =>
             block.type === 'atomic' && block.data.get('type') === 'image');
-
         if (imageBlock) return imageBlock.data.get('files');
         return null;
     }
@@ -121,7 +120,7 @@ class PublishPanel extends React.Component {
         });
     };
     _publishEntry = () => {
-        const { draftActions, profiles, loggedProfile } = this.props;
+        const { draftActions, appActions, profiles, loggedProfile } = this.props;
         const loggedProfileData = profiles.find(prf =>
             prf.get('profile') === loggedProfile.get('profile'));
 
@@ -133,7 +132,7 @@ class PublishPanel extends React.Component {
             if (featuredImage) {
                 featuredImage = this._findImageSource(featuredImage);
             }
-            draftActions.updateDraft({
+            const cleanDraft = {
                 id: draftId,
                 title,
                 content,
@@ -142,10 +141,17 @@ class PublishPanel extends React.Component {
                 featuredImage,
                 profile: loggedProfileData.get('profile'),
                 status: {
-                    currentAction: 'confirmPublish',
-                    publishing: true,
-                    publishingConfirmed: false
+                    publishing: true
                 }
+            };
+            draftActions.updateDraft(cleanDraft);
+            appActions.addPendingAction({
+                type: 'publishEntry',
+                payload: cleanDraft,
+                titleId: 'publishEntryTitle',
+                messageId: 'publishEntry',
+                gas: 4000000,
+                status: 'needConfirmation'
             });
         });
     };
@@ -231,7 +237,7 @@ class PublishPanel extends React.Component {
         });
     };
     _getFeaturedImage = () => {
-        const panelSize = this.panelSize;
+        const panelSize = this.panelSize || { width: 550 };
         if (this.state.featuredImage) {
             return {
                 files: this.state.featuredImage,
@@ -241,30 +247,35 @@ class PublishPanel extends React.Component {
         return null;
     };
     _checkExistingTags = (tags) => {
-        const tagService = new TagService();
-        let tagsPromise = Promise.resolve();
-        tags.forEach((tag) => {
-            tagsPromise = tagsPromise.then(prevData =>
-                new Promise((resolve, reject) => {
-                    tagService.checkExistingTags(tag, (ev, { data, error }) => {
-                        if (error) {
-                            return reject(error);
-                        }
-                        if (prevData) {
-                            return resolve(prevData.concat([{ tag, exists: data.exists }]));
-                        }
-                        return resolve([{ tag, exists: data.exists }]);
-                    });
-                })
-            );
+        this.setState({
+            checkingTags: true
+        }, () => {
+            const tagService = new TagService();
+            let tagsPromise = Promise.resolve();
+            tags.forEach((tag) => {
+                tagsPromise = tagsPromise.then(prevData =>
+                    new Promise((resolve, reject) => {
+                        tagService.checkExistingTags(tag, (ev, { data, error }) => {
+                            if (error) {
+                                return reject(error);
+                            }
+                            if (prevData) {
+                                return resolve(prevData.concat([data]));
+                            }
+                            return resolve([data]);
+                        });
+                    })
+                );
+            });
+            return tagsPromise.then((results) => {
+                this.setState({
+                    existingTags: results.filter(tagObj => tagObj.exists).map(tag => tag.tagName),
+                    checkingTags: false
+                }, () => {
+                    tagService.removeExistsListeners();
+                });
+            });
         });
-        return tagsPromise.then(results =>
-            this.setState({
-                existingTags: results.filter(tagObj => tagObj.exists).map(tag => tag.tag)
-            }, () => {
-                tagService.removeExistsListeners();
-            })
-        );
     };
     _handleCancelButton = () => {
         const { params } = this.props;
@@ -332,13 +343,12 @@ class PublishPanel extends React.Component {
                   zIndex: 16
               }}
               actions={[
-                  /* eslint-disable */
-                <RaisedButton
+                <RaisedButton // eslint-disable-line indent
                   key="cancel"
                   label="Later"
                   onTouchTap={this._handleCancelButton}
                 />,
-                <RaisedButton
+                <RaisedButton // eslint-disable-line indent
                   key="publish"
                   label="Publish"
                   primary
@@ -449,6 +459,7 @@ PublishPanel.propTypes = {
     pendingTags: React.PropTypes.shape(),
     entryActions: React.PropTypes.shape(),
     licences: React.PropTypes.shape(),
+    appActions: React.PropTypes.shape(),
     intl: React.PropTypes.shape()
 };
 PublishPanel.contextTypes = {

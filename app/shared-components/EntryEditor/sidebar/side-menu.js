@@ -18,8 +18,7 @@ class SideMenu extends Component {
         this.props.onChange(editorState);
     }
 
-    toggle = (ev) => {
-        console.log(this.state, 'toggle state');
+    toggle = () => {
         this.setState({
             open: !this.state.open
         });

@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { injectIntl } from 'react-intl';
 import { Dialog, FlatButton, RaisedButton, TextField, IconButton } from 'material-ui';
-import { confirmMessages } from 'locale-data/messages';
+import { confirmMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
 import InfoIcon from 'material-ui/svg-icons/action/info-outline';
 
 class PublishConfirmDialog extends Component {
@@ -20,15 +20,12 @@ class PublishConfirmDialog extends Component {
             });
         }
     }
-
+    onSubmit = (ev) => {
+        ev.preventDefault();
+        this._handleConfirm();
+    }
     _handleGasChange = (ev) => {
-        // const { gas } = this.props.resource;
         const amount = ev.target.value;
-        // if (minGas < amount) {
-        //     return this.setState({
-        //         gasError: `You cannot set gas amount lower than ${minGas}`
-        //     });
-        // }
         return this.setState({
             gasAmount: amount
         });
@@ -46,28 +43,22 @@ class PublishConfirmDialog extends Component {
         appActions.deletePendingAction(resource.get('id'));
         appActions.hidePublishConfirmDialog();
     }
-    onSubmit = (ev) => {
-        ev.preventDefault();
-        this._handleConfirm();
-    }
     render () {
         const { resource, intl, isOpen } = this.props;
         if (!resource) {
             return null;
         }
         const dialogActions = [
-          /*eslint-disable*/
-          <FlatButton
+          <FlatButton // eslint-disable-line indent
             label="Abort"
             style={{ marginRight: 8 }}
             onClick={this._handleAbort}
           />,
-          <RaisedButton
+          <RaisedButton // eslint-disable-line indent
             label="Confirm"
             primary
             onClick={this._handleConfirm}
           />
-          /*eslint-enable*/
         ];
         return (
           <Dialog
@@ -116,7 +107,8 @@ class PublishConfirmDialog extends Component {
 PublishConfirmDialog.propTypes = {
     isOpen: PropTypes.bool,
     resource: PropTypes.shape(),
-    intl: PropTypes.shape()
+    intl: PropTypes.shape(),
+    appActions: PropTypes.shape()
 };
 
 export default injectIntl(PublishConfirmDialog);

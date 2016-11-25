@@ -27,7 +27,8 @@ class ImageUploader extends Component {
         }
     }
     shouldComponentUpdate (nextProps, nextState) {
-        return nextState.imageFile !== this.state.imageFile;
+        return nextState.imageFile !== this.state.imageFile ||
+                nextState.initialImageFile !== this.state.initialImageFile;
     }
     getImage = () => {
         if (this.state.isNewImage) {

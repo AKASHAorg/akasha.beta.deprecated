@@ -91,11 +91,21 @@ const draftState = createReducer(initialState, {
 
     [types.GET_DRAFT_BY_ID_SUCCESS]: (state, { draft }) => {
         const draftIndex = state.get('drafts').findIndex(drft => drft.id === draft.id);
+        const { content, tags, ...others } = draft;
+        console.log(draft, 'getDraftById');
         if (draftIndex > -1) {
-            return state.mergeIn(['drafts', draftIndex], new Draft(draft));
+            return state.mergeIn(['drafts', draftIndex], new Draft({
+                content: new DraftContent(content),
+                tags: new List(tags),
+                ...others
+            }));
         }
         return state.merge({
-            drafts: state.get('drafts').push(new Draft(draft))
+            drafts: state.get('drafts').push(new Draft({
+                content: new DraftContent(content),
+                tags: new List(tags),
+                ...others
+            }))
         });
     },
 
