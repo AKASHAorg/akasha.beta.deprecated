@@ -11,9 +11,9 @@ const Channel = window.Channel;
 class TransactionService extends BaseService {
     constructor () {
         super();
-        this.serverManager = Channel.server.tx.manager;
         this.clientManager = Channel.client.tx.manager;
     }
+
     /**
      * Add a transaction to a queue to be notified when it`s mined
      * Request:
@@ -32,10 +32,10 @@ class TransactionService extends BaseService {
             transactionsDB.transaction('rw', transactionsDB.pending, () =>
                 transactionsDB.pending.bulkPut(txs)
             )
-            .then(() => onSuccess(txs))
-            .catch((reason) => {
-                onError(reason);
-            });
+                .then(() => onSuccess(txs))
+                .catch((reason) => {
+                    onError(reason);
+                });
         };
         this.registerListener(
             clientChannel,
@@ -66,12 +66,12 @@ class TransactionService extends BaseService {
                     });
                     return data;
                 })
-                .then((minedTx) => {
-                    onSuccess(minedTx);
-                })
-                .catch((reason) => {
-                    onError(reason);
-                });
+                    .then((minedTx) => {
+                        onSuccess(minedTx);
+                    })
+                    .catch((reason) => {
+                        onError(reason);
+                    });
             }
         };
         this.registerListener(
@@ -85,8 +85,8 @@ class TransactionService extends BaseService {
         transactionsDB.transaction('rw', transactionsDB.pending, transactionsDB.mined, () => {
             transactionsDB.pending.where('tx').equals(tx).delete();
         })
-        .then(() => onSuccess(tx))
-        .catch(reason => onError(reason));
+            .then(() => onSuccess(tx))
+            .catch(reason => onError(reason));
     };
 
     getTransactions = ({ type, options = {}, onSuccess, onError }) => {
@@ -97,8 +97,8 @@ class TransactionService extends BaseService {
             return transactionsDB[type].where('type+profile')
                 .equals([options.type, options.profile]).toArray();
         })
-        .then(data => onSuccess(data))
-        .catch(reason => onError(reason));
+            .then(data => onSuccess(data))
+            .catch(reason => onError(reason));
     };
 }
 

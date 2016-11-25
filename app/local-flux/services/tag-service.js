@@ -6,7 +6,6 @@ const { Channel } = window;
 class TagService extends BaseService {
     constructor () {
         super();
-        this.serverManager = Channel.server.tags.manager;
         this.clientManager = Channel.client.tags.manager;
     }
 
@@ -19,22 +18,22 @@ class TagService extends BaseService {
         tagsDB.transaction('rw', tagsDB.pendingTags, () => {
             return tagsDB.pendingTags.add(tagObj);
         })
-        .then(() => onSuccess(tagObj))
-        .catch(reason => onError(reason));
+            .then(() => onSuccess(tagObj))
+            .catch(reason => onError(reason));
 
     updatePendingTag = ({ tagObj, onSuccess, onError }) =>
         tagsDB.transaction('rw', tagsDB.pendingTags, () => {
             return tagsDB.pendingTags.update(tagObj.tag, tagObj);
         })
-        .then(() => onSuccess(tagObj))
-        .catch(error => onError(error));
+            .then(() => onSuccess(tagObj))
+            .catch(error => onError(error));
 
     deletePendingTag = ({ tagObj, onSuccess, onError }) =>
         tagsDB.transaction('rw', tagsDB.pendingTags, () =>
             tagsDB.pendingTags.delete(tagObj.tag)
         )
-        .then(() => onSuccess(tagObj))
-        .catch(error => onError(error));
+            .then(() => onSuccess(tagObj))
+            .catch(error => onError(error));
 
     getPendingTags = ({ profile, onSuccess, onError }) =>
         tagsDB.transaction('r', tagsDB.pendingTags, () =>
@@ -45,7 +44,6 @@ class TagService extends BaseService {
 
     registerTag = ({ tagName, token, gas, onSuccess, onError }) => {
         this.openChannel({
-            serverManager: this.serverManager,
             clientManager: this.clientManager,
             serverChannel: Channel.server.tags.create,
             clientChannel: Channel.client.tags.create,
@@ -74,20 +72,19 @@ class TagService extends BaseService {
         tagsDB.transaction('r', tagsDB.selectedTag, () =>
             tagsDB.selectedTag.where('akashaId').equals(akashaId).toArray()
         )
-        .then(results => onSuccess(results[0]))
-        .catch(reason => onError(reason));
+            .then(results => onSuccess(results[0]))
+            .catch(reason => onError(reason));
 
     saveTag = ({ akashaId, tagName, onError = () => {}, onSuccess }) =>
         tagsDB.transaction('rw', tagsDB.selectedTag, () => {
             tagsDB.selectedTag.put({ akashaId, tagName });
             return tagsDB.selectedTag.where('akashaId').equals(akashaId).toArray();
         })
-        .then(results => onSuccess(results[0]))
-        .catch(reason => onError(reason));
+            .then(results => onSuccess(results[0]))
+            .catch(reason => onError(reason));
 
     tagIterator = ({ start, limit, onError = () => {}, onSuccess }) =>
         this.openChannel({
-            serverManager: this.serverManager,
             clientManager: this.clientManager,
             serverChannel: Channel.server.tags.tagIterator,
             clientChannel: Channel.client.tags.tagIterator,
@@ -101,7 +98,6 @@ class TagService extends BaseService {
 
     subscribeTag = ({ token, tagName, gas = 2000000, onError = () => {}, onSuccess }) =>
         this.openChannel({
-            serverManager: this.serverManager,
             clientManager: this.clientManager,
             serverChannel: Channel.server.tags.subscribe,
             clientChannel: Channel.client.tags.subscribe,
@@ -115,7 +111,6 @@ class TagService extends BaseService {
 
     unsubscribeTag = ({ token, tagName, gas = 2000000, onError = () => {}, onSuccess }) =>
         this.openChannel({
-            serverManager: this.serverManager,
             clientManager: this.clientManager,
             serverChannel: Channel.server.tags.unSubscribe,
             clientChannel: Channel.client.tags.unSubscribe,

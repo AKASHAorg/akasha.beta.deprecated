@@ -1,7 +1,6 @@
-
 class HearthbeatService {
-    startHearthBeat = () => {}
-    getHearthBeat = () => {}
-    removeHearthBeat = () => {}
+    startHearthBeat = () => {};
+    getHearthBeat = () => {};
+    removeHearthBeat = () => {};
 }
 export { HearthbeatService };

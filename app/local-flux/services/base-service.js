@@ -10,6 +10,7 @@ class BaseService {
         // manager channel listeners
         this._openChannels = new Set();
     }
+
     // create a universal listener passed to clientChannel.on() method;
     createListener = (onError, onSuccess, channelName = 'notSetChannel') =>
         (ev, res) => {
@@ -48,8 +49,7 @@ class BaseService {
         return null;
     };
     /** open communication with a channel through channel manager
-     * @param serverManager <String> Server manager channel -> sending on this
-     * @param clientManager <String> Client manager channel -> listening on this
+     * @param clientManager <Object> Client manager channel -> listening on this
      * @param serverChannel <String> The channel we need to open
      * @param clientChannel <String> The channel we receive response data
      * @param listenerCb <Function> The actual listener
@@ -57,7 +57,6 @@ class BaseService {
      * @TODO make this a promise
      */
     openChannel = ({
-        serverManager,
         clientManager,
         serverChannel,
         clientChannel,
@@ -77,10 +76,10 @@ class BaseService {
         return serverChannel.enable();
     };
     /** close communication with a channel through channel manager
-     * @param manager <String> manager channel => we are sending req on this
-     * @param channel <String> the server channel we need to stop listen
+     * @param serverChannel <String> manager channel => we are sending req on this
+     * @param clientChannel <String> the server channel we need to stop listen
      */
-    closeChannel = (serverManager, serverChannel, clientChannel) => {
+    closeChannel = (serverChannel, clientChannel) => {
         this.removeListener(clientChannel);
         this._openChannels.delete(serverChannel.channel);
         serverChannel.disable();

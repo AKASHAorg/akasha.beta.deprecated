@@ -8,10 +8,10 @@ const Channel = window.Channel;
 class GethService extends BaseService {
     constructor () {
         super();
-        this.serverManager = Channel.server.geth.manager;
         this.clientManager = Channel.client.geth.manager;
         this.gethLoggerInterval = null;
     }
+
     /**
      * sends start Geth command to main process w/o options
      * @param {object} options Optional params
@@ -34,6 +34,7 @@ class GethService extends BaseService {
         );
         serverChannel.send(gethOptions);
     };
+
     /**
      * Register stop geth listener
      */
@@ -44,6 +45,7 @@ class GethService extends BaseService {
             this.createListener(onError, onSuccess, clientChannel.channelName)
         );
     }
+
     /**
      * Stop Geth process
      */
@@ -60,13 +62,12 @@ class GethService extends BaseService {
         const clientChannel = Channel.client.geth.restartService;
 
         return this.openChannel({
-            serverManager: this.serverManager,
-            clientManager: this.clientManager,
-            serverChannel,
-            clientChannel,
-            listenerCb: this.createListener(onError, onSuccess, clientChannel.channelName)
-        }, () =>
-            serverChannel.send(options)
+                clientManager: this.clientManager,
+                serverChannel,
+                clientChannel,
+                listenerCb: this.createListener(onError, onSuccess, clientChannel.channelName)
+            }, () =>
+                serverChannel.send(options)
         );
     };
     /**
@@ -77,7 +78,6 @@ class GethService extends BaseService {
         const clientChannel = Channel.client.geth.logs;
 
         this.openChannel({
-            serverManager: this.serverManager,
             clientManager: this.clientManager,
             serverChannel,
             clientChannel,
@@ -94,8 +94,8 @@ class GethService extends BaseService {
         const clientChannel = Channel.client.geth.logs;
 
         clearInterval(this.gethLoggerInterval);
-        this.closeChannel(this.serverManager, serverChannel, clientChannel);
-    }
+        this.closeChannel(serverChannel, clientChannel);
+    };
 
     /**
      *  Get current status of geth;
@@ -117,7 +117,7 @@ class GethService extends BaseService {
             this.createListener(onError, onSuccess, clientChannel.channelName)
         );
         serverChannel.send(options);
-    }
+    };
     /**
      * Retrieve options used by geth
      */
@@ -125,7 +125,6 @@ class GethService extends BaseService {
         const clientChannel = Channel.client.geth.options;
         const serverChannel = Channel.server.geth.options;
         return this.openChannel({
-            serverManager: this.serverManager,
             clientManager: this.clientManager,
             serverChannel,
             clientChannel,
@@ -143,15 +142,14 @@ class GethService extends BaseService {
         const serverChannel = Channel.server.geth.syncStatus;
 
         this.openChannel({
-            serverManager: this.serverManager,
-            clientManager: this.clientManager,
-            serverChannel,
-            clientChannel,
-            listenerCb: this.createListener(onError, onSuccess, clientChannel.channelName)
-        }, () =>
-            serverChannel.send(options)
+                clientManager: this.clientManager,
+                serverChannel,
+                clientChannel,
+                listenerCb: this.createListener(onError, onSuccess, clientChannel.channelName)
+            }, () =>
+                serverChannel.send(options)
         );
-    }
+    };
     closeSyncChannel = () => {
         // this.closeChannel(
         //     this.serverManager,

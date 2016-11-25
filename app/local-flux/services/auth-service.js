@@ -11,9 +11,9 @@ const Channel = window.Channel;
 class AuthService extends BaseService {
     constructor () {
         super();
-        this.serverManager = Channel.server.auth.manager;
         this.clientManager = Channel.client.auth.manager;
     }
+
     /**
      * Login profile in AKASHA
      * Request:
@@ -87,7 +87,6 @@ class AuthService extends BaseService {
      */
     createEthAddress = ({ password, onSuccess, onError }) => {
         this.openChannel({
-            serverManager: this.serverManager,
             clientManager: this.clientManager,
             serverChannel: Channel.server.auth.generateEthKey,
             clientChannel: Channel.client.auth.generateEthKey,
@@ -101,13 +100,12 @@ class AuthService extends BaseService {
      */
     getLocalIdentities = ({ options = {}, onError = () => {}, onSuccess }) => {
         return this.openChannel({
-            serverManager: this.serverManager,
-            clientManager: this.clientManager,
-            serverChannel: Channel.server.auth.getLocalIdentities,
-            clientChannel: Channel.client.auth.getLocalIdentities,
-            listenerCb: this.createListener(onError, onSuccess)
-        }, () =>
-            Channel.server.auth.getLocalIdentities.send(options)
+                clientManager: this.clientManager,
+                serverChannel: Channel.server.auth.getLocalIdentities,
+                clientChannel: Channel.client.auth.getLocalIdentities,
+                listenerCb: this.createListener(onError, onSuccess)
+            }, () =>
+                Channel.server.auth.getLocalIdentities.send(options)
         );
     };
     /**
@@ -121,22 +119,22 @@ class AuthService extends BaseService {
             }
             return profileDB.loggedProfile.add(profileData);
         })
-        .then(() => onSuccess(profileData))
-        .catch(reason => onError(reason));
+            .then(() => onSuccess(profileData))
+            .catch(reason => onError(reason));
 
     deleteLoggedProfile = ({ profileKey, onError, onSuccess }) =>
         profileDB.transaction('rw', profileDB.loggedProfile, () => {
             if (profileKey) return profileDB.loggedProfile.delete(profileKey);
             return profileDB.loggedProfile.clear();
         })
-        .then(() => onSuccess())
-        .catch(reason => onError(reason));
+            .then(() => onSuccess())
+            .catch(reason => onError(reason));
 
     getLoggedProfile = ({ onError, onSuccess }) =>
         profileDB.transaction('r', profileDB.loggedProfile, () =>
             profileDB.loggedProfile.toArray()
         ).then(profile => onSuccess(profile[0]))
-        .catch(reason => onError(reason));
+            .catch(reason => onError(reason));
 }
 
 export { AuthService };

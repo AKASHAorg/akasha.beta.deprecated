@@ -9,9 +9,9 @@ const Channel = window.Channel;
 class IpfsService extends BaseService {
     constructor () {
         super();
-        this.serverManager = Channel.server.ipfs.manager;
         this.clientManager = Channel.client.ipfs.manager;
     }
+
     /**
      * Send start IPFS service command to main process.
      * @param {object} options
@@ -31,7 +31,7 @@ class IpfsService extends BaseService {
             this.createListener(onError, onSuccess, clientChannel.channelName)
         );
         serverChannel.send(ipfsOptions);
-    }
+    };
     /**
      * Register stop ipfs listener
      */
@@ -41,14 +41,14 @@ class IpfsService extends BaseService {
             clientChannel,
             this.createListener(onError, onSuccess, clientChannel.channelName)
         );
-    }
+    };
     /**
      * Stop ipfs service
      */
     stop = ({ options = {} }) => {
         const serverChannel = Channel.server.ipfs.stopService;
         serverChannel.send(options);
-    }
+    };
     /**
      * get ipfs status
      * @response data = {
@@ -67,7 +67,8 @@ class IpfsService extends BaseService {
             this.createListener(onError, onSuccess, clientChannel.channelName)
         );
         serverChannel.send(options);
-    }
+    };
+
     resolve = ({ options = {}, onError = () => {}, onSuccess }) => {
         const serverChannel = Channel.server.ipfs.resolve;
         const clientChannel = Channel.client.ipfs.resolve;
@@ -76,7 +77,7 @@ class IpfsService extends BaseService {
             this.createListener(onError, onSuccess, clientChannel.channelName)
         );
         serverChannel.send(options);
-    }
+    };
     /**
      * Retrieve config used by ipfs
      */
@@ -85,13 +86,12 @@ class IpfsService extends BaseService {
         const serverChannel = Channel.server.ipfs.getConfig;
 
         return this.openChannel({
-            serverManager: this.serverManager,
-            clientManager: this.clientManager,
-            serverChannel,
-            clientChannel,
-            listenerCb: this.createListener(onError, onSuccess)
-        }, () =>
-            serverChannel.send(options)
+                clientManager: this.clientManager,
+                serverChannel,
+                clientChannel,
+                listenerCb: this.createListener(onError, onSuccess)
+            }, () =>
+                serverChannel.send(options)
         );
     };
 
@@ -103,13 +103,12 @@ class IpfsService extends BaseService {
         const serverChannel = Channel.server.ipfs.getPorts;
 
         return this.openChannel({
-            serverManager: this.serverManager,
-            clientManager: this.clientManager,
-            serverChannel,
-            clientChannel,
-            listenerCb: this.createListener(onError, onSuccess)
-        }, () =>
-            serverChannel.send(options)
+                clientManager: this.clientManager,
+                serverChannel,
+                clientChannel,
+                listenerCb: this.createListener(onError, onSuccess)
+            }, () =>
+                serverChannel.send(options)
         );
     }
 }

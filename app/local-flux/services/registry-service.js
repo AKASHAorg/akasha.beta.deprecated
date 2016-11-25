@@ -11,9 +11,9 @@ const Channel = window.Channel;
 class RegistryService extends BaseService {
     constructor () {
         super();
-        this.serverManager = Channel.server.registry.manager;
         this.clientManager = Channel.client.registry.manager;
     }
+
     /**
      * create a new profile
      * Request:
@@ -28,7 +28,6 @@ class RegistryService extends BaseService {
      */
     registerProfile = ({ token, akashaId, ipfs, gas = 2000000, onError, onSuccess }) => {
         this.openChannel({
-            serverManager: this.serverManager,
             clientManager: this.clientManager,
             serverChannel: Channel.server.registry.registerProfile,
             clientChannel: Channel.client.registry.registerProfile,
@@ -67,7 +66,7 @@ class RegistryService extends BaseService {
             this.createListener(onError, onSuccess)
         );
         Channel.server.registry.getByAddress.send(ethAddress);
-    }
+    };
 
     /**
      * Create a temporary profile in indexedDB
@@ -100,7 +99,7 @@ class RegistryService extends BaseService {
                 onSuccess({ ...changes, currentStatus });
             })
         )
-        .catch(reason => onError(reason));
+            .catch(reason => onError(reason));
     /**
      * Delete temporary profile. Called after profile was successfully created
      */
@@ -108,8 +107,8 @@ class RegistryService extends BaseService {
         profileDB.transaction('rw', profileDB.tempProfile, () => {
             profileDB.tempProfile.delete(akashaId);
         })
-        .then(() => onSuccess())
-        .catch(reason => onError(reason));
+            .then(() => onSuccess())
+            .catch(reason => onError(reason));
 
     /**
      * Get all available temporary profiles

@@ -1,6 +1,5 @@
 import entriesDB from './db/entry';
 import BaseService from './base-service';
-
 /** * DELETE THIS *****/
 import { generateEntries } from './faker-data';
 /** ******************/
@@ -18,9 +17,9 @@ const Channel = window.Channel;
 class EntryService extends BaseService {
     constructor () {
         super();
-        this.serverManager = Channel.server.entry.manager;
         this.clientManager = Channel.client.entry.manager;
     }
+
     /**
      *  Publish a new entry
      *
@@ -36,7 +35,6 @@ class EntryService extends BaseService {
             wordCount
         } = draft;
         this.openChannel({
-            serverManager: this.serverManager,
             clientManager: this.clientManager,
             serverChannel: Channel.server.entry.publish,
             clientChannel: Channel.client.entry.publish,
@@ -59,7 +57,6 @@ class EntryService extends BaseService {
 
     getEntriesCount = ({ akashaId, onError, onSuccess }) => {
         this.openChannel({
-            serverManager: this.serverManager,
             clientManager: this.clientManager,
             serverChannel: Channel.server.entry.getProfileEntriesCount,
             clientChannel: Channel.client.entry.getProfileEntriesCount,
@@ -69,7 +66,6 @@ class EntryService extends BaseService {
 
     getProfileEntries = ({ akashaId, onSuccess, onError }) => {
         this.openChannel({
-            serverManager: this.serverManager,
             clientManager: this.clientManager,
             serverChannel: Channel.server.entry.entryProfileIterator,
             clientChannel: Channel.client.entry.entryProfileIterator,
@@ -119,9 +115,11 @@ class EntryService extends BaseService {
             .then(entries => onSuccess(entries))
             .catch(reason => onError(reason));
 
-    entryTagIterator = ({ tagName, start, limit, onError = () => {}, onSuccess }) => {
+    entryTagIterator = ({
+        tagName, start, limit, onError = () => {
+    }, onSuccess
+    }) => {
         this.openChannel({
-            serverManager: this.serverManager,
             clientManager: this.clientManager,
             serverChannel: Channel.server.entry.entryTagIterator,
             clientChannel: Channel.client.entry.entryTagIterator,
@@ -131,9 +129,11 @@ class EntryService extends BaseService {
         });
     };
 
-    getTagEntriesCount = ({ tagName, onError = () => {}, onSuccess }) =>
+    getTagEntriesCount = ({
+        tagName, onError = () => {
+    }, onSuccess
+    }) =>
         this.openChannel({
-            serverManager: this.serverManager,
             clientManager: this.clientManager,
             serverChannel: Channel.server.entry.getTagEntriesCount,
             clientChannel: Channel.client.entry.getTagEntriesCount,
@@ -144,7 +144,6 @@ class EntryService extends BaseService {
 
     getLicences = ({ onSuccess, onError }) => {
         this.openChannel({
-            serverManager: Channel.server.licenses.manager,
             clientManager: Channel.client.licenses.manager,
             serverChannel: Channel.server.licenses.getLicenses,
             clientChannel: Channel.client.licenses.getLicenses,
@@ -162,9 +161,11 @@ class EntryService extends BaseService {
         );
     };
 
-    getEntriesStream = ({ akashaId, onError = () => {}, onSuccess }) => {
+    getEntriesStream = ({
+        akashaId, onError = () => {
+    }, onSuccess
+    }) => {
         this.openChannel({
-            serverManager: this.serverManager,
             clientManager: this.clientManager,
             serverChannel: Channel.server.entry.getEntriesStream,
             clientChannel: Channel.client.entry.getEntriesStream,

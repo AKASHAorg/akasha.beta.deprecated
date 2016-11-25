@@ -1,5 +1,4 @@
 import BaseService from './base-service';
-import profileDB from './db/profile';
 
 const Channel = window.Channel;
 /**
@@ -12,9 +11,9 @@ const Channel = window.Channel;
 class ProfileService extends BaseService {
     constructor () {
         super();
-        this.serverManager = Channel.server.profile.manager;
         this.clientManager = Channel.client.profile.manager;
     }
+
     /**
      * Get ballance for a profile
      * Request:
@@ -62,7 +61,6 @@ class ProfileService extends BaseService {
         const clientChannel = Channel.client.profile.updateProfileData;
         const serverChannel = Channel.server.profile.updateProfileData;
         this.openChannel({
-            serverManager: this.serverManager,
             clientManager: this.clientManager,
             serverChannel,
             clientChannel,
@@ -96,13 +94,13 @@ class ProfileService extends BaseService {
      * unregister profile -> delete profile from profiles registry contract
      * @todo gather more info and implement!
      */
-    unregister = () => {};
+    unregister = () => {
+    };
 
     getFollowersCount = ({ akashaId, onError = () => {}, onSuccess }) => {
         const clientChannel = Channel.client.profile.getFollowersCount;
         const serverChannel = Channel.server.profile.getFollowersCount;
         this.openChannel({
-            serverManager: this.serverManager,
             clientManager: this.clientManager,
             serverChannel,
             clientChannel,
@@ -120,7 +118,6 @@ class ProfileService extends BaseService {
         const clientChannel = Channel.client.profile.getFollowingCount;
         const serverChannel = Channel.server.profile.getFollowingCount;
         this.openChannel({
-            serverManager: this.serverManager,
             clientManager: this.clientManager,
             serverChannel,
             clientChannel,
@@ -138,7 +135,6 @@ class ProfileService extends BaseService {
         const clientChannel = Channel.client.profile.followersIterator;
         const serverChannel = Channel.server.profile.followersIterator;
         this.openChannel({
-            serverManager: this.serverManager,
             clientManager: this.clientManager,
             serverChannel,
             clientChannel,
@@ -156,7 +152,6 @@ class ProfileService extends BaseService {
         const clientChannel = Channel.client.profile.followingIterator;
         const serverChannel = Channel.server.profile.followingIterator;
         this.openChannel({
-            serverManager: this.serverManager,
             clientManager: this.clientManager,
             serverChannel,
             clientChannel,
@@ -174,7 +169,6 @@ class ProfileService extends BaseService {
         const clientChannel = Channel.client.profile.followProfile;
         const serverChannel = Channel.server.profile.followProfile;
         this.openChannel({
-            serverManager: this.serverManager,
             clientManager: this.clientManager,
             serverChannel,
             clientChannel,
@@ -192,7 +186,6 @@ class ProfileService extends BaseService {
         const clientChannel = Channel.client.profile.unFollowProfile;
         const serverChannel = Channel.server.profile.unFollowProfile;
         this.openChannel({
-            serverManager: this.serverManager,
             clientManager: this.clientManager,
             serverChannel,
             clientChannel,
@@ -210,7 +203,6 @@ class ProfileService extends BaseService {
         const clientChannel = Channel.client.profile.isFollower;
         const serverChannel = Channel.server.profile.isFollower;
         this.openChannel({
-            serverManager: this.serverManager,
             clientManager: this.clientManager,
             serverChannel,
             clientChannel,

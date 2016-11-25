@@ -1,5 +1,4 @@
 import MultiResImage from './multi-res-image';
-import ErrorRecord from './error-record';
 
 // schema for tempProfile
 function Status () {
