@@ -6,7 +6,7 @@ import StreamMenu from './components/stream-menu';
 import StreamSidebar from './components/stream-sidebar';
 import styles from './stream-container.scss';
 
-const LIMIT = 3;
+const LIMIT = 6;
 
 class StreamPage extends Component {
     constructor (props) {
@@ -16,6 +16,7 @@ class StreamPage extends Component {
             filter: 'tag'
         };
     }
+
     componentWillMount () {
         const { entryActions, loggedProfile } = this.props;
         entryActions.getEntriesStream(loggedProfile.get('akashaId'));
@@ -23,7 +24,7 @@ class StreamPage extends Component {
     }
 
     componentWillReceiveProps (nextProps) {
-        const { tagEntries, selectedTag, entryActions, params } = nextProps;
+        const { selectedTag, entryActions, params } = nextProps;
         if (selectedTag !== this.props.selectedTag) {
             this.setState({
                 filter: 'tag'
@@ -60,11 +61,13 @@ class StreamPage extends Component {
             default:
                 break;
         }
-    }
+    };
+
     handleTabActivation = (tab) => {
         const { params } = this.props;
         this.context.router.push(`/${params.akashaId}/explore/${tab.props.value}`);
-    }
+    };
+
     handleFilterChange = (val) => {
         if (val === this.state.filter) return;
         this.setState({

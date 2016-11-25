@@ -9,13 +9,13 @@ const ErrorRecord = Record({
     message: ''
 });
 
-const PendingTransaction = Record({
-    tx: '',
-    type: null,
-    profile: '',
-    akashaId: null,
-    tagName: null
-});
+// const PendingTransaction = Record({
+//     tx: '',
+//     type: null,
+//     profile: '',
+//     akashaId: null,
+//     tagName: null
+// });
 
 const MinedTransaction = Record({
     tx: '',
@@ -36,12 +36,10 @@ const initialState = fromJS({
 
 const transactionState = createReducer(initialState, {
 
-    [types.ADD_TO_QUEUE_SUCCESS]: (state, action) => {
-        const txs = action.data.map(tx => new PendingTransaction(tx));
-        return state.merge({
-            pending: state.get('pending').concat(txs)
-        });
-    },
+    [types.ADD_TO_QUEUE_SUCCESS]: (state, action) =>
+        state.merge({
+            pending: state.get('pending').concat(fromJS(action.data))
+        }),
 
     [types.ADD_TO_QUEUE_ERROR]: (state, action) =>
         state.merge({
@@ -67,7 +65,7 @@ const transactionState = createReducer(initialState, {
 
     [types.DELETE_PENDING_TX_SUCCESS]: (state, { tx, flags }) =>
         state.merge({
-            pending: state.get('pending').filter(pending => pending.tx !== tx),
+            pending: state.get('pending').filter(pending => pending.get('tx') !== tx),
             flags: state.get('flags').merge(flags)
         }),
 
@@ -101,7 +99,7 @@ const transactionState = createReducer(initialState, {
 
     [types.GET_PENDING_TRANSACTION_SUCCESS]: (state, action) =>
         state.merge({
-            pending: state.get('pending').concat(action.data),
+            pending: state.get('pending').concat(fromJS(action.data)),
             fetchingPending: false
         }),
 

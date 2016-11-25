@@ -20,7 +20,7 @@ const TagSearch = (props) => {
         fullWidth
         hintText="Type a tag"
         floatingLabelText="TAGGED IN"
-        value={tagName.toUpperCase()}
+        value={tagName}
       />
       <RaisedButton
         label={isSubscribed ?

@@ -71,16 +71,16 @@ export function hideEntryModal () {
     };
 }
 
-export function showConfirmationDialog (entity) {
+export function showWeightConfirmDialog (resource) {
     return {
-        type: types.SHOW_CONFIRMATION_DIALOG,
-        entity
+        type: types.SHOW_WEIGHT_CONFIRM_DIALOG,
+        resource
     };
 }
 
-export function hideConfirmationDialog () {
+export function hideWeightConfirmDialog () {
     return {
-        type: types.HIDE_CONFIRMATION_DIALOG
+        type: types.HIDE_WEIGHT_CONFIRM_DIALOG
     };
 }
 

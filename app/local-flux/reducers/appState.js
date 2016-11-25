@@ -34,7 +34,7 @@ const initialState = fromJS({
     showEntry: {
         modal: false
     },
-    confirmationDialog: null,
+    weightConfirmDialog: null,
     timestamp: null,
     notifications: new List(),
     pendingActions: new List(),
@@ -65,11 +65,11 @@ const appState = createReducer(initialState, {
     [types.HIDE_ENTRY_MODAL]: state =>
         state.set('showEntry', { modal: false }),
 
-    [types.SHOW_CONFIRMATION_DIALOG]: (state, action) =>
-        state.set('confirmationDialog', action.entity),
+    [types.SHOW_WEIGHT_CONFIRM_DIALOG]: (state, { resource }) =>
+        state.set('weightConfirmDialog', resource),
 
-    [types.HIDE_CONFIRMATION_DIALOG]: state =>
-        state.set('confirmationDialog', null),
+    [types.HIDE_WEIGHT_CONFIRM_DIALOG]: state =>
+        state.set('weightConfirmDialog', null),
 
     [types.SHOW_PUBLISH_CONFIRM_DIALOG]: (state, { resource }) =>
         state.set('publishConfirmDialog', resource),

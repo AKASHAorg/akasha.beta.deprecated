@@ -71,21 +71,53 @@ const initialState = fromJS({
     flags: new Map(),
     fetchingEntriesCount: false,
     entriesStream: new EntriesStream(),
-    tagEntries: new List(), // entries published with the selected tag
-    savedEntries: new List(),
+    entries: new List(),
     moreTagEntries: false,
     moreSavedEntries: false,
     tagEntriesCount: new Map(),
-    entriesCount: 0 // entries published by a logged profile
+    entriesCount: 0, // entries published by a logged profile
+    voteCost: new Map()
 });
+
+const voteFlagHandler = (state, { flags }) => {
+    const votePending = state.getIn(['flags', 'votePending']);
+    if (votePending === undefined) {
+        return state.merge({
+            flags: state.get('flags')
+                .set('votePending', new List([flags.votePending]))
+        });
+    }
+    const index = votePending.findIndex(flag =>
+        flag.entryId === flags.votePending.entryId);
+    if (index === -1) {
+        return state.merge({
+            flags: state.get('flags').merge({
+                votePending: state.getIn(['flags', 'votePending'])
+                    .push(flags.votePending)
+            })
+        });
+    }
+    return state.merge({
+        flags: state.get('flags').mergeIn(['votePending', index], flags.votePending)
+    });
+};
+
+const flagHandler = (state, { flags }) =>
+    state.merge({
+        flags: state.get('flags').merge(flags)
+    });
+
+const errorHandler = (state, { error, flags }) =>
+    state.merge({
+        errors: state.get('errors').push(new ErrorRecord(error)),
+        flags: state.get('flags').merge(flags)
+    });
+
 /**
  * State of the entries and drafts
  */
 const entryState = createReducer(initialState, {
-    [types.GET_ENTRIES_COUNT]: (state, { flags }) =>
-        state.merge({
-            flags: state.get('flags').merge(flags)
-        }),
+    [types.GET_ENTRIES_COUNT]: flagHandler,
 
     [types.GET_ENTRIES_COUNT_SUCCESS]: (state, { data, flags }) =>
         state.merge({
@@ -115,10 +147,7 @@ const entryState = createReducer(initialState, {
         return state.set('savedEntries', entriesList);
     },
 
-    [types.GET_PROFILE_ENTRIES]: (state, flags) =>
-        state.merge({
-            flags: state.get('flags').merge(flags)
-        }),
+    [types.GET_PROFILE_ENTRIES]: flagHandler,
 
     [types.GET_PROFILE_ENTRIES_SUCCESS]: (state, { data, flags }) =>
         state.merge({
@@ -127,11 +156,7 @@ const entryState = createReducer(initialState, {
             flags: state.get('flags').merge(flags)
         }),
 
-    [types.GET_PROFILE_ENTRIES_ERROR]: (state, { error, flags }) =>
-        state.merge({
-            errors: state.get('errors').push(new ErrorRecord(error)),
-            flags: state.get('flags').merge(flags)
-        }),
+    [types.GET_PROFILE_ENTRIES_ERROR]: errorHandler,
 
     [types.GET_LICENCES_SUCCESS]: (state, { licences }) => {
         const licencesList = new List(licences.map(licence => new Licence(licence)));
@@ -153,10 +178,7 @@ const entryState = createReducer(initialState, {
             errors: state.get('errors').push(new ErrorRecord(error))
         }),
 
-    [types.GET_ENTRIES_STREAM]: (state, { flags }) =>
-        state.merge({
-            flags: state.get('flags').merge(flags)
-        }),
+    [types.GET_ENTRIES_STREAM]: flagHandler,
 
     [types.GET_ENTRIES_STREAM_SUCCESS]: (state, { data, flags }) =>
         state.merge({
@@ -164,16 +186,9 @@ const entryState = createReducer(initialState, {
             flags: state.get('flags').merge(flags)
         }),
 
-    [types.GET_ENTRIES_STREAM_ERROR]: (state, { error, flags }) =>
-        state.merge({
-            errors: state.get('errors').push(new ErrorRecord(error)),
-            flags: state.get('flags').merge(flags)
-        }),
+    [types.GET_ENTRIES_STREAM_ERROR]: errorHandler,
 
-    [types.ENTRY_TAG_ITERATOR]: (state, { flags }) =>
-        state.merge({
-            flags: state.get('flags').merge(flags)
-        }),
+    [types.ENTRY_TAG_ITERATOR]: flagHandler,
 
     [types.ENTRY_TAG_ITERATOR_SUCCESS]: (state, { data, flags }) => {
         const moreTagEntries = data.limit === data.collection.length;
@@ -181,40 +196,76 @@ const entryState = createReducer(initialState, {
             fromJS(data.collection.slice(0, -1)) :
             fromJS(data.collection);
         return state.merge({
-            tagEntries: state.get('tagEntries').concat(newTagEntries),
+            entries: state.get('entries').concat(newTagEntries.map(entry =>
+                entry.set('type', 'tagEntry'))),
             moreTagEntries,
             flags: state.get('flags').merge(flags)
-        })
+        });
     },
 
-    [types.ENTRY_TAG_ITERATOR_ERROR]: (state, { error, flags }) =>
-        state.merge({
-            errors: state.get('errors').push(new ErrorRecord(error)),
-            flags: state.get('flags').merge(flags)
-        }),
+    [types.ENTRY_TAG_ITERATOR_ERROR]: errorHandler,
 
-    [types.GET_TAG_ENTRIES_COUNT]: (state, { flags }) =>
-        state.merge({
-            flags: state.get('flags').merge(flags)
-        }),
+    [types.GET_TAG_ENTRIES_COUNT]: flagHandler,
 
-    [types.GET_TAG_ENTRIES_COUNT_SUCCESS]: (state, { data, flags }) => {
-        return state.merge({
+    [types.GET_TAG_ENTRIES_COUNT_SUCCESS]: (state, { data, flags }) =>
+        state.merge({
             tagEntriesCount: state.get('tagEntriesCount').merge(fromJS(data)),
             flags: state.get('flags').merge(flags)
-        })
-    },
+        }),
 
-    [types.GET_TAG_ENTRIES_COUNT_ERROR]: (state, { error, flags }) =>
+    [types.GET_TAG_ENTRIES_COUNT_ERROR]: errorHandler,
+
+    [types.VOTE_COST]: flagHandler,
+
+    [types.VOTE_COST_SUCCESS]: (state, { data, flags }) =>
         state.merge({
-            errors: state.get('errors').push(new ErrorRecord(error)),
+            voteCost: state.get('voteCost').merge({ [data.weight]: data.cost }),
             flags: state.get('flags').merge(flags)
         }),
 
+    [types.VOTE_COST_ERROR]: errorHandler,
+
+    [types.UPVOTE]: voteFlagHandler,
+
+    [types.UPVOTE_SUCCESS]: voteFlagHandler,
+
+    [types.UPVOTE_ERROR]: voteFlagHandler,
+
+    [types.DOWNVOTE]: voteFlagHandler,
+
+    [types.DOWNVOTE_SUCCESS]: voteFlagHandler,
+
+    [types.DOWNVOTE_ERROR]: voteFlagHandler,
+
+    [types.GET_ENTRY]: flagHandler,
+
+    [types.GET_ENTRY_ERROR]: errorHandler,
+
+    [types.GET_ENTRY_SUCCESS]: (state, { data, flags }) => {
+        const entryIndex = state.get('entries').findIndex(entry =>
+            entry.get('entryId') === data.entryId);
+        return state.merge({
+            entries: state.get('entries').mergeIn([entryIndex], data),
+            flags: state.get('flags').merge(flags)
+        });
+    },
+
+    [types.GET_SCORE]: flagHandler,
+
+    [types.GET_SCORE_ERROR]: errorHandler,
+
+    [types.GET_SCORE_SUCCESS]: (state, { data, flags }) => {
+        const entryIndex = state.get('entries').findIndex(entry =>
+            entry.get('entryId') === data.entryId);
+        return state.merge({
+            entries: state.get('entries').mergeIn([entryIndex, 'content', 'score'], data.score),
+            flags: state.get('flags').merge(flags)
+        });
+    },
 
     [types.CLEAR_TAG_ENTRIES]: state =>
         state.merge({
-            tagEntries: new List()
+            entries: state.get('entries').filter(entry => entry.get('type') !== 'tagEntry')
         })
 });
 

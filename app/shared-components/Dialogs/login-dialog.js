@@ -65,6 +65,7 @@ const loginDialog = (props) => {
             <TextField
                 type="password"
                 fullWidth
+                autoFocus
                 floatingLabelText="Password"
                 onKeyPress={props.onKeyPress}
                 onChange={props.onPasswordChange}

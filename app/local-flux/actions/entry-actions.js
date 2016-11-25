@@ -1,5 +1,6 @@
 import { EntryService } from '../services';
 import { entryActionCreators } from './action-creators';
+import { AppActions, TransactionActions } from 'local-flux';
 
 let entryActions = null;
 
@@ -10,6 +11,8 @@ class EntryActions {
             return entryActions;
         }
         this.dispatch = dispatch;
+        this.appActions = new AppActions(dispatch);
+        this.transactionActions = new TransactionActions(dispatch);
         this.entryService = new EntryService();
         entryActions = this;
     }
@@ -102,16 +105,16 @@ class EntryActions {
         });
 
     entryTagIterator = (tagName, start, limit) => {
-        this.dispatch(entryActionCreators.entryTagIterator({ fetchingEntriesForTag: true }));
+        this.dispatch(entryActionCreators.entryTagIterator({ fetchingTagEntries: true }));
         this.entryService.entryTagIterator({
             tagName,
             start,
             limit,
             onSuccess: data => this.dispatch(entryActionCreators.entryTagIteratorSuccess(data, {
-                fetchingEntriesForTag: false
+                fetchingTagEntries: false
             })),
             onError: error => this.dispatch(entryActionCreators.entryTagIteratorError(error, {
-                fetchingEntriesForTag: false
+                fetchingTagEntries: false
             }))
         });
     };
@@ -129,14 +132,6 @@ class EntryActions {
         });
     }
 
-    castUpvote = (entryAddress, voteWeight) => {
-        this.entryService.castUpvote(entryAddress, voteWeight).then((result) => {
-            if (result.error) {
-                return this.dispatch(entryActionCreators.castUpvoteError(result.error));
-            }
-            return this.dispatch(entryActionCreators.castUpvoteSuccess(result.data));
-        });
-    };
     getLicences = () => {
         this.entryService.getLicences({
             onSuccess: ({ licenses }) =>
@@ -170,5 +165,153 @@ class EntryActions {
 
     clearTagEntries = () =>
         this.dispatch(entryActionCreators.clearTagEntries());
+
+    addUpvoteAction = payload =>
+        this.appActions.addPendingAction({
+            type: 'upvote',
+            payload,
+            gas: 2000000,
+            status: 'needWeightConfirmation'
+        });
+
+    addDownvoteAction = payload =>
+        this.appActions.addPendingAction({
+            type: 'downvote',
+            payload,
+            gas: 2000000,
+            status: 'needWeightConfirmation'
+        });
+
+    voteCost = (weight) => {
+        this.dispatch(entryActionCreators.voteCost({
+            fetchingVoteCost: true
+        }));
+        this.entryService.voteCost({
+            weight,
+            onSuccess: data =>
+                this.dispatch(entryActionCreators.voteCostSuccess(data, {
+                    fetchingVoteCost: false
+                })),
+            onError: error =>
+                this.dispatch(entryActionCreators.voteCostError(error, {
+                    fetchingVoteCost: false
+                }))
+        });
+    };
+
+    upvote = (entryId, weight, value, gas) =>
+        this.dispatch((dispatch, getState) => {
+            const token = getState().profileState.getIn(['loggedProfile', 'token']);
+            dispatch(entryActionCreators.upvote({ votePending: { entryId, value: true } }));
+            this.entryService.upvote({
+                token,
+                entryId,
+                weight,
+                value,
+                gas,
+                onSuccess: (data) => {
+                    const entryTitle = getState().entryState.get('entries')
+                        .find(entry => entry.get('entryId') === data.entryId)
+                        .getIn(['content', 'content', 'title']);
+                    this.transactionActions.listenForMinedTx();
+                    this.transactionActions.addToQueue([{
+                        tx: data.tx,
+                        type: 'upvote',
+                        entryId: data.entryId
+                    }]);
+                    this.appActions.showNotification({
+                        id: 'upvotingEntry',
+                        values: { entryTitle }
+                    });
+                },
+                onError: (error, data) =>
+                    dispatch(entryActionCreators.upvoteError(error, {
+                        votePending: { entryId: data.entryId, value: false }
+                    }))
+            });
+        });
+
+    downvote = (entryId, weight, value, gas) =>
+        this.dispatch((dispatch, getState) => {
+            const token = getState().profileState.getIn(['loggedProfile', 'token']);
+            dispatch(entryActionCreators.downvote({ votePending: { entryId, value: true } }));
+            this.entryService.downvote({
+                token,
+                entryId,
+                weight,
+                value,
+                gas,
+                onSuccess: (data) => {
+                    const entryTitle = getState().entryState.get('entries')
+                        .find(entry => entry.get('entryId') === data.entryId)
+                        .getIn(['content', 'content', 'title']);
+                    this.transactionActions.listenForMinedTx();
+                    this.transactionActions.addToQueue([{
+                        tx: data.tx,
+                        type: 'downvote',
+                        entryId: data.entryId
+                    }]);
+                    this.appActions.showNotification({
+                        id: 'downvotingEntry',
+                        values: { entryTitle }
+                    });
+                },
+                onError: (error, data) =>
+                    dispatch(entryActionCreators.downvoteError(error, {
+                        votePending: { entryId: data.entryId, value: false }
+                    }))
+            });
+        });
+
+    upvoteSuccess = entryId =>
+        this.dispatch((dispatch, getState) => {
+            const entryTitle = getState().entryState.get('entries')
+                .find(entry => entry.get('entryId') === entryId)
+                .getIn(['content', 'content', 'title']);
+            dispatch(entryActionCreators.upvoteSuccess({
+                votePending: { entryId, value: false }
+            }));
+            this.appActions.showNotification({
+                id: 'upvoteEntrySuccess',
+                values: { entryTitle }
+            });
+        });
+
+    downvoteSuccess = entryId =>
+        this.dispatch((dispatch, getState) => {
+            const entryTitle = getState().entryState.get('entries')
+                .find(entry => entry.get('entryId') === entryId)
+                .getIn(['content', 'content', 'title']);
+            dispatch(entryActionCreators.downvoteSuccess({
+                votePending: { entryId, value: false }
+            }));
+            this.appActions.showNotification({
+                id: 'downvoteEntrySuccess',
+                values: { entryTitle }
+            });
+        });
+
+    getEntry = (entryId, full) => {
+        this.dispatch(entryActionCreators.getEntry({ fetchingEntry: true }));
+        this.entryService.getEntry({
+            entryId,
+            full,
+            onSuccess: data =>
+                this.dispatch(entryActionCreators.getEntrySuccess(data, { fetchingEntry: false })),
+            onError: error =>
+                this.dispatch(entryActionCreators.getEntryError(error, { fetchingEntry: false }))
+        });
+    };
+
+    getScore = (entryId) => {
+        this.dispatch(entryActionCreators.getScore({ fetchingScore: true }));
+        this.entryService.getScore({
+            entryId,
+            onSuccess: data =>
+                this.dispatch(entryActionCreators.getScoreSuccess(data, { fetchingScore: false })),
+            onError: error =>
+                this.dispatch(entryActionCreators.getScoreError(error, { fetchingScore: false }))
+        });
+    };
 }
 export { EntryActions };

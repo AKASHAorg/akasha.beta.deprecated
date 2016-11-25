@@ -168,6 +168,53 @@ class EntryService extends BaseService {
             Channel.server.entry.getEntriesStream.send({ akashaId });
         });
     }
+
+    voteCost = ({ weight, onError = () => {}, onSuccess }) =>
+        this.openChannel({
+            clientManager: this.clientManager,
+            serverChannel: Channel.server.entry.voteCost,
+            clientChannel: Channel.client.entry.voteCost,
+            listenerCb: this.createListener(onError, onSuccess)
+        }, () => {
+            Channel.server.entry.voteCost.send({ weight });
+        });
+
+    upvote = ({ token, entryId, weight, value, gas = 2000000, onError = () => {}, onSuccess }) =>
+        this.openChannel({
+            clientManager: this.clientManager,
+            serverChannel: Channel.server.entry.upvote,
+            clientChannel: Channel.client.entry.upvote,
+            listenerCb: this.createListener(onError, onSuccess)
+        }, () => {
+            Channel.server.entry.upvote.send({ token, entryId, weight, value, gas });
+        });
+
+
+    downvote = ({ token, entryId, weight, value, gas = 2000000, onError = () => {}, onSuccess }) =>
+        this.openChannel({
+            clientManager: this.clientManager,
+            serverChannel: Channel.server.entry.downvote,
+            clientChannel: Channel.client.entry.downvote,
+            listenerCb: this.createListener(onError, onSuccess)
+        }, () => {
+            Channel.server.entry.downvote.send({ token, entryId, weight, value, gas });
+        });
+
+    getEntry = ({ entryId, full = false, onError = () => {}, onSuccess }) => {
+        this.registerListener(
+            Channel.client.entry.getEntry,
+            this.createListener(onError, onSuccess)
+        );
+        Channel.server.entry.getEntry.send({ entryId, full });
+    };
+
+    getScore = ({ entryId, onError = () => {}, onSuccess }) => {
+        this.registerListener(
+            Channel.client.entry.getScore,
+            this.createListener(onError, onSuccess)
+        );
+        Channel.server.entry.getScore.send({ entryId });
+    };
 }
 
 export { EntryService };

@@ -12,6 +12,7 @@ import ProfileUpdater from './components/profile-updater';
 import PublishEntryRunner from './components/publish-entry-runner';
 import TagPublisher from './components/tag-publisher';
 import FollowRunner from './components/follow-runner';
+import VoteRunner from './components/vote-runner';
 
 class HomeContainer extends React.Component {
     constructor (props) {
@@ -21,11 +22,15 @@ class HomeContainer extends React.Component {
     }
 
     componentWillMount () {
-        const { profileActions, eProcActions } = this.props;
+        const { profileActions, eProcActions, entryActions } = this.props;
         profileActions.resetFlags();
+        eProcActions.getGethStatus();
         this.interval = setInterval(() => {
             eProcActions.getGethStatus();
         }, 30000);
+        for (let i = 1; i <= 10; i += 1) {
+            entryActions.voteCost(i);
+        }
     }
     componentDidMount () {
         const { profileActions } = this.props;
@@ -108,7 +113,6 @@ class HomeContainer extends React.Component {
             <div className={styles.sideBar} >
               <Sidebar
                 activePanel={activePanel}
-                account={account}
                 appActions={appActions}
                 draftActions={draftActions}
                 loggedProfileData={loggedProfileData}
@@ -137,6 +141,7 @@ class HomeContainer extends React.Component {
             <FollowRunner />
             <PublishEntryRunner />
             <TagPublisher />
+            <VoteRunner />
           </div>
         );
     }

@@ -16,7 +16,7 @@ const Profile = Record({
     akashaId: '',
     avatar: null,
     backgroundImage: [],
-    balance: 0,
+    balance: null,
     about: null,
     links: [],
     profile: null,

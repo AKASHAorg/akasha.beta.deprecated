@@ -41,27 +41,13 @@ class EntryList extends Component {
         const { loggedProfileData } = this.props;
         this.context.router.push(`/${loggedProfileData.get('akashaId')}/explore/tag/${tag}`);
     };
-    _handleUpvote = (ev, entry) => {
-        const { appActions } = this.props;
-        const authorFirstName = entry.getIn(['author', 'firstName']);
-        const authorLastName = entry.getIn(['author', 'lastName']);
-        const intl = this.props.intl;
-        appActions.getConfirmation({
-            action: 'upvote',
-            address: entry.get('address'),
-            title: entry.get('title'),
-            subtitle: `${intl.formatMessage({
-                id: 'app.general.by',
-                defaultMessage: 'by',
-                description: 'entry is published `by` someone'
-            })} ${authorFirstName} ${authorLastName}`,
-            authorName: `${authorFirstName} ${authorLastName}`,
-            disclaimer: 'disclaimer'
-        });
+    handleUpvote = (payload) => {
+        const { entryActions } = this.props;
+        entryActions.addUpvoteAction(payload);
     };
-    _handleDownvote = (ev, entry) => {
-        const { appActions } = this.props;
-        appActions.getConfirmation('downvote', entry);
+    handleDownvote = (payload) => {
+        const { entryActions } = this.props;
+        entryActions.addDownvoteAction(payload);
     };
     _handleComment = (ev, entryAddress) => {
         const { appActions, entryState } = this.props;
@@ -110,7 +96,7 @@ class EntryList extends Component {
     render () {
         const { loggedProfileData, selectedTag, tagEntries, savedEntries, moreTagEntries,
             moreSavedEntries, tagEntriesCount, entriesStream, subscribePending, params, blockNr,
-            intl } = this.props;
+            votePending, intl } = this.props;
         const entries = params.filter === 'tag' ? tagEntries : savedEntries;
         const moreEntries = params.filter === 'tag' ? moreTagEntries : moreSavedEntries;
         const showMoreEntries = params.filter === 'tag' ?
@@ -139,23 +125,25 @@ class EntryList extends Component {
                 onFullScreenClick={this._handleEditorFullScreen}
               />
             */ }
-            {entries && entries.map((entry, key) =>
-              <EntryCard
-                entry={entry}
-                key={key}
-                onContentClick={ev => this._navigateToEntry(ev, entry)}
-                onTagClick={this._navigateToTag}
-                onUpvote={this._handleUpvote}
-                onDownvote={this._handleDownvote}
-                onComment={this._handleComment}
-                onShare={this._handleShare}
-                onBookmark={this._handleBookmark}
-                blockNr={blockNr}
-                selectProfile={this.selectProfile}
-                selectTag={this.selectTag}
-                selectedTag={selectedTag}
-              />
-            )}
+            {entries && entries.map((entry, key) => {
+                const voteEntryPending = votePending && votePending.find(vote =>
+                    vote.entryId === entry.get('entryId'));
+                return <EntryCard
+                  entry={entry}
+                  key={key}
+                  onContentClick={ev => this._navigateToEntry(ev, entry)}
+                  onTagClick={this._navigateToTag}
+                  handleUpvote={this.handleUpvote}
+                  handleDownvote={this.handleDownvote}
+                  handleComment={this.handleComment}
+                  handleBookmark={this.handleBookmark}
+                  blockNr={blockNr}
+                  selectProfile={this.selectProfile}
+                  selectTag={this.selectTag}
+                  selectedTag={selectedTag}
+                  voteEntryPending={voteEntryPending}
+                />;
+            })}
             {moreEntries &&
               <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                 <FlatButton
@@ -180,10 +168,12 @@ EntryList.propTypes = {
     entriesStream: PropTypes.shape(),
     selectedTag: PropTypes.string,
     subscribePending: PropTypes.shape(),
+    appActions: PropTypes.shape(),
     entryActions: PropTypes.shape(),
     tagActions: PropTypes.shape(),
     tagEntriesCount: PropTypes.shape(),
     blockNr: PropTypes.number,
+    votePending: PropTypes.shape(),
     params: PropTypes.shape(),
     intl: PropTypes.shape()
 };
