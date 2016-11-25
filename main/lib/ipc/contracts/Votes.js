@@ -19,7 +19,7 @@ class Votes extends BaseContract_1.default {
         value = this.gethInstance.web3.toWei(value, 'ether');
         return Promise.resolve(this.extractData('upvote', weight, entryId, { gas, value }));
     }
-    downvote(entryId, weight, gas = 2000000, value) {
+    downvote(entryId, weight, value, gas = 2000000) {
         value = this.gethInstance.web3.toWei(value, 'ether');
         return Promise.resolve(this.extractData('downvote', weight, entryId, { gas, value }));
     }
