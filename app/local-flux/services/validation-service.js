@@ -5,9 +5,9 @@ const Channel = window.Channel;
 class ValidationService extends BaseService {
     constructor () {
         super();
-        this.serverManager = Channel.server.registry.manager;
         this.clientManager = Channel.client.registry.manager;
     }
+
     /**
      * Validate akashaId on blockchain
      * Request:
@@ -20,7 +20,6 @@ class ValidationService extends BaseService {
         const clientChannel = Channel.client.registry.profileExists;
 
         return this.openChannel({
-            serverManager: this.serverManager,
             clientManager: this.clientManager,
             serverChannel,
             clientChannel,

@@ -1,4 +1,3 @@
-
 // schema for tempProfile
 
 export const LoggedProfileSchema = {

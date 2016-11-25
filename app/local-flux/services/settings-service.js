@@ -11,7 +11,7 @@ class SettingsService extends BaseService {
         }).catch((reason) => {
             onError(reason, options.table);
         });
-    }
+    };
     getSettings = ({ options = { table: '', query: {} }, onError = () => {}, onSuccess }) => {
         settingsDB.transaction('r', settingsDB[options.table], () =>
             settingsDB[options.table].where('name').equals(options.table).toArray()

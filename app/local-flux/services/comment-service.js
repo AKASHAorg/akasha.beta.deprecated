@@ -1,5 +1,4 @@
 import BaseService from './base-service';
-
 /** * DELETE THIS *****/
 import { generateComments } from './faker-data';
 /** ******************/
