@@ -3,6 +3,7 @@ import { IpfsConnector, ipfsEvents } from '@akashaproject/ipfs-connector';
 import { ipfsResponse } from './responses';
 import channels from '../../channels';
 
+const peerId = '/ip4/46.101.103.114/tcp/4001/ipfs/QmaztwrFRmRvvKYbAETVtNtdkAmsee4byiasr4RBq9XCtt';
 abstract class IpfsEmitter extends AbstractEmitter {
 
     public attachEmitters() {
@@ -29,6 +30,11 @@ abstract class IpfsEmitter extends AbstractEmitter {
             ipfsEvents.SERVICE_STARTED,
             () => {
                 this.fireEvent(channels.client.ipfs.startService, ipfsResponse({ started: true }));
+                IpfsConnector.getInstance()
+                    .api
+                    .apiClient
+                    .bootstrap
+                    .add(peerId, (err, data) => {})
             }
         );
         return this;
