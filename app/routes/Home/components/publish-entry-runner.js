@@ -15,8 +15,6 @@ class PublishEntryRunner extends Component {
         // draftActions.getPublishingDrafts(loggedProfile.get('profile'));
     }
     componentWillReceiveProps (nextProps) {
-        const { drafts, appActions, loggedProfile, draftActions, transactionActions,
-            minedTransactions } = nextProps;
         this.launchActions(nextProps);
         this.listenMinedTx(nextProps);
         // let publishableDrafts = [];
@@ -51,7 +49,7 @@ class PublishEntryRunner extends Component {
         const actions = pendingActions.filter(action => action.get('status') === 'readyToPublish');
         if (actions.size > 0) {
             actions.forEach((action) => {
-                // switch may seem unneccessary right now but it will be used for edit too!
+                // switch may seem unnecessary right now but it will be used for edit too!
                 switch (action.get('type')) {
                     case 'publishEntry':
                         appActions.updatePendingAction(action.merge({
@@ -66,10 +64,6 @@ class PublishEntryRunner extends Component {
         }
     }
     listenMinedTx = (nextProps) => {};
-    _registerDraft = (draft, token) => {
-        const { draftActions } = this.props;
-        draftActions.publishDraft(draft.toJS(), token);
-    }
     render () {
         return null;
     }

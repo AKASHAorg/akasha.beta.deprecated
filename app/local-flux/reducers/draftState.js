@@ -14,6 +14,11 @@ const DraftContent = Record({
     blocks: []
 });
 
+const DraftLicence = Record({
+    parent: '2',
+    id: '4'
+});
+
 const Draft = Record({
     id: null,
     content: new DraftContent(),
@@ -24,14 +29,11 @@ const Draft = Record({
     featuredImage: null,
     tags: new List(),
     tx: null,
-    licence: null,
+    licence: Record(),
     status: {
         created_at: '',
         updated_at: '',
-        tagsPublished: false,
-        publishing: false,
-        publishingConfirmed: false,
-        currentAction: null
+        publishing: false
     }
 });
 
@@ -41,9 +43,18 @@ const initialState = fromJS({
     flags: new Map(),
     draftsCount: 0
 });
-/**
- * State of the entries and drafts
- */
+
+const createDraftRecord = (draft) => {
+    const { content, tags, licence, ...others } = draft;
+    console.log('passed draft', draft);
+    return new Draft({
+        content: new DraftContent(content),
+        tags: fromJS(tags),
+        licence: new DraftLicence(licence),
+        ...others
+    });
+};
+
 const draftState = createReducer(initialState, {
     [types.SAVE_DRAFT]: (state, { flags }) =>
         state.merge({
@@ -51,7 +62,7 @@ const draftState = createReducer(initialState, {
         }),
 
     [types.CREATE_DRAFT_SUCCESS]: (state, { draft, flags }) => {
-        const drft = new Draft(draft);
+        const drft = createDraftRecord(draft);
         return state.merge({
             drafts: state.get('drafts').push(drft),
             flags: state.get('flags').merge(flags)
@@ -64,13 +75,34 @@ const draftState = createReducer(initialState, {
         }),
 
     [types.GET_DRAFTS_SUCCESS]: (state, { drafts, flags }) => {
-        const drfts = new List(drafts.map(draft => new Draft(draft)));
+        const drfts = new List(drafts.map(draft => createDraftRecord(draft)));
         return state.merge({
             drafts: drfts,
             flags: state.get('flags').merge(flags)
         });
     },
-    [types.PUBLISH_ENTRY_SUCCESS]: (state, action) => {
+    [types.PUBLISH_DRAFT]: (state, { flags }) => {
+        const publishPendingDrafts = state.getIn(['flags', 'publishPendingDrafts']);
+        if (publishPendingDrafts === undefined) {
+            return state.merge({
+                flags: state.get('flags').set('publishPendingDrafts', new List([flags.publishPending]))
+            });
+        }
+        const index = publishPendingDrafts.findIndex(flag =>
+            flag.draftId === flags.publishPending.draftId);
+        if (index === -1) {
+            return state.merge({
+                flags: state.get('flags').merge({
+                    publishPendingDrafts: state.getIn(['flags', 'publishPendingTags'])
+                        .push(flags.publishPending)
+                })
+            });
+        }
+        return state.merge({
+            flags: state.get('flags').mergeIn(['publishPendingDrafts', index], flags.publishPending)
+        });
+    },
+    [types.PUBLISH_DRAFT_SUCCESS]: (state, action) => {
         const draftIndex = state.get('drafts').findIndex(drft =>
             drft.get('id') === action.entry.id);
         return state.merge({
@@ -78,7 +110,7 @@ const draftState = createReducer(initialState, {
         });
     },
 
-    [types.PUBLISH_ENTRY_ERROR]: (state, { error }) =>
+    [types.PUBLISH_DRAFT_ERROR]: (state, { error }) =>
         state.merge({
             errors: state.get('errors').push(new ErrorRecord(error))
         }),
@@ -91,21 +123,12 @@ const draftState = createReducer(initialState, {
 
     [types.GET_DRAFT_BY_ID_SUCCESS]: (state, { draft }) => {
         const draftIndex = state.get('drafts').findIndex(drft => drft.id === draft.id);
-        const { content, tags, ...others } = draft;
-        console.log(draft, 'getDraftById');
         if (draftIndex > -1) {
-            return state.mergeIn(['drafts', draftIndex], new Draft({
-                content: new DraftContent(content),
-                tags: new List(tags),
-                ...others
-            }));
+            return state.mergeIn(['drafts', draftIndex], createDraftRecord(draft));
         }
+        console.log(createDraftRecord(draft), 'createdraftrecord');
         return state.merge({
-            drafts: state.get('drafts').push(new Draft({
-                content: new DraftContent(content),
-                tags: new List(tags),
-                ...others
-            }))
+            drafts: state.get('drafts').push(createDraftRecord(draft))
         });
     },
 
@@ -114,7 +137,7 @@ const draftState = createReducer(initialState, {
             drft.id === draft.id
         );
         return state.merge({
-            drafts: state.get('drafts').mergeIn([draftIndex], new Draft(draft)),
+            drafts: state.get('drafts').mergeDeepIn([draftIndex], draft),
             flags: state.get('flags').merge(flags)
         });
     },
@@ -150,7 +173,8 @@ const draftState = createReducer(initialState, {
 
     [types.GET_PUBLISHING_DRAFTS_SUCCESS]: (state, { drafts, flags }) =>
         state.merge({
-            drafts: state.get('drafts').toSet().union(new Set(drafts.map(drft => new Draft(drft)))).toList(),
+            drafts: state.get('drafts').toSet().union(new Set(drafts.map(drft =>
+                createDraftRecord(drft)))).toList(),
             flags: state.get('flags').merge(flags)
         }),
 

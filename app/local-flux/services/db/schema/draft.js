@@ -14,10 +14,7 @@ const draftSchema = Dexie.defineClass({
     status: {
         created_at: Date,
         updated_at: Date,
-        publishing: Boolean,
-        tagsPublished: Boolean,
-        publishingConfirmed: Boolean,
-        currentAction: 'String'
+        publishing: Boolean
     } // local use
 });
 export default draftSchema;
