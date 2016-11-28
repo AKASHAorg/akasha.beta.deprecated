@@ -1,7 +1,6 @@
-export function ErrorRecord () {
-    return {
-        code: Number,
-        message: String,
-        fatal: Boolean
-    };
-}
+const errorRecord = {
+    code: Number,
+    message: String,
+    fatal: Boolean
+};
+export default errorRecord;

@@ -1,6 +1,6 @@
 import Dexie from 'dexie';
-import { tempProfileSchema } from './schema/temp-profile';
-import { loggedProfileSchema } from './schema/logged-profile';
+import  tempProfileSchema  from './schema/temp-profile';
+import  loggedProfileSchema  from './schema/logged-profile';
 
 
 const profileDB = new Dexie('profiles');
@@ -28,10 +28,5 @@ profileDB.version(1).stores({
 
 profileDB.tempProfile.defineClass(tempProfileSchema);
 profileDB.tempProfile.defineClass(loggedProfileSchema);
-
-profileDB.open().catch((reason) => {
-    console.error('Could not open database!!', reason);
-    throw reason;
-});
 
 export default profileDB;

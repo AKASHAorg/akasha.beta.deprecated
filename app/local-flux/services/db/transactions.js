@@ -7,6 +7,4 @@ transactionsDB.version(1).stores({
     errors: '&tx, code, message, fatal'
 });
 
-transactionsDB.open();
-
 export default transactionsDB;

@@ -28,12 +28,11 @@ class AuthService extends BaseService {
      */
     login = ({ account, password, rememberTime, akashaId, registering = false, onSuccess, onError }) => {
         const successCb = (data) => {
-            profileDB.transaction('rw', profileDB.loggedProfile, () => {
-                profileDB.loggedProfile.put({ akashaId, ...data });
-                return { akashaId, ...data };
-            }).then((loggedProfile) => {
-                onSuccess(loggedProfile);
-            }).catch(error => onError(error));
+            return profileDB.loggedProfile.put({ akashaId, ...data })
+                .then(() => {
+                    return onSuccess({ akashaId, ...data });
+                })
+                .catch(error => onError(error));
         };
         this.registerListener(
             Channel.client.auth.login,
@@ -95,10 +94,14 @@ class AuthService extends BaseService {
             Channel.server.auth.generateEthKey.send({ password });
         });
     };
+
     /**
      * Get a list of local profiles created
      */
-    getLocalIdentities = ({ options = {}, onError = () => {}, onSuccess }) => {
+    getLocalIdentities = ({
+        options = {}, onError = () => {
+    }, onSuccess
+    }) => {
         return this.openChannel({
                 clientManager: this.clientManager,
                 serverChannel: Channel.server.auth.getLocalIdentities,
@@ -110,30 +113,42 @@ class AuthService extends BaseService {
     };
     /**
      * Save logged profile to indexedDB database.
-     * @param profileData {object}
+     * @param profileData
+     * @param onSuccess
+     * @param onError
+     * @returns {Promise<U|R>}
      */
-    createLoggedProfile = ({ profileData, onSuccess, onError }) =>
-        profileDB.transaction('rw', profileDB.loggedProfile, () => {
-            if (profileData.password) {
-                delete profileData.password;
-            }
-            return profileDB.loggedProfile.add(profileData);
-        })
+    createLoggedProfile = ({ profileData, onSuccess, onError }) => {
+        if (profileData.password) {
+            delete profileData.password;
+        }
+        return profileDB.loggedProfile
+            .put(profileData)
             .then(() => onSuccess(profileData))
-            .catch(reason => onError(reason));
+            .catch(reason => onError(reason))
+    };
 
-    deleteLoggedProfile = ({ profileKey, onError, onSuccess }) =>
-        profileDB.transaction('rw', profileDB.loggedProfile, () => {
-            if (profileKey) return profileDB.loggedProfile.delete(profileKey);
-            return profileDB.loggedProfile.clear();
-        })
-            .then(() => onSuccess())
-            .catch(reason => onError(reason));
+    /**
+     *
+     * @param profileKey
+     * @param onError
+     * @param onSuccess
+     */
+    deleteLoggedProfile = ({ profileKey, onError, onSuccess }) => {
+        const cleanup = (profileKey) ? profileDB.loggedProfile.delete(profileKey) :
+            profileDB.loggedProfile.clear();
+        return cleanup.then(() => onSuccess()).catch(reason => onError(reason));
+    };
 
+    /**
+     *
+     * @param onError
+     * @param onSuccess
+     */
     getLoggedProfile = ({ onError, onSuccess }) =>
-        profileDB.transaction('r', profileDB.loggedProfile, () =>
-            profileDB.loggedProfile.toArray()
-        ).then(profile => onSuccess(profile[0]))
+        profileDB.loggedProfile
+            .toArray()
+            .then(profile => onSuccess(profile[0]))
             .catch(reason => onError(reason));
 }
 

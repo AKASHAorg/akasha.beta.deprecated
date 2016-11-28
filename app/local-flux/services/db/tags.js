@@ -6,6 +6,4 @@ tagsDB.version(1).stores({
     selectedTag: '&akashaId'
 });
 
-tagsDB.open();
-
 export default tagsDB;

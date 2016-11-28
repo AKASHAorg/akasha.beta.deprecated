@@ -74,14 +74,14 @@ class RegistryService extends BaseService {
      * @param {object} currentStatus - Current status of the profile creation process
      */
     createTempProfile = ({ profileData, currentStatus, onSuccess, onError }) =>
-        profileDB.transaction('rw', profileDB.tempProfile, () =>
-            profileDB.tempProfile.add({
-                ...profileData,
-                currentStatus
-            })
-        ).then((data) => {
-            onSuccess(data);
-        }).catch(reason => onError(reason));
+        profileDB.tempProfile
+            .put({
+            ...profileData,
+            currentStatus
+        })
+            .then((data) => {
+                onSuccess(data);
+            }).catch(reason => onError(reason));
     /**
      * Update temporary profile in indexedDB
      * @param {string} akashaId
@@ -89,24 +89,23 @@ class RegistryService extends BaseService {
      * @return promise
      */
     updateTempProfile = ({ changes, currentStatus, onSuccess, onError }) =>
-        profileDB.transaction('rw', profileDB.tempProfile, () =>
-            profileDB.tempProfile.toArray().then(tmpProfile =>
-                profileDB.tempProfile.update(tmpProfile[0].akashaId, {
-                    ...changes,
-                    currentStatus
-                })
-            ).then(() => {
-                onSuccess({ ...changes, currentStatus });
+        profileDB.tempProfile.toArray().then(tmpProfile =>
+            profileDB.tempProfile
+                .update(tmpProfile[0].akashaId, {
+                ...changes,
+                currentStatus
             })
+                .then(() => {
+                    onSuccess({ ...changes, currentStatus });
+                })
         )
             .catch(reason => onError(reason));
     /**
      * Delete temporary profile. Called after profile was successfully created
      */
     deleteTempProfile = ({ akashaId, onSuccess, onError }) =>
-        profileDB.transaction('rw', profileDB.tempProfile, () => {
-            profileDB.tempProfile.delete(akashaId);
-        })
+        profileDB.tempProfile
+            .delete(akashaId)
             .then(() => onSuccess())
             .catch(reason => onError(reason));
 
@@ -114,12 +113,15 @@ class RegistryService extends BaseService {
      * Get all available temporary profiles
      * @return promise
      */
-    getTempProfile = ({ onError = () => {}, onSuccess }) => {
-        profileDB.transaction('rw', profileDB.tempProfile, () =>
-            profileDB.tempProfile.toArray()
-        ).then((results) => {
-            onSuccess(results[0]);
-        }).catch((reason) => {
+    getTempProfile = ({
+        onError = () => {
+        },
+        onSuccess
+    }) => {
+        profileDB.tempProfile.toArray()
+            .then((results) => {
+                onSuccess(results[0]);
+            }).catch((reason) => {
             onError(reason);
         });
     }

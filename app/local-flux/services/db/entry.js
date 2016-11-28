@@ -1,5 +1,5 @@
 import Dexie from 'dexie';
-import { getDraftClass } from './schema/draft';
+import draftSchema from './schema/draft';
 
 const entriesDB = new Dexie('entries');
 entriesDB.version(1).stores({
@@ -8,7 +8,7 @@ entriesDB.version(1).stores({
     savedEntries: '++id,akashaId'
 });
 
-entriesDB.drafts.mapToClass(getDraftClass());
+entriesDB.drafts.mapToClass(draftSchema);
 
 entriesDB.drafts.hook('creating', (primaryKey, obj) => {
     obj.status = {
@@ -36,6 +36,5 @@ entriesDB.drafts.hook('updating', (modifications, primaryKey, obj) => {
     // };
 });
 
-entriesDB.open();
 
 export default entriesDB;

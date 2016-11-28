@@ -9,6 +9,4 @@ settingsDB.version(1).stores({
     general: '&name'
 });
 
-settingsDB.open();
-
 export default settingsDB;
