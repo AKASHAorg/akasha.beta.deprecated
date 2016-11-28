@@ -1,20 +1,6 @@
 import MultiResImage from './multi-res-image';
 
-// schema for tempProfile
-function Status () {
-    return {
-        nextAction: String,
-        ethAddressRequested: Boolean,
-        faucetRequested: Boolean,
-        publishRequested: Boolean,
-        faucetTx: null,
-        publishTx: null,
-        listeningPublishTx: Boolean,
-        listeningFaucetTx: Boolean
-    };
-}
-
-export const TempProfileSchema = {
+const TempProfileSchema = {
     firstName: String,
     lastName: String,
     akashaId: String,
@@ -24,5 +10,15 @@ export const TempProfileSchema = {
     coverImage: [[MultiResImage]],
     about: String,
     links: Array,
-    currentStatus: [Status]
+    currentStatus: [{
+        nextAction: String,
+        ethAddressRequested: Boolean,
+        faucetRequested: Boolean,
+        publishRequested: Boolean,
+        faucetTx: null,
+        publishTx: null,
+        listeningPublishTx: Boolean,
+        listeningFaucetTx: Boolean
+    }]
 };
+export default TempProfileSchema;

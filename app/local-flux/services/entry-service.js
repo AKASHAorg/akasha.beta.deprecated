@@ -75,12 +75,10 @@ class EntryService extends BaseService {
 
     // get resource by id (drafts or entries);
     getById = ({ table, id, onSuccess, onError }) =>
-        entriesDB.transaction('r', entriesDB[table], () =>
-            entriesDB[table]
-                .where('id')
-                .equals(parseInt(id, 10))
-                .first()
-        )
+        entriesDB[table]
+            .where('id')
+            .equals(parseInt(id, 10))
+            .first()
             .then(entries => onSuccess(entries))
             .catch(reason => onError(reason));
 
@@ -100,18 +98,14 @@ class EntryService extends BaseService {
         });
 
     createSavedEntry = ({ akashaId, entry, onError, onSuccess }) =>
-        entriesDB.transaction('rw', entriesDB.savedEntries, () => {
-            entriesDB.savedEntries.add({ akashaId, ...entry.toJS() }).then(() => entry);
-        })
-            .then(() => onSuccess(entry))
+        entriesDB.savedEntries.put({ akashaId, ...entry.toJS() })
+            .then(() => onSuccess(entry.toJS()))
             .catch(reason => onError(reason));
 
     getSavedEntries = ({ akashaId, onError, onSuccess }) =>
-        entriesDB.transaction('r', entriesDB.savedEntries, () =>
-            entriesDB.savedEntries.where('akashaId')
-                .equals(akashaId)
-                .toArray()
-        )
+        entriesDB.savedEntries.where('akashaId')
+            .equals(akashaId)
+            .toArray()
             .then(entries => onSuccess(entries))
             .catch(reason => onError(reason));
 

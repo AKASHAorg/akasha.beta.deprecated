@@ -10,37 +10,27 @@ class TagService extends BaseService {
     }
 
     getLocalTagsCount = () =>
-        tagsDB.transaction('rw', tagsDB.blockTags, () =>
-            tagsDB.blockTags.count()
-        );
+        tagsDB.blockTags.count();
 
     createPendingTag = ({ tagObj, onSuccess, onError }) =>
-        tagsDB.transaction('rw', tagsDB.pendingTags, () => {
-            return tagsDB.pendingTags.add(tagObj);
-        })
+        tagsDB.pendingTags.put(tagObj)
             .then(() => onSuccess(tagObj))
             .catch(reason => onError(reason));
 
     updatePendingTag = ({ tagObj, onSuccess, onError }) =>
-        tagsDB.transaction('rw', tagsDB.pendingTags, () => {
-            return tagsDB.pendingTags.update(tagObj.tag, tagObj);
-        })
+        tagsDB.pendingTags.update(tagObj.tag, tagObj)
             .then(() => onSuccess(tagObj))
             .catch(error => onError(error));
 
     deletePendingTag = ({ tagObj, onSuccess, onError }) =>
-        tagsDB.transaction('rw', tagsDB.pendingTags, () =>
-            tagsDB.pendingTags.delete(tagObj.tag)
-        )
+        tagsDB.pendingTags.delete(tagObj.tag)
             .then(() => onSuccess(tagObj))
             .catch(error => onError(error));
 
     getPendingTags = ({ profile, onSuccess, onError }) =>
-        tagsDB.transaction('r', tagsDB.pendingTags, () =>
-            tagsDB.pendingTags.where('profile').equals(profile).toArray()
-        )
-          .then(results => onSuccess(results))
-          .catch(reason => onError(reason));
+        tagsDB.pendingTags.where('profile').equals(profile).toArray()
+            .then(results => onSuccess(results))
+            .catch(reason => onError(reason));
 
     registerTag = ({ tagName, token, gas, onSuccess, onError }) => {
         this.openChannel({
@@ -68,22 +58,39 @@ class TagService extends BaseService {
         Channel.client.tags.exists.removeAllListeners();
     };
 
-    getSelectedTag = ({ akashaId, onError = () => {}, onSuccess }) =>
-        tagsDB.transaction('r', tagsDB.selectedTag, () =>
-            tagsDB.selectedTag.where('akashaId').equals(akashaId).toArray()
-        )
+    getSelectedTag = ({
+        akashaId,
+        onError = () => {
+        },
+        onSuccess
+    }) =>
+        tagsDB.selectedTag.where('akashaId').equals(akashaId).toArray()
             .then(results => onSuccess(results[0]))
             .catch(reason => onError(reason));
 
-    saveTag = ({ akashaId, tagName, onError = () => {}, onSuccess }) =>
-        tagsDB.transaction('rw', tagsDB.selectedTag, () => {
-            tagsDB.selectedTag.put({ akashaId, tagName });
-            return tagsDB.selectedTag.where('akashaId').equals(akashaId).toArray();
-        })
+    saveTag = ({
+        akashaId,
+        tagName,
+        onError = () => {
+        },
+        onSuccess
+    }) => {
+        tagsDB.selectedTag.put({ akashaId, tagName });
+        return tagsDB.selectedTag
+            .where('akashaId')
+            .equals(akashaId)
+            .toArray()
             .then(results => onSuccess(results[0]))
             .catch(reason => onError(reason));
+    };
 
-    tagIterator = ({ start, limit, onError = () => {}, onSuccess }) =>
+    tagIterator = ({
+        start,
+        limit,
+        onError = () => {
+        },
+        onSuccess
+    }) =>
         this.openChannel({
             clientManager: this.clientManager,
             serverChannel: Channel.server.tags.tagIterator,
@@ -96,7 +103,14 @@ class TagService extends BaseService {
             Channel.server.tags.tagIterator.send({ start, limit });
         });
 
-    subscribeTag = ({ token, tagName, gas = 2000000, onError = () => {}, onSuccess }) =>
+    subscribeTag = ({
+        token,
+        tagName,
+        gas = 2000000,
+        onError = () => {
+        },
+        onSuccess
+    }) =>
         this.openChannel({
             clientManager: this.clientManager,
             serverChannel: Channel.server.tags.subscribe,
@@ -109,7 +123,14 @@ class TagService extends BaseService {
             Channel.server.tags.subscribe.send({ token, tagName, gas });
         });
 
-    unsubscribeTag = ({ token, tagName, gas = 2000000, onError = () => {}, onSuccess }) =>
+    unsubscribeTag = ({
+        token,
+        tagName,
+        gas = 2000000,
+        onError = () => {
+        },
+        onSuccess
+    }) =>
         this.openChannel({
             clientManager: this.clientManager,
             serverChannel: Channel.server.tags.unSubscribe,

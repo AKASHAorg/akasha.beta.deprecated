@@ -1,6 +1,5 @@
-export function EntryContent () {
-    return {
-        blocks: Array,
-        entityMap: Object
-    };
-}
+const entryContent = {
+    blocks: Array,
+    entityMap: Object
+};
+export default entryContent;
