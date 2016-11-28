@@ -68,16 +68,15 @@ class AddEntryPage extends Component {
         const title = this.editor.getTitle();
         const wordCount = getWordCount(contentState);
         const excerpt = contentState.getPlainText().slice(0, 160).replace(/\r?\n|\r/g, '');
-        const currentDraft = this._findCurrentDraft(drafts);
-        const { tags, licence, profile, featuredImage, status } = currentDraft;
-
         if (params.draftId !== 'new') {
             const draftId = parseInt(params.draftId, 10);
+            const currentDraft = this._findCurrentDraft(drafts);
+            const { tags = [], licence = {}, profile, featuredImage, status } = currentDraft;
             return draftActions.updateDraft({
                 id: draftId,
                 content,
-                tags,
-                licence,
+                tags: tags.toJS(),
+                licence: licence.toJS(),
                 profile,
                 featuredImage,
                 status,
@@ -88,7 +87,7 @@ class AddEntryPage extends Component {
         }
 
         return draftActions
-            .createDraftSync(loggedProfile.get('profile'), { content, title, wordCount, excerpt });
+            .createDraft(loggedProfile.get('profile'), { content, title, wordCount, excerpt });
     };
     _setupEntryForPublication = () => {
         const { params } = this.props;

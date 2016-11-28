@@ -37,10 +37,10 @@ class PublishPanel extends React.Component {
     componentWillReceiveProps (nextProps) {
         const { draft, params } = nextProps;
         const loggedProfileData = this._getLoggedProfileData();
+        console.log('draft status: ', draft.get('status'));
         if (draft && draft.get('status').publishing) {
             this.context.router.push(`/${loggedProfileData.get('akashaId')}/draft/${params.draftId}/publish-status`);
         } else if (draft && !draft.get('status').publishing) {
-            console.log(draft, 'draaaaaft!!!');
             this._populateDraft(draft);
             if (this.state.fetchingDraft) {
                 this.setState({
@@ -53,8 +53,8 @@ class PublishPanel extends React.Component {
         document.body.style.overflow = 'initial';
     }
     _populateDraft = (draft) => {
-        const { content, licence, excerpt } = draft;
-        let { title, tags, featuredImage } = draft;
+        const { content, licence, excerpt, tags } = draft;
+        let { title, featuredImage } = draft;
         const contentMap = convertFromRaw(content);
         const blockMap = contentMap.getBlockMap();
         if (!title) {
@@ -63,11 +63,7 @@ class PublishPanel extends React.Component {
         if (!featuredImage) {
             featuredImage = this._generateFeaturedImage(blockMap);
         }
-        if (typeof tags.toJS === 'function') {
-            tags = tags.toJS();
-        }
-        if (tags && tags.length > 0) {
-            console.log('checking tags');
+        if (tags && tags.size > 0) {
             if (!this.state.checkingTags) {
                 this._checkExistingTags(tags);
             }
@@ -76,7 +72,7 @@ class PublishPanel extends React.Component {
             title,
             content,
             excerpt,
-            tags,
+            tags: tags ? tags.toJS() : [],
             licence,
             featuredImage
         });
@@ -128,7 +124,7 @@ class PublishPanel extends React.Component {
         this.setState({
             validationErrors: []
         });
-        this._validateEntry(({ title, content, excerpt, licence, featuredImage }) => {
+        this._validateEntry(({ title, content, excerpt, licence, featuredImage, tags }) => {
             if (featuredImage) {
                 featuredImage = this._findImageSource(featuredImage);
             }
@@ -139,6 +135,7 @@ class PublishPanel extends React.Component {
                 excerpt,
                 licence,
                 featuredImage,
+                tags,
                 profile: loggedProfileData.get('profile'),
                 status: {
                     publishing: true
@@ -196,9 +193,6 @@ class PublishPanel extends React.Component {
         }
         return cb({ title, content, excerpt, licence, featuredImage, tags });
     }
-    // _handleTagAutocomplete = (value) => {
-    //     const { tagActions } = this.props;
-    // };
     _handleTagAdd = (tag) => {
         const newTags = this.state.tags.slice();
         newTags.push(tag);

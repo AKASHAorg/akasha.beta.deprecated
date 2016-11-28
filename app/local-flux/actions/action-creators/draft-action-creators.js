@@ -123,9 +123,17 @@ export function getDraftByIdSuccess (draft) {
 
 export function getDraftByIdError (error) {
     error.code = 'GDBIE';
+    console.error(error);
     return {
         type: types.GET_DRAFT_BY_ID_ERROR,
         error
+    };
+}
+
+export function publishDraft (flags) {
+    return {
+        type: types.PUBLISH_DRAFT,
+        flags
     };
 }
 

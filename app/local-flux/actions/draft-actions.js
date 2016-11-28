@@ -18,7 +18,7 @@ class DraftActions {
     }
 
     // Must return a promise and also to dispatch actions
-    createDraftSync = (profile, draft) =>
+    createDraft = (profile, draft) =>
         this.dispatch((dispatch, getState) => {
             const flags = getState().draftState.get('flags');
             if (!flags.get('savingDraft')) {
@@ -40,6 +40,7 @@ class DraftActions {
     updateDraft = changes =>
         this.dispatch((dispatch, getState) => {
             const flags = getState().draftState.get('flags');
+            console.log('draft changes to be saved', changes);
             if (!flags.get('savingDraft')) {
                 dispatch(draftActionCreators.startSavingDraft({
                     savingDraft: true
@@ -81,11 +82,11 @@ class DraftActions {
                 gas,
                 onSuccess: (data) => {
                     this.transactionActions.listenForMinedTx();
-                    this.transactionActions.addToQueue({
+                    this.transactionActions.addToQueue([{
                         tx: data.tx,
                         type: 'publishEntry',
                         draftId: draft.get('id')
-                    });
+                    }]);
                     this.appActions.showNotification({
                         id: 'publishingEntry',
                         values: { title: draft.get('title') }
