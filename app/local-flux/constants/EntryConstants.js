@@ -52,4 +52,12 @@ export const GET_SCORE = 'GET_SCORE';
 export const GET_SCORE_SUCCESS = 'GET_SCORE_SUCCESS';
 export const GET_SCORE_ERROR = 'GET_SCORE_ERROR';
 
+export const IS_ACTIVE = 'IS_ACTIVE';
+export const IS_ACTIVE_SUCCESS = 'IS_ACTIVE_SUCCESS';
+export const IS_ACTIVE_ERROR = 'IS_ACTIVE_ERROR';
+
+export const GET_VOTE_OF = 'GET_VOTE_OF';
+export const GET_VOTE_OF_SUCCESS = 'GET_VOTE_OF_SUCCESS';
+export const GET_VOTE_OF_ERROR = 'GET_VOTE_OF_ERROR';
+
 export const CLEAR_TAG_ENTRIES = 'CLEAR_TAG_ENTRIES';

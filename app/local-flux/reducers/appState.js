@@ -114,7 +114,7 @@ const appState = createReducer(initialState, {
 
     [types.ADD_PENDING_ACTION]: (state, { data }) =>
         state.merge({
-            pendingActions: state.get('pendingActions').push(new PendingAction(data))
+            pendingActions: state.get('pendingActions').push(new PendingAction(fromJS(data)))
         }),
 
     [types.UPDATE_PENDING_ACTION]: (state, { data }) => {

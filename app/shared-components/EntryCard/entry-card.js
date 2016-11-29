@@ -12,6 +12,11 @@ import style from './entry-card.scss';
 
 class EntryCard extends Component {
 
+    componentDidMount () {
+        const { entryActions, loggedAkashaId, entry } = this.props;
+        entryActions.getVoteOf(loggedAkashaId, entry.get('entryId'));
+    }
+
     selectProfile = () => {
         const { entry, selectProfile } = this.props;
         const profileAddress = entry.getIn(['entryEth', 'publisher', 'profile']);
@@ -24,19 +29,20 @@ class EntryCard extends Component {
     }
 
     upvote = () => {
-        const { entry, handleUpvote } = this.props;
+        const { entry, entryActions } = this.props;
         const firstName = entry.getIn(['entryEth', 'publisher', 'firstName']);
         const lastName = entry.getIn(['entryEth', 'publisher', 'lastName']);
         const payload = {
             publisherName: `${firstName} ${lastName}`,
             entryTitle: entry.getIn(['content', 'title']),
-            entryId: entry.get('entryId')
+            entryId: entry.get('entryId'),
+            active: entry.get('active')
         };
-        handleUpvote(payload);
+        entryActions.addUpvoteAction(payload);
     }
 
     downvote = () => {
-        const { entry, handleDownvote } = this.props;
+        const { entry, entryActions } = this.props;
         const firstName = entry.getIn(['entryEth', 'publisher', 'firstName']);
         const lastName = entry.getIn(['entryEth', 'publisher', 'lastName']);
         const payload = {
@@ -44,12 +50,14 @@ class EntryCard extends Component {
             entryTitle: entry.getIn(['content', 'title']),
             entryId: entry.get('entryId')
         };
-        handleDownvote(payload);
+        entryActions.addDownvoteAction(payload);
     }
 
     render () {
         const { entry, blockNr, selectedTag, voteEntryPending, intl } = this.props;
+        const { palette } = this.context.muiTheme;
         const content = entry.get('content');
+        const existingVoteWeight = entry.get('voteWeight') || 0;
         const blockNumberDiff = blockNr - entry.getIn(['entryEth', 'blockNr']);
         const publisher = entry.getIn(['entryEth', 'publisher']);
         const profileName = `${publisher.get('firstName')} ${publisher.get('lastName')}`;
@@ -57,6 +65,8 @@ class EntryCard extends Component {
         const avatar = imageCreator(publisher.get('avatar'), publisher.get('baseUrl'));
         const wordCount = content.get('wordCount') || 0;
         const readingTime = calculateReadingTime(wordCount);
+        const upvoteIconColor = existingVoteWeight > 0 ? palette.accent3Color : '';
+        const downvoteIconColor = existingVoteWeight < 0 ? palette.accent1Color : '';
         const cardSubtitle = (
           <div>
             {intl.formatMessage(entryMessages.publishedBlockDiff, { blockDiff: blockNumberDiff })}
@@ -139,32 +149,62 @@ class EntryCard extends Component {
             </CardText>
             <CardActions className="col-xs-12">
               <div style={{ display: 'flex', alignItems: 'center' }} >
-                <div>
+                <div style={{ position: 'relative' }}>
                   <IconButton
                     onTouchTap={this.upvote}
                     iconStyle={{ width: '20px', height: '20px' }}
-                    disabled={!entry.get('active') || (voteEntryPending && voteEntryPending.value)}
+                    disabled={!entry.get('active') || (voteEntryPending && voteEntryPending.value)
+                        || existingVoteWeight !== 0}
                   >
-                    <SvgIcon viewBox="0 0 20 20">
-                      <EntryUpvote />
+                    <SvgIcon viewBox="0 0 20 20" >
+                      <EntryUpvote fill={upvoteIconColor} />
                     </SvgIcon>
                   </IconButton>
-                  {entry.get('upvotes')}
+                  {existingVoteWeight > 0 &&
+                    <div
+                      style={{
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          textAlign: 'center',
+                          fontSize: '10px',
+                          color: palette.accent3Color
+                      }}
+                    >
+                      +{existingVoteWeight}
+                    </div>
+                  }
                 </div>
-                <div style={{ fontSize: '16px', padding: '0 5px' }}>
+                <div style={{ fontSize: '16px', padding: '0 5px', letterSpacing: '2px' }}>
                   {entry.get('score')}
                 </div>
-                <div>
+                <div style={{ position: 'relative' }}>
                   <IconButton
                     onTouchTap={this.downvote}
                     iconStyle={{ width: '20px', height: '20px' }}
-                    disabled={!entry.get('active') || (voteEntryPending && voteEntryPending.value)}
+                    disabled={!entry.get('active') || (voteEntryPending && voteEntryPending.value)
+                        || existingVoteWeight !== 0}
                   >
                     <SvgIcon viewBox="0 0 20 20">
-                      <EntryDownvote />
+                      <EntryDownvote fill={downvoteIconColor} />
                     </SvgIcon>
                   </IconButton>
-                  {entry.get('downvotes')}
+                  {existingVoteWeight < 0 &&
+                    <div
+                      style={{
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          textAlign: 'center',
+                          fontSize: '10px',
+                          color: palette.accent1Color
+                      }}
+                    >
+                      {existingVoteWeight}
+                    </div>
+                  }
                 </div>
                 <div>
                   <IconButton
@@ -197,14 +237,19 @@ class EntryCard extends Component {
 };
 
 EntryCard.propTypes = {
+    loggedAkashaId: PropTypes.string,
     entry: PropTypes.shape(),
     blockNr: PropTypes.number,
     selectedTag: PropTypes.string,
-    handleUpvote: PropTypes.func,
-    handleDownvote: PropTypes.func,
     selectProfile: PropTypes.func,
     selectTag: PropTypes.func,
     voteEntryPending: PropTypes.shape(),
+    entryActions: PropTypes.shape(),
     intl: PropTypes.shape()
 };
+
+EntryCard.contextTypes = {
+    muiTheme: PropTypes.shape()
+};
+
 export default injectIntl(EntryCard);

@@ -72,6 +72,7 @@ class VoteRunner extends Component {
                 }
                 entryActions[`${tx.type}Success`](tx.entryId);
                 entryActions.getScore(tx.entryId);
+                entryActions.getVoteOf(loggedProfile.get('akashaId'), tx.entryId);
                 if (correspondingAction) {
                     appActions.deletePendingAction(correspondingAction.get('id'));
                 }

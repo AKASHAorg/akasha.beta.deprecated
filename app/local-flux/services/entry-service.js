@@ -216,6 +216,26 @@ class EntryService extends BaseService {
         );
         Channel.server.entry.getScore.send({ entryId });
     };
+
+    isActive = ({ entryId, onError = () => {}, onSuccess }) =>
+        this.openChannel({
+            clientManager: this.clientManager,
+            serverChannel: Channel.server.entry.isActive,
+            clientChannel: Channel.client.entry.isActive,
+            listenerCb: this.createListener(onError, onSuccess)
+        }, () => {
+            Channel.server.entry.isActive.send({ entryId });
+        });
+
+    getVoteOf = ({ akashaId, entryId, onError = () => {}, onSuccess }) =>
+        this.openChannel({
+            clientManager: this.clientManager,
+            serverChannel: Channel.server.entry.getVoteOf,
+            clientChannel: Channel.client.entry.getVoteOf,
+            listenerCb: this.createListener(onError, onSuccess)
+        }, () => {
+            Channel.server.entry.getVoteOf.send({ akashaId, entryId });
+        });
 }
 
 export { EntryService };

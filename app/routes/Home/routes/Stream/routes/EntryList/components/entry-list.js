@@ -41,14 +41,14 @@ class EntryList extends Component {
         const { loggedProfileData } = this.props;
         this.context.router.push(`/${loggedProfileData.get('akashaId')}/explore/tag/${tag}`);
     };
-    handleUpvote = (payload) => {
-        const { entryActions } = this.props;
-        entryActions.addUpvoteAction(payload);
-    };
-    handleDownvote = (payload) => {
-        const { entryActions } = this.props;
-        entryActions.addDownvoteAction(payload);
-    };
+    // handleUpvote = (payload) => {
+    //     const { entryActions } = this.props;
+    //     entryActions.addUpvoteAction(payload);
+    // };
+    // handleDownvote = (payload) => {
+    //     const { entryActions } = this.props;
+    //     entryActions.addDownvoteAction(payload);
+    // };
     _handleComment = (ev, entryAddress) => {
         const { appActions, entryState } = this.props;
         const entry = entryState.get('published').find(entry =>
@@ -96,7 +96,7 @@ class EntryList extends Component {
     render () {
         const { loggedProfileData, selectedTag, tagEntries, savedEntries, moreTagEntries,
             moreSavedEntries, tagEntriesCount, entriesStream, subscribePending, params, blockNr,
-            votePending, intl } = this.props;
+            votePending, entryActions, intl } = this.props;
         const entries = params.filter === 'tag' ? tagEntries : savedEntries;
         const moreEntries = params.filter === 'tag' ? moreTagEntries : moreSavedEntries;
         const showMoreEntries = params.filter === 'tag' ?
@@ -129,12 +129,11 @@ class EntryList extends Component {
                 const voteEntryPending = votePending && votePending.find(vote =>
                     vote.entryId === entry.get('entryId'));
                 return <EntryCard
+                  loggedAkashaId={loggedProfileData.get('akashaId')}
                   entry={entry}
                   key={key}
                   onContentClick={ev => this._navigateToEntry(ev, entry)}
                   onTagClick={this._navigateToTag}
-                  handleUpvote={this.handleUpvote}
-                  handleDownvote={this.handleDownvote}
                   handleComment={this.handleComment}
                   handleBookmark={this.handleBookmark}
                   blockNr={blockNr}
@@ -142,6 +141,7 @@ class EntryList extends Component {
                   selectTag={this.selectTag}
                   selectedTag={selectedTag}
                   voteEntryPending={voteEntryPending}
+                  entryActions={entryActions}
                 />;
             })}
             {moreEntries &&

@@ -1,9 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import {
-    SettingsActions, AppActions, ProfileActions, EProcActions, DraftActions,
-    TagActions } from 'local-flux';
+import { SettingsActions, AppActions, ProfileActions, EProcActions, DraftActions,
+    TagActions, EntryActions } from 'local-flux';
 import { getMuiTheme } from 'material-ui/styles';
 import { AuthDialog, WeightConfirmDialog, PublishConfirmDialog } from 'shared-components';
 import NotificationBar from './components/notification-bar';
@@ -102,30 +101,25 @@ class App extends Component {
         appActions.hideAuthDialog();
     };
 
-    // _handleConfirmationDialogCancel = () => {
-    //     const { appActions } = this.props;
-    //     appActions.hideConfirmationDialog();
-    //     this.setState({
-    //         voteWeight: 1
-    //     });
-    // };
-    // _handleConfirmationDialogConfirm = (ev, actionType, entryAddress) => {
-    //     const { voteWeight } = this.state;
-    //     console.log('cast', actionType, 'of', voteWeight, 'to', entryAddress);
-    //     this.setState({
-    //         voteWeight: 1
-    //     });
-    // };
     render () {
-        const { appState, loginErrors, appActions, draftActions, tagActions,
-            profileActions, voteCost, loggedProfileData, loginRequested } = this.props;
+        const { appState, loginErrors, appActions, draftActions, tagActions, entryActions, voteCost,
+            profileActions, loggedProfileData, loginRequested, isActivePending,
+            entries } = this.props;
         const loggedProfileBalance = loggedProfileData && loggedProfileData.get('balance');
         const error = appState.get('error');
         const errorMessage = error.get('code')
             ? `Error ${error.get('code')}: ${error.get('message')}` : '';
         const isAuthDialogVisible = !!appState.get('showAuthDialog');
-        const isWeightConfirmationDialogVisible = appState.get('weightConfirmDialog') !== null;
+        const weightConfirmDialog = appState.get('weightConfirmDialog');
+        const isWeightConfirmationDialogVisible = weightConfirmDialog !== null;
         const isPublishConfirmationDialogVisible = appState.get('publishConfirmDialog') !== null;
+        let isEntryActive = false;
+        if (isWeightConfirmationDialogVisible) {
+            isEntryActive = entries
+                .find(entry =>
+                    entry.get('entryId') === weightConfirmDialog.getIn(['payload', 'entryId']))
+                .getIn(['content', 'active']);
+        }
 
         return (
           <div className="fill-height" >
@@ -149,14 +143,15 @@ class App extends Component {
             />
             <WeightConfirmDialog
               isOpen={isWeightConfirmationDialogVisible}
-              onVoteWeightChange={this._handleVoteWeightChange}
-              voteWeight={this.state.voteWeight}
-              onCancel={this._handleConfirmationDialogCancel}
-              onConfirm={this._handleConfirmationDialogConfirm}
               resource={appState.get('weightConfirmDialog')}
               balance={loggedProfileBalance}
               appActions={appActions}
+              entryActions={entryActions}
+              isActivePending={isActivePending}
               voteCost={voteCost}
+              active={isEntryActive}
+              minWeight={appState.getIn(['weightConfirmDialog', 'type']) === 'upvote' ? 1 : -10}
+              maxWeight={appState.getIn(['weightConfirmDialog', 'type']) === 'upvote' ? 10 : -1}
             />
             <PublishConfirmDialog
               appActions={appActions}
@@ -173,6 +168,7 @@ class App extends Component {
 App.propTypes = {
     appState: PropTypes.shape(),
     appActions: PropTypes.shape(),
+    entryActions: PropTypes.shape(),
     eProcActions: PropTypes.shape(),
     loginErrors: PropTypes.shape(),
     loggedProfile: PropTypes.shape(),
@@ -183,14 +179,16 @@ App.propTypes = {
     draftActions: PropTypes.shape(),
     tagActions: PropTypes.shape(),
     voteCost: PropTypes.shape(),
+    isActivePending: PropTypes.bool,
+    entries: PropTypes.shape(),
     theme: PropTypes.string,
     children: PropTypes.element
 };
 App.contextTypes = {
-    router: React.PropTypes.object
+    router: React.PropTypes.shape()
 };
 App.childContextTypes = {
-    muiTheme: PropTypes.object
+    muiTheme: PropTypes.shape()
 };
 
 function mapStateToProps (state) {
@@ -202,6 +200,8 @@ function mapStateToProps (state) {
             prf.get('profile') === state.profileState.getIn(['loggedProfile', 'profile'])),
         loginRequested: state.profileState.get('loginRequested'),
         voteCost: state.entryState.get('voteCost'),
+        isActivePending: state.entryState.getIn(['flags', 'isActivePending']),
+        entries: state.entryState.get('entries'),
         routeState: state.reduxAsyncConnect,
         theme: state.settingsState.get('general').get('theme')
     };
@@ -212,6 +212,7 @@ function mapDispatchToProps (dispatch) {
         settingsActions: new SettingsActions(dispatch),
         appActions: new AppActions(dispatch),
         eProcActions: new EProcActions(dispatch),
+        entryActions: new EntryActions(dispatch),
         tagActions: new TagActions(dispatch),
         draftActions: new DraftActions(dispatch)
     };

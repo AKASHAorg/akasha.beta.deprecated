@@ -59,7 +59,7 @@ const formMessages = defineMessages({
     voteWeightError: {
         id: 'app.form.voteWeightError',
         description: 'Error displayed when vote weight is not between limits',
-        defaultMessage: 'Vote weight must be between 1 and 10'
+        defaultMessage: 'Vote weight must be between {minWeight} and {maxWeight}'
     },
     notEnoughFunds: {
         id: 'app.form.notEnoughFunds',
