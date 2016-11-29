@@ -6,7 +6,8 @@ function mapStateToProps (state) {
     return {
         loggedProfile: state.profileState.get('loggedProfile'),
         drafts: state.draftState.get('drafts'),
-        draftErrors: state.draftState.get('errors')
+        draftErrors: state.draftState.get('errors'),
+        pendingActions: state.appState.get('pendingActions')
     };
 }
 

@@ -6,9 +6,9 @@ import imageCreator from '../../utils/imageUtils';
 let profileActions = null;
 
 class ProfileActions {
-    constructor (dispatch) {
+    constructor (dispatch) { // eslint-disable-line consistent-return
         if (profileActions) {
-           return profileActions;
+            return profileActions;
         }
         this.appActions = new AppActions(dispatch);
         this.transactionActions = new TransactionActions(dispatch);

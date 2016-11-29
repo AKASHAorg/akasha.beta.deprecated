@@ -3,7 +3,7 @@ import { NotificationsService } from '../services';
 let notificationsInstance;
 
 class NotificationsActions {
-    constructor (dispatch) {
+    constructor (dispatch) { // eslint-disable-line consistent-return
         if (notificationsInstance) {
             return notificationsInstance;
         }

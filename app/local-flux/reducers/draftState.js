@@ -29,7 +29,7 @@ const Draft = Record({
     featuredImage: null,
     tags: new List(),
     tx: null,
-    licence: Record(),
+    licence: new DraftLicence(),
     status: {
         created_at: '',
         updated_at: '',
@@ -46,7 +46,6 @@ const initialState = fromJS({
 
 const createDraftRecord = (draft) => {
     const { content, tags, licence, ...others } = draft;
-    console.log('passed draft', draft);
     return new Draft({
         content: new DraftContent(content),
         tags: fromJS(tags),
@@ -54,7 +53,27 @@ const createDraftRecord = (draft) => {
         ...others
     });
 };
-
+const publishTagHandler = (state, { flags }) => {
+    const publishPendingDrafts = state.getIn(['flags', 'publishPendingDrafts']);
+    if (publishPendingDrafts === undefined) {
+        return state.merge({
+            flags: state.get('flags').set('publishPendingDrafts', new List([flags.publishPending]))
+        });
+    }
+    const index = publishPendingDrafts.findIndex(flag =>
+        flag.draftId === flags.publishPending.draftId);
+    if (index === -1) {
+        return state.merge({
+            flags: state.get('flags').merge({
+                publishPendingDrafts: state.getIn(['flags', 'publishPendingTags'])
+                    .push(flags.publishPending)
+            })
+        });
+    }
+    return state.merge({
+        flags: state.get('flags').mergeIn(['publishPendingDrafts', index], flags.publishPending)
+    });
+};
 const draftState = createReducer(initialState, {
     [types.SAVE_DRAFT]: (state, { flags }) =>
         state.merge({
@@ -81,34 +100,8 @@ const draftState = createReducer(initialState, {
             flags: state.get('flags').merge(flags)
         });
     },
-    [types.PUBLISH_DRAFT]: (state, { flags }) => {
-        const publishPendingDrafts = state.getIn(['flags', 'publishPendingDrafts']);
-        if (publishPendingDrafts === undefined) {
-            return state.merge({
-                flags: state.get('flags').set('publishPendingDrafts', new List([flags.publishPending]))
-            });
-        }
-        const index = publishPendingDrafts.findIndex(flag =>
-            flag.draftId === flags.publishPending.draftId);
-        if (index === -1) {
-            return state.merge({
-                flags: state.get('flags').merge({
-                    publishPendingDrafts: state.getIn(['flags', 'publishPendingTags'])
-                        .push(flags.publishPending)
-                })
-            });
-        }
-        return state.merge({
-            flags: state.get('flags').mergeIn(['publishPendingDrafts', index], flags.publishPending)
-        });
-    },
-    [types.PUBLISH_DRAFT_SUCCESS]: (state, action) => {
-        const draftIndex = state.get('drafts').findIndex(drft =>
-            drft.get('id') === action.entry.id);
-        return state.merge({
-            drafts: state.get('drafts').delete(draftIndex)
-        });
-    },
+    [types.PUBLISH_DRAFT]: publishTagHandler,
+    [types.PUBLISH_DRAFT_SUCCESS]: publishTagHandler,
 
     [types.PUBLISH_DRAFT_ERROR]: (state, { error }) =>
         state.merge({
@@ -122,11 +115,11 @@ const draftState = createReducer(initialState, {
         }),
 
     [types.GET_DRAFT_BY_ID_SUCCESS]: (state, { draft }) => {
+        if (!draft) return state;
         const draftIndex = state.get('drafts').findIndex(drft => drft.id === draft.id);
         if (draftIndex > -1) {
             return state.mergeIn(['drafts', draftIndex], createDraftRecord(draft));
         }
-        console.log(createDraftRecord(draft), 'createdraftrecord');
         return state.merge({
             drafts: state.get('drafts').push(createDraftRecord(draft))
         });
@@ -136,8 +129,17 @@ const draftState = createReducer(initialState, {
         const draftIndex = state.get('drafts').findIndex(drft =>
             drft.id === draft.id
         );
+        const updatedDraft = state.getIn(['drafts', draftIndex]).withMutations((drft) => {
+            if (draft.licence) {
+                draft.licence = new DraftLicence(draft.licence);
+            }
+            if (draft.tags) {
+                draft.tags = new List(draft.tags);
+            }
+            drft.merge(draft);
+        });
         return state.merge({
-            drafts: state.get('drafts').mergeDeepIn([draftIndex], draft),
+            drafts: state.get('drafts').setIn([draftIndex], updatedDraft),
             flags: state.get('flags').merge(flags)
         });
     },

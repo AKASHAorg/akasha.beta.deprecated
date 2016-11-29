@@ -4,7 +4,7 @@ import { ProfileService, TransactionService } from '../services';
 let transactionActions = null;
 
 class TransactionActions {
-    constructor (dispatch) {
+    constructor (dispatch) { // eslint-disable-line consistent-return
         if (transactionActions) {
             return transactionActions;
         }

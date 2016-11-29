@@ -14,7 +14,8 @@ const ErrorRecord = Record({
 //     type: null,
 //     profile: '',
 //     akashaId: null,
-//     tagName: null
+//     tagName: null,
+//     draftId: null
 // });
 
 const MinedTransaction = Record({

@@ -5,7 +5,7 @@ import { TagService } from '../services';
 let tagActions = null;
 
 class TagActions {
-    constructor (dispatch) {
+    constructor (dispatch) { // eslint-disable-line consistent-return
         if (tagActions) {
             return tagActions;
         }

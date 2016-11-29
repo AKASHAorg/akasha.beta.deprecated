@@ -14,7 +14,6 @@ class EntryEditor extends Component {
         if (content) {
             editorState = editorStateFromRaw(content);
         }
-
         this.state = {
             editorState,
             title
@@ -38,11 +37,11 @@ class EntryEditor extends Component {
             title: ev.target.value
         });
     };
-    _handleKeyPress = (ev) => {
-        if (ev.key === 'Enter') {
-            this.editor.focus();
-        }
-    }
+    // _handleKeyPress = (ev) => {
+    //     if (ev.key === 'Enter') {
+    //         this.editor.focus();
+    //     }
+    // }
     _renderSidebar = ({ plugins, editorState, onChange }) => {
         const { showSidebar, readOnly } = this.props;
         if (showSidebar && !readOnly) {
@@ -71,6 +70,7 @@ class EntryEditor extends Component {
                       onChange={this._handleTitleChange}
                       value={this.state.title}
                       onKeyPress={this._handleKeyPress}
+                      tabIndex="0"
                     />
                   </div>
                 </div>
@@ -87,6 +87,7 @@ class EntryEditor extends Component {
                 onChange={this._handleEditorChange}
                 plugins={[imagePlugin]}
                 placeholder={editorPlaceholder}
+                tabIndex="0"
               />
             </div>
           </div>

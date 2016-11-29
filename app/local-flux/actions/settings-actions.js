@@ -4,7 +4,7 @@ import { SettingsService } from '../services';
 let settingsActions = null;
 
 class SettingsActions {
-    constructor (dispatch) {
+    constructor (dispatch) { // eslint-disable-line consistent-return
         if (settingsActions) {
             return settingsActions;
         }

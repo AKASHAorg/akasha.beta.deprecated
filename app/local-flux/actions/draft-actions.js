@@ -25,7 +25,7 @@ class DraftActions {
                 dispatch(draftActionCreators.startSavingDraft({
                     savingDraft: true
                 }));
-                return this.draftService.saveDraft({ profile, ...draft }).then((result) => {
+                return this.draftService.createOrUpdate({ profile, ...draft }).then((result) => {
                     dispatch(draftActionCreators.createDraftSuccess(result, {
                         savingDraft: false
                     }));
@@ -45,7 +45,7 @@ class DraftActions {
                 dispatch(draftActionCreators.startSavingDraft({
                     savingDraft: true
                 }));
-                return this.draftService.saveDraft(changes).then((savedDraft) => {
+                return this.draftService.createOrUpdate(changes).then((savedDraft) => {
                     dispatch(draftActionCreators.updateDraftSuccess(savedDraft, {
                         savingDraft: false
                     }));
@@ -98,7 +98,20 @@ class DraftActions {
             });
         });
     };
-
+    /**
+     * This action should be placed in entryActions ?
+     * Or it should be renamed to publishDraftSuccess ?
+     */
+    publishEntrySuccess = (draftId, title) => {
+        this.dispatch(draftActionCreators.publishDraftSuccess({
+            publishPending: { draftId, value: false }
+        }));
+        this.appActions.showNotification({
+            id: 'draftPublishedSuccessfully',
+            values: { title }
+        });
+        this.deleteDraft(draftId);
+    }
     getDrafts = profile =>
         this.draftService.getAllDrafts(profile).then(result =>
             this.dispatch(draftActionCreators.getDraftsSuccess(result))

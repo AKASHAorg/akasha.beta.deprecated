@@ -1,9 +1,27 @@
 import entriesDB from './db/entry';
 
 class DraftService {
-    constructor () {
-        this.listeners = {};
+    createOrUpdate = (draft) => {
+        if (!draft.id) {
+            return this.createDraft(draft);
+        }
+        return this.modifyDraft(draft);
     }
+    modifyDraft = (draft) => {
+        const { id, ...changes } = draft;
+        return entriesDB.drafts
+            .where('id')
+            .equals(id)
+            .modify(changes)
+            .then(() => draft);
+    }
+    createDraft = draft =>
+        entriesDB.drafts
+            .add(draft)
+            .then((id) => {
+                draft.id = id;
+                return draft;
+            });
 
     saveDraft = partialDraft =>
         entriesDB.drafts.put(partialDraft)
@@ -21,11 +39,11 @@ class DraftService {
             .where('profile')
             .equals(profile)
             .toArray()
-            .then((drafts) => {
-                return drafts.map(draft =>
+            .then(drafts =>
+                drafts.map(draft =>
                     Object.assign({}, draft)
-                );
-            });
+                )
+            );
 
     getDraftsCount = ({ profile, onSuccess, onError }) =>
          entriesDB.drafts

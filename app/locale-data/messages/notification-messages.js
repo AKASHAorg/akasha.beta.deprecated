@@ -66,6 +66,11 @@ const notificationMessages = defineMessages({
         description: 'Notification for when entry is publishing',
         defaultMessage: 'Publishing "{title}".'
     },
+    draftPublishedSuccessfully: {
+        id: 'app.notification.draftPublishedSuccessfully',
+        description: 'Notification for when draft successfully registered/published',
+        defaultMessage: 'Entry published successfully'
+    },
     upvotingEntry: {
         id: 'app.notification.upvotingEntry',
         description: 'Notification to be displayed when entry upvote transaction is sent',
@@ -85,6 +90,6 @@ const notificationMessages = defineMessages({
         id: 'app.notification.downvoteEntrySuccess',
         description: 'Notification to be displayed when downvote entry transaction was mined',
         defaultMessage: 'You successfully downvoted {entryTitle}'
-    }
+    },
 });
 export { notificationMessages };

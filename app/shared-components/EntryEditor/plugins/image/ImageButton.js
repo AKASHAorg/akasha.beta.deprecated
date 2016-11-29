@@ -30,7 +30,11 @@ export default class BlockButton extends Component {
     }
     _handleImageSubmit = (ev) => {
         const files = this.fileInput.files;
-        this._handleImageAdd(ev, files);
+        this.setState({
+            isAddingImage: true
+        }, () => {
+            this._handleImageAdd(ev, files);
+        });
     }
     _handleImageAdd = (ev, files) => {
         ev.persist(); // keep original event around for later use
@@ -48,6 +52,7 @@ export default class BlockButton extends Component {
         }).then(() => {
             this.fileInput.value = '';
             this.setState({
+                isAddingImage: false,
                 dialogOpen: false,
                 fileName: ''
             });
@@ -113,8 +118,16 @@ export default class BlockButton extends Component {
               contentStyle={{ width: 450, maxWidth: 'none' }}
               actions={[
                 /* eslint-disable */
-                <FlatButton label="Cancel" onTouchTap={this._handleDialogClose} />,
-                <FlatButton label="Upload" primary onTouchTap={this._handleImageSubmit} />
+                <FlatButton
+                  label="Cancel"
+                  onTouchTap={this._handleDialogClose}
+                />,
+                <FlatButton
+                  label={this.state.isAddingImage ? 'Uploading..' : 'Upload'}
+                  primary
+                  onTouchTap={this._handleImageSubmit}
+                  disabled={this.state.isAddingImage}
+                />
                 /* eslint-enable */
               ]}
             >

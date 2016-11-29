@@ -37,8 +37,7 @@ class PublishPanel extends React.Component {
     componentWillReceiveProps (nextProps) {
         const { draft, params } = nextProps;
         const loggedProfileData = this._getLoggedProfileData();
-        console.log('draft status: ', draft.get('status'));
-        if (draft && draft.get('status').publishing) {
+        if (draft && draft.getIn(['status', 'publishing'])) {
             this.context.router.push(`/${loggedProfileData.get('akashaId')}/draft/${params.draftId}/publish-status`);
         } else if (draft && !draft.get('status').publishing) {
             this._populateDraft(draft);
@@ -53,7 +52,7 @@ class PublishPanel extends React.Component {
         document.body.style.overflow = 'initial';
     }
     _populateDraft = (draft) => {
-        const { content, licence, excerpt, tags } = draft;
+        const { content, licence, excerpt, tags, wordCount } = draft;
         let { title, featuredImage } = draft;
         const contentMap = convertFromRaw(content);
         const blockMap = contentMap.getBlockMap();
@@ -63,10 +62,8 @@ class PublishPanel extends React.Component {
         if (!featuredImage) {
             featuredImage = this._generateFeaturedImage(blockMap);
         }
-        if (tags && tags.size > 0) {
-            if (!this.state.checkingTags) {
-                this._checkExistingTags(tags);
-            }
+        if (tags && tags.size > 0 && tags.size > this.state.tags.length) {
+            this._checkExistingTags(tags);
         }
         this.setState({
             title,
@@ -74,7 +71,8 @@ class PublishPanel extends React.Component {
             excerpt,
             tags: tags ? tags.toJS() : [],
             licence,
-            featuredImage
+            featuredImage,
+            wordCount
         });
     }
     _getLoggedProfileData = () => {
@@ -124,7 +122,14 @@ class PublishPanel extends React.Component {
         this.setState({
             validationErrors: []
         });
-        this._validateEntry(({ title, content, excerpt, licence, featuredImage, tags }) => {
+        this._validateEntry(({
+            title,
+            content,
+            excerpt,
+            licence,
+            featuredImage,
+            tags,
+            wordCount }) => {
             if (featuredImage) {
                 featuredImage = this._findImageSource(featuredImage);
             }
@@ -136,6 +141,7 @@ class PublishPanel extends React.Component {
                 licence,
                 featuredImage,
                 tags,
+                wordCount,
                 profile: loggedProfileData.get('profile'),
                 status: {
                     publishing: true
@@ -159,7 +165,8 @@ class PublishPanel extends React.Component {
             excerpt,
             licence,
             featuredImage,
-            tags
+            tags,
+            wordCount
         } = this.state;
         const validationErrors = this.state.validationErrors.slice();
         if (!title || title === '') {
@@ -191,21 +198,28 @@ class PublishPanel extends React.Component {
                 validationErrors
             });
         }
-        return cb({ title, content, excerpt, licence, featuredImage, tags });
+        return cb({
+            title,
+            content,
+            excerpt,
+            licence,
+            featuredImage,
+            tags,
+            wordCount
+        });
     }
     _handleTagAdd = (tag) => {
-        const newTags = this.state.tags.slice();
-        newTags.push(tag);
+        const newTags = [...this.state.tags, tag];
         this.setState({
             tags: newTags
         }, () => {
             this._checkExistingTags(newTags);
+            this._handleDraftUpdate('tags', this.state.tags);
         });
-        this._handleDraftUpdate('tags', newTags);
     };
     _handleTagDelete = (index) => {
         const { tagActions, pendingTags } = this.props;
-        const currentTags = this.state.tags.slice();
+        const currentTags = [...this.state.tags];
         const tag = currentTags[index];
         currentTags.splice(index, 1);
         this.setState({
@@ -220,7 +234,7 @@ class PublishPanel extends React.Component {
             if (!erroredTag && pendingTag) {
                 tagActions.deletePendingTag(pendingTag);
             }
-            this._handleDraftUpdate('tags', currentTags);
+            this._handleDraftUpdate('tags', this.state.tags);
         });
     };
     _handleDraftUpdate = (field, value) => {
