@@ -1,7 +1,8 @@
 import Dexie from 'dexie';
 import draftSchema from './schema/draft';
 
-const entriesDB = new Dexie('entries');
+const dbName = (process.env.NODE_ENV === 'production') ? 'entries-akasha': 'entries-dev';
+const entriesDB = new Dexie(dbName);
 entriesDB.version(1).stores({
     drafts: '++id,profile,status.publishingConfirmed,status.publishing',
     entries: '&ipfsHash',

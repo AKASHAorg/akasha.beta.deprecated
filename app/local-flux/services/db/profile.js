@@ -2,8 +2,8 @@ import Dexie from 'dexie';
 import  tempProfileSchema  from './schema/temp-profile';
 import  loggedProfileSchema  from './schema/logged-profile';
 
-
-const profileDB = new Dexie('profiles');
+const dbName = (process.env.NODE_ENV === 'production') ? 'profiles-akasha': 'profiles-dev';
+const profileDB = new Dexie(dbName);
 profileDB.version(1).stores({
     localProfiles: '&address, akashaId',
     loggedProfile: '&account, profile, akashaId',
