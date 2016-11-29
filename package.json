@@ -90,7 +90,7 @@
     "@types/mocha": "2.2.33",
     "@types/node": "6.0.51",
     "@types/ramda": "0.0.2",
-    "@types/request": "0.0.35",
+    "@types/request": "0.0.36",
     "@types/rimraf": "0.0.28",
     "@types/winston": "0.0.32",
     "asar": "0.12.3",
@@ -122,17 +122,16 @@
     "dexie": "1.5.1",
     "draft-js": "0.9.1",
     "draft-js-export-html": "0.5.2",
-    "electron": "1.4.8",
+    "electron": "1.4.10",
     "electron-builder": "^8.6.0",
     "electron-debug": "1.1.0",
     "electron-devtools-installer": "2.0.1",
     "electron-mocha": "3.2.1",
     "electron-rebuild": "1.4.0",
-    "eslint": "3.11.0",
+    "eslint": "3.11.1",
     "eslint-config-airbnb": "13.0.0",
     "eslint-plugin-babel": "4.0.0",
     "eslint-plugin-import": "2.2.0",
-    "eslint-plugin-jsx-a11y": "^2.2.3",
     "eslint-plugin-react": "6.7.1",
     "ethereumjs-testrpc": "3.0.2",
     "express": "4.14.0",
@@ -206,7 +205,7 @@
     "npm": ">=3.x"
   },
   "engines": {
-    "electron": "1.4.8"
+    "electron": "1.4.10"
   },
   "build": {
     "appId": "org.develar.ElectronReact",

@@ -7,7 +7,8 @@ import { constructed as contracts } from '../../contracts/index';
  * @type {Function}
  */
 const execute = Promise.coroutine(function*(data: {entryId: string, akashaId: string}) {
-    const weight = yield contracts.instance.votes.getVoteOfProfile(data.entryId, data.akashaId);
+    const profileAddress = yield contracts.instance.registry.addressOf(data.akashaId);
+    const weight = yield contracts.instance.votes.getVoteOfProfile(data.entryId, profileAddress);
     return { weight, entryId: data.entryId, akashaId: data.akashaId };
 });
 

@@ -19,6 +19,11 @@ class Registry extends BaseContract_1.default {
             return !!ethereumjs_util_1.unpad(exists);
         });
     }
+    addressOf(id) {
+        return this.contract
+            .addressOf
+            .callAsync(id);
+    }
     getByAddress(address) {
         return this.contract
             .addressOfKey

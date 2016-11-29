@@ -10,10 +10,12 @@ const can_claim_1 = require('./can-claim');
 const claim_deposit_1 = require('./claim-deposit');
 const downvote_entry_1 = require('./downvote-entry');
 const entry_score_1 = require('./entry-score');
+const entry_is_active_1 = require('./entry-is-active');
 const get_deposit_balance_1 = require('./get-deposit-balance');
 const upvote_entry_1 = require('./upvote-entry');
 const vote_cost_1 = require('./vote-cost');
 const vote_count_1 = require('./vote-count');
+const get_vote_of_1 = require('./get-vote-of');
 const votes_iterator_1 = require('./votes-iterator');
 const entry_stream_1 = require('./entry-stream');
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -34,6 +36,8 @@ exports.default = [
     vote_count_1.default,
     entry_tag_iterator_1.default,
     entry_profile_iterator_1.default,
-    votes_iterator_1.default
+    votes_iterator_1.default,
+    get_vote_of_1.default,
+    entry_is_active_1.default
 ];
 //# sourceMappingURL=index.js.map
