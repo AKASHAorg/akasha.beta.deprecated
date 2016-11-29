@@ -14,9 +14,9 @@ const channels = {
     tags: ['checkFormat', 'create', 'tagIterator', 'tagSubIterator', 'exists', 'getTagsCreated', 'subsCount',
         'subscribe', 'getTagId', 'getTagName', 'unSubscribe', 'isSubscribed'],
 
-    entry: ['getProfileEntriesCount', 'getTagEntriesCount', 'getEntry', 'publish', 'update', 'canClaim', 'claim',
+    entry: ['getProfileEntriesCount', 'getTagEntriesCount', 'isActive', 'getEntry', 'publish', 'update', 'canClaim', 'claim',
         'downvote', 'getScore', 'getDepositBalance', 'upvote', 'voteCost', 'voteCount', 'entryTagIterator',
-        'entryProfileIterator', 'votesIterator', 'getEntriesStream'],
+        'entryProfileIterator', 'votesIterator', 'getEntriesStream', 'getVoteOf'],
 
     comments: ['getComment', 'comment', 'commentsCount', 'removeComment', 'commentsIterator'],
 
@@ -25,9 +25,9 @@ const channels = {
     ipfs: ['startService', 'stopService', 'status', 'resolve', 'getConfig', 'setPorts', 'getPorts'],
 
     profile: ['getBalance', 'followProfile', 'getFollowersCount', 'getFollowingCount', 'getProfileData',
-        'unFollowProfile', 'updateProfileData', 'followersIterator', 'followingIterator', 'isFollower', 'isFollowing'],
+        'unFollowProfile', 'updateProfileData',  'followersIterator', 'followingIterator', 'isFollower', 'isFollowing'],
 
-    registry: ['fetchRegistered', 'getCurrentProfile', 'profileExists', 'registerProfile', 'getByAddress', 'unregister'],
+    registry: ['fetchRegistered', 'addressOf', 'checkIdFormat', 'getCurrentProfile', 'profileExists', 'registerProfile', 'getByAddress', 'unregister'],
 
     notifications: ['me', 'feed', 'setFilter'],
 

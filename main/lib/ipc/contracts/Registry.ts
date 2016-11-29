@@ -31,6 +31,17 @@ export default class Registry extends BaseContract {
     }
 
     /**
+     *
+     * @param id
+     * @returns {any}
+     */
+    public addressOf(id: string) {
+        return this.contract
+            .addressOf
+            .callAsync(id)
+    }
+
+    /**
      * Find a profile by eth address
      * @param address
      * @returns {any}
