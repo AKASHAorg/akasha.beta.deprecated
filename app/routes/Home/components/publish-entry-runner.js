@@ -1,48 +1,11 @@
-import React, { Component, PropTypes } from 'react';
+import { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { DraftActions, AppActions, TransactionActions } from 'local-flux';
-/**
- * This component will publish entries in parallel
- * main logic of entry publishing steps will be here
- * @TODO: Create some kind of queue and a task runner to be used for profile creation too
- *
- */
+import { DraftActions, AppActions, TransactionActions, EntryActions } from 'local-flux';
+
 class PublishEntryRunner extends Component {
-    componentWillMount () {
-        // const { transactionActions, loggedProfile, draftActions } = this.props;
-        // transactionActions.getPendingTransactions();
-        // transactionActions.getMinedTransactions();
-        // draftActions.getPublishingDrafts(loggedProfile.get('profile'));
-    }
     componentWillReceiveProps (nextProps) {
         this.launchActions(nextProps);
         this.listenMinedTx(nextProps);
-        // let publishableDrafts = [];
-        // if (drafts.size > 0) {
-        //     publishableDrafts = drafts.filter(draft =>
-        //         draft.status.publishing && draft.status.publishingConfirmed);
-        // }
-        // if (publishableDrafts.size > 0) {
-        //     publishableDrafts.forEach((draft) => {
-        //         const { status } = draft;
-        //         if (status.currentAction === 'checkLogin' && status.publishing && status.publishingConfirmed) {
-        //             const tokenIsValid = this._verifyExpiration(loggedProfile.get('expiration'));
-        //             if (tokenIsValid) {
-        //                 return this._registerDraft(draft, loggedProfile.get('token'));
-        //             }
-        //             return appActions.showAuthDialog();
-        //         }
-        //         if (status.currentAction === 'draftPublished' && draft.tx) {
-        //             return this._checkForTx(draft);
-        //         }
-        //         if (status.currentAction === 'listeningTx' &&
-        //                 minedTransactions.findIndex(minedTx => minedTx.tx === draft.tx) !== -1) {
-        //             // delete draft and pendingTxs
-        //             draftActions.deleteDraft(draft.id);
-        //             transactionActions.deletePendingTx(draft.tx);
-        //         }
-        //     });
-        // }
     }
     launchActions = (nextProps) => {
         const { pendingActions, appActions, draftActions } = nextProps;
@@ -52,7 +15,7 @@ class PublishEntryRunner extends Component {
                 // switch may seem unnecessary right now but it will be used for edit too!
                 switch (action.get('type')) {
                     case 'publishEntry':
-                        appActions.updatePendingAction(action.merge({
+                        appActions.updatePendingAction(action.mergeDeep({
                             status: 'publishing'
                         }));
                         draftActions.publishDraft(action.get('payload'), action.get('gas'));
@@ -63,29 +26,64 @@ class PublishEntryRunner extends Component {
             });
         }
     }
-    listenMinedTx = (nextProps) => {};
+    listenMinedTx = (nextProps) => {
+        const { minedTx, pendingTx, fetchingMined, fetchingPending, deletingPendingTx, appActions,
+            draftActions, transactionActions, loggedProfile,
+            pendingActions, entryActions } = nextProps;
+        const isNotFetching = !fetchingMined && !fetchingPending;
+        const pendingSubsTxs = isNotFetching ?
+            pendingTx.toJS().filter(tx =>
+                tx.profile === loggedProfile.get('profile') && (tx.type === 'publishEntry')) :
+                [];
+
+        pendingSubsTxs.forEach((tx) => {
+            const isMined = minedTx.find(mined => mined.tx === tx.tx);
+            if (isMined && !deletingPendingTx) {
+                const correspondingAction = pendingActions.find(action =>
+                    action.get('type') === tx.type && action.get('status') === 'publishing');
+                transactionActions.deletePendingTx(tx.tx);
+                // fire success action based on action type
+                // WARNING: action must match `action.type + "Success"`
+                // example: for action.type = 'registerTag', success action
+                // should be registerTagSuccess()
+                if (typeof draftActions[`${tx.type}Success`] !== 'function') {
+                    console.error(
+                        `There is no action "${tx.type}Success" in draftActions!!
+                        Please implement "${tx.type}Success" action!!`
+                    );
+                } else {
+                    draftActions[`${tx.type}Success`](tx.draftId);
+                    appActions.deletePendingAction(correspondingAction.get('id'));
+                    entryActions.getEntriesStream(loggedProfile.get('akashaId'));
+                }
+            }
+        });
+    };
     render () {
         return null;
     }
 }
 
 PublishEntryRunner.propTypes = {
-    drafts: PropTypes.shape(),
     draftActions: PropTypes.shape(),
     appActions: PropTypes.shape(),
     loggedProfile: PropTypes.shape(),
     transactionActions: PropTypes.shape(),
-    minedTransactions: PropTypes.shape()
+    minedTx: PropTypes.shape()
 
 };
 
 function mapStateToProps (state) {
     return {
+        fetchingMined: state.transactionState.get('fetchingMined'),
+        fetchingPending: state.transactionState.get('fetchingPending'),
+        deletingPendingTx: state.transactionState.getIn(['flags', 'deletingPendingTx']),
         loggedProfile: state.profileState.get('loggedProfile'),
         loggedProfileData: state.profileState.get('profiles').find(prf =>
             prf.get('profile') === state.profileState.getIn(['loggedProfile', 'profile'])),
         drafts: state.draftState.get('drafts'),
-        minedTransactions: state.transactionState.get('mined'),
+        minedTx: state.transactionState.get('mined'),
+        pendingTx: state.transactionState.get('pending'),
         pendingActions: state.appState.get('pendingActions'),
     };
 }
@@ -94,6 +92,7 @@ function mapDispatchToProps (dispatch) {
     return {
         draftActions: new DraftActions(dispatch),
         appActions: new AppActions(dispatch),
+        entryActions: new EntryActions(dispatch),
         transactionActions: new TransactionActions(dispatch)
     };
 }

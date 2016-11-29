@@ -4,7 +4,7 @@ import { commentActionCreators } from './action-creators';
 let commentActions = null;
 
 class CommentActions {
-    constructor (dispatch) {
+    constructor (dispatch) { // eslint-disable-line consistent-return
         if (commentActions) {
             return commentActions;
         }

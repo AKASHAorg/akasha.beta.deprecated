@@ -137,10 +137,10 @@ export function publishDraft (flags) {
     };
 }
 
-export function publishDraftSuccess (data) {
+export function publishDraftSuccess (flags) {
     return {
         type: types.PUBLISH_DRAFT_SUCCESS,
-        data
+        flags
     };
 }
 

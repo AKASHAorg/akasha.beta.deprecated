@@ -7,23 +7,26 @@ class PublishEntryStatus extends React.Component {
         document.body.style.overflow = 'hidden';
     }
     componentWillReceiveProps (nextProps) {
-        const { appActions, drafts, params } = nextProps;
-        // const currentDraft = drafts.find(draft => draft.id === parseInt(params.draftId, 10));
-        // const prevDraft = this.props.drafts.find(draft =>
-        //     draft.id === parseInt(params.draftId, 10));
-        // if (prevDraft && !currentDraft) {
-        //     if ((prevDraft.status.currentAction === 'draftPublished')) {
-        //         this.context.router.push(`/${params.akashaId}/explore/stream`);
-        //     }
-        // }
+        const { drafts, params, pendingActions } = nextProps;
+        const currentDraft = drafts.find(draft => draft.id === parseInt(params.draftId, 10));
+        const currentDraftAction = pendingActions.find(action =>
+            action.toJS().payload.id === parseInt(params.draftId, 10)
+        );
+        const prevDraft = this.props.drafts.find(draft =>
+            draft.id === parseInt(params.draftId, 10));
+        console.log(currentDraftAction, prevDraft, currentDraft, 'checkings');
+        if ((prevDraft && !currentDraft) || !currentDraftAction) {
+            this.context.router.push(`/${params.akashaId}/explore/tag`);
+        }
     }
     shouldComponentUpdate (nextProps) {
-        const { drafts, params } = nextProps;
+        const { drafts, params, pendingActions } = nextProps;
         const currentDraft = drafts.find(draft => draft.id === parseInt(params.draftId, 10));
         const prevCurrentDraft = this.props.drafts.find(draft =>
             draft.id === parseInt(params.draftId, 10)
         );
-        return prevCurrentDraft !== currentDraft;
+        return prevCurrentDraft !== currentDraft ||
+            pendingActions !== this.props.pendingActions;
     }
     componentWillUnmount () {
         document.body.style.overflow = 'initial';
@@ -31,19 +34,40 @@ class PublishEntryStatus extends React.Component {
     _handleReturn = () => {
         const { params } = this.props;
         const { router } = this.context;
-        router.push(`/${params.akashaId}/explore/stream`);
+        router.push(`/${params.akashaId}/explore/tag`);
+    }
+    _getCurrentAction = () => {
+        const { pendingActions, params } = this.props;
+        const currentDraftAction = pendingActions.find(action =>
+            action.toJS().payload.id === parseInt(params.draftId, 10)
+        );
+        console.log(currentDraftAction, 'currentDraftAction', pendingActions);
+        switch (currentDraftAction.toJS().status) {
+            case 'needConfirmation':
+                return 'Waiting for publish confirmation!';
+            case 'checkAuth':
+                return 'Waiting for re-authentication!';
+            case 'publishing':
+                return 'Receiving transaction id';
+            case 'publishComplete':
+                return 'Publish complete. Redirecting...';
+            default:
+                break;
+        }
     }
     render () {
         const { drafts, params, draftErrors } = this.props;
         const draftToPublish = drafts.find(draft =>
         draft.id === parseInt(params.draftId, 10));
+
+
         return (
           <PanelContainer
             showBorder
             title="Publishing entry"
             actions={[
                 /* eslint-disable */
-                <RaisedButton key="back-to-stream" label="Back to Stream" primary onClick={this._handleReturn} />
+                <RaisedButton key="back-to-stream" label="Back to Home" primary onClick={this._handleReturn} />
                 /* eslint-enable */
             ]}
             style={{
@@ -66,8 +90,8 @@ class PublishEntryStatus extends React.Component {
                   </div>
                   <div className="col-xs-12 center-xs">
                     <h3>Publishing &quot;{draftToPublish.title}&quot;</h3>
-                    <p>Current Action: {draftToPublish.get('status').currentAction}</p>
-                    <p>This entry is being published. You`ll be notified when it`s done.</p>
+                    <p>Current Action: {this._getCurrentAction()}</p>
+                    <p>This entry is being published. You can return to home.</p>
                     {(draftErrors.size > 0) &&
                         draftErrors.map((err, key) =>
                           <div key={key}>Error {err.get('code') && err.get('code')}: {err.get('message')}</div>
@@ -82,10 +106,10 @@ class PublishEntryStatus extends React.Component {
     }
 }
 PublishEntryStatus.propTypes = {
-    draftActions: React.PropTypes.shape(),
     params: React.PropTypes.shape(),
     drafts: React.PropTypes.shape(),
-    draftErrors: React.PropTypes.shape()
+    draftErrors: React.PropTypes.shape(),
+    pendingActions: React.PropTypes.shape()
 };
 PublishEntryStatus.contextTypes = {
     router: React.PropTypes.shape()

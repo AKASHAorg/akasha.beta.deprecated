@@ -4,9 +4,9 @@ import { AppService } from '../services';
 let appActions = null;
 
 class AppActions {
-    constructor (dispatch) {
+    constructor (dispatch) { // eslint-disable-line consistent-return
         if (appActions) {
-           return appActions;
+            return appActions;
         }
         this.dispatch = dispatch;
         this.appService = new AppService();

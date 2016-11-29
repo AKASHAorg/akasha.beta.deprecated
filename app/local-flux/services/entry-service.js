@@ -25,6 +25,7 @@ class EntryService extends BaseService {
      *
      */
     publishEntry = ({ draft, token, gas, onError, onSuccess }) => {
+        console.log(draft, 'sending draft to main for publishing');
         const {
             title,
             featuredImage,

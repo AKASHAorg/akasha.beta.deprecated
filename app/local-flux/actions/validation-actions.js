@@ -3,7 +3,7 @@ import { ValidationService } from '../services';
 let validationActions = null;
 
 class ValidationActions {
-    constructor (dispatch) {
+    constructor (dispatch) { // eslint-disable-line consistent-return
         if (validationActions) {
             return validationActions;
         }

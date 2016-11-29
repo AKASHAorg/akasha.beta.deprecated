@@ -1,4 +1,4 @@
-/* eslint new-cap: ["error", { "capIsNewExceptions": ["Record"] }]*/
+/* eslint new-cap: ["error", { "capIsNewExceptions": ["Record", "Map"] }]*/
 import { fromJS, Record, List } from 'immutable';
 import * as types from '../constants/AppConstants';
 import * as profileTypes from '../constants/ProfileConstants';
@@ -80,7 +80,7 @@ const appState = createReducer(initialState, {
     [types.SET_TIMESTAMP]: (state, action) =>
         state.set('timestamp', action.timestamp),
 
-    [profileTypes.LOGIN_SUCCESS]: state => {
+    [profileTypes.LOGIN_SUCCESS]: (state) => {
         const actionIndex = state.get('pendingActions').findIndex(action =>
             action.get('status') === 'checkAuth');
         if (actionIndex !== -1) {

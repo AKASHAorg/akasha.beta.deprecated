@@ -4,7 +4,7 @@ import { tempProfileActionCreators, profileActionCreators } from './action-creat
 let tempProfileActions = null;
 
 class TempProfileActions {
-    constructor (dispatch) {
+    constructor (dispatch) { // eslint-disable-line consistent-return
         if (tempProfileActions) {
             return tempProfileActions;
         }

@@ -6,7 +6,7 @@ let entryActions = null;
 
 class EntryActions {
 
-    constructor (dispatch) {
+    constructor (dispatch) { // eslint-disable-line consistent-return
         if (entryActions) {
             return entryActions;
         }

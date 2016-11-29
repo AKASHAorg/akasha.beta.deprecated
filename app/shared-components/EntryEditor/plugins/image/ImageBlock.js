@@ -20,37 +20,6 @@ import imageCreator, { findBestMatch } from 'utils/imageUtils'; // eslint-disabl
 import clickAway from 'utils/clickAway'; // eslint-disable-line import/no-unresolved, import/extensions
 import styles from './image-block.scss';
 
-
-/**
- * @TODO: Move this to a config file;
- */
-const variants = {
-    xs: {
-        primaryText: 'Extra Small',
-        component: <ImageSizeXS />
-    },
-    sm: {
-        primaryText: 'Small',
-        component: <ImageSizeSmall />
-    },
-    md: {
-        primaryText: 'Normal',
-        component: <ImageSizeMedium />
-    },
-    lg: {
-        primaryText: 'Large',
-        component: <ImageSizeLarge />
-    },
-    xl: {
-        primaryText: 'Extra Large',
-        component: <ImageSizeXL />
-    },
-    xxl: {
-        primaryText: 'Evolved',
-        component: <ImageSizeXXL />
-    }
-};
-
 class ImageBlock extends Component {
     constructor (props) {
         super(props);
@@ -64,22 +33,6 @@ class ImageBlock extends Component {
             imageSrc: media ? imageCreator(files[media].src) : null,
             isCardEnabled: false
         };
-        this.menuItems = [];
-        for (let i = Object.keys(files).length - 1; i >= 0; i -= 1) {
-            const key = Object.keys(files)[i];
-            this.menuItems.push(
-              <MenuItem
-                key={`k-${key}`}
-                leftIcon={
-                  <SvgIcon>
-                    {variants[key].component}
-                  </SvgIcon>
-                }
-                value={key}
-                primaryText={variants[key].primaryKey}
-              />
-            );
-        }
     }
     componentDidMount () {
         this.setImageSrc();
@@ -115,7 +68,7 @@ class ImageBlock extends Component {
                 isCardEnabled: false
             }, () => {
                 this.props.blockProps.setReadOnly(false);
-                // window.removeEventListener('keyup', this._removeImageContainer);
+                window.removeEventListener('keyup', this._removeImageContainer);
             });
         }
     }
@@ -138,14 +91,14 @@ class ImageBlock extends Component {
             isCardEnabled: true
         }, () => {
             this.props.blockProps.setReadOnly(true);
-            // window.addEventListener('keyup', this._removeImageContainer);
+            window.addEventListener('keyup', this._removeImageContainer);
         });
     }
     _removeImageContainer = (ev) => {
         if (ev.key === 'Delete' || ev.key === 'Backspace') {
             this.props.container.remove();
             this.props.blockProps.setReadOnly(false);
-            // window.removeEventListener('keyup', this._removeImageContainer);
+            window.removeEventListener('keyup', this._removeImageContainer);
         }
     }
     _getBaseNodeStyle = () => {
@@ -222,7 +175,7 @@ class ImageBlock extends Component {
                           </SvgIcon>
                         }
                         value={'md'}
-                        primaryText={'Medium'}
+                        primaryText={'Normal'}
                       />
                     }
                     {files.lg &&

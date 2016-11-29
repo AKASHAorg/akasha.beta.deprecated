@@ -10,7 +10,7 @@ let eProcActions = null;
  *
  */
 class EProcActions {
-    constructor (dispatch) {
+    constructor (dispatch) { // eslint-disable-line consistent-return
         if (eProcActions) {
             return eProcActions;
         }
