@@ -18,6 +18,7 @@ const vote_count_1 = require('./vote-count');
 const get_vote_of_1 = require('./get-vote-of');
 const votes_iterator_1 = require('./votes-iterator');
 const entry_stream_1 = require('./entry-stream');
+const get_entry_balance_1 = require('./get-entry-balance');
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = [
     entry_count_profile_1.default,
@@ -38,6 +39,7 @@ exports.default = [
     entry_profile_iterator_1.default,
     votes_iterator_1.default,
     get_vote_of_1.default,
-    entry_is_active_1.default
+    entry_is_active_1.default,
+    get_entry_balance_1.default
 ];
 //# sourceMappingURL=index.js.map
