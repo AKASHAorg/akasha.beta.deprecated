@@ -189,8 +189,8 @@
     "webpack-node-externals": "1.5.4"
   },
   "dependencies": {
-    "@akashaproject/contracts.js": "1.2.8",
-    "@akashaproject/geth-connector": "1.6.11",
+    "@akashaproject/contracts.js": "1.2.9",
+    "@akashaproject/geth-connector": "1.6.13",
     "@akashaproject/ipfs-connector": "1.6.12",
     "bluebird": "3.4.6",
     "ethereumjs-util": "5.0.1",
