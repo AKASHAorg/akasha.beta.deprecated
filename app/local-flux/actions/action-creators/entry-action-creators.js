@@ -297,3 +297,49 @@ export function getScoreError (error, flags) {
         flags
     };
 }
+
+export function isActive (flags) {
+    return {
+        type: types.IS_ACTIVE,
+        flags
+    };
+}
+
+export function isActiveSuccess (data, flags) {
+    return {
+        type: types.IS_ACTIVE_SUCCESS,
+        data,
+        flags
+    };
+}
+
+export function isActiveError (error, flags) {
+    return {
+        type: types.IS_ACTIVE_ERROR,
+        error,
+        flags
+    };
+}
+
+export function getVoteOf (flags) {
+    return {
+        type: types.GET_VOTE_OF,
+        flags
+    };
+}
+
+export function getVoteOfSuccess (data, flags) {
+    return {
+        type: types.GET_VOTE_OF_SUCCESS,
+        data,
+        flags
+    };
+}
+
+export function getVoteOfError (error, flags) {
+    return {
+        type: types.GET_VOTE_OF_ERROR,
+        error,
+        flags
+    };
+}

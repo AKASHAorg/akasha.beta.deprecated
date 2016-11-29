@@ -11,6 +11,11 @@ const confirmMessages = defineMessages({
         description: 'disclaimer for gas amount input',
         defaultMessage: `Gas to be used by this transaction. Unused gas will be returned.`
     },
+    inactiveEntryError: {
+        id: 'app.confirm.inactiveEntryError',
+        description: 'error message to be displayed when an entry is no longer active',
+        defaultMessage: 'The voting period for this entry has ended'
+    },
     registerTagTitle: {
         id: 'app.confirm.publishTagTitle',
         description: 'confirm dialog title for publishing a tag',

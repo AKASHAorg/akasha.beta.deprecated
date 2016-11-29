@@ -14,7 +14,7 @@ class WeightConfirmDialog extends React.PureComponent {
         super(props);
 
         this.state = {
-            voteWeight: '1',
+            voteWeight: null,
             gasAmount: null,
             voteWeightError: null,
             gasAmountError: null
@@ -22,18 +22,20 @@ class WeightConfirmDialog extends React.PureComponent {
     }
 
     componentWillReceiveProps (nextProps) {
-        const { isOpen, resource } = nextProps;
+        const { isOpen, resource, entryActions, minWeight, maxWeight } = nextProps;
         if (isOpen && !this.props.isOpen) {
+            entryActions.isActive(resource.getIn(['payload', 'entryId']));
+            const initialWeight = resource.get('type') === 'upvote' ? minWeight : maxWeight;
             this.setState({
+                voteWeight: initialWeight,
                 gasAmount: resource.get('gas'),
-                voteWeightError: !this.hasEnoughFunds(this.state.voteWeight) ?
+                voteWeightError: !this.hasEnoughFunds(initialWeight) ?
                     NOT_ENOUGH_FUNDS_ERROR :
                     null
             });
         }
         if (!isOpen && this.props.isOpen) {
             this.setState({
-                voteWeight: '1',
                 voteWeightError: null,
                 gasAmountError: null
             });
@@ -55,7 +57,7 @@ class WeightConfirmDialog extends React.PureComponent {
 
     hasEnoughFunds = (weight) => {
         const { balance, voteCost } = this.props;
-        return balance > voteCost.get(weight);
+        return balance > voteCost.get(Math.abs(weight).toString());
     }
 
     handleGasChange = (ev) => {
@@ -75,8 +77,9 @@ class WeightConfirmDialog extends React.PureComponent {
 
     handleVoteWeightChange = (ev) => {
         const weight = ev.target.value;
+        const { minWeight, maxWeight } = this.props;
         let voteWeightError = null;
-        if (weight < 1 || weight > 10) {
+        if (weight < minWeight || weight > maxWeight) {
             voteWeightError = WEIGHT_LIMIT_ERROR;
         } else if (!this.hasEnoughFunds(weight)) {
             voteWeightError = NOT_ENOUGH_FUNDS_ERROR;
@@ -93,7 +96,7 @@ class WeightConfirmDialog extends React.PureComponent {
         const updatedResource = resource.toJS();
         updatedResource.gas = this.state.gasAmount || resource.get('gas');
         updatedResource.status = 'checkAuth';
-        updatedResource.payload.weight = this.state.voteWeight;
+        updatedResource.payload.weight = Math.abs(this.state.voteWeight);
         updatedResource.payload.value = value;
         appActions.hideWeightConfirmDialog();
         appActions.updatePendingAction(updatedResource);
@@ -106,15 +109,18 @@ class WeightConfirmDialog extends React.PureComponent {
     }
 
     render () {
-        const { isOpen, voteCost, balance, intl } = this.props;
+        const { isOpen, voteCost, balance, isActivePending, resource, active, minWeight, maxWeight,
+            intl } = this.props;
         const { gasAmount, gasAmountError, voteWeight, voteWeightError } = this.state;
         const { palette } = this.context.muiTheme;
-        const resource = this.props.resource || { payload: {} };
-        const { entryTitle, publisherName } = resource.payload;
-        const voteWeightCost = voteCost.get(voteWeight);
+        const payload = resource ?
+            resource.get('payload').toJS() :
+            {};
+        const { entryTitle, publisherName } = payload;
+        const voteWeightCost = voteCost.get(Math.abs(voteWeight).toString());
         const shortBalance = balance ? balance.slice(0, 6) : '';
         const weightErrorText = voteWeightError === WEIGHT_LIMIT_ERROR ?
-            intl.formatMessage(formMessages.voteWeightError) :
+            intl.formatMessage(formMessages.voteWeightError, { minWeight, maxWeight }) :
             intl.formatMessage(formMessages.notEnoughFunds);
 
         const dialogActions = [
@@ -126,7 +132,7 @@ class WeightConfirmDialog extends React.PureComponent {
             label={intl.formatMessage(generalMessages.confirm)}
             primary
             onTouchTap={this.handleConfirm}
-            disabled={!!voteWeightError || !!gasAmountError}
+            disabled={!!voteWeightError || !!gasAmountError || isActivePending || !active}
           />
         ];
 
@@ -161,11 +167,11 @@ class WeightConfirmDialog extends React.PureComponent {
                   floatingLabelText="Vote weight"
                   errorText={voteWeightError && weightErrorText}
                   errorStyle={{ width: '350px' }}
-                  min={1}
-                  max={10}
+                  min={minWeight}
+                  max={maxWeight}
                 />
               </div>
-              {resource.type === 'upvote' && !voteWeightError &&
+              {resource && resource.type === 'upvote' && !voteWeightError &&
                 <div>
                   <small>
                     {intl.formatMessage(confirmMessages.voteWeightDisclaimer, {
@@ -205,6 +211,13 @@ class WeightConfirmDialog extends React.PureComponent {
                   }
                 </small>
               </div>
+              {!active &&
+                <div style={{ color: 'red' }}>
+                  <small>
+                    {intl.formatMessage(confirmMessages.inactiveEntryError)}
+                  </small>
+                </div>
+              }
             </div>
           </Dialog>
         );
@@ -216,7 +229,12 @@ WeightConfirmDialog.propTypes = {
     voteCost: PropTypes.shape(),
     resource: PropTypes.shape(),
     balance: PropTypes.string,
+    isActivePending: PropTypes.bool,
+    active: PropTypes.bool,
     appActions: PropTypes.shape(),
+    entryActions: PropTypes.shape(),
+    minWeight: PropTypes.number,
+    maxWeight: PropTypes.number,
     intl: PropTypes.shape()
 };
 

@@ -313,5 +313,28 @@ class EntryActions {
                 this.dispatch(entryActionCreators.getScoreError(error, { fetchingScore: false }))
         });
     };
+
+    isActive = (entryId) => {
+        this.dispatch(entryActionCreators.isActive({ isActivePending: true }));
+        this.entryService.isActive({
+            entryId,
+            onSuccess: data =>
+                this.dispatch(entryActionCreators.isActiveSuccess(data, { isActivePending: false })),
+            onError: error =>
+                this.dispatch(entryActionCreators.isActiveError(error, { isActivePending: false }))
+        });
+    };
+
+    getVoteOf = (akashaId, entryId) => {
+        this.dispatch(entryActionCreators.getVoteOf({ fetchingVoteOf: true }));
+        this.entryService.getVoteOf({
+            akashaId,
+            entryId,
+            onSuccess: data =>
+                this.dispatch(entryActionCreators.getVoteOfSuccess(data, { fetchingVoteOf: false })),
+            onError: error =>
+                this.dispatch(entryActionCreators.getVoteOfError(error, { fetchingVoteOf: false }))
+        });
+    }
 }
 export { EntryActions };

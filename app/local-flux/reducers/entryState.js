@@ -263,6 +263,32 @@ const entryState = createReducer(initialState, {
         });
     },
 
+    [types.IS_ACTIVE]: flagHandler,
+
+    [types.IS_ACTIVE_ERROR]: errorHandler,
+
+    [types.IS_ACTIVE_SUCCESS]: (state, { data, flags }) => {
+        const entryIndex = state.get('entries').findIndex(entry =>
+            entry.get('entryId') === data.entryId);
+        return state.merge({
+            entries: state.get('entries').mergeIn([entryIndex, 'content', 'active'], data.active),
+            flags: state.get('flags').merge(flags)
+        });
+    },
+
+    [types.GET_VOTE_OF]: flagHandler,
+
+    [types.GET_VOTE_OF_ERROR]: errorHandler,
+
+    [types.GET_VOTE_OF_SUCCESS]: (state, { data, flags }) => {
+        const entryIndex = state.get('entries').findIndex(entry =>
+            entry.get('entryId') === data.entryId);
+        return state.merge({
+            entries: state.get('entries').setIn([entryIndex, 'content', 'voteWeight'], data.weight),
+            flags: state.get('flags').merge(flags)
+        });
+    },
+
     [types.CLEAR_TAG_ENTRIES]: state =>
         state.merge({
             entries: state.get('entries').filter(entry => entry.get('type') !== 'tagEntry')
