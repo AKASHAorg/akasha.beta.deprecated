@@ -6,7 +6,7 @@ import StreamMenu from './components/stream-menu';
 import StreamSidebar from './components/stream-sidebar';
 import styles from './stream-container.scss';
 
-const LIMIT = 6;
+const LIMIT = 5;
 
 class StreamPage extends Component {
     constructor (props) {
@@ -18,9 +18,12 @@ class StreamPage extends Component {
     }
 
     componentWillMount () {
-        const { entryActions, loggedProfile } = this.props;
+        const { entryActions, loggedProfile, selectedTag } = this.props;
         entryActions.getEntriesStream(loggedProfile.get('akashaId'));
-        this.fetchEntries();
+        if (selectedTag) {
+            entryActions.entryTagIterator(selectedTag, 0, LIMIT + 1);
+            entryActions.getTagEntriesCount(selectedTag);
+        }
     }
 
     componentWillReceiveProps (nextProps) {
@@ -34,8 +37,27 @@ class StreamPage extends Component {
             }
             entryActions.clearTagEntries();
             if (selectedTag) {
-                entryActions.entryTagIterator(selectedTag, 0, LIMIT);
+                entryActions.entryTagIterator(selectedTag, 0, LIMIT + 1);
                 entryActions.getTagEntriesCount(selectedTag);
+            }
+        }
+    }
+
+    componentDidUpdate (prevProps, prevState) {
+        const { entryActions, selectedTag } = this.props;
+        if (this.state.filter !== prevState.filter) {
+            switch (this.state.filter) {
+                case 'tag':
+                    entryActions.clearSavedEntries();
+                    entryActions.entryTagIterator(selectedTag, 0, LIMIT + 1);
+                    entryActions.getTagEntriesCount(selectedTag);
+                    break;
+                case 'bookmarks':
+                    entryActions.clearTagEntries();
+                    entryActions.getSavedEntriesList(LIMIT);
+                    break;
+                default:
+                    break;
             }
         }
     }
@@ -43,25 +65,8 @@ class StreamPage extends Component {
     componentWillUnmount () {
         const { entryActions } = this.props;
         entryActions.clearTagEntries();
+        entryActions.clearSavedEntries();
     }
-
-    fetchEntries = () => {
-        const { entryActions, loggedProfile, selectedTag } = this.props;
-        const { filter } = this.state;
-        switch (filter) {
-            case 'bookmarks':
-                entryActions.getSavedEntries(loggedProfile.get('akashaId'));
-                break;
-            case 'tag':
-                if (selectedTag) {
-                    entryActions.entryTagIterator(selectedTag, 0, LIMIT);
-                    entryActions.getTagEntriesCount(selectedTag);
-                }
-                break;
-            default:
-                break;
-        }
-    };
 
     handleTabActivation = (tab) => {
         const { params } = this.props;

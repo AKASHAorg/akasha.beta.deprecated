@@ -98,22 +98,68 @@ class EntryService extends BaseService {
             return resolve(entries);
         });
 
-    createSavedEntry = ({ akashaId, entry, onError, onSuccess }) =>
-        entriesDB.savedEntries.put({ akashaId, ...entry.toJS() })
-            .then(() => onSuccess(entry.toJS()))
+    saveEntry = ({ akashaId, entry, onError, onSuccess }) =>
+        entriesDB.savedEntries.where('akashaId').equals(akashaId)
+            .toArray()
+            .then(records => {
+                let result;
+                if (!records.length) {
+                    result = { akashaId, entries: [entry] };
+                } else {
+                    records[0].entries.push(entry);
+                    result = { akashaId, entries: records[0].entries }
+                }
+                return entriesDB.savedEntries.put(result)
+                    .then(() => onSuccess(entry))
+                    .catch(reason => onError(reason));
+            })
             .catch(reason => onError(reason));
 
-    getSavedEntries = ({ akashaId, onError, onSuccess }) =>
+    deleteEntry = ({ akashaId, entryId, onError, onSuccess }) =>
+        entriesDB.savedEntries.where('akashaId').equals(akashaId)
+            .toArray()
+            .then(records => {
+                let result;
+                if (!records.length) {
+                    return;
+                } else {
+                    const entries = records[0].entries.filter(entry =>
+                        entry.entryId !== entryId);
+                    result = { akashaId, entries }
+                }
+                return entriesDB.savedEntries.put(result)
+                    .then(() => onSuccess(entryId))
+                    .catch(reason => onError(reason));
+            })
+            .catch(reason => onError(reason));
+
+    getSavedEntries = ({ akashaId, onError = () => {}, onSuccess }) =>
         entriesDB.savedEntries.where('akashaId')
             .equals(akashaId)
-            .toArray()
-            .then(entries => onSuccess(entries))
+            .first()
+            .then(result => onSuccess(result ? result.entries : []))
             .catch(reason => onError(reason));
 
-    entryTagIterator = ({
-        tagName, start, limit, onError = () => {
-    }, onSuccess
-    }) => {
+    getEntryList = ({ entries, onError = () => {}, onSuccess }) => {
+        this.openChannel({
+            clientManager: this.clientManager,
+            serverChannel: Channel.server.entry.getEntryList,
+            clientChannel: Channel.client.entry.getEntryList,
+            listenerCb: this.createListener(onError, onSuccess)
+        }, () => {
+            Channel.server.entry.getEntryList.send(entries);
+        });
+    }
+
+    moreEntryList = ({ entries, onError = () => {}, onSuccess }) => {
+        this.registerListener(
+            Channel.client.entry.getEntryList,
+            this.createListener(onError, onSuccess),
+            () => Channel.server.entry.getEntryList.send(entries)
+        );
+    }
+
+    entryTagIterator = ({ tagName, start, limit, onError = () => {}, onSuccess }) => {
         this.openChannel({
             clientManager: this.clientManager,
             serverChannel: Channel.server.entry.entryTagIterator,
@@ -123,6 +169,13 @@ class EntryService extends BaseService {
             Channel.server.entry.entryTagIterator.send({ tagName, start, limit });
         });
     };
+
+    moreEntryTagIterator = ({ tagName, start, limit, onError = () => {}, onSuccess }) =>
+        this.registerListener(
+            Channel.client.entry.entryTagIterator,
+            this.createListener(onError, onSuccess),
+            () => Channel.server.entry.entryTagIterator.send({ tagName, start, limit })
+        );
 
     getTagEntriesCount = ({
         tagName, onError = () => {

@@ -33,26 +33,6 @@ const Entry = Record({
     entryId: null,
     score: null
 });
-const SavedEntry = Record({
-    address: String,
-    author: {},
-    commentCount: Number,
-    content: [],
-    downvotes: Number,
-    excerpt: String,
-    id: Number,
-    licence: {},
-    shareCount: Number,
-    status: {
-        created_at: Date(),
-        updated_at: Date()
-    },
-    tags: [],
-    title: String,
-    upvotes: Number,
-    akashaId: String,
-    wordCount: Number
-});
 const Licence = Record({
     id: null,
     parent: null,
@@ -72,6 +52,7 @@ const initialState = fromJS({
     fetchingEntriesCount: false,
     entriesStream: new EntriesStream(),
     entries: new List(),
+    savedEntries: new List(),
     moreTagEntries: false,
     moreSavedEntries: false,
     tagEntriesCount: new Map(),
@@ -137,14 +118,36 @@ const entryState = createReducer(initialState, {
         });
     },
 
-    [types.CREATE_SAVED_ENTRY_SUCCESS]: (state, action) =>
+    [types.GET_SAVED_ENTRIES]: flagHandler,
+
+    [types.GET_SAVED_ENTRIES_ERROR]: errorHandler,
+
+    [types.GET_SAVED_ENTRIES_SUCCESS]: (state, { data, flags }) =>
         state.merge({
-            savedEntries: state.get('savedEntries').push(new SavedEntry(action.entry))
+            savedEntries: fromJS(data),
+            flags: state.get('flags').merge(flags)
         }),
 
-    [types.GET_SAVED_ENTRIES_SUCCESS]: (state, action) => {
-        const entriesList = new List(action.entries.map(entry => new SavedEntry(entry)));
-        return state.set('savedEntries', entriesList);
+    [types.GET_SAVED_ENTRIES_LIST]: flagHandler,
+
+    [types.GET_SAVED_ENTRIES_LIST_ERROR]: errorHandler,
+
+    [types.GET_SAVED_ENTRIES_LIST_SUCCESS]: (state, { data, flags }) =>
+        state.merge({
+            entries: fromJS(data.collection).map(entry => entry.set('type', 'savedEntry')),
+            flags: state.get('flags').merge(flags)
+        }),
+
+    [types.MORE_SAVED_ENTRIES_LIST]: flagHandler,
+
+    [types.MORE_SAVED_ENTRIES_LIST_ERROR]: errorHandler,
+
+    [types.MORE_SAVED_ENTRIES_LIST_SUCCESS]: (state, { data, flags }) => {
+        const entries = fromJS(data.collection).map(entry => entry.set('type', 'savedEntry'));
+        return state.merge({
+            entries: state.get('entries').concat(entries),
+            flags: state.get('flags').merge(flags)
+        });
     },
 
     [types.GET_PROFILE_ENTRIES]: flagHandler,
@@ -196,6 +199,22 @@ const entryState = createReducer(initialState, {
             fromJS(data.collection.slice(0, -1)) :
             fromJS(data.collection);
         return state.merge({
+            entries: newTagEntries.map(entry => entry.set('type', 'tagEntry')),
+            moreTagEntries,
+            flags: state.get('flags').merge(flags)
+        });
+    },
+
+    [types.ENTRY_TAG_ITERATOR_ERROR]: errorHandler,
+
+    [types.MORE_ENTRY_TAG_ITERATOR]: flagHandler,
+
+    [types.MORE_ENTRY_TAG_ITERATOR_SUCCESS]: (state, { data, flags }) => {
+        const moreTagEntries = data.limit === data.collection.length;
+        const newTagEntries = moreTagEntries ?
+            fromJS(data.collection.slice(0, -1)) :
+            fromJS(data.collection);
+        return state.merge({
             entries: state.get('entries').concat(newTagEntries.map(entry =>
                 entry.set('type', 'tagEntry'))),
             moreTagEntries,
@@ -203,7 +222,7 @@ const entryState = createReducer(initialState, {
         });
     },
 
-    [types.ENTRY_TAG_ITERATOR_ERROR]: errorHandler,
+    [types.MORE_ENTRY_TAG_ITERATOR_ERROR]: errorHandler,
 
     [types.GET_TAG_ENTRIES_COUNT]: flagHandler,
 
@@ -289,9 +308,36 @@ const entryState = createReducer(initialState, {
         });
     },
 
+    [types.SAVE_ENTRY]: flagHandler,
+
+    [types.SAVE_ENTRY_ERROR]: errorHandler,
+
+    [types.SAVE_ENTRY_SUCCESS]: (state, { data, flags }) =>
+        state.merge({
+            savedEntries: state.get('savedEntries').push(fromJS(data)),
+            flags: state.get('flags').merge(flags)
+        }),
+
+    [types.DELETE_ENTRY]: flagHandler,
+
+    [types.DELETE_ENTRY_ERROR]: errorHandler,
+
+    [types.DELETE_ENTRY_SUCCESS]: (state, { data, flags }) =>
+        state.merge({
+            savedEntries: state.get('savedEntries').filter(entry => entry.get('entryId') !== data),
+            entries: state.get('entries').filter(entry =>
+                entry.get('type') !== 'savedEntry' || entry.get('entryId') !== data),
+            flags: state.get('flags').merge(flags)
+        }),
+
     [types.CLEAR_TAG_ENTRIES]: state =>
         state.merge({
             entries: state.get('entries').filter(entry => entry.get('type') !== 'tagEntry')
+        }),
+
+    [types.CLEAR_SAVED_ENTRIES]: state =>
+        state.merge({
+            entries: state.get('entries').filter(entry => entry.get('type') !== 'savedEntry')
         })
 });
 
