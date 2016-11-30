@@ -71,7 +71,9 @@ class SyncStatus extends Component {
     startGeth () {
         const { gethStatus, gethSettings, eProcActions } = this.props;
         if (!gethStatus.get('spawned') && !gethStatus.get('startRequested')) {
-            eProcActions.startGeth(gethSettings.toJS());
+            const options = gethSettings.toJS();
+            options.ipcpath = options.ipcpath.replace('\\\\.\\pipe\\', '');
+            eProcActions.startGeth(options);
             this.setState({
                 hasStartedGeth: true
             });
