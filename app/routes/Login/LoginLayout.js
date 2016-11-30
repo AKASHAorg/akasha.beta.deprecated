@@ -22,11 +22,11 @@ const LoginLayout = (props) => {
             overflow: 'hidden'
         }}
       >
-        <div className="col-xs-5" style={{ padding: 0 }}>
+        <div className="col-xs-5 col-md-4" style={{ padding: 0 }}>
           {children}
         </div>
         <div
-          className="col-xs-7"
+          className="col-xs-7 col-md-8"
           style={{
               backgroundColor: theme === 'light' ? '#f3f3f3' : '#252525',
               padding: 0
