@@ -85,7 +85,7 @@
   "devDependencies": {
     "@types/bluebird": "3.0.36",
     "@types/chai": "3.4.34",
-    "@types/electron": "1.4.28",
+    "@types/electron": "1.4.29",
     "@types/lru-cache": "2.5.32",
     "@types/mocha": "2.2.33",
     "@types/node": "6.0.51",
@@ -123,7 +123,7 @@
     "draft-js": "0.9.1",
     "draft-js-export-html": "0.5.2",
     "electron": "1.4.10",
-    "electron-builder": "^8.6.0",
+    "electron-builder": "^10.2.0",
     "electron-debug": "1.1.0",
     "electron-devtools-installer": "2.0.1",
     "electron-mocha": "3.2.1",
@@ -190,7 +190,7 @@
   },
   "dependencies": {
     "@akashaproject/contracts.js": "1.2.9",
-    "@akashaproject/geth-connector": "1.6.13",
+    "@akashaproject/geth-connector": "1.6.16",
     "@akashaproject/ipfs-connector": "1.6.12",
     "bluebird": "3.4.6",
     "ethereumjs-util": "5.0.1",
