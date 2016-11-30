@@ -13,6 +13,7 @@ import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import { entryMessages, generalMessages } from 'locale-data/messages';
 import { injectIntl } from 'react-intl';
 import SearchBar from '../SearchBar/search-bar';
+import DraftCard from '../DraftCard/draft-card';
 import EntryCard from '../EntryCard/entry-card';
 
 class NewEntryFormPanel extends Component {
@@ -91,10 +92,10 @@ class NewEntryFormPanel extends Component {
                 entities = drafts.filter(drft =>
                     drft.get('profile') === loggedProfile.get('profile'))
                     .map((draft, key) =>
-                      <EntryCard
+                      <DraftCard
                         key={key}
                         headerTitle={'Draft'}
-                        publishedDate={`Last update ${draft.get('status').updated_at}`}
+                        lastUpdated={`Last update ${draft.get('status').updated_at}`}
                         headerActions={
                           <IconMenu iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}>
                             <MenuItem
@@ -117,10 +118,13 @@ class NewEntryFormPanel extends Component {
                     );
                 break;
             case 'listed':
+                console.log(entries, 'entries');
                 entities = entries.filter(entry =>
-                  (entry.get('akashaId') === loggedProfile.get('akashaId')) && entry.get('active'))
+                  (entry.get('akashaId') === loggedProfile.get('akashaId')))
                   .map((entry, key) =>
-                    <EntryCard
+                    <div key={key}>
+                      {entry.content.title}
+                      { /*<EntryCard
                       key={key}
                       headerTitle={`Listed`}
                       publishedDate={`published ${entry.get('entryEth').blockNr} blocks ago`}
@@ -139,7 +143,9 @@ class NewEntryFormPanel extends Component {
                       title={entry.get('content').title}
                       excerpt={entry.get('content').excerpt}
                       wordCount={610}
-                    />);
+                    />*/ }
+                    </div>
+                    );
                 break;
             case 'unlisted':
                 entities = entries.filter(entry =>
@@ -246,7 +252,6 @@ class NewEntryFormPanel extends Component {
     }
 }
 NewEntryFormPanel.propTypes = {
-    maxWidth: PropTypes.string,
     rootStyle: PropTypes.shape(),
     entries: PropTypes.shape(),
     drafts: PropTypes.shape(),
