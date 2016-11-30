@@ -241,7 +241,9 @@ class ServiceStatusBar extends Component {
             if (!gethStatus.get('synced')) {
                 eProcActions.startSync();
             }
-            eProcActions.startGeth(gethSettings.toJS());
+            const options = gethSettings.toJS();
+            options.ipcpath = options.ipcpath.replace('\\\\.\\pipe\\', '');
+            eProcActions.startGeth(options);
         }
         this.setState({
             gethToggled: !gethToggled
