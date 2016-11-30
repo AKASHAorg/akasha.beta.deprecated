@@ -49,7 +49,6 @@ class AddEntryPage extends Component {
     }
     _findCurrentDraft = (drafts) => {
         const { params } = this.props;
-        console.log(drafts);
         return drafts.find(draft => draft.id === parseInt(params.draftId, 10));
     }
 
