@@ -166,24 +166,22 @@ class ProfileDetails extends Component {
                   {intl.formatMessage(profileMessages.links)}
                 </div>
                 {profileData.links.map((link, key) =>
-                  <div key={key} style={{ display: 'flex', fontSize: '16px', fontWeight: 300 }}>
-                    <span
+                  <div
+                    key={key}
+                    style={{ fontSize: '16px', fontWeight: 300, paddingBottom: '10px' }}
+                  >
+                    <div
                       title={`${link.title}:`}
-                      style={{ display: 'inline-block', maxWidth: '50%', ...wrapTextStyle }}
+                      style={wrapTextStyle}
                     >
                       {`${link.title}:`}
-                    </span>
-                    <span
+                    </div>
+                    <div
                       title={link.url}
-                      style={{
-                          marginLeft: '10px',
-                          display: 'inline-block',
-                          maxWidth: '50%',
-                          ...wrapTextStyle
-                      }}
+                      style={wrapTextStyle}
                     >
                       {link.url}
-                    </span>
+                    </div>
                   </div>
                 )}
               </div>
