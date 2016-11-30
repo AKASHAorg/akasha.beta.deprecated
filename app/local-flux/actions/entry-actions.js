@@ -263,7 +263,7 @@ class EntryActions {
             });
         });
 
-    upvoteSuccess = entryId =>
+    upvoteSuccess = (entryId, minedSuccessfully) =>
         this.dispatch((dispatch, getState) => {
             const entryTitle = getState().entryState.get('entries')
                 .find(entry => entry.get('entryId') === entryId)
@@ -272,12 +272,12 @@ class EntryActions {
                 votePending: { entryId, value: false }
             }));
             this.appActions.showNotification({
-                id: 'upvoteEntrySuccess',
+                id: minedSuccessfully ? 'upvoteEntrySuccess' : 'upvoteEntryError',
                 values: { entryTitle }
             });
         });
 
-    downvoteSuccess = entryId =>
+    downvoteSuccess = (entryId, minedSuccessfully) =>
         this.dispatch((dispatch, getState) => {
             const entryTitle = getState().entryState.get('entries')
                 .find(entry => entry.get('entryId') === entryId)
@@ -286,7 +286,7 @@ class EntryActions {
                 votePending: { entryId, value: false }
             }));
             this.appActions.showNotification({
-                id: 'downvoteEntrySuccess',
+                id: minedSuccessfully ? 'downvoteEntrySuccess' : 'downvoteEntryError',
                 values: { entryTitle }
             });
         });
