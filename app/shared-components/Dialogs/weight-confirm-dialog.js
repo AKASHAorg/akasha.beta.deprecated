@@ -92,11 +92,12 @@ class WeightConfirmDialog extends React.PureComponent {
 
     handleConfirm = () => {
         const { resource, voteCost, appActions } = this.props;
-        const value = voteCost.get(this.state.voteWeight);
+        const voteWeight = Math.abs(this.state.voteWeight);
+        const value = voteCost.get(voteWeight.toString());
         const updatedResource = resource.toJS();
         updatedResource.gas = this.state.gasAmount || resource.get('gas');
         updatedResource.status = 'checkAuth';
-        updatedResource.payload.weight = Math.abs(this.state.voteWeight);
+        updatedResource.payload.weight = voteWeight;
         updatedResource.payload.value = value;
         appActions.hideWeightConfirmDialog();
         appActions.updatePendingAction(updatedResource);
@@ -113,6 +114,7 @@ class WeightConfirmDialog extends React.PureComponent {
             intl } = this.props;
         const { gasAmount, gasAmountError, voteWeight, voteWeightError } = this.state;
         const { palette } = this.context.muiTheme;
+        const fee = 0.0001;
         const payload = resource ?
             resource.get('payload').toJS() :
             {};
@@ -171,12 +173,17 @@ class WeightConfirmDialog extends React.PureComponent {
                   max={maxWeight}
                 />
               </div>
-              {resource && resource.type === 'upvote' && !voteWeightError &&
+              {resource && !voteWeightError &&
                 <div>
                   <small>
-                    {intl.formatMessage(confirmMessages.voteWeightDisclaimer, {
-                        publisherName, eth: voteWeightCost.slice(0, -1), voteWeight
-                    })}
+                    {resource.type === 'upvote' ?
+                        intl.formatMessage(confirmMessages.upvoteWeightDisclaimer, {
+                            publisherName, eth: voteWeightCost.slice(0, -1), voteWeight
+                        }) :
+                        intl.formatMessage(confirmMessages.downvoteWeightDisclaimer, {
+                            eth: voteWeightCost.slice(0, -1), voteWeight
+                        })
+                    }
                   </small>
                 </div>
               }
@@ -206,7 +213,7 @@ class WeightConfirmDialog extends React.PureComponent {
                 <small>
                   {!voteWeightError &&
                       intl.formatMessage(confirmMessages.voteFeeAgreement, {
-                          fee: voteWeightCost, balance: shortBalance
+                          fee, total: voteWeightCost, balance: shortBalance
                       })
                   }
                 </small>

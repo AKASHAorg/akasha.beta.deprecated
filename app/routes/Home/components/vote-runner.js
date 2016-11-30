@@ -58,10 +58,14 @@ class VoteRunner extends Component {
             [];
 
         pendingSubsTxs.forEach((tx) => {
-            const isMined = minedTx.find(mined => mined.tx === tx.tx);
-            if (isMined && !deletingPendingTx) {
+            const mined = minedTx.find(mined => mined.tx === tx.tx);
+            if (mined && !deletingPendingTx) {
                 const correspondingAction = pendingActions.find(action =>
                     action.get('type') === tx.type && action.get('status') === 'publishing');
+                let minedSuccessfully;
+                if (correspondingAction) {
+                    minedSuccessfully = mined.cumulativeGasUsed < correspondingAction.get('gas');
+                }
                 transactionActions.deletePendingTx(tx.tx);
                 // fire success action based on action type
                 // WARNING: action must match `action.type + "Success"`
@@ -70,7 +74,7 @@ class VoteRunner extends Component {
                 if (typeof entryActions[`${tx.type}Success`] !== 'function') {
                     return console.error(`There is no action "${tx.type}Success" in entryActions!! Please implement "${tx.type}Success" action!!`);
                 }
-                entryActions[`${tx.type}Success`](tx.entryId);
+                entryActions[`${tx.type}Success`](tx.entryId, minedSuccessfully);
                 entryActions.getScore(tx.entryId);
                 entryActions.getVoteOf(loggedProfile.get('akashaId'), tx.entryId);
                 if (correspondingAction) {

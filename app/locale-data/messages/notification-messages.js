@@ -81,6 +81,11 @@ const notificationMessages = defineMessages({
         description: 'Notification to be displayed when upvote entry transaction was mined',
         defaultMessage: 'You successfully upvoted {entryTitle}'
     },
+    upvoteEntryError: {
+        id: 'app.notification.upvoteEntryError',
+        description: 'Notification to be displayed when upvote entry transaction was mined but was unsuccessfull',
+        defaultMessage: 'Upvoting {entryTitle} has failed'
+    },
     downvotingEntry: {
         id: 'app.notification.downvotingEntry',
         description: 'Notification to be displayed when entry downvote transaction is sent',
@@ -90,6 +95,11 @@ const notificationMessages = defineMessages({
         id: 'app.notification.downvoteEntrySuccess',
         description: 'Notification to be displayed when downvote entry transaction was mined',
         defaultMessage: 'You successfully downvoted {entryTitle}'
+    },
+    downvoteEntryError: {
+        id: 'app.notification.downvoteEntryError',
+        description: 'Notification to be displayed when downvote entry transaction was mined but was unsuccessfull',
+        defaultMessage: 'Downvoting {entryTitle} has failed'
     },
 });
 export { notificationMessages };

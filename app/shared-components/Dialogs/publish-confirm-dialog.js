@@ -90,7 +90,7 @@ class PublishConfirmDialog extends Component {
           >
             <p>
               {intl.formatMessage(
-                  confirmMessages[resource.get('messageId')], resource.get('payload')
+                  confirmMessages[resource.get('messageId')], resource.get('payload').toJS()
               )}
             </p>
             <form onSubmit={this.onSubmit}>

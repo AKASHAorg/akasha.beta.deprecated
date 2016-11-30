@@ -86,15 +86,21 @@ const confirmMessages = defineMessages({
         description: 'confirm dialog message for entry publishing',
         defaultMessage: 'Are you sure you want to publish "{title}"?'
     },
-    voteWeightDisclaimer: {
-        id: 'app.confirm.voteWeightDisclaimer',
-        description: 'disclaimer for choosing an entry vote weight',
+    upvoteWeightDisclaimer: {
+        id: 'app.confirm.upvoteWeightDisclaimer',
+        description: 'disclaimer for choosing an entry upvote weight',
         defaultMessage: '{publisherName} will receive {eth} ETH from your +{voteWeight} vote'
+    },
+    downvoteWeightDisclaimer: {
+        id: 'app.confirm.downvoteWeightDisclaimer',
+        description: 'disclaimer for choosing an entry downvote weight',
+        defaultMessage: '{eth} ETH will go to the faucet from your {voteWeight} vote'
     },
     voteFeeAgreement: {
         id: 'app.confirm.feeAgreement',
         description: 'disclaimer for the cost of the vote',
-        defaultMessage: `By proceeding to vote this entry, you agree with the {fee} ETH fee
+        defaultMessage: `By proceeding to vote this entry, you agree with the {fee} ETH fee,
+                meaning a total of {total} ETH excluding gas cost
                 which will be deducted from your {balance} ETH balance.`
     },
     voteTitle: {
