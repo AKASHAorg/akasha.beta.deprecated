@@ -18,6 +18,7 @@ import getVoteOf from './get-vote-of';
 import votesIterator from './votes-iterator';
 import getEntriesStream from './entry-stream';
 import getEntryBalance from './get-entry-balance';
+import getEntryList from './get-entry-list';
 
 export default [
     entryCountProfile,
@@ -39,5 +40,6 @@ export default [
     votesIterator,
     getVoteOf,
     isActive,
-    getEntryBalance
+    getEntryBalance,
+    getEntryList
 ]
