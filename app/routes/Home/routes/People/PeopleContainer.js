@@ -206,7 +206,7 @@ class PeopleContainer extends Component {
             return this.props.children;
         }
 
-        return <div style={{ flex: '1 1 auto', height: '100%' }}>
+        return <div style={{ flex: '1 1 auto', height: '100%', width: 'calc(100% + 0.5rem)' }}>
           <Paper>
             <Tabs
               style={{ paddingLeft: '100px' }}
@@ -240,7 +240,7 @@ class PeopleContainer extends Component {
               />
             </Tabs>
           </Paper>
-          <div style={{ padding: '15px', position: 'relative', height: '100%' }}>
+          <div style={{ padding: '15px', position: 'relative', height: 'calc(100% - 48px)' }}>
             <div
               style={{
                   position: 'absolute',
