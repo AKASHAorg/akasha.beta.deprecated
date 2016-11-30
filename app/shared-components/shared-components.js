@@ -2,6 +2,7 @@ export AuthDialog from './Dialogs/auth-dialog';
 export Avatar from './Avatar/avatar';
 export Comment from './Comment/comment';
 export CommentEditor from './CommentEditor/comment-editor';
+export DataLoader from './Loaders/data-loader';
 export EntryCard from './EntryCard/entry-card';
 export EntryContent from './EntryContent/entry-content';
 export EntryEditor from './EntryEditor';

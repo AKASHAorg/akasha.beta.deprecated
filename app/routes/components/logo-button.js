@@ -8,7 +8,8 @@ const buttonStyle = {
     width: '48px',
     height: '48px',
     minWidth: 'initial',
-    borderRadius: '50%'
+    borderRadius: '50%',
+    cursor: 'initial'
 };
 
 class LogoButton extends Component {
@@ -26,7 +27,7 @@ class LogoButton extends Component {
           className={className}
           icon={<LogoIcon logoStyle={logoStyle} viewBox={viewBox} />}
           hoverColor="transparent"
-          onClick={this.onClick}
+          // onClick={this.onClick}
           style={buttonStyle}
         />;
     }

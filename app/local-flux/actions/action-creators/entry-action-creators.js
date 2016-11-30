@@ -65,17 +65,72 @@ export function createSavedEntryError (error) {
     };
 }
 
-export function getSavedEntriesSuccess (entries) {
+export function getSavedEntries (flags) {
     return {
-        type: types.GET_SAVED_ENTRIES_SUCCESS,
-        entries
+        type: types.GET_SAVED_ENTRIES,
+        flags
     };
 }
 
-export function getSavedEntriesError (error) {
+export function getSavedEntriesSuccess (data, flags) {
+    return {
+        type: types.GET_SAVED_ENTRIES_SUCCESS,
+        data,
+        flags
+    };
+}
+
+export function getSavedEntriesError (error, flags) {
     return {
         type: types.GET_SAVED_ENTRIES_ERROR,
-        error
+        error,
+        flags
+    };
+}
+
+export function getSavedEntriesList (flags) {
+    return {
+        type: types.GET_SAVED_ENTRIES_LIST,
+        flags
+    };
+}
+
+export function getSavedEntriesListSuccess (data, flags) {
+    return {
+        type: types.GET_SAVED_ENTRIES_LIST_SUCCESS,
+        data,
+        flags
+    };
+}
+
+export function getSavedEntriesListError (error, flags) {
+    return {
+        type: types.GET_SAVED_ENTRIES_LIST_ERROR,
+        error,
+        flags
+    };
+}
+
+export function moreSavedEntriesList (flags) {
+    return {
+        type: types.MORE_SAVED_ENTRIES_LIST,
+        flags
+    };
+}
+
+export function moreSavedEntriesListSuccess (data, flags) {
+    return {
+        type: types.MORE_SAVED_ENTRIES_LIST_SUCCESS,
+        data,
+        flags
+    };
+}
+
+export function moreSavedEntriesListError (error, flags) {
+    return {
+        type: types.MORE_SAVED_ENTRIES_LIST_ERROR,
+        error,
+        flags
     };
 }
 
@@ -155,6 +210,30 @@ export function entryTagIteratorError (error, flags) {
     };
 }
 
+export function moreEntryTagIterator (flags) {
+    return {
+        type: types.MORE_ENTRY_TAG_ITERATOR,
+        flags
+    };
+}
+
+export function moreEntryTagIteratorSuccess (data, flags) {
+    return {
+        type: types.MORE_ENTRY_TAG_ITERATOR_SUCCESS,
+        data,
+        flags
+    };
+}
+
+export function moreEntryTagIteratorError (error, flags) {
+    error.code = 'METIE01';
+    return {
+        type: types.MORE_ENTRY_TAG_ITERATOR_ERROR,
+        error,
+        flags
+    };
+}
+
 export function getTagEntriesCount (flags) {
     return {
         type: types.GET_TAG_ENTRIES_COUNT,
@@ -182,6 +261,12 @@ export function getTagEntriesCountError (error, flags) {
 export function clearTagEntries () {
     return {
         type: types.CLEAR_TAG_ENTRIES
+    };
+}
+
+export function clearSavedEntries () {
+    return {
+        type: types.CLEAR_SAVED_ENTRIES
     };
 }
 
@@ -339,6 +424,52 @@ export function getVoteOfSuccess (data, flags) {
 export function getVoteOfError (error, flags) {
     return {
         type: types.GET_VOTE_OF_ERROR,
+        error,
+        flags
+    };
+}
+
+export function saveEntry (flags) {
+    return {
+        type: types.SAVE_ENTRY,
+        flags
+    };
+}
+
+export function saveEntrySuccess (data, flags) {
+    return {
+        type: types.SAVE_ENTRY_SUCCESS,
+        data,
+        flags
+    };
+}
+
+export function saveEntryError (error, flags) {
+    return {
+        type: types.SAVE_ENTRY_ERROR,
+        error,
+        flags
+    };
+}
+
+export function deleteEntry (flags) {
+    return {
+        type: types.DELETE_ENTRY,
+        flags
+    };
+}
+
+export function deleteEntrySuccess (data, flags) {
+    return {
+        type: types.DELETE_ENTRY_SUCCESS,
+        data,
+        flags
+    };
+}
+
+export function deleteEntryError (error, flags) {
+    return {
+        type: types.DELETE_ENTRY_ERROR,
         error,
         flags
     };

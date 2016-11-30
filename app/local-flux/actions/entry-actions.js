@@ -69,16 +69,94 @@ class EntryActions {
             this.dispatch(entryActionCreators.getSortedEntries(result))
         );
     };
-    createSavedEntry = (akashaId, entry) => {
-        this.entryService.createSavedEntry(akashaId, entry).then(savedEntry =>
-            this.dispatch(entryActionCreators.createSavedEntrySuccess(savedEntry))
-        ).catch(reason => this.dispatch(entryActionCreators.createSavedEntryError(reason)));
+    saveEntry = (akashaId, entryId) => {
+        this.dispatch(entryActionCreators.saveEntry({ savingEntry: true }));
+        this.entryService.saveEntry({
+            akashaId,
+            entry: { entryId },
+            onSuccess: savedEntry =>
+                this.dispatch(entryActionCreators.saveEntrySuccess(savedEntry, {
+                    savingEntry: false
+                })),
+            onError: error =>
+                this.dispatch(entryActionCreators.saveEntryError(error, {
+                    savingEntry: false
+                }))
+        });
     };
-    getSavedEntries = akashaId =>
-        this.entryService.getSavedEntries(akashaId).then(entries =>
-            this.dispatch(entryActionCreators.getSavedEntriesSuccess(entries))
-        ).catch(reason => this.dispatch(entryActionCreators.getSavedEntriesError(reason))
-        );
+    deleteEntry = (akashaId, entryId) => {
+        this.dispatch(entryActionCreators.deleteEntry({ deletingEntry: true }));
+        this.entryService.deleteEntry({
+            akashaId,
+            entryId,
+            onSuccess: entryId =>
+                this.dispatch(entryActionCreators.deleteEntrySuccess(entryId, {
+                    deletingEntry: false
+                })),
+            onError: error =>
+                this.dispatch(entryActionCreators.deleteEntryError(error, {
+                    deletingEntry: false
+                }))
+        });
+    };
+    getSavedEntries = akashaId => {
+        this.dispatch(entryActionCreators.getSavedEntries({ fetchingSavedEntries: true }));
+        this.entryService.getSavedEntries({
+            akashaId,
+            onSuccess: data =>
+                this.dispatch(entryActionCreators.getSavedEntriesSuccess(data, {
+                    fetchingSavedEntries: false
+                })),
+            onError: error =>
+                this.dispatch(entryActionCreators.getSavedEntriesError(error, {
+                    fetchingSavedEntries: false
+                }))
+        });
+    };
+
+    getSavedEntriesList = (limit) =>
+        this.dispatch((dispatch, getState) => {
+            this.dispatch(entryActionCreators.getSavedEntriesList({
+                fetchingSavedEntriesList: true
+            }));
+            const savedEntries = getState().entryState.get('savedEntries');
+            const entries = savedEntries.reverse().slice(0, limit).toJS();
+            this.entryService.getEntryList({
+                entries,
+                onSuccess: data =>
+                    this.dispatch(entryActionCreators.getSavedEntriesListSuccess(data, {
+                        fetchingSavedEntriesList: false
+                    })),
+                onError: error =>
+                    this.dispatch(entryActionCreators.getSavedEntriesListError(error, {
+                        fetchingSavedEntriesList: false
+                    }))
+            });
+        });
+
+    moreSavedEntriesList = (limit) =>
+        this.dispatch((dispatch, getState) => {
+            if (limit !== 1) {
+                this.dispatch(entryActionCreators.moreSavedEntriesList({
+                    fetchingMoreSavedEntriesList: true
+                }));
+            }
+            const startIndex = getState().entryState.get('entries').filter(entry =>
+                entry.get('type') === 'savedEntry').size;
+            const savedEntries = getState().entryState.get('savedEntries');
+            const entries = savedEntries.reverse().slice(startIndex, startIndex + limit).toJS();
+            this.entryService.moreEntryList({
+                entries,
+                onSuccess: data =>
+                    this.dispatch(entryActionCreators.moreSavedEntriesListSuccess(data, {
+                        fetchingMoreSavedEntriesList: false
+                    })),
+                onError: error =>
+                    this.dispatch(entryActionCreators.moreSavedEntriesListError(error, {
+                        fetchingMoreSavedEntriesList: false
+                    }))
+            });
+        });
 
     getProfileEntries = (akashaId, startId, limit = 5) =>
         this.dispatch((dispatch, getState) => {
@@ -118,6 +196,22 @@ class EntryActions {
             }))
         });
     };
+
+    moreEntryTagIterator = (tagName, start, limit) => {
+        this.dispatch(entryActionCreators.moreEntryTagIterator({ fetchingMoreTagEntries: true }));
+        this.entryService.moreEntryTagIterator({
+            tagName,
+            start,
+            limit,
+            onSuccess: data => this.dispatch(entryActionCreators.moreEntryTagIteratorSuccess(data, {
+                fetchingMoreTagEntries: false
+            })),
+            onError: error => this.dispatch(entryActionCreators.moreEntryTagIteratorError(error, {
+                fetchingMoreTagEntries: false
+            }))
+        });
+    };
+
 
     getTagEntriesCount = (tagName) => {
         this.dispatch(entryActionCreators.getTagEntriesCount({ fetchingTagEntriesCount: true }));
@@ -165,6 +259,9 @@ class EntryActions {
 
     clearTagEntries = () =>
         this.dispatch(entryActionCreators.clearTagEntries());
+
+    clearSavedEntries = () =>
+        this.dispatch(entryActionCreators.clearSavedEntries());
 
     addUpvoteAction = payload =>
         this.appActions.addPendingAction({

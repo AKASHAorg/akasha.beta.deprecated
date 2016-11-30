@@ -64,6 +64,7 @@ class BaseService {
     }, cb) => {
         if (this._openChannels.has(serverChannel.channel)) {
             // server channel already opened. Nothing to do!
+            this.registerListener(clientChannel, listenerCb);
             return cb();
         }
         clientManager.once((ev, res) => {
