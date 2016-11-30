@@ -220,11 +220,6 @@ const setupMessages = defineMessages({
         description: 'finding peers status',
         defaultMessage: 'Finding peers'
     },
-    waitingForBlock: {
-        id: 'app.setup.waitingForBlock',
-        description: 'waiting for next block status',
-        defaultMessage: 'Waiting for next block'
-    },
     onePeer: {
         id: 'app.setup.onePeer',
         description: 'singular form of peers',
