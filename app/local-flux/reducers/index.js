@@ -4,6 +4,7 @@ import appState from './appState';
 import draftState from './draftState';
 import entryState from './entryState';
 import externalProcState from './externalProcState';
+import notificationsState from './notificationsState';
 import panelState from './panelState';
 import profileState from './profileState';
 import settingsState from './settingsState';
@@ -16,6 +17,7 @@ const rootReducer = combineReducers({
     draftState,
     entryState,
     externalProcState,
+    notificationsState,
     panelState,
     profileState,
     settingsState,
