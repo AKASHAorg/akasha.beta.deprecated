@@ -1,12 +1,12 @@
 import React, { Component, PropTypes } from 'react';
 import { injectIntl } from 'react-intl';
 import { FlatButton } from 'material-ui';
-import { EntryCard } from 'shared-components';
+import { DataLoader, EntryCard } from 'shared-components';
 import QuickEntryEditor from './quick-entry-editor';
 import TagSearch from './tag-search';
 import { generalMessages } from 'locale-data/messages';
 
-const LIMIT = 6;
+const LIMIT = 5;
 
 class EntryList extends Component {
     constructor (props) {
@@ -41,14 +41,6 @@ class EntryList extends Component {
         const { loggedProfileData } = this.props;
         this.context.router.push(`/${loggedProfileData.get('akashaId')}/explore/tag/${tag}`);
     };
-    // handleUpvote = (payload) => {
-    //     const { entryActions } = this.props;
-    //     entryActions.addUpvoteAction(payload);
-    // };
-    // handleDownvote = (payload) => {
-    //     const { entryActions } = this.props;
-    //     entryActions.addDownvoteAction(payload);
-    // };
     _handleComment = (ev, entryAddress) => {
         const { appActions, entryState } = this.props;
         const entry = entryState.get('published').find(entry =>
@@ -69,7 +61,12 @@ class EntryList extends Component {
 
     showMoreTagEntries = () => {
         const { entryActions, selectedTag } = this.props;
-        entryActions.entryTagIterator(selectedTag, this.lastTagEntryIndex, LIMIT);
+        entryActions.moreEntryTagIterator(selectedTag, this.lastTagEntryIndex, LIMIT + 1);
+    };
+
+    showMoreSavedEntries = () => {
+        const { entryActions } = this.props;
+        entryActions.moreSavedEntriesList(LIMIT);
     };
 
     subscribeTag = () => {
@@ -96,7 +93,9 @@ class EntryList extends Component {
     render () {
         const { loggedProfileData, selectedTag, tagEntries, savedEntries, moreTagEntries,
             moreSavedEntries, tagEntriesCount, entriesStream, subscribePending, params, blockNr,
-            votePending, entryActions, intl } = this.props;
+            votePending, entryActions, savedEntriesIds, fetchingTagEntries, fetchingMoreTagEntries,
+            fetchingSavedEntriesList, fetchingMoreSavedEntriesList, intl } = this.props;
+        const { palette } = this.context.muiTheme;
         const entries = params.filter === 'tag' ? tagEntries : savedEntries;
         const moreEntries = params.filter === 'tag' ? moreTagEntries : moreSavedEntries;
         const showMoreEntries = params.filter === 'tag' ?
@@ -107,6 +106,11 @@ class EntryList extends Component {
             null;
         const subscribePendingFlag = subscribePending && subscribePending.find(subs =>
             subs.tagName === selectedTag);
+        const timeout = 700;
+        const flag = params.filter === 'tag' ? fetchingTagEntries : fetchingSavedEntriesList;
+        const showMoreFlag = params.filter === 'tag' ?
+            fetchingMoreTagEntries :
+            fetchingMoreSavedEntriesList;
         return (
           <div>
             {params.filter === 'tag' && selectedTag &&
@@ -125,35 +129,55 @@ class EntryList extends Component {
                 onFullScreenClick={this._handleEditorFullScreen}
               />
             */ }
-            {entries && entries.map((entry, key) => {
-                const voteEntryPending = votePending && votePending.find(vote =>
-                    vote.entryId === entry.get('entryId'));
-                return <EntryCard
-                  loggedAkashaId={loggedProfileData.get('akashaId')}
-                  entry={entry}
-                  key={key}
-                  onContentClick={ev => this._navigateToEntry(ev, entry)}
-                  onTagClick={this._navigateToTag}
-                  handleComment={this.handleComment}
-                  handleBookmark={this.handleBookmark}
-                  blockNr={blockNr}
-                  selectProfile={this.selectProfile}
-                  selectTag={this.selectTag}
-                  selectedTag={selectedTag}
-                  voteEntryPending={voteEntryPending}
-                  entryActions={entryActions}
-                />;
-            })}
-            {moreEntries &&
-              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                <FlatButton
-                  label={intl.formatMessage(generalMessages.showMore)}
-                  onClick={showMoreEntries}
-                  labelStyle={{ fontSize: '12px' }}
-                  primary
-                />
+            <DataLoader flag={flag} timeout={timeout} size={80} style={{ paddingTop: '120px' }}>
+              <div>
+                {entries.size === 0 &&
+                  <div
+                    style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        color: palette.disabledColor,
+                        paddingTop: '10px'
+                    }}
+                  >
+                    No entries
+                  </div>
+                }
+                {entries && entries.map((entry, key) => {
+                    const voteEntryPending = votePending && votePending.find(vote =>
+                        vote.entryId === entry.get('entryId'));
+                    const isSaved = !!savedEntriesIds.find(id => id === entry.get('entryId'));
+                    return <EntryCard
+                      loggedAkashaId={loggedProfileData.get('akashaId')}
+                      entry={entry}
+                      key={key}
+                      onContentClick={ev => this._navigateToEntry(ev, entry)}
+                      onTagClick={this._navigateToTag}
+                      handleComment={this.handleComment}
+                      handleBookmark={this.handleBookmark}
+                      blockNr={blockNr}
+                      selectProfile={this.selectProfile}
+                      selectTag={this.selectTag}
+                      selectedTag={selectedTag}
+                      voteEntryPending={voteEntryPending}
+                      entryActions={entryActions}
+                      isSaved={isSaved}
+                    />;
+                })}
+                {moreEntries &&
+                  <DataLoader flag={showMoreFlag} size={30}>
+                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                      <FlatButton
+                        label={intl.formatMessage(generalMessages.showMore)}
+                        onClick={showMoreEntries}
+                        labelStyle={{ fontSize: '12px' }}
+                        primary
+                      />
+                    </div>
+                  </DataLoader>
+                }
               </div>
-            }
+            </DataLoader>
           </div>
         );
     }
@@ -163,6 +187,7 @@ EntryList.propTypes = {
     loggedProfileData: PropTypes.shape(),
     tagEntries: PropTypes.shape(),
     savedEntries: PropTypes.shape(),
+    savedEntriesIds: PropTypes.shape(),
     moreTagEntries: PropTypes.bool,
     moreSavedEntries: PropTypes.bool,
     entriesStream: PropTypes.shape(),
@@ -174,10 +199,15 @@ EntryList.propTypes = {
     tagEntriesCount: PropTypes.shape(),
     blockNr: PropTypes.number,
     votePending: PropTypes.shape(),
+    fetchingTagEntries: PropTypes.bool,
+    fetchingMoreTagEntries: PropTypes.bool,
+    fetchingSavedEntriesList: PropTypes.bool,
+    fetchingMoreSavedEntriesList: PropTypes.bool,
     params: PropTypes.shape(),
     intl: PropTypes.shape()
 };
 EntryList.contextTypes = {
+    muiTheme: PropTypes.shape(),
     router: PropTypes.shape()
 };
 export default injectIntl(EntryList);

@@ -60,7 +60,11 @@ class HomeContainer extends React.Component {
             transactionActions.getMinedTransactions();
             transactionActions.getPendingTransactions();
             draftActions.getDraftsCount(loggedProfile.get('profile'));
+            if (!loggedProfile.get('akashaId')) {
+                console.error('logged profile does not have akashaId');
+            }
             entryActions.getEntriesCount(loggedProfile.get('akashaId'));
+            entryActions.getSavedEntries(loggedProfile.get('akashaId'));
             tagActions.getSelectedTag(loggedProfile.get('akashaId'));
         }
     }

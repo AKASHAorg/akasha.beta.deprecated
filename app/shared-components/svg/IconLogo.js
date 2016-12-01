@@ -5,7 +5,9 @@ import { MenuAkashaLogo } from '../svg';
 
 class IconLogo extends Component {
     static defaultProps = {
-        logoStyle: { width: '40px', height: '40px', position: 'relative', top: '4px' },
+        logoStyle: {
+            width: '40px', height: '40px', position: 'relative', top: '4px', cursor: 'initial'
+        },
         viewBox: '0 0 32 32'
     };
 
