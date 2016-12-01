@@ -1,33 +1,10 @@
 import React, { Component, PropTypes } from 'react';
-import { injectIntl } from 'react-intl';
 import { FlatButton } from 'material-ui';
 import { DataLoader, EntryCard } from 'shared-components';
 import QuickEntryEditor from './quick-entry-editor';
 import TagSearch from './tag-search';
-import { generalMessages } from 'locale-data/messages';
-
-const LIMIT = 5;
 
 class EntryList extends Component {
-    constructor (props) {
-        super(props);
-
-        this.lastTagEntryIndex = 0;
-        this.state = {};
-    }
-
-    componentWillReceiveProps (nextProps) {
-        const { tagEntries, selectedTag } = nextProps;
-        if (selectedTag !== this.props.selectedTag) {
-            this.lastTagEntryIndex = 0;
-            return;
-        }
-        if (tagEntries.size !== this.props.tagEntries.size) {
-            this.lastTagEntryIndex = tagEntries.size > 0 ?
-                tagEntries.last().get('entryId') :
-                0;
-        }
-    }
 
     _navigateToEntry = (ev, entryData) => {
         ev.preventDefault();
@@ -59,16 +36,6 @@ class EntryList extends Component {
         entryActions.createDraft(loggedProfileData.get('akashaId'), draft);
     };
 
-    showMoreTagEntries = () => {
-        const { entryActions, selectedTag } = this.props;
-        entryActions.moreEntryTagIterator(selectedTag, this.lastTagEntryIndex, LIMIT + 1);
-    };
-
-    showMoreSavedEntries = () => {
-        const { entryActions } = this.props;
-        entryActions.moreSavedEntriesList(LIMIT);
-    };
-
     subscribeTag = () => {
         const { selectedTag, tagActions } = this.props;
         tagActions.addSubscribeTagAction(selectedTag);
@@ -94,13 +61,11 @@ class EntryList extends Component {
         const { loggedProfileData, selectedTag, tagEntries, savedEntries, moreTagEntries,
             moreSavedEntries, tagEntriesCount, entriesStream, subscribePending, params, blockNr,
             votePending, entryActions, savedEntriesIds, fetchingTagEntries, fetchingMoreTagEntries,
-            fetchingSavedEntriesList, fetchingMoreSavedEntriesList, intl } = this.props;
+            fetchingSavedEntriesList, fetchingMoreSavedEntriesList } = this.props;
         const { palette } = this.context.muiTheme;
         const entries = params.filter === 'tag' ? tagEntries : savedEntries;
         const moreEntries = params.filter === 'tag' ? moreTagEntries : moreSavedEntries;
-        const showMoreEntries = params.filter === 'tag' ?
-            this.showMoreTagEntries :
-            this.showMoreSavedEntries;
+
         const subscriptions = parseInt(loggedProfileData.get('subscriptionsCount'), 10) > 0 ?
             entriesStream.get('tags') :
             null;
@@ -112,7 +77,7 @@ class EntryList extends Component {
             fetchingMoreTagEntries :
             fetchingMoreSavedEntriesList;
         return (
-          <div>
+          <div style={{ paddingBottom: moreEntries && !showMoreFlag ? '30px' : '0px' }}>
             {params.filter === 'tag' && selectedTag &&
               <TagSearch
                 tagName={selectedTag}
@@ -167,12 +132,7 @@ class EntryList extends Component {
                 {moreEntries &&
                   <DataLoader flag={showMoreFlag} size={30}>
                     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                      <FlatButton
-                        label={intl.formatMessage(generalMessages.showMore)}
-                        onClick={showMoreEntries}
-                        labelStyle={{ fontSize: '12px' }}
-                        primary
-                      />
+                      <div ref={this.props.getTriggerRef} style={{ height: 0 }} />
                     </div>
                   </DataLoader>
                 }
@@ -203,11 +163,11 @@ EntryList.propTypes = {
     fetchingMoreTagEntries: PropTypes.bool,
     fetchingSavedEntriesList: PropTypes.bool,
     fetchingMoreSavedEntriesList: PropTypes.bool,
-    params: PropTypes.shape(),
-    intl: PropTypes.shape()
+    getTriggerRef: PropTypes.func,
+    params: PropTypes.shape()
 };
 EntryList.contextTypes = {
     muiTheme: PropTypes.shape(),
     router: PropTypes.shape()
 };
-export default injectIntl(EntryList);
+export default EntryList;
