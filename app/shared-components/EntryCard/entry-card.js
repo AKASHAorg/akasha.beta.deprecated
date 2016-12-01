@@ -28,7 +28,7 @@ class EntryCard extends Component {
         selectTag(tag);
     }
 
-    upvote = () => {
+    handleUpvote = () => {
         const { entry, entryActions } = this.props;
         const firstName = entry.getIn(['entryEth', 'publisher', 'firstName']);
         const lastName = entry.getIn(['entryEth', 'publisher', 'lastName']);
@@ -41,7 +41,7 @@ class EntryCard extends Component {
         entryActions.addUpvoteAction(payload);
     }
 
-    downvote = () => {
+    handleDownvote = () => {
         const { entry, entryActions } = this.props;
         const firstName = entry.getIn(['entryEth', 'publisher', 'firstName']);
         const lastName = entry.getIn(['entryEth', 'publisher', 'lastName']);
@@ -53,8 +53,18 @@ class EntryCard extends Component {
         entryActions.addDownvoteAction(payload);
     }
 
+    handleBookmark = () => {
+        const { entry, loggedAkashaId, isSaved, entryActions } = this.props;
+        if (isSaved) {
+            entryActions.deleteEntry(loggedAkashaId, entry.get('entryId'));
+            entryActions.moreSavedEntriesList(1);
+        } else {
+            entryActions.saveEntry(loggedAkashaId, entry.get('entryId'));
+        }
+    }
+
     render () {
-        const { entry, blockNr, selectedTag, voteEntryPending, intl } = this.props;
+        const { entry, blockNr, selectedTag, voteEntryPending, isSaved, intl } = this.props;
         const { palette } = this.context.muiTheme;
         const content = entry.get('content');
         const existingVoteWeight = entry.get('voteWeight') || 0;
@@ -151,7 +161,7 @@ class EntryCard extends Component {
               <div style={{ display: 'flex', alignItems: 'center' }} >
                 <div style={{ position: 'relative' }}>
                   <IconButton
-                    onTouchTap={this.upvote}
+                    onTouchTap={this.handleUpvote}
                     iconStyle={{ width: '20px', height: '20px' }}
                     disabled={!entry.get('active') || (voteEntryPending && voteEntryPending.value)
                         || existingVoteWeight !== 0}
@@ -181,7 +191,7 @@ class EntryCard extends Component {
                 </div>
                 <div style={{ position: 'relative' }}>
                   <IconButton
-                    onTouchTap={this.downvote}
+                    onTouchTap={this.handleDownvote}
                     iconStyle={{ width: '20px', height: '20px' }}
                     disabled={!entry.get('active') || (voteEntryPending && voteEntryPending.value)
                         || existingVoteWeight !== 0}
@@ -221,11 +231,14 @@ class EntryCard extends Component {
                 </div>
                 <div style={{ flex: '1 1 auto', textAlign: 'right' }}>
                   <IconButton
-                    onTouchTap={() => null}
+                    onTouchTap={this.handleBookmark}
                     iconStyle={{ width: '20px', height: '20px' }}
                   >
                     <SvgIcon viewBox="0 0 20 20">
-                      <EntryBookmarkOff />
+                      {isSaved ?
+                        <EntryBookmarkOn /> :
+                        <EntryBookmarkOff />
+                      }
                     </SvgIcon>
                   </IconButton>
                 </div>
@@ -244,6 +257,7 @@ EntryCard.propTypes = {
     selectProfile: PropTypes.func,
     selectTag: PropTypes.func,
     voteEntryPending: PropTypes.shape(),
+    isSaved: PropTypes.bool,
     entryActions: PropTypes.shape(),
     intl: PropTypes.shape()
 };
