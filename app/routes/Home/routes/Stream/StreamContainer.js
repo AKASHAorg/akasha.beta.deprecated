@@ -81,8 +81,8 @@ class StreamPage extends Component {
     };
 
     render () {
-        const { loggedProfileData, streamTags, newestTags, selectedTag, tagActions,
-            moreNewTags } = this.props;
+        const { loggedProfileData, streamTags, newestTags, selectedTag, entryActions, tagActions,
+            moreNewTags, tagEntries, params } = this.props;
         const subscriptionsCount = parseInt(loggedProfileData.get('subscriptionsCount'), 10);
         return (
           <div className={`${styles.root}`}>
@@ -100,7 +100,12 @@ class StreamPage extends Component {
               <div className={`col-xs-12 ${styles.streamPageContentInner}`} >
                 <div className={`row ${styles.content}`} >
                   <div className={`col-xs-8 ${styles.theStream}`} >
-                    <TheStream>
+                    <TheStream
+                      entryActions={entryActions}
+                      selectedTag={selectedTag}
+                      tagEntries={tagEntries}
+                      params={params}
+                    >
                       {this.props.children}
                     </TheStream>
                   </div>
@@ -132,6 +137,7 @@ StreamPage.propTypes = {
     newestTags: PropTypes.shape(),
     moreNewTags: PropTypes.bool,
     selectedTag: PropTypes.string,
+    tagEntries: PropTypes.shape(),
     entryActions: PropTypes.shape(),
     children: PropTypes.node,
     params: PropTypes.shape()
@@ -149,7 +155,10 @@ function mapStateToProps (state, ownProps) {
         streamTags: state.entryState.getIn(['entriesStream', 'tags']),
         newestTags: state.tagState.get('newestTags'),
         moreNewTags: state.tagState.get('moreNewTags'),
-        selectedTag: state.tagState.get('selectedTag')
+        selectedTag: state.tagState.get('selectedTag'),
+        tagEntries: state.entryState.get('entries')
+            .filter(entry => entry.get('type') === 'tagEntry')
+            .map(entry => entry.get('content')),
     };
 }
 
