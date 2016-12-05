@@ -3,21 +3,26 @@ import { constructed as contracts } from '../../contracts/index';
 import { filter } from './set-filter';
 import { GethConnector } from '@akashaproject/geth-connector';
 import getProfileData from '../profile/profile-data';
+import getEntry from '../entry/get-entry';
 
 let entries;
 let comments;
 let votes;
+let following;
 const eventTypes = {
     VOTE: 'vote',
     COMMENT: 'comment',
-    PUBLISH: 'publish'
+    PUBLISH: 'publish',
+    FOLLOWING: 'following'
 };
 
-const hydrateWithProfile = (cb, profile, extra) => {
-    getProfileData
-        .execute({ profile: profile })
-        .then((authorData) => {
-            cb('', Object.assign(extra, { author: authorData }))
+const hydrateWithProfile = (cb, profile, entry, extra) => {
+    const queue = [];
+    queue.push(getProfileData.execute({ profile: profile }));
+    queue.push(getEntry.execute({ entryId: entry }));
+    Promise.all(queue)
+        .then((result) => {
+            cb('', Object.assign(extra, { author: result[0], entry: result[1] }))
         })
         .catch((error) => {
             cb({ message: error.message }, extra)
@@ -38,6 +43,9 @@ const execute = Promise.coroutine(function*(data: { stop?: boolean }, cb) {
         votes.stopWatching(() => {
             votes = null;
         });
+        following.stopWatching(() => {
+            following = null;
+        });
         return { running: false };
     }
 
@@ -49,7 +57,7 @@ const execute = Promise.coroutine(function*(data: { stop?: boolean }, cb) {
     entries = contracts.instance.entries.contract.Publish({}, filterBlock);
     comments = contracts.instance.comments.contract.Commented({}, filterBlock);
     votes = contracts.instance.votes.contract.Vote({}, filterBlock);
-
+    following = contracts.instance.feed.contract.Follow({ following: filter.getMyAddress() }, filterBlock);
     entries.watch((err, entry) => {
         if (err) {
             cb({ message: err.message, type: eventTypes.PUBLISH });
@@ -58,10 +66,10 @@ const execute = Promise.coroutine(function*(data: { stop?: boolean }, cb) {
             hydrateWithProfile(
                 cb,
                 entry.args.author,
+                (entry.args.entryId).toString(),
                 {
                     type: eventTypes.PUBLISH,
                     profileAddress: entry.args.author,
-                    entryId: (entry.args.entryId).toString(),
                     blockNumber: entry.blockNumber,
                     tag: GethConnector.getInstance().web3.toUtf8(entry.args.tag)
                 }
@@ -78,10 +86,10 @@ const execute = Promise.coroutine(function*(data: { stop?: boolean }, cb) {
             hydrateWithProfile(
                 cb,
                 comment.args.profile,
+                (comment.args.entryId).toString(),
                 {
                     type: eventTypes.COMMENT,
                     profileAddress: comment.args.profile,
-                    entryId: (comment.args.entryId).toString(),
                     blockNumber: comment.blockNumber,
                     commentId: (comment.args.commentId).toString()
                 }
@@ -97,15 +105,33 @@ const execute = Promise.coroutine(function*(data: { stop?: boolean }, cb) {
             hydrateWithProfile(
                 cb,
                 vote.args.profile,
+                (vote.args.entry).toString(),
                 {
                     type: eventTypes.VOTE,
                     profileAddress: vote.args.profile,
-                    entryId: (vote.args.entry).toString(),
                     blockNumber: vote.blockNumber,
                     weight: (vote.args.weight).toNumber()
                 }
             );
         }
+    });
+
+    following.watch((err, event) => {
+        if (err) {
+            cb({ message: err.message, type: eventTypes.FOLLOWING });
+        }
+        getProfileData
+            .execute({ profile: event.args.follower })
+            .then((data) => {
+                cb('',
+                    {
+                        type: eventTypes.FOLLOWING,
+                        blockNumber: event.blockNumber,
+                        follower: data,
+                        profileAddress: event.args.following
+                    }
+                )
+            });
     });
     return { running: true }
 });

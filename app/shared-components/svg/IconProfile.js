@@ -3,6 +3,14 @@ import { Badge } from 'material-ui';
 import { colors } from 'material-ui/styles';
 import Avatar from '../Avatar/avatar';
 
+const badgeStyle = {
+    top: '-6px',
+    right: '-6px',
+    fontSize: '10px',
+    width: '18px',
+    height: '18px',
+    backgroundColor: colors.red500
+};
 class IconProfile extends Component {
 
     state = {
@@ -15,8 +23,20 @@ class IconProfile extends Component {
         };
     }
 
+    buildBadgeStyle = () => {
+        if(!this.props.notificationsCount && !this.props.hasFeed){
+            return Object.assign({}, badgeStyle, {display: 'none'});
+        }
+
+        if(this.props.hasFeed){
+            return Object.assign({}, badgeStyle, {width: '12px', height: '12px', fontSize: 0, right: 0, top: 0});
+        }
+
+        return badgeStyle;
+    };
+
     render () {
-        const { avatar, style, iconStyle, userInitials, activePanel, viewBox, hoverColor, color,
+        const { avatar, style, iconStyle, userInitials, activePanel, notificationsCount, viewBox, hoverColor, color,
             ...other } = this.props;
         const { palette } = this.state.muiTheme;
         const avatarWrapperStyle = {
@@ -29,15 +49,8 @@ class IconProfile extends Component {
 
         return (
           <Badge
-            badgeContent={3}
-            badgeStyle={{
-                top: '-6px',
-                right: '-6px',
-                fontSize: '10px',
-                width: '18px',
-                height: '18px',
-                backgroundColor: colors.red500
-            }}
+            badgeContent={notificationsCount}
+            badgeStyle={this.buildBadgeStyle()}
             primary
             style={{ padding: 0 }}
             onClick={this.props.onClick}
@@ -76,7 +89,9 @@ IconProfile.propTypes = {
     hoverColor: PropTypes.string,
     color: PropTypes.string,
     userInitials: PropTypes.string,
-    onClick: PropTypes.func
+    onClick: PropTypes.func,
+    notificationsCount: PropTypes.number,
+    hasFeed: PropTypes.bool
 };
 
 IconProfile.defaultProps = {

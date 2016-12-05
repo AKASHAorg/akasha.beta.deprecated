@@ -24,7 +24,7 @@ class NotificationsService extends BaseService {
                 Channel.client.notifications.setFilter.channelName
             )
         }, () => {
-            Channel.client.notifications.setFilter.send({ profiles, blockNr });
+            Channel.server.notifications.setFilter.send({ profiles, blockNr });
         });
     }
 
@@ -39,7 +39,7 @@ class NotificationsService extends BaseService {
                 Channel.client.notifications.setFilter.feed
             )
         }, () => {
-            Channel.client.notifications.feed.send({stop});
+            Channel.server.notifications.feed.send({stop});
         });
     }
 

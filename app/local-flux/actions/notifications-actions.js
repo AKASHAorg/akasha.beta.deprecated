@@ -24,7 +24,7 @@ class NotificationsActions {
             profiles,
             blockNr,
             onSuccess: (data) => {
-                console.log('engaging notifs!!');
+                this.watchFeed();
             }
         })
     }
@@ -34,10 +34,10 @@ class NotificationsActions {
      */
     watchFeed () {
         this.dispatch((dispatch, getState) => {
+            this.emitEvent = true;
             this.currentProfile = getState().profileState.getIn(['loggedProfile', 'profile']);
                 this.notificationsService.listenFeed({
                 onSuccess: (data) => {
-                    // if(getState().notificationsState.get())
                     if(data.profileAddress === this.currentProfile) {
                         return dispatch(action.receiveYouFeed(data));
                     }
