@@ -9,12 +9,14 @@ import followersIterator from './followers-iterator';
 import followingIterator from './following-iterator';
 import isFollower from './is-follower';
 import isFollowing from './is-following';
+import followingList from './following-list';
 
 export default [
     currentBalance,
     followProfile,
     followersCount,
     followingCount,
+    followingList,
     isFollower,
     isFollowing,
     profileData,

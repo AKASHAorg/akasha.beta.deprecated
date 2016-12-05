@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { AppActions, DraftActions, ProfileActions, EntryActions,
-    TransactionActions, TagActions, EProcActions } from 'local-flux';
+    TransactionActions, TagActions, EProcActions, NotificationsActions } from 'local-flux';
 import { Sidebar } from 'shared-components';
 import '../../styles/core.scss';
 import styles from './home.scss';
@@ -38,7 +38,7 @@ class HomeContainer extends React.Component {
     }
     componentWillReceiveProps (nextProps) {
         const { profileActions, entryActions, draftActions, tagActions,
-            transactionActions } = this.props;
+            transactionActions, notificationsActions } = this.props;
         const { loggedProfile, fetchingLoggedProfile } = nextProps;
 
         // action to modify status of a draft to stop publishing it :)
@@ -66,6 +66,8 @@ class HomeContainer extends React.Component {
             entryActions.getEntriesCount(loggedProfile.get('akashaId'));
             entryActions.getSavedEntries(loggedProfile.get('akashaId'));
             tagActions.getSelectedTag(loggedProfile.get('akashaId'));
+            // will be modified
+            notificationsActions.setFilter([]);
         }
     }
     componentWillUnmount () {
@@ -99,7 +101,8 @@ class HomeContainer extends React.Component {
     render () {
         const { appActions, draftActions, fetchingLoggedProfile, loggedProfileData,
             profileActions, entriesCount, draftsCount, loggedProfile, activePanel,
-            params, updatingProfile } = this.props;
+            params, updatingProfile, notificationsCount, hasFeed } = this.props;
+
         const profileAddress = loggedProfile.get('profile');
         const account = loggedProfile.get('account');
         const loadingInProgress = !loggedProfileData || fetchingLoggedProfile;
@@ -120,6 +123,8 @@ class HomeContainer extends React.Component {
                 appActions={appActions}
                 draftActions={draftActions}
                 loggedProfileData={loggedProfileData}
+                notificationsCount={notificationsCount}
+                hasFeed={hasFeed}
                 profileActions={profileActions}
                 entriesCount={entriesCount}
                 draftsCount={draftsCount}
@@ -170,7 +175,10 @@ HomeContainer.propTypes = {
     loggedProfileData: PropTypes.shape(),
     updatingProfile: PropTypes.bool,
     transactionActions: PropTypes.shape(),
-    params: PropTypes.shape()
+    params: PropTypes.shape(),
+    notificationsActions: PropTypes.shape(),
+    notificationsCount: PropTypes.number,
+    hasFeed: PropTypes.bool
 };
 
 HomeContainer.contextTypes = {
@@ -193,6 +201,8 @@ function mapStateToProps (state, ownProps) {
         updatingProfile: state.profileState.getIn(['flags', 'updatingProfile']),
         entriesCount: state.entryState.get('entriesCount'),
         draftsCount: state.draftState.get('draftsCount'),
+        notificationsCount: state.notificationsState.get('youNrFeed'),
+        hasFeed: state.notificationsState.get('hasFeed'),
     };
 }
 
@@ -202,6 +212,7 @@ function mapDispatchToProps (dispatch) {
         draftActions: new DraftActions(dispatch),
         entryActions: new EntryActions(dispatch),
         eProcActions: new EProcActions(dispatch),
+        notificationsActions: new NotificationsActions(dispatch),
         profileActions: new ProfileActions(dispatch),
         tagActions: new TagActions(dispatch),
         transactionActions: new TransactionActions(dispatch)

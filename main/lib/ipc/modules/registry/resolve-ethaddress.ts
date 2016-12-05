@@ -7,7 +7,8 @@ import { constructed as contracts } from '../../contracts/index';
  */
 const execute = Promise.coroutine(function*(data: ProfileByAddressRequest) {
     const profileAddress = yield contracts.instance.registry.getByAddress(data.ethAddress);
-    return { profileAddress };
+    const akashaId =  yield contracts.instance.profile.getId(profileAddress);
+    return { profileAddress, akashaId };
 });
 
 export default { execute, name: 'getByAddress' };

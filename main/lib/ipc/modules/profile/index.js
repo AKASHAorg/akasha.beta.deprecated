@@ -10,12 +10,14 @@ const followers_iterator_1 = require('./followers-iterator');
 const following_iterator_1 = require('./following-iterator');
 const is_follower_1 = require('./is-follower');
 const is_following_1 = require('./is-following');
+const following_list_1 = require('./following-list');
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = [
     current_balance_1.default,
     follow_profile_1.default,
     followers_count_1.default,
     following_count_1.default,
+    following_list_1.default,
     is_follower_1.default,
     is_following_1.default,
     profile_data_1.default,

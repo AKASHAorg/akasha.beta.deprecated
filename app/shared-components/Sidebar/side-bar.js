@@ -44,7 +44,7 @@ class SideBar extends Component {
         this.props.appActions.showPanel(panelName);
     };
     render () {
-        const { style, loggedProfileData, activePanel } = this.props;
+        const { style, loggedProfileData, activePanel, notificationsCount, hasFeed } = this.props;
         const profileName = `${loggedProfileData.get('firstName')} ${loggedProfileData.get('lastName')}`;
         const userInitials = profileName.match(/\b\w/g).reduce((prev, current) => prev + current, '');
         const balance = loggedProfileData.get('balance');
@@ -55,6 +55,8 @@ class SideBar extends Component {
                 activePanel={activePanel}
                 avatar={loggedProfileData.get('avatar')}
                 userInitials={userInitials}
+                hasFeed={hasFeed}
+                notificationsCount={notificationsCount}
                 onClick={() => this._handlePanelShow({ name: 'userProfile', overlay: true })}
               />
             </div>
@@ -88,9 +90,11 @@ SideBar.propTypes = {
     activePanel: PropTypes.string,
     style: PropTypes.shape(),
     appActions: PropTypes.shape(),
+    hasFeed: PropTypes.bool,
     profileActions: PropTypes.shape(),
     draftActions: PropTypes.shape(),
     entriesCount: PropTypes.number,
+    notificationsCount: PropTypes.number,
     draftsCount: PropTypes.number,
     loggedProfileData: PropTypes.shape()
 };
