@@ -75,7 +75,7 @@ class AddEntryPage extends Component {
             return draftActions.updateDraft({
                 id: draftId,
                 content,
-                tags: tags.toJS(),
+                tags: Array.isArray(tags) ? [] : tags.toJS(),
                 licence: licence.toJS(),
                 profile,
                 featuredImage,

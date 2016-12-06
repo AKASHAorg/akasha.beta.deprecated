@@ -6,15 +6,26 @@ class PanelContainer extends React.Component {
     constructor (props) {
         super(props);
         this.state = {
-            scrollTop: 0
+            isHeaderShrinked: false
         };
+    }
+    shouldComponentUpdate (nextProps, nextState) {
+        return (nextState.isHeaderShrinked !== this.state.isHeaderShrinked) ||
+        (this.props.children !== nextProps.children)
     }
     _handleScroll = () => {
         const scrollTop = this.panelContent.scrollTop;
-        this.setState({
-            scrollTop
-        });
+        if(scrollTop >= 24) {
+            this.setState({
+                isHeaderShrinked: true
+            });
+        } else {
+            this.setState({
+                isHeaderShrinked: false
+            });
+        }
     };
+
     render () {
         const rootStyle = {
             position: 'relative',
@@ -23,7 +34,7 @@ class PanelContainer extends React.Component {
             height: '100%',
             maxWidth: this.props.width
         };
-        const { scrollTop } = this.state;
+        const { isHeaderShrinked } = this.state;
         const { header, title, subTitle, showBorder, headerHeight, headerMinHeight, headerStyle,
             contentStyle } = this.props;
         const { muiTheme } = this.context;
@@ -35,7 +46,7 @@ class PanelContainer extends React.Component {
               header={header}
               title={title}
               subTitle={subTitle}
-              scrollTop={scrollTop}
+              shrinked={isHeaderShrinked}
               showBorder={showBorder}
               muiTheme={muiTheme}
               headerHeight={headerHeight}

@@ -63,7 +63,11 @@ class EntryCard extends Component {
             entryActions.saveEntry(loggedAkashaId, entry.get('entryId'));
         }
     }
-
+    _handleEntryNavigation = () => {
+      const { entry } = this.props;
+      const publisherAkashaId = entry.getIn(['entryEth', 'publisher', 'akashaId']);
+      this.context.router.push(`/${publisherAkashaId}/${entry.get('entryId')}`);
+    }
     render () {
         const { entry, blockNr, selectedTag, voteEntryPending, isSaved, style, intl } = this.props;
         const { palette } = this.context.muiTheme;
@@ -142,8 +146,10 @@ class EntryCard extends Component {
                   fontWeight: '600',
                   wordWrap: 'break-word',
                   maxHeight: '80px',
-                  overflow: 'hidden'
+                  overflow: 'hidden',
+                  cursor: 'pointer'
               }}
+              onClick={this._handleEntryNavigation}
             />
             <CardText style={{ paddingTop: '4px', paddingBottom: '4px' }}>
               <div style={{ display: 'flex' }}>
