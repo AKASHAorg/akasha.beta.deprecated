@@ -93,7 +93,8 @@ class TagActions {
                     }]);
                     this.appActions.showNotification({
                         id: 'registeringTag',
-                        values: { tagName: data.tag }
+                        values: { tagName: data.tag },
+                        duration: 3000
                     });
                 },
                 onError: error => dispatch(tagActionCreators.registerTagError(error, {
@@ -178,7 +179,8 @@ class TagActions {
                     }]);
                     this.appActions.showNotification({
                         id: 'subscribingTag',
-                        values: { tagName: data.tagName }
+                        values: { tagName: data.tagName },
+                        duration: 3000
                     });
                 },
                 onError: error =>
@@ -217,7 +219,8 @@ class TagActions {
                     }]);
                     this.appActions.showNotification({
                         id: 'unsubscribingTag',
-                        values: { tagName: data.tagName }
+                        values: { tagName: data.tagName },
+                        duration: 3000
                     });
                 },
                 onError: error =>

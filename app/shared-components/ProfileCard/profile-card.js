@@ -115,7 +115,7 @@ class ProfileCard extends Component {
             </div>
             <div style={actionsStyle}>
               <FlatButton
-                label={!isFollowerPending && isFollower ?
+                label={isFollower ?
                     intl.formatMessage(profileMessages.unfollow) :
                     intl.formatMessage(profileMessages.follow)
                 }
