@@ -188,7 +188,8 @@ class ProfileActions {
                     }]);
                     this.appActions.showNotification({
                         id: 'updatingProfile',
-                        values: {}
+                        values: {},
+                        duration: 3000
                     });
                 },
                 onError: error =>
@@ -313,6 +314,32 @@ class ProfileActions {
         });
     };
 
+    moreFollowersIterator = (akashaId, start, limit) => {
+        this.dispatch(profileActionCreators.moreFollowersIterator({
+            fetchingMoreFollowers: true
+        }));
+        this.profileService.moreFollowersIterator({
+            akashaId,
+            start,
+            limit,
+            onError: error =>
+                this.dispatch(profileActionCreators.moreFollowersIteratorError(error, {
+                    fetchingMoreFollowers: false
+                })),
+            onSuccess: (data) => {
+                data.collection.forEach((item) => {
+                    if (item.profile.avatar) {
+                        item.profile.avatar =
+                            imageCreator(item.profile.avatar, item.profile.baseUrl);
+                    }
+                });
+                this.dispatch(profileActionCreators.moreFollowersIteratorSuccess(data, {
+                    fetchingMoreFollowers: false
+                }));
+            }
+        });
+    };
+
     followingIterator = (akashaId, start, limit) => {
         this.dispatch(profileActionCreators.followingIterator({
             fetchingFollowing: true
@@ -334,6 +361,32 @@ class ProfileActions {
                 });
                 this.dispatch(profileActionCreators.followingIteratorSuccess(data, {
                     fetchingFollowing: false
+                }));
+            }
+        });
+    };
+
+    moreFollowingIterator = (akashaId, start, limit) => {
+        this.dispatch(profileActionCreators.moreFollowingIterator({
+            fetchingMoreFollowing: true
+        }));
+        this.profileService.moreFollowingIterator({
+            akashaId,
+            start,
+            limit,
+            onError: error =>
+                this.dispatch(profileActionCreators.moreFollowingIteratorError(error, {
+                    fetchingMoreFollowing: false
+                })),
+            onSuccess: (data) => {
+                data.collection.forEach((item) => {
+                    if (item.profile.avatar) {
+                        item.profile.avatar =
+                            imageCreator(item.profile.avatar, item.profile.baseUrl);
+                    }
+                });
+                this.dispatch(profileActionCreators.moreFollowingIteratorSuccess(data, {
+                    fetchingMoreFollowing: false
                 }));
             }
         });
@@ -391,7 +444,8 @@ class ProfileActions {
                     }]);
                     this.appActions.showNotification({
                         id: 'followingProfile',
-                        values: { akashaId: data.akashaId }
+                        values: { akashaId: data.akashaId },
+                        duration: 3000
                     });
                 },
                 onError: error =>
@@ -428,7 +482,8 @@ class ProfileActions {
                     }]);
                     this.appActions.showNotification({
                         id: 'unfollowingProfile',
-                        values: { akashaId: data.akashaId }
+                        values: { akashaId: data.akashaId },
+                        duration: 3000
                     });
                 },
                 onError: error =>

@@ -12,7 +12,8 @@ const ErrorRecord = Record({
 
 const Notification = Record({
     id: null,
-    values: new Map()
+    values: new Map(),
+    duration: null
 });
 
 const PendingAction = Record({
@@ -95,9 +96,6 @@ const appState = createReducer(initialState, {
     },
 
     [types.SHOW_NOTIFICATION]: (state, { notification }) => {
-        if (state.get('notifications').findIndex(notif => notif.type === notification.type) > -1) {
-            return state;
-        }
         return state.merge({
             notifications: state.get('notifications').push(new Notification(notification))
         });

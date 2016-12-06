@@ -158,29 +158,44 @@ class EntryActions {
             });
         });
 
-    getProfileEntries = (akashaId, startId, limit = 5) =>
-        this.dispatch((dispatch, getState) => {
-            const flags = getState().entryState.get('flags');
-            if (!flags.get('profileEntriesFetched') || !flags.get('fetchingProfileEntries')) {
-                dispatch(entryActionCreators.getProfileEntries({
-                    fetchingProfileEntries: true
-                }));
-                this.entryService.getProfileEntries({
-                    akashaId,
-                    startId,
-                    limit,
-                    onSuccess: data =>
-                        dispatch(entryActionCreators.getProfileEntriesSuccess(data, {
-                            fetchingProfileEntries: true
-                        })),
-                    onError: error =>
-                        dispatch(entryActionCreators.getProfileEntriesError(error, {
-                            fetchingProfileEntries: false,
-                            profileEntriesFetched: true
-                        }))
-                });
-            }
+    entryProfileIterator = (akashaId, start, limit = 6) => {
+        this.dispatch(entryActionCreators.entryProfileIterator({
+            fetchingProfileEntries: true
+        }));
+        this.entryService.entryProfileIterator({
+            akashaId,
+            start,
+            limit,
+            onSuccess: data =>
+                this.dispatch(entryActionCreators.entryProfileIteratorSuccess(data, {
+                    fetchingProfileEntries: false
+                })),
+            onError: error =>
+                this.dispatch(entryActionCreators.entryProfileIteratorError(error, {
+                    fetchingProfileEntries: false,
+                    profileEntriesFetched: true
+                }))
         });
+    };
+
+    moreEntryProfileIterator = (akashaId, start, limit = 6) => {
+        this.dispatch(entryActionCreators.moreEntryProfileIterator({
+            fetchingMoreProfileEntries: true
+        }));
+        this.entryService.moreEntryProfileIterator({
+            akashaId,
+            start,
+            limit,
+            onSuccess: data =>
+                this.dispatch(entryActionCreators.moreEntryProfileIteratorSuccess(data, {
+                    fetchingMoreProfileEntries: false
+                })),
+            onError: error =>
+                this.dispatch(entryActionCreators.moreEntryProfileIteratorError(error, {
+                    fetchingMoreProfileEntries: false
+                }))
+        });
+    };
 
     entryTagIterator = (tagName, start, limit) => {
         this.dispatch(entryActionCreators.entryTagIterator({ fetchingTagEntries: true }));
@@ -318,7 +333,8 @@ class EntryActions {
                     }]);
                     this.appActions.showNotification({
                         id: 'upvotingEntry',
-                        values: { entryTitle }
+                        values: { entryTitle },
+                        duration: 3000
                     });
                 },
                 onError: (error, data) =>
@@ -350,7 +366,8 @@ class EntryActions {
                     }]);
                     this.appActions.showNotification({
                         id: 'downvotingEntry',
-                        values: { entryTitle }
+                        values: { entryTitle },
+                        duration: 3000
                     });
                 },
                 onError: (error, data) =>

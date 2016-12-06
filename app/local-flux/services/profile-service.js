@@ -148,6 +148,13 @@ class ProfileService extends BaseService {
         });
     };
 
+    moreFollowersIterator = ({ akashaId, start, limit, onError = () => {}, onSuccess }) =>
+        this.registerListener(
+            Channel.client.profile.followersIterator,
+            this.createListener(onError, onSuccess),
+            () => Channel.server.profile.followersIterator.send({ akashaId, start, limit })
+        );
+
     followingIterator = ({ akashaId, start, limit, onError = () => {}, onSuccess }) => {
         const clientChannel = Channel.client.profile.followingIterator;
         const serverChannel = Channel.server.profile.followingIterator;
@@ -164,6 +171,13 @@ class ProfileService extends BaseService {
             serverChannel.send({ akashaId, start, limit });
         });
     };
+
+    moreFollowingIterator = ({ akashaId, start, limit, onError = () => {}, onSuccess }) =>
+        this.registerListener(
+            Channel.client.profile.followingIterator,
+            this.createListener(onError, onSuccess),
+            () => Channel.server.profile.followingIterator.send({ akashaId, start, limit })
+        );
 
     follow = ({ token, akashaId, gas = 2000000, onError = () => {}, onSuccess }) => {
         const clientChannel = Channel.client.profile.followProfile;

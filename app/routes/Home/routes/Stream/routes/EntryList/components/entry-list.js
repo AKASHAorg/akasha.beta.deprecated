@@ -24,13 +24,6 @@ class EntryList extends Component {
           entry.get('address') === entryAddress);
         appActions.showEntryModal(entry, { section: 'comments' });
     };
-    _handleShare = (ev, entry) => {
-        console.log('share entry', entry);
-    };
-    _handleBookmark = (ev, entry) => {
-        const { entryActions, loggedProfileData } = this.props;
-        entryActions.createSavedEntry(loggedProfileData.get('akashaId'), entry);
-    };
     _handleEditorFullScreen = (ev, draft) => {
         const { entryActions, loggedProfileData } = this.props;
         entryActions.createDraft(loggedProfileData.get('akashaId'), draft);
@@ -45,12 +38,6 @@ class EntryList extends Component {
         const { selectedTag, tagActions } = this.props;
         tagActions.addUnsubscribeTagAction(selectedTag);
     };
-
-    selectProfile = (address) => {
-        const { router } = this.context;
-        const loggedAkashaId = this.props.loggedProfileData.get('akashaId');
-        router.push(`/${loggedAkashaId}/profile/${address}`);
-    }
 
     selectTag = (tag) => {
         const { tagActions } = this.props;
@@ -118,15 +105,13 @@ class EntryList extends Component {
                       key={key}
                       onContentClick={ev => this._navigateToEntry(ev, entry)}
                       onTagClick={this._navigateToTag}
-                      handleComment={this.handleComment}
-                      handleBookmark={this.handleBookmark}
                       blockNr={blockNr}
-                      selectProfile={this.selectProfile}
                       selectTag={this.selectTag}
                       selectedTag={selectedTag}
                       voteEntryPending={voteEntryPending}
                       entryActions={entryActions}
                       isSaved={isSaved}
+                      style={{ width: '640px' }}
                     />;
                 })}
                 {moreEntries &&
