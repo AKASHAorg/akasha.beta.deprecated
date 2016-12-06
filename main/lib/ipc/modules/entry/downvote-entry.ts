@@ -1,7 +1,6 @@
 /*!
  * Copyright akasha
  */
-
 import { module as userModule } from '../auth/index';
 import * as Promise from 'bluebird';
 import { constructed as contracts } from '../../contracts/index';

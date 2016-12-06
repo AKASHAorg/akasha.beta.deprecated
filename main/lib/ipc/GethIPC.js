@@ -6,6 +6,7 @@ const Logger_1 = require('./Logger');
 const responses_1 = require('./event/responses');
 const path_1 = require('path');
 const electron_1 = require('electron');
+const genesis_1 = require('./config/genesis');
 class GethIPC extends GethEmitter_1.default {
     constructor() {
         super();
@@ -51,12 +52,17 @@ class GethIPC extends GethEmitter_1.default {
     }
     _start() {
         this.registerListener(channels_1.default.server.geth.startService, (event, data) => {
-            geth_connector_1.GethConnector.getInstance().writeGenesis(path_1.join(__dirname, 'config', 'genesis.json'), (err, stdout) => {
-                if (err) {
-                    (Logger_1.default.getInstance().getLogger(this.logger)).error(err);
+            genesis_1.checkForGenesis((errGenesis) => {
+                if (errGenesis) {
+                    (Logger_1.default.getInstance().getLogger(this.logger)).error(errGenesis);
                 }
-                (Logger_1.default.getInstance().getLogger(this.logger)).info(stdout);
-                geth_connector_1.GethConnector.getInstance().start(data);
+                geth_connector_1.GethConnector.getInstance().writeGenesis(genesis_1.getGenesisPath(), (err, stdout) => {
+                    if (err) {
+                        (Logger_1.default.getInstance().getLogger(this.logger)).error(err);
+                    }
+                    (Logger_1.default.getInstance().getLogger(this.logger)).info(stdout);
+                    geth_connector_1.GethConnector.getInstance().start(data);
+                });
             });
         });
         return this;

@@ -66,9 +66,9 @@ export default class Auth {
      */
     private _read(token: any) {
         // until geth will handle properly eth_sign ...
-/*        if (!this.isLogged(token)) {
-            throw new Error('Token is not valid');
-        }*/
+        /*        if (!this.isLogged(token)) {
+         throw new Error('Token is not valid');
+         }*/
         const result = Buffer.concat([this._decipher.update(this._encrypted), this._decipher.final()]);
         this._encrypt(result);
         return result;
