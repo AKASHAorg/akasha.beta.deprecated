@@ -136,6 +136,11 @@ class ProfileActivity extends Component {
         });
     }
 
+    selectTag = (tagName) => {
+        const { tagActions } = this.props;
+        tagActions.saveTag(tag);
+    }
+
     showMoreProfileEntries = () => {
         const { entryActions, profileData } = this.props;
         const akashaId = profileData.get('akashaId');
@@ -154,8 +159,8 @@ class ProfileActivity extends Component {
 
     renderEntries () {
         const { profileEntries, fetchingProfileEntries, loggedProfileData, votePending, blockNr,
-            savedEntriesIds, entryActions, moreProfileEntries,
-            fetchingMoreProfileEntries } = this.props;
+            savedEntriesIds, entryActions, moreProfileEntries, fetchingMoreProfileEntries,
+            selectTag } = this.props;
         const { palette } = this.context.muiTheme;
         return <DataLoader
           flag={fetchingProfileEntries}
@@ -185,7 +190,7 @@ class ProfileActivity extends Component {
                   entry={entry}
                   key={key}
                   blockNr={blockNr}
-                  selectTag={this.selectTag}
+                  selectTag={selectTag}
                   voteEntryPending={voteEntryPending}
                   entryActions={entryActions}
                   isSaved={isSaved}
@@ -402,6 +407,7 @@ ProfileActivity.propTypes = {
     followProfile: PropTypes.func.isRequired,
     unfollowProfile: PropTypes.func.isRequired,
     selectProfile: PropTypes.func.isRequired,
+    selectTag: PropTypes.func.isRequired,
     intl: PropTypes.shape()
 };
 
