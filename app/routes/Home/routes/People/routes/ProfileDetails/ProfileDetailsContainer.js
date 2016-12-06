@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { ProfileActions, EntryActions } from 'local-flux';
+import { EntryActions, ProfileActions, TagActions } from 'local-flux';
+import { DataLoader } from 'shared-components';
 import ProfileDetails from './components/profile-details';
 import ProfileActivity from './components/profile-activity';
 
@@ -22,10 +23,10 @@ class ProfileDetailsContainer extends Component {
     componentWillReceiveProps (nextProps) {
         const { profiles, profileActions, params, profileData, loggedProfileData } = nextProps;
         if (params.profileAddress !== this.props.params.profileAddress) {
+            profileActions.getProfileData([{ profile: params.profileAddress }], true);
             if (profiles.size > 1) {
                 profileActions.clearOtherProfiles();
             }
-            profileActions.getProfileData([{ profile: params.profileAddress }], true);
         } else if (!this.state.isFollowerRequested && profileData && profileData.get('akashaId')) {
             profileActions.isFollower(loggedProfileData.get('akashaId'), profileData.get('akashaId'));
             this.setState({
@@ -58,60 +59,82 @@ class ProfileDetailsContainer extends Component {
     }
 
     render () {
-        const { profileActions, entryActions, profileData, profiles,
+        const { profileActions, entryActions, profileData, profiles, profileEntries, votePending,
             followPending, fetchingFollowers, fetchingFollowing, fetchingProfileData,
-            loggedProfileData, isFollowerPending } = this.props;
+            fetchingProfileEntries, loggedProfileData, isFollowerPending, blockNr,
+            savedEntriesIds, moreProfileEntries, fetchingMoreProfileEntries, fetchingMoreFollowers,
+            fetchingMoreFollowing } = this.props;
+        const isFollower = !fetchingProfileData && profileData &&
+            loggedProfileData.getIn(['isFollower', profileData.get('akashaId')]);
 
-        if (!profileData ||
-                profileData.get('backgroundImage')['/'] !== undefined) {
-            return <div>Fetching data</div>;
-        }
-
-        const isFollower = loggedProfileData.getIn(['isFollower', profileData.get('akashaId')]);
-
-        return <div style={{ display: 'flex', height: '100%' }}>
-          <ProfileDetails
-            loggedAddress={loggedProfileData.get('profile')}
-            isFollowerPending={isFollowerPending}
-            isFollower={isFollower}
-            profileData={profileData}
-            fetchingProfileData={fetchingProfileData}
-            followProfile={this.followProfile}
-            unfollowProfile={this.unfollowProfile}
-            followPending={followPending}
-          />
-          <ProfileActivity
-            loggedProfileData={loggedProfileData}
-            profileData={profileData}
-            profileActions={profileActions}
-            getEntriesCount={entryActions.getEntriesCount}
-            profiles={profiles}
-            fetchingFollowers={fetchingFollowers}
-            fetchingFollowing={fetchingFollowing}
-            followPending={followPending}
-            followProfile={this.followProfile}
-            unfollowProfile={this.unfollowProfile}
-            selectProfile={this.selectProfile}
-            isFollowerPending={isFollowerPending}
-          />
-        </div>;
+        return <DataLoader
+          flag={!profileData}
+          timeout={300}
+          size={80}
+          style={{ paddingTop: '120px' }}
+        >
+          <div style={{ display: 'flex', height: '100%' }}>
+            <ProfileDetails
+                loggedAddress={loggedProfileData.get('profile')}
+                isFollowerPending={isFollowerPending}
+                isFollower={isFollower}
+                profileData={profileData}
+                fetchingProfileData={fetchingProfileData}
+                followProfile={this.followProfile}
+                unfollowProfile={this.unfollowProfile}
+                followPending={followPending}
+            />
+            <ProfileActivity
+                loggedProfileData={loggedProfileData}
+                profileData={profileData}
+                profileEntries={profileEntries}
+                savedEntriesIds={savedEntriesIds}
+                blockNr={blockNr}
+                entryActions={entryActions}
+                profileActions={profileActions}
+                getEntriesCount={entryActions.getEntriesCount}
+                profiles={profiles}
+                fetchingFollowers={fetchingFollowers}
+                fetchingFollowing={fetchingFollowing}
+                fetchingMoreFollowers={fetchingMoreFollowers}
+                fetchingMoreFollowing={fetchingMoreFollowing}
+                fetchingMoreProfileEntries={fetchingMoreProfileEntries}
+                fetchingProfileEntries={fetchingProfileEntries}
+                moreProfileEntries={moreProfileEntries}
+                followPending={followPending}
+                followProfile={this.followProfile}
+                unfollowProfile={this.unfollowProfile}
+                selectProfile={this.selectProfile}
+                isFollowerPending={isFollowerPending}
+                votePending={votePending}
+            />
+          </div>
+        </DataLoader>;
     }
 }
 
 ProfileDetailsContainer.propTypes = {
-    profileActions: PropTypes.shape(),
+    blockNr: PropTypes.number,
     entryActions: PropTypes.shape(),
-    profileData: PropTypes.shape(),
-    loggedProfileData: PropTypes.shape(),
-    profiles: PropTypes.shape(),
     fetchingFollowers: PropTypes.bool,
     fetchingFollowing: PropTypes.bool,
+    fetchingMoreProfileEntries: PropTypes.bool,
     fetchingProfileData: PropTypes.bool,
-    loggedProfile: PropTypes.shape(),
-    params: PropTypes.shape(),
+    fetchingProfileEntries: PropTypes.bool,
     followPending: PropTypes.shape(),
+    isFollowerPending: PropTypes.bool,
+    loggedProfile: PropTypes.shape(),
+    loggedProfileData: PropTypes.shape(),
     loginRequested: PropTypes.bool,
-    isFollowerPending: PropTypes.bool
+    moreProfileEntries: PropTypes.bool,
+    params: PropTypes.shape(),
+    profileActions: PropTypes.shape(),
+    profileData: PropTypes.shape(),
+    profileEntries: PropTypes.shape(),
+    profiles: PropTypes.shape(),
+    savedEntriesIds: PropTypes.shape(),
+    tagActions: PropTypes.shape(),
+    votePending: PropTypes.shape()
 };
 
 ProfileDetailsContainer.contextTypes = {
@@ -121,28 +144,41 @@ ProfileDetailsContainer.contextTypes = {
 
 function mapStateToProps (state, ownProps) {
     const { profileAddress } = ownProps.params;
-
+    const profileData = state.profileState.get('profiles').find(profile =>
+            profile && profile.get('profile') === profileAddress);
+    const akashaId = profileData ? profileData.get('akashaId') : '';
     return {
-        profileAddress,
-        profileData: state.profileState.get('profiles').find(profile =>
-            profile && profile.get('profile') === profileAddress),
-        profiles: state.profileState.get('profiles'),
-        loggedProfileData: state.profileState.get('profiles').find(profile =>
-            profile.get('profile') === state.profileState.getIn(['loggedProfile', 'profile'])),
+        blockNr: state.externalProcState.getIn(['gethStatus', 'blockNr']),
         fetchingFollowers: state.profileState.getIn(['flags', 'fetchingFollowers']),
         fetchingFollowing: state.profileState.getIn(['flags', 'fetchingFollowing']),
+        fetchingMoreFollowers: state.profileState.getIn(['flags', 'fetchingMoreFollowers']),
+        fetchingMoreFollowing: state.profileState.getIn(['flags', 'fetchingMoreFollowing']),
+        fetchingMoreProfileEntries: state.entryState.getIn(['flags', 'fetchingMoreProfileEntries']),
         fetchingProfileData: state.profileState.getIn(['flags', 'fetchingProfileData']),
-        loggedProfile: state.profileState.get('loggedProfile'),
+        fetchingProfileEntries: state.entryState.getIn(['flags', 'fetchingProfileEntries']),
         followPending: state.profileState.getIn(['flags', 'followPending']),
+        isFollowerPending: state.profileState.getIn(['flags', 'isFollowerPending']),
+        loggedProfile: state.profileState.get('loggedProfile'),
+        loggedProfileData: state.profileState.get('profiles').find(profile =>
+            profile.get('profile') === state.profileState.getIn(['loggedProfile', 'profile'])),
         loginRequested: state.profileState.getIn(['flags', 'loginRequested']),
-        isFollowerPending: state.profileState.getIn(['flags', 'isFollowerPending'])
+        moreProfileEntries: state.entryState.get('moreProfileEntries'),
+        profileData,
+        profileEntries: state.entryState.get('entries').filter(entry =>
+            entry.get('type') === 'profileEntry'
+                && entry.get('akashaId') === akashaId
+            ).map(entry => entry.get('content')),
+        profiles: state.profileState.get('profiles'),
+        savedEntriesIds: state.entryState.get('savedEntries').map(entry => entry.get('entryId')),
+        votePending: state.entryState.getIn(['flags', 'votePending']),
     };
 }
 
 function mapDispatchToProps (dispatch) {
     return {
+        entryActions: new EntryActions(dispatch),
         profileActions: new ProfileActions(dispatch),
-        entryActions: new EntryActions(dispatch)
+        tagActions: new TagActions(dispatch)
     };
 }
 

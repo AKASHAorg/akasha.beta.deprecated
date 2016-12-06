@@ -3,12 +3,16 @@ import PanelLoader from 'shared-components/Panels/panel-loader';
 import { AppActions, ProfileActions, EntryActions, DraftActions, NotificationsActions } from 'local-flux';
 
 function mapStateToProps (state) {
+    const loggedProfile = state.profileState.get('loggedProfile');
+    const publishedEntries = state.entryState.get('entries').filter(entry =>
+        entry.get('type') === 'profileEntry' && entry.get('akashaId') === loggedProfile.get('akashaId')
+    );
     return {
         fetchingProfileData: state.profileState.getIn(['flags', 'fetchingProfileData']),
         loginRequested: state.profileState.getIn(['flags', 'loginRequested']),
         panelState: state.panelState,
-        loggedProfile: state.profileState.get('loggedProfile'),
-        entries: state.entryState.get('published'),
+        loggedProfile,
+        entries: publishedEntries,
         drafts: state.draftState.get('drafts'),
         draftsCount: state.draftState.get('draftsCount'),
         entriesCount: state.entryState.get('entriesCount'),

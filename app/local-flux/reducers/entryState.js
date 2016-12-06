@@ -53,8 +53,9 @@ const initialState = fromJS({
     entriesStream: new EntriesStream(),
     entries: new List(),
     savedEntries: new List(),
-    moreTagEntries: false,
+    moreProfileEntries: false,
     moreSavedEntries: false,
+    moreTagEntries: false,
     tagEntriesCount: new Map(),
     entriesCount: 0, // entries published by a logged profile
     voteCost: new Map()
@@ -150,16 +151,39 @@ const entryState = createReducer(initialState, {
         });
     },
 
-    [types.GET_PROFILE_ENTRIES]: flagHandler,
+    [types.ENTRY_PROFILE_ITERATOR]: flagHandler,
 
-    [types.GET_PROFILE_ENTRIES_SUCCESS]: (state, { data, flags }) =>
-        state.merge({
-            published: state.get('published').concat(data.collection.map(item =>
-                new Entry({ akashaId: data.akashaId, ...item.content }))),
+    [types.ENTRY_PROFILE_ITERATOR_SUCCESS]: (state, { data, flags }) => {
+        const moreProfileEntries = data.limit === data.collection.length;
+        const newProfileEntries = moreProfileEntries ?
+            fromJS(data.collection.slice(0, -1)) :
+            fromJS(data.collection);
+        return state.merge({
+            entries: newProfileEntries.map(entry =>
+                entry.merge({ type: 'profileEntry', akashaId: data.akashaId })),
+            moreProfileEntries,
             flags: state.get('flags').merge(flags)
-        }),
+        });
+    },
 
-    [types.GET_PROFILE_ENTRIES_ERROR]: errorHandler,
+    [types.ENTRY_PROFILE_ITERATOR_ERROR]: errorHandler,
+
+    [types.MORE_ENTRY_PROFILE_ITERATOR]: flagHandler,
+
+    [types.MORE_ENTRY_PROFILE_ITERATOR_SUCCESS]: (state, { data, flags }) => {
+        const moreProfileEntries = data.limit === data.collection.length;
+        const newProfileEntries = moreProfileEntries ?
+            fromJS(data.collection.slice(0, -1)) :
+            fromJS(data.collection);
+        return state.merge({
+            entries: state.get('entries').concat(newProfileEntries.map(entry =>
+                entry.merge({ type: 'profileEntry', akashaId: data.akashaId }))),
+            moreProfileEntries,
+            flags: state.get('flags').merge(flags)
+        });
+    },
+
+    [types.MORE_ENTRY_PROFILE_ITERATOR_ERROR]: errorHandler,
 
     [types.GET_LICENCES_SUCCESS]: (state, { licences }) => {
         const licencesList = new List(licences.map(licence => new Licence(licence)));

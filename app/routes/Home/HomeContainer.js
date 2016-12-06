@@ -73,6 +73,7 @@ class HomeContainer extends React.Component {
     componentWillUnmount () {
         this.props.appActions.hidePanel();
         this.props.tagActions.clearSelectedTag();
+        this.props.profileActions.clearLocalProfiles();
         clearInterval(this.interval);
     }
     _getLoadingMessage = () => {

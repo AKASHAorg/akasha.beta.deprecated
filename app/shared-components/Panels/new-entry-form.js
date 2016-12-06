@@ -41,7 +41,7 @@ class NewEntryFormPanel extends Component {
                 draftActions.getDrafts(loggedProfile.get('profile'));
             }
             if (tabsValue === 'listed' && profileEntries.size < entriesCount) {
-                entryActions.getProfileEntries(loggedProfile.get('akashaId'));
+                entryActions.entryProfileIterator(loggedProfile.get('akashaId'));
             }
         }
     }
