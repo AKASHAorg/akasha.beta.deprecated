@@ -6,7 +6,7 @@ import Logger from './Logger';
 import { gethResponse } from './event/responses';
 import { join } from 'path';
 import { app } from 'electron';
-import { checkForGenesis, getGenesisPath } from './config/genesis';
+import { getGenesisPath } from './config/genesis';
 import IpcMainEvent = Electron.IpcMainEvent;
 import WebContents = Electron.WebContents;
 
@@ -95,10 +95,7 @@ class GethIPC extends GethEmitter {
         this.registerListener(
             channels.server.geth.startService,
             (event: IpcMainEvent, data: GethStartRequest) => {
-                checkForGenesis((errGenesis) => {
-                    if (errGenesis) {
-                        (Logger.getInstance().getLogger(this.logger)).error(errGenesis);
-                    }
+                console.log('=== start geth ====');
                     GethConnector.getInstance().writeGenesis(
                         getGenesisPath(),
                         (err: Error, stdout: any) => {
@@ -108,7 +105,6 @@ class GethIPC extends GethEmitter {
                             (Logger.getInstance().getLogger(this.logger)).info(stdout);
                             GethConnector.getInstance().start(data);
                         });
-                })
             }
         );
         return this;

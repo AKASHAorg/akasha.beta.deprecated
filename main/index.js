@@ -5,6 +5,7 @@ const ipfs_connector_1 = require('@akashaproject/ipfs-connector');
 const path_1 = require('path');
 const index_1 = require('./lib/ipc/index');
 const menu_1 = require('./menu');
+const Logger_1 = require('./lib/ipc/Logger');
 const stopServices = () => {
     geth_connector_1.GethConnector.getInstance().stop();
     ipfs_connector_1.IpfsConnector.getInstance().stop();
@@ -40,6 +41,7 @@ function bootstrapApp() {
     }
     electron_1.app.on('ready', () => {
         let modules = index_1.initModules();
+        Logger_1.default.getInstance();
         mainWindow = new electron_1.BrowserWindow({
             width: 1280,
             height: 720,
