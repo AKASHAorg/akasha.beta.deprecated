@@ -12,6 +12,7 @@ const tag_count_1 = require('./tag-count');
 const tags_iterator_1 = require('./tags-iterator');
 const subs_iterator_1 = require('./subs-iterator');
 const is_subscribed_1 = require('./is-subscribed');
+const search_tag_1 = require('./search-tag');
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = [
     check_format_1.default,
@@ -26,6 +27,7 @@ exports.default = [
     unsubscribe_tag_1.default,
     tags_iterator_1.default,
     subs_iterator_1.default,
-    is_subscribed_1.default
+    is_subscribed_1.default,
+    search_tag_1.default
 ];
 //# sourceMappingURL=index.js.map

@@ -11,7 +11,7 @@ const hashPath = (...path) => {
 const channels = {
     auth: ['login', 'logout', 'requestEther', 'generateEthKey', 'getLocalIdentities'],
     tags: ['checkFormat', 'create', 'tagIterator', 'tagSubIterator', 'exists', 'getTagsCreated', 'subsCount',
-        'subscribe', 'getTagId', 'getTagName', 'unSubscribe', 'isSubscribed'],
+        'subscribe', 'getTagId', 'getTagName', 'unSubscribe', 'isSubscribed', 'searchTag'],
     entry: ['getProfileEntriesCount', 'getTagEntriesCount', 'isActive', 'getEntry', 'publish', 'update', 'canClaim', 'claim',
         'downvote', 'getScore', 'getDepositBalance', 'upvote', 'voteCost', 'voteCount', 'entryTagIterator',
         'entryProfileIterator', 'votesIterator', 'getEntriesStream', 'getVoteOf', 'getEntryBalance', 'getEntryList'],

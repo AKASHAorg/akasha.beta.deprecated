@@ -11,6 +11,7 @@ import tagCount from './tag-count';
 import tagIterator from './tags-iterator';
 import subsIterator from './subs-iterator';
 import isSubscribed from './is-subscribed';
+import searchTag from './search-tag';
 
 export default [
     checkFormat,
@@ -25,5 +26,6 @@ export default [
     unSubscribeTag,
     tagIterator,
     subsIterator,
-    isSubscribed
+    isSubscribed,
+    searchTag
 ]
