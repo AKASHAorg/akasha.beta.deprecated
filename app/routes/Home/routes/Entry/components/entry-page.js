@@ -5,13 +5,15 @@ import styles from './entry-page.scss';
 import readOnlyImagePlugin from 'shared-components/EntryEditor/plugins/readOnlyImage/read-only-image-plugin';
 import { TagChip, Avatar } from 'shared-components';
 import { EntryComment, EntryDownvote, EntryUpvote } from 'shared-components/svg';
+import imageCreator from 'utils/imageUtils';
 
 class EntryPage extends Component {
     constructor (props) {
         super(props);
         this.state = {
             publisherTitleShadow: false,
-            activeTab: 'all'
+            activeTab: 'all',
+            commentEditorState: editorStateFromRaw(null)
         }
     }
     componentWillMount () {
@@ -22,6 +24,7 @@ class EntryPage extends Component {
     }
     componentDidMount() {
         window.addEventListener('scroll', this._handleContentScroll);
+        console.log(this.props.entry, 'entry');
     }
     componentWillUnmount() {
         window.removeEventListener('scroll', this._handleContentScroll);
@@ -31,6 +34,11 @@ class EntryPage extends Component {
     }
     handleDownvote = () => {
 
+    }
+    _handleCommentChange = (editorState) => {
+        this.setState({
+            commentEditorState: editorState
+        })
     }
     _handleTabChange = (value) => {
         this.setState({
@@ -49,18 +57,20 @@ class EntryPage extends Component {
             })
         }
     }
+    _navigateToTag = (ev, tagName) => {
+        console.info('navigateToTag', tagName);
+    }
     render() {
         const { entry, votePending } = this.props;
         const { publisherTitleShadow, activeTab } = this.state;
         const { palette } = this.context.muiTheme;
-        console.log(entry, 'entry');
         if(!entry) {
             return <div className={styles.loader}>Loading entry..</div>
         }
         const entryBaseUrl = entry.get('baseUrl');
         const publisher = entry.getIn(['entryEth', 'publisher']);
         const publisherBaseUrl = publisher.get('baseUrl');
-        const publisherAvatar = `${publisherBaseUrl}/${publisher.get('avatar')}`;
+        const publisherAvatar = imageCreator(publisher.get('avatar'), publisherBaseUrl);
         const cleanupEntry = entry.getIn(['content']).toJS().draft.slice(5, entry.get('content').toJS().draft.length -3)
         const entryContent = editorStateFromRaw(JSON.parse(cleanupEntry));
         const existingVoteWeight = entry.get('voteWeight') || 0;
@@ -110,7 +120,11 @@ class EntryPage extends Component {
                   <div className={`${styles.entry_infos}`}>
                     <div className={`${styles.entry_tags}`}>
                         {entry.getIn(['content', 'tags']).map((tag, key) =>
-                            <TagChip key={key} tag={tag} />
+                            <TagChip
+                              key={key}
+                              tag={tag}
+                              onTagClick={this._navigateToTag}
+                            />
                         )}
                     </div>
                     <div className={`${styles.entry_actions}`}>
@@ -158,11 +172,21 @@ class EntryPage extends Component {
                       </div>
                     </div>
                     <div className={`${styles.comment_writer}`}>
-                        <Avatar
-                          avatarImage={publisherAvatar}
-                          userInitials={userInitials}
-                        />
-                        <textarea placeholder="Write a comment..."></textarea>
+                        <div className={`${styles.avatar_image}`}>
+                          <Avatar
+                            image={publisherAvatar}
+                            userInitials={userInitials}
+                            radius={40}
+                          />
+                        </div>
+                        <div className={`${styles.comment_editor}`}>
+                          <MegadraftEditor
+                            placeholder={`Write a comment...`}
+                            editorState={this.state.commentEditorState}
+                            onChange={this._handleCommentChange}
+                            sidebarRendererFn={() => null}
+                          />
+                        </div>
                     </div>
                     <div id="comments-section" className={`${styles.comments_section}`}>
                       <Tabs
