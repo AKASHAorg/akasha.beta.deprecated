@@ -1,4 +1,5 @@
 import React, { PropTypes } from 'react';
+import { isInViewport } from 'utils/domUtils';
 import throttle from 'lodash.throttle';
 import styles from './stream.scss';
 
@@ -35,12 +36,8 @@ class Stream extends React.Component {
         if (!this.trigger) {
             return null;
         }
-        const rect = this.trigger.getBoundingClientRect();
 
-        if (rect.top >= 0 && rect.left >= 0 &&
-            rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-            rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-        ) {
+        if (isInViewport(this.trigger)) {
             if (this.props.params.filter === 'tag') {
                 this.showMoreTagEntries();
             } else {

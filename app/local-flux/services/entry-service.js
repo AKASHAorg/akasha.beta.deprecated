@@ -65,14 +65,21 @@ class EntryService extends BaseService {
         }, () => Channel.server.entry.getProfileEntriesCount.send({ akashaId }));
     };
 
-    getProfileEntries = ({ akashaId, onSuccess, onError }) => {
+    entryProfileIterator = ({ akashaId, start, limit, onSuccess, onError }) => {
         this.openChannel({
             clientManager: this.clientManager,
             serverChannel: Channel.server.entry.entryProfileIterator,
             clientChannel: Channel.client.entry.entryProfileIterator,
             listenerCb: this.createListener(onError, onSuccess)
-        }, () => Channel.server.entry.entryProfileIterator.send({ akashaId }));
+        }, () => Channel.server.entry.entryProfileIterator.send({ akashaId, start, limit }));
     }
+
+    moreEntryProfileIterator = ({ akashaId, start, limit, onError = () => {}, onSuccess }) =>
+        this.registerListener(
+            Channel.client.entry.entryProfileIterator,
+            this.createListener(onError, onSuccess),
+            () => Channel.server.entry.entryProfileIterator.send({ akashaId, start, limit })
+        );
 
     // get resource by id (drafts or entries);
     getById = ({ table, id, onSuccess, onError }) =>

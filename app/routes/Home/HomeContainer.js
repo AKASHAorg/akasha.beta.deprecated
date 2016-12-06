@@ -37,9 +37,9 @@ class HomeContainer extends React.Component {
         profileActions.getLoggedProfile();
     }
     componentWillReceiveProps (nextProps) {
-        const { profileActions, entryActions, draftActions, tagActions,
-            transactionActions, notificationsActions } = this.props;
-        const { loggedProfile, fetchingLoggedProfile } = nextProps;
+        const { profileActions, entryActions, draftActions, tagActions, transactionActions,
+            notificationsActions } = this.props;
+        const { loggedProfile, fetchingLoggedProfile, selectedTag, savingTag, params } = nextProps;
 
         // action to modify status of a draft to stop publishing it :)
         // draftActions.updateDraft({
@@ -69,10 +69,15 @@ class HomeContainer extends React.Component {
             // will be modified
             notificationsActions.setFilter([]);
         }
+        if (this.dataLoaded && selectedTag && !savingTag && this.props.savingTag
+                && params.filter !== 'tag') {
+            this.context.router.push(`/${params.akashaId}/explore/tag`);
+        }
     }
     componentWillUnmount () {
         this.props.appActions.hidePanel();
         this.props.tagActions.clearSelectedTag();
+        this.props.profileActions.clearLocalProfiles();
         clearInterval(this.interval);
     }
     _getLoadingMessage = () => {
@@ -178,7 +183,8 @@ HomeContainer.propTypes = {
     params: PropTypes.shape(),
     notificationsActions: PropTypes.shape(),
     notificationsCount: PropTypes.number,
-    hasFeed: PropTypes.bool
+    hasFeed: PropTypes.bool,
+    selectedTag: PropTypes.string
 };
 
 HomeContainer.contextTypes = {
@@ -203,6 +209,8 @@ function mapStateToProps (state, ownProps) {
         draftsCount: state.draftState.get('draftsCount'),
         notificationsCount: state.notificationsState.get('youNrFeed'),
         hasFeed: state.notificationsState.get('hasFeed'),
+        selectedTag: state.tagState.get('selectedTag'),
+        savingTag: state.tagState.getIn(['flags', 'savingTag'])
     };
 }
 
