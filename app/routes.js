@@ -19,7 +19,7 @@ import StreamPageContainer from './routes/Home/routes/Stream/StreamContainer';
 import EntryListContainer from './routes/Home/routes/Stream/routes/EntryList/EntryListContainer';
 import PeoplePageContainer from './routes/Home/routes/People/PeopleContainer';
 import ProfileDetailsContainer from './routes/Home/routes/People/routes/ProfileDetails/ProfileDetailsContainer';
-
+import EntryPageContainer from './routes/Home/routes/Entry/EntryContainer';
 import requireAuth from './require-auth';
 
 export default (
@@ -57,6 +57,7 @@ export default (
     {/** user home after login */}
     <Route component={requireAuth(HomeContainer)} path=":akashaId" >
       <IndexRedirect to="explore/tag" />
+
       {/** loads articles from blockchain */}
       <Route component={StreamPageContainer}>
         <Route component={EntryListContainer} path="explore(/:filter)" />
@@ -68,6 +69,7 @@ export default (
 
       {/** create a new entry or edit existing one */}
       <Route component={NewEntryContainer} path="draft/:draftId" >
+
         {/** publish an entry */}
         <Route component={PublishEntryPanelContainer} path="publish" />
 
@@ -77,6 +79,8 @@ export default (
         {/** display info about newly published entry */}
         <Route component={PublishEntryCompleteContainer} path="publish-complete" />
       </Route>
+      {/** view entry page */}
+      <Route component={EntryPageContainer} path=":entryId" />
     </Route>
   </Route>
 );

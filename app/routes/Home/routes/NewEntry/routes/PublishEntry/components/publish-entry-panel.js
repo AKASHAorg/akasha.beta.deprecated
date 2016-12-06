@@ -187,7 +187,7 @@ class PublishPanel extends React.Component {
                 error: 'Please review the licence'
             });
         }
-        if (!excerpt || excerpt.length < '60') {
+        if (!excerpt || excerpt.length < 60) {
             validationErrors.push({
                 field: 'excerpt',
                 error: 'Please provide a longer excerpt'
