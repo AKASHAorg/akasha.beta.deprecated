@@ -88,7 +88,7 @@ abstract class ModuleEmitter extends AbstractEmitter {
                 channels.server[this.MODULE_NAME][method.name],
                 (event: any, data: any) => {
                     let response: any;
-                    const stamp = method.name + ' ' +(new Date()).getTime();
+                    const stamp = method.name + ' ' + (new Date()).getTime();
                     console.time(stamp);
                     method
                         .execute(data)

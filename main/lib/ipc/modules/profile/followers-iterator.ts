@@ -15,7 +15,7 @@ const execute = Promise.coroutine(function*(data: {start?: number, limit?: numbe
     let counter = 0;
     const results = [];
     const maxResults = (data.limit) ? data.limit : 10;
-    if(!data.start) {
+    if (!data.start) {
         profileId = yield contracts.instance.feed.getFollowersById(data.akashaId, currentId);
         profile = yield profileData.execute({ profile: profileId });
         results.push({ profile, address: profileId, index: currentId });

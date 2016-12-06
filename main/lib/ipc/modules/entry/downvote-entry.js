@@ -1,6 +1,3 @@
-/*!
- * Copyright akasha
- */
 "use strict";
 const index_1 = require('../auth/index');
 const Promise = require('bluebird');

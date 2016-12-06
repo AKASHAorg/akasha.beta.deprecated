@@ -17,10 +17,10 @@ const execute = Promise.coroutine(function*(data: ProfileUpdateRequest) {
 
     const txData = yield contracts.instance.profile
         .updateHash(
-        ipfsHash,
-        currentProfile.profileAddress,
-        data.gas
-    );
+            ipfsHash,
+            currentProfile.profileAddress,
+            data.gas
+        );
     const tx = yield userModule.auth.signData(txData, data.token);
     return { tx };
 });

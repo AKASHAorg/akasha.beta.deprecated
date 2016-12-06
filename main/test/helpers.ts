@@ -128,7 +128,7 @@ export const checkSynced = (done) => {
         }
         return injected;
     });
-    interval = setInterval(()=> ipcMain.emit(channel.server.geth.syncStatus, '', {}), 1000);
+    interval = setInterval(() => ipcMain.emit(channel.server.geth.syncStatus, '', {}), 1000);
 };
 
 export const getToken = (done, authData, collect) => {

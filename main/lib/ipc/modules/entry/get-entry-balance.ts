@@ -8,7 +8,7 @@ import { GethConnector } from '@akashaproject/geth-connector';
  */
 const execute = Promise.coroutine(function*(data: {entryId: string}) {
     const balanceAddress = yield contracts.instance.entries.getEntryFund(data.entryId);
-    if(!balanceAddress) {
+    if (!balanceAddress) {
         return { balance: 'claimed', unit: '', entryId: data.entryId };
     }
     const weiAmount = yield GethConnector.getInstance().web3.eth.getBalanceAsync(balanceAddress);

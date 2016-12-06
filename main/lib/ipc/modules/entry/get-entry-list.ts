@@ -10,7 +10,7 @@ const execute = Promise.coroutine(function*(data: {entryId: string}[]) {
         return getEntry.execute(entryObj);
     });
     const resolved = yield Promise.all(pool);
-    return {collection: resolved}
+    return { collection: resolved }
 });
 
 export default { execute, name: 'getEntryList' };

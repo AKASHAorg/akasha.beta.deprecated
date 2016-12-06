@@ -34,7 +34,8 @@ abstract class IpfsEmitter extends AbstractEmitter {
                     .api
                     .apiClient
                     .bootstrap
-                    .add(peerId, (err, data) => {})
+                    .add(peerId, (err, data) => {
+                    })
             }
         );
         return this;
