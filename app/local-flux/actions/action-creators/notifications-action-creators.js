@@ -26,3 +26,17 @@ export function readYouNotif(number){
         payload: number
     }
 }
+
+export function deleteYouNotif(index){
+    return {
+        type: types.DELETE_YOU_NOTIF,
+        payload: index
+    }
+}
+
+export function deleteFeedNotif(index){
+    return {
+        type: types.DELETE_FEED_NOTIF,
+        payload: index
+    }
+}

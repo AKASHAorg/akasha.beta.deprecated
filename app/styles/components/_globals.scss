@@ -49,6 +49,12 @@ html, body {
   z-index: 5;
   background: rgba(0,0,0,0.312);
 }
+.link {
+    cursor: pointer;
+    font-weight: 500;
+    text-decoration: underline;
+    color: #008B8B;
+}
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {

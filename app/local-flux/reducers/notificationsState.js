@@ -48,6 +48,14 @@ const notificationsState = createReducer(initialState, {
         }
         return state;
     },
+    [types.DELETE_YOU_NOTIF]: (state, action) => {
+        const youNotifs = state.get('youFeed').delete(action.payload);
+        return state.merge({youFeed: youNotifs});
+    },
+    [types.DELETE_FEED_NOTIF]: (state, action) => {
+        const feedNotifs = state.get('notifFeed').delete(action.payload);
+        return state.merge({notifFeed: feedNotifs});
+    }
 });
 
 export default notificationsState;
