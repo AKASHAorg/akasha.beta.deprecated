@@ -29,39 +29,48 @@ export function getSortedEntries (entries) {
         entries
     };
 }
-export function getProfileEntries (flags) {
+export function entryProfileIterator (flags) {
     return {
-        type: types.GET_PROFILE_ENTRIES,
+        type: types.ENTRY_PROFILE_ITERATOR,
         flags
     };
 }
-export function getProfileEntriesSuccess (data, flags) {
+export function entryProfileIteratorSuccess (data, flags) {
     return {
-        type: types.GET_PROFILE_ENTRIES_SUCCESS,
+        type: types.ENTRY_PROFILE_ITERATOR_SUCCESS,
         data,
         flags
     };
 }
 
-export function getProfileEntriesError (error, flags) {
+export function entryProfileIteratorError (error, flags) {
     return {
-        type: types.GET_PROFILE_ENTRIES_ERROR,
+        type: types.ENTRY_PROFILE_ITERATOR_ERROR,
         error,
         flags
     };
 }
 
-export function createSavedEntrySuccess (entry) {
+export function moreEntryProfileIterator (flags) {
     return {
-        type: types.CREATE_SAVED_ENTRY_SUCCESS,
-        entry
+        type: types.MORE_ENTRY_PROFILE_ITERATOR,
+        flags
+    };
+}
+export function moreEntryProfileIteratorSuccess (data, flags) {
+    return {
+        type: types.MORE_ENTRY_PROFILE_ITERATOR_SUCCESS,
+        data,
+        flags
     };
 }
 
-export function createSavedEntryError (error) {
+export function moreEntryProfileIteratorError (error, flags) {
+    error.code = 'MEPIE01';
     return {
-        type: types.CREATE_SAVED_ENTRY_ERROR,
-        error
+        type: types.MORE_ENTRY_PROFILE_ITERATOR_ERROR,
+        error,
+        flags
     };
 }
 
@@ -81,6 +90,7 @@ export function getSavedEntriesSuccess (data, flags) {
 }
 
 export function getSavedEntriesError (error, flags) {
+    error.code = 'GSEE01';
     return {
         type: types.GET_SAVED_ENTRIES_ERROR,
         error,
@@ -104,6 +114,7 @@ export function getSavedEntriesListSuccess (data, flags) {
 }
 
 export function getSavedEntriesListError (error, flags) {
+    error.code = 'GSELE01';
     return {
         type: types.GET_SAVED_ENTRIES_LIST_ERROR,
         error,
@@ -127,6 +138,7 @@ export function moreSavedEntriesListSuccess (data, flags) {
 }
 
 export function moreSavedEntriesListError (error, flags) {
+    error.code = 'MSELE01';
     return {
         type: types.MORE_SAVED_ENTRIES_LIST_ERROR,
         error,
@@ -445,6 +457,7 @@ export function saveEntrySuccess (data, flags) {
 }
 
 export function saveEntryError (error, flags) {
+    error.code = 'SEE01';
     return {
         type: types.SAVE_ENTRY_ERROR,
         error,

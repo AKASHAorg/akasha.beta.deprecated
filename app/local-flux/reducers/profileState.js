@@ -50,11 +50,19 @@ const initialState = fromJS({
     flags: new Map()
 });
 
+const flagHandler = (state, { flags }) =>
+    state.merge({
+        flags: state.get('flags').merge(flags)
+    });
+
+const errorHandler = (state, { error, flags }) =>
+    state.merge({
+        errors: state.get('errors').push(new ErrorRecord(error)),
+        flags: state.get('flags').merge(flags)
+    });
+
 const profileState = createReducer(initialState, {
-    [types.LOGIN]: (state, { flags }) =>
-        state.merge({
-            flags: state.get('flags').merge(flags)
-        }),
+    [types.LOGIN]: flagHandler,
 
     [types.LOGIN_SUCCESS]: (state, { profile, flags }) =>
         state.merge({
@@ -62,16 +70,9 @@ const profileState = createReducer(initialState, {
             flags: state.get('flags').merge(flags),
         }),
 
-    [types.LOGIN_ERROR]: (state, { error, flags }) =>
-        state.merge({
-            errors: state.get('errors').push(new ErrorRecord(error)),
-            flags: state.get('flags').merge(flags),
-        }),
+    [types.LOGIN_ERROR]: errorHandler,
 
-    [types.GET_CURRENT_PROFILE]: (state, { flags }) =>
-        state.merge({
-            flags: state.get('flags').merge(flags)
-        }),
+    [types.GET_CURRENT_PROFILE]: flagHandler,
 
     [types.GET_CURRENT_PROFILE_SUCCESS]: (state, { data, flags }) =>
         state.merge({
@@ -79,16 +80,9 @@ const profileState = createReducer(initialState, {
             flags: state.get('flags').merge(flags)
         }),
 
-    [types.GET_CURRENT_PROFILE_ERROR]: (state, { error, flags }) =>
-        state.merge({
-            errors: state.get('errors').push(new ErrorRecord(error)),
-            flags: state.get('flags').merge(flags)
-        }),
+    [types.GET_CURRENT_PROFILE_ERROR]: errorHandler,
 
-    [types.GET_LOGGED_PROFILE]: (state, { flags }) =>
-        state.merge({
-            flags: state.get('flags').merge(flags)
-        }),
+    [types.GET_LOGGED_PROFILE]: flagHandler,
 
     [types.GET_LOGGED_PROFILE_SUCCESS]: (state, { profile, flags }) =>
         state.merge({
@@ -109,8 +103,7 @@ const profileState = createReducer(initialState, {
             errors: state.get('errors').push(new ErrorRecord(error))
         }),
 
-    [types.GET_LOCAL_PROFILES]: (state, { flags }) =>
-        state.merge({ flags: state.get('flags').merge(flags) }),
+    [types.GET_LOCAL_PROFILES]: flagHandler,
 
     [types.GET_LOCAL_PROFILES_SUCCESS]: (state, { data, flags }) =>
         state.merge({
@@ -134,10 +127,7 @@ const profileState = createReducer(initialState, {
             errors: state.get('errors').push(new ErrorRecord(error))
         }),
 
-    [types.GET_PROFILE_DATA]: (state, { flags }) =>
-        state.merge({
-            flags: state.get('flags').merge(flags)
-        }),
+    [types.GET_PROFILE_DATA]: flagHandler,
 
     [types.GET_PROFILE_DATA_SUCCESS]: (state, { data, flags }) => {
         const profileIndex = state.get('profiles').findIndex(profile =>
@@ -157,11 +147,7 @@ const profileState = createReducer(initialState, {
         });
     },
 
-    [types.GET_PROFILE_DATA_ERROR]: (state, { error, flags }) =>
-        state.merge({
-            errors: state.get('errors').push(new ErrorRecord(error)),
-            flags: state.get('flags').merge(flags)
-        }),
+    [types.GET_PROFILE_DATA_ERROR]: errorHandler,
 
     [types.GET_PROFILE_BALANCE_SUCCESS]: (state, { data }) => {
         const loggedProfileAccount = state.getIn(['loggedProfile', 'account']);
@@ -176,21 +162,11 @@ const profileState = createReducer(initialState, {
             errors: new List()
         }),
 
-    [types.UPDATE_PROFILE_DATA]: (state, { flags }) =>
-        state.merge({
-            flags: state.get('flags').merge(flags)
-        }),
+    [types.UPDATE_PROFILE_DATA]: flagHandler,
 
-    [types.UPDATE_PROFILE_DATA_ERROR]: (state, { error, flags }) =>
-        state.merge({
-            errors: state.get('errors').push(new ErrorRecord(error)),
-            flags: state.get('flags').merge(flags)
-        }),
+    [types.UPDATE_PROFILE_DATA_ERROR]: errorHandler,
 
-    [types.UPDATE_PROFILE_DATA_SUCCESS]: (state, { flags }) =>
-        state.merge({
-            flags: state.get('flags').merge(flags)
-        }),
+    [types.UPDATE_PROFILE_DATA_SUCCESS]: flagHandler,
 
     [types.RESET_FLAGS]: state =>
         state.merge({
@@ -217,10 +193,7 @@ const profileState = createReducer(initialState, {
         });
     },
 
-    [types.FOLLOWERS_ITERATOR]: (state, { flags }) =>
-        state.merge({
-            flags: state.get('flags').merge(flags)
-        }),
+    [types.FOLLOWERS_ITERATOR]: flagHandler,
 
     [types.FOLLOWERS_ITERATOR_SUCCESS]: (state, { data, flags }) => {
         const profileIndex = state.get('profiles').findIndex(profile =>
@@ -242,6 +215,28 @@ const profileState = createReducer(initialState, {
         }
         return state.merge({
             profiles: state.get('profiles').mergeIn([profileIndex], {
+                followers: followersList,
+                moreFollowers
+            }),
+            flags: state.get('flags').merge(flags)
+        });
+    },
+
+    [types.FOLLOWERS_ITERATOR_ERROR]: errorHandler,
+
+    [types.MORE_FOLLOWERS_ITERATOR]: flagHandler,
+
+    [types.MORE_FOLLOWERS_ITERATOR_SUCCESS]: (state, { data, flags }) => {
+        const profileIndex = state.get('profiles').findIndex(profile =>
+            profile.get('akashaId') === data.akashaId
+        );
+        const moreFollowers = data.limit === data.collection.length;
+        const followersList = moreFollowers ?
+            fromJS(data.collection.slice(0, -1)) :
+            fromJS(data.collection);
+
+        return state.merge({
+            profiles: state.get('profiles').mergeIn([profileIndex], {
                 followers: state.getIn(['profiles', profileIndex, 'followers'])
                     .concat(followersList),
                 moreFollowers
@@ -250,16 +245,9 @@ const profileState = createReducer(initialState, {
         });
     },
 
-    [types.FOLLOWERS_ITERATOR_ERROR]: (state, { error, flags }) =>
-        state.merge({
-            errors: state.get('errors').push(new ErrorRecord(error)),
-            flags: state.get('flags').merge(flags)
-        }),
+    [types.MORE_FOLLOWERS_ITERATOR_ERROR]: errorHandler,
 
-    [types.FOLLOWING_ITERATOR]: (state, { flags }) =>
-        state.merge({
-            flags: state.get('flags').merge(flags)
-        }),
+    [types.FOLLOWING_ITERATOR]: flagHandler,
 
     [types.FOLLOWING_ITERATOR_SUCCESS]: (state, { data, flags }) => {
         const profileIndex = state.get('profiles').findIndex(profile =>
@@ -281,6 +269,27 @@ const profileState = createReducer(initialState, {
         }
         return state.merge({
             profiles: state.get('profiles').mergeIn([profileIndex], {
+                following: followingList,
+                moreFollowing
+            }),
+            flags: state.get('flags').merge(flags)
+        });
+    },
+
+    [types.FOLLOWING_ITERATOR_ERROR]: errorHandler,
+
+    [types.MORE_FOLLOWING_ITERATOR]: flagHandler,
+
+    [types.MORE_FOLLOWING_ITERATOR_SUCCESS]: (state, { data, flags }) => {
+        const profileIndex = state.get('profiles').findIndex(profile =>
+            profile.get('akashaId') === data.akashaId
+        );
+        const moreFollowing = data.limit === data.collection.length;
+        const followingList = moreFollowing ?
+            fromJS(data.collection.slice(0, -1)) :
+            fromJS(data.collection);
+        return state.merge({
+            profiles: state.get('profiles').mergeIn([profileIndex], {
                 following: state.getIn(['profiles', profileIndex, 'following'])
                     .concat(followingList),
                 moreFollowing
@@ -289,11 +298,7 @@ const profileState = createReducer(initialState, {
         });
     },
 
-    [types.FOLLOWING_ITERATOR_ERROR]: (state, { error, flags }) =>
-        state.merge({
-            errors: state.get('errors').push(new ErrorRecord(error)),
-            flags: state.get('flags').merge(flags)
-        }),
+    [types.MORE_FOLLOWING_ITERATOR_ERROR]: errorHandler,
 
     [types.FOLLOW_PROFILE]: (state, { flags }) => {
         const followPending = state.getIn(['flags', 'followPending']);
@@ -423,10 +428,7 @@ const profileState = createReducer(initialState, {
         });
     },
 
-    [types.IS_FOLLOWER]: (state, { flags }) =>
-        state.merge({
-            flags: state.get('flags').merge(flags)
-        }),
+    [types.IS_FOLLOWER]: flagHandler,
 
     [types.IS_FOLLOWER_SUCCESS]: (state, { data, flags }) => {
         const profileIndex = state.get('profiles').findIndex(profile =>
@@ -441,11 +443,7 @@ const profileState = createReducer(initialState, {
         });
     },
 
-    [types.IS_FOLLOWER_ERROR]: (state, { error, flags }) =>
-        state.merge({
-            errors: state.get('errors').push(new ErrorRecord(error)),
-            flags: state.get('flags').merge(flags)
-        }),
+    [types.IS_FOLLOWER_ERROR]: errorHandler,
 
     [types.CLEAR_FOLLOWERS]: (state, { akashaId }) => {
         const profileIndex = state.get('profiles').findIndex(prf =>

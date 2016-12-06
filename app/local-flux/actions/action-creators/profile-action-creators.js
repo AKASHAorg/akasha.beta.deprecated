@@ -287,6 +287,29 @@ export function followersIteratorError (error, flags) {
     };
 }
 
+export function moreFollowersIterator (flags) {
+    return {
+        type: types.MORE_FOLLOWERS_ITERATOR,
+        flags
+    };
+}
+
+export function moreFollowersIteratorSuccess (data, flags) {
+    return {
+        type: types.MORE_FOLLOWERS_ITERATOR_SUCCESS,
+        data,
+        flags
+    };
+}
+
+export function moreFollowersIteratorError (error, flags) {
+    return {
+        type: types.MORE_FOLLOWERS_ITERATOR_ERROR,
+        error,
+        flags
+    };
+}
+
 export function followingIterator (flags) {
     return {
         type: types.FOLLOWING_ITERATOR,
@@ -305,6 +328,29 @@ export function followingIteratorSuccess (data, flags) {
 export function followingIteratorError (error, flags) {
     return {
         type: types.FOLLOWING_ITERATOR_ERROR,
+        error,
+        flags
+    };
+}
+
+export function moreFollowingIterator (flags) {
+    return {
+        type: types.MORE_FOLLOWING_ITERATOR,
+        flags
+    };
+}
+
+export function moreFollowingIteratorSuccess (data, flags) {
+    return {
+        type: types.MORE_FOLLOWING_ITERATOR_SUCCESS,
+        data,
+        flags
+    };
+}
+
+export function moreFollowingIteratorError (error, flags) {
+    return {
+        type: types.MORE_FOLLOWING_ITERATOR_ERROR,
         error,
         flags
     };

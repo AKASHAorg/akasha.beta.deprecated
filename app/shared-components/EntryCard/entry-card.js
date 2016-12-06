@@ -18,9 +18,10 @@ class EntryCard extends Component {
     }
 
     selectProfile = () => {
-        const { entry, selectProfile } = this.props;
+        const { entry, loggedAkashaId } = this.props;
+        const { router } = this.context;
         const profileAddress = entry.getIn(['entryEth', 'publisher', 'profile']);
-        selectProfile(profileAddress);
+        router.push(`/${loggedAkashaId}/profile/${profileAddress}`);
     }
 
     selectTag = (ev, tag) => {
@@ -64,7 +65,7 @@ class EntryCard extends Component {
     }
 
     render () {
-        const { entry, blockNr, selectedTag, voteEntryPending, isSaved, intl } = this.props;
+        const { entry, blockNr, selectedTag, voteEntryPending, isSaved, style, intl } = this.props;
         const { palette } = this.context.muiTheme;
         const content = entry.get('content');
         const existingVoteWeight = entry.get('voteWeight') || 0;
@@ -92,7 +93,10 @@ class EntryCard extends Component {
           </div>
         );
         return (
-          <Card className="start-xs" style={{ marginBottom: 16 }}>
+          <Card
+            className="start-xs"
+            style={Object.assign({}, { margin: '5px 5px 16px 5px' }, style)}
+          >
             <CardHeader
               title={
                 <button
@@ -259,11 +263,13 @@ EntryCard.propTypes = {
     voteEntryPending: PropTypes.shape(),
     isSaved: PropTypes.bool,
     entryActions: PropTypes.shape(),
+    style: PropTypes.shape(),
     intl: PropTypes.shape()
 };
 
 EntryCard.contextTypes = {
-    muiTheme: PropTypes.shape()
+    muiTheme: PropTypes.shape(),
+    router: PropTypes.shape()
 };
 
 export default injectIntl(EntryCard);

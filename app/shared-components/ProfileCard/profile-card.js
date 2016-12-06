@@ -76,7 +76,7 @@ class ProfileCard extends Component {
 
         return (
           <Paper
-            style={{ width: '220px', margin: '10px', display: 'flex', flexDirection: 'column' }}
+            style={{ width: '215px', margin: '10px', display: 'flex', flexDirection: 'column' }}
           >
             <div style={{ display: 'flex', justifyContent: 'center', padding: '15px' }}>
               <button
