@@ -27,14 +27,11 @@ class StreamPage extends Component {
     }
 
     componentWillReceiveProps (nextProps) {
-        const { selectedTag, entryActions, params } = nextProps;
+        const { selectedTag, entryActions } = nextProps;
         if (selectedTag !== this.props.selectedTag) {
             this.setState({
                 filter: 'tag'
             });
-            if (params.filter !== 'tag') {
-                this.context.router.push(`/${params.akashaId}/explore/tag`);
-            }
             entryActions.clearTagEntries();
             if (selectedTag) {
                 entryActions.entryTagIterator(selectedTag, 0, LIMIT + 1);

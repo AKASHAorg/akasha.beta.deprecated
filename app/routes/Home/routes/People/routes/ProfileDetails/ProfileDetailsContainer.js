@@ -63,7 +63,7 @@ class ProfileDetailsContainer extends Component {
             followPending, fetchingFollowers, fetchingFollowing, fetchingProfileData,
             fetchingProfileEntries, loggedProfileData, isFollowerPending, blockNr,
             savedEntriesIds, moreProfileEntries, fetchingMoreProfileEntries, fetchingMoreFollowers,
-            fetchingMoreFollowing } = this.props;
+            fetchingMoreFollowing, tagActions } = this.props;
         const isFollower = !fetchingProfileData && profileData &&
             loggedProfileData.getIn(['isFollower', profileData.get('akashaId')]);
 
@@ -105,6 +105,7 @@ class ProfileDetailsContainer extends Component {
                 followProfile={this.followProfile}
                 unfollowProfile={this.unfollowProfile}
                 selectProfile={this.selectProfile}
+                selectTag={tagActions.saveTag}
                 isFollowerPending={isFollowerPending}
                 votePending={votePending}
             />
