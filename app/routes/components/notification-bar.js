@@ -19,17 +19,29 @@ class NotificationBar extends Component {
         }
     }
     _getAutoHideDuration = (notification) => {
+        if (notification && notification.get('duration')) {
+            return notification.get('duration');
+        }
         return null;
     }
     _getActionLabel = (notification) => {
+        const { palette } = this.context.muiTheme;
+        let message;
+        if (notification && notification.get('duration')) {
+            return null;
+        }
         switch (notification && notification.type) {
             case 'alertHasPublishingDrafts':
-                return 'View';
+                message = 'View';
+                break;
             case 'alertLoginRequired':
-                return 'Confirm';
+                message = 'Confirm';
+                break;
             default:
-                return 'Dismiss';
+                message = 'Dismiss';
+                break;
         }
+        return <span style={{ color: palette.accent2Color }}>{message}</span>;
     }
     _handleActionTouchTap = (ev, notification) => {
         ev.preventDefault();
@@ -48,7 +60,6 @@ class NotificationBar extends Component {
     _hideNotification = (reason, notification) => {
         const { appActions } = this.props;
         const notifications = this.state.notifications;
-        console.log('hiding', notification);
         this.setState({
             notifications: notifications.delete(notifications.findIndex(notific =>
                 notific.id === notification.id))
@@ -60,6 +71,9 @@ class NotificationBar extends Component {
     render () {
         const { intl } = this.props;
         const { notifications } = this.state;
+        if (!notifications.size) {
+            return null;
+        }
         const message = notifications.first() ?
             intl.formatMessage(
                 notificationMessages[notifications.first().get('id')],
@@ -84,6 +98,10 @@ NotificationBar.propTypes = {
     appState: PropTypes.shape(),
     appActions: PropTypes.shape(),
     intl: PropTypes.shape()
+};
+
+NotificationBar.contextTypes = {
+    muiTheme: PropTypes.shape()
 };
 
 export default injectIntl(NotificationBar);

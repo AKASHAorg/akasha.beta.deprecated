@@ -188,7 +188,8 @@ class ProfileActions {
                     }]);
                     this.appActions.showNotification({
                         id: 'updatingProfile',
-                        values: {}
+                        values: {},
+                        duration: 3000
                     });
                 },
                 onError: error =>
@@ -443,7 +444,8 @@ class ProfileActions {
                     }]);
                     this.appActions.showNotification({
                         id: 'followingProfile',
-                        values: { akashaId: data.akashaId }
+                        values: { akashaId: data.akashaId },
+                        duration: 3000
                     });
                 },
                 onError: error =>
@@ -480,7 +482,8 @@ class ProfileActions {
                     }]);
                     this.appActions.showNotification({
                         id: 'unfollowingProfile',
-                        values: { akashaId: data.akashaId }
+                        values: { akashaId: data.akashaId },
+                        duration: 3000
                     });
                 },
                 onError: error =>

@@ -333,7 +333,8 @@ class EntryActions {
                     }]);
                     this.appActions.showNotification({
                         id: 'upvotingEntry',
-                        values: { entryTitle }
+                        values: { entryTitle },
+                        duration: 3000
                     });
                 },
                 onError: (error, data) =>
@@ -365,7 +366,8 @@ class EntryActions {
                     }]);
                     this.appActions.showNotification({
                         id: 'downvotingEntry',
-                        values: { entryTitle }
+                        values: { entryTitle },
+                        duration: 3000
                     });
                 },
                 onError: (error, data) =>
