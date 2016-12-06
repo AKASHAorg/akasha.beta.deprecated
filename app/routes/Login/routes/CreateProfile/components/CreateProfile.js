@@ -41,8 +41,8 @@ class CreateProfile extends Component {
         this.setState({ opt_details: false });
     }
     componentDidMount () {
-        if (this.refs.firstName) {
-            this.refs.firstName.focus();
+        if (this.refs.lastName) {
+            this.refs.lastName.focus();
         }
     }
     componentWillUpdate (nextProps) {
@@ -76,10 +76,6 @@ class CreateProfile extends Component {
             optionalData.about = this.state.about;
         }
 
-        // save a temporary profile to indexedDB
-        // console.log(profileData);
-        // console.log('profile creation is disabled for testing purposes!!')
-        // return;
         this.avatar.getImage().then((uintArr) => {
             if (uintArr) {
                 optionalData.avatar = uintArr;
@@ -200,7 +196,7 @@ class CreateProfile extends Component {
             floatingLabelText: intl.formatMessage(formMessages.firstName),
             ref: 'firstName',
             floatingLabelStyle: floatLabelStyle,
-            style: { width: '210px', verticalAlign: 'middle' },
+            style: { marginLeft: '20px', verticalAlign: 'middle', width: '47%' },
             statePath: 'formValues.firstName',
             required: true,
             addValueLink: true,
@@ -212,7 +208,7 @@ class CreateProfile extends Component {
             floatingLabelStyle: floatLabelStyle,
             floatingLabelText: intl.formatMessage(formMessages.lastName),
             ref: 'lastName',
-            style: { width: '210px', marginLeft: '20px', verticalAlign: 'middle' },
+            style: { verticalAlign: 'middle', width: '47%' },
             statePath: 'formValues.lastName',
             required: true,
             addValueLink: true,
@@ -287,19 +283,20 @@ class CreateProfile extends Component {
             <form
               action=""
               onSubmit={this.handleSubmit}
+              className="row"
               ref={(profileForm) => { this.profileForm = profileForm; }}
             >
-              <TextField {...firstNameProps} />
-              <TextField {...lastNameProps} />
-              <TextField {...akashaIdProps} />
-              <TextField {...passwordProps} />
-              <TextField {...password2Props} />
-              <Checkbox
-                label={intl.formatMessage(profileMessages.optionalDetailsLabel)}
-                style={{ marginTop: '18px', marginLeft: '-4px' }}
-                checked={this.state.opt_details}
-                onCheck={this.handleShowDetails}
-              />
+                <TextField {...lastNameProps} />
+                <TextField {...firstNameProps} />
+                <TextField  {...akashaIdProps} />
+                <TextField {...passwordProps} />
+                <TextField {...password2Props} />
+                <Checkbox
+                  label={intl.formatMessage(profileMessages.optionalDetailsLabel)}
+                  style={{ marginTop: '18px', marginLeft: '-4px' }}
+                  checked={this.state.opt_details}
+                  onCheck={this.handleShowDetails}
+                />
               <div style={{ display: this.state.opt_details ? 'block' : 'none' }} >
                 <h3 style={{ margin: '30px 0 10px 0' }} >
                   {intl.formatMessage(profileMessages.avatarTitle)}
@@ -332,7 +329,7 @@ class CreateProfile extends Component {
                   onChange={this._handleAboutChange}
                 />
                 <div className="row" style={{ margin: '20px 0 0 0' }}>
-                  <h3 className="col-xs-10">
+                  <h3 className="col-xs-10" style={{ marginTop: 10 }}>
                     {intl.formatMessage(profileMessages.linksTitle)}
                   </h3>
                   <div className="col-xs-2 end-xs">

@@ -57,7 +57,7 @@ class TagsField extends React.Component {
         if (currentTags.indexOf(tag) > -1) {
             return this._createError(`Tag "${tag}" already added!`, true);
         }
-        if (tag.length > 2 && tag.length <= 24) {
+        if (tag.length > 3 && tag.length <= 24) {
             if (ALPHANUMERIC_REGEX.test(tag)) {
                 this.state.error = '';
                 if (this.props.onTagAdded) {
@@ -69,7 +69,7 @@ class TagsField extends React.Component {
         } else if (tag.length >= 25) {
             this._createError('Tags can have maximum 24 characters.', false);
         } else {
-            this._createError('Tags should have at least 3 characters.', false);
+            this._createError('Tags should have at least 4 characters.', false);
         }
         return null;
     };

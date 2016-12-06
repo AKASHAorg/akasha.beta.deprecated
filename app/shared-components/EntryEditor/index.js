@@ -56,11 +56,11 @@ class EntryEditor extends Component {
     };
 
     render () {
-        const { showTitle, titlePlaceholder, editorPlaceholder } = this.props;
+        const { showTitle, titlePlaceholder, editorPlaceholder, readOnly } = this.props;
         return (
           <div className="editor" style={{ textAlign: 'left' }}>
             <div>
-              {showTitle &&
+              {showTitle && !readOnly &&
                 <div className={styles.title}>
                   <div className={styles.titleInner}>
                     <textarea
@@ -82,6 +82,7 @@ class EntryEditor extends Component {
                         this.props.editorRef(this);
                     }
                 }}
+                readOnly={readOnly}
                 sidebarRendererFn={this._renderSidebar}
                 editorState={this.state.editorState}
                 onChange={this._handleEditorChange}

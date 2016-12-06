@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 
 const PanelContainerHeader = (props) => {
-    const { header, showBorder, subTitle, title, scrollTop, muiTheme,
+    const { header, showBorder, subTitle, title, shrinked, muiTheme,
         headerHeight, headerMinHeight, headerStyle } = props;
     return (
       <div
@@ -12,15 +12,15 @@ const PanelContainerHeader = (props) => {
             left: 0,
             right: 0,
             minHeight: headerMinHeight,
-            height: `${headerHeight - (scrollTop / 1.5)}px`,
+            height: `${shrinked ? headerHeight - 24 : headerHeight}px`,
             padding: '12px 24px',
             background: muiTheme.palette.canvasColor,
             margin: 0,
             zIndex: 10,
             transition: 'height 0.118s ease-in-out',
-            boxShadow: (scrollTop > 0) ?
+            boxShadow: shrinked ?
                 `0px 3px 3px -1px ${muiTheme.palette.paperShadowColor}` : 'none',
-            borderBottom: (showBorder && scrollTop === 0) ?
+            borderBottom: showBorder && !shrinked ?
                 `1px solid ${muiTheme.palette.borderColor}` : 'none'
         }, headerStyle)}
       >
@@ -44,7 +44,7 @@ PanelContainerHeader.propTypes = {
     showBorder: PropTypes.bool,
     subTitle: PropTypes.string,
     title: PropTypes.string,
-    scrollTop: PropTypes.number,
+    shrinked: PropTypes.bool,
     muiTheme: PropTypes.shape().isRequired,
     headerHeight: PropTypes.number,
     headerMinHeight: PropTypes.number,
