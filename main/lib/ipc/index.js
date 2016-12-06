@@ -1,4 +1,5 @@
 "use strict";
+const genesis_1 = require('./config/genesis');
 const GethIPC_1 = require('./GethIPC');
 const IpfsIPC_1 = require('./IpfsIPC');
 const AuthIPC_1 = require('./AuthIPC');
@@ -31,6 +32,11 @@ function initModules() {
             logger.registerLogger('akasha', { maxsize: 50 * 1024 });
             ipcChannels.forEach((obj) => {
                 obj.initListeners(webContents);
+            });
+            genesis_1.checkForGenesis((errGenesis) => {
+                if (errGenesis) {
+                    (Logger_1.default.getInstance().getLogger('akasha')).error(errGenesis);
+                }
             });
         },
         logger,

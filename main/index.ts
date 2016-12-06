@@ -5,6 +5,7 @@ import { IpfsConnector } from '@akashaproject/ipfs-connector';
 import { resolve } from 'path';
 import { initModules } from './lib/ipc/index';
 import { initMenu } from './menu';
+import Logger from './lib/ipc/Logger';
 
 const stopServices = () => {
     GethConnector.getInstance().stop();
@@ -45,6 +46,7 @@ export function bootstrapApp() {
 
     app.on('ready', () => {
         let modules = initModules();
+        Logger.getInstance();
         mainWindow = new BrowserWindow({
             width: 1280,
             height: 720,

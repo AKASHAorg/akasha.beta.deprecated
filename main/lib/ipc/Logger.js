@@ -12,7 +12,23 @@ class AppLogger {
         }
         this.loggers = {};
         const defaultPath = path_1.join(electron_1.app.getPath('userData'), 'logs');
-        this._setLogsFolder(defaultPath);
+        fs_1.open(defaultPath, 'r', (err, fd) => {
+            if (err) {
+                if (err.code === "ENOENT") {
+                    return this._buildPath(defaultPath);
+                }
+                throw err;
+            }
+            this._setLogsFolder(defaultPath);
+            this.PATH_OK = true;
+            return this.PATH_OK;
+        });
+    }
+    _buildPath(path) {
+        this._setLogsFolder(path);
+        fs_1.mkdirSync(path);
+        this.PATH_OK = true;
+        return this.PATH_OK;
     }
     static getInstance() {
         if (!this[symbol]) {
@@ -22,19 +38,6 @@ class AppLogger {
     }
     _setLogsFolder(path) {
         this.logPath = path;
-        return fs_1.access(this.logPath, fs_1.constants.W_OK, (err) => {
-            if (err) {
-                fs_1.mkdir(this.logPath, (error) => {
-                    if (error) {
-                        this.PATH_OK = false;
-                        throw new Error(error.message);
-                    }
-                    this.PATH_OK = true;
-                });
-                return;
-            }
-            this.PATH_OK = true;
-        });
     }
     registerLogger(name, { level = 'info', errorLevel = 'warn', maxsize = 10 * 1024, maxFiles = 1 } = {}) {
         if (!this.PATH_OK) {

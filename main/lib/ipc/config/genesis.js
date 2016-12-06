@@ -29,6 +29,7 @@ function checkForGenesis(cb) {
         if (err) {
             if (err.code === "ENOENT") {
                 writeGenesisFile();
+                return cb();
             }
             return cb(err);
         }

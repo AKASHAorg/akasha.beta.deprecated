@@ -1,3 +1,4 @@
+import { checkForGenesis } from './config/genesis';
 import GethIPC from './GethIPC';
 import IpfsIPC from './IpfsIPC';
 import AuthIPC from './AuthIPC';
@@ -32,6 +33,11 @@ export function initModules() {
             logger.registerLogger('akasha', { maxsize: 50 * 1024 });
             ipcChannels.forEach((obj: any) => {
                 obj.initListeners(webContents);
+            });
+            checkForGenesis((errGenesis) => {
+                    if (errGenesis) {
+                        (Logger.getInstance().getLogger('akasha')).error(errGenesis);
+                    }
             });
         },
         logger,
