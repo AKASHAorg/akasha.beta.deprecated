@@ -97,6 +97,10 @@ class GethIPC extends GethEmitter {
                 GethConnector.getInstance().writeGenesis(
                     join(__dirname, 'config', 'genesis.json'),
                     (err: Error, stdout: any) => {
+                        if(err){
+                            (Logger.getInstance().getLogger(this.logger)).error(err);
+                        }
+                        (Logger.getInstance().getLogger(this.logger)).info(stdout);
                         GethConnector.getInstance().start(data);
                     });
             }
