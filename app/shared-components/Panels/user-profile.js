@@ -2,6 +2,7 @@ import React, { PropTypes, Component } from 'react';
 import { colors } from 'material-ui/styles';
 import { Paper, Tabs, Tab, List, ListItem, Avatar } from 'material-ui';
 import UserProfileHeader from './user-profile/user-profile-header';
+import ActionDelete from 'material-ui/svg-icons/action/delete';
 
 const tabStyles = {
     default_tab: {
@@ -72,29 +73,43 @@ class UserProfilePanel extends Component {
     renderYouNotifs = () => {
         const youNotifs = this.props.notificationsState.get('youFeed');
         const notifs = [];
-        youNotifs.forEach((val) => {
+        youNotifs.forEach((val, index) => {
             if (val.type === eventTypes.PUBLISH) {
-                return notifs.push(this._renderEntry(val));
+                return notifs.push(this._renderEntry(val, index));
             }
             if (val.type === eventTypes.COMMENT) {
-                return notifs.push(this._renderComment(val));
+                return notifs.push(this._renderComment(val, index));
             }
             if (val.type === eventTypes.VOTE) {
-                return notifs.push(this._renderVote(val));
+                return notifs.push(this._renderVote(val, index));
             }
             if (val.type === eventTypes.FOLLOWING) {
-                return notifs.push(this._renderFollower(val));
+                return notifs.push(this._renderFollower(val, index));
             }
         });
         return (<List>{notifs}</List>)
     };
 
-    _renderFollower (event) {
+    navigateToTag (event, tag) {
+        event.preventDefault();
+        const { tagActions, appActions } = this.props;
+        appActions.hidePanel();
+        tagActions.saveTag(tag);
+    }
+    navigateToProfile(profileAddress) {
+        const { router } = this.context;
+        const { appActions } = this.props;
+        const loggedAkashaId = this.props.loggedProfileData.get('akashaId');
+        appActions.hidePanel();
+        router.push(`/${loggedAkashaId}/profile/${profileAddress}`);
+    }
+
+    _renderFollower (event, index) {
         return (
             <ListItem
                 leftAvatar={<Avatar src={event.follower.baseUrl + '/' + event.follower.avatar} />}
                 primaryText={
-                    <strong style={{ color: colors.darkBlack }} >
+                    <strong onClick={() => { this.navigateToProfile(event.follower.profile)}} style={{ color: colors.darkBlack }} >
                         {event.follower.akashaId}
                     </strong>
                 }
@@ -108,29 +123,32 @@ class UserProfilePanel extends Component {
                 }
                 secondaryTextLines={2}
                 key={eventTypes.FOLLOWING + event.follower.akashaId}
+                rightIcon={<ActionDelete onClick={(e)=> {this.props.notificationsActions.deleteYouNotif(index)}}/>}
             />);
     };
 
-    _renderEntry (event) {
+    _renderEntry (event, index) {
         return (
             <ListItem
                 leftAvatar={<Avatar src={event.author.baseUrl + '/' + event.author.avatar} />}
                 primaryText={
-                    <strong style={{ color: colors.darkBlack }} >
+                    <strong onClick={() => { this.navigateToProfile(event.profileAddress)}} style={{ color: colors.darkBlack }} >
                         {event.author.akashaId}
                     </strong>
                 }
                 secondaryText={
                     <p>
                         <span style={{ color: colors.darkBlack }} >
-                            Published <a style={{ fontWeight: '500' }} href="#" >{event.entry.content.title}</a> on tag <a
-                            href="#" >{event.tag}</a>
+                            Published <span className="link" onClick={(e)=> { this.navigateToTag(e, event.tag);}} >
+                            {event.entry.content.title}</span> on tag &nbsp;
+                            <span className="link" onClick={(e)=> { this.navigateToTag(e, event.tag);}} >{event.tag}</span>
                         </span><br />
                         Block {event.blockNumber}
                     </p>
                 }
                 secondaryTextLines={2}
                 key={event.tag + event.entry.entryId}
+                rightIcon={<ActionDelete onClick={(e)=> {this.props.notificationsActions.deleteYouNotif(index)}} />}
             />);
     }
 
@@ -139,7 +157,7 @@ class UserProfilePanel extends Component {
             <ListItem
                 leftAvatar={<Avatar src={event.author.baseUrl + '/' + event.author.avatar} />}
                 primaryText={
-                    <strong style={{ color: colors.darkBlack }} >
+                    <strong onClick={() => { this.navigateToProfile(event.profileAddress)}} style={{ color: colors.darkBlack }}  >
                         {event.author.akashaId}
                     </strong>
                 }
@@ -153,6 +171,7 @@ class UserProfilePanel extends Component {
                 }
                 secondaryTextLines={2}
                 key={eventTypes.COMMENT + event.blockNumber + event.commentId}
+                rightIcon={<ActionDelete onClick={(e)=> {this.props.notificationsActions.deleteFeedNotif(index)}}/>}
             />);
     }
 
@@ -162,7 +181,7 @@ class UserProfilePanel extends Component {
             <ListItem
                 leftAvatar={<Avatar src={event.author.baseUrl + '/' + event.author.avatar} />}
                 primaryText={
-                    <strong style={{ color: colors.darkBlack }} >
+                    <strong onClick={() => { this.navigateToProfile(event.profileAddress)}} style={{ color: colors.darkBlack }} >
                         {event.author.akashaId}
                     </strong>
                 }
@@ -177,6 +196,7 @@ class UserProfilePanel extends Component {
                 }
                 secondaryTextLines={2}
                 key={eventTypes.VOTE + event.blockNumber}
+                rightIcon={<ActionDelete onClick={(e)=> {this.props.notificationsActions.deleteFeedNotif(index)}} />}
             />
         );
     }
@@ -249,5 +269,8 @@ UserProfilePanel.propTypes = {
     notificationsActions: PropTypes.shape(),
     showPanel: PropTypes.func
 };
-
+UserProfilePanel.contextTypes = {
+    muiTheme: PropTypes.shape(),
+    router: PropTypes.shape()
+};
 export default UserProfilePanel;

@@ -55,6 +55,14 @@ class NotificationsActions {
         this.dispatch(action.readYouNotif(number));
     }
 
+    deleteYouNotif(index){
+        this.dispatch(action.deleteYouNotif(index));
+    }
+
+    deleteFeedNotif(index){
+        this.dispatch(action.deleteFeedNotif(index));
+    }
+
     /**
      * Stop subscription
      */

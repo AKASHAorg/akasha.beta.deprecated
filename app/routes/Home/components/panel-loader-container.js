@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import PanelLoader from 'shared-components/Panels/panel-loader';
-import { AppActions, ProfileActions, EntryActions, DraftActions, NotificationsActions } from 'local-flux';
+import { AppActions, ProfileActions, EntryActions, DraftActions, NotificationsActions, TagActions } from 'local-flux';
 
 function mapStateToProps (state) {
     return {
@@ -12,7 +12,7 @@ function mapStateToProps (state) {
         drafts: state.draftState.get('drafts'),
         draftsCount: state.draftState.get('draftsCount'),
         entriesCount: state.entryState.get('entriesCount'),
-        notificationsState: state.notificationsState
+        notificationsState: state.notificationsState,
     };
 }
 
@@ -22,7 +22,8 @@ function mapDispatchToProps (dispatch) {
         profileActions: new ProfileActions(dispatch),
         entryActions: new EntryActions(dispatch),
         draftActions: new DraftActions(dispatch),
-        notificationsActions: new NotificationsActions(dispatch)
+        notificationsActions: new NotificationsActions(dispatch),
+        tagActions: new TagActions(dispatch),
     };
 }
 
