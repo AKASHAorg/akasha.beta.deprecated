@@ -84,7 +84,10 @@ const eProcState = createReducer(initialState, {
             newStatus.starting = null;
             newStatus.stopped = null;
         }
-        return state.merge({ gethStatus: state.get('gethStatus').merge(newStatus) });
+        return state.merge({
+            gethStatus: state.get('gethStatus').merge(newStatus),
+            gethErrors: state.get('gethErrors').clear()
+        });
     },
 
     [types.START_GETH_ERROR]: (state, action) =>
@@ -122,7 +125,8 @@ const eProcState = createReducer(initialState, {
             ipfsStatus.downloading = null;
         }
         return state.merge({
-            ipfsStatus: new IpfsStatus(action.data)
+            ipfsStatus: new IpfsStatus(action.data),
+            ipfsErrors: state.get('ipfsErrors').clear()
         });
     },
 
