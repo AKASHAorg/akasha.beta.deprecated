@@ -93,9 +93,10 @@ class ProfileActivity extends Component {
     }
 
     componentWillUnmount () {
-        const { profileActions, profileData } = this.props;
+        const { profileActions, entryActions, profileData } = this.props;
         profileActions.clearFollowing(profileData.akashaId);
         profileActions.clearFollowers(profileData.akashaId);
+        entryActions.clearProfileEntries();
     }
 
     handleScroll = () => {

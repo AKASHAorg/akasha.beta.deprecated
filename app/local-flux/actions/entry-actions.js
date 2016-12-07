@@ -158,44 +158,53 @@ class EntryActions {
             });
         });
 
-    entryProfileIterator = (akashaId, start, limit = 6) => {
-        this.dispatch(entryActionCreators.entryProfileIterator({
-            fetchingProfileEntries: true
-        }));
-        this.entryService.entryProfileIterator({
-            akashaId,
-            start,
-            limit,
-            onSuccess: data =>
-                this.dispatch(entryActionCreators.entryProfileIteratorSuccess(data, {
-                    fetchingProfileEntries: false
-                })),
-            onError: error =>
-                this.dispatch(entryActionCreators.entryProfileIteratorError(error, {
-                    fetchingProfileEntries: false,
-                    profileEntriesFetched: true
-                }))
+    entryProfileIterator = (akashaId, start, limit = 6) =>
+        this.dispatch((dispatch, getState) => {
+            const loggedAkashaId = getState().profileState.getIn(['loggedProfile', 'akashaId']);
+            dispatch(entryActionCreators.entryProfileIterator({
+                fetchingProfileEntries: akashaId !== loggedAkashaId,
+                fetchingPublishedEntries: akashaId === loggedAkashaId
+            }));
+            this.entryService.entryProfileIterator({
+                akashaId,
+                start,
+                limit,
+                onSuccess: data =>
+                    dispatch(entryActionCreators.entryProfileIteratorSuccess(data, {
+                        fetchingProfileEntries: false,
+                        fetchingPublishedEntries: false
+                    })),
+                onError: error =>
+                    dispatch(entryActionCreators.entryProfileIteratorError(error, {
+                        fetchingProfileEntries: false,
+                        fetchingPublishedEntries: false
+                    }))
+            });
         });
-    };
 
-    moreEntryProfileIterator = (akashaId, start, limit = 6) => {
-        this.dispatch(entryActionCreators.moreEntryProfileIterator({
-            fetchingMoreProfileEntries: true
-        }));
-        this.entryService.moreEntryProfileIterator({
-            akashaId,
-            start,
-            limit,
-            onSuccess: data =>
-                this.dispatch(entryActionCreators.moreEntryProfileIteratorSuccess(data, {
-                    fetchingMoreProfileEntries: false
-                })),
-            onError: error =>
-                this.dispatch(entryActionCreators.moreEntryProfileIteratorError(error, {
-                    fetchingMoreProfileEntries: false
-                }))
+    moreEntryProfileIterator = (akashaId, start, limit = 6) =>
+        this.dispatch((dispatch, getState) => {
+            const loggedAkashaId = getState().profileState.getIn(['loggedProfile', 'akashaId']);
+            this.dispatch(entryActionCreators.moreEntryProfileIterator({
+                fetchingMoreProfileEntries: akashaId !== loggedAkashaId,
+                fetchingMorePublishedEntries: akashaId === loggedAkashaId
+            }));
+            this.entryService.moreEntryProfileIterator({
+                akashaId,
+                start,
+                limit,
+                onSuccess: data =>
+                    this.dispatch(entryActionCreators.moreEntryProfileIteratorSuccess(data, {
+                        fetchingMoreProfileEntries: false,
+                        fetchingMorePublishedEntries: false
+                    })),
+                onError: error =>
+                    this.dispatch(entryActionCreators.moreEntryProfileIteratorError(error, {
+                        fetchingMoreProfileEntries: false,
+                        fetchingMorePublishedEntries: false
+                    }))
+            });
         });
-    };
 
     entryTagIterator = (tagName, start, limit) => {
         this.dispatch(entryActionCreators.entryTagIterator({ fetchingTagEntries: true }));
@@ -277,6 +286,9 @@ class EntryActions {
 
     clearSavedEntries = () =>
         this.dispatch(entryActionCreators.clearSavedEntries());
+
+    clearProfileEntries = () =>
+        this.dispatch(entryActionCreators.clearProfileEntries());
 
     addUpvoteAction = payload =>
         this.appActions.addPendingAction({

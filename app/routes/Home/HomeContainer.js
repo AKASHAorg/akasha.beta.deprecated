@@ -137,7 +137,6 @@ class HomeContainer extends React.Component {
             </div>
             <div className={styles.panelLoader} >
               <PanelLoaderContainer
-                loggedProfileData={loggedProfileData}
                 profileAddress={profileAddress}
                 params={params}
                 showPanel={appActions.showPanel}

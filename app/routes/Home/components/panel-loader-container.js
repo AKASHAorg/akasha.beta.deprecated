@@ -4,19 +4,26 @@ import { AppActions, ProfileActions, EntryActions, DraftActions, NotificationsAc
 
 function mapStateToProps (state) {
     const loggedProfile = state.profileState.get('loggedProfile');
-    const publishedEntries = state.entryState.get('entries').filter(entry =>
-        entry.get('type') === 'profileEntry' && entry.get('akashaId') === loggedProfile.get('akashaId')
-    );
+    const publishedEntries = state.entryState.get('entries')
+        .filter(entry =>
+            entry.get('type') === 'profileEntry'
+                && entry.get('akashaId') === loggedProfile.get('akashaId')
+        )
+        .map(entry => entry.get('content'));
     return {
-        fetchingProfileData: state.profileState.getIn(['flags', 'fetchingProfileData']),
-        loginRequested: state.profileState.getIn(['flags', 'loginRequested']),
-        panelState: state.panelState,
-        loggedProfile,
-        entries: publishedEntries,
         drafts: state.draftState.get('drafts'),
         draftsCount: state.draftState.get('draftsCount'),
-        entriesCount: state.entryState.get('entriesCount'),
+        fetchingMorePublishedEntries: state.entryState.getIn(['flags', 'fetchingMorePublishedEntries']),
+        fetchingPublishedEntries: state.entryState.getIn(['flags', 'fetchingPublishedEntries']),
+        fetchingProfileData: state.profileState.getIn(['flags', 'fetchingProfileData']),
+        loggedProfile,
+        loggedProfileData: state.profileState.get('profiles').find(profile =>
+            profile.get('profile') === state.profileState.getIn(['loggedProfile', 'profile'])),
+        loginRequested: state.profileState.getIn(['flags', 'loginRequested']),
+        moreProfileEntries: state.entryState.get('moreProfileEntries'),
         notificationsState: state.notificationsState,
+        panelState: state.panelState,
+        publishedEntries
     };
 }
 

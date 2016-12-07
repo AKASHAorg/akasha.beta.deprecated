@@ -135,7 +135,9 @@ const entryState = createReducer(initialState, {
 
     [types.GET_SAVED_ENTRIES_LIST_SUCCESS]: (state, { data, flags }) =>
         state.merge({
-            entries: fromJS(data.collection).map(entry => entry.set('type', 'savedEntry')),
+            entries: state.get('entries')
+                .filter(entry => entry.get('type') !== 'savedEntry')
+                .concat(fromJS(data.collection).map(entry => entry.set('type', 'savedEntry'))),
             flags: state.get('flags').merge(flags)
         }),
 
@@ -159,8 +161,12 @@ const entryState = createReducer(initialState, {
             fromJS(data.collection.slice(0, -1)) :
             fromJS(data.collection);
         return state.merge({
-            entries: newProfileEntries.map(entry =>
-                entry.merge({ type: 'profileEntry', akashaId: data.akashaId })),
+            entries: state.get('entries')
+                .filter(entry =>
+                    entry.get('type') !== 'profileEntry' || entry.get('akashaId') !== data.akashaId)
+                .concat(newProfileEntries.map(entry =>
+                    entry.merge({ type: 'profileEntry', akashaId: data.akashaId })
+                )),
             moreProfileEntries,
             flags: state.get('flags').merge(flags)
         });
@@ -223,7 +229,9 @@ const entryState = createReducer(initialState, {
             fromJS(data.collection.slice(0, -1)) :
             fromJS(data.collection);
         return state.merge({
-            entries: newTagEntries.map(entry => entry.set('type', 'tagEntry')),
+            entries: state.get('entries')
+                .filter(entry => entry.get('type') !== 'tagEntry')
+                .concat(newTagEntries.map(entry => entry.set('type', 'tagEntry'))),
             moreTagEntries,
             flags: state.get('flags').merge(flags)
         });
@@ -362,6 +370,11 @@ const entryState = createReducer(initialState, {
     [types.CLEAR_SAVED_ENTRIES]: state =>
         state.merge({
             entries: state.get('entries').filter(entry => entry.get('type') !== 'savedEntry')
+        }),
+
+    [types.CLEAR_PROFILE_ENTRIES]: state =>
+        state.merge({
+            entries: state.get('entries').filter(entry => entry.get('type') !== 'profileEntry')
         })
 });
 
