@@ -24,13 +24,13 @@ export function create(data) {
  * @returns {any}
  */
 export function getCommentContent(hash) {
-    if (comments.records.getFull(hash)) {
-        return Promise.resolve(comments.records.getFull(hash));
+    if (comments.getFull(hash)) {
+        return Promise.resolve(comments.getFull(hash));
     }
     return IpfsConnector.getInstance().api
         .get(hash)
         .then((data) => {
-            comments.records.setFull(hash, data);
+            comments.setFull(hash, data);
             return data;
         })
 }
