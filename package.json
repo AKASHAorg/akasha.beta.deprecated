@@ -123,7 +123,7 @@
     "draft-js": "0.9.1",
     "draft-js-export-html": "0.5.2",
     "electron": "1.4.10",
-    "electron-builder": "^10.2.0",
+    "electron-builder": "10.6.1",
     "electron-debug": "1.1.0",
     "electron-devtools-installer": "2.0.1",
     "electron-mocha": "3.2.1",
@@ -189,7 +189,7 @@
     "webpack-node-externals": "1.5.4"
   },
   "dependencies": {
-    "@akashaproject/contracts.js": "1.2.9",
+    "@akashaproject/contracts.js": "1.2.10",
     "@akashaproject/geth-connector": "1.6.18",
     "@akashaproject/ipfs-connector": "1.6.12",
     "bluebird": "3.4.6",
