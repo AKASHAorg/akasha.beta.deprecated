@@ -25,6 +25,7 @@ class CommentService extends BaseService {
             Channel.client.comments.comment,
             this.createListener(onError, onSuccess)
         );
+        console.log(payload, 'creating comment!!');
         Channel.server.comments.comment.send(payload);
     }
 }

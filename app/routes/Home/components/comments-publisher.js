@@ -29,8 +29,7 @@ class CommentsPublisher extends Component {
     }
     listenForMinedTx = (nextProps) => {
         const { minedTx, pendingTx, fetchingMined, fetchingPending, deletingPendingTx, appActions,
-            entryActions, transactionActions, commentsActions, loggedProfile,
-            pendingActions } = nextProps;
+            transactionActions, commentsActions, loggedProfile, pendingActions } = nextProps;
         const isNotFetching = !fetchingMined && !fetchingPending;
         const pendingSubsTxs = isNotFetching ?
             pendingTx.toJS().filter(tx =>
@@ -52,7 +51,6 @@ class CommentsPublisher extends Component {
                 } else {
                     commentsActions[`${tx.type}Success`](tx.draftId);
                     appActions.deletePendingAction(correspondingAction.get('id'));
-                    entryActions.getEntriesStream(loggedProfile.get('akashaId'));
                 }
             }
         });
