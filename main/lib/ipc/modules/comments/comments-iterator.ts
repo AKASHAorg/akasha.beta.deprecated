@@ -1,5 +1,6 @@
 import * as Promise from 'bluebird';
 import { constructed as contracts } from '../../contracts/index';
+import getComment from './get-comment';
 /**
  * Get entries indexed by tag
  * @type {Function}
@@ -14,7 +15,7 @@ const execute = Promise.coroutine(function*(data: {start?: number, limit?: numbe
     const results = [];
     let counter = 0;
     if (!data.start) {
-        comment = yield contracts.instance.comments.getComment(data.entryId, currentId);
+        comment = yield getComment.execute({entryId: data.entryId, commentId: currentId});
         results.push({ commentId: currentId, content: comment });
         counter = 1;
     }
@@ -25,7 +26,7 @@ const execute = Promise.coroutine(function*(data: {start?: number, limit?: numbe
         if (currentId === '0') {
             break;
         }
-        comment = yield contracts.instance.comments.getComment(data.entryId, currentId);
+        comment = yield getComment.execute({entryId: data.entryId, commentId: currentId});
         results.push({ commentId: currentId, content: comment });
         counter++;
     }

@@ -9,7 +9,7 @@ import { comments } from '../models/records';
 export function create(data) {
     const date = (new Date()).toJSON();
     const constructed = {
-        content: data.content,
+        content: data,
         date
     };
     return IpfsConnector.getInstance().api

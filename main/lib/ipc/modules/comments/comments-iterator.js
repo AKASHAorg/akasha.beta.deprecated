@@ -1,6 +1,7 @@
 "use strict";
 const Promise = require('bluebird');
 const index_1 = require('../../contracts/index');
+const get_comment_1 = require('./get-comment');
 const execute = Promise.coroutine(function* (data) {
     let currentId = (data.start) ? data.start : yield index_1.constructed.instance.comments.getFirstComment(data.entryId);
     if (currentId === '0') {
@@ -11,7 +12,7 @@ const execute = Promise.coroutine(function* (data) {
     const results = [];
     let counter = 0;
     if (!data.start) {
-        comment = yield index_1.constructed.instance.comments.getComment(data.entryId, currentId);
+        comment = yield get_comment_1.default.execute({ entryId: data.entryId, commentId: currentId });
         results.push({ commentId: currentId, content: comment });
         counter = 1;
     }
@@ -21,7 +22,7 @@ const execute = Promise.coroutine(function* (data) {
         if (currentId === '0') {
             break;
         }
-        comment = yield index_1.constructed.instance.comments.getComment(data.entryId, currentId);
+        comment = yield get_comment_1.default.execute({ entryId: data.entryId, commentId: currentId });
         results.push({ commentId: currentId, content: comment });
         counter++;
     }
