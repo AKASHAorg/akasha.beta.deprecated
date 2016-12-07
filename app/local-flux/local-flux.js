@@ -1,6 +1,6 @@
 export {
     AppActions,
-    CommentActions,
+    CommentsActions,
     DraftActions,
     EProcActions,
     EntryActions,

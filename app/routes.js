@@ -56,7 +56,7 @@ export default (
 
     {/** user home after login */}
     <Route component={requireAuth(HomeContainer)} path=":akashaId" >
-      <IndexRedirect to="explore/tag" />
+      <IndexRedirect to="explore/tag" ignoreScrollBehaviour />
 
       {/** loads articles from blockchain */}
       <Route component={StreamPageContainer}>
@@ -80,7 +80,7 @@ export default (
         <Route component={PublishEntryCompleteContainer} path="publish-complete" />
       </Route>
       {/** view entry page */}
-      <Route component={EntryPageContainer} path=":entryId" />
+      <Route component={EntryPageContainer} path="entry/:entryId" />
     </Route>
   </Route>
 );

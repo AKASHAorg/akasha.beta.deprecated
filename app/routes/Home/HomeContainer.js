@@ -13,6 +13,7 @@ import PublishEntryRunner from './components/publish-entry-runner';
 import TagPublisher from './components/tag-publisher';
 import FollowRunner from './components/follow-runner';
 import VoteRunner from './components/vote-runner';
+import CommentsPublisher from './components/comments-publisher';
 
 class HomeContainer extends React.Component {
     constructor (props) {
@@ -141,7 +142,6 @@ class HomeContainer extends React.Component {
                 updatingProfile={updatingProfile}
               />
             </div>
-            <EntryModal />
             <div className={`col-xs-12 ${styles.childWrapper}`} >
               {this.props.children}
             </div>
@@ -151,6 +151,7 @@ class HomeContainer extends React.Component {
             <PublishEntryRunner />
             <TagPublisher />
             <VoteRunner />
+            <CommentsPublisher />
           </div>
         );
     }

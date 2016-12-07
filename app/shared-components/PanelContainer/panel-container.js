@@ -10,12 +10,12 @@ class PanelContainer extends React.Component {
         };
     }
     shouldComponentUpdate (nextProps, nextState) {
-        return (nextState.isHeaderShrinked !== this.state.isHeaderShrinked) ||
-        (this.props.children !== nextProps.children)
+        return (nextState !== this.state) ||
+        (this.props !== nextProps);
     }
     _handleScroll = () => {
         const scrollTop = this.panelContent.scrollTop;
-        if(scrollTop >= 24) {
+        if (scrollTop >= 24) {
             this.setState({
                 isHeaderShrinked: true
             });

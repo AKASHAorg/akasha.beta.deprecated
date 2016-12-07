@@ -1,5 +1,5 @@
 import * as appActionCreators from './app-action-creators';
-import * as commentActionCreators from './comment-action-creators';
+import * as commentsActionCreators from './comments-action-creators';
 import * as draftActionCreators from './draft-action-creators';
 import * as entryActionCreators from './entry-action-creators';
 import * as externalProcessActionCreators from './external-process-action-creators';
@@ -13,7 +13,7 @@ import * as validationActionCreators from './validation-action-creators';
 
 export {
     appActionCreators,
-    commentActionCreators,
+    commentsActionCreators,
     draftActionCreators,
     entryActionCreators,
     externalProcessActionCreators,

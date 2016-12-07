@@ -13,6 +13,11 @@
     z-index: 5;
     left: 64px;
     right: 0;
+    &_inner {
+        max-width: 752px;
+        margin: 0 auto;
+        transition: box-shadow 0.215s ease-in-out;
+    }
 }
 .entry_title {
     max-width: 700px;
@@ -36,12 +41,34 @@
     padding-top: 64px;
 }
 .comment_writer {
-    vertical-align: middle;
+    padding: 16px 0;
 }
-.avatar_image, .comment_editor {
+.avatar_image,
+.comment_editor {
     display: inline-block;
 }
+.avatar_image {
+    vertical-align: top;
+}
+.comment_publish_actions {
+    margin-top: 8px;
+}
 .comment_editor {
-    max-width: 644px;
-    margin-left: 16px
+    width: 636px;
+    margin-left: 16px;
+    vertical-align: middle;
+    border: 1px solid #DDD;
+    padding: 0 8px;
+    :global {
+        .megadraft {
+            .megadraft-editor {
+                .paragraph {
+                    width: 100%;
+                }
+            }
+        }
+        .megadraft-editor .public-DraftEditorPlaceholder-root {
+            line-height: 32px;
+        }
+    }
 }
