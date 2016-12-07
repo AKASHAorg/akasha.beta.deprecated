@@ -242,7 +242,9 @@ class ServiceStatusBar extends Component {
                 eProcActions.startSync();
             }
             const options = gethSettings.toJS();
-            options.ipcpath = options.ipcpath.replace('\\\\.\\pipe\\', '');
+            if (options && options.ipcpath) {
+                options.ipcpath = options.ipcpath.replace('\\\\.\\pipe\\', '');
+            }
             eProcActions.startGeth(options);
         }
         this.setState({
