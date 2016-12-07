@@ -65,7 +65,7 @@ export default class Auth {
      * @private
      */
     private _read(token: any) {
-        // until geth will handle properly eth_sign ...
+        // until geth will handle properly eth_sign ... "\x19Ethereum Signed Message:\n"  + len(message)
         /*        if (!this.isLogged(token)) {
          throw new Error('Token is not valid');
          }*/

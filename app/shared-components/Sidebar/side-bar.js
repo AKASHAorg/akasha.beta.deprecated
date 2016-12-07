@@ -86,7 +86,7 @@ class SideBar extends Component {
               <CommunityIcon disabled tooltip="Coming Soon" />
               <PeopleIcon onClick={this._handlePeople} tooltip="People" />
             </div>
-            <div style={{ flexGrow: 1, padding: '14px 8px', display: 'flex', justifyContent: 'center' }} >
+            <div style={{ flexGrow: 1, padding: '14px 8px', display: 'flex', justifyContent: 'center', alignItems: 'flex-end' }} >
               <LogoButton />
             </div>
           </div>
