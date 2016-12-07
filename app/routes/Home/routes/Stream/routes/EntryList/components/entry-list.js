@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { FlatButton } from 'material-ui';
-import { DataLoader, EntryCard } from 'shared-components';
+import { DataLoader, EntryCard, EntryListContainer } from 'shared-components';
 import QuickEntryEditor from './quick-entry-editor';
 import TagSearch from './tag-search';
 
@@ -48,23 +48,27 @@ class EntryList extends Component {
         const { loggedProfileData, selectedTag, tagEntries, savedEntries, moreTagEntries,
             moreSavedEntries, tagEntriesCount, entriesStream, subscribePending, params, blockNr,
             votePending, entryActions, savedEntriesIds, fetchingTagEntries, fetchingMoreTagEntries,
-            fetchingSavedEntriesList, fetchingMoreSavedEntriesList } = this.props;
+            fetchingSavedEntriesList, fetchingMoreSavedEntriesList, getTriggerRef } = this.props;
         const { palette } = this.context.muiTheme;
         const entries = params.filter === 'tag' ? tagEntries : savedEntries;
         const moreEntries = params.filter === 'tag' ? moreTagEntries : moreSavedEntries;
-
         const subscriptions = parseInt(loggedProfileData.get('subscriptionsCount'), 10) > 0 ?
             entriesStream.get('tags') :
             null;
         const subscribePendingFlag = subscribePending && subscribePending.find(subs =>
             subs.tagName === selectedTag);
-        const timeout = 700;
-        const flag = params.filter === 'tag' ? fetchingTagEntries : fetchingSavedEntriesList;
-        const showMoreFlag = params.filter === 'tag' ?
+        const fetchingEntries = params.filter === 'tag' ? fetchingTagEntries : fetchingSavedEntriesList;
+        const fetchingMoreEntries = params.filter === 'tag' ?
             fetchingMoreTagEntries :
             fetchingMoreSavedEntriesList;
         return (
-          <div style={{ paddingBottom: moreEntries && !showMoreFlag ? '30px' : '0px' }}>
+          <div
+            style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center'
+            }}
+          >
             {params.filter === 'tag' && selectedTag &&
               <TagSearch
                 tagName={selectedTag}
@@ -81,48 +85,13 @@ class EntryList extends Component {
                 onFullScreenClick={this._handleEditorFullScreen}
               />
             */ }
-            <DataLoader flag={flag} timeout={timeout} size={80} style={{ paddingTop: '120px' }}>
-              <div>
-                {entries.size === 0 &&
-                  <div
-                    style={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        color: palette.disabledColor,
-                        paddingTop: '10px'
-                    }}
-                  >
-                    No entries
-                  </div>
-                }
-                {entries && entries.map((entry, key) => {
-                    const voteEntryPending = votePending && votePending.find(vote =>
-                        vote.entryId === entry.get('entryId'));
-                    const isSaved = !!savedEntriesIds.find(id => id === entry.get('entryId'));
-                    return <EntryCard
-                      loggedAkashaId={loggedProfileData.get('akashaId')}
-                      entry={entry}
-                      key={key}
-                      onContentClick={ev => this._navigateToEntry(ev, entry)}
-                      onTagClick={this._navigateToTag}
-                      blockNr={blockNr}
-                      selectTag={this.selectTag}
-                      selectedTag={selectedTag}
-                      voteEntryPending={voteEntryPending}
-                      entryActions={entryActions}
-                      isSaved={isSaved}
-                      style={{ width: '640px' }}
-                    />;
-                })}
-                {moreEntries &&
-                  <DataLoader flag={showMoreFlag} size={30}>
-                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                      <div ref={this.props.getTriggerRef} style={{ height: 0 }} />
-                    </div>
-                  </DataLoader>
-                }
-              </div>
-            </DataLoader>
+            <EntryListContainer
+                entries={entries}
+                fetchingEntries={fetchingEntries}
+                fetchingMoreEntries={fetchingMoreEntries}
+                getTriggerRef={getTriggerRef}
+                moreEntries={moreEntries}
+            />
           </div>
         );
     }

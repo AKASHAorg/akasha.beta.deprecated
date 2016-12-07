@@ -287,7 +287,10 @@ class EntryService extends BaseService {
             Channel.server.entry.isActive.send({ entryId });
         });
 
-    getVoteOf = ({ akashaId, entryId, onError = () => {}, onSuccess }) =>
+    getVoteOf = ({ akashaId, entryId, onError = () => {}, onSuccess }) => {
+        if (this._openChannels.has(Channel.server.entry.getVoteOf.channel)) {
+            return Channel.server.entry.getVoteOf.send({ akashaId, entryId });
+        }
         this.openChannel({
             clientManager: this.clientManager,
             serverChannel: Channel.server.entry.getVoteOf,
@@ -295,6 +298,45 @@ class EntryService extends BaseService {
             listenerCb: this.createListener(onError, onSuccess)
         }, () => {
             Channel.server.entry.getVoteOf.send({ akashaId, entryId });
+        });
+    };
+
+    canClaim = ({ entryId, onError, onSuccess }) => {
+        if (this._openChannels.has(Channel.server.entry.canClaim.channel)) {
+            return Channel.server.entry.canClaim.send({ entryId });
+        }
+        this.openChannel({
+            clientManager: this.clientManager,
+            serverChannel: Channel.server.entry.canClaim,
+            clientChannel: Channel.client.entry.canClaim,
+            listenerCb: this.createListener(onError, onSuccess)
+        }, () => {
+            Channel.server.entry.canClaim.send({ entryId });
+        });
+    };
+
+    getEntryBalance = ({ entryId, onError, onSuccess }) => {
+        if (this._openChannels.has(Channel.server.entry.getEntryBalance.channel)) {
+            return Channel.server.entry.getEntryBalance.send({ entryId });
+        }
+        this.openChannel({
+            clientManager: this.clientManager,
+            serverChannel: Channel.server.entry.getEntryBalance,
+            clientChannel: Channel.client.entry.getEntryBalance,
+            listenerCb: this.createListener(onError, onSuccess)
+        }, () => {
+            Channel.server.entry.getEntryBalance.send({ entryId });
+        });
+    };
+
+    claim = ({ entryId, token, gas, onError, onSuccess }) =>
+        this.openChannel({
+            clientManager: this.clientManager,
+            serverChannel: Channel.server.entry.claim,
+            clientChannel: Channel.client.entry.claim,
+            listenerCb: this.createListener(onError, onSuccess)
+        }, () => {
+            Channel.server.entry.claim.send({ entryId, token, gas });
         });
 }
 

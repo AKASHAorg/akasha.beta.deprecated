@@ -48,6 +48,7 @@ const UserProfileHeader = (props) => {
                 tooltip="Wallet"
                 style={{ width: '40px', height: '40px' }}
                 iconStyle={svgStyle.style}
+                disabled
               >
                 <SvgIcon
                   viewBox={svgStyle.viewBox}
@@ -62,6 +63,7 @@ const UserProfileHeader = (props) => {
                 tooltip="Comments"
                 style={{ width: '40px', height: '40px' }}
                 iconStyle={svgStyle.style}
+                disabled
               >
                 <SvgIcon
                   viewBox={svgStyle.viewBox}
@@ -76,6 +78,7 @@ const UserProfileHeader = (props) => {
                 tooltip="Votes"
                 style={{ width: '40px', height: '40px' }}
                 iconStyle={svgStyle.style}
+                disabled
               >
                 <SvgIcon
                   viewBox={svgStyle.viewBox}
@@ -90,6 +93,7 @@ const UserProfileHeader = (props) => {
                 tooltip="Network"
                 style={{ width: '40px', height: '40px' }}
                 iconStyle={svgStyle.style}
+                disabled
               >
                 <SvgIcon
                   viewBox={svgStyle.viewBox}
@@ -119,6 +123,7 @@ const UserProfileHeader = (props) => {
                 tooltip="Settings"
                 style={{ width: '40px', height: '40px' }}
                 iconStyle={svgStyle.style}
+                disabled
               >
                 <SvgIcon
                   viewBox={svgStyle.viewBox}

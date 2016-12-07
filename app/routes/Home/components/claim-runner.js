@@ -2,7 +2,7 @@ import { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { AppActions, EntryActions, TagActions, TransactionActions } from 'local-flux';
 
-class VoteRunner extends Component {
+class ClaimRunner extends Component {
 
     componentWillReceiveProps (nextProps) {
         this.launchActions(nextProps);
@@ -12,58 +12,34 @@ class VoteRunner extends Component {
     launchActions = (nextProps) => {
         const { pendingActions, appActions, entryActions } = nextProps;
         const actions = pendingActions.filter(action =>
-            action.get('status') === 'readyToPublish');
+            action.get('status') === 'readyToPublish' && action.get('type') === 'claim');
         if (actions.size > 0) {
             actions.forEach((action) => {
-                const actionType = action.get('type');
-                switch (actionType) {
-                    case 'upvote':
-                        appActions.updatePendingAction(action.merge({
-                            status: 'publishing'
-                        }));
-                        entryActions.upvote(
-                            action.getIn(['payload', 'entryId']),
-                            action.getIn(['payload', 'weight']),
-                            action.getIn(['payload', 'value']),
-                            action.get('gas')
-                        );
-                        break;
-                    case 'downvote':
-                        appActions.updatePendingAction(action.merge({
-                            status: 'publishing'
-                        }));
-                        entryActions.downvote(
-                            action.getIn(['payload', 'entryId']),
-                            action.getIn(['payload', 'weight']),
-                            action.getIn(['payload', 'value']),
-                            action.get('gas')
-                        );
-                        break;
-                    default:
-                        break;
-                }
+                appActions.updatePendingAction(action.merge({
+                    status: 'publishing'
+                }));
+                entryActions.claim(
+                    action.getIn(['payload', 'entryId']),
+                    action.get('gas')
+                );
             });
         }
     };
     listenForMinedTx = (nextProps) => {
-        const { appActions, deletingPendingTx, entries, entryActions, fetchingMined,
-            fetchingPending, loggedProfile, minedTx, pendingActions, pendingTx,
-            transactionActions } = nextProps;
+        const { minedTx, pendingTx, fetchingMined, fetchingPending, deletingPendingTx, appActions,
+            entryActions, transactionActions, loggedProfile, pendingActions } = nextProps;
         const isNotFetching = !fetchingMined && !fetchingPending;
-        const pendingSubsTxs = isNotFetching ?
+        const pendingTxs = isNotFetching ?
             pendingTx.toJS().filter(tx =>
-                tx.profile === loggedProfile.get('profile') && (tx.type === 'upvote' ||
-                    tx.type === 'downvote')
+                tx.profile === loggedProfile.get('profile') && tx.type === 'claim'
             ) :
             [];
 
-        pendingSubsTxs.forEach((tx) => {
+        pendingTxs.forEach((tx) => {
             const mined = minedTx.find(mined => mined.tx === tx.tx);
             if (mined && !deletingPendingTx) {
                 const correspondingAction = pendingActions.find(action =>
                     action.get('type') === tx.type && action.get('status') === 'publishing');
-                const entry = entries.find(entry => entry.get('entryId') === tx.entryId);
-                const loggedAkashaId = loggedProfile.get('akashaId');
                 let minedSuccessfully;
                 if (correspondingAction) {
                     minedSuccessfully = mined.cumulativeGasUsed < correspondingAction.get('gas');
@@ -77,12 +53,8 @@ class VoteRunner extends Component {
                     return console.error(`There is no action "${tx.type}Success" in entryActions!! Please implement "${tx.type}Success" action!!`);
                 }
                 entryActions[`${tx.type}Success`](tx.entryId, minedSuccessfully);
-                entryActions.getScore(tx.entryId);
-                entryActions.getVoteOf(loggedProfile.get('akashaId'), tx.entryId);
-                if (entry.getIn(['entryEth', 'publisher', 'akashaId']) === loggedAkashaId) {
-                    entryActions.canClaim(tx.entryId);
-                    entryActions.getEntryBalance(tx.entryId);
-                }
+                entryActions.canClaim(tx.entryId);
+                entryActions.getEntryBalance(tx.entryId);
                 if (correspondingAction) {
                     appActions.deletePendingAction(correspondingAction.get('id'));
                 }
@@ -94,30 +66,28 @@ class VoteRunner extends Component {
     }
 }
 
-VoteRunner.propTypes = {
-    appActions: PropTypes.shape(),
-    deletingPendingTx: PropTypes.bool,
-    entries: PropTypes.shape(),
-    entryActions: PropTypes.shape(),
+ClaimRunner.propTypes = {
     fetchingMined: PropTypes.bool,
     fetchingPending: PropTypes.bool,
-    loggedProfile: PropTypes.shape(),
-    minedTx: PropTypes.shape(),
+    deletingPendingTx: PropTypes.bool,
     pendingActions: PropTypes.shape(),
-    pendingTx: PropTypes.shape(),
+    loggedProfile: PropTypes.shape(),
     transactionActions: PropTypes.shape(),
+    appActions: PropTypes.shape(),
+    entryActions: PropTypes.shape()
 };
 
 function mapStateToProps (state) {
     return {
-        deletingPendingTx: state.transactionState.getIn(['flags', 'deletingPendingTx']),
-        entries: state.entryState.get('entries').map(entry => entry.get('content')),
         fetchingMined: state.transactionState.get('fetchingMined'),
         fetchingPending: state.transactionState.get('fetchingPending'),
+        deletingPendingTx: state.transactionState.getIn(['flags', 'deletingPendingTx']),
         loggedProfile: state.profileState.get('loggedProfile'),
-        minedTx: state.transactionState.get('mined'),
+        loggedProfileData: state.profileState.get('profiles').find(prf =>
+            prf.get('profile') === state.profileState.getIn(['loggedProfile', 'profile'])),
         pendingActions: state.appState.get('pendingActions'),
         pendingTx: state.transactionState.get('pending'),
+        minedTx: state.transactionState.get('mined')
     };
 }
 
@@ -132,4 +102,4 @@ function mapDispatchToProps (dispatch) {
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(VoteRunner);
+)(ClaimRunner);

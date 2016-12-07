@@ -293,7 +293,7 @@ class EntryPage extends Component {
 }
 EntryPage.propTypes = {
     entry: React.PropTypes.shape(),
-    votePending: React.PropTypes.bool,
+    votePending: React.PropTypes.shape(),
     loggedProfile: React.PropTypes.shape(),
     profiles: React.PropTypes.shape(),
     appActions: React.PropTypes.shape(),

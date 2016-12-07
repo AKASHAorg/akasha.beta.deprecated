@@ -54,7 +54,7 @@ class PublishPanel extends React.Component {
     _populateDraft = (draft) => {
         const { content, licence, excerpt, tags, wordCount } = draft;
         let { title, featuredImage } = draft;
-        const contentMap = convertFromRaw(content);
+        const contentMap = convertFromRaw(content.toJS());
         const blockMap = contentMap.getBlockMap();
         if (!title) {
             title = this._generateTitle(blockMap);

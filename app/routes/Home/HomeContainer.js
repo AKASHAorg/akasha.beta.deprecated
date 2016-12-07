@@ -2,11 +2,12 @@ import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { AppActions, DraftActions, ProfileActions, EntryActions,
     TransactionActions, TagActions, EProcActions, NotificationsActions } from 'local-flux';
-import { Sidebar } from 'shared-components';
+import { DataLoader, Sidebar } from 'shared-components';
 import '../../styles/core.scss';
 import styles from './home.scss';
 import PanelLoaderContainer from './components/panel-loader-container';
 import EntryModal from './components/entry-modal';
+import ClaimRunner from './components/claim-runner';
 import CommonRunner from './components/common-runner';
 import ProfileUpdater from './components/profile-updater';
 import PublishEntryRunner from './components/publish-entry-runner';
@@ -110,49 +111,47 @@ class HomeContainer extends React.Component {
         const account = loggedProfile.get('account');
         const loadingInProgress = !loggedProfileData || fetchingLoggedProfile;
 
-        if (loadingInProgress) {
-            return (
-              <div>{this._getLoadingMessage()}</div>
-            );
-        }
         if (!account) {
             return <div>Logging out...</div>;
         }
         return (
-          <div className={styles.root} >
-            <div className={styles.sideBar} >
-              <Sidebar
-                activePanel={activePanel}
-                appActions={appActions}
-                draftActions={draftActions}
-                loggedProfileData={loggedProfileData}
-                notificationsCount={notificationsCount}
-                hasFeed={hasFeed}
-                profileActions={profileActions}
-                draftsCount={draftsCount}
-              />
+          <DataLoader flag={loadingInProgress} size={80} timeout={500}>
+            <div className={styles.root} >
+              <div className={styles.sideBar} >
+                <Sidebar
+                  activePanel={activePanel}
+                  appActions={appActions}
+                  draftActions={draftActions}
+                  loggedProfileData={loggedProfileData}
+                  notificationsCount={notificationsCount}
+                  hasFeed={hasFeed}
+                  profileActions={profileActions}
+                  draftsCount={draftsCount}
+                />
+              </div>
+              <div className={styles.panelLoader} >
+                <PanelLoaderContainer
+                  profileAddress={profileAddress}
+                  params={params}
+                  showPanel={appActions.showPanel}
+                  hidePanel={appActions.hidePanel}
+                  updateProfileData={this.updateProfileData}
+                  updatingProfile={updatingProfile}
+                />
+              </div>
+              <div className={`col-xs-12 ${styles.childWrapper}`}>
+                {this.props.children}
+              </div>
+              <ClaimRunner />
+              <CommonRunner />
+              <ProfileUpdater />
+              <FollowRunner />
+              <PublishEntryRunner />
+              <TagPublisher />
+              <VoteRunner />
+              <CommentsPublisher />
             </div>
-            <div className={styles.panelLoader} >
-              <PanelLoaderContainer
-                profileAddress={profileAddress}
-                params={params}
-                showPanel={appActions.showPanel}
-                hidePanel={appActions.hidePanel}
-                updateProfileData={this.updateProfileData}
-                updatingProfile={updatingProfile}
-              />
-            </div>
-            <div className={`col-xs-12 ${styles.childWrapper}`} >
-              {this.props.children}
-            </div>
-            <CommonRunner />
-            <ProfileUpdater />
-            <FollowRunner />
-            <PublishEntryRunner />
-            <TagPublisher />
-            <VoteRunner />
-            <CommentsPublisher />
-          </div>
+          </DataLoader>
         );
     }
 }
