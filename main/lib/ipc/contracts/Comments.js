@@ -25,10 +25,11 @@ class Comments extends BaseContract_1.default {
             .callAsync(entryId, commentId)
             .then((result) => {
             return {
-                profile: result.profile,
-                parent: result.parent,
-                ipfsHash: this.flattenIpfs(result.ipfsHash),
-                active: !(result.removed)
+                profile: result[0],
+                idComment: result[1],
+                parent: result[2],
+                ipfsHash: this.flattenIpfs(result[3]),
+                active: !(result[4])
             };
         });
     }

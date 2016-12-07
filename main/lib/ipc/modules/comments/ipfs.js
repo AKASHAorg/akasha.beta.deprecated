@@ -13,13 +13,13 @@ function create(data) {
 }
 exports.create = create;
 function getCommentContent(hash) {
-    if (records_1.comments.records.getFull(hash)) {
-        return Promise.resolve(records_1.comments.records.getFull(hash));
+    if (records_1.comments.getFull(hash)) {
+        return Promise.resolve(records_1.comments.getFull(hash));
     }
     return ipfs_connector_1.IpfsConnector.getInstance().api
         .get(hash)
         .then((data) => {
-        records_1.comments.records.setFull(hash, data);
+        records_1.comments.setFull(hash, data);
         return data;
     });
 }

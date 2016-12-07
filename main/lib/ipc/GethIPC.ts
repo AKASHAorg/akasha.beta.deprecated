@@ -32,7 +32,7 @@ class GethIPC extends GethEmitter {
             bootnodes: this.BOOTNODE,
             datadir: join(datadir, 'akasha'),
             ipcpath: join(datadir, 'akasha', 'geth.ipc'),
-            networkid: 512180,
+            networkid: 512180
         });
         // register listeners
         this._start()
