@@ -282,6 +282,12 @@ export function clearSavedEntries () {
     };
 }
 
+export function clearProfileEntries () {
+    return {
+        type: types.CLEAR_PROFILE_ENTRIES
+    };
+}
+
 export function voteCost (flags) {
     return {
         type: types.VOTE_COST,
