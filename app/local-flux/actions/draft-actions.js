@@ -169,6 +169,8 @@ class DraftActions {
             }
         });
     };
+
+    clearDraftState = () => this.dispatch(draftActionCreators.clearDraftState());
 }
 
 export { DraftActions };

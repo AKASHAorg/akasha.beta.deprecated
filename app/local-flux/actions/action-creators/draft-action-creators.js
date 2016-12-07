@@ -190,3 +190,9 @@ export function getPublishingDraftsError (error, flags) {
         flags
     };
 }
+
+export function clearDraftState () {
+    return {
+        type: types.CLEAR_DRAFT_STATE
+    };
+}

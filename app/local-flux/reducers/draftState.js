@@ -84,6 +84,7 @@ const draftState = createReducer(initialState, {
         const drft = createDraftRecord(draft);
         return state.merge({
             drafts: state.get('drafts').push(drft),
+            draftsCount: state.get('draftsCount') + 1,
             flags: state.get('flags').merge(flags)
         });
     },
@@ -185,6 +186,8 @@ const draftState = createReducer(initialState, {
             errors: state.get('errors').push(new ErrorRecord(error)),
             flags: state.get('flags').merge(flags)
         }),
+
+    [types.CLEAR_DRAFT_STATE]: (state) => initialState,
 });
 
 export default draftState;

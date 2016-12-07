@@ -199,7 +199,7 @@ class NewEntryFormPanel extends Component {
                 >
                   <Tab label="Drafts" value="drafts" style={tabStyle} />
                   <Tab label="Listed" value="listed" style={tabStyle} />
-                  <Tab label="Unlisted" value="unlisted" style={tabStyle} />
+                  <Tab label="Unlisted" value="unlisted" style={tabStyle} disabled />
                 </Tabs>
               </div>
               <div className="col-xs-4 end-xs">

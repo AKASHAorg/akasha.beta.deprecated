@@ -17,6 +17,7 @@ import ToolbarVotes from './ToolbarVotes';
 import ToolbarWallet from './ToolbarWallet';
 import ProfileIcon from './IconProfile';
 import AddEntryIcon from './IconAddEntry';
+import EntriesIcon from './IconEntries';
 import SearchIcon from './IconSearch';
 import StreamsIcon from './IconStreams';
 import PortalsIcon from './IconPortals';
@@ -51,7 +52,7 @@ import EntryDownvote from './entry-downvote';
 import EntryUpvote from './entry-upvote';
 
 export {
-    ProfileIcon, AddEntryIcon, SearchIcon, StreamsIcon, PortalsIcon,
+    ProfileIcon, AddEntryIcon, EntriesIcon, SearchIcon, StreamsIcon, PortalsIcon,
     CommunityIcon, PeopleIcon, LogoIcon, MenuAddEntry, MenuAkashaLogo,
     MenuCommunities, MenuEntries, MenuEthereum, MenuPeople, MenuPortals,
     MenuSearch, MenuStreams, MenuUser, ToolbarComments, ToolbarEthereum,
