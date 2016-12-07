@@ -319,6 +319,10 @@ const entryState = createReducer(initialState, {
             flags: state.get('flags').merge(flags)
         });
     },
+
+    [types.UNLOAD_FULL_ENTRY]: state =>
+        state.set('fullEntry', null),
+
     [types.GET_SCORE]: flagHandler,
 
     [types.GET_SCORE_ERROR]: errorHandler,

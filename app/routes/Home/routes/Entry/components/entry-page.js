@@ -25,7 +25,7 @@ class EntryPage extends Component {
         const { entry, entryActions, commentsActions, params, fetchingFullEntry,
           fetchingComments } = this.props;
 
-        if (!entry && !fetchingFullEntry) {
+        if ((!entry && !fetchingFullEntry) || entry.get('entryId') !== params.entryId) {
             entryActions.getFullEntry(params.entryId);
             if (!fetchingComments) {
                 commentsActions.getEntryComments(params.entryId, 0, 7);
@@ -36,7 +36,9 @@ class EntryPage extends Component {
         return (nextProps !== this.props) || (nextState !== this.state);
     }
     componentWillUnmount () {
+        const { entryActions } = this.props;
         window.removeEventListener('scroll', this._handleContentScroll);
+        entryActions.unloadFullEntry();
     }
     handleUpvote = () => {
 

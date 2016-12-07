@@ -436,6 +436,9 @@ class EntryActions {
                 }))
         });
     }
+    unloadFullEntry = () => {
+        this.dispatch(entryActionCreators.unloadFullEntry());
+    }
     getScore = (entryId) => {
         this.dispatch(entryActionCreators.getScore({ fetchingScore: true }));
         this.entryService.getScore({

@@ -9,6 +9,14 @@ const ErrorRecord = Record({
     fatal: false
 });
 
+const Comment = Record({
+    entryId: null,
+    commentId: null,
+    active: null,
+    parent: null,
+    profile: null
+});
+
 const initialState = fromJS({
     entryComments: new List(),
     flags: new Map(),
@@ -30,8 +38,23 @@ const commentsState = createReducer(initialState, {
     [types.GET_ENTRY_COMMENTS]: flagsHandler,
     [types.GET_ENTRY_COMMENTS_ERROR]: errorHandler,
     [types.GET_ENTRY_COMMENTS_SUCCESS]: (state, { data, flags }) => {
-        console.log(data, 'comments fetched and ready to be stored!');
-        return state;
+        console.log(data, 'comments fetched! Please REVIEW THE CASTING TO RECORD!!');
+        const comments = data.collection.map((comment) => {
+            const entryId = data.entryId;
+            const { commentId, content } = comment;
+            const { active, parent, profile } = content;
+            return new Comment({
+                entryId,
+                commentId: parseInt(commentId, 10),
+                active,
+                parent,
+                profile,
+            });
+        });
+        return state.merge({
+            entryComments: state.get('entryComments').concat(new List(comments)),
+            flags: state.get('flags').merge(flags)
+        });
     }
 });
 
