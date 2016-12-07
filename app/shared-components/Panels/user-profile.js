@@ -136,7 +136,7 @@ class UserProfilePanel extends Component {
                     </p>
                 }
                 secondaryTextLines={2}
-                key={eventTypes.FOLLOWING + event.follower.akashaId}
+                key={eventTypes.FOLLOWING + event.blockNumber + event.follower.akashaId}
                 rightIcon={<ActionDelete onClick={(e) => {
                     this.props.notificationsActions.deleteYouNotif(index)
                 }} />}
@@ -169,7 +169,7 @@ class UserProfilePanel extends Component {
                     </p>
                 }
                 secondaryTextLines={2}
-                key={event.tag + event.entry.entryId}
+                key={event.tag + event.entry.entryId + event.blockNumber}
                 rightIcon={<ActionDelete onClick={(e) => {
                     if(this.props.loggedProfileData.get('profile') === event.profileAddress){
                         return this.props.notificationsActions.deleteYouNotif(index);
@@ -242,7 +242,7 @@ class UserProfilePanel extends Component {
                     </p>
                 }
                 secondaryTextLines={2}
-                key={eventTypes.VOTE + event.blockNumber}
+                key={eventTypes.VOTE + event.blockNumber + event.profileAddress}
                 rightIcon={<ActionDelete onClick={(e) => {
                     if(this.props.loggedProfileData.get('profile') === event.profileAddress){
                         return this.props.notificationsActions.deleteYouNotif(index);
