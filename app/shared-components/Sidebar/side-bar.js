@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import {
     ProfileIcon,
     AddEntryIcon,
+    EntriesIcon,
     SearchIcon,
     StreamsIcon,
     PortalsIcon,
@@ -16,8 +17,9 @@ class SideBar extends Component {
         profileActions.getProfileBalance();
     }
     _handleNewEntry = () => {
-        const { draftActions, appActions, loggedProfileData, entriesCount,
+        const { draftActions, appActions, loggedProfileData,
             draftsCount } = this.props;
+        const entriesCount = parseInt(loggedProfileData.get('entriesCount'), 10);
 
         if (entriesCount > 0 || draftsCount > 0) {
             appActions.showPanel({ name: 'newEntry', overlay: true });
@@ -44,10 +46,12 @@ class SideBar extends Component {
         this.props.appActions.showPanel(panelName);
     };
     render () {
-        const { style, loggedProfileData, activePanel, notificationsCount, hasFeed } = this.props;
+        const { style, loggedProfileData, activePanel, notificationsCount, hasFeed,
+            draftsCount } = this.props;
         const profileName = `${loggedProfileData.get('firstName')} ${loggedProfileData.get('lastName')}`;
         const userInitials = profileName.match(/\b\w/g).reduce((prev, current) => prev + current, '');
         const balance = loggedProfileData.get('balance');
+        const entriesCount = parseInt(loggedProfileData.get('entriesCount'), 10);
         return (
           <div style={style} >
             <div style={{ flexGrow: 0, padding: '14px 14px 5px' }} >
@@ -67,7 +71,10 @@ class SideBar extends Component {
               <div style={{ textAlign: 'center' }}>ETH</div>
             </div>
             <div style={{ flexGrow: 1, padding: '14px' }} >
-              <AddEntryIcon onClick={this._handleNewEntry} tooltip="Add new entry" />
+              {(entriesCount > 0 || draftsCount > 0) ?
+                <EntriesIcon onClick={this._handleNewEntry} tooltip="My entries" /> :
+                <AddEntryIcon onClick={this._handleNewEntry} tooltip="Add new entry" />
+              }
               <SearchIcon onClick={this._handleSearch} tooltip="Search" />
             </div>
             <div style={{ flexGrow: 4, padding: '14px' }} >
@@ -93,7 +100,6 @@ SideBar.propTypes = {
     hasFeed: PropTypes.bool,
     profileActions: PropTypes.shape(),
     draftActions: PropTypes.shape(),
-    entriesCount: PropTypes.number,
     notificationsCount: PropTypes.number,
     draftsCount: PropTypes.number,
     loggedProfileData: PropTypes.shape()

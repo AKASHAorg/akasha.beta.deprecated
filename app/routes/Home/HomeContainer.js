@@ -63,7 +63,6 @@ class HomeContainer extends React.Component {
             if (!loggedProfile.get('akashaId')) {
                 console.error('logged profile does not have akashaId');
             }
-            entryActions.getEntriesCount(loggedProfile.get('akashaId'));
             entryActions.getSavedEntries(loggedProfile.get('akashaId'));
             tagActions.getSelectedTag(loggedProfile.get('akashaId'));
             // will be modified
@@ -75,14 +74,15 @@ class HomeContainer extends React.Component {
         }
     }
     componentWillUnmount () {
-        this.props.appActions.hidePanel();
-        this.props.tagActions.clearSelectedTag();
-        this.props.profileActions.clearLocalProfiles();
+        const { appActions, draftActions, profileActions, tagActions } = this.props;
+        appActions.hidePanel();
+        tagActions.clearSelectedTag();
+        profileActions.clearLocalProfiles();
+        draftActions.clearDraftState();
         clearInterval(this.interval);
     }
     _getLoadingMessage = () => {
-        const { fetchingDraftsCount, fetchingEntriesCount, fetchingLoggedProfile,
-            fetchingProfileData } = this.props;
+        const { fetchingDraftsCount, fetchingLoggedProfile, fetchingProfileData } = this.props;
         if (fetchingLoggedProfile) {
             return 'Loading profile';
         }
@@ -91,9 +91,6 @@ class HomeContainer extends React.Component {
         }
         if (fetchingDraftsCount) {
             return 'Loading drafts';
-        }
-        if (fetchingEntriesCount) {
-            return 'Loading your published entries';
         }
         return 'Loading...';
     }
@@ -105,7 +102,7 @@ class HomeContainer extends React.Component {
 
     render () {
         const { appActions, draftActions, fetchingLoggedProfile, loggedProfileData,
-            profileActions, entriesCount, draftsCount, loggedProfile, activePanel,
+            profileActions, draftsCount, loggedProfile, activePanel,
             params, updatingProfile, notificationsCount, hasFeed } = this.props;
 
         const profileAddress = loggedProfile.get('profile');
@@ -131,7 +128,6 @@ class HomeContainer extends React.Component {
                 notificationsCount={notificationsCount}
                 hasFeed={hasFeed}
                 profileActions={profileActions}
-                entriesCount={entriesCount}
                 draftsCount={draftsCount}
               />
             </div>
@@ -170,11 +166,9 @@ HomeContainer.propTypes = {
     children: PropTypes.element,
     draftActions: PropTypes.shape(),
     draftsCount: PropTypes.number,
-    entriesCount: PropTypes.number,
     fetchingLoggedProfile: PropTypes.bool,
     fetchingProfileData: PropTypes.bool,
     fetchingDraftsCount: PropTypes.bool,
-    fetchingEntriesCount: PropTypes.bool,
     loggedProfile: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
     updatingProfile: PropTypes.bool,
@@ -197,14 +191,12 @@ function mapStateToProps (state, ownProps) {
         fetchingDraftsCount: state.draftState.getIn(['flags', 'fetchingDraftsCount']),
         fetchingPublishedEntries: state.draftState.get('fetchingPublishedEntries'),
         fetchingPublishingDrafts: state.draftState.getIn(['flags', 'fetchingPublishingDrafts']),
-        fetchingEntriesCount: state.entryState.getIn(['flags', 'fetchingEntriesCount']),
         activePanel: state.panelState.get('activePanel').get('name'),
         loginRequested: state.profileState.getIn(['flags', 'loginRequested']),
         loggedProfile: state.profileState.get('loggedProfile'),
         loggedProfileData: state.profileState.get('profiles').find(profile =>
             profile.get('profile') === state.profileState.getIn(['loggedProfile', 'profile'])),
         updatingProfile: state.profileState.getIn(['flags', 'updatingProfile']),
-        entriesCount: state.entryState.get('entriesCount'),
         draftsCount: state.draftState.get('draftsCount'),
         notificationsCount: state.notificationsState.get('youNrFeed'),
         hasFeed: state.notificationsState.get('hasFeed'),
