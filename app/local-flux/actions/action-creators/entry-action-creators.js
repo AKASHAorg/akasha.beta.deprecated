@@ -378,6 +378,29 @@ export function getEntryError (error, flags) {
     };
 }
 
+export function getFullEntry (flags) {
+    return {
+        type: types.GET_FULL_ENTRY,
+        flags
+    };
+}
+
+export function getFullEntrySuccess (data, flags) {
+    return {
+        type: types.GET_FULL_ENTRY_SUCCESS,
+        data,
+        flags
+    };
+}
+
+export function getFullEntryError (error, flags) {
+    return {
+        type: types.GET_FULL_ENTRY_ERROR,
+        error,
+        flags
+    };
+}
+
 export function getScore (flags) {
     return {
         type: types.GET_SCORE,

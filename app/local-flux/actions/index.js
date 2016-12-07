@@ -1,5 +1,5 @@
 export { AppActions } from './app-actions';
-export { CommentActions } from './comment-actions';
+export { CommentsActions } from './comments-actions';
 export { DraftActions } from './draft-actions';
 export { EntryActions } from './entry-actions';
 export { EProcActions } from './external-process-actions';

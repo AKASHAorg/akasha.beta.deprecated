@@ -64,9 +64,8 @@ class EntryCard extends Component {
         }
     }
     _handleEntryNavigation = () => {
-      const { entry } = this.props;
-      const publisherAkashaId = entry.getIn(['entryEth', 'publisher', 'akashaId']);
-      this.context.router.push(`/${publisherAkashaId}/${entry.get('entryId')}`);
+      const { entry, loggedAkashaId } = this.props;
+      this.context.router.push(`/${loggedAkashaId}/entry/${entry.get('entryId')}`);
     }
     render () {
         const { entry, blockNr, selectedTag, voteEntryPending, isSaved, style, intl } = this.props;

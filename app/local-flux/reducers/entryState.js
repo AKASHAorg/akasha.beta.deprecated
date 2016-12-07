@@ -31,7 +31,8 @@ const Entry = Record({
     content: EntryContent(),
     entryEth: EntryEth(),
     entryId: null,
-    score: null
+    score: null,
+    commentsCount: 0
 });
 const Licence = Record({
     id: null,
@@ -52,6 +53,7 @@ const initialState = fromJS({
     fetchingEntriesCount: false,
     entriesStream: new EntriesStream(),
     entries: new List(),
+    fullEntry: null,
     savedEntries: new List(),
     moreProfileEntries: false,
     moreSavedEntries: false,
@@ -300,7 +302,23 @@ const entryState = createReducer(initialState, {
             flags: state.get('flags').merge(flags)
         });
     },
-
+    [types.GET_FULL_ENTRY]: flagHandler,
+    [types.GET_FULL_ENTRY_ERROR]: errorHandler,
+    [types.GET_FULL_ENTRY_SUCCESS]: (state, { data, flags }) => {
+        const { active, baseUrl, commentsCount, entryId, score, content, entryEth } = data;
+        return state.merge({
+            fullEntry: new Entry({
+                active,
+                baseUrl,
+                commentsCount,
+                entryId,
+                score,
+                content: new EntryContent(content),
+                entryEth: new EntryEth(entryEth)
+            }),
+            flags: state.get('flags').merge(flags)
+        });
+    },
     [types.GET_SCORE]: flagHandler,
 
     [types.GET_SCORE_ERROR]: errorHandler,

@@ -101,5 +101,16 @@ const notificationMessages = defineMessages({
         description: 'Notification to be displayed when downvote entry transaction was mined but was unsuccessfull',
         defaultMessage: 'Downvoting {entryTitle} has failed'
     },
+    publishingComment: {
+        id: 'app.notification.publishingComment',
+        description: 'Notification to be displayed when comment publishing tx was sent',
+        defaultMessage: 'Publishing comment'
+    },
+    commentPublishedSuccessfully: {
+        id: 'app.notification.commentPublishedSuccessfully',
+        description: 'Notification to be displayed when comment successfully published',
+        defaultMessage: 'Comment published successfully'
+    }
+
 });
 export { notificationMessages };

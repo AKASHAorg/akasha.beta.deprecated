@@ -54,16 +54,6 @@ class EntryActions {
         ).catch(reason => this.dispatch(entryActionCreators.checkTagExistenceError(reason)));
     };
 
-    createTag = (tag) => {
-        this.dispatch(entryActionCreators.createTag());
-        return this.entryService.createTag(tag).then(result =>
-            this.dispatch(entryActionCreators.createTagSuccess(result.tag))
-        ).catch(reason => this.dispatch(entryActionCreators.createTagError(reason)));
-    };
-
-    requestAuthentication = () => {
-
-    };
     getSortedEntries = ({ sortBy }) => {
         this.entryService.getSortedEntries({ sortBy }).then(result =>
             this.dispatch(entryActionCreators.getSortedEntries(result))
@@ -428,7 +418,24 @@ class EntryActions {
                 this.dispatch(entryActionCreators.getEntryError(error, { fetchingEntry: false }))
         });
     };
-
+    getFullEntry = (entryId, full = true) => {
+        this.dispatch(entryActionCreators.getFullEntry({ fetchingFullEntry: true }));
+        this.entryService.getEntry({
+            entryId,
+            full,
+            onSuccess: (data) => {
+                // @todo: [code: 3ntry3] get rid of this asap!!
+                window.entry__baseUrl = data.baseUrl;
+                this.dispatch(entryActionCreators.getFullEntrySuccess(data, {
+                    fetchingFullEntry: false
+                }));
+            },
+            onError: error =>
+                this.dispatch(entryActionCreators.getFullEntryError(error, {
+                    fetchingFullEntry: false
+                }))
+        });
+    }
     getScore = (entryId) => {
         this.dispatch(entryActionCreators.getScore({ fetchingScore: true }));
         this.entryService.getScore({

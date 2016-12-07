@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
-import {
-    SvgIcon } from 'material-ui';
 import withWidth from 'material-ui/utils/withWidth';
-import imageCreator, { findBestMatch } from 'utils/imageUtils'; // eslint-disable-line import/no-unresolved, import/extensions
-import clickAway from 'utils/clickAway'; // eslint-disable-line import/no-unresolved, import/extensions
+import { findBestMatch } from 'utils/imageUtils'; // eslint-disable-line import/no-unresolved, import/extensions
 import styles from './image-block.scss';
 
 class ImageBlock extends Component {
@@ -11,7 +8,7 @@ class ImageBlock extends Component {
         super(props);
         this.state = {
             loading: true
-        }
+        };
     }
     _getBaseNodeStyle = () => {
         const { media } = this.props.data;
@@ -46,10 +43,11 @@ class ImageBlock extends Component {
         const { width } = this.props;
         const widths = [320, 700, 1280];
         const fileKey = findBestMatch(widths[width - 1], files, media);
-        return `http://127.0.0.1:8080/ipfs/${files[fileKey].src}`;
+        // @todo: [code: 3ntry3] get rid of this too;
+        return `${window.entry__baseUrl}/${files[fileKey].src}`;
     }
     render () {
-        const { files, caption, media } = this.props.data;
+        const { caption, } = this.props.data;
         const baseNodeStyle = this._getBaseNodeStyle();
         return (
           <div
@@ -60,7 +58,7 @@ class ImageBlock extends Component {
               className={`${styles.rootInner}`}
             >
               <div className={`${styles.image}`} >
-                <img src={this._getImageSrc()} />
+                <img src={this._getImageSrc()} role="presentation" />
               </div>
               <div className={`${styles.caption}`} >
                 <small>{caption}</small>
@@ -71,10 +69,6 @@ class ImageBlock extends Component {
     }
 }
 ImageBlock.propTypes = {
-    container: React.PropTypes.shape({
-        updateData: React.PropTypes.func,
-        remove: React.PropTypes.func
-    }),
     data: React.PropTypes.shape({
         files: React.PropTypes.shape(),
         caption: React.PropTypes.string,
@@ -83,7 +77,7 @@ ImageBlock.propTypes = {
         licence: React.PropTypes.string,
         termsAccepted: React.PropTypes.bool
     }),
-    blockProps: React.PropTypes.shape()
+    width: React.PropTypes.number
 };
 
 export default withWidth({

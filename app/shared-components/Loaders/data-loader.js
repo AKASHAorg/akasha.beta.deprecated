@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { RefreshIndicator } from 'material-ui';
 
 class DataLoader extends Component {
-    constructor(props) {
+    constructor (props) {
         super(props);
 
         this.timeout = null;
@@ -54,7 +54,7 @@ class DataLoader extends Component {
     render () {
         const { size, style } = this.props;
         if (this.state.loading) {
-            return <div
+            return (<div
               style={Object.assign({
                   display: 'flex',
                   flexDirection: 'column',
@@ -65,13 +65,13 @@ class DataLoader extends Component {
             >
               <div style={{ position: 'relative', width: size, height: size }}>
                 <RefreshIndicator
-                    top={0}
-                    left={0}
-                    size={size}
-                    status="loading"
+                  top={0}
+                  left={0}
+                  size={size}
+                  status="loading"
                 />
               </div>
-            </div>
+            </div>);
         }
         return this.props.children;
     }

@@ -50,6 +50,16 @@ const entryMessages = defineMessages({
         id: 'app.entry.readTime',
         description: 'estimated time to read an entry',
         defaultMessage: 'read'
+    },
+    allComments: {
+        id: 'app.entry.allComments',
+        description: 'all comments section title',
+        defaultMessage: 'ALL COMMENTS ({commentsCount})'
+    },
+    writeComment: {
+        id: 'app.entry.writeComment',
+        description: 'placeholder for writing a comment',
+        defaultMessage: 'Write a comment'
     }
 });
 export { entryMessages };

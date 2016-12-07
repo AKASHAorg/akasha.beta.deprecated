@@ -201,5 +201,10 @@ const generalMessages = defineMessages({
         description: 'label for button that loads more data',
         defaultMessage: 'Show more'
     },
+    publish: {
+        id: 'app.general.publish',
+        description: 'button label for publish action',
+        defaultMessage: 'Publish'
+    }
 });
 export { generalMessages };

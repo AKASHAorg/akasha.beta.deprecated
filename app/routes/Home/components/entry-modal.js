@@ -29,7 +29,7 @@ class EntryModal extends React.Component {
     }
     componentDidMount () {
         const { commentActions } = this.props;
-        commentActions.getCommentsByEntry();
+        // commentActions.getCommentsByEntry();
     }
     // handle tab changing logic here
     _handleTabChange = (val, ev) => {

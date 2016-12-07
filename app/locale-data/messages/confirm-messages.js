@@ -107,6 +107,16 @@ const confirmMessages = defineMessages({
         id: 'app.confirm.voteTitle',
         description: 'confirm dialog title for voting an entry',
         defaultMessage: 'Vote'
+    },
+    publishCommentTitle: {
+        id: 'app.confirm.publishCommentTitle',
+        description: 'confirm dialog title for publishing new comment',
+        defaultMessage: 'Comment'
+    },
+    publishComment: {
+        id: 'app.confirm.publishComment',
+        description: 'confirm dialog message for new comment publishing',
+        defaultMessage: 'Are you sure you want to comment?'
     }
 });
 export { confirmMessages };
