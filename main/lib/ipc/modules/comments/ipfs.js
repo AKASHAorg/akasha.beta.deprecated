@@ -4,7 +4,7 @@ const records_1 = require('../models/records');
 function create(data) {
     const date = (new Date()).toJSON();
     const constructed = {
-        content: data.content,
+        content: data,
         date
     };
     return ipfs_connector_1.IpfsConnector.getInstance().api
