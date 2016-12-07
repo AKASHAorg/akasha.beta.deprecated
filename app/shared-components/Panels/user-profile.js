@@ -42,6 +42,10 @@ class UserProfilePanel extends Component {
         return {};
     };
 
+    componentDidMount () {
+        this.readSubscriptionNotif();
+    }
+
     renderFeedNotifications = () => {
         const feedNotifs = this.props.notificationsState.get('notifFeed');
         const notifs = [];
@@ -212,9 +216,8 @@ class UserProfilePanel extends Component {
         const { palette } = this.context.muiTheme;
         const type = (event.weight > 0) ? 'Upvoted' : 'Downvoted';
         const colorVote = (event.weight > 0) ? palette.accent3Color : palette.accent1Color;
-        if (event.weight > 0) {
-            event.weight = '+' + event.weight;
-        }
+        const voteWeight = (event.weight > 0) ?  ('+' + event.weight): event.weight;
+
         return (
             <ListItem
                 leftAvatar={<Avatar src={event.author.baseUrl + '/' + event.author.avatar} />}
@@ -228,7 +231,7 @@ class UserProfilePanel extends Component {
                 secondaryText={
                     <p>
                         <span style={{ color: colors.darkBlack }} >
-                            {type}(<span style={{ color: colorVote }} >{event.weight}</span>) on&nbsp;
+                            {type}(<span style={{ color: colorVote }} >{voteWeight}</span>) on&nbsp;
                             <span className="link" onClick={() => {
                                 this.navigateToEntry(event.entry.entryId);
                             }} >

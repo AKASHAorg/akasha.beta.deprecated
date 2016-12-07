@@ -95,16 +95,15 @@ class GethIPC extends GethEmitter {
         this.registerListener(
             channels.server.geth.startService,
             (event: IpcMainEvent, data: GethStartRequest) => {
-                console.log('=== start geth ====');
-                    GethConnector.getInstance().writeGenesis(
-                        getGenesisPath(),
-                        (err: Error, stdout: any) => {
-                            if (err) {
-                                (Logger.getInstance().getLogger(this.logger)).error(err);
-                            }
-                            (Logger.getInstance().getLogger(this.logger)).info(stdout);
-                            GethConnector.getInstance().start(data);
-                        });
+                GethConnector.getInstance().writeGenesis(
+                    getGenesisPath(),
+                    (err: Error, stdout: any) => {
+                        if (err) {
+                            (Logger.getInstance().getLogger(this.logger)).error(err);
+                        }
+                        (Logger.getInstance().getLogger(this.logger)).info(stdout);
+                        GethConnector.getInstance().start(data);
+                    });
             }
         );
         return this;

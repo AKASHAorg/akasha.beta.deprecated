@@ -4,14 +4,20 @@ const geth_connector_1 = require('@akashaproject/geth-connector');
 const ipfs_connector_1 = require('@akashaproject/ipfs-connector');
 const path_1 = require('path');
 const index_1 = require('./lib/ipc/index');
+const feed_1 = require('./lib/ipc/modules/notifications/feed');
 const menu_1 = require('./menu');
 const Logger_1 = require('./lib/ipc/Logger');
+let modules;
 const stopServices = () => {
+    feed_1.default.execute({ stop: true });
+    if (modules) {
+        modules.flushAll();
+    }
     geth_connector_1.GethConnector.getInstance().stop();
     ipfs_connector_1.IpfsConnector.getInstance().stop();
     setTimeout(() => {
         process.exit(0);
-    }, 1000);
+    }, 1200);
 };
 function bootstrapApp() {
     let mainWindow = null;
@@ -40,7 +46,7 @@ function bootstrapApp() {
         electron_1.app.quit();
     }
     electron_1.app.on('ready', () => {
-        let modules = index_1.initModules();
+        modules = index_1.initModules();
         Logger_1.default.getInstance();
         mainWindow = new electron_1.BrowserWindow({
             width: 1280,
@@ -61,10 +67,11 @@ function bootstrapApp() {
         }
         mainWindow.once('close', (ev) => {
             ev.preventDefault();
+            feed_1.default.execute({ stop: true });
             modules.flushAll();
             geth_connector_1.GethConnector.getInstance().stop();
             ipfs_connector_1.IpfsConnector.getInstance().stop();
-            setTimeout(() => electron_1.app.quit(), 1000);
+            setTimeout(() => electron_1.app.quit(), 1200);
         });
         menu_1.initMenu(mainWindow);
         mainWindow.webContents.once('did-finish-load', () => {

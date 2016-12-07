@@ -28,7 +28,7 @@ class IconProfile extends Component {
             return Object.assign({}, badgeStyle, {display: 'none'});
         }
 
-        if(this.props.hasFeed){
+        if(this.props.hasFeed && !this.props.notificationsCount){
             return Object.assign({}, badgeStyle, {width: '12px', height: '12px', fontSize: 0, right: 0, top: 0});
         }
 
