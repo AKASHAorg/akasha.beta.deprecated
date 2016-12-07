@@ -139,7 +139,7 @@
     "faker": "3.1.0",
     "fbjs-scripts": "0.7.1",
     "file-loader": "0.9.0",
-    "fuse.js": "2.5.0",
+    "fuse.js": "2.6.1",
     "history": "4.4.1",
     "immutable": "3.8.1",
     "lodash.throttle": "4.1.1",
@@ -183,7 +183,7 @@
     "tslint": "4.0.2",
     "typescript": "2.0.10",
     "validatorjs": "3.9.0",
-    "webpack": "1.13.3",
+    "webpack": "1.14.0",
     "webpack-dev-middleware": "1.8.4",
     "webpack-hot-middleware": "2.13.2",
     "webpack-node-externals": "1.5.4"

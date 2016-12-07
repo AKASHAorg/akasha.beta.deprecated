@@ -4,15 +4,21 @@ import { GethConnector } from '@akashaproject/geth-connector';
 import { IpfsConnector } from '@akashaproject/ipfs-connector';
 import { resolve } from 'path';
 import { initModules } from './lib/ipc/index';
+import feed from './lib/ipc/modules/notifications/feed';
 import { initMenu } from './menu';
 import Logger from './lib/ipc/Logger';
 
+let modules;
 const stopServices = () => {
+    feed.execute({ stop: true });
+    if (modules) {
+        modules.flushAll();
+    }
     GethConnector.getInstance().stop();
     IpfsConnector.getInstance().stop();
     setTimeout(() => {
         process.exit(0);
-    }, 1000);
+    }, 1200);
 };
 export function bootstrapApp() {
     let mainWindow = null;
@@ -45,7 +51,7 @@ export function bootstrapApp() {
     }
 
     app.on('ready', () => {
-        let modules = initModules();
+        modules = initModules();
         Logger.getInstance();
         mainWindow = new BrowserWindow({
             width: 1280,
@@ -68,10 +74,11 @@ export function bootstrapApp() {
 
         mainWindow.once('close', (ev: Event) => {
             ev.preventDefault();
+            feed.execute({ stop: true });
             modules.flushAll();
             GethConnector.getInstance().stop();
             IpfsConnector.getInstance().stop();
-            setTimeout(() => app.quit(), 1000);
+            setTimeout(() => app.quit(), 1200);
         });
         initMenu(mainWindow);
         mainWindow.webContents.once('did-finish-load', () => {
