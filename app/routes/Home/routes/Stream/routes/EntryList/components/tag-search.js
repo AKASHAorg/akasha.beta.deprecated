@@ -14,7 +14,7 @@ const TagSearch = (props) => {
       subscribePending, intl } = props;
   const isSubscribed = subscriptions && !!subscriptions.find(tag => tag.get('tagName') === tagName);
   const isPending = subscribePending && subscribePending.value;
-  return <div className="row" style={{ paddingBottom: 24 }}>
+  return <div className="row" style={{ paddingBottom: 24, width: '640px' }}>
     <div className="col-xs-12" style={{ position: 'relative' }}>
       <TextField
         fullWidth

@@ -117,6 +117,17 @@ const confirmMessages = defineMessages({
         id: 'app.confirm.publishComment',
         description: 'confirm dialog message for new comment publishing',
         defaultMessage: 'Are you sure you want to comment?'
+    },
+    claimTitle: {
+        id: 'app.confirm.claimTitle',
+        description: 'confirm dialog title for claiming an entry\'s balance',
+        defaultMessage: 'Claim'
+    },
+    claim: {
+        id: 'app.confirm.claim',
+        description: 'confirm dialog message for claiming an entry\'s balance',
+        defaultMessage: `Are you sure you want to claim this entry\'s balance?
+                {entryTitle}`
     }
 });
 export { confirmMessages };

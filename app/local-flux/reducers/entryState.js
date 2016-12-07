@@ -49,7 +49,10 @@ const initialState = fromJS({
     published: new List(),
     licences: new List(),
     errors: new List(),
-    flags: new Map(),
+    flags: new Map({
+        votePending: new List(),
+        claimPending: new List()
+    }),
     fetchingEntriesCount: false,
     entriesStream: new EntriesStream(),
     entries: new List(),
@@ -63,14 +66,8 @@ const initialState = fromJS({
     voteCost: new Map()
 });
 
-const voteFlagHandler = (state, { flags }) => {
+const voteFlagHandler = (state, { error, flags }) => {
     const votePending = state.getIn(['flags', 'votePending']);
-    if (votePending === undefined) {
-        return state.merge({
-            flags: state.get('flags')
-                .set('votePending', new List([flags.votePending]))
-        });
-    }
     const index = votePending.findIndex(flag =>
         flag.entryId === flags.votePending.entryId);
     if (index === -1) {
@@ -78,11 +75,40 @@ const voteFlagHandler = (state, { flags }) => {
             flags: state.get('flags').merge({
                 votePending: state.getIn(['flags', 'votePending'])
                     .push(flags.votePending)
-            })
+            }),
+            errors: error ?
+                state.get('errors').push(new ErrorRecord(error)) :
+                state.get('errors')
         });
     }
     return state.merge({
-        flags: state.get('flags').mergeIn(['votePending', index], flags.votePending)
+        flags: state.get('flags').mergeIn(['votePending', index], flags.votePending),
+        errors: error ?
+            state.get('errors').push(new ErrorRecord(error)) :
+            state.get('errors')
+    });
+};
+
+const claimFlagHandler = (state, { error, flags }) => {
+    const claimPending = state.getIn(['flags', 'claimPending']);
+    const index = claimPending.findIndex(flag =>
+        flag.entryId === flags.claimPending.entryId);
+    if (index === -1) {
+        return state.merge({
+            flags: state.get('flags').merge({
+                claimPending: state.getIn(['flags', 'claimPending'])
+                    .push(flags.claimPending)
+            }),
+            errors: error ?
+                state.get('errors').push(new ErrorRecord(error)) :
+                state.get('errors')
+        });
+    }
+    return state.merge({
+        flags: state.get('flags').mergeIn(['claimPending', index], flags.claimPending),
+        errors: error ?
+            state.get('errors').push(new ErrorRecord(error)) :
+            state.get('errors')
     });
 };
 
@@ -354,7 +380,7 @@ const entryState = createReducer(initialState, {
     [types.GET_VOTE_OF_ERROR]: errorHandler,
 
     [types.GET_VOTE_OF_SUCCESS]: (state, { data, flags }) => {
-        const entryIndex = state.get('entries').findIndex(entry =>
+        const entryIndex = state.get('entries').findLastIndex(entry =>
             entry.get('entryId') === data.entryId);
         return state.merge({
             entries: state.get('entries').setIn([entryIndex, 'content', 'voteWeight'], data.weight),
@@ -384,6 +410,38 @@ const entryState = createReducer(initialState, {
             flags: state.get('flags').merge(flags)
         }),
 
+    [types.CAN_CLAIM]: flagHandler,
+
+    [types.CAN_CLAIM_ERROR]: errorHandler,
+
+    [types.CAN_CLAIM_SUCCESS]: (state, { data, flags }) => {
+        const entryIndex = state.get('entries').findLastIndex(entry =>
+            entry.get('entryId') === data.entryId);
+
+        return state.merge({
+            entries: state.get('entries').mergeIn([entryIndex, 'content'], {
+                canClaim: data.canClaim
+            }),
+            flags: state.get('flags').merge(flags)
+        });
+    },
+
+    [types.GET_ENTRY_BALANCE]: flagHandler,
+
+    [types.GET_ENTRY_BALANCE_ERROR]: errorHandler,
+
+    [types.GET_ENTRY_BALANCE_SUCCESS]: (state, { data, flags }) => {
+        const entryIndex = state.get('entries').findLastIndex(entry =>
+            entry.get('entryId') === data.entryId);
+
+        return state.merge({
+            entries: state.get('entries').mergeIn([entryIndex, 'content'], {
+                balance: data.balance
+            }),
+            flags: state.get('flags').merge(flags)
+        });
+    },
+
     [types.CLEAR_TAG_ENTRIES]: state =>
         state.merge({
             entries: state.get('entries').filter(entry => entry.get('type') !== 'tagEntry')
@@ -397,7 +455,13 @@ const entryState = createReducer(initialState, {
     [types.CLEAR_PROFILE_ENTRIES]: state =>
         state.merge({
             entries: state.get('entries').filter(entry => entry.get('type') !== 'profileEntry')
-        })
+        }),
+
+    [types.CLAIM]: claimFlagHandler,
+
+    [types.CLAIM_SUCCESS]: claimFlagHandler,
+
+    [types.CLAIM_ERROR]: claimFlagHandler
 });
 
 export default entryState;

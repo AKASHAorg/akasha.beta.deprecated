@@ -520,3 +520,71 @@ export function deleteEntryError (error, flags) {
         flags
     };
 }
+
+export function canClaim (flags) {
+    return {
+        type: types.CAN_CLAIM,
+        flags
+    };
+}
+
+export function canClaimSuccess (data, flags) {
+    return {
+        type: types.CAN_CLAIM_SUCCESS,
+        data,
+        flags
+    };
+}
+
+export function canClaimError (error, flags) {
+    return {
+        type: types.CAN_CLAIM_ERROR,
+        error,
+        flags
+    };
+}
+
+export function getEntryBalance (flags) {
+    return {
+        type: types.GET_ENTRY_BALANCE,
+        flags
+    };
+}
+
+export function getEntryBalanceSuccess (data, flags) {
+    return {
+        type: types.GET_ENTRY_BALANCE_SUCCESS,
+        data,
+        flags
+    };
+}
+
+export function getEntryBalanceError (error, flags) {
+    return {
+        type: types.GET_ENTRY_BALANCE_ERROR,
+        error,
+        flags
+    };
+}
+
+export function claim (flags) {
+    return {
+        type: types.CLAIM,
+        flags
+    };
+}
+
+export function claimSuccess (flags) {
+    return {
+        type: types.CLAIM_SUCCESS,
+        flags
+    };
+}
+
+export function claimError (error, flags) {
+    return {
+        type: types.CLAIM_ERROR,
+        error,
+        flags
+    };
+}

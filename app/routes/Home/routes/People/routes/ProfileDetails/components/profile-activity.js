@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { Tab, Tabs, Paper, FlatButton } from 'material-ui';
-import { DataLoader, ProfileCard, EntryCard } from 'shared-components';
+import { DataLoader, EntryCard, EntryListContainer, ProfileCard } from 'shared-components';
 import { injectIntl } from 'react-intl';
 import throttle from 'lodash.throttle';
 import { isInViewport } from 'utils/domUtils';
@@ -163,50 +163,15 @@ class ProfileActivity extends Component {
             savedEntriesIds, entryActions, moreProfileEntries, fetchingMoreProfileEntries,
             selectTag } = this.props;
         const { palette } = this.context.muiTheme;
-        return <DataLoader
-          flag={fetchingProfileEntries}
-          timeout={700}
-          size={80}
-          style={{ paddingTop: '120px' }}
-        >
-          <div style={{ display: 'flex', flexWrap: 'wrap', paddingRight: '20px' }} >
-            {profileEntries.size === 0 &&
-              <div
-                style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    color: palette.disabledColor,
-                    paddingTop: '10px'
-                }}
-              >
-                No entries
-              </div>
-            }
-            {profileEntries && profileEntries.map((entry, key) => {
-                const voteEntryPending = votePending && votePending.find(vote =>
-                    vote.entryId === entry.get('entryId'));
-                const isSaved = !!savedEntriesIds.find(id => id === entry.get('entryId'));
-                return <EntryCard
-                  loggedAkashaId={loggedProfileData.get('akashaId')}
-                  entry={entry}
-                  key={key}
-                  blockNr={blockNr}
-                  selectTag={selectTag}
-                  voteEntryPending={voteEntryPending}
-                  entryActions={entryActions}
-                  isSaved={isSaved}
-                  style={{ width: '670px' }}
-                />;
-            })}
-            {moreProfileEntries &&
-              <DataLoader flag={fetchingMoreProfileEntries} size={30}>
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                  <div id="entries" ref={(el) => { this.trigger = el; }} style={{ height: 0 }} />
-                </div>
-              </DataLoader>
-            }
-          </div>
-        </DataLoader>;
+        return <EntryListContainer
+            entries={profileEntries}
+            cardStyle={{ width: '670px' }}
+            fetchingEntries={fetchingProfileEntries}
+            fetchingMoreEntries={fetchingMoreProfileEntries}
+            getTriggerRef={(el) => { this.trigger = el; }}
+            moreEntries={moreProfileEntries}
+            style={{ alignItems: 'flex-start' }}
+        />;
     }
 
     renderFollowers () {

@@ -6,13 +6,21 @@ import { DataLoader, EntryCard } from 'shared-components';
 
 class EntryList extends Component {
     render () {
-        const { blockNr, entries, entryActions, fetchingEntries, fetchingMoreEntries,
-            fetchMoreEntries, getTriggerRef, loggedProfileData, moreEntries, savedEntriesIds,
-            selectedTag, tagActions, votePending } = this.props;
+        const { blockNr, cardStyle, claimPending, canClaimPending, entries, entryActions,
+            fetchingEntries, fetchingEntryBalance, fetchingMoreEntries, getTriggerRef,
+            loggedProfileData, moreEntries, savedEntriesIds, selectedTag, style, tagActions,
+            votePending } = this.props;
         const { palette } = this.context.muiTheme;
 
         return (
-          <div style={{ paddingBottom: moreEntries && !fetchingMoreEntries ? '30px' : '0px' }}>
+          <div
+            style={Object.assign({}, {
+                paddingBottom: moreEntries && !fetchingMoreEntries ? '30px' : '0px',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center'
+            }, style)}
+          >
             <DataLoader flag={fetchingEntries} timeout={700} size={80} style={{ paddingTop: '120px' }}>
               <div>
                 {entries.size === 0 &&
@@ -30,17 +38,23 @@ class EntryList extends Component {
                 {entries && entries.map((entry, key) => {
                     const voteEntryPending = votePending && votePending.find(vote =>
                         vote.entryId === entry.get('entryId'));
+                    const claimEntryPending = claimPending && claimPending.find(claim =>
+                        claim.entryId === entry.get('entryId'));
                     const isSaved = !!savedEntriesIds.find(id => id === entry.get('entryId'));
                     return <EntryCard
-                      loggedAkashaId={loggedProfileData.get('akashaId')}
-                      entry={entry}
-                      key={key}
                       blockNr={blockNr}
-                      selectTag={tagActions.saveTag}
-                      selectedTag={selectedTag}
-                      voteEntryPending={voteEntryPending}
+                      canClaimPending={canClaimPending}
+                      claimPending={claimEntryPending && claimEntryPending.value}
+                      entry={entry}
                       entryActions={entryActions}
+                      fetchingEntryBalance={fetchingEntryBalance}
                       isSaved={isSaved}
+                      key={key}
+                      loggedAkashaId={loggedProfileData.get('akashaId')}
+                      selectedTag={selectedTag}
+                      selectTag={tagActions.saveTag}
+                      style={cardStyle}
+                      voteEntryPending={voteEntryPending && voteEntryPending.value}
                     />;
                 })}
                 {moreEntries &&
@@ -59,16 +73,20 @@ class EntryList extends Component {
 
 EntryList.propTypes = {
     blockNr: PropTypes.number,
+    cardStyle: PropTypes.shape(),
+    canClaimPending: PropTypes.bool,
+    claimPending: PropTypes.shape(),
     entries: PropTypes.shape(),
     entryActions: PropTypes.shape(),
     fetchingEntries: PropTypes.bool,
+    fetchingEntryBalance: PropTypes.bool,
     fetchingMoreEntries: PropTypes.bool,
-    fetchMoreEntries: PropTypes.func,
     getTriggerRef: PropTypes.func,
     loggedProfileData: PropTypes.shape(),
     moreEntries: PropTypes.bool,
     savedEntriesIds: PropTypes.shape(),
     selectedTag: PropTypes.string,
+    style: PropTypes.shape(),
     tagActions: PropTypes.shape(),
     votePending: PropTypes.shape()
 };
@@ -80,6 +98,9 @@ EntryList.contextTypes = {
 function mapStateToProps (state) {
     return {
         blockNr: state.externalProcState.getIn(['gethStatus', 'blockNr']),
+        canClaimPending: state.entryState.getIn(['flags', 'canClaimPending']),
+        claimPending: state.entryState.getIn(['flags', 'claimPending']),
+        fetchingEntryBalance: state.entryState.getIn(['flags', 'fetchingEntryBalance']),
         loggedProfileData: state.profileState.get('profiles').find(prf =>
             prf.get('akashaId') === state.profileState.getIn(['loggedProfile', 'akashaId'])),
         savedEntriesIds: state.entryState.get('savedEntries').map(entry => entry.get('entryId')),

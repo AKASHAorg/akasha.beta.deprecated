@@ -160,11 +160,12 @@ class NewEntryFormPanel extends Component {
                 entities =
                     <EntryListContainer
                       entries={publishedEntries}
+                      cardStyle={{ width: 'auto' }}
                       fetchingEntries={fetchingPublishedEntries}
                       fetchingMoreEntries={fetchingMorePublishedEntries}
-                      fetchMoreEntries={entryActions.moreEntryProfileIterator}
                       getTriggerRef={this.getTriggerRef}
                       moreEntries={moreProfileEntries}
+                      style={{ display: 'block' }}
                     />
                 break;
             // case 'unlisted':

@@ -10,7 +10,7 @@ class DraftCard extends Component {
             onTitleClick
         } = this.props;
         return (
-          <Card className="start-xs" style={{ marginBottom: 16 }}>
+          <Card className="start-xs" style={{ margin: '5px 5px 16px 5px' }}>
             <CardHeader
               title={headerTitle}
               subtitle={`${lastUpdated} - ${wordCount} words`}

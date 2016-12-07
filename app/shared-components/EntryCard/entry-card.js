@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { Card, CardHeader, CardTitle, CardText, CardActions, IconButton,
     SvgIcon } from 'material-ui';
 import { EntryBookmarkOn, EntryBookmarkOff, EntryComment, EntryDownvote,
-    EntryUpvote } from 'shared-components/svg';
+    EntryUpvote, ToolbarEthereum } from 'shared-components/svg';
 import { injectIntl } from 'react-intl';
 import { Avatar, TagChip } from 'shared-components';
 import { calculateReadingTime } from 'utils/dataModule';
@@ -15,19 +15,44 @@ class EntryCard extends Component {
     componentDidMount () {
         const { entryActions, loggedAkashaId, entry } = this.props;
         entryActions.getVoteOf(loggedAkashaId, entry.get('entryId'));
+        if (this.isOwnEntry()) {
+            entryActions.canClaim(entry.get('entryId'));
+            entryActions.getEntryBalance(entry.get('entryId'));
+        }
     }
+
+    shouldComponentUpdate (nextProps) {
+        const { blockNr, canClaimPending, claimPending, entry, fetchingEntryBalance, isSaved,
+            voteEntryPending } = nextProps;
+        if (blockNr !== this.props.blockNr ||
+            canClaimPending !== this.props.canClaimPending ||
+            claimPending !== this.props.claimPending ||
+            !entry.equals(this.props.entry) ||
+            fetchingEntryBalance !== this.props.fetchingEntryBalance ||
+            isSaved !== this.props.isSaved ||
+            voteEntryPending !== this.props.voteEntryPending
+        ) {
+            return true;
+        }
+        return false;
+    }
+
+    isOwnEntry = () => {
+        const { entry, loggedAkashaId } = this.props;
+        return entry.getIn(['entryEth', 'publisher', 'akashaId']) === loggedAkashaId;
+    };
 
     selectProfile = () => {
         const { entry, loggedAkashaId } = this.props;
         const { router } = this.context;
         const profileAddress = entry.getIn(['entryEth', 'publisher', 'profile']);
         router.push(`/${loggedAkashaId}/profile/${profileAddress}`);
-    }
+    };
 
     selectTag = (ev, tag) => {
         const { selectTag } = this.props;
         selectTag(tag);
-    }
+    };
 
     handleUpvote = () => {
         const { entry, entryActions } = this.props;
@@ -40,7 +65,7 @@ class EntryCard extends Component {
             active: entry.get('active')
         };
         entryActions.addUpvoteAction(payload);
-    }
+    };
 
     handleDownvote = () => {
         const { entry, entryActions } = this.props;
@@ -52,7 +77,7 @@ class EntryCard extends Component {
             entryId: entry.get('entryId')
         };
         entryActions.addDownvoteAction(payload);
-    }
+    };
 
     handleBookmark = () => {
         const { entry, loggedAkashaId, isSaved, entryActions } = this.props;
@@ -62,13 +87,25 @@ class EntryCard extends Component {
         } else {
             entryActions.saveEntry(loggedAkashaId, entry.get('entryId'));
         }
-    }
+    };
+
+    handleClaim = () => {
+        const { entry, entryActions } = this.props;
+        const payload = {
+            entryTitle: entry.getIn(['content', 'title']),
+            entryId: entry.get('entryId')
+        };
+        entryActions.addClaimAction(payload);
+    };
+
     _handleEntryNavigation = () => {
       const { entry, loggedAkashaId } = this.props;
       this.context.router.push(`/${loggedAkashaId}/entry/${entry.get('entryId')}`);
-    }
+    };
+
     render () {
-        const { entry, blockNr, selectedTag, voteEntryPending, isSaved, style, intl } = this.props;
+        const { blockNr, canClaimPending, claimPending, entry, fetchingEntryBalance, intl, isSaved,
+            selectedTag, style, voteEntryPending } = this.props;
         const { palette } = this.context.muiTheme;
         const content = entry.get('content');
         const existingVoteWeight = entry.get('voteWeight') || 0;
@@ -98,7 +135,7 @@ class EntryCard extends Component {
         return (
           <Card
             className="start-xs"
-            style={Object.assign({}, { margin: '5px 5px 16px 5px' }, style)}
+            style={Object.assign({}, { margin: '5px 5px 16px 5px', width: '640px' }, style)}
           >
             <CardHeader
               title={
@@ -172,8 +209,7 @@ class EntryCard extends Component {
                   <IconButton
                     onTouchTap={this.handleUpvote}
                     iconStyle={{ width: '20px', height: '20px' }}
-                    disabled={!entry.get('active') || (voteEntryPending && voteEntryPending.value)
-                        || existingVoteWeight !== 0}
+                    disabled={!entry.get('active') || voteEntryPending || existingVoteWeight !== 0}
                   >
                     <SvgIcon viewBox="0 0 20 20" >
                       <EntryUpvote fill={upvoteIconColor} />
@@ -239,17 +275,42 @@ class EntryCard extends Component {
                   {entry.get('commentsCount')}
                 </div>
                 <div style={{ flex: '1 1 auto', textAlign: 'right' }}>
-                  <IconButton
-                    onTouchTap={this.handleBookmark}
-                    iconStyle={{ width: '20px', height: '20px' }}
-                  >
-                    <SvgIcon viewBox="0 0 20 20">
-                      {isSaved ?
-                        <EntryBookmarkOn /> :
-                        <EntryBookmarkOff />
+                  {!this.isOwnEntry() &&
+                    <IconButton
+                      onTouchTap={this.handleBookmark}
+                      iconStyle={{ width: '20px', height: '20px' }}
+                    >
+                      <SvgIcon viewBox="0 0 20 20">
+                        {isSaved ?
+                          <EntryBookmarkOn /> :
+                          <EntryBookmarkOff />
+                        }
+                      </SvgIcon>
+                    </IconButton>
+                  }
+                  {this.isOwnEntry() && (!canClaimPending || entry.get('canClaim') !== undefined)
+                      && (!fetchingEntryBalance || entry.get('balance') !== undefined) &&
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+                      {!entry.get('active') &&
+                        <IconButton
+                          onTouchTap={this.handleClaim}
+                          iconStyle={{
+                            width: '20px',
+                            height: '20px',
+                            fill: !entry.get('canClaim') ? palette.accent3Color : 'currentColor'
+                          }}
+                          disabled={claimPending}
+                        >
+                          <SvgIcon viewBox="0 0 16 16">
+                            <ToolbarEthereum />
+                          </SvgIcon>
+                        </IconButton>
                       }
-                    </SvgIcon>
-                  </IconButton>
+                      <div style={{ fontSize: '16px', paddingRight: '5px' }}>
+                        {entry.get('balance')} ETH
+                      </div>
+                    </div>
+                  }
                 </div>
               </div>
             </CardActions>
@@ -259,17 +320,19 @@ class EntryCard extends Component {
 };
 
 EntryCard.propTypes = {
-    loggedAkashaId: PropTypes.string,
-    entry: PropTypes.shape(),
     blockNr: PropTypes.number,
-    selectedTag: PropTypes.string,
-    selectProfile: PropTypes.func,
-    selectTag: PropTypes.func,
-    voteEntryPending: PropTypes.shape(),
-    isSaved: PropTypes.bool,
+    canClaimPending: PropTypes.bool,
+    claimPending: PropTypes.bool,
+    entry: PropTypes.shape(),
     entryActions: PropTypes.shape(),
+    fetchingEntryBalance: PropTypes.bool,
+    intl: PropTypes.shape(),
+    isSaved: PropTypes.bool,
+    loggedAkashaId: PropTypes.string,
+    selectedTag: PropTypes.string,
+    selectTag: PropTypes.func,
     style: PropTypes.shape(),
-    intl: PropTypes.shape()
+    voteEntryPending: PropTypes.bool,
 };
 
 EntryCard.contextTypes = {

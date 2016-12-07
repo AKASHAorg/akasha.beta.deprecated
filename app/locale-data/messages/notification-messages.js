@@ -110,7 +110,21 @@ const notificationMessages = defineMessages({
         id: 'app.notification.commentPublishedSuccessfully',
         description: 'Notification to be displayed when comment successfully published',
         defaultMessage: 'Comment published successfully'
-    }
-
+    },
+    claiming: {
+        id: 'app.notification.claiming',
+        description: 'Notification to be displayed when claim transaction is sent',
+        defaultMessage: 'Claiming {entryTitle} ...'
+    },
+    claimSuccess: {
+        id: 'app.notification.claimSuccess',
+        description: 'Notification to be displayed when claim transaction was mined',
+        defaultMessage: 'You successfully claimed {entryTitle}'
+    },
+    claimError: {
+        id: 'app.notification.claimError',
+        description: 'Notification to be displayed when claim transaction was mined but was unsuccessfull',
+        defaultMessage: 'Claiming {entryTitle} has failed'
+    },
 });
 export { notificationMessages };

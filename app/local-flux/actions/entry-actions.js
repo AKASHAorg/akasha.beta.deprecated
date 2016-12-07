@@ -296,6 +296,16 @@ class EntryActions {
             status: 'needWeightConfirmation'
         });
 
+    addClaimAction = payload =>
+        this.appActions.addPendingAction({
+            type: 'claim',
+            payload,
+            gas: 2000000,
+            titleId: 'claimTitle',
+            messageId: 'claim',
+            status: 'needConfirmation'
+        });
+
     voteCost = (weight) => {
         this.dispatch(entryActionCreators.voteCost({
             fetchingVoteCost: true
@@ -472,5 +482,76 @@ class EntryActions {
                 this.dispatch(entryActionCreators.getVoteOfError(error, { fetchingVoteOf: false }))
         });
     }
+
+    canClaim = (entryId) => {
+        this.dispatch(entryActionCreators.canClaim({ canClaimPending: true }));
+        this.entryService.canClaim({
+            entryId,
+            onSuccess: data => this.dispatch(entryActionCreators.canClaimSuccess(data, {
+                canClaimPending: false
+            })),
+            onError: error => this.dispatch(entryActionCreators.canClaimError(error, {
+                canClaimPending: false
+            }))
+        });
+    }
+
+    getEntryBalance = (entryId) => {
+        this.dispatch(entryActionCreators.getEntryBalance({ fetchingEntryBalance: true }));
+        this.entryService.getEntryBalance({
+            entryId,
+            onSuccess: data => this.dispatch(entryActionCreators.getEntryBalanceSuccess(data, {
+                fetchingEntryBalance: false
+            })),
+            onError: error => this.dispatch(entryActionCreators.getEntryBalanceError(error, {
+                fetchingEntryBalance: false
+            }))
+        });
+    }
+
+    claim = (entryId, gas) =>
+        this.dispatch((dispatch, getState) => {
+            const token = getState().profileState.getIn(['loggedProfile', 'token']);
+            dispatch(entryActionCreators.claim({ claimPending: { entryId, value: true } }));
+            this.entryService.upvote({
+                token,
+                entryId,
+                gas,
+                onSuccess: (data) => {
+                    const entryTitle = getState().entryState.get('entries')
+                        .find(entry => entry.get('entryId') === data.entryId)
+                        .getIn(['content', 'content', 'title']);
+                    this.transactionActions.listenForMinedTx();
+                    this.transactionActions.addToQueue([{
+                        tx: data.tx,
+                        type: 'claim',
+                        entryId: data.entryId
+                    }]);
+                    this.appActions.showNotification({
+                        id: 'claiming',
+                        values: { entryTitle },
+                        duration: 3000
+                    });
+                },
+                onError: (error, data) =>
+                    dispatch(entryActionCreators.claimError(error, {
+                        claimPending: { entryId: data.entryId, value: false }
+                    }))
+            });
+        });
+
+    claimSuccess = (entryId, minedSuccessfully) =>
+        this.dispatch((dispatch, getState) => {
+            const entryTitle = getState().entryState.get('entries')
+                .find(entry => entry.get('entryId') === entryId)
+                .getIn(['content', 'content', 'title']);
+            dispatch(entryActionCreators.claimSuccess({
+                claimPending: { entryId, value: false }
+            }));
+            this.appActions.showNotification({
+                id: minedSuccessfully ? 'claimSuccess' : 'claimError',
+                values: { entryTitle }
+            });
+        });
 }
 export { EntryActions };
