@@ -25,7 +25,7 @@ class GethIPC extends GethEmitter_1.default {
             bootnodes: this.BOOTNODE,
             datadir: path_1.join(datadir, 'akasha'),
             ipcpath: path_1.join(datadir, 'akasha', 'geth.ipc'),
-            networkid: 512180
+            networkid: 512180,
         });
         this._start()
             ._restart()
