@@ -54,8 +54,8 @@ export default class Comments extends BaseContract {
             .then((result) => {
                 return {
                     profile: result[0],
-                    idComment: result[1],
-                    parent: result[2],
+                    idComment: (result[1]).toString(),
+                    parent: (result[2]).toString(),
                     ipfsHash: this.flattenIpfs(result[3]),
                     active: !(result[4])
                 }
