@@ -97,9 +97,9 @@ export default class BlockButton extends Component {
     }
     render () {
         const akashaTermsLink =
-          <a href="#" onClick={(ev) => this.showTerms(ev)}>
+          (<a href="#" onClick={ev => this.showTerms(ev)}>
             {'AKASHA\'s terms'}
-          </a>;
+          </a>);
         const { dialogOpen, licence, fileName } = this.state;
         const selectFileMessage = fileName || 'Select file';
         return (
