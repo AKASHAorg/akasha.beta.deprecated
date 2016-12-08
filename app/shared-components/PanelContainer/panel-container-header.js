@@ -28,7 +28,7 @@ const PanelContainerHeader = (props) => {
         {!header &&
           <div className="col-xs-12">
             <div className="row middle-xs">
-              <h3 className="col-xs-7" style={{ fontWeight: 300 }}>{title}</h3>
+              <h3 className="col-xs-8" style={{ fontWeight: 300 }}>{title}</h3>
               {subTitle &&
                 <div className="col-xs-4 end-xs">{subTitle}</div>
               }
@@ -42,8 +42,14 @@ const PanelContainerHeader = (props) => {
 PanelContainerHeader.propTypes = {
     header: PropTypes.element,
     showBorder: PropTypes.bool,
-    subTitle: PropTypes.string,
-    title: PropTypes.string,
+    subTitle: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.node
+    ]),
+    title: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.node
+    ]),
     shrinked: PropTypes.bool,
     muiTheme: PropTypes.shape().isRequired,
     headerHeight: PropTypes.number,

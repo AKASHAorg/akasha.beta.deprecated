@@ -126,7 +126,7 @@ class AddEntryPage extends Component {
         return this._findCurrentDraft(drafts).get('content');
     }
     render () {
-        const { drafts, savingDraft } = this.props;
+        const { appActions, drafts, savingDraft } = this.props;
         const { fetchingDraft, draftMissing } = this.state;
         const currentDraft = this._findCurrentDraft(drafts);
         const initialContent = this._getInitialContent();
@@ -199,6 +199,7 @@ class AddEntryPage extends Component {
                     title={draftTitle}
                     showTitle
                     placeHolder="Write something"
+                    showTerms={appActions.showTerms}
                   />
                 </div>
               }
@@ -224,6 +225,7 @@ class AddEntryPage extends Component {
     }
 }
 AddEntryPage.propTypes = {
+    appActions: React.PropTypes.shape(),
     draftActions: React.PropTypes.shape().isRequired,
     loggedProfile: React.PropTypes.shape(),
     params: React.PropTypes.shape(),

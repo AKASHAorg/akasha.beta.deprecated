@@ -167,9 +167,10 @@ class CreateProfile extends Component {
             about: ev.target.value
         });
     };
-    _handleModalShow = (ev, modalName) => {
+    showTerms = (ev) => {
+        const { appActions } = this.props;
         ev.preventDefault();
-        console.log('show modal ', modalName);
+        appActions.showTerms();
     };
     renderWarningMessage () {
         const { intl, gethStatus, ipfsStatus } = this.props;
@@ -392,20 +393,11 @@ class CreateProfile extends Component {
                   values={{
                       termsLink: (
                         <a
-                          href="/terms"
-                          onClick={ev => this._handleModalShow(ev, 'termsOfService')}
+                          href="#"
+                          onClick={ev => this.showTerms(ev)}
                           style={{ color: palette.primary1Color }}
                         >
                           {intl.formatMessage(generalMessages.termsOfService)}
-                        </a>
-                      ),
-                      privacyLink: (
-                        <a
-                          href="/privacy"
-                          onClick={ev => this._handleModalShow(ev, 'privacyPolicy')}
-                          style={{ color: palette.primary1Color }}
-                        >
-                          {intl.formatMessage(generalMessages.privacyPolicy)}
                         </a>
                       )
                   }}
@@ -418,6 +410,7 @@ class CreateProfile extends Component {
 }
 
 CreateProfile.propTypes = {
+    appActions: PropTypes.shape(),
     style: PropTypes.shape(),
     customValidate: React.PropTypes.func,
     errors: React.PropTypes.shape(),

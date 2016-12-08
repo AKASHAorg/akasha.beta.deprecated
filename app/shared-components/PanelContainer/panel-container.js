@@ -108,12 +108,18 @@ PanelContainer.propTypes = {
     actions: PropTypes.node,
     children: PropTypes.node,
     width: PropTypes.number,
-    title: PropTypes.string,
+    title: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.node
+    ]),
     showBorder: PropTypes.bool,
     header: PropTypes.node,
     leftActions: PropTypes.node,
     style: PropTypes.shape(),
-    subTitle: PropTypes.string,
+    subTitle: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.node
+    ]),
     headerHeight: PropTypes.number,
     headerMinHeight: PropTypes.number,
     headerStyle: PropTypes.shape(),

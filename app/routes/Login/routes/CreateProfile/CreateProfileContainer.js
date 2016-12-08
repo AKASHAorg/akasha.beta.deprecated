@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import CreateProfile from './components/CreateProfile';
-import { TempProfileActions, ValidationActions } from 'local-flux';
+import { AppActions, TempProfileActions, ValidationActions } from 'local-flux';
 
 function mapStateToProps (state, ownProps) {
     return {
@@ -12,6 +12,7 @@ function mapStateToProps (state, ownProps) {
 
 function mapDispatchToProps (dispatch) {
     return {
+        appActions: new AppActions(dispatch),
         tempProfileActions: new TempProfileActions(dispatch),
         validationActions: new ValidationActions(dispatch)
     };
