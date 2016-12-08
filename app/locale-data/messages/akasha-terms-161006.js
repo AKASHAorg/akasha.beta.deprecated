@@ -78,7 +78,7 @@ const akashaTerms = defineMessages({
     paymentOfFeesBody: {
         id: 'app.akasha.terms.paymentOfFeesBody',
         description: 'payment of fees section content',
-        defaultMessage: `14 When creating an Identity, you will be provided with an Ethereum Address (Ethereum Identity Key) to which you will need to make a transfer of a small amount of Ether (ETH). Whenever your usage of AKASHA is subject to the payment of a fee, this fee – after you have provided your consent in each individual case – will be withdrawn from your Ethereum Identity Key Balance. The amount of ETH on your Ethereum Identity Key Balance remains in your control and may be withdrawn any time.`
+        defaultMessage: '14 When creating an Identity, you will be provided with an Ethereum Address (Ethereum Identity Key) to which you will need to make a transfer of a small amount of Ether (ETH). Whenever your usage of AKASHA is subject to the payment of a fee, this fee – after you have provided your consent in each individual case – will be withdrawn from your Ethereum Identity Key Balance. The amount of ETH on your Ethereum Identity Key Balance remains in your control and may be withdrawn any time.'
     },
     advertisementTitle: {
         id: 'app.akasha.terms.advertisementTitle',
@@ -98,7 +98,7 @@ const akashaTerms = defineMessages({
     noWarrantyBody: {
         id: 'app.akasha.terms.noWarrantyBody',
         description: 'no warranty section content',
-        defaultMessage: `16 You understand and expressly accept that there is no warranty whatsoever regarding the availability, functionality, and/or the success of AKASHA and the Ethereum Identity Key , expressed or implied, to the extent permitted by law, and that the Pre-Alpha release of AKASHA is used at the sole risk of yourself on an “as is” and “under development” basis and without, to the extent permitted by law, any warranties of any kind, including, but not limited to, warranties of title or implied warranties, merchantability or fitness for a particular purpose;`
+        defaultMessage: '16 You understand and expressly accept that there is no warranty whatsoever regarding the availability, functionality, and/or the success of AKASHA and the Ethereum Identity Key , expressed or implied, to the extent permitted by law, and that the Pre-Alpha release of AKASHA is used at the sole risk of yourself on an “as is” and “under development” basis and without, to the extent permitted by law, any warranties of any kind, including, but not limited to, warranties of title or implied warranties, merchantability or fitness for a particular purpose;'
     },
     passwordTitle: {
         id: 'app.akasha.terms.passwordTitle',

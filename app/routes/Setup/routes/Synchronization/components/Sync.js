@@ -159,14 +159,14 @@ class SyncStatus extends Component {
         return eProcActions.stopIPFS();
     };
     renderError (error, key) {
-        return <Paper key={key} style={{ margin: '10px 0', padding: '5px' }} >
+        return (<Paper key={key} style={{ margin: '10px 0', padding: '5px' }} >
           <span>
             {error.get('code')}
           </span>
           <span style={{ marginLeft: '5px' }}>
             {error.get('message')}
           </span>
-        </Paper>;
+        </Paper>);
     }
     render () {
         const {

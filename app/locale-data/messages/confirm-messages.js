@@ -9,7 +9,7 @@ const confirmMessages = defineMessages({
     gasInputDisclaimer: {
         id: 'app.confirm.gasInputDisclaimer',
         description: 'disclaimer for gas amount input',
-        defaultMessage: `Gas to be used by this transaction. Unused gas will be returned.`
+        defaultMessage: 'Gas to be used by this transaction. Unused gas will be returned.'
     },
     inactiveEntryError: {
         id: 'app.confirm.inactiveEntryError',

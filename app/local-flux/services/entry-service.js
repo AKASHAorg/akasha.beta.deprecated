@@ -108,13 +108,13 @@ class EntryService extends BaseService {
     saveEntry = ({ akashaId, entry, onError, onSuccess }) =>
         entriesDB.savedEntries.where('akashaId').equals(akashaId)
             .toArray()
-            .then(records => {
+            .then((records) => {
                 let result;
                 if (!records.length) {
                     result = { akashaId, entries: [entry] };
                 } else {
                     records[0].entries.push(entry);
-                    result = { akashaId, entries: records[0].entries }
+                    result = { akashaId, entries: records[0].entries };
                 }
                 return entriesDB.savedEntries.put(result)
                     .then(() => onSuccess(entry))
@@ -125,14 +125,14 @@ class EntryService extends BaseService {
     deleteEntry = ({ akashaId, entryId, onError, onSuccess }) =>
         entriesDB.savedEntries.where('akashaId').equals(akashaId)
             .toArray()
-            .then(records => {
+            .then((records) => {
                 let result;
                 if (!records.length) {
                     return;
                 } else {
                     const entries = records[0].entries.filter(entry =>
                         entry.entryId !== entryId);
-                    result = { akashaId, entries }
+                    result = { akashaId, entries };
                 }
                 return entriesDB.savedEntries.put(result)
                     .then(() => onSuccess(entryId))
@@ -186,7 +186,7 @@ class EntryService extends BaseService {
 
     getTagEntriesCount = ({
         tagName, onError = () => {
-    }, onSuccess
+        }, onSuccess
     }) =>
         this.openChannel({
             clientManager: this.clientManager,
@@ -218,7 +218,7 @@ class EntryService extends BaseService {
 
     getEntriesStream = ({
         akashaId, onError = () => {
-    }, onSuccess
+        }, onSuccess
     }) => {
         this.openChannel({
             clientManager: this.clientManager,

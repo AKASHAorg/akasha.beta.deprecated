@@ -62,11 +62,11 @@ class GethService extends BaseService {
         const clientChannel = Channel.client.geth.restartService;
 
         return this.openChannel({
-                clientManager: this.clientManager,
-                serverChannel,
-                clientChannel,
-                listenerCb: this.createListener(onError, onSuccess, clientChannel.channelName)
-            }, () =>
+            clientManager: this.clientManager,
+            serverChannel,
+            clientChannel,
+            listenerCb: this.createListener(onError, onSuccess, clientChannel.channelName)
+        }, () =>
                 serverChannel.send(options)
         );
     };
@@ -142,11 +142,11 @@ class GethService extends BaseService {
         const serverChannel = Channel.server.geth.syncStatus;
 
         this.openChannel({
-                clientManager: this.clientManager,
-                serverChannel,
-                clientChannel,
-                listenerCb: this.createListener(onError, onSuccess, clientChannel.channelName)
-            }, () =>
+            clientManager: this.clientManager,
+            serverChannel,
+            clientChannel,
+            listenerCb: this.createListener(onError, onSuccess, clientChannel.channelName)
+        }, () =>
                 serverChannel.send(options)
         );
     };

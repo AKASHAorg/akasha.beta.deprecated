@@ -52,7 +52,7 @@ const UserProfileHeader = (props) => {
               >
                 <SvgIcon
                   viewBox={svgStyle.viewBox}
-                  className={"hand-icon"}
+                  className={'hand-icon'}
                   color={svgStyle.color}
                   hoverColor={svgStyle.hoverColor}
                 >
@@ -67,7 +67,7 @@ const UserProfileHeader = (props) => {
               >
                 <SvgIcon
                   viewBox={svgStyle.viewBox}
-                  className={"hand-icon"}
+                  className={'hand-icon'}
                   color={svgStyle.color}
                   hoverColor={svgStyle.hoverColor}
                 >
@@ -82,7 +82,7 @@ const UserProfileHeader = (props) => {
               >
                 <SvgIcon
                   viewBox={svgStyle.viewBox}
-                  className={"hand-icon"}
+                  className={'hand-icon'}
                   color={svgStyle.color}
                   hoverColor={svgStyle.hoverColor}
                 >
@@ -97,7 +97,7 @@ const UserProfileHeader = (props) => {
               >
                 <SvgIcon
                   viewBox={svgStyle.viewBox}
-                  className={"hand-icon"}
+                  className={'hand-icon'}
                   color={svgStyle.color}
                   hoverColor={svgStyle.hoverColor}
                 >
@@ -127,7 +127,7 @@ const UserProfileHeader = (props) => {
               >
                 <SvgIcon
                   viewBox={svgStyle.viewBox}
-                  className={"hand-icon"}
+                  className={'hand-icon'}
                   color={svgStyle.color}
                   hoverColor={svgStyle.hoverColor}
                 >
@@ -142,7 +142,7 @@ const UserProfileHeader = (props) => {
               >
                 <SvgIcon
                   viewBox={svgStyle.viewBox}
-                  className={"hand-icon"}
+                  className={'hand-icon'}
                   color={svgStyle.color}
                   hoverColor={svgStyle.hoverColor}
                 >

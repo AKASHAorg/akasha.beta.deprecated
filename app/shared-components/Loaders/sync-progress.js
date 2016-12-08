@@ -7,9 +7,9 @@ function SyncProgress ({ innerIconStyle, value, strokeWidth }, { muiTheme }) {
         fill: muiTheme.palette.textColor
     };
     return (
-        <CircularProgress mode="determinate" strokeWidth={strokeWidth} size={3} value={value} >
-            <MenuEthereum style={innerIconStyle || defaultIconStyle} />
-        </CircularProgress>
+      <CircularProgress mode="determinate" strokeWidth={strokeWidth} size={3} value={value} >
+        <MenuEthereum style={innerIconStyle || defaultIconStyle} />
+      </CircularProgress>
     );
 }
 SyncProgress.propTypes = {
@@ -20,7 +20,7 @@ SyncProgress.propTypes = {
 
 SyncProgress.contextTypes = {
     muiTheme: PropTypes.shape().isRequired
-}
+};
 
 SyncProgress.defaultProps = {
     value: 1,

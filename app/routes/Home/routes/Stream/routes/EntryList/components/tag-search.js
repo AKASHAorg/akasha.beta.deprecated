@@ -10,52 +10,52 @@ const buttonStyle = {
     top: 25
 };
 const TagSearch = (props) => {
-  const { tagName, tagEntriesCount, subscriptions, subscribeTag, unsubscribeTag,
+    const { tagName, tagEntriesCount, subscriptions, subscribeTag, unsubscribeTag,
       subscribePending, intl } = props;
-  const isSubscribed = subscriptions && !!subscriptions.find(tag => tag.get('tagName') === tagName);
-  const isPending = subscribePending && subscribePending.value;
-  return <div className="row" style={{ paddingBottom: 24, width: '640px' }}>
-    <div className="col-xs-12" style={{ position: 'relative' }}>
-      <TextField
-        fullWidth
-        hintText="Type a tag"
-        floatingLabelText="TAGGED IN"
-        value={tagName}
-      />
-      <RaisedButton
-        label={isSubscribed ?
+    const isSubscribed = subscriptions && !!subscriptions.find(tag => tag.get('tagName') === tagName);
+    const isPending = subscribePending && subscribePending.value;
+    return (<div className="row" style={{ paddingBottom: 24, width: '640px' }}>
+      <div className="col-xs-12" style={{ position: 'relative' }}>
+        <TextField
+          fullWidth
+          hintText="Type a tag"
+          floatingLabelText="TAGGED IN"
+          value={tagName}
+        />
+        <RaisedButton
+          label={isSubscribed ?
             intl.formatMessage(tagMessages.unsubscribe) :
             intl.formatMessage(tagMessages.subscribe)
         }
-        primary={!isSubscribed}
-        style={buttonStyle}
-        onClick={isSubscribed ? unsubscribeTag : subscribeTag}
-        disabled={isPending}
-      />
-    </div>
-    <div
-      className="col-xs-12"
-      style={{
-          display: 'flex', justifyContent: 'space-between', paddingTop: '10px'
-      }}
-    >
-      <div>
-        <FormattedMessage
-          id="app.profile.entriesCount"
-          description="counting a profile's entries"
-          defaultMessage={`{entriesCount, number} {entriesCount, plural,
+          primary={!isSubscribed}
+          style={buttonStyle}
+          onClick={isSubscribed ? unsubscribeTag : subscribeTag}
+          disabled={isPending}
+        />
+      </div>
+      <div
+        className="col-xs-12"
+        style={{
+            display: 'flex', justifyContent: 'space-between', paddingTop: '10px'
+        }}
+      >
+        <div>
+          <FormattedMessage
+            id="app.profile.entriesCount"
+            description="counting a profile's entries"
+            defaultMessage={`{entriesCount, number} {entriesCount, plural,
                 one {entry}
                 few {entries}
                 many {entries}
                 other {entries}
               }`}
-          values={{ entriesCount: tagEntriesCount.get('count') }}
-        />
+            values={{ entriesCount: tagEntriesCount.get('count') }}
+          />
+        </div>
+        <div>Sorted by latest</div>
       </div>
-      <div>Sorted by latest</div>
-    </div>
-  </div>;
-}
+    </div>);
+};
 
 TagSearch.propTypes = {
     tagName: PropTypes.string,

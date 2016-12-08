@@ -5,11 +5,11 @@ import { SyncProgressLoader } from 'shared-components';
 
 class SyncStatus extends Component {
 
-    renderCounter(current, total, message) {
+    renderCounter (current, total, message) {
         if (!current || !total) {
-          return null;
+            return null;
         }
-        return <div style={{ fontSize: '16px' }} >
+        return (<div style={{ fontSize: '16px' }} >
           {message &&
             <span style={{ marginRight: '10px' }}>
               {message}
@@ -19,7 +19,7 @@ class SyncStatus extends Component {
             {current}
           </strong>/
           {total}
-        </div>;
+        </div>);
     }
 
     render () {
@@ -62,64 +62,62 @@ class SyncStatus extends Component {
                   processingMessage)}
               </div>
             );
-        } else {
-            if (syncActionId === 4) {
-                currentProgress = 100;
-                progressBody = (
-                  <div>
-                    <div style={statusTextStyle} >
-                      {intl.formatMessage(setupMessages.syncCompleted)}
-                    </div>
-                  </div>
+        } else if (syncActionId === 4) {
+            currentProgress = 100;
+            progressBody = (
+              <div>
+                <div style={statusTextStyle} >
+                  {intl.formatMessage(setupMessages.syncCompleted)}
+                </div>
+              </div>
                 );
-            } else if (gethStatus.get('starting')) {
-                progressBody = (
-                  <div>
-                    <div style={statusTextStyle} >
-                      {intl.formatMessage(setupMessages.startingGeth)}
-                    </div>
-                  </div>
+        } else if (gethStatus.get('starting')) {
+            progressBody = (
+              <div>
+                <div style={statusTextStyle} >
+                  {intl.formatMessage(setupMessages.startingGeth)}
+                </div>
+              </div>
                 );
-            } else if (gethStatus.get('downloading')) {
-                progressBody = (
-                  <div>
-                    <div style={statusTextStyle} >
-                      {intl.formatMessage(setupMessages.downloadingGeth)}
-                    </div>
-                  </div>
+        } else if (gethStatus.get('downloading')) {
+            progressBody = (
+              <div>
+                <div style={statusTextStyle} >
+                  {intl.formatMessage(setupMessages.downloadingGeth)}
+                </div>
+              </div>
                 );
-            } else if (ipfsStatus.get('downloading')) {
-                progressBody = (
-                  <div>
-                    <div>
-                      <div style={statusTextStyle} >
-                        {intl.formatMessage(setupMessages.downloadingIpfs)}
-                      </div>
-                    </div>
+        } else if (ipfsStatus.get('downloading')) {
+            progressBody = (
+              <div>
+                <div>
+                  <div style={statusTextStyle} >
+                    {intl.formatMessage(setupMessages.downloadingIpfs)}
                   </div>
+                </div>
+              </div>
                 );
-            } else if (syncActionId === 2 || syncActionId === 3) {
-                progressBody = (
-                  <div>
-                    <div style={statusTextStyle} >
-                      {intl.formatMessage(setupMessages.disconnected)}
-                    </div>
-                    {this.renderCounter(gethSyncStatus.currentBlock, gethSyncStatus.highestBlock,
+        } else if (syncActionId === 2 || syncActionId === 3) {
+            progressBody = (
+              <div>
+                <div style={statusTextStyle} >
+                  {intl.formatMessage(setupMessages.disconnected)}
+                </div>
+                {this.renderCounter(gethSyncStatus.currentBlock, gethSyncStatus.highestBlock,
                       synchronizingMessage)}
-                    {this.renderCounter(gethSyncStatus.pulledStates, gethSyncStatus.knownStates,
+                {this.renderCounter(gethSyncStatus.pulledStates, gethSyncStatus.knownStates,
                       processingMessage)}
-                  </div>
+              </div>
                 );
-            } else {
-                peerInfo = intl.formatMessage(setupMessages.findingPeers);
-                progressBody = (
-                  <div>
-                    <div style={statusTextStyle} >
-                      {peerInfo}
-                    </div>
-                  </div>
+        } else {
+            peerInfo = intl.formatMessage(setupMessages.findingPeers);
+            progressBody = (
+              <div>
+                <div style={statusTextStyle} >
+                  {peerInfo}
+                </div>
+              </div>
                 );
-            }
         }
         return (
           <div style={{ padding: '32px 0', textAlign: 'center' }} >

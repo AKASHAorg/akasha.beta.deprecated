@@ -100,7 +100,7 @@ class ImageUploader extends Component {
         const { initialImageFile } = this.state;
         return (
           <div
-            ref={(container) => { this.container = container }}
+            ref={(container) => { this.container = container; }}
             style={this.context.muiTheme.imageUploader}
           >
             {this.state.isNewImage &&

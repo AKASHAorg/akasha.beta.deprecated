@@ -76,9 +76,9 @@ class RegistryService extends BaseService {
     createTempProfile = ({ profileData, currentStatus, onSuccess, onError }) =>
         profileDB.tempProfile
             .put({
-            ...profileData,
-            currentStatus
-        })
+                ...profileData,
+                currentStatus
+            })
             .then((data) => {
                 onSuccess(data);
             }).catch(reason => onError(reason));
@@ -92,9 +92,9 @@ class RegistryService extends BaseService {
         profileDB.tempProfile.toArray().then(tmpProfile =>
             profileDB.tempProfile
                 .update(tmpProfile[0].akashaId, {
-                ...changes,
-                currentStatus
-            })
+                    ...changes,
+                    currentStatus
+                })
                 .then(() => {
                     onSuccess({ ...changes, currentStatus });
                 })
@@ -122,8 +122,8 @@ class RegistryService extends BaseService {
             .then((results) => {
                 onSuccess(results[0]);
             }).catch((reason) => {
-            onError(reason);
-        });
+                onError(reason);
+            });
     }
 }
 

@@ -230,7 +230,7 @@ class EntryModal extends React.Component {
                       `Aww..!! It’s a perfect inspiring article for a beginner. Thanks a
                       looooooooooooot for sharing it Cammi..:-)`
                     }
-                    onReply={(ev) => this._handleReply(ev, comment)}
+                    onReply={ev => this._handleReply(ev, comment)}
                     repliesLimit={3}
                     stats={{ upvotes: 159, downvotes: 340, replies: 7 }}
                   >
@@ -240,9 +240,9 @@ class EntryModal extends React.Component {
                       publishDate={'1 day ago'}
                       avatar={'https://c2.staticflickr.com/2/1268/552681861_5046590531_q.jpg'}
                       text={
-                        "@AndreiBiga Thanks!"
+                        '@AndreiBiga Thanks!'
                       }
-                      onReply={(ev) => this._handleReply(ev, comment)}
+                      onReply={ev => this._handleReply(ev, comment)}
                       repliesLimit={3}
                       stats={{ upvotes: 159, downvotes: 340, replies: 7 }}
                     />

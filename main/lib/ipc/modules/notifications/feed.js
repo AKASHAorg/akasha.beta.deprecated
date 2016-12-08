@@ -28,6 +28,9 @@ const hydrateWithProfile = (cb, profile, entry, extra) => {
     });
 };
 const execute = Promise.coroutine(function* (data, cb) {
+    if (!index_1.constructed.instance) {
+        return { running: false };
+    }
     if (data.stop && entries) {
         entries.stopWatching(() => {
             entries = null;

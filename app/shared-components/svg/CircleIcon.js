@@ -21,7 +21,7 @@ function CircleIcon ({ children, disabled, tooltip, onClick }) {
         iconStyle={{ width: '32px', height: '32px', fill: '#000' }}
         onClick={onClick}
       >
-          {children}
+        {children}
       </IconButton>
     );
 }

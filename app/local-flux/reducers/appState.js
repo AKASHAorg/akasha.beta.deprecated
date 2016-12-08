@@ -95,11 +95,9 @@ const appState = createReducer(initialState, {
         return state.set('showAuthDialog', null);
     },
 
-    [types.SHOW_NOTIFICATION]: (state, { notification }) => {
-        return state.merge({
-            notifications: state.get('notifications').push(new Notification(notification))
-        });
-    },
+    [types.SHOW_NOTIFICATION]: (state, { notification }) => state.merge({
+        notifications: state.get('notifications').push(new Notification(notification))
+    }),
 
     [types.HIDE_NOTIFICATION]: (state, { notification }) => {
         const indexToRemove = state.get('notifications').findIndex(notific =>

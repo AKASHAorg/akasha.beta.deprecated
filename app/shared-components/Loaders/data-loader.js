@@ -31,7 +31,7 @@ class DataLoader extends Component {
             if (timeout) {
                 this.timeout = setTimeout(() => { this.updateLoadingState(); }, timeout);
             }
-        } else if ((!timeout || timeoutExpired) && loading !== flag ) {
+        } else if ((!timeout || timeoutExpired) && loading !== flag) {
             this.setState({
                 loading: flag
             });

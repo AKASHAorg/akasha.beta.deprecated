@@ -86,11 +86,11 @@ class IpfsService extends BaseService {
         const serverChannel = Channel.server.ipfs.getConfig;
 
         return this.openChannel({
-                clientManager: this.clientManager,
-                serverChannel,
-                clientChannel,
-                listenerCb: this.createListener(onError, onSuccess)
-            }, () =>
+            clientManager: this.clientManager,
+            serverChannel,
+            clientChannel,
+            listenerCb: this.createListener(onError, onSuccess)
+        }, () =>
                 serverChannel.send(options)
         );
     };
@@ -103,11 +103,11 @@ class IpfsService extends BaseService {
         const serverChannel = Channel.server.ipfs.getPorts;
 
         return this.openChannel({
-                clientManager: this.clientManager,
-                serverChannel,
-                clientChannel,
-                listenerCb: this.createListener(onError, onSuccess)
-            }, () =>
+            clientManager: this.clientManager,
+            serverChannel,
+            clientChannel,
+            listenerCb: this.createListener(onError, onSuccess)
+        }, () =>
                 serverChannel.send(options)
         );
     }

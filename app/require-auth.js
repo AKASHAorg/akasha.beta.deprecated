@@ -29,5 +29,3 @@ export default function requireAuthentication (Component) {
     });
     return connect(mapStateToProps, mapDispatchToProps)(ProtectedComponent);
 }
-
-

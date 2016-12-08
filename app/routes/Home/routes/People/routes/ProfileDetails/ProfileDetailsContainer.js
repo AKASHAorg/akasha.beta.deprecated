@@ -6,7 +6,7 @@ import ProfileDetails from './components/profile-details';
 import ProfileActivity from './components/profile-activity';
 
 class ProfileDetailsContainer extends Component {
-    constructor(props) {
+    constructor (props) {
         super(props);
 
         this.state = {
@@ -60,7 +60,7 @@ class ProfileDetailsContainer extends Component {
         const isFollower = !fetchingProfileData && profileData &&
             loggedProfileData.getIn(['isFollower', profileData.get('akashaId')]);
 
-        return <DataLoader
+        return (<DataLoader
           flag={!profileData}
           timeout={300}
           size={80}
@@ -68,42 +68,42 @@ class ProfileDetailsContainer extends Component {
         >
           <div style={{ display: 'flex', height: '100%' }}>
             <ProfileDetails
-                loggedAddress={loggedProfileData.get('profile')}
-                isFollowerPending={isFollowerPending}
-                isFollower={isFollower}
-                profileData={profileData}
-                fetchingProfileData={fetchingProfileData}
-                followProfile={this.followProfile}
-                unfollowProfile={this.unfollowProfile}
-                followPending={followPending}
+              loggedAddress={loggedProfileData.get('profile')}
+              isFollowerPending={isFollowerPending}
+              isFollower={isFollower}
+              profileData={profileData}
+              fetchingProfileData={fetchingProfileData}
+              followProfile={this.followProfile}
+              unfollowProfile={this.unfollowProfile}
+              followPending={followPending}
             />
             <ProfileActivity
-                loggedProfileData={loggedProfileData}
-                profileData={profileData}
-                profileEntries={profileEntries}
-                savedEntriesIds={savedEntriesIds}
-                blockNr={blockNr}
-                entryActions={entryActions}
-                profileActions={profileActions}
-                getEntriesCount={entryActions.getEntriesCount}
-                profiles={profiles}
-                fetchingFollowers={fetchingFollowers}
-                fetchingFollowing={fetchingFollowing}
-                fetchingMoreFollowers={fetchingMoreFollowers}
-                fetchingMoreFollowing={fetchingMoreFollowing}
-                fetchingMoreProfileEntries={fetchingMoreProfileEntries}
-                fetchingProfileEntries={fetchingProfileEntries}
-                moreProfileEntries={moreProfileEntries}
-                followPending={followPending}
-                followProfile={this.followProfile}
-                unfollowProfile={this.unfollowProfile}
-                selectProfile={this.selectProfile}
-                selectTag={tagActions.saveTag}
-                isFollowerPending={isFollowerPending}
-                votePending={votePending}
+              loggedProfileData={loggedProfileData}
+              profileData={profileData}
+              profileEntries={profileEntries}
+              savedEntriesIds={savedEntriesIds}
+              blockNr={blockNr}
+              entryActions={entryActions}
+              profileActions={profileActions}
+              getEntriesCount={entryActions.getEntriesCount}
+              profiles={profiles}
+              fetchingFollowers={fetchingFollowers}
+              fetchingFollowing={fetchingFollowing}
+              fetchingMoreFollowers={fetchingMoreFollowers}
+              fetchingMoreFollowing={fetchingMoreFollowing}
+              fetchingMoreProfileEntries={fetchingMoreProfileEntries}
+              fetchingProfileEntries={fetchingProfileEntries}
+              moreProfileEntries={moreProfileEntries}
+              followPending={followPending}
+              followProfile={this.followProfile}
+              unfollowProfile={this.unfollowProfile}
+              selectProfile={this.selectProfile}
+              selectTag={tagActions.saveTag}
+              isFollowerPending={isFollowerPending}
+              votePending={votePending}
             />
           </div>
-        </DataLoader>;
+        </DataLoader>);
     }
 }
 

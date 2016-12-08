@@ -135,7 +135,7 @@ class EntryPage extends Component {
                         <CardHeader
                           avatar={publisherAvatar}
                           title={`${publisher.lastName} ${publisher.firstName}`}
-                          subtitle={`1 day ago - 5 min read`}
+                          subtitle={'1 day ago - 5 min read'}
                           style={{
                               width: '93%',
                               display: 'inline-block'
@@ -274,7 +274,7 @@ class EntryPage extends Component {
                             publishDate={'3 days ago'}
                             avatar={'http://c2.staticflickr.com/2/1659/25017672329_e5b9967612_b.jpg'}
                             text={
-                              `comment text here!!!`
+                              'comment text here!!!'
                             }
                             onReply={ev => this._handleReply(ev, 'comment')}
                             repliesLimit={3}

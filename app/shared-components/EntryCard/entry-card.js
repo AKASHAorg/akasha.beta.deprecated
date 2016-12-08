@@ -113,8 +113,8 @@ class EntryCard extends Component {
     };
 
     _handleEntryNavigation = () => {
-      const { entry, loggedAkashaId } = this.props;
-      this.context.router.push(`/${loggedAkashaId}/entry/${entry.get('entryId')}`);
+        const { entry, loggedAkashaId } = this.props;
+        this.context.router.push(`/${loggedAkashaId}/entry/${entry.get('entryId')}`);
     };
 
     onExpandChange = (expanded) => {
@@ -342,14 +342,14 @@ class EntryCard extends Component {
                   }
                   {this.isOwnEntry() && (!canClaimPending || entry.get('canClaim') !== undefined)
                       && (!fetchingEntryBalance || entry.get('balance') !== undefined) &&
-                    <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
-                      {!entry.get('active') &&
+                      <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+                        {!entry.get('active') &&
                         <IconButton
                           onTouchTap={this.handleClaim}
                           iconStyle={{
-                            width: '20px',
-                            height: '20px',
-                            fill: !entry.get('canClaim') ? palette.accent3Color : 'currentColor'
+                              width: '20px',
+                              height: '20px',
+                              fill: !entry.get('canClaim') ? palette.accent3Color : 'currentColor'
                           }}
                           tooltip="Claim"
                           disabled={claimPending}
@@ -359,10 +359,10 @@ class EntryCard extends Component {
                           </SvgIcon>
                         </IconButton>
                       }
-                      <div style={{ fontSize: '16px', paddingRight: '5px' }}>
-                        {entry.get('balance')} ETH
+                        <div style={{ fontSize: '16px', paddingRight: '5px' }}>
+                          {entry.get('balance')} ETH
                       </div>
-                    </div>
+                      </div>
                   }
                 </div>
               </div>
@@ -370,7 +370,7 @@ class EntryCard extends Component {
           </Card>
         );
     }
-};
+}
 
 EntryCard.propTypes = {
     blockNr: PropTypes.number,

@@ -18,7 +18,7 @@ class CommentService extends BaseService {
                 payload.start = start;
             }
             Channel.server.comments.commentsIterator.send(payload);
-        })
+        });
 
     publishComment = ({ onSuccess, onError, ...payload }) => {
         this.registerListener(

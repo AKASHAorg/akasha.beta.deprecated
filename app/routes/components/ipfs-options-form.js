@@ -16,7 +16,7 @@ class IpfsOptionsForm extends Component {
         const inputStyle = { color: palette.textColor };
         const labelStyle = Object.assign({}, floatingLabelStyle, { color: palette.disabledColor });
 
-        return <div style={style}>
+        return (<div style={style}>
           <TextField
             floatingLabelStyle={labelStyle}
             floatingLabelText={intl.formatMessage(setupMessages.ipfsStoragePath)}
@@ -67,7 +67,7 @@ class IpfsOptionsForm extends Component {
               {intl.formatMessage(setupMessages.saveIpfsSettingsSuccess)}
             </div>
           }
-        </div>;
+        </div>);
     }
 }
 

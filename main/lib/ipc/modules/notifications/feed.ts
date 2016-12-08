@@ -33,6 +33,10 @@ const hydrateWithProfile = (cb, profile, entry, extra) => {
  * @type {Function}
  */
 const execute = Promise.coroutine(function*(data: { stop?: boolean }, cb) {
+    if (!contracts.instance) {
+        return { running: false };
+    }
+
     if (data.stop && entries) {
         entries.stopWatching(() => {
             entries = null;

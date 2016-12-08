@@ -14,11 +14,11 @@ const tabStyles = {
     }
 };
 const selectedStyle = {
-    position: "fixed",
-    top: "296px",
-    width: "480px",
-    bottom: "0px",
-    overflow: "auto"
+    position: 'fixed',
+    top: '296px',
+    width: '480px',
+    bottom: '0px',
+    overflow: 'auto'
 };
 const [FEED_SELECTED, YOU_SELECTED, MESSAGES_SELECTED] = [1, 2, 3];
 const eventTypes = {
@@ -59,9 +59,8 @@ class UserProfilePanel extends Component {
             if (val.type === eventTypes.VOTE) {
                 return notifs.push(this._renderVote(val, index));
             }
-
         });
-        return (<List>{notifs}</List>)
+        return (<List>{notifs}</List>);
     };
 
     readSubscriptionNotif = () => {
@@ -91,7 +90,7 @@ class UserProfilePanel extends Component {
                 return notifs.push(this._renderFollower(val, index));
             }
         });
-        return (<List>{notifs}</List>)
+        return (<List>{notifs}</List>);
     };
 
     navigateToTag (tag) {
@@ -118,198 +117,223 @@ class UserProfilePanel extends Component {
 
     _renderFollower (event, index) {
         return (
-            <ListItem
-                leftAvatar={<Avatar src={event.follower.baseUrl + '/' + event.follower.avatar} />}
-                primaryText={
-                    <strong onClick={() => {
-                        this.navigateToProfile(event.follower.profile)
-                    }} style={{ color: colors.darkBlack }} >
-                        {event.follower.akashaId}
-                    </strong>
+          <ListItem
+            leftAvatar={<Avatar src={`${event.follower.baseUrl}/${event.follower.avatar}`} />}
+            primaryText={
+              <strong
+                onClick={() => {
+                    this.navigateToProfile(event.follower.profile);
+                }} style={{ color: colors.darkBlack }}
+              >
+                {event.follower.akashaId}
+              </strong>
                 }
-                secondaryText={
-                    <p>
-                        <span style={{ color: colors.darkBlack }} >
+            secondaryText={
+              <p>
+                <span style={{ color: colors.darkBlack }} >
                             Followed you.
                         </span><br />
                         Block {event.blockNumber}
-                    </p>
+              </p>
                 }
-                secondaryTextLines={2}
-                key={eventTypes.FOLLOWING + event.blockNumber + event.follower.akashaId}
-                rightIcon={<ActionDelete onClick={(e) => {
-                    this.props.notificationsActions.deleteYouNotif(index)
-                }} />}
-            />);
-    };
+            secondaryTextLines={2}
+            key={eventTypes.FOLLOWING + event.blockNumber + event.follower.akashaId}
+            rightIcon={<ActionDelete
+              onClick={(e) => {
+                  this.props.notificationsActions.deleteYouNotif(index);
+              }}
+            />}
+          />);
+    }
 
     _renderEntry (event, index) {
         return (
-            <ListItem
-                leftAvatar={<Avatar src={event.author.baseUrl + '/' + event.author.avatar} />}
-                primaryText={
-                    <strong onClick={() => {
-                        this.navigateToProfile(event.profileAddress)
-                    }} style={{ color: colors.darkBlack }} >
-                        {event.author.akashaId}
-                    </strong>
+          <ListItem
+            leftAvatar={<Avatar src={`${event.author.baseUrl}/${event.author.avatar}`} />}
+            primaryText={
+              <strong
+                onClick={() => {
+                    this.navigateToProfile(event.profileAddress);
+                }} style={{ color: colors.darkBlack }}
+              >
+                {event.author.akashaId}
+              </strong>
                 }
-                secondaryText={
-                    <p>
-                        <span style={{ color: colors.darkBlack }} >
-                            Published <span className="link" onClick={() => {
-                            this.navigateToEntry(event.entry.entryId);
-                        }} >
-                            {event.entry.content.title}</span> on tag &nbsp;
-                            <span className="link" onClick={() => {
-                                this.navigateToTag(event.tag);
-                            }} >{event.tag}</span>
-                        </span><br />
+            secondaryText={
+              <p>
+                <span style={{ color: colors.darkBlack }} >
+                            Published <span
+                              className="link" onClick={() => {
+                                  this.navigateToEntry(event.entry.entryId);
+                              }}
+                            >
+                              {event.entry.content.title}</span> on tag &nbsp;
+                            <span
+                              className="link" onClick={() => {
+                                  this.navigateToTag(event.tag);
+                              }}
+                            >{event.tag}</span>
+                </span><br />
                         Block {event.blockNumber}
-                    </p>
+              </p>
                 }
-                secondaryTextLines={2}
-                key={event.tag + event.entry.entryId + event.blockNumber}
-                rightIcon={<ActionDelete onClick={(e) => {
-                    if(this.props.loggedProfileData.get('profile') === event.profileAddress){
-                        return this.props.notificationsActions.deleteYouNotif(index);
-                    }
-                    return this.props.notificationsActions.deleteFeedNotif(index);
-                }} />}
-            />);
+            secondaryTextLines={2}
+            key={event.tag + event.entry.entryId + event.blockNumber}
+            rightIcon={<ActionDelete
+              onClick={(e) => {
+                  if (this.props.loggedProfileData.get('profile') === event.profileAddress) {
+                      return this.props.notificationsActions.deleteYouNotif(index);
+                  }
+                  return this.props.notificationsActions.deleteFeedNotif(index);
+              }}
+            />}
+          />);
     }
 
     _renderComment (event, index) {
         return (
-            <ListItem
-                leftAvatar={<Avatar src={event.author.baseUrl + '/' + event.author.avatar} />}
-                primaryText={
-                    <strong onClick={() => {
-                        this.navigateToProfile(event.profileAddress)
-                    }} style={{ color: colors.darkBlack }} >
-                        {event.author.akashaId}
-                    </strong>
+          <ListItem
+            leftAvatar={<Avatar src={`${event.author.baseUrl}/${event.author.avatar}`} />}
+            primaryText={
+              <strong
+                onClick={() => {
+                    this.navigateToProfile(event.profileAddress);
+                }} style={{ color: colors.darkBlack }}
+              >
+                {event.author.akashaId}
+              </strong>
                 }
-                secondaryText={
-                    <p>
-                        <span style={{ color: colors.darkBlack }} >
-                            Commented on <span className="link" onClick={() => {
-                            this.navigateToEntry(event.entry.entryId);
-                        }} >
-                            {event.entry.content.title}</span>
-                        </span><br />
+            secondaryText={
+              <p>
+                <span style={{ color: colors.darkBlack }} >
+                            Commented on <span
+                              className="link" onClick={() => {
+                                  this.navigateToEntry(event.entry.entryId);
+                              }}
+                            >
+                              {event.entry.content.title}</span>
+                </span><br />
                         Block {event.blockNumber}
-                    </p>
+              </p>
                 }
-                secondaryTextLines={2}
-                key={eventTypes.COMMENT + event.blockNumber + event.commentId}
-                rightIcon={<ActionDelete onClick={(e) => {
-                    if(this.props.loggedProfileData.get('profile') === event.profileAddress){
-                        return this.props.notificationsActions.deleteYouNotif(index);
-                    }
-                    return this.props.notificationsActions.deleteFeedNotif(index);
-                }} />}
-            />);
+            secondaryTextLines={2}
+            key={eventTypes.COMMENT + event.blockNumber + event.commentId}
+            rightIcon={<ActionDelete
+              onClick={(e) => {
+                  if (this.props.loggedProfileData.get('profile') === event.profileAddress) {
+                      return this.props.notificationsActions.deleteYouNotif(index);
+                  }
+                  return this.props.notificationsActions.deleteFeedNotif(index);
+              }}
+            />}
+          />);
     }
 
     _renderVote (event, index) {
         const { palette } = this.context.muiTheme;
         const type = (event.weight > 0) ? 'Upvoted' : 'Downvoted';
         const colorVote = (event.weight > 0) ? palette.accent3Color : palette.accent1Color;
-        const voteWeight = (event.weight > 0) ?  ('+' + event.weight): event.weight;
+        const voteWeight = (event.weight > 0) ? (`+${event.weight}`) : event.weight;
 
         return (
-            <ListItem
-                leftAvatar={<Avatar src={event.author.baseUrl + '/' + event.author.avatar} />}
-                primaryText={
-                    <strong onClick={() => {
-                        this.navigateToProfile(event.profileAddress)
-                    }} style={{ color: colors.darkBlack }} >
-                        {event.author.akashaId}
-                    </strong>
+          <ListItem
+            leftAvatar={<Avatar src={`${event.author.baseUrl}/${event.author.avatar}`} />}
+            primaryText={
+              <strong
+                onClick={() => {
+                    this.navigateToProfile(event.profileAddress);
+                }} style={{ color: colors.darkBlack }}
+              >
+                {event.author.akashaId}
+              </strong>
                 }
-                secondaryText={
-                    <p>
-                        <span style={{ color: colors.darkBlack }} >
-                            {type}(<span style={{ color: colorVote }} >{voteWeight}</span>) on&nbsp;
-                            <span className="link" onClick={() => {
-                                this.navigateToEntry(event.entry.entryId);
-                            }} >
-                            {event.entry.content.title}
+            secondaryText={
+              <p>
+                <span style={{ color: colors.darkBlack }} >
+                  {type}(<span style={{ color: colorVote }} >{voteWeight}</span>) on&nbsp;
+                            <span
+                              className="link" onClick={() => {
+                                  this.navigateToEntry(event.entry.entryId);
+                              }}
+                            >
+                              {event.entry.content.title}
                             </span>
-                        </span><br />
+                </span><br />
                         Block {event.blockNumber}
-                    </p>
+              </p>
                 }
-                secondaryTextLines={2}
-                key={eventTypes.VOTE + event.blockNumber + event.profileAddress}
-                rightIcon={<ActionDelete onClick={(e) => {
-                    if(this.props.loggedProfileData.get('profile') === event.profileAddress){
-                        return this.props.notificationsActions.deleteYouNotif(index);
-                    }
-                    return this.props.notificationsActions.deleteFeedNotif(index);
-                }} />}
-            />
+            secondaryTextLines={2}
+            key={eventTypes.VOTE + event.blockNumber + event.profileAddress}
+            rightIcon={<ActionDelete
+              onClick={(e) => {
+                  if (this.props.loggedProfileData.get('profile') === event.profileAddress) {
+                      return this.props.notificationsActions.deleteYouNotif(index);
+                  }
+                  return this.props.notificationsActions.deleteFeedNotif(index);
+              }}
+            />}
+          />
         );
     }
 
     render () {
         const { loggedProfileData, profileActions, profileAddress, showPanel, notificationsState } = this.props;
         return (
-            <Paper
-                style={{
-                    width: (this.props.width || 480),
-                    zIndex: 10,
-                    position: 'relative',
-                    height: '100%',
-                    borderRadius: 0
-                }}
-            >
-                <UserProfileHeader
-                    profile={loggedProfileData}
-                    profileActions={profileActions}
-                    profileAddress={profileAddress}
-                    showPanel={showPanel}
-                />
-                <div style={{ width: '100%', marginTop: '-48px' }} >
-                    <div>
-                        <Tabs tabItemContainerStyle={{ backgroundColor: 'transparent' }} >
-                            <Tab label="FEED" style={tabStyles.default_tab}
-                                 onActive={() => {
-                                     this.setState({ selected: FEED_SELECTED });
-                                     this.readSubscriptionNotif();
-                                 }}
-                            >
-                                <div style={this.getStyle(FEED_SELECTED)} >
-                                    {this.renderFeedNotifications()}
-                                </div>
-                            </Tab>
-                            <Tab
-                                label={
-                                    <span>
+          <Paper
+            style={{
+                width: (this.props.width || 480),
+                zIndex: 10,
+                position: 'relative',
+                height: '100%',
+                borderRadius: 0
+            }}
+          >
+            <UserProfileHeader
+              profile={loggedProfileData}
+              profileActions={profileActions}
+              profileAddress={profileAddress}
+              showPanel={showPanel}
+            />
+            <div style={{ width: '100%', marginTop: '-48px' }} >
+              <div>
+                <Tabs tabItemContainerStyle={{ backgroundColor: 'transparent' }} >
+                  <Tab
+                    label="FEED" style={tabStyles.default_tab}
+                    onActive={() => {
+                        this.setState({ selected: FEED_SELECTED });
+                        this.readSubscriptionNotif();
+                    }}
+                  >
+                    <div style={this.getStyle(FEED_SELECTED)} >
+                      {this.renderFeedNotifications()}
+                    </div>
+                  </Tab>
+                  <Tab
+                    label={
+                      <span>
                         You <sup style={{ color: colors.red500 }} >({notificationsState.get('youNrFeed')})</sup>
                       </span>
                                 }
-                                style={tabStyles.default_tab}
-                                onActive={() => {
-                                    this.setState({ selected: YOU_SELECTED });
-                                    this.readYouNotif(notificationsState.get('youNrFeed'));
-                                }}
-                            >
-                                <div style={this.getStyle(YOU_SELECTED)} >
-                                    {this.renderYouNotifs()}
-                                </div>
-                            </Tab>
-                            <Tab label="MESSAGES" style={tabStyles.default_tab} disabled
-                                 onActive={() => this.setState({ selected: MESSAGES_SELECTED })} >
-                                <div style={this.getStyle(MESSAGES_SELECTED)} >
-
-                                </div>
-                            </Tab>
-                        </Tabs>
+                    style={tabStyles.default_tab}
+                    onActive={() => {
+                        this.setState({ selected: YOU_SELECTED });
+                        this.readYouNotif(notificationsState.get('youNrFeed'));
+                    }}
+                  >
+                    <div style={this.getStyle(YOU_SELECTED)} >
+                      {this.renderYouNotifs()}
                     </div>
-                </div>
-            </Paper>
+                  </Tab>
+                  <Tab
+                    label="MESSAGES" style={tabStyles.default_tab} disabled
+                    onActive={() => this.setState({ selected: MESSAGES_SELECTED })}
+                  >
+                    <div style={this.getStyle(MESSAGES_SELECTED)} />
+                  </Tab>
+                </Tabs>
+              </div>
+            </div>
+          </Paper>
         );
     }
 }

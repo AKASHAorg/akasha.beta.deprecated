@@ -50,8 +50,8 @@ const canClickAway = (Component, props) => {
         }
     }
     return ClickAwayable;
-}
+};
 
 export default function ClickAway (Component, props) {
-    return canClickAway.apply(null, arguments);
+    return canClickAway(...arguments);
 }

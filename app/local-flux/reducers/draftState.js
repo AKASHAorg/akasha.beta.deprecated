@@ -187,7 +187,7 @@ const draftState = createReducer(initialState, {
             flags: state.get('flags').merge(flags)
         }),
 
-    [types.CLEAR_DRAFT_STATE]: (state) => initialState,
+    [types.CLEAR_DRAFT_STATE]: state => initialState,
 });
 
 export default draftState;

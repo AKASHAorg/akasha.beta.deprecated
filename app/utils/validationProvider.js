@@ -2,7 +2,7 @@ import React from 'react';
 import validator from 'react-validation-mixin';
 import Validatr from 'validatorjs';
 import strategy from 'react-validatorjs-strategy';
-import { validationMessages } from 'locale-data/messages'
+import { validationMessages } from 'locale-data/messages';
 import r from 'ramda';
 
 export default function (Component) {

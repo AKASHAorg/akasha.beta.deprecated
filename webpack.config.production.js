@@ -1,4 +1,5 @@
 /* eslint strict: 0 */
+
 'use strict';
 
 const webpack = require('webpack');
@@ -31,11 +32,11 @@ config.module.loaders.push({
 config.plugins.push(
     new webpack.optimize.OccurrenceOrderPlugin(),
     new webpack.DefinePlugin({
-        '__DEV__': false,
+        __DEV__: false,
         'process.env': {
-            'NODE_ENV': JSON.stringify('production')
+            NODE_ENV: JSON.stringify('production')
         },
-        'global': {}
+        global: {}
     }),
     new webpack.optimize.UglifyJsPlugin({
         compressor: {

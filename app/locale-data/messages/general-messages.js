@@ -193,7 +193,7 @@ const generalMessages = defineMessages({
     },
     serviceStoppedWarning: {
         id: 'app.createProfile.serviceStoppedWarning',
-        description: `message to be displayed when geth and/or IPFS are/is stopped`,
+        description: 'message to be displayed when geth and/or IPFS are/is stopped',
         defaultMessage: 'Geth and IPFS must be started'
     },
     showMore: {
