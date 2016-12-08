@@ -35,12 +35,16 @@ class CommentsActions {
     publishComment = (commentPayload, gas) => {
         this.dispatch((dispatch, getState) => {
             const loggedProfile = getState().profileState.get('loggedProfile');
+            const loggedProfileData = getState().profileState.get('profiles').find(prf =>
+                prf.profile === loggedProfile.get('profile')
+            );
             const token = loggedProfile.get('token');
             const flagOn = { entryId: commentPayload.entryId, value: true };
             const flagOff = { entryId: commentPayload.entryId, value: false };
             dispatch(commentsActionCreators.publishComment({
                 registerPending: flagOn
             }));
+            console.log(commentPayload, 'the payload');
             this.commentService.publishComment({
                 token,
                 gas,
@@ -56,6 +60,18 @@ class CommentsActions {
                         id: 'publishingComment',
                         duration: 3000
                     });
+                    dispatch(commentsActionCreators.publishCommentOptimistic({
+                        commentId: 'temp',
+                        data: {
+                            active: true,
+                            content: commentPayload.get('content'),
+                            date: null,
+                            ipfsHash: null,
+                            parent: commentPayload.get('parent') || '0',
+                            profile: loggedProfileData
+                        },
+                        entryId: commentPayload.get('entryId')
+                    }));
                 },
                 onError: error => dispatch(commentsActionCreators.publishCommentError(error, {
                     registerPending: flagOff
