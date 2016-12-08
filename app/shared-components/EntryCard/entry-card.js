@@ -351,7 +351,7 @@ class EntryCard extends Component {
                               height: '20px',
                               fill: !entry.get('canClaim') ? palette.accent3Color : 'currentColor'
                           }}
-                          tooltip="Claim"
+                          tooltip={!entry.get('canClaim') ? 'Already Claimed' : 'Claim'}
                           disabled={claimPending}
                         >
                           <SvgIcon viewBox="0 0 16 16">

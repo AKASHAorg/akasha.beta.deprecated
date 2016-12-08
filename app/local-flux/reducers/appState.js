@@ -35,6 +35,7 @@ const initialState = fromJS({
     showEntry: {
         modal: false
     },
+    showTerms: false,
     weightConfirmDialog: null,
     timestamp: null,
     notifications: new List(),
@@ -125,6 +126,16 @@ const appState = createReducer(initialState, {
         state.merge({
             pendingActions: state.get('pendingActions').filter(action =>
                 action.get('id') !== actionId)
+        }),
+
+    [types.SHOW_TERMS]: state =>
+        state.merge({
+            showTerms: true
+        }),
+
+    [types.HIDE_TERMS]: state =>
+        state.merge({
+            showTerms: false
         }),
 
 });

@@ -74,6 +74,10 @@ class AppActions {
 
     hideNotification = notification =>
         this.dispatch(appActionCreators.hideNotification(notification));
+
+    showTerms = () => this.dispatch(appActionCreators.showTerms());
+
+    hideTerms = () => this.dispatch(appActionCreators.hideTerms());
 }
 
 export { AppActions };
