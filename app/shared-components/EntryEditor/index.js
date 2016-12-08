@@ -12,7 +12,7 @@ class EntryEditor extends Component {
         const { content, title } = this.props;
         let editorState = editorStateFromRaw(null);
         if (content) {
-            editorState = editorStateFromRaw(content);
+            editorState = editorStateFromRaw(content.toJS());
         }
         this.state = {
             editorState,

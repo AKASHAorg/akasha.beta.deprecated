@@ -53,7 +53,7 @@ const createDraftRecord = (draft) => {
         ...others
     });
 };
-const publishTagHandler = (state, { flags }) => {
+const publishDraftHandler = (state, { flags }) => {
     const publishPendingDrafts = state.getIn(['flags', 'publishPendingDrafts']);
     if (publishPendingDrafts === undefined) {
         return state.merge({
@@ -65,7 +65,7 @@ const publishTagHandler = (state, { flags }) => {
     if (index === -1) {
         return state.merge({
             flags: state.get('flags').merge({
-                publishPendingDrafts: state.getIn(['flags', 'publishPendingTags'])
+                publishPendingDrafts: state.getIn(['flags', 'publishPendingDrafts'])
                     .push(flags.publishPending)
             })
         });
@@ -101,8 +101,8 @@ const draftState = createReducer(initialState, {
             flags: state.get('flags').merge(flags)
         });
     },
-    [types.PUBLISH_DRAFT]: publishTagHandler,
-    [types.PUBLISH_DRAFT_SUCCESS]: publishTagHandler,
+    [types.PUBLISH_DRAFT]: publishDraftHandler,
+    [types.PUBLISH_DRAFT_SUCCESS]: publishDraftHandler,
 
     [types.PUBLISH_DRAFT_ERROR]: (state, { error }) =>
         state.merge({
