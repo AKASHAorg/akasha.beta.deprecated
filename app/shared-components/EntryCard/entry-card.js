@@ -53,7 +53,7 @@ class EntryCard extends Component {
 
     isPossiblyUnsafe = () => {
         const { entry } = this.props;
-        return parseInt(entry.get('score'), 10) <= -30;
+        return !this.isOwnEntry() && parseInt(entry.get('score'), 10) <= -30;
     };
 
     selectProfile = () => {
@@ -359,9 +359,11 @@ class EntryCard extends Component {
                           </SvgIcon>
                         </IconButton>
                       }
-                      <div style={{ fontSize: '16px', paddingRight: '5px' }}>
-                        {entry.get('balance')} ETH
-                      </div>
+                      {entry.get('balance') !== 'claimed' &&
+                        <div style={{ fontSize: '16px', paddingRight: '5px' }}>
+                          {entry.get('balance')} ETH
+                        </div>
+                      }
                     </div>
                   }
                 </div>
