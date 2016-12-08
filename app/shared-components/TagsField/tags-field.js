@@ -1,5 +1,6 @@
 import React from 'react';
 import { AutoComplete, Chip, IconButton } from 'material-ui';
+import debounce from 'lodash.debounce';
 import AddIcon from 'material-ui/svg-icons/content/add';
 import RemoveIcon from 'material-ui/svg-icons/navigation/close';
 import PendingIcon from 'material-ui/svg-icons/action/schedule';
@@ -42,15 +43,20 @@ class TagsField extends React.Component {
             this.props.onRequestTagAutocomplete(value);
         }
     };
+    _delayedReq = debounce(() => {
+        this._checkTagAutocomplete(this.state.tagString);
+        Channel.server.tags.searchTag.send({ tagName: this.state.tagString, limit: 3 });
+    }, 210);
+
     _handleInputChange = (ev) => {
-        if (ev.target.value.length >= 3) {
-            this._checkTagAutocomplete(ev.target.value);
-            Channel.server.tags.searchTag.send({ tagName: ev.target.value, limit: 3 });
-        }
         this.setState({
             tagString: ev.target.value,
         });
+        if (ev.target.value.length >= 3) {
+            this._delayedReq();
+        }
     };
+
     _handleDeleteTag = (ev, index) => {
         this.props.onDelete(index);
     };
@@ -227,6 +233,7 @@ class TagsField extends React.Component {
             onChange={this._handleInputChange}
             value={this.state.tagString}
             onBlur={this._handleInputBlur}
+            onClick={() => this._tagsInput.focus()}
             onNewRequest={this._handleSelect}
             dataSource={this.state.dataSource}
             textFieldStyle={{ minHeight: '48px', height: 'inherit' }}
