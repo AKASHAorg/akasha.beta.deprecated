@@ -35,8 +35,7 @@ config.plugins.push(
         __DEV__: false,
         'process.env': {
             NODE_ENV: JSON.stringify('production')
-        },
-        global: {}
+        }
     }),
     new webpack.optimize.UglifyJsPlugin({
         compressor: {
