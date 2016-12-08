@@ -7,10 +7,10 @@ export function getEntryComments (flags) {
     };
 }
 
-export function getEntryCommentsSuccess (data, flags) {
+export function getEntryCommentsSuccess (comments, flags) {
     return {
         type: types.GET_ENTRY_COMMENTS_SUCCESS,
-        data,
+        comments,
         flags
     };
 }
@@ -40,6 +40,13 @@ export function publishCommentSuccess (data) {
     return {
         type: types.PUBLISH_COMMENT_SUCCESS,
         data
+    };
+}
+
+export function publishCommentOptimistic (comment) {
+    return {
+        type: types.PUBLISH_COMMENT_OPTIMISTIC,
+        comment
     };
 }
 

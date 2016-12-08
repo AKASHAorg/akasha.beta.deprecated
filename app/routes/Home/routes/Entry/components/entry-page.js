@@ -2,6 +2,7 @@
 import React, { Component } from 'react';
 import { CardHeader, SvgIcon, IconButton, RaisedButton, Divider } from 'material-ui';
 import { MegadraftEditor, editorStateFromRaw, editorStateToJSON } from 'megadraft';
+import { EditorState } from 'draft-js';
 import CloseIcon from 'material-ui/svg-icons/navigation/close';
 import { injectIntl } from 'react-intl';
 import readOnlyImagePlugin from 'shared-components/EntryEditor/plugins/readOnlyImage/read-only-image-plugin';
@@ -17,7 +18,7 @@ class EntryPage extends Component {
         this.state = {
             publisherTitleShadow: false,
             activeTab: 'all',
-            commentEditorState: editorStateFromRaw(null)
+            commentEditorState: EditorState.createEmpty()
         };
     }
     componentDidMount () {
