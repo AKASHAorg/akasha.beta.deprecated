@@ -1,5 +1,5 @@
 import React from 'react';
-import { TextField, Chip, IconButton } from 'material-ui';
+import { AutoComplete, Chip, IconButton } from 'material-ui';
 import AddIcon from 'material-ui/svg-icons/content/add';
 import RemoveIcon from 'material-ui/svg-icons/navigation/close';
 import PendingIcon from 'material-ui/svg-icons/action/schedule';
@@ -9,9 +9,22 @@ class TagsField extends React.Component {
         super(props);
         this.state = {
             tagString: '',
-            erroredTags: []
+            erroredTags: [],
+            dataSource: []
         };
+        Channel.server.tags.searchTag.enable();
+        Channel.client.tags.searchTag.on(this.hydrateDataSource);
     }
+
+    componentWillUnmount() {
+        Channel.server.tags.searchTag.disable();
+        Channel.client.tags.searchTag.removeListener(this.hydrateDataSource);
+    }
+
+    hydrateDataSource = (ev, result) => {
+        this.setState({dataSource: result.data.collection});
+    };
+
     componentWillReceiveProps (nextProps) {
         const { pendingTags } = nextProps;
         const erroredTags = pendingTags.filter(tag => typeof tag.error === 'object');
@@ -32,6 +45,7 @@ class TagsField extends React.Component {
     _handleInputChange = (ev) => {
         if (ev.target.value.length >= 3) {
             this._checkTagAutocomplete(ev.target.value);
+            Channel.server.tags.searchTag.send({tagName: ev.target.value, limit: 3});
         }
         this.setState({
             tagString: ev.target.value,
@@ -76,7 +90,7 @@ class TagsField extends React.Component {
     _handleTagRegister = (ev, tag) => {
         ev.preventDefault();
         this.props.onTagRegisterRequest(tag);
-    }
+    };
     _handleTagDetect = (ev) => {
         const MODIFIER_KEYS = ['Enter', ' ', ',', ';'];
         for (let i = 0; i < MODIFIER_KEYS.length; i += 1) {
@@ -84,7 +98,8 @@ class TagsField extends React.Component {
                 ev.preventDefault();
                 this._createTag();
                 this.setState({
-                    tagString: ''
+                    tagString: '',
+                    dataSource: []
                 });
             }
         }
@@ -100,6 +115,18 @@ class TagsField extends React.Component {
         if (this.props.onBlur) {
             this.props.onBlur(ev);
         }
+    };
+    _handleSelect = (value) => {
+        this.setState({
+            tagString: value
+        });
+
+        this._createTag();
+
+        this.setState({
+            tagString: ''
+        });
+        this._tagsInput.focus();
     };
     render () {
         const currentTags = this.props.tags;
@@ -188,7 +215,7 @@ class TagsField extends React.Component {
             );
         });
         return (
-          <TextField
+          <AutoComplete
             fullWidth
             id="tags"
             multiLine
@@ -200,6 +227,9 @@ class TagsField extends React.Component {
             onChange={this._handleInputChange}
             value={this.state.tagString}
             onBlur={this._handleInputBlur}
+            onNewRequest={this._handleSelect}
+            dataSource={this.state.dataSource}
+            textFieldStyle={{minHeight: "48px", height: "inherit"}}
           >
             <div>
               {tags}
@@ -211,22 +241,23 @@ class TagsField extends React.Component {
                       border: 'inherit',
                       verticalAlign: 'middle',
                       height: '32px',
-                      width: '250px'
+                      width: '70px'
                   }}
                   type="text"
                   onChange={this._handleInputChange}
                   value={this.state.tagString}
                   placeholder={
-                      currentTags.length < 3 ?
-                      `add a tag (${3 - currentTags.length} free remaining)` :
+                      currentTags.length < 10 ?
+                      `add a tag (${10 - currentTags.length} max remaining)` :
                       'add a tag (paid)'
                   }
                   onKeyPress={this._handleTagDetect}
                   disabled={currentTags.length >= 10}
+                  ref={(r) => this._tagsInput = r}
                 />
               }
             </div>
-          </TextField>
+          </AutoComplete>
         );
     }
 }
