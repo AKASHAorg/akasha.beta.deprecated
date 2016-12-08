@@ -89,8 +89,17 @@ export default class BlockButton extends Component {
         });
         return biggestAvailableKey;
     }
+    showTerms = (ev) => {
+        const { showTerms } = this.props;
+        ev.preventDefault();
+        this._handleDialogClose();
+        showTerms();
+    }
     render () {
-        const akashaTermsLink = <a href="">{'AKASHA\'s terms'}</a>;
+        const akashaTermsLink =
+          <a href="#" onClick={(ev) => this.showTerms(ev)}>
+            {'AKASHA\'s terms'}
+          </a>;
         const { dialogOpen, licence, fileName } = this.state;
         const selectFileMessage = fileName || 'Select file';
         return (

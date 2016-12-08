@@ -21,6 +21,7 @@ class BlockStyles extends Component {
                       editorState={this.props.editorState}
                       onChange={this.onChange}
                       onClick={this.handleClick}
+                      showTerms={this.props.showTerms}
                     />
                   </li>
                 );
@@ -33,7 +34,8 @@ BlockStyles.propTypes = {
     onChange: React.PropTypes.func,
     open: React.PropTypes.bool,
     plugins: React.PropTypes.arrayOf(React.PropTypes.shape()),
-    editorState: React.PropTypes.shape()
+    editorState: React.PropTypes.shape(),
+    showTerms: React.PropTypes.func
 };
 BlockStyles.propTypes = {
     toggle: React.PropTypes.func

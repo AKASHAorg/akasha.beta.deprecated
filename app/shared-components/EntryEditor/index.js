@@ -43,13 +43,14 @@ class EntryEditor extends Component {
     //     }
     // }
     _renderSidebar = ({ plugins, editorState, onChange }) => {
-        const { showSidebar, readOnly } = this.props;
+        const { showSidebar, readOnly, showTerms } = this.props;
         if (showSidebar && !readOnly) {
             return (
               <EditorSidebar
                 plugins={plugins}
                 editorState={editorState}
                 onChange={onChange}
+                showTerms={showTerms}
               />);
         }
         return null;
@@ -104,6 +105,7 @@ EntryEditor.defaultProps = {
 };
 
 EntryEditor.propTypes = {
+    showTerms: PropTypes.func,
     title: PropTypes.string,
     editorRef: PropTypes.func,
     readOnly: PropTypes.bool,

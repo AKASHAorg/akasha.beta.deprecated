@@ -38,6 +38,7 @@ class SideMenu extends Component {
               open={this.state.open}
               onChange={this.onChange}
               toggle={this.toggle}
+              showTerms={this.props.showTerms}
             />
           </li>
         );
@@ -47,7 +48,8 @@ SideMenu.propTypes = {
     sidebarVisible: React.PropTypes.bool,
     plugins: React.PropTypes.arrayOf(React.PropTypes.shape()),
     editorState: React.PropTypes.shape(),
-    onChange: React.PropTypes.func
+    onChange: React.PropTypes.func,
+    showTerms: React.PropTypes.func
 };
 
 export default SideMenu;

@@ -96,10 +96,7 @@ class SideBar extends Component {
             return null;
         }
         return (
-          <div
-            ref={(container) => { this.container = container; }}
-
-          >
+          <div ref={(container) => { this.container = container; }} >
             <div style={{ top: `${this.state.top}px`, left: `${this.state.left}px`, zIndex: 9 }} className="sidebar__menu">
               <ul className="sidebar__sidemenu-wrapper">
                 <SideMenu
@@ -107,6 +104,7 @@ class SideBar extends Component {
                   editorState={this.props.editorState}
                   onChange={this.onChange}
                   plugins={this.getValidSidebarPlugins()}
+                  showTerms={this.props.showTerms}
                 />
               </ul>
             </div>
@@ -118,7 +116,8 @@ SideBar.propTypes = {
     onChange: React.PropTypes.func,
     editorState: React.PropTypes.shape(),
     readOnly: React.PropTypes.bool,
-    plugins: React.PropTypes.arrayOf(React.PropTypes.shape())
+    plugins: React.PropTypes.arrayOf(React.PropTypes.shape()),
+    showTerms: React.PropTypes.func
 };
 
 export default SideBar;

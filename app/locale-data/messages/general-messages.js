@@ -6,15 +6,10 @@ const generalMessages = defineMessages({
         description: 'entry is written `by`',
         defaultMessage: 'by'
     },
-    privacyPolicy: {
-        id: 'app.general.privacyPolicy',
-        description: 'Privacy Policy',
-        defaultMessage: 'Privacy Policy'
-    },
     termsOfService: {
         id: 'app.general.termsOfService',
-        description: 'Terms of Service',
-        defaultMessage: 'Terms of Service'
+        description: 'Terms of Service and Privacy Policy',
+        defaultMessage: 'Terms of Service and Privacy Policy'
     },
     addImage: {
         id: 'app.general.addImage',

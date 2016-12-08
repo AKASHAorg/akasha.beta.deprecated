@@ -5,6 +5,7 @@ import { SettingsActions, AppActions, ProfileActions, EProcActions, DraftActions
     TagActions, EntryActions } from 'local-flux';
 import { getMuiTheme } from 'material-ui/styles';
 import { AuthDialog, WeightConfirmDialog, PublishConfirmDialog } from 'shared-components';
+import TermsPanel from './components/terms-panel';
 import NotificationBar from './components/notification-bar';
 import lightTheme from '../layouts/AkashaTheme/lightTheme';
 import darkTheme from '../layouts/AkashaTheme/darkTheme';
@@ -161,6 +162,9 @@ class App extends Component {
               isOpen={isPublishConfirmationDialogVisible}
               resource={appState.get('publishConfirmDialog')}
             />
+            {appState.get('showTerms') &&
+              <TermsPanel hideTerms={appActions.hideTerms} />
+            }
           </div>
         );
     }
