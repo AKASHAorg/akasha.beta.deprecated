@@ -7,42 +7,42 @@ import { MenuEntries } from '../svg';
 
 class IconEntries extends Component {
 
-  _handleClick = (ev) => {
-    if(this.props.onClick) return this.props.onClick(ev);
-  }
+    _handleClick = (ev) => {
+        if (this.props.onClick) return this.props.onClick(ev);
+    }
 
-  render () {
-    let { style, iconStyle, viewBox, hoverColor, color, disabled, tooltip, ...other } = this.props;
-    const { palette } = this.context.muiTheme;
+    render () {
+        let { style, iconStyle, viewBox, hoverColor, color, disabled, tooltip, ...other } = this.props;
+        const { palette } = this.context.muiTheme;
 
-    style = Object.assign(style, {
-        borderColor: colors.faintBlack,
-        ':hover': {
-            borderColor: palette.primary1Color
+        style = Object.assign(style, {
+            borderColor: colors.faintBlack,
+            ':hover': {
+                borderColor: palette.primary1Color
+            }
         }
-      }
     );
 
-    return (
-      <CircleIcon
-        style={style}
-        disabled = {disabled}
-        tooltip = {tooltip}
-        onClick = {this._handleClick}
-      >
-        <SvgIcon
-          color={color}
-          hoverColor={hoverColor}
-          style={iconStyle}
-          viewBox={viewBox}
-          onClick={this._handleClick}
-          {...other}
-        >
-          <MenuEntries />
-        </SvgIcon>
-      </CircleIcon>
-    );
-  }
+        return (
+          <CircleIcon
+            style={style}
+            disabled={disabled}
+            tooltip={tooltip}
+            onClick={this._handleClick}
+          >
+            <SvgIcon
+              color={color}
+              hoverColor={hoverColor}
+              style={iconStyle}
+              viewBox={viewBox}
+              onClick={this._handleClick}
+              {...other}
+            >
+              <MenuEntries />
+            </SvgIcon>
+          </CircleIcon>
+        );
+    }
 }
 
 IconEntries.propTypes = {

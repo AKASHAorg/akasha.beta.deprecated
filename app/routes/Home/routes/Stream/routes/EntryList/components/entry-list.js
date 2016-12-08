@@ -86,11 +86,11 @@ class EntryList extends Component {
               />
             */ }
             <EntryListContainer
-                entries={entries}
-                fetchingEntries={fetchingEntries}
-                fetchingMoreEntries={fetchingMoreEntries}
-                getTriggerRef={getTriggerRef}
-                moreEntries={moreEntries}
+              entries={entries}
+              fetchingEntries={fetchingEntries}
+              fetchingMoreEntries={fetchingMoreEntries}
+              getTriggerRef={getTriggerRef}
+              moreEntries={moreEntries}
             />
           </div>
         );

@@ -12,9 +12,10 @@ const maxFeed = 64;
 
 const notificationsState = createReducer(initialState, {
     [types.FEED_SUBSCRIPTION_NOTIF]: (state, action) => {
-        let updatedFeed, feedObj;
+        let updatedFeed,
+            feedObj;
         const hasFeed = !state.get('hasFeed');
-        if(action.payload.hasOwnProperty('running')){
+        if (action.payload.hasOwnProperty('running')) {
             return state;
         }
         if (state.get('notifFeed').size > maxFeed) {
@@ -25,7 +26,7 @@ const notificationsState = createReducer(initialState, {
         }
 
 
-        return state.merge(feedObj)
+        return state.merge(feedObj);
     },
     [types.FEED_YOU_NOTIF]: (state, action) => {
         let updatedFeed;
@@ -36,25 +37,25 @@ const notificationsState = createReducer(initialState, {
             updatedFeed = state.get('youFeed').pop();
             updatedFeed = updatedFeed.unshift(action.payload);
         }
-        return state.merge({ youFeed: updatedFeed, youNrFeed: feedNr })
+        return state.merge({ youFeed: updatedFeed, youNrFeed: feedNr });
     },
     [types.READ_YOU_NOTIF]: (state, action) => {
         const feedNr = state.get('youNrFeed') - action.payload;
         return state.merge({ youNrFeed: (feedNr > 0) ? feedNr : 0 });
     },
     [types.READ_SUBSCRIPTION_NOTIF]: (state, action) => {
-        if (state.get("hasFeed")) {
+        if (state.get('hasFeed')) {
             return state.merge({ hasFeed: false });
         }
         return state;
     },
     [types.DELETE_YOU_NOTIF]: (state, action) => {
         const youNotifs = state.get('youFeed').delete(action.payload);
-        return state.merge({youFeed: youNotifs});
+        return state.merge({ youFeed: youNotifs });
     },
     [types.DELETE_FEED_NOTIF]: (state, action) => {
         const feedNotifs = state.get('notifFeed').delete(action.payload);
-        return state.merge({notifFeed: feedNotifs});
+        return state.merge({ notifFeed: feedNotifs });
     }
 });
 

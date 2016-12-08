@@ -175,14 +175,14 @@ class CreateProfile extends Component {
         const { intl, gethStatus, ipfsStatus } = this.props;
         const { palette } = this.context.muiTheme;
         if (!gethStatus.get('api') || (!ipfsStatus.get('started') && !ipfsStatus.get('spawned'))) {
-            return <div
+            return (<div
               style={{ height: '36px', lineHeight: '36px', display: 'flex', alignItems: 'center' }}
             >
               <ErrorIcon style={{ color: palette.accent1Color }} />
               <span style={{ marginLeft: '5px', color: palette.accent1Color }}>
                 {intl.formatMessage(generalMessages.serviceStoppedWarning)}
               </span>
-            </div>;
+            </div>);
         }
         return null;
     }
@@ -286,17 +286,17 @@ class CreateProfile extends Component {
               className="row"
               ref={(profileForm) => { this.profileForm = profileForm; }}
             >
-                <TextField {...lastNameProps} />
-                <TextField {...firstNameProps} />
-                <TextField  {...akashaIdProps} />
-                <TextField {...passwordProps} />
-                <TextField {...password2Props} />
-                <Checkbox
-                  label={intl.formatMessage(profileMessages.optionalDetailsLabel)}
-                  style={{ marginTop: '18px', marginLeft: '-4px' }}
-                  checked={this.state.opt_details}
-                  onCheck={this.handleShowDetails}
-                />
+              <TextField {...lastNameProps} />
+              <TextField {...firstNameProps} />
+              <TextField {...akashaIdProps} />
+              <TextField {...passwordProps} />
+              <TextField {...password2Props} />
+              <Checkbox
+                label={intl.formatMessage(profileMessages.optionalDetailsLabel)}
+                style={{ marginTop: '18px', marginLeft: '-4px' }}
+                checked={this.state.opt_details}
+                onCheck={this.handleShowDetails}
+              />
               <div style={{ display: this.state.opt_details ? 'block' : 'none' }} >
                 <h3 style={{ margin: '30px 0 10px 0' }} >
                   {intl.formatMessage(profileMessages.avatarTitle)}

@@ -15,7 +15,7 @@ addLocaleData([...en]);
 const store = configureStore();
 const history = syncHistoryWithStore(hashHistory, store);
 
-window['Perf'] = ReactPerf;
+window.Perf = ReactPerf;
 
 injectTapEventPlugin();
 render(

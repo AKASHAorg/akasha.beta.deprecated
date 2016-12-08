@@ -4,6 +4,7 @@
     "rules": {
         "indent": [2, 4, {"SwitchCase": 1}],
         "comma-dangle": [0],
+        "comma-style": ["error", "last"],
         "complexity": [2, 10],
         "no-param-reassign": [0],
         "max-depth": [2, 5],

@@ -23,13 +23,13 @@ class LogoButton extends Component {
 
     render () {
         const { logoStyle, viewBox, className } = this.props;
-        return <FlatButton
+        return (<FlatButton
           className={className}
           icon={<LogoIcon logoStyle={logoStyle} viewBox={viewBox} />}
           hoverColor="transparent"
           // onClick={this.onClick}
           style={buttonStyle}
-        />;
+        />);
     }
 }
 

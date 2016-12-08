@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { RaisedButton } from 'material-ui';
-import { profileMessages } from 'locale-data/messages'
+import { profileMessages } from 'locale-data/messages';
 import imageCreator, { findBestMatch } from 'utils/imageUtils';
 import { Avatar, PanelContainer } from 'shared-components';
 import { FormattedMessage, injectIntl } from 'react-intl';
@@ -55,7 +55,7 @@ class ProfileDetails extends Component {
             '';
         const profileName = `${profileData.firstName} ${profileData.lastName}`;
         const userInitials = profileName.match(/\b\w/g).reduce((prev, current) => prev + current, '');
-        const followers = <FormattedMessage
+        const followers = (<FormattedMessage
           id="app.profile.followersCount"
           description="counting a profile's followers"
           defaultMessage={`{followersCount, number} {followersCount, plural,
@@ -65,9 +65,9 @@ class ProfileDetails extends Component {
             other {followers}
           }`}
           values={{ followersCount: profileData.followersCount || 0 }}
-        />;
+        />);
 
-        return <div>
+        return (<div>
           <div style={imageWrapperStyle}>
             <img
               src={imageUrl}
@@ -129,14 +129,14 @@ class ProfileDetails extends Component {
               }
             />
           </div>
-        </div>;
+        </div>);
     }
 
     render () {
         const { intl } = this.props;
         const profileData = this.props.profileData ? this.props.profileData.toJS() : {};
 
-        return <PanelContainer
+        return (<PanelContainer
           style={{ flex: '0 0 400px', height: '100%' }}
           header={this.renderHeader()}
           headerStyle={{ padding: '0px' }}
@@ -187,7 +187,7 @@ class ProfileDetails extends Component {
               </div>
             }
           </div>
-        </PanelContainer>;
+        </PanelContainer>);
     }
 }
 

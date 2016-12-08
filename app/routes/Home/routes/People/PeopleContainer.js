@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { Paper, Tabs, Tab, FlatButton } from 'material-ui';
 import { injectIntl } from 'react-intl';
-import { profileMessages, generalMessages } from 'locale-data/messages'
+import { profileMessages, generalMessages } from 'locale-data/messages';
 import { ProfileActions } from 'local-flux';
 import { ProfileCard } from 'shared-components';
 
@@ -123,7 +123,7 @@ class PeopleContainer extends Component {
             return <div>No followers</div>;
         }
 
-        return <div>
+        return (<div>
           <div style={{ display: 'flex', flexWrap: 'wrap' }} >
             {followers.map((follower, key) => {
                 const profile = follower.profile;
@@ -153,7 +153,7 @@ class PeopleContainer extends Component {
               />
             </div>
           }
-        </div>;
+        </div>);
     }
 
     renderFollowing () {
@@ -165,7 +165,7 @@ class PeopleContainer extends Component {
             return <div>No following</div>;
         }
 
-        return <div>
+        return (<div>
           <div style={{ display: 'flex', flexWrap: 'wrap' }} >
             {followings.map((following, key) => {
                 const profile = following.profile;
@@ -195,7 +195,7 @@ class PeopleContainer extends Component {
               />
             </div>
           }
-        </div>;
+        </div>);
     }
 
     render () {
@@ -206,7 +206,7 @@ class PeopleContainer extends Component {
             return this.props.children;
         }
 
-        return <div style={{ flex: '1 1 auto', height: '100%', width: 'calc(100% + 0.5rem)' }}>
+        return (<div style={{ flex: '1 1 auto', height: '100%', width: 'calc(100% + 0.5rem)' }}>
           <Paper>
             <Tabs
               style={{ paddingLeft: '100px' }}
@@ -219,7 +219,7 @@ class PeopleContainer extends Component {
                   <span>
                     {intl.formatMessage(profileMessages.followers)}
                     {followersCount !== null &&
-                      <span style={{ marginLeft: '5px'}}>({followersCount})</span>
+                      <span style={{ marginLeft: '5px' }}>({followersCount})</span>
                     }
                   </span>
                 }
@@ -231,7 +231,7 @@ class PeopleContainer extends Component {
                   <span>
                     {intl.formatMessage(profileMessages.following)}
                     {followingCount !== null &&
-                      <span style={{ marginLeft: '5px'}}>({followingCount})</span>
+                      <span style={{ marginLeft: '5px' }}>({followingCount})</span>
                     }
                   </span>
                 }
@@ -256,7 +256,7 @@ class PeopleContainer extends Component {
               {this.state.activeTab === 'following' && this.renderFollowing()}
             </div>
           </div>
-        </div>;
+        </div>);
     }
 }
 

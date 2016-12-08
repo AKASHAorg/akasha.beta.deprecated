@@ -46,7 +46,7 @@ class StreamSidebar extends Component {
 
     renderRecommendedTags () {
         const { streamTags, selectedTag, intl } = this.props;
-        return <div>
+        return (<div>
           <Subheader className="row start-xs middle-xs">
             <small
               className="start-xs col-xs-8"
@@ -65,7 +65,7 @@ class StreamSidebar extends Component {
               />
             )}
           </div>
-        </div>;
+        </div>);
     }
 
     render () {
@@ -90,7 +90,7 @@ class StreamSidebar extends Component {
                     >
                       {intl.formatMessage(tagMessages.subscribedTags)}
                     </small>
-                    {/*<div className="col-xs-4 end-xs">
+                    {/* <div className="col-xs-4 end-xs">
                       <FlatButton>
                         <small>+ADD NEW</small>
                       </FlatButton>

@@ -72,7 +72,7 @@ class ProfileActivity extends Component {
                 case 'entries':
                     profileActions.clearFollowing(profileData.akashaId);
                     profileActions.clearFollowers(profileData.akashaId);
-                    entryActions.entryProfileIterator(profileData.akashaId, 0, ENTRIES_LIMIT)
+                    entryActions.entryProfileIterator(profileData.akashaId, 0, ENTRIES_LIMIT);
                     break;
                 case 'followers':
                     profileActions.clearFollowing(profileData.akashaId);
@@ -163,15 +163,15 @@ class ProfileActivity extends Component {
             savedEntriesIds, entryActions, moreProfileEntries, fetchingMoreProfileEntries,
             selectTag } = this.props;
         const { palette } = this.context.muiTheme;
-        return <EntryListContainer
-            entries={profileEntries}
-            cardStyle={{ width: '670px' }}
-            fetchingEntries={fetchingProfileEntries}
-            fetchingMoreEntries={fetchingMoreProfileEntries}
-            getTriggerRef={(el) => { this.trigger = el; }}
-            moreEntries={moreProfileEntries}
-            style={{ alignItems: 'flex-start' }}
-        />;
+        return (<EntryListContainer
+          entries={profileEntries}
+          cardStyle={{ width: '670px' }}
+          fetchingEntries={fetchingProfileEntries}
+          fetchingMoreEntries={fetchingMoreProfileEntries}
+          getTriggerRef={(el) => { this.trigger = el; }}
+          moreEntries={moreProfileEntries}
+          style={{ alignItems: 'flex-start' }}
+        />);
     }
 
     renderFollowers () {
@@ -181,7 +181,7 @@ class ProfileActivity extends Component {
         const { palette } = this.context.muiTheme;
         const followers = profileData.get('followers');
 
-        return <DataLoader
+        return (<DataLoader
           flag={fetchingFollowers}
           timeout={200}
           size={80}
@@ -225,7 +225,7 @@ class ProfileActivity extends Component {
               </DataLoader>
             }
           </div>
-        </DataLoader>;
+        </DataLoader>);
     }
 
     renderFollowing () {
@@ -235,7 +235,7 @@ class ProfileActivity extends Component {
         const { palette } = this.context.muiTheme;
         const followings = profileData.get('following');
 
-        return <DataLoader
+        return (<DataLoader
           flag={fetchingFollowing}
           timeout={200}
           size={80}
@@ -279,14 +279,14 @@ class ProfileActivity extends Component {
               </DataLoader>
             }
           </div>
-        </DataLoader>;
+        </DataLoader>);
     }
 
     render () {
         const { profileData } = this.props;
         const { entriesCount, followersCount, followingCount } = profileData;
 
-        return <div style={{ flex: '1 1 auto' }}>
+        return (<div style={{ flex: '1 1 auto' }}>
           <Paper style={{ width: 'calc(100% + 0.5rem)' }}>
             <Tabs
               style={{ paddingLeft: '50px' }}
@@ -348,7 +348,7 @@ class ProfileActivity extends Component {
               {this.state.activeTab === 'following' && this.renderFollowing()}
             </div>
           </div>
-        </div>;
+        </div>);
     }
 }
 

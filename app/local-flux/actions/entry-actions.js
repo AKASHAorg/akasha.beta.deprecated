@@ -89,7 +89,7 @@ class EntryActions {
                 }))
         });
     };
-    getSavedEntries = akashaId => {
+    getSavedEntries = (akashaId) => {
         this.dispatch(entryActionCreators.getSavedEntries({ fetchingSavedEntries: true }));
         this.entryService.getSavedEntries({
             akashaId,
@@ -104,7 +104,7 @@ class EntryActions {
         });
     };
 
-    getSavedEntriesList = (limit) =>
+    getSavedEntriesList = limit =>
         this.dispatch((dispatch, getState) => {
             this.dispatch(entryActionCreators.getSavedEntriesList({
                 fetchingSavedEntriesList: true
@@ -124,7 +124,7 @@ class EntryActions {
             });
         });
 
-    moreSavedEntriesList = (limit) =>
+    moreSavedEntriesList = limit =>
         this.dispatch((dispatch, getState) => {
             if (limit !== 1) {
                 this.dispatch(entryActionCreators.moreSavedEntriesList({

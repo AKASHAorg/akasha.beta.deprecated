@@ -8,21 +8,21 @@ function AuthDialog (props) {
     const { intl, errors } = props;
     const loginErrors = errors.toJS();
     const dialogTitle =
-      <div style={{ padding: '10px 10px 20px' }}>
+      (<div style={{ padding: '10px 10px 20px' }}>
         <PanelHeader title={intl.formatMessage(formMessages.confirmPassword)} noStatusBar />
-      </div>;
+      </div>);
     const dialogActions = [
       <RaisedButton
-        label="Cancel"
-        style={{ marginRight: 8 }}
-        onTouchTap={props.onCancel}
-      />,
+          label="Cancel"
+          style={{ marginRight: 8 }}
+          onTouchTap={props.onCancel}
+        />,
       <RaisedButton
-        label="Confirm"
-        primary
-        onTouchTap={props.onSubmit}
-        disabled={props.loginRequested}
-      />
+          label="Confirm"
+          primary
+          onTouchTap={props.onSubmit}
+          disabled={props.loginRequested}
+        />
     ];
     const minute = 'min';
     return (

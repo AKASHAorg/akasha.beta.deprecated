@@ -17,7 +17,7 @@ class GethOptionsForm extends Component {
         const { palette } = this.context.muiTheme;
         const labelStyle = Object.assign({}, floatingLabelStyle, { color: palette.disabledColor });
 
-        return <div style={{ marginLeft: '50px' }}>
+        return (<div style={{ marginLeft: '50px' }}>
           <Checkbox
             label={intl.formatMessage(setupMessages.gethAutodag)}
             checked={this.props.autoDag}
@@ -40,7 +40,7 @@ class GethOptionsForm extends Component {
             <MenuItem key={1} value={1} primaryText="1" />
             <MenuItem key={2} value={2} primaryText="2" />
           </SelectField>
-        </div>;
+        </div>);
     }
 
     render () {
@@ -49,7 +49,7 @@ class GethOptionsForm extends Component {
         const inputStyle = { color: palette.textColor };
         const labelStyle = Object.assign({}, floatingLabelStyle, { color: palette.disabledColor });
 
-        return <div style={style}>
+        return (<div style={style}>
           <SelectField
             floatingLabelStyle={labelStyle}
             floatingLabelText={intl.formatMessage(setupMessages.gethCacheSize)}
@@ -102,7 +102,7 @@ class GethOptionsForm extends Component {
               {intl.formatMessage(setupMessages.saveGethSettingsSuccess)}
             </div>
           }
-        </div>;
+        </div>);
     }
 }
 

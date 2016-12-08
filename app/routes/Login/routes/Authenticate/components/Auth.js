@@ -81,13 +81,13 @@ class Auth extends Component {
             message = intl.formatMessage(setupMessages.findingProfiles);
         }
         if (message) {
-            return <div
+            return (<div
               style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}
             >
               <div style={{ maxWidth: '80%', textAlign: 'center' }}>
                 {message}
               </div>
-            </div>;
+            </div>);
         }
         return null;
     }

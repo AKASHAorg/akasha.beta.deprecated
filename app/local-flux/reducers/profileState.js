@@ -465,7 +465,7 @@ const profileState = createReducer(initialState, {
         });
     },
 
-    [tagTypes.SUBSCRIBE_TAG_SUCCESS]: state => {
+    [tagTypes.SUBSCRIBE_TAG_SUCCESS]: (state) => {
         const profileIndex = state.get('profiles').findIndex(prf =>
             prf.get('profile') === state.getIn(['loggedProfile', 'profile']));
         return state.merge({
@@ -475,7 +475,7 @@ const profileState = createReducer(initialState, {
             })
         });
     },
-    [tagTypes.UNSUBSCRIBE_TAG_SUCCESS]: state => {
+    [tagTypes.UNSUBSCRIBE_TAG_SUCCESS]: (state) => {
         const profileIndex = state.get('profiles').findIndex(prf =>
             prf.get('profile') === state.getIn(['loggedProfile', 'profile']));
         return state.merge({

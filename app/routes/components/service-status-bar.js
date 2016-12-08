@@ -351,7 +351,7 @@ class ServiceStatusBar extends Component {
 
     getGethActions () {
         const { intl, gethBusyState, disableStopService } = this.props;
-        return <div style={{ display: 'flex' }}>
+        return (<div style={{ display: 'flex' }}>
           <div style={{ flex: '0 0 auto', height: '36px', display: 'flex', alignItems: 'center' }}>
             <Toggle
               label={this.state.gethToggled ?
@@ -377,12 +377,12 @@ class ServiceStatusBar extends Component {
               onClick={this.saveGethOptions}
             />
           </div>
-        </div>;
+        </div>);
     }
 
     getIpfsActions () {
         const { intl, ipfsBusyState, disableStopService } = this.props;
-        return <div style={{ display: 'flex' }}>
+        return (<div style={{ display: 'flex' }}>
           <div style={{ flex: '0 0 auto', height: '36px', display: 'flex', alignItems: 'center' }}>
             <Toggle
               label={this.state.ipfsToggled ?
@@ -408,7 +408,7 @@ class ServiceStatusBar extends Component {
               onClick={this.saveIpfsOptions}
             />
           </div>
-        </div>;
+        </div>);
     }
 
     renderIpfsErrors () {
@@ -439,7 +439,7 @@ class ServiceStatusBar extends Component {
             palette.accent1Color :
             palette.primary1Color;
 
-        return <div style={{ width: '100%' }}>
+        return (<div style={{ width: '100%' }}>
           <button
             style={this.getTitleButtonStyle(GETH_SETTINGS)}
             onClick={() => this.selectTab(GETH_SETTINGS)}
@@ -454,7 +454,7 @@ class ServiceStatusBar extends Component {
             <div style={{ height: '46px', lineHeight: '46px' }}>Logs</div>
             <div style={{ height: '2px', backgroundColor: logsBarColor }} />
           </button>
-        </div>;
+        </div>);
     }
 
     renderGethDialog () {
@@ -462,7 +462,7 @@ class ServiceStatusBar extends Component {
             gethLogs } = this.props;
         const { cache, mine, autoDag, fast, minerThreads, isGethFormDirty,
             showGethSuccessMessage } = this.state;
-        return <Dialog
+        return (<Dialog
           title={this.renderGethTitle()}
           actions={this.getGethActions()}
           open={this.state.isGethDialogOpen}
@@ -498,7 +498,7 @@ class ServiceStatusBar extends Component {
               style={{ height: '400px', overflowY: 'visible', margin: '0px', paddingTop: '10px' }}
             />
           }
-        </Dialog>;
+        </Dialog>);
     }
 
     renderIpfsTitle () {
@@ -510,7 +510,7 @@ class ServiceStatusBar extends Component {
             palette.accent1Color :
             palette.primary1Color;
 
-        return <div style={{ width: '100%' }}>
+        return (<div style={{ width: '100%' }}>
           <button
             style={this.getTitleButtonStyle(IPFS_SETTINGS)}
             onClick={() => this.selectTab(IPFS_SETTINGS)}
@@ -522,13 +522,13 @@ class ServiceStatusBar extends Component {
             <div style={{ height: '46px', lineHeight: '46px' }}>Logs</div>
             <div style={{ height: '2px', backgroundColor: logsBarColor }} />
           </button>
-        </div>;
+        </div>);
     }
 
     renderIpfsDialog () {
         const { intl, ipfsSettings, settingsActions } = this.props;
         const { storagePath, showIpfsSuccessMessage, isIpfsFormDirty } = this.state;
-        return <Dialog
+        return (<Dialog
           title={this.renderIpfsTitle()}
           actions={this.getIpfsActions()}
           open={this.state.isIpfsDialogOpen}
@@ -552,7 +552,7 @@ class ServiceStatusBar extends Component {
               {this.renderIpfsErrors()}
             </div>
           }
-        </Dialog>;
+        </Dialog>);
     }
 
     render () {
@@ -563,16 +563,16 @@ class ServiceStatusBar extends Component {
             color: palette.textColor,
             position: 'relative',
             top: '4px'
-        }
+        };
         const ethereumIcon =
-          <SvgIcon viewBox="0 0 16 16">
+          (<SvgIcon viewBox="0 0 16 16">
             <StatusBarEthereum />
-          </SvgIcon>;
+          </SvgIcon>);
         const ipfsIcon =
-          <SvgIcon viewBox="0 0 16 16">
+          (<SvgIcon viewBox="0 0 16 16">
             <StatusBarIpfs />
-          </SvgIcon>;
-        return <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          </SvgIcon>);
+        return (<div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           {this.props.gethStatus &&
             <div style={this.getContainerStyle(this.getGethState())}>
               <IconButton
@@ -599,7 +599,7 @@ class ServiceStatusBar extends Component {
               {this.renderIpfsDialog()}
             </div>
           }
-        </div>;
+        </div>);
     }
 }
 
@@ -620,7 +620,7 @@ ServiceStatusBar.propTypes = {
 
 ServiceStatusBar.contextTypes = {
     muiTheme: PropTypes.shape().isRequired
-}
+};
 
 function mapStateToProps (state, ownProps) {
     return {

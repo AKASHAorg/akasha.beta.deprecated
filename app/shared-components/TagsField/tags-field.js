@@ -185,7 +185,7 @@ class TagsField extends React.Component {
                   <RemoveIcon />
                 </IconButton>
               </Chip>
-          );
+            );
         });
         return (
           <TextField

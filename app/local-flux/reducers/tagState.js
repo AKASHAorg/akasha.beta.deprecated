@@ -68,7 +68,7 @@ const subscribeErrorFlagHandler = (state, { error, flags }) => {
         flags: state.get('flags').mergeIn(['subscribePending', index], flags.subscribePending),
         errors: state.get('errors').push(new ErrorRecord(error))
     });
-}
+};
 
 const tagState = createReducer(initialState, {
     [types.GET_PENDING_TAGS]: (state, { flags }) =>

@@ -92,7 +92,7 @@ class QuickEntryEditor extends React.Component {
                 <div className="row" style={{ minHeight: 150 }}>
                   <div className="col-xs-12">
                     <EntryEditor
-                      ref={(editor) => this.editor = editor}
+                      ref={editor => this.editor = editor}
                       onAutosave={this._handleEditorChange}
                     />
                   </div>

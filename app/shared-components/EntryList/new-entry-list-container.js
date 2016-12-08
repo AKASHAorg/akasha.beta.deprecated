@@ -41,7 +41,7 @@ class EntryList extends Component {
                     const claimEntryPending = claimPending && claimPending.find(claim =>
                         claim.entryId === entry.get('entryId'));
                     const isSaved = !!savedEntriesIds.find(id => id === entry.get('entryId'));
-                    return <EntryCard
+                    return (<EntryCard
                       blockNr={blockNr}
                       canClaimPending={canClaimPending}
                       claimPending={claimEntryPending && claimEntryPending.value}
@@ -55,7 +55,7 @@ class EntryList extends Component {
                       selectTag={tagActions.saveTag}
                       style={cardStyle}
                       voteEntryPending={voteEntryPending && voteEntryPending.value}
-                    />;
+                    />);
                 })}
                 {moreEntries &&
                   <DataLoader flag={fetchingMoreEntries} size={30}>

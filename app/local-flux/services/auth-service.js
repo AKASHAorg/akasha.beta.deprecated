@@ -27,13 +27,9 @@ class AuthService extends BaseService {
      * }
      */
     login = ({ account, password, rememberTime, akashaId, registering = false, onSuccess, onError }) => {
-        const successCb = (data) => {
-            return profileDB.loggedProfile.put({ akashaId, ...data })
-                .then(() => {
-                    return onSuccess({ akashaId, ...data });
-                })
+        const successCb = data => profileDB.loggedProfile.put({ akashaId, ...data })
+                .then(() => onSuccess({ akashaId, ...data }))
                 .catch(error => onError(error));
-        };
         this.registerListener(
             Channel.client.auth.login,
             this.createListener(onError, successCb)
@@ -100,17 +96,15 @@ class AuthService extends BaseService {
      */
     getLocalIdentities = ({
         options = {}, onError = () => {
-    }, onSuccess
-    }) => {
-        return this.openChannel({
-                clientManager: this.clientManager,
-                serverChannel: Channel.server.auth.getLocalIdentities,
-                clientChannel: Channel.client.auth.getLocalIdentities,
-                listenerCb: this.createListener(onError, onSuccess)
-            }, () =>
+        }, onSuccess
+    }) => this.openChannel({
+        clientManager: this.clientManager,
+        serverChannel: Channel.server.auth.getLocalIdentities,
+        clientChannel: Channel.client.auth.getLocalIdentities,
+        listenerCb: this.createListener(onError, onSuccess)
+    }, () =>
                 Channel.server.auth.getLocalIdentities.send(options)
         );
-    };
     /**
      * Save logged profile to indexedDB database.
      * @param profileData
@@ -125,7 +119,7 @@ class AuthService extends BaseService {
         return profileDB.loggedProfile
             .put(profileData)
             .then(() => onSuccess(profileData))
-            .catch(reason => onError(reason))
+            .catch(reason => onError(reason));
     };
 
     /**

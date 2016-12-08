@@ -26,8 +26,8 @@ class SettingsService extends BaseService {
             .then((data) => {
                 onSuccess(data[0] || {}, options.table);
             }).catch((reason) => {
-            onError(reason, options.table);
-        });
+                onError(reason, options.table);
+            });
     }
 }
 

@@ -178,9 +178,7 @@ const settingsState = createReducer(initialState, {
         return state;
     },
 
-    [types.CHANGE_THEME]: (state, action) => {
-        return state.updateIn(['general', 'theme'], () => action.theme);
-    },
+    [types.CHANGE_THEME]: (state, action) => state.updateIn(['general', 'theme'], () => action.theme),
 
     [eProcTypes.GET_GETH_OPTIONS_SUCCESS]: (state, action) => {
         const gethSettings = Object.assign({}, state.get('geth').toJS());

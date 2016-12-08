@@ -62,7 +62,7 @@ class Stream extends React.Component {
 
     render () {
         return (
-          <div className={`row ${styles.root}`} ref={c => { this.container = c; }}>
+          <div className={`row ${styles.root}`} ref={(c) => { this.container = c; }}>
             <div className="col-xs-12">
               <div className="row center-xs">
                 <div className="col-xs-10" style={{ padding: '24px 0' }}>

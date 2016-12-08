@@ -26,7 +26,7 @@ class ProfileCard extends Component {
             followingCount } = profileData;
         const isOwnProfile = akashaId === loggedProfileData.get('akashaId');
         const isFollower = loggedProfileData.getIn(['isFollower', akashaId]);
-        const entriesCountMessage = <FormattedMessage
+        const entriesCountMessage = (<FormattedMessage
           id="app.profile.entriesCount"
           description="counting a profile's entries"
           defaultMessage={`{entriesCount, number} {entriesCount, plural,
@@ -36,8 +36,8 @@ class ProfileCard extends Component {
                 other {entries}
               }`}
           values={{ entriesCount }}
-        />;
-        const followersCountMessage = <FormattedMessage
+        />);
+        const followersCountMessage = (<FormattedMessage
           id="app.profile.followersCount"
           description="counting a profile's followers"
           defaultMessage={`{followersCount, number} {followersCount, plural,
@@ -47,8 +47,8 @@ class ProfileCard extends Component {
                 other {followers}
               }`}
           values={{ followersCount }}
-        />;
-        const followingCountMessage = <FormattedMessage
+        />);
+        const followingCountMessage = (<FormattedMessage
           id="app.profile.followingCount"
           description="counting a profile's following"
           defaultMessage={`{followingCount, number} {followingCount, plural,
@@ -58,7 +58,7 @@ class ProfileCard extends Component {
                 other {following}
               }`}
           values={{ followingCount }}
-        />;
+        />);
         const titleStyle = {
             fontSize: '18px',
             fontWeight: '500',

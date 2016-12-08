@@ -49,7 +49,7 @@ class LogsList extends Component {
     render () {
         const { gethLogs } = this.props;
         const style = Object.assign({}, listStyle, this.props.style);
-        return <ul style={style} className="col-xs-12">
+        return (<ul style={style} className="col-xs-12">
           {gethLogs.map((log, key) => (
             <li key={key} style={{ marginBottom: '8px' }} >
               <div style={{ display: 'flex' }}>
@@ -67,7 +67,7 @@ class LogsList extends Component {
             </li>)
           )
           }
-        </ul>;
+        </ul>);
     }
 }
 
@@ -80,6 +80,6 @@ LogsList.propTypes = {
 
 LogsList.contextTypes = {
     muiTheme: PropTypes.shape().isRequired
-}
+};
 
 export default LogsList;

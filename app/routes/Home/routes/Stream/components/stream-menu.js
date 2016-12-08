@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 import { Paper, Tabs, Tab, SvgIcon } from 'material-ui';
 import LabelIcon from 'material-ui/svg-icons/action/label';
 
-const StreamMenu = (props) =>
+const StreamMenu = props =>
   <div className="row">
     <Paper className="col-xs-12">
       <Tabs
@@ -25,15 +25,15 @@ const StreamMenu = (props) =>
               </div>
               <SvgIcon
                 style={{
-                  transform: 'rotate(-45deg)',
-                  flex: '0 0 auto',
-                  position: 'relative',
-                  top: '-5px',
-                  height: '20px',
-                  width: '20px'
+                    transform: 'rotate(-45deg)',
+                    flex: '0 0 auto',
+                    position: 'relative',
+                    top: '-5px',
+                    height: '20px',
+                    width: '20px'
                 }}
               >
-                <LabelIcon  />
+                <LabelIcon />
               </SvgIcon>
             </div>
           }

@@ -26,7 +26,7 @@ class NotificationsActions {
             onSuccess: (data) => {
                 this.watchFeed();
             }
-        })
+        });
     }
 
     /**
@@ -36,30 +36,30 @@ class NotificationsActions {
         this.dispatch((dispatch, getState) => {
             this.emitEvent = true;
             this.currentProfile = getState().profileState.getIn(['loggedProfile', 'profile']);
-                this.notificationsService.listenFeed({
+            this.notificationsService.listenFeed({
                 onSuccess: (data) => {
-                    if(data.profileAddress === this.currentProfile) {
+                    if (data.profileAddress === this.currentProfile) {
                         return dispatch(action.receiveYouFeed(data));
                     }
                     return dispatch(action.receiveSubscriptionFeed(data));
                 }
-            })
+            });
         });
     }
 
-    readFeedNotif() {
+    readFeedNotif () {
         this.dispatch(action.readSubscriptionFeed());
     }
 
-    readYouNotif(number) {
+    readYouNotif (number) {
         this.dispatch(action.readYouNotif(number));
     }
 
-    deleteYouNotif(index){
+    deleteYouNotif (index) {
         this.dispatch(action.deleteYouNotif(index));
     }
 
-    deleteFeedNotif(index){
+    deleteFeedNotif (index) {
         this.dispatch(action.deleteFeedNotif(index));
     }
 
@@ -72,7 +72,7 @@ class NotificationsActions {
             onSuccess: () => {
                 this.emitEvent = false;
             }
-        })
+        });
     }
 }
 
