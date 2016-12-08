@@ -4,6 +4,7 @@ import {
     RaisedButton,
     RadioButton,
     Divider,
+    Checkbox,
     SvgIcon } from 'material-ui';
 import { CreativeCommonsBY, CreativeCommonsCC, CreativeCommonsNCEU, CreativeCommonsNCJP,
   CreativeCommonsNC, CreativeCommonsND, CreativeCommonsREMIX, CreativeCommonsSHARE,
@@ -129,7 +130,7 @@ class LicenceDialog extends React.Component {
             </div>
             <div className="row middle-xs" style={{ marginTop: 24 }}>
               <div className="col-xs-6">
-                {/* <Checkbox label="Set as default licence" onCheck={this._handleDefaultLicenceSet} /> */}
+                <Checkbox label="Set as default licence" onCheck={this._handleDefaultLicenceSet} />
               </div>
               <div className="col-xs-6 end-xs">
                 <RaisedButton label="cancel" onTouchTap={this._handleDialogCancel} />
