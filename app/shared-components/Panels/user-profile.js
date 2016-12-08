@@ -137,7 +137,7 @@ class UserProfilePanel extends Component {
               </p>
                 }
             secondaryTextLines={2}
-            key={index}
+            key={eventTypes.FOLLOWING + index}
             rightIcon={<ActionDelete
               onClick={(e) => {
                   this.props.notificationsActions.deleteYouNotif(index);
@@ -168,18 +168,17 @@ class UserProfilePanel extends Component {
                               }}
                             >
                               {event.entry.content.title}</span> on tag &nbsp;
-                            <span
-                              className="link" onClick={() => {
-                                  this.navigateToTag(event.tag);
-                              }}
-                            >{event.tag}</span>
+                    <span
+                      className="link" onClick={() => {
+                          this.navigateToTag(event.tag);
+                      }}
+                    >{event.tag}</span>
                 </span><br />
                         Block {event.blockNumber}
               </p>
                 }
-<<<<<<< 17d60c9463856be7016ea5837d3e7b53a0dd5a5e
             secondaryTextLines={2}
-            key={event.tag + event.entry.entryId + event.blockNumber}
+            key={eventTypes.PUBLISH + index}
             rightIcon={<ActionDelete
               onClick={(e) => {
                   if (this.props.loggedProfileData.get('profile') === event.profileAddress) {
@@ -189,17 +188,6 @@ class UserProfilePanel extends Component {
               }}
             />}
           />);
-=======
-                secondaryTextLines={2}
-                key={index}
-                rightIcon={<ActionDelete onClick={(e) => {
-                    if(this.props.loggedProfileData.get('profile') === event.profileAddress){
-                        return this.props.notificationsActions.deleteYouNotif(index);
-                    }
-                    return this.props.notificationsActions.deleteFeedNotif(index);
-                }} />}
-            />);
->>>>>>> feat(terms): Show terms and conditions panel
     }
 
     _renderComment (event, index) {
@@ -228,9 +216,8 @@ class UserProfilePanel extends Component {
                         Block {event.blockNumber}
               </p>
                 }
-<<<<<<< 17d60c9463856be7016ea5837d3e7b53a0dd5a5e
             secondaryTextLines={2}
-            key={eventTypes.COMMENT + event.blockNumber + event.commentId}
+            key={eventTypes.COMMENT + index}
             rightIcon={<ActionDelete
               onClick={(e) => {
                   if (this.props.loggedProfileData.get('profile') === event.profileAddress) {
@@ -240,17 +227,6 @@ class UserProfilePanel extends Component {
               }}
             />}
           />);
-=======
-                secondaryTextLines={2}
-                key={index}
-                rightIcon={<ActionDelete onClick={(e) => {
-                    if(this.props.loggedProfileData.get('profile') === event.profileAddress){
-                        return this.props.notificationsActions.deleteYouNotif(index);
-                    }
-                    return this.props.notificationsActions.deleteFeedNotif(index);
-                }} />}
-            />);
->>>>>>> feat(terms): Show terms and conditions panel
     }
 
     _renderVote (event, index) {
@@ -275,20 +251,19 @@ class UserProfilePanel extends Component {
               <p>
                 <span style={{ color: colors.darkBlack }} >
                   {type}(<span style={{ color: colorVote }} >{voteWeight}</span>) on&nbsp;
-                            <span
-                              className="link" onClick={() => {
-                                  this.navigateToEntry(event.entry.entryId);
-                              }}
-                            >
-                              {event.entry.content.title}
-                            </span>
+                    <span
+                      className="link" onClick={() => {
+                          this.navigateToEntry(event.entry.entryId);
+                      }}
+                    >
+                      {event.entry.content.title}
+                    </span>
                 </span><br />
                         Block {event.blockNumber}
               </p>
                 }
-<<<<<<< 17d60c9463856be7016ea5837d3e7b53a0dd5a5e
             secondaryTextLines={2}
-            key={eventTypes.VOTE + event.blockNumber + event.profileAddress}
+            key={eventTypes.VOTE + index}
             rightIcon={<ActionDelete
               onClick={(e) => {
                   if (this.props.loggedProfileData.get('profile') === event.profileAddress) {
@@ -298,17 +273,6 @@ class UserProfilePanel extends Component {
               }}
             />}
           />
-=======
-                secondaryTextLines={2}
-                key={index}
-                rightIcon={<ActionDelete onClick={(e) => {
-                    if(this.props.loggedProfileData.get('profile') === event.profileAddress){
-                        return this.props.notificationsActions.deleteYouNotif(index);
-                    }
-                    return this.props.notificationsActions.deleteFeedNotif(index);
-                }} />}
-            />
->>>>>>> feat(terms): Show terms and conditions panel
         );
     }
 

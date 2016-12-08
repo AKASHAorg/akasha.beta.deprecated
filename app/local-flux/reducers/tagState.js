@@ -122,10 +122,10 @@ const tagState = createReducer(initialState, {
             flags: state.get('flags').merge(flags)
         }),
 
-     [types.CREATE_TAG_SUCCESS]: (state, { data }) => {
-         const pendingTagIndex = state.get('pendingTags').findIndex(tagObj => tagObj.tag === data.tagName);
-         return state.merge({'pendingTags': state.get('pendingTags').delete(pendingTagIndex)});
-     },
+    [types.CREATE_TAG_SUCCESS]: (state, { data }) => {
+        const pendingTagIndex = state.get('pendingTags').findIndex(tagObj => tagObj.tag === data.tagName);
+        return state.merge({ pendingTags: state.get('pendingTags').delete(pendingTagIndex) });
+    },
 
     [types.CREATE_TAG_ERROR]: (state, { error }) => {
         const tagName = error.from;

@@ -16,13 +16,13 @@ class TagsField extends React.Component {
         Channel.client.tags.searchTag.on(this.hydrateDataSource);
     }
 
-    componentWillUnmount() {
+    componentWillUnmount () {
         Channel.server.tags.searchTag.disable();
         Channel.client.tags.searchTag.removeListener(this.hydrateDataSource);
     }
 
     hydrateDataSource = (ev, result) => {
-        this.setState({dataSource: result.data.collection});
+        this.setState({ dataSource: result.data.collection });
     };
 
     componentWillReceiveProps (nextProps) {
@@ -45,7 +45,7 @@ class TagsField extends React.Component {
     _handleInputChange = (ev) => {
         if (ev.target.value.length >= 3) {
             this._checkTagAutocomplete(ev.target.value);
-            Channel.server.tags.searchTag.send({tagName: ev.target.value, limit: 3});
+            Channel.server.tags.searchTag.send({ tagName: ev.target.value, limit: 3 });
         }
         this.setState({
             tagString: ev.target.value,
@@ -229,7 +229,7 @@ class TagsField extends React.Component {
             onBlur={this._handleInputBlur}
             onNewRequest={this._handleSelect}
             dataSource={this.state.dataSource}
-            textFieldStyle={{minHeight: "48px", height: "inherit"}}
+            textFieldStyle={{ minHeight: '48px', height: 'inherit' }}
           >
             <div>
               {tags}
@@ -253,7 +253,7 @@ class TagsField extends React.Component {
                   }
                   onKeyPress={this._handleTagDetect}
                   disabled={currentTags.length >= 10}
-                  ref={(r) => this._tagsInput = r}
+                  ref={r => this._tagsInput = r}
                 />
               }
             </div>
