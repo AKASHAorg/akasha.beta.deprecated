@@ -139,3 +139,15 @@ export function deletePendingAction (actionId) {
         actionId
     };
 }
+
+export function showTerms () {
+    return {
+        type: types.SHOW_TERMS
+    };
+}
+
+export function hideTerms () {
+    return {
+        type: types.HIDE_TERMS
+    };
+}

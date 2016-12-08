@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { ProfileActions, DraftActions } from 'local-flux';
+import { AppActions, ProfileActions, DraftActions } from 'local-flux';
 import AddEntryPage from './components/add-entry';
 
 function mapStateToProps (state) {
@@ -14,6 +14,7 @@ function mapStateToProps (state) {
 /* eslint-disable no-unused-vars */
 function mapDispatchToProps (dispatch) {
     return {
+        appActions: new AppActions(dispatch),
         profileActions: new ProfileActions(dispatch),
         draftActions: new DraftActions(dispatch)
     };
