@@ -16,7 +16,7 @@ const execute = Promise.coroutine(function*(data: {start?: number, limit?: numbe
     let counter = 0;
     if (!data.start) {
         comment = yield getComment.execute({entryId: data.entryId, commentId: currentId});
-        results.push({ commentId: currentId, content: comment });
+        results.push(comment);
         counter = 1;
     }
 
@@ -27,7 +27,7 @@ const execute = Promise.coroutine(function*(data: {start?: number, limit?: numbe
             break;
         }
         comment = yield getComment.execute({entryId: data.entryId, commentId: currentId});
-        results.push({ commentId: currentId, content: comment });
+        results.push(comment);
         counter++;
     }
     return { collection: results, entryId: data.entryId, limit: maxResults };

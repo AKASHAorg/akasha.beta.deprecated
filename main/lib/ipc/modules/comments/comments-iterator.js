@@ -13,7 +13,7 @@ const execute = Promise.coroutine(function* (data) {
     let counter = 0;
     if (!data.start) {
         comment = yield get_comment_1.default.execute({ entryId: data.entryId, commentId: currentId });
-        results.push({ commentId: currentId, content: comment });
+        results.push(comment);
         counter = 1;
     }
     while (counter < maxResults) {
@@ -23,7 +23,7 @@ const execute = Promise.coroutine(function* (data) {
             break;
         }
         comment = yield get_comment_1.default.execute({ entryId: data.entryId, commentId: currentId });
-        results.push({ commentId: currentId, content: comment });
+        results.push(comment);
         counter++;
     }
     return { collection: results, entryId: data.entryId, limit: maxResults };
