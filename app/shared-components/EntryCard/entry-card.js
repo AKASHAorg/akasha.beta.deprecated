@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { Card, CardHeader, CardTitle, CardText, CardActions, IconButton,
     SvgIcon } from 'material-ui';
+import WarningIcon from 'material-ui/svg-icons/alert/warning';
 import { EntryBookmarkOn, EntryBookmarkOff, EntryComment, EntryDownvote,
     EntryUpvote, ToolbarEthereum } from 'shared-components/svg';
 import { injectIntl } from 'react-intl';
@@ -11,6 +12,13 @@ import { entryMessages } from 'locale-data/messages';
 import style from './entry-card.scss';
 
 class EntryCard extends Component {
+    constructor (props) {
+        super(props);
+
+        this.state = {
+            expanded: false
+        };
+    }
 
     componentDidMount () {
         const { entryActions, loggedAkashaId, entry } = this.props;
@@ -21,7 +29,7 @@ class EntryCard extends Component {
         }
     }
 
-    shouldComponentUpdate (nextProps) {
+    shouldComponentUpdate (nextProps, nextState) {
         const { blockNr, canClaimPending, claimPending, entry, fetchingEntryBalance, isSaved,
             voteEntryPending } = nextProps;
         if (blockNr !== this.props.blockNr ||
@@ -30,7 +38,8 @@ class EntryCard extends Component {
             !entry.equals(this.props.entry) ||
             fetchingEntryBalance !== this.props.fetchingEntryBalance ||
             isSaved !== this.props.isSaved ||
-            voteEntryPending !== this.props.voteEntryPending
+            voteEntryPending !== this.props.voteEntryPending ||
+            nextState.expanded !== this.state.expanded
         ) {
             return true;
         }
@@ -40,6 +49,11 @@ class EntryCard extends Component {
     isOwnEntry = () => {
         const { entry, loggedAkashaId } = this.props;
         return entry.getIn(['entryEth', 'publisher', 'akashaId']) === loggedAkashaId;
+    };
+
+    isPossiblyUnsafe = () => {
+        const { entry } = this.props;
+        return parseInt(entry.get('score'), 10) <= -30;
     };
 
     selectProfile = () => {
@@ -103,6 +117,12 @@ class EntryCard extends Component {
       this.context.router.push(`/${loggedAkashaId}/entry/${entry.get('entryId')}`);
     };
 
+    onExpandChange = (expanded) => {
+        this.setState({
+            expanded
+        });
+    }
+
     render () {
         const { blockNr, canClaimPending, claimPending, entry, fetchingEntryBalance, intl, isSaved,
             selectedTag, style, voteEntryPending } = this.props;
@@ -135,14 +155,23 @@ class EntryCard extends Component {
         return (
           <Card
             className="start-xs"
-            style={Object.assign({}, { margin: '5px 5px 16px 5px', width: '640px' }, style)}
+            // expandable={this.isPossiblyUnsafe()}
+            expanded={this.isPossiblyUnsafe() ? this.state.expanded : true}
+            onExpandChange={this.onExpandChange}
+            style={Object.assign(
+                {},
+                {
+                    margin: '5px 5px 16px 5px',
+                    width: '640px',
+                    opacity: this.isPossiblyUnsafe() && !this.state.expanded ? 0.5 : 1
+                },
+                style
+            )}
           >
             <CardHeader
               title={
                 <button
-                  style={{
-                      border: '0px', outline: 'none', background: 'transparent', padding: 0
-                  }}
+                  style={{ border: '0px', outline: 'none', background: 'transparent', padding: 0 }}
                   onClick={this.selectProfile}
                 >
                   {`${publisher.get('firstName')} ${publisher.get('lastName')}`}
@@ -172,10 +201,21 @@ class EntryCard extends Component {
               }
               titleStyle={{ fontSize: '16px', fontWeight: '600' }}
               subtitleStyle={{ fontSize: '12px' }}
+              showExpandableButton={this.isPossiblyUnsafe()}
               style={{ paddingBottom: '4px' }}
-            />
+            >
+              {this.isPossiblyUnsafe() &&
+                <IconButton
+                  style={{ position: 'absolute', right: '50px', top: '10px' }}
+                  tooltip="Possibly unsafe content"
+                >
+                  <WarningIcon color="red" />
+                </IconButton>
+              }
+            </CardHeader>
             <CardTitle
               title={content.get('title')}
+              expandable
               style={{
                   paddingTop: '4px',
                   paddingBottom: '4px',
@@ -187,7 +227,7 @@ class EntryCard extends Component {
               }}
               onClick={this._handleEntryNavigation}
             />
-            <CardText style={{ paddingTop: '4px', paddingBottom: '4px' }}>
+            <CardText style={{ paddingTop: '4px', paddingBottom: '4px' }} expandable>
               <div style={{ display: 'flex' }}>
                 {content.get('tags').map((tag, key) =>
                   <TagChip
@@ -200,7 +240,15 @@ class EntryCard extends Component {
                 )}
               </div>
             </CardText>
-            <CardText style={{ paddingTop: '4px', paddingBottom: '4px', wordWrap: 'break-word' }}>
+            <CardText
+              style={{
+                  paddingTop: '4px',
+                  paddingBottom: '4px',
+                  wordWrap: 'break-word',
+                  fontSize: '16px'
+              }}
+              expandable
+            >
               {content.get('excerpt')}
             </CardText>
             <CardActions className="col-xs-12">
@@ -209,6 +257,7 @@ class EntryCard extends Component {
                   <IconButton
                     onTouchTap={this.handleUpvote}
                     iconStyle={{ width: '20px', height: '20px' }}
+                    tooltip="Upvote"
                     disabled={!entry.get('active') || voteEntryPending || existingVoteWeight !== 0}
                   >
                     <SvgIcon viewBox="0 0 20 20" >
@@ -238,6 +287,7 @@ class EntryCard extends Component {
                   <IconButton
                     onTouchTap={this.handleDownvote}
                     iconStyle={{ width: '20px', height: '20px' }}
+                    tooltip="Downvote"
                     disabled={!entry.get('active') || (voteEntryPending && voteEntryPending.value)
                         || existingVoteWeight !== 0}
                   >
@@ -265,6 +315,7 @@ class EntryCard extends Component {
                   <IconButton
                     onTouchTap={() => null}
                     iconStyle={{ width: '20px', height: '20px' }}
+                    tooltip="Comments"
                   >
                     <SvgIcon viewBox="0 0 20 20">
                       <EntryComment />
@@ -279,6 +330,7 @@ class EntryCard extends Component {
                     <IconButton
                       onTouchTap={this.handleBookmark}
                       iconStyle={{ width: '20px', height: '20px' }}
+                      tooltip="Bookmark"
                     >
                       <SvgIcon viewBox="0 0 20 20">
                         {isSaved ?
@@ -299,6 +351,7 @@ class EntryCard extends Component {
                             height: '20px',
                             fill: !entry.get('canClaim') ? palette.accent3Color : 'currentColor'
                           }}
+                          tooltip="Claim"
                           disabled={claimPending}
                         >
                           <SvgIcon viewBox="0 0 16 16">

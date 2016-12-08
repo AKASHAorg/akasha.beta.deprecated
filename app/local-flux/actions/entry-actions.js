@@ -513,7 +513,7 @@ class EntryActions {
         this.dispatch((dispatch, getState) => {
             const token = getState().profileState.getIn(['loggedProfile', 'token']);
             dispatch(entryActionCreators.claim({ claimPending: { entryId, value: true } }));
-            this.entryService.upvote({
+            this.entryService.claim({
                 token,
                 entryId,
                 gas,
