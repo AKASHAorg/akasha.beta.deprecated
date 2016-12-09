@@ -9,7 +9,8 @@ function mapStateToProps (state, ownProps) {
         fetchingComments: state.commentsState.getIn(['flags', 'fetchingComments']),
         votePending: state.entryState.getIn(['flags', 'votePending']),
         profiles: state.profileState.get('profiles'),
-        loggedProfile: state.profileState.get('loggedProfile')
+        loggedProfile: state.profileState.get('loggedProfile'),
+        comments: state.commentsState.get('entryComments')
     };
 }
 
