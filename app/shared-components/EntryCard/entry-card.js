@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import { Link } from 'react-router';
 import { Card, CardHeader, CardTitle, CardText, CardActions, IconButton,
     SvgIcon } from 'material-ui';
 import WarningIcon from 'material-ui/svg-icons/alert/warning';
@@ -93,6 +94,12 @@ class EntryCard extends Component {
         entryActions.addDownvoteAction(payload);
     };
 
+    handleComments = () => {
+        const { router } = this.context;
+        const { entry, loggedAkashaId } = this.props;
+        router.push(`/${loggedAkashaId}/entry/${entry.get('entryId')}#comments-section`);
+    };
+
     handleBookmark = () => {
         const { entry, loggedAkashaId, isSaved, entryActions } = this.props;
         if (isSaved) {
@@ -105,6 +112,9 @@ class EntryCard extends Component {
 
     handleClaim = () => {
         const { entry, entryActions } = this.props;
+        if (!entry.get('canClaim')) {
+            return;
+        }
         const payload = {
             entryTitle: entry.getIn(['content', 'title']),
             entryId: entry.get('entryId')
@@ -133,7 +143,9 @@ class EntryCard extends Component {
         const publisher = entry.getIn(['entryEth', 'publisher']);
         const profileName = `${publisher.get('firstName')} ${publisher.get('lastName')}`;
         const userInitials = profileName.match(/\b\w/g).reduce((prev, current) => prev + current, '');
-        const avatar = imageCreator(publisher.get('avatar'), publisher.get('baseUrl'));
+        const avatar = publisher.get('avatar') ?
+            imageCreator(publisher.get('avatar'), publisher.get('baseUrl')) :
+            null;
         const wordCount = content.get('wordCount') || 0;
         const readingTime = calculateReadingTime(wordCount);
         const upvoteIconColor = existingVoteWeight > 0 ? palette.accent3Color : '';
@@ -288,8 +300,7 @@ class EntryCard extends Component {
                     onTouchTap={this.handleDownvote}
                     iconStyle={{ width: '20px', height: '20px' }}
                     tooltip="Downvote"
-                    disabled={!entry.get('active') || (voteEntryPending && voteEntryPending.value)
-                        || existingVoteWeight !== 0}
+                    disabled={!entry.get('active') || voteEntryPending || existingVoteWeight !== 0}
                   >
                     <SvgIcon viewBox="0 0 20 20">
                       <EntryDownvote fill={downvoteIconColor} />
@@ -313,7 +324,7 @@ class EntryCard extends Component {
                 </div>
                 <div>
                   <IconButton
-                    onTouchTap={() => null}
+                    onTouchTap={this.handleComments}
                     iconStyle={{ width: '20px', height: '20px' }}
                     tooltip="Comments"
                   >

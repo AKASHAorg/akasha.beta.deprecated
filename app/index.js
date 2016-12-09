@@ -17,11 +17,24 @@ const history = syncHistoryWithStore(hashHistory, store);
 
 window.Perf = ReactPerf;
 
+function hashLinkScroll() {
+    const { hash } = window.location;
+    if (hash.split('#')[2] ) {
+        setTimeout(() => {
+            const id = hash.split('#')[2];
+            const element = document.getElementById(id);
+            if (element) {
+                element.scrollIntoView();
+            }
+        }, 300);
+    }
+}
+
 injectTapEventPlugin();
 render(
   <Provider store={store} >
     <IntlProvider locale="en" >
-      <Router history={history} >
+      <Router history={history} onUpdate={hashLinkScroll} >
         {routes}
       </Router>
     </IntlProvider>

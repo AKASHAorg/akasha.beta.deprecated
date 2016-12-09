@@ -15,7 +15,8 @@ const EntryContent = Record({
     featuredImage: null,
     licence: {},
     tags: [],
-    title: ''
+    title: '',
+    wordCount: null
 });
 
 const EntryEth = Record({
@@ -27,12 +28,15 @@ const EntryEth = Record({
 const Entry = Record({
     akashaId: null,
     active: null,
+    balance: null,
     baseUrl: '',
+    canClaim: null,
     content: EntryContent(),
     entryEth: EntryEth(),
     entryId: null,
     score: null,
-    commentsCount: 0
+    commentsCount: 0,
+    voteWeight: null
 });
 const Licence = Record({
     id: null,
@@ -356,9 +360,16 @@ const entryState = createReducer(initialState, {
     [types.GET_SCORE_SUCCESS]: (state, { data, flags }) => {
         const entryIndex = state.get('entries').findIndex(entry =>
             entry.get('entryId') === data.entryId);
+        const oldFullEntry = state.get('fullEntry');
+        const fullEntry = oldFullEntry && data.entryId === oldFullEntry.entryId ?
+            oldFullEntry.set('score', data.score) :
+            oldFullEntry;
         return state.merge({
-            entries: state.get('entries').mergeIn([entryIndex, 'content', 'score'], data.score),
-            flags: state.get('flags').merge(flags)
+            entries: entryIndex === -1 ?
+                state.get('entries') :
+                state.get('entries').mergeIn([entryIndex, 'content', 'score'], data.score),
+            flags: state.get('flags').merge(flags),
+            fullEntry
         });
     },
 
@@ -369,9 +380,16 @@ const entryState = createReducer(initialState, {
     [types.IS_ACTIVE_SUCCESS]: (state, { data, flags }) => {
         const entryIndex = state.get('entries').findIndex(entry =>
             entry.get('entryId') === data.entryId);
+        const oldFullEntry = state.get('fullEntry');
+        const fullEntry = oldFullEntry && data.entryId === oldFullEntry.entryId ?
+            oldFullEntry.set('active', data.active) :
+            oldFullEntry;
         return state.merge({
-            entries: state.get('entries').mergeIn([entryIndex, 'content', 'active'], data.active),
-            flags: state.get('flags').merge(flags)
+            entries: entryIndex === -1 ?
+                state.get('entries') :
+                state.get('entries').mergeIn([entryIndex, 'content', 'active'], data.active),
+            flags: state.get('flags').merge(flags),
+            fullEntry
         });
     },
 
@@ -382,9 +400,16 @@ const entryState = createReducer(initialState, {
     [types.GET_VOTE_OF_SUCCESS]: (state, { data, flags }) => {
         const entryIndex = state.get('entries').findLastIndex(entry =>
             entry.get('entryId') === data.entryId);
+        const oldFullEntry = state.get('fullEntry');
+        const fullEntry = oldFullEntry && data.entryId === oldFullEntry.entryId ?
+            oldFullEntry.set('voteWeight', data.weight) :
+            oldFullEntry;
         return state.merge({
-            entries: state.get('entries').setIn([entryIndex, 'content', 'voteWeight'], data.weight),
-            flags: state.get('flags').merge(flags)
+            entries: entryIndex === -1 ?
+                state.get('entries') :
+                state.get('entries').setIn([entryIndex, 'content', 'voteWeight'], data.weight),
+            flags: state.get('flags').merge(flags),
+            fullEntry
         });
     },
 
@@ -417,12 +442,17 @@ const entryState = createReducer(initialState, {
     [types.CAN_CLAIM_SUCCESS]: (state, { data, flags }) => {
         const entryIndex = state.get('entries').findLastIndex(entry =>
             entry.get('entryId') === data.entryId);
+        const oldFullEntry = state.get('fullEntry');
+        const fullEntry = oldFullEntry && data.entryId === oldFullEntry.entryId ?
+            oldFullEntry.set('canClaim', data.canClaim) :
+            oldFullEntry;
 
         return state.merge({
             entries: state.get('entries').mergeIn([entryIndex, 'content'], {
                 canClaim: data.canClaim
             }),
-            flags: state.get('flags').merge(flags)
+            flags: state.get('flags').merge(flags),
+            fullEntry
         });
     },
 
@@ -433,12 +463,17 @@ const entryState = createReducer(initialState, {
     [types.GET_ENTRY_BALANCE_SUCCESS]: (state, { data, flags }) => {
         const entryIndex = state.get('entries').findLastIndex(entry =>
             entry.get('entryId') === data.entryId);
+        const oldFullEntry = state.get('fullEntry');
+        const fullEntry = oldFullEntry && data.entryId === oldFullEntry.entryId ?
+            oldFullEntry.set('balance', data.balance) :
+            oldFullEntry;
 
         return state.merge({
             entries: state.get('entries').mergeIn([entryIndex, 'content'], {
                 balance: data.balance
             }),
-            flags: state.get('flags').merge(flags)
+            flags: state.get('flags').merge(flags),
+            fullEntry
         });
     },
 

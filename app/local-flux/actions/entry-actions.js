@@ -334,9 +334,11 @@ class EntryActions {
                 value,
                 gas,
                 onSuccess: (data) => {
-                    const entryTitle = getState().entryState.get('entries')
-                        .find(entry => entry.get('entryId') === data.entryId)
-                        .getIn(['content', 'content', 'title']);
+                    const entry = getState().entryState.get('entries')
+                        .find(entry => entry.get('entryId') === data.entryId);
+                    const entryTitle = entry ?
+                        entry.getIn(['content', 'content', 'title']) :
+                        getState().entryState.get('fullEntry').content.title;
                     this.transactionActions.listenForMinedTx();
                     this.transactionActions.addToQueue([{
                         tx: data.tx,
@@ -367,9 +369,11 @@ class EntryActions {
                 value,
                 gas,
                 onSuccess: (data) => {
-                    const entryTitle = getState().entryState.get('entries')
-                        .find(entry => entry.get('entryId') === data.entryId)
-                        .getIn(['content', 'content', 'title']);
+                    const entry = getState().entryState.get('entries')
+                        .find(entry => entry.get('entryId') === data.entryId);
+                    const entryTitle = entry ?
+                        entry.getIn(['content', 'content', 'title']) :
+                        getState().entryState.get('fullEntry').content.title;
                     this.transactionActions.listenForMinedTx();
                     this.transactionActions.addToQueue([{
                         tx: data.tx,
@@ -391,9 +395,11 @@ class EntryActions {
 
     upvoteSuccess = (entryId, minedSuccessfully) =>
         this.dispatch((dispatch, getState) => {
-            const entryTitle = getState().entryState.get('entries')
-                .find(entry => entry.get('entryId') === entryId)
-                .getIn(['content', 'content', 'title']);
+            const entry = getState().entryState.get('entries')
+                .find(entry => entry.get('entryId') === entryId);
+            const entryTitle = entry ?
+                entry.getIn(['content', 'content', 'title']) :
+                getState().entryState.get('fullEntry').content.title;
             dispatch(entryActionCreators.upvoteSuccess({
                 votePending: { entryId, value: false }
             }));
@@ -405,9 +411,11 @@ class EntryActions {
 
     downvoteSuccess = (entryId, minedSuccessfully) =>
         this.dispatch((dispatch, getState) => {
-            const entryTitle = getState().entryState.get('entries')
-                .find(entry => entry.get('entryId') === entryId)
-                .getIn(['content', 'content', 'title']);
+            const entry = getState().entryState.get('entries')
+                .find(entry => entry.get('entryId') === entryId);
+            const entryTitle = entry ?
+                entry.getIn(['content', 'content', 'title']) :
+                getState().entryState.get('fullEntry').content.title;
             dispatch(entryActionCreators.downvoteSuccess({
                 votePending: { entryId, value: false }
             }));
@@ -518,9 +526,11 @@ class EntryActions {
                 entryId,
                 gas,
                 onSuccess: (data) => {
-                    const entryTitle = getState().entryState.get('entries')
-                        .find(entry => entry.get('entryId') === data.entryId)
-                        .getIn(['content', 'content', 'title']);
+                    const entry = getState().entryState.get('entries')
+                        .find(entry => entry.get('entryId') === data.entryId);
+                    const entryTitle = entry ?
+                        entry.getIn(['content', 'content', 'title']) :
+                        getState().entryState.get('fullEntry').content.title;
                     this.transactionActions.listenForMinedTx();
                     this.transactionActions.addToQueue([{
                         tx: data.tx,
@@ -542,9 +552,11 @@ class EntryActions {
 
     claimSuccess = (entryId, minedSuccessfully) =>
         this.dispatch((dispatch, getState) => {
-            const entryTitle = getState().entryState.get('entries')
-                .find(entry => entry.get('entryId') === entryId)
-                .getIn(['content', 'content', 'title']);
+            const entry = getState().entryState.get('entries')
+                .find(entry => entry.get('entryId') === entryId);
+            const entryTitle = entry ?
+                entry.getIn(['content', 'content', 'title']) :
+                getState().entryState.get('fullEntry').content.title;
             dispatch(entryActionCreators.claimSuccess({
                 claimPending: { entryId, value: false }
             }));
