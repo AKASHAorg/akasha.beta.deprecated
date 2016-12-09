@@ -49,7 +49,7 @@ class CommentsPublisher extends Component {
                 if (typeof commentsActions[`${tx.type}Success`] !== 'function') {
                     console.error(`There is no action "${tx.type}Success" in commentsActions!! Please implement "${tx.type}Success" action!!`);
                 } else {
-                    commentsActions[`${tx.type}Success`](tx.draftId);
+                    commentsActions[`${tx.type}Success`](tx);
                     appActions.deletePendingAction(correspondingAction.get('id'));
                 }
             }
