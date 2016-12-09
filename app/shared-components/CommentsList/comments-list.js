@@ -1,8 +1,41 @@
 import React, { Component } from 'react';
-import imageCreator from 'utils/imageUtils';
 import Comment from '../Comment/comment';
 
 class CommentsList extends Component {
+    constructor (props) {
+        super(props);
+        this.requestSent = false;
+        this.state = {
+            loadedCommentsCount: this.props.comments.size
+        };
+    }
+    componentDidMount () {
+        window.addEventListener('scroll', this._handleScroll);
+    }
+    componentWillReceiveProps (nextProps) {
+        const { comments } = nextProps;
+        this.setState({
+            loadedCommentsCount: comments.size
+        });
+    }
+    componentWillUnmount () {
+        window.removeEventListener('scroll', this._handleScroll);
+    }
+    _handleScroll = () => {
+        const { comments, fetchLimit, commentsCount, onLoadMoreRequest } = this.props;
+        const { scrollY, innerHeight } = window;
+        const { scrollHeight } = document.body;
+        const bottomOffset = 350;
+        const shouldTriggerEvent = (scrollY + innerHeight + bottomOffset) >= scrollHeight;
+
+        if (shouldTriggerEvent && !this.requestSent && (commentsCount > fetchLimit)) {
+            const lastLoadedCommentId = comments.getIn([(this.state.loadedCommentsCount - 1), 'commentId']) - 1;
+            if (onLoadMoreRequest) {
+                onLoadMoreRequest(lastLoadedCommentId);
+                this.requestSent = true;
+            }
+        }
+    }
     renderComment = (comment, key) => {
         const { loggedProfile, entryAuthorProfile } = this.props;
         const { data } = comment;
@@ -17,7 +50,7 @@ class CommentsList extends Component {
             key={key}
             authorName={authorName}
             viewerIsAuthor={viewerIsAuthor}
-            publishDate={'3 days ago'}
+            publishDate={comment.getIn(['data', 'date'])}
             avatar={authorAvatar}
             rawContent={content}
             onReply={ev => this._handleReply(ev, 'comment')}
@@ -29,16 +62,13 @@ class CommentsList extends Component {
         );
     }
     render () {
-        const { comments } = this.props;
-        const publishingCommentList = comments.filter(comm => comm.get('tempTx'))
-          .map((comment, key) =>
+        const { comments, publishingComments } = this.props;
+        const publishingCommentList = publishingComments.map((comment, key) =>
+          this.renderComment(comment, key)
+        );
+        const commentList = comments.map((comment, key) =>
             this.renderComment(comment, key)
-          );
-        const commentList = comments.filter(comm =>
-                (!comm.get('tempTx') && comm.getIn(['data', 'active'])))
-            .map((comment, key) =>
-                this.renderComment(comment, key)
-            );
+        );
         return (
           <div>
             {publishingCommentList}
@@ -50,6 +80,10 @@ class CommentsList extends Component {
 CommentsList.propTypes = {
     comments: React.PropTypes.shape(),
     loggedProfile: React.PropTypes.shape(),
-    entryAuthorProfile: React.PropTypes.string
+    entryAuthorProfile: React.PropTypes.string,
+    publishingComments: React.PropTypes.shape(),
+    onLoadMoreRequest: React.PropTypes.func,
+    commentsCount: React.PropTypes.number,
+    fetchLimit: React.PropTypes.number
 };
 export default CommentsList;

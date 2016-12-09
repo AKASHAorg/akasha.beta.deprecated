@@ -43,7 +43,7 @@ const castCommentToRecord = (commentObj) => {
     const { commentId, data, entryId, tempTx } = commentObj;
     const { active, content, date, ipfsHash, parent, profile } = data;
     return new Comment({
-        entryId,
+        entryId: parseInt(entryId, 10),
         commentId: parseInt(commentId, 10),
         tempTx,
         data: new CommentData({

@@ -1,23 +1,22 @@
 /* eslint import/no-unresolved: 0, import/extensions: 0 */
 import React, { Component } from 'react';
-import { RaisedButton, Divider } from 'material-ui';
-import { MegadraftEditor, editorStateFromRaw, editorStateToJSON } from 'megadraft';
+import { Divider } from 'material-ui';
 import { injectIntl } from 'react-intl';
-import { EntryComment } from 'shared-components/svg';
-import { TagChip, Avatar, DataLoader, CommentsList } from 'shared-components';
-import { generalMessages, entryMessages } from 'locale-data/messages';
+import { TagChip, DataLoader, CommentsList, CommentEditor } from 'shared-components';
+import { entryMessages } from 'locale-data/messages';
 import EntryPageHeader from './entry-page-header';
 import EntryPageContent from './entry-page-content';
 import EntryPageActions from './entry-page-actions';
 import styles from './entry-page.scss';
+
+const COMMENT_FETCH_LIMIT = 7;
 
 class EntryPage extends Component {
     constructor (props) {
         super(props);
         this.state = {
             publisherTitleShadow: false,
-            activeTab: 'all',
-            commentEditorState: editorStateFromRaw(null)
+            activeTab: 'all'
         };
     }
     componentDidMount () {
@@ -28,7 +27,7 @@ class EntryPage extends Component {
         if ((!entry && !fetchingFullEntry) || entry.get('entryId') !== params.entryId) {
             entryActions.getFullEntry(params.entryId);
             if (!fetchingComments) {
-                commentsActions.getEntryComments(params.entryId, 0, 7);
+                commentsActions.getEntryComments(params.entryId, 0, COMMENT_FETCH_LIMIT);
             }
         }
     }
@@ -55,16 +54,10 @@ class EntryPage extends Component {
     handleDownvote = () => {
 
     }
-    _handleCommentChange = (editorState) => {
-        this.setState({
-            commentEditorState: editorState
-        });
-    }
-    _handleCommentCreate = (parent) => {
+    _handleCommentCreate = (editorState, parent) => {
         const { appActions, entry } = this.props;
-        const comment = editorStateToJSON(this.state.commentEditorState);
         const payload = {
-            content: comment,
+            content: editorState,
             entryId: entry.get('entryId')
         };
         if (parent) {
@@ -77,9 +70,6 @@ class EntryPage extends Component {
             messageId: 'publishComment',
             gas: 2000000,
             status: 'needConfirmation'
-        });
-        this.setState({
-            commentEditorState: editorStateFromRaw(null)
         });
     }
     _handleContentScroll = (ev) => {
@@ -103,10 +93,8 @@ class EntryPage extends Component {
     _handleBackNavigation = () => {
         this.context.router.goBack();
     }
-    _handleLoadMoreComments = () => {
-        const { comments } = this.props;
-        const lastCommentIndex = comments.sort((a, b) => a.get('commentId') > b.get('commentId')).first();
-        console.log('load more comment starting from index', lastCommentIndex);
+    _handleLoadMoreComments = (fromId) => {
+        console.log('load more comment starting from id', fromId);
     }
     render () {
         const { entry, votePending, loggedProfile, profiles, intl, fetchingFullEntry,
@@ -147,42 +135,16 @@ class EntryPage extends Component {
                       entryScore={entry.get('score')}
                       entryId={entry.get('entryId')}
                     />
-                    <div className={`${styles.comment_writer}`}>
-                      <div className={`${styles.avatar_image}`}>
-                        <Avatar
-                          image={loggedProfileAvatar}
-                          userInitials={loggedProfileUserInitials}
-                          radius={48}
-                        />
-                      </div>
-                      <div className={`${styles.comment_editor}`}>
-                        <MegadraftEditor
-                          placeholder={`${intl.formatMessage(entryMessages.writeComment)}...`}
-                          editorState={this.state.commentEditorState}
-                          onChange={this._handleCommentChange}
-                          sidebarRendererFn={() => null}
-                        />
-                      </div>
-                      {this.state.commentEditorState.getCurrentContent().hasText() &&
-                        <div className={`${styles.comment_publish_actions} end-xs`}>
-                          <RaisedButton
-                            label={intl.formatMessage(generalMessages.cancel)}
-                            onClick={this._handleCommentCancel}
-                          />
-                          <RaisedButton
-                            label={intl.formatMessage(generalMessages.publish)}
-                            onClick={() => this._handleCommentCreate(null)}
-                            primary
-                            style={{ marginLeft: 8 }}
-                          />
-                        </div>
-                      }
-                    </div>
+                    <CommentEditor
+                      profileAvatar={loggedProfileAvatar}
+                      profileUserInitials={loggedProfileUserInitials}
+                      onCommentCreate={this._handleCommentCreate}
+                    />
                     <div id="comments-section" className={`${styles.comments_section}`}>
                       <div>
                         <h4>
                           {intl.formatMessage(entryMessages.allComments, {
-                              commentsCount: entry.get('commentsCount').toString()
+                              commentsCount: entry.get('commentsCount')
                           })}
                         </h4>
                         <Divider />
@@ -192,7 +154,17 @@ class EntryPage extends Component {
                           <DataLoader flag={fetchingComments} >
                             <CommentsList
                               loggedProfile={loggedProfile}
-                              comments={comments}
+                              publishingComments={
+                                  comments.filter(comm => comm.get('tempTx'))
+                              }
+                              comments={
+                                  comments.filter(comm =>
+                                    (comm.getIn(['data', 'active']) && !comm.get('tempTx') &&
+                                      (comm.get('entryId') === entry.get('entryId')))
+                                  )
+                              }
+                              commentsCount={entry.get('commentsCount')}
+                              fetchLimit={COMMENT_FETCH_LIMIT}
                               onLoadMoreRequest={this._handleLoadMoreComments}
                               onCommenterClick={this._navigateToProfile}
                               entryAuthorProfile={entry.getIn(['entryEth', 'publisher']).profile}
