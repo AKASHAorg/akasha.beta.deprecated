@@ -116,9 +116,21 @@ class UserProfilePanel extends Component {
     }
 
     _renderFollower (event, index) {
+        const { palette } = this.context.muiTheme;
+        const name = `${event.follower.firstName} ${event.follower.lastName}`;
+        const initials = name.match(/\b\w/g).reduce((prev, current) => prev + current, '');
         return (
           <ListItem
-            leftAvatar={<Avatar src={`${event.follower.baseUrl}/${event.follower.avatar}`} />}
+            leftAvatar={event.follower.avatar ?
+              <Avatar src={`${event.follower.baseUrl}/${event.follower.avatar}`} /> :
+              <Avatar style={{ backgroundColor: 'rgba(239, 239, 239, 1)', border: '1px solid' }} >
+                <span
+                  style={{ color: palette.textColor, textTransform: 'uppercase', fontWeight: '500' }}
+                >
+                  {initials}
+                </span>
+              </Avatar>
+            }
             primaryText={
               <strong
                 onClick={() => {
@@ -149,9 +161,21 @@ class UserProfilePanel extends Component {
     }
 
     _renderEntry (event, index) {
+        const { palette } = this.context.muiTheme;
+        const name = `${event.author.firstName} ${event.author.lastName}`;
+        const initials = name.match(/\b\w/g).reduce((prev, current) => prev + current, '');
         return (
           <ListItem
-            leftAvatar={<Avatar src={`${event.author.baseUrl}/${event.author.avatar}`} />}
+            leftAvatar={event.author.avatar ?
+              <Avatar src={`${event.author.baseUrl}/${event.author.avatar}`} /> :
+              <Avatar style={{ backgroundColor: 'rgba(239, 239, 239, 1)', border: '1px solid' }} >
+                <span
+                  style={{ color: palette.textColor, textTransform: 'uppercase', fontWeight: '500' }}
+                >
+                  {initials}
+                </span>
+              </Avatar>
+            }
             primaryText={
               <strong
                 onClick={() => {
@@ -195,9 +219,21 @@ class UserProfilePanel extends Component {
     }
 
     _renderComment (event, index) {
+        const { palette } = this.context.muiTheme;
+        const name = `${event.author.firstName} ${event.author.lastName}`;
+        const initials = name.match(/\b\w/g).reduce((prev, current) => prev + current, '');
         return (
           <ListItem
-            leftAvatar={<Avatar src={`${event.author.baseUrl}/${event.author.avatar}`} />}
+            leftAvatar={event.author.avatar ?
+              <Avatar src={`${event.author.baseUrl}/${event.author.avatar}`} /> :
+              <Avatar style={{ backgroundColor: 'rgba(239, 239, 239, 1)', border: '1px solid' }} >
+                <span
+                  style={{ color: palette.textColor, textTransform: 'uppercase', fontWeight: '500' }}
+                >
+                  {initials}
+                </span>
+              </Avatar>
+            }
             primaryText={
               <strong
                 onClick={() => {
@@ -240,10 +276,20 @@ class UserProfilePanel extends Component {
         const type = (event.weight > 0) ? 'Upvoted' : 'Downvoted';
         const colorVote = (event.weight > 0) ? palette.accent3Color : palette.accent1Color;
         const voteWeight = (event.weight > 0) ? (`+${event.weight}`) : event.weight;
-
+        const name = `${event.author.firstName} ${event.author.lastName}`;
+        const initials = name.match(/\b\w/g).reduce((prev, current) => prev + current, '');
         return (
           <ListItem
-            leftAvatar={<Avatar src={`${event.author.baseUrl}/${event.author.avatar}`} />}
+            leftAvatar={event.author.avatar ?
+              <Avatar src={`${event.author.baseUrl}/${event.author.avatar}`} /> :
+              <Avatar style={{ backgroundColor: 'rgba(239, 239, 239, 1)', border: '1px solid' }} >
+                <span
+                  style={{ color: palette.textColor, textTransform: 'uppercase', fontWeight: '500' }}
+                >
+                  {initials}
+                </span>
+              </Avatar>
+            }
             primaryText={
               <strong
                 onClick={() => {

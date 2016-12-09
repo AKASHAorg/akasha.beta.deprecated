@@ -105,7 +105,7 @@ class App extends Component {
     render () {
         const { appState, loginErrors, appActions, draftActions, tagActions, entryActions, voteCost,
             profileActions, loggedProfileData, loginRequested, isActivePending,
-            entries } = this.props;
+            entries, fullEntry } = this.props;
         const loggedProfileBalance = loggedProfileData && loggedProfileData.get('balance');
         const error = appState.get('error');
         const errorMessage = error.get('code')
@@ -116,10 +116,11 @@ class App extends Component {
         const isPublishConfirmationDialogVisible = appState.get('publishConfirmDialog') !== null;
         let isEntryActive = false;
         if (isWeightConfirmationDialogVisible) {
-            isEntryActive = entries
-                .find(entry =>
-                    entry.get('entryId') === weightConfirmDialog.getIn(['payload', 'entryId']))
-                .getIn(['content', 'active']);
+            const entry = entries.find(entry =>
+                entry.get('entryId') === weightConfirmDialog.getIn(['payload', 'entryId']));
+            isEntryActive = entry ?
+                entry.getIn(['content', 'active']) :
+                fullEntry.active;
         }
 
         return (
@@ -206,6 +207,7 @@ function mapStateToProps (state) {
         voteCost: state.entryState.get('voteCost'),
         isActivePending: state.entryState.getIn(['flags', 'isActivePending']),
         entries: state.entryState.get('entries'),
+        fullEntry: state.entryState.get('fullEntry'),
         routeState: state.reduxAsyncConnect,
         theme: state.settingsState.get('general').get('theme')
     };

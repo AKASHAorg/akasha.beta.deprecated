@@ -47,7 +47,7 @@ class VoteRunner extends Component {
     };
     listenForMinedTx = (nextProps) => {
         const { appActions, deletingPendingTx, entries, entryActions, fetchingMined,
-            fetchingPending, loggedProfile, minedTx, pendingActions, pendingTx,
+            fetchingPending, fullEntry, loggedProfile, minedTx, pendingActions, pendingTx,
             transactionActions } = nextProps;
         const isNotFetching = !fetchingMined && !fetchingPending;
         const pendingSubsTxs = isNotFetching ?
@@ -63,6 +63,9 @@ class VoteRunner extends Component {
                 const correspondingAction = pendingActions.find(action =>
                     action.get('type') === tx.type && action.get('status') === 'publishing');
                 const entry = entries.find(entry => entry.get('entryId') === tx.entryId);
+                const publisherAkashaId = entry ?
+                    entry.getIn(['entryEth', 'publisher', 'akashaId']) :
+                    fullEntry.entryEth.publisher.akashaId;
                 const loggedAkashaId = loggedProfile.get('akashaId');
                 let minedSuccessfully;
                 if (correspondingAction) {
@@ -79,7 +82,7 @@ class VoteRunner extends Component {
                 entryActions[`${tx.type}Success`](tx.entryId, minedSuccessfully);
                 entryActions.getScore(tx.entryId);
                 entryActions.getVoteOf(loggedProfile.get('akashaId'), tx.entryId);
-                if (entry.getIn(['entryEth', 'publisher', 'akashaId']) === loggedAkashaId) {
+                if (publisherAkashaId === loggedAkashaId) {
                     entryActions.canClaim(tx.entryId);
                     entryActions.getEntryBalance(tx.entryId);
                 }
@@ -114,6 +117,7 @@ function mapStateToProps (state) {
         entries: state.entryState.get('entries').map(entry => entry.get('content')),
         fetchingMined: state.transactionState.get('fetchingMined'),
         fetchingPending: state.transactionState.get('fetchingPending'),
+        fullEntry: state.entryState.get('fullEntry'),
         loggedProfile: state.profileState.get('loggedProfile'),
         minedTx: state.transactionState.get('mined'),
         pendingActions: state.appState.get('pendingActions'),
