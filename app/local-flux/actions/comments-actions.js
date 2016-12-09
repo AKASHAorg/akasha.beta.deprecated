@@ -39,8 +39,8 @@ class CommentsActions {
                 prf.profile === loggedProfile.get('profile')
             );
             const token = loggedProfile.get('token');
-            const flagOn = { entryId: commentPayload.entryId, value: true };
-            const flagOff = { entryId: commentPayload.entryId, value: false };
+            const flagOn = { entryId: commentPayload.get('entryId'), value: true };
+            const flagOff = { entryId: commentPayload.get('entryId'), value: false };
             dispatch(commentsActionCreators.publishComment({
                 registerPending: flagOn
             }));
@@ -50,11 +50,12 @@ class CommentsActions {
                 gas,
                 ...commentPayload.toJS(),
                 onSuccess: (data) => {
+                    console.log(data, 'data on publish success');
                     this.transactionActions.listenForMinedTx();
                     this.transactionActions.addToQueue([{
                         tx: data.tx,
                         type: 'publishComment',
-                        entryId: data.entryId,
+                        entryId: commentPayload.get('entryId'),
                     }]);
                     this.appActions.showNotification({
                         id: 'publishingComment',
@@ -70,7 +71,8 @@ class CommentsActions {
                             parent: commentPayload.get('parent') || '0',
                             profile: loggedProfileData
                         },
-                        entryId: commentPayload.get('entryId')
+                        entryId: commentPayload.get('entryId'),
+                        tempTx: data.tx
                     }));
                 },
                 onError: error => dispatch(commentsActionCreators.publishCommentError(error, {
@@ -79,9 +81,9 @@ class CommentsActions {
             });
         });
     }
-    publishCommentSuccess = (entryId) => {
+    publishCommentSuccess = (tx) => {
         this.dispatch(commentsActionCreators.publishCommentSuccess({
-            registerPending: { entryId, value: false }
+            registerPending: { entryId: tx.entryId, tx, value: false }
         }));
         this.appActions.showNotification({
             id: 'commentPublishedSuccessfully'
