@@ -1,54 +1,60 @@
 html, body {
-  margin: 0;
-  height: 100%;
+    margin: 0;
+    height: 100%;
 }
+
 .hidden {
-  display: none;
+    display: none;
 }
+
 .fill-height {
-  width: 100%;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 .fill-height > div {
-  width: 100%;
-  flex-grow: 1;
-  flex-shrink: 1;
-  flex-basis: auto;
-  display: inline-flex;
+    width: 100%;
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: auto;
+    display: inline-flex;
 }
 
 .user-icon {
-  visibility: hidden;
-  &:hover, .active {
-    visibility: visible;
-    cursor: pointer;
-  }
+    visibility: hidden;
+    &:hover, .active {
+        visibility: visible;
+        cursor: pointer;
+    }
 }
+
 .caret-down {
-  width: 0;
-  height: 0;
-  border-left: 10px solid transparent;
-  border-right: 10px solid transparent;
-  border-top: 10px solid;
-  border-top-color: #000;
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 10px solid;
+    border-top-color: #000;
 }
+
 .hand-icon {
-  &:hover {
-    cursor: pointer;
-  }
+    &:hover {
+        cursor: pointer;
+    }
 }
+
 .overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 5;
-  background: rgba(0,0,0,0.312);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 5;
+    background: rgba(0, 0, 0, 0.312);
 }
+
 .link {
     cursor: pointer;
     font-weight: 500;
@@ -56,10 +62,21 @@ html, body {
     color: #008B8B;
 }
 
+.has_hidden_action {
+    .hidden_action {
+        display: none !important;
+    }
+    &:hover {
+        .hidden_action {
+            display: block !important;
+        }
+    }
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
     width: 6px;
-    background: rgba(0,0,0,0.02);
+    background: rgba(0, 0, 0, 0.02);
 }
 
 /* Track */
@@ -71,8 +88,9 @@ html, body {
 ::-webkit-scrollbar-thumb {
     -webkit-border-radius: 1px;
     border-radius: 1px;
-    background: rgba(0,0,0,0.2);
+    background: rgba(0, 0, 0, 0.2);
 }
+
 ::-webkit-scrollbar-thumb:window-inactive {
-  background: rgba(0,0,0,0.05);
+    background: rgba(0, 0, 0, 0.05);
 }

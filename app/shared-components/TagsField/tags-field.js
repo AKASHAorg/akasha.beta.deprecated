@@ -135,7 +135,6 @@ class TagsField extends React.Component {
     };
     render () {
         const currentTags = this.props.tags;
-        console.log(currentTags.length);
         const { pendingTags, existingTags } = this.props;
         const { erroredTags } = this.state;
         const tags = currentTags.map((tag, key) => {
