@@ -20,6 +20,7 @@ const Comment = Record({
     entryId: null,
     data: new CommentData(),
     commentId: null,
+    tempTx: null
 });
 
 const initialState = fromJS({
@@ -39,12 +40,12 @@ const errorHandler = (state, { error, flags }) =>
         flags: state.get('flags').merge(flags)
     });
 const castCommentToRecord = (commentObj) => {
-    const { commentId, data, entryId } = commentObj;
+    const { commentId, data, entryId, tempTx } = commentObj;
     const { active, content, date, ipfsHash, parent, profile } = data;
-    console.log('casting', commentObj);
     return new Comment({
         entryId,
         commentId: parseInt(commentId, 10),
+        tempTx,
         data: new CommentData({
             active,
             content,
@@ -59,9 +60,10 @@ const commentsState = createReducer(initialState, {
     [types.GET_ENTRY_COMMENTS]: flagsHandler,
     [types.GET_ENTRY_COMMENTS_ERROR]: errorHandler,
     [types.GET_ENTRY_COMMENTS_SUCCESS]: (state, { comments, flags }) => {
-        const comms = comments.collection.map(comment =>
-            castCommentToRecord(comment)
-        );
+        const comms = comments.collection.map((comment) => {
+            comment.data.profile.avatar = `${comment.data.profile.baseUrl}/${comment.data.profile.avatar}`;
+            return castCommentToRecord(comment);
+        });
         return state.merge({
             entryComments: state.get('entryComments').concat(new List(comms)),
             flags: state.get('flags').merge(flags)
@@ -71,13 +73,13 @@ const commentsState = createReducer(initialState, {
         state.merge({
             entryComments: state.get('entryComments').push(castCommentToRecord(comment))
         }),
-    [types.PUBLISH_COMMENT_SUCCESS]: (state, { data, flags }) => {
-        console.log(data, 'published comment');
+    [types.PUBLISH_COMMENT_SUCCESS]: (state, { data }) => {
         const index = state.get('entryComments').findIndex(comm =>
-            comm.get('entryId') === data.entryId && comm.get('commentId') === 'temp'
+            comm.get('tempTx') && (comm.get('tempTx') === data.registerPending.tx.tx)
         );
-        console.log('update comment with index %s in list', index);
-        return state;
+        return state.merge({
+            entryComments: state.get('entryComments').mergeIn([index], { tempTx: null })
+        });
     }
 
 });

@@ -1,15 +1,14 @@
 /* eslint import/no-unresolved: 0, import/extensions: 0 */
 import React, { Component } from 'react';
-import { CardHeader, SvgIcon, IconButton, RaisedButton, Divider } from 'material-ui';
+import { RaisedButton, Divider } from 'material-ui';
 import { MegadraftEditor, editorStateFromRaw, editorStateToJSON } from 'megadraft';
-import { EditorState } from 'draft-js';
-import CloseIcon from 'material-ui/svg-icons/navigation/close';
 import { injectIntl } from 'react-intl';
-import readOnlyImagePlugin from 'shared-components/EntryEditor/plugins/readOnlyImage/read-only-image-plugin';
-import { EntryComment, EntryDownvote, EntryUpvote } from 'shared-components/svg';
-import { TagChip, Avatar, DataLoader, Comment } from 'shared-components';
-import imageCreator from 'utils/imageUtils';
+import { EntryComment } from 'shared-components/svg';
+import { TagChip, Avatar, DataLoader, CommentsList } from 'shared-components';
 import { generalMessages, entryMessages } from 'locale-data/messages';
+import EntryPageHeader from './entry-page-header';
+import EntryPageContent from './entry-page-content';
+import EntryPageActions from './entry-page-actions';
 import styles from './entry-page.scss';
 
 class EntryPage extends Component {
@@ -18,7 +17,7 @@ class EntryPage extends Component {
         this.state = {
             publisherTitleShadow: false,
             activeTab: 'all',
-            commentEditorState: EditorState.createEmpty()
+            commentEditorState: editorStateFromRaw(null)
         };
     }
     componentDidMount () {
@@ -27,6 +26,15 @@ class EntryPage extends Component {
           fetchingComments } = this.props;
 
         if ((!entry && !fetchingFullEntry) || entry.get('entryId') !== params.entryId) {
+            entryActions.getFullEntry(params.entryId);
+            if (!fetchingComments) {
+                commentsActions.getEntryComments(params.entryId, 0, 7);
+            }
+        }
+    }
+    componentWillReceiveProps (nextProps) {
+        const { params, entry, entryActions, fetchingComments, commentsActions } = this.props;
+        if (params.entryId !== nextProps.params.entryId && entry.get('entryId') !== nextProps.params.entryId) {
             entryActions.getFullEntry(params.entryId);
             if (!fetchingComments) {
                 commentsActions.getEntryComments(params.entryId, 0, 7);
@@ -95,84 +103,32 @@ class EntryPage extends Component {
     _handleBackNavigation = () => {
         this.context.router.goBack();
     }
+    _handleLoadMoreComments = () => {
+        const { comments } = this.props;
+        const lastCommentIndex = comments.sort((a, b) => a.get('commentId') > b.get('commentId')).first();
+        console.log('load more comment starting from index', lastCommentIndex);
+    }
     render () {
-        const { entry, votePending, loggedProfile, profiles, intl, fetchingFullEntry } = this.props;
-        const { publisherTitleShadow, activeTab } = this.state;
-        const { palette } = this.context.muiTheme;
-        if (fetchingFullEntry || !entry) {
-            return null;
-        }
-        const publisher = entry.getIn(['entryEth', 'publisher']);
-        const publisherBaseUrl = publisher.baseUrl;
-        const publisherAvatar = imageCreator(publisher.avatar, publisherBaseUrl);
+        const { entry, votePending, loggedProfile, profiles, intl, fetchingFullEntry,
+          fetchingComments, comments } = this.props;
+        const { publisherTitleShadow } = this.state;
         const loggedProfileData = profiles.find(prf => prf.get('profile') === loggedProfile.get('profile'));
         const loggedProfileAvatar = loggedProfileData.get('avatar');
-        const cleanupEntry = entry.getIn(['content']).toJS().draft.slice(5, entry.get('content').toJS().draft.length - 3);
-        const entryContent = editorStateFromRaw(JSON.parse(cleanupEntry));
-        const existingVoteWeight = entry.get('voteWeight') || 0;
-        const voteEntryPending = votePending && votePending.find(vote =>
-                        vote.entryId === entry.get('entryId'));
-        const upvoteIconColor = existingVoteWeight > 0 ? palette.accent3Color : '';
-        const downvoteIconColor = existingVoteWeight < 0 ? palette.accent1Color : '';
-        const profileName = `${publisher.firstName} ${publisher.lastName}`;
-        const userInitials = profileName.match(/\b\w/g).reduce((prev, current) => prev + current, '');
+        const loggedProfileName = `${loggedProfileData.firstName} ${loggedProfileData.lastName}`;
+        const loggedProfileUserInitials = loggedProfileName.match(/\b\w/g).reduce((prev, current) => prev + current, '');
         return (
-          <DataLoader flag={fetchingFullEntry}>
+          <DataLoader flag={!entry || fetchingFullEntry} timeout={500}>
             <div className={`${styles.root} row`} >
               <div className="col-xs-12">
                 <div className={`${styles.entry_page_inner}`}>
                   <div id="content-section" className={`${styles.content_section}`}>
-                    <div
-                      className={`${styles.entry_publisher_info} ${styles.with_shadow}`}
-                      style={{ backgroundColor: '#FFF' }}
-                    >
-                      <div
-                        className={`${styles.entry_publisher_info_inner}`}
-                        style={{
-                            boxShadow: publisherTitleShadow ?
-                              '0px 15px 28px -15px #DDD, 0 12px 15px -15px #000000' : 'none'
-                        }}
-                      >
-                        <CardHeader
-                          avatar={publisherAvatar}
-                          title={`${publisher.lastName} ${publisher.firstName}`}
-                          subtitle={'1 day ago - 5 min read'}
-                          style={{
-                              width: '93%',
-                              display: 'inline-block'
-                          }}
-                        />
-                        <div
-                          style={{
-                              width: '7%',
-                              display: 'inline-block'
-                          }}
-                        >
-                          <IconButton
-                            onClick={this._handleBackNavigation}
-                          >
-                            <SvgIcon>
-                              <CloseIcon />
-                            </SvgIcon>
-                          </IconButton>
-                        </div>
-                      </div>
-                    </div>
-                    <div className={`${styles.content_inner} row`} >
-                      <div className="col-xs-12">
-                        <h1 className={`${styles.entry_title}`}>
-                          {entry.getIn(['content', 'title'])}
-                        </h1>
-                      </div>
-                      <div className={`${styles.entry_content} col-xs-12`} >
-                        <MegadraftEditor
-                          readOnly
-                          editorState={entryContent}
-                          onChange={() => {}}
-                          plugins={[readOnlyImagePlugin]}
-                        />
-                      </div>
-                    </div>
+                    <EntryPageHeader
+                      publisher={entry.entryEth.publisher}
+                      publisherTitleShadow={publisherTitleShadow}
+                    />
+                    <EntryPageContent
+                      entry={entry}
+                    />
                   </div>
                   <div className={`${styles.entry_infos}`}>
                     <div className={`${styles.entry_tags}`}>
@@ -184,55 +140,18 @@ class EntryPage extends Component {
                         />
                       )}
                     </div>
-                    <div className={`${styles.entry_actions}`}>
-                      <div className={`${styles.entry_upvote}`}>
-                        <IconButton
-                          onTouchTap={this.handleUpvote}
-                          iconStyle={{ width: '20px', height: '20px' }}
-                          disabled={!entry.get('active') || (voteEntryPending && voteEntryPending.value)
-                              || existingVoteWeight !== 0}
-                        >
-                          <SvgIcon viewBox="0 0 20 20" >
-                            <EntryUpvote fill={upvoteIconColor} />
-                          </SvgIcon>
-                        </IconButton>
-                      </div>
-                      <div className={`${styles.entry_score_counter}`}>
-                        {entry.get('score')}
-                      </div>
-                      <div className={`${styles.entry_downvote}`}>
-                        <IconButton
-                          onTouchTap={this.handleDownvote}
-                          iconStyle={{ width: '20px', height: '20px' }}
-                          disabled={!entry.get('active') || (voteEntryPending && voteEntryPending.value)
-                              || existingVoteWeight !== 0}
-                        >
-                          <SvgIcon viewBox="0 0 20 20">
-                            <EntryDownvote fill={downvoteIconColor} />
-                          </SvgIcon>
-                        </IconButton>
-                        {existingVoteWeight < 0 &&
-                          <div
-                            style={{
-                                position: 'absolute',
-                                top: 0,
-                                left: 0,
-                                right: 0,
-                                textAlign: 'center',
-                                fontSize: '10px',
-                                color: palette.accent1Color
-                            }}
-                          >
-                            {existingVoteWeight}
-                          </div>
-                        }
-                      </div>
-                    </div>
+                    <EntryPageActions
+                      existingVoteWeight={(entry.get('voteWeight') || 0)}
+                      votePending={votePending}
+                      entryIsActive={entry.get('active')}
+                      entryScore={entry.get('score')}
+                      entryId={entry.get('entryId')}
+                    />
                     <div className={`${styles.comment_writer}`}>
                       <div className={`${styles.avatar_image}`}>
                         <Avatar
                           image={loggedProfileAvatar}
-                          userInitials={userInitials}
+                          userInitials={loggedProfileUserInitials}
                           radius={48}
                         />
                       </div>
@@ -270,17 +189,15 @@ class EntryPage extends Component {
                       </div>
                       <div>
                         <div>
-                          <Comment
-                            author={'Comment Author name here'}
-                            publishDate={'3 days ago'}
-                            avatar={'http://c2.staticflickr.com/2/1659/25017672329_e5b9967612_b.jpg'}
-                            text={
-                              'comment text here!!!'
-                            }
-                            onReply={ev => this._handleReply(ev, 'comment')}
-                            repliesLimit={3}
-                            stats={{ upvotes: '', downvotes: '', replies: '' }}
-                          />
+                          <DataLoader flag={fetchingComments} >
+                            <CommentsList
+                              loggedProfile={loggedProfile}
+                              comments={comments}
+                              onLoadMoreRequest={this._handleLoadMoreComments}
+                              onCommenterClick={this._navigateToProfile}
+                              entryAuthorProfile={entry.getIn(['entryEth', 'publisher']).profile}
+                            />
+                          </DataLoader>
                         </div>
                       </div>
                     </div>
@@ -299,9 +216,12 @@ EntryPage.propTypes = {
     profiles: React.PropTypes.shape(),
     appActions: React.PropTypes.shape(),
     entryActions: React.PropTypes.shape(),
+    commentsActions: React.PropTypes.shape(),
     intl: React.PropTypes.shape(),
     params: React.PropTypes.shape(),
-    fetchingFullEntry: React.PropTypes.bool
+    fetchingFullEntry: React.PropTypes.bool,
+    fetchingComments: React.PropTypes.bool,
+    comments: React.PropTypes.shape()
 };
 EntryPage.contextTypes = {
     muiTheme: React.PropTypes.shape(),

@@ -1,9 +1,20 @@
-.root {}
+.root {
+    margin-bottom: 16px;
+}
 .commentHeader {
-    paddingTop: 8px;
+    padding-top: 8px;
 }
 .commentAuthor {
-    
+
+}
+.author_name {
+    padding: 3px;
+}
+.viewer_is_author {
+    color: rgb(114, 189, 255);
+}
+.is_entry_author {
+    color: #00da4d;
 }
 .header {
     padding: 0;
@@ -14,6 +25,13 @@
 }
 .commentBody {
     padding: 0 8px;
+    :global {
+        .megadraft-editor {
+            .DraftEditor-root {
+                font-size: 16px;
+            }
+        }
+    }
 }
 .commentReply {
     padding-left: 48px;
