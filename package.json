@@ -140,7 +140,7 @@
     "fuse.js": "2.6.1",
     "history": "4.4.1",
     "immutable": "3.8.1",
-    "lodash.debounce": "^4.0.8",
+    "lodash.debounce": "4.0.8",
     "lodash.throttle": "4.1.1",
     "material-ui": "0.16.4",
     "megadraft": "0.4.9",

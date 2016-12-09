@@ -113,7 +113,6 @@ class TagsField extends React.Component {
     _handleInputBlur = (ev) => {
         const value = ev.target.value;
         if (value && value.length > 0) {
-            this._createTag();
             this.setState({
                 tagString: ''
             });
@@ -136,6 +135,7 @@ class TagsField extends React.Component {
     };
     render () {
         const currentTags = this.props.tags;
+        console.log(currentTags.length);
         const { pendingTags, existingTags } = this.props;
         const { erroredTags } = this.state;
         const tags = currentTags.map((tag, key) => {
