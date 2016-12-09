@@ -336,8 +336,8 @@ const entryState = createReducer(initialState, {
             fullEntry: new Entry({
                 active,
                 baseUrl,
-                commentsCount,
-                entryId,
+                commentsCount: parseInt(commentsCount, 10),
+                entryId: parseInt(entryId, 10),
                 score,
                 content: new EntryContent(content),
                 entryEth: new EntryEth(entryEth)

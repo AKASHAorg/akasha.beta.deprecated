@@ -62,7 +62,7 @@ class EntryPageAction extends Component {
     }
 }
 EntryPageAction.propTypes = {
-    entryId: React.PropTypes.string,
+    entryId: React.PropTypes.number,
     entryScore: React.PropTypes.string,
     votePending: React.PropTypes.shape(),
     entryIsActive: React.PropTypes.bool,

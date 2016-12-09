@@ -6,6 +6,7 @@ import {
     IconButton,
   } from 'material-ui';
 import { MegadraftEditor, editorStateFromRaw } from 'megadraft';
+import { injectIntl } from 'react-intl';
 import ArrowDownIcon from 'material-ui/svg-icons/hardware/keyboard-arrow-down';
 import ArrowUpIcon from 'material-ui/svg-icons/hardware/keyboard-arrow-up';
 import ReplayIcon from 'material-ui/svg-icons/av/replay';
@@ -41,7 +42,7 @@ class Comment extends React.Component {
     }
     render () {
         const { isPublishing, viewerIsAuthor, authorName, publishDate, avatar, children,
-          isEntryAuthor } = this.props;
+          isEntryAuthor, intl } = this.props;
         const { editorState, isExpanded } = this.state;
         let expandedStyle = {};
         if (isExpanded === false) {
@@ -72,7 +73,7 @@ class Comment extends React.Component {
                       {authorName}
                     </b>
                   }
-                  subtitle={publishDate}
+                  subtitle={intl.formatRelative(new Date(publishDate))}
                   avatar={avatar}
                 />
               </div>
@@ -118,7 +119,8 @@ Comment.propTypes = {
     children: React.PropTypes.node,
     isPublishing: React.PropTypes.bool,
     viewerIsAuthor: React.PropTypes.bool,
-    isEntryAuthor: React.PropTypes.bool
+    isEntryAuthor: React.PropTypes.bool,
+    intl: React.PropTypes.shape()
 };
 
-export default Comment;
+export default injectIntl(Comment);
