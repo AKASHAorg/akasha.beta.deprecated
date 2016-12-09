@@ -8,7 +8,7 @@ class TagsIPC extends ModuleEmitter {
     constructor() {
         super();
         this.MODULE_NAME = 'tags';
-        this.DEFAULT_MANAGED = ['exists', 'getTagId', 'getTagName'];
+        this.DEFAULT_MANAGED = ['exists', 'getTagId', 'getTagName', 'searchTag'];
     }
 
     /**

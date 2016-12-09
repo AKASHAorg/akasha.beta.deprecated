@@ -48,7 +48,7 @@ class EntryList extends Component {
         const { loggedProfileData, selectedTag, tagEntries, savedEntries, moreTagEntries,
             moreSavedEntries, tagEntriesCount, entriesStream, subscribePending, params, blockNr,
             votePending, entryActions, savedEntriesIds, fetchingTagEntries, fetchingMoreTagEntries,
-            fetchingSavedEntriesList, fetchingMoreSavedEntriesList, getTriggerRef } = this.props;
+            fetchingSavedEntriesList, fetchingMoreSavedEntriesList, getTriggerRef, tagActions } = this.props;
         const { palette } = this.context.muiTheme;
         const entries = params.filter === 'tag' ? tagEntries : savedEntries;
         const moreEntries = params.filter === 'tag' ? moreTagEntries : moreSavedEntries;
@@ -77,6 +77,8 @@ class EntryList extends Component {
                 subscribeTag={this.subscribeTag}
                 unsubscribeTag={this.unsubscribeTag}
                 subscribePending={subscribePendingFlag}
+                selectTag={tagActions.saveTag}
+                publishTag={tagActions.addRegisterTagAction}
               />
             }
             {/* params.filter === 'bookmarks' &&

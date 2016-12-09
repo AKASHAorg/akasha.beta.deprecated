@@ -13,12 +13,10 @@ class TagsField extends React.Component {
             erroredTags: [],
             dataSource: []
         };
-        Channel.server.tags.searchTag.enable();
         Channel.client.tags.searchTag.on(this.hydrateDataSource);
     }
 
     componentWillUnmount () {
-        Channel.server.tags.searchTag.disable();
         Channel.client.tags.searchTag.removeListener(this.hydrateDataSource);
     }
 
