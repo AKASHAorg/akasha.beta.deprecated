@@ -64,6 +64,12 @@ class Avatar extends React.Component {
             isNewAvatarLoaded: true
         });
     }
+    _handleAvatarClick = (ev) => {
+        // only when not editable!!
+        if (this.props.onClick) {
+            this.props.onClick(ev);
+        }
+    }
     render () {
         const {
               radius,
@@ -140,6 +146,18 @@ class Avatar extends React.Component {
                     </div>
                   </div>
                 }
+                {!editable && avatarImage &&
+                    <div
+                      style={{
+                          position: 'absolute',
+                          width: '100%',
+                          height: '100%',
+                          top: 0,
+                          left: 0
+                      }}
+                      onClick={this._handleAvatarClick}
+                    />
+                }
               </div>
             }
             {!avatarImage &&
@@ -199,7 +217,8 @@ Avatar.propTypes = {
     userInitialsWrapperStyle: React.PropTypes.shape(),
     offsetBorder: React.PropTypes.string,
     clearAvatarImage: React.PropTypes.func,
-    style: React.PropTypes.shape()
+    style: React.PropTypes.shape(),
+    onClick: React.PropTypes.func
 };
 Avatar.contextTypes = {
     muiTheme: React.PropTypes.object

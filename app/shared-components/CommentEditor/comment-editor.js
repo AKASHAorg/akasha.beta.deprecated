@@ -39,6 +39,7 @@ class CommentEditor extends React.Component {
                 image={profileAvatar}
                 userInitials={profileUserInitials}
                 radius={48}
+                userInitialsStyle={{ fontSize: 22, textTransform: 'uppercase', fontWeight: 500 }}
               />
             </div>
             <div className={`${styles.comment_editor}`}>
