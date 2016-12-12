@@ -5,6 +5,7 @@ import { mainResponse } from './event/responses';
 import { module as userModule } from './modules/auth/index';
 import { constructed } from './contracts/index';
 import { post as POST } from 'request';
+import notifs from './modules/notifications/feed';
 import WebContents = Electron.WebContents;
 
 const faucetToken = '8336abae5a97f017d2d0ef952a6a566d4bbed5cd22c7b524ae749673d5562b567af109371' +
@@ -50,6 +51,7 @@ class AuthIPC extends ModuleEmitter {
         this.registerListener(
             channels.server[this.MODULE_NAME].logout,
             (event: any, data: AuthLogoutRequest) => {
+                notifs.execute({stop: true});
                 userModule
                     .auth
                     .logout();
