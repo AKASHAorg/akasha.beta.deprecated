@@ -22,25 +22,22 @@ class EntryPage extends Component {
 
     componentDidMount () {
         window.addEventListener('scroll', this._handleContentScroll);
-        const { commentsActions, entry, entryActions, fetchingComments, fetchingFullEntry,
-            params } = this.props;
+
+        const { entry, entryActions, params, fetchingFullEntry } = this.props;
 
         if ((!entry && !fetchingFullEntry) || entry.get('entryId') !== params.entryId) {
             entryActions.getFullEntry(params.entryId);
-            if (!fetchingComments) {
-                commentsActions.getEntryComments(params.entryId, 0, COMMENT_FETCH_LIMIT);
-            }
+            this.fetchComments(params.entryId);
         }
     }
 
     componentWillReceiveProps (nextProps) {
         const { params, entry, entryActions, fetchingComments, commentsActions,
             loggedProfile } = this.props;
+
         if (params.entryId !== nextProps.params.entryId && entry.get('entryId') !== nextProps.params.entryId) {
             entryActions.getFullEntry(params.entryId);
-            if (!fetchingComments) {
-                commentsActions.getEntryComments(params.entryId, 0, 7);
-            }
+            this.fetchComments(nextProps.params.entryId);
         }
         if (nextProps.entry && !entry) {
             entryActions.getVoteOf(loggedProfile.get('akashaId'), nextProps.entry.get('entryId'));
@@ -56,9 +53,19 @@ class EntryPage extends Component {
     }
 
     componentWillUnmount () {
-        const { entryActions } = this.props;
+        const { entryActions, commentsActions, params } = this.props;
         window.removeEventListener('scroll', this._handleContentScroll);
         entryActions.unloadFullEntry();
+        commentsActions.unloadComments(parseInt(params.entryId, 10));
+    }
+    fetchComments = (entryId, startId = 0) => {
+        const { fetchingComments, commentsActions } = this.props;
+        // if it`s not already fetching comments, return
+        console.log('fetching comments!');
+        if (fetchingComments) {
+            return;
+        }
+        commentsActions.getEntryComments(entryId, startId, COMMENT_FETCH_LIMIT);
     }
 
     isOwnEntry = (nextProps) => {
@@ -160,13 +167,11 @@ class EntryPage extends Component {
         saveTag(tagName);
     }
 
-    _handleLoadMoreComments = (fromId) => {
-        console.log('load more comment starting from id', fromId);
-    }
     render () {
         const { blockNr, canClaimPending, claimPending, comments, entry, fetchingComments,
             fetchingEntryBalance, fetchingFullEntry, intl, loggedProfile, profiles, savedEntries,
             votePending } = this.props;
+
         const { publisherTitleShadow } = this.state;
         if (!entry || fetchingFullEntry) {
             return <DataLoader flag={true} size={80} style={{ paddingTop: '120px' }} />;
@@ -237,9 +242,13 @@ class EntryPage extends Component {
                     </div>
                     <div>
                       <div>
-                        <DataLoader flag={fetchingComments} >
+                        <div>
                           <CommentsList
                             loggedProfile={loggedProfile}
+                            newlyCreatedComments={
+                                comments.filter(comm =>
+                                    (!comm.get('tempTx') && !comm.get('commentId')))
+                            }
                             publishingComments={
                                 comments.filter(comm => comm.get('tempTx'))
                             }
@@ -249,13 +258,14 @@ class EntryPage extends Component {
                                     (comm.get('entryId') === entry.get('entryId')))
                                 )
                             }
+                            entryId={entry.get('entryId')}
                             commentsCount={entry.get('commentsCount')}
                             fetchLimit={COMMENT_FETCH_LIMIT}
-                            onLoadMoreRequest={this._handleLoadMoreComments}
+                            onLoadMoreRequest={this.fetchComments}
                             onCommenterClick={this._navigateToProfile}
                             entryAuthorProfile={entry.getIn(['entryEth', 'publisher']).profile}
                           />
-                        </DataLoader>
+                        </div>
                       </div>
                     </div>
                   </div>

@@ -13,7 +13,7 @@ const CommentData = Record({
     parent: null,
     profile: new Map(),
     content: null,
-    date: new Date(),
+    date: new Date().toISOString(),
     ipfsHash: null,
 });
 const Comment = Record({
@@ -49,7 +49,7 @@ const castCommentToRecord = (commentObj) => {
         data: new CommentData({
             active,
             content,
-            date,
+            date: date || new Date().toISOString(),
             ipfsHash,
             parent,
             profile: new Map(profile)
@@ -71,7 +71,7 @@ const commentsState = createReducer(initialState, {
     },
     [types.PUBLISH_COMMENT_OPTIMISTIC]: (state, { comment }) =>
         state.merge({
-            entryComments: state.get('entryComments').push(castCommentToRecord(comment))
+            entryComments: state.get('entryComments').unshift(castCommentToRecord(comment))
         }),
     [types.PUBLISH_COMMENT_SUCCESS]: (state, { data }) => {
         const index = state.get('entryComments').findIndex(comm =>
@@ -80,7 +80,12 @@ const commentsState = createReducer(initialState, {
         return state.merge({
             entryComments: state.get('entryComments').mergeIn([index], { tempTx: null })
         });
-    }
+    },
+    [types.UNLOAD_COMMENTS]: (state, { entryId }) =>
+        state.set('entryComments',
+            state.get('entryComments').filter(comment =>
+                comment.get('entryId') !== entryId)
+        ),
 
 });
 

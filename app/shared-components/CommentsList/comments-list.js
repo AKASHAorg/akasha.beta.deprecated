@@ -17,21 +17,28 @@ class CommentsList extends Component {
         this.setState({
             loadedCommentsCount: comments.size
         });
+        if (comments.size > this.props.comments.size) {
+            this.requestSent = false;
+        }
     }
     componentWillUnmount () {
         window.removeEventListener('scroll', this._handleScroll);
     }
+    _handleNavigation = (to) => {
+        const { loggedProfile } = this.props;
+        this.context.router.push(`${loggedProfile.get('akashaId')}/${to}`);
+    }
     _handleScroll = () => {
-        const { comments, fetchLimit, commentsCount, onLoadMoreRequest } = this.props;
+        const { comments, fetchLimit, commentsCount, onLoadMoreRequest, entryId } = this.props;
         const { scrollY, innerHeight } = window;
         const { scrollHeight } = document.body;
-        const bottomOffset = 350;
+        const bottomOffset = 500;
         const shouldTriggerEvent = (scrollY + innerHeight + bottomOffset) >= scrollHeight;
 
-        if (shouldTriggerEvent && !this.requestSent && (commentsCount > fetchLimit)) {
-            const lastLoadedCommentId = comments.getIn([(this.state.loadedCommentsCount - 1), 'commentId']) - 1;
-            if (onLoadMoreRequest) {
-                onLoadMoreRequest(lastLoadedCommentId);
+        if (shouldTriggerEvent && (commentsCount > fetchLimit) && !this.requestSent) {
+            const lastLoadedCommentId = comments.getIn([(this.state.loadedCommentsCount - 1), 'commentId']);
+            if (onLoadMoreRequest && lastLoadedCommentId > 1) {
+                onLoadMoreRequest(entryId, lastLoadedCommentId);
                 this.requestSent = true;
             }
         }
@@ -39,10 +46,11 @@ class CommentsList extends Component {
     renderComment = (comment, key) => {
         const { loggedProfile, entryAuthorProfile } = this.props;
         const { data } = comment;
-        const content = JSON.parse(data.content);
         const { profile } = data;
+        const content = JSON.parse(data.content);
         const authorName = `${profile.get('firstName')} ${profile.get('lastName')}`;
-        const authorAvatar = profile.get('avatar');
+        const authorAvatar = (profile.get('avatar') === `${profile.get('baseUrl')}/`) ?
+            null : profile.get('avatar');
         const viewerIsAuthor = loggedProfile.get('profile') === profile.get('profile');
         const isEntryAuthor = entryAuthorProfile === profile.get('profile');
         return (
@@ -58,21 +66,25 @@ class CommentsList extends Component {
             stats={{ upvotes: '', downvotes: '', replies: '' }}
             isPublishing={!!comment.get('tempTx')}
             isEntryAuthor={isEntryAuthor}
+            onAuthorNameClick={() => this._handleNavigation(`profile/${profile.get('profile')}`)}
           />
         );
     }
     render () {
-        const { comments, publishingComments } = this.props;
-        const publishingCommentList = publishingComments.map((comment, key) =>
-          this.renderComment(comment, key)
-        );
-        const commentList = comments.map((comment, key) =>
-            this.renderComment(comment, key)
-        );
+        const { comments, publishingComments, newlyCreatedComments } = this.props;
+        console.log(newlyCreatedComments, 'created comments');
+        console.log(publishingComments, 'publishingComments');
         return (
           <div>
-            {publishingCommentList}
-            {commentList}
+            {publishingComments.map((comment, key) =>
+                this.renderComment(comment, key)
+            )}
+            {newlyCreatedComments.map((comment, key) =>
+                this.renderComment(comment, key)
+            )}
+            {comments.map((comment, key) =>
+                this.renderComment(comment, key)
+            )}
           </div>
         );
     }
@@ -82,8 +94,13 @@ CommentsList.propTypes = {
     loggedProfile: React.PropTypes.shape(),
     entryAuthorProfile: React.PropTypes.string,
     publishingComments: React.PropTypes.shape(),
+    newlyCreatedComments: React.PropTypes.shape(),
     onLoadMoreRequest: React.PropTypes.func,
     commentsCount: React.PropTypes.number,
-    fetchLimit: React.PropTypes.number
+    fetchLimit: React.PropTypes.number,
+    entryId: React.PropTypes.number
+};
+CommentsList.contextTypes = {
+    router: React.PropTypes.shape()
 };
 export default CommentsList;

@@ -16,7 +16,10 @@ export default {
         accent1Color: '#c82506',
         accent2Color: '#de6a10',
         accent3Color: '#70bf41',
-        paperShadowColor: Colors.grey400
+        paperShadowColor: Colors.grey400,
+        commentAuthorColor: Colors.grey800,
+        commentViewerIsAuthorColor: Colors.blueA400,
+        commentIsEntryAuthorColor: Colors.greenA700
     },
     imageUploader: {
         position: 'relative',
