@@ -2,15 +2,20 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { Paper, Tabs, Tab, FlatButton } from 'material-ui';
 import { injectIntl } from 'react-intl';
+import throttle from 'lodash.throttle';
 import { profileMessages, generalMessages } from 'locale-data/messages';
 import { ProfileActions } from 'local-flux';
-import { ProfileCard } from 'shared-components';
+import { DataLoader, ProfileCard } from 'shared-components';
+import { isInViewport } from 'utils/domUtils';
+
+const LIMIT = 13;
 
 class PeopleContainer extends Component {
 
     constructor (props) {
         super(props);
 
+        this.trigger = null;
         this.lastFollowerIndex = 0;
         this.lastFollowingIndex = 0;
         this.state = {
@@ -21,8 +26,14 @@ class PeopleContainer extends Component {
     componentWillMount () {
         const { profileActions, loggedProfileData } = this.props;
         profileActions.followersIterator(
-            loggedProfileData.akashaId, this.lastFollowerIndex, 9
+            loggedProfileData.akashaId, this.lastFollowerIndex, LIMIT
         );
+    }
+
+    componentDidMount () {
+        if (this.container) {
+            this.container.addEventListener('scroll', throttle(this.handleScroll, 500));
+        }
     }
 
     componentWillReceiveProps (nextProps) {
@@ -51,13 +62,13 @@ class PeopleContainer extends Component {
                 case 'followers':
                     profileActions.clearFollowing(loggedProfileData.akashaId);
                     profileActions.followersIterator(
-                        loggedProfileData.akashaId, this.lastFollowerIndex, 9
+                        loggedProfileData.akashaId, this.lastFollowerIndex, LIMIT
                     );
                     break;
                 case 'following':
                     profileActions.clearFollowers(loggedProfileData.akashaId);
                     profileActions.followingIterator(
-                        loggedProfileData.akashaId, this.lastFollowingIndex, 9
+                        loggedProfileData.akashaId, this.lastFollowingIndex, LIMIT
                     );
                     break;
                 default:
@@ -71,6 +82,25 @@ class PeopleContainer extends Component {
         profileActions.clearFollowers(loggedProfileData.akashaId);
         profileActions.clearFollowing(loggedProfileData.akashaId);
     }
+
+    handleScroll = () => {
+        if (!this.trigger) {
+            return null;
+        }
+
+        if (isInViewport(this.trigger)) {
+            switch (this.state.activeTab) {
+                case 'followers':
+                    this.showMoreFollowers();
+                    break;
+                case 'following':
+                    this.showMoreFollowing();
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
 
     getTabStyle = (tab) => {
         const { palette } = this.context.muiTheme;
@@ -106,58 +136,64 @@ class PeopleContainer extends Component {
 
     showMoreFollowers = () => {
         const { profileActions, loggedProfileData } = this.props;
-        profileActions.followersIterator(loggedProfileData.akashaId, this.lastFollowerIndex, 9);
+        profileActions.moreFollowersIterator(loggedProfileData.akashaId, this.lastFollowerIndex, LIMIT);
     };
 
     showMoreFollowing = () => {
         const { profileActions, loggedProfileData } = this.props;
-        profileActions.followingIterator(loggedProfileData.akashaId, this.lastFollowingIndex, 9);
+        profileActions.moreFollowingIterator(loggedProfileData.akashaId, this.lastFollowingIndex, LIMIT);
     };
 
     renderFollowers () {
-        const { fetchingFollowers, profileActions, followPending, loggedProfileData,
-            isFollowerPending, intl } = this.props;
+        const { fetchingFollowers, fetchingMoreFollowers, profileActions, followPending,
+            loggedProfileData, isFollowerPending, intl } = this.props;
         const followers = loggedProfileData.get('followers').toJS();
 
         if (!followers.length && !fetchingFollowers) {
             return <div>No followers</div>;
         }
 
-        return (<div>
-          <div style={{ display: 'flex', flexWrap: 'wrap' }} >
-            {followers.map((follower, key) => {
-                const profile = follower.profile;
-                const followProfilePending = followPending && followPending.find(follow =>
-                    follow.akashaId === profile.akashaId);
-                return profile &&
-                  <ProfileCard
-                    key={key}
-                    loggedProfileData={loggedProfileData}
-                    profileData={profile}
-                    followProfile={this.followProfile}
-                    unfollowProfile={this.unfollowProfile}
-                    followPending={followProfilePending}
-                    isFollowerPending={isFollowerPending}
-                    selectProfile={this.selectProfile}
-                    isFollowerAction={profileActions.isFollower}
-                  />;
-            })}
-          </div>
-          {loggedProfileData.get('moreFollowers') &&
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
-              <FlatButton
-                label={intl.formatMessage(generalMessages.showMore)}
-                onClick={this.showMoreFollowers}
-                style={{ margin: '10px' }}
-                primary
-              />
+        return (
+          <DataLoader
+            flag={fetchingFollowers}
+            timeout={200}
+            size={80}
+            style={{ paddingTop: '120px' }}
+          >
+            <div>
+              <div style={{ display: 'flex', flexWrap: 'wrap' }} >
+                {followers.map((follower, key) => {
+                    const profile = follower.profile;
+                    const followProfilePending = followPending && followPending.find(follow =>
+                        follow.akashaId === profile.akashaId);
+                    return profile &&
+                      <ProfileCard
+                        key={key}
+                        loggedProfileData={loggedProfileData}
+                        profileData={profile}
+                        followProfile={this.followProfile}
+                        unfollowProfile={this.unfollowProfile}
+                        followPending={followProfilePending}
+                        isFollowerPending={isFollowerPending}
+                        selectProfile={this.selectProfile}
+                        isFollowerAction={profileActions.isFollower}
+                      />;
+                })}
+              </div>
+              {loggedProfileData.get('moreFollowers') &&
+                <DataLoader flag={fetchingMoreFollowers} size={30}>
+                  <div style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+                    <div id="followers" ref={(el) => { this.trigger = el; }} style={{ height: 0 }} />
+                  </div>
+                </DataLoader>
+              }
             </div>
-          }
-        </div>);
+          </DataLoader>
+        );
     }
 
     renderFollowing () {
-        const { fetchingFollowing, profileActions, followPending, loggedProfileData,
+        const { fetchingFollowing, fetchingMoreFollowing, profileActions, followPending, loggedProfileData,
             isFollowerPending, intl } = this.props;
         const followings = loggedProfileData.get('following').toJS();
 
@@ -165,37 +201,43 @@ class PeopleContainer extends Component {
             return <div>No following</div>;
         }
 
-        return (<div>
-          <div style={{ display: 'flex', flexWrap: 'wrap' }} >
-            {followings.map((following, key) => {
-                const profile = following.profile;
-                const followProfilePending = followPending && followPending.find(follow =>
-                    follow.akashaId === profile.akashaId);
-                return profile &&
-                  <ProfileCard
-                    key={key}
-                    loggedProfileData={loggedProfileData}
-                    profileData={profile}
-                    followProfile={this.followProfile}
-                    unfollowProfile={this.unfollowProfile}
-                    followPending={followProfilePending}
-                    isFollowerPending={isFollowerPending}
-                    selectProfile={this.selectProfile}
-                    isFollowerAction={profileActions.isFollower}
-                  />;
-            })}
-          </div>
-          {loggedProfileData.get('moreFollowing') &&
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
-              <FlatButton
-                label={intl.formatMessage(generalMessages.showMore)}
-                onClick={this.showMoreFollowing}
-                style={{ margin: '10px' }}
-                primary
-              />
+        return (
+          <DataLoader
+            flag={fetchingFollowing}
+            timeout={200}
+            size={80}
+            style={{ paddingTop: '120px' }}
+          >
+            <div>
+              <div style={{ display: 'flex', flexWrap: 'wrap' }} >
+                {followings.map((following, key) => {
+                    const profile = following.profile;
+                    const followProfilePending = followPending && followPending.find(follow =>
+                        follow.akashaId === profile.akashaId);
+                    return profile &&
+                      <ProfileCard
+                        key={key}
+                        loggedProfileData={loggedProfileData}
+                        profileData={profile}
+                        followProfile={this.followProfile}
+                        unfollowProfile={this.unfollowProfile}
+                        followPending={followProfilePending}
+                        isFollowerPending={isFollowerPending}
+                        selectProfile={this.selectProfile}
+                        isFollowerAction={profileActions.isFollower}
+                      />;
+                })}
+              </div>
+              {loggedProfileData.get('moreFollowing') &&
+                <DataLoader flag={fetchingMoreFollowing} size={30}>
+                  <div style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+                    <div id="following" ref={(el) => { this.trigger = el; }} style={{ height: 0 }} />
+                  </div>
+                </DataLoader>
+              }
             </div>
-          }
-        </div>);
+          </DataLoader>
+        );
     }
 
     render () {
@@ -244,13 +286,14 @@ class PeopleContainer extends Component {
             <div
               style={{
                   position: 'absolute',
-                  top: '0px',
+                  top: '35px',
                   left: '100px',
-                  right: '100px',
-                  bottom: '45px',
+                  right: '30px',
+                  bottom: '35px',
                   overflowY: 'auto',
-                  padding: '30px 0'
+                  padding: '0'
               }}
+              ref={(el) => { this.container = el; }}
             >
               {this.state.activeTab === 'followers' && this.renderFollowers()}
               {this.state.activeTab === 'following' && this.renderFollowing()}
@@ -264,6 +307,8 @@ PeopleContainer.propTypes = {
     loggedProfileData: PropTypes.shape(),
     fetchingFollowers: PropTypes.bool,
     fetchingFollowing: PropTypes.bool,
+    fetchingMoreFollowers: PropTypes.bool,
+    fetchingMoreFollowing: PropTypes.bool,
     isFollowerPending: PropTypes.bool,
     followPending: PropTypes.shape(),
     profileActions: PropTypes.shape(),
@@ -283,6 +328,8 @@ function mapStateToProps (state, ownProps) {
             profile.get('profile') === state.profileState.getIn(['loggedProfile', 'profile'])),
         fetchingFollowers: state.profileState.getIn(['flags', 'fetchingFollowers']),
         fetchingFollowing: state.profileState.getIn(['flags', 'fetchingFollowing']),
+        fetchingMoreFollowers: state.profileState.getIn(['flags', 'fetchingMoreFollowers']),
+        fetchingMoreFollowing: state.profileState.getIn(['flags', 'fetchingMoreFollowing']),
         isFollowerPending: state.profileState.getIn(['flags', 'isFollowerPending']),
         followPending: state.profileState.getIn(['flags', 'followPending']),
         ...ownProps

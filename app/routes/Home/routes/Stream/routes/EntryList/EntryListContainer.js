@@ -7,7 +7,7 @@ function mapStateToProps (state) {
             .filter(entry => entry.get('type') === 'savedEntry');
     return {
         loggedProfileData: state.profileState.get('profiles').find(prf =>
-            prf.get('akashaId') === state.profileState.getIn(['loggedProfile', 'akashaId'])),
+            prf.get('profile') === state.profileState.getIn(['loggedProfile', 'profile'])),
         tagEntries: state.entryState.get('entries')
             .filter(entry => entry.get('type') === 'tagEntry')
             .map(entry => entry.get('content')),

@@ -102,7 +102,7 @@ function mapStateToProps (state) {
         claimPending: state.entryState.getIn(['flags', 'claimPending']),
         fetchingEntryBalance: state.entryState.getIn(['flags', 'fetchingEntryBalance']),
         loggedProfileData: state.profileState.get('profiles').find(prf =>
-            prf.get('akashaId') === state.profileState.getIn(['loggedProfile', 'akashaId'])),
+            prf.get('profile') === state.profileState.getIn(['loggedProfile', 'profile'])),
         savedEntriesIds: state.entryState.get('savedEntries').map(entry => entry.get('entryId')),
         selectedTag: state.tagState.get('selectedTag'),
         votePending: state.entryState.getIn(['flags', 'votePending'])
