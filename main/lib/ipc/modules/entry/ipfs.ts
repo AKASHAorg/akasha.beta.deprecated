@@ -1,4 +1,4 @@
-import { IpfsConnector, IpfsApiHelper } from '@akashaproject/ipfs-connector';
+import { IpfsConnector } from '@akashaproject/ipfs-connector';
 import * as Promise from 'bluebird';
 import { isEmpty } from 'ramda';
 import { entries } from '../models/records';
@@ -6,17 +6,20 @@ import { entries } from '../models/records';
 export const DRAFT_BLOCKS = 'blocks';
 export const ATOMIC_TYPE = 'atomic';
 export const IMAGE_TYPE = 'image';
+export const max_size = 200 * 1000;
+export const EXCERPT = 'excerpt';
+export const FEATURED_IMAGE = 'featuredImage';
+export const DRAFT_PART = 'draft-part';
 
 class IpfsEntry {
 
     id: string;
     draft: any;
     title: string;
-    excerpt: any;
     licence: string;
-    featuredImage: any;
     tags: any[];
     wordCount: number;
+    entryLinks: any[];
 
     /**
      *
@@ -26,6 +29,7 @@ class IpfsEntry {
      */
     create(content: any, tags: any[]) {
         const ipfsApiRequests = [];
+        this.entryLinks = [];
         this.draft = Object.assign({}, content.draft);
         content.draft = null;
         this.title = content.title;
@@ -35,30 +39,28 @@ class IpfsEntry {
         if (content.featuredImage) {
             ipfsApiRequests.push(
                 IpfsConnector.getInstance().api
-                    .constructObjLink(content.featuredImage, true)
-                    .then((obj) => this.featuredImage = obj));
-        } else {
-            this.featuredImage = { [IpfsApiHelper.LINK_SYMBOL]: '' };
+                    .add(content.featuredImage, true)
+                    .then((obj) => {
+                        this.entryLinks.push(Object.assign({}, obj, { name: FEATURED_IMAGE }));
+                    }));
         }
 
         ipfsApiRequests.push(
             IpfsConnector.getInstance().api
-                .constructObjLink(content.excerpt)
-                .then((obj) => this.excerpt = obj));
+                .add(content.excerpt)
+                .then((obj) => this.entryLinks.push(Object.assign({}, obj, { name: EXCERPT }))));
 
         return Promise.all(ipfsApiRequests)
             .then(() => this._uploadMediaDraft())
-            .then((draft) => {
+            .then((parts) => {
                 return IpfsConnector.getInstance().api
-                    .add({
-                        draft: draft,
-                        excerpt: this.excerpt,
-                        featuredImage: this.featuredImage,
+                    .createNode({
+                        draftParts: parts,
                         licence: this.licence,
                         tags: this.tags,
                         title: this.title,
                         wordCount: this.wordCount
-                    })
+                    }, this.entryLinks).then((node) => node.hash)
             });
     }
 
@@ -96,14 +98,41 @@ class IpfsEntry {
                         .add(element.data.files[imSize].src, true)
                         .then(
                             (obj) => {
-                                this.draft[DRAFT_BLOCKS][blockIndex[index]].data.files[imSize].src = obj;
+                                this.entryLinks.push(Object.assign({}, obj, { name: (imSize + index) }));
+                                this.draft[DRAFT_BLOCKS][blockIndex[index]].data.files[imSize].src = obj.hash;
                             }
                         )
                 );
             });
         });
         return Promise.all(uploads).then(() => {
-            return IpfsConnector.getInstance().api.constructObjLink(Buffer.from(JSON.stringify(this.draft)), true);
+            let start, end;
+            const slices = [];
+            const entryDraft = Buffer.from(JSON.stringify(this.draft));
+            const parts = Math.ceil(entryDraft.length / max_size);
+            for (let q = 0; q <= parts; q++) {
+                start = q * max_size;
+                end = start + max_size;
+
+                if (start > entryDraft.length) {
+                    break;
+                }
+
+                if (end > entryDraft.length) {
+                    end = entryDraft.length;
+                }
+                let sliceDraft = entryDraft.slice(start, end);
+                slices.push(
+                    IpfsConnector.getInstance().api
+                        .add(sliceDraft)
+                        .then(
+                            (obj) => {
+                                this.entryLinks.push(Object.assign({}, obj, { name: (DRAFT_PART + q) }));
+                            }
+                        )
+                );
+            }
+            return Promise.all(slices).then(() => parts);
         });
     }
 }
@@ -112,24 +141,28 @@ class IpfsEntry {
  * @param hash
  * @returns {any}
  */
-export function getShortContent(hash) {
+export const getShortContent = Promise.coroutine(function*(hash) {
     if (entries.getShort(hash)) {
         return Promise.resolve(entries.getShort(hash));
     }
-    return IpfsConnector.getInstance().api
-        .get(hash)
-        .then((data) => {
-            return IpfsConnector.getInstance()
-                .api
-                .resolve(data.excerpt[IpfsApiHelper.LINK_SYMBOL])
-                .then((excerpt) => {
-                    data.excerpt = excerpt;
-                    data.featuredImage = data.featuredImage[IpfsApiHelper.LINK_SYMBOL];
-                    entries.setShort(hash, data);
-                    return data;
-                });
-        })
-}
+    const response = {
+        [EXCERPT]: '',
+        [FEATURED_IMAGE]: ''
+    };
+    const root = yield IpfsConnector.getInstance().api.get(hash);
+    const extraData = yield IpfsConnector.getInstance().api.findLinks(hash, [EXCERPT, FEATURED_IMAGE]);
+    for (let i = 0; i < extraData.length; i++) {
+        if (extraData[i].name === FEATURED_IMAGE) {
+            response[FEATURED_IMAGE] = extraData[i].multihash;
+        }
+        if (extraData[i].name === EXCERPT) {
+            response[EXCERPT] = yield IpfsConnector.getInstance().api.get(extraData[i].multihash);
+        }
+    }
+    const data = Object.assign({}, root, response);
+    entries.setShort(hash, data);
+    return data;
+});
 
 
 /**
@@ -137,23 +170,34 @@ export function getShortContent(hash) {
  * @param hash
  * @returns {any}
  */
-export function getFullContent(hash) {
+export const getFullContent = Promise.coroutine(function*(hash) {
     if (entries.getFull(hash)) {
         return Promise.resolve(entries.getFull(hash));
     }
-    return IpfsConnector.getInstance().api
-        .get(hash)
-        .then((data) => {
-            return IpfsConnector.getInstance()
-                .api
-                .resolve(data.draft[IpfsApiHelper.LINK_SYMBOL])
-                .then((draft) => {
-                    data.draft = draft.toString();
-                    entries.setFull(hash, data);
-                    return data;
-                });
-        })
-}
+    let tmp;
+    const root = yield IpfsConnector.getInstance().api.get(hash);
+    const parts = [];
+    const draftParts = [];
+    for (let i = 0; i < root.draftParts; i++) {
+        parts.push(DRAFT_PART + i);
+    }
+    const extraData = yield IpfsConnector.getInstance().api.findLinks(hash, parts);
+    for (let y = 0; y < extraData.length; y++) {
+        tmp = yield IpfsConnector.getInstance().api.getObject(extraData[y].multihash, true);
+        draftParts.push(tmp);
+    }
+    const draftObj = draftParts.map((el) => {
+        let currentData = (el.toJSON()).data;
+        if(!Buffer.isBuffer(currentData)){
+            currentData = Buffer.from(currentData);
+        }
+        return currentData;
+    });
+    const draft = JSON.parse(JSON.stringify(Buffer.concat(draftObj)));
+    const data = Object.assign({}, root, { draft: draft });
+    entries.setFull(hash, data);
+    return data;
+});
 
 export default IpfsEntry;
 
