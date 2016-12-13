@@ -44,7 +44,7 @@ const castCommentToRecord = (commentObj) => {
     const { active, content, date, ipfsHash, parent, profile } = data;
     return new Comment({
         entryId: parseInt(entryId, 10),
-        commentId: parseInt(commentId, 10),
+        commentId: (commentId !== 'temp') ? parseInt(commentId, 10) : null,
         tempTx,
         data: new CommentData({
             active,
@@ -69,10 +69,11 @@ const commentsState = createReducer(initialState, {
             flags: state.get('flags').merge(flags)
         });
     },
-    [types.PUBLISH_COMMENT_OPTIMISTIC]: (state, { comment }) =>
-        state.merge({
-            entryComments: state.get('entryComments').unshift(castCommentToRecord(comment))
-        }),
+    [types.PUBLISH_COMMENT_OPTIMISTIC]: (state, { comment }) => {
+        const imComment = castCommentToRecord(comment);
+        const entryComments = state.get('entryComments').insert(0, imComment);
+        return state.set('entryComments', entryComments);
+    },
     [types.PUBLISH_COMMENT_SUCCESS]: (state, { data }) => {
         const index = state.get('entryComments').findIndex(comm =>
             comm.get('tempTx') && (comm.get('tempTx') === data.registerPending.tx.tx)

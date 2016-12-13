@@ -57,7 +57,7 @@ class SideBar extends Component {
         });
         return plugins;
     }
-    setBarPosition () {
+    setSidebarPosition () {
         const container = this.container;
         const element = this.getSelectedBlockElement();
         if (!element || !container) {
@@ -69,13 +69,11 @@ class SideBar extends Component {
         let top = element.getBoundingClientRect().top - containerTop;
         top = Math.floor(top) + 8;
 
-        if ((this.state.top !== top)) {
-            this.setState({
-                sidebarVisible: true,
-                top,
-                left
-            });
-        }
+        this.setState({
+            sidebarVisible: true,
+            top,
+            left
+        });
     }
     resetSidebarPosition = () => {
         this.setState({
@@ -88,7 +86,7 @@ class SideBar extends Component {
             clearImmediate(this.updatingPosition);
         }
         this.updatingPosition = null;
-        this.updatingPosition = setImmediate(() => this.setBarPosition());
+        this.updatingPosition = setImmediate(() => this.setSidebarPosition());
     }
     render () {
         const isVisible = this.state.sidebarVisible;

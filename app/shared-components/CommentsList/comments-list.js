@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import { injectIntl } from 'react-intl';
+import { entryMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
 import Comment from '../Comment/comment';
 
 class CommentsList extends Component {
@@ -6,7 +8,8 @@ class CommentsList extends Component {
         super(props);
         this.requestSent = false;
         this.state = {
-            loadedCommentsCount: this.props.comments.size
+            loadedCommentsCount: this.props.comments.size,
+            loadMoreReq: false
         };
     }
     componentDidMount () {
@@ -17,8 +20,15 @@ class CommentsList extends Component {
         this.setState({
             loadedCommentsCount: comments.size
         });
+        if (comments.last()) {
+            this.setState({
+                lastLoadedCommentId: comments.last().get('commentId')
+            });
+        }
         if (comments.size > this.props.comments.size) {
-            this.requestSent = false;
+            this.setState({
+                loadMoreReq: false
+            });
         }
     }
     componentWillUnmount () {
@@ -29,17 +39,19 @@ class CommentsList extends Component {
         this.context.router.push(`${loggedProfile.get('akashaId')}/${to}`);
     }
     _handleScroll = () => {
-        const { comments, fetchLimit, commentsCount, onLoadMoreRequest, entryId } = this.props;
+        const { fetchLimit, commentsCount, onLoadMoreRequest, entryId } = this.props;
+        const { lastLoadedCommentId } = this.state;
         const { scrollY, innerHeight } = window;
         const { scrollHeight } = document.body;
         const bottomOffset = 500;
         const shouldTriggerEvent = (scrollY + innerHeight + bottomOffset) >= scrollHeight;
-
-        if (shouldTriggerEvent && (commentsCount > fetchLimit) && !this.requestSent) {
-            const lastLoadedCommentId = comments.getIn([(this.state.loadedCommentsCount - 1), 'commentId']);
+        if (shouldTriggerEvent && (commentsCount > fetchLimit) && !this.state.loadMoreReq) {
             if (onLoadMoreRequest && lastLoadedCommentId > 1) {
-                onLoadMoreRequest(entryId, lastLoadedCommentId);
-                this.requestSent = true;
+                this.setState({
+                    loadMoreReq: true
+                }, () => {
+                    onLoadMoreRequest(entryId, lastLoadedCommentId);
+                });
             }
         }
     }
@@ -71,9 +83,8 @@ class CommentsList extends Component {
         );
     }
     render () {
-        const { comments, publishingComments, newlyCreatedComments } = this.props;
-        console.log(newlyCreatedComments, 'created comments');
-        console.log(publishingComments, 'publishingComments');
+        const { comments, publishingComments, newlyCreatedComments, intl } = this.props;
+        console.log(comments, 'new comments');
         return (
           <div>
             {publishingComments.map((comment, key) =>
@@ -85,6 +96,11 @@ class CommentsList extends Component {
             {comments.map((comment, key) =>
                 this.renderComment(comment, key)
             )}
+            {this.state.loadMoreReq &&
+              <div style={{ padding: '16px 0', textAlign: 'center' }}>
+                {`${intl.formatMessage(entryMessages.loadingMoreComments)}...`}
+              </div>
+            }
           </div>
         );
     }
@@ -98,9 +114,10 @@ CommentsList.propTypes = {
     onLoadMoreRequest: React.PropTypes.func,
     commentsCount: React.PropTypes.number,
     fetchLimit: React.PropTypes.number,
-    entryId: React.PropTypes.number
+    entryId: React.PropTypes.number,
+    intl: React.PropTypes.shape()
 };
 CommentsList.contextTypes = {
     router: React.PropTypes.shape()
 };
-export default CommentsList;
+export default injectIntl(CommentsList);

@@ -56,6 +56,10 @@ export default class BlockButton extends Component {
                 dialogOpen: false,
                 fileName: ''
             });
+            // verify if editor is in focus and blur;
+            if (document.activeElement.contentEditable === 'true') {
+                document.activeElement.blur();
+            }
         }).catch((reason) => {
             this.setState({
                 errors: reason.message

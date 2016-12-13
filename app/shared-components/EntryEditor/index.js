@@ -31,17 +31,35 @@ class EntryEditor extends Component {
             this.props.onAutosave();
         }
     };
-    _addImage = () => {};
     _handleTitleChange = (ev) => {
         this.setState({
             title: ev.target.value
         });
     };
-    // _handleKeyPress = (ev) => {
-    //     if (ev.key === 'Enter') {
-    //         this.editor.focus();
-    //     }
-    // }
+    _handleKeyPress = (ev) => {
+        if (ev.key === 'Enter') {
+            ev.preventDefault();
+            this._focusEditor();
+        }
+    }
+    _focusEditor = () => {
+        const editorContainerNode = this.editor.refs.editor;
+        const contentEditableNode = editorContainerNode.querySelector('[contenteditable=true]');
+        contentEditableNode.focus();
+    }
+    _blurEditor = () => {
+        const editorContainerNode = this.editor.refs.editor;
+        const contentEditableNode = editorContainerNode.querySelector('[contenteditable=true]');
+        contentEditableNode.blur();
+    }
+    _checkEditorFocus = () => {
+        if (this.editor) {
+            const editorContainerNode = this.editor.refs.editor;
+            const contentEditableNode = editorContainerNode.querySelector('[contenteditable=true]');
+            return contentEditableNode && contentEditableNode.isSameNode(document.activeElement);
+        }
+        return false;
+    }
     _renderSidebar = ({ plugins, editorState, onChange }) => {
         const { showSidebar, readOnly, showTerms } = this.props;
         if (showSidebar && !readOnly) {
@@ -51,6 +69,7 @@ class EntryEditor extends Component {
                 editorState={editorState}
                 onChange={onChange}
                 showTerms={showTerms}
+                editorHasFocus={this._checkEditorFocus()}
               />);
         }
         return null;
@@ -90,6 +109,7 @@ class EntryEditor extends Component {
                 plugins={[imagePlugin]}
                 placeholder={editorPlaceholder}
                 tabIndex="0"
+                hasFocus={this._checkEditorFocus()}
               />
             </div>
           </div>

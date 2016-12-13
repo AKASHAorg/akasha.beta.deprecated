@@ -228,7 +228,7 @@ class TagsField extends React.Component {
             fullWidth
             id="tags"
             multiLine
-            style={{ lineHeight: 'inherit', height: 'inherit', marginBottom: '16px' }}
+            style={{ lineHeight: 'inherit', height: 'inherit', marginBottom: '16px', cursor: 'text' }}
             errorText={this.state.error || errorText}
             underlineStyle={{ bottom: '-4px' }}
             underlineShow={(currentTags.length < 10)}
