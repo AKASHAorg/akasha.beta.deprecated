@@ -114,7 +114,7 @@ class EntryPageAction extends Component {
                       }
                       {entry.balance !== 'claimed' &&
                         <div style={{ fontSize: '16px', paddingRight: '5px' }}>
-                          {entry.balance} ETH
+                          {entry.balance} AETH
                         </div>
                       }
                     </div>

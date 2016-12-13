@@ -71,10 +71,9 @@ class EntryCard extends Component {
 
     handleUpvote = () => {
         const { entry, entryActions } = this.props;
-        const firstName = entry.getIn(['entryEth', 'publisher', 'firstName']);
-        const lastName = entry.getIn(['entryEth', 'publisher', 'lastName']);
+        const akashaId = entry.getIn(['entryEth', 'publisher', 'akashaId']);
         const payload = {
-            publisherName: `${firstName} ${lastName}`,
+            publisherAkashaId: akashaId,
             entryTitle: entry.getIn(['content', 'title']),
             entryId: entry.get('entryId'),
             active: entry.get('active')
@@ -84,10 +83,9 @@ class EntryCard extends Component {
 
     handleDownvote = () => {
         const { entry, entryActions } = this.props;
-        const firstName = entry.getIn(['entryEth', 'publisher', 'firstName']);
-        const lastName = entry.getIn(['entryEth', 'publisher', 'lastName']);
+        const akashaId = entry.getIn(['entryEth', 'publisher', 'akashaId']);
         const payload = {
-            publisherName: `${firstName} ${lastName}`,
+            publisherAkashaId: akashaId,
             entryTitle: entry.getIn(['content', 'title']),
             entryId: entry.get('entryId')
         };
@@ -375,7 +373,7 @@ class EntryCard extends Component {
                       }
                         {entry.get('balance') !== 'claimed' &&
                         <div style={{ fontSize: '16px', paddingRight: '5px' }}>
-                          {entry.get('balance')} ETH
+                          {entry.get('balance')} AETH
                         </div>
                       }
                       </div>
