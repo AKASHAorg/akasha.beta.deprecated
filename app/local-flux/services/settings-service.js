@@ -29,6 +29,24 @@ class SettingsService extends BaseService {
                 onError(reason, options.table);
             });
     }
+
+    saveLastBlockNr = ({ akashaId, blockNr }) => {
+        settingsDB.user.where('akashaId').equals(akashaId).toArray()
+            .then((data) => {
+                const result = data[0] || {};
+                result.lastBlockNr = blockNr;
+                settingsDB.user.put({ akashaId, ...result });
+            })
+            .catch(reason => null);
+    };
+
+    getUserSettings = ({ akashaId, onSuccess, onError }) => {
+        settingsDB.user.where('akashaId').equals(akashaId).toArray()
+            .then(data => {
+                onSuccess(data[0]);
+            })
+            .catch(reason => onError(reason));
+    };
 }
 
 export { SettingsService };

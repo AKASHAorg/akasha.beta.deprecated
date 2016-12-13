@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { AppActions, DraftActions, ProfileActions, EntryActions,
+import { AppActions, DraftActions, ProfileActions, SettingsActions, EntryActions,
     TransactionActions, TagActions, EProcActions, NotificationsActions } from 'local-flux';
 import { DataLoader, Sidebar } from 'shared-components';
 import '../../styles/core.scss';
@@ -39,19 +39,10 @@ class HomeContainer extends React.Component {
         profileActions.getLoggedProfile();
     }
     componentWillReceiveProps (nextProps) {
-        const { profileActions, entryActions, draftActions, tagActions, transactionActions,
-            notificationsActions } = this.props;
-        const { loggedProfile, fetchingLoggedProfile, selectedTag, savingTag, params } = nextProps;
-
-        // action to modify status of a draft to stop publishing it :)
-        // draftActions.updateDraft({
-        //     id: 2,
-        //     status: {
-        //         currentAction: null,
-        //         publishing: false,
-        //         publishConfirmed: false
-        //     }
-        // });
+        const { profileActions, settingsActions, entryActions, draftActions, tagActions,
+            transactionActions, notificationsActions } = this.props;
+        const { loggedProfile, fetchingLoggedProfile, selectedTag, savingTag, params,
+            userSettings } = nextProps;
 
         if (!loggedProfile.get('account') && !fetchingLoggedProfile) {
             this.context.router.push('/authenticate/');
@@ -62,25 +53,32 @@ class HomeContainer extends React.Component {
             transactionActions.getMinedTransactions();
             transactionActions.getPendingTransactions();
             draftActions.getDraftsCount(loggedProfile.get('profile'));
-            if (!loggedProfile.get('akashaId')) {
-                console.error('logged profile does not have akashaId');
-            }
             entryActions.getSavedEntries(loggedProfile.get('akashaId'));
             tagActions.getSelectedTag(loggedProfile.get('akashaId'));
-            // will be modified
+            settingsActions.getUserSettings(loggedProfile.get('akashaId'));
+        }
+        if (!userSettings && this.props.userSettings) {
             notificationsActions.setFilter([]);
+        } else if (userSettings && userSettings.lastBlockNr !== this.props.userSettings.lastBlockNr) {
+            notificationsActions.setFilter([], userSettings.lastBlockNr);
         }
         if (this.dataLoaded && selectedTag && !savingTag && this.props.savingTag
                 && params.filter !== 'tag') {
             this.context.router.push(`/${params.akashaId}/explore/tag`);
         }
+        if (nextProps.blockNr !== this.props.blockNr) {
+            settingsActions.saveLastBlockNr(loggedProfile.get('akashaId'), nextProps.blockNr);
+        }
     }
     componentWillUnmount () {
-        const { appActions, draftActions, profileActions, tagActions } = this.props;
+        const { appActions, draftActions, notificationsActions, profileActions, settingsActions,
+            tagActions } = this.props;
         appActions.hidePanel();
         tagActions.clearSelectedTag();
         profileActions.clearLocalProfiles();
         draftActions.clearDraftState();
+        settingsActions.clearUserSettings();
+        notificationsActions.clearNotifications();
         clearInterval(this.interval);
     }
     _getLoadingMessage = () => {
@@ -158,6 +156,7 @@ class HomeContainer extends React.Component {
 
 HomeContainer.propTypes = {
     appActions: PropTypes.shape(),
+    blockNr: PropTypes.number,
     entryActions: PropTypes.shape(),
     eProcActions: PropTypes.shape(),
     profileActions: PropTypes.shape(),
@@ -177,7 +176,8 @@ HomeContainer.propTypes = {
     notificationsActions: PropTypes.shape(),
     notificationsCount: PropTypes.number,
     hasFeed: PropTypes.bool,
-    selectedTag: PropTypes.string
+    selectedTag: PropTypes.string,
+    userSettings: PropTypes.shape()
 };
 
 HomeContainer.contextTypes = {
@@ -186,6 +186,7 @@ HomeContainer.contextTypes = {
 /* eslint-disable no-unused-vars */
 function mapStateToProps (state, ownProps) {
     return {
+        blockNr: state.externalProcState.getIn(['gethStatus', 'blockNr']),
         fetchingLoggedProfile: state.profileState.getIn(['flags', 'fetchingLoggedProfile']),
         fetchingProfileData: state.profileState.getIn(['flags', 'fetchingProfileData']),
         fetchingDraftsCount: state.draftState.getIn(['flags', 'fetchingDraftsCount']),
@@ -201,7 +202,8 @@ function mapStateToProps (state, ownProps) {
         notificationsCount: state.notificationsState.get('youNrFeed'),
         hasFeed: state.notificationsState.get('hasFeed'),
         selectedTag: state.tagState.get('selectedTag'),
-        savingTag: state.tagState.getIn(['flags', 'savingTag'])
+        savingTag: state.tagState.getIn(['flags', 'savingTag']),
+        userSettings: state.settingsState.get('userSettings')
     };
 }
 
@@ -213,6 +215,7 @@ function mapDispatchToProps (dispatch) {
         eProcActions: new EProcActions(dispatch),
         notificationsActions: new NotificationsActions(dispatch),
         profileActions: new ProfileActions(dispatch),
+        settingsActions: new SettingsActions(dispatch),
         tagActions: new TagActions(dispatch),
         transactionActions: new TransactionActions(dispatch)
     };
