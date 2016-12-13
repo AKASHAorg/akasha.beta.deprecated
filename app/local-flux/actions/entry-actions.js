@@ -197,18 +197,26 @@ class EntryActions {
         });
 
     entryTagIterator = (tagName, start, limit) => {
-        this.dispatch(entryActionCreators.entryTagIterator({ fetchingTagEntries: true }));
-        this.entryService.entryTagIterator({
-            tagName,
-            start,
-            limit,
-            onSuccess: data => this.dispatch(entryActionCreators.entryTagIteratorSuccess(data, {
-                fetchingTagEntries: false
-            })),
-            onError: error => this.dispatch(entryActionCreators.entryTagIteratorError(error, {
-                fetchingTagEntries: false
-            }))
-        });
+        this.dispatch((dispatch, getState) => {
+            const selectedTag = getState().tagState.get('selectedTag');
+            this.dispatch(entryActionCreators.entryTagIterator({ fetchingTagEntries: true }));
+            this.entryService.entryTagIterator({
+                tagName,
+                start,
+                limit,
+                onSuccess: data => {
+                    if (selectedTag === data.tagName) {
+                        dispatch(entryActionCreators.entryTagIteratorSuccess(data, {
+                            fetchingTagEntries: false
+                        }));
+                    }
+                },
+                onError: error => dispatch(entryActionCreators.entryTagIteratorError(error, {
+                    fetchingTagEntries: false
+                }))
+            });
+        })
+
     };
 
     moreEntryTagIterator = (tagName, start, limit) => {

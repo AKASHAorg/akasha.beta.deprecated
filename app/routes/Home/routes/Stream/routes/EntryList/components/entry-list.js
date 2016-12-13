@@ -46,8 +46,8 @@ class EntryList extends Component {
 
     render () {
         const { loggedProfileData, selectedTag, tagEntries, savedEntries, moreTagEntries,
-            moreSavedEntries, tagEntriesCount, entriesStream, subscribePending, params, blockNr,
-            votePending, entryActions, savedEntriesIds, fetchingTagEntries, fetchingMoreTagEntries,
+            moreSavedEntries, tagEntriesCount, entriesStream, subscribePending, params,
+            entryActions, fetchingTagEntries, fetchingMoreTagEntries, registerPending,
             fetchingSavedEntriesList, fetchingMoreSavedEntriesList, getTriggerRef, tagActions } = this.props;
         const { palette } = this.context.muiTheme;
         const entries = params.filter === 'tag' ? tagEntries : savedEntries;
@@ -55,6 +55,8 @@ class EntryList extends Component {
         const subscriptions = parseInt(loggedProfileData.get('subscriptionsCount'), 10) > 0 ?
             entriesStream.get('tags') :
             null;
+        const registerPendingFlag = registerPending && registerPending.find(tag =>
+            tag.tagName === selectedTag);
         const subscribePendingFlag = subscribePending && subscribePending.find(subs =>
             subs.tagName === selectedTag);
         const fetchingEntries = params.filter === 'tag' ? fetchingTagEntries : fetchingSavedEntriesList;
@@ -76,6 +78,7 @@ class EntryList extends Component {
                 subscriptions={subscriptions}
                 subscribeTag={this.subscribeTag}
                 unsubscribeTag={this.unsubscribeTag}
+                registerPending={registerPendingFlag}
                 subscribePending={subscribePendingFlag}
                 selectTag={tagActions.saveTag}
                 publishTag={tagActions.addRegisterTagAction}
@@ -100,27 +103,25 @@ class EntryList extends Component {
 }
 
 EntryList.propTypes = {
-    loggedProfileData: PropTypes.shape(),
-    tagEntries: PropTypes.shape(),
-    savedEntries: PropTypes.shape(),
-    savedEntriesIds: PropTypes.shape(),
-    moreTagEntries: PropTypes.bool,
-    moreSavedEntries: PropTypes.bool,
-    entriesStream: PropTypes.shape(),
-    selectedTag: PropTypes.string,
-    subscribePending: PropTypes.shape(),
     appActions: PropTypes.shape(),
+    entriesStream: PropTypes.shape(),
     entryActions: PropTypes.shape(),
-    tagActions: PropTypes.shape(),
-    tagEntriesCount: PropTypes.shape(),
-    blockNr: PropTypes.number,
-    votePending: PropTypes.shape(),
     fetchingTagEntries: PropTypes.bool,
     fetchingMoreTagEntries: PropTypes.bool,
     fetchingSavedEntriesList: PropTypes.bool,
     fetchingMoreSavedEntriesList: PropTypes.bool,
     getTriggerRef: PropTypes.func,
-    params: PropTypes.shape()
+    loggedProfileData: PropTypes.shape(),
+    moreSavedEntries: PropTypes.bool,
+    moreTagEntries: PropTypes.bool,
+    params: PropTypes.shape(),
+    registerPending: PropTypes.shape(),
+    savedEntries: PropTypes.shape(),
+    selectedTag: PropTypes.string,
+    subscribePending: PropTypes.shape(),
+    tagActions: PropTypes.shape(),
+    tagEntries: PropTypes.shape(),
+    tagEntriesCount: PropTypes.shape(),
 };
 EntryList.contextTypes = {
     muiTheme: PropTypes.shape(),

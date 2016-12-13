@@ -103,23 +103,25 @@ export function getTagsError (error) {
     };
 }
 
-export function registerTag () {
+export function registerTag (flags) {
     return {
-        type: types.CREATE_TAG
+        type: types.REGISTER_TAG,
+        flags
     };
 }
 
-export function registerTagSuccess (data) {
+export function registerTagSuccess (flags) {
     return {
-        type: types.CREATE_TAG_SUCCESS,
-        data
+        type: types.REGISTER_TAG_SUCCESS,
+        flags
     };
 }
 
-export function registerTagError (error) {
+export function registerTagError (error, flags) {
     return {
-        type: types.CREATE_TAG_ERROR,
-        error
+        type: types.REGISTER_TAG_ERROR,
+        error,
+        flags
     };
 }
 
