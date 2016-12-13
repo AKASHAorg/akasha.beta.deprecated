@@ -467,8 +467,8 @@ class PublishPanel extends React.Component {
                 <div className="col-xs-12 field" style={{ marginBottom: 24 }}>
                   <small>
                     By proceeding to publish this entry, you agree with the
-                    <b> 0.005 ETH</b> fee which will be deducted from your
-                    <b> 0.02 ETH</b> balance.
+                    <b> 0.005 AETH</b> fee which will be deducted from your
+                    <b> 0.02 AETH</b> balance.
                   </small>
                 </div>
               </div>

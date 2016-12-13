@@ -118,13 +118,18 @@ class WeightConfirmDialog extends React.PureComponent {
         const payload = resource ?
             resource.get('payload').toJS() :
             {};
-        const { entryTitle, publisherName } = payload;
+        const { entryTitle, publisherAkashaId } = payload;
         const voteWeightCost = voteCost.get(Math.abs(voteWeight).toString());
         const shortBalance = balance ? balance.slice(0, 6) : '';
         const weightErrorText = voteWeightError === WEIGHT_LIMIT_ERROR ?
             intl.formatMessage(formMessages.voteWeightError, { minWeight, maxWeight }) :
             intl.formatMessage(formMessages.notEnoughFunds);
-
+        const voteFundsDestination = resource && resource.type === 'upvote' ?
+            'Author' :
+            'Faucet';
+        const title = resource && resource.type === 'upvote' ?
+            intl.formatMessage(confirmMessages.upvoteTitle) :
+            intl.formatMessage(confirmMessages.downvoteTitle);
         const dialogActions = [
           <FlatButton // eslint-disable-line indent
             label={intl.formatMessage(generalMessages.cancel)}
@@ -143,15 +148,13 @@ class WeightConfirmDialog extends React.PureComponent {
             contentStyle={{ width: 420, maxWidth: 'none', height: '415px' }}
             bodyStyle={{ paddingBottom: 0 }}
             modal
-            title={
-              <div style={{ fontSize: 24 }}>{intl.formatMessage(confirmMessages.voteTitle)}</div>
-            }
+            title={<div style={{ fontSize: 24 }}>{title}</div>}
             open={isOpen}
             actions={dialogActions}
           >
             <div style={{ color: palette.textColor }}>
               <div style={{ fontSize: '18px' }}>{entryTitle}</div>
-              <small>by {publisherName}</small>
+              <small>by {publisherAkashaId}</small>
               <div style={{ position: 'relative' }}>
                 <div style={{ position: 'absolute', top: '39px' }}>
                   <SvgIcon viewBox="0 0 20 20" style={{ marginRight: '10px' }}>
@@ -172,13 +175,24 @@ class WeightConfirmDialog extends React.PureComponent {
                   min={minWeight}
                   max={maxWeight}
                 />
+                <IconButton
+                  style={{ position: 'relative', top: '5px' }}
+                  tooltip={
+                    <div style={{ width: '200px', whiteSpace: 'normal' }}>
+                      {intl.formatMessage(confirmMessages.voteWeightDisclaimer)}
+                    </div>
+                  }
+                  tooltipPosition="top-right"
+                >
+                  <InfoIcon />
+                </IconButton>
               </div>
               {resource && !voteWeightError &&
                 <div>
                   <small>
                     {resource.type === 'upvote' ?
                         intl.formatMessage(confirmMessages.upvoteWeightDisclaimer, {
-                            publisherName, eth: voteWeightCost.slice(0, -1), voteWeight
+                            publisherAkashaId, eth: voteWeightCost.slice(0, -1), voteWeight
                         }) :
                         intl.formatMessage(confirmMessages.downvoteWeightDisclaimer, {
                             eth: voteWeightCost.slice(0, -1), voteWeight
@@ -204,7 +218,12 @@ class WeightConfirmDialog extends React.PureComponent {
                 />
                 <IconButton
                   style={{ marginTop: 24, flex: '0 0 auto' }}
-                  title={intl.formatMessage(confirmMessages.gasInputDisclaimer)}
+                  tooltip={
+                    <div style={{ width: '200px', whiteSpace: 'normal' }}>
+                      {intl.formatMessage(confirmMessages.gasInputDisclaimer)}
+                    </div>
+                  }
+                  tooltipPosition="top-left"
                 >
                   <InfoIcon />
                 </IconButton>
@@ -212,9 +231,28 @@ class WeightConfirmDialog extends React.PureComponent {
               <div style={{ paddingTop: '10px' }}>
                 <small>
                   {!voteWeightError &&
-                      intl.formatMessage(confirmMessages.voteFeeAgreement, {
-                          fee, total: voteWeightCost, balance: shortBalance
-                      })
+                    <div style={{ display: 'flex' }}>
+                      <span style={{ flex: '1 1 auto' }}>
+                        By proceeding to vote this entry, you agree to pay {voteWeightCost} AETH
+                        excluding gas cost which will be deducted from your {shortBalance} AETH
+                        balance.
+                      </span>
+                      <IconButton
+                        tooltip={
+                          <div style={{ textAlign: 'left' }}>
+                            <div>
+                              {voteFundsDestination}: {voteWeightCost && voteWeightCost.slice(0, -1)} AETH
+                            </div>
+                            <div>Fee: {fee} AETH</div>
+                            <div>Total: {voteWeightCost} AETH</div>
+                          </div>
+                        }
+                        tooltipPosition="top-left"
+                        style={{ flex: '0 0 auto' }}
+                      >
+                        <InfoIcon />
+                      </IconButton>
+                    </div>
                   }
                 </small>
               </div>

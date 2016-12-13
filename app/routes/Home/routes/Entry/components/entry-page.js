@@ -79,10 +79,9 @@ class EntryPage extends Component {
 
     handleUpvote = () => {
         const { entry, entryActions } = this.props;
-        const firstName = entry.entryEth.publisher.firstName;
-        const lastName = entry.entryEth.publisher.lastName;
+        const akashaId = entry.entryEth.publisher.akashaId;
         const payload = {
-            publisherName: `${firstName} ${lastName}`,
+            publisherAkashaId: akashaId,
             entryTitle: entry.content.title,
             entryId: entry.entryId,
             active: entry.active
@@ -92,10 +91,9 @@ class EntryPage extends Component {
 
     handleDownvote = () => {
         const { entry, entryActions } = this.props;
-        const firstName = entry.entryEth.publisher.firstName;
-        const lastName = entry.entryEth.publisher.lastName;
+        const akashaId = entry.entryEth.publisher.akashaId;
         const payload = {
-            publisherName: `${firstName} ${lastName}`,
+            publisherAkashaId: akashaId,
             entryTitle: entry.content.title,
             entryId: entry.entryId
         };

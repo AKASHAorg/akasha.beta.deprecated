@@ -89,24 +89,34 @@ const confirmMessages = defineMessages({
     upvoteWeightDisclaimer: {
         id: 'app.confirm.upvoteWeightDisclaimer',
         description: 'disclaimer for choosing an entry upvote weight',
-        defaultMessage: '{publisherName} will receive {eth} ETH from your +{voteWeight} vote'
+        defaultMessage: '{publisherAkashaId} will receive {eth} AETH from your +{voteWeight} vote'
     },
     downvoteWeightDisclaimer: {
         id: 'app.confirm.downvoteWeightDisclaimer',
         description: 'disclaimer for choosing an entry downvote weight',
-        defaultMessage: '{eth} ETH will go to the faucet from your {voteWeight} vote'
+        defaultMessage: '{eth} AETH will go to the faucet from your {voteWeight} vote'
+    },
+    voteWeightDisclaimer: {
+        id: 'app.confirm.voteWeightDisclaimer',
+        description: 'disclaimer for vote weight input field',
+        defaultMessage: 'Bigger weight means bigger impact, but also more costs for you.'
     },
     voteFeeAgreement: {
         id: 'app.confirm.feeAgreement',
         description: 'disclaimer for the cost of the vote',
-        defaultMessage: `By proceeding to vote this entry, you agree with the {fee} ETH fee,
-                meaning a total of {total} ETH excluding gas cost
-                which will be deducted from your {balance} ETH balance.`
+        defaultMessage: `By proceeding to vote this entry, you agree with the {fee} AETH fee,
+                meaning a total of {total} AETH excluding gas cost
+                which will be deducted from your {balance} AETH balance.`
     },
-    voteTitle: {
-        id: 'app.confirm.voteTitle',
+    upvoteTitle: {
+        id: 'app.confirm.upvoteTitle',
         description: 'confirm dialog title for voting an entry',
-        defaultMessage: 'Vote'
+        defaultMessage: 'Upvote'
+    },
+    downvoteTitle: {
+        id: 'app.confirm.downvoteTitle',
+        description: 'confirm dialog title for voting an entry',
+        defaultMessage: 'Downvote'
     },
     publishCommentTitle: {
         id: 'app.confirm.publishCommentTitle',
