@@ -33,7 +33,8 @@ const IpfsSettings = Record({
 });
 
 const UserSettings = Record({
-
+    akashaId: null,
+    lastBlockNr: null
 });
 
 const GeneralSettings = Record({
@@ -177,6 +178,21 @@ const settingsState = createReducer(initialState, {
         }
         return state;
     },
+
+    [types.GET_USER_SETTINGS_SUCCESS]: (state, { data }) =>
+        state.merge({
+            userSettings: data ? new UserSettings(data) : null
+        }),
+
+    [types.GET_USER_SETTINGS_ERROR]: (state, { error }) =>
+        state.merge({
+            errors: state.get('errors').push(new ErrorRecord(error)),
+        }),
+
+    [types.CLEAR_USER_SETTINGS]: state =>
+        state.merge({
+            userSettings: new UserSettings()
+        }),
 
     [types.CHANGE_THEME]: (state, action) => state.updateIn(['general', 'theme'], () => action.theme),
 

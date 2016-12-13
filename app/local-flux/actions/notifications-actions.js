@@ -74,6 +74,10 @@ class NotificationsActions {
             }
         });
     }
+
+    clearNotifications () {
+        this.dispatch(action.clearNotifications());
+    }
 }
 
 export { NotificationsActions };

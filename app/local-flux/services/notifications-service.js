@@ -14,6 +14,7 @@ class NotificationsService extends BaseService {
         },
         onSuccess
     }) {
+        console.log('SERVICE: SET FILTER', blockNr);
         this.openChannel({
             clientManager: this.clientManager,
             serverChannel: Channel.server.notifications.setFilter,

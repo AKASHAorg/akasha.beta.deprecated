@@ -119,3 +119,23 @@ export function changeTheme (theme) {
         theme
     };
 }
+
+export function getUserSettingsSuccess (data) {
+    return {
+        type: types.GET_USER_SETTINGS_SUCCESS,
+        data
+    };
+}
+
+export function getUserSettingsError (error) {
+    return {
+        type: types.GET_USER_SETTINGS_ERROR,
+        error
+    };
+}
+
+export function clearUserSettings () {
+    return {
+        type: types.CLEAR_USER_SETTINGS
+    };
+}

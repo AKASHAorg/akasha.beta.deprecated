@@ -72,9 +72,26 @@ class SettingsActions {
     };
     // save user level settings
     saveUserSettings = () => {};
-    getUserSettings = () => {};
 
     changeTheme = theme =>
         this.dispatch(settingsActionCreators.changeTheme(theme));
+
+    saveLastBlockNr = (akashaId, blockNr) => {
+        if (akashaId && blockNr) {
+            this.settingsService.saveLastBlockNr({
+                akashaId,
+                blockNr
+            });
+        }
+    }
+
+    getUserSettings = (akashaId) =>
+        this.settingsService.getUserSettings({
+            akashaId,
+            onSuccess: (data) => this.dispatch(settingsActionCreators.getUserSettingsSuccess(data)),
+            onError: (error) => this.dispatch(settingsActionCreators.getUserSettingsError(error))
+        });
+
+    clearUserSettings = () => this.dispatch(settingsActionCreators.clearUserSettings());
 }
 export { SettingsActions };
