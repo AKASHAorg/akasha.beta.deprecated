@@ -247,7 +247,9 @@ class EntryPage extends Component {
                             loggedProfile={loggedProfile}
                             newlyCreatedComments={
                                 comments.filter(comm =>
-                                    (!comm.get('tempTx') && !comm.get('commentId')))
+                                    (!comm.get('tempTx') && !comm.getIn(['data', 'ipfsHash']) &&
+                                        !comm.get('commentId'))
+                                )
                             }
                             publishingComments={
                                 comments.filter(comm => comm.get('tempTx'))
@@ -255,6 +257,7 @@ class EntryPage extends Component {
                             comments={
                                 comments.filter(comm =>
                                   (comm.getIn(['data', 'active']) && !comm.get('tempTx') &&
+                                    comm.get('commentId') && comm.getIn(['data', 'ipfsHash']) &&
                                     (comm.get('entryId') === entry.get('entryId')))
                                 )
                             }

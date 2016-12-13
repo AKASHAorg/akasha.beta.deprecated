@@ -125,9 +125,15 @@ class AddEntryPage extends Component {
         }
         return this._findCurrentDraft(drafts).get('content');
     }
+    _handleDraftDelete = () => {
+        const { params, draftActions } = this.props;
+        const { draftId } = params;
+        draftActions.deleteDraft(parseInt(draftId, 10));
+        this.context.router.push(`/${params.akashaId}/explore/tag`);
+    }
     render () {
         const { appActions, drafts, savingDraft } = this.props;
-        const { fetchingDraft, draftMissing } = this.state;
+        const { fetchingDraft, draftMissing, isNewDraft } = this.state;
         const currentDraft = this._findCurrentDraft(drafts);
         const initialContent = this._getInitialContent();
         const draftTitle = currentDraft ? currentDraft.title : '';
@@ -171,9 +177,7 @@ class AddEntryPage extends Component {
                   targetOrigin={{ horizontal: 'left', vertical: 'top' }}
                   style={{ margin: '4px 0' }}
                 >
-                  <MenuItem primaryText="Create public link" />
-                  <MenuItem primaryText="Word count" />
-                  <MenuItem primaryText="Delete draft" />
+                  <MenuItem primaryText="Delete draft" disabled={isNewDraft} onClick={this._handleDraftDelete} />
                 </IconMenu>
               </ToolbarGroup>
             </Toolbar>

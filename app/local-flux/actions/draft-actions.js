@@ -40,7 +40,6 @@ class DraftActions {
     updateDraft = changes =>
         this.dispatch((dispatch, getState) => {
             const flags = getState().draftState.get('flags');
-            console.log('draft changes to be saved', changes);
             if (!flags.get('savingDraft')) {
                 dispatch(draftActionCreators.startSavingDraft({
                     savingDraft: true

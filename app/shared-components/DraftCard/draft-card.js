@@ -16,18 +16,19 @@ class DraftCard extends Component {
               subtitle={`${lastUpdated} - ${wordCount} words`}
               titleStyle={{ fontSize: '16px', fontWeight: '600' }}
               subtitleStyle={{ fontSize: '12px' }}
-              style={{ paddingBottom: '4px' }}
+              style={{ paddingBottom: '4px', cursor: 'default', userSelect: 'none' }}
             />
             <CardTitle
               onClick={onTitleClick}
-              title={title}
+              title={title || 'No Title'}
               style={{
                   paddingTop: '4px',
                   paddingBottom: '4px',
                   fontWeight: '600',
                   wordWrap: 'break-word',
                   maxHeight: '80px',
-                  overflow: 'hidden'
+                  overflow: 'hidden',
+                  cursor: 'pointer'
               }}
             />
             {tags &&
@@ -43,8 +44,16 @@ class DraftCard extends Component {
                 </div>
               </CardText>
             }
-            <CardText style={{ paddingTop: '4px', paddingBottom: '4px', wordWrap: 'break-word' }}>
-              {excerpt}
+            <CardText
+              style={{
+                  paddingTop: '4px',
+                  paddingBottom: '4px',
+                  wordWrap: 'break-word',
+                  cursor: 'pointer'
+              }}
+              onClick={onTitleClick}
+            >
+              {(wordCount > 0) ? excerpt : 'No content yet..'}
             </CardText>
           </Card>
         );

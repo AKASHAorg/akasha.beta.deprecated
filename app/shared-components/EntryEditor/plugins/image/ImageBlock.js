@@ -24,7 +24,6 @@ class ImageBlock extends Component {
     constructor (props) {
         super(props);
         const { files, media, caption, licence, termsAccepted } = this.props.data;
-        console.log(licence, 'a licence');
         this.state = {
             previewImage: media,
             caption,
@@ -134,7 +133,6 @@ class ImageBlock extends Component {
         const { isCardEnabled, imageSrc, previewImage } = this.state;
         const { files, caption } = this.props.data;
         const baseNodeStyle = this._getBaseNodeStyle();
-        console.log(this.props, 'props');
         return (
           <div
             ref={(baseNode) => { this.baseNodeRef = baseNode; }}

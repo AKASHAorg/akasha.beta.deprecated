@@ -60,6 +60,11 @@ const entryMessages = defineMessages({
         id: 'app.entry.writeComment',
         description: 'placeholder for writing a comment',
         defaultMessage: 'Write a comment'
+    },
+    loadingMoreComments: {
+        id: 'app.entry.loadingMoreComments',
+        description: 'message for loading more comments',
+        defaultMessage: 'Loading more comments'
     }
 });
 export { entryMessages };
