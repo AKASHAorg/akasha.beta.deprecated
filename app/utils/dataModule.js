@@ -95,3 +95,19 @@ export const getWordCount = (content) => {
     const matchWords = plainText.match(/[^~`!¡@#$%^&*()_\-+={}\[\]|\\:;"'<,>.?¿\/\s]+/g);
     return matchWords ? matchWords.length : 0;
 };
+
+export const validateTag = (tagName) => {
+    const tag = tagName ? tagName.trim().toLowerCase() : '';
+    const ALPHANUMERIC_REGEX = /^(?:[a-zA-Z0-9]+(?:(-|_)(?!$))?)+$/;
+    let error = null;
+    if (tag.length > 3 && tag.length <= 24) {
+        if (!ALPHANUMERIC_REGEX.test(tag)) {
+            error = 'alphanumericError';
+        }
+    } else if (tag.length > 24) {
+        error = 'tooLongError';
+    } else {
+        error = 'tooShortError';
+    }
+    return error;
+}

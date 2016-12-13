@@ -15,44 +15,17 @@ const initialState = fromJS({
     pendingTags: new List(),
     selectedTag: null,
     errors: new List(),
-    flags: new Map(),
+    flags: new Map({
+        registerPending: new List(),
+        subscribePending: new List()
+    }),
     newestTags: new List(),
     moreNewTags: false,
     isLoading: false
 });
 
-const subscribeFlagHandler = (state, { flags }) => {
+const subscribeFlagHandler = (state, { error, flags }) => {
     const subscribePending = state.getIn(['flags', 'subscribePending']);
-    if (subscribePending === undefined) {
-        return state.merge({
-            flags: state.get('flags')
-                .set('subscribePending', new List([flags.subscribePending]))
-        });
-    }
-    const index = subscribePending.findIndex(flag =>
-        flag.tagName === flags.subscribePending.tagName);
-    if (index === -1) {
-        return state.merge({
-            flags: state.get('flags').merge({
-                subscribePending: state.getIn(['flags', 'subscribePending'])
-                    .push(flags.subscribePending)
-            })
-        });
-    }
-    return state.merge({
-        flags: state.get('flags').mergeIn(['subscribePending', index], flags.subscribePending)
-    });
-};
-
-const subscribeErrorFlagHandler = (state, { error, flags }) => {
-    const subscribePending = state.getIn(['flags', 'subscribePending']);
-    if (subscribePending === undefined) {
-        return state.merge({
-            flags: state.get('flags')
-                .set('subscribePending', new List([flags.subscribePending])),
-            errors: state.get('errors').push(new ErrorRecord(error))
-        });
-    }
     const index = subscribePending.findIndex(flag =>
         flag.tagName === flags.subscribePending.tagName);
     if (index === -1) {
@@ -61,12 +34,42 @@ const subscribeErrorFlagHandler = (state, { error, flags }) => {
                 subscribePending: state.getIn(['flags', 'subscribePending'])
                     .push(flags.subscribePending)
             }),
-            errors: state.get('errors').push(new ErrorRecord(error))
+            errors: error ?
+                state.get('errors').push(new ErrorRecord(error)) :
+                state.get('errors')
         });
     }
     return state.merge({
         flags: state.get('flags').mergeIn(['subscribePending', index], flags.subscribePending),
-        errors: state.get('errors').push(new ErrorRecord(error))
+        errors: error ?
+            state.get('errors').push(new ErrorRecord(error)) :
+            state.get('errors')
+    });
+};
+
+const registerFlagHandler = (state, { error, flags }) => {
+    const registerPending = state.getIn(['flags', 'registerPending']);
+    const index = registerPending.findIndex(flag =>
+        flag.tagName === flags.registerPending.tagName);
+    if (error) {
+        flags.registerPending.error = error;
+    }
+    if (index === -1) {
+        return state.merge({
+            flags: state.get('flags').merge({
+                registerPending: state.getIn(['flags', 'registerPending'])
+                    .push(flags.registerPending)
+            }),
+            errors: error ?
+                state.get('errors').push(new ErrorRecord(error)) :
+                state.get('errors')
+        });
+    }
+    return state.merge({
+        flags: state.get('flags').mergeIn(['registerPending', index], flags.registerPending),
+        errors: error ?
+            state.get('errors').push(new ErrorRecord(error)) :
+            state.get('errors')
     });
 };
 
@@ -122,18 +125,11 @@ const tagState = createReducer(initialState, {
             flags: state.get('flags').merge(flags)
         }),
 
-    [types.CREATE_TAG_SUCCESS]: (state, { data }) => {
-        const pendingTagIndex = state.get('pendingTags').findIndex(tagObj => tagObj.tag === data.tagName);
-        return state.merge({ pendingTags: state.get('pendingTags').delete(pendingTagIndex) });
-    },
+    [types.REGISTER_TAG]: registerFlagHandler,
 
-    [types.CREATE_TAG_ERROR]: (state, { error }) => {
-        const tagName = error.from;
-        const pendingTagIndex = state.get('pendingTags').findIndex(tagObj => tagObj.tag === tagName);
-        return state.merge({
-            pendingTags: state.get('pendingTags').mergeIn([pendingTagIndex], { error })
-        });
-    },
+    [types.REGISTER_TAG_SUCCESS]: registerFlagHandler,
+
+    [types.REGISTER_TAG_ERROR]: registerFlagHandler,
 
     [types.GET_SELECTED_TAG]: (state, { flags }) =>
         state.merge({
@@ -232,13 +228,13 @@ const tagState = createReducer(initialState, {
 
     [types.SUBSCRIBE_TAG_SUCCESS]: subscribeFlagHandler,
 
-    [types.SUBSCRIBE_TAG_ERROR]: subscribeErrorFlagHandler,
+    [types.SUBSCRIBE_TAG_ERROR]: subscribeFlagHandler,
 
     [types.UNSUBSCRIBE_TAG]: subscribeFlagHandler,
 
     [types.UNSUBSCRIBE_TAG_SUCCESS]: subscribeFlagHandler,
 
-    [types.UNSUBSCRIBE_TAG_ERROR]: subscribeErrorFlagHandler
+    [types.UNSUBSCRIBE_TAG_ERROR]: subscribeFlagHandler
 });
 
 export default tagState;

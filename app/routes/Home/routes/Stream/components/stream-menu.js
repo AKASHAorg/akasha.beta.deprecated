@@ -20,7 +20,15 @@ const StreamMenu = props =>
         <Tab
           label={
             <div style={{ display: 'flex' }}>
-              <div style={{ flex: '1 1 auto', paddingRight: '10px' }}>
+              <div
+                style={{
+                  flex: '1 1 auto',
+                  paddingRight: '10px',
+                  maxWidth: '190px',
+                  overflowX: 'hidden',
+                  textOverflow: 'ellipsis'
+                }}
+              >
                 {props.selectedTag}
               </div>
               <SvgIcon

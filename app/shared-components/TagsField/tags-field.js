@@ -1,9 +1,12 @@
 import React from 'react';
+import { injectIntl } from 'react-intl';
 import { AutoComplete, Chip, IconButton } from 'material-ui';
 import debounce from 'lodash.debounce';
 import AddIcon from 'material-ui/svg-icons/content/add';
 import RemoveIcon from 'material-ui/svg-icons/navigation/close';
 import PendingIcon from 'material-ui/svg-icons/action/schedule';
+import { validateTag } from 'utils/dataModule';
+import { formMessages } from 'locale-data/messages';
 
 class TagsField extends React.Component {
     constructor (props) {
@@ -25,13 +28,21 @@ class TagsField extends React.Component {
     };
 
     componentWillReceiveProps (nextProps) {
-        const { pendingTags } = nextProps;
-        const erroredTags = pendingTags.filter(tag => typeof tag.error === 'object');
+        const { checkExistingTags, existingTags, registerPending } = nextProps;
+        const erroredTags = registerPending.filter(tag => !!tag.error);
+        const registeredTags = registerPending.filter(tag =>
+            this.props.registerPending.find(oldTag =>
+                oldTag.tagName === tag.tagName && oldTag.value && !tag.value
+            )
+        );
+        if (registeredTags.size) {
+            checkExistingTags(registeredTags.map(tag => tag.tagName).concat(existingTags));
+        }
         if (erroredTags.size > 0) {
             this.setState({
                 erroredTags: erroredTags.map(tag => ({
-                    tag: tag.error.from ? tag.error.from.tagName : '',
-                    message: tag.error.message
+                    tag: tag.tagName || '',
+                    message: tag.error
                 }))
             });
         }
@@ -49,6 +60,7 @@ class TagsField extends React.Component {
     _handleInputChange = (ev) => {
         this.setState({
             tagString: ev.target.value,
+            error: null
         });
         if (ev.target.value.length >= 3) {
             this._delayedReq();
@@ -58,38 +70,32 @@ class TagsField extends React.Component {
     _handleDeleteTag = (ev, index) => {
         this.props.onDelete(index);
     };
-    _createError = (error, removeCurrentTag) => {
-        this.setState({
-            error
-        });
-        if (removeCurrentTag) {
-            this.setState({
+
+    _createTag = () => {
+        const { intl } = this.props;
+        const currentTags = this.props.tags;
+        const tag = this.state.tagString.trim().toLowerCase();
+        if (currentTags.indexOf(tag) > -1) {
+            const errorMessage = intl.formatMessage(formMessages.tagAlreadyAdded, { tag });
+            return this.setState({
+                error: errorMessage,
                 tagString: ''
             });
         }
-    };
-    _createTag = () => {
-        const currentTags = this.props.tags;
-        const tag = this.state.tagString.trim().toLowerCase();
-        const ALPHANUMERIC_REGEX = /^(?:[a-zA-Z0-9]+(?:(-|_)(?!$))?)+$/;
-        if (currentTags.indexOf(tag) > -1) {
-            return this._createError(`Tag "${tag}" already added!`, true);
-        }
-        if (tag.length > 3 && tag.length <= 24) {
-            if (ALPHANUMERIC_REGEX.test(tag)) {
-                this.state.error = '';
-                if (this.props.onTagAdded) {
-                    this.props.onTagAdded(tag);
-                }
-            } else {
-                this._createError('Tags can contain only letters, numbers, one dash ( - ) or one underscore ( _ ).', false);
-            }
-        } else if (tag.length >= 25) {
-            this._createError('Tags can have maximum 24 characters.', false);
+        const error = validateTag(tag);
+        if (error) {
+            const errorMessage = intl.formatMessage(formMessages[error]);
+            this.setState({
+                error: errorMessage
+            });
         } else {
-            this._createError('Tags should have at least 4 characters.', false);
+            this.setState({
+                error: ''
+            });
+            if (this.props.onTagAdded) {
+                this.props.onTagAdded(tag);
+            }
         }
-        return null;
     };
     _handleTagRegister = (ev, tag) => {
         ev.preventDefault();
@@ -133,14 +139,14 @@ class TagsField extends React.Component {
     };
     render () {
         const currentTags = this.props.tags;
-        const { pendingTags, existingTags } = this.props;
+        const { registerPending, existingTags, errorText } = this.props;
         const { erroredTags } = this.state;
         const tags = currentTags.map((tag, key) => {
             const tagExists = existingTags.indexOf(tag) > -1;
-            const tagIsPending = pendingTags.toJS().find(tagObj => tagObj.payload.tagName === tag);
+            const tagIsPending = registerPending.toJS().find(tagObj => tagObj.tagName === tag);
             const erroredTag = erroredTags.find(tagObj => tagObj.tag === tag);
             let borderColor;
-            if (tagIsPending) {
+            if (tagIsPending && tagIsPending.value) {
                 borderColor = '#ffaa0e';
             } else if (erroredTag) {
                 borderColor = 'red';
@@ -189,7 +195,7 @@ class TagsField extends React.Component {
                 }}
               >
                 <span style={{ fontWeight: 500 }}>{tag}</span>
-                {tagIsPending &&
+                {tagIsPending && tagIsPending.value &&
                   <PendingIcon
                     title="Registering tag"
                     style={tagActionButtonStyle}
@@ -223,7 +229,7 @@ class TagsField extends React.Component {
             id="tags"
             multiLine
             style={{ lineHeight: 'inherit', height: 'inherit', marginBottom: '16px' }}
-            errorText={this.state.error}
+            errorText={this.state.error || errorText}
             underlineStyle={{ bottom: '-4px' }}
             underlineShow={(currentTags.length < 10)}
             errorStyle={{ bottom: '-18px' }}
@@ -266,14 +272,17 @@ class TagsField extends React.Component {
     }
 }
 TagsField.propTypes = {
+    checkExistingTags: React.PropTypes.func,
+    errorText: React.PropTypes.string,
     tags: React.PropTypes.arrayOf(React.PropTypes.string),
     onTagAdded: React.PropTypes.func,
     onDelete: React.PropTypes.func,
     existingTags: React.PropTypes.arrayOf(React.PropTypes.string),
-    pendingTags: React.PropTypes.shape(),
+    registerPending: React.PropTypes.shape(),
     onRequestTagAutocomplete: React.PropTypes.func,
     onBlur: React.PropTypes.func,
-    onTagRegisterRequest: React.PropTypes.func
+    onTagRegisterRequest: React.PropTypes.func,
+    intl: React.PropTypes.shape()
 };
 
-export default TagsField;
+export default injectIntl(TagsField);

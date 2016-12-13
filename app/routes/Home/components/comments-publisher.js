@@ -69,7 +69,6 @@ function mapStateToProps (state) {
         loggedProfileData: state.profileState.get('profiles').find(prf =>
             prf.get('profile') === state.profileState.getIn(['loggedProfile', 'profile'])),
         pendingActions: state.appState.get('pendingActions'),
-        pendingTags: state.tagState.get('pendingTags'),
         pendingTx: state.transactionState.get('pending'),
         minedTx: state.transactionState.get('mined')
     };

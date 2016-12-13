@@ -1,9 +1,11 @@
 import React, { PropTypes, Component } from 'react';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import { AutoComplete, RaisedButton } from 'material-ui';
+import { AutoComplete, IconButton, RaisedButton } from 'material-ui';
 import AddIcon from 'material-ui/svg-icons/content/add-circle';
-import { tagMessages } from 'locale-data/messages';
+import SearchIcon from 'material-ui/svg-icons/action/search';
+import { formMessages, tagMessages } from 'locale-data/messages';
 import debounce from 'lodash.debounce';
+import { validateTag } from 'utils/dataModule';
 
 const buttonStyle = {
     height: 34,
@@ -17,7 +19,8 @@ class TagSearch extends Component {
         this.state = {
             dataSource: [],
             pendingTag: this.props.tagName,
-            typed: ''
+            typed: '',
+            error: null
         };
         Channel.client.tags.searchTag.on(this.hydrateDataSource);
         Channel.client.tags.exists.on(this.checkTag);
@@ -50,18 +53,26 @@ class TagSearch extends Component {
 
     handleInputChange = (slice) => {
         this.setState({
-            typed: slice
+            typed: slice,
+            error: null
         });
         this.delayedReq();
     };
 
     handleSelect = (value) => {
+        const { intl, selectTag } = this.props;
+        const error = validateTag(value);
+        if (error) {
+            const errorMessage = intl.formatMessage(formMessages[error]);
+            return this.setState({
+                error: errorMessage
+            });
+        }
+        selectTag(value);
         this.setState({
             typed: '',
             pendingTag: ''
         });
-        const { selectTag } = this.props;
-        selectTag(value);
     };
 
     handlePublishTag = () => {
@@ -71,12 +82,12 @@ class TagSearch extends Component {
     render () {
         const {
             tagName, tagEntriesCount, subscriptions, subscribeTag, unsubscribeTag,
-            subscribePending, intl
+            registerPending, subscribePending, intl
         } = this.props;
         const isSubscribed = subscriptions && !!subscriptions.find(tag => tag.get('tagName') === tagName);
         const isPending = subscribePending && subscribePending.value;
         return (<div className="row" style={{ paddingBottom: 24, width: '640px' }} >
-          <div className="col-xs-12" style={{ position: 'relative', padding: 0 }} >
+          <div className="col-xs-12" style={{ position: 'relative', padding: 0, height: '72px' }} >
             <AutoComplete
               fullWidth
               hintText="Search another tag"
@@ -85,8 +96,17 @@ class TagSearch extends Component {
               onUpdateInput={this.handleInputChange}
               onNewRequest={this.handleSelect}
               searchText={this.state.typed}
+              errorText={this.state.error}
             />
-            {!this.state.pendingTag && <RaisedButton
+            {this.state.typed && <RaisedButton
+              label={'Search'}
+              primary
+              style={buttonStyle}
+              onClick={() => { this.handleSelect(this.state.typed); }}
+              icon={<SearchIcon />}
+            />
+            }
+            {!this.state.typed && !this.state.pendingTag && <RaisedButton
               label={isSubscribed ?
                         intl.formatMessage(tagMessages.unsubscribe) :
                         intl.formatMessage(tagMessages.subscribe)
@@ -96,12 +116,13 @@ class TagSearch extends Component {
               onClick={isSubscribed ? unsubscribeTag : subscribeTag}
               disabled={isPending}
             />}
-            {this.state.pendingTag && <RaisedButton
-              label={'Create tag'}
+            {!this.state.typed && this.state.pendingTag && <RaisedButton
+              label={'Create'}
               primary
               style={buttonStyle}
               onClick={this.handlePublishTag}
               icon={<AddIcon />}
+              disabled={registerPending && registerPending.value}
             />}
           </div>
           <div
@@ -137,6 +158,7 @@ TagSearch.propTypes = {
     unsubscribeTag: PropTypes.func,
     selectTag: PropTypes.func,
     publishTag: PropTypes.func,
+    registerPending: PropTypes.shape(),
     subscribePending: PropTypes.shape()
 };
 export default injectIntl(TagSearch);
