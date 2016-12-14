@@ -3,7 +3,7 @@ import { FlatButton, RadioButton, RadioButtonGroup, RaisedButton } from 'materia
 import { injectIntl } from 'react-intl';
 import { setupMessages, generalMessages } from 'locale-data/messages'; /* eslint import/no-unresolved: 0 */
 import PanelContainer from 'shared-components/PanelContainer/panel-container'; /* eslint import/no-unresolved: 0 */
-import { GethSettingsForm, IpfsSettingsForm } from 'shared-components';
+import { DataLoader, GethSettingsForm, IpfsSettingsForm } from 'shared-components';
 import PanelHeader from '../../../../components/panel-header';
 
 class Config extends Component {
@@ -18,9 +18,8 @@ class Config extends Component {
         const { configFlags } = nextProps;
         const cancelRequest = configFlags && configFlags.get('requestStartupChange');
         if (!cancelRequest) {
-            return this.context.router.push('setup/sync-status');
+            this.context.router.push('setup/sync-status');
         }
-        return null;
     }
     handleChange = (ev, value) => {
         const { settingsActions, isAdvanced } = this.props;
@@ -99,80 +98,83 @@ class Config extends Component {
 
     _sendReport = () => {};
     render () {
-        const { isAdvanced, intl, gethSettings, ipfsSettings, settingsActions } = this.props;
+        const { isAdvanced, intl, gethSettings, ipfsSettings, settingsActions,
+            fetchingFlags } = this.props;
         const radioStyle = { marginTop: '10px', marginBottom: '10px' };
         const defaultSelected = !isAdvanced ? 'express' : 'advanced';
         return (
-          <PanelContainer
-            showBorder
-            actions={[
-              /* eslint-disable */
-              <RaisedButton
-                key="next"
-                label={intl.formatMessage(generalMessages.nextButtonLabel)}
-                primary
-                backgroundColor={this.context.muiTheme.raisedButton.secondaryColor}
-                style={{ marginLeft: '12px' }}
-                onClick={this.handleSubmit}
-              />
-              /* eslint-enable */
-            ]}
-            header={<PanelHeader title={'AKASHA'} />}
-          >
-            <h1 style={{ fontWeight: '400' }} className="col-xs-12" >
-              {intl.formatMessage(setupMessages.firstTimeSetupTitle)}
-            </h1>
-            <div className="col-xs-12">
-              <p>
-                {intl.formatMessage(setupMessages.akashaNextGenNetwork)}
-              </p>
-              <p>
-                {intl.formatMessage(setupMessages.youHaveNotHeared)}
-              </p>
-              <p>
-                {intl.formatMessage(setupMessages.ifYouHaveEth)}
-              </p>
-            </div>
-            <div style={{ paddingLeft: '12px' }} className="col-xs-12" >
-              <RadioButtonGroup
-                defaultSelected={defaultSelected}
-                name="installType"
-                onChange={this.handleChange}
-              >
-                <RadioButton
-                  label={intl.formatMessage(setupMessages.expressSetup)}
-                  style={radioStyle}
-                  value={'express'}
+          <DataLoader flag={fetchingFlags} size={80} style={{ paddingTop: '150px' }}>
+            <PanelContainer
+                showBorder
+                actions={[
+                /* eslint-disable */
+                <RaisedButton
+                    key="next"
+                    label={intl.formatMessage(generalMessages.nextButtonLabel)}
+                    primary
+                    backgroundColor={this.context.muiTheme.raisedButton.secondaryColor}
+                    style={{ marginLeft: '12px' }}
+                    onClick={this.handleSubmit}
                 />
-                <RadioButton
-                  label={intl.formatMessage(setupMessages.advancedSetup)}
-                  style={radioStyle}
-                  value={'advanced'}
-                />
-              </RadioButtonGroup>
-              {isAdvanced &&
-                <div>
-                  <GethSettingsForm
-                    intl={intl}
-                    gethSettings={gethSettings}
-                    handleGethDatadir={this.handleGethDatadir}
-                    handleGethCacheSize={this.handleGethCacheSize}
-                  />
-                  <IpfsSettingsForm
-                    intl={intl}
-                    ipfsSettings={ipfsSettings}
-                    handleIpfsPath={this.handleIpfsPath}
-                  />
-                  <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                    <FlatButton
-                      label={intl.formatMessage(generalMessages.reset)}
-                      onClick={settingsActions.resetSettings}
-                    />
-                  </div>
+                /* eslint-enable */
+                ]}
+                header={<PanelHeader title={'AKASHA'} />}
+            >
+                <h1 style={{ fontWeight: '400' }} className="col-xs-12" >
+                {intl.formatMessage(setupMessages.firstTimeSetupTitle)}
+                </h1>
+                <div className="col-xs-12">
+                <p>
+                    {intl.formatMessage(setupMessages.akashaNextGenNetwork)}
+                </p>
+                <p>
+                    {intl.formatMessage(setupMessages.youHaveNotHeared)}
+                </p>
+                <p>
+                    {intl.formatMessage(setupMessages.ifYouHaveEth)}
+                </p>
                 </div>
-              }
-            </div>
-          </PanelContainer>
+                <div style={{ paddingLeft: '12px' }} className="col-xs-12" >
+                <RadioButtonGroup
+                    defaultSelected={defaultSelected}
+                    name="installType"
+                    onChange={this.handleChange}
+                >
+                    <RadioButton
+                    label={intl.formatMessage(setupMessages.expressSetup)}
+                    style={radioStyle}
+                    value={'express'}
+                    />
+                    <RadioButton
+                    label={intl.formatMessage(setupMessages.advancedSetup)}
+                    style={radioStyle}
+                    value={'advanced'}
+                    />
+                </RadioButtonGroup>
+                {isAdvanced &&
+                    <div>
+                    <GethSettingsForm
+                        intl={intl}
+                        gethSettings={gethSettings}
+                        handleGethDatadir={this.handleGethDatadir}
+                        handleGethCacheSize={this.handleGethCacheSize}
+                    />
+                    <IpfsSettingsForm
+                        intl={intl}
+                        ipfsSettings={ipfsSettings}
+                        handleIpfsPath={this.handleIpfsPath}
+                    />
+                    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                        <FlatButton
+                        label={intl.formatMessage(generalMessages.reset)}
+                        onClick={settingsActions.resetSettings}
+                        />
+                    </div>
+                    </div>
+                }
+                </div>
+            </PanelContainer>
+            </DataLoader>
         );
     }
 }
@@ -185,6 +187,7 @@ Config.propTypes = {
     defaultIpfsSettings: PropTypes.shape().isRequired,
     isAdvanced: PropTypes.bool.isRequired,
     configFlags: PropTypes.shape(),
+    fetchingFlags: PropTypes.bool,
     style: PropTypes.shape(),
     intl: PropTypes.shape(),
     eProcActions: PropTypes.shape()

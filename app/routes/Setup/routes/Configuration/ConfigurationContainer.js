@@ -11,6 +11,7 @@ function mapStateToProps (state, ownProps) {
         ipfsSettings: state.settingsState.get('ipfs'),
         defaultIpfsSettings: state.settingsState.get('defaultIpfsSettings'),
         configFlags: state.settingsState.get('flags'),
+        fetchingFlags: state.settingsState.get('fetchingFlags'),
         isAdvanced: state.settingsState.get('isAdvanced'),
         userSettings: state.settingsState.get('userSettings')
     };
