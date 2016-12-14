@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
-import { RaisedButton } from 'material-ui';
+import { IconButton, RaisedButton } from 'material-ui';
+import CopyIcon from 'material-ui/svg-icons/content/content-copy';
 import { profileMessages } from 'locale-data/messages';
 import imageCreator, { findBestMatch } from 'utils/imageUtils';
 import { Avatar, PanelContainer } from 'shared-components';
@@ -38,6 +39,18 @@ class ProfileDetails extends Component {
             width: '400px'
         };
     }
+
+    handleCopyLink = (url) => {
+        let textArea = document.createElement('textarea');
+        textArea.value = url;
+        textArea.style.position = 'fixed';
+        textArea.style.top = -99999;
+        textArea.style.left = -99999;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+    };
 
     renderHeader () {
         const { isFollowerPending, isFollower, followProfile, unfollowProfile, loggedAddress,
@@ -168,20 +181,31 @@ class ProfileDetails extends Component {
                 {profileData.links.map((link, key) =>
                   <div
                     key={key}
-                    style={{ fontSize: '16px', fontWeight: 300, paddingBottom: '10px' }}
+                    style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'flex-start',
+                        fontSize: '16px',
+                        fontWeight: 300,
+                    }}
                   >
-                    <div
-                      title={`${link.title}:`}
-                      style={wrapTextStyle}
-                    >
-                      {`${link.title}:`}
+                    <div style={{ width: '292px', paddingRight: '10px' }}>
+                      <a href={link.url}>
+                        <div
+                          title={link.title}
+                          style={{ display: 'inline-block', maxWidth: '100%', ...wrapTextStyle }}
+                        >
+                          {link.title}
+                        </div>
+                      </a>
                     </div>
-                    <div
-                      title={link.url}
-                      style={wrapTextStyle}
+                    <IconButton
+                      onClick={() => { this.handleCopyLink(link.url) }}
+                      title="Copy link address"
+                      style={{ padding: '6px 12px', height: '36px' }}
                     >
-                      {link.url}
-                    </div>
+                      <CopyIcon  />
+                    </IconButton>
                   </div>
                 )}
               </div>
