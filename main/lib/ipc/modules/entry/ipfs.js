@@ -126,6 +126,7 @@ exports.getFullContent = Promise.coroutine(function* (hash) {
         return Promise.resolve(records_1.entries.getFull(hash));
     }
     let tmp;
+    let draft;
     const root = yield ipfs_connector_1.IpfsConnector.getInstance().api.get(hash);
     const parts = [];
     const draftParts = [];
@@ -144,9 +145,17 @@ exports.getFullContent = Promise.coroutine(function* (hash) {
         }
         return currentData;
     });
-    const draft = JSON.parse(JSON.stringify(Buffer.concat(draftObj)));
+    const content = (Buffer.concat(draftObj)).toString();
+    try {
+        draft = JSON.parse(content);
+    }
+    catch (err) {
+        draft = null;
+    }
     const data = Object.assign({}, root, { draft: draft });
     records_1.entries.setFull(hash, data);
+    tmp = null;
+    draft = null;
     return data;
 });
 Object.defineProperty(exports, "__esModule", { value: true });

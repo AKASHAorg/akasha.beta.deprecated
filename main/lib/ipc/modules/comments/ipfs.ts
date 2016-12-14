@@ -14,7 +14,7 @@ export function create(data) {
     };
     return IpfsConnector.getInstance().api
         .add(constructed)
-        .then((hash: string) => hash)
+        .then((result: any) => result.hash)
 }
 
 
