@@ -55,6 +55,7 @@ const initialState = fromJS({
     userSettings: new UserSettings(),
     general: new GeneralSettings(),
     isAdvanced: false,
+    fetchingFlags: false,
     fetchingGethSettings: false,
     fetchingIpfsSettings: false
 });
@@ -162,6 +163,10 @@ const settingsState = createReducer(initialState, {
             return state.merge({
                 fetchingIpfsSettings: true
             });
+        } else if (action.table === 'flags') {
+            return state.merge({
+                fetchingFlags: true
+            });
         }
         return state;
     },
@@ -174,6 +179,10 @@ const settingsState = createReducer(initialState, {
         } else if (action.table === 'ipfs') {
             return state.merge({
                 fetchingIpfsSettings: false
+            });
+        } else if (action.table === 'flags') {
+            return state.merge({
+                fetchingFlags: false
             });
         }
         return state;
