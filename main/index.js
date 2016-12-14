@@ -7,6 +7,7 @@ const index_1 = require('./lib/ipc/index');
 const feed_1 = require('./lib/ipc/modules/notifications/feed');
 const menu_1 = require('./menu');
 const Logger_1 = require('./lib/ipc/Logger');
+const check_version_1 = require('./check-version');
 let modules;
 const stopServices = () => {
     feed_1.default.execute({ stop: true });
@@ -77,6 +78,7 @@ function bootstrapApp() {
         mainWindow.webContents.once('did-finish-load', () => {
             modules.logger.registerLogger('APP');
             modules.initListeners(mainWindow.webContents);
+            check_version_1.default.setWindow(mainWindow);
         });
         mainWindow.once('ready-to-show', () => {
             mainWindow.show();

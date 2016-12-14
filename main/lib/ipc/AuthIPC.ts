@@ -6,6 +6,7 @@ import { module as userModule } from './modules/auth/index';
 import { constructed } from './contracts/index';
 import { post as POST } from 'request';
 import notifs from './modules/notifications/feed';
+//import  updater from '../../check-version';
 import WebContents = Electron.WebContents;
 
 const faucetToken = '8336abae5a97f017d2d0ef952a6a566d4bbed5cd22c7b524ae749673d5562b567af109371' +
@@ -115,6 +116,14 @@ class AuthIPC extends ModuleEmitter {
                             response,
                             event
                         );
+                        /** Uncomment this when deployed
+                        constructed
+                            .instance
+                            .feed
+                            .getAppState((err, state)=>{
+                                updater.checkVersion(state[0], state[1], state[2]);
+                            });
+                         **/
                     });
             }
         );
