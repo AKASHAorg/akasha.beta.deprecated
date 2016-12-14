@@ -76,7 +76,7 @@ class EditProfile extends Component {
                 const newImage = {};
                 Object.keys(background).forEach((key) => {
                     newImage[key] = Object.assign({}, background[key], {
-                        src: background[key].src['/']
+                        src: background[key].src
                     });
                 });
                 data.backgroundImage = newImage;
@@ -215,7 +215,7 @@ class EditProfile extends Component {
         });
         const mediumImage = this.state.backgroundImage.md;
         const backgroundImageLink = mediumImage &&
-            imageCreator(mediumImage.src['/'], loggedProfileData.get('baseUrl'));
+            imageCreator(mediumImage.src, loggedProfileData.get('baseUrl'));
 
         return (
           <Paper

@@ -64,7 +64,7 @@ class ProfileDetails extends Component {
         const isOwnProfile = profile === loggedAddress;
         const bestMatch = findBestMatch(400, backgroundImage);
         const imageUrl = backgroundImage[bestMatch] ?
-            imageCreator(backgroundImage[bestMatch].src['/'], profileData.baseUrl) :
+            imageCreator(backgroundImage[bestMatch].src, profileData.baseUrl) :
             '';
         const profileName = `${profileData.firstName} ${profileData.lastName}`;
         const userInitials = profileName.match(/\b\w/g).reduce((prev, current) => prev + current, '');
