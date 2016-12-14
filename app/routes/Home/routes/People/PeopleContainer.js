@@ -286,12 +286,12 @@ class PeopleContainer extends Component {
             <div
               style={{
                   position: 'absolute',
-                  top: '35px',
+                  top: '0px',
                   left: '100px',
-                  right: '30px',
-                  bottom: '35px',
+                  right: '0px',
+                  bottom: '0px',
                   overflowY: 'auto',
-                  padding: '0'
+                  padding: '30px 0px'
               }}
               ref={(el) => { this.container = el; }}
             >
