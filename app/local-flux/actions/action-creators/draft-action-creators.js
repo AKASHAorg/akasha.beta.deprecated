@@ -57,6 +57,13 @@ export function deleteDraftError (error) {
     };
 }
 
+export function getDrafts (flags) {
+    return {
+        type: types.GET_DRAFTS,
+        flags
+    };
+}
+
 export function getDraftsSuccess (drafts, flags) {
     return {
         type: types.GET_DRAFTS_SUCCESS,

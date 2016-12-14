@@ -111,10 +111,16 @@ class DraftActions {
         });
         this.deleteDraft(draftId);
     }
-    getDrafts = profile =>
-        this.draftService.getAllDrafts(profile).then(result =>
-            this.dispatch(draftActionCreators.getDraftsSuccess(result))
-        ).catch(reason => this.dispatch(draftActionCreators.getDraftsError(reason)));
+    getDrafts = profile => {
+        draftActionCreators.getDrafts({ fetchingDrafts: true });
+        this.draftService.getAllDrafts(profile)
+            .then(result => this.dispatch(draftActionCreators.getDraftsSuccess(result, {
+                fetchingDrafts: false
+            })))
+            .catch(reason => this.dispatch(draftActionCreators.getDraftsError(reason, {
+                fetchingDrafts: false
+            })));
+    };
 
     getDraftsCount = (profile) => {
         this.dispatch((dispatch, getState) => {

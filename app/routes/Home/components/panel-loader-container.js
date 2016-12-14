@@ -13,6 +13,7 @@ function mapStateToProps (state) {
     return {
         drafts: state.draftState.get('drafts'),
         draftsCount: state.draftState.get('draftsCount'),
+        fetchingDrafts: state.draftState.getIn(['flags', 'fetchingDrafts']),
         fetchingMorePublishedEntries: state.entryState.getIn(['flags', 'fetchingMorePublishedEntries']),
         fetchingPublishedEntries: state.entryState.getIn(['flags', 'fetchingPublishedEntries']),
         fetchingProfileData: state.profileState.getIn(['flags', 'fetchingProfileData']),
