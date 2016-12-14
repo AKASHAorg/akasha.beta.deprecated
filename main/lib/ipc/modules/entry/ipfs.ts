@@ -175,6 +175,7 @@ export const getFullContent = Promise.coroutine(function*(hash) {
         return Promise.resolve(entries.getFull(hash));
     }
     let tmp;
+    let draft;
     const root = yield IpfsConnector.getInstance().api.get(hash);
     const parts = [];
     const draftParts = [];
@@ -188,14 +189,21 @@ export const getFullContent = Promise.coroutine(function*(hash) {
     }
     const draftObj = draftParts.map((el) => {
         let currentData = (el.toJSON()).data;
-        if(!Buffer.isBuffer(currentData)){
+        if (!Buffer.isBuffer(currentData)) {
             currentData = Buffer.from(currentData);
         }
         return currentData;
     });
-    const draft = JSON.parse(JSON.stringify(Buffer.concat(draftObj)));
+    const content = (Buffer.concat(draftObj)).toString();
+    try {
+        draft = JSON.parse(content);
+    } catch (err) {
+        draft = null;
+    }
     const data = Object.assign({}, root, { draft: draft });
     entries.setFull(hash, data);
+    tmp = null;
+    draft = null;
     return data;
 });
 

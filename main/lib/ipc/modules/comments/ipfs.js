@@ -9,7 +9,7 @@ function create(data) {
     };
     return ipfs_connector_1.IpfsConnector.getInstance().api
         .add(constructed)
-        .then((hash) => hash);
+        .then((result) => result.hash);
 }
 exports.create = create;
 function getCommentContent(hash) {

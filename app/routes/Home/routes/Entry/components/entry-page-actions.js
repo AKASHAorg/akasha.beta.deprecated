@@ -11,8 +11,7 @@ class EntryPageAction extends Component {
         const voteWeight = entry.existingVoteWeight || 0;
         const upvoteIconColor = voteWeight > 0 ? palette.accent3Color : '';
         const downvoteIconColor = voteWeight < 0 ? palette.accent1Color : '';
-        const voteButtonsDisabled = !entry.active || voteWeight !== 0 ||
-            (voteEntryPending && voteEntryPending.value);
+        const voteButtonsDisabled = !entry.active || voteWeight !== 0 || votePending;
         return (
           <CardActions
             className="col-xs-12"
