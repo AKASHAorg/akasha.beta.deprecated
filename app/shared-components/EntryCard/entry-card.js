@@ -10,7 +10,7 @@ import { Avatar, TagChip } from 'shared-components';
 import { calculateReadingTime } from 'utils/dataModule';
 import imageCreator from 'utils/imageUtils';
 import { entryMessages } from 'locale-data/messages';
-import style from './entry-card.scss';
+import styles from './entry-card.scss';
 
 class EntryCard extends Component {
     constructor (props) {
@@ -183,6 +183,7 @@ class EntryCard extends Component {
             <CardHeader
               title={
                 <button
+                  className={styles.contentLink}
                   style={{ border: '0px', outline: 'none', background: 'transparent', padding: 0 }}
                   onClick={this.selectProfile}
                 >
@@ -228,14 +229,14 @@ class EntryCard extends Component {
             <CardTitle
               title={content.get('title')}
               expandable
+              className={styles.contentLink}
               style={{
                   paddingTop: '4px',
                   paddingBottom: '4px',
                   fontWeight: '600',
                   wordWrap: 'break-word',
                   maxHeight: '80px',
-                  overflow: 'hidden',
-                  cursor: 'pointer'
+                  overflow: 'hidden'
               }}
               onClick={this._handleEntryNavigation}
             />
@@ -253,6 +254,7 @@ class EntryCard extends Component {
               </div>
             </CardText>
             <CardText
+              className={styles.contentLink}
               style={{
                   paddingTop: '4px',
                   paddingBottom: '4px',
@@ -260,6 +262,7 @@ class EntryCard extends Component {
                   fontSize: '16px'
               }}
               expandable
+              onClick={this._handleEntryNavigation}
             >
               {content.get('excerpt')}
             </CardText>

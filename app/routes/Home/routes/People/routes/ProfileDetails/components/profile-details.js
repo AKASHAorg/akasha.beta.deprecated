@@ -49,7 +49,7 @@ class ProfileDetails extends Component {
         document.body.appendChild(textArea);
         textArea.select();
         document.execCommand('copy');
-        document.body.removeChild(textarea);
+        document.body.removeChild(textArea);
     };
 
     renderHeader () {

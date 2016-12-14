@@ -94,6 +94,11 @@ const draftState = createReducer(initialState, {
             errors: state.get('errors').push(new ErrorRecord(error))
         }),
 
+    [types.GET_DRAFTS]: (state, { flags }) =>
+        state.merge({
+            flags: state.get('flags').merge(flags)
+        }),
+
     [types.GET_DRAFTS_SUCCESS]: (state, { drafts, flags }) => {
         const drfts = new List(drafts.map(draft => createDraftRecord(draft)));
         return state.merge({
@@ -101,6 +106,13 @@ const draftState = createReducer(initialState, {
             flags: state.get('flags').merge(flags)
         });
     },
+
+    [types.GET_DRAFTS_ERROR]: (state, { error, flags }) =>
+        state.merge({
+            errors: state.get('errors').push(new ErrorRecord(error)),
+            flags: state.get('flags').merge(flags)
+        }),
+
     [types.PUBLISH_DRAFT]: publishDraftHandler,
     [types.PUBLISH_DRAFT_SUCCESS]: publishDraftHandler,
 
@@ -109,11 +121,7 @@ const draftState = createReducer(initialState, {
             errors: state.get('errors').push(new ErrorRecord(error))
         }),
 
-    [types.GET_DRAFTS_ERROR]: (state, { error, flags }) =>
-        state.merge({
-            errors: state.get('errors').push(new ErrorRecord(error)),
-            flags: state.get('flags').merge(flags)
-        }),
+
 
     [types.GET_DRAFT_BY_ID_SUCCESS]: (state, { draft }) => {
         if (!draft) return state;
