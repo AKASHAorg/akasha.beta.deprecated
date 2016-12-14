@@ -26,10 +26,6 @@ class PublishPanel extends React.Component {
             validationErrors: []
         };
     }
-    componentWillMount () {
-        const { entryActions } = this.props;
-        entryActions.getLicences();
-    }
     componentDidMount () {
         this.panelSize = this.container.getBoundingClientRect();
         document.body.style.overflow = 'hidden';

@@ -1,8 +1,11 @@
 /* eslint import/no-unresolved: 0, import/extensions: 0 */
 import React, { Component, PropTypes } from 'react';
-import { Divider } from 'material-ui';
+import { Divider, IconButton, SvgIcon } from 'material-ui';
 import { injectIntl } from 'react-intl';
 import { TagChip, DataLoader, CommentsList, CommentEditor } from 'shared-components';
+import { CreativeCommonsBY, CreativeCommonsCC, CreativeCommonsNCEU, CreativeCommonsNCJP,
+    CreativeCommonsNC, CreativeCommonsND, CreativeCommonsREMIX, CreativeCommonsSHARE,
+    CreativeCommonsZERO, CreativeCommonsPD, CreativeCommonsSA } from 'shared-components/svg';
 import { entryMessages } from 'locale-data/messages';
 import EntryPageHeader from './entry-page-header';
 import EntryPageContent from './entry-page-content';
@@ -167,11 +170,57 @@ class EntryPage extends Component {
         saveTag(tagName);
     }
 
+    renderLicenceIcons = () => {
+        const { entry, licences } = this.props;
+        const licence = licences.find(lic => lic.id === entry.content.licence.id);
+        if (!licence) {
+            return null;
+        }
+        const licenceIcons = {
+            CCBY: CreativeCommonsBY,
+            CCCC: CreativeCommonsCC,
+            CCNCEU: CreativeCommonsNCEU,
+            CCNCJP: CreativeCommonsNCJP,
+            CCNC: CreativeCommonsNC,
+            CCND: CreativeCommonsND,
+            CCREMIX: CreativeCommonsREMIX,
+            CCSHARE: CreativeCommonsSHARE,
+            CCZERO: CreativeCommonsZERO,
+            CCPD: CreativeCommonsPD,
+            CCSA: CreativeCommonsSA
+        };
+        return (
+          <div style={{ display: 'inline-flex' }}>
+            {licence.description.map((descr, index) => {
+              if (descr.icon && licenceIcons[descr.icon] !== undefined) {
+                return (
+                  <IconButton
+                    key={index}
+                    tooltip={descr.text}
+                    style={{ padding: '6px', width: '30px', height: '30px' }}
+                    iconStyle={{ width: '18px', height: '18px' }}
+                  >
+                    <SvgIcon viewBox="0 0 18 18" >
+                      {React.createElement(licenceIcons[descr.icon])}
+                    </SvgIcon>
+                  </IconButton>
+                );
+              }
+            })}
+          </div>
+        );
+    };
+
     render () {
         const { blockNr, canClaimPending, claimPending, comments, entry, fetchingComments,
-            fetchingEntryBalance, fetchingFullEntry, intl, loggedProfile, profiles, savedEntries,
-            votePending } = this.props;
-
+            fetchingEntryBalance, fetchingFullEntry, intl, licences, loggedProfile, profiles,
+            savedEntries, votePending } = this.props;
+        const licence = licences ?
+            licences.find(lic => lic.id === entry.content.licence.id) :
+            {};
+        const licenceLabel = licence.parent ?
+            licences.find(lic => lic.id === licence.parent).label :
+            licence.label;
         const { publisherTitleShadow } = this.state;
         if (!entry || fetchingFullEntry) {
             return <DataLoader flag={true} size={80} style={{ paddingTop: '120px' }} />;
@@ -202,6 +251,15 @@ class EntryPage extends Component {
                   <EntryPageContent
                     entry={entry}
                   />
+                </div>
+                <div
+                  className={`${styles.entry_infos}`}
+                  style={{ display: 'flex', alignItems: 'center', padding: '8px 0' }}
+                >
+                  <span style={{ textDecoration: 'underline', paddingRight: '10px' }}>
+                    {licenceLabel}
+                  </span>
+                  {this.renderLicenceIcons()}
                 </div>
                 <div className={`${styles.entry_infos}`}>
                   <div className={`${styles.entry_tags}`}>
@@ -292,6 +350,7 @@ EntryPage.propTypes = {
     fetchingEntryBalance: PropTypes.bool,
     fetchingFullEntry: PropTypes.bool,
     intl: PropTypes.shape(),
+    licences: PropTypes.shape(),
     loggedProfile: PropTypes.shape(),
     params: PropTypes.shape(),
     profiles: PropTypes.shape(),
