@@ -7,6 +7,7 @@ import { initModules } from './lib/ipc/index';
 import feed from './lib/ipc/modules/notifications/feed';
 import { initMenu } from './menu';
 import Logger from './lib/ipc/Logger';
+import updater from './check-version';
 
 let modules;
 const stopServices = () => {
@@ -84,6 +85,7 @@ export function bootstrapApp() {
         mainWindow.webContents.once('did-finish-load', () => {
             modules.logger.registerLogger('APP');
             modules.initListeners(mainWindow.webContents);
+            updater.setWindow(mainWindow);
         });
 
         mainWindow.once('ready-to-show', () => {

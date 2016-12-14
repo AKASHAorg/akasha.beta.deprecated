@@ -140,7 +140,7 @@ class IpfsIPC extends IpfsEmitter {
                 let response: IpfsResolveResponse;
                 IpfsConnector.getInstance()
                     .api
-                    .resolve(data.hash)
+                    .get(data.hash)
                     .then((source: any) => {
                         response = ipfsResponse({ content: source, hash: data.hash });
                     })
