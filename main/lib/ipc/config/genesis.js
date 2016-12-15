@@ -5,15 +5,13 @@ const path_1 = require('path');
 const writeGenesisFile = () => {
     const genesis = {
         "alloc": {},
-        "config": {
-            "homesteadBlock": 10
-        },
+        "config": { "homesteadBlock": 10 },
         "coinbase": "0x0000000000000000000000000000000000000000",
         "difficulty": "0x20000",
-        "extraData": "",
-        "gasLimit": "0x493e00",
-        "nonce": "0x0000000193221442",
-        "mixhash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "extraData": "0x616b617368612e616c706861",
+        "gasLimit": "0x47b760",
+        "nonce": "0x0000000076a16716",
+        "mixhash": "0x0000000000000000000000000000000000000000000000000000000000000009",
         "parentHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
         "timestamp": "0x00"
     };
@@ -21,7 +19,7 @@ const writeGenesisFile = () => {
     fs_1.writeFileSync(getGenesisPath(), genesisBuffer);
 };
 function getGenesisPath() {
-    return path_1.join(electron_1.app.getPath('userData'), 'genesis.json');
+    return path_1.join(electron_1.app.getPath('userData'), 'akasha.alpha.json');
 }
 exports.getGenesisPath = getGenesisPath;
 function checkForGenesis(cb) {

@@ -5,7 +5,6 @@ const channels_1 = require('../../channels');
 const responses_1 = require('./responses');
 const index_1 = require('../contracts/index');
 const index_2 = require('../modules/index');
-const peers = require('../config/peers.json');
 class GethEmitter extends AbstractEmitter_1.AbstractEmitter {
     attachEmitters() {
         this._download()
@@ -35,9 +34,6 @@ class GethEmitter extends AbstractEmitter_1.AbstractEmitter {
             this.fireEvent(channels_1.default.client.geth.startService, responses_1.gethResponse({}));
             index_1.constructed.init(geth_connector_1.GethConnector.getInstance().web3);
             index_2.initModules();
-            peers.list.forEach((peer) => {
-                geth_connector_1.GethConnector.getInstance().web3.admin.addPeerAsync(peer);
-            });
         });
         return this;
     }
