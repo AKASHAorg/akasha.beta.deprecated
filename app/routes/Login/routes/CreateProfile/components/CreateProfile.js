@@ -41,8 +41,8 @@ class CreateProfile extends Component {
         this.setState({ opt_details: false });
     }
     componentDidMount () {
-        if (this.refs.lastName) {
-            this.refs.lastName.focus();
+        if (this.refs.firstName) {
+            this.refs.firstName.focus();
         }
     }
     componentWillUpdate (nextProps) {
@@ -197,7 +197,7 @@ class CreateProfile extends Component {
             floatingLabelText: intl.formatMessage(formMessages.firstName),
             ref: 'firstName',
             floatingLabelStyle: floatLabelStyle,
-            style: { marginLeft: '20px', verticalAlign: 'middle', width: '47%' },
+            style: { verticalAlign: 'middle', width: '47%' },
             statePath: 'formValues.firstName',
             required: true,
             addValueLink: true,
@@ -209,7 +209,7 @@ class CreateProfile extends Component {
             floatingLabelStyle: floatLabelStyle,
             floatingLabelText: intl.formatMessage(formMessages.lastName),
             ref: 'lastName',
-            style: { verticalAlign: 'middle', width: '47%' },
+            style: { marginLeft: '20px', verticalAlign: 'middle', width: '47%' },
             statePath: 'formValues.lastName',
             required: true,
             addValueLink: true,
@@ -287,8 +287,8 @@ class CreateProfile extends Component {
               className="row"
               ref={(profileForm) => { this.profileForm = profileForm; }}
             >
-              <TextField {...lastNameProps} />
               <TextField {...firstNameProps} />
+              <TextField {...lastNameProps} />
               <TextField {...akashaIdProps} />
               <TextField {...passwordProps} />
               <TextField {...password2Props} />

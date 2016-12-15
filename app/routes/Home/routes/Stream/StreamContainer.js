@@ -95,30 +95,28 @@ class StreamPage extends Component {
             </div>
             <div className={`row ${styles.streamPageContent}`} >
               <div className={`col-xs-12 ${styles.streamPageContentInner}`} >
-                <div className={`row ${styles.content}`} >
-                  <div className={`col-xs-8 ${styles.theStream}`} >
-                    <TheStream
-                      entryActions={entryActions}
-                      selectedTag={selectedTag}
-                      tagEntries={tagEntries}
-                      params={params}
-                    >
-                      {this.props.children}
-                    </TheStream>
-                  </div>
-                  <div
-                    className={`col-xs-4 ${styles.streamSidebarWrapper}`}
-                    style={{ backgroundColor: '#F5F5F5' }}
+                <div className={styles.theStream}>
+                  <TheStream
+                    entryActions={entryActions}
+                    selectedTag={selectedTag}
+                    tagEntries={tagEntries}
+                    params={params}
                   >
-                    <StreamSidebar
-                      subscriptionsCount={subscriptionsCount}
-                      selectedTag={selectedTag}
-                      streamTags={streamTags}
-                      newestTags={newestTags}
-                      moreNewTags={moreNewTags}
-                      tagActions={tagActions}
-                    />
-                  </div>
+                    {this.props.children}
+                  </TheStream>
+                </div>
+                <div
+                  className={styles.streamSidebarWrapper}
+                  style={{ backgroundColor: '#F5F5F5' }}
+                >
+                  <StreamSidebar
+                    subscriptionsCount={subscriptionsCount}
+                    selectedTag={selectedTag}
+                    streamTags={streamTags}
+                    newestTags={newestTags}
+                    moreNewTags={moreNewTags}
+                    tagActions={tagActions}
+                  />
                 </div>
               </div>
             </div>
