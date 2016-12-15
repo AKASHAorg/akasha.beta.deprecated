@@ -1,8 +1,5 @@
 import entriesDB from './db/entry';
 import BaseService from './base-service';
-/** * DELETE THIS *****/
-import { generateEntries } from './faker-data';
-/** ******************/
 
 const Channel = window.Channel;
 
