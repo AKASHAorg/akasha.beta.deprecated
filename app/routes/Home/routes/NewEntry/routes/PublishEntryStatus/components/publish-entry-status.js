@@ -10,11 +10,10 @@ class PublishEntryStatus extends React.Component {
         const { drafts, params, pendingActions } = nextProps;
         const currentDraft = drafts.find(draft => draft.id === parseInt(params.draftId, 10));
         const currentDraftAction = pendingActions.find(action =>
-            action.toJS().payload.id === parseInt(params.draftId, 10)
+            action.toJS().payload.draft.id === parseInt(params.draftId, 10)
         );
         const prevDraft = this.props.drafts.find(draft =>
             draft.id === parseInt(params.draftId, 10));
-        console.log(currentDraftAction, prevDraft, currentDraft, 'checkings');
         if ((prevDraft && !currentDraft) || !currentDraftAction) {
             this.context.router.push(`/${params.akashaId}/explore/tag`);
         }
@@ -36,12 +35,11 @@ class PublishEntryStatus extends React.Component {
         const { router } = this.context;
         router.push(`/${params.akashaId}/explore/tag`);
     }
-    _getCurrentAction = () => {
+    _getCurrentAction = () => { // eslint-disable-line consistent-return
         const { pendingActions, params } = this.props;
         const currentDraftAction = pendingActions.find(action =>
             action.toJS().payload.draft.id === parseInt(params.draftId, 10)
         );
-        console.log(currentDraftAction, 'currentDraftAction', pendingActions);
         switch (currentDraftAction.toJS().status) {
             case 'needConfirmation':
                 return 'Waiting for publish confirmation!';

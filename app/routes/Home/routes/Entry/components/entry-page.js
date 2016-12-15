@@ -36,7 +36,7 @@ class EntryPage extends Component {
     }
 
     componentWillReceiveProps (nextProps) {
-        const { params, entry, entryActions, fetchingComments, commentsActions,
+        const { params, entry, entryActions,
             loggedProfile } = this.props;
 
         if (params.entryId !== nextProps.params.entryId && entry.get('entryId') !== nextProps.params.entryId) {
@@ -65,7 +65,6 @@ class EntryPage extends Component {
     fetchComments = (entryId, startId = 0) => {
         const { fetchingComments, commentsActions } = this.props;
         // if it`s not already fetching comments, return
-        console.log('fetching comments!');
         if (fetchingComments) {
             return;
         }
@@ -176,7 +175,7 @@ class EntryPage extends Component {
             return null;
         }
         const licenceIcons = {
-            ['copyright-1']: AllRightsReserved,
+            'copyright-1': AllRightsReserved,
             CCBY: CreativeCommonsBY,
             CCCC: CreativeCommonsCC,
             CCNCEU: CreativeCommonsNCEU,
@@ -191,36 +190,36 @@ class EntryPage extends Component {
         };
         return (
           <div style={{ display: 'inline-flex' }}>
-            {licence.description.map((descr, index) => {
-              if (descr.icon && licenceIcons[descr.icon] !== undefined) {
-                const viewBox = descr.icon === 'CCBY' || descr.icon === 'copyright-1' ?
-                    '0 0 20 20' :
-                    '0 0 18 18';
-                return (
-                  <IconButton
-                    key={index}
-                    tooltip={descr.text}
-                    style={{ padding: '6px', width: '30px', height: '30px' }}
-                    iconStyle={{ width: '18px', height: '18px' }}
-                  >
-                    <SvgIcon viewBox={viewBox}>
-                      {React.createElement(licenceIcons[descr.icon])}
-                    </SvgIcon>
-                  </IconButton>
-                );
-              }
+            {licence.description.map((descr, index) => { // eslint-disable-line consistent-return, array-callback-return, max-len
+                if (descr.icon && licenceIcons[descr.icon] !== undefined) {
+                    const viewBox = descr.icon === 'CCBY' || descr.icon === 'copyright-1' ?
+                        '0 0 20 20' :
+                        '0 0 18 18';
+                    return (
+                      <IconButton
+                        key={index}
+                        tooltip={descr.text}
+                        style={{ padding: '6px', width: '30px', height: '30px' }}
+                        iconStyle={{ width: '18px', height: '18px' }}
+                      >
+                        <SvgIcon viewBox={viewBox}>
+                          {React.createElement(licenceIcons[descr.icon])}
+                        </SvgIcon>
+                      </IconButton>
+                    );
+                }
             })}
           </div>
         );
     };
 
     render () {
-        const { blockNr, canClaimPending, claimPending, comments, entry, fetchingComments,
+        const { blockNr, canClaimPending, claimPending, comments, entry,
             fetchingEntryBalance, fetchingFullEntry, intl, licences, loggedProfile, profiles,
             savedEntries, votePending } = this.props;
         const { publisherTitleShadow } = this.state;
         if (!entry || fetchingFullEntry) {
-            return <DataLoader flag={true} size={80} style={{ paddingTop: '120px' }} />;
+            return <DataLoader flag size={80} style={{ paddingTop: '120px' }} />;
         }
         const licence = licences ?
             licences.find(lic => lic.id === entry.content.licence.id) :
@@ -234,7 +233,6 @@ class EntryPage extends Component {
         const loggedProfileName = `${loggedProfileData.firstName} ${loggedProfileData.lastName}`;
         const loggedProfileUserInitials = loggedProfileName.match(/\b\w/g).reduce((prev, current) => prev + current, '');
         const isSaved = entry && !!savedEntries.find(id => id === entry.entryId);
-        const existingVoteWeight = entry.voteWeight || 0;
         const claimEntryPending = claimPending && claimPending.find(claim =>
             claim.entryId === entry.entryId);
         const voteEntryPending = votePending && votePending.find(vote =>
