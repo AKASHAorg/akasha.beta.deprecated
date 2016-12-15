@@ -65,6 +65,11 @@ const entryMessages = defineMessages({
         id: 'app.entry.loadingMoreComments',
         description: 'message for loading more comments',
         defaultMessage: 'Loading more comments'
+    },
+    createdAt: {
+        id: 'app.entry.createdAt',
+        description: 'message to display when sorting something',
+        defaultMessage: 'Created {createdAt}'
     }
 });
 export { entryMessages };

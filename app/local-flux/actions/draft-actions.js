@@ -1,6 +1,7 @@
 import { AppActions, TransactionActions } from 'local-flux';
 import { draftActionCreators } from './action-creators';
 import { DraftService, EntryService } from '../services';
+import { hashHistory } from 'react-router';
 
 let draftActions = null;
 
@@ -18,26 +19,40 @@ class DraftActions {
     }
 
     // Must return a promise and also to dispatch actions
-    createDraft = (profile, draft) =>
+    createDraft = (akashaId, draft, showNotification) =>
         this.dispatch((dispatch, getState) => {
             const flags = getState().draftState.get('flags');
             if (!flags.get('savingDraft')) {
                 dispatch(draftActionCreators.startSavingDraft({
                     savingDraft: true
                 }));
-                return this.draftService.createOrUpdate({ profile, ...draft }).then((result) => {
+                return this.draftService.createOrUpdate({ akashaId, ...draft }).then((result) => {
                     dispatch(draftActionCreators.createDraftSuccess(result, {
                         savingDraft: false
                     }));
+                    if (showNotification) {
+                        this.appActions.showNotification({
+                            id: 'draftSavedSuccessfully',
+                            duration: 2000
+                        });
+                    }
                     return result;
-                }).catch(reason => dispatch(draftActionCreators.createDraftError(reason, {
-                    savingDraft: false
-                })));
+                }).catch((reason) => {
+                    dispatch(draftActionCreators.createDraftError(reason, {
+                        savingDraft: false
+                    }));
+                    if (showNotification) {
+                        this.appActions.showNotification({
+                            id: 'draftSaveFailed',
+                            duration: 2000
+                        });
+                    }
+                });
             }
             return Promise.resolve();
         });
     // must return a promise.
-    updateDraft = changes =>
+    updateDraft = (changes, showNotification) =>
         this.dispatch((dispatch, getState) => {
             const flags = getState().draftState.get('flags');
             if (!flags.get('savingDraft')) {
@@ -48,10 +63,23 @@ class DraftActions {
                     dispatch(draftActionCreators.updateDraftSuccess(savedDraft, {
                         savingDraft: false
                     }));
+                    if (showNotification) {
+                        this.appActions.showNotification({
+                            id: 'draftSavedSuccessfully',
+                            duration: 2000
+                        });
+                    }
                     return savedDraft;
-                }).catch(reason => dispatch(draftActionCreators.updateDraftError(reason, {
-                    savingDraft: false
-                })));
+                }).catch((reason) => {
+                    dispatch(draftActionCreators.updateDraftError(reason, {
+                        savingDraft: false
+                    }));
+                    if (showNotification) {
+                        this.appActions.showNotification({
+                            id: 'draftSaveFailed'
+                        });
+                    }
+                });
             }
             return Promise.resolve();
         });
@@ -88,8 +116,9 @@ class DraftActions {
                     }]);
                     this.appActions.showNotification({
                         id: 'publishingEntry',
-                        values: { title: draft.get('title') }
+                        values: { title: draft.getIn(['content', 'title']) }
                     });
+                    hashHistory.push(`/${draft.get('akashaId')}/draft/${draft.get('id')}/publish`);
                 },
                 onError: error => dispatch(draftActionCreators.publishDraftError(error, {
                     publishPending: flagOff
@@ -111,9 +140,10 @@ class DraftActions {
         });
         this.deleteDraft(draftId);
     }
-    getDrafts = profile => {
+
+    getDrafts = (akashaId) => {
         draftActionCreators.getDrafts({ fetchingDrafts: true });
-        this.draftService.getAllDrafts(profile)
+        this.draftService.getAllDrafts(akashaId)
             .then(result => this.dispatch(draftActionCreators.getDraftsSuccess(result, {
                 fetchingDrafts: false
             })))
@@ -122,7 +152,7 @@ class DraftActions {
             })));
     };
 
-    getDraftsCount = (profile) => {
+    getDraftsCount = (akashaId) => {
         this.dispatch((dispatch, getState) => {
             const flags = getState().draftState.get('flags');
             if (!flags.get('fetchingDraftsCount') && !flags.get('draftsCountFetched')) {
@@ -130,7 +160,7 @@ class DraftActions {
                     fetchingDraftsCount: true
                 }));
                 this.draftService.getDraftsCount({
-                    profile,
+                    akashaId,
                     onSuccess: result =>
                         dispatch(draftActionCreators.getDraftsCountSuccess(result, {
                             fetchingDraftsCount: false,
@@ -152,7 +182,7 @@ class DraftActions {
             onError: error => this.dispatch(draftActionCreators.getDraftByIdError(error))
         });
 
-    getPublishingDrafts = (profile) => {
+    getPublishingDrafts = (akashaId) => {
         this.dispatch((dispatch, getState) => {
             const flags = getState().draftState.get('flags');
             if (!flags.get('fetchingPublishingDrafts') && !flags.get('publishingDraftsFetched')) {
@@ -160,7 +190,7 @@ class DraftActions {
                     fetchingPublishingDrafts: true,
                 }));
                 this.draftService.getPublishingDrafts({
-                    profile,
+                    akashaId,
                     onSuccess: data =>
                         dispatch(draftActionCreators.getPublishingDraftsSuccess(data, {
                             fetchingPublishingDrafts: false,

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { insertDataBlock } from 'megadraft';
 import { IconButton, Dialog, FlatButton, RaisedButton, SelectField, MenuItem } from 'material-ui';
-import { getResizedImages } from 'utils/imageUtils'; // eslint-disable-line import/no-unresolved, import/extensions
+import { getResizedImages, findBestMatch } from 'utils/imageUtils'; // eslint-disable-line import/no-unresolved, import/extensions
 import PhotoCircle from 'material-ui/svg-icons/image/add-a-photo';
 
 export default class BlockButton extends Component {
@@ -21,7 +21,12 @@ export default class BlockButton extends Component {
         });
     }
     _triggerFileBrowser = () => {
+        this.fileInput.value = '';
         this.fileInput.click();
+        this.setState({
+            isAddingImage: false,
+            error: ''
+        });
     }
     _handleDialogClose = () => {
         this.setState({
@@ -40,10 +45,13 @@ export default class BlockButton extends Component {
         ev.persist(); // keep original event around for later use
         const filePromises = getResizedImages([files[0].path], { minWidth: 320 });
         Promise.all(filePromises).then((results) => {
+            const files = results[0];
+            const bestKey = findBestMatch(640, files);
+            console.log(bestKey, files, 'bestKey from files');
             const data = {
                 files: results[0],
                 type: 'image',
-                media: 'md',
+                media: bestKey,
                 termsAccepted: true,
                 licence: this.state.licence,
                 caption: ''
@@ -62,7 +70,7 @@ export default class BlockButton extends Component {
             }
         }).catch((reason) => {
             this.setState({
-                errors: reason.message
+                error: reason
             });
         });
     }
@@ -72,7 +80,6 @@ export default class BlockButton extends Component {
     _handleImageSelect = () => {
         const files = this.fileInput.files;
         const fileName = files[0].name;
-        console.log(files);
         this.setState({
             fileName
         });
@@ -154,10 +161,10 @@ export default class BlockButton extends Component {
                   />
                 </div>
               </div>
-              {this.state.errors &&
+              {this.state.error &&
                 <div className="row">
                   <div className="col-xs-12">
-                    <p>{this.state.error}</p>
+                    <small style={{ color: 'red' }}>{this.state.error}</small>
                   </div>
                 </div>
               }
@@ -194,5 +201,7 @@ export default class BlockButton extends Component {
 }
 BlockButton.propTypes = {
     onChange: React.PropTypes.func,
-    editorState: React.PropTypes.shape()
+    editorState: React.PropTypes.shape(),
+    showTerms: React.PropTypes.func,
+    onClick: React.PropTypes.func
 };

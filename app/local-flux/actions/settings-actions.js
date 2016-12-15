@@ -85,11 +85,18 @@ class SettingsActions {
         }
     }
 
-    getUserSettings = (akashaId) =>
+    saveDefaultEntryLicence = (akashaId, licenceObj) => {
+        this.settingsService.saveDefaultLicence({
+            akashaId,
+            licenceObj
+        });
+    }
+
+    getUserSettings = akashaId =>
         this.settingsService.getUserSettings({
             akashaId,
-            onSuccess: (data) => this.dispatch(settingsActionCreators.getUserSettingsSuccess(data)),
-            onError: (error) => this.dispatch(settingsActionCreators.getUserSettingsError(error))
+            onSuccess: data => this.dispatch(settingsActionCreators.getUserSettingsSuccess(data)),
+            onError: error => this.dispatch(settingsActionCreators.getUserSettingsError(error))
         });
 
     clearUserSettings = () => this.dispatch(settingsActionCreators.clearUserSettings());

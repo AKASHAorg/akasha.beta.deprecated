@@ -34,7 +34,8 @@ const IpfsSettings = Record({
 
 const UserSettings = Record({
     akashaId: null,
-    lastBlockNr: null
+    lastBlockNr: null,
+    defaultLicence: null
 });
 
 const GeneralSettings = Record({

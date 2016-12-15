@@ -8,86 +8,135 @@ import {
     MenuItem } from 'material-ui';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import { getWordCount } from 'utils/dataModule'; // eslint-disable-line import/no-unresolved, import/extensions
-import EntryEditor from 'shared-components/EntryEditor'; // eslint-disable-line import/no-unresolved, import/extensions
+import { AlertDialog, EntryEditor } from 'shared-components'; // eslint-disable-line import/no-unresolved, import/extensions
+import { generalMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
+import { injectIntl } from 'react-intl';
+
 
 class AddEntryPage extends Component {
-    constructor (props) {
-        super(props);
-        this.state = {
-            publishable: true,
-            draftToEdit: {},
-            isNewDraft: false,
-            fetchingDraft: false
-        };
+    state = {
+        isNewDraft: false,
+        fetchingDraft: false
+    };
+    componentDidMount () {
+        const { drafts, params } = this.props;
+        this.context.router.setRouteLeaveHook(this.props.route, this.onPageLeave);
+        const currentDraft = this._findCurrentDraft(drafts);
+        if (params.draftId !== 'new' && !currentDraft) {
+            this.getDraft(params.draftId);
+        }
     }
-    componentWillMount () {
-        const { params, draftActions } = this.props;
+    componentWillReceiveProps (nextProps) {
+        const { drafts, params, route } = nextProps;
+        const currentDraft = this._findCurrentDraft(drafts);
         if (params.draftId === 'new') {
-            return this.setState({
+            this.setState({
                 isNewDraft: true,
                 fetchingDraft: false
             });
-        }
-        return this.setState({
-            fetchingDraft: true
-        }, () => {
-            draftActions.getDraftById(parseInt(params.draftId, 10));
-        });
-    }
-    componentWillReceiveProps (nextProps) {
-        const { drafts } = nextProps;
-        // logic for populating existing draft;
-        const currentDraft = this._findCurrentDraft(drafts);
-        if (this.state.isNewDraft) {
-            return this.setState({
-                fetchingDraft: false
+        } else if (!currentDraft && !this.state.fetchingDraft) {
+            this.getDraft(params.draftId);
+        } else {
+            this.setState({
+                isNewDraft: false
             });
         }
-        return this.setState({
-            fetchingDraft: (typeof currentDraft === 'undefined')
-        });
+    }
+    // display an alert when leaving route
+    onPageLeave = (nextLocation) => {
+        const nextPathIsPublish = nextLocation.pathname.indexOf('publish') > -1;
+        if (this.state.shouldBeSaved && !this.waitingConfirm && !nextPathIsPublish) {
+            if (this.alertDialog) {
+                this.alertDialog.show(((confirmed) => {
+                    if (confirmed) {
+                        this.context.router.push(nextLocation);
+                    }
+                    this.waitingConfirm = false;
+                }));
+                this.waitingConfirm = true;
+                return false;
+            }
+        }
+    }
+    // fetch draft with id
+    getDraft = (draftId) => {
+        const { draftActions } = this.props;
+        draftActions.getDraftById(parseInt(draftId, 10));
     }
     _findCurrentDraft = (drafts) => {
         const { params } = this.props;
         return drafts.find(draft => draft.id === parseInt(params.draftId, 10));
     }
-
-    _checkIfMustSave = () => {
-        if (this.state.shouldBeSaved) {
-            return 'You have unsaved changes!, Are you sure you want to leave?';
-        }
-        return true;
+    // we only want to check if it should be saved so no params needed
+    _handleEditorChange = () => {
+        this.setState({
+            shouldBeSaved: true
+        });
     }
     _handleDraftSave = () => {
-        this._saveDraft();
+        const { params } = this.props;
+        this._saveDraft().then((draft) => {
+            let draftId;
+            if (draft.id) {
+                draftId = draft.id;
+            }
+            if (typeof draft === 'number') {
+                draftId = draft;
+            }
+            this.setState({
+                shouldBeSaved: false
+            }, () => {
+                this.context.router.push(`/${params.akashaId}/draft/${draftId}`);
+            });
+        });
     }
+    // published draft structure
+    /**
+     * {
+     *   content: { title, featuredImage, excerpt, licence, draft, wordCount }
+     *   tags: []
+     * }
+     */
     _saveDraft = () => {
-        const { draftActions, params, loggedProfile, drafts } = this.props;
-        const content = this.editor.getRawContent();
+        const { draftActions, params, drafts } = this.props;
+        let { defaultLicence } = this.props;
+        const draft = this.editor.getRawContent();
         const contentState = this.editor.getContent();
         const title = this.editor.getTitle();
         const wordCount = getWordCount(contentState);
         const excerpt = contentState.getPlainText().slice(0, 160).replace(/\r?\n|\r/g, '');
+        const akashaId = params.akashaId;
+        const showNotification = true;
+        if (!defaultLicence) defaultLicence = { parent: '1', id: null };
         if (params.draftId !== 'new') {
             const draftId = parseInt(params.draftId, 10);
             const currentDraft = this._findCurrentDraft(drafts);
-            const { tags = [], licence = {}, profile, featuredImage, status } = currentDraft;
+            const { tags = [], licence = defaultLicence, featuredImage } = currentDraft;
             return draftActions.updateDraft({
                 id: draftId,
-                content,
+                content: {
+                    title,
+                    featuredImage,
+                    excerpt,
+                    licence,
+                    draft,
+                    wordCount
+                },
                 tags: Array.isArray(tags) ? [] : tags.toJS(),
-                licence: licence.toJS(),
-                profile,
-                featuredImage,
-                status,
-                title,
-                wordCount,
-                excerpt
-            });
+                akashaId
+            }, showNotification);
         }
 
-        return draftActions
-            .createDraft(loggedProfile.get('profile'), { content, title, wordCount, excerpt });
+        return draftActions.createDraft(akashaId, {
+            content: {
+                title,
+                draft,
+                wordCount,
+                excerpt,
+                licence: defaultLicence
+            },
+            tags: []
+        }, showNotification);
     };
     _setupEntryForPublication = () => {
         const { params } = this.props;
@@ -103,7 +152,7 @@ class AddEntryPage extends Component {
         });
     }
     _getHeaderTitle = () => {
-        const { savingDraft } = this.props;
+        const { savingDraft, entriesCount, draftsCount } = this.props;
         const { fetchingDraft, draftMissing, isNewDraft } = this.state;
         let headerTitle = 'First entry';
         if (savingDraft) {
@@ -112,18 +161,10 @@ class AddEntryPage extends Component {
             headerTitle = 'Finding draft';
         } else if (draftMissing) {
             headerTitle = 'Draft is missing';
-        } else if (!isNewDraft) {
+        } else if (!isNewDraft || (entriesCount > 0) || (draftsCount > 0)) {
             headerTitle = 'New Entry';
         }
         return headerTitle;
-    }
-    _getInitialContent = () => {
-        const { isNewDraft, fetchingDraft } = this.state;
-        const { drafts } = this.props;
-        if (isNewDraft || fetchingDraft) {
-            return null;
-        }
-        return this._findCurrentDraft(drafts).get('content');
     }
     _handleDraftDelete = () => {
         const { params, draftActions } = this.props;
@@ -131,12 +172,21 @@ class AddEntryPage extends Component {
         draftActions.deleteDraft(parseInt(draftId, 10));
         this.context.router.push(`/${params.akashaId}/explore/tag`);
     }
+    _getDraftContent = () => {
+        const { drafts } = this.props;
+        const { fetchingDraft, isNewDraft } = this.state;
+        const currentDraft = this._findCurrentDraft(drafts);
+        if (fetchingDraft || isNewDraft || !currentDraft) {
+            return null;
+        }
+        return currentDraft.getIn(['content', 'draft']);
+    }
     render () {
-        const { appActions, drafts, savingDraft } = this.props;
+        const { appActions, drafts, savingDraft, intl } = this.props;
         const { fetchingDraft, draftMissing, isNewDraft } = this.state;
         const currentDraft = this._findCurrentDraft(drafts);
-        const initialContent = this._getInitialContent();
-        const draftTitle = currentDraft ? currentDraft.title : '';
+        const initialContent = this._getDraftContent();
+        const draftTitle = currentDraft ? currentDraft.content.title : '';
         return (
           <div>
             <Toolbar
@@ -164,7 +214,6 @@ class AddEntryPage extends Component {
                 <FlatButton
                   primary
                   label="Publish"
-                  disabled={!this.state.publishable}
                   onClick={this._setupEntryForPublication}
                 />
                 <IconMenu
@@ -194,7 +243,7 @@ class AddEntryPage extends Component {
                 <div>The draft you are looking for cannot be found!</div>
               }
               {!fetchingDraft && !draftMissing &&
-                <div className="col-xs-12">
+                <div className="col-xs-12" style={{ paddingRight: 0 }}>
                   <EntryEditor
                     editorRef={(editor) => { this.editor = editor; }}
                     onChange={this._handleEditorChange}
@@ -204,6 +253,12 @@ class AddEntryPage extends Component {
                     showTitle
                     placeHolder="Write something"
                     showTerms={appActions.showTerms}
+                  />
+                  <AlertDialog
+                    ref={(alert) => { this.alertDialog = alert; }}
+                    message={'Are you sure you want to leave? Unsaved changes will be lost!'}
+                    confirmLabel={intl.formatMessage(generalMessages.leave)}
+                    cancelLabel={intl.formatMessage(generalMessages.cancel)}
                   />
                 </div>
               }
@@ -231,13 +286,17 @@ class AddEntryPage extends Component {
 AddEntryPage.propTypes = {
     appActions: React.PropTypes.shape(),
     draftActions: React.PropTypes.shape().isRequired,
-    loggedProfile: React.PropTypes.shape(),
     params: React.PropTypes.shape(),
     children: React.PropTypes.node,
     drafts: React.PropTypes.shape(),
-    savingDraft: React.PropTypes.bool
+    savingDraft: React.PropTypes.bool,
+    route: React.PropTypes.shape(),
+    entriesCount: React.PropTypes.number,
+    draftsCount: React.PropTypes.number,
+    intl: React.PropTypes.shape(),
+    defaultLicence: React.PropTypes.shape()
 };
 AddEntryPage.contextTypes = {
     router: React.PropTypes.shape()
 };
-export default AddEntryPage;
+export default injectIntl(AddEntryPage);

@@ -15,27 +15,25 @@ class PublishPanel extends React.Component {
         super(props);
         this.state = {
             isLicencingOpen: false,
-            title: '',
-            content: null,
-            excerpt: '',
-            tags: [],
-            existingTags: [],
-            licence: null,
-            featuredImage: {},
+            draft: null,
             fetchingDraft: true,
-            validationErrors: []
+            validationErrors: [],
+            existingTags: []
         };
+        this.tagService = new TagService();
     }
     componentDidMount () {
-        this.panelSize = this.container.getBoundingClientRect();
+        if (this.container) {
+            this.panelSize = this.container.getBoundingClientRect();
+        }
+        if (this.props.draft) {
+            this._populateDraft(this.props.draft);
+        }
         document.body.style.overflow = 'hidden';
     }
     componentWillReceiveProps (nextProps) {
-        const { draft, params } = nextProps;
-        const loggedProfileData = this._getLoggedProfileData();
-        if (draft && draft.getIn(['status', 'publishing'])) {
-            this.context.router.push(`/${loggedProfileData.get('akashaId')}/draft/${params.draftId}/publish-status`);
-        } else if (draft && !draft.getIn(['status', 'publishing'])) {
+        const { draft } = nextProps;
+        if (draft && !draft.equals(this.props.draft)) {
             this._populateDraft(draft);
             if (this.state.fetchingDraft) {
                 this.setState({
@@ -47,47 +45,24 @@ class PublishPanel extends React.Component {
     componentWillUnmount () {
         document.body.style.overflow = 'initial';
     }
+
     _populateDraft = (draft) => {
-        const { content, licence, excerpt, tags, wordCount } = draft;
-        let { title, featuredImage } = draft;
-        const contentMap = convertFromRaw(content.toJS());
-        const blockMap = contentMap.getBlockMap();
-        const tagsHaveChanged = (draft && !this.props.draft) ||
-            (tags && this.props.draft && !tags.equals(this.props.draft.tags));
-        if (!featuredImage) {
-            featuredImage = this._generateFeaturedImage(blockMap);
-        }
-        if (tags && tags.size > 0 && tags.size > this.state.tags.length && tagsHaveChanged) {
+        const tags = draft.get('tags');
+        const tagsHaveChanged = draft.get('tags') && this.props.draft && !draft.get('tags').equals(this.props.draft.get('tags'));
+        if (tags && tags.size > 0 && tagsHaveChanged) {
             this._checkExistingTags(tags);
         }
         this.setState({
-            title,
-            content,
-            excerpt,
-            tags: tags ? tags.toJS() : [],
-            licence,
-            featuredImage,
-            wordCount
+            draft
         });
-    }
+    };
+
     _getLoggedProfileData = () => {
         const { loggedProfile, profiles } = this.props;
         return profiles.find(prf =>
             prf.get('profile') === loggedProfile.get('profile'));
-    }
+    };
 
-    _generateFeaturedImage = (blockMap) => {
-        const imageBlock = blockMap.find(block =>
-            block.type === 'atomic' && block.data.get('type') === 'image');
-        if (imageBlock) return imageBlock.data.get('files');
-        return null;
-    }
-    _findImageSource = (imageFiles) => {
-        // @TODO move this to a config file
-        const recommendedFeaturedImageWidth = '640';
-        const imageObject = findBestMatch(recommendedFeaturedImageWidth, imageFiles);
-        return imageObject.src;
-    }
     _handleLicenceDialogClose = () => {
         this.setState({
             isLicencingOpen: false
@@ -98,52 +73,28 @@ class PublishPanel extends React.Component {
             isLicencingOpen: true
         });
     };
-    _handleLicenceSet = (ev, selectedLicence) => {
+    _handleLicenceSet = (ev, selectedLicence, isDefault) => {
+        const { settingsActions, loggedProfile } = this.props;
+        if (isDefault) {
+            settingsActions.saveDefaultEntryLicence(loggedProfile.get('akashaId'), selectedLicence);
+        }
         this.setState({
-            licence: selectedLicence,
+            draft: this.state.draft.setIn(['content', 'licence'], selectedLicence),
             isLicencingOpen: false
         }, () => {
-            this._handleDraftUpdate('licence', selectedLicence);
+            this._handleDraftUpdate('content.licence', selectedLicence);
         });
     };
     _publishEntry = () => {
-        const { draftActions, appActions, profiles, loggedProfile } = this.props;
-        const loggedProfileData = profiles.find(prf =>
-            prf.get('profile') === loggedProfile.get('profile'));
-
-        const draftId = parseInt(this.props.params.draftId, 10);
+        const { draftActions, appActions } = this.props;
         this.setState({
             validationErrors: []
         });
-        this._validateEntry(({
-            title,
-            content,
-            excerpt,
-            licence,
-            featuredImage,
-            tags,
-            wordCount }) => {
-            if (featuredImage) {
-                featuredImage = this._findImageSource(featuredImage);
-            }
-            const cleanDraft = {
-                id: draftId,
-                title,
-                content,
-                excerpt,
-                licence,
-                featuredImage,
-                tags,
-                wordCount,
-                profile: loggedProfileData.get('profile'),
-                status: {
-                    publishing: true
-                }
-            };
-            draftActions.updateDraft(cleanDraft);
+        this._validateEntry(() => {
+            draftActions.updateDraft(this.state.draft.toJS());
             appActions.addPendingAction({
                 type: 'publishEntry',
-                payload: cleanDraft,
+                payload: this.state.draft.toJS(),
                 titleId: 'publishEntryTitle',
                 messageId: 'publishEntry',
                 gas: 4000000,
@@ -152,18 +103,9 @@ class PublishPanel extends React.Component {
         });
     };
     _validateEntry = (cb) => {
-        const {
-            tags,
-            title,
-            content,
-            excerpt,
-            licence,
-            featuredImage,
-            existingTags,
-            wordCount
-        } = this.state;
+        const { draft, existingTags } = this.state;
         const validationErrors = this.state.validationErrors.slice();
-        if (!title || title === '') {
+        if (!draft.getIn(['content', 'title']) || draft.getIn(['content', 'title']) === '') {
             validationErrors.push({
                 field: 'title',
                 error: 'Title must not be empty'
@@ -175,19 +117,19 @@ class PublishPanel extends React.Component {
                 error: 'You must add at least 1 valid tag'
             });
         }
-        if (existingTags && existingTags.length !== tags.length) {
+        if (existingTags && existingTags.length !== draft.get('tags').size) {
             validationErrors.push({
                 field: 'tags',
                 error: 'You have unregistered tags. Please either remove or register them.'
             });
         }
-        if (!licence) {
+        if (!draft.getIn(['content', 'licence'])) {
             validationErrors.push({
                 field: 'licence',
                 error: 'Please review the licence'
             });
         }
-        if (!excerpt || excerpt.length < 60) {
+        if (!draft.getIn(['content', 'excerpt']) || draft.getIn(['content', 'excerpt']).size < 35) {
             validationErrors.push({
                 field: 'excerpt',
                 error: 'Please provide a longer excerpt'
@@ -198,45 +140,27 @@ class PublishPanel extends React.Component {
                 validationErrors
             });
         }
-        return cb({
-            title,
-            content,
-            excerpt,
-            licence,
-            featuredImage,
-            tags,
-            wordCount
-        });
+        return cb();
     }
     _handleTagAdd = (tag) => {
-        const newTags = [...this.state.tags, tag];
+        const newTags = this.state.draft.get('tags').push(tag);
         this.setState({
-            tags: newTags
+            draft: this.state.draft.setIn(['tags'], newTags)
         }, () => {
             this._checkExistingTags(newTags);
-            this._handleDraftUpdate('tags', this.state.tags);
+            this._handleDraftUpdate('tags', this.state.draft.get('tags').toJS());
         });
     };
     _handleTagDelete = (index) => {
-        const { tagActions, pendingTags } = this.props;
-        const currentTags = [...this.state.tags];
-        const tag = currentTags[index];
-        currentTags.splice(index, 1);
+        const tag = this.state.draft.getIn(['tags', index]);
+        const newTags = this.state.draft.get('tags').delete(index);
         this.setState({
-            tags: currentTags,
+            draft: this.state.draft.set('tags', newTags),
             existingTags: this.state.existingTags.filter(tg => tg !== tag),
             validationErrors: this.state.validationErrors.filter(err => err.field !== 'tags')
         }, () => {
-            // const pendingTag = pendingTags.find(tagObj => tagObj.tag === tag);
-            // const erroredTag = pendingTags.filter(tags => typeof tags.error === 'object')
-            //                              .find(tagObj => tagObj.error.from.tagName === tag);
-            // if (erroredTag) {
-            //     tagActions.deletePendingTag({ tag: erroredTag.error.from.tagName });
-            // }
-            // if (!erroredTag && pendingTag) {
-            //     tagActions.deletePendingTag(pendingTag);
-            // }
-            this._handleDraftUpdate('tags', this.state.tags);
+            console.log(this.state);
+            this._handleDraftUpdate('tags', this.state.draft.get('tags').toJS());
         });
     };
     _handleDraftUpdate = (field, value) => {
@@ -246,32 +170,33 @@ class PublishPanel extends React.Component {
             [field]: value
         });
     };
-    _getFeaturedImage = () => {
-        const panelSize = this.panelSize || { width: 550 };
-        if (this.state.featuredImage) {
-            return {
-                files: this.state.featuredImage,
-                containerSize: panelSize
-            };
-        }
-        return null;
-    };
+    // _getFeaturedImage = () => {
+    //     const panelSize = this.panelSize || { width: 550 };
+    //     if (this.state.featuredImage) {
+    //         return {
+    //             files: this.state.featuredImage,
+    //             containerSize: panelSize
+    //         };
+    //     }
+    //     return null;
+    // };
     _checkExistingTags = (tags) => {
+        console.log('checking tags');
         this.setState({
             checkingTags: true
         }, () => {
-            const tagService = new TagService();
             let tagsPromise = Promise.resolve();
             tags.forEach((tag) => {
                 tagsPromise = tagsPromise.then(prevData =>
                     new Promise((resolve, reject) => {
-                        tagService.checkExistingTags(tag, (ev, { data, error }) => {
+                        this.tagService.checkExistingTags(tag, (ev, { data, error }) => {
                             if (error) {
                                 return reject(error);
                             }
                             if (prevData) {
                                 return resolve(prevData.concat([data]));
                             }
+                            this.tagService.removeExistsListeners();
                             return resolve([data]);
                         });
                     })
@@ -285,8 +210,6 @@ class PublishPanel extends React.Component {
                     validationErrors: existingTags.length ?
                         this.state.validationErrors.filter(err => err.field !== 'tags') :
                         this.state.validationErrors
-                }, () => {
-                    tagService.removeExistsListeners();
                 });
             });
         });
@@ -322,13 +245,13 @@ class PublishPanel extends React.Component {
     }
     _handleTitleChange = (ev) => {
         this.setState({
-            title: ev.target.value,
+            draft: this.state.draft.setIn(['content', 'title'], ev.target.value),
             validationErrors: this.state.validationErrors.filter(err => err.field !== 'title')
         });
     };
     _handleExcerptChange = (ev) => {
         this.setState({
-            excerpt: ev.target.value,
+            draft: this.state.draft.setIn(['content', 'excerpt'], ev.target.value),
             validationErrors: this.state.validationErrors.filter(err => err.field !== 'excerpt')
         });
     };
@@ -353,8 +276,11 @@ class PublishPanel extends React.Component {
         };
     }
     render () {
-        const { tags, validationErrors, existingTags } = this.state;
+        const { draft, validationErrors, existingTags } = this.state;
         const { registerPending, licences } = this.props;
+        if (!draft) {
+            return <div>Loading</div>;
+        }
         return (
           <div ref={(container) => { this.container = container; }} className="mdfckr-container">
             <PanelContainer
@@ -392,22 +318,22 @@ class PublishPanel extends React.Component {
                 onDone={this._handleLicenceSet}
                 licences={licences}
               />
-              <div className="col-xs-12">
-                <div className="col-xs-12 field">
+              <div className="col-xs-12" style={{ marginTop: 48 }}>
+                <div className="col-xs-12" style={{ marginBottom: 32 }}>
                   <small>Title shown in preview</small>
                   <TextField
                     name="title"
                     fullWidth
-                    value={this.state.title || ''}
+                    value={this.state.draft.content.title || ''}
                     onChange={this._handleTitleChange}
-                    onBlur={ev => this._handleDraftUpdate('title', ev.target.value)}
+                    onBlur={ev => this._handleDraftUpdate('content.title', ev.target.value)}
                     errorText={
                         validationErrors.filter(ve => ve.field === 'title')
                               .map(err => `${err.error}`)[0]
                     }
                   />
                 </div>
-                <div className="col-xs-12 field">
+                {/* <div className="col-xs-12 field">
                   <small>Featured Image</small>
                   <ImageUploader
                     ref={(featuredImageUploader) => {
@@ -416,11 +342,11 @@ class PublishPanel extends React.Component {
                     dialogTitle={'Add a featured image'}
                     initialImage={this._getFeaturedImage()}
                   />
-                </div>
-                <div className="col-xs-12 field">
+                </div> */}
+                <div className="col-xs-12" style={{ marginBottom: 32 }}>
                   <small>Tags</small>
                   <TagsField
-                    tags={tags}
+                    tags={draft.get('tags') ? draft.get('tags').toJS() : []}
                     checkExistingTags={this._checkExistingTags}
                     existingTags={existingTags}
                     registerPending={registerPending}
@@ -436,22 +362,22 @@ class PublishPanel extends React.Component {
                     }
                   />
                 </div>
-                <div className="col-xs-12 field">
+                <div className="col-xs-12" style={{ marginBottom: 32 }}>
                   <small>Excerpt shown in preview</small>
                   <TextField
                     name="excerpt"
                     multiLine
                     fullWidth
-                    value={this.state.excerpt}
+                    value={this.state.draft.content.excerpt}
                     onChange={this._handleExcerptChange}
-                    onBlur={ev => this._handleDraftUpdate('excerpt', ev.target.value)}
+                    onBlur={ev => this._handleDraftUpdate('content.excerpt', ev.target.value)}
                     errorText={
                         validationErrors.filter(ve => ve.field === 'excerpt')
                               .map(err => `${err.error}`)[0]
                     }
                   />
                 </div>
-                <div className="col-xs-12 field">
+                <div className="col-xs-12" style={{ marginBottom: 32 }}>
                   <small>Licence</small>
                   <TextField
                     name="licence"
@@ -464,13 +390,13 @@ class PublishPanel extends React.Component {
                     value={this._getLicenceMeta().label}
                   />
                 </div>
-                <div className="col-xs-12 field" style={{ marginBottom: 24 }}>
+                {/** <div className="col-xs-12 field" style={{ marginBottom: 24 }}>
                   <small>
                     By proceeding to publish this entry, you agree with the
                     <b> 0.005 AETH</b> fee which will be deducted from your
                     <b> 0.02 AETH</b> balance.
                   </small>
-                </div>
+                </div> */}
               </div>
             </PanelContainer>
           </div>
@@ -487,7 +413,9 @@ PublishPanel.propTypes = {
     entryActions: React.PropTypes.shape(),
     licences: React.PropTypes.shape(),
     appActions: React.PropTypes.shape(),
-    intl: React.PropTypes.shape()
+    intl: React.PropTypes.shape(),
+    settingsActions: React.PropTypes.shape(),
+    draft: React.PropTypes.shape()
 };
 PublishPanel.contextTypes = {
     router: React.PropTypes.shape()
