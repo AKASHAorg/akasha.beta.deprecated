@@ -12,7 +12,7 @@ function mapStateToProps (state, ownProps) {
         fetchingFullEntry: state.entryState.getIn(['flags', 'fetchingFullEntry']),
         fetchingComments: state.commentsState.getIn(['flags', 'fetchingComments']),
         fetchingEntryBalance: state.entryState.getIn(['flags', 'fetchingEntryBalance']),
-        licences: fullEntry && state.entryState.get('licences'),
+        licences: state.entryState.get('licences'),
         loggedProfile: state.profileState.get('loggedProfile'),
         profiles: state.profileState.get('profiles'),
         savedEntries: state.entryState.get('savedEntries').map(entry => entry.get('entryId')),
