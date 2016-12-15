@@ -82,6 +82,7 @@ class PublishPanel extends React.Component {
             draft: this.state.draft.setIn(['content', 'licence'], selectedLicence),
             isLicencingOpen: false
         }, () => {
+            console.log(selectedLicence, 'selected licence');
             this._handleDraftUpdate('content.licence', selectedLicence);
         });
     };
@@ -257,7 +258,7 @@ class PublishPanel extends React.Component {
     };
     _getLicenceMeta = () => {
         const { licences } = this.props;
-        const { licence } = this.state;
+        const licence = this.state.draft.get('licence');
         if (licences.size === 0) {
             return {
                 description: [],
@@ -313,7 +314,7 @@ class PublishPanel extends React.Component {
             >
               <LicenceDialog
                 isOpen={this.state.isLicencingOpen}
-                defaultSelected={this.state.licence}
+                defaultSelected={this.state.draft.get('licence')}
                 onRequestClose={this._handleLicenceDialogClose}
                 onDone={this._handleLicenceSet}
                 licences={licences}
