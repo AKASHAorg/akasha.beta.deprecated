@@ -4,7 +4,7 @@
   "private": true,
   "description": "Akasha platform",
   "main": "main.js",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "scripts": {
     "test": "cross-env NODE_ENV=test BABEL_DISABLE_CACHE=1 mocha --compilers js:babel-register --recursive --require ./test/setup.js test/**/*.spec.js",
     "test-watch": "npm test -- --watch",
