@@ -77,7 +77,11 @@ const eProcState = createReducer(initialState, {
 
     [types.START_GETH_SUCCESS]: (state, action) => {
         const newStatus = action.data;
-        if (newStatus.starting) {
+        const syncActionId = state.get('syncActionId') === 3 && newStatus.api ?
+            1 :
+            state.get('syncActionId');
+
+        if (newStatus.starting || newStatus.spawned || newStatus.api) {
             newStatus.downloading = null;
         }
         if (newStatus.started || newStatus.spawned) {
@@ -86,7 +90,8 @@ const eProcState = createReducer(initialState, {
         }
         return state.merge({
             gethStatus: state.get('gethStatus').merge(newStatus),
-            gethErrors: state.get('gethErrors').clear()
+            gethErrors: state.get('gethErrors').clear(),
+            syncActionId
         });
     },
 

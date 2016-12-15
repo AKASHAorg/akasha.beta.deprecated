@@ -146,7 +146,7 @@ class WeightConfirmDialog extends React.PureComponent {
         return (
           <Dialog
             contentStyle={{ width: 420, maxWidth: 'none', height: '415px' }}
-            bodyStyle={{ paddingBottom: 0 }}
+            bodyStyle={{ paddingBottom: '24px' }}
             modal
             title={<div style={{ fontSize: 24 }}>{title}</div>}
             open={isOpen}
@@ -227,34 +227,6 @@ class WeightConfirmDialog extends React.PureComponent {
                 >
                   <InfoIcon />
                 </IconButton>
-              </div>
-              <div style={{ paddingTop: '10px' }}>
-                <small>
-                  {!voteWeightError &&
-                    <div style={{ display: 'flex' }}>
-                      <span style={{ flex: '1 1 auto' }}>
-                        By proceeding to vote this entry, you agree to pay {voteWeightCost} AETH
-                        excluding gas cost which will be deducted from your {shortBalance} AETH
-                        balance.
-                      </span>
-                      <IconButton
-                        tooltip={
-                          <div style={{ textAlign: 'left' }}>
-                            <div>
-                              {voteFundsDestination}: {voteWeightCost && voteWeightCost.slice(0, -1)} AETH
-                            </div>
-                            <div>Fee: {fee} AETH</div>
-                            <div>Total: {voteWeightCost} AETH</div>
-                          </div>
-                        }
-                        tooltipPosition="top-left"
-                        style={{ flex: '0 0 auto' }}
-                      >
-                        <InfoIcon />
-                      </IconButton>
-                    </div>
-                  }
-                </small>
               </div>
               {!active &&
                 <div style={{ color: 'red' }}>
