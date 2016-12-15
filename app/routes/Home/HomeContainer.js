@@ -53,7 +53,7 @@ class HomeContainer extends React.Component {
             profileActions.getProfileData([{ profile: loggedProfile.get('profile') }], true);
             transactionActions.getMinedTransactions();
             transactionActions.getPendingTransactions();
-            draftActions.getDraftsCount(loggedProfile.get('profile'));
+            draftActions.getDraftsCount(loggedProfile.get('akashaId'));
             entryActions.getSavedEntries(loggedProfile.get('akashaId'));
             tagActions.getSelectedTag(loggedProfile.get('akashaId'));
             settingsActions.getUserSettings(loggedProfile.get('akashaId'));

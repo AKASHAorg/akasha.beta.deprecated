@@ -14,7 +14,7 @@ html, body {
     flex-direction: column;
 }
 
-.fill-height > div {
+.fill-height > div:first-child {
     width: 100%;
     flex-grow: 1;
     flex-shrink: 1;
