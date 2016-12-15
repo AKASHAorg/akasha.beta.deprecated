@@ -23,6 +23,9 @@ class TransactionActions {
                 onSuccess: (data) => {
                     this.dispatch(transactionActionCreators.transactionMinedSuccess(data));
                     const profileKey = getState().profileState.getIn(['loggedProfile', 'account']);
+                    if (!profileKey) {
+                        return;
+                    }
                     this.profileService.getProfileBalance({
                         options: {
                             etherBase: profileKey

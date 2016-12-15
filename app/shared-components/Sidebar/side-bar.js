@@ -68,7 +68,7 @@ class SideBar extends Component {
               <div style={{ textAlign: 'center' }}>
                 {balance && balance.slice(0, 6)}
               </div>
-              <div style={{ textAlign: 'center' }}>ETH</div>
+              <div style={{ textAlign: 'center' }}>AETH</div>
             </div>
             <div style={{ flexGrow: 1, padding: '14px' }} >
               {(entriesCount > 0 || draftsCount > 0) ?

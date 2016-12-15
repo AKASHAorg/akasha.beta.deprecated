@@ -6,9 +6,9 @@ import {
     Divider,
     Checkbox,
     SvgIcon } from 'material-ui';
-import { CreativeCommonsBY, CreativeCommonsCC, CreativeCommonsNCEU, CreativeCommonsNCJP,
-  CreativeCommonsNC, CreativeCommonsND, CreativeCommonsREMIX, CreativeCommonsSHARE,
-  CreativeCommonsZERO, CreativeCommonsPD, CreativeCommonsSA
+import { AllRightsReserved, CreativeCommonsBY, CreativeCommonsCC, CreativeCommonsNCEU,
+    CreativeCommonsNCJP, CreativeCommonsNC, CreativeCommonsND, CreativeCommonsREMIX,
+    CreativeCommonsSHARE, CreativeCommonsZERO, CreativeCommonsPD, CreativeCommonsSA
 } from 'shared-components/svg'; // eslint-disable-line import/no-unresolved, import/extensions
 
 class LicenceDialog extends React.Component {
@@ -17,6 +17,12 @@ class LicenceDialog extends React.Component {
         this.state = {
             defaultLicence: props.defaultSelected
         };
+    }
+    _getViewBox = (icon) => {
+        if (icon === 'CCBY' || icon === 'copyright-1') {
+            return '0 0 20 20';
+        }
+        return '0 0 18 18';
     }
     _handleDialogCancel = (ev) => {
         this.props.onRequestClose(ev);
@@ -33,7 +39,7 @@ class LicenceDialog extends React.Component {
         this.setState({
             defaultLicence: {
                 parent: val,
-                id: null
+                id: val === '1' ? val : null
             }
         });
     }
@@ -46,6 +52,7 @@ class LicenceDialog extends React.Component {
         const { licences } = this.props;
         const { defaultLicence } = this.state;
         const licenceIcons = {
+            ['copyright-1']: AllRightsReserved,
             CCBY: CreativeCommonsBY,
             CCCC: CreativeCommonsCC,
             CCNCEU: CreativeCommonsNCEU,
@@ -118,7 +125,10 @@ class LicenceDialog extends React.Component {
                   .description
                   .map((licDescription, key) =>
                     <small key={key} className="row top-xs" style={{ marginTop: 8 }}>
-                      <SvgIcon className="material-icons" style={{ fontSize: 18 }}>
+                      <SvgIcon
+                        viewBox={this._getViewBox(licDescription.icon)}
+                        style={{ height: '20px', width: '20px' }}
+                      >
                         {React.createElement(licenceIcons[licDescription.icon])}
                       </SvgIcon>
                       <div className="col-xs-11">
