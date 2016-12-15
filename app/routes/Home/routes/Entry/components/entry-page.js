@@ -215,16 +215,16 @@ class EntryPage extends Component {
         const { blockNr, canClaimPending, claimPending, comments, entry, fetchingComments,
             fetchingEntryBalance, fetchingFullEntry, intl, licences, loggedProfile, profiles,
             savedEntries, votePending } = this.props;
+        const { publisherTitleShadow } = this.state;
+        if (!entry || fetchingFullEntry) {
+            return <DataLoader flag={true} size={80} style={{ paddingTop: '120px' }} />;
+        }
         const licence = licences ?
             licences.find(lic => lic.id === entry.content.licence.id) :
             {};
         const licenceLabel = licence.parent ?
             licences.find(lic => lic.id === licence.parent).label :
             licence.label;
-        const { publisherTitleShadow } = this.state;
-        if (!entry || fetchingFullEntry) {
-            return <DataLoader flag={true} size={80} style={{ paddingTop: '120px' }} />;
-        }
         const blockNumberDiff = blockNr - entry.entryEth.blockNr;
         const loggedProfileData = profiles.find(prf => prf.get('profile') === loggedProfile.get('profile'));
         const loggedProfileAvatar = loggedProfileData.get('avatar');
