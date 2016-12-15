@@ -9,32 +9,28 @@ const ErrorRecord = Record({
     fatal: false
 });
 
-const DraftContent = Record({
-    entityMap: {},
-    blocks: []
-});
-
 const DraftLicence = Record({
     parent: '2',
     id: '4'
 });
 
+const DraftContent = Record({
+    draft: null,
+    title: '',
+    excerpt: '',
+    wordCount: 0,
+    licence: new DraftLicence()
+});
+
+
 const Draft = Record({
     id: null,
     content: new DraftContent(),
-    profile: null,
-    title: '',
-    wordCount: 0,
-    excerpt: null,
-    featuredImage: null,
     tags: new List(),
+    akashaId: null,
     tx: null,
-    licence: new DraftLicence(),
-    status: {
-        created_at: '',
-        updated_at: '',
-        publishing: false
-    }
+    created_at: null,
+    updated_at: null
 });
 
 const initialState = fromJS({
@@ -44,13 +40,24 @@ const initialState = fromJS({
     draftsCount: 0
 });
 
-const createDraftRecord = (draft) => {
-    const { content, tags, licence, ...others } = draft;
+const createDraftRecord = (draftObj) => {
+    const { content, tags, id, akashaId, tx, created_at, updated_at } = draftObj;
+    const { title, excerpt, licence, draft, wordCount, featuredImage } = content;
     return new Draft({
-        content: new DraftContent(content),
-        tags: fromJS(tags),
-        licence: new DraftLicence(licence),
-        ...others
+        id,
+        akashaId,
+        tx,
+        created_at,
+        updated_at,
+        content: new DraftContent({
+            draft,
+            title,
+            licence,
+            excerpt,
+            featuredImage,
+            wordCount
+        }),
+        tags: fromJS(tags)
     });
 };
 const publishDraftHandler = (state, { flags }) => {
@@ -138,17 +145,16 @@ const draftState = createReducer(initialState, {
         const draftIndex = state.get('drafts').findIndex(drft =>
             drft.id === draft.id
         );
-        const updatedDraft = state.getIn(['drafts', draftIndex]).withMutations((drft) => {
-            if (draft.licence) {
-                draft.licence = new DraftLicence(draft.licence);
+        let currentDraft;
+        Object.keys(draft).forEach((key) => {
+            if (key.indexOf('.') > -1) {
+                currentDraft = state.getIn(['drafts', draftIndex]).mergeIn(key.split('.'), draft[key]);
+            } else {
+                currentDraft = state.getIn(['drafts', draftIndex]).merge({ [key]: draft[key] });
             }
-            if (draft.tags) {
-                draft.tags = new List(draft.tags);
-            }
-            drft.merge(draft);
         });
         return state.merge({
-            drafts: state.get('drafts').setIn([draftIndex], updatedDraft),
+            drafts: state.get('drafts').setIn([draftIndex], createDraftRecord(currentDraft.toJS())),
             flags: state.get('flags').merge(flags)
         });
     },

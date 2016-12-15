@@ -126,5 +126,15 @@ const notificationMessages = defineMessages({
         description: 'Notification to be displayed when claim transaction was mined but was unsuccessfull',
         defaultMessage: 'Claiming {entryTitle} has failed'
     },
+    draftSavedSuccessfully: {
+        id: 'app.notification.draftSavedSuccessfully',
+        description: 'notification to show when draft was successfully saved',
+        defaultMessage: 'Draft successfully saved!'
+    },
+    draftSaveFailed: {
+        id: 'app.notification.draftSaveFailed',
+        description: 'Notification to show when saving draft failed',
+        defaultMessage: 'Failed to save draft!'
+    }
 });
 export { notificationMessages };

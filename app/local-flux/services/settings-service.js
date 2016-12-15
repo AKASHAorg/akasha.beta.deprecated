@@ -39,7 +39,14 @@ class SettingsService extends BaseService {
             })
             .catch(reason => null);
     };
-
+    saveDefaultLicence = ({ akashaId, licenceObj }) => {
+        settingsDB.user.where('akashaId').equals(akashaId).toArray()
+            .then((data) => {
+                const result = data[0] || {};
+                result.defaultLicence = licenceObj;
+                settingsDB.user.put({ akashaId, ...result });
+            });
+    }
     getUserSettings = ({ akashaId, onSuccess, onError }) => {
         settingsDB.user.where('akashaId').equals(akashaId).toArray()
             .then(data => {

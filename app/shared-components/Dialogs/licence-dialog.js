@@ -15,7 +15,8 @@ class LicenceDialog extends React.Component {
     constructor (props) {
         super(props);
         this.state = {
-            defaultLicence: props.defaultSelected
+            defaultLicence: props.defaultSelected,
+            isDefault: false
         };
     }
     _getViewBox = (icon) => {
@@ -36,10 +37,12 @@ class LicenceDialog extends React.Component {
         });
     }
     _handleMainLicenceCheck = (ev, val) => {
+        const { licences } = this.props;
+        const sublic = licences.filter(lic => lic.get('parent') === val);
         this.setState({
             defaultLicence: {
                 parent: val,
-                id: val === '1' ? val : null
+                id: (sublic.size > 0) ? sublic.first().get('id') : val
             }
         });
     }
@@ -52,7 +55,7 @@ class LicenceDialog extends React.Component {
         const { licences } = this.props;
         const { defaultLicence } = this.state;
         const licenceIcons = {
-            ['copyright-1']: AllRightsReserved,
+            'copyright-1': AllRightsReserved,
             CCBY: CreativeCommonsBY,
             CCCC: CreativeCommonsCC,
             CCNCEU: CreativeCommonsNCEU,
@@ -149,7 +152,7 @@ class LicenceDialog extends React.Component {
                   primary
                   style={{ marginLeft: 8 }}
                   onTouchTap={ev =>
-                      this.props.onDone(ev, this.state.defaultLicence)}
+                      this.props.onDone(ev, this.state.defaultLicence, this.state.isDefault)}
                 />
               </div>
             </div>

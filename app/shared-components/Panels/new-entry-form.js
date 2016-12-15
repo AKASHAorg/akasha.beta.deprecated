@@ -4,20 +4,16 @@ import {
     RaisedButton,
     Tabs,
     Tab,
-    SelectField,
     MenuItem,
     IconMenu,
-    IconButton,
-    CircularProgress } from 'material-ui';
+    IconButton } from 'material-ui';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import throttle from 'lodash.throttle';
-import { entryMessages, generalMessages } from 'locale-data/messages';
+import { generalMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
 import { DataLoader } from 'shared-components';
 import { injectIntl } from 'react-intl';
-import { isInViewport } from 'utils/domUtils';
-import SearchBar from '../SearchBar/search-bar';
+import { isInViewport } from 'utils/domUtils'; // eslint-disable-line import/no-unresolved, import/extensions
 import DraftCard from '../DraftCard/draft-card';
-import EntryCard from '../EntryCard/entry-card';
 import EntryListContainer from '../EntryList/new-entry-list-container';
 
 const LIMIT = 6;
@@ -39,7 +35,7 @@ class NewEntryFormPanel extends Component {
     componentDidMount () {
         const { draftActions, drafts, draftsCount, loggedProfileData } = this.props;
         if (drafts.size !== draftsCount) {
-            draftActions.getDrafts(loggedProfileData.get('profile'));
+            draftActions.getDrafts(loggedProfileData.get('akashaId'));
         }
         if (this.container) {
             this.container.addEventListener('scroll', throttle(this.handleScroll, 500));
@@ -61,8 +57,7 @@ class NewEntryFormPanel extends Component {
         const { tabsValue } = nextState;
         if (this.state.tabsValue !== tabsValue) {
             if (tabsValue === 'drafts' && drafts.size !== draftsCount) {
-                draftActions.getDrafts(loggedProfileData.get('profile'));
-                // entryActions.clearPublishedEntries();
+                draftActions.getDrafts(loggedProfileData.get('akashaId'));
             }
             if (tabsValue === 'listed') {
                 entryActions.entryProfileIterator(loggedProfileData.get('akashaId'), 0, LIMIT);
@@ -74,7 +69,7 @@ class NewEntryFormPanel extends Component {
         this.trigger = element;
     }
 
-    handleScroll = () => {
+    handleScroll = () => { // eslint-disable-line consistent-return
         const { entryActions, loggedProfileData } = this.props;
         if (!this.trigger) {
             return null;
@@ -153,8 +148,8 @@ class NewEntryFormPanel extends Component {
             );
     }
     _getTabContent = () => {
-        const { drafts, entryActions, fetchingDrafts, fetchingPublishedEntries,
-            fetchingMorePublishedEntries, intl, loggedProfileData, moreProfileEntries,
+        const { drafts, fetchingDrafts, fetchingPublishedEntries,
+            fetchingMorePublishedEntries, moreProfileEntries,
             publishedEntries } = this.props;
         const { palette } = this.context.muiTheme;
         switch (this.state.tabsValue) {
@@ -193,10 +188,6 @@ class NewEntryFormPanel extends Component {
                     style={{ display: 'block' }}
                   />
                 );
-            // case 'unlisted':
-            //     entities = entries.filter(entry =>
-            //       (entry.get('akashaId') === loggedProfileData.get('akashaId')) && !entry.get('active'));
-            //     break;
             default:
                 return null;
         }
@@ -232,7 +223,7 @@ class NewEntryFormPanel extends Component {
                   <Tab
                     label={<span style={{ color: palette.disabledColor }}>Unlisted</span>}
                     value="unlisted"
-                    style={{ cursor: 'not-allowed', ...tabStyle}}
+                    style={{ cursor: 'not-allowed', ...tabStyle }}
                     disabled
                   />
                 </Tabs>
@@ -257,7 +248,7 @@ class NewEntryFormPanel extends Component {
             >
               {hasEntries &&
                 <div className="col-xs-12" style={{ padding: '15px' }}>
-                  {/*<div className="col-xs-8">
+                  {/* <div className="col-xs-8">
                     <SearchBar
                         hintText={
                         `Search

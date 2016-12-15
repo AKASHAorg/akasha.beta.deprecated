@@ -7,17 +7,35 @@ import styles from './style.scss';
 import imagePlugin from './plugins/image/image-plugin';
 
 class EntryEditor extends Component {
-    constructor (props) {
-        super(props);
-        const { content, title } = this.props;
-        let editorState = editorStateFromRaw(null);
-        if (content) {
-            editorState = editorStateFromRaw(content.toJS());
+    state = {
+        editorState: editorStateFromRaw(null),
+        title: ''
+    };
+    componentWillMount () {
+        this.setState({
+            editorState: editorStateFromRaw(this.props.content),
+            title: this.props.title
+        });
+    }
+    componentDidMount () {
+        if (this.props.showTitle) {
+            this.titleRef.focus();
         }
-        this.state = {
-            editorState,
-            title
-        };
+    }
+    componentWillReceiveProps (nextProps) {
+        const { content } = nextProps;
+        if (content && content !== this.props.content) {
+            this.setState({
+                editorState: editorStateFromRaw(nextProps.content),
+                title: nextProps.title
+            });
+        }
+    }
+    shouldComponentUpdate (nextProps, nextState) {
+        return (nextProps.title !== this.props.title) ||
+            (nextProps.content !== this.props.content) ||
+            (nextState.title !== this.state.title) ||
+            (nextState.editorState !== this.state.editorState);
     }
     getRawContent = () => convertToRaw(this.state.editorState.getCurrentContent());
     getContent = () => this.state.editorState.getCurrentContent();
@@ -29,6 +47,9 @@ class EntryEditor extends Component {
         });
         if (this.props.onAutosave) {
             this.props.onAutosave();
+        }
+        if (this.props.onChange) {
+            this.props.onChange(editorState);
         }
     };
     _handleTitleChange = (ev) => {
@@ -77,6 +98,7 @@ class EntryEditor extends Component {
 
     render () {
         const { showTitle, titlePlaceholder, editorPlaceholder, readOnly } = this.props;
+        console.info('if you can see this, editor is re-rendering');
         return (
           <div className="editor" style={{ textAlign: 'left' }}>
             <div>
@@ -84,6 +106,7 @@ class EntryEditor extends Component {
                 <div className={styles.title}>
                   <div className={styles.titleInner}>
                     <textarea
+                      ref={(title) => { this.titleRef = title; }}
                       type="text"
                       className={styles.inputField}
                       placeholder={titlePlaceholder}
@@ -134,7 +157,8 @@ EntryEditor.propTypes = {
     onAutosave: PropTypes.func,
     editorPlaceholder: PropTypes.string,
     titlePlaceholder: PropTypes.string,
-    showSidebar: PropTypes.bool
+    showSidebar: PropTypes.bool,
+    onChange: PropTypes.func
 };
 
 export default EntryEditor;

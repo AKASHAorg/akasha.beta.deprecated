@@ -1,3 +1,4 @@
+export AlertDialog from './Dialogs/alert-dialog';
 export AuthDialog from './Dialogs/auth-dialog';
 export Avatar from './Avatar/avatar';
 export Comment from './Comment/comment';

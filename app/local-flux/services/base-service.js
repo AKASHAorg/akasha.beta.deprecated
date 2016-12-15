@@ -26,7 +26,6 @@ class BaseService {
      * @param cb <Function> callback
      */
     registerListener = (clientChannel, listener, cb) => {
-        console.info('base service registerListener -> ', clientChannel.channelName);
         this._listeners.set(clientChannel.channel, listener);
         if (clientChannel.listenerCount > 0) {
             if (typeof cb === 'function') return cb();
@@ -63,7 +62,6 @@ class BaseService {
         clientChannel,
         listenerCb
     }, cb) => {
-        console.info('base service openChannel -> ', serverChannel.channelName);
         if (this._openChannels.has(serverChannel.channel)) {
             // server channel already opened. Nothing to do!
             this.registerListener(clientChannel, listenerCb);
@@ -71,7 +69,7 @@ class BaseService {
         }
         clientManager.once((ev, res) => {
             if (res.error) {
-                console.log(res.error.message, 'please check base-service -> openChannel method');
+                console.info(res.error.message, 'please check base-service -> openChannel method');
             }
             this._openChannels.add(serverChannel.channel);
             return this.registerListener(clientChannel, listenerCb, cb);

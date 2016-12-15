@@ -180,6 +180,7 @@ class ImageUploader extends Component {
               style={uploadButtonStyle}
               onChange={this._handleDialogOpen}
               multiple={multiFiles}
+              accept="image/*"
             />
             {this.state.error &&
               <div style={errorStyle}>{this.state.error}</div>
