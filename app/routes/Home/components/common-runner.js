@@ -21,7 +21,7 @@ class CommonRunner extends Component {
         } else if (unconfirmedActions.size > 0) {
             appActions.showPublishConfirmDialog(unconfirmedActions.first());
         } else if (confirmedActions.size > 0) {
-            const isLoggedIn = Date.parse(loggedProfile.get('expiration')) > Date.now();
+            const isLoggedIn = Date.parse(loggedProfile.get('expiration')) - 3000 > Date.now();
             if (isLoggedIn) {
                 appActions.updatePendingAction(
                     confirmedActions.first().set('status', 'readyToPublish')

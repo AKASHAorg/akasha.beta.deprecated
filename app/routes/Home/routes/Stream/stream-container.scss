@@ -21,6 +21,7 @@
 }
 .theStream {
     height: 100%;
+    width: calc(100% - 400px);
     position: relative;
 }
 .streamSidebarWrapper {
@@ -28,6 +29,7 @@
     bottom: 0;
     top: 48px;
     right: 0;
+    width: 400px;
     overflow-y: auto;
     overflow-x: hidden;
 }
