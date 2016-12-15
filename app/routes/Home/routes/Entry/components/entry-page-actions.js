@@ -16,8 +16,7 @@ class EntryPageAction extends Component {
           <CardActions
             className="col-xs-12"
             style={{
-                padding: '18px 8px 0px',
-                borderBottom: `1px solid ${palette.borderColor}`
+                padding: '18px 8px 0px'
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center' }} >
@@ -114,7 +113,7 @@ class EntryPageAction extends Component {
                       }
                       {entry.balance !== 'claimed' &&
                         <div style={{ fontSize: '16px', paddingRight: '5px' }}>
-                          {entry.balance} ETH
+                          {entry.balance} AETH
                         </div>
                       }
                     </div>

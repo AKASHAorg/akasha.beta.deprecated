@@ -3,9 +3,10 @@ import React, { Component, PropTypes } from 'react';
 import { Divider, IconButton, SvgIcon } from 'material-ui';
 import { injectIntl } from 'react-intl';
 import { TagChip, DataLoader, CommentsList, CommentEditor } from 'shared-components';
-import { CreativeCommonsBY, CreativeCommonsCC, CreativeCommonsNCEU, CreativeCommonsNCJP,
-    CreativeCommonsNC, CreativeCommonsND, CreativeCommonsREMIX, CreativeCommonsSHARE,
-    CreativeCommonsZERO, CreativeCommonsPD, CreativeCommonsSA } from 'shared-components/svg';
+import { AllRightsReserved, CreativeCommonsBY, CreativeCommonsCC, CreativeCommonsNCEU,
+    CreativeCommonsNCJP, CreativeCommonsNC, CreativeCommonsND, CreativeCommonsREMIX,
+    CreativeCommonsSHARE, CreativeCommonsZERO, CreativeCommonsPD,
+    CreativeCommonsSA } from 'shared-components/svg';
 import { entryMessages } from 'locale-data/messages';
 import EntryPageHeader from './entry-page-header';
 import EntryPageContent from './entry-page-content';
@@ -78,10 +79,9 @@ class EntryPage extends Component {
 
     handleUpvote = () => {
         const { entry, entryActions } = this.props;
-        const firstName = entry.entryEth.publisher.firstName;
-        const lastName = entry.entryEth.publisher.lastName;
+        const akashaId = entry.entryEth.publisher.akashaId;
         const payload = {
-            publisherName: `${firstName} ${lastName}`,
+            publisherAkashaId: akashaId,
             entryTitle: entry.content.title,
             entryId: entry.entryId,
             active: entry.active
@@ -91,10 +91,9 @@ class EntryPage extends Component {
 
     handleDownvote = () => {
         const { entry, entryActions } = this.props;
-        const firstName = entry.entryEth.publisher.firstName;
-        const lastName = entry.entryEth.publisher.lastName;
+        const akashaId = entry.entryEth.publisher.akashaId;
         const payload = {
-            publisherName: `${firstName} ${lastName}`,
+            publisherAkashaId: akashaId,
             entryTitle: entry.content.title,
             entryId: entry.entryId
         };
@@ -177,6 +176,7 @@ class EntryPage extends Component {
             return null;
         }
         const licenceIcons = {
+            ['copyright-1']: AllRightsReserved,
             CCBY: CreativeCommonsBY,
             CCCC: CreativeCommonsCC,
             CCNCEU: CreativeCommonsNCEU,
@@ -193,6 +193,9 @@ class EntryPage extends Component {
           <div style={{ display: 'inline-flex' }}>
             {licence.description.map((descr, index) => {
               if (descr.icon && licenceIcons[descr.icon] !== undefined) {
+                const viewBox = descr.icon === 'CCBY' || descr.icon === 'copyright-1' ?
+                    '0 0 20 20' :
+                    '0 0 18 18';
                 return (
                   <IconButton
                     key={index}
@@ -200,7 +203,7 @@ class EntryPage extends Component {
                     style={{ padding: '6px', width: '30px', height: '30px' }}
                     iconStyle={{ width: '18px', height: '18px' }}
                   >
-                    <SvgIcon viewBox="0 0 18 18" >
+                    <SvgIcon viewBox={viewBox}>
                       {React.createElement(licenceIcons[descr.icon])}
                     </SvgIcon>
                   </IconButton>
@@ -215,16 +218,16 @@ class EntryPage extends Component {
         const { blockNr, canClaimPending, claimPending, comments, entry, fetchingComments,
             fetchingEntryBalance, fetchingFullEntry, intl, licences, loggedProfile, profiles,
             savedEntries, votePending } = this.props;
+        const { publisherTitleShadow } = this.state;
+        if (!entry || fetchingFullEntry) {
+            return <DataLoader flag={true} size={80} style={{ paddingTop: '120px' }} />;
+        }
         const licence = licences ?
             licences.find(lic => lic.id === entry.content.licence.id) :
             {};
         const licenceLabel = licence.parent ?
             licences.find(lic => lic.id === licence.parent).label :
             licence.label;
-        const { publisherTitleShadow } = this.state;
-        if (!entry || fetchingFullEntry) {
-            return <DataLoader flag={true} size={80} style={{ paddingTop: '120px' }} />;
-        }
         const blockNumberDiff = blockNr - entry.entryEth.blockNr;
         const loggedProfileData = profiles.find(prf => prf.get('profile') === loggedProfile.get('profile'));
         const loggedProfileAvatar = loggedProfileData.get('avatar');
