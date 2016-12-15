@@ -12,8 +12,8 @@ import WebContents = Electron.WebContents;
 
 class GethIPC extends GethEmitter {
     public logger = 'geth';
-    private BOOTNODE = 'enode://a7b111165e63cb608814f0ba55c0e7f779841473320ac6dbe6089d952241fb5a5a' +
-        '9bcc9406215e366ab5438d6ab11129c3247ed8354dc6e00ed9ce9305493667@138.68.78.152:30301';
+    private BOOTNODE = 'enode://7f809ac6c56bf8a387ad3c759ece63bc4cde466c5f06b2d68e0f21928470dd35949e978091537e1fb633a'+
+        '1a7eaf06630234d22d1b0c1d98b4643be5f28e5fe79@138.68.78.152:30301';
     private DEFAULT_MANAGED: string[] = ['startService', 'stopService', 'status'];
 
     constructor() {
@@ -30,9 +30,9 @@ class GethIPC extends GethEmitter {
         const datadir = GethConnector.getDefaultDatadir();
         GethConnector.getInstance().setOptions({
             bootnodes: this.BOOTNODE,
-            datadir: join(datadir, 'akasha'),
-            ipcpath: join(datadir, 'akasha', 'geth.ipc'),
-            networkid: 512180
+            datadir: join(datadir, 'akasha-alpha'),
+            ipcpath: join(datadir, 'akasha-alpha', 'geth.ipc'),
+            networkid: 511337
         });
         // register listeners
         this._start()

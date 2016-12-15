@@ -11,8 +11,8 @@ class GethIPC extends GethEmitter_1.default {
     constructor() {
         super();
         this.logger = 'geth';
-        this.BOOTNODE = 'enode://a7b111165e63cb608814f0ba55c0e7f779841473320ac6dbe6089d952241fb5a5a' +
-            '9bcc9406215e366ab5438d6ab11129c3247ed8354dc6e00ed9ce9305493667@138.68.78.152:30301';
+        this.BOOTNODE = 'enode://7f809ac6c56bf8a387ad3c759ece63bc4cde466c5f06b2d68e0f21928470dd35949e978091537e1fb633a' +
+            '1a7eaf06630234d22d1b0c1d98b4643be5f28e5fe79@138.68.78.152:30301';
         this.DEFAULT_MANAGED = ['startService', 'stopService', 'status'];
         this.attachEmitters();
     }
@@ -23,9 +23,9 @@ class GethIPC extends GethEmitter_1.default {
         const datadir = geth_connector_1.GethConnector.getDefaultDatadir();
         geth_connector_1.GethConnector.getInstance().setOptions({
             bootnodes: this.BOOTNODE,
-            datadir: path_1.join(datadir, 'akasha'),
-            ipcpath: path_1.join(datadir, 'akasha', 'geth.ipc'),
-            networkid: 512180
+            datadir: path_1.join(datadir, 'akasha-alpha'),
+            ipcpath: path_1.join(datadir, 'akasha-alpha', 'geth.ipc'),
+            networkid: 511337
         });
         this._start()
             ._restart()

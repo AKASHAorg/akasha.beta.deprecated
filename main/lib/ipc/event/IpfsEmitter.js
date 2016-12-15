@@ -3,7 +3,7 @@ const AbstractEmitter_1 = require('./AbstractEmitter');
 const ipfs_connector_1 = require('@akashaproject/ipfs-connector');
 const responses_1 = require('./responses');
 const channels_1 = require('../../channels');
-const peerId = '/ip4/46.101.103.114/tcp/4001/ipfs/QmaztwrFRmRvvKYbAETVtNtdkAmsee4byiasr4RBq9XCtt';
+const peerId = '/ip4/46.101.103.114/tcp/4001/ipfs/QmYfXRuVWMWFRJxUSFPHtScTNR9CU2samRsTK15VFJPpvh';
 class IpfsEmitter extends AbstractEmitter_1.AbstractEmitter {
     attachEmitters() {
         this._download()
@@ -27,6 +27,7 @@ class IpfsEmitter extends AbstractEmitter_1.AbstractEmitter {
                 .apiClient
                 .bootstrap
                 .add(peerId, (err, data) => {
+                console.log('add ipfs peer ', err, data);
             });
         });
         return this;
