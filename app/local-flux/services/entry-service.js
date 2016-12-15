@@ -24,17 +24,8 @@ class EntryService extends BaseService {
      *  Publish a new entry
      *
      */
-    publishEntry = ({ draft, token, gas, onError, onSuccess }) => {
-        console.log(draft, 'sending draft to main for publishing');
-        const {
-            title,
-            featuredImage,
-            excerpt,
-            licence,
-            tags,
-            content,
-            wordCount
-        } = draft;
+    publishEntry = ({ draftObj, token, gas, onError, onSuccess }) => {
+        console.log(draftObj, 'sending draft to main for publishing');
         this.openChannel({
             clientManager: this.clientManager,
             serverChannel: Channel.server.entry.publish,
@@ -42,15 +33,8 @@ class EntryService extends BaseService {
             listenerCb: this.createListener(onError, onSuccess)
         }, () =>
             Channel.server.entry.publish.send({
-                content: {
-                    title,
-                    featuredImage,
-                    excerpt,
-                    licence,
-                    draft: content,
-                    wordCount
-                },
-                tags,
+                content: draftObj.content,
+                tags: draftObj.tags,
                 token,
                 gas
             }));
