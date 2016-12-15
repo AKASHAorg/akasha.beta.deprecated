@@ -31,10 +31,9 @@ class App extends Component {
         settingsActions.getSettings('general');
     }
     componentDidMount () {
-        const { appActions, entryActions, eProcActions } = this.props;
+        const { appActions, eProcActions } = this.props;
         const timestamp = new Date().getTime();
         appActions.setTimestamp(timestamp);
-        entryActions.getLicences();
         setTimeout(() => {
             eProcActions.getGethOptions();
             eProcActions.getIpfsConfig();

@@ -3,9 +3,10 @@ import React, { Component, PropTypes } from 'react';
 import { Divider, IconButton, SvgIcon } from 'material-ui';
 import { injectIntl } from 'react-intl';
 import { TagChip, DataLoader, CommentsList, CommentEditor } from 'shared-components';
-import { CreativeCommonsBY, CreativeCommonsCC, CreativeCommonsNCEU, CreativeCommonsNCJP,
-    CreativeCommonsNC, CreativeCommonsND, CreativeCommonsREMIX, CreativeCommonsSHARE,
-    CreativeCommonsZERO, CreativeCommonsPD, CreativeCommonsSA } from 'shared-components/svg';
+import { AllRightsReserved, CreativeCommonsBY, CreativeCommonsCC, CreativeCommonsNCEU,
+    CreativeCommonsNCJP, CreativeCommonsNC, CreativeCommonsND, CreativeCommonsREMIX,
+    CreativeCommonsSHARE, CreativeCommonsZERO, CreativeCommonsPD,
+    CreativeCommonsSA } from 'shared-components/svg';
 import { entryMessages } from 'locale-data/messages';
 import EntryPageHeader from './entry-page-header';
 import EntryPageContent from './entry-page-content';
@@ -177,6 +178,7 @@ class EntryPage extends Component {
             return null;
         }
         const licenceIcons = {
+            ['copyright-1']: AllRightsReserved,
             CCBY: CreativeCommonsBY,
             CCCC: CreativeCommonsCC,
             CCNCEU: CreativeCommonsNCEU,
@@ -193,6 +195,9 @@ class EntryPage extends Component {
           <div style={{ display: 'inline-flex' }}>
             {licence.description.map((descr, index) => {
               if (descr.icon && licenceIcons[descr.icon] !== undefined) {
+                const viewBox = descr.icon === 'CCBY' || descr.icon === 'copyright-1' ?
+                    '0 0 20 20' :
+                    '0 0 18 18';
                 return (
                   <IconButton
                     key={index}
@@ -200,7 +205,7 @@ class EntryPage extends Component {
                     style={{ padding: '6px', width: '30px', height: '30px' }}
                     iconStyle={{ width: '18px', height: '18px' }}
                   >
-                    <SvgIcon viewBox="0 0 18 18" >
+                    <SvgIcon viewBox={viewBox}>
                       {React.createElement(licenceIcons[descr.icon])}
                     </SvgIcon>
                   </IconButton>

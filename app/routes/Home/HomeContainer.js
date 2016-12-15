@@ -27,6 +27,7 @@ class HomeContainer extends React.Component {
         const { profileActions, eProcActions, entryActions } = this.props;
         profileActions.resetFlags();
         eProcActions.getGethStatus();
+        entryActions.getLicences();
         this.interval = setInterval(() => {
             eProcActions.getGethStatus();
         }, 30000);
