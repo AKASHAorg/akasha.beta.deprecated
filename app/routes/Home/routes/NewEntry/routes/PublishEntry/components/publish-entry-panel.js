@@ -18,7 +18,8 @@ class PublishPanel extends React.Component {
             draft: null,
             fetchingDraft: true,
             validationErrors: [],
-            existingTags: []
+            existingTags: [],
+            checkingTags: false
         };
         this.tagService = new TagService();
     }
@@ -28,6 +29,9 @@ class PublishPanel extends React.Component {
         }
         if (this.props.draft) {
             this._populateDraft(this.props.draft);
+            if (this.props.draft.get('tags').size && !this.state.checkingTags) {
+                this._checkExistingTags(this.props.draft.get('tags'));
+            }
         }
         document.body.style.overflow = 'hidden';
     }
@@ -48,8 +52,7 @@ class PublishPanel extends React.Component {
 
     _populateDraft = (draft) => {
         const tags = draft.get('tags');
-        const tagsHaveChanged = draft.get('tags') && this.props.draft && !draft.get('tags').equals(this.props.draft.get('tags'));
-        if (tags && tags.size > 0 && tagsHaveChanged) {
+        if (tags && tags.size > 0 && !this.state.checkingTags) {
             this._checkExistingTags(tags);
         }
         this.setState({
@@ -95,7 +98,10 @@ class PublishPanel extends React.Component {
             draftActions.updateDraft(this.state.draft.toJS());
             appActions.addPendingAction({
                 type: 'publishEntry',
-                payload: this.state.draft.toJS(),
+                payload: {
+                    title: this.state.draft.getIn(['content', 'title']),
+                    draft: this.state.draft.toJS()
+                },
                 titleId: 'publishEntryTitle',
                 messageId: 'publishEntry',
                 gas: 4000000,
@@ -171,18 +177,7 @@ class PublishPanel extends React.Component {
             [field]: value
         });
     };
-    // _getFeaturedImage = () => {
-    //     const panelSize = this.panelSize || { width: 550 };
-    //     if (this.state.featuredImage) {
-    //         return {
-    //             files: this.state.featuredImage,
-    //             containerSize: panelSize
-    //         };
-    //     }
-    //     return null;
-    // };
     _checkExistingTags = (tags) => {
-        console.log('checking tags');
         this.setState({
             checkingTags: true
         }, () => {
@@ -219,20 +214,6 @@ class PublishPanel extends React.Component {
         const { params } = this.props;
         this.context.router.push(`/${params.akashaId}/draft/${params.draftId}`);
     }
-    _getSelectedLicence = () => {
-        const { licences } = this.props;
-        if (this.state.licence) {
-            return this.state.licence;
-        }
-        if (licences.size === 0) {
-            return null;
-        }
-        return {
-            mainLicence: licences.find(lic => lic.id === '1'),
-            subLicence: null,
-            isDefault: false
-        };
-    }
     _handleTagRegisterRequest = (tagName) => {
         const { tagActions } = this.props;
         // 1. verify that tag is not in pending state
@@ -258,7 +239,7 @@ class PublishPanel extends React.Component {
     };
     _getLicenceMeta = () => {
         const { licences } = this.props;
-        const licence = this.state.draft.get('licence');
+        const licence = this.state.draft.getIn(['content', 'licence']);
         if (licences.size === 0) {
             return {
                 description: [],
@@ -273,7 +254,9 @@ class PublishPanel extends React.Component {
         }
         return {
             label: licences.find(licenceObj => licenceObj.id === licence.parent).label,
-            description: licences.find(licenceObj => licenceObj.id === licence.id).description
+            description: licence.id ?
+                licences.find(licenceObj => licenceObj.id === licence.id).description :
+                licences.find(licenceObj => licenceObj.id === licence.parent).label
         };
     }
     render () {
@@ -314,7 +297,7 @@ class PublishPanel extends React.Component {
             >
               <LicenceDialog
                 isOpen={this.state.isLicencingOpen}
-                defaultSelected={this.state.draft.get('licence')}
+                defaultSelected={this.state.draft.getIn(['content', 'licence']).toJS()}
                 onRequestClose={this._handleLicenceDialogClose}
                 onDone={this._handleLicenceSet}
                 licences={licences}

@@ -18,7 +18,7 @@ class PublishEntryRunner extends Component {
                         appActions.updatePendingAction(action.mergeDeep({
                             status: 'publishing'
                         }));
-                        draftActions.publishDraft(action.get('payload'), action.get('gas'));
+                        draftActions.publishDraft(action.getIn(['payload', 'draft']), action.get('gas'));
                         break;
                     default:
                         break;

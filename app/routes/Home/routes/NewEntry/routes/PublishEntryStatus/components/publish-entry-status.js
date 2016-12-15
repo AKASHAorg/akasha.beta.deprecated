@@ -39,7 +39,7 @@ class PublishEntryStatus extends React.Component {
     _getCurrentAction = () => {
         const { pendingActions, params } = this.props;
         const currentDraftAction = pendingActions.find(action =>
-            action.toJS().payload.id === parseInt(params.draftId, 10)
+            action.toJS().payload.draft.id === parseInt(params.draftId, 10)
         );
         console.log(currentDraftAction, 'currentDraftAction', pendingActions);
         switch (currentDraftAction.toJS().status) {
@@ -89,12 +89,14 @@ class PublishEntryStatus extends React.Component {
                     <CircularProgress size={80} />
                   </div>
                   <div className="col-xs-12 center-xs">
-                    <h3>Publishing &quot;{draftToPublish.title}&quot;</h3>
+                    <h3>Publishing &quot;{draftToPublish.getIn(['content', 'title'])}&quot;</h3>
                     <p>Current Action: {this._getCurrentAction()}</p>
                     <p>This entry is being published. You can return to home.</p>
                     {(draftErrors.size > 0) &&
                         draftErrors.map((err, key) =>
-                          <div key={key}>Error {err.get('code') && err.get('code')}: {err.get('message')}</div>
+                          <div key={key} style={{ color: 'red' }}>
+                            Error {err.get('code') && err.get('code')}: {err.get('message')}
+                          </div>
                         )
                     }
                   </div>
