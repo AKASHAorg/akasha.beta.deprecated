@@ -200,6 +200,11 @@ const generalMessages = defineMessages({
         id: 'app.general.publish',
         description: 'button label for publish action',
         defaultMessage: 'Publish'
+    },
+    leave: {
+        id: 'app.general.leave',
+        description: 'leave button label',
+        defaultMessage: 'Leave'
     }
 });
 export { generalMessages };
