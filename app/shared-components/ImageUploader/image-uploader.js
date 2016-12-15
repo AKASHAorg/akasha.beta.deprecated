@@ -28,7 +28,8 @@ class ImageUploader extends Component {
     }
     shouldComponentUpdate (nextProps, nextState) {
         return nextState.imageFile !== this.state.imageFile ||
-                nextState.initialImageFile !== this.state.initialImageFile;
+                nextState.initialImageFile !== this.state.initialImageFile ||
+                nextState.error !== this.state.error;
     }
     getImage = () => {
         if (this.state.isNewImage) {
@@ -55,15 +56,17 @@ class ImageUploader extends Component {
             .then(results =>
                 this.setState({
                     imageFile: results,
-                    isNewImage: true
+                    isNewImage: true,
+                    error: null
                 }, () => {
                     this.fileInput.value = '';
                 })
-            ).catch(err =>
-                this.setState({
+            ).catch((err) => {
+                console.error(err);
+                return this.setState({
                     error: err
-                })
-            );
+                });
+            });
     }
     _getImageSrc = (imageObj) => {
         const containerWidth = this.container.getBoundingClientRect().width;

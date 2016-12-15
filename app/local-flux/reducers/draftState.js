@@ -52,7 +52,7 @@ const createDraftRecord = (draftObj) => {
         content: new DraftContent({
             draft,
             title,
-            licence,
+            licence: new DraftLicence(licence),
             excerpt,
             featuredImage,
             wordCount

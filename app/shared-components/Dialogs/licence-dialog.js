@@ -119,6 +119,23 @@ class LicenceDialog extends React.Component {
             modal
             contentStyle={{ maxWidth: '550px' }}
             autoScrollBodyContent
+            actions={
+              <div className="row middle-xs">
+                <div className="col-xs-6">
+                  <Checkbox label="Set as default licence" onCheck={this._handleDefaultLicenceSet} />
+                </div>
+                <div className="col-xs-6 end-xs">
+                  <RaisedButton label="cancel" onTouchTap={this._handleDialogCancel} />
+                  <RaisedButton
+                    label="done"
+                    primary
+                    style={{ marginLeft: 8 }}
+                    onTouchTap={ev =>
+                        this.props.onDone(ev, this.state.defaultLicence, this.state.isDefault)}
+                  />
+                </div>
+              </div>
+            }
           >
             {radios}
             <Divider style={{ marginTop: 16 }} />
@@ -140,21 +157,6 @@ class LicenceDialog extends React.Component {
                     </small>
                   )
               }
-            </div>
-            <div className="row middle-xs" style={{ marginTop: 24 }}>
-              <div className="col-xs-6">
-                <Checkbox label="Set as default licence" onCheck={this._handleDefaultLicenceSet} />
-              </div>
-              <div className="col-xs-6 end-xs">
-                <RaisedButton label="cancel" onTouchTap={this._handleDialogCancel} />
-                <RaisedButton
-                  label="done"
-                  primary
-                  style={{ marginLeft: 8 }}
-                  onTouchTap={ev =>
-                      this.props.onDone(ev, this.state.defaultLicence, this.state.isDefault)}
-                />
-              </div>
             </div>
           </Dialog>
         );

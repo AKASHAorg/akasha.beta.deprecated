@@ -120,12 +120,12 @@ class NewEntryFormPanel extends Component {
     }
     _getDraftCards = () => {
         const { drafts, intl, loggedProfileData } = this.props;
-        return drafts.filter(drft => drft.get('profile') === loggedProfileData.get('profile'))
+        return drafts.filter(drft => drft.get('akashaId') === loggedProfileData.get('akashaId'))
             .map((draft, key) =>
               <DraftCard
                 key={key}
                 headerTitle={'Draft'}
-                lastUpdated={`Last update ${draft.get('status').updated_at}`}
+                lastUpdated={`Last update ${draft.get('updated_at')}`}
                 headerActions={
                   <IconMenu iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}>
                     <MenuItem
@@ -140,9 +140,9 @@ class NewEntryFormPanel extends Component {
                     />
                   </IconMenu>
                 }
-                title={draft.get('title')}
-                excerpt={draft.get('excerpt')}
-                wordCount={draft.get('wordCount')}
+                title={draft.getIn(['content', 'title'])}
+                excerpt={draft.getIn(['content', 'excerpt'])}
+                wordCount={draft.getIn(['content', 'wordCount'])}
                 onTitleClick={ev => this._handleDraftEdit(ev, draft.get('id'))}
               />
             );

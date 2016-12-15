@@ -104,7 +104,7 @@ class DraftActions {
             const flagOff = { draftId: draft.get('id'), value: false };
             dispatch(draftActionCreators.publishDraft({ publishPending: flagOn }));
             this.entryService.publishEntry({
-                draft: draft.toJS(),
+                draftObj: draft.toJS(),
                 token,
                 gas,
                 onSuccess: (data) => {
@@ -118,7 +118,7 @@ class DraftActions {
                         id: 'publishingEntry',
                         values: { title: draft.getIn(['content', 'title']) }
                     });
-                    hashHistory.push(`/${draft.get('akashaId')}/draft/${draft.get('id')}/publish`);
+                    hashHistory.push(`/${draft.get('akashaId')}/draft/${draft.get('id')}/publish-status`);
                 },
                 onError: error => dispatch(draftActionCreators.publishDraftError(error, {
                     publishPending: flagOff
@@ -181,29 +181,6 @@ class DraftActions {
             onSuccess: result => this.dispatch(draftActionCreators.getDraftByIdSuccess(result)),
             onError: error => this.dispatch(draftActionCreators.getDraftByIdError(error))
         });
-
-    getPublishingDrafts = (akashaId) => {
-        this.dispatch((dispatch, getState) => {
-            const flags = getState().draftState.get('flags');
-            if (!flags.get('fetchingPublishingDrafts') && !flags.get('publishingDraftsFetched')) {
-                dispatch(draftActionCreators.getPublishingDrafts({
-                    fetchingPublishingDrafts: true,
-                }));
-                this.draftService.getPublishingDrafts({
-                    akashaId,
-                    onSuccess: data =>
-                        dispatch(draftActionCreators.getPublishingDraftsSuccess(data, {
-                            fetchingPublishingDrafts: false,
-                            publishingDraftsFetched: true
-                        })),
-                    onError: error => dispatch(draftActionCreators.getPublishingDraftsError(error, {
-                        fetchingPublishingDrafts: false,
-                        publishingDraftsFetched: false
-                    }))
-                });
-            }
-        });
-    };
 
     clearDraftState = () => this.dispatch(draftActionCreators.clearDraftState());
 }
