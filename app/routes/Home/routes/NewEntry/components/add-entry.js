@@ -29,6 +29,7 @@ class AddEntryPage extends Component {
     componentWillReceiveProps (nextProps) {
         const { drafts, params, route } = nextProps;
         const currentDraft = this._findCurrentDraft(drafts);
+        console.log(params.draftId, 'draftId');
         if (params.draftId === 'new') {
             this.setState({
                 isNewDraft: true,
@@ -175,9 +176,13 @@ class AddEntryPage extends Component {
     _getDraftContent = () => {
         const { drafts } = this.props;
         const { fetchingDraft, isNewDraft } = this.state;
-        const currentDraft = this._findCurrentDraft(drafts);
-        if (fetchingDraft || isNewDraft || !currentDraft) {
+        console.log(isNewDraft, fetchingDraft, 'currentDraft');
+        if (fetchingDraft || isNewDraft) {
             return null;
+        }
+        const currentDraft = this._findCurrentDraft(drafts);
+        if(!currentDraft) {
+            return null
         }
         return currentDraft.getIn(['content', 'draft']);
     }

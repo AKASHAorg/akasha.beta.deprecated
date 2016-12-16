@@ -40,7 +40,7 @@ class EntryPage extends Component {
             loggedProfile } = this.props;
 
         if (params.entryId !== nextProps.params.entryId && entry.get('entryId') !== nextProps.params.entryId) {
-            entryActions.getFullEntry(params.entryId);
+            entryActions.getFullEntry(nextProps.params.entryId);
             this.fetchComments(nextProps.params.entryId);
         }
         if (nextProps.entry && !entry) {

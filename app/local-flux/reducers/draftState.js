@@ -43,7 +43,7 @@ const initialState = fromJS({
 const createDraftRecord = (draftObj) => {
     const { content, tags, id, akashaId, tx, created_at, updated_at } = draftObj;
     const { title, excerpt, licence, draft, wordCount, featuredImage } = content;
-    return new Draft({
+    const createdDraft = new Draft({
         id,
         akashaId,
         tx,
@@ -59,6 +59,7 @@ const createDraftRecord = (draftObj) => {
         }),
         tags: fromJS(tags)
     });
+    return createdDraft;
 };
 const publishDraftHandler = (state, { flags }) => {
     const publishPendingDrafts = state.getIn(['flags', 'publishPendingDrafts']);

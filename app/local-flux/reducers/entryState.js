@@ -336,18 +336,31 @@ const entryState = createReducer(initialState, {
     [types.GET_FULL_ENTRY_ERROR]: errorHandler,
     [types.GET_FULL_ENTRY_SUCCESS]: (state, { data, flags }) => {
         const { active, baseUrl, commentsCount, entryId, score, content, entryEth } = data;
-        return state.merge({
-            fullEntry: new Entry({
-                active,
-                baseUrl,
-                commentsCount: parseInt(commentsCount, 10),
-                entryId: parseInt(entryId, 10),
-                score,
-                content: new EntryContent(content),
-                entryEth: new EntryEth(entryEth)
-            }),
-            flags: state.get('flags').merge(flags)
-        });
+        const newEntry = new Entry({
+            active,
+            baseUrl,
+            commentsCount: parseInt(commentsCount, 10),
+            entryId: parseInt(entryId, 10),
+            score,
+            content: new EntryContent(content),
+            entryEth: new EntryEth(entryEth)
+        })
+        console.log(newEntry, 'the new entry');
+        return state.withMutations((stateMap) =>
+            stateMap.set('fullEntry', newEntry).mergeIn(['flags'], flags)
+        );
+        // return state.merge({
+        //     fullEntry: new Entry({
+        //         active,
+        //         baseUrl,
+        //         commentsCount: parseInt(commentsCount, 10),
+        //         entryId: parseInt(entryId, 10),
+        //         score,
+        //         content: new EntryContent(content),
+        //         entryEth: new EntryEth(entryEth)
+        //     }),
+        //     flags: state.get('flags').merge(flags)
+        // });
     },
 
     [types.UNLOAD_FULL_ENTRY]: state =>
