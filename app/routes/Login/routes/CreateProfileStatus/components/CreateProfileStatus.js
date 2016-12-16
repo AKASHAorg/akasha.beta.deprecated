@@ -67,7 +67,7 @@ class CreateProfileStatus extends Component {
                   <FormattedMessage
                     id="app.createProfileStatus.createEthAddress"
                     description="Message status when generating eth key"
-                    defaultMessage="Creating local ethereum key"
+                    defaultMessage="Creating local Ethereum key"
                   />
                 );
                 break;
@@ -76,7 +76,7 @@ class CreateProfileStatus extends Component {
                   <FormattedMessage
                     id="app.createProfileStatus.requestingEthers"
                     description="Message status when request to faucet started"
-                    defaultMessage="Receiving ethers from AKASHA"
+                    defaultMessage="Receiving aethers from AKASHA"
                   />
                 );
                 break;
@@ -140,10 +140,6 @@ class CreateProfileStatus extends Component {
         transactionActions.addToQueue([{ tx, type }]);
     };
     finishProfilePublishing = (minedTransactions, publishMinedIndex) => {
-        const hasEvents = minedTransactions.getIn([publishMinedIndex, 'hasEvents']);
-        if (!hasEvents) {
-            console.error('No events!! Create a handler for this case!!');
-        }
         return this.context.router.push('/authenticate/new-profile-complete');
     };
     _checkTxIndex = (transactions, transaction) =>
