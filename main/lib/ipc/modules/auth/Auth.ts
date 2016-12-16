@@ -10,6 +10,7 @@ export default class Auth {
     private _decipher: Decipher;
     private _cipher: Cipher;
     private _session: {address: string, expiration: Date, vrs: {v: string, r: string, s: string}};
+    private _task;
 
     /**
      *
@@ -130,7 +131,7 @@ export default class Auth {
                             address: acc,
                             vrs: fromRpcSig(signedString)
                         };
-                        setTimeout(() => this._flushSession(), 1000 * 60 * timer);
+                        this._task = setTimeout(() => this._flushSession(), 1000 * 60 * timer);
                         return { token, expiration, account: acc };
                     });
             })
@@ -145,6 +146,7 @@ export default class Auth {
             GethConnector.getInstance().web3.personal.lockAccountAsync(this._session.address);
         }
         this._flushSession();
+
     }
 
     /**
@@ -184,6 +186,8 @@ export default class Auth {
         this._encrypted = null;
         this._cipher = null;
         this._decipher = null;
+        clearTimeout(this._task);
+        console.log('flushed session');
     }
 
     /**
