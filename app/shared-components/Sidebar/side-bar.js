@@ -17,11 +17,13 @@ class SideBar extends Component {
         profileActions.getProfileBalance();
     }
     _handleNewEntry = () => {
-        const { draftActions, appActions, loggedProfileData,
+        const { activePanel, draftActions, appActions, loggedProfileData,
             draftsCount } = this.props;
         const entriesCount = parseInt(loggedProfileData.get('entriesCount'), 10);
 
-        if (entriesCount > 0 || draftsCount > 0) {
+        if (activePanel === 'newEntry') {
+            appActions.hidePanel();
+        } else if (entriesCount > 0 || draftsCount > 0) {
             appActions.showPanel({ name: 'newEntry', overlay: true });
         } else {
             appActions.hidePanel();
@@ -43,7 +45,12 @@ class SideBar extends Component {
         this._handleNavigation(path);
     }
     _handlePanelShow = (panelName) => {
-        this.props.appActions.showPanel(panelName);
+        const { activePanel, appActions } = this.props;
+        if (activePanel === panelName.name) {
+            appActions.hidePanel();
+        } else {
+            appActions.showPanel(panelName);
+        }
     };
     render () {
         const { style, loggedProfileData, activePanel, notificationsCount, hasFeed,

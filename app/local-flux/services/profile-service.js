@@ -73,6 +73,18 @@ class ProfileService extends BaseService {
             serverChannel.send({ token, ipfs, gas });
         });
     };
+
+    getProfileList = ({ profiles, onError = () => {}, onSuccess }) => {
+        this.openChannel({
+            clientManager: this.clientManager,
+            serverChannel: Channel.server.profile.getProfileList,
+            clientChannel: Channel.client.profile.getProfileList,
+            listenerCb: this.createListener(onError, onSuccess)
+        }, () => {
+            Channel.server.profile.getProfileList.send(profiles);
+        });
+    }
+
     /**
      * retrieve profile data by ipfs address
      * Request:

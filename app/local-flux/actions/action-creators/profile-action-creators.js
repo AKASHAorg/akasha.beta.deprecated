@@ -107,6 +107,30 @@ export function getProfileDataError (error, flags) {
     };
 }
 
+export function getProfileList (flags) {
+    return {
+        type: types.GET_PROFILE_LIST,
+        flags
+    };
+}
+
+export function getProfileListSuccess (data, flags) {
+    return {
+        type: types.GET_PROFILE_LIST_SUCCESS,
+        data,
+        flags
+    };
+}
+
+export function getProfileListError (error, flags) {
+    error.code = 'GPLE01';
+    return {
+        type: types.GET_PROFILE_LIST_ERROR,
+        error,
+        flags
+    };
+}
+
 export function clearLocalProfilesSuccess () {
     return {
         type: types.CLEAR_LOCAL_PROFILES_SUCCESS
