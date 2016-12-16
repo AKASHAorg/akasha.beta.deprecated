@@ -29,19 +29,6 @@ class Avatar extends React.Component {
                 resolve(null);
             }
         });
-
-    _handleMouseEnter = () => {
-        this.setState({
-            showChangeAvatar: this.props.editable,
-            showNameTooltip: this.props.editable
-        });
-    }
-    _handleMouseLeave = () => {
-        this.setState({
-            showChangeAvatar: false,
-            showNameTooltip: false
-        });
-    }
     _handleAvatarClear = () => {
         const { clearAvatarImage } = this.props;
         if (clearAvatarImage) {
@@ -99,10 +86,8 @@ class Avatar extends React.Component {
         return (
           <div
             style={Object.assign({ maxWidth: radius, maxHeight: radius, position: 'relative' }, style)}
-            onMouseEnter={this._handleMouseEnter}
-            onMouseLeave={this._handleMouseLeave}
           >
-            {this.state.showChangeAvatar && !this.state.isNewAvatarLoaded &&
+            {editable &&
               <input
                 ref={(fileInput) => { this.fileInput = fileInput; }}
                 style={dialogHandlerStyle}
