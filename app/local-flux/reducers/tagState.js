@@ -170,12 +170,17 @@ const tagState = createReducer(initialState, {
             flags: state.get('flags').merge(flags)
         }),
 
-    [types.TAG_ITERATOR_SUCCESS]: (state, { data, flags }) =>
-        state.merge({
-            newestTags: state.get('newestTags').concat(fromJS(data.collection.slice(0, -1))),
+    [types.TAG_ITERATOR_SUCCESS]: (state, { data, flags }) => {
+        const moreTags = data.limit === data.collection.length;
+        const newTags = moreTags ?
+            fromJS(data.collection.slice(0, -1)) :
+            fromJS(data.collection);
+        return state.merge({
+            newestTags: state.get('newestTags').concat(newTags),
             moreNewTags: data.limit === data.collection.length,
             flags: state.get('flags').merge(flags)
-        }),
+        });
+    },
 
     [types.TAG_ITERATOR_ERROR]: (state, { error, flags }) =>
         state.merge({

@@ -189,15 +189,19 @@ class ProfileDetails extends Component {
                         fontWeight: 300,
                     }}
                   >
-                    <div style={{ width: '292px', paddingRight: '10px' }}>
-                      <a href={link.url}>
-                        <div
-                          title={link.title}
-                          style={{ display: 'inline-block', maxWidth: '100%', ...wrapTextStyle }}
-                        >
-                          {link.title}
-                        </div>
-                      </a>
+                    <div
+                      style={{
+                          width: '292px',
+                          display: 'flex',
+                          alignItems: 'center'
+                      }}
+                    >
+                      <div
+                        title={link.url}
+                        style={{ display: 'inline-block', maxWidth: '100%', ...wrapTextStyle }}
+                      >
+                        {link.title}
+                      </div>
                     </div>
                     <IconButton
                       onClick={() => { this.handleCopyLink(link.url) }}
