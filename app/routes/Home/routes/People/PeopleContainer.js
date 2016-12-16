@@ -15,7 +15,8 @@ const RECOMMENDED_PEOPLE = [
     { profile: '0x390d83df56e035be232ad95cf0c89ae37857abac' },
     { profile: '0x24a052abcec2851e9742526758115c1229580722' },
     { profile: '0xdb2167325c999f42a2d533381d1b2911285a5a50' },
-    { profile: '0xa40fe140e260938a33f17e8c362cbad2d070d8ad' }
+    { profile: '0xa40fe140e260938a33f17e8c362cbad2d070d8ad' },
+    { profile: '0x3d4623be87bf20e60fb3ec805f964a2fa369c84f' }
 ];
 
 class PeopleContainer extends Component {
