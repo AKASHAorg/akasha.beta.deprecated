@@ -400,7 +400,7 @@ class CreateProfile extends Component {
                   </div>
                 )}
               </div>
-              <small>
+              <small style={{ paddingBottom: '15px', marginTop: '15px' }}>
                 <FormattedMessage
                   {...profileMessages.terms}
                   values={{

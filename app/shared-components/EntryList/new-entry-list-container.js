@@ -1,13 +1,13 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { EntryActions, TagActions } from 'local-flux';
+import { AppActions, EntryActions, TagActions } from 'local-flux';
 import { FlatButton } from 'material-ui';
 import { DataLoader, EntryCard } from 'shared-components';
 
 class EntryList extends Component {
     render () {
-        const { blockNr, cardStyle, claimPending, canClaimPending, entries, entryActions,
-            fetchingEntries, fetchingEntryBalance, fetchingMoreEntries, getTriggerRef,
+        const { appActions, blockNr, cardStyle, claimPending, canClaimPending, entries,
+            entryActions, fetchingEntries, fetchingEntryBalance, fetchingMoreEntries, getTriggerRef,
             loggedProfileData, moreEntries, savedEntriesIds, selectedTag, style, tagActions,
             votePending } = this.props;
         const { palette } = this.context.muiTheme;
@@ -48,6 +48,7 @@ class EntryList extends Component {
                       entry={entry}
                       entryActions={entryActions}
                       fetchingEntryBalance={fetchingEntryBalance}
+                      hidePanel={appActions.hidePanel}
                       isSaved={isSaved}
                       key={key}
                       loggedAkashaId={loggedProfileData.get('akashaId')}
@@ -72,6 +73,7 @@ class EntryList extends Component {
 }
 
 EntryList.propTypes = {
+    appActions: PropTypes.shape(),
     blockNr: PropTypes.number,
     cardStyle: PropTypes.shape(),
     canClaimPending: PropTypes.bool,
@@ -111,6 +113,7 @@ function mapStateToProps (state) {
 
 function mapDispatchToProps (dispatch) {
     return {
+        appActions: new AppActions(dispatch),
         entryActions: new EntryActions(dispatch),
         tagActions: new TagActions(dispatch)
     };

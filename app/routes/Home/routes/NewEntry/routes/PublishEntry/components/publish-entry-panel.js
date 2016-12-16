@@ -287,7 +287,6 @@ class PublishPanel extends React.Component {
                   key="publish"
                   label="Publish"
                   primary
-                  disabled={(registerPending.size > 0)}
                   style={{ marginLeft: 8 }}
                   onTouchTap={this._publishEntry}
                 />
