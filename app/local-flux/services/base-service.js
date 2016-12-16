@@ -69,7 +69,7 @@ class BaseService {
         }
         clientManager.once((ev, res) => {
             if (res.error) {
-                console.info(res.error.message, 'please check base-service -> openChannel method');
+                // console.info(res.error.message, 'please check base-service -> openChannel method');
             }
             this._openChannels.add(serverChannel.channel);
             return this.registerListener(clientChannel, listenerCb, cb);

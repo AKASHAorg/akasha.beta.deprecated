@@ -43,7 +43,6 @@ class SideBar extends Component {
 
         do {
             if (node.getAttribute && node.getAttribute('data-block') === 'true') {
-                console.log(node, 'the node');
                 return node;
             }
             node = node.parentNode;

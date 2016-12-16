@@ -53,7 +53,6 @@ class TempProfileActions {
         if (!tempProfile.get('address') && !currentStatus.get('ethAddressRequested')) {
             this.dispatch(tempProfileActionCreators.createEthAddress());
             this.dispatch((dispatch) => {
-                console.log('createEthAddress', tempProfile);
                 this.authService.createEthAddress({
                     password,
                     onSuccess: (data) => {
@@ -81,7 +80,6 @@ class TempProfileActions {
         this.dispatch(tempProfileActionCreators.requestFundFromFaucet());
         if (address && !tempProfile.getIn(['currentStatus', 'faucetRequested'])) {
             this.dispatch((dispatch) => {
-                console.log('requestFund', tempProfile);
                 this.authService.requestEther({
                     address,
                     onSuccess: (data) => {
@@ -176,7 +174,6 @@ class TempProfileActions {
     }
 
     updateTempProfile = (changes, currentStatus, cb) => {
-        console.log('updateTemp', currentStatus);
         this.registryService.updateTempProfile({
             changes,
             currentStatus,
@@ -212,7 +209,6 @@ class TempProfileActions {
 
     tempLogin = ({ account, password, rememberTime, akashaId, registering = true }) => {
         password = new TextEncoder('utf-8').encode(password);
-        console.log('tempLogin', account);
         this.dispatch(tempProfileActionCreators.login());
         this.authService.login({
             account,

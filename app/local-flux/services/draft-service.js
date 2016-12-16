@@ -2,7 +2,6 @@ import entriesDB from './db/entry';
 
 class DraftService {
     createOrUpdate = (draft) => {
-        console.log('draft service', draft);
         if (!draft.id) {
             return this.createDraft(draft);
         }

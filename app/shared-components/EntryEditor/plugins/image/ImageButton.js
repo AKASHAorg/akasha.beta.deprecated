@@ -30,7 +30,6 @@ export default class BlockButton extends Component {
         Promise.all(filePromises).then((results) => {
             const files = results[0];
             const bestKey = findBestMatch(1280, files);
-            console.log(bestKey, files, 'bestKey from files');
             const data = {
                 files: results[0],
                 type: 'image',

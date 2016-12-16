@@ -40,7 +40,6 @@ class TagService extends BaseService {
             listenerCb: this.createListener(
                 onError,
                 (data) => {
-                    console.log(data, 'tag publish data');
                     onSuccess({ tag: tagName, tx: data.tx });
                 },
             )

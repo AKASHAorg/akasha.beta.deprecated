@@ -70,7 +70,6 @@ export default function (Component) {
                             });
                             return;
                         }
-                        console.log('no errors!', cb);
                         if (typeof cb === 'function') {
                             cb();
                         }

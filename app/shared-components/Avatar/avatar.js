@@ -87,7 +87,7 @@ class Avatar extends React.Component {
           <div
             style={Object.assign({ maxWidth: radius, maxHeight: radius, position: 'relative' }, style)}
           >
-            {editable &&
+            {editable && !avatarImage &&
               <input
                 ref={(fileInput) => { this.fileInput = fileInput; }}
                 style={dialogHandlerStyle}
