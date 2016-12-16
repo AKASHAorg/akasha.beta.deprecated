@@ -22,6 +22,7 @@ class BlockStyles extends Component {
                       onChange={this.onChange}
                       onClick={this.handleClick}
                       showTerms={this.props.showTerms}
+                      onError={this.props.onError}
                     />
                   </li>
                 );

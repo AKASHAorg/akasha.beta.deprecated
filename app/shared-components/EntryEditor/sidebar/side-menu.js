@@ -39,6 +39,7 @@ class SideMenu extends Component {
               onChange={this.onChange}
               toggle={this.toggle}
               showTerms={this.props.showTerms}
+              onError={this.props.onError}
             />
           </li>
         );

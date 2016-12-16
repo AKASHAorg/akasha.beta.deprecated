@@ -105,6 +105,7 @@ class SideBar extends Component {
                   onChange={this.onChange}
                   plugins={this.getValidSidebarPlugins()}
                   showTerms={this.props.showTerms}
+                  onError={this.props.onError}
                 />
               </ul>
             </div>

@@ -81,7 +81,7 @@ class EntryEditor extends Component {
         return false;
     }
     _renderSidebar = ({ plugins, editorState, onChange }) => {
-        const { showSidebar, readOnly, showTerms } = this.props;
+        const { showSidebar, readOnly, showTerms, onError } = this.props;
         if (showSidebar && !readOnly) {
             return (
               <EditorSidebar
@@ -89,6 +89,7 @@ class EntryEditor extends Component {
                 editorState={editorState}
                 onChange={onChange}
                 showTerms={showTerms}
+                onError={onError}
                 editorHasFocus={this._checkEditorFocus()}
               />);
         }
@@ -97,7 +98,7 @@ class EntryEditor extends Component {
 
     render () {
         const { showTitle, titlePlaceholder, editorPlaceholder, readOnly } = this.props;
-        console.info('if you can see this, editor is re-rendering');
+        // console.info('if you can see this, editor is re-rendering');
         return (
           <div className="editor" style={{ textAlign: 'left' }}>
             <div>

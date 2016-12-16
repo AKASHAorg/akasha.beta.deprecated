@@ -16,7 +16,8 @@ import { injectIntl } from 'react-intl';
 class AddEntryPage extends Component {
     state = {
         isNewDraft: false,
-        fetchingDraft: false
+        fetchingDraft: false,
+        errors: {}
     };
     componentDidMount () {
         const { drafts, params } = this.props;
@@ -184,6 +185,14 @@ class AddEntryPage extends Component {
         }
         return currentDraft.getIn(['content', 'draft']);
     }
+    _handleEditorErrors = (errorMessage) => {
+        const { appActions } = this.props;
+        appActions.showNotification({
+            id: 'editorMessage',
+            values: { errorMessage: errorMessage },
+            duration: 3000
+        });
+    }
     render () {
         const { appActions, drafts, savingDraft, intl } = this.props;
         const { fetchingDraft, draftMissing, isNewDraft } = this.state;
@@ -256,6 +265,7 @@ class AddEntryPage extends Component {
                     showTitle
                     placeHolder="Write something"
                     showTerms={appActions.showTerms}
+                    onError={this._handleEditorErrors}
                   />
                   <AlertDialog
                     ref={(alert) => { this.alertDialog = alert; }}
