@@ -46,6 +46,6 @@ config.plugins.push(
     new ExtractTextPlugin('style.css', { allChunks: true })
 );
 config.devtool = 'cheap-module-source-map';
-config.target = 'electron-renderer';
+config.target = 'web';
 
 module.exports = config;
