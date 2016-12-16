@@ -12,20 +12,21 @@ class Setup extends Component {
     render () {
         const { theme } = this.props;
         return (
-          <div className="col-xs-12" style={{ padding: 0, overflow: 'hidden' }}>
+          <div style={{ display: 'flex', padding: 0, overflow: 'hidden' }}>
             <div
-              className="col-xs-5"
               style={{
-                  padding: 0
+                  padding: 0,
+                  flex: '5 5 auto',
+                  maxWidth: '640px'
               }}
             >
               {this.props.children}
             </div>
             <div
-              className="col-xs-7"
               style={{
                   backgroundColor: theme === 'light' ? '#f3f3f3' : '#252525',
-                  padding: 0
+                  padding: 0,
+                  flex: '7 7 auto'
               }}
             >
               <Tutorials theme={theme} />

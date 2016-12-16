@@ -16,20 +16,20 @@ const LoginLayout = (props) => {
     const { children, theme } = props;
     return (
       <div
-        className="col-xs-12"
         style={{
             padding: 0,
-            overflow: 'hidden'
+            overflow: 'hidden',
+            display: 'flex'
         }}
       >
-        <div className="col-xs-7 col-lg-5" style={{ padding: 0 }}>
+        <div style={{ padding: 0, flex: '5 5 auto', maxWidth: '640px' }}>
           {children}
         </div>
         <div
-          className="col-xs-5 col-lg-7"
           style={{
               backgroundColor: theme === 'light' ? '#f3f3f3' : '#252525',
-              padding: 0
+              padding: 0,
+              flex: '7 7 auto'
           }}
         >
           <Tutorials theme={theme} />
