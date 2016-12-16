@@ -83,7 +83,7 @@ class Auth {
                     address: acc,
                     vrs: ethereumjs_util_1.fromRpcSig(signedString)
                 };
-                setTimeout(() => this._flushSession(), 1000 * 60 * timer);
+                this._task = setTimeout(() => this._flushSession(), 1000 * 60 * timer);
                 return { token, expiration, account: acc };
             });
         })
@@ -124,6 +124,8 @@ class Auth {
         this._encrypted = null;
         this._cipher = null;
         this._decipher = null;
+        clearTimeout(this._task);
+        console.log('flushed session');
     }
     _signSession(account, hash) {
         return geth_connector_1.GethConnector.getInstance()
