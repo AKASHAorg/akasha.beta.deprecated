@@ -1,6 +1,6 @@
 import Dexie from 'dexie';
 
-const dbName = (process.env.NODE_ENV === 'production') ? 'settings-akasha' : 'settings-dev';
+const dbName = 'settings-akasha-alpha';
 const settingsDB = new Dexie(dbName);
 settingsDB.version(1).stores({
     geth: '&name, autodag, cache, datadir, fast, ipcpath, mine, minerthreads, networkid',

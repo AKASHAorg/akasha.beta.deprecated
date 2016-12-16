@@ -79,7 +79,7 @@
     "email": "hi@akasha.world",
     "url": "https://github.com/AkashaProject"
   },
-  "license": "MPL 2.0",
+  "license": "",
   "bugs": {
     "url": "https://github.com/AkashaProject/node-app/issues"
   },
@@ -247,6 +247,7 @@
       "app/app.html",
       "main.js",
       "main.js.map",
+        "Licence",
       "package.json"
     ],
     "win": {
