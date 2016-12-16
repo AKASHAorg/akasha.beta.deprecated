@@ -1,7 +1,7 @@
 import Dexie from 'dexie';
 import draftSchema from './schema/draft';
 
-const dbName = (process.env.NODE_ENV === 'production') ? 'entries-akasha' : 'entries-dev';
+const dbName = 'entries-akasha-alpha';
 const entriesDB = new Dexie(dbName);
 entriesDB.version(1).stores({
     drafts: '++id,akashaId',

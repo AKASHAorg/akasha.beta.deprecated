@@ -24,11 +24,9 @@ class ModuleEmitter extends AbstractEmitter_1.AbstractEmitter {
     }
     _initMethods(methods) {
         methods.forEach((method) => {
-            console.log([this.MODULE_NAME], [method.name]);
             if (method.name === 'feed') {
                 this.registerListener(channels_1.default.server[this.MODULE_NAME][method.name], (event, data) => {
                     let response;
-                    console.time(method.name);
                     method
                         .execute(data, (er, ev) => {
                         if (er) {
@@ -47,7 +45,6 @@ class ModuleEmitter extends AbstractEmitter_1.AbstractEmitter {
                     })
                         .finally(() => {
                         this.fireEvent(channels_1.default.client[this.MODULE_NAME][method.name], response, event);
-                        console.timeEnd(method.name);
                         response = null;
                     });
                 });
@@ -55,8 +52,6 @@ class ModuleEmitter extends AbstractEmitter_1.AbstractEmitter {
             }
             this.registerListener(channels_1.default.server[this.MODULE_NAME][method.name], (event, data) => {
                 let response;
-                const stamp = method.name + ' ' + (new Date()).getTime();
-                console.time(stamp);
                 method
                     .execute(data)
                     .then((result) => {
@@ -67,7 +62,6 @@ class ModuleEmitter extends AbstractEmitter_1.AbstractEmitter {
                 })
                     .finally(() => {
                     this.fireEvent(channels_1.default.client[this.MODULE_NAME][method.name], response, event);
-                    console.timeEnd(stamp);
                     response = null;
                 });
             });

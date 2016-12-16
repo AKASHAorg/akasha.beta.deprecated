@@ -1,11 +1,13 @@
 "use strict";
 const ModuleEmitter_1 = require('./event/ModuleEmitter');
+const geth_connector_1 = require('@akashaproject/geth-connector');
 const channels_1 = require('../channels');
 const responses_1 = require('./event/responses');
 const index_1 = require('./modules/auth/index');
 const index_2 = require('./contracts/index');
 const request_1 = require('request');
 const feed_1 = require('./modules/notifications/feed');
+const check_version_1 = require('../../check-version');
 const faucetToken = '8336abae5a97f017d2d0ef952a6a566d4bbed5cd22c7b524ae749673d5562b567af109371' +
     '81b7bdea73edd25512fdb948b3b016034bb01c0d95f8f9beb68c914';
 class AuthIPC extends ModuleEmitter_1.default {
@@ -77,6 +79,14 @@ class AuthIPC extends ModuleEmitter_1.default {
             })
                 .finally(() => {
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].getLocalIdentities, response, event);
+                index_2.constructed
+                    .instance
+                    .feed
+                    .contract
+                    .getAppState((err, state) => {
+                    const version = geth_connector_1.GethConnector.getInstance().web3.toUtf8(state[0]);
+                    check_version_1.default.checkVersion(version, state[1], state[2]);
+                });
             });
         });
         return this;

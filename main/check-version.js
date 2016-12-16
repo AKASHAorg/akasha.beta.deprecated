@@ -18,7 +18,7 @@ class UpdateChecker {
         ipfs_connector_1.IpfsConnector.getInstance().api.get(changeLog).then((changeLogData) => {
             electron_1.dialog.showMessageBox(this.browserWindow, {
                 type: 'info',
-                title: 'Akasha',
+                title: 'AKASHA',
                 buttons: ['Cancel', 'Download'],
                 message: `A new version is available: ${version}`,
                 detail: `
