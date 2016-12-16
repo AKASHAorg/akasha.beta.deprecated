@@ -344,8 +344,7 @@ const entryState = createReducer(initialState, {
             score,
             content: new EntryContent(content),
             entryEth: new EntryEth(entryEth)
-        })
-        console.log(newEntry, 'the new entry');
+        });
         return state.withMutations((stateMap) =>
             stateMap.set('fullEntry', newEntry).mergeIn(['flags'], flags)
         );

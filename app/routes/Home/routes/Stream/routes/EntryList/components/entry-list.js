@@ -10,9 +10,7 @@ class EntryList extends Component {
         ev.preventDefault();
         const { appActions } = this.props;
 
-        appActions.showEntryModal(entryData).then(() => {
-            console.log('start loading data');
-        });
+        appActions.showEntryModal(entryData).then(() => {});
     };
     _navigateToTag = (ev, tag) => {
         const { loggedProfileData } = this.props;

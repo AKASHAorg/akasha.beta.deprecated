@@ -24,7 +24,6 @@ class EntryEditor extends Component {
     }
     componentWillReceiveProps (nextProps) {
         const { content } = nextProps;
-        console.log(content);
         if(content !== this.props.content)
         this.setState({
             editorState: editorStateFromRaw(nextProps.content),

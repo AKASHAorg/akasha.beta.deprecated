@@ -22,7 +22,6 @@ class EntryService extends BaseService {
      *
      */
     publishEntry = ({ draftObj, token, gas, onError, onSuccess }) => {
-        console.log(draftObj, 'sending draft to main for publishing');
         this.openChannel({
             clientManager: this.clientManager,
             serverChannel: Channel.server.entry.publish,

@@ -44,13 +44,11 @@ class CommentsActions {
             dispatch(commentsActionCreators.publishComment({
                 registerPending: flagOn
             }));
-            console.log(commentPayload, 'the payload');
             this.commentService.publishComment({
                 token,
                 gas,
                 ...commentPayload.toJS(),
                 onSuccess: (data) => {
-                    console.log(data, 'data on publish success');
                     this.transactionActions.listenForMinedTx();
                     this.transactionActions.addToQueue([{
                         tx: data.tx,

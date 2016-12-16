@@ -228,7 +228,6 @@ class Auth extends Component {
         ];
         const localProfiles = this._getLocalProfiles();
         const selectedProfile = this.state.selectedProfile;
-        // console.log(selectedProfile.toJS(), 'selectedProfile');
         return (
           <PanelContainer
             showBorder
