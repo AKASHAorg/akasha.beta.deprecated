@@ -46,14 +46,28 @@ export default function (Component) {
                     const statePathLens = r.lensPath(key.split('.'));
                     const value = r.view(statePathLens, state);
                     const { intl } = this.props;
+                    this.state.errors[validationKey] = [];
                     validationActions[validationActionName](value, (error, data) => {
                         if (error) {
                             this.state.errors[validationKey][0] = error.message;
                             return;
                         }
                         if (data.exists) {
-                            this.state.errors[validationKey][0] =
-                                intl.formatMessage(validationMessages.akashaIdExists);
+                            const newErrors = Object.assign({}, this.state.errors, {
+                                [validationKey]: [intl.formatMessage(validationMessages.akashaIdExists)]
+                            });
+                            this.setState({
+                                errors: newErrors
+                            });
+                            return;
+                        }
+                        if (!data.idValid) {
+                            const newErrors = Object.assign({}, this.state.errors, {
+                                [validationKey]: [intl.formatMessage(validationMessages.akashaIdNotValid)]
+                            });
+                            this.setState({
+                                errors: newErrors
+                            });
                             return;
                         }
                         console.log('no errors!', cb);
