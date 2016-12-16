@@ -11,6 +11,7 @@ const following_iterator_1 = require('./following-iterator');
 const is_follower_1 = require('./is-follower');
 const is_following_1 = require('./is-following');
 const following_list_1 = require('./following-list');
+const get_profile_list_1 = require('./get-profile-list');
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = [
     current_balance_1.default,
@@ -24,6 +25,7 @@ exports.default = [
     unfollow_profile_1.default,
     update_profile_1.default,
     followers_iterator_1.default,
-    following_iterator_1.default
+    following_iterator_1.default,
+    get_profile_list_1.default
 ];
 //# sourceMappingURL=index.js.map

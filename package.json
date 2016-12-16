@@ -195,7 +195,7 @@
     "@akashaproject/geth-connector": "1.6.18",
     "@akashaproject/ipfs-connector": "1.7.0",
     "bluebird": "3.4.6",
-    "compare-versions": "^3.0.0",
+    "compare-versions": "3.0.0",
     "electron-debug": "1.1.0",
     "electron-devtools-installer": "2.0.1",
     "ethereumjs-util": "5.0.1",
