@@ -10,6 +10,7 @@ import followingIterator from './following-iterator';
 import isFollower from './is-follower';
 import isFollowing from './is-following';
 import followingList from './following-list';
+import getProfileList from './get-profile-list';
 
 export default [
     currentBalance,
@@ -23,5 +24,6 @@ export default [
     unfollowProfile,
     updateProfile,
     followersIterator,
-    followingIterator
+    followingIterator,
+    getProfileList
 ];
