@@ -11,6 +11,7 @@ export default class IconSearch extends Component {
     };
 
     static propTypes = {
+        disabled: PropTypes.bool,
         style: PropTypes.object,
         iconStyle: PropTypes.object,
         viewBox: PropTypes.string,
@@ -46,12 +47,13 @@ export default class IconSearch extends Component {
     }
 
     render () {
-        let { style, iconStyle, viewBox, hoverColor, color, tooltip, ...other } = this.props;
+        let { disabled, style, iconStyle, viewBox, hoverColor, color, tooltip,
+            ...other } = this.props;
         const {
-      baseTheme: {
-        palette
-      }
-    } = this.state.muiTheme;
+            baseTheme: {
+                palette
+            }
+        } = this.state.muiTheme;
 
         style = Object.assign(style, {
             borderColor: colors.faintBlack,
@@ -65,6 +67,7 @@ export default class IconSearch extends Component {
           <CircleIcon
             onClick={this._handleClick}
             tooltip={tooltip}
+            disabled={disabled}
           >
             <SvgIcon
               color={color}

@@ -283,8 +283,8 @@ class EditProfile extends Component {
                 </h3>
                 <ImageUploader
                   ref={(imageUploader) => { this.imageUploader = imageUploader; }}
-                  minHeight={350}
-                  minWidth={672}
+                  minHeight={320}
+                  minWidth={320}
                   initialImageLink={backgroundImageLink}
                   clearImage={this.clearBackgroundImage}
                 />

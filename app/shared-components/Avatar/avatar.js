@@ -112,21 +112,29 @@ class Avatar extends React.Component {
             }
             {avatarImage &&
               <div>
-                <AvatarEditor
-                  style={{
-                      borderRadius: 150,
-                      border: offsetBorder || 0,
-                      backgroundColor,
-                      width: radius,
-                      height: radius,
-                      borderColor: palette.borderColor
-                  }}
-                  border={1}
-                  image={avatarImage}
-                  ref={(editor) => { this.editor = editor; }}
-                  borderRadius={100}
-                  scale={editable ? this.state.avatarScale : 1}
-                />
+                {editable ?
+                  <AvatarEditor
+                    style={{
+                        borderRadius: 150,
+                        border: offsetBorder || 0,
+                        backgroundColor,
+                        width: radius,
+                        height: radius,
+                        borderColor: palette.borderColor
+                    }}
+                    border={1}
+                    image={avatarImage}
+                    ref={(editor) => { this.editor = editor; }}
+                    borderRadius={100}
+                    scale={editable ? this.state.avatarScale : 1}
+                  /> :
+                  <img
+                    src={avatarImage}
+                    style={{
+                        width: radius, height: radius, borderRadius: '50%', imageRendering: 'auto'
+                    }}
+                  />
+                }
                 {editable &&
                   <div>
                     <Slider

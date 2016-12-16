@@ -58,6 +58,9 @@ class CreateProfile extends Component {
         this.setState({ opt_details: !this.state.opt_details });
     };
     handleSubmit = () => {
+        if (this.hasErrors) {
+            return;
+        }
         const { tempProfileActions } = this.props;
         const profileData = this.state.formValues;
         const optionalData = {};
@@ -172,6 +175,16 @@ class CreateProfile extends Component {
         ev.preventDefault();
         appActions.showTerms();
     };
+    hasErrors = () => {
+        const { errors } = this.props;
+        let hasErrors = false;
+        Object.keys(errors).forEach(key => {
+            if (errors[key] && errors[key].length) {
+                hasErrors = true;
+            }
+        });
+        return hasErrors;
+    }
     renderWarningMessage () {
         const { intl, gethStatus, ipfsStatus } = this.props;
         const { palette } = this.context.muiTheme;
@@ -271,7 +284,7 @@ class CreateProfile extends Component {
                 type="submit"
                 onClick={this._submitForm}
                 style={{ marginLeft: 8 }}
-                disabled={this.state.submitting || isServiceStopped}
+                disabled={this.state.submitting || isServiceStopped || this.hasErrors()}
                 primary
               />
               /* eslint-enable */
@@ -298,7 +311,7 @@ class CreateProfile extends Component {
                 checked={this.state.opt_details}
                 onCheck={this.handleShowDetails}
               />
-              <div style={{ display: this.state.opt_details ? 'block' : 'none' }} >
+              <div style={{ display: this.state.opt_details ? 'block' : 'none', width: '100%' }} >
                 <h3 style={{ margin: '30px 0 10px 0' }} >
                   {intl.formatMessage(profileMessages.avatarTitle)}
                 </h3>

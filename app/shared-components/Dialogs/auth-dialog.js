@@ -33,7 +33,7 @@ function AuthDialog (props) {
         open={props.isVisible}
       >
         <form onSubmit={props.onSubmit}>
-          <small>{intl.formatMessage(formMessages.confirmPasswordToContinue)}</small>
+          <div>{intl.formatMessage(formMessages.confirmPasswordToContinue)}</div>
           <TextField
             fullWidth
             floatingLabelText={intl.formatMessage(formMessages.password)}
@@ -51,7 +51,7 @@ function AuthDialog (props) {
                 onCheck={props.onRememberPasswordCheck}
               />
             </div>
-            <div className="col-xs-3 start-xs" style={{ paddingLeft: 0 }}>
+            <div className="col-xs-3 start-xs" style={{ paddingLeft: 0, display: 'flex' }}>
               <SelectField
                 value={props.rememberTime}
                 style={{ width: 100 }}

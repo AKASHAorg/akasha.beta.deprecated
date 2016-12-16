@@ -75,7 +75,7 @@ class SideBar extends Component {
                 <EntriesIcon onClick={this._handleNewEntry} tooltip="My entries" /> :
                 <AddEntryIcon onClick={this._handleNewEntry} tooltip="Add new entry" />
               }
-              <SearchIcon onClick={this._handleSearch} tooltip="Search" />
+              <SearchIcon onClick={this._handleSearch} tooltip="Search" disabled />
             </div>
             <div style={{ flexGrow: 4, padding: '14px' }} >
               <StreamsIcon

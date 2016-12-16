@@ -20,14 +20,13 @@ class UserValidation {
              * akashaId matches [ab.c, a.bc, abcd, abcdef...(32 chars)]
              * akashaId do not match [abc, .abc, abc., ..ab, ab.., etc]
              */
-            akashaId: ['required', 'min:4', 'max:32', 'regex:/^\\S(?:[a-z0-9]+(?:.(?!$))?)+$/'],
+            akashaId: ['required', 'min:4', 'max:32'],
             password: 'required|min:8',
             password2: 'required|same:password'
         }, {
             required: formatMessage(validationMessages.required),
             min: formatMessage(validationMessages.min),
             max: formatMessage(validationMessages.max),
-            regex: 'Only lowercase alphanumeric characters and dots allowed',
             'same.password2': formatMessage(validationMessages.passwordNotMatching),
         }, (validator) => {
             validator.setAttributeNames({

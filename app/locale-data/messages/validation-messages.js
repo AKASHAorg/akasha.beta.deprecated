@@ -28,6 +28,11 @@ const validationMessages = defineMessages({
         id: 'app.validator.akashaIdExists',
         description: 'When the akashaId chosen already registered',
         defaultMessage: 'akashaId already registered!'
+    },
+    akashaIdNotValid: {
+        id: 'app.validator.akashaIdNotValid',
+        description: 'When the akashaId is not valid',
+        defaultMessage: 'Only lowercase alphanumeric characters, dots and underscores allowed'
     }
 });
 export { validationMessages };
