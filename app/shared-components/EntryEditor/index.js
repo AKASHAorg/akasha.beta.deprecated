@@ -24,12 +24,12 @@ class EntryEditor extends Component {
     }
     componentWillReceiveProps (nextProps) {
         const { content } = nextProps;
-        if (content && content !== this.props.content) {
-            this.setState({
-                editorState: editorStateFromRaw(nextProps.content),
-                title: nextProps.title
-            });
-        }
+        console.log(content);
+        if(content !== this.props.content)
+        this.setState({
+            editorState: editorStateFromRaw(nextProps.content),
+            title: nextProps.title
+        });
     }
     shouldComponentUpdate (nextProps, nextState) {
         return (nextProps.title !== this.props.title) ||

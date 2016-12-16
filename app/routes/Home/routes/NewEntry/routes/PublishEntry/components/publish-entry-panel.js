@@ -82,10 +82,9 @@ class PublishPanel extends React.Component {
             settingsActions.saveDefaultEntryLicence(loggedProfile.get('akashaId'), selectedLicence);
         }
         this.setState({
-            draft: this.state.draft.setIn(['content', 'licence'], selectedLicence),
+            draft: this.state.draft.mergeIn(['content', 'licence'], selectedLicence),
             isLicencingOpen: false
         }, () => {
-            console.log(selectedLicence, 'selected licence');
             this._handleDraftUpdate('content.licence', selectedLicence);
         });
     };
@@ -166,7 +165,6 @@ class PublishPanel extends React.Component {
             existingTags: this.state.existingTags.filter(tg => tg !== tag),
             validationErrors: this.state.validationErrors.filter(err => err.field !== 'tags')
         }, () => {
-            console.log(this.state);
             this._handleDraftUpdate('tags', this.state.draft.get('tags').toJS());
         });
     };
