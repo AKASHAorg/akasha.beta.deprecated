@@ -135,6 +135,11 @@ const notificationMessages = defineMessages({
         id: 'app.notification.draftSaveFailed',
         description: 'Notification to show when saving draft failed',
         defaultMessage: 'Failed to save draft!'
+    },
+    editorMessage: {
+        id: 'app.notification.editorMessage',
+        description: 'just a placeholder',
+        defaultMessage: '{errorMessage}'
     }
 });
 export { notificationMessages };

@@ -51,9 +51,7 @@ export default class BlockButton extends Component {
                 document.activeElement.blur();
             }
         }).catch((reason) => {
-            this.setState({
-                error: reason
-            });
+            this.props.onError(reason);
         });
     }
 

@@ -54,7 +54,9 @@ class ImageBlock extends Component {
         if (!imageKey && imageKey === '') {
             imageKey = findBestMatch(containerWidth, imageFiles, this.state.previewImage);
         }
-
+        if(imageKey === 'xl' || imageKey === 'lg') {
+            imageKey = 'md';
+        }
         this.props.container.updateData({ media: imageKey });
         this.setState({
             previewImage: imageKey,
