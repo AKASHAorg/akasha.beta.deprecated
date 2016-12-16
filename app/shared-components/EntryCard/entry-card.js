@@ -121,7 +121,8 @@ class EntryCard extends Component {
     };
 
     _handleEntryNavigation = () => {
-        const { entry, loggedAkashaId } = this.props;
+        const { entry, hidePanel, loggedAkashaId } = this.props;
+        hidePanel();
         this.context.router.push(`/${loggedAkashaId}/entry/${entry.get('entryId')}`);
     };
 
@@ -393,6 +394,7 @@ EntryCard.propTypes = {
     entry: PropTypes.shape(),
     entryActions: PropTypes.shape(),
     fetchingEntryBalance: PropTypes.bool,
+    hidePanel: PropTypes.func,
     intl: PropTypes.shape(),
     isSaved: PropTypes.bool,
     loggedAkashaId: PropTypes.string,

@@ -108,13 +108,10 @@ class HomeContainer extends React.Component {
 
         const profileAddress = loggedProfile.get('profile');
         const account = loggedProfile.get('account');
-        const loadingInProgress = !loggedProfileData || fetchingLoggedProfile;
+        const loadingInProgress = !loggedProfileData || fetchingLoggedProfile || !account;
 
-        if (!account) {
-            return <div>Logging out...</div>;
-        }
         return (
-          <DataLoader flag={loadingInProgress} size={80} timeout={500}>
+          <DataLoader flag={loadingInProgress} size={80} timeout={500} style={{ paddingTop: '50px' }}>
             <div className={styles.root} >
               <div className={styles.sideBar} >
                 <Sidebar
