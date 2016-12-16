@@ -40,8 +40,10 @@ class SideBar extends Component {
             return null;
         }
         let node = selection.getRangeAt(0).startContainer;
+
         do {
             if (node.getAttribute && node.getAttribute('data-block') === 'true') {
+                console.log(node, 'the node');
                 return node;
             }
             node = node.parentNode;
@@ -65,7 +67,8 @@ class SideBar extends Component {
         }
         const containerTop =
             (container.getBoundingClientRect().top + 16) - document.documentElement.clientTop;
-        const left = element.offsetLeft - 50;
+        const cursorNode = element.querySelector('span');
+        const left = cursorNode.offsetLeft - 50;
         let top = element.getBoundingClientRect().top - containerTop;
         top = Math.floor(top) + 8;
 

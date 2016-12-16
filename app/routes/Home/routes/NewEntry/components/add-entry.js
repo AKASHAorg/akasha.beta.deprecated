@@ -108,7 +108,7 @@ class AddEntryPage extends Component {
         const excerpt = contentState.getPlainText().slice(0, 160).replace(/\r?\n|\r/g, '');
         const akashaId = params.akashaId;
         const showNotification = true;
-        if (!defaultLicence) defaultLicence = { parent: '1', id: null };
+        if (!defaultLicence) defaultLicence = { parent: null, id: '1' };
         if (params.draftId !== 'new') {
             const draftId = parseInt(params.draftId, 10);
             const currentDraft = this._findCurrentDraft(drafts);

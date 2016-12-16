@@ -73,7 +73,7 @@ class LicenceDialog extends React.Component {
             return <div>Loading licences</div>;
         }
         if (defaultLicence) {
-            selectedMainLicence = licences.find(licence => licence.id === defaultLicence.parent);
+            selectedMainLicence = licences.find(licence => licence.id === (defaultLicence.parent ? defaultLicence.parent : defaultLicence.id));
         } else {
             selectedMainLicence = licences.find(licence => licence.id === '1');
         }
