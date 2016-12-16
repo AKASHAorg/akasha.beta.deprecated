@@ -200,6 +200,29 @@ class ProfileActions {
         });
     };
 
+    getProfileList = (profiles) => {
+        this.dispatch(profileActionCreators.getProfileList({
+            fetchingProfileList: true
+        }));
+        this.profileService.getProfileList({
+            profiles,
+            onSuccess: data => {
+                data.collection.forEach((item) => {
+                    if (item.avatar) {
+                        item.avatar = imageCreator(item.avatar, item.baseUrl);
+                    }
+                });
+                this.dispatch(profileActionCreators.getProfileListSuccess(data, {
+                    fetchingProfileList: false
+                }));
+            },
+            onError: error =>
+                this.dispatch(profileActionCreators.getProfileListError(error, {
+                    fetchingProfileList: false
+                }))
+        });
+    }
+
     updateProfileDataSuccess = () => {
         this.dispatch(profileActionCreators.updateProfileDataSuccess({
             updatingProfile: false

@@ -44,6 +44,7 @@ const LoggedProfile = Record({
 
 const initialState = fromJS({
     profiles: new List(),
+    profileList: new List(),
     loggedProfile: new LoggedProfile(),
     errors: new List(),
     fetchingFullLoggedProfile: false,
@@ -148,6 +149,16 @@ const profileState = createReducer(initialState, {
     },
 
     [types.GET_PROFILE_DATA_ERROR]: errorHandler,
+
+    [types.GET_PROFILE_LIST]: flagHandler,
+
+    [types.GET_PROFILE_LIST_SUCCESS]: (state, { data, flags }) =>
+        state.merge({
+            profileList: fromJS(data.collection),
+            flags: state.get('flags').merge(flags)
+        }),
+
+    [types.GET_PROFILE_LIST_ERROR]: errorHandler,
 
     [types.GET_PROFILE_BALANCE_SUCCESS]: (state, { data }) => {
         const loggedProfileAccount = state.getIn(['loggedProfile', 'account']);

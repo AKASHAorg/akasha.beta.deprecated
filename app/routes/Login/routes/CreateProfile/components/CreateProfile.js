@@ -58,7 +58,7 @@ class CreateProfile extends Component {
         this.setState({ opt_details: !this.state.opt_details });
     };
     handleSubmit = () => {
-        if (this.hasErrors) {
+        if (this.hasErrors()) {
             return;
         }
         const { tempProfileActions } = this.props;

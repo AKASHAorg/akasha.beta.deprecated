@@ -9,6 +9,14 @@ import { DataLoader, ProfileCard } from 'shared-components';
 import { isInViewport } from 'utils/domUtils';
 
 const LIMIT = 13;
+const RECOMMENDED_PEOPLE = [
+    { profile: '0x39dbdec443648f91f1e2d30befc4264f290fbb47' },
+    { profile: '0xce08edabdee18520cef580ac30100af64dac4938' },
+    { profile: '0x390d83df56e035be232ad95cf0c89ae37857abac' },
+    { profile: '0x24a052abcec2851e9742526758115c1229580722' },
+    { profile: '0xdb2167325c999f42a2d533381d1b2911285a5a50' },
+    { profile: '0xa40fe140e260938a33f17e8c362cbad2d070d8ad' }
+];
 
 class PeopleContainer extends Component {
 
@@ -19,15 +27,16 @@ class PeopleContainer extends Component {
         this.lastFollowerIndex = 0;
         this.lastFollowingIndex = 0;
         this.state = {
-            activeTab: 'followers'
+            activeTab: 'recommended'
         };
     }
 
     componentWillMount () {
         const { profileActions, loggedProfileData } = this.props;
-        profileActions.followersIterator(
-            loggedProfileData.akashaId, this.lastFollowerIndex, LIMIT
-        );
+        // profileActions.followersIterator(
+        //     loggedProfileData.akashaId, this.lastFollowerIndex, LIMIT
+        // );
+        profileActions.getProfileList(RECOMMENDED_PEOPLE);
     }
 
     componentDidMount () {
@@ -144,6 +153,43 @@ class PeopleContainer extends Component {
         profileActions.moreFollowingIterator(loggedProfileData.akashaId, this.lastFollowingIndex, LIMIT);
     };
 
+    renderRecommended () {
+        const { fetchingProfileList, followPending, intl, isFollowerPending, loggedProfileData,
+            profileActions, profileList } = this.props;
+
+        if (!profileList.size && !fetchingProfileList) {
+            return <div>No recommandations</div>;
+        }
+
+        return (
+          <DataLoader
+            flag={fetchingProfileList}
+            timeout={200}
+            size={80}
+            style={{ paddingTop: '120px' }}
+          >
+            <div style={{ display: 'flex', flexWrap: 'wrap' }} >
+              {profileList.toJS().map((profile, key) => {
+                  const followProfilePending = followPending && followPending.find(follow =>
+                      follow.akashaId === profile.akashaId);
+                  return profile &&
+                    <ProfileCard
+                      key={key}
+                      loggedProfileData={loggedProfileData}
+                      profileData={profile}
+                      followProfile={this.followProfile}
+                      unfollowProfile={this.unfollowProfile}
+                      followPending={followProfilePending}
+                      isFollowerPending={isFollowerPending}
+                      selectProfile={this.selectProfile}
+                      isFollowerAction={profileActions.isFollower}
+                    />;
+              })}
+            </div>
+          </DataLoader>
+        );
+    }
+
     renderFollowers () {
         const { fetchingFollowers, fetchingMoreFollowers, profileActions, followPending,
             loggedProfileData, isFollowerPending, intl } = this.props;
@@ -257,6 +303,11 @@ class PeopleContainer extends Component {
               value={this.state.activeTab}
             >
               <Tab
+                label="Recommended"
+                style={this.getTabStyle('recommended')}
+                value="recommended"
+              />
+              <Tab
                 label={
                   <span>
                     {intl.formatMessage(profileMessages.followers)}
@@ -295,6 +346,7 @@ class PeopleContainer extends Component {
               }}
               ref={(el) => { this.container = el; }}
             >
+              {this.state.activeTab === 'recommended' && this.renderRecommended()}
               {this.state.activeTab === 'followers' && this.renderFollowers()}
               {this.state.activeTab === 'following' && this.renderFollowing()}
             </div>
@@ -309,9 +361,11 @@ PeopleContainer.propTypes = {
     fetchingFollowing: PropTypes.bool,
     fetchingMoreFollowers: PropTypes.bool,
     fetchingMoreFollowing: PropTypes.bool,
+    fetchingProfileList: PropTypes.bool,
     isFollowerPending: PropTypes.bool,
     followPending: PropTypes.shape(),
     profileActions: PropTypes.shape(),
+    profileList: PropTypes.shape(),
     params: PropTypes.shape(),
     children: PropTypes.element,
     intl: PropTypes.shape()
@@ -330,8 +384,10 @@ function mapStateToProps (state, ownProps) {
         fetchingFollowing: state.profileState.getIn(['flags', 'fetchingFollowing']),
         fetchingMoreFollowers: state.profileState.getIn(['flags', 'fetchingMoreFollowers']),
         fetchingMoreFollowing: state.profileState.getIn(['flags', 'fetchingMoreFollowing']),
+        fetchingProfileList: state.profileState.getIn(['flags', 'fetchingProfileList']),
         isFollowerPending: state.profileState.getIn(['flags', 'isFollowerPending']),
         followPending: state.profileState.getIn(['flags', 'followPending']),
+        profileList: state.profileState.get('profileList'),
         ...ownProps
     };
 }
