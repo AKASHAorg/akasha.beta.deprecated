@@ -133,6 +133,7 @@ class ImageBlock extends Component {
         const { isCardEnabled, imageSrc, previewImage } = this.state;
         const { files, caption } = this.props.data;
         const baseNodeStyle = this._getBaseNodeStyle();
+        console.log(files, previewImage, 'some files');
         return (
           <div
             ref={(baseNode) => { this.baseNodeRef = baseNode; }}
@@ -151,7 +152,7 @@ class ImageBlock extends Component {
               >
                 <ToolbarGroup>
                   <SelectField
-                    value={previewImage}
+                    value={(previewImage === 'xl') ? 'lg' : previewImage}
                     onChange={this._handleSizeChange}
                   >
                     {files.xs &&
@@ -176,7 +177,7 @@ class ImageBlock extends Component {
                         primaryText={'Normal'}
                       />
                     }
-                    {files.lg &&
+                    {(files.lg || files.xl) &&
                       <MenuItem
                         leftIcon={
                           <SvgIcon>

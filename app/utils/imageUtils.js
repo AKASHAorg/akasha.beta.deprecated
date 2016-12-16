@@ -63,9 +63,6 @@ function extractImageFromContent (content) {
  */
 const imageWidths = [
     {
-        key: 'xxl',
-        res: 1920
-    }, {
         key: 'xl',
         res: 1280
     }, {

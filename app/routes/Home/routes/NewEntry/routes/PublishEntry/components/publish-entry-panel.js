@@ -251,7 +251,8 @@ class PublishPanel extends React.Component {
             };
         }
         return {
-            label: licences.find(licenceObj => licenceObj.id === licence.parent).label,
+            label: licence.parent ? licences.find(licenceObj => licenceObj.id === licence.parent).label :
+                licences.find(licenceObj => licenceObj.id === licence.id).label,
             description: licence.id ?
                 licences.find(licenceObj => licenceObj.id === licence.id).description :
                 licences.find(licenceObj => licenceObj.id === licence.parent).label
