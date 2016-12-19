@@ -1,6 +1,5 @@
 import React, { PropTypes, Component } from 'react';
 import { connect } from 'react-redux';
-import SideBarIcon from './side-bar-icon';
 import {
     ProfileIcon,
     AddEntryIcon,
@@ -53,7 +52,7 @@ class SideBar extends Component {
             appActions.showPanel(panelName);
         }
     };
-    renderIcon
+
     render () {
         const { style, loggedProfileData, activePanel, notificationsCount, hasFeed,
             draftsCount } = this.props;
@@ -89,20 +88,18 @@ class SideBar extends Component {
             </div>
             <div style={{ flexGrow: 1, padding: '14px' }} >
               {(entriesCount > 0 || draftsCount > 0) ?
-                <SideBarIcon
-                  handleClick={this._handleNewEntry}
-                  isActive={activePanel === 'newEntry'}
-                  title="My entries"
-                >
-                  <EntriesIcon />
-                </SideBarIcon> :
-                <SideBarIcon
-                  handleClick={this._handleNewEntry}
-                  isActive={isAddEntryActive}
-                  title="Add new entry"
-                >
-                  <AddEntryIcon />
-                </SideBarIcon>
+                <div title="My entries">
+                  <EntriesIcon
+                    onClick={this._handleNewEntry}
+                    isActive={activePanel === 'newEntry'}
+                  />
+                </div> :
+                <div title="Add new entry">
+                  <AddEntryIcon
+                    onClick={this._handleNewEntry}
+                    isActive={isAddEntryActive}
+                  />
+                </div>
               }
               <div title="Coming Soon">
                 <SearchIcon
@@ -112,26 +109,24 @@ class SideBar extends Component {
               </div>
             </div>
             <div style={{ flexGrow: 4, padding: '14px' }} >
-              <SideBarIcon
-                handleClick={() => this._handleNavigation('explore/tag')}
-                isActive={isStreamActive}
-                title="Stream"
-              >
-                <StreamsIcon />
-              </SideBarIcon>
+              <div title="Stream">
+                <StreamsIcon
+                  onClick={() => this._handleNavigation('explore/tag')}
+                  isActive={isStreamActive}
+                />
+              </div>
               <div title="Coming Soon">
                 <PortalsIcon disabled />
               </div>
               <div title="Coming Soon">
                 <CommunityIcon disabled />
               </div>
-              <SideBarIcon
-                handleClick={this._handlePeople}
-                isActive={isPeopleActive}
-                title="People"
-              >
-                <PeopleIcon />
-              </SideBarIcon>
+              <div title="People">
+                <PeopleIcon
+                  onClick={this._handlePeople}
+                  isActive={isPeopleActive}
+                />
+              </div>
             </div>
             <div style={{ flexGrow: 1, padding: '14px 8px', display: 'flex', justifyContent: 'center', alignItems: 'flex-end' }} >
               <LogoButton />
