@@ -193,7 +193,7 @@
     "dependencies": {
         "@akashaproject/contracts.js": "1.2.11",
         "@akashaproject/geth-connector": "1.6.20",
-        "@akashaproject/ipfs-connector": "1.7.1",
+        "@akashaproject/ipfs-connector": "1.7.3",
         "bluebird": "3.4.6",
         "compare-versions": "3.0.0",
         "electron-debug": "1.1.0",
