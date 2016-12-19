@@ -27,14 +27,14 @@ class UserValidation {
             required: formatMessage(validationMessages.required),
             min: formatMessage(validationMessages.min),
             max: formatMessage(validationMessages.max),
-            'same.password2': formatMessage(validationMessages.passwordNotMatching),
+            'same.password2': formatMessage(validationMessages.passphraseNotMatching),
         }, (validator) => {
             validator.setAttributeNames({
                 firstName: formatMessage(formMessages.firstName),
                 lastName: formatMessage(formMessages.lastName),
                 akashaId: formatMessage(formMessages.akashaId),
-                password: formatMessage(formMessages.password),
-                password2: formatMessage(formMessages.passwordVerify)
+                password: formatMessage(formMessages.passphrase),
+                password2: formatMessage(formMessages.passphraseVerify)
             });
         });
     }

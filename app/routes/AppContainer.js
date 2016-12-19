@@ -97,7 +97,8 @@ class App extends Component {
         });
     };
     _handleCancellation = () => {
-        const { appActions, appState } = this.props;
+        const { appActions, appState, profileActions } = this.props;
+        profileActions.clearLoginErrors();
         appActions.deletePendingAction(appState.get('showAuthDialog'));
         appActions.hideAuthDialog();
     };
@@ -140,7 +141,7 @@ class App extends Component {
               isVisible={isAuthDialogVisible}
               onSubmit={this._handleConfirmation}
               onCancel={this._handleCancellation}
-              errors={loginErrors}
+              loginErrors={loginErrors}
               loginRequested={loginRequested}
             />
             <WeightConfirmDialog
@@ -199,7 +200,7 @@ App.childContextTypes = {
 function mapStateToProps (state) {
     return {
         appState: state.appState,
-        loginErrors: state.profileState.get('errors'),
+        loginErrors: state.profileState.get('errors').filter(err => err.get('type') === 'login'),
         loggedProfile: state.profileState.get('loggedProfile'),
         loggedProfileData: state.profileState.get('profiles').find(prf =>
             prf.get('profile') === state.profileState.getIn(['loggedProfile', 'profile'])),
