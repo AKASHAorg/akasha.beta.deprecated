@@ -19,10 +19,10 @@ const validationMessages = defineMessages({
                         Do not translate :attribute or :max!`,
         defaultMessage: ':attribute must not have more than :max characters.'
     },
-    passwordNotMatching: {
-        id: 'app.validator.passwordNotMatching',
-        description: 'When the password field is different than this one.',
-        defaultMessage: 'Oups! Password verification is different than first one!'
+    passphraseNotMatching: {
+        id: 'app.validator.passphraseNotMatching',
+        description: 'When the passphrase field is different than this one.',
+        defaultMessage: 'Oups! Passphrase verification is different than first one!'
     },
     akashaIdExists: {
         id: 'app.validator.akashaIdExists',

@@ -5,11 +5,10 @@ import { formMessages } from 'locale-data/messages';
 import PanelHeader from '../../routes/components/panel-header';
 
 function AuthDialog (props) {
-    const { intl, errors } = props;
-    const loginErrors = errors.toJS();
+    const { intl, loginErrors } = props;
     const dialogTitle =
       (<div style={{ padding: '10px 10px 20px' }}>
-        <PanelHeader title={intl.formatMessage(formMessages.confirmPassword)} noStatusBar />
+        <PanelHeader title={intl.formatMessage(formMessages.confirmPassphrase)} noStatusBar />
       </div>);
     const dialogActions = [
       <RaisedButton
@@ -33,20 +32,20 @@ function AuthDialog (props) {
         open={props.isVisible}
       >
         <form onSubmit={props.onSubmit}>
-          <div>{intl.formatMessage(formMessages.confirmPasswordToContinue)}</div>
+          <div>{intl.formatMessage(formMessages.confirmPassphraseToContinue)}</div>
           <TextField
             fullWidth
-            floatingLabelText={intl.formatMessage(formMessages.password)}
+            floatingLabelText={intl.formatMessage(formMessages.passphrase)}
             autoFocus
             onChange={props.onPasswordChange}
             type="password"
             value={props.password}
-            errorText={!!loginErrors.length && loginErrors[0].message}
+            errorText={loginErrors.size ? loginErrors.first().message : null}
           />
           <div className="row middle-xs">
-            <div className="col-xs-7" style={{ paddingRight: 0 }}>
+            <div className="col-xs-8" style={{ paddingRight: 0 }}>
               <Checkbox
-                label="Remember my password for"
+                label="Remember my passphrase for"
                 checked={props.rememberChecked}
                 onCheck={props.onRememberPasswordCheck}
               />
@@ -78,7 +77,7 @@ AuthDialog.propTypes = {
     onSubmit: PropTypes.func,
     onCancel: PropTypes.func,
     password: PropTypes.string,
-    errors: PropTypes.shape(),
+    loginErrors: PropTypes.shape(),
     loginRequested: PropTypes.bool,
     intl: PropTypes.shape()
 };

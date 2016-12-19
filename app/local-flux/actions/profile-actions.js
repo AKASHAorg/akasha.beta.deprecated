@@ -258,6 +258,9 @@ class ProfileActions {
     clearErrors = () => {
         this.dispatch(profileActionCreators.clearErrors());
     };
+    clearLoginErrors = () => {
+        this.dispatch(profileActionCreators.clearLoginErrors());
+    };
     resetFlags = () => {
         this.dispatch(profileActionCreators.resetFlags());
     };

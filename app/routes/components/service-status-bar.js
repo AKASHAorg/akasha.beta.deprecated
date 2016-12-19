@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { SvgIcon, FlatButton, Dialog, Toggle, IconButton } from 'material-ui';
+import { SvgIcon, FlatButton, Dialog, Toggle, IconButton, Tab, Tabs } from 'material-ui';
 import { StatusBarEthereum, StatusBarIpfs } from 'shared-components/svg';
 import { LogsList } from 'shared-components';
 import ServiceState from 'constants/ServiceState';
@@ -126,12 +126,10 @@ class ServiceStatusBar extends Component {
     getTitleButtonStyle (tab) {
         const { palette } = this.context.muiTheme;
         return {
-            border: 'none',
-            outline: 'none',
             color: this.state.activeTab === tab ?
-                palette.alternateTextColor :
+                palette.textColor :
                 palette.disabledColor,
-            backgroundColor: palette.primary1Color,
+            backgroundColor: palette.canvasColor,
             width: '50%',
             height: '48px',
             padding: '0px',
@@ -195,14 +193,14 @@ class ServiceStatusBar extends Component {
             activeTab: GETH_SETTINGS,
             isGethDialogOpen: true
         });
-    }
+    };
 
     openIpfsDialog = () => {
         this.setState({
             activeTab: IPFS_SETTINGS,
             isIpfsDialogOpen: true
         });
-    }
+    };
 
     closeGethDialog = () => {
         this.setState({
@@ -216,7 +214,7 @@ class ServiceStatusBar extends Component {
             isGethFormDirty: false,
             showGethSuccessMessage: false
         });
-    }
+    };
 
     closeIpfsDialog = () => {
         this.setState({
@@ -226,7 +224,7 @@ class ServiceStatusBar extends Component {
             isIpfsFormDirty: false,
             showIpfsSuccessMessage: false
         });
-    }
+    };
 
     onGethToggle = () => {
         const { eProcActions, gethSettings, gethStatus } = this.props;
@@ -270,28 +268,28 @@ class ServiceStatusBar extends Component {
             cache: value,
             isGethFormDirty: true
         });
-    }
+    };
 
     onMineChange = () => {
         this.setState({
             mine: !this.state.mine,
             isGethFormDirty: true
         });
-    }
+    };
 
     onAutodagChange = () => {
         this.setState({
             autoDag: !this.state.autoDag,
             isGethFormDirty: true
         });
-    }
+    };
 
     onFastChange = () => {
         this.setState({
             fast: !this.state.fast,
             isGethFormDirty: true
         });
-    }
+    };
 
     onMinerThreadsChange = (event, index, value) => {
         this.setState({
@@ -330,7 +328,7 @@ class ServiceStatusBar extends Component {
             isGethFormDirty: false,
             showGethSuccessMessage: false
         });
-    }
+    };
 
     saveIpfsOptions = () => {
         const { settingsActions } = this.props;
@@ -341,13 +339,13 @@ class ServiceStatusBar extends Component {
             showIpfsSuccessMessage: false,
             isIpfsFormDirty: false
         });
-    }
+    };
 
-    selectTab (tab) {
+    selectTab = (tab) => {
         this.setState({
             activeTab: tab
         });
-    }
+    };
 
     getGethActions () {
         const { intl, gethBusyState, disableStopService } = this.props;
@@ -440,20 +438,22 @@ class ServiceStatusBar extends Component {
             palette.primary1Color;
 
         return (<div style={{ width: '100%' }}>
-          <button
-            style={this.getTitleButtonStyle(GETH_SETTINGS)}
-            onClick={() => this.selectTab(GETH_SETTINGS)}
+          <Tabs
+            tabItemContainerStyle={{ width: '100%' }}
+            onChange={this.selectTab}
+            value={this.state.activeTab}
           >
-            <div style={{ height: '46px', lineHeight: '46px' }}>Settings</div>
-            <div style={{ height: '2px', backgroundColor: settingsBarColor }} />
-          </button>
-          <button
-            style={this.getTitleButtonStyle(GETH_LOGS)}
-            onClick={() => this.selectTab(GETH_LOGS)}
-          >
-            <div style={{ height: '46px', lineHeight: '46px' }}>Logs</div>
-            <div style={{ height: '2px', backgroundColor: logsBarColor }} />
-          </button>
+            <Tab
+              label="Settings"
+              style={this.getTitleButtonStyle(GETH_SETTINGS)}
+              value={GETH_SETTINGS}
+            />
+            <Tab
+              label="Logs"
+              style={this.getTitleButtonStyle(GETH_LOGS)}
+              value={GETH_LOGS}
+            />
+          </Tabs>
         </div>);
     }
 
@@ -511,17 +511,22 @@ class ServiceStatusBar extends Component {
             palette.primary1Color;
 
         return (<div style={{ width: '100%' }}>
-          <button
-            style={this.getTitleButtonStyle(IPFS_SETTINGS)}
-            onClick={() => this.selectTab(IPFS_SETTINGS)}
+          <Tabs
+            tabItemContainerStyle={{ width: '100%' }}
+            onChange={this.selectTab}
+            value={this.state.activeTab}
           >
-            <div style={{ height: '46px', lineHeight: '46px' }}>Settings</div>
-            <div style={{ height: '2px', backgroundColor: settingsBarColor }} />
-          </button>
-          <button style={this.getTitleButtonStyle(IPFS_LOGS)} onClick={() => this.selectTab(IPFS_LOGS)}>
-            <div style={{ height: '46px', lineHeight: '46px' }}>Logs</div>
-            <div style={{ height: '2px', backgroundColor: logsBarColor }} />
-          </button>
+            <Tab
+              label="Settings"
+              style={this.getTitleButtonStyle(IPFS_SETTINGS)}
+              value={IPFS_SETTINGS}
+            />
+            <Tab
+              label="Logs"
+              style={this.getTitleButtonStyle(IPFS_LOGS)}
+              value={IPFS_LOGS}
+            />
+          </Tabs>
         </div>);
     }
 

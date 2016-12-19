@@ -16,25 +16,25 @@ const formMessages = defineMessages({
         description: 'Placeholder for last name input',
         defaultMessage: 'Akasha ID'
     },
-    password: {
-        id: 'app.password',
-        description: 'Placeholder for password input',
-        defaultMessage: 'Password'
+    passphrase: {
+        id: 'app.passphrase',
+        description: 'Placeholder for passphrase input',
+        defaultMessage: 'Passphrase'
     },
-    confirmPassword: {
-        id: 'app.form.confirmPassword',
+    confirmPassphrase: {
+        id: 'app.form.confirmPassphrase',
         description: 'authenticate dialog title',
-        defaultMessage: 'Confirm password'
+        defaultMessage: 'Confirm passphrase'
     },
-    confirmPasswordToContinue: {
-        id: 'app.form.confirmPasswordToContinue',
-        description: 'Label for confirming password',
-        defaultMessage: 'You need to confirm your password to continue'
+    confirmPassphraseToContinue: {
+        id: 'app.form.confirmPassphraseToContinue',
+        description: 'Label for confirming passphrase',
+        defaultMessage: 'You need to confirm your passphrase to continue'
     },
-    passwordVerify: {
-        id: 'app.passwordVerify',
-        description: 'Placeholder for password verify input',
-        defaultMessage: 'Verify Password'
+    passphraseVerify: {
+        id: 'app.passphraseVerify',
+        description: 'Placeholder for passphrase verify input',
+        defaultMessage: 'Verify passphrase'
     },
     title: {
         id: 'app.inputField.title',

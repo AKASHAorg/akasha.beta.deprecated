@@ -97,6 +97,7 @@ class Auth extends Component {
         this.setState({ openModal: true, selectedProfile });
     };
     handleModalClose = () => {
+        this.props.profileActions.clearLoginErrors();
         this.setState(({ openModal: false }));
     };
     handleLogin = () => {
@@ -186,7 +187,7 @@ class Auth extends Component {
         ev.preventDefault();
         const { profileActions, loginErrors } = this.props;
         if (loginErrors.size > 0) {
-            profileActions.clearErrors();
+            profileActions.clearLoginErrors();
         }
         this.setState({
             password: ev.target.value
@@ -263,7 +264,7 @@ class Auth extends Component {
                 onUnlockCheck={this._handleUnlockCheck}
                 unlockTimerKey={this.state.unlockTimer}
                 isUnlockedChecked={this.state.unlockIsChecked}
-                errors={this.props.loginErrors}
+                loginErrors={this.props.loginErrors}
               />
             }
           </PanelContainer>

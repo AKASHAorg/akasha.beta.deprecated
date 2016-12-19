@@ -7,7 +7,7 @@ function mapStateToProps (state, ownProps) {
         tempProfile: state.tempProfileState.get('tempProfile'),
         localProfiles: state.profileState.get('profiles'),
         loggedProfile: state.profileState.get('loggedProfile'),
-        loginErrors: state.profileState.get('errors'),
+        loginErrors: state.profileState.get('errors').filter(error => error.get('type') === 'login'),
         localProfilesFetched: state.profileState.get('flags').get('localProfilesFetched'),
         fetchingLocalProfiles: state.profileState.get('flags').get('fetchingLocalProfiles'),
         gethStatus: state.externalProcState.get('gethStatus'),
