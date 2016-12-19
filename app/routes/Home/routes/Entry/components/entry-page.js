@@ -198,7 +198,6 @@ class EntryPage extends Component {
                     return (
                       <IconButton
                         key={index}
-                        tooltip={descr.text}
                         style={{ padding: '6px', width: '30px', height: '30px' }}
                         iconStyle={{ width: '18px', height: '18px' }}
                       >
