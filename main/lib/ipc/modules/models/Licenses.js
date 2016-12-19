@@ -47,7 +47,7 @@ exports.LicencesList = [
             },
             {
                 icon: 'CCND',
-                text: 'no derivatives licence description'
+                text: 'Others can only distribute non-derivative copies of your work.'
             }
         ]
     }, {
@@ -96,7 +96,7 @@ exports.LicencesList = [
             },
             {
                 icon: 'CCND',
-                text: 'no derivatives licence description'
+                text: 'Others can only distribute non-derivative copies of your work.'
             }
         ]
     }, {
@@ -133,7 +133,7 @@ exports.LicencesList = [
         parent: '3',
         label: 'Public Domain',
         description: [
-            { icon: 'CCPD', text: 'Public domain licence description' }
+            { icon: 'CCPD', text: 'This work is already in the public domain and free of copyright restrictions.' }
         ]
     }
 ];
