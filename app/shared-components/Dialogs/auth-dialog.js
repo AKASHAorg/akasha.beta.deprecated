@@ -28,7 +28,7 @@ function AuthDialog (props) {
       <Dialog
         contentStyle={{ width: '40%', maxWidth: 'none' }}
         actions={dialogActions}
-        title={intl.formatMessage(formMessages.confirmPassword)}
+        title={intl.formatMessage(formMessages.confirmPassphrase)}
         open={isVisible}
       >
         <form onSubmit={onSubmit}>
