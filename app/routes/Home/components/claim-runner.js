@@ -31,33 +31,34 @@ class ClaimRunner extends Component {
         const isNotFetching = !fetchingMined && !fetchingPending;
         const pendingTxs = isNotFetching ?
             pendingTx.toJS().filter(tx =>
-                tx.profile === loggedProfile.get('profile') && tx.type === 'claim'
+                tx.profile === loggedProfile.get('profile') &&
+                tx.type === 'claim' &&
+                !!minedTx.find(mined => mined.tx === tx.tx) &&
+                !deletingPendingTx.find(deleting => deleting.tx === tx.tx && deleting.value)
             ) :
             [];
 
         pendingTxs.forEach((tx) => {
+            const correspondingAction = pendingActions.find(action =>
+                action.get('type') === tx.type && action.get('status') === 'publishing');
             const mined = minedTx.find(mined => mined.tx === tx.tx);
-            if (mined && !deletingPendingTx) {
-                const correspondingAction = pendingActions.find(action =>
-                    action.get('type') === tx.type && action.get('status') === 'publishing');
-                let minedSuccessfully;
-                if (correspondingAction) {
-                    minedSuccessfully = mined.cumulativeGasUsed < correspondingAction.get('gas');
-                }
-                transactionActions.deletePendingTx(tx.tx);
-                // fire success action based on action type
-                // WARNING: action must match `action.type + "Success"`
-                // example: for action.type = 'upvote', success action
-                // should be upvoteSuccess()
-                if (typeof entryActions[`${tx.type}Success`] !== 'function') {
-                    return console.error(`There is no action "${tx.type}Success" in entryActions!! Please implement "${tx.type}Success" action!!`);
-                }
-                entryActions[`${tx.type}Success`](tx.entryId, minedSuccessfully);
-                entryActions.canClaim(tx.entryId);
-                entryActions.getEntryBalance(tx.entryId);
-                if (correspondingAction) {
-                    appActions.deletePendingAction(correspondingAction.get('id'));
-                }
+            let minedSuccessfully;
+            if (correspondingAction) {
+                minedSuccessfully = mined.cumulativeGasUsed < correspondingAction.get('gas');
+            }
+            transactionActions.deletePendingTx(tx.tx);
+            // fire success action based on action type
+            // WARNING: action must match `action.type + "Success"`
+            // example: for action.type = 'upvote', success action
+            // should be upvoteSuccess()
+            if (typeof entryActions[`${tx.type}Success`] !== 'function') {
+                return console.error(`There is no action "${tx.type}Success" in entryActions!! Please implement "${tx.type}Success" action!!`);
+            }
+            entryActions[`${tx.type}Success`](tx.entryId, minedSuccessfully);
+            entryActions.canClaim(tx.entryId);
+            entryActions.getEntryBalance(tx.entryId);
+            if (correspondingAction) {
+                appActions.deletePendingAction(correspondingAction.get('id'));
             }
         });
     };
@@ -69,7 +70,7 @@ class ClaimRunner extends Component {
 ClaimRunner.propTypes = {
     fetchingMined: PropTypes.bool,
     fetchingPending: PropTypes.bool,
-    deletingPendingTx: PropTypes.bool,
+    deletingPendingTx: PropTypes.shape(),
     pendingActions: PropTypes.shape(),
     loggedProfile: PropTypes.shape(),
     transactionActions: PropTypes.shape(),

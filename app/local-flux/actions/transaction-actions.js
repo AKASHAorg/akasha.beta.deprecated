@@ -44,17 +44,17 @@ class TransactionActions {
 
     deletePendingTx = (tx) => {
         this.dispatch(transactionActionCreators.deletePendingTx({
-            deletingPendingTx: true
+            deletingPendingTx: { tx, value: true }
         }));
         this.transactionService.deletePendingTx({
             tx,
             onSuccess: () =>
                 this.dispatch(transactionActionCreators.deletePendingTxSuccess(tx, {
-                    deletingPendingTx: false
+                    deletingPendingTx: { tx, value: false }
                 })),
             onError: reason =>
                 this.dispatch(transactionActionCreators.deletePendingTxError(reason, {
-                    deletingPendingTx: false
+                    deletingPendingTx: { tx, value: false }
                 }))
         });
     };

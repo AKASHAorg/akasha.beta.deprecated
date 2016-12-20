@@ -32,8 +32,33 @@ const initialState = fromJS({
     errors: new List(),
     fetchingMined: false,
     fetchingPending: false,
-    flags: new Map()
+    flags: new Map({
+        deletingPendingTx: new List()
+    })
 });
+
+const deletePendingTxFlagHandler = (state, { error, flags }) => {
+    const deletingPendingTx = state.getIn(['flags', 'deletingPendingTx']);
+    const index = deletingPendingTx.findIndex(flag =>
+        flag.tx === flags.deletingPendingTx.tx);
+    if (index === -1) {
+        return state.merge({
+            flags: state.get('flags').merge({
+                deletingPendingTx: state.getIn(['flags', 'deletingPendingTx'])
+                    .push(flags.deletingPendingTx)
+            }),
+            errors: error ?
+                state.get('errors').push(new ErrorRecord(error)) :
+                state.get('errors')
+        });
+    }
+    return state.merge({
+        flags: state.get('flags').mergeIn(['deletingPendingTx', index], flags.deletingPendingTx),
+        errors: error ?
+            state.get('errors').push(new ErrorRecord(error)) :
+            state.get('errors')
+    });
+};
 
 const transactionState = createReducer(initialState, {
 
@@ -59,22 +84,28 @@ const transactionState = createReducer(initialState, {
             errors: state.get('errors').push(new ErrorRecord(action.error))
         }),
 
-    [types.DELETE_PENDING_TX]: (state, { flags }) =>
-        state.merge({
-            flags: state.get('flags').merge(flags)
-        }),
+    [types.DELETE_PENDING_TX]: deletePendingTxFlagHandler,
 
-    [types.DELETE_PENDING_TX_SUCCESS]: (state, { tx, flags }) =>
-        state.merge({
+    [types.DELETE_PENDING_TX_SUCCESS]: (state, { tx, flags }) => {
+        const deletingPendingTx = state.getIn(['flags', 'deletingPendingTx']);
+        const index = deletingPendingTx.findIndex(flag =>
+            flag.tx === flags.deletingPendingTx.tx);
+        if (index === -1) {
+            return state.merge({
+                pending: state.get('pending').filter(pending => pending.get('tx') !== tx),
+                flags: state.get('flags').merge({
+                    deletingPendingTx: state.getIn(['flags', 'deletingPendingTx'])
+                        .push(flags.deletingPendingTx)
+                }),
+            });
+        }
+        return state.merge({
             pending: state.get('pending').filter(pending => pending.get('tx') !== tx),
-            flags: state.get('flags').merge(flags)
-        }),
+            flags: state.get('flags').mergeIn(['deletingPendingTx', index], flags.deletingPendingTx),
+        });
+    },
 
-    [types.DELETE_PENDING_TX_ERROR]: (state, { error, flags }) =>
-        state.merge({
-            errors: state.get('errors').push(new ErrorRecord(error)),
-            flags: state.get('flags').merge(flags)
-        }),
+    [types.DELETE_PENDING_TX_ERROR]: deletePendingTxFlagHandler,
 
     [types.GET_MINED_TRANSACTION]: state =>
         state.merge({

@@ -20,7 +20,6 @@ function AuthDialog (props) {
         label={intl.formatMessage(generalMessages.confirm)}
         primary
         onTouchTap={handleSubmit}
-        disabled={loginRequested}
       />
     ];
     const minute = 'min';
