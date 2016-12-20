@@ -6,7 +6,7 @@ import { constructed as contracts } from '../../contracts/index';
  * @type {Function}
  */
 const execute = Promise.coroutine(function*(data: {akashaId: string}) {
-    const count = yield contracts.instance.feed.subsCount(data.akashaId);
+    const count = yield contracts.instance.subs.subsCount(data.akashaId);
     return { count, akashaId: data.akashaId };
 });
 

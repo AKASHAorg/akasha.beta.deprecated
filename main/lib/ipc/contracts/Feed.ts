@@ -24,14 +24,6 @@ export default class Feed extends BaseContract {
         this.contract.getFollowersNext.callAsync = Promise.promisify(this.contract.getFollowersNext.call);
         this.contract.getFollowersPrev.callAsync = Promise.promisify(this.contract.getFollowersPrev.call);
         this.contract.getFollowersById.callAsync = Promise.promisify(this.contract.getFollowersById.call);
-
-        // tags
-        this.contract.subsCount.callAsync = Promise.promisify(this.contract.subsCount.call);
-        this.contract.subsFirst.callAsync = Promise.promisify(this.contract.subsFirst.call);
-        this.contract.subsLast.callAsync = Promise.promisify(this.contract.subsLast.call);
-        this.contract.subsNext.callAsync = Promise.promisify(this.contract.subsNext.call);
-        this.contract.subsPrev.callAsync = Promise.promisify(this.contract.subsPrev.call);
-        this.contract.isSubscribed.callAsync = Promise.promisify(this.contract.isSubscribed.call);
     }
 
     public follow(id: string, gas: number = 2000000) {
@@ -48,22 +40,6 @@ export default class Feed extends BaseContract {
         }
         const idTr = this.gethInstance.web3.fromUtf8(id);
         return this.evaluateData('unFollow', gas, idTr);
-    }
-
-    public subscribe(tagName: string, gas: number = 2000000) {
-        if (!tagName) {
-            throw new Error('No tag provided');
-        }
-        const tagNameTr = this.gethInstance.web3.fromUtf8(tagName);
-        return this.evaluateData('subscribe', gas, tagNameTr);
-    }
-
-    public unSubscribe(tagName: string, gas: number = 2000000) {
-        if (!tagName) {
-            throw new Error('No tag provided');
-        }
-        const tagNameTr = this.gethInstance.web3.fromUtf8(tagName);
-        return this.evaluateData('unSubscribe', gas, tagNameTr);
     }
 
     public isFollowing(follower: string, id: string) {
@@ -138,33 +114,4 @@ export default class Feed extends BaseContract {
         return this.contract.getFollowersById.callAsync(idTr, indexId);
     }
 
-    public subsCount(id: string) {
-        const idTr = this.gethInstance.web3.fromUtf8(id);
-        return this.contract.subsCount.callAsync(idTr).then((result) => result.toString());
-    }
-
-    public subsFirst(id: string) {
-        const idTr = this.gethInstance.web3.fromUtf8(id);
-        return this.contract.subsFirst.callAsync(idTr).then((result) => result.toString());
-    }
-
-    public subsLast(id: string) {
-        const idTr = this.gethInstance.web3.fromUtf8(id);
-        return this.contract.subsLast.callAsync(idTr).then((result) => result.toString());
-    }
-
-    public subsNext(id: string, tagId: string) {
-        const idTr = this.gethInstance.web3.fromUtf8(id);
-        return this.contract.subsNext.callAsync(idTr, tagId).then((result) => result.toString());
-    }
-
-    public subsPrev(id: string, tagId: string) {
-        const idTr = this.gethInstance.web3.fromUtf8(id);
-        return this.contract.subsPrev.callAsync(idTr, tagId).then((result) => result.toString());
-    }
-
-    public isSubscribed(id: string, tagName: string) {
-        const idTr = this.gethInstance.web3.fromUtf8(id);
-        return this.contract.isSubscribed.callAsync(idTr, tagName);
-    }
 }
