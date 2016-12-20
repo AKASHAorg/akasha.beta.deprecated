@@ -108,9 +108,13 @@ class NewEntryFormPanel extends Component {
                 break;
         }
     }
-    _handleDraftDelete = (ev, draftId) => {
-        const { draftActions } = this.props;
-        draftActions.deleteDraft(draftId);
+    _handleDraftDelete = (id) => {
+        const { draftActions, params } = this.props;
+        const { draftId } = params;
+        draftActions.deleteDraft(id);
+        if (draftId === id.toString()) {
+            this.context.router.push(`/${params.akashaId}/explore/tag`);
+        }
     }
     _handleNewEntry = () => {
         const { router } = this.context;
@@ -126,23 +130,10 @@ class NewEntryFormPanel extends Component {
                 key={key}
                 headerTitle={'Draft'}
                 lastUpdated={`Last update ${draft.get('updated_at')}`}
-                headerActions={
-                  <IconMenu iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}>
-                    <MenuItem
-                      primaryText={intl.formatMessage(generalMessages.edit)}
-                      onClick={ev => this._handleDraftEdit(ev, draft.get('id'))}
-                      disabled
-                    />
-                    <MenuItem
-                      primaryText={intl.formatMessage(generalMessages.delete)}
-                      disabled
-                      onClick={ev => this._handleDraftDelete(ev, draft.get('id'))}
-                    />
-                  </IconMenu>
-                }
                 title={draft.getIn(['content', 'title'])}
                 excerpt={draft.getIn(['content', 'excerpt'])}
                 wordCount={draft.getIn(['content', 'wordCount'])}
+                onDelete={() => this._handleDraftDelete(draft.get('id'))}
                 onTitleClick={ev => this._handleDraftEdit(ev, draft.get('id'))}
               />
             );
