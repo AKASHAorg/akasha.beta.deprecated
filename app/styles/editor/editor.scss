@@ -7,13 +7,13 @@
      font-size: 20px;
  }
 .megadraft-editor {
+    [data-block=true],
     .paragraph,
     h2,
     blockquote,
     .public-DraftStyleDefault-ul,
     .public-DraftStyleDefault-ol {
         width: 700px;
-        display: block;
         margin: 8px auto;
         font-family: 'Roboto', Open Sans, sans-serif;
         line-height: 1.6;
@@ -34,15 +34,16 @@
         font-weight: 300;
     }
 }
- .megadraft-editor .paragraph + .paragraph {
+.megadraft-editor .paragraph + .paragraph {
     margin-top: 24px;
- }
+}
 
- .megadraft-editor .public-DraftEditor-content figure {
-    margin: 0;
+.megadraft-editor .public-DraftEditor-content figure {
+    width: 100%;
+    margin: 0 auto;
     margin-top: 8px;
     margin-bottom: 0;
- }
+}
 .megadraft-editor .sidemenu {
     width: auto;
 }

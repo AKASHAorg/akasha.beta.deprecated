@@ -54,7 +54,7 @@ class ImageBlock extends Component {
         if (!imageKey && imageKey === '') {
             imageKey = findBestMatch(containerWidth, imageFiles, this.state.previewImage);
         }
-        if(imageKey === 'xl' || imageKey === 'lg') {
+        if (imageKey === 'xl' || imageKey === 'lg') {
             imageKey = 'md';
         }
         this.props.container.updateData({ media: imageKey });
@@ -105,9 +105,12 @@ class ImageBlock extends Component {
     _getBaseNodeStyle = () => {
         const { previewImage } = this.state;
         if (previewImage === 'xs') {
-            if (this.baseNodeRef) this.baseNodeRef.parentNode.parentNode.style.float = 'left';
+            if (this.baseNodeRef) {
+                this.baseNodeRef.parentNode.parentNode.style.float = 'left';
+                this.baseNodeRef.parentNode.parentNode.style.width = 'inherit';
+            }
             return {
-                width: 320,
+                width: 'inherit',
                 float: 'left',
                 marginRight: 48,
                 // @TODO: DIRTYHACK!! GET RID OF THIS!!!

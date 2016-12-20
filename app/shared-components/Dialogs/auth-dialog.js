@@ -1,60 +1,59 @@
 import React, { PropTypes } from 'react';
-import { injectIntl } from 'react-intl';
 import { TextField, Dialog, RaisedButton, Checkbox, SelectField, MenuItem } from 'material-ui';
-import { formMessages } from 'locale-data/messages';
-import PanelHeader from '../../routes/components/panel-header';
+import { formMessages, generalMessages } from '../../locale-data/messages';
 
 function AuthDialog (props) {
-    const { intl, loginErrors } = props;
-    const dialogTitle =
-      (<div style={{ padding: '10px 10px 20px' }}>
-        <PanelHeader title={intl.formatMessage(formMessages.confirmPassphrase)} noStatusBar />
-      </div>);
+    const { intl, loginErrors, onCancel, loginRequested, onPasswordChange,
+      password, onSubmit, isVisible, rememberTime, rememberChecked, onRememberPasswordCheck,
+      onRememberTimeChange } = props;
+    const handleSubmit = (ev) => {
+        ev.preventDefault();
+        return props.onSubmit();
+    };
     const dialogActions = [
-      <RaisedButton
-          label="Cancel"
-          style={{ marginRight: 8 }}
-          onTouchTap={props.onCancel}
-        />,
-      <RaisedButton
-          label="Confirm"
-          primary
-          onTouchTap={props.onSubmit}
-          disabled={props.loginRequested}
-        />
+      <RaisedButton // eslint-disable-line indent
+        label={intl.formatMessage(generalMessages.cancel)}
+        style={{ marginRight: 8 }}
+        onTouchTap={onCancel}
+      />,
+      <RaisedButton // eslint-disable-line indent
+        label={intl.formatMessage(generalMessages.confirm)}
+        primary
+        onTouchTap={handleSubmit}
+      />
     ];
     const minute = 'min';
     return (
       <Dialog
         contentStyle={{ width: '40%', maxWidth: 'none' }}
         actions={dialogActions}
-        title={dialogTitle}
-        open={props.isVisible}
+        title={intl.formatMessage(formMessages.confirmPassphrase)}
+        open={isVisible}
       >
-        <form onSubmit={props.onSubmit}>
+        <form onSubmit={onSubmit}>
           <div>{intl.formatMessage(formMessages.confirmPassphraseToContinue)}</div>
           <TextField
             fullWidth
             floatingLabelText={intl.formatMessage(formMessages.passphrase)}
             autoFocus
-            onChange={props.onPasswordChange}
+            onChange={onPasswordChange}
             type="password"
-            value={props.password}
+            value={password}
             errorText={loginErrors.size ? loginErrors.first().message : null}
           />
           <div className="row middle-xs">
             <div className="col-xs-8" style={{ paddingRight: 0 }}>
               <Checkbox
-                label="Remember my passphrase for"
-                checked={props.rememberChecked}
-                onCheck={props.onRememberPasswordCheck}
+                label={intl.formatMessage(formMessages.rememberPassFor)}
+                checked={rememberChecked}
+                onCheck={onRememberPasswordCheck}
               />
             </div>
             <div className="col-xs-3 start-xs" style={{ paddingLeft: 0, display: 'flex' }}>
               <SelectField
-                value={props.rememberTime}
+                value={rememberTime}
                 style={{ width: 100 }}
-                onChange={props.onRememberTimeChange}
+                onChange={onRememberTimeChange}
               >
                 <MenuItem value={5} primaryText={`5 ${minute}`} />
                 <MenuItem value={10} primaryText={`10 ${minute}`} />
@@ -82,4 +81,4 @@ AuthDialog.propTypes = {
     intl: PropTypes.shape()
 };
 
-export default injectIntl(AuthDialog);
+export default AuthDialog;

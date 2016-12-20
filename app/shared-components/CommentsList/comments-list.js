@@ -84,6 +84,7 @@ class CommentsList extends Component {
     }
     render () {
         const { comments, publishingComments, newlyCreatedComments, intl } = this.props;
+        console.log(publishingComments, 'publishingComments');
         return (
           <div>
             {publishingComments.map((comment, key) =>

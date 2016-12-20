@@ -32,10 +32,12 @@ class ProfileDetails extends Component {
         const actualRatio = 400 / 200;
         if (originalRatio > actualRatio) {
             return {
+                flex: 'none',
                 height: '200px'
             };
         }
         return {
+            flex: 'none',
             width: '400px'
         };
     }

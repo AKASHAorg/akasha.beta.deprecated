@@ -6,7 +6,9 @@ class FollowRunner extends Component {
 
     componentWillReceiveProps (nextProps) {
         this.launchActions(nextProps);
-        this.listenForMinedTx(nextProps);
+        if (!nextProps.minedTx.equals(this.props.minedTx)) {
+            this.listenForMinedTx(nextProps);
+        }
     }
 
     launchActions = (nextProps) => {
@@ -47,32 +49,32 @@ class FollowRunner extends Component {
         const isNotFetching = !fetchingMined && !fetchingPending;
         const pendingFollowTxs = isNotFetching ?
             pendingTx.toJS().filter(tx =>
-                tx.profile === loggedProfileData.get('profile') && (tx.type === 'followProfile' ||
-                    tx.type === 'unfollowProfile')
+                tx.profile === loggedProfileData.get('profile') &&
+                (tx.type === 'followProfile' || tx.type === 'unfollowProfile') &&
+                !!minedTx.find(mined => mined.tx === tx.tx) &&
+                !deletingPendingTx.find(deleting => deleting.tx === tx.tx && deleting.value)
             ) :
             [];
 
         pendingFollowTxs.forEach((tx) => {
-            const isMined = minedTx.find(mined => mined.tx === tx.tx);
-            if (isMined && !deletingPendingTx) {
-                const loggedProfile = loggedProfileData.get('profile');
-                const loggedAkashaId = loggedProfileData.get('akashaId');
-                const profile = profiles.find(prf => prf.get('akashaId') === tx.akashaId);
-                const profileAddress = profile ? profile.get('profile') : null;
-                const correspondingAction = pendingActions.find(action =>
-                    action.get('type') === tx.type && action.get('status') === 'publishing');
-                transactionActions.listenForMinedTx({ watch: false });
-                transactionActions.deletePendingTx(tx.tx);
-                if (tx.type === 'followProfile') {
-                    profileActions.followProfileSuccess(tx.akashaId);
-                } else {
-                    profileActions.unfollowProfileSuccess(tx.akashaId);
-                }
-                profileActions.getProfileData([{ profile: loggedProfile }], true);
-                if (profileAddress) {
-                    profileActions.getProfileData([{ profile: profileAddress }], true);
-                }
-                profileActions.isFollower(loggedAkashaId, tx.akashaId);
+            const loggedProfile = loggedProfileData.get('profile');
+            const loggedAkashaId = loggedProfileData.get('akashaId');
+            const profile = profiles.find(prf => prf.get('akashaId') === tx.akashaId);
+            const profileAddress = profile ? profile.get('profile') : null;
+            const correspondingAction = pendingActions.find(action =>
+                action.get('type') === tx.type && action.get('status') === 'publishing');
+            transactionActions.deletePendingTx(tx.tx);
+            if (tx.type === 'followProfile') {
+                profileActions.followProfileSuccess(tx.akashaId);
+            } else {
+                profileActions.unfollowProfileSuccess(tx.akashaId);
+            }
+            profileActions.getProfileData([{ profile: loggedProfile }], true);
+            if (profileAddress) {
+                profileActions.getProfileData([{ profile: profileAddress }], true);
+            }
+            profileActions.isFollower(loggedAkashaId, tx.akashaId);
+            if (correspondingAction) {
                 appActions.deletePendingAction(correspondingAction.get('id'));
             }
         });
@@ -89,7 +91,7 @@ FollowRunner.propTypes = {
     transactionActions: PropTypes.shape(),
     fetchingMined: PropTypes.bool,
     fetchingPending: PropTypes.bool,
-    deletingPendingTx: PropTypes.bool,
+    deletingPendingTx: PropTypes.shape(),
     minedTx: PropTypes.shape(),
     pendingTx: PropTypes.shape(),
     pendingActions: PropTypes.shape(),

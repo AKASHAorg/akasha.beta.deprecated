@@ -38,7 +38,7 @@ class NotificationBar extends Component {
                 message = 'Confirm';
                 break;
             default:
-                message = 'Dismiss';
+                message = 'Ok';
                 break;
         }
         return <span style={{ color: palette.accent2Color }}>{message}</span>;

@@ -9,6 +9,7 @@ import { hashHistory } from 'react-router';
 import { injectIntl } from 'react-intl';
 import { LoginDialog, PanelContainer } from 'shared-components';
 import { setupMessages, generalMessages } from 'locale-data/messages'; /* eslint import/no-unresolved: 0*/
+import debounce from 'lodash.debounce';
 import PanelHeader from '../../../../components/panel-header';
 
 class Auth extends Component {
@@ -100,7 +101,7 @@ class Auth extends Component {
         this.props.profileActions.clearLoginErrors();
         this.setState(({ openModal: false }));
     };
-    handleLogin = () => {
+    handleLogin = debounce(() => {
         const { profileActions } = this.props;
         const selectedProfile = this.state.selectedProfile;
         let unlockInterval = 1;
@@ -113,7 +114,7 @@ class Auth extends Component {
             rememberTime: unlockInterval,
             akashaId: selectedProfile.get('akashaId')
         });
-    };
+    }, 1000, { leading: true, trailing: false });
     _getLocalProfiles () {
         const { localProfiles } = this.props;
         const { palette } = this.context.muiTheme;
@@ -223,7 +224,7 @@ class Auth extends Component {
               label={intl.formatMessage(generalMessages.submit)}
               primary
               onTouchTap={this.handleLogin}
-              disabled={isServiceStopped || loginRequested}
+              disabled={isServiceStopped}
             />
             /* eslint-enable */
         ];
