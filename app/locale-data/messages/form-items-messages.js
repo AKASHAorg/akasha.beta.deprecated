@@ -85,6 +85,11 @@ const formMessages = defineMessages({
         id: 'app.form.tagAlreadyAdded',
         description: 'Error displayed when trying to add a tag that already exists',
         defaultMessage: 'Tag {tag} already added'
+    },
+    rememberPassFor: {
+        id: 'app.form.rememberPassFor',
+        description: 'Label for checkbox to remember password',
+        defaultMessage: 'Remember my password for'
     }
 });
 export { formMessages };

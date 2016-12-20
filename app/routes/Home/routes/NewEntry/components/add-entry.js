@@ -14,14 +14,16 @@ import { injectIntl } from 'react-intl';
 
 
 class AddEntryPage extends Component {
-    state = {
-        isNewDraft: false,
-        fetchingDraft: false,
-        errors: {}
-    };
+    constructor (props) {
+        super(props);
+        this.state = {
+            isNewDraft: false,
+            fetchingDraft: false,
+            errors: {}
+        };
+    }
     componentDidMount () {
         const { drafts, params } = this.props;
-        this.context.router.setRouteLeaveHook(this.props.route, this.onPageLeave);
         const currentDraft = this._findCurrentDraft(drafts);
         if (params.draftId !== 'new' && !currentDraft) {
             this.getDraft(params.draftId);
@@ -30,6 +32,7 @@ class AddEntryPage extends Component {
     componentWillReceiveProps (nextProps) {
         const { drafts, params, route } = nextProps;
         const currentDraft = this._findCurrentDraft(drafts);
+        const currentPathName = this.props.location.pathname;
         if (params.draftId === 'new') {
             this.setState({
                 isNewDraft: true,
@@ -42,11 +45,15 @@ class AddEntryPage extends Component {
                 isNewDraft: false
             });
         }
+        if (currentPathName.includes('/publish') || currentPathName.includes('/publish-status')) {
+            this.context.router.setRouteLeaveHook(this.props.route, () => true);
+        } else {
+            this.context.router.setRouteLeaveHook(this.props.route, this.onPageLeave);
+        }
     }
     // display an alert when leaving route
     onPageLeave = (nextLocation) => {
-        const nextPathIsPublish = nextLocation.pathname.indexOf('publish') > -1;
-        if (this.state.shouldBeSaved && !this.waitingConfirm && !nextPathIsPublish) {
+        if (this.state.shouldBeSaved && !this.waitingConfirm) {
             if (this.alertDialog) {
                 this.alertDialog.show(((confirmed) => {
                     if (confirmed) {
@@ -102,7 +109,6 @@ class AddEntryPage extends Component {
         const { draftActions, params, drafts } = this.props;
         let { defaultLicence } = this.props;
         const draft = this.editor.getRawContent();
-        const contentState = this.editor.getContent();
         const title = this.editor.getTitle();
         const wordCount = getWordCount(contentState);
         const excerpt = contentState.getPlainText().slice(0, 160).replace(/\r?\n|\r/g, '');
@@ -180,8 +186,8 @@ class AddEntryPage extends Component {
             return null;
         }
         const currentDraft = this._findCurrentDraft(drafts);
-        if(!currentDraft) {
-            return null
+        if (!currentDraft) {
+            return null;
         }
         return currentDraft.getIn(['content', 'draft']);
     }
@@ -189,7 +195,7 @@ class AddEntryPage extends Component {
         const { appActions } = this.props;
         appActions.showNotification({
             id: 'editorMessage',
-            values: { errorMessage: errorMessage },
+            values: { errorMessage },
             duration: 3000
         });
     }
@@ -307,7 +313,10 @@ AddEntryPage.propTypes = {
     entriesCount: React.PropTypes.number,
     draftsCount: React.PropTypes.number,
     intl: React.PropTypes.shape(),
-    defaultLicence: React.PropTypes.shape()
+    defaultLicence: React.PropTypes.shape(),
+    location: React.PropTypes.shape({
+        pathname: React.PropTypes.string
+    })
 };
 AddEntryPage.contextTypes = {
     router: React.PropTypes.shape()

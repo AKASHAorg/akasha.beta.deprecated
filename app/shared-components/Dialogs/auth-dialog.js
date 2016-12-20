@@ -1,38 +1,35 @@
 import React, { PropTypes } from 'react';
-import { injectIntl } from 'react-intl';
 import { TextField, Dialog, RaisedButton, Checkbox, SelectField, MenuItem } from 'material-ui';
-import { formMessages } from 'locale-data/messages';
-import PanelHeader from '../../routes/components/panel-header';
+import { formMessages, generalMessages } from '../../locale-data/messages';
 
 function AuthDialog (props) {
     const { intl, errors } = props;
-    const loginErrors = errors.toJS();
-    const dialogTitle =
-      (<div style={{ padding: '10px 10px 20px' }}>
-        <PanelHeader title={intl.formatMessage(formMessages.confirmPassword)} noStatusBar />
-      </div>);
+    const handleSubmit = (ev) => {
+        ev.preventDefault();
+        return props.onSubmit();
+    };
     const dialogActions = [
-      <RaisedButton
-          label="Cancel"
-          style={{ marginRight: 8 }}
-          onTouchTap={props.onCancel}
-        />,
-      <RaisedButton
-          label="Confirm"
-          primary
-          onTouchTap={props.onSubmit}
-          disabled={props.loginRequested}
-        />
+      <RaisedButton // eslint-disable-line indent
+        label={intl.formatMessage(generalMessages.cancel)}
+        style={{ marginRight: 8 }}
+        onTouchTap={props.onCancel}
+      />,
+      <RaisedButton // eslint-disable-line indent
+        label={intl.formatMessage(generalMessages.confirm)}
+        primary
+        onTouchTap={handleSubmit}
+        disabled={props.loginRequested}
+      />
     ];
     const minute = 'min';
     return (
       <Dialog
         contentStyle={{ width: '40%', maxWidth: 'none' }}
         actions={dialogActions}
-        title={dialogTitle}
+        title={intl.formatMessage(formMessages.confirmPassword)}
         open={props.isVisible}
       >
-        <form onSubmit={props.onSubmit}>
+        <form onSubmit={handleSubmit}>
           <div>{intl.formatMessage(formMessages.confirmPasswordToContinue)}</div>
           <TextField
             fullWidth
@@ -41,12 +38,12 @@ function AuthDialog (props) {
             onChange={props.onPasswordChange}
             type="password"
             value={props.password}
-            errorText={!!loginErrors.length && loginErrors[0].message}
+            errorText={!!errors.length && errors[0].message}
           />
           <div className="row middle-xs">
             <div className="col-xs-7" style={{ paddingRight: 0 }}>
               <Checkbox
-                label="Remember my password for"
+                label={intl.formatMessage(formMessages.rememberPassFor)}
                 checked={props.rememberChecked}
                 onCheck={props.onRememberPasswordCheck}
               />
@@ -78,9 +75,9 @@ AuthDialog.propTypes = {
     onSubmit: PropTypes.func,
     onCancel: PropTypes.func,
     password: PropTypes.string,
-    errors: PropTypes.shape(),
+    errors: PropTypes.arrayOf(React.PropTypes.shape()),
     loginRequested: PropTypes.bool,
     intl: PropTypes.shape()
 };
 
-export default injectIntl(AuthDialog);
+export default AuthDialog;

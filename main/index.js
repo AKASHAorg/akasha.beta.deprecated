@@ -57,7 +57,7 @@ function bootstrapApp() {
             resizable: true,
             show: false,
             webPreferences: {
-                nodeIntegration: false,
+                // nodeIntegration: false,
                 preload: path_1.resolve(__dirname, 'preloader.js')
             }
         });

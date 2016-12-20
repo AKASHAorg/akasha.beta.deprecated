@@ -54,7 +54,7 @@ const entryMessages = defineMessages({
     allComments: {
         id: 'app.entry.allComments',
         description: 'all comments section title',
-        defaultMessage: 'ALL COMMENTS ({commentsCount})'
+        defaultMessage: 'ALL COMMENTS'
     },
     writeComment: {
         id: 'app.entry.writeComment',
