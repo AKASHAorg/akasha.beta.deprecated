@@ -66,13 +66,12 @@ class App extends Component {
         const { appActions } = this.props;
         appActions.clearErrors();
     };
-    _handleConfirmation = (ev) => {
+    _handleConfirmation = () => {
         const { loggedProfile, profileActions } = this.props;
         const { rememberTime, userPassword, rememberPasswordChecked } = this.state;
         const account = loggedProfile.get('account');
         const akashaId = loggedProfile.get('akashaId');
         const remember = rememberPasswordChecked ? rememberTime : 1;
-        ev.preventDefault();
         profileActions.login({
             account, password: userPassword, rememberTime: remember, akashaId, reauthenticate: true
         });
@@ -105,7 +104,7 @@ class App extends Component {
     render () {
         const { appState, loginErrors, appActions, draftActions, tagActions, entryActions, voteCost,
             profileActions, loggedProfileData, loginRequested, isActivePending,
-            entries, fullEntry } = this.props;
+            entries, fullEntry, intl } = this.props;
         const loggedProfileBalance = loggedProfileData && loggedProfileData.get('balance');
         const error = appState.get('error');
         const errorMessage = error.get('code')
@@ -140,8 +139,9 @@ class App extends Component {
               isVisible={isAuthDialogVisible}
               onSubmit={this._handleConfirmation}
               onCancel={this._handleCancellation}
-              errors={loginErrors}
+              errors={loginErrors.toJS()}
               loginRequested={loginRequested}
+              intl={intl}
             />
             <WeightConfirmDialog
               isOpen={isWeightConfirmationDialogVisible}
@@ -187,7 +187,8 @@ App.propTypes = {
     isActivePending: PropTypes.bool,
     entries: PropTypes.shape(),
     theme: PropTypes.string,
-    children: PropTypes.element
+    children: PropTypes.element,
+    intl: PropTypes.shape()
 };
 App.contextTypes = {
     router: React.PropTypes.shape()

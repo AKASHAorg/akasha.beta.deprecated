@@ -293,9 +293,7 @@ class EntryPage extends Component {
                   <div id="comments-section" className={`${styles.comments_section}`}>
                     <div>
                       <h4>
-                        {intl.formatMessage(entryMessages.allComments, {
-                            commentsCount: entry.get('commentsCount')
-                        })}
+                        {`${intl.formatMessage(entryMessages.allComments)} (${entry.get('commentsCount')})`}
                       </h4>
                       <Divider />
                     </div>
@@ -317,10 +315,10 @@ class EntryPage extends Component {
                                 comments.filter(comm =>
                                   (comm.getIn(['data', 'active']) && !comm.get('tempTx') &&
                                     comm.get('commentId') && comm.getIn(['data', 'ipfsHash']) &&
-                                    (comm.get('entryId') === entry.get('entryId')))
+                                  (comm.get('entryId') === parseInt(entry.get('entryId'), 10)))
                                 )
                             }
-                            entryId={entry.get('entryId')}
+                            entryId={parseInt(entry.get('entryId'), 10)}
                             commentsCount={entry.get('commentsCount')}
                             fetchLimit={COMMENT_FETCH_LIMIT}
                             onLoadMoreRequest={this.fetchComments}

@@ -47,7 +47,6 @@ class SideBar extends Component {
             }
             node = node.parentNode;
         } while (node != null);
-        // return null;
     }
     getValidSidebarPlugins () {
         const plugins = [];
@@ -61,7 +60,9 @@ class SideBar extends Component {
     setSidebarPosition () {
         const container = this.container;
         const element = this.getSelectedBlockElement();
-        if (!element || !container) {
+        const blacklistedTagNames = ['LI', 'BLOCKQUOTE']
+        const isBlackListed = element && blacklistedTagNames.includes(element.tagName)
+        if (!element || !container || isBlackListed) {
             return;
         }
         const containerTop =
@@ -118,7 +119,8 @@ SideBar.propTypes = {
     editorState: React.PropTypes.shape(),
     readOnly: React.PropTypes.bool,
     plugins: React.PropTypes.arrayOf(React.PropTypes.shape()),
-    showTerms: React.PropTypes.func
+    showTerms: React.PropTypes.func,
+    onError: React.PropTypes.func
 };
 
 export default SideBar;
