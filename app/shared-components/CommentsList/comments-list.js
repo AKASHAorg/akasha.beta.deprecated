@@ -9,11 +9,12 @@ class CommentsList extends Component {
         this.requestSent = false;
         this.state = {
             loadedCommentsCount: this.props.comments.size,
-            loadMoreReq: false
+            loadMoreReq: false,
+            publishingComments: this.props.publishingComments
         };
     }
     componentDidMount () {
-        window.addEventListener('scroll', this._handleScroll);
+        window.addEventListener('scroll', this._handleScroll, { pasive: true });
     }
     componentWillReceiveProps (nextProps) {
         const { comments } = nextProps;
@@ -55,46 +56,41 @@ class CommentsList extends Component {
             }
         }
     }
-    renderComment = (comment, key) => {
-        const { loggedProfile, entryAuthorProfile } = this.props;
-        const { data } = comment;
-        const { profile } = data;
-        const content = JSON.parse(data.content);
-        const authorName = `${profile.get('firstName')} ${profile.get('lastName')}`;
-        const authorAvatar = (profile.get('avatar') === `${profile.get('baseUrl')}/`) ?
-            null : profile.get('avatar');
-        const viewerIsAuthor = loggedProfile.get('profile') === profile.get('profile');
-        const isEntryAuthor = entryAuthorProfile === profile.get('profile');
-        return (
-          <Comment
-            key={key}
-            authorName={authorName}
-            viewerIsAuthor={viewerIsAuthor}
-            publishDate={comment.getIn(['data', 'date'])}
-            avatar={authorAvatar}
-            rawContent={content}
-            onReply={ev => this._handleReply(ev, 'comment')}
-            repliesLimit={3}
-            stats={{ upvotes: '', downvotes: '', replies: '' }}
-            isPublishing={!!comment.get('tempTx')}
-            isEntryAuthor={isEntryAuthor}
-            onAuthorNameClick={() => this._handleNavigation(`profile/${profile.get('profile')}`)}
-          />
-        );
-    }
     render () {
         const { comments, publishingComments, newlyCreatedComments, intl } = this.props;
-        console.log(publishingComments, 'publishingComments');
+        const { loggedProfile, entryAuthorProfile } = this.props;
         return (
           <div>
             {publishingComments.map((comment, key) =>
-                this.renderComment(comment, key)
+              <Comment
+                key={`${key}-publishingComments`}
+                comment={comment}
+                loggedProfile={loggedProfile}
+                entryAuthorProfile={entryAuthorProfile}
+                isPublishing
+                onAuthorNameClick={this._handleNavigation}
+                onReply={ev => this._handleReply(ev, 'comment')}
+              />
             )}
             {newlyCreatedComments.map((comment, key) =>
-                this.renderComment(comment, key)
+              <Comment
+                key={`${key}-newComments`}
+                comment={comment}
+                loggedProfile={loggedProfile}
+                entryAuthorProfile={entryAuthorProfile}
+                onReply={ev => this._handleReply(ev, 'comment')}
+                onAuthorNameClick={this._handleNavigation}
+              />
             )}
             {comments.map((comment, key) =>
-                this.renderComment(comment, key)
+              <Comment
+                key={`${key}-fetchedComments`}
+                comment={comment}
+                loggedProfile={loggedProfile}
+                entryAuthorProfile={entryAuthorProfile}
+                onReply={ev => this._handleReply(ev, 'comment')}
+                onAuthorNameClick={this._handleNavigation}
+              />
             )}
             {this.state.loadMoreReq &&
               <div style={{ padding: '16px 0', textAlign: 'center' }}>
