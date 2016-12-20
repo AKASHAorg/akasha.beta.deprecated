@@ -29,24 +29,24 @@ class ProfileUpdater extends Component {
         const { minedTx, pendingTx, fetchingMined, fetchingPending, deletingPendingTx, appActions,
             profileActions, transactionActions, loggedProfile, pendingActions } = nextProps;
         const isNotFetching = !fetchingMined && !fetchingPending;
-        const pendingFollowTxs = isNotFetching ?
+        const pendingTxs = isNotFetching ?
             pendingTx.toJS().filter(tx =>
-                tx.profile === loggedProfile && tx.type === 'updateProfile'
+                tx.profile === loggedProfile &&
+                tx.type === 'updateProfile' &&
+                !!minedTx.find(mined => mined.tx === tx.tx) &&
+                !deletingPendingTx.find(deleting => deleting.tx === tx.tx && deleting.value)
             ) :
             [];
 
-        pendingFollowTxs.forEach((tx) => {
-            const isMined = minedTx.find(mined => mined.tx === tx.tx);
-            if (isMined && !deletingPendingTx) {
-                const correspondingAction = pendingActions.find(action =>
-                    action.get('type') === tx.type && action.get('status') === 'publishing');
-                transactionActions.listenForMinedTx({ watch: false });
-                transactionActions.deletePendingTx(tx.tx);
-                profileActions.updateProfileDataSuccess();
-                profileActions.getProfileData([{ profile: loggedProfile }], true);
-                if (correspondingAction) {
-                    appActions.deletePendingAction(correspondingAction.get('id'));
-                }
+        pendingTxs.forEach((tx) => {
+            const correspondingAction = pendingActions.find(action =>
+                action.get('type') === tx.type && action.get('status') === 'publishing');
+            transactionActions.listenForMinedTx({ watch: false });
+            transactionActions.deletePendingTx(tx.tx);
+            profileActions.updateProfileDataSuccess();
+            profileActions.getProfileData([{ profile: loggedProfile }], true);
+            if (correspondingAction) {
+                appActions.deletePendingAction(correspondingAction.get('id'));
             }
         });
     };
@@ -63,7 +63,7 @@ ProfileUpdater.propTypes = {
     pendingActions: PropTypes.shape(),
     fetchingMined: PropTypes.bool,
     fetchingPending: PropTypes.bool,
-    deletingPendingTx: PropTypes.bool,
+    deletingPendingTx: PropTypes.shape(),
     minedTx: PropTypes.shape(),
     pendingTx: PropTypes.shape(),
     loggedProfile: PropTypes.string

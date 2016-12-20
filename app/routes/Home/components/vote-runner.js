@@ -50,45 +50,45 @@ class VoteRunner extends Component {
             fetchingPending, fullEntry, loggedProfile, minedTx, pendingActions, pendingTx,
             transactionActions } = nextProps;
         const isNotFetching = !fetchingMined && !fetchingPending;
-        const pendingSubsTxs = isNotFetching ?
+        const pendingTxs = isNotFetching ?
             pendingTx.toJS().filter(tx =>
-                tx.profile === loggedProfile.get('profile') && (tx.type === 'upvote' ||
-                    tx.type === 'downvote')
+                tx.profile === loggedProfile.get('profile') &&
+                (tx.type === 'upvote' || tx.type === 'downvote') &&
+                !!minedTx.find(mined => mined.tx === tx.tx) &&
+                !deletingPendingTx.find(deleting => deleting.tx === tx.tx && deleting.value)
             ) :
             [];
 
-        pendingSubsTxs.forEach((tx) => {
+        pendingTxs.forEach((tx) => {
+            const correspondingAction = pendingActions.find(action =>
+                action.get('type') === tx.type && action.get('status') === 'publishing');
+            const entry = entries.find(entry => entry.get('entryId') === tx.entryId);
+            const publisherAkashaId = entry ?
+                entry.getIn(['entryEth', 'publisher', 'akashaId']) :
+                fullEntry.entryEth.publisher.akashaId;
+            const loggedAkashaId = loggedProfile.get('akashaId');
             const mined = minedTx.find(mined => mined.tx === tx.tx);
-            if (mined && !deletingPendingTx) {
-                const correspondingAction = pendingActions.find(action =>
-                    action.get('type') === tx.type && action.get('status') === 'publishing');
-                const entry = entries.find(entry => entry.get('entryId') === tx.entryId);
-                const publisherAkashaId = entry ?
-                    entry.getIn(['entryEth', 'publisher', 'akashaId']) :
-                    fullEntry.entryEth.publisher.akashaId;
-                const loggedAkashaId = loggedProfile.get('akashaId');
-                let minedSuccessfully;
-                if (correspondingAction) {
-                    minedSuccessfully = mined.cumulativeGasUsed < correspondingAction.get('gas');
-                }
-                transactionActions.deletePendingTx(tx.tx);
-                // fire success action based on action type
-                // WARNING: action must match `action.type + "Success"`
-                // example: for action.type = 'upvote', success action
-                // should be upvoteSuccess()
-                if (typeof entryActions[`${tx.type}Success`] !== 'function') {
-                    return console.error(`There is no action "${tx.type}Success" in entryActions!! Please implement "${tx.type}Success" action!!`);
-                }
-                entryActions[`${tx.type}Success`](tx.entryId, minedSuccessfully);
-                entryActions.getScore(tx.entryId);
-                entryActions.getVoteOf(loggedProfile.get('akashaId'), tx.entryId);
-                if (publisherAkashaId === loggedAkashaId) {
-                    entryActions.canClaim(tx.entryId);
-                    entryActions.getEntryBalance(tx.entryId);
-                }
-                if (correspondingAction) {
-                    appActions.deletePendingAction(correspondingAction.get('id'));
-                }
+            let minedSuccessfully;
+            if (correspondingAction) {
+                minedSuccessfully = mined.cumulativeGasUsed < correspondingAction.get('gas');
+            }
+            transactionActions.deletePendingTx(tx.tx);
+            // fire success action based on action type
+            // WARNING: action must match `action.type + "Success"`
+            // example: for action.type = 'upvote', success action
+            // should be upvoteSuccess()
+            if (typeof entryActions[`${tx.type}Success`] !== 'function') {
+                return console.error(`There is no action "${tx.type}Success" in entryActions!! Please implement "${tx.type}Success" action!!`);
+            }
+            entryActions[`${tx.type}Success`](tx.entryId, minedSuccessfully);
+            entryActions.getScore(tx.entryId);
+            entryActions.getVoteOf(loggedProfile.get('akashaId'), tx.entryId);
+            if (publisherAkashaId === loggedAkashaId) {
+                entryActions.canClaim(tx.entryId);
+                entryActions.getEntryBalance(tx.entryId);
+            }
+            if (correspondingAction) {
+                appActions.deletePendingAction(correspondingAction.get('id'));
             }
         });
     };
@@ -99,7 +99,7 @@ class VoteRunner extends Component {
 
 VoteRunner.propTypes = {
     appActions: PropTypes.shape(),
-    deletingPendingTx: PropTypes.bool,
+    deletingPendingTx: PropTypes.shape(),
     entries: PropTypes.shape(),
     entryActions: PropTypes.shape(),
     fetchingMined: PropTypes.bool,

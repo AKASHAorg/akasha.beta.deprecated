@@ -5,6 +5,7 @@ import { SettingsActions, AppActions, ProfileActions, EProcActions, DraftActions
     TagActions, EntryActions } from 'local-flux';
 import { getMuiTheme } from 'material-ui/styles';
 import { AuthDialog, WeightConfirmDialog, PublishConfirmDialog } from 'shared-components';
+import debounce from 'lodash.debounce';
 import TermsPanel from './components/terms-panel';
 import NotificationBar from './components/notification-bar';
 import lightTheme from '../layouts/AkashaTheme/lightTheme';
@@ -66,17 +67,17 @@ class App extends Component {
         const { appActions } = this.props;
         appActions.clearErrors();
     };
-    _handleConfirmation = (ev) => {
+    _handleConfirmation = debounce(() => {
         const { loggedProfile, profileActions } = this.props;
         const { rememberTime, userPassword, rememberPasswordChecked } = this.state;
         const account = loggedProfile.get('account');
         const akashaId = loggedProfile.get('akashaId');
         const remember = rememberPasswordChecked ? rememberTime : 1;
-        ev.preventDefault();
         profileActions.login({
             account, password: userPassword, rememberTime: remember, akashaId, reauthenticate: true
         });
-    };
+    }, 1000, { leading: true, trailing: false });
+
     _setRememberPassword = () => {
         this.setState({
             rememberPasswordChecked: !this.state.rememberPasswordChecked
@@ -106,11 +107,8 @@ class App extends Component {
     render () {
         const { appState, loginErrors, appActions, draftActions, tagActions, entryActions, voteCost,
             profileActions, loggedProfileData, loginRequested, isActivePending,
-            entries, fullEntry } = this.props;
+            entries, fullEntry, intl } = this.props;
         const loggedProfileBalance = loggedProfileData && loggedProfileData.get('balance');
-        const error = appState.get('error');
-        const errorMessage = error.get('code')
-            ? `Error ${error.get('code')}: ${error.get('message')}` : '';
         const isAuthDialogVisible = !!appState.get('showAuthDialog');
         const weightConfirmDialog = appState.get('weightConfirmDialog');
         const isWeightConfirmationDialogVisible = weightConfirmDialog !== null;
@@ -143,6 +141,7 @@ class App extends Component {
               onCancel={this._handleCancellation}
               loginErrors={loginErrors}
               loginRequested={loginRequested}
+              intl={intl}
             />
             <WeightConfirmDialog
               isOpen={isWeightConfirmationDialogVisible}
@@ -188,7 +187,9 @@ App.propTypes = {
     isActivePending: PropTypes.bool,
     entries: PropTypes.shape(),
     theme: PropTypes.string,
-    children: PropTypes.element
+    children: PropTypes.element,
+    intl: PropTypes.shape(),
+    fullEntry: PropTypes.shape()
 };
 App.contextTypes = {
     router: React.PropTypes.shape()

@@ -33,25 +33,25 @@ class CommentsPublisher extends Component {
         const isNotFetching = !fetchingMined && !fetchingPending;
         const pendingSubsTxs = isNotFetching ?
             pendingTx.toJS().filter(tx =>
-                tx.profile === loggedProfile.get('profile') && (tx.type === 'publishComment')
+                tx.profile === loggedProfile.get('profile') &&
+                tx.type === 'publishComment' &&
+                !!minedTx.find(mined => mined.tx === tx.tx) &&
+                !deletingPendingTx.find(deleting => deleting.tx === tx.tx && deleting.value)
             ) :
             [];
         pendingSubsTxs.forEach((tx) => {
-            const isMined = minedTx.find(mined => mined.tx === tx.tx);
-            if (isMined && !deletingPendingTx) {
-                const correspondingAction = pendingActions.find(action =>
-                    action.get('type') === tx.type && action.get('status') === 'publishing');
-                transactionActions.deletePendingTx(tx.tx);
-                // fire success action based on action type
-                // WARNING: action must match `action.type + "Success"`
-                // example: for action.type = 'registerTag', success action
-                // should be registerTagSuccess()
-                if (typeof commentsActions[`${tx.type}Success`] !== 'function') {
-                    console.error(`There is no action "${tx.type}Success" in commentsActions!! Please implement "${tx.type}Success" action!!`);
-                } else {
-                    commentsActions[`${tx.type}Success`](tx);
-                    appActions.deletePendingAction(correspondingAction.get('id'));
-                }
+            const correspondingAction = pendingActions.find(action =>
+                action.get('type') === tx.type && action.get('status') === 'publishing');
+            transactionActions.deletePendingTx(tx.tx);
+            // fire success action based on action type
+            // WARNING: action must match `action.type + "Success"`
+            // example: for action.type = 'registerTag', success action
+            // should be registerTagSuccess()
+            if (typeof commentsActions[`${tx.type}Success`] !== 'function') {
+                console.error(`There is no action "${tx.type}Success" in commentsActions!! Please implement "${tx.type}Success" action!!`);
+            } else {
+                commentsActions[`${tx.type}Success`](tx);
+                appActions.deletePendingAction(correspondingAction.get('id'));
             }
         });
     }

@@ -31,31 +31,32 @@ class PublishEntryRunner extends Component {
             draftActions, transactionActions, loggedProfile,
             pendingActions, entryActions } = nextProps;
         const isNotFetching = !fetchingMined && !fetchingPending;
-        const pendingSubsTxs = isNotFetching ?
+        const pendingTxs = isNotFetching ?
             pendingTx.toJS().filter(tx =>
-                tx.profile === loggedProfile.get('profile') && (tx.type === 'publishEntry')) :
-                [];
+                tx.profile === loggedProfile.get('profile') &&
+                tx.type === 'publishEntry' &&
+                !!minedTx.find(mined => mined.tx === tx.tx) &&
+                !deletingPendingTx.find(deleting => deleting.tx === tx.tx && deleting.value)
+            ) :
+            [];
 
-        pendingSubsTxs.forEach((tx) => {
-            const isMined = minedTx.find(mined => mined.tx === tx.tx);
-            if (isMined && !deletingPendingTx) {
-                const correspondingAction = pendingActions.find(action =>
-                    action.get('type') === tx.type && action.get('status') === 'publishing');
-                transactionActions.deletePendingTx(tx.tx);
-                // fire success action based on action type
-                // WARNING: action must match `action.type + "Success"`
-                // example: for action.type = 'registerTag', success action
-                // should be registerTagSuccess()
-                if (typeof draftActions[`${tx.type}Success`] !== 'function') {
-                    console.error(
-                        `There is no action "${tx.type}Success" in draftActions!!
-                        Please implement "${tx.type}Success" action!!`
-                    );
-                } else {
-                    draftActions[`${tx.type}Success`](tx.draftId);
-                    appActions.deletePendingAction(correspondingAction.get('id'));
-                    entryActions.getEntriesStream(loggedProfile.get('akashaId'));
-                }
+        pendingTxs.forEach((tx) => {
+            const correspondingAction = pendingActions.find(action =>
+                action.get('type') === tx.type && action.get('status') === 'publishing');
+            transactionActions.deletePendingTx(tx.tx);
+            // fire success action based on action type
+            // WARNING: action must match `action.type + "Success"`
+            // example: for action.type = 'registerTag', success action
+            // should be registerTagSuccess()
+            if (typeof draftActions[`${tx.type}Success`] !== 'function') {
+                console.error(
+                    `There is no action "${tx.type}Success" in draftActions!!
+                    Please implement "${tx.type}Success" action!!`
+                );
+            } else {
+                draftActions[`${tx.type}Success`](tx.draftId);
+                appActions.deletePendingAction(correspondingAction.get('id'));
+                entryActions.getEntriesStream(loggedProfile.get('akashaId'));
             }
         });
     };
@@ -69,8 +70,8 @@ PublishEntryRunner.propTypes = {
     appActions: PropTypes.shape(),
     loggedProfile: PropTypes.shape(),
     transactionActions: PropTypes.shape(),
-    minedTx: PropTypes.shape()
-
+    minedTx: PropTypes.shape(),
+    deletingPendingTx: PropTypes.shape()
 };
 
 function mapStateToProps (state) {
