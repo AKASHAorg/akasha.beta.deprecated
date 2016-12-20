@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
-import { Card, CardHeader, CardTitle, CardText } from 'material-ui';
+import { Card, CardHeader, CardTitle, CardText, IconButton } from 'material-ui';
+import DeleteIcon from 'material-ui/svg-icons/action/delete';
 import { TagChip } from 'shared-components';
 import styles from './draft-card.scss';
 
@@ -7,17 +8,25 @@ class DraftCard extends Component {
     render () {
         const {
             title, headerTitle, lastUpdated, excerpt, wordCount, tags,
-            onTitleClick
+            onDelete, onTitleClick
         } = this.props;
         return (
-          <Card className="start-xs" style={{ margin: '5px 5px 16px 5px' }}>
+          <Card className="start-xs has_hidden_action" style={{ margin: '5px 5px 16px 5px' }}>
             <CardHeader
               title={headerTitle}
               subtitle={`${lastUpdated} - ${wordCount} words`}
               titleStyle={{ fontSize: '16px', fontWeight: '600' }}
               subtitleStyle={{ fontSize: '12px' }}
               style={{ paddingBottom: '4px', cursor: 'default', userSelect: 'none' }}
-            />
+            >
+              <IconButton
+                className="hidden_action"
+                onClick={onDelete}
+                style={{ position: 'absolute', top: 10, right: 10 }}
+              >
+                <DeleteIcon />
+              </IconButton>
+            </CardHeader>
             <CardTitle
               onClick={onTitleClick}
               title={title || 'No Title'}
@@ -63,10 +72,10 @@ class DraftCard extends Component {
 DraftCard.propTypes = {
     headerTitle: PropTypes.string.isRequired,
     lastUpdated: PropTypes.string.isRequired,
-    headerActions: PropTypes.element,
     title: PropTypes.string.isRequired,
     excerpt: PropTypes.string.isRequired,
     wordCount: PropTypes.number.isRequired,
+    onDelete: PropTypes.func.isRequired,
     onTitleClick: PropTypes.func.isRequired,
     tags: PropTypes.shape()
 };
