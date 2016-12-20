@@ -10,13 +10,7 @@ import { isInViewport } from 'utils/domUtils';
 
 const LIMIT = 13;
 const RECOMMENDED_PEOPLE = [
-    { profile: '0x39dbdec443648f91f1e2d30befc4264f290fbb47' },
-    { profile: '0xce08edabdee18520cef580ac30100af64dac4938' },
-    { profile: '0x390d83df56e035be232ad95cf0c89ae37857abac' },
-    { profile: '0x24a052abcec2851e9742526758115c1229580722' },
-    { profile: '0xdb2167325c999f42a2d533381d1b2911285a5a50' },
-    { profile: '0xa40fe140e260938a33f17e8c362cbad2d070d8ad' },
-    { profile: '0x3d4623be87bf20e60fb3ec805f964a2fa369c84f' }
+    { profile: '0xf01d0a16c63646aae5977726770c201a1891efb5' } // update this
 ];
 
 class PeopleContainer extends Component {

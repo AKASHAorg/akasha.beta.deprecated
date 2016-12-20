@@ -31,7 +31,7 @@ const execute = Promise.coroutine(function*(data: { akashaId: string }) {
         fCount--;
     }
 
-    let currentSub = yield contracts.instance.feed.subsFirst(data.akashaId);
+    let currentSub = yield contracts.instance.subs.subsFirst(data.akashaId);
     let tagName = yield contracts.instance.tags.getTagName(currentSub);
     if (!tagName) {
         subbedTags.push({ tagName: DEFAULT_TAG, tagId: 'dont use :)' });
@@ -40,7 +40,7 @@ const execute = Promise.coroutine(function*(data: { akashaId: string }) {
     }
 
     while (sCount > 1) {
-        currentSub = yield contracts.instance.feed.subsNext(data.akashaId, currentSub);
+        currentSub = yield contracts.instance.subs.subsNext(data.akashaId, currentSub);
         tagName = yield contracts.instance.tags.getTagName(currentSub);
         subbedTags.push({ tagId: currentSub, tagName: tagName });
         sCount--;

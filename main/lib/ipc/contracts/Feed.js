@@ -19,12 +19,6 @@ class Feed extends BaseContract_1.default {
         this.contract.getFollowersNext.callAsync = Promise.promisify(this.contract.getFollowersNext.call);
         this.contract.getFollowersPrev.callAsync = Promise.promisify(this.contract.getFollowersPrev.call);
         this.contract.getFollowersById.callAsync = Promise.promisify(this.contract.getFollowersById.call);
-        this.contract.subsCount.callAsync = Promise.promisify(this.contract.subsCount.call);
-        this.contract.subsFirst.callAsync = Promise.promisify(this.contract.subsFirst.call);
-        this.contract.subsLast.callAsync = Promise.promisify(this.contract.subsLast.call);
-        this.contract.subsNext.callAsync = Promise.promisify(this.contract.subsNext.call);
-        this.contract.subsPrev.callAsync = Promise.promisify(this.contract.subsPrev.call);
-        this.contract.isSubscribed.callAsync = Promise.promisify(this.contract.isSubscribed.call);
     }
     follow(id, gas = 2000000) {
         if (!id) {
@@ -39,20 +33,6 @@ class Feed extends BaseContract_1.default {
         }
         const idTr = this.gethInstance.web3.fromUtf8(id);
         return this.evaluateData('unFollow', gas, idTr);
-    }
-    subscribe(tagName, gas = 2000000) {
-        if (!tagName) {
-            throw new Error('No tag provided');
-        }
-        const tagNameTr = this.gethInstance.web3.fromUtf8(tagName);
-        return this.evaluateData('subscribe', gas, tagNameTr);
-    }
-    unSubscribe(tagName, gas = 2000000) {
-        if (!tagName) {
-            throw new Error('No tag provided');
-        }
-        const tagNameTr = this.gethInstance.web3.fromUtf8(tagName);
-        return this.evaluateData('unSubscribe', gas, tagNameTr);
     }
     isFollowing(follower, id) {
         const idTr = this.gethInstance.web3.fromUtf8(id);
@@ -111,30 +91,6 @@ class Feed extends BaseContract_1.default {
     getFollowersById(id, indexId) {
         const idTr = this.gethInstance.web3.fromUtf8(id);
         return this.contract.getFollowersById.callAsync(idTr, indexId);
-    }
-    subsCount(id) {
-        const idTr = this.gethInstance.web3.fromUtf8(id);
-        return this.contract.subsCount.callAsync(idTr).then((result) => result.toString());
-    }
-    subsFirst(id) {
-        const idTr = this.gethInstance.web3.fromUtf8(id);
-        return this.contract.subsFirst.callAsync(idTr).then((result) => result.toString());
-    }
-    subsLast(id) {
-        const idTr = this.gethInstance.web3.fromUtf8(id);
-        return this.contract.subsLast.callAsync(idTr).then((result) => result.toString());
-    }
-    subsNext(id, tagId) {
-        const idTr = this.gethInstance.web3.fromUtf8(id);
-        return this.contract.subsNext.callAsync(idTr, tagId).then((result) => result.toString());
-    }
-    subsPrev(id, tagId) {
-        const idTr = this.gethInstance.web3.fromUtf8(id);
-        return this.contract.subsPrev.callAsync(idTr, tagId).then((result) => result.toString());
-    }
-    isSubscribed(id, tagName) {
-        const idTr = this.gethInstance.web3.fromUtf8(id);
-        return this.contract.isSubscribed.callAsync(idTr, tagName);
     }
 }
 Object.defineProperty(exports, "__esModule", { value: true });

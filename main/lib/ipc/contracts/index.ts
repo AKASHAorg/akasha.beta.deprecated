@@ -5,6 +5,7 @@ import Feed from './Feed';
 import Faucet from './Faucet';
 import Entries from './Entries';
 import Comments from './Comments';
+import Subs from './Subs';
 import Votes from './Votes';
 import RegistryStore from './RegistryStore';
 import contracts from '@akashaproject/contracts.js';
@@ -24,11 +25,12 @@ class Contracts {
         const profile = new Profile(factory.classes.Profile);
         const tags = new Tags(factory.objects.tags);
         const feed = new Feed(factory.objects.feed);
+        const subs = new Subs(factory.objects.subs);
         const faucet = new Faucet(factory.objects.faucet);
         const entries = new Entries(factory.objects.entries);
         const comments = new Comments(factory.objects.comments);
         const votes = new Votes(factory.objects.votes);
-        this.instance = { profile, registry, registryStore, tags, feed, faucet, entries, comments, votes };
+        this.instance = { profile, registry, registryStore, tags, feed, faucet, entries, comments, subs, votes };
         return this.instance;
     }
 }

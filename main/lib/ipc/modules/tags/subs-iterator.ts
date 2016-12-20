@@ -6,7 +6,7 @@ import { constructed as contracts } from '../../contracts/index';
  * @type {Function}
  */
 const execute = Promise.coroutine(function*(data: {start?: number, limit?: number, akashaId: string }) {
-    let currentId = (data.start) ? data.start : yield contracts.instance.feed.subsFirst(data.akashaId);
+    let currentId = (data.start) ? data.start : yield contracts.instance.subs.subsFirst(data.akashaId);
     if (currentId === '0') {
         return { collection: [], akashaId: data.akashaId };
     }
@@ -20,7 +20,7 @@ const execute = Promise.coroutine(function*(data: {start?: number, limit?: numbe
         counter = 1;
     }
     while (counter < maxResults) {
-        currentId = yield contracts.instance.feed.subsNext(data.akashaId, currentId);
+        currentId = yield contracts.instance.subs.subsNext(data.akashaId, currentId);
         if (currentId === '0') {
             break;
         }

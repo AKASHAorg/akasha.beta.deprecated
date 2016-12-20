@@ -25,7 +25,7 @@ const execute = Promise.coroutine(function* (data) {
         followedProfiles.push({ profileAddress: profileAddress, akashaId: profileId });
         fCount--;
     }
-    let currentSub = yield index_1.constructed.instance.feed.subsFirst(data.akashaId);
+    let currentSub = yield index_1.constructed.instance.subs.subsFirst(data.akashaId);
     let tagName = yield index_1.constructed.instance.tags.getTagName(currentSub);
     if (!tagName) {
         subbedTags.push({ tagName: exports.DEFAULT_TAG, tagId: 'dont use :)' });
@@ -34,7 +34,7 @@ const execute = Promise.coroutine(function* (data) {
         subbedTags.push({ tagId: currentSub, tagName: tagName });
     }
     while (sCount > 1) {
-        currentSub = yield index_1.constructed.instance.feed.subsNext(data.akashaId, currentSub);
+        currentSub = yield index_1.constructed.instance.subs.subsNext(data.akashaId, currentSub);
         tagName = yield index_1.constructed.instance.tags.getTagName(currentSub);
         subbedTags.push({ tagId: currentSub, tagName: tagName });
         sCount--;
