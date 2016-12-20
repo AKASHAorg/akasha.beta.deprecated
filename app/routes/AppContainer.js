@@ -96,7 +96,8 @@ class App extends Component {
         });
     };
     _handleCancellation = () => {
-        const { appActions, appState } = this.props;
+        const { appActions, appState, profileActions } = this.props;
+        profileActions.clearLoginErrors();
         appActions.deletePendingAction(appState.get('showAuthDialog'));
         appActions.hideAuthDialog();
     };
@@ -106,9 +107,6 @@ class App extends Component {
             profileActions, loggedProfileData, loginRequested, isActivePending,
             entries, fullEntry, intl } = this.props;
         const loggedProfileBalance = loggedProfileData && loggedProfileData.get('balance');
-        const error = appState.get('error');
-        const errorMessage = error.get('code')
-            ? `Error ${error.get('code')}: ${error.get('message')}` : '';
         const isAuthDialogVisible = !!appState.get('showAuthDialog');
         const weightConfirmDialog = appState.get('weightConfirmDialog');
         const isWeightConfirmationDialogVisible = weightConfirmDialog !== null;
@@ -139,7 +137,7 @@ class App extends Component {
               isVisible={isAuthDialogVisible}
               onSubmit={this._handleConfirmation}
               onCancel={this._handleCancellation}
-              errors={loginErrors.toJS()}
+              loginErrors={loginErrors}
               loginRequested={loginRequested}
               intl={intl}
             />
@@ -188,7 +186,8 @@ App.propTypes = {
     entries: PropTypes.shape(),
     theme: PropTypes.string,
     children: PropTypes.element,
-    intl: PropTypes.shape()
+    intl: PropTypes.shape(),
+    fullEntry: PropTypes.shape()
 };
 App.contextTypes = {
     router: React.PropTypes.shape()
@@ -200,11 +199,11 @@ App.childContextTypes = {
 function mapStateToProps (state) {
     return {
         appState: state.appState,
-        loginErrors: state.profileState.get('errors'),
+        loginErrors: state.profileState.get('errors').filter(err => err.get('type') === 'login'),
         loggedProfile: state.profileState.get('loggedProfile'),
         loggedProfileData: state.profileState.get('profiles').find(prf =>
             prf.get('profile') === state.profileState.getIn(['loggedProfile', 'profile'])),
-        loginRequested: state.profileState.get('loginRequested'),
+        loginRequested: state.profileState.getIn(['flags', 'loginRequested']),
         voteCost: state.entryState.get('voteCost'),
         isActivePending: state.entryState.getIn(['flags', 'isActivePending']),
         entries: state.entryState.get('entries'),

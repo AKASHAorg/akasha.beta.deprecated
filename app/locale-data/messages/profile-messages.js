@@ -86,13 +86,13 @@ export const profileMessages = defineMessages({
     },
     weCannotHelpRecover: {
         id: 'app.profile.weCannotHelpRecover',
-        description: 'text explaining we cannot recover lost pass',
-        defaultMessage: 'Since we cannot help you recover passwords, or identities make sure to:'
+        description: 'text explaining we cannot recover lost passphrases',
+        defaultMessage: 'Since we cannot help you recover passphrases, or identities make sure to:'
     },
     writePassKeepSafe: {
         id: 'app.profile.writePassKeepSafe',
-        description: 'a tip for storing password safely',
-        defaultMessage: 'Write down your password and keep it safe'
+        description: 'a tip for storing passphrase safely',
+        defaultMessage: 'Write down your passphrase and keep it safe'
     },
     backupYourId: {
         id: 'app.profile.backupYourId',

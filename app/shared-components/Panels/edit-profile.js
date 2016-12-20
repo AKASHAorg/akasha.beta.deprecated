@@ -374,7 +374,6 @@ EditProfile.propTypes = {
     showPanel: PropTypes.func,
     fetchingProfileData: PropTypes.bool,
     updateProfileData: PropTypes.func,
-    loginRequested: PropTypes.bool,
     updatingProfile: PropTypes.bool
 };
 

@@ -7,7 +7,8 @@ import { createReducer } from './create-reducer';
 const ErrorRecord = Record({
     code: null,
     message: '',
-    fatal: false
+    fatal: false,
+    type: null
 });
 
 const Profile = Record({
@@ -171,6 +172,11 @@ const profileState = createReducer(initialState, {
     [types.CLEAR_PROFILE_ERRORS]: state =>
         state.merge({
             errors: new List()
+        }),
+
+    [types.CLEAR_LOGIN_ERRORS]: state =>
+        state.merge({
+            errors: state.get('errors').filter(err => err.get('type') !== 'login')
         }),
 
     [types.UPDATE_PROFILE_DATA]: flagHandler,

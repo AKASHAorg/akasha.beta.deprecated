@@ -30,6 +30,14 @@ html, body {
     }
 }
 
+.sidebar-icon {
+    border-width: 0;
+    &:hover, .active {
+        border-width: 1px;
+        cursor: pointer;
+    }
+}
+
 .caret-down {
     width: 0;
     height: 0;

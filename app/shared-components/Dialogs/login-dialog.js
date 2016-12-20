@@ -66,19 +66,19 @@ const loginDialog = (props) => {
           type="password"
           fullWidth
           autoFocus
-          floatingLabelText="Password"
+          floatingLabelText="Passphrase"
           onKeyPress={props.onKeyPress}
           onChange={props.onPasswordChange}
-          errorText={props.errors.reduce((prev, current) => `${prev.message} ${current.message}`)}
+          errorText={props.loginErrors.size ? props.loginErrors.first().message : null}
         />
         <div className="row middle-xs" >
           <div className="col-xs-6" style={{ paddingRight: 0 }} >
             <Checkbox
-              label="Remember my password for"
+              label="Remember my passphrase for"
               onCheck={handleUnlockCheck}
             />
           </div>
-          <div className="col-xs-3 start-xs" style={{ paddingLeft: 0 }} >
+          <div className="col-xs-3 start-xs" style={{ paddingLeft: 0, display: 'flex' }} >
             <SelectField
               value={props.unlockTimerKey}
               style={{ width: 100 }}
@@ -103,6 +103,6 @@ loginDialog.propTypes = {
     onKeyPress: React.PropTypes.func.isRequired,
     onUnlockCheck: React.PropTypes.func.isRequired,
     unlockTimerKey: React.PropTypes.number.isRequired,
-    errors: React.PropTypes.shape()
+    loginErrors: React.PropTypes.shape()
 };
 export default loginDialog;
