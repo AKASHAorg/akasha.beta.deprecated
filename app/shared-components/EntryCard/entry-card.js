@@ -58,9 +58,10 @@ class EntryCard extends Component {
     };
 
     selectProfile = () => {
-        const { entry, loggedAkashaId } = this.props;
+        const { entry, hidePanel, loggedAkashaId } = this.props;
         const { router } = this.context;
         const profileAddress = entry.getIn(['entryEth', 'publisher', 'profile']);
+        hidePanel();
         router.push(`/${loggedAkashaId}/profile/${profileAddress}`);
     };
 
@@ -271,7 +272,7 @@ class EntryCard extends Component {
                   <IconButton
                     onTouchTap={this.handleUpvote}
                     iconStyle={{ width: '20px', height: '20px' }}
-                    tooltip="Upvote"
+                    title={entry.get('active') ? 'Upvote' : 'Voting period has ended'}
                     disabled={!entry.get('active') || voteEntryPending || existingVoteWeight !== 0}
                   >
                     <SvgIcon viewBox="0 0 20 20" >
@@ -301,7 +302,7 @@ class EntryCard extends Component {
                   <IconButton
                     onTouchTap={this.handleDownvote}
                     iconStyle={{ width: '20px', height: '20px' }}
-                    tooltip="Downvote"
+                    title={entry.get('active') ? 'Downvote' : 'Voting period has ended'}
                     disabled={!entry.get('active') || voteEntryPending || existingVoteWeight !== 0}
                   >
                     <SvgIcon viewBox="0 0 20 20">

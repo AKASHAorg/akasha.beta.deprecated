@@ -5,73 +5,25 @@ import CircleIcon from './CircleIcon';
 import { MenuPeople } from '../svg';
 
 
-export default class IconEntries extends Component {
-    state = {
-        muiTheme: this.context.muiTheme
-    };
+class IconEntries extends Component {
+    // static defaultProps = {
+    //     iconStyle: { width: '32px', height: '32px' },
+    // };
 
-    static propTypes = {
-        style: PropTypes.shape(),
-        iconStyle: PropTypes.shape(),
-        viewBox: PropTypes.string,
-        hoverColor: PropTypes.string,
-        color: PropTypes.string,
-        onClick: PropTypes.func
-    };
-
-    static defaultProps = {
-        style: {
-            width: '32px',
-            height: '32px',
-            borderWidth: '1px',
-            borderStyle: 'solid',
-            borderRadius: '50%'
-        },
-        iconStyle: { width: '32px', height: '32px' },
-        viewBox: '0 0 32 32',
-        color: colors.lightBlack,
-        hoverColor: colors.darkBlack
-    };
-
-    static contextTypes = {
-        muiTheme: React.PropTypes.object
-    };
-
-    static childContextTypes = {
-        muiTheme: React.PropTypes.object
-    };
-
-    getChildContext () {
-        return {
-            muiTheme: this.state.muiTheme
-        };
-    }
 
     render () {
-        let { style, iconStyle, viewBox, hoverColor, color, tooltip, onClick } = this.props;
-        const {
-            baseTheme: {
-                palette
-            }
-        } = this.state.muiTheme;
-
-        style = Object.assign(style, {
-            borderColor: colors.faintBlack,
-            ':hover': {
-                borderColor: palette.primary1Color
-            }
-        });
+        let { disabled, iconStyle, isActive, onClick } = this.props;
 
         return (
           <CircleIcon
-            tooltip={tooltip}
+            isActive={isActive}
             onClick={onClick}
           >
             <SvgIcon
-              color={color}
-              hoverColor={hoverColor}
+              color={colors.lightBlack}
+              hoverColor={colors.darkBlack}
               style={iconStyle}
-              viewBox={viewBox}
+              viewBox="0 0 32 32"
             >
               <MenuPeople />
             </SvgIcon>
@@ -80,3 +32,11 @@ export default class IconEntries extends Component {
     }
 }
 
+IconEntries.propTypes = {
+    disabled: PropTypes.bool,
+    iconStyle: PropTypes.shape(),
+    isActive: PropTypes.bool,
+    onClick: PropTypes.func.isRequired,
+};
+
+export default IconEntries;

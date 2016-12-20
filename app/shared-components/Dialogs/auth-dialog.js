@@ -3,7 +3,9 @@ import { TextField, Dialog, RaisedButton, Checkbox, SelectField, MenuItem } from
 import { formMessages, generalMessages } from '../../locale-data/messages';
 
 function AuthDialog (props) {
-    const { intl, errors } = props;
+    const { intl, loginErrors, onCancel, loginRequested, onPasswordChange,
+      password, onSubmit, isVisible, rememberTime, rememberChecked, onRememberPasswordCheck,
+      onRememberTimeChange } = props;
     const handleSubmit = (ev) => {
         ev.preventDefault();
         return props.onSubmit();
@@ -12,13 +14,13 @@ function AuthDialog (props) {
       <RaisedButton // eslint-disable-line indent
         label={intl.formatMessage(generalMessages.cancel)}
         style={{ marginRight: 8 }}
-        onTouchTap={props.onCancel}
+        onTouchTap={onCancel}
       />,
       <RaisedButton // eslint-disable-line indent
         label={intl.formatMessage(generalMessages.confirm)}
         primary
         onTouchTap={handleSubmit}
-        disabled={props.loginRequested}
+        disabled={loginRequested}
       />
     ];
     const minute = 'min';
@@ -27,32 +29,32 @@ function AuthDialog (props) {
         contentStyle={{ width: '40%', maxWidth: 'none' }}
         actions={dialogActions}
         title={intl.formatMessage(formMessages.confirmPassword)}
-        open={props.isVisible}
+        open={isVisible}
       >
-        <form onSubmit={handleSubmit}>
-          <div>{intl.formatMessage(formMessages.confirmPasswordToContinue)}</div>
+        <form onSubmit={onSubmit}>
+          <div>{intl.formatMessage(formMessages.confirmPassphraseToContinue)}</div>
           <TextField
             fullWidth
-            floatingLabelText={intl.formatMessage(formMessages.password)}
+            floatingLabelText={intl.formatMessage(formMessages.passphrase)}
             autoFocus
-            onChange={props.onPasswordChange}
+            onChange={onPasswordChange}
             type="password"
-            value={props.password}
-            errorText={!!errors.length && errors[0].message}
+            value={password}
+            errorText={loginErrors.size ? loginErrors.first().message : null}
           />
           <div className="row middle-xs">
-            <div className="col-xs-7" style={{ paddingRight: 0 }}>
+            <div className="col-xs-8" style={{ paddingRight: 0 }}>
               <Checkbox
                 label={intl.formatMessage(formMessages.rememberPassFor)}
-                checked={props.rememberChecked}
-                onCheck={props.onRememberPasswordCheck}
+                checked={rememberChecked}
+                onCheck={onRememberPasswordCheck}
               />
             </div>
             <div className="col-xs-3 start-xs" style={{ paddingLeft: 0, display: 'flex' }}>
               <SelectField
-                value={props.rememberTime}
+                value={rememberTime}
                 style={{ width: 100 }}
-                onChange={props.onRememberTimeChange}
+                onChange={onRememberTimeChange}
               >
                 <MenuItem value={5} primaryText={`5 ${minute}`} />
                 <MenuItem value={10} primaryText={`10 ${minute}`} />
@@ -75,7 +77,7 @@ AuthDialog.propTypes = {
     onSubmit: PropTypes.func,
     onCancel: PropTypes.func,
     password: PropTypes.string,
-    errors: PropTypes.arrayOf(React.PropTypes.shape()),
+    loginErrors: PropTypes.shape(),
     loginRequested: PropTypes.bool,
     intl: PropTypes.shape()
 };

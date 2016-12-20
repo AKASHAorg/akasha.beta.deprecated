@@ -86,9 +86,19 @@ class DraftActions {
     deleteDraft = (draftId) => {
         this.draftService.deleteDraft({
             draftId,
-            onSuccess: deletedId =>
-                this.dispatch(draftActionCreators.deleteDraftSuccess(deletedId)),
-            onError: error => this.dispatch(draftActionCreators.deleteDraftError(error))
+            onSuccess: deletedId => {
+                this.appActions.showNotification({
+                    id: 'draftDeletedSuccessfully',
+                    duration: 2000
+                });
+                this.dispatch(draftActionCreators.deleteDraftSuccess(deletedId));
+            },
+            onError: error => {
+                this.appActions.showNotification({
+                    id: 'draftDeleteFailed'
+                });
+                this.dispatch(draftActionCreators.deleteDraftError(error));
+            }
         });
     }
     updateDraftThrottled = (draft) => {

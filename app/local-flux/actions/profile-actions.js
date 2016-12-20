@@ -22,27 +22,25 @@ class ProfileActions {
     login = ({ account, password, rememberTime, akashaId }) => {
         this.dispatch((dispatch, getState) => {
             const flags = getState().profileState.get('flags');
-            if (!flags.get('loginRequested')) {
-                password = new TextEncoder('utf-8').encode(password);
-                dispatch(profileActionCreators.login({
-                    loginRequested: true
-                }));
-                this.authService.login({
-                    account,
-                    password,
-                    rememberTime,
-                    akashaId,
-                    onSuccess: (data) => {
-                        this.dispatch(profileActionCreators.loginSuccess(data, {
-                            loginRequested: false
-                        }));
-                        this.getCurrentProfile();
-                    },
-                    onError: error => this.dispatch(profileActionCreators.loginError(error, {
+            password = new TextEncoder('utf-8').encode(password);
+            dispatch(profileActionCreators.login({
+                loginRequested: true
+            }));
+            this.authService.login({
+                account,
+                password,
+                rememberTime,
+                akashaId,
+                onSuccess: (data) => {
+                    this.dispatch(profileActionCreators.loginSuccess(data, {
                         loginRequested: false
-                    }))
-                });
-            }
+                    }));
+                    this.getCurrentProfile();
+                },
+                onError: error => this.dispatch(profileActionCreators.loginError(error, {
+                    loginRequested: false
+                }))
+            });
         });
     };
 
@@ -257,6 +255,9 @@ class ProfileActions {
 
     clearErrors = () => {
         this.dispatch(profileActionCreators.clearErrors());
+    };
+    clearLoginErrors = () => {
+        this.dispatch(profileActionCreators.clearLoginErrors());
     };
     resetFlags = () => {
         this.dispatch(profileActionCreators.resetFlags());

@@ -52,9 +52,18 @@ class SideBar extends Component {
             appActions.showPanel(panelName);
         }
     };
+
     render () {
         const { style, loggedProfileData, activePanel, notificationsCount, hasFeed,
             draftsCount } = this.props;
+        const { router } = this.context;
+        const pathName = router.location.pathname;
+        const isAddEntryActive = !activePanel &&
+            pathName.indexOf(`${loggedProfileData.get('akashaId')}/draft/new`) !== -1;
+        const isStreamActive = !activePanel &&
+            pathName.indexOf(`${loggedProfileData.get('akashaId')}/explore/`) !== -1;
+        const isPeopleActive = !activePanel &&
+            pathName.indexOf(`${loggedProfileData.get('akashaId')}/people`) !== -1;
         const profileName = `${loggedProfileData.get('firstName')} ${loggedProfileData.get('lastName')}`;
         const userInitials = profileName.match(/\b\w/g).reduce((prev, current) => prev + current, '');
         const balance = loggedProfileData.get('balance');
@@ -79,19 +88,45 @@ class SideBar extends Component {
             </div>
             <div style={{ flexGrow: 1, padding: '14px' }} >
               {(entriesCount > 0 || draftsCount > 0) ?
-                <EntriesIcon onClick={this._handleNewEntry} tooltip="My entries" /> :
-                <AddEntryIcon onClick={this._handleNewEntry} tooltip="Add new entry" />
+                <div title="My entries">
+                  <EntriesIcon
+                    onClick={this._handleNewEntry}
+                    isActive={activePanel === 'newEntry'}
+                  />
+                </div> :
+                <div title="Add new entry">
+                  <AddEntryIcon
+                    onClick={this._handleNewEntry}
+                    isActive={isAddEntryActive}
+                  />
+                </div>
               }
-              <SearchIcon onClick={this._handleSearch} tooltip="Search" disabled />
+              <div title="Coming Soon">
+                <SearchIcon
+                  onClick={this._handleSearch}
+                  disabled
+                />
+              </div>
             </div>
             <div style={{ flexGrow: 4, padding: '14px' }} >
-              <StreamsIcon
-                onClick={() => this._handleNavigation('explore/tag')}
-                tooltip="Stream"
-              />
-              <PortalsIcon disabled tooltip="Coming Soon" />
-              <CommunityIcon disabled tooltip="Coming Soon" />
-              <PeopleIcon onClick={this._handlePeople} tooltip="People" />
+              <div title="Stream">
+                <StreamsIcon
+                  onClick={() => this._handleNavigation('explore/tag')}
+                  isActive={isStreamActive}
+                />
+              </div>
+              <div title="Coming Soon">
+                <PortalsIcon disabled />
+              </div>
+              <div title="Coming Soon">
+                <CommunityIcon disabled />
+              </div>
+              <div title="People">
+                <PeopleIcon
+                  onClick={this._handlePeople}
+                  isActive={isPeopleActive}
+                />
+              </div>
             </div>
             <div style={{ flexGrow: 1, padding: '14px 8px', display: 'flex', justifyContent: 'center', alignItems: 'flex-end' }} >
               <LogoButton />

@@ -136,6 +136,16 @@ const notificationMessages = defineMessages({
         description: 'Notification to show when saving draft failed',
         defaultMessage: 'Failed to save draft!'
     },
+    draftDeletedSuccessfully: {
+        id: 'app.notification.draftDeletedSuccessfully',
+        description: 'notification to show when draft was successfully deleted',
+        defaultMessage: 'Draft successfully deleted!'
+    },
+    draftDeleteFailed: {
+        id: 'app.notification.draftDeleteFailed',
+        description: 'Notification to show when deleting draft failed',
+        defaultMessage: 'Failed to delete draft!'
+    },
     editorMessage: {
         id: 'app.notification.editorMessage',
         description: 'just a placeholder',

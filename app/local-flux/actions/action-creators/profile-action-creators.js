@@ -17,7 +17,7 @@ export function loginSuccess (profile, flags) {
 
 export function loginError (error, flags) {
     error.code = 'LOGINE01';
-    console.error(error);
+    error.type = 'login';
     return {
         type: types.LOGIN_ERROR,
         error,
@@ -221,6 +221,12 @@ export function getProfileBalanceError (error) {
 export function clearErrors () {
     return {
         type: types.CLEAR_PROFILE_ERRORS
+    };
+}
+
+export function clearLoginErrors () {
+    return {
+        type: types.CLEAR_LOGIN_ERRORS
     };
 }
 

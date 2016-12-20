@@ -8,7 +8,7 @@ class EntryPageAction extends Component {
         const { canClaimPending, claimPending, entry, fetchingEntryBalance, votePending,
             handleBookmark, handleClaim, handleDownvote, handleUpvote, isOwnEntry, isSaved } = this.props;
         const { palette } = this.context.muiTheme;
-        const voteWeight = entry.existingVoteWeight || 0;
+        const voteWeight = entry.voteWeight || 0;
         const upvoteIconColor = voteWeight > 0 ? palette.accent3Color : '';
         const downvoteIconColor = voteWeight < 0 ? palette.accent1Color : '';
         const voteButtonsDisabled = !entry.active || voteWeight !== 0 || votePending;
@@ -24,7 +24,7 @@ class EntryPageAction extends Component {
                 <IconButton
                   onTouchTap={handleUpvote}
                   iconStyle={{ width: '24px', height: '24px' }}
-                  tooltip="Upvote"
+                  title={entry.get('active') ? 'Upvote' : 'Voting period has ended'}
                   disabled={voteButtonsDisabled}
                 >
                   <SvgIcon viewBox="0 0 20 20" >
@@ -54,7 +54,7 @@ class EntryPageAction extends Component {
                 <IconButton
                   onTouchTap={handleDownvote}
                   iconStyle={{ width: '24px', height: '24px' }}
-                  tooltip="Downvote"
+                  title={entry.get('active') ? 'Downvote' : 'Voting period has ended'}
                   disabled={voteButtonsDisabled}
                 >
                   <SvgIcon viewBox="0 0 20 20">
