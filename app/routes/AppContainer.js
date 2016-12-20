@@ -204,7 +204,7 @@ function mapStateToProps (state) {
         loggedProfile: state.profileState.get('loggedProfile'),
         loggedProfileData: state.profileState.get('profiles').find(prf =>
             prf.get('profile') === state.profileState.getIn(['loggedProfile', 'profile'])),
-        loginRequested: state.profileState.get('loginRequested'),
+        loginRequested: state.profileState.getIn(['flags', 'loginRequested']),
         voteCost: state.entryState.get('voteCost'),
         isActivePending: state.entryState.getIn(['flags', 'isActivePending']),
         entries: state.entryState.get('entries'),

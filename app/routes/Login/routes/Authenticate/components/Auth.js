@@ -209,7 +209,7 @@ class Auth extends Component {
         });
     };
     render () {
-        const { style, intl, gethStatus, ipfsStatus } = this.props;
+        const { gethStatus, intl, ipfsStatus, loginRequested, style } = this.props;
         const { openModal } = this.state;
         const isServiceStopped = !gethStatus.get('api') || gethStatus.get('stopped')
             || (!ipfsStatus.get('started') && !ipfsStatus.get('spawned'));
@@ -223,7 +223,7 @@ class Auth extends Component {
               label={intl.formatMessage(generalMessages.submit)}
               primary
               onTouchTap={this.handleLogin}
-              disabled={isServiceStopped}
+              disabled={isServiceStopped || loginRequested}
             />
             /* eslint-enable */
         ];
@@ -283,6 +283,7 @@ Auth.propTypes = {
     fetchingLocalProfiles: React.PropTypes.bool,
     loggedProfile: React.PropTypes.shape().isRequired,
     loginErrors: React.PropTypes.shape().isRequired,
+    loginRequested: React.PropTypes.bool,
     style: React.PropTypes.shape(),
     intl: React.PropTypes.shape(),
 };
