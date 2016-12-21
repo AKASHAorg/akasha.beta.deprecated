@@ -21,6 +21,11 @@ const entryMessages = defineMessages({
                 other {blocks}
             } ago`
     },
+    published: {
+        id: 'app.entry.published',
+        description: 'published',
+        defaultMessage: 'Published'
+    },
     minutesCount: {
         id: 'app.entry.minutesCount',
         description: 'minutes of read time',
