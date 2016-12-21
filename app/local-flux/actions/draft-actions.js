@@ -1,7 +1,7 @@
 import { AppActions, TransactionActions } from 'local-flux';
+import { hashHistory } from 'react-router';
 import { draftActionCreators } from './action-creators';
 import { DraftService, EntryService } from '../services';
-import { hashHistory } from 'react-router';
 
 let draftActions = null;
 
@@ -128,7 +128,7 @@ class DraftActions {
                         id: 'publishingEntry',
                         values: { title: draft.getIn(['content', 'title']) }
                     });
-                    hashHistory.push(`/${draft.get('akashaId')}/draft/${draft.get('id')}/publish-status`);
+                    hashHistory.replace(`/${draft.get('akashaId')}/draft/${draft.get('id')}/publish-status`);
                 },
                 onError: error => dispatch(draftActionCreators.publishDraftError(error, {
                     publishPending: flagOff
