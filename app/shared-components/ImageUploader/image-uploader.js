@@ -4,12 +4,36 @@ import { injectIntl } from 'react-intl';
 import DeleteIcon from 'material-ui/svg-icons/action/delete';
 import { AddImage } from 'shared-components/svg'; // eslint-disable-line import/no-unresolved, import/extensions
 import { generalMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
-import imageCreator, { getResizedImages, findBestMatch } from '../../utils/imageUtils';
+import imageCreator, { getResizedImages, findClosestMatch } from '../../utils/imageUtils';
 
 class ImageUploader extends Component {
     constructor (props) {
         super(props);
         this.state = {};
+    }
+    componentDidMount () {
+        const { initialImageLink, minHeight, minWidth } = this.props;
+        if (initialImageLink) {
+            const filePromises = getResizedImages([initialImageLink], {
+                minWidth: minWidth,
+                minHeight: minHeight
+            });
+            return Promise.all(filePromises)
+                .then(results =>
+                    this.setState({
+                        imageFile: results,
+                        isNewImage: true,
+                        error: null
+                    }, () => {
+                        this.fileInput.value = '';
+                    })
+                ).catch((err) => {
+                    console.error(err);
+                    return this.setState({
+                        error: err
+                    });
+                });
+        }
     }
     componentWillReceiveProps (nextProps) {
         if (nextProps.initialImage && nextProps.initialImage.files) {
@@ -70,7 +94,7 @@ class ImageUploader extends Component {
     }
     _getImageSrc = (imageObj) => {
         const containerWidth = this.container.getBoundingClientRect().width;
-        const bestKey = findBestMatch(containerWidth, imageObj);
+        const bestKey = findClosestMatch(containerWidth, imageObj);
         const imageSrc = imageCreator(imageObj[bestKey].src);
 
         console.info(`showing "${bestKey}" image with width "${imageObj[bestKey].width}px" and height "${imageObj[bestKey].height}px"`);

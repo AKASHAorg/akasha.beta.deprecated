@@ -16,7 +16,7 @@ import {
   ImageSizeSmall,
   ImageSizeXL,
   ImageSizeXXL } from 'shared-components/svg'; // eslint-disable-line import/no-unresolved, import/extensions
-import imageCreator, { findBestMatch } from 'utils/imageUtils'; // eslint-disable-line import/no-unresolved, import/extensions
+import imageCreator, { findClosestMatch } from 'utils/imageUtils'; // eslint-disable-line import/no-unresolved, import/extensions
 import clickAway from 'utils/clickAway'; // eslint-disable-line import/no-unresolved, import/extensions
 import styles from './image-block.scss';
 
@@ -52,7 +52,7 @@ class ImageBlock extends Component {
         const imageFiles = this.props.data.files;
 
         if (!imageKey && imageKey === '') {
-            imageKey = findBestMatch(containerWidth, imageFiles, this.state.previewImage);
+            imageKey = findClosestMatch(containerWidth, imageFiles, this.state.previewImage);
         }
         if (imageKey === 'xl' || imageKey === 'lg') {
             imageKey = 'md';
