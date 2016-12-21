@@ -176,7 +176,7 @@ class ProfileActivity extends Component {
 
     renderFollowers () {
         const { fetchingFollowers, profileData, profileActions, followPending, followProfile,
-            unfollowProfile, selectProfile, loggedProfileData, isFollowerPending,
+            unfollowProfile, selectProfile, showPanel, loggedProfileData, isFollowerPending,
             fetchingMoreFollowers, intl } = this.props;
         const { palette } = this.context.muiTheme;
         const followers = profileData.get('followers');
@@ -214,6 +214,7 @@ class ProfileActivity extends Component {
                     followPending={followProfilePending}
                     isFollowerPending={isFollowerPending}
                     selectProfile={selectProfile}
+                    showPanel={showPanel}
                     isFollowerAction={profileActions.isFollower}
                   />;
             })}
@@ -230,7 +231,7 @@ class ProfileActivity extends Component {
 
     renderFollowing () {
         const { fetchingFollowing, profileData, profileActions, followPending,
-            followProfile, unfollowProfile, selectProfile, loggedProfileData,
+            followProfile, unfollowProfile, selectProfile, showPanel, loggedProfileData,
             isFollowerPending, fetchingMoreFollowing, intl } = this.props;
         const { palette } = this.context.muiTheme;
         const followings = profileData.get('following');
@@ -268,6 +269,7 @@ class ProfileActivity extends Component {
                     followPending={followProfilePending}
                     isFollowerPending={isFollowerPending}
                     selectProfile={selectProfile}
+                    showPanel={showPanel}
                     isFollowerAction={profileActions.isFollower}
                   />;
             })}
@@ -376,6 +378,7 @@ ProfileActivity.propTypes = {
     unfollowProfile: PropTypes.func.isRequired,
     selectProfile: PropTypes.func.isRequired,
     selectTag: PropTypes.func.isRequired,
+    showPanel: PropTypes.func,
     intl: PropTypes.shape()
 };
 
