@@ -102,7 +102,7 @@ class NewEntryFormPanel extends Component {
         appActions.hidePanel();
         switch (entryType) {
             case 'drafts':
-                router.push(`/${loggedProfileData.get('akashaId')}/draft/${entryId}`);
+                router.replace(`/${loggedProfileData.get('akashaId')}/draft/${entryId}`);
                 break;
             default:
                 break;
@@ -120,7 +120,7 @@ class NewEntryFormPanel extends Component {
         const { router } = this.context;
         const { appActions, loggedProfileData } = this.props;
         appActions.hidePanel();
-        return router.push(`/${loggedProfileData.get('akashaId')}/draft/new`);
+        return router.replace(`/${loggedProfileData.get('akashaId')}/draft/new`);
     }
     _getDraftCards = () => {
         const { drafts, intl, loggedProfileData } = this.props;

@@ -14,7 +14,8 @@ class SideBar extends Component {
         return (nextState.top !== this.state.top) ||
             (nextState.sidebarVisible !== this.state.sidebarVisible) ||
             (nextState.left !== this.state.left) ||
-            (nextProps.editorState !== this.props.editorState);
+            (nextProps.editorState !== this.props.editorState) ||
+            (nextProps.editorHasFocus !== this.props.editorHasFocus);
     }
     componentDidUpdate () {
         this.updateSidebarPosition();
@@ -60,8 +61,8 @@ class SideBar extends Component {
     setSidebarPosition () {
         const container = this.container;
         const element = this.getSelectedBlockElement();
-        const blacklistedTagNames = ['LI', 'BLOCKQUOTE']
-        const isBlackListed = element && blacklistedTagNames.includes(element.tagName)
+        const blacklistedTagNames = ['LI', 'BLOCKQUOTE', 'FIGURE'];
+        const isBlackListed = element && blacklistedTagNames.includes(element.tagName);
         if (!element || !container || isBlackListed) {
             return;
         }
@@ -107,6 +108,8 @@ class SideBar extends Component {
                   plugins={this.getValidSidebarPlugins()}
                   showTerms={this.props.showTerms}
                   onError={this.props.onError}
+                  onSidebarToggle={this.props.onSidebarToggle}
+                  editorHasFocus={this.props.editorHasFocus}
                 />
               </ul>
             </div>
@@ -120,7 +123,9 @@ SideBar.propTypes = {
     readOnly: React.PropTypes.bool,
     plugins: React.PropTypes.arrayOf(React.PropTypes.shape()),
     showTerms: React.PropTypes.func,
-    onError: React.PropTypes.func
+    onError: React.PropTypes.func,
+    onSidebarToggle: React.PropTypes.func,
+    editorHasFocus: React.PropTypes.bool
 };
 
 export default SideBar;

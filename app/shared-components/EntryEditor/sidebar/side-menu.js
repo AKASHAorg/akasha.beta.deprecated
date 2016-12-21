@@ -9,9 +9,20 @@ class SideMenu extends Component {
             open: false
         };
     }
+    componentWillReceiveProps (nextProps) {
+        if (nextProps.editorHasFocus) {
+            this.setState({
+                open: false
+            }, () => {
+                this.props.onSidebarToggle(false);
+            });
+        }
+    }
     componentWillUnmount () {
         this.setState({
             open: false
+        }, () => {
+            this.props.onSidebarToggle(false);
         });
     }
     onChange = (editorState) => {
@@ -21,6 +32,8 @@ class SideMenu extends Component {
     toggle = () => {
         this.setState({
             open: !this.state.open
+        }, () => {
+            this.props.onSidebarToggle(this.state.open);
         });
     }
 
@@ -50,7 +63,9 @@ SideMenu.propTypes = {
     plugins: React.PropTypes.arrayOf(React.PropTypes.shape()),
     editorState: React.PropTypes.shape(),
     onChange: React.PropTypes.func,
-    showTerms: React.PropTypes.func
+    showTerms: React.PropTypes.func,
+    onSidebarToggle: React.PropTypes.func,
+    onError: React.PropTypes.func
 };
 
 export default SideMenu;

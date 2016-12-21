@@ -112,7 +112,7 @@ class UserProfilePanel extends Component {
         const { appActions } = this.props;
         const loggedAkashaId = this.props.loggedProfileData.get('akashaId');
         appActions.hidePanel();
-        router.replace(`/${loggedAkashaId}/entry/${entryId}`);
+        router.push(`/${loggedAkashaId}/entry/${entryId}`);
     }
 
     _renderFollower (event, index) {

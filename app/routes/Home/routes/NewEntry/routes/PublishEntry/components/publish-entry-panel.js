@@ -210,7 +210,7 @@ class PublishPanel extends React.Component {
     };
     _handleCancelButton = () => {
         const { params } = this.props;
-        this.context.router.push(`/${params.akashaId}/draft/${params.draftId}`);
+        this.context.router.replace(`/${params.akashaId}/draft/${params.draftId}`);
     }
     _handleTagRegisterRequest = (tagName) => {
         const { tagActions } = this.props;

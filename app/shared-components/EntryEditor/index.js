@@ -1,6 +1,5 @@
 import React, { Component, PropTypes } from 'react';
 import { MegadraftEditor, editorStateFromRaw } from 'megadraft';
-import { stateToHTML } from 'draft-js-export-html';
 import { convertToRaw } from 'draft-js';
 import EditorSidebar from './sidebar/editor-sidebar';
 import styles from './style.scss';
@@ -9,7 +8,8 @@ import imagePlugin from './plugins/image/image-plugin';
 class EntryEditor extends Component {
     state = {
         editorState: editorStateFromRaw(null),
-        title: ''
+        title: '',
+        sidebarOpen: false
     };
     componentWillMount () {
         this.setState({
@@ -24,21 +24,22 @@ class EntryEditor extends Component {
     }
     componentWillReceiveProps (nextProps) {
         const { content } = nextProps;
-        if(content !== this.props.content)
-        this.setState({
-            editorState: editorStateFromRaw(nextProps.content),
-            title: nextProps.title
-        });
+        if (content !== this.props.content) {
+            this.setState({
+                editorState: editorStateFromRaw(nextProps.content),
+                title: nextProps.title
+            });
+        }
     }
     shouldComponentUpdate (nextProps, nextState) {
         return (nextProps.title !== this.props.title) ||
             (nextProps.content !== this.props.content) ||
             (nextState.title !== this.state.title) ||
-            (nextState.editorState !== this.state.editorState);
+            (nextState.editorState !== this.state.editorState) ||
+            (nextState.sidebarOpen !== this.state.sidebarOpen);
     }
     getRawContent = () => convertToRaw(this.state.editorState.getCurrentContent());
     getContent = () => this.state.editorState.getCurrentContent();
-    getHtmlContent = () => stateToHTML(this.state.editorState.getCurrentContent());
     getTitle = () => this.state.title;
     _handleEditorChange = (editorState) => {
         this.setState({
@@ -76,9 +77,14 @@ class EntryEditor extends Component {
         if (this.editor) {
             const editorContainerNode = this.editor.refs.editor;
             const contentEditableNode = editorContainerNode.querySelector('[contenteditable=true]');
-            return contentEditableNode && contentEditableNode.isSameNode(document.activeElement);
+            return (contentEditableNode && contentEditableNode.isSameNode(document.activeElement));
         }
         return false;
+    }
+    _handleSidebarToggle = (isOpen) => {
+        this.setState({
+            sidebarOpen: isOpen
+        });
     }
     _renderSidebar = ({ plugins, editorState, onChange }) => {
         const { showSidebar, readOnly, showTerms, onError } = this.props;
@@ -91,6 +97,7 @@ class EntryEditor extends Component {
                 showTerms={showTerms}
                 onError={onError}
                 editorHasFocus={this._checkEditorFocus()}
+                onSidebarToggle={this._handleSidebarToggle}
               />);
         }
         return null;
@@ -98,7 +105,6 @@ class EntryEditor extends Component {
 
     render () {
         const { showTitle, titlePlaceholder, editorPlaceholder, readOnly } = this.props;
-        // console.info('if you can see this, editor is re-rendering');
         return (
           <div className="editor" style={{ textAlign: 'left' }}>
             <div>
@@ -130,7 +136,7 @@ class EntryEditor extends Component {
                 editorState={this.state.editorState}
                 onChange={this._handleEditorChange}
                 plugins={[imagePlugin]}
-                placeholder={editorPlaceholder}
+                placeholder={this.state.sidebarOpen ? '' : editorPlaceholder}
                 tabIndex="0"
                 hasFocus={this._checkEditorFocus()}
               />
@@ -158,7 +164,8 @@ EntryEditor.propTypes = {
     editorPlaceholder: PropTypes.string,
     titlePlaceholder: PropTypes.string,
     showSidebar: PropTypes.bool,
-    onChange: PropTypes.func
+    onChange: PropTypes.func,
+    onError: PropTypes.func
 };
 
 export default EntryEditor;

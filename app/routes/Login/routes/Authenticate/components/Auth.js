@@ -53,7 +53,7 @@ class Auth extends Component {
         if (loginErrors.size === 0) {
             if (this.state.selectedProfile &&
                 loggedProfile.get('account') === this.state.selectedProfile.get('ethAddress')) {
-                this.context.router.push(`/${this.state.selectedProfile.get('akashaId')}`);
+                this.context.router.replace(`/${this.state.selectedProfile.get('akashaId')}/explore/tag`);
             }
 
             if (tempProfile.get('akashaId') !== '') {
