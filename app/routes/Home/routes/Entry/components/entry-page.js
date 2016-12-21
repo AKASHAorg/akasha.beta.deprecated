@@ -227,7 +227,6 @@ class EntryPage extends Component {
         const licenceLabel = licence.parent ?
             licences.find(lic => lic.id === licence.parent).label :
             licence.label;
-        const blockNumberDiff = blockNr - entry.entryEth.blockNr;
         const loggedProfileData = profiles.find(prf => prf.get('profile') === loggedProfile.get('profile'));
         const loggedProfileAvatar = loggedProfileData.get('avatar');
         const loggedProfileName = `${loggedProfileData.firstName} ${loggedProfileData.lastName}`;
@@ -243,10 +242,12 @@ class EntryPage extends Component {
               <div className={`${styles.entry_page_inner}`}>
                 <div id="content-section" className={`${styles.content_section}`}>
                   <EntryPageHeader
-                    blockNumberDiff={blockNumberDiff}
+                    blockNr={blockNr}
+                    entryBlockNr={entry.entryEth.blockNr}
                     publisher={entry.entryEth.publisher}
                     publisherTitleShadow={publisherTitleShadow}
                     selectProfile={this.selectProfile}
+                    timestamp={entry.entryEth.unixStamp}
                     wordCount={entry.content.wordCount}
                   />
                   <EntryPageContent
