@@ -30,7 +30,7 @@ class AddEntryPage extends Component {
         }
     }
     componentWillReceiveProps (nextProps) {
-        const { drafts, params, route } = nextProps;
+        const { drafts, params } = nextProps;
         const currentDraft = this._findCurrentDraft(drafts);
         const currentPathName = this.props.location.pathname;
         if (params.draftId === 'new') {
@@ -53,11 +53,12 @@ class AddEntryPage extends Component {
     }
     // display an alert when leaving route
     onPageLeave = (nextLocation) => {
-        if (this.state.shouldBeSaved && !this.waitingConfirm) {
+        const nextIsPublish = nextLocation.pathname.includes('/publish');
+        if (this.state.shouldBeSaved && !this.waitingConfirm && !nextIsPublish) {
             if (this.alertDialog) {
                 this.alertDialog.show(((confirmed) => {
                     if (confirmed) {
-                        this.context.router.push(nextLocation);
+                        this.context.router.replace(nextLocation);
                     }
                     this.waitingConfirm = false;
                 }));
@@ -94,7 +95,7 @@ class AddEntryPage extends Component {
             this.setState({
                 shouldBeSaved: false
             }, () => {
-                this.context.router.push(`/${params.akashaId}/draft/${draftId}`);
+                this.context.router.replace(`/${params.akashaId}/draft/${draftId}`);
             });
         });
     }
@@ -156,7 +157,7 @@ class AddEntryPage extends Component {
             if (typeof draft === 'number') {
                 draftId = draft;
             }
-            this.context.router.push(`/${params.akashaId}/draft/${draftId}/publish`);
+            this.context.router.replace(`/${params.akashaId}/draft/${draftId}/publish`);
         });
     }
     _getHeaderTitle = () => {
@@ -178,7 +179,7 @@ class AddEntryPage extends Component {
         const { params, draftActions } = this.props;
         const { draftId } = params;
         draftActions.deleteDraft(parseInt(draftId, 10));
-        this.context.router.push(`/${params.akashaId}/explore/tag`);
+        this.context.router.replace(`/${params.akashaId}/explore/tag`);
     }
     _getDraftContent = () => {
         const { drafts } = this.props;

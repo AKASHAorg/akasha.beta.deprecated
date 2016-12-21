@@ -309,7 +309,7 @@ class EntryPage extends Component {
                                 )
                             }
                             publishingComments={
-                                comments.filter(comm => comm.get('tempTx'))
+                                comments.filter(comm => (comm.get('tempTx') && comm.get('profile')))
                             }
                             comments={
                                 comments.filter(comm =>

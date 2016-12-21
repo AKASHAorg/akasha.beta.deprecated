@@ -110,7 +110,7 @@ class ImageBlock extends Component {
                 this.baseNodeRef.parentNode.parentNode.style.width = 'inherit';
             }
             return {
-                width: 'inherit',
+                width: 320,
                 float: 'left',
                 marginRight: 48,
                 // @TODO: DIRTYHACK!! GET RID OF THIS!!!
