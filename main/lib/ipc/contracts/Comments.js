@@ -29,7 +29,8 @@ class Comments extends BaseContract_1.default {
                 idComment: (result[1]).toString(),
                 parent: (result[2]).toString(),
                 ipfsHash: this.flattenIpfs(result[3]),
-                active: !(result[4])
+                active: !(result[4]),
+                unixStamp: (result[5]).toNumber()
             };
         });
     }
