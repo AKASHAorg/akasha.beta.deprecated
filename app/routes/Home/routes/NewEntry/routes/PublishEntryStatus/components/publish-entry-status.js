@@ -42,6 +42,7 @@ class PublishEntryStatus extends React.Component {
     _getCurrentAction = () => { // eslint-disable-line consistent-return
         const { pendingActions, params } = this.props;
         const currentDraftAction = pendingActions.find(action =>
+            action.toJS().payload.draft &&
             action.toJS().payload.draft.id === parseInt(params.draftId, 10)
         );
         switch (currentDraftAction.toJS().status) {
