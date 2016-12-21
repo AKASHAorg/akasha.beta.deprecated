@@ -12,13 +12,15 @@ const execute = Promise.coroutine(function*(data: {start?: number, limit?: numbe
     }
     let row;
     let akashaId;
-    const maxResults = (data.limit) ? data.limit : 30;
+    const maxResults = (data.limit) ? data.limit : 100;
     const results = [];
     let counter = 0;
     if (!data.start) {
         row = yield contracts.instance.votes.getVoteOf(data.entryId, currentId);
+        console.log(row);
         akashaId = yield contracts.instance.profile.getId(row.profile);
-        results.push({ akashaId: akashaId, score: row.score });
+        console.log(akashaId);
+        results.push({ akashaId: akashaId, profileAddress: row.profile, score: row.score });
         counter = 1;
     }
     while (counter < maxResults) {
@@ -28,7 +30,7 @@ const execute = Promise.coroutine(function*(data: {start?: number, limit?: numbe
         }
         row = yield contracts.instance.votes.getVoteOf(data.entryId, currentId);
         akashaId = yield contracts.instance.profile.getId(row.profile);
-        results.push({ akashaId: akashaId, score: row.score });
+        results.push({ akashaId: akashaId, profileAddress: row.profile, score: row.score });
         counter++;
     }
     return { collection: results, entryId: data.entryId, limit: maxResults };
