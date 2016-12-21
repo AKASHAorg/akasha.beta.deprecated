@@ -63,6 +63,7 @@ class EntryModal extends React.Component {
     }
     render () {
         const { profileState, appState } = this.props;
+        const { palette } = this.context.muiTheme;
         if (!appState.get('showEntry').modal) {
             return null;
         }
@@ -188,7 +189,6 @@ class EntryModal extends React.Component {
                         tabItemContainerStyle={{
                             backgroundColor: 'transparent'
                         }}
-                        inkBarStyle={{ backgroundColor: 'blue' }}
                         onChange={this._handleTabChange}
                         value={this.state.activeTab}
                       >

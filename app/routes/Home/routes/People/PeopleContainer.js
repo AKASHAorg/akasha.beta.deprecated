@@ -283,6 +283,7 @@ class PeopleContainer extends Component {
 
     render () {
         const { params, loggedProfileData, intl } = this.props;
+        const { palette } = this.context.muiTheme;
         const { followersCount, followingCount } = loggedProfileData;
 
         if (params.profileAddress) {
@@ -296,6 +297,7 @@ class PeopleContainer extends Component {
               tabItemContainerStyle={{ width: '500px', backgroundColor: 'transparent' }}
               onChange={this.handleChangeTab}
               value={this.state.activeTab}
+              inkBarStyle={{ backgroundColor: palette.primary1Color }}
             >
               <Tab
                 label="Recommended"
