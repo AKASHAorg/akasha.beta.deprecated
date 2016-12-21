@@ -9,6 +9,7 @@ export EntryCard from './EntryCard/entry-card';
 export EntryContent from './EntryContent/entry-content';
 export EntryEditor from './EntryEditor';
 export EntryListContainer from './EntryList/new-entry-list-container';
+export EntryVotesPanel from './EntryVotesPanel/entry-votes-panel';
 export GethSettingsForm from './Forms/geth-settings-form';
 export ImageUploader from './ImageUploader/image-uploader';
 export IpfsSettingsForm from './Forms/ipfs-settings-form';
