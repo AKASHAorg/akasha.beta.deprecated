@@ -99,7 +99,8 @@ class Entries extends BaseContract_1.default {
             return {
                 blockNr: (result[0]).toNumber(),
                 publisher: result[1],
-                ipfsHash: this.flattenIpfs(result[2])
+                ipfsHash: this.flattenIpfs(result[2]),
+                unixStamp: (result[3]).toNumber()
             };
         });
     }

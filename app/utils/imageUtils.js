@@ -13,7 +13,7 @@ import r from 'ramda';
  *
  * @returns imageKey <string> a key of obj
  */
-function findBestMatch (width, obj, initialKey) {
+function findClosestMatch (width, obj, initialKey) {
     let curr = initialKey ? obj[initialKey].width : 0;
     let imageKey = initialKey || '';
     let diff = Math.abs(width - curr);
@@ -24,6 +24,24 @@ function findBestMatch (width, obj, initialKey) {
             curr = obj[key].width;
             imageKey = key;
         }
+    }
+    return imageKey;
+}
+
+function findBestMatch (width, obj, initialKey) {
+    let curr = initialKey ? obj[initialKey].width : 0;
+    let imageKey = initialKey || '';
+    let diff = curr - width;
+    for (const key of Object.keys(obj)) {
+        const newDiff = obj[key].width - width;
+        if ((newDiff < diff && newDiff >= 0) || (diff < 0 && newDiff > 0)) {
+            diff = newDiff;
+            curr = obj[key].width;
+            imageKey = key;
+        }
+    }
+    if (!imageKey) {
+        return findClosestMatch(width, obj, initialKey);
     }
     return imageKey;
 }
@@ -191,4 +209,4 @@ function getResizedImages (imagePaths, options) {
 }
 
 export default imageCreator;
-export { getResizedImages, extractImageFromContent, findBestMatch };
+export { getResizedImages, extractImageFromContent, findBestMatch, findClosestMatch };

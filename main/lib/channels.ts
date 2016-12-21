@@ -28,7 +28,8 @@ const channels = {
         'unFollowProfile', 'updateProfileData', 'followersIterator', 'followingIterator', 'isFollower', 'isFollowing',
         'getFollowingList', 'getProfileList'],
 
-    registry: ['fetchRegistered', 'addressOf', 'checkIdFormat', 'getCurrentProfile', 'profileExists', 'registerProfile', 'getByAddress', 'unregister'],
+    registry: ['fetchRegistered', 'addressOf', 'checkIdFormat', 'getCurrentProfile', 'profileExists', 'registerProfile',
+        'getByAddress', 'unregister'],
 
     notifications: ['me', 'feed', 'setFilter'],
 

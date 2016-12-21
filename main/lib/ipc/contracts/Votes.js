@@ -39,7 +39,9 @@ class Votes extends BaseContract_1.default {
         return this.contract
             .getFirstVoteId
             .callAsync(entryId)
-            .then((result) => result.toString());
+            .then((result) => {
+            return result.toString();
+        });
     }
     getLastVoteId(entryId) {
         return this.contract
@@ -64,7 +66,7 @@ class Votes extends BaseContract_1.default {
             .getVoteOf
             .callAsync(entryId, voteId)
             .then((result) => {
-            return { profile: result.profile, score: (result.score).toString() };
+            return { profile: result[0], score: (result[1]).toString() };
         });
     }
     getVoteOfProfile(entryId, akashaId) {

@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { EntryActions, ProfileActions, TagActions } from 'local-flux';
+import { AppActions, EntryActions, ProfileActions, TagActions } from 'local-flux';
 import { DataLoader } from 'shared-components';
 import ProfileDetails from './components/profile-details';
 import ProfileActivity from './components/profile-activity';
@@ -52,8 +52,8 @@ class ProfileDetailsContainer extends Component {
     }
 
     render () {
-        const { profileActions, entryActions, profileData, profiles, profileEntries, votePending,
-            followPending, fetchingFollowers, fetchingFollowing, fetchingProfileData,
+        const { appActions, profileActions, entryActions, profileData, profiles, profileEntries,
+            votePending, followPending, fetchingFollowers, fetchingFollowing, fetchingProfileData,
             fetchingProfileEntries, loggedProfileData, isFollowerPending, blockNr,
             savedEntriesIds, moreProfileEntries, fetchingMoreProfileEntries, fetchingMoreFollowers,
             fetchingMoreFollowing, tagActions } = this.props;
@@ -76,6 +76,7 @@ class ProfileDetailsContainer extends Component {
               followProfile={this.followProfile}
               unfollowProfile={this.unfollowProfile}
               followPending={followPending}
+              showPanel={appActions.showPanel}
             />
             <ProfileActivity
               loggedProfileData={loggedProfileData}
@@ -99,6 +100,7 @@ class ProfileDetailsContainer extends Component {
               unfollowProfile={this.unfollowProfile}
               selectProfile={this.selectProfile}
               selectTag={tagActions.saveTag}
+              showPanel={appActions.showPanel}
               isFollowerPending={isFollowerPending}
               votePending={votePending}
             />
@@ -108,6 +110,7 @@ class ProfileDetailsContainer extends Component {
 }
 
 ProfileDetailsContainer.propTypes = {
+    appActions: PropTypes.shape(),
     blockNr: PropTypes.number,
     entryActions: PropTypes.shape(),
     fetchingFollowers: PropTypes.bool,
@@ -170,6 +173,7 @@ function mapStateToProps (state, ownProps) {
 
 function mapDispatchToProps (dispatch) {
     return {
+        appActions: new AppActions(dispatch),
         entryActions: new EntryActions(dispatch),
         profileActions: new ProfileActions(dispatch),
         tagActions: new TagActions(dispatch)

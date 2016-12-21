@@ -195,7 +195,8 @@ export default class Entries extends BaseContract {
                 return {
                     blockNr: (result[0]).toNumber(),
                     publisher: result[1],
-                    ipfsHash: this.flattenIpfs(result[2])
+                    ipfsHash: this.flattenIpfs(result[2]),
+                    unixStamp: (result[3]).toNumber()
                 }
             });
     }
