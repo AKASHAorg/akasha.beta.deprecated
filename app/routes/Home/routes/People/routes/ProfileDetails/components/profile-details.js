@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { IconButton, RaisedButton } from 'material-ui';
 import CopyIcon from 'material-ui/svg-icons/content/content-copy';
-import { profileMessages } from 'locale-data/messages';
+import { generalMessages, profileMessages } from 'locale-data/messages';
 import imageCreator, { findBestMatch } from 'utils/imageUtils';
 import { Avatar, PanelContainer } from 'shared-components';
 import { FormattedMessage, injectIntl } from 'react-intl';
@@ -30,16 +30,17 @@ class ProfileDetails extends Component {
         }
         const originalRatio = backgroundImage.width / backgroundImage.height;
         const actualRatio = 400 / 200;
-        if (originalRatio > actualRatio) {
+        if (originalRatio > 4 || originalRatio < actualRatio) {
+            return {
+                flex: 'none',
+                width: '400px'
+            }
+        } else {
             return {
                 flex: 'none',
                 height: '200px'
             };
         }
-        return {
-            flex: 'none',
-            width: '400px'
-        };
     }
 
     handleCopyLink = (url) => {
@@ -56,7 +57,7 @@ class ProfileDetails extends Component {
 
     renderHeader () {
         const { isFollowerPending, isFollower, followProfile, unfollowProfile, loggedAddress,
-            followPending, intl } = this.props;
+            followPending, intl, showPanel } = this.props;
         const profileData = this.props.profileData ?
             this.props.profileData.toJS() :
             {};
@@ -127,21 +128,23 @@ class ProfileDetails extends Component {
               </div>
             </div>
             <RaisedButton
-              label={!isFollowerPending && isFollower ?
-                  intl.formatMessage(profileMessages.unfollow) :
-                  intl.formatMessage(profileMessages.follow)
+              label={isOwnProfile ?
+                  intl.formatMessage(generalMessages.edit) :
+                  (!isFollowerPending && isFollower) ?
+                      intl.formatMessage(profileMessages.unfollow) :
+                      intl.formatMessage(profileMessages.follow)
               }
               primary
               style={{ margin: '20px 0' }}
               buttonStyle={{ width: '120px' }}
               labelStyle={{ fontWeight: 300 }}
-              onClick={() => isFollower ?
-                  unfollowProfile(profileData.akashaId) :
-                  followProfile(profileData.akashaId)
+              onClick={() => isOwnProfile ?
+                  showPanel({ name: 'editProfile', overlay: true }) :
+                  isFollower ?
+                      unfollowProfile(profileData.akashaId) :
+                      followProfile(profileData.akashaId)
               }
-              disabled={isOwnProfile || isFollowerPending ||
-                  (followProfilePending && followProfilePending.value)
-              }
+              disabled={isFollowerPending || (followProfilePending && followProfilePending.value)}
             />
           </div>
         </div>);
@@ -233,7 +236,8 @@ ProfileDetails.propTypes = {
     followPending: PropTypes.shape(),
     isFollowerPending: PropTypes.bool,
     isFollower: PropTypes.bool,
-    intl: PropTypes.shape()
+    intl: PropTypes.shape(),
+    showPanel: PropTypes.func.isRequired
 };
 
 export default injectIntl(ProfileDetails);

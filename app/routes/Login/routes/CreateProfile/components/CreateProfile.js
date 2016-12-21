@@ -326,7 +326,6 @@ class CreateProfile extends Component {
                 </h3>
                 <ImageUploader
                   ref={(imageUploader) => { this.imageUploader = imageUploader; }}
-                  minHeight={320}
                   minWidth={320}
                 />
                 <h3 style={{ margin: '20px 0 0 0' }} >

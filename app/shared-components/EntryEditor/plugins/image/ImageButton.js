@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { insertDataBlock } from 'megadraft';
 import { IconButton, Dialog, FlatButton, RaisedButton, SelectField, MenuItem } from 'material-ui';
-import { getResizedImages, findBestMatch } from 'utils/imageUtils'; // eslint-disable-line import/no-unresolved, import/extensions
+import { getResizedImages, findClosestMatch } from 'utils/imageUtils'; // eslint-disable-line import/no-unresolved, import/extensions
 import PhotoCircle from 'material-ui/svg-icons/image/add-a-photo';
 
 export default class BlockButton extends Component {
@@ -29,7 +29,7 @@ export default class BlockButton extends Component {
         const filePromises = getResizedImages([files[0].path], { minWidth: 320 });
         Promise.all(filePromises).then((results) => {
             const files = results[0];
-            const bestKey = findBestMatch(1280, files);
+            const bestKey = findClosestMatch(1280, files);
             const data = {
                 files: results[0],
                 type: 'image',

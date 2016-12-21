@@ -8,13 +8,13 @@ const execute = Promise.coroutine(function* (data) {
     }
     let row;
     let akashaId;
-    const maxResults = (data.limit) ? data.limit : 30;
+    const maxResults = (data.limit) ? data.limit : 100;
     const results = [];
     let counter = 0;
     if (!data.start) {
         row = yield index_1.constructed.instance.votes.getVoteOf(data.entryId, currentId);
         akashaId = yield index_1.constructed.instance.profile.getId(row.profile);
-        results.push({ akashaId: akashaId, score: row.score });
+        results.push({ akashaId: akashaId, profileAddress: row.profile, score: row.score });
         counter = 1;
     }
     while (counter < maxResults) {
@@ -24,7 +24,7 @@ const execute = Promise.coroutine(function* (data) {
         }
         row = yield index_1.constructed.instance.votes.getVoteOf(data.entryId, currentId);
         akashaId = yield index_1.constructed.instance.profile.getId(row.profile);
-        results.push({ akashaId: akashaId, score: row.score });
+        results.push({ akashaId: akashaId, profileAddress: row.profile, score: row.score });
         counter++;
     }
     return { collection: results, entryId: data.entryId, limit: maxResults };

@@ -22,7 +22,8 @@ const EntryContent = Record({
 const EntryEth = Record({
     blockNr: null,
     ipfsHash: null,
-    publisher: null
+    publisher: null,
+    unixStamp: null
 });
 
 const Entry = Record({

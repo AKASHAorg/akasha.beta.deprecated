@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import withWidth from 'material-ui/utils/withWidth';
-import { findBestMatch } from 'utils/imageUtils'; // eslint-disable-line import/no-unresolved, import/extensions
+import { findClosestMatch } from 'utils/imageUtils'; // eslint-disable-line import/no-unresolved, import/extensions
 import styles from './image-block.scss';
 
 class ImageBlock extends Component {
@@ -42,7 +42,7 @@ class ImageBlock extends Component {
         const { files, media } = this.props.data;
         const { width } = this.props;
         const widths = [320, 700, 1280];
-        const fileKey = findBestMatch(widths[width - 1], files, media);
+        const fileKey = findClosestMatch(widths[width - 1], files, media);
         // @todo: [code: 3ntry3] get rid of this too;
         return `${window.entry__baseUrl}/${files[fileKey].src}`;
     }

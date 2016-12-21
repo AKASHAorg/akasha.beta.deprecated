@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Paper, FlatButton } from 'material-ui';
 import { Avatar } from 'shared-components';
-import { profileMessages } from 'locale-data/messages';
+import { generalMessages, profileMessages } from 'locale-data/messages';
 
 class ProfileCard extends Component {
 
@@ -14,6 +14,11 @@ class ProfileCard extends Component {
     selectProfile = () => {
         const { profileData, selectProfile } = this.props;
         selectProfile(profileData.profile);
+    }
+
+    openEditPanel = () => {
+        const { showPanel } = this.props;
+        showPanel({ name: 'editProfile', overlay: true });
     }
 
     render () {
@@ -115,19 +120,21 @@ class ProfileCard extends Component {
             </div>
             <div style={actionsStyle}>
               <FlatButton
-                label={isFollower ?
-                    intl.formatMessage(profileMessages.unfollow) :
-                    intl.formatMessage(profileMessages.follow)
+                label={isOwnProfile ?
+                    intl.formatMessage(generalMessages.edit) :
+                    isFollower ?
+                        intl.formatMessage(profileMessages.unfollow) :
+                        intl.formatMessage(profileMessages.follow)
                 }
                 primary
                 labelStyle={{ fontWeight: 400 }}
-                onClick={() => isFollower ?
-                    unfollowProfile(akashaId) :
-                    followProfile(akashaId)
+                onClick={() => isOwnProfile ?
+                    this.openEditPanel() :
+                    isFollower ?
+                        unfollowProfile(akashaId) :
+                        followProfile(akashaId)
                 }
-                disabled={isOwnProfile || isFollowerPending ||
-                    (followPending && followPending.value)
-                }
+                disabled={isFollowerPending || (followPending && followPending.value)}
               />
             </div>
           </Paper>
@@ -144,6 +151,7 @@ ProfileCard.propTypes = {
     isFollowerPending: PropTypes.bool,
     isFollowerAction: PropTypes.func.isRequired,
     selectProfile: PropTypes.func.isRequired,
+    showPanel: PropTypes.func.isRequired,
     intl: PropTypes.shape()
 };
 
