@@ -46,11 +46,20 @@ class EntryPageHeader extends Component {
     };
 
     renderSubtitle = () => {
-        const { blockNumberDiff, intl, wordCount } = this.props;
+        const { entryBlockNr, intl, timestamp, wordCount } = this.props;
+        const publishDate = new Date(timestamp * 1000);
         const readingTime = calculateReadingTime(wordCount);
         return (
           <div style={{ fontSize: '12px' }}>
-            {intl.formatMessage(entryMessages.publishedBlockDiff, { blockDiff: blockNumberDiff })}
+            <span style={{ paddingRight: '5px' }}>
+              {intl.formatMessage(entryMessages.published)}
+            </span>
+            <span
+              title={`Block ${entryBlockNr}`}
+              style={{ fontWeight: 600, textDecoration: 'underline' }}
+            >
+              {intl.formatRelative(publishDate)}
+            </span>
             <span style={{ padding: '0 5px' }}>-</span>
             {readingTime.hours &&
               intl.formatMessage(entryMessages.hoursCount, { hours: readingTime.hours })
@@ -114,11 +123,13 @@ class EntryPageHeader extends Component {
 }
 
 EntryPageHeader.propTypes = {
-    blockNumberDiff: PropTypes.number,
+    blockNr: PropTypes.number,
+    entryBlockNr: PropTypes.number,
     intl: PropTypes.shape(),
     publisher: PropTypes.shape(),
     publisherTitleShadow: PropTypes.bool,
     selectProfile: PropTypes.func,
+    timestamp: PropTypes.number,
     wordCount: PropTypes.number
 };
 

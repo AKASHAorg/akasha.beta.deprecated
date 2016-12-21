@@ -140,6 +140,7 @@ class EntryCard extends Component {
         const content = entry.get('content');
         const existingVoteWeight = entry.get('voteWeight') || 0;
         const blockNumberDiff = blockNr - entry.getIn(['entryEth', 'blockNr']);
+        const publishDate = new Date(entry.getIn(['entryEth', 'unixStamp']) * 1000);
         const publisher = entry.getIn(['entryEth', 'publisher']);
         const profileName = `${publisher.get('firstName')} ${publisher.get('lastName')}`;
         const userInitials = profileName.match(/\b\w/g).reduce((prev, current) => prev + current, '');
@@ -152,7 +153,15 @@ class EntryCard extends Component {
         const downvoteIconColor = existingVoteWeight < 0 ? palette.accent1Color : '';
         const cardSubtitle = (
           <div>
-            {intl.formatMessage(entryMessages.publishedBlockDiff, { blockDiff: blockNumberDiff })}
+            <span style={{ paddingRight: '5px' }}>
+              {intl.formatMessage(entryMessages.published)}
+            </span>
+            <span
+              title={`Block ${entry.getIn(['entryEth', 'blockNr'])}`}
+              style={{ fontWeight: 600, textDecoration: 'underline' }}
+            >
+              {intl.formatRelative(publishDate)}
+            </span>
             <span style={{ padding: '0 5px' }}>-</span>
             {readingTime.hours &&
               intl.formatMessage(entryMessages.hoursCount, { hours: readingTime.hours })
