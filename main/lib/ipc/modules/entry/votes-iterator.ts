@@ -17,9 +17,7 @@ const execute = Promise.coroutine(function*(data: {start?: number, limit?: numbe
     let counter = 0;
     if (!data.start) {
         row = yield contracts.instance.votes.getVoteOf(data.entryId, currentId);
-        console.log(row);
         akashaId = yield contracts.instance.profile.getId(row.profile);
-        console.log(akashaId);
         results.push({ akashaId: akashaId, profileAddress: row.profile, score: row.score });
         counter = 1;
     }

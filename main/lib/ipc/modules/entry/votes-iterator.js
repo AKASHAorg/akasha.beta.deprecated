@@ -13,9 +13,7 @@ const execute = Promise.coroutine(function* (data) {
     let counter = 0;
     if (!data.start) {
         row = yield index_1.constructed.instance.votes.getVoteOf(data.entryId, currentId);
-        console.log(row);
         akashaId = yield index_1.constructed.instance.profile.getId(row.profile);
-        console.log(akashaId);
         results.push({ akashaId: akashaId, profileAddress: row.profile, score: row.score });
         counter = 1;
     }
