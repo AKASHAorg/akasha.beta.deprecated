@@ -4,7 +4,7 @@
     "private": true,
     "description": "Akasha platform",
     "main": "main.js",
-    "version": "0.2.0",
+    "version": "0.1.0",
     "scripts": {
         "test": "cross-env NODE_ENV=test BABEL_DISABLE_CACHE=1 mocha --compilers js:babel-register --recursive --require ./test/setup.js test/**/*.spec.js",
         "test-watch": "npm test -- --watch",
@@ -178,7 +178,7 @@
         "redux-thunk": "2.1.0",
         "rimraf": "2.5.4",
         "roboto-fontface": "0.6.0",
-        "sass-loader": "4.1.0",
+        "sass-loader": "4.1.1",
         "sinon": "1.17.6",
         "source-map-support": "0.4.6",
         "standard-version": "^4.0.0",
@@ -193,7 +193,7 @@
     },
     "dependencies": {
         "@akashaproject/contracts.js": "1.2.12",
-        "@akashaproject/geth-connector": "1.6.20",
+        "@akashaproject/geth-connector": "1.6.21",
         "@akashaproject/ipfs-connector": "1.7.3",
         "bluebird": "3.4.6",
         "compare-versions": "3.0.0",
