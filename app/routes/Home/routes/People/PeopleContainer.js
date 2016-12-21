@@ -4,7 +4,7 @@ import { Paper, Tabs, Tab, FlatButton } from 'material-ui';
 import { injectIntl } from 'react-intl';
 import throttle from 'lodash.throttle';
 import { profileMessages, generalMessages } from 'locale-data/messages';
-import { ProfileActions } from 'local-flux';
+import { AppActions, ProfileActions } from 'local-flux';
 import { DataLoader, ProfileCard } from 'shared-components';
 import { isInViewport } from 'utils/domUtils';
 
@@ -149,8 +149,8 @@ class PeopleContainer extends Component {
     };
 
     renderRecommended () {
-        const { fetchingProfileList, followPending, intl, isFollowerPending, loggedProfileData,
-            profileActions, profileList } = this.props;
+        const { appActions, fetchingProfileList, followPending, intl, isFollowerPending,
+            loggedProfileData, profileActions, profileList } = this.props;
 
         if (!profileList.size && !fetchingProfileList) {
             return <div>No recommandations</div>;
@@ -177,6 +177,7 @@ class PeopleContainer extends Component {
                       followPending={followProfilePending}
                       isFollowerPending={isFollowerPending}
                       selectProfile={this.selectProfile}
+                      showPanel={appActions.showPanel}
                       isFollowerAction={profileActions.isFollower}
                     />;
               })}
@@ -186,7 +187,7 @@ class PeopleContainer extends Component {
     }
 
     renderFollowers () {
-        const { fetchingFollowers, fetchingMoreFollowers, profileActions, followPending,
+        const { appActions, fetchingFollowers, fetchingMoreFollowers, profileActions, followPending,
             loggedProfileData, isFollowerPending, intl } = this.props;
         const followers = loggedProfileData.get('followers').toJS();
 
@@ -217,6 +218,7 @@ class PeopleContainer extends Component {
                         followPending={followProfilePending}
                         isFollowerPending={isFollowerPending}
                         selectProfile={this.selectProfile}
+                        showPanel={appActions.showPanel}
                         isFollowerAction={profileActions.isFollower}
                       />;
                 })}
@@ -234,8 +236,8 @@ class PeopleContainer extends Component {
     }
 
     renderFollowing () {
-        const { fetchingFollowing, fetchingMoreFollowing, profileActions, followPending, loggedProfileData,
-            isFollowerPending, intl } = this.props;
+        const { appActions, fetchingFollowing, fetchingMoreFollowing, profileActions, followPending,
+            loggedProfileData, isFollowerPending, intl } = this.props;
         const followings = loggedProfileData.get('following').toJS();
 
         if (!followings.length && !fetchingFollowing) {
@@ -265,6 +267,7 @@ class PeopleContainer extends Component {
                         followPending={followProfilePending}
                         isFollowerPending={isFollowerPending}
                         selectProfile={this.selectProfile}
+                        showPanel={appActions.showPanel}
                         isFollowerAction={profileActions.isFollower}
                       />;
                 })}
@@ -353,6 +356,7 @@ class PeopleContainer extends Component {
 }
 
 PeopleContainer.propTypes = {
+    appActions: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
     fetchingFollowers: PropTypes.bool,
     fetchingFollowing: PropTypes.bool,
@@ -391,6 +395,7 @@ function mapStateToProps (state, ownProps) {
 
 function mapDispatchToProps (dispatch) {
     return {
+        appActions: new AppActions(dispatch),
         profileActions: new ProfileActions(dispatch)
     };
 }
