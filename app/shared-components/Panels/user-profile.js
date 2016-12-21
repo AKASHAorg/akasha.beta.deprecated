@@ -94,24 +94,22 @@ class UserProfilePanel extends Component {
     };
 
     navigateToTag (tag) {
-        const { tagActions, appActions } = this.props;
-        appActions.hidePanel();
+        const { hidePanel, tagActions } = this.props;
+        hidePanel();
         tagActions.saveTag(tag);
     }
 
     navigateToProfile (profileAddress) {
         const { router } = this.context;
-        const { appActions } = this.props;
         const loggedAkashaId = this.props.loggedProfileData.get('akashaId');
-        appActions.hidePanel();
+        this.props.hidePanel();
         router.push(`/${loggedAkashaId}/profile/${profileAddress}`);
     }
 
     navigateToEntry (entryId) {
         const { router } = this.context;
-        const { appActions } = this.props;
         const loggedAkashaId = this.props.loggedProfileData.get('akashaId');
-        appActions.hidePanel();
+        this.props.hidePanel();
         router.push(`/${loggedAkashaId}/entry/${entryId}`);
     }
 
@@ -331,7 +329,8 @@ class UserProfilePanel extends Component {
     }
 
     render () {
-        const { loggedProfileData, profileActions, profileAddress, showPanel, notificationsState } = this.props;
+        const { loggedProfileData, profileActions, profileAddress, showPanel, hidePanel,
+            notificationsState } = this.props;
         const { palette } = this.context.muiTheme;
         return (
           <Paper
@@ -348,6 +347,7 @@ class UserProfilePanel extends Component {
               profileActions={profileActions}
               profileAddress={profileAddress}
               showPanel={showPanel}
+              hidePanel={hidePanel}
             />
             <div style={{ width: '100%', marginTop: '-48px' }} >
               <div>
@@ -401,7 +401,8 @@ UserProfilePanel.propTypes = {
     profileActions: PropTypes.shape(),
     profileAddress: PropTypes.string,
     notificationsActions: PropTypes.shape(),
-    showPanel: PropTypes.func
+    showPanel: PropTypes.func,
+    hidePanel: PropTypes.func
 };
 UserProfilePanel.contextTypes = {
     muiTheme: PropTypes.shape(),

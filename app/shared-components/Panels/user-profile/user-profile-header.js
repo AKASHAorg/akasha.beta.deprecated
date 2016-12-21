@@ -12,8 +12,9 @@ import {
   ToolbarLogout
 } from '../../svg';
 
-const UserProfileHeader = (props) => {
+const UserProfileHeader = (props, { router }) => {
     const { profile, profileAddress, profileActions, showPanel } = props;
+
     // const avatarImage = `data:image/gif;base64,${
     //     btoa(String.fromCharCode.apply(null, profile.getIn(['optionalData', 'avatar'])))
     // }`;
@@ -27,6 +28,10 @@ const UserProfileHeader = (props) => {
         color: colors.minBlack,
         hoverColor: colors.lightBlack,
         viewBox: '0 0 20 20'
+    };
+    const navigateToProfile = () => {
+        props.hidePanel();
+        router.push(`/${profile.get('profile')}/profile/${profileAddress}`);
     };
     const profileName = `${profile.get('firstName')} ${profile.get('lastName')}`;
     const userInitials = profileName.match(/\b\w/g).reduce((prev, current) => prev + current, '');
@@ -154,7 +159,8 @@ const UserProfileHeader = (props) => {
         </div>
         <div className="row start-xs" >
           <div
-            className="col-xs-12"
+            className="col-xs-12 textLink"
+            onClick={navigateToProfile}
             style={{
                 fontSize: '36px',
                 fontWeight: 400,
@@ -164,7 +170,8 @@ const UserProfileHeader = (props) => {
             {`${profile.get('firstName')} ${profile.get('lastName')}`}
           </div>
           <div
-            className="col-xs-12"
+            className="col-xs-12 textLink"
+            onClick={navigateToProfile}
             style={{ fontSize: '20px' }}
           >
             {`@${profile.get('akashaId')}`}
@@ -179,7 +186,11 @@ UserProfileHeader.propTypes = {
     profileActions: PropTypes.shape(),
     profileAddress: PropTypes.string,
     profile: PropTypes.shape(),
-    showPanel: PropTypes.func
+    showPanel: PropTypes.func,
+    hidePanel: PropTypes.func
+};
+UserProfileHeader.contextTypes = {
+    router: PropTypes.shape()
 };
 UserProfileHeader.defaultProps = {
     rootStyle: {

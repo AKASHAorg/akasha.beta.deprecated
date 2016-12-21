@@ -70,6 +70,13 @@ html, body {
     color: #008B8B;
 }
 
+.textLink {
+    cursor: pointer;
+    &:hover {
+        opacity: 0.8;
+    }
+}
+
 .has_hidden_action {
     .hidden_action {
         display: none !important;
