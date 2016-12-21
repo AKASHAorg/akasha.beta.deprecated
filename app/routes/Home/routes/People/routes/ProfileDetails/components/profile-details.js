@@ -30,16 +30,17 @@ class ProfileDetails extends Component {
         }
         const originalRatio = backgroundImage.width / backgroundImage.height;
         const actualRatio = 400 / 200;
-        if (originalRatio > actualRatio) {
+        if (originalRatio > 4 || originalRatio < actualRatio) {
+            return {
+                flex: 'none',
+                width: '400px'
+            }
+        } else {
             return {
                 flex: 'none',
                 height: '200px'
             };
         }
-        return {
-            flex: 'none',
-            width: '400px'
-        };
     }
 
     handleCopyLink = (url) => {
