@@ -125,7 +125,7 @@
         "draft-js": "0.9.1",
         "draft-js-export-html": "0.5.2",
         "electron": "1.4.13",
-        "electron-builder": "10.9.2",
+        "electron-builder": "10.9.3",
         "electron-mocha": "3.3.0",
         "electron-rebuild": "1.4.0",
         "enzyme": "2.6.0",
