@@ -1,4 +1,4 @@
-import { Menu } from 'electron';
+import { Menu, app, shell, session } from 'electron';
 
 const installExtensions = async() => {
     if (process.env.NODE_ENV === 'development') {
@@ -34,5 +34,185 @@ export async function initMenu(mainWindow: any) {
             }]).popup(mainWindow);
         });
     }
-    mainWindow.setMenu(null);
+
+    const template: any = [
+        {
+            label: 'Edit',
+            submenu: [
+                {
+                    role: 'undo'
+                },
+                {
+                    role: 'redo'
+                },
+                {
+                    type: 'separator'
+                },
+                {
+                    role: 'cut'
+                },
+                {
+                    role: 'copy'
+                },
+                {
+                    role: 'paste'
+                },
+                {
+                    role: 'pasteandmatchstyle'
+                },
+                {
+                    type: 'separator'
+                },
+                {
+                    role: 'delete'
+                },
+                {
+                    role: 'selectall'
+                }
+            ]
+        },
+        {
+            label: 'View',
+            submenu: [
+                {
+                    role: 'reload'
+                },
+                {
+                    role: 'togglefullscreen'
+                },
+                {
+                    type: 'separator'
+                },
+                {
+                    role: 'resetzoom'
+                },
+                {
+                    role: 'zoomin'
+                },
+                {
+                    role: 'zoomout'
+                }
+            ]
+        },
+        {
+            role: 'window',
+            submenu: [
+                {
+                    role: 'minimize'
+                },
+                {
+                    role: 'close'
+                }
+            ]
+        },
+        {
+            role: 'help',
+            submenu: [
+                {
+                    label: 'Learn More',
+                    click () {
+                        shell.openExternal('https://github.com/AkashaProject/Alpha/wiki/FAQ')
+                    }
+                },
+                {
+                    label: 'Report Issue',
+                    click () {
+                        shell.openExternal('https://github.com/AkashaProject/Alpha/issues/new')
+                    }
+                },
+                {
+                    type: 'separator'
+                },
+                {
+                    label: 'Clear Cache',
+                    click () {
+                        session.defaultSession.clearCache(function () {
+                            console.log('cleared cache');
+                        })
+                    }
+                }
+                ,
+                {
+                    label: 'Reset App Data',
+                    click () {
+                        session.defaultSession.clearStorageData(function () {
+                            console.log('cleared storage app data');
+                        })
+                    }
+                },
+                {
+                    type: 'separator'
+                },
+                {
+                    label: 'About AKASHA',
+                    click () {
+                        shell.openExternal('http://akasha.world')
+                    }
+                }
+            ]
+        }
+    ];
+
+    if (process.platform === 'darwin') {
+        template.unshift({
+            label: app.getName(),
+            submenu: [
+                {
+                    role: 'about'
+                },
+                {
+                    type: 'separator'
+                },
+                {
+                    role: 'services',
+                    submenu: []
+                },
+                {
+                    type: 'separator'
+                },
+                {
+                    role: 'hide'
+                },
+                {
+                    role: 'hideothers'
+                },
+                {
+                    role: 'unhide'
+                },
+                {
+                    type: 'separator'
+                },
+                {
+                    role: 'quit'
+                }
+            ]
+        });
+        // Window menu.
+        template[3].submenu = [
+            {
+                label: 'Close',
+                accelerator: 'CmdOrCtrl+W',
+                role: 'close'
+            },
+            {
+                label: 'Minimize',
+                accelerator: 'CmdOrCtrl+M',
+                role: 'minimize'
+            },
+            {
+                label: 'Zoom',
+                role: 'zoom'
+            },
+            {
+                type: 'separator'
+            },
+            {
+                label: 'Bring All to Front',
+                role: 'front'
+            }
+        ]
+    }
+
+    const menu = Menu.buildFromTemplate(template);
+    Menu.setApplicationMenu(menu);
 }
