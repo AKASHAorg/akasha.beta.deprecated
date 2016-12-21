@@ -6,7 +6,6 @@ import { DataLoader, Sidebar } from 'shared-components';
 import '../../styles/core.scss';
 import styles from './home.scss';
 import PanelLoaderContainer from './components/panel-loader-container';
-import EntryModal from './components/entry-modal';
 import ClaimRunner from './components/claim-runner';
 import CommonRunner from './components/common-runner';
 import ProfileUpdater from './components/profile-updater';

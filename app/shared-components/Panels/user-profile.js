@@ -332,6 +332,7 @@ class UserProfilePanel extends Component {
 
     render () {
         const { loggedProfileData, profileActions, profileAddress, showPanel, notificationsState } = this.props;
+        const { palette } = this.context.muiTheme;
         return (
           <Paper
             style={{
@@ -350,7 +351,10 @@ class UserProfilePanel extends Component {
             />
             <div style={{ width: '100%', marginTop: '-48px' }} >
               <div>
-                <Tabs tabItemContainerStyle={{ backgroundColor: 'transparent' }} >
+                <Tabs
+                  tabItemContainerStyle={{ backgroundColor: 'transparent' }}
+                  inkBarStyle={{ backgroundColor: palette.primary1Color }}
+                >
                   <Tab
                     label="FEED" style={tabStyles.default_tab}
                     onActive={() => {

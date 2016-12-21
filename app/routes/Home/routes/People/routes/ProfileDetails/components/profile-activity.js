@@ -284,6 +284,7 @@ class ProfileActivity extends Component {
 
     render () {
         const { profileData } = this.props;
+        const { palette } = this.context.muiTheme;
         const { entriesCount, followersCount, followingCount } = profileData;
 
         return (<div style={{ flex: '1 1 auto' }}>
@@ -293,6 +294,7 @@ class ProfileActivity extends Component {
               tabItemContainerStyle={{ width: '500px', backgroundColor: 'transparent' }}
               onChange={this.handleChangeTab}
               value={this.state.activeTab}
+              inkBarStyle={{ backgroundColor: palette.primary1Color }}
             >
               <Tab
                 label={

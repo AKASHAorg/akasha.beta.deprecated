@@ -442,6 +442,7 @@ class ServiceStatusBar extends Component {
             tabItemContainerStyle={{ width: '100%' }}
             onChange={this.selectTab}
             value={this.state.activeTab}
+            inkBarStyle={{ backgroundColor: palette.primary1Color }}
           >
             <Tab
               label="Settings"
@@ -515,6 +516,7 @@ class ServiceStatusBar extends Component {
             tabItemContainerStyle={{ width: '100%' }}
             onChange={this.selectTab}
             value={this.state.activeTab}
+            inkBarStyle={{ backgroundColor: palette.primary1Color }}
           >
             <Tab
               label="Settings"

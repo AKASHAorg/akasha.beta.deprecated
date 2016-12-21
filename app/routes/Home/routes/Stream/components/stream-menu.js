@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 import { Paper, Tabs, Tab, SvgIcon } from 'material-ui';
 import LabelIcon from 'material-ui/svg-icons/action/label';
 
-const StreamMenu = props =>
+const StreamMenu = (props, { muiTheme }) =>
   <div className="row">
     <Paper className="col-xs-12">
       <Tabs
@@ -10,6 +10,7 @@ const StreamMenu = props =>
         tabItemContainerStyle={{ backgroundColor: 'transparent', width: '400px' }}
         onChange={props.onChange}
         style={{ paddingLeft: '50px' }}
+        inkBarStyle={{ backgroundColor: muiTheme.palette.primary1Color }}
       >
         <Tab
           onActive={props.onActive}
@@ -59,4 +60,9 @@ StreamMenu.propTypes = {
     onChange: PropTypes.func,
     onActive: PropTypes.func
 };
+
+StreamMenu.contextTypes = {
+    muiTheme: PropTypes.shape()
+};
+
 export default StreamMenu;
