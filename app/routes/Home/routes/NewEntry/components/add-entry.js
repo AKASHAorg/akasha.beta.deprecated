@@ -109,6 +109,7 @@ class AddEntryPage extends Component {
         const { draftActions, params, drafts } = this.props;
         let { defaultLicence } = this.props;
         const draft = this.editor.getRawContent();
+        const contentState = this.editor.getContent();
         const title = this.editor.getTitle();
         const wordCount = getWordCount(contentState);
         const excerpt = contentState.getPlainText().slice(0, 160).replace(/\r?\n|\r/g, '');

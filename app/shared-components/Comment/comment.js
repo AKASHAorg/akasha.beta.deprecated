@@ -9,14 +9,11 @@ import {
   } from 'material-ui';
 import { MegadraftEditor, editorStateFromRaw } from 'megadraft';
 import { injectIntl } from 'react-intl';
-import ArrowDownIcon from 'material-ui/svg-icons/hardware/keyboard-arrow-down';
-import ArrowUpIcon from 'material-ui/svg-icons/hardware/keyboard-arrow-up';
-import ReplayIcon from 'material-ui/svg-icons/av/replay';
 import MoreIcon from 'material-ui/svg-icons/navigation/expand-more';
 import LessIcon from 'material-ui/svg-icons/navigation/expand-less';
 import { Avatar } from 'shared-components';
+import { getWordCount } from 'utils/dataModule'; // eslint-disable-line import/no-unresolved, import/extensions
 import style from './comment.scss';
-import { getWordCount } from 'utils/dataModule';
 
 class Comment extends React.Component {
     constructor (props) {
@@ -27,16 +24,15 @@ class Comment extends React.Component {
         };
     }
     componentWillMount () {
-        const { rawContent } = this.props;
+        const { comment } = this.props;
         let isExpanded = null;
-        const editorState = editorStateFromRaw(rawContent);
+        const editorState = editorStateFromRaw(JSON.parse(comment.data.content));
         const wordCount = getWordCount(editorState.getCurrentContent());
         if (wordCount > 60) {
             isExpanded = false;
         }
         this.setState({
-            isExpanded,
-            editorState
+            isExpanded
         });
     }
     _toggleExpanded = (ev, isExpanded) => {
@@ -46,12 +42,19 @@ class Comment extends React.Component {
         });
     }
     render () {
-        const { isPublishing, viewerIsAuthor, authorName, publishDate, avatar,
-            children, isEntryAuthor, intl, onAuthorNameClick } = this.props;
+        const { isPublishing, comment,
+            children, intl, onAuthorNameClick, entryAuthorProfile, loggedProfile } = this.props;
+        const { isExpanded } = this.state;
+        const { data } = comment;
+        const { profile, date, content } = data;
         const { palette } = this.context.muiTheme;
-        const { editorState, isExpanded } = this.state;
-        let expandedStyle = {};
+        const authorName = `${profile.get('firstName')} ${profile.get('lastName')}`;
+        const authorAvatar = (profile.get('avatar') === `${profile.get('baseUrl')}/`) ?
+            null : profile.get('avatar');
+        const isEntryAuthor = entryAuthorProfile === profile.get('profile');
+        const viewerIsAuthor = loggedProfile.get('profile') === profile.get('profile');
         let commentAuthorNameColor = palette.commentAuthorColor;
+        let expandedStyle = {};
         if (isExpanded === false) {
             expandedStyle = {
                 maxHeight: 155,
@@ -70,7 +73,6 @@ class Comment extends React.Component {
         if (isEntryAuthor) {
             commentAuthorNameColor = palette.commentIsEntryAuthorColor;
         }
-
         return (
           <div className={`${style.root}`}>
             <div className={`row ${style.commentHeader}`}>
@@ -95,10 +97,10 @@ class Comment extends React.Component {
                         ${isEntryAuthor && style.is_entry_author} ${style.author_name}`}
                     />
                   }
-                  subtitle={intl.formatRelative(new Date(publishDate))}
+                  subtitle={intl.formatRelative(new Date(date))}
                   avatar={
                     <Avatar
-                      image={avatar}
+                      image={authorAvatar}
                       style={{ display: 'inline-block', cursor: 'pointer' }}
                       userInitials={authorName.match(/\b\w/g).reduce((prev, current) => prev + current, '')}
                       radius={40}
@@ -117,7 +119,7 @@ class Comment extends React.Component {
             <div className={`row ${style.commentBody}`} style={expandedStyle}>
               <MegadraftEditor
                 readOnly
-                editorState={editorState}
+                editorState={editorStateFromRaw(JSON.parse(content))}
                 sidebarRendererFn={() => null}
               />
             </div>
@@ -150,15 +152,11 @@ class Comment extends React.Component {
     }
 }
 Comment.propTypes = {
-    authorName: React.PropTypes.string,
-    publishDate: React.PropTypes.string,
-    avatar: React.PropTypes.string,
-    stats: React.PropTypes.object,
-    rawContent: React.PropTypes.shape(),
     children: React.PropTypes.node,
     isPublishing: React.PropTypes.bool,
-    viewerIsAuthor: React.PropTypes.bool,
-    isEntryAuthor: React.PropTypes.bool,
+    entryAuthorProfile: React.PropTypes.string,
+    loggedProfile: React.PropTypes.shape(),
+    comment: React.PropTypes.shape(),
     intl: React.PropTypes.shape(),
     onAuthorNameClick: React.PropTypes.func
 };
