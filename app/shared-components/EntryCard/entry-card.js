@@ -1,12 +1,12 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
-import { Card, CardHeader, CardTitle, CardText, CardActions, IconButton,
+import { Card, CardHeader, CardTitle, CardText, CardActions, IconButton, FlatButton,
     SvgIcon } from 'material-ui';
 import WarningIcon from 'material-ui/svg-icons/alert/warning';
 import { EntryBookmarkOn, EntryBookmarkOff, EntryComment, EntryDownvote,
     EntryUpvote, ToolbarEthereum } from 'shared-components/svg';
 import { injectIntl } from 'react-intl';
-import { Avatar, TagChip } from 'shared-components';
+import { Avatar, EntryVotesPanel, TagChip } from 'shared-components';
 import { calculateReadingTime } from 'utils/dataModule';
 import imageCreator from 'utils/imageUtils';
 import { entryMessages } from 'locale-data/messages';
@@ -17,7 +17,8 @@ class EntryCard extends Component {
         super(props);
 
         this.state = {
-            expanded: false
+            expanded: false,
+            showVotes: false
         };
     }
 
@@ -40,7 +41,8 @@ class EntryCard extends Component {
             fetchingEntryBalance !== this.props.fetchingEntryBalance ||
             isSaved !== this.props.isSaved ||
             voteEntryPending !== this.props.voteEntryPending ||
-            nextState.expanded !== this.state.expanded
+            nextState.expanded !== this.state.expanded ||
+            nextState.showVotes !== this.state.showVotes
         ) {
             return true;
         }
@@ -125,6 +127,18 @@ class EntryCard extends Component {
         const { entry, hidePanel, loggedAkashaId } = this.props;
         hidePanel();
         this.context.router.push(`/${loggedAkashaId}/entry/${entry.get('entryId')}`);
+    };
+
+    openVotesPanel = () => {
+        this.setState({
+           showVotes: true
+        });
+    };
+
+    closeVotesPanel = () => {
+        this.setState({
+           showVotes: false
+        });
     };
 
     onExpandChange = (expanded) => {
@@ -305,7 +319,11 @@ class EntryCard extends Component {
                   }
                 </div>
                 <div style={{ fontSize: '16px', padding: '0 5px', letterSpacing: '2px' }}>
-                  {entry.get('score')}
+                  <FlatButton
+                    label={entry.get('score')}
+                    onClick={this.openVotesPanel}
+                    style={{ minWidth: '10px', borderRadius: '6px' }}
+                  />
                 </div>
                 <div style={{ position: 'relative' }}>
                   <IconButton
@@ -391,6 +409,13 @@ class EntryCard extends Component {
                   }
                 </div>
               </div>
+              {this.state.showVotes &&
+                <EntryVotesPanel
+                  closeVotesPanel={this.closeVotesPanel}
+                  entryId={entry.get('entryId')}
+                  entryTitle={content.get('title')}
+                />
+              }
             </CardActions>
           </Card>
         );

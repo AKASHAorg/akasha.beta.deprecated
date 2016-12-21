@@ -34,6 +34,7 @@ class CreateProfileComplete extends Component {
             actions={[
                 /* eslint-disable */
                 <RaisedButton
+                  title="Coming soon"
                   label={intl.formatMessage(generalMessages.backup)}
                   disabled
                   key="backup"
