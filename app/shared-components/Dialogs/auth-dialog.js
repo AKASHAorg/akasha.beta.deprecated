@@ -8,7 +8,7 @@ function AuthDialog (props) {
       onRememberTimeChange } = props;
     const handleSubmit = (ev) => {
         ev.preventDefault();
-        return props.onSubmit();
+        return onSubmit();
     };
     const dialogActions = [
       <RaisedButton // eslint-disable-line indent
@@ -30,7 +30,7 @@ function AuthDialog (props) {
         title={intl.formatMessage(formMessages.confirmPassphrase)}
         open={isVisible}
       >
-        <form onSubmit={onSubmit}>
+        <form onSubmit={handleSubmit}>
           <div>{intl.formatMessage(formMessages.confirmPassphraseToContinue)}</div>
           <TextField
             fullWidth
