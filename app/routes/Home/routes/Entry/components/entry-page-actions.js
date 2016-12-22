@@ -1,9 +1,27 @@
 import React, { Component, PropTypes } from 'react';
-import { CardActions, IconButton, SvgIcon } from 'material-ui';
+import { CardActions, FlatButton, IconButton, SvgIcon } from 'material-ui';
 import styles from './entry-page-actions.scss';
+import { EntryVotesPanel } from 'shared-components';
 import { EntryBookmarkOn, EntryBookmarkOff, EntryDownvote, EntryUpvote, ToolbarEthereum } from 'shared-components/svg';
 
 class EntryPageAction extends Component {
+
+    state = {
+        showVotes: false
+    };
+
+    openVotesPanel = () => {
+        this.setState({
+           showVotes: true
+        });
+    };
+
+    closeVotesPanel = () => {
+        this.setState({
+           showVotes: false
+        });
+    };
+
     render () {
         const { canClaimPending, claimPending, entry, fetchingEntryBalance, votePending,
             handleBookmark, handleClaim, handleDownvote, handleUpvote, isOwnEntry, isSaved } = this.props;
@@ -48,7 +66,11 @@ class EntryPageAction extends Component {
                 }
               </div>
               <div style={{ fontSize: '18px', padding: '0 15px', letterSpacing: '2px' }}>
-                {entry.score}
+                <FlatButton
+                  label={entry.score}
+                  onClick={this.openVotesPanel}
+                  style={{ minWidth: '10px', borderRadius: '6px' }}
+                />
               </div>
               <div style={{ position: 'relative' }}>
                 <IconButton
@@ -117,9 +139,16 @@ class EntryPageAction extends Component {
                         </div>
                       }
                     </div>
-                }
+                  }
               </div>
             </div>
+            {this.state.showVotes &&
+              <EntryVotesPanel
+                closeVotesPanel={this.closeVotesPanel}
+                entryId={entry.entryId}
+                entryTitle={entry.content.title}
+              />
+            }
           </CardActions>
         );
     }
