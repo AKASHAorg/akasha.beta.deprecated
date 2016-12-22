@@ -1,20 +1,37 @@
 import { connect } from 'react-redux';
-import { ProfileActions, EntryActions, AppActions } from 'local-flux';
+import { EntryActions, AppActions, TagActions } from 'local-flux';
 import EntryList from './components/entry-list';
 
-
 function mapStateToProps (state) {
+    const savedEntries = state.entryState.get('entries')
+            .filter(entry => entry.get('type') === 'savedEntry');
     return {
-        profileState: state.profileState,
-        entryState: state.entryState
+        entriesStream: state.entryState.get('entriesStream'),
+        fetchingTagEntries: state.entryState.getIn(['flags', 'fetchingTagEntries']),
+        fetchingMoreTagEntries: state.entryState.getIn(['flags', 'fetchingMoreTagEntries']),
+        fetchingSavedEntriesList: state.entryState.getIn(['flags', 'fetchingSavedEntriesList']),
+        fetchingMoreSavedEntriesList: state.entryState.getIn(['flags', 'fetchingMoreSavedEntriesList']),
+        loggedProfileData: state.profileState.get('profiles').find(prf =>
+            prf.get('profile') === state.profileState.getIn(['loggedProfile', 'profile'])),
+        moreSavedEntries: state.entryState.get('savedEntries').size > savedEntries.size &&
+            !state.entryState.getIn(['flags', 'fetchingSavedEntriesList']),
+        moreTagEntries: state.entryState.get('moreTagEntries'),
+        registerPending: state.tagState.getIn(['flags', 'registerPending']),
+        savedEntries,
+        selectedTag: state.tagState.get('selectedTag'),
+        subscribePending: state.tagState.getIn(['flags', 'subscribePending']),
+        tagEntries: state.entryState.get('entries')
+            .filter(entry => entry.get('type') === 'tagEntry')
+            .map(entry => entry.get('content')),
+        tagEntriesCount: state.entryState.get('tagEntriesCount'),
     };
 }
 
 function mapDispatchToProps (dispatch) {
     return {
         appActions: new AppActions(dispatch),
-        profileActions: new ProfileActions(dispatch),
-        entryActions: new EntryActions(dispatch)
+        entryActions: new EntryActions(dispatch),
+        tagActions: new TagActions(dispatch)
     };
 }
 

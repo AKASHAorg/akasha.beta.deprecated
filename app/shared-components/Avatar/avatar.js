@@ -3,15 +3,13 @@ import AvatarEditor from 'react-avatar-editor/dist';
 import AddPhotoIcon from 'material-ui/svg-icons/image/add-a-photo';
 import ClearIcon from 'material-ui/svg-icons/content/clear';
 import { SvgIcon, Slider } from 'material-ui';
-import { remote } from 'electron';
-const { dialog } = remote;
 
 class Avatar extends React.Component {
     constructor (props) {
         super(props);
         this.state = {
             avatarImage: null,
-            avatarScale: 1.2
+            avatarScale: props.avatarScale || 1.2
         };
     }
     componentWillUnmount () {
@@ -19,12 +17,11 @@ class Avatar extends React.Component {
     }
     getImage = () =>
         new Promise((resolve) => {
-            if (this.editor && this.state.avatarImage) {
+            if (this.editor) {
                 const imageCanvas = this.editor.getImageScaledToCanvas();
-
-                imageCanvas.toBlob(blob => {
+                imageCanvas.toBlob((blob) => {
                     const reader = new FileReader();
-                    reader.onloadend = (ev) =>
+                    reader.onloadend = ev =>
                         resolve(new Uint8Array(ev.target.result));
                     reader.readAsArrayBuffer(blob);
                 }, 'image/jpg');
@@ -32,20 +29,11 @@ class Avatar extends React.Component {
                 resolve(null);
             }
         });
-
-    _handleMouseEnter = () => {
-        this.setState({
-            showChangeAvatar: this.props.editable,
-            showNameTooltip: this.props.editable
-        });
-    }
-    _handleMouseLeave = () => {
-        this.setState({
-            showChangeAvatar: false,
-            showNameTooltip: false
-        });
-    }
     _handleAvatarClear = () => {
+        const { clearAvatarImage } = this.props;
+        if (clearAvatarImage) {
+            clearAvatarImage();
+        }
         this.setState({
             avatarImage: null,
             isNewAvatarLoaded: false
@@ -56,27 +44,25 @@ class Avatar extends React.Component {
             avatarScale: sliderValue
         });
     }
-    _handleDialogOpen = () => {
-        dialog.showOpenDialog({
-            title: 'Select image for your avatar',
-            properties: ['openFile'],
-            filters: [{ name: 'Images', extensions: ['jpg', 'png'] }]
-        }, files => {
-            if (!files) {
-                return;
-            }
-            this.setState({
-                avatarImage: files[0],
-                isNewAvatarLoaded: true
-            });
+    _handleImageAdd = () => {
+        const files = this.fileInput.files[0].path;
+        this.setState({
+            avatarImage: files,
+            isNewAvatarLoaded: true
         });
+    }
+    _handleAvatarClick = (ev) => {
+        // only when not editable!!
+        if (this.props.onClick) {
+            this.props.onClick(ev);
+        }
     }
     render () {
         const {
               radius,
               editable,
-              userName,
               image,
+              userInitials,
               userInitialsStyle,
               avatarEmptyStyle,
               avatarClearStyle,
@@ -85,49 +71,55 @@ class Avatar extends React.Component {
               userInitialsWrapperStyle,
               offsetBorder,
               backgroundColor,
-              ...other } = this.props;
+              style } = this.props;
         const palette = this.context.muiTheme.palette;
-        let userInitials;
         let avatarImage;
-        if (this.props.userName) {
-            userInitials = userName.split(' ').map((part) => part.charAt(0)).join('');
-        }
+
         if (this.state.avatarImage) {
             avatarImage = this.state.avatarImage;
         } else if (image) {
             avatarImage = image;
         }
-
+        if (!avatarImage) {
+            this.editor = null;
+        }
         return (
           <div
-            style={{ maxWidth: (radius || 150), position: 'relative' }}
-            onMouseEnter={this._handleMouseEnter}
-            onMouseLeave={this._handleMouseLeave}
-            {...other}
+            style={Object.assign({ maxWidth: radius, maxHeight: radius, position: 'relative' }, style)}
           >
-          {this.state.showChangeAvatar && !this.state.isNewAvatarLoaded &&
-            <div
-              style={dialogHandlerStyle}
-              onClick={this._handleDialogOpen}
-            />
+            {editable && !avatarImage &&
+              <input
+                ref={(fileInput) => { this.fileInput = fileInput; }}
+                style={dialogHandlerStyle}
+                type="file"
+                onChange={this._handleImageAdd}
+              />
             }
-
             {avatarImage &&
               <div>
-                <AvatarEditor
-                  style={{
-                      borderRadius: 150,
-                      border: offsetBorder || 0,
-                      backgroundColor
-                  }}
-                  border={this.state.isNewAvatarLoaded ? 5 : 0}
-                  image={avatarImage}
-                  ref={(editor) => this.editor = editor}
-                  width={radius || 130}
-                  height={radius || 130}
-                  borderRadius={100}
-                  scale={editable ? this.state.avatarScale : 1}
-                />
+                {editable ?
+                  <AvatarEditor
+                    style={{
+                        borderRadius: 150,
+                        border: offsetBorder || 0,
+                        backgroundColor,
+                        width: radius,
+                        height: radius,
+                        borderColor: palette.borderColor
+                    }}
+                    border={1}
+                    image={avatarImage}
+                    ref={(editor) => { this.editor = editor; }}
+                    borderRadius={100}
+                    scale={editable ? this.state.avatarScale : 1}
+                  /> :
+                  <img
+                    src={avatarImage}
+                    style={{
+                        width: radius, height: radius, borderRadius: '50%', imageRendering: 'auto'
+                    }}
+                  />
+                }
                 {editable &&
                   <div>
                     <Slider
@@ -147,28 +139,50 @@ class Avatar extends React.Component {
                     </div>
                   </div>
                 }
+                {!editable && avatarImage &&
+                    <div
+                      style={{
+                          position: 'absolute',
+                          width: '100%',
+                          height: '100%',
+                          top: 0,
+                          left: 0
+                      }}
+                      onClick={this._handleAvatarClick}
+                    />
+                }
               </div>
             }
             {!avatarImage &&
-              <div style={avatarEmptyStyle}>
-                {this.props.userName &&
+              <div
+                style={{
+                    ...avatarEmptyStyle,
+                    width: radius,
+                    height: radius,
+                    border: `1px solid ${palette.borderColor}`
+                }}
+              >
+                {this.props.userInitials &&
                   <div
                     style={{
                         height: '100%',
-                        backgroundColor: this.props.backgroundColor
+                        backgroundColor: this.props.backgroundColor,
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center'
                     }}
                   >
                     <div style={userInitialsAlignStyle} />
                     <div style={userInitialsWrapperStyle}>
-                      <h2 style={userInitialsStyle}>{userInitials}</h2>
+                      <h3 style={userInitialsStyle}>{userInitials}</h3>
                     </div>
                   </div>
                 }
-                {!userName &&
+                {!userInitials &&
                   <SvgIcon
                     style={{
-                        width: this.props.radius,
-                        height: this.props.radius
+                        width: radius,
+                        height: radius
                     }}
                     color={palette.textColor}
                   >
@@ -178,22 +192,26 @@ class Avatar extends React.Component {
               </div>
             }
           </div>
-          );
+        );
     }
 }
 Avatar.propTypes = {
+    avatarScale: React.PropTypes.number,
     image: React.PropTypes.string,
     editable: React.PropTypes.bool,
-    userName: React.PropTypes.string,
+    userInitials: React.PropTypes.string,
     radius: React.PropTypes.number,
-    userInitialsStyle: React.PropTypes.object,
+    userInitialsStyle: React.PropTypes.shape(),
     backgroundColor: React.PropTypes.string,
-    avatarEmptyStyle: React.PropTypes.object,
-    avatarClearStyle: React.PropTypes.object,
-    dialogHandlerStyle: React.PropTypes.object,
-    userInitialsAlignStyle: React.PropTypes.object,
-    userInitialsWrapperStyle: React.PropTypes.object,
-    offsetBorder: React.PropTypes.string
+    avatarEmptyStyle: React.PropTypes.shape(),
+    avatarClearStyle: React.PropTypes.shape(),
+    dialogHandlerStyle: React.PropTypes.shape(),
+    userInitialsAlignStyle: React.PropTypes.shape(),
+    userInitialsWrapperStyle: React.PropTypes.shape(),
+    offsetBorder: React.PropTypes.string,
+    clearAvatarImage: React.PropTypes.func,
+    style: React.PropTypes.shape(),
+    onClick: React.PropTypes.func
 };
 Avatar.contextTypes = {
     muiTheme: React.PropTypes.object
@@ -202,11 +220,8 @@ Avatar.defaultProps = {
     radius: 150,
     backgroundColor: 'rgba(239, 239, 239, 1)',
     avatarEmptyStyle: {
-        width: 150,
-        height: 150,
         borderRadius: '50%',
         overflow: 'hidden',
-        border: '1px solid #444'
     },
     avatarClearStyle: {
         cursor: 'pointer',
@@ -218,7 +233,8 @@ Avatar.defaultProps = {
         height: '100%',
         width: '100%',
         position: 'absolute',
-        cursor: 'pointer'
+        cursor: 'pointer',
+        opacity: 0
     },
     userInitialsAlignStyle: {
         height: '100%',
@@ -230,6 +246,11 @@ Avatar.defaultProps = {
         verticalAlign: 'middle',
         textAlign: 'center',
         width: '100%'
+    },
+    userInitialsStyle: {
+        textTransform: 'uppercase',
+        fontSize: '36px',
+        fontWeight: '600'
     }
 };
 export default Avatar;

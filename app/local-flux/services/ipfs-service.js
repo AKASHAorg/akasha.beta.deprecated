@@ -1,4 +1,3 @@
-import { ipcRenderer } from 'electron';
 import BaseService from './base-service';
 
 const Channel = window.Channel;
@@ -10,54 +9,46 @@ const Channel = window.Channel;
 class IpfsService extends BaseService {
     constructor () {
         super();
-        this.serverManager = Channel.server.ipfs.manager;
         this.clientManager = Channel.client.ipfs.manager;
     }
+
     /**
      * Send start IPFS service command to main process.
      * @param {object} options
      * @return promise
      */
-    start = (options) => {
+    start = ({ options = {}, onError = () => {}, onSuccess }) => {
         const serverChannel = Channel.server.ipfs.startService;
         const clientChannel = Channel.client.ipfs.startService;
-        if (this._listeners.get(clientChannel)) {
-            return Promise.resolve();
-        }
-        return new Promise((resolve, reject) => {
-            const listenerCb = (ev, res) => {
-                if (res.error) {
-                    return reject(res.error);
-                }
-                return resolve(res.data);
-            };
-            this.registerListener(clientChannel, listenerCb, () =>
-                ipcRenderer.send(serverChannel, options)
-            );
+        const ipfsOptions = {};
+        Object.keys(options).forEach((key) => {
+            if (key !== 'name' && key !== 'ports' && options[key] !== null) {
+                ipfsOptions[key] = options[key];
+            }
         });
-    }
+        this.registerListener(
+            clientChannel,
+            this.createListener(onError, onSuccess, clientChannel.channelName)
+        );
+        serverChannel.send(ipfsOptions);
+    };
+    /**
+     * Register stop ipfs listener
+     */
+    registerStopListener = ({ onError = () => {}, onSuccess }) => {
+        const clientChannel = Channel.client.ipfs.stopService;
+        this.registerListener(
+            clientChannel,
+            this.createListener(onError, onSuccess, clientChannel.channelName)
+        );
+    };
     /**
      * Stop ipfs service
      */
-    stop = () => {
+    stop = ({ options = {} }) => {
         const serverChannel = Channel.server.ipfs.stopService;
-        const clientChannel = Channel.client.ipfs.stopService;
-        if (this._listeners.get(clientChannel)) {
-            return Promise.resolve();
-        }
-        return new Promise((resolve, reject) => {
-            const listenerCb = (ev, res) => {
-                if (res.error) {
-                    return reject(res.error);
-                }
-                return resolve(res.data);
-            };
-
-            this.registerListener(clientChannel, listenerCb, () =>
-                ipcRenderer.send(serverChannel, {})
-            );
-        });
-    }
+        serverChannel.send(options);
+    };
     /**
      * get ipfs status
      * @response data = {
@@ -68,39 +59,57 @@ class IpfsService extends BaseService {
      *      stopped?: boolean;
      * }
      */
-    getStatus = () => {
+    getStatus = ({ options = {}, onError = () => {}, onSuccess }) => {
         const serverChannel = Channel.server.ipfs.status;
         const clientChannel = Channel.client.ipfs.status;
-        if (this._listeners.get(clientChannel)) {
-            return Promise.resolve();
-        }
-        return new Promise((resolve, reject) => {
-            const listenerCb = (ev, res) => {
-                if (res.error) {
-                    return reject(res.error);
-                }
-                return resolve(res.data);
-            };
-            this.registerListener(clientChannel, listenerCb, () =>
-                ipcRenderer.send(serverChannel, {})
-            );
-        });
-    }
-    resolve = (ipfsHash) => {
+        this.registerListener(
+            clientChannel,
+            this.createListener(onError, onSuccess, clientChannel.channelName)
+        );
+        serverChannel.send(options);
+    };
+
+    resolve = ({ options = {}, onError = () => {}, onSuccess }) => {
         const serverChannel = Channel.server.ipfs.resolve;
         const clientChannel = Channel.client.ipfs.resolve;
-        if (this._listeners.get(clientChannel)) {
-            return Promise.resolve();
-        }
-        return new Promise((resolve, reject) => {
-            const listenerCb = (ev, res) => {
-                if (res.error) return reject(res.error);
-                return resolve(res.data);
-            };
-            this.registerListener(clientChannel, listenerCb, () =>
-                ipcRenderer.send(serverChannel, { hash: ipfsHash })
-            );
-        });
+        this.registerListener(
+            clientChannel,
+            this.createListener(onError, onSuccess, clientChannel.channelName)
+        );
+        serverChannel.send(options);
+    };
+    /**
+     * Retrieve config used by ipfs
+     */
+    getConfig = ({ options = {}, onError = () => {}, onSuccess }) => {
+        const clientChannel = Channel.client.ipfs.getConfig;
+        const serverChannel = Channel.server.ipfs.getConfig;
+
+        return this.openChannel({
+            clientManager: this.clientManager,
+            serverChannel,
+            clientChannel,
+            listenerCb: this.createListener(onError, onSuccess)
+        }, () =>
+                serverChannel.send(options)
+        );
+    };
+
+    /**
+     * Retrieve ports used by ipfs
+     */
+    getPorts = ({ options = {}, onError = () => {}, onSuccess }) => {
+        const clientChannel = Channel.client.ipfs.getPorts;
+        const serverChannel = Channel.server.ipfs.getPorts;
+
+        return this.openChannel({
+            clientManager: this.clientManager,
+            serverChannel,
+            clientChannel,
+            listenerCb: this.createListener(onError, onSuccess)
+        }, () =>
+                serverChannel.send(options)
+        );
     }
 }
 

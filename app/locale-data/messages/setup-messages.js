@@ -26,6 +26,31 @@ const setupMessages = defineMessages({
         description: 'geth cache size input placeholder',
         defaultMessage: 'Geth cache size'
     },
+    gethNetworkId: {
+        id: 'app.setup.gethNetworkId',
+        description: 'geth network id placeholder',
+        defaultMessage: 'Geth network id'
+    },
+    gethAutodag: {
+        id: 'app.setup.gethAutodag',
+        description: 'geth autodag flag',
+        defaultMessage: 'Autodag'
+    },
+    gethFast: {
+        id: 'app.setup.gethFast',
+        description: 'geth fast flag',
+        defaultMessage: 'Fast'
+    },
+    gethMine: {
+        id: 'app.setup.gethMine',
+        description: 'geth mine flag',
+        defaultMessage: 'Mine'
+    },
+    gethMinerThreads: {
+        id: 'app.setup.gethMinerThreads',
+        description: 'number of threads used for mining',
+        defaultMessage: 'Miner threads'
+    },
     changeIfIpfsRunning: {
         id: 'app.setup.changeIfIpfsRunning',
         description: 'ipfs input field placeholder',
@@ -41,6 +66,16 @@ const setupMessages = defineMessages({
         description: 'error shown when user sets a cache size lower than 512mb',
         defaultMessage: 'Cache size should not be less than 512Mb'
     },
+    ipfsStoragePath: {
+        id: 'app.setup.ipfsStoragePath',
+        description: 'ipfs input field label',
+        defaultMessage: 'IPFS storage path'
+    },
+    changeIpfsStoragePath: {
+        id: 'app.setup.changeIpfsStoragePath',
+        description: 'ipfs input field label',
+        defaultMessage: 'Change IPFS directory'
+    },
     ipfsApiPort: {
         id: 'app.setup.ipfsApiPort',
         description: 'ipfs input field label',
@@ -50,6 +85,11 @@ const setupMessages = defineMessages({
         id: 'app.setup.ipfsGatewayPort',
         description: 'ipfs input field label',
         defaultMessage: 'IPFS gateway port'
+    },
+    ipfsSwarmPort: {
+        id: 'app.setup.ipfsSwarmPort',
+        description: 'ipfs input field label',
+        defaultMessage: 'IPFS swarm port'
     },
     firstTimeSetupTitle: {
         id: 'app.setup.firstTimeSetupTitle',
@@ -90,15 +130,25 @@ const setupMessages = defineMessages({
         description: 'message shown when geth is downloading',
         defaultMessage: 'Downloading Geth client..'
     },
+    downloadingIpfs: {
+        id: 'app.setup.downloadingIpfs',
+        description: 'message shown when IPFS is downloading',
+        defaultMessage: 'Downloading IPFS client..'
+    },
     startingGeth: {
         id: 'app.setup.startingGeth',
-        description: 'message shown then Geth is starting',
+        description: 'message shown when Geth is starting',
         defaultMessage: 'Starting Geth client..'
+    },
+    processing: {
+        id: 'app.setup.processing',
+        description: 'message shown when processing blocks',
+        defaultMessage: 'Processing'
     },
     synchronizing: {
         id: 'app.setup.synchronizing',
         description: 'state of block sync',
-        defaultMessage: 'Synchronising'
+        defaultMessage: 'Synchronizing'
     },
     syncStopped: {
         id: 'app.setup.syncStopped',
@@ -110,10 +160,20 @@ const setupMessages = defineMessages({
         description: 'state of block sync',
         defaultMessage: 'Synchronization completed'
     },
+    syncPaused: {
+        id: 'app.setup.syncPaused',
+        description: 'state of block sync',
+        defaultMessage: 'Syncronization is paused'
+    },
     syncResuming: {
         id: 'app.setup.syncResuming',
         description: 'state of block sync',
         defaultMessage: 'Resuming synchronization...'
+    },
+    disconnected: {
+        id: 'app.setup.disconnected',
+        description: 'disconnected',
+        defaultMessage: 'Disconnected'
     },
     beforeSyncStart: {
         id: 'app.setup.beforeSyncStart',
@@ -128,6 +188,13 @@ const setupMessages = defineMessages({
                         network. You will be able to log in and enjoy the full AKASHA experience as
                         soon as the sync is complete.`
     },
+    afterSyncFinish: {
+        id: 'app.setup.afterSyncFinish',
+        description: 'Message to show after synchronization has finished',
+        defaultMessage: `Synchronization is complete. IPFS service needs to be started in order to
+                        continue. You can start it manually from the status bar in the header or
+                        click NEXT to start it automatically.`
+    },
     initializingTitle: {
         id: 'app.setup.initializingTitle',
         description: 'Title for initializing state page',
@@ -137,6 +204,11 @@ const setupMessages = defineMessages({
         id: 'app.setup.noProfilesFound',
         description: 'message if no local profiles found.',
         defaultMessage: 'No profiles found. Create a new identity or import an existing one.'
+    },
+    findingProfiles: {
+        id: 'app.setup.findingProfiles',
+        description: 'when we are trying to discover local profiles with akasha account',
+        defaultMessage: 'Finding profiles..'
     },
     logInTitle: {
         id: 'app.setup.logInTitle',
@@ -167,6 +239,55 @@ const setupMessages = defineMessages({
         id: 'app.setup.peers',
         description: 'base plural form of peer',
         defaultMessage: 'peers'
+    },
+    hideDetails: {
+        id: 'app.setup.hideDetails',
+        description: 'hide geth logs',
+        defaultMessage: 'Hide details'
+    },
+    viewDetails: {
+        id: 'app.setup.viewDetails',
+        description: 'show geth logs',
+        defaultMessage: 'View details'
+    },
+    retry: {
+        id: 'app.setup.retry',
+        description: 'try again',
+        defaultMessage: 'Retry'
+    },
+    retryStep: {
+        id: 'app.setup.retryStep',
+        description: 'retry current step',
+        defaultMessage: 'Retry Step'
+    },
+    identityRegistered: {
+        id: 'app.setup.identityRegistered',
+        description: 'panel title when identity registered',
+        defaultMessage: 'Identity Registered!'
+    },
+    saveGethSettingsSuccess: {
+        id: 'app.setup.saveGethSettingsSuccess',
+        description: 'Geth settings successfully saved',
+        defaultMessage: `You have successfully saved your settings. You need to restart your geth
+                        client for your changes to be applied.`
+    },
+    saveIpfsSettingsSuccess: {
+        id: 'app.setup.saveIpfsSettingsSuccess',
+        description: 'IPFS settings successfully saved',
+        defaultMessage: `You have successfully saved your settings. You need to restart your IPFS
+                        client for your changes to be applied.`
+    },
+    gethStopped: {
+        id: 'app.setup.gethStopped',
+        description: 'message to be displayed when geth is stopped and profiles cannot be loaded',
+        defaultMessage: `Geth service is not working. Please start it manually in order to fetch
+                        your profiles.`
+    },
+    ipfsStopped: {
+        id: 'app.setup.ipfsStopped',
+        description: 'message to be displayed when ipfs is stopped and profiles cannot be loaded',
+        defaultMessage: `IPFS service is stopped. Please start it manually in order to fetch
+                        your profiles.`
     }
 });
 

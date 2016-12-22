@@ -24,7 +24,7 @@ class QuickEntryEditor extends React.Component {
         this.setState({
             isExpanded: false
         }, () => {
-            this.editor.refs.clickAwayableElement.blur();
+            // this.editor.refs.clickAwayableElement.blur();
         });
     }
     _handlePublish = (ev) => {};
@@ -58,7 +58,7 @@ class QuickEntryEditor extends React.Component {
                   src={avatarImage}
                   size={40}
                 />
-                  
+
               </div>
               <div className="col-xs-11" style={{ cursor: 'text' }} onClick={this._handleEditClick}>
                 <p
@@ -92,7 +92,7 @@ class QuickEntryEditor extends React.Component {
                 <div className="row" style={{ minHeight: 150 }}>
                   <div className="col-xs-12">
                     <EntryEditor
-                      ref={(editor) => this.editor = editor}
+                      ref={editor => this.editor = editor}
                       onAutosave={this._handleEditorChange}
                     />
                   </div>

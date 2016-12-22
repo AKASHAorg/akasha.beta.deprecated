@@ -1,105 +1,323 @@
-import debug from 'debug';
-import { ipcRenderer } from 'electron';
 import entriesDB from './db/entry';
 import BaseService from './base-service';
 
 const Channel = window.Channel;
-const dbg = debug('App:EntryService:');
 
-/** * DELETE THIS *****/
-import { generateEntries } from './faker-data';
-/** ******************/
 
 /**
  * Entry service
- * default open channels =>
+ * channels => ['publish', 'update', 'upvote', 'downvote', 'isOpenedToVotes', 'getVoteOf',
+ *  'getVoteEndDate', 'getScore', 'getEntriesCount', 'getEntryOf', 'getEntry', 'getEntriesCreated',
+ *  'getVotesEvent']
+ * default open channels => ['getVoteEndDate', 'getScore', 'getEntry']
  */
 class EntryService extends BaseService {
     constructor () {
         super();
-        this.serverManager = Channel.server.entry.manager;
         this.clientManager = Channel.client.entry.manager;
     }
+
     /**
      *  Publish a new entry
      *
      */
-    publishEntry = (entry, profileAddress) => {
-        const serverChannel = Channel.server.entry.publish;
-        const clientChannel = Channel.client.entry.publish;
-        if (this._listeners.has(clientChannel)) return Promise.resolve();
-        return new Promise((resolve, reject) => {
-            const listenerCb = (ev, res) => {
-                dbg('publishEntry', res);
-                if (res.error) {
-                    return reject(res.error);
-                }
-                return resolve(res);
-            };
-            return this.openChannel({
-                serverManager: this.serverManager,
-                clientManager: this.clientManager,
-                serverChannel,
-                clientChannel,
-                listenerCb
-            }, () => ipcRenderer.send(serverChannel, entry));
-        });
+    publishEntry = ({ draftObj, token, gas, onError, onSuccess }) => {
+        this.openChannel({
+            clientManager: this.clientManager,
+            serverChannel: Channel.server.entry.publish,
+            clientChannel: Channel.client.entry.publish,
+            listenerCb: this.createListener(onError, onSuccess)
+        }, () =>
+            Channel.server.entry.publish.send({
+                content: draftObj.content,
+                tags: draftObj.tags,
+                token,
+                gas
+            }));
     };
-    getResourceCount = (table) =>
-        entriesDB.transaction('rw', entriesDB[table], () =>
-            entriesDB[table].count()
+
+    getEntriesCount = ({ akashaId, onError, onSuccess }) => {
+        this.openChannel({
+            clientManager: this.clientManager,
+            serverChannel: Channel.server.entry.getProfileEntriesCount,
+            clientChannel: Channel.client.entry.getProfileEntriesCount,
+            listenerCb: this.createListener(onError, onSuccess)
+        }, () => Channel.server.entry.getProfileEntriesCount.send({ akashaId }));
+    };
+
+    entryProfileIterator = ({ akashaId, start, limit, onSuccess, onError }) => {
+        this.openChannel({
+            clientManager: this.clientManager,
+            serverChannel: Channel.server.entry.entryProfileIterator,
+            clientChannel: Channel.client.entry.entryProfileIterator,
+            listenerCb: this.createListener(onError, onSuccess)
+        }, () => Channel.server.entry.entryProfileIterator.send({ akashaId, start, limit }));
+    }
+
+    moreEntryProfileIterator = ({ akashaId, start, limit, onError = () => {}, onSuccess }) =>
+        this.registerListener(
+            Channel.client.entry.entryProfileIterator,
+            this.createListener(onError, onSuccess),
+            () => Channel.server.entry.entryProfileIterator.send({ akashaId, start, limit })
         );
+
     // get resource by id (drafts or entries);
-    getById = (table, id) =>
-        entriesDB.transaction('r', entriesDB[table], () => {
-            dbg('getById from', table, 'with id', id);
-            return entriesDB[table]
-                    .where('id')
-                    .equals(parseInt(id, 10))
-                    .first();
-        });
+    getById = ({ table, id, onSuccess, onError }) =>
+        entriesDB[table]
+            .where('id')
+            .equals(parseInt(id, 10))
+            .first()
+            .then(entries => onSuccess(entries))
+            .catch(reason => onError(reason));
+
     getSortedEntries = ({ sortBy }) =>
-        new Promise((resolve, reject) => {
+        new Promise((resolve) => {
             let entries = [];
             if (sortBy === 'rating') {
                 entries = generateEntries(1);
-                dbg('getting entries by rating', entries);
                 return resolve(entries);
             }
             if (sortBy === 'top') {
                 entries = generateEntries(3);
-                dbg('getting top entries', entries);
                 return resolve(entries);
             }
             entries = generateEntries(2);
-            dbg('getting entries by', sortBy, entries);
             return resolve(entries);
         });
-        // entriesDB.transaction('r', entriesDB.drafts, () => {
-        //     if (sortBy === 'rating') {
-        //         return entriesDB.drafts.where('tags').anyOf('top-rating').toArray();
-        //     }
-        //     if (sortBy === 'top') {
-        //         return entriesDB.drafts.sortBy('status.created_at').toArray();
-        //     }
-        // });
-    createSavedEntry = (userName, entry) =>
-        entriesDB.transaction('rw', entriesDB.savedEntries, () => {
-            entriesDB.savedEntries.add({ userName, ...entry.toJS() }).then(entryId => {
-                dbg('new savedEntry created with id', entryId);
-                return entry;
-            });
+
+    saveEntry = ({ akashaId, entry, onError, onSuccess }) =>
+        entriesDB.savedEntries.where('akashaId').equals(akashaId)
+            .toArray()
+            .then((records) => {
+                let result;
+                if (!records.length) {
+                    result = { akashaId, entries: [entry] };
+                } else {
+                    records[0].entries.push(entry);
+                    result = { akashaId, entries: records[0].entries };
+                }
+                return entriesDB.savedEntries.put(result)
+                    .then(() => onSuccess(entry))
+                    .catch(reason => onError(reason));
+            })
+            .catch(reason => onError(reason));
+
+    deleteEntry = ({ akashaId, entryId, onError, onSuccess }) =>
+        entriesDB.savedEntries.where('akashaId').equals(akashaId)
+            .toArray()
+            .then((records) => {
+                let result;
+                if (!records.length) {
+                    return;
+                } else {
+                    const entries = records[0].entries.filter(entry =>
+                        entry.entryId !== entryId);
+                    result = { akashaId, entries };
+                }
+                return entriesDB.savedEntries.put(result)
+                    .then(() => onSuccess(entryId))
+                    .catch(reason => onError(reason));
+            })
+            .catch(reason => onError(reason));
+
+    getSavedEntries = ({ akashaId, onError = () => {}, onSuccess }) =>
+        entriesDB.savedEntries.where('akashaId')
+            .equals(akashaId)
+            .first()
+            .then(result => onSuccess(result ? result.entries : []))
+            .catch(reason => onError(reason));
+
+    getEntryList = ({ entries, onError = () => {}, onSuccess }) => {
+        this.openChannel({
+            clientManager: this.clientManager,
+            serverChannel: Channel.server.entry.getEntryList,
+            clientChannel: Channel.client.entry.getEntryList,
+            listenerCb: this.createListener(onError, onSuccess)
+        }, () => {
+            Channel.server.entry.getEntryList.send(entries);
+        });
+    }
+
+    moreEntryList = ({ entries, onError = () => {}, onSuccess }) => {
+        this.registerListener(
+            Channel.client.entry.getEntryList,
+            this.createListener(onError, onSuccess),
+            () => Channel.server.entry.getEntryList.send(entries)
+        );
+    }
+
+    entryTagIterator = ({ tagName, start, limit, onError = () => {}, onSuccess }) => {
+        this.openChannel({
+            clientManager: this.clientManager,
+            serverChannel: Channel.server.entry.entryTagIterator,
+            clientChannel: Channel.client.entry.entryTagIterator,
+            listenerCb: this.createListener(onError, onSuccess)
+        }, () => {
+            Channel.server.entry.entryTagIterator.send({ tagName, start, limit });
+        });
+    };
+
+    moreEntryTagIterator = ({ tagName, start, limit, onError = () => {}, onSuccess }) =>
+        this.registerListener(
+            Channel.client.entry.entryTagIterator,
+            this.createListener(onError, onSuccess),
+            () => Channel.server.entry.entryTagIterator.send({ tagName, start, limit })
+        );
+
+    getTagEntriesCount = ({
+        tagName, onError = () => {
+        }, onSuccess
+    }) =>
+        this.openChannel({
+            clientManager: this.clientManager,
+            serverChannel: Channel.server.entry.getTagEntriesCount,
+            clientChannel: Channel.client.entry.getTagEntriesCount,
+            listenerCb: this.createListener(onError, onSuccess)
+        }, () => {
+            Channel.server.entry.getTagEntriesCount.send({ tagName });
         });
 
-    getSavedEntries = (userName) =>
-        entriesDB.transaction('r', entriesDB.savedEntries, () => {
-            dbg('getting saved entries for username ', userName);
-            return entriesDB.savedEntries.where('userName')
-                                         .equals(userName)
-                                         .toArray();
+    getLicences = ({ onSuccess, onError }) => {
+        this.openChannel({
+            clientManager: Channel.client.licenses.manager,
+            serverChannel: Channel.server.licenses.getLicenses,
+            clientChannel: Channel.client.licenses.getLicenses,
+            listenerCb: this.createListener(onError, onSuccess)
+        }, () => {
+            Channel.server.licenses.getLicenses.send();
+        });
+    };
+
+    getLicencesById = ({ id, onSuccess, onError }) => {
+        this.registerListener(
+            Channel.client.licenses.getLicenceById,
+            this.createListener(onError, onSuccess),
+            () => Channel.server.licenses.getLicenceById({ id })
+        );
+    };
+
+    getEntriesStream = ({
+        akashaId, onError = () => {
+        }, onSuccess
+    }) => {
+        this.openChannel({
+            clientManager: this.clientManager,
+            serverChannel: Channel.server.entry.getEntriesStream,
+            clientChannel: Channel.client.entry.getEntriesStream,
+            listenerCb: this.createListener(onError, onSuccess)
+        }, () => {
+            Channel.server.entry.getEntriesStream.send({ akashaId });
+        });
+    }
+
+    voteCost = ({ weight, onError = () => {}, onSuccess }) =>
+        this.openChannel({
+            clientManager: this.clientManager,
+            serverChannel: Channel.server.entry.voteCost,
+            clientChannel: Channel.client.entry.voteCost,
+            listenerCb: this.createListener(onError, onSuccess)
+        }, () => {
+            Channel.server.entry.voteCost.send({ weight });
         });
 
-    getEntriesForTag = () => {};
+    upvote = ({ token, entryId, weight, value, gas = 2000000, onError = () => {}, onSuccess }) =>
+        this.openChannel({
+            clientManager: this.clientManager,
+            serverChannel: Channel.server.entry.upvote,
+            clientChannel: Channel.client.entry.upvote,
+            listenerCb: this.createListener(onError, onSuccess)
+        }, () => {
+            Channel.server.entry.upvote.send({ token, entryId, weight, value, gas });
+        });
+
+
+    downvote = ({ token, entryId, weight, value, gas = 2000000, onError = () => {}, onSuccess }) =>
+        this.openChannel({
+            clientManager: this.clientManager,
+            serverChannel: Channel.server.entry.downvote,
+            clientChannel: Channel.client.entry.downvote,
+            listenerCb: this.createListener(onError, onSuccess)
+        }, () => {
+            Channel.server.entry.downvote.send({ token, entryId, weight, value, gas });
+        });
+
+    getEntry = ({ entryId, full = false, onError = () => {}, onSuccess }) => {
+        this.registerListener(
+            Channel.client.entry.getEntry,
+            this.createListener(onError, onSuccess)
+        );
+        Channel.server.entry.getEntry.send({ entryId, full });
+    };
+
+    getScore = ({ entryId, onError = () => {}, onSuccess }) => {
+        this.registerListener(
+            Channel.client.entry.getScore,
+            this.createListener(onError, onSuccess)
+        );
+        Channel.server.entry.getScore.send({ entryId });
+    };
+
+    isActive = ({ entryId, onError = () => {}, onSuccess }) =>
+        this.openChannel({
+            clientManager: this.clientManager,
+            serverChannel: Channel.server.entry.isActive,
+            clientChannel: Channel.client.entry.isActive,
+            listenerCb: this.createListener(onError, onSuccess)
+        }, () => {
+            Channel.server.entry.isActive.send({ entryId });
+        });
+
+    getVoteOf = ({ akashaId, entryId, onError = () => {}, onSuccess }) => {
+        if (this._openChannels.has(Channel.server.entry.getVoteOf.channel)) {
+            return Channel.server.entry.getVoteOf.send({ akashaId, entryId });
+        }
+        this.openChannel({
+            clientManager: this.clientManager,
+            serverChannel: Channel.server.entry.getVoteOf,
+            clientChannel: Channel.client.entry.getVoteOf,
+            listenerCb: this.createListener(onError, onSuccess)
+        }, () => {
+            Channel.server.entry.getVoteOf.send({ akashaId, entryId });
+        });
+    };
+
+    canClaim = ({ entryId, onError, onSuccess }) => {
+        if (this._openChannels.has(Channel.server.entry.canClaim.channel)) {
+            return Channel.server.entry.canClaim.send({ entryId });
+        }
+        this.openChannel({
+            clientManager: this.clientManager,
+            serverChannel: Channel.server.entry.canClaim,
+            clientChannel: Channel.client.entry.canClaim,
+            listenerCb: this.createListener(onError, onSuccess)
+        }, () => {
+            Channel.server.entry.canClaim.send({ entryId });
+        });
+    };
+
+    getEntryBalance = ({ entryId, onError, onSuccess }) => {
+        if (this._openChannels.has(Channel.server.entry.getEntryBalance.channel)) {
+            return Channel.server.entry.getEntryBalance.send({ entryId });
+        }
+        this.openChannel({
+            clientManager: this.clientManager,
+            serverChannel: Channel.server.entry.getEntryBalance,
+            clientChannel: Channel.client.entry.getEntryBalance,
+            listenerCb: this.createListener(onError, onSuccess)
+        }, () => {
+            Channel.server.entry.getEntryBalance.send({ entryId });
+        });
+    };
+
+    claim = ({ entryId, token, gas, onError, onSuccess }) =>
+        this.openChannel({
+            clientManager: this.clientManager,
+            serverChannel: Channel.server.entry.claim,
+            clientChannel: Channel.client.entry.claim,
+            listenerCb: this.createListener(onError, onSuccess)
+        }, () => {
+            Channel.server.entry.claim.send({ entryId, token, gas });
+        });
 }
 
 export { EntryService };

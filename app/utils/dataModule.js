@@ -16,18 +16,17 @@ export const inputFieldMethods = {
         const parts = statePath.split('.');
         const nameSpace = parts.shift();
         const errorKey = parts[parts.length - 1];
-        const props = r.omit(['statePath', 'addValueLink', 'onTextChange'], params);
+        const props = r.omit(['statePath', 'addValueLink', 'onTextChange', 'onFocus'], params);
         const validationErrors = this.props.getValidationMessages(errorKey);
         const state = this.state;
         let value = state[nameSpace];
-        parts.forEach(piece => {
+        parts.forEach((piece) => {
             value = value[piece];
         });
 
         const getNewValuePath = (newVal) => {
             const constructedObj = {};
             let internalPtr;
-
             constructedObj[nameSpace] = r.clone(state[nameSpace]) || {};
 
             // if the value should be placed right in component's
@@ -63,6 +62,9 @@ export const inputFieldMethods = {
                 }
             };
         }
+        if (props.onFocus) {
+            props.onFocus();
+        }
         if (validationErrors.length > 0) {
             props.errorText = validationErrors.reduce((prev, current) => `${prev}, ${current}`);
         }
@@ -90,11 +92,22 @@ export const calculateReadingTime = (wordCount, options = {}) => {
 
 export const getWordCount = (content) => {
     const plainText = content.getPlainText('');
-    // new line, carriage return, line feed
-    const regex = /(?:\r\n|\r|\n)/g;
-    // replace above characters w/ space
-    const cleanString = plainText.replace(regex, ' ').trim();
-    // matches words according to whitespace
-    const wordArray = cleanString.match(/\S+/g);
-    return wordArray ? wordArray.length : 0;
+    const matchWords = plainText.match(/[^~`!¡@#$%^&*()_\-+={}\[\]|\\:;"'<,>.?¿\/\s]+/g);
+    return matchWords ? matchWords.length : 0;
 };
+
+export const validateTag = (tagName) => {
+    const tag = tagName ? tagName.trim().toLowerCase() : '';
+    const ALPHANUMERIC_REGEX = /^(?:[a-zA-Z0-9]+(?:(-|_)(?!$))?)+$/;
+    let error = null;
+    if (tag.length > 3 && tag.length <= 24) {
+        if (!ALPHANUMERIC_REGEX.test(tag)) {
+            error = 'alphanumericError';
+        }
+    } else if (tag.length > 24) {
+        error = 'tooLongError';
+    } else {
+        error = 'tooShortError';
+    }
+    return error;
+}

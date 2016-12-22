@@ -1,16 +1,16 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import {
     List,
     ListItem,
     FlatButton,
-    RaisedButton } from 'material-ui';
-import Avatar from '../../../../../shared-components/Avatar/avatar';
-import LoginDialog from '../../../../../shared-components/Dialogs/login-dialog';
-import PanelContainer from 'shared-components/PanelContainer/panel-container';
-import LoginHeader from '../../../components/LoginHeader';
+    RaisedButton,
+    Avatar } from 'material-ui';
 import { hashHistory } from 'react-router';
-import { FormattedMessage, injectIntl } from 'react-intl';
-import { setupMessages, generalMessages } from 'locale-data/messages';
+import { injectIntl } from 'react-intl';
+import { LoginDialog, PanelContainer } from 'shared-components';
+import { setupMessages, generalMessages } from 'locale-data/messages'; /* eslint import/no-unresolved: 0*/
+import debounce from 'lodash.debounce';
+import PanelHeader from '../../../../components/panel-header';
 
 class Auth extends Component {
     constructor (props, context) {
@@ -24,59 +24,136 @@ class Auth extends Component {
         };
     }
     componentWillMount () {
-        const { profileActions } = this.props;
-        profileActions.checkTempProfile().then(() => {
-            profileActions.clearLoggedProfile();
-        });
+        const { profileActions, tempProfileActions, gethStatus } = this.props;
+        tempProfileActions.getTempProfile();
+        profileActions.clearLoggedProfile();
+        if (gethStatus.get('api')) {
+            profileActions.getLocalProfiles();
+        }
+    }
+    componentWillReceiveProps (nextProps) {
+        const {
+            profileActions,
+            tempProfile,
+            localProfiles,
+            loggedProfile,
+            loginErrors,
+            gethStatus,
+            ipfsStatus,
+            fetchingLocalProfiles } = nextProps;
+        const oldIpfsStatus = this.props.ipfsStatus;
+        const ipfsStatusChanged = (ipfsStatus.get('started') && !oldIpfsStatus.get('started'))
+            || (ipfsStatus.get('spawned') && !oldIpfsStatus.get('spawned'));
+        const profilesChanged = this.props.localProfiles.size !== nextProps.localProfiles.size;
+        const fetchingLocalProfilesChanged = !fetchingLocalProfiles &&
+            this.props.fetchingLocalProfiles;
+        if (gethStatus.get('api') && !this.props.gethStatus.get('api')) {
+            profileActions.getLocalProfiles();
+        }
+        if (loginErrors.size === 0) {
+            if (this.state.selectedProfile &&
+                loggedProfile.get('account') === this.state.selectedProfile.get('ethAddress')) {
+                this.context.router.replace(`/${this.state.selectedProfile.get('akashaId')}/explore/tag`);
+            }
+
+            if (tempProfile.get('akashaId') !== '') {
+                return this.context.router.push('/authenticate/new-profile-status');
+            }
+        }
+        if ((ipfsStatus.get('started') || ipfsStatus.get('spawned')) && localProfiles.size > 0
+                && (profilesChanged || ipfsStatusChanged || fetchingLocalProfilesChanged)) {
+            profileActions.getProfileData(localProfiles.toJS());
+        }
+        return null;
+    }
+    componentWillUnmount () {
+        this.props.profileActions.clearLocalProfiles();
+    }
+    getPlaceholderMessage () {
+        const { intl, gethStatus, ipfsStatus, localProfiles, localProfilesFetched } = this.props;
+        let message;
+        if (!gethStatus.get('api')) {
+            message = intl.formatMessage(setupMessages.gethStopped);
+        } else if (!ipfsStatus.get('spawned') && !ipfsStatus.get('started')) {
+            message = intl.formatMessage(setupMessages.ipfsStopped);
+        } else if (localProfiles.size === 0 && localProfilesFetched) {
+            message = intl.formatMessage(setupMessages.noProfilesFound);
+        } else if (localProfiles.size === 0 && !localProfilesFetched) {
+            message = intl.formatMessage(setupMessages.findingProfiles);
+        }
+        if (message) {
+            return (<div
+              style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}
+            >
+              <div style={{ maxWidth: '80%', textAlign: 'center' }}>
+                {message}
+              </div>
+            </div>);
+        }
+        return null;
     }
     handleTouchTap = (index) => {
-        const { profileState } = this.props;
-        const selectedProfile = profileState.get('profiles').get(index);
+        const { localProfiles } = this.props;
+        const selectedProfile = localProfiles.get(index);
         this.setState({ openModal: true, selectedProfile });
     };
     handleModalClose = () => {
+        this.props.profileActions.clearLoginErrors();
         this.setState(({ openModal: false }));
     };
-    handleLogin = () => {
+    handleLogin = debounce(() => {
         const { profileActions } = this.props;
-        const selectedProfile = this.state.selectedProfile.toJS();
-        selectedProfile.password = this.state.password;
-        let unlockInterval = 0;
+        const selectedProfile = this.state.selectedProfile;
+        let unlockInterval = 1;
         if (this.state.unlockIsChecked) {
             unlockInterval = this.state.unlockTimer;
         }
-        profileActions.login(selectedProfile, unlockInterval, false);
-    };
+        profileActions.login({
+            account: selectedProfile.get('ethAddress'),
+            password: this.state.password,
+            rememberTime: unlockInterval,
+            akashaId: selectedProfile.get('akashaId')
+        });
+    }, 1000, { leading: true, trailing: false });
     _getLocalProfiles () {
-        const { profileState } = this.props;
-        const profilesList = profileState.get('profiles');
-        if (profilesList.size === 0) {
-            return <div><FormattedMessage {...setupMessages.noProfilesFound} /></div>;
+        const { localProfiles } = this.props;
+        const { palette } = this.context.muiTheme;
+        if (localProfiles.size === 0) {
+            return this.getPlaceholderMessage();
         }
-        if (profilesList.first().size <= 2) {
-            return <div>Finding Local Profiles</div>;
-        }
-        return profileState.get('profiles').map((profile, index) => {
-            const profileAddress = profile.get('address');
-            const optionalData = profile.get('optionalData');
+        return localProfiles.map((profile, index) => {
+            const profileAddress = profile.get('ethAddress');
             const profileName = `${profile.get('firstName')} ${profile.get('lastName')}`;
-            const avatarProps = {
-                editable: false,
-                userName: profileName,
-                image: optionalData ?
-                    `data:image/gif;base64,${
-                        btoa(String.fromCharCode.apply(null, optionalData.get('avatar')))
-                        }` : null,
-                radius: 48,
-                className: 'col-xs-4 middle-xs',
-                userInitialsStyle: { fontSize: 18 }
-            };
+            const userInitials = profileName.match(/\b\w/g);
+            const avatarImage = profile.get('avatar');
+            let avtr;
+            if (!profile.get('akashaId')) {
+                return null;
+            }
+            if (avatarImage) {
+                avtr = (
+                  <Avatar
+                    src={avatarImage}
+                    size={48}
+                    style={{ top: '12px', border: `1px solid ${palette.paperShadowColor}` }}
+                  />
+                );
+            } else {
+                avtr = (
+                  <Avatar>
+                    {userInitials &&
+                      ((userInitials.shift() || '') + (userInitials.pop() || '')).toUpperCase()
+                    }
+                    {!userInitials && profile.get('akashaId') &&
+                        profile.get('akashaId')
+                    }
+                  </Avatar>
+                );
+            }
             return (
               <ListItem
                 key={index}
-                leftAvatar={
-                  <Avatar {...avatarProps} />
-                }
+                leftAvatar={avtr}
                 primaryText={
                   <div
                     style={{
@@ -91,14 +168,14 @@ class Auth extends Component {
                 }
                 secondaryText={
                   <div style={{ marginLeft: 16 }}>
-                    {profile.get('userName')}
+                    @{profile.get('akashaId')}
                   </div>
                 }
                 secondaryTextLines={1}
                 value={profileAddress}
                 onTouchTap={() => this.handleTouchTap(index)}
                 className="col-xs-12"
-                style={{ border: '1px solid #DDD', marginBottom: 8 }}
+                style={{ border: `1px solid ${palette.borderColor}`, marginBottom: 8 }}
               />
             );
         });
@@ -109,12 +186,16 @@ class Auth extends Component {
     };
     _handlePasswordChange = (ev) => {
         ev.preventDefault();
+        const { profileActions, loginErrors } = this.props;
+        if (loginErrors.size > 0) {
+            profileActions.clearLoginErrors();
+        }
         this.setState({
             password: ev.target.value
         });
     };
     _handleDialogKeyPress = (ev) => {
-        if (ev.charCode === 13) {
+        if (ev.key === 'Enter') {
             this.handleLogin();
         }
     };
@@ -129,19 +210,33 @@ class Auth extends Component {
         });
     };
     render () {
-        const { style, intl } = this.props;
+        const { gethStatus, intl, ipfsStatus, loginRequested, style } = this.props;
         const { openModal } = this.state;
+        const isServiceStopped = !gethStatus.get('api') || gethStatus.get('stopped')
+            || (!ipfsStatus.get('started') && !ipfsStatus.get('spawned'));
         const modalActions = [
-            <FlatButton label="Cancel" onTouchTap={this.handleModalClose} />,
-            <FlatButton label="Submit" primary onTouchTap={this.handleLogin} />
+            /* eslint-disable */
+            <FlatButton
+              label={intl.formatMessage(generalMessages.cancel)}
+              onTouchTap={this.handleModalClose}
+            />,
+            <FlatButton
+              label={intl.formatMessage(generalMessages.submit)}
+              primary
+              onTouchTap={this.handleLogin}
+              disabled={isServiceStopped}
+            />
+            /* eslint-enable */
         ];
         const localProfiles = this._getLocalProfiles();
         const selectedProfile = this.state.selectedProfile;
         return (
-            <PanelContainer
-              showBorder
-              header={<LoginHeader title={intl.formatMessage(setupMessages.logInTitle)} />}
-              actions={[
+          <PanelContainer
+            showBorder
+            style={style}
+            header={<PanelHeader title={intl.formatMessage(setupMessages.logInTitle)} />}
+            actions={[
+                /* eslint-disable */
                 <RaisedButton
                   key="createNewIdentity"
                   label={intl.formatMessage(generalMessages.createNewIdentityLabel)}
@@ -149,39 +244,54 @@ class Auth extends Component {
                   style={{ marginLeft: '10px' }}
                   onMouseUp={this._handleIdentityCreate}
                 />
-              ]}
-            >
+                /* eslint-enable */
+            ]}
+          >
+            {gethStatus.get('api') && (ipfsStatus.get('started') || ipfsStatus.get('spawned')) ?
               <List className="col-xs-12">
-                {localProfiles}
-              </List>
-              {this.state.selectedProfile &&
-                <LoginDialog
-                  profile={selectedProfile}
-                  isOpen={openModal}
-                  modalActions={modalActions}
-                  title={'Log In'}
-                  onPasswordChange={this._handlePasswordChange}
-                  onKeyPress={this._handleDialogKeyPress}
-                  onUnlockTimerChange={this._handleUnlockTimerChange}
-                  onUnlockCheck={this._handleUnlockCheck}
-                  unlockTimerKey={this.state.unlockTimer}
-                  isUnlockedChecked={this.state.unlockIsChecked}
-                />
-              }
-            </PanelContainer>
+                { localProfiles }
+              </List> :
+              <div> {this.getPlaceholderMessage()} </div>
+            }
+            {this.state.selectedProfile &&
+              <LoginDialog
+                profile={selectedProfile}
+                isOpen={openModal}
+                modalActions={modalActions}
+                title={'Log In'}
+                onPasswordChange={this._handlePasswordChange}
+                onKeyPress={this._handleDialogKeyPress}
+                onUnlockTimerChange={this._handleUnlockTimerChange}
+                onUnlockCheck={this._handleUnlockCheck}
+                unlockTimerKey={this.state.unlockTimer}
+                isUnlockedChecked={this.state.unlockIsChecked}
+                loginErrors={this.props.loginErrors}
+              />
+            }
+          </PanelContainer>
         );
     }
 }
 
 Auth.propTypes = {
-    profileActions: React.PropTypes.object.isRequired,
-    profileState: React.PropTypes.object.isRequired,
-    style: React.PropTypes.object
+    profileActions: React.PropTypes.shape().isRequired,
+    tempProfileActions: React.PropTypes.shape().isRequired,
+    tempProfile: React.PropTypes.shape().isRequired,
+    localProfiles: React.PropTypes.shape().isRequired,
+    gethStatus: PropTypes.shape().isRequired,
+    ipfsStatus: PropTypes.shape().isRequired,
+    localProfilesFetched: React.PropTypes.bool,
+    fetchingLocalProfiles: React.PropTypes.bool,
+    loggedProfile: React.PropTypes.shape().isRequired,
+    loginErrors: React.PropTypes.shape().isRequired,
+    loginRequested: React.PropTypes.bool,
+    style: React.PropTypes.shape(),
+    intl: React.PropTypes.shape(),
 };
 
 Auth.contextTypes = {
-    muiTheme: React.PropTypes.object,
-    router: React.PropTypes.object
+    muiTheme: React.PropTypes.shape(),
+    router: React.PropTypes.shape()
 };
 
 Auth.defaultProps = {
@@ -195,5 +305,3 @@ Auth.defaultProps = {
 };
 
 export default injectIntl(Auth);
-
-

@@ -1,47 +1,25 @@
 import Dexie from 'dexie';
-import debug from 'debug';
-import { getDraftClass } from './schema/draft';
-const dbg = debug('App:entriesDB');
+import draftSchema from './schema/draft';
 
-const entriesDB = new Dexie('entries');
+const dbName = 'entries-akasha-alpha-' + process.env.NODE_ENV;
+const entriesDB = new Dexie(dbName);
 entriesDB.version(1).stores({
-    drafts: '++id,tags,authorUsername',
+    drafts: '++id,akashaId',
     entries: '&ipfsHash',
-    savedEntries: '++id,userName'
+    savedEntries: '&akashaId'
 });
 
-entriesDB.drafts.mapToClass(getDraftClass());
+entriesDB.drafts.mapToClass(draftSchema);
 
-entriesDB.drafts.hook('creating', (primaryKey, obj, transaction) => {
-    dbg('creating.. ', obj);
-    obj.status = {
-        created_at: new Date().toString(),
-        updated_at: new Date().toString(),
-        tagsPublished: false,
-        publishing: false
-    };
+entriesDB.drafts.hook('creating', (primaryKey, obj) => {
+    obj.created_at = new Date().toString();
+    obj.updated_at = new Date().toString();
 });
 
-entriesDB.drafts.hook('updating', (modifications, primaryKey, obj, transaction) => {
-    dbg('updating..', obj, modifications);
-    return {
-        status: {
-            created_at: obj.status.created_at,
-            updated_at: new Date().toString(),
-            tagsPublished: obj.status.tagsPublished,
-            publishing: obj.status.publishing
-        }
-    };
-});
+entriesDB.drafts.hook('updating', (modifications, primaryKey, obj) => ({
+    updated_at: new Date().toString(),
+    created_at: obj.created_at
+}));
 
-entriesDB.entries.hook('creating', (primaryKey, obj, transaction) => {
-    dbg('creating.. ', obj);
-});
-
-entriesDB.savedEntries.hook('creating', (primaryKey, obj, transaction) => {
-    dbg('creating savedEntries ', obj);
-});
-
-entriesDB.open();
 
 export default entriesDB;

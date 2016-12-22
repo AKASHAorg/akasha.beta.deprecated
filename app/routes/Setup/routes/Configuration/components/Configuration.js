@@ -1,27 +1,24 @@
 import React, { Component, PropTypes } from 'react';
-import { remote } from 'electron';
-import SetupHeader from '../../../components/setup-header';
-import { RadioButton, RadioButtonGroup, RaisedButton } from 'material-ui';
+import { FlatButton, RadioButton, RadioButtonGroup, RaisedButton } from 'material-ui';
 import { injectIntl } from 'react-intl';
-import { setupMessages, generalMessages } from 'locale-data/messages';
-import { AdvancedSetupForm } from './advanced-setup-form';
-import PanelContainer from 'shared-components/PanelContainer/panel-container';
+import { setupMessages, generalMessages } from 'locale-data/messages'; /* eslint import/no-unresolved: 0 */
+import PanelContainer from 'shared-components/PanelContainer/panel-container'; /* eslint import/no-unresolved: 0 */
+import { DataLoader, GethSettingsForm, IpfsSettingsForm } from 'shared-components';
+import PanelHeader from '../../../../components/panel-header';
 
-const { dialog } = remote;
-
-class Setup extends Component {
+class Config extends Component {
     constructor (props) {
         super(props);
+
         this.state = {
-            gethLogs: []
+            isDialogOpen: false
         };
     }
-    componentWillMount () {
-        const { configFlags, gethSettings } = this.props;
-        const cancelRequest = configFlags.get('requestStartupChange');
-        console.log(gethSettings, cancelRequest, 'ready for sync');
-        if (!cancelRequest && gethSettings) {
-            return this.context.router.push('setup/sync-status');
+    componentWillUpdate (nextProps) {
+        const { configFlags } = nextProps;
+        const cancelRequest = configFlags && configFlags.get('requestStartupChange');
+        if (!cancelRequest) {
+            this.context.router.push('setup/sync-status');
         }
     }
     handleChange = (ev, value) => {
@@ -32,20 +29,10 @@ class Setup extends Component {
         }
         settingsActions.toggleAdvancedSettings(show);
     };
-    handleGethDatadir = (ev) => {
-        ev.target.blur();
-        ev.preventDefault();
+    handleGethDatadir = (gethDataDir) => {
         const { settingsActions } = this.props;
-        if (!this.state.isDialogOpen) {
-            this.showOpenDialog('geth data directory', (paths) => {
-                this.setState({
-                    isDialogOpen: false
-                }, () => {
-                    if (paths) {
-                        settingsActions.setupGethDataDir(paths[0]);
-                    }
-                });
-            });
+        if (gethDataDir) {
+            settingsActions.setupGethDataDir(gethDataDir);
         }
     };
     handleGethIpc = (ev) => {
@@ -57,39 +44,13 @@ class Setup extends Component {
         }
         settingsActions.setupGethIPCPath(target.value);
     };
-    handleGethCacheSize = (ev) => {
-        const { settingsActions, gethSettings, intl } = this.props;
-        const target = ev.target;
-        const currentCacheSize = gethSettings.get('cacheSize');
-        if (currentCacheSize === target.value || !target.value) {
-            return;
-        }
-        if (target.value < 512) {
-            this.setState({
-                cacheSizeError: intl.formatMessage(setupMessages.gethCacheSizeError)
-            });
-        } else {
-            this.setState({
-                cacheSizeError: null
-            }, () => {
-                settingsActions.setupGethCacheSize(target.value);
-            });
-        }
+    handleGethCacheSize = (event, index, value) => {
+        this.props.settingsActions.setupGethCacheSize(value);
     };
-    handleIpfsPath = (ev) => {
+    handleIpfsPath = (ipfsPath) => {
         const { settingsActions } = this.props;
-        ev.target.blur();
-        ev.stopPropagation();
-        if (!this.state.isDialogOpen) {
-            this.showOpenDialog('ipfs path', (paths) => {
-                this.setState({
-                    isDialogOpen: false
-                }, () => {
-                    if (paths) {
-                        settingsActions.setupIPFSPath(paths[0]);
-                    }
-                });
-            });
+        if (ipfsPath) {
+            settingsActions.setupIPFSPath(ipfsPath);
         }
     };
     handleIpfsApiPort = (ev) => {
@@ -111,25 +72,22 @@ class Setup extends Component {
         settingsActions.setupIPFSGatewayPort(target.value);
     };
     handleSubmit = () => {
-        const { settingsActions, gethSettings, ipfsSettings } = this.props;
-        const { datadir, ipcpath, cache } = gethSettings.toJS();
-        const { ipfsPath } = ipfsSettings.toJS();
-        settingsActions.saveSettings({ name: 'geth', datadir, ipcpath, cache });
-        settingsActions.saveSettings({ name: 'ipfs', ipfsPath });
-        settingsActions.saveSettings({ name: 'flags', requestStartupChange: false });
-        this.context.router.push('setup/sync-status');
-    };
+        const { settingsActions, gethSettings, defaultGethSettings, ipfsSettings,
+            defaultIpfsSettings, eProcActions, isAdvanced } = this.props;
+        let geth = gethSettings.toJS();
+        let ipfs = ipfsSettings.toJS();
 
-    showOpenDialog = (title, cb) => {
-        this.setState({
-            isDialogOpen: true
-        }, () => {
-            dialog.showOpenDialog({
-                title: `Select ${title}`,
-                buttonLabel: 'Select',
-                properties: ['openDirectory']
-            }, cb);
-        });
+        if (!isAdvanced) {
+            geth = defaultGethSettings.toJS();
+            ipfs = defaultIpfsSettings.toJS();
+            settingsActions.resetSettings();
+        }
+
+        settingsActions.saveSettings('geth', geth);
+        settingsActions.saveSettings('ipfs', ipfs);
+        settingsActions.saveSettings('flags', { requestStartupChange: false });
+        eProcActions.startSync();
+        this.context.router.push('setup/sync-status');
     };
 
     _getLogs = () => {};
@@ -140,95 +98,107 @@ class Setup extends Component {
 
     _sendReport = () => {};
     render () {
-        const { isAdvanced, intl, gethSettings, ipfsSettings } = this.props;
+        const { isAdvanced, intl, gethSettings, ipfsSettings, settingsActions,
+            fetchingFlags } = this.props;
         const radioStyle = { marginTop: '10px', marginBottom: '10px' };
         const defaultSelected = !isAdvanced ? 'express' : 'advanced';
         return (
-          <PanelContainer
-            showBorder
-            actions={[
-              <RaisedButton
-                key="next"
-                label={intl.formatMessage(generalMessages.nextButtonLabel)}
-                primary
-                backgroundColor={this.context.muiTheme.raisedButton.secondaryColor}
-                style={{ marginLeft: '12px' }}
-                onClick={this.handleSubmit}
-              />
-            ]}
-            header={
-              <SetupHeader title={"AKASHA"} />
-            }
-          >
-            <h1 style={{ fontWeight: '400' }} className="col-xs-12" >
-              {intl.formatMessage(setupMessages.firstTimeSetupTitle)}
-            </h1>
-            <div className="col-xs-12">
-              <p>
-                  {intl.formatMessage(setupMessages.akashaNextGenNetwork)}
-              </p>
-              <p>
-                {intl.formatMessage(setupMessages.youHaveNotHeared)}
-              </p>
-              <p>
-                {intl.formatMessage(setupMessages.ifYouHaveEth)}
-              </p>
-            </div>
-            <div style={{ paddingLeft: '12px' }} className="col-xs-12" >
-              <RadioButtonGroup
-                defaultSelected={defaultSelected}
-                name="installType"
-                onChange={this.handleChange}
-              >
-                <RadioButton
-                  label={intl.formatMessage(setupMessages.expressSetup)}
-                  style={radioStyle}
-                  value={'express'}
+          <DataLoader flag={fetchingFlags} size={80} style={{ paddingTop: '150px' }}>
+            <PanelContainer
+                showBorder
+                actions={[
+                /* eslint-disable */
+                <RaisedButton
+                    key="next"
+                    label={intl.formatMessage(generalMessages.nextButtonLabel)}
+                    primary
+                    backgroundColor={this.context.muiTheme.raisedButton.secondaryColor}
+                    style={{ marginLeft: '12px' }}
+                    onClick={this.handleSubmit}
                 />
-                <RadioButton
-                  label={intl.formatMessage(setupMessages.advancedSetup)}
-                  style={radioStyle}
-                  value={'advanced'}
-                />
-              </RadioButtonGroup>
-              {isAdvanced &&
-                <AdvancedSetupForm
-                  intl={intl}
-                  style={this.props.style}
-                  isAdvanced={isAdvanced}
-                  gethSettings={gethSettings}
-                  ipfsSettings={ipfsSettings}
-                  cacheSizeError={this.state.cacheSizeError}
-                  handleGethDatadir={this.handleGethDatadir}
-                  handleGethIpc={this.handleGethIpc}
-                  handleGethCacheSize={this.handleGethCacheSize}
-                  handleIpfsPath={this.handleIpfsPath}
-                  handleIpfsApiPort={this.handleIpfsApiPort}
-                  handleIpfsGatewayPort={this.handleIpfsGatewayPort}
-                />
-              }
-            </div>
-          </PanelContainer>
+                /* eslint-enable */
+                ]}
+                header={<PanelHeader title={'AKASHA'} />}
+            >
+                <h1 style={{ fontWeight: '400' }} className="col-xs-12" >
+                {intl.formatMessage(setupMessages.firstTimeSetupTitle)}
+                </h1>
+                <div className="col-xs-12">
+                <p>
+                    {intl.formatMessage(setupMessages.akashaNextGenNetwork)}
+                </p>
+                <p>
+                    {intl.formatMessage(setupMessages.youHaveNotHeared)}
+                </p>
+                <p>
+                    {intl.formatMessage(setupMessages.ifYouHaveEth)}
+                </p>
+                </div>
+                <div style={{ paddingLeft: '12px' }} className="col-xs-12" >
+                <RadioButtonGroup
+                    defaultSelected={defaultSelected}
+                    name="installType"
+                    onChange={this.handleChange}
+                >
+                    <RadioButton
+                    label={intl.formatMessage(setupMessages.expressSetup)}
+                    style={radioStyle}
+                    value={'express'}
+                    />
+                    <RadioButton
+                    label={intl.formatMessage(setupMessages.advancedSetup)}
+                    style={radioStyle}
+                    value={'advanced'}
+                    />
+                </RadioButtonGroup>
+                {isAdvanced &&
+                    <div>
+                    <GethSettingsForm
+                        intl={intl}
+                        gethSettings={gethSettings}
+                        handleGethDatadir={this.handleGethDatadir}
+                        handleGethCacheSize={this.handleGethCacheSize}
+                    />
+                    <IpfsSettingsForm
+                        intl={intl}
+                        ipfsSettings={ipfsSettings}
+                        handleIpfsPath={this.handleIpfsPath}
+                    />
+                    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                        <FlatButton
+                        label={intl.formatMessage(generalMessages.reset)}
+                        onClick={settingsActions.resetSettings}
+                        />
+                    </div>
+                    </div>
+                }
+                </div>
+            </PanelContainer>
+            </DataLoader>
         );
     }
 }
 
-Setup.propTypes = {
+Config.propTypes = {
     settingsActions: PropTypes.shape().isRequired,
     gethSettings: PropTypes.shape().isRequired,
+    defaultGethSettings: PropTypes.shape().isRequired,
     ipfsSettings: PropTypes.shape().isRequired,
+    defaultIpfsSettings: PropTypes.shape().isRequired,
     isAdvanced: PropTypes.bool.isRequired,
-    configFlags: PropTypes.shape().isRequired,
+    configFlags: PropTypes.shape(),
+    fetchingFlags: PropTypes.bool,
     style: PropTypes.shape(),
     intl: PropTypes.shape(),
+    eProcActions: PropTypes.shape()
 };
 
-Setup.contextTypes = {
-    muiTheme: React.PropTypes.object,
+Config.contextTypes = {
+    muiTheme: React.PropTypes.shape().isRequired,
     router: React.PropTypes.object
 };
 
-Setup.defaultProps = {
+Config.defaultProps = {
     style: {
         width: '100%',
         height: '100%',
@@ -238,4 +208,4 @@ Setup.defaultProps = {
     }
 };
 
-export default injectIntl(Setup);
+export default injectIntl(Config);

@@ -60,8 +60,14 @@ class TxIPC extends ModuleEmitter {
     private _emitMined() {
         GethConnector.getInstance().on(
             CONSTANTS.TX_MINED,
-            (txHash: string) => {
-                const response: EmitMinedResponse = mainResponse({ mined: txHash, watching: gethHelper.watching });
+            (tx: any) => {
+                const response: EmitMinedResponse = mainResponse({
+                    mined: tx.transactionHash,
+                    blockNumber: tx.blockNumber,
+                    cumulativeGasUsed: tx.cumulativeGasUsed,
+                    hasEvents: !!(tx.logs.length),
+                    watching: gethHelper.watching
+                });
                 this.fireEvent(
                     channels.client[this.MODULE_NAME].emitMined,
                     response

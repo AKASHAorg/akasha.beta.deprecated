@@ -1,10 +1,7 @@
-import { ipcRenderer } from 'electron';
-import debug from 'debug';
 import BaseService from './base-service';
 import profileDB from './db/profile';
 
 const Channel = window.Channel;
-const dbg = debug('App:RegistryService:');
 /**
  * Registry Service.
  * default open channels => ['getCurrentProfile', 'getByAddress']
@@ -14,36 +11,33 @@ const dbg = debug('App:RegistryService:');
 class RegistryService extends BaseService {
     constructor () {
         super();
-        this.serverManager = Channel.server.registry.manager;
         this.clientManager = Channel.client.registry.manager;
     }
+
     /**
      * create a new profile
      * Request:
      * @param <object> {
-     *      username: string;
+     *      token: String;
+     *      akashaId: string;
      *      ipfs: IpfsProfileCreateRequest;
      *      gas?: number;
      * }
      * Response:
      * @param data = { tx: string }
      */
-    registerProfile = ({ username, ipfs, gas = 90000 }) => {
-        const serverChannel = Channel.server.registry.registerProfile;
-        const clientChannel = Channel.client.registry.registerProfile;
-        if (this._listeners.has(clientChannel)) return Promise.resolve();
-        return new Promise((resolve, reject) => {
-            const listenerCb = (ev, res) => {
-                if (res.error) return reject(res.error);
-                return resolve(res.data);
-            };
-            return this.openChannel({
-                serverManager: this.serverManager,
-                clientManager: this.clientManager,
-                serverChannel,
-                clientChannel,
-                listenerCb
-            }, () => ipcRenderer.send(serverChannel, { username, ipfs, gas }));
+    registerProfile = ({ token, akashaId, ipfs, gas = 2000000, onError, onSuccess }) => {
+        this.openChannel({
+            clientManager: this.clientManager,
+            serverChannel: Channel.server.registry.registerProfile,
+            clientChannel: Channel.client.registry.registerProfile,
+            listenerCb: this.createListener(
+                onError,
+                onSuccess,
+                Channel.client.registry.registerProfile.channelName
+            )
+        }, () => {
+            Channel.server.registry.registerProfile.send({ token, akashaId, ipfs, gas });
         });
     };
     /**
@@ -52,19 +46,12 @@ class RegistryService extends BaseService {
      * Response:
      * @param data = {ethAddress: String}
      */
-    getCurrentProfile = () => {
-        const serverChannel = Channel.server.registry.getCurrentProfile;
-        const clientChannel = Channel.client.registry.getCurrentProfile;
-        if (this._listeners.has(clientChannel)) return Promise.resolve();
-        return new Promise((resolve, reject) => {
-            const listenerCb = (ev, res) => {
-                if (res.error) return reject(res.error);
-                return resolve(res.data);
-            };
-            return this.registerListener(clientChannel, listenerCb, () =>
-                ipcRenderer.send(serverChannel, {})
-            );
-        });
+    getCurrentProfile = ({ onError, onSuccess }) => {
+        this.registerListener(
+            Channel.client.registry.getCurrentProfile,
+            this.createListener(onError, onSuccess)
+        );
+        Channel.server.registry.getCurrentProfile.send({});
     };
     /**
      * return contract address for a given eth address
@@ -73,58 +60,71 @@ class RegistryService extends BaseService {
      * Response:
      *  @param data = { profileAddress: String } -> profile contract address
      */
-    getByAddress = (ethAddress) => {
-        const serverChannel = Channel.server.registry.getByAddress;
-        const clientChannel = Channel.client.registry.getByAddress;
-        if (this._listeners.has(clientChannel)) return Promise.resolve();
-        return new Promise((resolve, reject) => {
-            const listenerCb = (ev, res) => {
-                if (res.error) return reject(res.error);
-                return resolve(res.data);
-            };
-            return this.registerListener(clientChannel, listenerCb, () =>
-                ipcRenderer.send(serverChannel, { ethAddress })
-            );
-        });
-    }
+    getByAddress = ({ ethAddress, onSuccess, onError }) => {
+        this.registerListener(
+            Channel.client.registry.getByAddress,
+            this.createListener(onError, onSuccess)
+        );
+        Channel.server.registry.getByAddress.send(ethAddress);
+    };
 
     /**
      * Create a temporary profile in indexedDB
      * @param {object} profileData - Data of the profile created
      * @param {object} currentStatus - Current status of the profile creation process
      */
-    createTempProfile = (profileData, currentStatus) =>
-        profileDB.transaction('rw', profileDB.tempProfile, () => {
-            dbg('saveTempProfile(add)', profileData);
-            return profileDB.tempProfile.add({
+    createTempProfile = ({ profileData, currentStatus, onSuccess, onError }) =>
+        profileDB.tempProfile
+            .put({
                 ...profileData,
                 currentStatus
-            });
-        });
+            })
+            .then((data) => {
+                onSuccess(data);
+            }).catch(reason => onError(reason));
     /**
      * Update temporary profile in indexedDB
-     * @param {string} userName
+     * @param {string} akashaId
      * @param {object} changes - Contains data of the updated profile
      * @return promise
      */
-    updateTempProfile = (userName, changes) =>
-        profileDB.transaction('rw', profileDB.tempProfile, () => {
-            dbg('updateTempProfile(update)', userName, { ...changes });
-            return profileDB.tempProfile.update(userName, { ...changes });
-        });
+    updateTempProfile = ({ changes, currentStatus, onSuccess, onError }) =>
+        profileDB.tempProfile.toArray().then(tmpProfile =>
+            profileDB.tempProfile
+                .update(tmpProfile[0].akashaId, {
+                    ...changes,
+                    currentStatus
+                })
+                .then(() => {
+                    onSuccess({ ...changes, currentStatus });
+                })
+        )
+            .catch(reason => onError(reason));
     /**
      * Delete temporary profile. Called after profile was successfully created
      */
-    deleteTempProfile = () =>
-        profileDB.tempProfile.clear();
+    deleteTempProfile = ({ akashaId, onSuccess, onError }) =>
+        profileDB.tempProfile
+            .delete(akashaId)
+            .then(() => onSuccess())
+            .catch(reason => onError(reason));
+
     /**
      * Get all available temporary profiles
      * @return promise
      */
-    getTempProfile = () =>
-        profileDB.transaction('r', profileDB.tempProfile, () =>
-            profileDB.tempProfile.toArray()
-        );
+    getTempProfile = ({
+        onError = () => {
+        },
+        onSuccess
+    }) => {
+        profileDB.tempProfile.toArray()
+            .then((results) => {
+                onSuccess(results[0]);
+            }).catch((reason) => {
+                onError(reason);
+            });
+    }
 }
 
-export {RegistryService}
+export { RegistryService };

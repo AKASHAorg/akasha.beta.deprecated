@@ -1,15 +1,16 @@
 import { AbstractEmitter } from './AbstractEmitter';
 import { IpfsConnector, ipfsEvents } from '@akashaproject/ipfs-connector';
 import { ipfsResponse } from './responses';
-import { initIpfsModules } from '../modules/index';
 import channels from '../../channels';
 
+const peerId = '/ip4/46.101.103.114/tcp/4001/ipfs/QmYfXRuVWMWFRJxUSFPHtScTNR9CU2samRsTK15VFJPpvh';
 abstract class IpfsEmitter extends AbstractEmitter {
 
     public attachEmitters() {
         this._download()
             ._catchCorrupted()
             ._catchFailed()
+            ._catchError()
             ._started()
             ._stopped();
     }
@@ -29,7 +30,15 @@ abstract class IpfsEmitter extends AbstractEmitter {
             ipfsEvents.SERVICE_STARTED,
             () => {
                 this.fireEvent(channels.client.ipfs.startService, ipfsResponse({ started: true }));
-                initIpfsModules();
+                IpfsConnector.getInstance()
+                    .api
+                    .apiClient
+                    .bootstrap
+                    .add(peerId, (err, data) => {
+                        if(err){
+                            console.log('add ipfs peer err ', err);
+                        }
+                    })
             }
         );
         return this;
@@ -68,6 +77,18 @@ abstract class IpfsEmitter extends AbstractEmitter {
                 );
             }
         );
+        return this;
+    }
+
+    private _catchError() {
+        IpfsConnector.getInstance().on(
+            ipfsEvents.ERROR,
+            (message: string) => {
+                this.fireEvent(
+                    channels.client.ipfs.startService,
+                    ipfsResponse({}, { message })
+                )
+            });
         return this;
     }
 }

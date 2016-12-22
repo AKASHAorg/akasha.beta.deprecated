@@ -1,22 +1,13 @@
 import Dexie from 'dexie';
-import debug from 'debug';
-const dbg = debug('App:settingsDB');
 
-const settingsDB = new Dexie('settings');
+const dbName = 'settings-akasha-alpha-' + process.env.NODE_ENV;
+const settingsDB = new Dexie(dbName);
 settingsDB.version(1).stores({
-    geth: '&name, datadir, ipcpath, cache',
+    geth: '&name, autodag, cache, datadir, fast, ipcpath, mine, minerthreads, networkid',
     ipfs: '&name, ipfsPath',
     flags: '&name, requestStartupChange',
-    user: '&username, autoCrashReports'
+    user: '&akashaId, autoCrashReports',
+    general: '&name'
 });
-
-settingsDB.geth.hook('creating', (primaryKey, obj, transaction) => {
-    dbg('creating.. ', obj);
-});
-settingsDB.ipfs.hook('creating', (primaryKey, obj, transaction) => {
-    dbg('creating.. ', obj);
-});
-
-settingsDB.open();
 
 export default settingsDB;

@@ -3,7 +3,7 @@
   "plugins": ["add-module-exports", "transform-runtime", [
   	"react-intl", {
   		"messagesDir": "./intl/messages",
-  		"enforceDescriptions": true 
+  		"enforceDescriptions": true
   	}
   ]],
   "env": {

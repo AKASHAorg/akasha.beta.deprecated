@@ -1,30 +1,45 @@
 import React, { Component, PropTypes } from 'react';
+import { Tutorials } from 'shared-components';
 
 class Setup extends Component {
-    constructor (props) {
-        super(props);
-        this.state = {
-            gethLogs: []
-        };
+    componentDidMount () {
+        const { settingsActions } = this.props;
+        settingsActions.getSettings('flags');
+        settingsActions.getSettings('geth');
+        settingsActions.getSettings('ipfs');
     }
+
     render () {
+        const { theme } = this.props;
         return (
-          <div className="row">
-            <div className="col-xs-6">
-               {this.props.children}
+          <div style={{ display: 'flex', padding: 0, overflow: 'hidden' }}>
+            <div
+              style={{
+                  padding: 0,
+                  flex: '5 5 auto',
+                  maxWidth: '640px'
+              }}
+            >
+              {this.props.children}
             </div>
-            <div className="col-xs-6">Setup Tutorials??</div>
+            <div
+              style={{
+                  backgroundColor: theme === 'light' ? '#f3f3f3' : '#252525',
+                  padding: 0,
+                  flex: '7 7 auto'
+              }}
+            >
+              <Tutorials theme={theme} />
+            </div>
           </div>
         );
     }
 }
 
 Setup.propTypes = {
-    eProcActions: PropTypes.object.isRequired,
-    settingsActions: PropTypes.object.isRequired,
-    settingsState: PropTypes.object.isRequired,
-    style: PropTypes.object,
-    intl: PropTypes.object,
+    settingsActions: PropTypes.shape().isRequired,
+    children: PropTypes.element,
+    theme: PropTypes.string
 };
 
 Setup.contextTypes = {

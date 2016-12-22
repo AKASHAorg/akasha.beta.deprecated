@@ -12,12 +12,15 @@ class PanelLoader extends Component {
         const activePanel = panelState.get('activePanel');
         if (activePanel.get('name')) {
             const Panel = Panels[activePanel.get('name')];
+            if (!Panel) {
+                return null;
+            }
             return (
-              <div className="panel" style={{ height: '100%' }} >
+              <div className="panel" style={{ height: '100%', position: 'fixed' }} >
                 <Panel {...other} />
-                  {activePanel.get('overlay') &&
-                    <div className="overlay" onClick={this._handleOverlayClick} />
-                  }
+                {activePanel.get('overlay') &&
+                  <div className="overlay" onClick={this._handleOverlayClick} />
+                }
               </div>
             );
         }
@@ -26,12 +29,10 @@ class PanelLoader extends Component {
 }
 PanelLoader.propTypes = {
     children: PropTypes.element,
-    panelState: PropTypes.object,
-    profileState: PropTypes.object,
-    entryState: PropTypes.object,
-    appActions: PropTypes.object
+    panelState: PropTypes.shape(),
+    appActions: PropTypes.shape()
 };
 PanelLoader.contextTypes = {
-    muiTheme: PropTypes.object
+    muiTheme: PropTypes.shape()
 };
 export default PanelLoader;

@@ -1,5 +1,5 @@
 :global {
-  @import 'vendor/flexboxgrid';
+  @import './vendor/flexboxgrid';
   @import 'base';
 
   // Some best-practice CSS that's useful for most apps
@@ -13,7 +13,6 @@
     margin: 0;
     padding: 0;
     height: 100%;
-    overflow: hidden;
   }
 
   *,

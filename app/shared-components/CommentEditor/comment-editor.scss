@@ -1,1 +1,36 @@
-.root {}
+.comment_writer {
+    padding: 16px 0;
+}
+.avatar_image,
+.comment_editor {
+    display: inline-block;
+}
+.avatar_image {
+    vertical-align: top;
+}
+.comment_publish_actions {
+    margin-top: 8px;
+}
+.comment_editor {
+    width: 636px;
+    margin-left: 16px;
+    vertical-align: middle;
+    border: 1px solid #DDD;
+    padding: 0 8px;
+    :global {
+        .megadraft {
+            .megadraft-editor {
+                .paragraph,
+                h2,
+                blockquote,
+                .public-DraftStyleDefault-ul,
+                .public-DraftStyleDefault-ol {
+                    width: 100%;
+                }
+                .public-DraftEditorPlaceholder-root {
+                    line-height: 32px;
+                }
+            }
+        }
+    }
+}

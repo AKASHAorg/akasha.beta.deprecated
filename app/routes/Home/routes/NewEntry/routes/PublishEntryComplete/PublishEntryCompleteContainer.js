@@ -8,7 +8,7 @@ function mapStateToProps (state) {
         entryState: state.entryState
     };
 }
-
+/* eslint-disable no-unused-vars */
 function mapDispatchToProps (dispatch) {
     return {
         profileActions: new ProfileActions(dispatch),

@@ -29,7 +29,7 @@ class EntryModal extends React.Component {
     }
     componentDidMount () {
         const { commentActions } = this.props;
-        commentActions.getCommentsByEntry();
+        // commentActions.getCommentsByEntry();
     }
     // handle tab changing logic here
     _handleTabChange = (val, ev) => {
@@ -59,10 +59,11 @@ class EntryModal extends React.Component {
         const { profileState } = this.props;
         const loggedProfile = profileState.get('loggedProfile');
         this._hideEntryModal();
-        this.context.router.push(`/${loggedProfile.get('userName')}/explore/tag/${tag}`);
+        this.context.router.push(`/${loggedProfile.get('akashaId')}/explore/tag/${tag}`);
     }
     render () {
         const { profileState, appState } = this.props;
+        const { palette } = this.context.muiTheme;
         if (!appState.get('showEntry').modal) {
             return null;
         }
@@ -156,8 +157,8 @@ class EntryModal extends React.Component {
                     <div>
                       <Avatar
                         editable={false}
-                        userName={
-                          `${loggedProfile.get('firstName')} ${loggedProfile.get('lastName')}`
+                        userInitials={
+                          `${loggedProfile.get('firstName')[0]}${loggedProfile.get('lastName')[0]}`
                         }
                         image={avatarImage}
                         radius={40}
@@ -188,7 +189,6 @@ class EntryModal extends React.Component {
                         tabItemContainerStyle={{
                             backgroundColor: 'transparent'
                         }}
-                        inkBarStyle={{ backgroundColor: 'blue' }}
                         onChange={this._handleTabChange}
                         value={this.state.activeTab}
                       >
@@ -227,10 +227,10 @@ class EntryModal extends React.Component {
                     publishDate={'3 days ago'}
                     avatar={'http://c2.staticflickr.com/2/1659/25017672329_e5b9967612_b.jpg'}
                     text={
-                      `Aww..!! It’s a perfect inspiring article for a beginner. Thanks a 
+                      `Aww..!! It’s a perfect inspiring article for a beginner. Thanks a
                       looooooooooooot for sharing it Cammi..:-)`
                     }
-                    onReply={(ev) => this._handleReply(ev, comment)}
+                    onReply={ev => this._handleReply(ev, comment)}
                     repliesLimit={3}
                     stats={{ upvotes: 159, downvotes: 340, replies: 7 }}
                   >
@@ -240,9 +240,9 @@ class EntryModal extends React.Component {
                       publishDate={'1 day ago'}
                       avatar={'https://c2.staticflickr.com/2/1268/552681861_5046590531_q.jpg'}
                       text={
-                        "@AndreiBiga Thanks!"
+                        '@AndreiBiga Thanks!'
                       }
-                      onReply={(ev) => this._handleReply(ev, comment)}
+                      onReply={ev => this._handleReply(ev, comment)}
                       repliesLimit={3}
                       stats={{ upvotes: 159, downvotes: 340, replies: 7 }}
                     />

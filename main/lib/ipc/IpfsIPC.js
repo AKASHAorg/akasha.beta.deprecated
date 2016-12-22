@@ -4,6 +4,8 @@ const ipfs_connector_1 = require('@akashaproject/ipfs-connector');
 const Logger_1 = require('./Logger');
 const channels_1 = require('../channels');
 const responses_1 = require('./event/responses');
+const settings_1 = require('./config/settings');
+const electron_1 = require('electron');
 class IpfsIPC extends IpfsEmitter_1.default {
     constructor() {
         super();
@@ -13,22 +15,30 @@ class IpfsIPC extends IpfsEmitter_1.default {
     }
     initListeners(webContents) {
         ipfs_connector_1.IpfsConnector.getInstance().setLogger(Logger_1.default.getInstance().registerLogger(this.logger));
+        ipfs_connector_1.IpfsConnector.getInstance().setBinPath(electron_1.app.getPath('userData'));
         this.webContents = webContents;
         this._start()
             ._stop()
             ._status()
             ._resolve()
+            ._getConfig()
+            ._setPorts()
+            ._getPorts()
             ._manager();
     }
     _start() {
-        this.registerListener(channels_1.default.server.ipfs.startService, (event) => {
+        this.registerListener(channels_1.default.server.ipfs.startService, (event, data) => {
+            if (data.storagePath) {
+                ipfs_connector_1.IpfsConnector.getInstance().setIpfsFolder(data.storagePath);
+            }
             ipfs_connector_1.IpfsConnector.getInstance().start();
         });
         return this;
     }
     _stop() {
         this.registerListener(channels_1.default.server.ipfs.stopService, (event, data) => {
-            ipfs_connector_1.IpfsConnector.getInstance().stop(data.signal);
+            const signal = (data) ? data.signal : 'SIGINT';
+            ipfs_connector_1.IpfsConnector.getInstance().stop(signal);
         });
         return this;
     }
@@ -57,7 +67,7 @@ class IpfsIPC extends IpfsEmitter_1.default {
             let response;
             ipfs_connector_1.IpfsConnector.getInstance()
                 .api
-                .resolve(data.hash)
+                .get(data.hash)
                 .then((source) => {
                 response = responses_1.ipfsResponse({ content: source, hash: data.hash });
             })
@@ -67,6 +77,59 @@ class IpfsIPC extends IpfsEmitter_1.default {
             })
                 .finally(() => {
                 this.fireEvent(channels_1.default.client.ipfs.resolve, response, event);
+            });
+        });
+        return this;
+    }
+    _getConfig() {
+        this.registerListener(channels_1.default.server.ipfs.getConfig, (event) => {
+            let response;
+            response = responses_1.ipfsResponse({
+                apiPort: ipfs_connector_1.IpfsConnector.getInstance().options.apiAddress.split('/').pop(),
+                storagePath: ipfs_connector_1.IpfsConnector.getInstance().options.extra.env.IPFS_PATH
+            });
+            this.fireEvent(channels_1.default.client.ipfs.getConfig, response, event);
+        });
+        return this;
+    }
+    _setPorts() {
+        this.registerListener(channels_1.default.server.ipfs.setPorts, (event, data) => {
+            let response;
+            ipfs_connector_1.IpfsConnector.getInstance()
+                .setPorts(data.ports, data.restart)
+                .then(() => {
+                response = responses_1.ipfsResponse({ set: true });
+            })
+                .catch((err) => {
+                response = responses_1.ipfsResponse({}, {
+                    message: err.message,
+                    from: { ports: data.ports }
+                });
+            })
+                .finally(() => {
+                this.fireEvent(channels_1.default.client.ipfs.setPorts, response, event);
+            });
+        });
+        return this;
+    }
+    _getPorts() {
+        this.registerListener(channels_1.default.server.ipfs.getPorts, (event) => {
+            let response;
+            ipfs_connector_1.IpfsConnector.getInstance()
+                .getPorts()
+                .then((ports) => {
+                settings_1.generalSettings.set(settings_1.BASE_URL, `http://127.0.0.1:${ports.gateway}/ipfs`);
+                response = responses_1.ipfsResponse({
+                    apiPort: ports.api,
+                    gatewayPort: ports.gateway,
+                    swarmPort: ports.swarm
+                });
+            })
+                .catch((err) => {
+                response = responses_1.ipfsResponse({}, { message: err.message });
+            })
+                .finally(() => {
+                this.fireEvent(channels_1.default.client.ipfs.getPorts, response, event);
             });
         });
         return this;

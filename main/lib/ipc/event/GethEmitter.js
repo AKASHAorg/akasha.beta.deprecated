@@ -31,7 +31,7 @@ class GethEmitter extends AbstractEmitter_1.AbstractEmitter {
         geth_connector_1.GethConnector.getInstance().on(geth_connector_1.CONSTANTS.STARTED, () => {
             this.fireEvent(channels_1.default.client.geth.startService, responses_1.gethResponse({ started: true }));
         });
-        geth_connector_1.GethConnector.getInstance().once(geth_connector_1.CONSTANTS.IPC_CONNECTED, () => {
+        geth_connector_1.GethConnector.getInstance().on(geth_connector_1.CONSTANTS.IPC_CONNECTED, () => {
             this.fireEvent(channels_1.default.client.geth.startService, responses_1.gethResponse({}));
             index_1.constructed.init(geth_connector_1.GethConnector.getInstance().web3);
             index_2.initModules();
@@ -49,13 +49,13 @@ class GethEmitter extends AbstractEmitter_1.AbstractEmitter {
     }
     _fatal() {
         geth_connector_1.GethConnector.getInstance().on(geth_connector_1.CONSTANTS.FATAL, (message) => {
-            this.fireEvent(channels_1.default.client.geth.startService, responses_1.gethResponse({}, { message: message, fatal: true }));
+            this.fireEvent(channels_1.default.client.geth.startService, responses_1.gethResponse({}, { message, fatal: true }));
         });
         return this;
     }
     _error() {
         geth_connector_1.GethConnector.getInstance().on(geth_connector_1.CONSTANTS.ERROR, (message) => {
-            this.fireEvent(channels_1.default.client.geth.startService, responses_1.gethResponse({}, { message: message }));
+            this.fireEvent(channels_1.default.client.geth.startService, responses_1.gethResponse({}, { message }));
         });
         return this;
     }

@@ -1,16 +1,19 @@
 import { connect } from 'react-redux';
 import CreateProfile from './components/CreateProfile';
-import { ProfileActions, ValidationActions } from 'local-flux';
+import { AppActions, TempProfileActions, ValidationActions } from 'local-flux';
 
-function mapStateToProps (state) {
+function mapStateToProps (state, ownProps) {
     return {
-        profileState: state.profileState
+        tempProfile: state.tempProfileState.get('tempProfile'),
+        gethStatus: state.externalProcState.get('gethStatus'),
+        ipfsStatus: state.externalProcState.get('ipfsStatus')
     };
 }
 
 function mapDispatchToProps (dispatch) {
     return {
-        profileActions: new ProfileActions(dispatch),
+        appActions: new AppActions(dispatch),
+        tempProfileActions: new TempProfileActions(dispatch),
         validationActions: new ValidationActions(dispatch)
     };
 }
