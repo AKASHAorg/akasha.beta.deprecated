@@ -174,7 +174,12 @@ class ProfileDetails extends Component {
                   {intl.formatMessage(profileMessages.about)}
                 </div>
                 <div style={{ fontSize: '16px', fontWeight: 300 }}>
-                  {profileData.about}
+                  {profileData.about.split('\n').map(text =>
+                    <span>
+                      {text}
+                      <br/>
+                    </span>
+                  )}
                 </div>
               </div>
             }
