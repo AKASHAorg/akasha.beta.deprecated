@@ -111,7 +111,7 @@ class SideBar extends Component {
             <div style={{ flexGrow: 4, padding: '14px' }} >
               <div title="Stream">
                 <StreamsIcon
-                  onClick={() => this._handleNavigation('explore/tag')}
+                  onClick={() => (!isStreamActive ? this._handleNavigation('explore/tag') : null)}
                   isActive={isStreamActive}
                 />
               </div>
