@@ -87,8 +87,8 @@ class CommentsActions {
             id: 'commentPublishedSuccessfully'
         });
     }
-    unloadComments = (entryId) => {
-        this.dispatch(commentsActionCreators.unloadComments(entryId));
+    unloadComments = (entryId, commentId) => {
+        this.dispatch(commentsActionCreators.unloadComments(entryId, commentId));
     }
 }
 

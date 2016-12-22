@@ -27,10 +27,11 @@ class EntryPage extends Component {
     componentDidMount () {
         window.addEventListener('scroll', this._handleContentScroll);
 
-        const { entry, entryActions, params, fetchingFullEntry } = this.props;
+        const { entry, entryActions, params, fetchingFullEntry, commentsActions } = this.props;
 
         if ((!entry && !fetchingFullEntry) || entry.get('entryId') !== params.entryId) {
             entryActions.getFullEntry(params.entryId);
+            commentsActions.unloadComments(parseInt(params.entryId, 10), null);
             this.fetchComments(params.entryId);
         }
     }
@@ -310,7 +311,7 @@ class EntryPage extends Component {
                                 )
                             }
                             publishingComments={
-                                comments.filter(comm => (comm.get('tempTx') && comm.get('profile')))
+                                comments.filter(comm => (comm.get('tempTx') && comm.getIn('data', 'profile')))
                             }
                             comments={
                                 comments.filter(comm =>

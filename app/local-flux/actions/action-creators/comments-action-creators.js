@@ -57,9 +57,10 @@ export function publishCommentError (error) {
     };
 }
 
-export function unloadComments(entryId) {
+export function unloadComments (entryId, commentId) {
     return {
         type: types.UNLOAD_COMMENTS,
-        entryId
+        entryId,
+        commentId
     };
 }

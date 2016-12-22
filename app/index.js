@@ -17,9 +17,9 @@ const history = syncHistoryWithStore(hashHistory, store);
 
 window.Perf = ReactPerf;
 
-function hashLinkScroll() {
+function hashLinkScroll () {
     const { hash } = window.location;
-    if (hash.split('#')[2] ) {
+    if (hash.split('#')[2]) {
         setTimeout(() => {
             const id = hash.split('#')[2];
             const element = document.getElementById(id);
