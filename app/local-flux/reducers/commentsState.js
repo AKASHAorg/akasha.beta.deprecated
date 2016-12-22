@@ -78,14 +78,21 @@ const commentsState = createReducer(initialState, {
         const index = state.get('entryComments').findIndex(comm =>
             comm.get('tempTx') && (comm.get('tempTx') === data.registerPending.tx.tx)
         );
+        if (index === -1) {
+            return state;
+        }
         return state.merge({
-            entryComments: state.get('entryComments').mergeIn([index], { tempTx: null })
+            entryComments: state.get('entryComments').setIn([index, 'tempTx'], null)
         });
     },
-    [types.UNLOAD_COMMENTS]: (state, { entryId }) =>
+    [types.UNLOAD_COMMENTS]: (state, { entryId, commentId }) =>
         state.set('entryComments',
-            state.get('entryComments').filter(comment =>
-                comment.get('entryId') !== entryId)
+            state.get('entryComments').filter((comment) => {
+                if (commentId === null) {
+                    return ((comment.get('entryId') !== entryId) && (comment.get('commentId') !== commentId));
+                }
+                return comment.get('entryId') !== entryId;
+            })
         ),
 
 });
