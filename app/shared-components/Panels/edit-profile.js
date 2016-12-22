@@ -121,9 +121,6 @@ class EditProfile extends Component {
         if (this.state.links.length > 0) {
             links = r.reject(link => link.id === linkId, links);
         }
-        for (let i = 0; i < links.length; i += 1) {
-            links[i].id = i;
-        }
         this.setState({
             links
         });
@@ -214,7 +211,7 @@ class EditProfile extends Component {
             onBlur: this.props.handleValidation('formValues.lastName')
         });
         const key = findBestMatch(400, this.state.backgroundImage);
-        const backgroundImageLink =
+        const backgroundImageLink = this.state.backgroundImage && key &&
             imageCreator(this.state.backgroundImage[key].src, loggedProfileData.get('baseUrl'));
 
         return (
