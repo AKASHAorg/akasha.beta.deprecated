@@ -1,26 +1,25 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
 import { TextField, Dialog, RaisedButton, Checkbox, SelectField, MenuItem } from 'material-ui';
-import { LogoIcon } from 'shared-components/svg';
+import { formMessages, generalMessages } from '../../locale-data/messages';
 
-export default function AuthDialog (props) {
-    const DialogTitle = (
-      <div className="row middle-xs">
-        <LogoIcon />
-        <div className="col-xs-11">
-          Confirm Password
-        </div>
-      </div>
-    );
+function AuthDialog (props) {
+    const { intl, loginErrors, onCancel, loginRequested, onPasswordChange,
+      password, onSubmit, isVisible, rememberTime, rememberChecked, onRememberPasswordCheck,
+      onRememberTimeChange } = props;
+    const handleSubmit = (ev) => {
+        ev.preventDefault();
+        return onSubmit();
+    };
     const dialogActions = [
-      <RaisedButton
-        label="Cancel"
+      <RaisedButton // eslint-disable-line indent
+        label={intl.formatMessage(generalMessages.cancel)}
         style={{ marginRight: 8 }}
-        onTouchTap={props.onCancel}
+        onTouchTap={onCancel}
       />,
-      <RaisedButton
-        label="Confirm"
+      <RaisedButton // eslint-disable-line indent
+        label={intl.formatMessage(generalMessages.confirm)}
         primary
-        onTouchTap={props.onSubmit}
+        onTouchTap={handleSubmit}
       />
     ];
     const minute = 'min';
@@ -28,42 +27,58 @@ export default function AuthDialog (props) {
       <Dialog
         contentStyle={{ width: '40%', maxWidth: 'none' }}
         actions={dialogActions}
-        title={DialogTitle}
-        open={props.isVisible}
+        title={intl.formatMessage(formMessages.confirmPassphrase)}
+        open={isVisible}
       >
-        <small>You need to confirm your password to continue</small>
-        <TextField
-          fullWidth
-          hintText="Type your password"
-          floatingLabelText={"Password"}
-          autoFocus
-          onChange={props.onPasswordChange}
-          type="password"
-          value={props.password}
-        />
-        <div className="row middle-xs">
-          <div className="col-xs-7" style={{ paddingRight: 0 }}>
-            <Checkbox
-              label="Keep account unlocked for"
-              onCheck={props.onUnlockCheck}
-            />
+        <form onSubmit={handleSubmit}>
+          <div>{intl.formatMessage(formMessages.confirmPassphraseToContinue)}</div>
+          <TextField
+            fullWidth
+            floatingLabelText={intl.formatMessage(formMessages.passphrase)}
+            autoFocus
+            onChange={onPasswordChange}
+            type="password"
+            value={password}
+            errorText={loginErrors.size ? loginErrors.first().message : null}
+          />
+          <div className="row middle-xs">
+            <div className="col-xs-8" style={{ paddingRight: 0 }}>
+              <Checkbox
+                label={intl.formatMessage(formMessages.rememberPassFor)}
+                checked={rememberChecked}
+                onCheck={onRememberPasswordCheck}
+              />
+            </div>
+            <div className="col-xs-3 start-xs" style={{ paddingLeft: 0, display: 'flex' }}>
+              <SelectField
+                value={rememberTime}
+                style={{ width: 100 }}
+                onChange={onRememberTimeChange}
+              >
+                <MenuItem value={5} primaryText={`5 ${minute}`} />
+                <MenuItem value={10} primaryText={`10 ${minute}`} />
+                <MenuItem value={15} primaryText={`15 ${minute}`} />
+                <MenuItem value={30} primaryText={`30 ${minute}`} />
+              </SelectField>
+            </div>
           </div>
-          <div className="col-xs-3 start-xs" style={{ paddingLeft: 0 }}>
-            <SelectField value={1} style={{ width: 100 }}>
-              <MenuItem value={1} primaryText={`30 ${minute}`} />
-              <MenuItem value={2} primaryText={`20 ${minute}`} />
-              <MenuItem value={3} primaryText={`10 ${minute}`} />
-            </SelectField>
-          </div>
-        </div>
+        </form>
       </Dialog>
     );
 }
 AuthDialog.propTypes = {
-    isVisible: React.PropTypes.bool,
-    onPasswordChange: React.PropTypes.func,
-    onUnlockCheck: React.PropTypes.func,
-    onSubmit: React.PropTypes.func,
-    onCancel: React.PropTypes.func,
-    password: React.PropTypes.string
+    isVisible: PropTypes.bool,
+    onPasswordChange: PropTypes.func,
+    rememberChecked: PropTypes.bool,
+    onRememberPasswordCheck: PropTypes.func,
+    rememberTime: PropTypes.number,
+    onRememberTimeChange: PropTypes.func,
+    onSubmit: PropTypes.func,
+    onCancel: PropTypes.func,
+    password: PropTypes.string,
+    loginErrors: PropTypes.shape(),
+    loginRequested: PropTypes.bool,
+    intl: PropTypes.shape()
 };
+
+export default AuthDialog;

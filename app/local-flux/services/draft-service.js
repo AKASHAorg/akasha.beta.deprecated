@@ -1,59 +1,68 @@
-import { ipcRenderer } from 'electron';
 import entriesDB from './db/entry';
-import debug from 'debug';
-const dbg = debug('App:DraftService:');
-
-/** * DELETE THIS *****/
-import { generateEntries } from './faker-data';
-/** ******************/
 
 class DraftService {
-    constructor () {
-        this.listeners = {};
+    createOrUpdate = (draft) => {
+        if (!draft.id) {
+            return this.createDraft(draft);
+        }
+        return this.modifyDraft(draft);
     }
-    saveDraft = (partialDraft) =>
-        entriesDB.transaction('rw', entriesDB.drafts, () => {
-            if (partialDraft.id) {
-                return entriesDB.drafts.update(partialDraft.id, partialDraft).then(updated => {
-                    dbg('draft ', partialDraft.id, 'updated');
-                    if (updated) {
-                        return partialDraft;
-                    }
-                    return null;
-                });
-            }
-            return entriesDB.drafts.add(partialDraft).then(draftId => {
-                dbg('draft with id', draftId, 'created');
-                return partialDraft;
+
+    modifyDraft = (draft) => {
+        const { id, ...changes } = draft;
+        return entriesDB.drafts
+            .where('id')
+            .equals(id)
+            .modify(changes)
+            .then(() => draft);
+    }
+
+    createDraft = draft =>
+        entriesDB.drafts
+            .add(draft)
+            .then((id) => {
+                draft.id = id;
+                return draft;
             });
-        });
-    getAllDrafts = (userName) =>
-        entriesDB.transaction('rw', entriesDB.drafts, () =>
-            entriesDB.drafts
-                     .where('authorUsername')
-                     .equals(userName)
-                     .toArray()
-                     .then(drafts => {
-                         dbg('getAllDrafts', drafts);
-                         const convDrafts = drafts.map(draft => {
-                             return Object.assign({}, draft);
-                         });
-                         return convDrafts;
-                     })
-        );
-    getDraftsCount = (userName) =>
-        entriesDB.transaction('rw', entriesDB.drafts, () =>
-            entriesDB.drafts.where('authorUsername').equals(userName).count()
-        )
-    // get resource by id (drafts or entries);
-    getById = (table, id) =>
-        entriesDB.transaction('r', entriesDB[table], () => {
-            dbg('getById from', table, 'with id', id);
-            return entriesDB[table]
-                    .where('id')
-                    .equals(parseInt(id, 10))
-                    .first();
-        });
+
+    saveDraft = partialDraft =>
+        entriesDB.drafts.put(partialDraft)
+            .then(() => partialDraft);
+
+    deleteDraft = ({ draftId, onSuccess, onError }) =>
+        entriesDB.drafts.where('id')
+            .equals(draftId)
+            .delete()
+            .then(() => onSuccess(draftId))
+            .catch(reason => onError(reason));
+
+    getAllDrafts = akashaId =>
+        entriesDB.drafts
+            .where('akashaId')
+            .equals(akashaId)
+            .toArray()
+            .then(drafts =>
+                drafts.map(draft =>
+                    Object.assign({}, draft)
+                )
+            );
+
+    getDraftsCount = ({ akashaId, onSuccess, onError }) =>
+         entriesDB.drafts
+            .where('akashaId')
+            .equals(akashaId)
+            .count()
+            .then(counter => onSuccess(counter))
+            .catch(error => onError(error));
+
+    // get draft by id;
+    getById = ({ id, onSuccess, onError }) =>
+        entriesDB.drafts
+            .where('id')
+            .equals(id)
+            .first()
+            .then(result => onSuccess(result))
+            .catch(reason => onError(reason));
 }
 
 export { DraftService };

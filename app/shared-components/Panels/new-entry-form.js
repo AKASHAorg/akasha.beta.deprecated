@@ -4,26 +4,81 @@ import {
     RaisedButton,
     Tabs,
     Tab,
-    SelectField,
     MenuItem,
-    Card,
-    CardHeader,
-    CardText,
     IconMenu,
-    IconButton,
-    CircularProgress } from 'material-ui';
-import SearchBar from '../SearchBar/search-bar';
+    IconButton } from 'material-ui';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
+import throttle from 'lodash.throttle';
+import { generalMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
+import { DataLoader } from 'shared-components';
+import { injectIntl } from 'react-intl';
+import { isInViewport } from 'utils/domUtils'; // eslint-disable-line import/no-unresolved, import/extensions
+import DraftCard from '../DraftCard/draft-card';
+import EntryListContainer from '../EntryList/new-entry-list-container';
+
+const LIMIT = 6;
 
 class NewEntryFormPanel extends Component {
     constructor (props) {
         super(props);
+
+        this.lastListedEntryIndex = 0;
+        this.trigger = null;
+        this.container = null;
         this.state = {
             tabsValue: 'drafts',
             searchValue: '',
             sortByValue: 'latest'
         };
     }
+
+    componentDidMount () {
+        const { draftActions, drafts, draftsCount, loggedProfileData } = this.props;
+        if (drafts.size !== draftsCount) {
+            draftActions.getDrafts(loggedProfileData.get('akashaId'));
+        }
+        if (this.container) {
+            this.container.addEventListener('scroll', throttle(this.handleScroll, 500));
+        }
+    }
+
+    componentWillReceiveProps (nextProps) {
+        const { publishedEntries } = nextProps;
+
+        if (publishedEntries.size !== this.props.publishedEntries.size) {
+            this.lastListedEntryIndex = publishedEntries.size > 0 ?
+                publishedEntries.last().get('entryId') :
+                0;
+        }
+    }
+
+    componentWillUpdate (nextProps, nextState) {
+        const { draftActions, entryActions, drafts, draftsCount, loggedProfileData } = this.props;
+        const { tabsValue } = nextState;
+        if (this.state.tabsValue !== tabsValue) {
+            if (tabsValue === 'drafts' && drafts.size !== draftsCount) {
+                draftActions.getDrafts(loggedProfileData.get('akashaId'));
+            }
+            if (tabsValue === 'listed') {
+                entryActions.entryProfileIterator(loggedProfileData.get('akashaId'), 0, LIMIT);
+            }
+        }
+    }
+
+    getTriggerRef = (element) => {
+        this.trigger = element;
+    }
+
+    handleScroll = () => { // eslint-disable-line consistent-return
+        const { entryActions, loggedProfileData } = this.props;
+        if (!this.trigger) {
+            return null;
+        }
+        if (isInViewport(this.trigger)) {
+            entryActions.moreEntryProfileIterator(loggedProfileData.get('akashaId'), this.lastListedEntryIndex, LIMIT);
+        }
+    }
+
     _handleTabsChange = (value) => {
         this.setState({
             tabsValue: value,
@@ -40,84 +95,104 @@ class NewEntryFormPanel extends Component {
             sortByValue: payload
         });
     }
-    _handleEntryEdit = (ev, entryId) => {
+    _handleDraftEdit = (ev, entryId) => {
         const entryType = this.state.tabsValue;
         const { router } = this.context;
-        const { profileState, appActions } = this.props;
-        const userName = profileState.get('loggedProfile').get('userName');
+        const { appActions, loggedProfileData } = this.props;
         appActions.hidePanel();
         switch (entryType) {
             case 'drafts':
-                return router.push(`/${userName}/draft/${entryId}`);
+                router.replace(`/${loggedProfileData.get('akashaId')}/draft/${entryId}`);
+                break;
             default:
                 break;
         }
     }
-    _handleNewEntry = (ev) => {
+    _handleDraftDelete = (id) => {
+        const { draftActions, params } = this.props;
+        const { draftId } = params;
+        draftActions.deleteDraft(id);
+        if (draftId === id.toString()) {
+            this.context.router.push(`/${params.akashaId}/explore/tag`);
+        }
+    }
+    _handleNewEntry = () => {
         const { router } = this.context;
-        const { profileState, appActions } = this.props;
-        const userName = profileState.get('loggedProfile').get('userName');
+        const { appActions, loggedProfileData } = this.props;
         appActions.hidePanel();
-        return router.push(`/${userName}/draft/new`);
+        return router.replace(`/${loggedProfileData.get('akashaId')}/draft/new`);
+    }
+    _getDraftCards = () => {
+        const { drafts, intl, loggedProfileData } = this.props;
+        return drafts.filter(drft => drft.get('akashaId') === loggedProfileData.get('akashaId'))
+            .map((draft, key) =>
+              <DraftCard
+                key={key}
+                headerTitle={'Draft'}
+                lastUpdated={`Last update ${draft.get('updated_at')}`}
+                title={draft.getIn(['content', 'title'])}
+                excerpt={draft.getIn(['content', 'excerpt'])}
+                wordCount={draft.getIn(['content', 'wordCount'])}
+                onDelete={() => this._handleDraftDelete(draft.get('id'))}
+                onTitleClick={ev => this._handleDraftEdit(ev, draft.get('id'))}
+              />
+            );
     }
     _getTabContent = () => {
-        const { entryState } = this.props;
-        let entries;
+        const { drafts, fetchingDrafts, fetchingPublishedEntries,
+            fetchingMorePublishedEntries, moreProfileEntries,
+            publishedEntries } = this.props;
+        const { palette } = this.context.muiTheme;
         switch (this.state.tabsValue) {
             case 'drafts':
-                entries = entryState.get('drafts');
-                break;
-            case 'listed':
-                entries = entryState.get('published');
-                break;
-            case 'unlisted':
-                entries = entryState.get('published');
-                break;
-            default:
-                break;
-        }
-        const entryCards = entries.map((card, key) => {
-            return (
-              <Card key={key} style={{ marginBottom: 8 }}>
-                <CardHeader
-                  title="Draft"
-                  subtitle="1 day ago - 18 words so far"
+                return (<DataLoader
+                  flag={fetchingDrafts}
+                  timeout={300}
+                  size={80}
+                  style={{ paddingTop: '120px' }}
                 >
-                  <div style={{ width: '55%', display: 'inline-block', textAlign: 'right' }}>
-                    <IconMenu iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}>
-                      <MenuItem
-                        primaryText="Edit"
-                        onClick={(ev) => this._handleEntryEdit(ev, card.id)}
-                      />
-                      <MenuItem primaryText="Publish" />
-                      <MenuItem primaryText="Delete" />
-                    </IconMenu>
+                  <div>
+                    {drafts && drafts.size > 0 ?
+                        this._getDraftCards() :
+                        <div
+                          style={{
+                              display: 'flex',
+                              justifyContent: 'center',
+                              color: palette.disabledColor,
+                              paddingTop: '10px'
+                          }}
+                        >
+                          No drafts found
+                        </div>
+                    }
                   </div>
-                </CardHeader>
-                <CardText>
-                  <h2
-                    onClick={(ev) => this._handleEntryEdit(ev, card.id)}
-                    style={{ cursor: 'pointer' }}
-                  >
-                    {card.title && card.title}
-                    {!card.title && 'No Title'}
-                  </h2>
-                </CardText>
-                <CardText>
-                  <p>{card.excerpt}</p>
-                </CardText>
-              </Card>
-            );
-        });
-        return (
-          <div>{entryCards}</div>
-        );
+                </DataLoader>);
+            case 'listed':
+                return (
+                  <EntryListContainer
+                    entries={publishedEntries}
+                    cardStyle={{ width: 'auto' }}
+                    fetchingEntries={fetchingPublishedEntries}
+                    fetchingMoreEntries={fetchingMorePublishedEntries}
+                    getTriggerRef={this.getTriggerRef}
+                    moreEntries={moreProfileEntries}
+                    style={{ display: 'block' }}
+                  />
+                );
+            default:
+                return null;
+        }
     }
     render () {
+        const { drafts, publishedEntries } = this.props;
+        const { palette } = this.context.muiTheme;
         const tabStyle = {
             backgroundColor: '#FFF',
             color: '#444'
         };
+        const hasEntries = this.state.tabsValue === 'drafts' ?
+            drafts.size > 0 :
+            publishedEntries.size > 0;
         return (
           <Paper style={this.props.rootStyle}>
             <div
@@ -125,18 +200,23 @@ class NewEntryFormPanel extends Component {
               style={{
                   borderBottom: '1px solid #DDD',
                   padding: '12px 24px 0',
-                  margin: 0
+                  margin: 0,
               }}
             >
               <div className="col-xs-8">
                 <Tabs
                   value={this.state.tabsValue}
                   onChange={this._handleTabsChange}
-                  inkBarStyle={{ backgroundColor: '#4285F4' }}
+                  inkBarStyle={{ backgroundColor: palette.primary1Color }}
                 >
                   <Tab label="Drafts" value="drafts" style={tabStyle} />
                   <Tab label="Listed" value="listed" style={tabStyle} />
-                  <Tab label="Unlisted" value="unlisted" style={tabStyle} />
+                  <Tab
+                    label={<span style={{ color: palette.disabledColor }}>Unlisted</span>}
+                    value="unlisted"
+                    style={{ cursor: 'not-allowed', ...tabStyle }}
+                    disabled
+                  />
                 </Tabs>
               </div>
               <div className="col-xs-4 end-xs">
@@ -151,51 +231,42 @@ class NewEntryFormPanel extends Component {
                   position: 'absolute',
                   top: 61,
                   bottom: 0,
+                  right: 0,
+                  left: 0,
                   overflowY: 'auto'
               }}
+              ref={(el) => { this.container = el; }}
             >
-              <div className="col-xs-12" style={{ padding: 0 }}>
-                <div className="row middle-xs" style={{ margin: 0 }}>
-                  <div className="col-xs-8">
+              {hasEntries &&
+                <div className="col-xs-12" style={{ padding: '15px' }}>
+                  {/* <div className="col-xs-8">
                     <SearchBar
-                      hintText={
+                        hintText={
                         `Search
-                         ${this.state.tabsValue}
-                         ${this.state.tabsValue === 'drafts' ? '' : 'entries'}`
-                      }
-                      onChange={this._handleSearchChange}
-                      showCancelButton={(this.state.searchValue.length > 0)}
-                      value={this.state.searchValue}
-                      searchIconStyle={{
-                          marginRight: '-24px',
-                          marginBottom: '-19px',
-                          height: '48px'
-                      }}
+                            ${this.state.tabsValue}
+                            ${this.state.tabsValue === 'drafts' ? '' : 'entries'}`
+                        }
+                        onChange={() => null}
+                        showCancelButton={(this.state.searchValue.length > 0)}
+                        value={this.state.searchValue}
+                        searchIconStyle={{
+                            marginRight: '-24px',
+                            marginBottom: '-19px',
+                            height: '48px'
+                        }}
                     />
-                  </div>
-                  <div className="col-xs-4">
-                    <div className="row middle-xs">
-                      <div className="col-xs-5">Sort By</div>
-                      <SelectField
-                        className="col-xs-7"
-                        value={this.state.sortByValue}
-                        onChange={this._handleSortByValueChange}
-                        style={{ width: '50px' }}
-                      >
-                        <MenuItem value="latest" primaryText="Latest" />
-                        <MenuItem value="oldest" primaryText="Oldest" />
-                      </SelectField>
                     </div>
-                  </div>
+                  */}
+                  Sorted by latest
                 </div>
-              </div>
-              <div className="col-xs-12">
+              }
+              <div className="col-xs-12" style={{ height: 'calc(100% - 56px)' }}>
                 {/** this.state.isTabLoading &&
                   <div className="center-xs" style={{ paddingTop: '12.5%' }}>
                     <CircularProgress />
                   </div>
                 **/}
-                <div>
+                <div style={{ overflow: 'hidden', minHeight: '400px' }}>
                   {this._getTabContent()}
                 </div>
               </div>
@@ -205,22 +276,31 @@ class NewEntryFormPanel extends Component {
     }
 }
 NewEntryFormPanel.propTypes = {
-    maxWidth: PropTypes.string,
-    rootStyle: PropTypes.object,
-    profileState: PropTypes.object,
-    entryState: PropTypes.object,
-    entryActions: PropTypes.object,
-    appActions: PropTypes.object
+    appActions: PropTypes.shape(),
+    draftActions: PropTypes.shape(),
+    drafts: PropTypes.shape(),
+    draftsCount: PropTypes.number,
+    entryActions: PropTypes.shape(),
+    fetchingDrafts: PropTypes.bool,
+    fetchingMorePublishedEntries: PropTypes.bool,
+    fetchingPublishedEntries: PropTypes.bool,
+    intl: PropTypes.shape(),
+    loggedProfileData: PropTypes.shape(),
+    moreProfileEntries: PropTypes.bool,
+    publishedEntries: PropTypes.shape(),
+    rootStyle: PropTypes.shape(),
 };
 NewEntryFormPanel.contextTypes = {
-    router: PropTypes.object
+    muiTheme: PropTypes.shape(),
+    router: PropTypes.shape()
 };
 NewEntryFormPanel.defaultProps = {
     rootStyle: {
         height: '100%',
-        width: 640,
+        width: 480,
         zIndex: 10,
-        position: 'relative'
+        position: 'relative',
+        borderRadius: 0
     }
 };
-export default NewEntryFormPanel;
+export default injectIntl(NewEntryFormPanel);

@@ -1,3 +1,4 @@
+import { checkForGenesis } from './config/genesis';
 import GethIPC from './GethIPC';
 import IpfsIPC from './IpfsIPC';
 import AuthIPC from './AuthIPC';
@@ -8,6 +9,8 @@ import ProfileIPC from './ProfileIPC';
 import TagsIPC from './TagsIPC';
 import EntryIPC from './EntryIPC';
 import CommentsIPC from './CommentsIPC';
+import LicensesIPC from './LicensesIPC';
+import NotificationsIPC from './NotificationsIPC';
 import WebContents = Electron.WebContents;
 
 export function initModules() {
@@ -21,13 +24,20 @@ export function initModules() {
         new ProfileIPC(),
         new TagsIPC(),
         new EntryIPC(),
-        new CommentsIPC()
+        new CommentsIPC(),
+        new LicensesIPC(),
+        new NotificationsIPC()
     ];
     return {
         initListeners: (webContents: WebContents) => {
-            logger.registerLogger('akasha', { maxsize: 50 * 1024});
+            logger.registerLogger('akasha', { maxsize: 50 * 1024 });
             ipcChannels.forEach((obj: any) => {
                 obj.initListeners(webContents);
+            });
+            checkForGenesis((errGenesis) => {
+                    if (errGenesis) {
+                        (Logger.getInstance().getLogger('akasha')).error(errGenesis);
+                    }
             });
         },
         logger,

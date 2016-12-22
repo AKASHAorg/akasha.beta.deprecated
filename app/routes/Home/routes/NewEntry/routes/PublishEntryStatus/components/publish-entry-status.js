@@ -1,51 +1,122 @@
 import React from 'react';
-import PanelContainer from 'shared-components/PanelContainer/panel-container';
-import { CircularProgress } from 'material-ui';
+import PanelContainer from 'shared-components/PanelContainer/panel-container'; // eslint-disable-line import/no-unresolved, import/extensions
+import { CircularProgress, RaisedButton } from 'material-ui';
 
+const REDIRECT_TIMEOUT = 5; // seconds
 class PublishEntryStatus extends React.Component {
-    constructor (props) {
-        super(props);
-    }
     componentDidMount () {
-        const { entryActions, entryState, profileState } = this.props;
-        const draftToPublish = entryState.get('drafts').find(draft =>
-            draft.id === parseInt(this.props.params.draftId, 10));
-        entryActions.publishEntry(
-            draftToPublish.toJS(),
-            profileState.get('loggedProfile').get('address')
+        document.body.style.overflow = 'hidden';
+        this.timeout = setTimeout(this._handleReturn, REDIRECT_TIMEOUT * 1000);
+    }
+    // componentWillReceiveProps (nextProps) {
+    //     const { drafts, params, pendingActions } = nextProps;
+    //     const currentDraft = drafts.find(draft => draft.id === parseInt(params.draftId, 10));
+    //     const currentDraftAction = pendingActions.find(action =>
+    //         action.toJS().payload.draft.id === parseInt(params.draftId, 10)
+    //     );
+    //     const prevDraft = this.props.drafts.find(draft =>
+    //         draft.id === parseInt(params.draftId, 10));
+    //     // if ((prevDraft && !currentDraft) || !currentDraftAction) {
+    //     //     this.context.router.push(`/${params.akashaId}/explore/tag`);
+    //     // }
+    // }
+    shouldComponentUpdate (nextProps) {
+        const { drafts, params, pendingActions } = nextProps;
+        const currentDraft = drafts.find(draft => draft.id === parseInt(params.draftId, 10));
+        const prevCurrentDraft = this.props.drafts.find(draft =>
+            draft.id === parseInt(params.draftId, 10)
         );
+        return prevCurrentDraft !== currentDraft ||
+            pendingActions !== this.props.pendingActions;
+    }
+    componentWillUnmount () {
+        document.body.style.overflow = 'initial';
+        clearTimeout(this.timeout);
+        this.timeout = undefined;
+    }
+    _handleReturn = () => {
+        const { params } = this.props;
+        const { router } = this.context;
+        router.replace(`/${params.akashaId}/explore/tag`);
+    }
+    _getCurrentAction = () => { // eslint-disable-line consistent-return
+        const { pendingActions, params } = this.props;
+        const currentDraftAction = pendingActions.find(action =>
+            action.toJS().payload.draft &&
+            action.toJS().payload.draft.id === parseInt(params.draftId, 10)
+        );
+        switch (currentDraftAction.toJS().status) {
+            case 'needConfirmation':
+                return 'Waiting for publish confirmation!';
+            case 'checkAuth':
+                return 'Waiting for re-authentication!';
+            case 'publishing':
+                return 'Receiving transaction id';
+            case 'publishComplete':
+                return 'Publish complete. Redirecting...';
+            default:
+                break;
+        }
     }
     render () {
-        const { entryState } = this.props;
-        const draftToPublish = entryState.get('drafts').find(draft =>
-        draft.id === parseInt(this.props.params.draftId, 10));
-        
+        const { drafts, params, draftErrors } = this.props;
+        const draftToPublish = drafts.find(draft =>
+        draft.id === parseInt(params.draftId, 10));
+
+
         return (
           <PanelContainer
             showBorder
             title="Publishing entry"
+            actions={[
+                /* eslint-disable */
+                <RaisedButton key="back-to-stream" label="Back to Home" primary onClick={this._handleReturn} />
+                /* eslint-enable */
+            ]}
             style={{
                 left: '50%',
                 marginLeft: '-320px',
-                position: 'absolute',
+                position: 'fixed',
                 top: 0,
-                bottom: 0
+                bottom: 0,
+                zIndex: 16
             }}
           >
             <div className="col-xs-12" style={{ paddingTop: 32 }}>
-              <div className="row">
-                <div className="col-xs-12 center-xs">
-                  <CircularProgress size={1} />
+              {!draftToPublish &&
+                <div>Finding draft.. Please wait.</div>
+              }
+              {draftToPublish &&
+                <div className="row" style={{ height: '100%' }}>
+                  <div className="col-xs-12 center-xs" style={{ paddingTop: 64 }}>
+                    <CircularProgress size={80} />
+                  </div>
+                  <div className="col-xs-12 center-xs">
+                    <h3>Publishing &quot;{draftToPublish.getIn(['content', 'title'])}&quot;</h3>
+                    <p>Current Action: {this._getCurrentAction()}</p>
+                    <p>This entry is being published. You will be redirected to home in {REDIRECT_TIMEOUT} seconds.</p>
+                    {(draftErrors.size > 0) &&
+                        draftErrors.map((err, key) =>
+                          <div key={key} style={{ color: 'red' }}>
+                            Error {err.get('code') && err.get('code')}: {err.get('message')}
+                          </div>
+                        )
+                    }
+                  </div>
                 </div>
-                <div className="col-xs-12 center-xs" style={{ paddingTop: 16 }}>
-                  <h3>Status of the entry..</h3>
-                  <p>This entry is being published.</p>
-                </div>
-              </div>
+               }
             </div>
           </PanelContainer>
         );
     }
 }
-PublishEntryStatus.propTypes = {};
+PublishEntryStatus.propTypes = {
+    params: React.PropTypes.shape(),
+    drafts: React.PropTypes.shape(),
+    draftErrors: React.PropTypes.shape(),
+    pendingActions: React.PropTypes.shape()
+};
+PublishEntryStatus.contextTypes = {
+    router: React.PropTypes.shape()
+};
 export default PublishEntryStatus;

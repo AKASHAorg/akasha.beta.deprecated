@@ -1,0 +1,54 @@
+import * as Promise from 'bluebird';
+import currentProfile from '../registry/current-profile';
+import getFollowingList from '../profile/following-list';
+import { GethConnector } from '@akashaproject/geth-connector';
+
+export const filter = {
+    _address: {},
+    _blockNr: 0,
+    _currentAddress: '',
+    setBlockNr: (bNr: number) => {
+        this._blockNr = bNr;
+    },
+    setAddress: (addresses) => {
+        this._address = addresses;
+    },
+    hasAddress: (qAddress) => {
+        return this._address.hasOwnProperty(qAddress);
+    },
+    getBlockNr: () => {
+        return this._blockNr;
+    },
+    setMyAddress: (address) => {
+        this._currentAddress = address;
+    },
+    getMyAddress: () => {
+        return this._currentAddress;
+    }
+};
+/**
+ * Set which profiles to watch for changes
+ * @param data
+ * @returns {Bluebird<{done: boolean, watching: any}>}
+ */
+const execute = Promise.coroutine(function*(data: { profiles: string[], blockNr?: number}) {
+    const blockNr = (data.blockNr) ? data.blockNr : yield GethConnector.getInstance().web3.eth.getBlockNumberAsync();
+    const myProfile = yield currentProfile.execute();
+    let objectFilter = {};
+    let temp;
+    filter.setBlockNr(blockNr);
+    if (!data.profiles.length) {
+        temp = yield getFollowingList.execute({ akashaId: myProfile.akashaId });
+        data.profiles = temp.collection;
+    }
+    data.profiles.forEach((profileAddress) => {
+        Object.defineProperty(objectFilter, profileAddress, { value: true });
+    });
+    Object.defineProperty(objectFilter, myProfile.profileAddress, { value: true });
+    filter.setMyAddress(myProfile.profileAddress);
+    filter.setAddress(objectFilter);
+    objectFilter = null;
+    return { done: true, watching: data.profiles };
+});
+
+export default { execute, name: 'setFilter' };

@@ -1,18 +1,17 @@
 import { connect } from 'react-redux';
-import { asyncConnect } from 'redux-connect';
 import Configuration from './components/Configuration';
 import {
-    SetupActions,
-    SyncActions,
     SettingsActions,
-    EProcActions,
-    BootstrapBundleActions } from 'local-flux';
+    EProcActions } from 'local-flux';
 
-function mapStateToProps (state) {
+function mapStateToProps (state, ownProps) {
     return {
         gethSettings: state.settingsState.get('geth'),
+        defaultGethSettings: state.settingsState.get('defaultGethSettings'),
         ipfsSettings: state.settingsState.get('ipfs'),
+        defaultIpfsSettings: state.settingsState.get('defaultIpfsSettings'),
         configFlags: state.settingsState.get('flags'),
+        fetchingFlags: state.settingsState.get('fetchingFlags'),
         isAdvanced: state.settingsState.get('isAdvanced'),
         userSettings: state.settingsState.get('userSettings')
     };
@@ -25,10 +24,7 @@ function mapDispatchToProps (dispatch) {
     };
 }
 
-export default asyncConnect([{
-    promise: ({ store: { dispatch, getState } }) =>
-        Promise.resolve(new BootstrapBundleActions(dispatch).initConfig(getState))
-}])(connect(
+export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(Configuration));
+)(Configuration);

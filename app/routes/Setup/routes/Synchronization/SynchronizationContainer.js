@@ -1,34 +1,36 @@
 import { connect } from 'react-redux';
-import SyncStatus from './components/Sync';
-import { asyncConnect } from 'redux-connect';
-
 import {
-    LoggerActions,
     EProcActions,
-    ExternalProcessBundleActions,
-    BootstrapBundleActions } from 'local-flux';
+    SettingsActions } from 'local-flux';
+import SyncStatus from './components/Sync';
 
-function mapStateToProps (state) {
+function mapStateToProps (state, ownProps) {
     return {
         gethStatus: state.externalProcState.get('gethStatus'),
+        gethErrors: state.externalProcState.get('gethErrors'),
+        gethLogs: state.externalProcState.get('gethLogs'),
+        ipfsStatus: state.externalProcState.get('ipfsStatus'),
+        ipfsErrors: state.externalProcState.get('ipfsErrors'),
+        configFlags: state.settingsState.get('flags'),
         gethSettings: state.settingsState.get('geth'),
+        fetchingGethSettings: state.settingsState.get('fetchingGethSettings'),
+        fetchingIpfsSettings: state.settingsState.get('fetchingIpfsSettings'),
         gethSyncStatus: state.externalProcState.get('gethSyncStatus'),
-        syncActionId: state.externalProcState.get('syncActionId')
+        syncActionId: state.externalProcState.get('syncActionId'),
+        gethBusyState: state.externalProcState.get('gethBusyState'),
+        ipfsBusyState: state.externalProcState.get('ipfsBusyState'),
+        ipfsPortsRequested: state.externalProcState.get('ipfsPortsRequested'),
+        timestamp: state.appState.get('timestamp')
     };
 }
 
 function mapDispatchToProps (dispatch) {
     return {
         eProcActions: new EProcActions(dispatch),
-        loggerActions: new LoggerActions(dispatch)
+        settingsActions: new SettingsActions(dispatch)
     };
 }
-export default asyncConnect([{
-    promise: ({ store: { dispatch, getState } }) => {
-        const bootstrapActions = new BootstrapBundleActions(dispatch);
-        return Promise.resolve(bootstrapActions.initSync(getState));
-    }
-}])(connect(
+export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(SyncStatus));
+)(SyncStatus);

@@ -9,17 +9,23 @@ const hashPath = (...path) => {
     return hash.digest('hex');
 };
 const channels = {
-    auth: ['manager', 'login', 'logout', 'requestEther', 'generateEthKey', 'getLocalIdentities'],
-    tags: ['manager', 'create', 'exists', 'getTagId', 'getTagAt', 'isSubscribed', 'subscribe',
-        'unsubscribe', 'getSubPosition'],
-    entry: ['manager', 'publish', 'update', 'upvote', 'downvote', 'isOpenedToVotes', 'getVoteOf',
-        'getVoteEndDate', 'getScore'],
-    comments: ['manager', 'publish', 'update', 'upvote', 'downvote', 'getScore'],
-    geth: ['manager', 'options', 'startService', 'stopService', 'restartService', 'syncStatus', 'logs', 'status'],
-    ipfs: ['manager', 'startService', 'stopService', 'status', 'resolve'],
-    profile: ['manager', 'getProfileData', 'getMyBalance', 'getIpfs', 'unregister'],
-    registry: ['manager', 'profileExists', 'registerProfile', 'getCurrentProfile', 'getByAddress'],
-    tx: ['manager', 'addToQueue', 'emitMined'],
+    auth: ['login', 'logout', 'requestEther', 'generateEthKey', 'getLocalIdentities'],
+    tags: ['checkFormat', 'create', 'tagIterator', 'tagSubIterator', 'exists', 'getTagsCreated', 'subsCount',
+        'subscribe', 'getTagId', 'getTagName', 'unSubscribe', 'isSubscribed', 'searchTag'],
+    entry: ['getProfileEntriesCount', 'getTagEntriesCount', 'isActive', 'getEntry', 'publish', 'update', 'canClaim', 'claim',
+        'downvote', 'getScore', 'getDepositBalance', 'upvote', 'voteCost', 'voteCount', 'entryTagIterator',
+        'entryProfileIterator', 'votesIterator', 'getEntriesStream', 'getVoteOf', 'getEntryBalance', 'getEntryList'],
+    comments: ['getComment', 'comment', 'commentsCount', 'removeComment', 'commentsIterator'],
+    geth: ['options', 'startService', 'stopService', 'restartService', 'syncStatus', 'logs', 'status'],
+    ipfs: ['startService', 'stopService', 'status', 'resolve', 'getConfig', 'setPorts', 'getPorts'],
+    profile: ['getBalance', 'followProfile', 'getFollowersCount', 'getFollowingCount', 'getProfileData',
+        'unFollowProfile', 'updateProfileData', 'followersIterator', 'followingIterator', 'isFollower', 'isFollowing',
+        'getFollowingList', 'getProfileList'],
+    registry: ['fetchRegistered', 'addressOf', 'checkIdFormat', 'getCurrentProfile', 'profileExists', 'registerProfile',
+        'getByAddress', 'unregister'],
+    notifications: ['me', 'feed', 'setFilter'],
+    tx: ['addToQueue', 'emitMined'],
+    licenses: ['getLicenceById', 'getLicenses']
 };
 const processes = ['server', 'client'];
 const mem = os_1.totalmem().toLocaleString();
@@ -28,7 +34,7 @@ Object.keys(channels).forEach((attr) => {
     channels[attr].forEach((endpoint) => {
         processes.forEach((proc) => {
             if (!EVENTS[proc].hasOwnProperty(attr)) {
-                EVENTS[proc][attr] = {};
+                EVENTS[proc][attr] = { manager: hashPath(proc, attr, mem, 'manager') };
             }
             EVENTS[proc][attr][endpoint] = hashPath(proc, attr, mem, endpoint);
         });

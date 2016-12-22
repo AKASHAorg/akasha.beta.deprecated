@@ -1,4 +1,5 @@
 "use strict";
+const genesis_1 = require('./config/genesis');
 const GethIPC_1 = require('./GethIPC');
 const IpfsIPC_1 = require('./IpfsIPC');
 const AuthIPC_1 = require('./AuthIPC');
@@ -9,6 +10,8 @@ const ProfileIPC_1 = require('./ProfileIPC');
 const TagsIPC_1 = require('./TagsIPC');
 const EntryIPC_1 = require('./EntryIPC');
 const CommentsIPC_1 = require('./CommentsIPC');
+const LicensesIPC_1 = require('./LicensesIPC');
+const NotificationsIPC_1 = require('./NotificationsIPC');
 function initModules() {
     const logger = Logger_1.default.getInstance();
     const ipcChannels = [
@@ -20,7 +23,9 @@ function initModules() {
         new ProfileIPC_1.default(),
         new TagsIPC_1.default(),
         new EntryIPC_1.default(),
-        new CommentsIPC_1.default()
+        new CommentsIPC_1.default(),
+        new LicensesIPC_1.default(),
+        new NotificationsIPC_1.default()
     ];
     return {
         initListeners: (webContents) => {
@@ -28,8 +33,13 @@ function initModules() {
             ipcChannels.forEach((obj) => {
                 obj.initListeners(webContents);
             });
+            genesis_1.checkForGenesis((errGenesis) => {
+                if (errGenesis) {
+                    (Logger_1.default.getInstance().getLogger('akasha')).error(errGenesis);
+                }
+            });
         },
-        logger: logger,
+        logger,
         flushAll: () => {
             ipcChannels.forEach((obj) => {
                 obj.purgeAllListeners();

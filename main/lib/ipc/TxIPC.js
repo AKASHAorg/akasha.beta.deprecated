@@ -40,8 +40,14 @@ class TxIPC extends ModuleEmitter_1.default {
         return this;
     }
     _emitMined() {
-        geth_connector_1.GethConnector.getInstance().on(geth_connector_1.CONSTANTS.TX_MINED, (txHash) => {
-            const response = responses_1.mainResponse({ mined: txHash, watching: geth_connector_1.gethHelper.watching });
+        geth_connector_1.GethConnector.getInstance().on(geth_connector_1.CONSTANTS.TX_MINED, (tx) => {
+            const response = responses_1.mainResponse({
+                mined: tx.transactionHash,
+                blockNumber: tx.blockNumber,
+                cumulativeGasUsed: tx.cumulativeGasUsed,
+                hasEvents: !!(tx.logs.length),
+                watching: geth_connector_1.gethHelper.watching
+            });
             this.fireEvent(channels_1.default.client[this.MODULE_NAME].emitMined, response);
         });
     }

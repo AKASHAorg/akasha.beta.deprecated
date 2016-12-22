@@ -4,84 +4,36 @@ import { colors } from 'material-ui/styles';
 import CircleIcon from './CircleIcon';
 import { MenuAddEntry } from '../svg';
 
+class IconAddEntry extends Component {
+    render () {
+        let { iconStyle, viewBox, disabled, tooltip, isActive, onClick } = this.props;
 
-export default class IconAddEntry extends Component {
-  state = {
-    muiTheme: this.context.muiTheme
-  };
-
-  static propTypes = {
-    style: PropTypes.object,
-    iconStyle: PropTypes.object,
-    viewBox: PropTypes.string,
-    hoverColor: PropTypes.string,
-    color: PropTypes.string
-  };
-
-  static defaultProps = {
-    style: {
-      width: '32px',
-      height: '32px',
-      borderWidth: '1px',
-      borderStyle: 'solid',
-      borderRadius: '50%'
-    },
-    viewBox: '0 0 32 32',
-    color: colors.lightBlack,
-    hoverColor: colors.darkBlack
-  };
-
-  static contextTypes = {
-    muiTheme: React.PropTypes.object
-  };
-
-  static childContextTypes = {
-    muiTheme: React.PropTypes.object
-  };
-
-  getChildContext () {
-    return {
-      muiTheme: this.state.muiTheme
-    };
-  }
-
-  render () {
-    let { style, iconStyle, viewBox, hoverColor, color, disabled, tooltip, ...other } = this.props;
-    const {
-      baseTheme: {
-        palette
-      }
-    } = this.state.muiTheme;
-
-    style = Object.assign(style, {
-        borderColor: colors.faintBlack,
-        ':hover': {
-          borderColor: palette.primary1Color
-        }
-      }
-    );
-
-    return (
-      <CircleIcon
-        style={style}
-        disabled = {disabled}
-        tooltip = {tooltip}
-        onClick = {this._handleClick}
-      >
-        <SvgIcon
-          color={color}
-          hoverColor={hoverColor}
-          style={iconStyle}
-          viewBox={viewBox}
-          onClick={this._handleClick}
-          {...other}
-        >
-          <MenuAddEntry />
-        </SvgIcon>
-      </CircleIcon>
-    );
-  }
-  _handleClick = (ev) => {
-    if(this.props.onClick) return this.props.onClick(ev);
-  }
+        return (
+          <CircleIcon
+            disabled={disabled}
+            isActive={isActive}
+            onClick={onClick}
+            tooltip={tooltip}
+          >
+            <SvgIcon
+              color={colors.lightBlack}
+              hoverColor={colors.darkBlack}
+              style={iconStyle}
+              viewBox="0 0 32 32"
+            >
+              <MenuAddEntry />
+            </SvgIcon>
+          </CircleIcon>
+        );
+    }
 }
+
+IconAddEntry.propTypes = {
+    disabled: PropTypes.bool,
+    iconStyle: PropTypes.shape(),
+    isActive: PropTypes.bool,
+    onClick: PropTypes.func.isRequired,
+    tooltip: PropTypes.string,
+};
+
+export default IconAddEntry;

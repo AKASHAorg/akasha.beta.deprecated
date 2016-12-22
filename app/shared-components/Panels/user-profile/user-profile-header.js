@@ -12,12 +12,13 @@ import {
   ToolbarLogout
 } from '../../svg';
 
-const UserProfileHeader = (props) => {
-    const { profile } = props;
-    const profileAddress = profile.get('address');
-    const avatarImage = `data:image/gif;base64,${
-        btoa(String.fromCharCode.apply(null, profile.getIn(['optionalData', 'avatar'])))
-    }`;
+const UserProfileHeader = (props, { router, muiTheme }) => {
+    const { profile, profileAddress, profileActions, showPanel } = props;
+    const { palette } = muiTheme;
+    // const avatarImage = `data:image/gif;base64,${
+    //     btoa(String.fromCharCode.apply(null, profile.getIn(['optionalData', 'avatar'])))
+    // }`;
+    const avatarImage = profile.get('avatar');
     const svgStyle = {
         style: {
             width: '20px',
@@ -28,6 +29,12 @@ const UserProfileHeader = (props) => {
         hoverColor: colors.lightBlack,
         viewBox: '0 0 20 20'
     };
+    const navigateToProfile = () => {
+        props.hidePanel();
+        router.push(`/${profile.get('profile')}/profile/${profileAddress}`);
+    };
+    const profileName = `${profile.get('firstName')} ${profile.get('lastName')}`;
+    const userInitials = profileName.match(/\b\w/g).reduce((prev, current) => prev + current, '');
     return (
       <div style={props.rootStyle} >
         <div className="row top-xs" >
@@ -37,6 +44,7 @@ const UserProfileHeader = (props) => {
               image={avatarImage}
               editable={false}
               offsetBorder="1px solid rgba(0, 0, 0, 0.41)"
+              userInitials={userInitials}
             />
           </div>
           <div className="col-xs-8" style={{ marginTop: '-20px' }} >
@@ -45,10 +53,11 @@ const UserProfileHeader = (props) => {
                 tooltip="Wallet"
                 style={{ width: '40px', height: '40px' }}
                 iconStyle={svgStyle.style}
+                disabled
               >
                 <SvgIcon
                   viewBox={svgStyle.viewBox}
-                  className={"hand-icon"}
+                  className={'hand-icon'}
                   color={svgStyle.color}
                   hoverColor={svgStyle.hoverColor}
                 >
@@ -59,10 +68,11 @@ const UserProfileHeader = (props) => {
                 tooltip="Comments"
                 style={{ width: '40px', height: '40px' }}
                 iconStyle={svgStyle.style}
+                disabled
               >
                 <SvgIcon
                   viewBox={svgStyle.viewBox}
-                  className={"hand-icon"}
+                  className={'hand-icon'}
                   color={svgStyle.color}
                   hoverColor={svgStyle.hoverColor}
                 >
@@ -73,10 +83,11 @@ const UserProfileHeader = (props) => {
                 tooltip="Votes"
                 style={{ width: '40px', height: '40px' }}
                 iconStyle={svgStyle.style}
+                disabled
               >
                 <SvgIcon
                   viewBox={svgStyle.viewBox}
-                  className={"hand-icon"}
+                  className={'hand-icon'}
                   color={svgStyle.color}
                   hoverColor={svgStyle.hoverColor}
                 >
@@ -87,10 +98,11 @@ const UserProfileHeader = (props) => {
                 tooltip="Network"
                 style={{ width: '40px', height: '40px' }}
                 iconStyle={svgStyle.style}
+                disabled
               >
                 <SvgIcon
                   viewBox={svgStyle.viewBox}
-                  className={"hand-icon"}
+                  className={'hand-icon'}
                   color={svgStyle.color}
                   hoverColor={svgStyle.hoverColor}
                 >
@@ -101,11 +113,12 @@ const UserProfileHeader = (props) => {
                 tooltip="Profile"
                 style={{ width: '40px', height: '40px' }}
                 iconStyle={svgStyle.style}
+                onTouchTap={() => { showPanel({ name: 'editProfile', overlay: true }); }}
               >
                 <SvgIcon
                   viewBox={svgStyle.viewBox}
-                  className={"hand-icon"}
-                  color={svgStyle.color}
+                  className="hand-icon"
+                  color={palette.textColor}
                   hoverColor={svgStyle.hoverColor}
                 >
                   <ToolbarProfile />
@@ -115,10 +128,11 @@ const UserProfileHeader = (props) => {
                 tooltip="Settings"
                 style={{ width: '40px', height: '40px' }}
                 iconStyle={svgStyle.style}
+                disabled
               >
                 <SvgIcon
                   viewBox={svgStyle.viewBox}
-                  className={"hand-icon"}
+                  className={'hand-icon'}
                   color={svgStyle.color}
                   hoverColor={svgStyle.hoverColor}
                 >
@@ -129,12 +143,12 @@ const UserProfileHeader = (props) => {
                 tooltip="Logout"
                 style={{ width: '40px', height: '40px' }}
                 iconStyle={svgStyle.style}
-                onTouchTap={() => { props.profileActions.logout(profileAddress); }}
+                onTouchTap={() => { profileActions.logout(profileAddress); }}
               >
                 <SvgIcon
                   viewBox={svgStyle.viewBox}
-                  className={"hand-icon"}
-                  color={svgStyle.color}
+                  className={'hand-icon'}
+                  color={palette.textColor}
                   hoverColor={svgStyle.hoverColor}
                 >
                   <ToolbarLogout />
@@ -145,20 +159,22 @@ const UserProfileHeader = (props) => {
         </div>
         <div className="row start-xs" >
           <div
-            className="col-xs-12"
+            className="col-xs-12 textLink"
+            onClick={navigateToProfile}
             style={{
-                fontSize: '48px',
-                fontWeight: 500,
+                fontSize: '36px',
+                fontWeight: 400,
                 textTransform: 'capitalize'
             }}
           >
-            {`${profile.get('lastName')} ${profile.get('firstName')}`}
+            {`${profile.get('firstName')} ${profile.get('lastName')}`}
           </div>
           <div
-            className="col-xs-12"
-            style={{ fontSize: '28px', fontWeight: 200 }}
+            className="col-xs-12 textLink"
+            onClick={navigateToProfile}
+            style={{ fontSize: '20px' }}
           >
-            {`@${profile.get('userName')}`}
+            {`@${profile.get('akashaId')}`}
           </div>
         </div>
       </div>
@@ -166,18 +182,25 @@ const UserProfileHeader = (props) => {
 };
 
 UserProfileHeader.propTypes = {
-    scrollPos: PropTypes.object,
-    rootStyle: PropTypes.object,
-    profileActions: PropTypes.object,
+    rootStyle: PropTypes.shape(),
+    profileActions: PropTypes.shape(),
+    profileAddress: PropTypes.string,
+    profile: PropTypes.shape(),
+    showPanel: PropTypes.func,
+    hidePanel: PropTypes.func
+};
+UserProfileHeader.contextTypes = {
+    router: PropTypes.shape(),
+    muiTheme: PropTypes.shape()
 };
 UserProfileHeader.defaultProps = {
     rootStyle: {
         width: '100%',
         borderBottom: '2px solid #cccccc',
-        paddingTop: '32px',
+        paddingTop: '16px',
         paddingLeft: '32px',
         paddingRight: '32px',
-        paddingBottom: '104px',
+        paddingBottom: '64px',
         backgroundColor: 'rgba(0, 0, 0, 0.03)'
     }
 };

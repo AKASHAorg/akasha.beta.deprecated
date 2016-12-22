@@ -2,6 +2,7 @@
 const crypto_1 = require('crypto');
 const geth_connector_1 = require('@akashaproject/geth-connector');
 const ethereumjs_util_1 = require('ethereumjs-util');
+const index_1 = require('../../contracts/index');
 const Promise = require('bluebird');
 const randomBytesAsync = Promise.promisify(crypto_1.randomBytes);
 class Auth {
@@ -35,16 +36,20 @@ class Auth {
         });
     }
     _read(token) {
-        if (!this.isLogged(token)) {
-            throw new Error('Token is not valid');
-        }
         const result = Buffer.concat([this._decipher.update(this._encrypted), this._decipher.final()]);
         this._encrypt(result);
         return result;
     }
-    login(acc, pass, timer = 0) {
-        return geth_connector_1.gethHelper
-            .hasKey(acc)
+    login(acc, pass, timer = 0, registering = false) {
+        return index_1.constructed.instance
+            .registry
+            .getByAddress(acc)
+            .then((address) => {
+            if (!ethereumjs_util_1.unpad(address) && !registering) {
+                throw new Error(`eth key: ${acc} has no profile attached`);
+            }
+            return geth_connector_1.gethHelper.hasKey(acc);
+        })
             .then((found) => {
             if (!found) {
                 throw new Error(`local key for ${acc} not found`);
@@ -74,12 +79,12 @@ class Auth {
                 geth_connector_1.GethConnector.getInstance().web3.personal.lockAccountAsync(acc);
                 geth_connector_1.GethConnector.getInstance().web3.eth.defaultAccount = acc;
                 this._session = {
-                    expiration: expiration,
+                    expiration,
                     address: acc,
                     vrs: ethereumjs_util_1.fromRpcSig(signedString)
                 };
-                setTimeout(() => this._flushSession(), 1000 * 60 * timer);
-                return { token: token, expiration: expiration, account: acc };
+                this._task = setTimeout(() => this._flushSession(), 1000 * 60 * timer);
+                return { token, expiration, account: acc };
             });
         })
             .catch((err) => {
@@ -89,7 +94,6 @@ class Auth {
     }
     logout() {
         if (this._session) {
-            geth_connector_1.GethConnector.getInstance().web3.eth.defaultAccount = '';
             geth_connector_1.GethConnector.getInstance().web3.personal.lockAccountAsync(this._session.address);
         }
         this._flushSession();
@@ -108,6 +112,7 @@ class Auth {
         try {
             pubKey = ethereumjs_util_1.bufferToHex(ethereumjs_util_1.ecrecover(ethereumjs_util_1.toBuffer(token), v, r, s));
             ethAddr = ethereumjs_util_1.pubToAddress(pubKey);
+            console.log(ethereumjs_util_1.bufferToHex(ethAddr), this._session.address);
             return ethereumjs_util_1.bufferToHex(ethAddr) === this._session.address;
         }
         catch (err) {
@@ -119,6 +124,8 @@ class Auth {
         this._encrypted = null;
         this._cipher = null;
         this._decipher = null;
+        clearTimeout(this._task);
+        console.log('flushed session');
     }
     _signSession(account, hash) {
         return geth_connector_1.GethConnector.getInstance()

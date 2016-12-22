@@ -6,8 +6,8 @@ class PublishEntryComplete extends React.Component {
     }
     render () {
         return (
-            <div>Entry publishing Complete!!</div>
-        )
+          <div>Entry publishing Complete!!</div>
+        );
     }
 }
 PublishEntryComplete.propTypes = {};

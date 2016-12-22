@@ -1,14 +1,14 @@
 import React from 'react';
-import { autoPrefix, transitions, getMuiTheme } from 'material-ui/styles';
+import { autoPrefix, transitions } from 'material-ui/styles';
 
 function getRelativeValue (value, min, max) {
     const clampedValue = Math.min(Math.max(min, value), max);
     const rangeValue = max - min;
-    const relValue = Math.round(clampedValue / rangeValue * 10000) / 10000;
+    const relValue = Math.round((clampedValue / rangeValue) * 10000) / 10000;
     return relValue * 100;
 }
 
-function getStyles (props, state) {
+function getStyles (props, context) {
     const {
         max,
         min,
@@ -16,11 +16,7 @@ function getStyles (props, state) {
         value
     } = props;
 
-    const {
-        baseTheme: {
-            palette
-        }
-    } = state.muiTheme;
+    const { palette } = context.muiTheme;
 
     const zoom = size * 1.3;
     const baseSize = 32;
@@ -73,21 +69,13 @@ function getStyles (props, state) {
 class CircularProgress extends React.Component {
     constructor (props) {
         super(props);
-        this.state = {
-            muiTheme: getMuiTheme()
-        };
+
         this.scalePathTimer = undefined;
         this.rotateWrapperTimer = undefined;
     }
     componentDidMount () {
         this._scalePath(this.refs.path);
         this._rotateWrapper(this.refs.wrapper);
-    }
-
-    componentWillReceiveProps (nextProps, nextContext) {
-        this.setState({
-            muiTheme: nextContext.muiTheme || this.state.muiTheme
-        });
     }
 
     componentWillUnmount () {
@@ -121,17 +109,17 @@ class CircularProgress extends React.Component {
     _rotateWrapper (wrapper) {
         if (this.props.mode !== 'indeterminate') return;
 
-        autoPrefix.set(wrapper.style, 'transform', 'rotate(0deg)', this.state.muiTheme);
-        autoPrefix.set(wrapper.style, 'transitionDuration', '0ms', this.state.muiTheme);
+        autoPrefix.set(wrapper.style, 'transform', 'rotate(0deg)', this.context.muiTheme);
+        autoPrefix.set(wrapper.style, 'transitionDuration', '0ms', this.context.muiTheme);
 
         setTimeout(() => {
-            autoPrefix.set(wrapper.style, 'transform', 'rotate(1800deg)', this.state.muiTheme);
-            autoPrefix.set(wrapper.style, 'transitionDuration', '10s', this.state.muiTheme);
+            autoPrefix.set(wrapper.style, 'transform', 'rotate(1800deg)', this.context.muiTheme);
+            autoPrefix.set(wrapper.style, 'transitionDuration', '10s', this.context.muiTheme);
             autoPrefix.set(
                 wrapper.style,
                 'transitionTimingFunction',
                 'linear',
-                this.state.muiTheme
+                this.context.muiTheme
             );
         }, 50);
 
@@ -142,20 +130,20 @@ class CircularProgress extends React.Component {
         const {
             style,
             innerStyle,
-            children
-        } = this.props;
-        let {
+            children,
             maskStyle,
             strokeWidth,
             radius,
             ...other,
         } = this.props;
 
-        const {
-            prepareStyles,
-        } = this.state.muiTheme;
-
-        const styles = getStyles(this.props, this.state);
+        const { prepareStyles, palette } = this.context.muiTheme;
+        const styles = getStyles(this.props, this.context);
+        const defaultMaskStyle = {
+            stroke: palette.disabledColor,
+            opacity: 0.6,
+            strokeDasharray: '95, 200'
+        };
 
         return (
           <div {...other} style={prepareStyles(Object.assign(styles.root, style))} >
@@ -163,7 +151,7 @@ class CircularProgress extends React.Component {
               <svg style={prepareStyles(styles.svg)} >
                 {children}
                 <circle
-                  ref="path" style={maskStyle} cx="16"
+                  ref="path" style={maskStyle || defaultMaskStyle} cx="16"
                   cy="16" r={radius} fill="none"
                   strokeWidth={strokeWidth} strokeMiterlimit="10"
                 />
@@ -181,7 +169,6 @@ class CircularProgress extends React.Component {
 CircularProgress.defaultProps = {
     mode: 'indeterminate',
     value: 0,
-    maskStyle: { stroke: 'rgba(0, 0, 0, 0.15)', strokeDasharray: '95, 200' },
     min: 0,
     max: 100,
     radius: '15',

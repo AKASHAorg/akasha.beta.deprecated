@@ -10,19 +10,35 @@ export default class Registry extends BaseContract {
     constructor(instance: any) {
         super();
         this.contract = Promise.promisifyAll(instance);
-        this.contract.getById.callAsync = Promise.promisify(this.contract.getById.call);
-        this.contract.getByAddr.callAsync = Promise.promisify(this.contract.getByAddr.call);
+        this.contract.addressOf.callAsync = Promise.promisify(this.contract.addressOf.call);
+        this.contract.addressOfKey.callAsync = Promise.promisify(this.contract.addressOfKey.call);
+        this.contract.isRegistered.callAsync = Promise.promisify(this.contract.isRegistered.call);
+        this.contract.check_format.callAsync = Promise.promisify(this.contract.check_format.call);
     }
 
     /**
      *
-     * @param username
+     * @param id
      * @returns {any}
      */
-    public profileExists(username: string) {
+    public profileExists(id: string) {
         return this.contract
-            .getById
-            .callAsync(username);
+            .addressOf
+            .callAsync(id)
+            .then((exists) => {
+                return !!unpad(exists);
+            });
+    }
+
+    /**
+     *
+     * @param id
+     * @returns {any}
+     */
+    public addressOf(id: string) {
+        return this.contract
+            .addressOf
+            .callAsync(id)
     }
 
     /**
@@ -32,17 +48,20 @@ export default class Registry extends BaseContract {
      */
     public getByAddress(address: string) {
         return this.contract
-            .getByAddr
-            .callAsync(address);
+            .addressOfKey
+            .callAsync(address)
+            .then((profileAddress) => {
+                if (!!unpad(profileAddress)) {
+                    return profileAddress;
+                }
+                return '';
+            });
     }
 
-    /**
-     * Get curre
-     * @returns {any}
-     */
-    public getMyProfile() {
+    public checkFormat(id: string) {
         return this.contract
-            .getMyProfileAsync();
+            .check_format
+            .callAsync(id)
     }
 
     /**
@@ -66,8 +85,7 @@ export default class Registry extends BaseContract {
             })
             .then((addrList: string[]) => {
                 addrList.forEach((val: string, index: number) => {
-                    const valTr = unpad(val);
-                    if (valTr) {
+                    if (val) {
                         profileList.push({ key: keyList[index], profile: val });
                     }
                 });
@@ -78,35 +96,57 @@ export default class Registry extends BaseContract {
 
     /**
      *
-     * @param username
+     * @param id
      * @param ipfsHash
      * @param gas
      * @returns {PromiseLike<TResult>|Promise<TResult>|Thenable<U>|Bluebird<U>}
      */
-    public register(username: string, ipfsHash: string, gas: number = 1900000) {
-        const usernameTr = this.gethInstance.web3.fromUtf8(username);
-        const ipfsHashTr = [ipfsHash.slice(0, 23), ipfsHash.slice(23)].map((v) => {
-            return this.gethInstance.web3.fromUtf8(v);
-        });
-        return this.profileExists(usernameTr)
+    public register(id: string, ipfsHash: string, gas: number = 2000000) {
+        const idTr = this.gethInstance.web3.fromUtf8(id);
+        const ipfsHashTr = this.splitIpfs(ipfsHash);
+        return this.profileExists(idTr)
             .then((address: string) => {
                 const exists = unpad(address);
                 if (exists) {
-                    throw new Error(`${username} already taken`);
+                    throw new Error(`${id} already taken`);
                 }
 
                 if (ipfsHashTr.length !== 2) {
                     throw new Error('Expected exactly 2 ipfs slices');
                 }
+                return this.contract
+                    .check_format
+                    .callAsync(id);
+            }).then((isOK) => {
+                if (!isOK) {
+                    throw new Error(`${id} has illegal characters`);
+                }
 
-                return this.estimateGas('register', usernameTr, ipfsHashTr)
-                    .then((estimatedGas) => {
-                        if (estimatedGas > gas) {
-                            throw new Error(`Gas required: ${estimatedGas}, Gas provided: ${gas}`);
-                        }
-                        return this.extractData('register', usernameTr, ipfsHashTr, { gas });
-                    });
-            });
+                return this.evaluateData('register', gas, idTr, ipfsHashTr);
+            })
+    }
+
+    /**
+     *
+     * @param id
+     * @param gas
+     * @returns {Bluebird<U>}
+     */
+    public unregister(id: string, gas: number = 2000000) {
+        const idTr = this.gethInstance.web3.fromUtf8(id);
+        return this.evaluateData('unregister', gas, idTr);
+    }
+
+    /**
+     *
+     * @param filter
+     * @returns {Bluebird<T>|any}
+     */
+    public getRegistered(filter: {index: {}, fromBlock: string, toBlock?: string, address?: string}) {
+        const { fromBlock, toBlock, address } = filter;
+        const Registered = this.contract.Register(filter.index, { fromBlock, toBlock, address });
+        Registered.getAsync = Promise.promisify(Registered.get);
+        return Registered.getAsync();
     }
 
 }

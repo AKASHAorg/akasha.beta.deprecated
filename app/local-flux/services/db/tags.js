@@ -1,16 +1,10 @@
 import Dexie from 'dexie';
-import debug from 'debug';
-const dbg = debug('App:tagsDB');
 
-const tagsDB = new Dexie('tags');
+const dbName = 'tags-akasha-alpha-' + process.env.NODE_ENV;
+const tagsDB = new Dexie(dbName);
 tagsDB.version(1).stores({
-    blockTags: '&tag'
+    pendingTags: '&tag, tx, profile',
+    selectedTag: '&akashaId'
 });
-
-tagsDB.blockTags.hook('creating', (primaryKey, obj, transaction) => {
-    dbg('creating.. ', obj);
-});
-
-tagsDB.open();
 
 export default tagsDB;

@@ -1,0 +1,35 @@
+.root {
+    height: 100%;
+}
+.streamPageInner {
+    z-index: 10;
+    position: fixed;
+    top: 0;
+    left: 64px;
+    right: 0;
+    height: 48px;
+}
+.streamPageContent {
+    padding-top: 48px;
+    height: 100%;
+}
+.streamPageContentInner {
+    height: 100%;
+}
+.content {
+    height: 100%;
+}
+.theStream {
+    height: 100%;
+    width: calc(100% - 400px);
+    position: relative;
+}
+.streamSidebarWrapper {
+    position: fixed;
+    bottom: 0;
+    top: 48px;
+    right: 0;
+    width: 400px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}

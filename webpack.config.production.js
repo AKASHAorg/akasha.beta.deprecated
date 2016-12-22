@@ -1,51 +1,51 @@
 /* eslint strict: 0 */
+
 'use strict';
 
 const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const webpackTargetElectronRenderer = require('webpack-target-electron-renderer');
 const baseConfig = require('./webpack.config.base');
 
 
 const config = Object.create(baseConfig);
 
-config.devtool = '#inline-source-map';
+config.devtool = 'inline-source-map';
 
-config.entry = './app/index';
+config.entry = ['./app/index'];
 
 config.output.publicPath = '../dist/';
 
 config.module.loaders.push({
     test: /^((?!\.module).)*\.css$/,
     loader: ExtractTextPlugin.extract(
-      'style-loader',
-      'css-loader'
+        'style-loader',
+        'css-loader'
     )
 }, {
     test: /\.module\.css$/,
     loader: ExtractTextPlugin.extract(
-      'style-loader',
-      'css-loader?modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]'
+        'style-loader',
+        'css-loader?modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]'
     )
 });
 
 config.plugins.push(
-  new webpack.optimize.OccurenceOrderPlugin(),
-  new webpack.DefinePlugin({
-      '__DEV__': false,
-      'process.env': {
-          'NODE_ENV': JSON.stringify('production')
-      }
-  }),
-  new webpack.optimize.UglifyJsPlugin({
-      compressor: {
-          screw_ie8: true,
-          warnings: false
-      }
-  }),
-  new ExtractTextPlugin('style.css', { allChunks: true })
+    new webpack.optimize.OccurrenceOrderPlugin(),
+    new webpack.DefinePlugin({
+        __DEV__: false,
+        'process.env': {
+            NODE_ENV: JSON.stringify('production')
+        }
+    }),
+    new webpack.optimize.UglifyJsPlugin({
+        compressor: {
+            screw_ie8: true,
+            warnings: false
+        }
+    }),
+    new ExtractTextPlugin('style.css', { allChunks: true })
 );
-
-config.target = webpackTargetElectronRenderer(config);
+config.devtool = 'cheap-module-source-map';
+config.target = 'web';
 
 module.exports = config;

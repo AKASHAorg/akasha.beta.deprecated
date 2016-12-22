@@ -1,17 +1,13 @@
 import Dexie from 'dexie';
-import MultiResImage from './multi-res-image';
 import EntryContent from './entry-content';
 
-export function getDraftClass () {
-    const Draft = Dexie.defineClass({
-        id: String, // local id
-        authorUsername: String,
-        title: String,
-        content: EntryContent,
-        tags: Array,
-        excerpt: String,
-        featuredImage: MultiResImage,
-        status: {} // local use
-    });
-    return Draft;
-}
+const draftSchema = Dexie.defineClass({
+    id: String, // local id
+    akashaId: String,
+    content: EntryContent,
+    tags: Array,
+    created_at: Date,
+    updated_at: Date,
+    tx: String
+});
+export default draftSchema;

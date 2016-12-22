@@ -1,25 +1,31 @@
 import { combineReducers } from 'redux';
 import { routerReducer as routing } from 'react-router-redux';
-import { reducer as reduxAsyncConnect } from 'redux-connect';
-import profileState from './profileState';
-import panelState from './panelState';
 import appState from './appState';
-import settingsState from './settingsState';
+import commentsState from './commentsState';
+import draftState from './draftState';
 import entryState from './entryState';
 import externalProcState from './externalProcState';
+import notificationsState from './notificationsState';
+import panelState from './panelState';
+import profileState from './profileState';
+import settingsState from './settingsState';
 import tagState from './tagState';
-import draftState from './draftState';
+import tempProfileState from './tempProfileState';
+import transactionState from './transactionState';
 
 const rootReducer = combineReducers({
-    profileState,
-    panelState,
     appState,
-    settingsState,
+    commentsState,
+    draftState,
     entryState,
     externalProcState,
+    notificationsState,
+    panelState,
+    profileState,
+    settingsState,
     tagState,
-    draftState,
-    reduxAsyncConnect,
+    tempProfileState,
+    transactionState,
     routing,
 });
 

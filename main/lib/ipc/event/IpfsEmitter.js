@@ -2,13 +2,14 @@
 const AbstractEmitter_1 = require('./AbstractEmitter');
 const ipfs_connector_1 = require('@akashaproject/ipfs-connector');
 const responses_1 = require('./responses');
-const index_1 = require('../modules/index');
 const channels_1 = require('../../channels');
+const peerId = '/ip4/46.101.103.114/tcp/4001/ipfs/QmYfXRuVWMWFRJxUSFPHtScTNR9CU2samRsTK15VFJPpvh';
 class IpfsEmitter extends AbstractEmitter_1.AbstractEmitter {
     attachEmitters() {
         this._download()
             ._catchCorrupted()
             ._catchFailed()
+            ._catchError()
             ._started()
             ._stopped();
     }
@@ -21,7 +22,15 @@ class IpfsEmitter extends AbstractEmitter_1.AbstractEmitter {
     _started() {
         ipfs_connector_1.IpfsConnector.getInstance().on(ipfs_connector_1.ipfsEvents.SERVICE_STARTED, () => {
             this.fireEvent(channels_1.default.client.ipfs.startService, responses_1.ipfsResponse({ started: true }));
-            index_1.initIpfsModules();
+            ipfs_connector_1.IpfsConnector.getInstance()
+                .api
+                .apiClient
+                .bootstrap
+                .add(peerId, (err, data) => {
+                if (err) {
+                    console.log('add ipfs peer err ', err);
+                }
+            });
         });
         return this;
     }
@@ -40,6 +49,12 @@ class IpfsEmitter extends AbstractEmitter_1.AbstractEmitter {
     _catchFailed() {
         ipfs_connector_1.IpfsConnector.getInstance().on(ipfs_connector_1.ipfsEvents.SERVICE_FAILED, (err) => {
             this.fireEvent(channels_1.default.client.ipfs.startService, responses_1.ipfsResponse({}, { message: err.message, fatal: true }));
+        });
+        return this;
+    }
+    _catchError() {
+        ipfs_connector_1.IpfsConnector.getInstance().on(ipfs_connector_1.ipfsEvents.ERROR, (message) => {
+            this.fireEvent(channels_1.default.client.ipfs.startService, responses_1.ipfsResponse({}, { message }));
         });
         return this;
     }

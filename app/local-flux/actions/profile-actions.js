@@ -1,326 +1,553 @@
-import { hashHistory } from 'react-router';
-import debug from 'debug';
-import { ProfileService } from '../services';
-import { profileActionCreators, appActionCreators } from './action-creators';
+import { AppActions, TransactionActions } from 'local-flux';
+import { ProfileService, AuthService, RegistryService } from '../services';
+import { profileActionCreators } from './action-creators';
+import imageCreator from '../../utils/imageUtils';
 
-const dbg = debug('App:ProfileActions:');
 let profileActions = null;
 
 class ProfileActions {
-    constructor (dispatch) {
-        if (!profileActions) {
-            profileActions = this;
+    constructor (dispatch) { // eslint-disable-line consistent-return
+        if (profileActions) {
+            return profileActions;
         }
+        this.appActions = new AppActions(dispatch);
+        this.transactionActions = new TransactionActions(dispatch);
         this.profileService = new ProfileService();
+        this.authService = new AuthService();
+        this.registryService = new RegistryService();
         this.dispatch = dispatch;
-        return profileActions;
+        profileActions = this;
     }
-    login = (profileData, unlockInterval, isConfirmation) =>
-        this.profileService.login(profileData, unlockInterval).then(result => {
-            if (!result) {
-                const error = new Error('Main process doomed');
-                return this.dispatch(profileActionCreators.loginError(error));
-            }
-            if (!result.success) {
-                const error = new Error(result.status.message, 'login action');
-                return this.dispatch(profileActionCreators.loginError(error));
-            }
-            return this.dispatch(profileActionCreators.loginSuccess(result.data));
-        })
-        .then(() => {
-            this.dispatch((dispatch, getState) => {
-                const localProfiles = getState().profileState.get('profiles');
-                const loggedProfile = getState().profileState.get('loggedProfile');
-                if (loggedProfile.size > 0) {
-                    const profile = localProfiles.find(prof =>
-                        prof.address === loggedProfile.get('address')
-                    );
-                    if (isConfirmation) {
-                        return this.profileService.updateLoggedProfile(profile.toJS());
-                    }
-                    return this.profileService.createLoggedProfile(profile.toJS()).then(() => {
-                        hashHistory.push(`${profile.get('userName')}`);
-                    });
-                }
-            });
-        })
-        .catch(reason => profileActionCreators.loginError(reason));
 
-    logout = (account) => {
-        this.profileService.logout(account).then(result => {
-            this.dispatch(profileActionCreators.logoutSuccess(result));
-        })
-        .then(() => {
-            this.profileService.removeLoggedProfile().then(() => {
-                hashHistory.push('authenticate');
-            });
-        }).catch(reason => profileActionCreators.logoutError(reason));
-    };
-
-    checkLoggedProfile = (options = {}) =>
-        this.profileService.getLoggedProfile().then(loggedProfile => {
-            const profile = loggedProfile[0];
-            if (profile) {
-                this.dispatch(profileActionCreators.loginSuccess(profile));
-                if (options.redirect) {
-                    return hashHistory.push(`/${profile.username}`);
-                }
-            }
-            return null;
-        });
-    clearLoggedProfile = () => {
-        this.profileService.clearLoggedProfile();
-    }
-    /**
-     * Retrieve all temporary profiles
-     */
-    getTempProfile = () =>
-        this.profileService.getTempProfile().then((profile) => {
-            dbg('getTempProfile', profile);
-            return this.dispatch(profileActionCreators.getTempProfileSuccess(profile));
-        })
-        .catch(reason => this.dispatch(profileActionCreators.getTempProfileError(reason)));
-
-    createTempProfile = (profileData, currentStatus) =>
-        this.profileService.createTempProfile(profileData, currentStatus).then(() => {
-            dbg('createTempProfile', { profileData, currentStatus });
-            this.dispatch(
-                profileActionCreators.createTempProfileSuccess(profileData, currentStatus)
-            );
-        }).catch(reason =>
-            this.dispatch(profileActionCreators.createTempProfileError(reason))
-        );
-
-    updateTempProfile = (profileData, currentStatus) =>
-        this.profileService.updateTempProfile(profileData.get('userName'), {
-            ...profileData.toJS(),
-            ...currentStatus })
-        .then(() => {
-            dbg('updateTempProfile', { ...profileData.toJS(), ...currentStatus });
-            return this.dispatch(
-                profileActionCreators.updateTempProfileSuccess(
-                    ...profileData.toJS(),
-                    ...currentStatus
-                )
-            );
-        })
-        .catch(reason =>
-            this.dispatch(profileActionCreators.updateTempProfileError(reason))
-        );
-
-    deleteTempProfile = () =>
-        this.profileService.deleteTempProfile().then(() => {
-            dbg('deleteTempProfile');
-            this.dispatch(profileActionCreators.deleteTempProfileSuccess());
-        }).catch(reason =>
-            this.dispatch(profileActionCreators.deleteTempProfileError(reason))
-        );
-
-    /**
-     * Step0: Creates a new eth address and updates the status of the profile creation process
-     * @param: {string} profilePassword
-     */
-    createEthAddress (profilePassword) {
-        this.dispatch(profileActionCreators.createEthAddress());
-        this.profileService.createEthAddress(profilePassword).then(result => {
-            dbg('createEthAddress', result);
-            if (!result.success) {
-                dbg(result.status.message);
-                this.dispatch(profileActionCreators.createEthAddressError(result.status.message));
-            }
-            this.dispatch(profileActionCreators.createEthAddressSuccess(result.data));
-        })
-        .then(() =>
-            this.dispatch((dispatch, getState) => {
-                const newerProfile = getState().profileState.getIn(['tempProfile']);
-                this.updateTempProfile(newerProfile, {
-                    currentStatus: {
-                        currentStep: 1,
-                        status: 'finished',
-                        message: 'eth address created'
-                    }
-                });
-                return newerProfile;
-            })
-        )
-        .then((newerProfile) =>
-            this.requestFundFromFaucet(newerProfile.get('address'))
-        )
-        .catch(reason => this.dispatch(profileActionCreators.createEthAddressError(reason)));
-    }
-    /**
-     * Step1: Send request to faucet and store the status of this step in indexedDB
-     * @param {string} profileAddress
-     */
-    requestFundFromFaucet (profileAddress) {
-        this.dispatch(profileActionCreators.requestFund());
-        this.profileService.requestFundFromFaucet(profileAddress).then(result => {
-            dbg('requestFundFromFaucet_success', result);
-            if (!result.success) {
-                dbg('ERROR: ', result.status.message);
-                this.dispatch(profileActionCreators.requestFundError(result.status.error));
-            }
-            return this.dispatch(profileActionCreators.requestFundSuccess(result.data));
-        })
-        .then(() => {
-            this.dispatch((dispatch, getState) => {
-                const newerProfile = getState().profileState.getIn(['tempProfile']);
-                this.updateTempProfile(newerProfile, {
-                    currentStatus: {
-                        currentStep: 2,
-                        status: 'finished',
-                        message: 'fund from faucet request success.'
-                    }
-                });
-            });
-        })
-        .then(() => {
-            this.fundFromFaucet();
-        });
-    }
-    /**
-     * Step2: Verify if balance > 0 or faucet transaction was mined
-     * and proceed to the next step
-     */
-    fundFromFaucet () {
-        dbg('funding from faucet');
-        this.profileService.fundFromFaucet().then(result => {
-            dbg('fundFromFaucet', result);
-            return this.dispatch(profileActionCreators.fundSuccess(result.data));
-        })
-        .then(() =>
-            this.dispatch((dispatch, getState) => {
-                const newerProfile = getState().profileState.getIn(['tempProfile']);
-                this.updateTempProfile(newerProfile, {
-                    currentStatus: {
-                        currentStep: 3,
-                        status: 'finished',
-                        message: 'fund from faucet success.'
-                    }
-                }).then(() =>
-                    this.completeProfileCreation(newerProfile)
-                );
-            })
-        )
-        .catch(reason => this.dispatch(profileActionCreators.fundError(reason)));
-    }
-    /**
-     * Step4 (last step) acctually create the profile using data received from the user
-     * @param {object} profileData
-     */
-    completeProfileCreation (profileData) {
-        this.profileService.completeProfileCreation(profileData).then(result => {
-            dbg('completeProfileCreation', result);
-            if (!result.success) {
-                this.dispatch(
-                    profileActionCreators.completeProfileCreationError(result.status.error)
-                );
-            }
-            this.dispatch(profileActionCreators.completeProfileCreationSuccess(result.data));
-            return result;
-        })
-        .then((result) => {
-            if (result.success) {
-                return this.deleteTempProfile();
-            }
-            dbg('completeProfileCreation_ERROR', result);
-            return result;
-        })
-        .then((result) => {
-            if (result.success) {
-                return hashHistory.push('authenticate');
-            }
-            return Promise.reject(new Error(result.status.message));
-        })
-        .catch(reason => this.dispatch(appActionCreators.showError({
-            code: '3XX',
-            message: `Error: ${reason.message}`
-        })));
-    }
-     /**
-     * Resumes the process of profile creation
-     * Step 0:: Create a new Ethereum address
-     * Step 1:: Request funds from faucet
-     * Step 2:: Receive funds from faucet
-     * Step 3:: Create new profile
-     */
-    createProfile = () => {
+    login = ({ account, password, rememberTime, akashaId }) => {
         this.dispatch((dispatch, getState) => {
-            const unfinishedProfiles = getState().profileState.get('tempProfile');
-            dbg('createProfile', unfinishedProfiles.toJS());
-            if (unfinishedProfiles) {
-                const currentStep = unfinishedProfiles.get('currentStatus').currentStep;
-                const profilePassword = unfinishedProfiles.get('password');
-                const profileAddress = unfinishedProfiles.get('address');
-                dbg('resuming step', currentStep);
-                switch (currentStep) {
-                    case 0:
-                        return this.createEthAddress(profilePassword);
-                    case 1:
-                        return this.requestFundFromFaucet(profileAddress);
-                    case 2:
-                        return this.fundFromFaucet();
-                    case 3:
-                        return this.completeProfileCreation(unfinishedProfiles);
-                    default:
-                        break;
-                }
-            }
-            // no new profile.
-            return this.getLocalProfiles();
+            const flags = getState().profileState.get('flags');
+            password = new TextEncoder('utf-8').encode(password);
+            dispatch(profileActionCreators.login({
+                loginRequested: true
+            }));
+            this.authService.login({
+                account,
+                password,
+                rememberTime,
+                akashaId,
+                onSuccess: (data) => {
+                    this.dispatch(profileActionCreators.loginSuccess(data, {
+                        loginRequested: false
+                    }));
+                    this.getCurrentProfile();
+                },
+                onError: error => this.dispatch(profileActionCreators.loginError(error, {
+                    loginRequested: false
+                }))
+            });
         });
     };
 
-    /**
-     * Check if temp profile exists. If true then navigate to profile status page.
-     * Else populate profile lists
-     */
-    checkTempProfile = () =>
-        this.getTempProfile().then(() =>
-            this.dispatch((dispatch, getState) => {
-                const tempProfile = getState().profileState.get('tempProfile');
-                dbg('checkTempProfile', tempProfile);
-                if (tempProfile.size > 0) {
-                    return hashHistory.push('/authenticate/new-profile-status');
-                }
-                return this.getLocalProfiles().then(() =>
-                    hashHistory.push('/authenticate')
-                );
-            })
-        ).catch(reason =>
-            this.dispatch(profileActionCreators.checkTempProfileError(reason))
-        );
-
-    getLocalProfiles = () =>
-        this.getProfilesList().then(() =>
-            this.dispatch((dispatch, getState) => {
-                const profilesHash = getState().profileState.get('profiles');
-                const hashes = profilesHash.toJS().map(el => el.ipfsHash);
-                this.getProfileData(hashes);
-            })
-        )
-        .catch(reason => console.error(reason));
-    /**
-     * get all local profiles available
-     * returns only the address and userName
-     */
-    getProfilesList = () =>
-        this.profileService.getProfilesList().then(profiles => {
-            dbg('getProfilesList', profiles);
-            return this.dispatch(profileActionCreators.getProfilesListSuccess(profiles.data));
-        }).catch(reason => this.dispatch(profileActionCreators.getProfilesListError(reason)));
-
-    getProfileData = (ipfsHashes) => {
-        this.profileService.getProfileData(ipfsHashes, (err, profile) => {
-            if (err) {
-                dbg('ERROR', err);
-                this.dispatch(profileActionCreators.getProfileDataError(err));
-            }
-            return this.dispatch(profileActionCreators.getProfileDataSuccess(profile));
+    logout = (profileKey, flush) => {
+        this.authService.logout({
+            options: {
+                profileKey,
+                flush
+            },
+            onSuccess: data => this.dispatch(profileActionCreators.logoutSuccess(data)),
+            onError: error => this.dispatch(profileActionCreators.logoutError(error))
         });
     };
-    requestAuthentication = (nextAction) => {
-        this.dispatch(profileActionCreators.setActionAfterAuth(nextAction));
+
+    getLoggedProfile = () => {
+        this.dispatch((dispatch, getState) => {
+            const flags = getState().profileState.get('flags');
+            if (!flags.get('fetchingLoggedProfile')) {
+                dispatch(profileActionCreators.getLoggedProfile({
+                    fetchingLoggedProfile: true
+                }));
+                this.authService.getLoggedProfile({
+                    onSuccess: (data) => {
+                        dispatch(profileActionCreators.getLoggedProfileSuccess(data, {
+                            fetchingLoggedProfile: false
+                        }));
+                        this.getCurrentProfile();
+                    },
+                    onError: error => dispatch(profileActionCreators.getLoggedProfileError(error, {
+                        fetchingLoggedProfile: false
+                    }))
+                });
+            }
+        });
     };
+
+    getLocalProfiles = () => {
+        this.dispatch((dispatch, getState) => {
+            const flags = getState().profileState.get('flags');
+            if (!flags.get('fetchingLocalProfiles')) {
+                dispatch(profileActionCreators.getLocalProfiles({
+                    fetchingLocalProfiles: true
+                }));
+                this.authService.getLocalIdentities({
+                    onSuccess: (data) => {
+                        this.dispatch(profileActionCreators.getLocalProfilesSuccess(data, {
+                            fetchingLocalProfiles: false,
+                            localProfilesFetched: true
+                        }));
+                    },
+                    onError: err => this.dispatch(profileActionCreators.getLocalProfilesError(err, {
+                        fetchingLocalProfiles: false,
+                        localProfilesFetched: false
+                    }))
+                });
+            }
+        });
+    };
+
+    getCurrentProfile = () => {
+        this.dispatch((dispatch, getState) => {
+            const flags = getState().profileState.get('flags');
+            if (!flags.get('fetchingCurrentProfile') && !flags.get('currentProfileFetched')) {
+                dispatch(profileActionCreators.getCurrentProfile({
+                    fetchingCurrentProfile: true
+                }));
+                this.registryService.getCurrentProfile({
+                    onSuccess: data =>
+                        dispatch(profileActionCreators.getCurrentProfileSuccess(data, {
+                            fetchingCurrentProfile: false,
+                            currentProfileFetched: true
+                        })),
+                    onError: err => dispatch(profileActionCreators.getCurrentProfileError(err, {
+                        fetchingCurrentProfile: false
+                    }))
+                });
+            }
+        });
+    };
+
+    clearLocalProfiles = () =>
+        this.dispatch(profileActionCreators.clearLocalProfilesSuccess());
+
+    clearOtherProfiles = () =>
+        this.dispatch(profileActionCreators.clearOtherProfiles());
+
+    /**
+     * profiles = [{key: string, profile: string}]
+     */
+    getProfileData = (profiles, full = false) => {
+        this.dispatch(profileActionCreators.getProfileData({
+            fetchingProfileData: true
+        }));
+        profiles.forEach((profileObject) => {
+            this.profileService.getProfileData({
+                options: {
+                    profile: profileObject.profile,
+                    full
+                },
+                onSuccess: (data) => {
+                    if (data.avatar) {
+                        data.avatar = imageCreator(data.avatar, data.baseUrl);
+                    }
+                    this.dispatch(profileActionCreators.getProfileDataSuccess(data, {
+                        fetchingProfileData: false
+                    }));
+                },
+                onError: (err) => {
+                    this.dispatch(profileActionCreators.getProfileDataError(err, {
+                        fetchingProfileData: false
+                    }));
+                }
+            });
+        });
+    };
+
+    updateProfileData = (updatedProfile, gas) => {
+        const { firstName, lastName, avatar, about, links,
+            backgroundImage } = updatedProfile.toJS();
+        const ipfs = { firstName, lastName, about, avatar };
+
+        if (links) {
+            ipfs.links = links;
+        }
+
+        if (backgroundImage) {
+            ipfs.backgroundImage = backgroundImage.length ? backgroundImage[0] : backgroundImage;
+        }
+        this.dispatch(profileActionCreators.updateProfileData({
+            updatingProfile: true
+        }));
+        this.dispatch((dispatch, getState) => {
+            const loggedProfile = getState().profileState.get('loggedProfile');
+            this.profileService.updateProfileData({
+                token: loggedProfile.get('token'),
+                ipfs,
+                gas,
+                onSuccess: (data) => {
+                    this.transactionActions.listenForMinedTx();
+                    this.transactionActions.addToQueue([{
+                        tx: data.tx,
+                        type: 'updateProfile'
+                    }]);
+                    this.appActions.showNotification({
+                        id: 'updatingProfile',
+                        values: {},
+                        duration: 3000
+                    });
+                },
+                onError: error =>
+                    dispatch(profileActionCreators.updateProfileDataError(error, {
+                        updatingProfile: false
+                    }))
+            });
+        });
+    };
+
+    getProfileList = (profiles) => {
+        this.dispatch(profileActionCreators.getProfileList({
+            fetchingProfileList: true
+        }));
+        this.profileService.getProfileList({
+            profiles,
+            onSuccess: data => {
+                data.collection.forEach((item) => {
+                    if (item.avatar) {
+                        item.avatar = imageCreator(item.avatar, item.baseUrl);
+                    }
+                });
+                this.dispatch(profileActionCreators.getProfileListSuccess(data, {
+                    fetchingProfileList: false
+                }));
+            },
+            onError: error =>
+                this.dispatch(profileActionCreators.getProfileListError(error, {
+                    fetchingProfileList: false
+                }))
+        });
+    }
+
+    updateProfileDataSuccess = () => {
+        this.dispatch(profileActionCreators.updateProfileDataSuccess({
+            updatingProfile: false
+        }));
+        this.appActions.showNotification({
+            id: 'profileUpdateSuccess',
+            values: { }
+        });
+    };
+
+    getProfileBalance = unit =>
+        this.dispatch((dispatch, getState) => {
+            const profileKey = getState().profileState.getIn(['loggedProfile', 'account']);
+            this.profileService.getProfileBalance({
+                options: {
+                    etherBase: profileKey,
+                    unit
+                },
+                onSuccess: data =>
+                    this.dispatch(profileActionCreators.getProfileBalanceSuccess(data)),
+                onError: error =>
+                    this.dispatch(profileActionCreators.getProfileBalanceError(error))
+            });
+        });
+
+    clearLoggedProfile = () => {
+        this.authService.deleteLoggedProfile({
+            onSuccess: () => this.dispatch(profileActionCreators.deleteLoggedProfileSuccess()),
+            onError: error => this.dispatch(profileActionCreators.deleteLoggedProfileError(error))
+        });
+    };
+
+    clearErrors = () => {
+        this.dispatch(profileActionCreators.clearErrors());
+    };
+    clearLoginErrors = () => {
+        this.dispatch(profileActionCreators.clearLoginErrors());
+    };
+    resetFlags = () => {
+        this.dispatch(profileActionCreators.resetFlags());
+    };
+    // this method is only called to check if there is a logged profile
+    // it does not dispatch anything and is useless as an action
+    //
+    checkLoggedProfile = (cb) => {
+        this.dispatch((dispatch, getState) => {
+            const loggedProfile = getState().profileState.get('loggedProfile');
+            if (loggedProfile.get('account')) {
+                return cb(null, true);
+            }
+            return this.authService.getLoggedProfile({
+                onSuccess: (data) => {
+                    if (data && data.account !== '') {
+                        return cb(null, true);
+                    }
+                    return cb(null, false);
+                },
+                onError: err => cb(err, false)
+            });
+        });
+    };
+
+    hideNotification = notification =>
+        this.dispatch(profileActionCreators.hideNotification(notification));
+
+    getFollowersCount = (akashaId) => {
+        this.dispatch(profileActionCreators.getFollowersCount());
+        this.profileService.getFollowersCount({
+            akashaId,
+            onError: error =>
+                this.dispatch(profileActionCreators.getFollowersCountError(error)),
+            onSuccess: data =>
+                this.dispatch(
+                    profileActionCreators.getFollowersCountSuccess(data.akashaId, data.count)
+                )
+        });
+    };
+
+    getFollowingCount = (akashaId) => {
+        this.dispatch(profileActionCreators.getFollowingCount());
+        this.profileService.getFollowingCount({
+            akashaId,
+            onError: error =>
+                this.dispatch(profileActionCreators.getFollowingCountError(error)),
+            onSuccess: data =>
+                this.dispatch(
+                    profileActionCreators.getFollowingCountSuccess(data.akashaId, data.count)
+                )
+        });
+    };
+
+    followersIterator = (akashaId, start, limit) => {
+        this.dispatch(profileActionCreators.followersIterator({
+            fetchingFollowers: true
+        }));
+        this.profileService.followersIterator({
+            akashaId,
+            start,
+            limit,
+            onError: error =>
+                this.dispatch(profileActionCreators.followersIteratorError(error, {
+                    fetchingFollowers: false
+                })),
+            onSuccess: (data) => {
+                data.collection.forEach((item) => {
+                    if (item.profile.avatar) {
+                        item.profile.avatar =
+                            imageCreator(item.profile.avatar, item.profile.baseUrl);
+                    }
+                });
+                this.dispatch(profileActionCreators.followersIteratorSuccess(data, {
+                    fetchingFollowers: false
+                }));
+            }
+        });
+    };
+
+    moreFollowersIterator = (akashaId, start, limit) => {
+        this.dispatch(profileActionCreators.moreFollowersIterator({
+            fetchingMoreFollowers: true
+        }));
+        this.profileService.moreFollowersIterator({
+            akashaId,
+            start,
+            limit,
+            onError: error =>
+                this.dispatch(profileActionCreators.moreFollowersIteratorError(error, {
+                    fetchingMoreFollowers: false
+                })),
+            onSuccess: (data) => {
+                data.collection.forEach((item) => {
+                    if (item.profile.avatar) {
+                        item.profile.avatar =
+                            imageCreator(item.profile.avatar, item.profile.baseUrl);
+                    }
+                });
+                this.dispatch(profileActionCreators.moreFollowersIteratorSuccess(data, {
+                    fetchingMoreFollowers: false
+                }));
+            }
+        });
+    };
+
+    followingIterator = (akashaId, start, limit) => {
+        this.dispatch(profileActionCreators.followingIterator({
+            fetchingFollowing: true
+        }));
+        this.profileService.followingIterator({
+            akashaId,
+            start,
+            limit,
+            onError: error =>
+                this.dispatch(profileActionCreators.followingIteratorError(error, {
+                    fetchingFollowing: false
+                })),
+            onSuccess: (data) => {
+                data.collection.forEach((item) => {
+                    if (item.profile.avatar) {
+                        item.profile.avatar =
+                            imageCreator(item.profile.avatar, item.profile.baseUrl);
+                    }
+                });
+                this.dispatch(profileActionCreators.followingIteratorSuccess(data, {
+                    fetchingFollowing: false
+                }));
+            }
+        });
+    };
+
+    moreFollowingIterator = (akashaId, start, limit) => {
+        this.dispatch(profileActionCreators.moreFollowingIterator({
+            fetchingMoreFollowing: true
+        }));
+        this.profileService.moreFollowingIterator({
+            akashaId,
+            start,
+            limit,
+            onError: error =>
+                this.dispatch(profileActionCreators.moreFollowingIteratorError(error, {
+                    fetchingMoreFollowing: false
+                })),
+            onSuccess: (data) => {
+                data.collection.forEach((item) => {
+                    if (item.profile.avatar) {
+                        item.profile.avatar =
+                            imageCreator(item.profile.avatar, item.profile.baseUrl);
+                    }
+                });
+                this.dispatch(profileActionCreators.moreFollowingIteratorSuccess(data, {
+                    fetchingMoreFollowing: false
+                }));
+            }
+        });
+    };
+
+    addUpdateProfileDataAction = (profileData) => {
+        this.appActions.addPendingAction({
+            type: 'updateProfile',
+            payload: { profileData },
+            titleId: 'updateProfileTitle',
+            messageId: 'updateProfile',
+            gas: 2000000,
+            status: 'needConfirmation'
+        });
+    }
+
+    addFollowProfileAction = (akashaId) => {
+        this.appActions.addPendingAction({
+            type: 'followProfile',
+            payload: { akashaId },
+            titleId: 'followProfileTitle',
+            messageId: 'followProfile',
+            gas: 2000000,
+            status: 'needConfirmation'
+        });
+    };
+
+    addUnfollowProfileAction = (akashaId) => {
+        this.appActions.addPendingAction({
+            type: 'unfollowProfile',
+            payload: { akashaId },
+            titleId: 'unfollowProfileTitle',
+            messageId: 'unfollowProfile',
+            gas: 2000000,
+            status: 'needConfirmation'
+        });
+    };
+
+    followProfile = (akashaId, gas) =>
+        this.dispatch((dispatch, getState) => {
+            const loggedProfile = getState().profileState.get('loggedProfile');
+            const flagOn = { akashaId, value: true };
+            const flagOff = { akashaId, value: false };
+            this.dispatch(profileActionCreators.followProfile({ followPending: flagOn }));
+            this.profileService.follow({
+                token: loggedProfile.get('token'),
+                akashaId,
+                gas,
+                onSuccess: (data) => {
+                    this.transactionActions.listenForMinedTx();
+                    this.transactionActions.addToQueue([{
+                        tx: data.tx,
+                        type: 'followProfile',
+                        akashaId: data.akashaId
+                    }]);
+                    this.appActions.showNotification({
+                        id: 'followingProfile',
+                        values: { akashaId: data.akashaId },
+                        duration: 3000
+                    });
+                },
+                onError: error =>
+                    dispatch(profileActionCreators.followProfileError(error, flagOff))
+            });
+        });
+
+    followProfileSuccess = (akashaId) => {
+        this.dispatch(profileActionCreators.followProfileSuccess({
+            followPending: { akashaId, value: false }
+        }));
+        this.appActions.showNotification({
+            id: 'followProfileSuccess',
+            values: { akashaId }
+        });
+    };
+
+    unfollowProfile = (akashaId, gas) =>
+        this.dispatch((dispatch, getState) => {
+            const loggedProfile = getState().profileState.get('loggedProfile');
+            const flagOn = { akashaId, value: true };
+            const flagOff = { akashaId, value: false };
+            this.dispatch(profileActionCreators.unfollowProfile({ followPending: flagOn }));
+            this.profileService.unfollow({
+                token: loggedProfile.get('token'),
+                akashaId,
+                gas,
+                onSuccess: (data) => {
+                    this.transactionActions.listenForMinedTx();
+                    this.transactionActions.addToQueue([{
+                        tx: data.tx,
+                        type: 'unfollowProfile',
+                        akashaId: data.akashaId
+                    }]);
+                    this.appActions.showNotification({
+                        id: 'unfollowingProfile',
+                        values: { akashaId: data.akashaId },
+                        duration: 3000
+                    });
+                },
+                onError: error =>
+                    dispatch(profileActionCreators.unfollowProfileError(error, flagOff))
+            });
+        });
+
+    unfollowProfileSuccess = (akashaId) => {
+        this.dispatch(profileActionCreators.unfollowProfileSuccess({
+            followPending: { akashaId, value: false }
+        }));
+        this.appActions.showNotification({
+            id: 'unfollowProfileSuccess',
+            values: { akashaId }
+        });
+    };
+
+    isFollower = (akashaId, following) => {
+        this.dispatch(profileActionCreators.isFollower({
+            isFollowerPending: true
+        }));
+        this.profileService.isFollower({
+            akashaId,
+            following,
+            onSuccess: data =>
+                this.dispatch(profileActionCreators.isFollowerSuccess(data, {
+                    isFollowerPending: false
+                })),
+            onError: error =>
+                this.dispatch(profileActionCreators.isFollowerError(error, {
+                    isFollowerPending: false
+                }))
+        });
+    };
+
+    clearFollowers = akashaId =>
+        this.dispatch(profileActionCreators.clearFollowers(akashaId));
+
+    clearFollowing = akashaId =>
+        this.dispatch(profileActionCreators.clearFollowing(akashaId));
+
 }
 export { ProfileActions };

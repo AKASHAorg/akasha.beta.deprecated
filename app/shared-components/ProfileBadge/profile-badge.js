@@ -17,7 +17,7 @@ export default class ProfileBadge extends Component {
                 right: 7
             }}
           >
-            <CircularProgress mode={"determinate"} >
+            <CircularProgress mode={'determinate'} >
               <MenuUser />
             </CircularProgress>
           </Badge>

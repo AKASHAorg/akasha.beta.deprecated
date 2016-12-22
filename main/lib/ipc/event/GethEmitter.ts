@@ -4,7 +4,7 @@ import channels from '../../channels';
 import { gethResponse } from './responses';
 import { constructed } from '../contracts/index';
 import { initModules } from '../modules/index';
-const peers  = require('../config/peers.json');
+const peers = require('../config/peers.json');
 
 abstract class GethEmitter extends AbstractEmitter {
     public attachEmitters() {
@@ -51,7 +51,7 @@ abstract class GethEmitter extends AbstractEmitter {
             }
         );
 
-        GethConnector.getInstance().once(
+        GethConnector.getInstance().on(
             CONSTANTS.IPC_CONNECTED, () => {
                 this.fireEvent(channels.client.geth.startService, gethResponse({}));
                 // inject web3 instance

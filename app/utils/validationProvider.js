@@ -1,9 +1,16 @@
 import React from 'react';
 import validator from 'react-validation-mixin';
+import Validatr from 'validatorjs';
 import strategy from 'react-validatorjs-strategy';
+import { validationMessages } from 'locale-data/messages';
 import r from 'ramda';
+
 export default function (Component) {
     const validationClass = validator(strategy)(Component);
+    // Validatr.register('akashaIdRule', (value, requirement, attribute) => {
+    //     console.log(value, value.match(/[a-z0-9.]/g));
+    //     return value.match(/[a-z0-9.]/g);
+    // }, 'The :attribute field must be lowercase, alphanumeric with dots only.');
     return class ValidationProvider extends validationClass {
         constructor (props) {
             super(props);
@@ -22,7 +29,7 @@ export default function (Component) {
             const validationKey = key.indexOf('.') !== -1 ? key.split('.')[1] : key;
             this.validate(validationKey, (err) => {
                 if (err) return;
-                // server validation here
+                // server validation starts here
                 const serverValidationRules = this.refs.component.serverValidatedFields;
                 if (validationKey.indexOf(serverValidationRules) !== -1) {
                     const validationActionName = `validate${
@@ -38,11 +45,33 @@ export default function (Component) {
                     const state = this.refs.component.state;
                     const statePathLens = r.lensPath(key.split('.'));
                     const value = r.view(statePathLens, state);
-
-                    validationActions[validationActionName](value, (data) => {
-                        if (data.exists) {
-                            this.state.errors[validationKey][0] = 'Username already registered!';
+                    const { intl } = this.props;
+                    this.state.errors[validationKey] = [];
+                    validationActions[validationActionName](value, (error, data) => {
+                        if (error) {
+                            this.state.errors[validationKey][0] = error.message;
                             return;
+                        }
+                        if (data.exists) {
+                            const newErrors = Object.assign({}, this.state.errors, {
+                                [validationKey]: [intl.formatMessage(validationMessages.akashaIdExists)]
+                            });
+                            this.setState({
+                                errors: newErrors
+                            });
+                            return;
+                        }
+                        if (!data.idValid) {
+                            const newErrors = Object.assign({}, this.state.errors, {
+                                [validationKey]: [intl.formatMessage(validationMessages.akashaIdNotValid)]
+                            });
+                            this.setState({
+                                errors: newErrors
+                            });
+                            return;
+                        }
+                        if (typeof cb === 'function') {
+                            cb();
                         }
                     });
                 }
@@ -53,11 +82,12 @@ export default function (Component) {
               <Component
                 ref="component"
                 errors={this.state.errors}
-                validate={this.customValidate}
                 isValid={this.isValid}
                 getValidationMessages={this.getValidationMessages}
                 clearValidations={this.clearValidations}
                 handleValidation={this.handleCustomValidation}
+                validate={super.validate}
+                customValidate={this.customValidate}
                 {...this.props}
               >
                 {this.props.children}

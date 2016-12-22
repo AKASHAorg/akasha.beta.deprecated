@@ -5,13 +5,15 @@ import channels from '../channels';
 import Logger from './Logger';
 import { gethResponse } from './event/responses';
 import { join } from 'path';
+import { app } from 'electron';
+import { getGenesisPath } from './config/genesis';
 import IpcMainEvent = Electron.IpcMainEvent;
-import IpcRenderer = Electron.IpcRenderer;
-import IpcRendererEvent = Electron.IpcRendererEvent;
 import WebContents = Electron.WebContents;
 
 class GethIPC extends GethEmitter {
     public logger = 'geth';
+    private BOOTNODE = 'enode://7f809ac6c56bf8a387ad3c759ece63bc4cde466c5f06b2d68e0f21928470dd35949e978091537e1fb633a'+
+        '1a7eaf06630234d22d1b0c1d98b4643be5f28e5fe79@138.68.78.152:30301';
     private DEFAULT_MANAGED: string[] = ['startService', 'stopService', 'status'];
 
     constructor() {
@@ -23,11 +25,14 @@ class GethIPC extends GethEmitter {
         GethConnector.getInstance().setLogger(
             Logger.getInstance().registerLogger(this.logger)
         );
+        GethConnector.getInstance().setBinPath(app.getPath('userData'));
         this.webContents = webContents;
         const datadir = GethConnector.getDefaultDatadir();
         GethConnector.getInstance().setOptions({
-            datadir: join(datadir, 'akasha'),
-            networkid: 512180
+            bootnodes: this.BOOTNODE,
+            datadir: join(datadir, 'akasha-alpha'),
+            ipcpath: join(datadir, 'akasha-alpha', 'geth.ipc'),
+            networkid: 511337
         });
         // register listeners
         this._start()
@@ -91,8 +96,12 @@ class GethIPC extends GethEmitter {
             channels.server.geth.startService,
             (event: IpcMainEvent, data: GethStartRequest) => {
                 GethConnector.getInstance().writeGenesis(
-                    join(__dirname, 'config', 'genesis.json'),
+                    getGenesisPath(),
                     (err: Error, stdout: any) => {
+                        if (err) {
+                            (Logger.getInstance().getLogger(this.logger)).error(err);
+                        }
+                        (Logger.getInstance().getLogger(this.logger)).info(stdout);
                         GethConnector.getInstance().start(data);
                     });
             }
@@ -124,7 +133,8 @@ class GethIPC extends GethEmitter {
         this.registerListener(
             channels.server.geth.stopService,
             (event: IpcMainEvent, data: GethStopRequest) => {
-                GethConnector.getInstance().stop(data.signal);
+                const signal = (data) ? data.signal : 'SIGINT';
+                GethConnector.getInstance().stop(signal);
             }
         );
         return this;
@@ -180,7 +190,7 @@ class GethIPC extends GethEmitter {
             channels.server.geth.logs,
             (event: any) => {
                 GethConnector.getInstance().logger.query(
-                    { start: 0, limit: 20 },
+                    { start: 0, limit: 20, order: 'desc' },
                     (err: Error, info: any) => {
                         let response: MainResponse;
                         if (err) {
@@ -207,11 +217,32 @@ class GethIPC extends GethEmitter {
         this.registerListener(
             channels.server.geth.status,
             (event: any) => {
-                this.fireEvent(
-                    channels.client.geth.status,
-                    gethResponse({}),
-                    event
-                );
+                if (!GethConnector.getInstance().serviceStatus.api) {
+                    this.fireEvent(
+                        channels.client.geth.status,
+                        gethResponse({}),
+                        event
+                    );
+                    return null;
+                }
+                let response;
+                GethConnector.getInstance()
+                    .web3
+                    .eth
+                    .getBlockNumberAsync()
+                    .then((blockNr) => {
+                        response = gethResponse({ blockNr });
+                    })
+                    .catch((err) => {
+                        response = gethResponse({}, { message: err.message })
+                    })
+                    .finally(() => {
+                        this.fireEvent(
+                            channels.client.geth.status,
+                            response,
+                            event
+                        );
+                    })
             }
         );
         return this;
@@ -232,7 +263,7 @@ class GethIPC extends GethEmitter {
                     mapObj[k] = v;
                 }
                 this.fireEvent(
-                    channels.client.geth.status,
+                    channels.client.geth.options,
                     gethResponse(mapObj),
                     event
                 );

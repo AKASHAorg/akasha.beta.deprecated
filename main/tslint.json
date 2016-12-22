@@ -2,7 +2,10 @@
     "rules": {
         "class-name": true,
         "interface-name": false,
-        "max-line-length": [true, 140],
+        "max-line-length": [
+            true,
+            140
+        ],
         "comment-format": [
             true,
             "check-space"

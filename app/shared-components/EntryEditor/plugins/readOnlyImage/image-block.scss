@@ -1,0 +1,13 @@
+.rootInner {
+    position: relative;
+}
+.image {
+    img {
+        width: 100%;
+        display: inherit;
+    }
+}
+.caption {
+    text-align: center;
+    font-family: 'Roboto', sans-serif;
+}

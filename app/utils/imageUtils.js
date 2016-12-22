@@ -1,27 +1,68 @@
 import r from 'ramda';
-import debug from 'debug';
-const dbg = debug('App:imageUtils');
-const error = debug('App:error');
 
-function imageCreator (arrayBuffer, { mimeType = 'image/png', width = 100, height = 100 } = {}) {
-    const blobFile = new Blob([arrayBuffer], { type: mimeType });
-    const imageUrl = window.URL.createObjectURL(blobFile);
-    // const image = new Image(width, height);
-    // image.onload = function onload () {
-    //     window.URL.revokeObjectURL(imageUrl);
-    // };
-    // image.src = imageUrl;
-    return imageUrl;
+/**
+ * Utility to extract best matching image key given a width
+ * @param width <number> a given width
+ * @param obj <object> images object
+ *
+ * obj = {
+ *      xs: {},
+ *      sm: {},
+ *      ...
+ * }
+ *
+ * @returns imageKey <string> a key of obj
+ */
+function findClosestMatch (width, obj, initialKey) {
+    let curr = initialKey ? obj[initialKey].width : 0;
+    let imageKey = initialKey || '';
+    let diff = Math.abs(width - curr);
+    for (const key of Object.keys(obj)) {
+        const newDiff = Math.abs(width - obj[key].width);
+        if (newDiff < diff) {
+            diff = newDiff;
+            curr = obj[key].width;
+            imageKey = key;
+        }
+    }
+    return imageKey;
+}
+
+function findBestMatch (width, obj, initialKey) {
+    let curr = initialKey ? obj[initialKey].width : 0;
+    let imageKey = initialKey || '';
+    let diff = curr - width;
+    for (const key of Object.keys(obj)) {
+        const newDiff = obj[key].width - width;
+        if ((newDiff < diff && newDiff >= 0) || (diff < 0 && newDiff > 0)) {
+            diff = newDiff;
+            curr = obj[key].width;
+            imageKey = key;
+        }
+    }
+    if (!imageKey) {
+        return findClosestMatch(width, obj, initialKey);
+    }
+    return imageKey;
+}
+
+function imageCreator (arrayBuffer, baseUrl) {
+    if (baseUrl && typeof arrayBuffer === 'string') {
+        return `${baseUrl}/${arrayBuffer}`;
+    }
+
+    const blobFile = new Blob([arrayBuffer], { type: 'image/jpg' });
+    return window.URL.createObjectURL(blobFile);
 }
 /**
  * Utility to extract first image from draftjs generated content;
  * @param {object} content Draft-js generated content;
- * @return {array} image Array of versions of an image;
+ * @returns {array} image Array of versions of an image;
  */
 function extractImageFromContent (content) {
     const { entityMap } = content;
     if (!entityMap) {
-        error(`entityMap not found inside content param. 
+        console.error(`entityMap not found inside content param.
             Make sure you have passed the right content!`
         );
         return null;
@@ -40,25 +81,39 @@ function extractImageFromContent (content) {
  */
 const imageWidths = [
     {
-        key: 'xlarge',
-        res: '1920'
+        key: 'xl',
+        res: 1280
     }, {
-        key: 'mlarge',
-        res: '1280'
+        key: 'lg',
+        res: 1024
     }, {
-        key: 'large',
-        res: '1024'
+        key: 'md',
+        res: 768
     }, {
-        key: 'xmed',
-        res: '768'
+        key: 'sm',
+        res: 640
     }, {
-        key: 'med',
-        res: '640'
-    }, {
-        key: 'small',
-        res: '320'
+        key: 'xs',
+        res: 320
     }
 ];
+
+function convertToBlob (canvas, widthObj) {
+    return new Promise((resolve) => {
+        const blobCb = (canvasWidth, canvasHeight) => (blob) => {
+            const reader = new FileReader();
+            reader.onloadend = () =>
+                resolve({
+                    key: widthObj.key,
+                    src: new Uint8Array(reader.result),
+                    width: canvasWidth,
+                    height: canvasHeight
+                });
+            reader.readAsArrayBuffer(blob);
+        };
+        canvas.toBlob(blobCb(canvas.width, canvas.height), 'image/jpg', '0.9');
+    });
+}
 
 function readImageData (imagePath, canvas, ctx, options) {
     return new Promise((resolve, reject) => {
@@ -68,7 +123,7 @@ function readImageData (imagePath, canvas, ctx, options) {
         const { minWidth, minHeight } = options;
         if (options.imageWidths) {
             resizeWidths = imageWidths.filter((width) => {
-                for (let i = options.imageWidths.length - 1; i >= 0; i--) {
+                for (let i = options.imageWidths.length - 1; i >= 0; i -= 1) {
                     if (width.key === options.imageWidths[i]) {
                         return true;
                     }
@@ -77,7 +132,6 @@ function readImageData (imagePath, canvas, ctx, options) {
             });
         }
         img.onload = () => {
-            const images = [];
             const imgWidth = img.width;
             const imgHeight = img.height;
             if (imgHeight < minHeight) {
@@ -89,35 +143,32 @@ function readImageData (imagePath, canvas, ctx, options) {
                     `Image width is smaller than minimum allowed of ${minWidth} pixels`
                 );
             }
-            const aspectRatio = imgHeight > imgWidth ? imgHeight / imgWidth : imgWidth / imgHeight;
-
-            for (let i = resizeWidths.length - 1; i >= 0; i--) {
+            const aspectRatio = imgWidth / imgHeight;
+            for (let i = resizeWidths.length - 1; i >= 0; i -= 1) {
                 if (img.width >= resizeWidths[i].res) {
                     availableWidths.push(resizeWidths[i]);
                 }
             }
-            const blobCb = (width, canvasWidth, canvasHeight) =>
-                (blob) => {
-                    const reader = new FileReader();
-                    reader.onloadend = () => {
-                        images.push(
-                            {
-                                key: width.key,
-                                imageFile: new Uint8Array(reader.result),
-                                width: canvasWidth,
-                                height: canvasHeight
-                            }
-                        );
-                    };
-                    reader.readAsArrayBuffer(blob);
-                };
-            r.forEach(width => {
-                canvas.width = width.res;
-                canvas.height = width.res / aspectRatio;
+            const blobsPromise = [];
+            for (let i = availableWidths.length - 1; i >= 0; i -= 1) {
+                canvas.width = availableWidths[i].res;
+                canvas.height = availableWidths[i].res / aspectRatio;
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                canvas.toBlob(blobCb(width, canvas.width, canvas.height), 'image/jpg');
-            }, availableWidths);
-            resolve(images);
+                blobsPromise.push(convertToBlob(canvas, availableWidths[i]));
+            }
+            Promise.all(blobsPromise).then((imageArray) => {
+                // an imageArray contains an object for each available key
+                // [{key: 'sm', width: 320, ....}]
+                const imageObj = {};
+                imageArray.forEach((imgObj) => {
+                    imageObj[imgObj.key] = {
+                        src: imgObj.src,
+                        width: imgObj.width,
+                        height: imgObj.height
+                    };
+                });
+                return resolve(imageObj);
+            });
         };
         img.src = imagePath;
     });
@@ -129,7 +180,7 @@ function readImageData (imagePath, canvas, ctx, options) {
  * @param {Number} options.minHeight Minimum allowed height
  * @param {Number} options.minWidth Minimum allowed width
  * @param {Array} options.imageWidths Resize using keys in this array only
- * @return {Array} promises Array of promises for each passed path
+ * @returns {Array} promises Array of promises for each passed path
  *
  * @example
  *  const filePromises = getResizedImages([/path/to/image.jpg, /path/to/image2.png], {
@@ -158,4 +209,4 @@ function getResizedImages (imagePaths, options) {
 }
 
 export default imageCreator;
-export { getResizedImages, extractImageFromContent };
+export { getResizedImages, extractImageFromContent, findBestMatch, findClosestMatch };

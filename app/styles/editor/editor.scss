@@ -1,0 +1,102 @@
+@import '../../../node_modules/megadraft/lib/styles/megadraft.scss';
+
+/**
+ * Editor styles override
+ */
+ .megadraft-editor .DraftEditor-root {
+     font-size: 20px;
+ }
+.megadraft-editor {
+    [data-block=true],
+    .paragraph,
+    h2,
+    blockquote,
+    .public-DraftStyleDefault-ul,
+    .public-DraftStyleDefault-ol {
+        width: 700px;
+        margin: 8px auto;
+        font-family: 'Roboto', Open Sans, sans-serif;
+        line-height: 1.6;
+        letter-spacing: 0.005em;
+    }
+    .public-DraftEditorPlaceholder-root {
+        width: 100%;
+        .public-DraftEditorPlaceholder-inner{
+            width: 700px;
+            margin: 0 auto;
+        }
+    }
+}
+.megadraft-editor {
+    h2 {
+        margin-top: 24px;
+        font-size: 32px;
+        font-weight: 300;
+    }
+}
+.megadraft-editor .paragraph + .paragraph {
+    margin-top: 24px;
+}
+
+.megadraft-editor .public-DraftEditor-content figure {
+    width: 100%;
+    margin: 0 auto;
+    margin-top: 8px;
+    margin-bottom: 0;
+}
+.megadraft-editor .sidemenu {
+    width: auto;
+}
+.megadraft-editor .sidebar__menu {
+    z-index: 10;
+}
+.megadraft-editor .sidemenu__button {
+    display: inline-block;
+    color: #444;
+    border: 1px solid #444;
+    border-radius: 50%;
+    outline: none;
+    vertical-align: middle;
+    &--open {
+        transform: rotate(137deg); // 1337 looks better :))
+        &:before {
+            background-color: transparent;
+        }
+    }
+    &:before {
+        background-color: transparent;
+    }
+}
+.megadraft-editor .sidemenu__items {
+    display: inline-block;
+    vertical-align: middle;
+    overflow: hidden;
+    padding: 0;
+    max-height: 32px;
+    margin-top: 0;
+    text-align: left;
+    opacity: 0;
+    width: 0;
+    &--open {
+        opacity: 1;
+        width: auto;
+        display: inline-block;
+        list-style: none;
+        padding: 0;
+        overflow: initial;
+    }
+}
+
+.megadraft-editor .sidemenu__item {
+    margin-left: 8px;
+    max-width: 32px;
+    input[type='file'] {
+        height: 0px;
+        width: 0px;
+        opacity: 0;
+        overflow: hidden;
+    }
+}
+/*.megadraft-editor {
+    padding-top: 16px;
+}*/

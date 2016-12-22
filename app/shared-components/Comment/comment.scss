@@ -1,9 +1,11 @@
-.root {}
-.commentHeader {
-    paddingTop: 8px;
+.root {
+    margin-bottom: 16px;
 }
-.commentAuthor {
-    
+.commentHeader {
+    padding-top: 8px;
+}
+.author_name {
+    padding: 3px;
 }
 .header {
     padding: 0;
@@ -14,6 +16,13 @@
 }
 .commentBody {
     padding: 0 8px;
+    :global {
+        .megadraft-editor {
+            .DraftEditor-root {
+                font-size: 16px;
+            }
+        }
+    }
 }
 .commentReply {
     padding-left: 48px;

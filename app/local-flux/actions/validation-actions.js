@@ -3,17 +3,18 @@ import { ValidationService } from '../services';
 let validationActions = null;
 
 class ValidationActions {
-    constructor (dispatch) {
-        if (!validationActions) {
-            validationActions = this;
+    constructor (dispatch) { // eslint-disable-line consistent-return
+        if (validationActions) {
+            return validationActions;
         }
         this.validationService = new ValidationService();
         this.dispatch = dispatch;
-        return validationActions;
+        validationActions = this;
     }
-    validateUsername = (userName, cb) => {
-        this.validationService.validateUsername(userName).then(isValid => {
-            return cb(isValid);
+    validateAkashaid = (akashaId, cb) => {
+        this.validationService.validateakashaId(akashaId, {
+            onError: err => cb(err),
+            onSuccess: data => cb(null, data)
         });
     }
 }
