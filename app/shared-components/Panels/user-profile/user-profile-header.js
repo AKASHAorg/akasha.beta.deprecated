@@ -12,9 +12,9 @@ import {
   ToolbarLogout
 } from '../../svg';
 
-const UserProfileHeader = (props, { router }) => {
+const UserProfileHeader = (props, { router, muiTheme }) => {
     const { profile, profileAddress, profileActions, showPanel } = props;
-
+    const { palette } = muiTheme;
     // const avatarImage = `data:image/gif;base64,${
     //     btoa(String.fromCharCode.apply(null, profile.getIn(['optionalData', 'avatar'])))
     // }`;
@@ -118,7 +118,7 @@ const UserProfileHeader = (props, { router }) => {
                 <SvgIcon
                   viewBox={svgStyle.viewBox}
                   className="hand-icon"
-                  color={svgStyle.color}
+                  color={palette.textColor}
                   hoverColor={svgStyle.hoverColor}
                 >
                   <ToolbarProfile />
@@ -148,7 +148,7 @@ const UserProfileHeader = (props, { router }) => {
                 <SvgIcon
                   viewBox={svgStyle.viewBox}
                   className={'hand-icon'}
-                  color={svgStyle.color}
+                  color={palette.textColor}
                   hoverColor={svgStyle.hoverColor}
                 >
                   <ToolbarLogout />
@@ -190,7 +190,8 @@ UserProfileHeader.propTypes = {
     hidePanel: PropTypes.func
 };
 UserProfileHeader.contextTypes = {
-    router: PropTypes.shape()
+    router: PropTypes.shape(),
+    muiTheme: PropTypes.shape()
 };
 UserProfileHeader.defaultProps = {
     rootStyle: {

@@ -290,7 +290,7 @@ class ProfileActivity extends Component {
         const { entriesCount, followersCount, followingCount } = profileData;
 
         return (<div style={{ flex: '1 1 auto' }}>
-          <Paper style={{ width: 'calc(100% + 0.5rem)' }}>
+          <Paper style={{ width: 'calc(100% + 0.5rem)', position: 'fixed', zIndex: 3 }}>
             <Tabs
               style={{ paddingLeft: '50px' }}
               tabItemContainerStyle={{ width: '500px', backgroundColor: 'transparent' }}
@@ -334,7 +334,7 @@ class ProfileActivity extends Component {
               />
             </Tabs>
           </Paper>
-          <div style={{ padding: '15px', position: 'relative', height: 'calc(100% - 48px)' }}>
+          <div style={{ padding: '15px', position: 'relative', height: 'calc(100% - 48px)', top: '48px' }}>
             <div
               style={{
                   position: 'absolute',

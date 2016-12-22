@@ -294,7 +294,7 @@ class PeopleContainer extends Component {
         }
 
         return (<div style={{ flex: '1 1 auto', height: '100%', width: 'calc(100% + 0.5rem)' }}>
-          <Paper>
+          <Paper style={{ position: 'fixed', zIndex: 3, width: '100%' }}>
             <Tabs
               style={{ paddingLeft: '100px' }}
               tabItemContainerStyle={{ width: '500px', backgroundColor: 'transparent' }}
@@ -333,7 +333,7 @@ class PeopleContainer extends Component {
               />
             </Tabs>
           </Paper>
-          <div style={{ padding: '15px', position: 'relative', height: 'calc(100% - 48px)' }}>
+          <div style={{ padding: '15px', position: 'relative', height: 'calc(100% - 48px)', top: '48px' }}>
             <div
               style={{
                   position: 'absolute',
