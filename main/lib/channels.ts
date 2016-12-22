@@ -9,25 +9,33 @@ const hashPath = (...path: string[]) => {
 };
 const channels = {
 
-    auth: ['manager', 'login', 'logout', 'requestEther', 'generateEthKey', 'getLocalIdentities'],
+    auth: ['login', 'logout', 'requestEther', 'generateEthKey', 'getLocalIdentities'],
 
-    tags: ['manager', 'create', 'exists', 'getTagId', 'getTagAt', 'isSubscribed', 'subscribe',
-        'unsubscribe', 'getSubPosition'],
+    tags: ['checkFormat', 'create', 'tagIterator', 'tagSubIterator', 'exists', 'getTagsCreated', 'subsCount',
+        'subscribe', 'getTagId', 'getTagName', 'unSubscribe', 'isSubscribed', 'searchTag'],
 
-    entry: ['manager', 'publish', 'update', 'upvote', 'downvote', 'isOpenedToVotes', 'getVoteOf',
-    'getVoteEndDate', 'getScore'],
+    entry: ['getProfileEntriesCount', 'getTagEntriesCount', 'isActive', 'getEntry', 'publish', 'update', 'canClaim', 'claim',
+        'downvote', 'getScore', 'getDepositBalance', 'upvote', 'voteCost', 'voteCount', 'entryTagIterator',
+        'entryProfileIterator', 'votesIterator', 'getEntriesStream', 'getVoteOf', 'getEntryBalance', 'getEntryList'],
 
-    comments: ['manager', 'publish', 'update', 'upvote', 'downvote', 'getScore'],
+    comments: ['getComment', 'comment', 'commentsCount', 'removeComment', 'commentsIterator'],
 
-    geth: ['manager', 'options', 'startService', 'stopService', 'restartService', 'syncStatus', 'logs', 'status'],
+    geth: ['options', 'startService', 'stopService', 'restartService', 'syncStatus', 'logs', 'status'],
 
-    ipfs: ['manager', 'startService', 'stopService', 'status', 'resolve'],
+    ipfs: ['startService', 'stopService', 'status', 'resolve', 'getConfig', 'setPorts', 'getPorts'],
 
-    profile: ['manager', 'getProfileData', 'getMyBalance', 'getIpfs', 'unregister'],
+    profile: ['getBalance', 'followProfile', 'getFollowersCount', 'getFollowingCount', 'getProfileData',
+        'unFollowProfile', 'updateProfileData', 'followersIterator', 'followingIterator', 'isFollower', 'isFollowing',
+        'getFollowingList', 'getProfileList'],
 
-    registry: ['manager', 'profileExists', 'registerProfile', 'getCurrentProfile', 'getByAddress'],
+    registry: ['fetchRegistered', 'addressOf', 'checkIdFormat', 'getCurrentProfile', 'profileExists', 'registerProfile',
+        'getByAddress', 'unregister'],
 
-    tx: ['manager', 'addToQueue', 'emitMined'],
+    notifications: ['me', 'feed', 'setFilter'],
+
+    tx: ['addToQueue', 'emitMined'],
+
+    licenses: ['getLicenceById', 'getLicenses']
 };
 
 const processes = ['server', 'client'];
@@ -37,7 +45,7 @@ Object.keys(channels).forEach((attr) => {
     channels[attr].forEach((endpoint: string) => {
         processes.forEach((proc) => {
             if (!EVENTS[proc].hasOwnProperty(attr)) {
-                EVENTS[proc][attr] = {};
+                EVENTS[proc][attr] = { manager: hashPath(proc, attr, mem, 'manager') };
             }
             EVENTS[proc][attr][endpoint] = hashPath(proc, attr, mem, endpoint);
         });

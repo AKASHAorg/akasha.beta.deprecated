@@ -1,10 +1,7 @@
-import { ipcRenderer } from 'electron';
-import debug from 'debug';
 import BaseService from './base-service';
 import profileDB from './db/profile';
 
 const Channel = window.Channel;
-const dbg = debug('App:AuthService:');
 /**
  * Auth Service.
  * default open channels => ['login', 'logout', 'requestEther']
@@ -14,9 +11,9 @@ const dbg = debug('App:AuthService:');
 class AuthService extends BaseService {
     constructor () {
         super();
-        this.serverManager = Channel.server.auth.manager;
         this.clientManager = Channel.client.auth.manager;
     }
+
     /**
      * Login profile in AKASHA
      * Request:
@@ -29,43 +26,34 @@ class AuthService extends BaseService {
      *      expiration: Date -> expiration time of the token
      * }
      */
-    login = (profile, rememberTime) => {
-        const serverChannel = Channel.server.auth.login;
-        const clientChannel = Channel.client.auth.login;
-        if (this._listeners.get(clientChannel)) {
-            return Promise.resolve();
-        }
-        return new Promise((resolve, reject) => {
-            const listenerCb = (ev, res) => {
-                if (res.error) return reject(res.error);
-                return resolve(res.data);
-            };
-            return this.registerListener(clientChannel, listenerCb, () =>
-                ipcRenderer.send(serverChannel, { ...profile, rememberTime })
-            );
-        });
+    login = ({ account, password, rememberTime, akashaId, registering = false, onSuccess, onError }) => {
+        const successCb = data => profileDB.loggedProfile.put({ akashaId, ...data })
+                .then(() => onSuccess({ akashaId, ...data }))
+                .catch(error => onError(error));
+        this.registerListener(
+            Channel.client.auth.login,
+            this.createListener(onError, successCb)
+        );
+        Channel.server.auth.login.send({ account, password, rememberTime, registering });
     };
     /**
      *  Logout profile
+     * @request flush <Boolean>
      * @response data: {
      *      done: Boolean
      * }
+     * @param options.flush <Boolean>
+     * @param options.profileKey <String> Eth key
      */
-    logout = () => {
-        const serverChannel = Channel.server.auth.logout;
-        const clientChannel = Channel.client.auth.logout;
-        if (this._listeners.get(clientChannel)) {
-            return Promise.resolve();
-        }
-        return new Promise((resolve, reject) => {
-            const listenerCb = (ev, res) => {
-                if (res.error) return reject(res.error);
-                return resolve(res.data);
-            };
-            return this.registerListener(clientChannel, listenerCb, () =>
-                ipcRenderer.send(serverChannel, {})
-            );
-        });
+    logout = ({ options = { profileKey: '', flush: true }, onError, onSuccess }) => {
+        const successCb = () => {
+            this.deleteLoggedProfile({ profileKey: options.profileKey, onError, onSuccess });
+        };
+        this.registerListener(
+            Channel.client.auth.logout,
+            this.createListener(onError, successCb)
+        );
+        Channel.server.auth.logout.send({});
     };
     /**
      * Sends a request to faucet
@@ -74,98 +62,88 @@ class AuthService extends BaseService {
      * Response:
      * @param data: { tx: String }
      */
-    requestEther = ({ address }) => {
-        const serverChannel = Channel.server.auth.requestEther;
-        const clientChannel = Channel.client.auth.requestEther;
-
-        if (this._listeners.get(clientChannel)) {
-            return Promise.resolve();
-        }
-
-        return new Promise((resolve, reject) => {
-            const listenerCb = (ev, res) => {
-                if (res.error) return reject(res.error);
-                return resolve(res.data);
-            };
-            return this.registerListener(clientChannel, listenerCb, () =>
-                ipcRenderer.send(serverChannel, { address })
-            );
-        });
+    requestEther = ({ address, onSuccess, onError }) => {
+        const successCb = (data) => {
+            if (data === 'Unauthorized' || data === 'Bad Request') {
+                return onError({ message: data, fatal: true });
+            }
+            return onSuccess(data);
+        };
+        this.registerListener(
+            Channel.client.auth.requestEther,
+            this.createListener(onError, successCb)
+        );
+        Channel.server.auth.requestEther.send({ address });
     };
     /**
      * Create a new eth address
      * @param {Uint8Array} profilePassword - user chosen password
      * @return new Promise
      */
-    createEthAddress = ({ password }) => {
-        const serverChannel = Channel.server.auth.generateEthKey;
-        const clientChannel = Channel.client.auth.generateEthKey;
-        if (this._listeners.get(clientChannel)) {
-            return Promise.resolve();
-        }
-        return new Promise((resolve, reject) => {
-            const listenerCb = (ev, res) => {
-                if (res.error) return reject(res.error);
-                return resolve(res.data);
-            };
-            return this.registerListener(clientChannel, listenerCb, () =>
-                ipcRenderer.send(serverChannel, { password })
-            );
+    createEthAddress = ({ password, onSuccess, onError }) => {
+        this.openChannel({
+            clientManager: this.clientManager,
+            serverChannel: Channel.server.auth.generateEthKey,
+            clientChannel: Channel.client.auth.generateEthKey,
+            listenerCb: this.createListener(onError, onSuccess)
+        }, () => {
+            Channel.server.auth.generateEthKey.send({ password });
         });
     };
+
     /**
      * Get a list of local profiles created
      */
-    getLocalIdentities = () => {
-        const serverChannel = Channel.server.auth.getLocalIdentities;
-        const clientChannel = Channel.client.auth.getLocalIdentities;
-        if (this._listeners.has(clientChannel)) {
-            return Promise.resolve();
-        }
-
-        return new Promise((resolve, reject) => {
-            const listenerCb = (ev, res) => {
-                if (res.error) return reject(res.error);
-                return resolve(res.data);
-            };
-            return this.openChannel({
-                serverManager: this.serverManager,
-                clientManager: this.clientManager,
-                serverChannel,
-                clientChannel,
-                listenerCb
-            }, () =>
-                ipcRenderer.send(serverChannel, {})
-            );
-        });
-    };
+    getLocalIdentities = ({
+        options = {}, onError = () => {
+        }, onSuccess
+    }) => this.openChannel({
+        clientManager: this.clientManager,
+        serverChannel: Channel.server.auth.getLocalIdentities,
+        clientChannel: Channel.client.auth.getLocalIdentities,
+        listenerCb: this.createListener(onError, onSuccess)
+    }, () =>
+                Channel.server.auth.getLocalIdentities.send(options)
+        );
     /**
      * Save logged profile to indexedDB database.
-     * @param profileData {object}
+     * @param profileData
+     * @param onSuccess
+     * @param onError
+     * @returns {Promise<U|R>}
      */
-    createLoggedProfile = profileData =>
-        profileDB.transaction('rw', profileDB.loggedProfile, () => {
-            dbg('saving logged profile', profileData);
-            if (profileData.password) {
-                delete profileData.password;
-            }
-            return profileDB.loggedProfile.add(profileData);
-        });
-    updateLoggedProfile = loggedProfile =>
-        profileDB.transaction('rw', profileDB.loggedProfile, () => {
-            dbg('updating loggedProfile', loggedProfile);
-            return profileDB.loggedProfile.update(loggedProfile.address, loggedProfile);
-        });
-    deleteLoggedProfile = loggedProfile =>
-        profileDB.transaction('rw', profileDB.loggedProfile, () => {
-            dbg('deleting loggedProfile', loggedProfile);
-            return profileDB.loggedProfile.delete(loggedProfile.address);
-        });
-    getLoggedProfile = () =>
-        profileDB.transaction('r', profileDB.loggedProfile, () => {
-            dbg('getLoggedProfile');
-            return profileDB.loggedProfile.toArray();
-        });
+    createLoggedProfile = ({ profileData, onSuccess, onError }) => {
+        if (profileData.password) {
+            delete profileData.password;
+        }
+        return profileDB.loggedProfile
+            .put(profileData)
+            .then(() => onSuccess(profileData))
+            .catch(reason => onError(reason));
+    };
+
+    /**
+     *
+     * @param profileKey
+     * @param onError
+     * @param onSuccess
+     */
+    deleteLoggedProfile = ({ profileKey, onError, onSuccess }) => {
+        const cleanup = (profileKey) ? profileDB.loggedProfile.delete(profileKey) :
+            profileDB.loggedProfile.clear();
+        return cleanup.then(() => onSuccess()).catch(reason => onError(reason));
+    };
+
+    /**
+     *
+     * @param onError
+     * @param onSuccess
+     */
+    getLoggedProfile = ({ onError, onSuccess }) =>
+        profileDB.loggedProfile
+            .toArray()
+            .then(profile => onSuccess(profile[0]))
+            .catch(reason => onError(reason));
 }
 
 export { AuthService };

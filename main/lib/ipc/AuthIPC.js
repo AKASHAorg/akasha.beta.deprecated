@@ -1,10 +1,13 @@
 "use strict";
 const ModuleEmitter_1 = require('./event/ModuleEmitter');
+const geth_connector_1 = require('@akashaproject/geth-connector');
 const channels_1 = require('../channels');
 const responses_1 = require('./event/responses');
 const index_1 = require('./modules/auth/index');
 const index_2 = require('./contracts/index');
 const request_1 = require('request');
+const feed_1 = require('./modules/notifications/feed');
+const check_version_1 = require('../../check-version');
 const faucetToken = '8336abae5a97f017d2d0ef952a6a566d4bbed5cd22c7b524ae749673d5562b567af109371' +
     '81b7bdea73edd25512fdb948b3b016034bb01c0d95f8f9beb68c914';
 class AuthIPC extends ModuleEmitter_1.default {
@@ -26,7 +29,7 @@ class AuthIPC extends ModuleEmitter_1.default {
         this.registerListener(channels_1.default.server[this.MODULE_NAME].login, (event, data) => {
             index_1.module
                 .auth
-                .login(data.account, data.password, data.rememberTime)
+                .login(data.account, data.password, data.rememberTime, data.registering)
                 .then((response) => {
                 const response1 = responses_1.mainResponse(response);
                 return this.fireEvent(channels_1.default.client[this.MODULE_NAME].login, response1, event);
@@ -36,6 +39,7 @@ class AuthIPC extends ModuleEmitter_1.default {
     }
     _logout() {
         this.registerListener(channels_1.default.server[this.MODULE_NAME].logout, (event, data) => {
+            feed_1.default.execute({ stop: true });
             index_1.module
                 .auth
                 .logout();
@@ -50,11 +54,11 @@ class AuthIPC extends ModuleEmitter_1.default {
                 .auth
                 .generateKey(data.password)
                 .then((address) => {
-                const response = responses_1.mainResponse({ address: address });
+                const response = responses_1.mainResponse({ address });
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].generateEthKey, response, event);
             })
                 .catch((error) => {
-                const response = responses_1.mainResponse({ error: error });
+                const response = responses_1.mainResponse({ error });
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].generateEthKey, response, event);
             });
         });
@@ -75,6 +79,14 @@ class AuthIPC extends ModuleEmitter_1.default {
             })
                 .finally(() => {
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].getLocalIdentities, response, event);
+                index_2.constructed
+                    .instance
+                    .feed
+                    .contract
+                    .getAppState((err, state) => {
+                    const version = geth_connector_1.GethConnector.getInstance().web3.toUtf8(state[0]);
+                    check_version_1.default.checkVersion(version, state[1], state[2]);
+                });
             });
         });
         return this;
@@ -86,7 +98,7 @@ class AuthIPC extends ModuleEmitter_1.default {
                 json: { address: data.address, token: faucetToken },
                 agentOptions: { rejectUnauthorized: false }
             }, (error, response, body) => {
-                const data = (error) ? { error: error } : body;
+                const data = (error) ? { error } : body;
                 const response1 = responses_1.mainResponse(data);
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].requestEther, response1, event);
             });

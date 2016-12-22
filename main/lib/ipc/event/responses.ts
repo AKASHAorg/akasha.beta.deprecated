@@ -19,10 +19,10 @@ export const gethResponse = (data: Object, error?: {message: string, fatal?: boo
  * @param error
  * @returns {{data: IpfsStatus, error: {message: string, fatal?: boolean}}}
  */
-export const ipfsResponse = (data: Object, error?: {message: string, fatal?: boolean}): MainResponse => {
+export const ipfsResponse = (data: Object, error?: {message: string, fatal?: boolean, from?: {}}): MainResponse => {
     const status = IpfsConnector.getInstance().serviceStatus;
-    const merged: IpfsStatus = Object.assign(data, {api: status.api, spawned: status.process});
-    return {data: merged, error};
+    const merged: IpfsStatus = Object.assign(data, { api: status.api, spawned: status.process });
+    return { data: merged, error };
 };
 
 /**
@@ -32,7 +32,7 @@ export const ipfsResponse = (data: Object, error?: {message: string, fatal?: boo
  */
 export const mainResponse = (rawData: any): MainResponse => {
     if (rawData.error) {
-        return { data: {}, error: rawData.error };
+        return { data: {}, error: { message: rawData.error.message, from: rawData.from } };
     }
-    return {data: rawData};
+    return { data: rawData };
 };

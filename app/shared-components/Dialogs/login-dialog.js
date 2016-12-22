@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-    Dialog,
-    TextField,
-    Checkbox,
-    SelectField,
-    MenuItem } from 'material-ui';
-import Avatar from '../Avatar/avatar';
+import { Dialog, TextField, Checkbox, SelectField, MenuItem, Avatar } from 'material-ui';
 
 const loginDialog = (props) => {
     const minute = 'min';
@@ -16,13 +10,14 @@ const loginDialog = (props) => {
         modalActions
     } = props;
     const handleUnlockChange = (ev, key, payload) => {
-        console.log('change to key, payload', key, payload);
         props.onUnlockTimerChange(key, payload);
     };
     const handleUnlockCheck = (ev, isUnlocked) => {
-        console.log('want auto unlock?', isUnlocked);
         props.onUnlockCheck(isUnlocked);
-    }
+    };
+    const profileName = `${profile.get('firstName')} ${profile.get('lastName')}`;
+    const userInitials = profileName.match(/\b\w/g);
+    const avatarImage = profile.get('avatar');
     return (
       <Dialog
         title={title}
@@ -31,34 +26,32 @@ const loginDialog = (props) => {
         actions={modalActions}
         contentStyle={{ width: '50%' }}
       >
-        <Avatar
-          editable={false}
-          userName={
-            `${profile.get('firstName')} ${profile.get('lastName')}`
-          }
-          image={`data:image/gif;base64,${
-            btoa(String.fromCharCode.apply(
-              null,
-              profile.getIn(['optionalData', 'avatar'])
-            ))
-          }`}
-        />
-        <div className="row">
-          <div className="col-xs-6">
+        {avatarImage &&
+        <Avatar src={avatarImage} size={100} style={{ border: '1px solid #bcbcbc' }} />
+            }
+        {!avatarImage &&
+        <Avatar src={avatarImage} size={100} >
+          {userInitials &&
+                ((userInitials.shift() || '') + (userInitials.pop() || '')).toUpperCase()
+                }
+        </Avatar>
+            }
+        <div className="row" >
+          <div className="col-xs-6" >
             <TextField
               disabled
               fullWidth
               floatingLabelText="Name"
               value={
-                `${profile.get('firstName')} ${profile.get('lastName')}`
-              }
+                            `${profile.get('firstName')} ${profile.get('lastName')}`
+                        }
             />
           </div>
-          <div className="col-xs-6">
+          <div className="col-xs-6" >
             <TextField
               disabled
-              floatingLabelText="userName"
-              value={`${profile.get('userName')}`}
+              floatingLabelText="Akasha Id"
+              value={`${profile.get('akashaId')}`}
               fullWidth
             />
           </div>
@@ -67,23 +60,25 @@ const loginDialog = (props) => {
           disabled
           fullWidth
           floatingLabelText="Ethereum address"
-          value={profile.get('address')}
+          value={profile.get('ethAddress')}
         />
         <TextField
           type="password"
           fullWidth
-          floatingLabelText="Password"
+          autoFocus
+          floatingLabelText="Passphrase"
           onKeyPress={props.onKeyPress}
           onChange={props.onPasswordChange}
+          errorText={props.loginErrors.size ? props.loginErrors.first().message : null}
         />
-        <div className="row middle-xs">
-          <div className="col-xs-7" style={{ paddingRight: 0 }}>
+        <div className="row middle-xs" >
+          <div className="col-xs-6" style={{ paddingRight: 0 }} >
             <Checkbox
-              label="Keep account unlocked for"
+              label="Remember my passphrase for"
               onCheck={handleUnlockCheck}
             />
           </div>
-          <div className="col-xs-3 start-xs" style={{ paddingLeft: 0 }}>
+          <div className="col-xs-3 start-xs" style={{ paddingLeft: 0, display: 'flex' }} >
             <SelectField
               value={props.unlockTimerKey}
               style={{ width: 100 }}
@@ -100,11 +95,14 @@ const loginDialog = (props) => {
     );
 };
 loginDialog.propTypes = {
-    profile: React.PropTypes.object.isRequired,
+    profile: React.PropTypes.shape().isRequired,
     isOpen: React.PropTypes.bool.isRequired,
     title: React.PropTypes.string.isRequired,
-    modalActions: React.PropTypes.array.isRequired,
+    modalActions: React.PropTypes.arrayOf(React.PropTypes.element).isRequired,
     onPasswordChange: React.PropTypes.func.isRequired,
-    onKeyPress: React.PropTypes.func.isRequired
+    onKeyPress: React.PropTypes.func.isRequired,
+    onUnlockCheck: React.PropTypes.func.isRequired,
+    unlockTimerKey: React.PropTypes.number.isRequired,
+    loginErrors: React.PropTypes.shape()
 };
 export default loginDialog;

@@ -22,6 +22,14 @@ export default class BaseContract {
             this.gethInstance.web3.toUtf8(ipfsHash[1]);
     }
 
+    public splitIpfs(ipfsHash: string) {
+        const offset = Math.floor(ipfsHash.length / 2);
+        return [
+            this.gethInstance.web3.fromUtf8(ipfsHash.slice(0, offset)),
+            this.gethInstance.web3.fromUtf8(ipfsHash.slice(offset))
+        ];
+    }
+
     /**
      * @returns {any}
      */
@@ -55,6 +63,16 @@ export default class BaseContract {
                     }
                     return resolve(gas);
                 });
+        });
+    }
+
+    public evaluateData(method: string, gas: number, ...params: any[]) {
+        return this.estimateGas(method, ...params).then((estimatedGas) => {
+            if (estimatedGas > gas) {
+                throw new Error(`${method} GAS => { required: ${estimatedGas}, provided: ${gas} }`);
+            }
+            console.log('estimated gas for', method, estimatedGas);
+            return this.extractData(method, ...params, { gas });
         });
     }
 

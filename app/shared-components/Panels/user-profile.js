@@ -1,20 +1,8 @@
 import React, { PropTypes, Component } from 'react';
-import radium from 'radium';
 import { colors } from 'material-ui/styles';
-import {
-  Paper,
-  IconButton,
-  Tabs,
-  Tab,
-  List,
-  Subheader,
-  ListItem,
-  Divider,
-  Avatar,
-  IconMenu,
-  MenuItem } from 'material-ui';
-import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
+import { Paper, Tabs, Tab, List, ListItem, Avatar } from 'material-ui';
 import UserProfileHeader from './user-profile/user-profile-header';
+import ActionDelete from 'material-ui/svg-icons/action/delete';
 
 const tabStyles = {
     default_tab: {
@@ -25,106 +13,380 @@ const tabStyles = {
         color: colors.deepOrange700,
     }
 };
-
-const iconButtonElement = (
-  <IconButton
-    touch
-    tooltip="more"
-    tooltipPosition="bottom-left"
-  >
-    <MoreVertIcon color={colors.grey400} />
-  </IconButton>
-);
-
-const rightIconMenu = (
-  <IconMenu iconButtonElement={iconButtonElement} >
-    <MenuItem>Reply</MenuItem>
-    <MenuItem>Forward</MenuItem>
-    <MenuItem>Delete</MenuItem>
-  </IconMenu>
-);
-
-
+const selectedStyle = {
+    position: 'fixed',
+    top: '296px',
+    width: '480px',
+    bottom: '0px',
+    overflow: 'auto'
+};
+const [FEED_SELECTED, YOU_SELECTED, MESSAGES_SELECTED] = [1, 2, 3];
+const eventTypes = {
+    VOTE: 'vote',
+    COMMENT: 'comment',
+    PUBLISH: 'publish',
+    FOLLOWING: 'following'
+};
 class UserProfilePanel extends Component {
+    constructor (props) {
+        super(props);
+        this.state = {
+            selected: FEED_SELECTED
+        };
+    }
+
+    getStyle = (identity) => {
+        if (identity === this.state.selected) {
+            return selectedStyle;
+        }
+        return {};
+    };
+
+    componentDidMount () {
+        this.readSubscriptionNotif();
+    }
+
+    renderFeedNotifications = () => {
+        const feedNotifs = this.props.notificationsState.get('notifFeed');
+        const notifs = [];
+        feedNotifs.forEach((val, index) => {
+            if (val.type === eventTypes.PUBLISH) {
+                return notifs.push(this._renderEntry(val, index));
+            }
+            if (val.type === eventTypes.COMMENT) {
+                return notifs.push(this._renderComment(val, index));
+            }
+            if (val.type === eventTypes.VOTE) {
+                return notifs.push(this._renderVote(val, index));
+            }
+        });
+        return (<List>{notifs}</List>);
+    };
+
+    readSubscriptionNotif = () => {
+        const { notificationsActions } = this.props;
+        notificationsActions.readFeedNotif();
+    };
+
+    readYouNotif = (number) => {
+        const { notificationsActions } = this.props;
+        notificationsActions.readYouNotif(number);
+    };
+
+    renderYouNotifs = () => {
+        const youNotifs = this.props.notificationsState.get('youFeed');
+        const notifs = [];
+        youNotifs.forEach((val, index) => {
+            if (val.type === eventTypes.PUBLISH) {
+                return notifs.push(this._renderEntry(val, index));
+            }
+            if (val.type === eventTypes.COMMENT) {
+                return notifs.push(this._renderComment(val, index));
+            }
+            if (val.type === eventTypes.VOTE) {
+                return notifs.push(this._renderVote(val, index));
+            }
+            if (val.type === eventTypes.FOLLOWING) {
+                return notifs.push(this._renderFollower(val, index));
+            }
+        });
+        return (<List>{notifs}</List>);
+    };
+
+    navigateToTag (tag) {
+        const { hidePanel, tagActions } = this.props;
+        hidePanel();
+        tagActions.saveTag(tag);
+    }
+
+    navigateToProfile (profileAddress) {
+        const { router } = this.context;
+        const loggedAkashaId = this.props.loggedProfileData.get('akashaId');
+        this.props.hidePanel();
+        router.push(`/${loggedAkashaId}/profile/${profileAddress}`);
+    }
+
+    navigateToEntry (entryId) {
+        const { router } = this.context;
+        const loggedAkashaId = this.props.loggedProfileData.get('akashaId');
+        this.props.hidePanel();
+        router.push(`/${loggedAkashaId}/entry/${entryId}`);
+    }
+
+    _renderFollower (event, index) {
+        const { palette } = this.context.muiTheme;
+        const name = `${event.follower.firstName} ${event.follower.lastName}`;
+        const initials = name.match(/\b\w/g).reduce((prev, current) => prev + current, '');
+        return (
+          <ListItem
+            leftAvatar={event.follower.avatar ?
+              <Avatar src={`${event.follower.baseUrl}/${event.follower.avatar}`} /> :
+              <Avatar style={{ backgroundColor: 'rgba(239, 239, 239, 1)', border: '1px solid' }} >
+                <span
+                  style={{ color: palette.textColor, textTransform: 'uppercase', fontWeight: '500' }}
+                >
+                  {initials}
+                </span>
+              </Avatar>
+            }
+            primaryText={
+              <strong
+                onClick={() => {
+                    this.navigateToProfile(event.follower.profile);
+                }} style={{ color: colors.darkBlack }}
+              >
+                {event.follower.akashaId}
+              </strong>
+                }
+            secondaryText={
+              <p>
+                <span style={{ color: colors.darkBlack }} >
+                            Followed you.
+                        </span><br />
+                        Block {event.blockNumber}
+              </p>
+                }
+            secondaryTextLines={2}
+            key={eventTypes.FOLLOWING + index + event.blockNumber}
+            className="has_hidden_action"
+            rightIcon={<ActionDelete
+              className="hidden_action"
+              onClick={(e) => {
+                  this.props.notificationsActions.deleteYouNotif(index);
+              }}
+            />}
+          />);
+    }
+
+    _renderEntry (event, index) {
+        const { palette } = this.context.muiTheme;
+        const name = `${event.author.firstName} ${event.author.lastName}`;
+        const initials = name.match(/\b\w/g).reduce((prev, current) => prev + current, '');
+        return (
+          <ListItem
+            leftAvatar={event.author.avatar ?
+              <Avatar src={`${event.author.baseUrl}/${event.author.avatar}`} /> :
+              <Avatar style={{ backgroundColor: 'rgba(239, 239, 239, 1)', border: '1px solid' }} >
+                <span
+                  style={{ color: palette.textColor, textTransform: 'uppercase', fontWeight: '500' }}
+                >
+                  {initials}
+                </span>
+              </Avatar>
+            }
+            primaryText={
+              <strong
+                onClick={() => {
+                    this.navigateToProfile(event.profileAddress);
+                }} style={{ color: colors.darkBlack }}
+              >
+                {event.author.akashaId}
+              </strong>
+                }
+            secondaryText={
+              <p>
+                <span style={{ color: colors.darkBlack }} >
+                            Published <span
+                              className="link" onClick={() => {
+                                  this.navigateToEntry(event.entry.entryId);
+                              }}
+                            >
+                              {event.entry.content.title}</span> on tag &nbsp;
+                    <span
+                      className="link" onClick={() => {
+                          this.navigateToTag(event.tag);
+                      }}
+                    >{event.tag}</span>
+                </span><br />
+                        Block {event.blockNumber}
+              </p>
+                }
+            secondaryTextLines={2}
+            key={eventTypes.PUBLISH + index + event.blockNumber}
+            className="has_hidden_action"
+            rightIcon={<ActionDelete
+              className="hidden_action"
+              onClick={(e) => {
+                  if (this.props.loggedProfileData.get('profile') === event.profileAddress) {
+                      return this.props.notificationsActions.deleteYouNotif(index);
+                  }
+                  return this.props.notificationsActions.deleteFeedNotif(index);
+              }}
+            />}
+          />);
+    }
+
+    _renderComment (event, index) {
+        const { palette } = this.context.muiTheme;
+        const name = `${event.author.firstName} ${event.author.lastName}`;
+        const initials = name.match(/\b\w/g).reduce((prev, current) => prev + current, '');
+        return (
+          <ListItem
+            leftAvatar={event.author.avatar ?
+              <Avatar src={`${event.author.baseUrl}/${event.author.avatar}`} /> :
+              <Avatar style={{ backgroundColor: 'rgba(239, 239, 239, 1)', border: '1px solid' }} >
+                <span
+                  style={{ color: palette.textColor, textTransform: 'uppercase', fontWeight: '500' }}
+                >
+                  {initials}
+                </span>
+              </Avatar>
+            }
+            primaryText={
+              <strong
+                onClick={() => {
+                    this.navigateToProfile(event.profileAddress);
+                }} style={{ color: colors.darkBlack }}
+              >
+                {event.author.akashaId}
+              </strong>
+                }
+            secondaryText={
+              <p>
+                <span style={{ color: colors.darkBlack }} >
+                            Commented on <span
+                              className="link" onClick={() => {
+                                  this.navigateToEntry(event.entry.entryId);
+                              }}
+                            >
+                              {event.entry.content.title}</span>
+                </span><br />
+                        Block {event.blockNumber}
+              </p>
+                }
+            secondaryTextLines={2}
+            key={eventTypes.COMMENT + index + event.blockNumber}
+            className="has_hidden_action"
+            rightIcon={<ActionDelete
+              className="hidden_action"
+              onClick={(e) => {
+                  if (this.props.loggedProfileData.get('profile') === event.profileAddress) {
+                      return this.props.notificationsActions.deleteYouNotif(index);
+                  }
+                  return this.props.notificationsActions.deleteFeedNotif(index);
+              }}
+            />}
+          />);
+    }
+
+    _renderVote (event, index) {
+        const { palette } = this.context.muiTheme;
+        const type = (event.weight > 0) ? 'Upvoted' : 'Downvoted';
+        const colorVote = (event.weight > 0) ? palette.accent3Color : palette.accent1Color;
+        const voteWeight = (event.weight > 0) ? (`+${event.weight}`) : event.weight;
+        const name = `${event.author.firstName} ${event.author.lastName}`;
+        const initials = name.match(/\b\w/g).reduce((prev, current) => prev + current, '');
+        return (
+          <ListItem
+            leftAvatar={event.author.avatar ?
+              <Avatar src={`${event.author.baseUrl}/${event.author.avatar}`} /> :
+              <Avatar style={{ backgroundColor: 'rgba(239, 239, 239, 1)', border: '1px solid' }} >
+                <span
+                  style={{ color: palette.textColor, textTransform: 'uppercase', fontWeight: '500' }}
+                >
+                  {initials}
+                </span>
+              </Avatar>
+            }
+            primaryText={
+              <strong
+                onClick={() => {
+                    this.navigateToProfile(event.profileAddress);
+                }} style={{ color: colors.darkBlack }}
+              >
+                {event.author.akashaId}
+              </strong>
+                }
+            secondaryText={
+              <p>
+                <span style={{ color: colors.darkBlack }} >
+                  {type}(<span style={{ color: colorVote }} >{voteWeight}</span>) on&nbsp;
+                    <span
+                      className="link" onClick={() => {
+                          this.navigateToEntry(event.entry.entryId);
+                      }}
+                    >
+                      {event.entry.content.title}
+                    </span>
+                </span><br />
+                        Block {event.blockNumber}
+              </p>
+                }
+            secondaryTextLines={2}
+            key={eventTypes.VOTE + index + event.blockNumber}
+            className="has_hidden_action"
+            rightIcon={<ActionDelete
+              className="hidden_action"
+              onClick={(e) => {
+                  if (this.props.loggedProfileData.get('profile') === event.profileAddress) {
+                      return this.props.notificationsActions.deleteYouNotif(index);
+                  }
+                  return this.props.notificationsActions.deleteFeedNotif(index);
+              }}
+            />}
+          />
+        );
+    }
+
     render () {
-        const loggedProfile = this.props.profileState.get('loggedProfile');
+        const { loggedProfileData, profileActions, profileAddress, showPanel, hidePanel,
+            notificationsState } = this.props;
+        const { palette } = this.context.muiTheme;
         return (
           <Paper
             style={{
-                width: (this.props.width || 640),
+                width: (this.props.width || 480),
                 zIndex: 10,
                 position: 'relative',
-                height: '100%'
+                height: '100%',
+                borderRadius: 0
             }}
           >
             <UserProfileHeader
-              profile={loggedProfile}
-              profileActions={this.props.profileActions}
+              profile={loggedProfileData}
+              profileActions={profileActions}
+              profileAddress={profileAddress}
+              showPanel={showPanel}
+              hidePanel={hidePanel}
             />
             <div style={{ width: '100%', marginTop: '-48px' }} >
               <div>
-                <Tabs tabItemContainerStyle={{ backgroundColor: 'transparent' }} >
-                  <Tab label="FEED" style={tabStyles.default_tab} >
-                    <div>
-                      <List >
-                        <Subheader>Wednesday, 27 January 2016</Subheader>
-                        <ListItem
-                          leftAvatar={<Avatar src="" />}
-                          rightIconButton={rightIconMenu}
-                          primaryText={
-                            <strong style={{ color: colors.darkBlack }}>
-                              Vasile Ghita
-                            </strong>
-                          }
-                          secondaryText={
-                            <p>
-                              <span style={{ color: colors.darkBlack }}>
-                                Commented on <a href="#">Entry name</a>
-                              </span>
-                              <br />
-                              Jan10
-                            </p>
-                          }
-                          secondaryTextLines={2}
-                        />
-                        <Divider />
-                      </List>
-                      <List>
-                        <Subheader>Last week</Subheader>
-                        <ListItem
-                          leftAvatar={<Avatar src="" />}
-                          rightIconButton={rightIconMenu}
-                          primaryText={
-                            <strong style={{ color: colors.darkBlack }}>
-                              Vasile Ghita
-                            </strong>
-                          }
-                          secondaryText={
-                            <p>
-                              <span style={{ color: colors.darkBlack }}>
-                                Published on <a href="#">Entry name</a>
-                              </span><br />
-                              Jan10
-                            </p>
-                          }
-                          secondaryTextLines={2}
-                        />
-                        <Divider />
-                      </List>
+                <Tabs
+                  tabItemContainerStyle={{ backgroundColor: 'transparent' }}
+                  inkBarStyle={{ backgroundColor: palette.primary1Color }}
+                >
+                  <Tab
+                    label="FEED" style={tabStyles.default_tab}
+                    onActive={() => {
+                        this.setState({ selected: FEED_SELECTED });
+                        this.readSubscriptionNotif();
+                    }}
+                  >
+                    <div style={this.getStyle(FEED_SELECTED)} >
+                      {this.renderFeedNotifications()}
                     </div>
                   </Tab>
                   <Tab
                     label={
                       <span>
-                        You <sup style={{ color: colors.red500 }}>(3)</sup>
+                        You <sup style={{ color: colors.red500 }} >({notificationsState.get('youNrFeed')})</sup>
                       </span>
-                    }
+                                }
                     style={tabStyles.default_tab}
+                    onActive={() => {
+                        this.setState({ selected: YOU_SELECTED });
+                        this.readYouNotif(notificationsState.get('youNrFeed'));
+                    }}
                   >
-                    <div></div>
+                    <div style={this.getStyle(YOU_SELECTED)} >
+                      {this.renderYouNotifs()}
+                    </div>
                   </Tab>
-                  <Tab label="MESSAGES" style={tabStyles.default_tab} >
-                    <div></div>
+                  <Tab
+                    label="MESSAGES" style={tabStyles.default_tab} disabled
+                    onActive={() => this.setState({ selected: MESSAGES_SELECTED })}
+                  >
+                    <div style={this.getStyle(MESSAGES_SELECTED)} />
                   </Tab>
                 </Tabs>
               </div>
@@ -135,8 +397,15 @@ class UserProfilePanel extends Component {
 }
 UserProfilePanel.propTypes = {
     width: PropTypes.string,
-    profileState: PropTypes.object,
-    profileActions: PropTypes.object,
+    loggedProfileData: PropTypes.shape(),
+    profileActions: PropTypes.shape(),
+    profileAddress: PropTypes.string,
+    notificationsActions: PropTypes.shape(),
+    showPanel: PropTypes.func,
+    hidePanel: PropTypes.func
 };
-
+UserProfilePanel.contextTypes = {
+    muiTheme: PropTypes.shape(),
+    router: PropTypes.shape()
+};
 export default UserProfilePanel;

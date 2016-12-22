@@ -1,88 +1,46 @@
 import React, { Component, PropTypes } from 'react';
-import { IconButton, TextField } from 'material-ui';
-import {
-    Editor,
-    EditorState,
-    SelectionState,
-    ContentState,
-    getDefaultKeyBinding,
-    CompositeDecorator,
-    convertToRaw,
-    convertFromRaw,
-    AtomicBlockUtils,
-    RichUtils,
-    Entity } from 'draft-js';
-import { stateToHTML } from 'draft-js-export-html';
-import { getResizedImages } from '../../utils/imageUtils';
-import clickAway from '../../utils/clickAway';
-import styles from './style.css';
-import AddCircle from 'material-ui/svg-icons/content/add-circle-outline';
-import PhotoCircle from 'material-ui/svg-icons/image/add-a-photo';
-import { handleStrategy } from './strategies';
-import { HandleComponent } from './components';
-
-import EditorToolbar from './components/editor-toolbar';
-import rendererFn from './components/custom-renderer';
-import { remote } from 'electron';
-const { dialog } = remote;
-
-const compositeDecorator = new CompositeDecorator([
-    {
-        strategy: handleStrategy,
-        component: HandleComponent
-    }
-]);
+import { MegadraftEditor, editorStateFromRaw } from 'megadraft';
+import { convertToRaw } from 'draft-js';
+import EditorSidebar from './sidebar/editor-sidebar';
+import styles from './style.scss';
+import imagePlugin from './plugins/image/image-plugin';
 
 class EntryEditor extends Component {
-    constructor (props) {
-        super(props);
-        const { content, title } = this.props;
-        let editorState = EditorState.createEmpty(compositeDecorator);
-        if (content) {
-            const convertedContent = convertFromRaw(content);
-            editorState = EditorState.createWithContent(convertedContent, compositeDecorator);
-        }
-        this.state = {
-            editorState,
-            showAddButton: false,
-            toolbarVisible: false,
-            editorEnabled: true,
-            readOnly: props.readOnly || false,
-            title
-        };
+    state = {
+        editorState: editorStateFromRaw(null),
+        title: '',
+        sidebarOpen: false
+    };
+    componentWillMount () {
+        this.setState({
+            editorState: editorStateFromRaw(this.props.content),
+            title: this.props.title
+        });
     }
     componentDidMount () {
-        if (!this.state.readOnly && this.props.title) {
-            this.titleInput.focus();
-        } else if (this.state.readOnly) {
-            this.editor.focus();
+        if (this.props.showTitle) {
+            this.titleRef.focus();
         }
+    }
+    componentWillReceiveProps (nextProps) {
+        const { content } = nextProps;
+        if (content !== this.props.content) {
+            this.setState({
+                editorState: editorStateFromRaw(nextProps.content),
+                title: nextProps.title
+            });
+        }
+    }
+    shouldComponentUpdate (nextProps, nextState) {
+        return (nextProps.title !== this.props.title) ||
+            (nextProps.content !== this.props.content) ||
+            (nextState.title !== this.state.title) ||
+            (nextState.editorState !== this.state.editorState) ||
+            (nextState.sidebarOpen !== this.state.sidebarOpen);
     }
     getRawContent = () => convertToRaw(this.state.editorState.getCurrentContent());
     getContent = () => this.state.editorState.getCurrentContent();
-    getHtmlContent = () => stateToHTML(this.state.editorState.getCurrentContent());
-
     getTitle = () => this.state.title;
-    componentClickAway = () => {
-        const selection = this.state.editorState.getSelection();
-        if (selection.getAnchorKey()) {
-            EditorState.forceSelection(this.state.editorState, SelectionState.createEmpty());
-        }
-    };
-    focus = () => {
-        if (this.state.toolbarVisible) {
-            this._toggleToolbarVisibility(false);
-        }
-        this.editor.focus();
-    };
-    blur = () => {
-        this.editor.blur();
-    };
-    toggleAddButton = () => {
-        this.setState({
-            showAddButton: !this.state.showAddButton
-        });
-    };
     _handleEditorChange = (editorState) => {
         this.setState({
             editorState,
@@ -90,195 +48,124 @@ class EntryEditor extends Component {
         if (this.props.onAutosave) {
             this.props.onAutosave();
         }
-    };
-    _handleEditorContainerClick = (ev) => {
-        ev.preventDefault();
-        this.focus();
-    };
-    _handleAddClick = () => {
-        this.setState({
-            lastSelection: this.state.editorState.getSelection().getAnchorKey(),
-            showAddButton: !this.state.showAddButton,
-        });
-    };
-    _handleBeforeInput = () => {
-        this.setState({
-            showAddButton: false
-        });
-    };
-    _toggleBlockType = (blockType, src) => {
-        const entityKey = Entity.create(blockType, 'IMMUTABLE', src[0]);
-        this.setState({
-            showAddButton: false
-        });
-        this._handleEditorChange(
-            AtomicBlockUtils.insertAtomicBlock(this.state.editorState, entityKey, ' ')
-        );
-    };
-    _addImage = () => {
-        dialog.showOpenDialog({
-            title: 'Select Image',
-            properties: ['openFile'],
-            filters: [{ name: 'Images', extensions: ['jpg', 'png', 'gif'] }]
-        }, files => {
-            if (!files) {
-                return;
-            }
-            const outputFilePromises = getResizedImages(files, {
-                minWidth: 1280,
-                imageWidths: ['mlarge']
-            });
-            Promise.all(outputFilePromises).then(results => {
-                this._toggleBlockType('image', results[0]);
-            }).catch(err => {
-                this.setState({
-                    error: err
-                });
-            });
-        });
-    };
-    _handleReturn = (ev) => {
-        if (ev.shiftKey) {
-            this.setState({
-                editorState: RichUtils.insertSoftNewline(this.state.editorState)
-            });
-            return true;
-        }
-        return false;
-    };
-    _getAddButtonStyles = () => {
-        const { editorState } = this.state;
-        const startKey = this.state.startKey || editorState.getSelection().getStartKey();
-        const selectionContent = editorState.getCurrentContent().getBlockForKey(startKey).getText();
-
-        const addButtonStyles = {
-            position: 'absolute',
-            opacity: 0,
-            left: -200,
-            zIndex: 5,
-            transition: 'opacity 0.218s ease-in-out, top 0.1s ease-in-out'
-        };
-
-        if (this._canShowAddButton(selectionContent, editorState)) {
-            const node = document.querySelector(`span[data-offset-key="${startKey}-0-0"]`);
-            let anchorNode = window.getSelection().anchorNode;
-            // @TODO: use state for dom manipulation;
-            addButtonStyles.opacity = 1;
-            if (node) {
-                addButtonStyles.top = node.getBoundingClientRect().top - 12 + window.scrollY;
-                addButtonStyles.left = node.getBoundingClientRect().left - 48;
-            } else if (anchorNode && anchorNode.getBoundingClientRect) {
-                addButtonStyles.top = anchorNode.getBoundingClientRect().top + 20 + window.scrollY;
-                addButtonStyles.left = anchorNode.getBoundingClientRect().left - 48;
-            } else if (anchorNode && anchorNode.parentElement) {
-                anchorNode = anchorNode.parentElement;
-                addButtonStyles.top = anchorNode.getBoundingClientRect().top + 20 + window.scrollY;
-                addButtonStyles.left = anchorNode.getBoundingClientRect().left - 48;
-            }
-        }
-        return addButtonStyles;
-    };
-    _canShowAddButton = (selectionContent, editorState) => this.state.showAddButton ||
-        (selectionContent.length === 0 && editorState.getSelection().getHasFocus())
-    _testFocus = () => {
-        this.setState({
-            showAddButton: false,
-        });
-    };
-    _handleTitleKeyPress = (ev) => {
-        if (ev.charCode === 13) {
-            this.editor.focus();
+        if (this.props.onChange) {
+            this.props.onChange(editorState);
         }
     };
     _handleTitleChange = (ev) => {
-        this.setState({ title: ev.target.value });
-        if (this.props.onTitleChange) this.props.onTitleChange(ev);
-    };
-    _toggleToolbarVisibility = (visible) => {
-        if (visible) {
-            return this.setState({
-                toolbarVisible: visible
-            });
-        }
-        return this.setState({
-            toolbarVisible: !this.state.toolbarVisible
+        this.setState({
+            title: ev.target.value
         });
     };
+    _handleKeyPress = (ev) => {
+        if (ev.key === 'Enter') {
+            ev.preventDefault();
+            this._focusEditor();
+        }
+    }
+    _focusEditor = () => {
+        const editorContainerNode = this.editor.refs.editor;
+        const contentEditableNode = editorContainerNode.querySelector('[contenteditable=true]');
+        contentEditableNode.focus();
+    }
+    _blurEditor = () => {
+        const editorContainerNode = this.editor.refs.editor;
+        const contentEditableNode = editorContainerNode.querySelector('[contenteditable=true]');
+        contentEditableNode.blur();
+    }
+    _checkEditorFocus = () => {
+        if (this.editor) {
+            const editorContainerNode = this.editor.refs.editor;
+            const contentEditableNode = editorContainerNode.querySelector('[contenteditable=true]');
+            return (contentEditableNode && contentEditableNode.isSameNode(document.activeElement));
+        }
+        return false;
+    }
+    _handleSidebarToggle = (isOpen) => {
+        this.setState({
+            sidebarOpen: isOpen
+        });
+    }
+    _renderSidebar = ({ plugins, editorState, onChange }) => {
+        const { showSidebar, readOnly, showTerms, onError } = this.props;
+        if (showSidebar && !readOnly) {
+            return (
+              <EditorSidebar
+                plugins={plugins}
+                editorState={editorState}
+                onChange={onChange}
+                showTerms={showTerms}
+                onError={onError}
+                editorHasFocus={this._checkEditorFocus()}
+                onSidebarToggle={this._handleSidebarToggle}
+              />);
+        }
+        return null;
+    };
+
     render () {
-        const { editorState } = this.state;
-        const addButtonStyles = this._getAddButtonStyles();
+        const { showTitle, titlePlaceholder, editorPlaceholder, readOnly } = this.props;
         return (
           <div className="editor" style={{ textAlign: 'left' }}>
-            <div style={addButtonStyles}>
-              <IconButton
-                onMouseDown={this._handleAddClick}
-                style={{
-                    transform: this.state.showAddButton ? 'rotate(135deg)' : 'rotate(-180deg)'
-                }}
-              >
-                <AddCircle color={this.state.showAddButton ? 'rgb(3, 169, 244)' : '#DDD'} />
-              </IconButton>
-                {this.state.showAddButton &&
-                  <IconButton onClick={this._addImage} >
-                    <PhotoCircle />
-                  </IconButton>
-                }
-            </div>
             <div>
-            {this.props.showTitleField &&
-              <TextField
-                ref={(titleInput) => this.titleInput = titleInput}
-                hintText="Title"
-                underlineShow={false}
-                hintStyle={{ fontSize: 32 }}
-                inputStyle={{ fontSize: 32 }}
-                style={{ marginBottom: 16 }}
-                onKeyPress={this._handleTitleKeyPress}
-                onChange={this._handleTitleChange}
-                value={this.state.title}
-                fullWidth
+              {showTitle && !readOnly &&
+                <div className={styles.title}>
+                  <div className={styles.titleInner}>
+                    <textarea
+                      ref={(title) => { this.titleRef = title; }}
+                      type="text"
+                      className={styles.inputField}
+                      placeholder={titlePlaceholder}
+                      onChange={this._handleTitleChange}
+                      value={this.state.title}
+                      onKeyPress={this._handleKeyPress}
+                      tabIndex="0"
+                    />
+                  </div>
+                </div>
+              }
+              <MegadraftEditor
+                ref={(edtr) => {
+                    this.editor = edtr;
+                    if (this.props.editorRef) {
+                        this.props.editorRef(this);
+                    }
+                }}
+                readOnly={readOnly}
+                sidebarRendererFn={this._renderSidebar}
+                editorState={this.state.editorState}
+                onChange={this._handleEditorChange}
+                plugins={[imagePlugin]}
+                placeholder={this.state.sidebarOpen ? '' : editorPlaceholder}
+                tabIndex="0"
+                hasFocus={this._checkEditorFocus()}
               />
-            }
-              <div onClick={this._handleEditorContainerClick}>
-                <Editor
-                  ref={(editor) => {
-                      this.editor = editor;
-                      if (this.props.editorRef) {
-                          this.props.editorRef(this);
-                      }
-                  }}
-                  editorState={editorState}
-                  blockRendererFn={rendererFn}
-                  onChange={this._handleEditorChange}
-                  handleReturn={this._handleReturn}
-                  placeholder={this.state.showAddButton ? '' : this.props.textHint}
-                  handleBeforeInput={this._handleBeforeInput}
-                />
-              </div>
             </div>
-            <EditorToolbar
-              ref={(toolbar) => this.toolbar = toolbar}
-              editorState={editorState}
-              isVisible={this.state.toolbarVisible}
-              toggleVisibility={this._toggleToolbarVisibility}
-              toggleBlockType={this._toggleBlockType}
-              toggleInlineStyle={this._toggleInlineStyle}
-              setLink={this._setLink}
-            />
           </div>
         );
     }
 }
-
-EntryEditor.propTypes = {
-    onChange: PropTypes.func,
-    title: PropTypes.string,
-    showTitleField: PropTypes.bool,
-    editorRef: PropTypes.func,
-    onTitleChange: PropTypes.func,
-    readOnly: PropTypes.bool,
-    content: PropTypes.object,
-    textHint: PropTypes.string
+EntryEditor.defaultProps = {
+    showSidebar: true,
+    showTitle: true,
+    readOnly: false,
+    editorPlaceholder: 'write something',
+    titlePlaceholder: 'write a title'
 };
 
-export default clickAway(EntryEditor);
+EntryEditor.propTypes = {
+    showTerms: PropTypes.func,
+    title: PropTypes.string,
+    editorRef: PropTypes.func,
+    readOnly: PropTypes.bool,
+    content: PropTypes.shape(),
+    showTitle: PropTypes.bool,
+    onAutosave: PropTypes.func,
+    editorPlaceholder: PropTypes.string,
+    titlePlaceholder: PropTypes.string,
+    showSidebar: PropTypes.bool,
+    onChange: PropTypes.func,
+    onError: PropTypes.func
+};
+
+export default EntryEditor;

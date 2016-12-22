@@ -1,7 +1,6 @@
-/// <reference path="../../typings/index.d.ts" />
 import { join as pathJoin } from 'path';
 import { Logger, transports } from 'winston';
-import { constants, access as fsAccess, mkdir } from 'fs';
+import { open, mkdirSync } from 'fs';
 import { app } from 'electron';
 
 const symbolEnforcer = Symbol();
@@ -22,7 +21,25 @@ class AppLogger {
         }
         this.loggers = {};
         const defaultPath = pathJoin(app.getPath('userData'), 'logs');
-        this._setLogsFolder(defaultPath);
+        open(defaultPath, 'r', (err, fd) => {
+            if (err) {
+                if (err.code === "ENOENT") {
+                    return this._buildPath(defaultPath);
+                }
+                throw err;
+            }
+            this._setLogsFolder(defaultPath);
+            this.PATH_OK = true;
+            return this.PATH_OK;
+        });
+
+    }
+
+    private _buildPath(path) {
+        this._setLogsFolder(path);
+        mkdirSync(path);
+        this.PATH_OK = true;
+        return this.PATH_OK;
     }
 
     /**
@@ -43,19 +60,6 @@ class AppLogger {
      */
     private _setLogsFolder(path: string) {
         this.logPath = path;
-        return fsAccess(this.logPath, constants.W_OK, (err) => {
-            if (err) {
-                mkdir(this.logPath, (error) => {
-                    if (error) {
-                        this.PATH_OK = false;
-                        throw new Error(error.message);
-                    }
-                    this.PATH_OK = true;
-                });
-                return;
-            }
-            this.PATH_OK = true;
-        });
     }
 
     /**

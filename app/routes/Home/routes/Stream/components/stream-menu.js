@@ -1,59 +1,68 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
 import { Paper, Tabs, Tab, SvgIcon } from 'material-ui';
 import LabelIcon from 'material-ui/svg-icons/action/label';
 
-const StreamMenu = (props) =>
+const StreamMenu = (props, { muiTheme }) =>
   <div className="row">
     <Paper className="col-xs-12">
-      <div className="row center-xs">
-        <div className="col-xs-11" style={{ marginLeft: 24 }}>
-          <div className="row">
-            <Tabs
-              value={props.activeTab}
-              className={`col-xs-${props.routeParams.tagName ? '5' : '4'}`}
-              tabItemContainerStyle={{ backgroundColor: 'transparent' }}
-              onChange={props.onChange}
-            >
-              <Tab
-                onActive={props.onActive}
-                label="STREAM"
-                value="stream"
-                style={{ color: '#444' }}
-              />
-              <Tab
-                onActive={props.onActive}
-                label="TOP ENTRIES"
-                value="top"
-                style={{ color: '#444' }}
-              />
-              <Tab
-                onActive={props.onActive}
-                label="SAVED"
-                value="saved"
-                style={{ color: '#444' }}
-              />
-              {props.routeParams.filter === 'tag' &&
-                <Tab
-                  label={props.routeParams.tagName}
-                  className="col-xs"
-                  // icon={
-                  //   <SvgIcon >
-                  //     <LabelIcon style={{ transform: 'rotate(-45deg)' }} />
-                  //   </SvgIcon>}
-                  value="tag"
-                  style={{ color: '#444', fill: '#444' }}
-                />
-              }
-            </Tabs>
-          </div>
-        </div>
-      </div>
+      <Tabs
+        value={props.activeTab}
+        tabItemContainerStyle={{ backgroundColor: 'transparent', width: '400px' }}
+        onChange={props.onChange}
+        style={{ paddingLeft: '50px' }}
+        inkBarStyle={{ backgroundColor: muiTheme.palette.primary1Color }}
+      >
+        <Tab
+          onActive={props.onActive}
+          label="BOOKMARKS"
+          value="bookmarks"
+          style={{ color: '#444' }}
+        />
+        <Tab
+          label={
+            <div style={{ display: 'flex' }}>
+              <div
+                style={{
+                  flex: '1 1 auto',
+                  paddingRight: '10px',
+                  maxWidth: '190px',
+                  overflowX: 'hidden',
+                  textOverflow: 'ellipsis'
+                }}
+              >
+                {props.selectedTag}
+              </div>
+              <SvgIcon
+                style={{
+                    transform: 'rotate(-45deg)',
+                    flex: '0 0 auto',
+                    position: 'relative',
+                    top: '-5px',
+                    height: '20px',
+                    width: '20px'
+                }}
+              >
+                <LabelIcon />
+              </SvgIcon>
+            </div>
+          }
+          onActive={props.onActive}
+          value="tag"
+          style={{ color: '#444', fill: '#444' }}
+        />
+      </Tabs>
     </Paper>
   </div>;
 
 StreamMenu.propTypes = {
-    activeTab: React.PropTypes.string,
-    onChange: React.PropTypes.func,
-    routeParams: React.PropTypes.object
+    activeTab: PropTypes.string,
+    selectedTag: PropTypes.string,
+    onChange: PropTypes.func,
+    onActive: PropTypes.func
 };
+
+StreamMenu.contextTypes = {
+    muiTheme: PropTypes.shape()
+};
+
 export default StreamMenu;

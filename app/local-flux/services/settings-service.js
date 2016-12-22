@@ -1,15 +1,59 @@
 import settingsDB from './db/settings';
+import BaseService from './base-service';
 
-class SettingsService {
-    saveSettings (table, settings) {
-        return settingsDB.transaction('rw', settingsDB[table], () =>
-            settingsDB[table].put({ name: table, ...settings })
-        );
+class SettingsService extends BaseService {
+    saveSettings = ({
+        options,
+        onError = () => {
+        },
+        onSuccess
+    }) => {
+        const settings = options.settings;
+        return settingsDB[options.table].put({ name: options.table, ...settings })
+            .then(() => {
+                onSuccess(options.settings, options.table);
+            }).catch((reason) => {
+                onError(reason, options.table);
+            });
+    };
+    getSettings = ({
+        options = { table: '', query: {} },
+        onError = () => {
+        },
+        onSuccess
+    }) => {
+        settingsDB[options.table].where('name').equals(options.table).toArray()
+            .then((data) => {
+                onSuccess(data[0] || {}, options.table);
+            }).catch((reason) => {
+                onError(reason, options.table);
+            });
     }
-    getSettings (table, query) {
-        return settingsDB.transaction('r', settingsDB[table], () =>
-            settingsDB[table].where('name').equals(table).toArray()
-        );
+
+    saveLastBlockNr = ({ akashaId, blockNr }) => {
+        settingsDB.user.where('akashaId').equals(akashaId).toArray()
+            .then((data) => {
+                const result = data[0] || {};
+                result.lastBlockNr = blockNr;
+                settingsDB.user.put({ akashaId, ...result });
+            })
+            .catch(reason => null);
+    };
+    saveDefaultLicence = ({ akashaId, licenceObj }) => {
+        settingsDB.user.where('akashaId').equals(akashaId).toArray()
+            .then((data) => {
+                const result = data[0] || {};
+                result.defaultLicence = licenceObj;
+                settingsDB.user.put({ akashaId, ...result });
+            });
     }
+    getUserSettings = ({ akashaId, onSuccess, onError }) => {
+        settingsDB.user.where('akashaId').equals(akashaId).toArray()
+            .then(data => {
+                onSuccess(data[0]);
+            })
+            .catch(reason => onError(reason));
+    };
 }
+
 export { SettingsService };

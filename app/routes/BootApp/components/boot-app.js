@@ -10,16 +10,19 @@ class BootApp extends React.Component {
         };
     }
     componentWillMount () {
-        const { appState } = this.props;
+        const { appActions } = this.props;
+        appActions.checkForUpdates();
+    }
+    componentDidUpdate (prevProps) {
+        const { appState } = prevProps;
         const hasUpdates = appState.getIn(['updates', 'hasUpdates']);
         if (!hasUpdates) {
             return this.context.router.push('setup');
         }
-        return this.setState({
-            hasUpdates
-        });
+        return null;
     }
     render () {
+        // @todo: manage app updates
         return (
           <div className="loader row">
             <div
@@ -29,10 +32,11 @@ class BootApp extends React.Component {
               <CircularProgress
                 style={{
                     paddingLeft: '50%',
-                    marginLeft: '-25px',
+                    marginLeft: '-40px',
                     marginTop: '22.5%'
                 }}
-                size={1.5}
+                size={80}
+                thickness={5}
               />
               <div
                 className="col-xs-12 center-xs"
@@ -54,7 +58,8 @@ class BootApp extends React.Component {
     }
 }
 BootApp.propTypes = {
-    appState: React.PropTypes.shape()
+    appState: React.PropTypes.shape(),
+    appActions: React.PropTypes.shape()
 };
 BootApp.contextTypes = {
     router: React.PropTypes.object

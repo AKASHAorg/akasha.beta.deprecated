@@ -1,26 +1,29 @@
 import { connect } from 'react-redux';
-import { asyncConnect } from 'redux-connect';
+import { ProfileActions, TempProfileActions } from 'local-flux';
 import Auth from './components/Auth';
-import { ProfileActions, BootstrapBundleActions } from 'local-flux';
 
-function mapStateToProps (state) {
+function mapStateToProps (state, ownProps) {
     return {
-        profileState: state.profileState
+        tempProfile: state.tempProfileState.get('tempProfile'),
+        localProfiles: state.profileState.get('profiles'),
+        loggedProfile: state.profileState.get('loggedProfile'),
+        loginErrors: state.profileState.get('errors').filter(error => error.get('type') === 'login'),
+        loginRequested: state.profileState.getIn(['flags', 'loginRequested']),
+        localProfilesFetched: state.profileState.get('flags').get('localProfilesFetched'),
+        fetchingLocalProfiles: state.profileState.get('flags').get('fetchingLocalProfiles'),
+        gethStatus: state.externalProcState.get('gethStatus'),
+        ipfsStatus: state.externalProcState.get('ipfsStatus')
     };
 }
 
 function mapDispatchToProps (dispatch) {
     return {
-        profileActions: new ProfileActions(dispatch)
+        profileActions: new ProfileActions(dispatch),
+        tempProfileActions: new TempProfileActions(dispatch)
     };
 }
 
-export default asyncConnect([{
-    promise: ({ store: { dispatch, getState } }) => {
-        const bootstrapActions = new BootstrapBundleActions(dispatch);
-        return Promise.resolve(bootstrapActions.initAuth(getState));
-    }
-}])(connect(
+export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(Auth));
+)(Auth);

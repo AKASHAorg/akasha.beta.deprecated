@@ -1,4 +1,5 @@
 /* eslint strict: 0 */
+
 'use strict';
 
 const path = require('path');
@@ -10,30 +11,22 @@ const webpackConfig = {
         loaders: [{
             test: /\.(js|jsx)$/,
             loaders: ['babel-loader'],
-            exclude: /node_modules/
+            exclude: path.resolve(__dirname, 'node_modules')
         }
         ]
     },
     output: {
         path: path.join(__dirname, 'dist'),
-        filename: 'bundle.js',
-        libraryTarget: 'commonjs2'
+        filename: 'bundle.js'
     },
     resolve: {
         extensions: ['', '.js', '.jsx'],
         root: path.join(__dirname, 'app'),
         packageMains: ['webpack', 'browser', 'web', 'browserify', ['jam', 'main'], 'main'],
-        modulesDirectories: ['node_modules', 'local-flux', 'shared-components', 'locale-data']
+        modulesDirectories: ['node_modules', 'constants', 'local-flux', 'shared-components', 'locale-data', 'utils']
     },
-    plugins: [
-        new webpack.BannerPlugin(
-          'require("source-map-support").install();',
-          { raw: true, entryOnly: false }
-        ),
-    ],
-    externals: [
-        'source-map-support'
-    ]
+    plugins: [],
+    externals: [new webpack.ExternalsPlugin('commonjs2', ['electron'])]
 };
 
 webpackConfig.module.loaders.push({

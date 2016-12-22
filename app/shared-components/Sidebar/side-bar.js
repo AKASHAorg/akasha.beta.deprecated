@@ -1,35 +1,38 @@
 import React, { PropTypes, Component } from 'react';
 import { connect } from 'react-redux';
-import { AppActions, ProfileActions, EntryActions } from 'local-flux';
 import {
     ProfileIcon,
     AddEntryIcon,
+    EntriesIcon,
     SearchIcon,
     StreamsIcon,
     PortalsIcon,
     CommunityIcon,
-    PeopleIcon,
-    LogoIcon } from '../svg';
+    PeopleIcon } from '../svg';
+import LogoButton from '../../routes/components/logo-button';
 
 class SideBar extends Component {
+    componentWillMount () {
+        const { profileActions } = this.props;
+        profileActions.getProfileBalance();
+    }
     _handleNewEntry = () => {
-        const { entryActions, entryState, profileState, appActions } = this.props;
-        const entriesCount = entryState.get('entriesCount');
-        const draftsCount = entryState.get('draftsCount');
-        const loggedProfile = profileState.get('loggedProfile');
+        const { activePanel, draftActions, appActions, loggedProfileData,
+            draftsCount } = this.props;
+        const entriesCount = parseInt(loggedProfileData.get('entriesCount'), 10);
 
-        if (entriesCount > 0 || draftsCount > 0) {
+        if (activePanel === 'newEntry') {
+            appActions.hidePanel();
+        } else if (entriesCount > 0 || draftsCount > 0) {
             appActions.showPanel({ name: 'newEntry', overlay: true });
-            entryActions.getDrafts(loggedProfile.get('userName'));
         } else {
             appActions.hidePanel();
-            this.context.router.push(`/${loggedProfile.get('userName')}/draft/new`);
+            this.context.router.push(`/${loggedProfileData.get('akashaId')}/draft/new`);
         }
     };
     _handleNavigation = (to) => {
-        const { profileState, appActions } = this.props;
-        const loggedUser = profileState.get('loggedProfile');
-        const basePath = loggedUser.get('userName');
+        const { appActions, loggedProfileData } = this.props;
+        const basePath = loggedProfileData.get('akashaId');
         appActions.hidePanel();
         if (!to) {
             // navigate to index route
@@ -37,51 +40,111 @@ class SideBar extends Component {
         }
         return this.context.router.push(`${basePath}/${to}`);
     };
+    _handlePeople = () => {
+        const path = 'people';
+        this._handleNavigation(path);
+    }
     _handlePanelShow = (panelName) => {
-        this.props.appActions.showPanel(panelName);
+        const { activePanel, appActions } = this.props;
+        if (activePanel === panelName.name) {
+            appActions.hidePanel();
+        } else {
+            appActions.showPanel(panelName);
+        }
     };
+
     render () {
-        const { style } = this.props;
+        const { style, loggedProfileData, activePanel, notificationsCount, hasFeed,
+            draftsCount } = this.props;
+        const { router } = this.context;
+        const pathName = router.location.pathname;
+        const isAddEntryActive = !activePanel &&
+            pathName.indexOf(`${loggedProfileData.get('akashaId')}/draft/new`) !== -1;
+        const isStreamActive = !activePanel &&
+            pathName.indexOf(`${loggedProfileData.get('akashaId')}/explore/`) !== -1;
+        const isPeopleActive = !activePanel &&
+            pathName.indexOf(`${loggedProfileData.get('akashaId')}/people`) !== -1;
+        const profileName = `${loggedProfileData.get('firstName')} ${loggedProfileData.get('lastName')}`;
+        const userInitials = profileName.match(/\b\w/g).reduce((prev, current) => prev + current, '');
+        const balance = loggedProfileData.get('balance');
+        const entriesCount = parseInt(loggedProfileData.get('entriesCount'), 10);
         return (
           <div style={style} >
-            <div style={{ flexGrow: 1, padding: '16px' }} >
+            <div style={{ flexGrow: 0, padding: '14px 14px 5px' }} >
               <ProfileIcon
+                activePanel={activePanel}
+                avatar={loggedProfileData.get('avatar')}
+                userInitials={userInitials}
+                hasFeed={hasFeed}
+                notificationsCount={notificationsCount}
                 onClick={() => this._handlePanelShow({ name: 'userProfile', overlay: true })}
               />
             </div>
-            <div style={{ flexGrow: 1, padding: '16px' }} >
-              <AddEntryIcon onClick={this._handleNewEntry} tooltip="Add new entry" />
-              <SearchIcon onClick={this._handleSearch} tooltip="Search" />
+            <div style={{ flexGrow: 0, fontSize: '14px', fontWeight: '100', fontFamily: 'Roboto' }}>
+              <div style={{ textAlign: 'center' }}>
+                {balance && balance.slice(0, 6)}
+              </div>
+              <div style={{ textAlign: 'center' }}>AETH</div>
             </div>
-            <div style={{ flexGrow: 4, padding: '16px' }} >
-              <StreamsIcon
-                onClick={() => this._handleNavigation('explore/stream')}
-                tooltip="Stream"
-              />
-              <PortalsIcon disabled tooltip="Coming Soon" />
-              <CommunityIcon disabled tooltip="Coming Soon" />
-              <PeopleIcon onClick={this._handlePeople} tooltip="People" />
+            <div style={{ flexGrow: 1, padding: '14px' }} >
+              {(entriesCount > 0 || draftsCount > 0) ?
+                <div title="My entries">
+                  <EntriesIcon
+                    onClick={this._handleNewEntry}
+                    isActive={activePanel === 'newEntry'}
+                  />
+                </div> :
+                <div title="Add new entry">
+                  <AddEntryIcon
+                    onClick={this._handleNewEntry}
+                    isActive={isAddEntryActive}
+                  />
+                </div>
+              }
+              <div title="Coming Soon">
+                <SearchIcon
+                  onClick={this._handleSearch}
+                  disabled
+                />
+              </div>
             </div>
-            <div style={{ flexGrow: 1, padding: '16px' }} >
-              <LogoIcon
-                style={{ position: 'absolute', bottom: '16px', width: '32px', height: '32px' }}
-              />
+            <div style={{ flexGrow: 4, padding: '14px' }} >
+              <div title="Stream">
+                <StreamsIcon
+                  onClick={() => (!isStreamActive ? this._handleNavigation('explore/tag') : null)}
+                  isActive={isStreamActive}
+                />
+              </div>
+              <div title="Coming Soon">
+                <PortalsIcon disabled />
+              </div>
+              <div title="Coming Soon">
+                <CommunityIcon disabled />
+              </div>
+              <div title="People">
+                <PeopleIcon
+                  onClick={this._handlePeople}
+                  isActive={isPeopleActive}
+                />
+              </div>
+            </div>
+            <div style={{ flexGrow: 1, padding: '14px 8px', display: 'flex', justifyContent: 'center', alignItems: 'flex-end' }} >
+              <LogoButton />
             </div>
           </div>
         );
     }
 }
 SideBar.propTypes = {
-    style: PropTypes.object,
-    iconStyle: PropTypes.object,
-    innerStyle: PropTypes.object,
-    viewBox: PropTypes.string,
-    color: PropTypes.string,
-    appActions: PropTypes.object,
-    profileState: PropTypes.object,
-    profileActions: PropTypes.object,
-    entryActions: PropTypes.object,
-    entryState: PropTypes.object
+    activePanel: PropTypes.string,
+    style: PropTypes.shape(),
+    appActions: PropTypes.shape(),
+    hasFeed: PropTypes.bool,
+    profileActions: PropTypes.shape(),
+    draftActions: PropTypes.shape(),
+    notificationsCount: PropTypes.number,
+    draftsCount: PropTypes.number,
+    loggedProfileData: PropTypes.shape()
 };
 
 SideBar.contextTypes = {
@@ -105,15 +168,5 @@ SideBar.defaultProps = {
     viewBox: '0 0 32 32',
     color: '#000'
 };
-export default connect(
-    state => ({
-        panelState: state.panelState,
-        profileState: state.profileState,
-        entryState: state.entryState
-    }),
-    dispatch => ({
-        appActions: new AppActions(dispatch),
-        profileActions: new ProfileActions(dispatch),
-        entryActions: new EntryActions(dispatch)
-    })
-)(SideBar);
+
+export default SideBar;

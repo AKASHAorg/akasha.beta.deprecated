@@ -1,8 +1,10 @@
 {
     "extends": ["airbnb", "plugin:import/electron"],
+    "plugins": ["babel"],
     "rules": {
         "indent": [2, 4, {"SwitchCase": 1}],
         "comma-dangle": [0],
+        "comma-style": ["error", "last"],
         "complexity": [2, 10],
         "no-param-reassign": [0],
         "max-depth": [2, 5],
@@ -13,10 +15,13 @@
         "no-underscore-dangle": ["error", { "allowAfterThis": true }],
         "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
         "import/no-extraneous-dependencies": 0,
-        "import/prefer-default-export": 0
+        "import/prefer-default-export": 0,
+        "babel/generator-star-spacing": 1,
+        "generator-star-spacing": 0
     },
     "settings": {
-        "import/core-modules": ["electron", "local-flux", "locale-data", "shared-components"]
+        "import/core-modules": ["electron", "local-flux", "locale-data", "shared-components"],
+        "import/external-module-folders": ["node_modules", "local-flux", "shared-components", "locale-data"]
     },
     "parser": "babel-eslint",
     "env": {

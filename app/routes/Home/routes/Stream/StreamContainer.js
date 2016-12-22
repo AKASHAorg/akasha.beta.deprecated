@@ -1,94 +1,124 @@
-import React, { Component } from 'react';
-import { EntryActions } from 'local-flux';
+import React, { Component, PropTypes } from 'react';
+import { EntryActions, TagActions } from 'local-flux';
 import { connect } from 'react-redux';
 import TheStream from './components/stream';
 import StreamMenu from './components/stream-menu';
 import StreamSidebar from './components/stream-sidebar';
+import styles from './stream-container.scss';
+
+const LIMIT = 5;
 
 class StreamPage extends Component {
     constructor (props) {
         super(props);
+        const { params } = props;
         this.state = {
-            filter: 'stream'
+            filter: params.filter
         };
     }
+
     componentWillMount () {
-        this._handleFilterChange(this.props.params.filter);
-        this._fetchEntries(this.props, this.state);
+        const { entryActions, loggedProfile, selectedTag, params } = this.props;
+        entryActions.getEntriesStream(loggedProfile.get('akashaId'));
+        if (selectedTag && params.filter === 'tag') {
+            entryActions.entryTagIterator(selectedTag, 0, LIMIT + 1);
+            entryActions.getTagEntriesCount(selectedTag);
+        } else if (params.filter === 'bookmarks') {
+            entryActions.getSavedEntriesList(LIMIT);
+        }
     }
 
     componentWillReceiveProps (nextProps) {
-        if (nextProps.params.filter !== this.state.filter) {
-            this._handleFilterChange(nextProps.params.filter);
+        const { selectedTag, entryActions } = nextProps;
+        if (selectedTag !== this.props.selectedTag) {
+            this.setState({
+                filter: 'tag'
+            });
+            entryActions.clearTagEntries();
+            if (selectedTag) {
+                entryActions.entryTagIterator(selectedTag, 0, LIMIT + 1);
+                entryActions.getTagEntriesCount(selectedTag);
+            }
         }
     }
 
-    componentWillUpdate (nextProps, nextState) {
-        if (nextState.filter === this.state.filter) {
-            return;
-        }
-        this._fetchEntries(nextProps, nextState);
-    }
-    _fetchEntries = (props, state) => {
-        const { entryActions, profileState, params } = props;
-        const loggedProfile = profileState.get('loggedProfile');
-        const { filter } = state;
-        switch (filter) {
-            case 'top':
-                return entryActions.getSortedEntries({ sortBy: 'rating' });
-            case 'saved':
-                return entryActions.getSavedEntries(loggedProfile.get('userName'));
-            case 'tag':
-                return entryActions.getEntriesForTag({ tagName: params.tagName });
-            default: // 'stream'
-                return entryActions.getSortedEntries({ sortBy: 'date' });
+    componentDidUpdate (prevProps, prevState) {
+        const { entryActions, selectedTag } = this.props;
+        if (this.state.filter !== prevState.filter) {
+            switch (this.state.filter) {
+                case 'tag':
+                    entryActions.clearSavedEntries();
+                    entryActions.entryTagIterator(selectedTag, 0, LIMIT + 1);
+                    entryActions.getTagEntriesCount(selectedTag);
+                    break;
+                case 'bookmarks':
+                    entryActions.clearTagEntries();
+                    entryActions.getSavedEntriesList(LIMIT);
+                    break;
+                default:
+                    break;
+            }
         }
     }
-    _handleTabActivation = (tab) => {
+
+    componentWillUnmount () {
+        const { entryActions } = this.props;
+        entryActions.clearTagEntries();
+        entryActions.clearSavedEntries();
+    }
+
+    handleTabActivation = (tab) => {
         const { params } = this.props;
-        this.context.router.push(`/${params.username}/explore/${tab.props.value}`);
-    }
-    _handleFilterChange = (val) => {
+        this.context.router.push(`/${params.akashaId}/explore/${tab.props.value}`);
+    };
+
+    handleFilterChange = (val) => {
         if (val === this.state.filter) return;
         this.setState({
             filter: val
         });
     };
+
     render () {
+        const { loggedProfileData, streamTags, newestTags, selectedTag, entryActions, tagActions,
+            moreNewTags, tagEntries, params } = this.props;
+        const subscriptionsCount = parseInt(loggedProfileData.get('subscriptionsCount'), 10);
         return (
-          <div style={{ height: '100%' }}>
+          <div className={`${styles.root}`}>
             <div
-              style={{
-                  zIndex: 10,
-                  position: 'fixed',
-                  top: 0,
-                  left: 64,
-                  right: 0,
-                  height: 56
-              }}
+              className={`${styles.streamPageInner}`}
             >
               <StreamMenu
                 activeTab={this.state.filter}
-                onChange={this._handleFilterChange}
-                routeParams={this.props.params}
-                onActive={this._handleTabActivation}
+                selectedTag={selectedTag}
+                onChange={this.handleFilterChange}
+                onActive={this.handleTabActivation}
               />
             </div>
-            <div className="row" style={{ marginTop: 45, height: '100%' }}>
-              <div className="col-xs-12" style={{ height: '100%' }}>
-                <div className="row" style={{ height: '100%' }}>
-                  <div className="col-xs-8" style={{ height: '100%', position: 'relative' }}>
-                    <TheStream
-                      filter={this.state.filter}
-                      {...this.props}
-                    />
-                  </div>
-                  <div
-                    className="col-xs-4"
-                    style={{ backgroundColor: '#F5F5F5', minHeight: '100%' }}
+            <div className={`row ${styles.streamPageContent}`} >
+              <div className={`col-xs-12 ${styles.streamPageContentInner}`} >
+                <div className={styles.theStream}>
+                  <TheStream
+                    entryActions={entryActions}
+                    selectedTag={selectedTag}
+                    tagEntries={tagEntries}
+                    params={params}
                   >
-                    <StreamSidebar params={this.props.params} />
-                  </div>
+                    {this.props.children}
+                  </TheStream>
+                </div>
+                <div
+                  className={styles.streamSidebarWrapper}
+                  style={{ backgroundColor: '#F5F5F5' }}
+                >
+                  <StreamSidebar
+                    subscriptionsCount={subscriptionsCount}
+                    selectedTag={selectedTag}
+                    streamTags={streamTags}
+                    newestTags={newestTags}
+                    moreNewTags={moreNewTags}
+                    tagActions={tagActions}
+                  />
                 </div>
               </div>
             </div>
@@ -98,25 +128,41 @@ class StreamPage extends Component {
 }
 
 StreamPage.propTypes = {
-    entryActions: React.PropTypes.object,
-    children: React.PropTypes.node,
-    params: React.PropTypes.object
+    loggedProfile: PropTypes.shape(),
+    loggedProfileData: PropTypes.shape(),
+    streamTags: PropTypes.shape(),
+    newestTags: PropTypes.shape(),
+    moreNewTags: PropTypes.bool,
+    selectedTag: PropTypes.string,
+    tagEntries: PropTypes.shape(),
+    entryActions: PropTypes.shape(),
+    children: PropTypes.node,
+    params: PropTypes.shape()
 };
 
 StreamPage.contextTypes = {
     router: React.PropTypes.object
 };
-
-function mapStateToProps (state) {
+/* eslint-disable no-unused-vars */
+function mapStateToProps (state, ownProps) {
     return {
-        entryState: state.entryState,
-        profileState: state.profileState
+        loggedProfile: state.profileState.get('loggedProfile'),
+        loggedProfileData: state.profileState.get('profiles').find(prf =>
+            prf.get('profile') === state.profileState.getIn(['loggedProfile', 'profile'])),
+        streamTags: state.entryState.getIn(['entriesStream', 'tags']),
+        newestTags: state.tagState.get('newestTags'),
+        moreNewTags: state.tagState.get('moreNewTags'),
+        selectedTag: state.tagState.get('selectedTag'),
+        tagEntries: state.entryState.get('entries')
+            .filter(entry => entry.get('type') === 'tagEntry')
+            .map(entry => entry.get('content')),
     };
 }
 
 function mapDispatchToProps (dispatch) {
     return {
         entryActions: new EntryActions(dispatch),
+        tagActions: new TagActions(dispatch)
     };
 }
 

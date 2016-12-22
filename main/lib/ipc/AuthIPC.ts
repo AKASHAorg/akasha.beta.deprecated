@@ -1,12 +1,14 @@
 /// <reference path="../../typings/main.d.ts" />
 import ModuleEmitter from './event/ModuleEmitter';
+import { GethConnector } from '@akashaproject/geth-connector';
 import channels from '../channels';
-import WebContents = Electron.WebContents;
-import IpcMainEvent = Electron.IpcMainEvent;
 import { mainResponse } from './event/responses';
-import {module as userModule} from './modules/auth/index';
-import {constructed} from './contracts/index';
+import { module as userModule } from './modules/auth/index';
+import { constructed } from './contracts/index';
 import { post as POST } from 'request';
+import notifs from './modules/notifications/feed';
+import updater from '../../check-version';
+import WebContents = Electron.WebContents;
 
 const faucetToken = '8336abae5a97f017d2d0ef952a6a566d4bbed5cd22c7b524ae749673d5562b567af109371' +
     '81b7bdea73edd25512fdb948b3b016034bb01c0d95f8f9beb68c914';
@@ -34,7 +36,7 @@ class AuthIPC extends ModuleEmitter {
             (event: any, data: AuthLoginRequest) => {
                 userModule
                     .auth
-                    .login(data.account, data.password, data.rememberTime)
+                    .login(data.account, data.password, data.rememberTime, data.registering)
                     .then((response: any) => {
                         const response1: AuthLoginResponse = mainResponse(response);
                         return this.fireEvent(
@@ -51,10 +53,11 @@ class AuthIPC extends ModuleEmitter {
         this.registerListener(
             channels.server[this.MODULE_NAME].logout,
             (event: any, data: AuthLogoutRequest) => {
+                notifs.execute({ stop: true });
                 userModule
                     .auth
                     .logout();
-                const response: AuthLogoutResponse = mainResponse({done: true});
+                const response: AuthLogoutResponse = mainResponse({ done: true });
                 return this.fireEvent(
                     channels.client[this.MODULE_NAME].logout,
                     response,
@@ -73,15 +76,15 @@ class AuthIPC extends ModuleEmitter {
                     .auth
                     .generateKey(data.password)
                     .then((address: string) => {
-                        const response: AuthKeygenResponse = mainResponse({address});
-                       this.fireEvent(
-                           channels.client[this.MODULE_NAME].generateEthKey,
-                           response,
-                           event
-                       );
+                        const response: AuthKeygenResponse = mainResponse({ address });
+                        this.fireEvent(
+                            channels.client[this.MODULE_NAME].generateEthKey,
+                            response,
+                            event
+                        );
                     })
                     .catch((error: Error) => {
-                        const response: AuthKeygenResponse = mainResponse({error});
+                        const response: AuthKeygenResponse = mainResponse({ error });
                         this.fireEvent(
                             channels.client[this.MODULE_NAME].generateEthKey,
                             response,
@@ -102,11 +105,11 @@ class AuthIPC extends ModuleEmitter {
                     .instance
                     .registry
                     .getLocalProfiles()
-                    .then((list: {key: string, profile: string}[]) => {
+                    .then((list: { key: string, profile: string }[]) => {
                         response = mainResponse(list);
                     })
                     .catch((err: Error) => {
-                        response = mainResponse({error: {message: err.message}});
+                        response = mainResponse({ error: { message: err.message } });
                     })
                     .finally(() => {
                         this.fireEvent(
@@ -114,6 +117,14 @@ class AuthIPC extends ModuleEmitter {
                             response,
                             event
                         );
+                        constructed
+                            .instance
+                            .feed
+                            .contract
+                            .getAppState((err, state) => {
+                                const version = GethConnector.getInstance().web3.toUtf8(state[0]);
+                                updater.checkVersion(version, state[1], state[2]);
+                            });
                     });
             }
         );
@@ -126,11 +137,11 @@ class AuthIPC extends ModuleEmitter {
             (event: any, data: RequestEtherRequest) => {
                 POST({
                         url: 'https://138.68.78.152:1337/get/faucet',
-                        json: {address: data.address, token: faucetToken},
+                        json: { address: data.address, token: faucetToken },
                         agentOptions: { rejectUnauthorized: false }
                     },
-                    (error: Error, response: any, body: {tx: string}) => {
-                        const data = (error) ? {error} : body;
+                    (error: Error, response: any, body: { tx: string }) => {
+                        const data = (error) ? { error } : body;
                         const response1: RequestEtherResponse = mainResponse(data);
                         this.fireEvent(
                             channels.client[this.MODULE_NAME].requestEther,

@@ -1,8 +1,8 @@
 /* eslint strict: 0 */
+
 'use strict';
 
 const webpack = require('webpack');
-const webpackTargetElectronRenderer = require('webpack-target-electron-renderer');
 const baseConfig = require('./webpack.config.base');
 
 
@@ -19,6 +19,7 @@ config.entry = [
 
 config.output.publicPath = 'http://localhost:3000/dist/';
 
+config.externals.push('source-map-support');
 config.module.loaders.push({
     test: /^((?!\.module).)*\.css$/,
     loaders: [
@@ -35,16 +36,20 @@ config.module.loaders.push({
 
 
 config.plugins.push(
-  new webpack.HotModuleReplacementPlugin(),
-  new webpack.NoErrorsPlugin(),
-  new webpack.DefinePlugin({
-      '__DEV__': true,
-      'process.env': {
-          'NODE_ENV': JSON.stringify('development')
-      }
-  })
+    new webpack.BannerPlugin(
+        'require("source-map-support").install();',
+        { raw: true, entryOnly: false }
+    ),
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.NoErrorsPlugin(),
+    new webpack.DefinePlugin({
+        __DEV__: true,
+        'process.env': {
+            NODE_ENV: JSON.stringify('development')
+        }
+    })
 );
 
-config.target = webpackTargetElectronRenderer(config);
+config.target = 'electron-renderer';
 
 module.exports = config;

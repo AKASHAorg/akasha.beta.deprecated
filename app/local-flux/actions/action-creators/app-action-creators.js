@@ -32,15 +32,29 @@ export function hidePanel (panel) {
     };
 }
 
-export function showAuthDialog () {
+export function showAuthDialog (actionId) {
     return {
-        type: types.SHOW_AUTH_DIALOG
+        type: types.SHOW_AUTH_DIALOG,
+        actionId
     };
 }
 
 export function hideAuthDialog () {
     return {
         type: types.HIDE_AUTH_DIALOG
+    };
+}
+
+export function showPublishConfirmDialog (resource) {
+    return {
+        type: types.SHOW_PUBLISH_CONFIRM_DIALOG,
+        resource
+    };
+}
+
+export function hidePublishConfirmDialog () {
+    return {
+        type: types.HIDE_PUBLISH_CONFIRM_DIALOG
     };
 }
 
@@ -57,16 +71,16 @@ export function hideEntryModal () {
     };
 }
 
-export function showConfirmationDialog (entity) {
+export function showWeightConfirmDialog (resource) {
     return {
-        type: types.SHOW_CONFIRMATION_DIALOG,
-        entity
+        type: types.SHOW_WEIGHT_CONFIRM_DIALOG,
+        resource
     };
 }
 
-export function hideConfirmationDialog () {
+export function hideWeightConfirmDialog () {
     return {
-        type: types.HIDE_CONFIRMATION_DIALOG
+        type: types.HIDE_WEIGHT_CONFIRM_DIALOG
     };
 }
 
@@ -81,5 +95,59 @@ export function castUpvoteSuccess (data) {
     return {
         type: types.CAST_UPVOTE_SUCCESS,
         data
+    };
+}
+
+export function setTimestamp (timestamp) {
+    return {
+        type: types.SET_TIMESTAMP,
+        timestamp
+    };
+}
+
+export function showNotification (notification) {
+    return {
+        type: types.SHOW_NOTIFICATION,
+        notification
+    };
+}
+
+export function hideNotification (notification) {
+    return {
+        type: types.HIDE_NOTIFICATION,
+        notification
+    };
+}
+
+export function addPendingAction (data) {
+    return {
+        type: types.ADD_PENDING_ACTION,
+        data
+    };
+}
+
+export function updatePendingAction (data) {
+    return {
+        type: types.UPDATE_PENDING_ACTION,
+        data
+    };
+}
+
+export function deletePendingAction (actionId) {
+    return {
+        type: types.DELETE_PENDING_ACTION,
+        actionId
+    };
+}
+
+export function showTerms () {
+    return {
+        type: types.SHOW_TERMS
+    };
+}
+
+export function hideTerms () {
+    return {
+        type: types.HIDE_TERMS
     };
 }

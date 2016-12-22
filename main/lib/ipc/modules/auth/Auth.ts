@@ -1,6 +1,7 @@
 import { createCipher, createDecipher, randomBytes, Decipher, Cipher } from 'crypto';
 import { GethConnector, gethHelper } from '@akashaproject/geth-connector';
-import { fromRpcSig, ecrecover, toBuffer, bufferToHex, pubToAddress } from 'ethereumjs-util';
+import { fromRpcSig, ecrecover, toBuffer, bufferToHex, pubToAddress, unpad } from 'ethereumjs-util';
+import { constructed as contracts } from '../../contracts/index';
 import * as Promise from 'bluebird';
 
 const randomBytesAsync = Promise.promisify(randomBytes);
@@ -9,6 +10,7 @@ export default class Auth {
     private _decipher: Decipher;
     private _cipher: Cipher;
     private _session: {address: string, expiration: Date, vrs: {v: string, r: string, s: string}};
+    private _task;
 
     /**
      *
@@ -64,25 +66,35 @@ export default class Auth {
      * @private
      */
     private _read(token: any) {
-        if (!this.isLogged(token)) {
-            throw new Error('Token is not valid');
-        }
+        // until geth will handle properly eth_sign ... "\x19Ethereum Signed Message:\n"  + len(message)
+        /*        if (!this.isLogged(token)) {
+         throw new Error('Token is not valid');
+         }*/
         const result = Buffer.concat([this._decipher.update(this._encrypted), this._decipher.final()]);
         this._encrypt(result);
         return result;
     }
+
 
     /**
      *
      * @param acc
      * @param pass
      * @param timer
-     * @returns {Bluebird<U>}
+     * @param registering
+     * @returns {any}
      */
-    public login(acc: string, pass: any | Uint8Array, timer: number = 0) {
+    public login(acc: string, pass: any | Uint8Array, timer: number = 0, registering = false) {
 
-        return gethHelper
-            .hasKey(acc)
+        return contracts.instance
+            .registry
+            .getByAddress(acc)
+            .then((address: string) => {
+                if (!unpad(address) && !registering) {
+                    throw new Error(`eth key: ${acc} has no profile attached`);
+                }
+                return gethHelper.hasKey(acc);
+            })
             .then((found) => {
                 if (!found) {
                     throw new Error(`local key for ${acc} not found`);
@@ -119,7 +131,7 @@ export default class Auth {
                             address: acc,
                             vrs: fromRpcSig(signedString)
                         };
-                        setTimeout(() => this._flushSession(), 1000 * 60 * timer);
+                        this._task = setTimeout(() => this._flushSession(), 1000 * 60 * timer);
                         return { token, expiration, account: acc };
                     });
             })
@@ -131,10 +143,10 @@ export default class Auth {
 
     public logout() {
         if (this._session) {
-            GethConnector.getInstance().web3.eth.defaultAccount = '';
             GethConnector.getInstance().web3.personal.lockAccountAsync(this._session.address);
         }
         this._flushSession();
+
     }
 
     /**
@@ -157,6 +169,7 @@ export default class Auth {
         try {
             pubKey = bufferToHex(ecrecover(toBuffer(token), v, r, s));
             ethAddr = pubToAddress(pubKey);
+            console.log(bufferToHex(ethAddr), this._session.address);
             return bufferToHex(ethAddr) === this._session.address;
         } catch (err) {
             return false;
@@ -173,6 +186,8 @@ export default class Auth {
         this._encrypted = null;
         this._cipher = null;
         this._decipher = null;
+        clearTimeout(this._task);
+        console.log('flushed session');
     }
 
     /**

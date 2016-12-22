@@ -1,30 +1,32 @@
 import Dexie from 'dexie';
-import { tempProfileSchema } from './schema/temp-profile';
-import debug from 'debug';
-const dbg = debug('App:profileDB');
+import tempProfileSchema from './schema/temp-profile';
+import loggedProfileSchema from './schema/logged-profile';
 
-const profileDB = new Dexie('profiles');
+const dbName = 'profiles-akasha-alpha-' + process.env.NODE_ENV;
+const profileDB = new Dexie(dbName);
 profileDB.version(1).stores({
-    localProfiles: '&address, userName',
-    loggedProfile: '&address, userName',
-    tempProfile: 'userName, currentStatus'
+    localProfiles: '&address, akashaId',
+    loggedProfile: '&account, profile, akashaId',
+    tempProfile: '&akashaId, currentStatus'
 });
+
+//
+// Ugrading to a new version
+//
+// profileDB.version(2).stores({
+//     localProfiles: '&account, createdAt',
+//     loggedProfile: '&account',
+//     tempProfile: '&akashaId, currentStatus'
+// }).upgrade((transaction) => {
+//     transaction.localProfiles.toCollection().modify((profile) => {
+//         profile.account = profile.address;
+//         profile.createdAt = new Date();
+//         delete profile.address;
+//         delete profile.akashaId;
+//     });
+// });
 
 profileDB.tempProfile.defineClass(tempProfileSchema);
-
-profileDB.tempProfile.hook('creating', (primaryKey, obj) => {
-    dbg('creating tempProfile ', obj);
-});
-profileDB.tempProfile.hook('creating', (primaryKey, obj) => {
-    dbg('creating tempProfile ', obj);
-});
-profileDB.localProfiles.hook('creating', (primaryKey, obj) => {
-    dbg('creating localProfiles ', obj);
-});
-profileDB.loggedProfile.hook('creating', (primaryKey, obj) => {
-    dbg('creating loggedProfile ', obj);
-});
-
-profileDB.open();
+profileDB.tempProfile.defineClass(loggedProfileSchema);
 
 export default profileDB;

@@ -1,33 +1,40 @@
 import React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
-import { ReduxAsyncConnect } from 'redux-connect';
-import { IntlProvider } from 'react-intl';
+import { IntlProvider, addLocaleData } from 'react-intl';
 import { Router, hashHistory } from 'react-router';
 import { syncHistoryWithStore } from 'react-router-redux';
-
+import en from 'react-intl/locale-data/en';
 import injectTapEventPlugin from 'react-tap-event-plugin';
+import ReactPerf from 'react-addons-perf';
 import routes from './routes';
 import configureStore from './local-flux/store/configureStore';
-import { ruMessages } from './locale-data/ru';
-import debug from 'debug';
-import ReactPerf from 'react-addons-perf';
-import Promise from 'bluebird';
+// import { ruMessages } from './locale-data/ru';
 
-window.Promise = Promise;
-window.appDebug = debug.enable('App:*');
-// temporary
-
+addLocaleData([...en]);
 const store = configureStore();
 const history = syncHistoryWithStore(hashHistory, store);
 
-global.Perf = ReactPerf;
+window.Perf = ReactPerf;
+
+function hashLinkScroll () {
+    const { hash } = window.location;
+    if (hash.split('#')[2]) {
+        setTimeout(() => {
+            const id = hash.split('#')[2];
+            const element = document.getElementById(id);
+            if (element) {
+                element.scrollIntoView();
+            }
+        }, 300);
+    }
+}
 
 injectTapEventPlugin();
 render(
   <Provider store={store} >
     <IntlProvider locale="en" >
-      <Router history={history} render={(props) => <ReduxAsyncConnect {...props} />} >
+      <Router history={history} onUpdate={hashLinkScroll} >
         {routes}
       </Router>
     </IntlProvider>

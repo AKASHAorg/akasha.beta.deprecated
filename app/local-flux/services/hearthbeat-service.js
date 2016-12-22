@@ -1,8 +1,6 @@
-import { ipcRenderer } from 'electron';
-
 class HearthbeatService {
-    startHearthBeat = () => {}
-    getHearthBeat = () => {}
-    removeHearthBeat = () => {}
+    startHearthBeat = () => {};
+    getHearthBeat = () => {};
+    removeHearthBeat = () => {};
 }
 export { HearthbeatService };
