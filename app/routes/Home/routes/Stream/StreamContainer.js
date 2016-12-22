@@ -11,18 +11,20 @@ const LIMIT = 5;
 class StreamPage extends Component {
     constructor (props) {
         super(props);
-
+        const { params } = props;
         this.state = {
-            filter: 'tag'
+            filter: params.filter
         };
     }
 
     componentWillMount () {
-        const { entryActions, loggedProfile, selectedTag } = this.props;
+        const { entryActions, loggedProfile, selectedTag, params } = this.props;
         entryActions.getEntriesStream(loggedProfile.get('akashaId'));
-        if (selectedTag) {
+        if (selectedTag && params.filter === 'tag') {
             entryActions.entryTagIterator(selectedTag, 0, LIMIT + 1);
             entryActions.getTagEntriesCount(selectedTag);
+        } else if (params.filter === 'bookmarks') {
+            entryActions.getSavedEntriesList(LIMIT);
         }
     }
 
