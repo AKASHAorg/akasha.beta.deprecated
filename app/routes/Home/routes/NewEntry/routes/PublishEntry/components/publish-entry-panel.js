@@ -85,7 +85,7 @@ class PublishPanel extends React.Component {
             draft: this.state.draft.mergeIn(['content', 'licence'], selectedLicence),
             isLicencingOpen: false
         }, () => {
-            this._handleDraftUpdate('content.licence', selectedLicence);
+            this._handleDraftUpdate({ content: {licence: selectedLicence}});
         });
     };
     _publishEntry = () => {
@@ -154,7 +154,7 @@ class PublishPanel extends React.Component {
             draft: this.state.draft.setIn(['tags'], newTags)
         }, () => {
             this._checkExistingTags(newTags);
-            this._handleDraftUpdate('tags', this.state.draft.get('tags').toJS());
+            this._handleDraftUpdate({tags: this.state.draft.get('tags').toJS()});
         });
     };
     _handleTagDelete = (index) => {
@@ -165,14 +165,14 @@ class PublishPanel extends React.Component {
             existingTags: this.state.existingTags.filter(tg => tg !== tag),
             validationErrors: this.state.validationErrors.filter(err => err.field !== 'tags')
         }, () => {
-            this._handleDraftUpdate('tags', this.state.draft.get('tags').toJS());
+            this._handleDraftUpdate({tags: this.state.draft.get('tags').toJS()});
         });
     };
-    _handleDraftUpdate = (field, value) => {
+    _handleDraftUpdate = (obj) => {
         const { draftActions, params } = this.props;
         draftActions.updateDraft({
             id: parseInt(params.draftId, 10),
-            [field]: value
+            ...obj
         });
     };
     _checkExistingTags = (tags) => {
@@ -308,7 +308,7 @@ class PublishPanel extends React.Component {
                     fullWidth
                     value={this.state.draft.content.title || ''}
                     onChange={this._handleTitleChange}
-                    onBlur={ev => this._handleDraftUpdate('content.title', ev.target.value)}
+                    onBlur={ev => this._handleDraftUpdate({ content: { title: ev.target.value } })}
                     errorText={
                         validationErrors.filter(ve => ve.field === 'title')
                               .map(err => `${err.error}`)[0]
@@ -352,7 +352,7 @@ class PublishPanel extends React.Component {
                     fullWidth
                     value={this.state.draft.content.excerpt}
                     onChange={this._handleExcerptChange}
-                    onBlur={ev => this._handleDraftUpdate('content.excerpt', ev.target.value)}
+                    onBlur={ev => this._handleDraftUpdate({ content: { excerpt: ev.target.value } })}
                     errorText={
                         validationErrors.filter(ve => ve.field === 'excerpt')
                               .map(err => `${err.error}`)[0]

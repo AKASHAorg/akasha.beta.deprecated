@@ -102,7 +102,7 @@ class AddEntryPage extends Component {
     // published draft structure
     /**
      * {
-     *   content: { title, featuredImage, excerpt, licence, draft, wordCount }
+     *   content: { title, excerpt, licence, draft, wordCount }
      *   tags: []
      * }
      */
@@ -120,12 +120,11 @@ class AddEntryPage extends Component {
         if (params.draftId !== 'new') {
             const draftId = parseInt(params.draftId, 10);
             const currentDraft = this._findCurrentDraft(drafts);
-            const { tags = [], licence = defaultLicence, featuredImage } = currentDraft;
+            const { tags = [], licence = defaultLicence } = currentDraft;
             return draftActions.updateDraft({
                 id: draftId,
                 content: {
                     title,
-                    featuredImage,
                     excerpt,
                     licence,
                     draft,

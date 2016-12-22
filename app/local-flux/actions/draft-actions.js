@@ -87,10 +87,6 @@ class DraftActions {
         this.draftService.deleteDraft({
             draftId,
             onSuccess: deletedId => {
-                this.appActions.showNotification({
-                    id: 'draftDeletedSuccessfully',
-                    duration: 2000
-                });
                 this.dispatch(draftActionCreators.deleteDraftSuccess(deletedId));
             },
             onError: error => {
