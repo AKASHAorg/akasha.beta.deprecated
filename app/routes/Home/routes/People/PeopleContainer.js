@@ -10,7 +10,17 @@ import { isInViewport } from 'utils/domUtils';
 
 const LIMIT = 13;
 const RECOMMENDED_PEOPLE = [
-    { profile: '0xf01d0a16c63646aae5977726770c201a1891efb5' } // update this
+    { profile: '0xe56b1c9536d8ee19e20e4745a2a4ab0a3467106b' },
+    { profile: '0x11256ddf50ef001562d510cc2f86eaa8d07dc6de' },
+    { profile: '0x53f5fbc58d0a40d9ec827430ab5465c4095b3d56' },
+    { profile: '0xd51cd82f2ad128996961bc4249aaa8cec4d54717' },
+    { profile: '0xdaff874ce41ecf1f81eb3bd218ba42e81e6a3091' },
+    { profile: '0x8493ca5bf45c5d152a61cba6b6cdc99b2ca7381b' },
+    { profile: '0xea23be4250364fa0a63c6f795fea2d6dffe3ae17' },
+    { profile: '0x339a2b70041d83227e9a8bc6a65d59a3817b70eb' },
+    { profile: '0x16f0db59540d2878e58d318814c088bcce8de39b' },
+    { profile: '0xa8e3c6850df5915a3bc94149e8fd79c87c96fbb6' },
+    { profile: '0xf01d0a16c63646aae5977726770c201a1891efb5' }
 ];
 
 class PeopleContainer extends Component {
