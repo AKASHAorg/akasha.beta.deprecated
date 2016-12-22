@@ -51,6 +51,7 @@ class Comment extends React.Component {
         const authorName = `${profile.get('firstName')} ${profile.get('lastName')}`;
         const authorAvatar = (profile.get('avatar') === `${profile.get('baseUrl')}/`) ?
             null : profile.get('avatar');
+        const authorProfilePath = `profile/${profile.get('profile')}`;
         const isEntryAuthor = entryAuthorProfile === profile.get('profile');
         const viewerIsAuthor = loggedProfile.get('profile') === profile.get('profile');
         let commentAuthorNameColor = palette.commentAuthorColor;
@@ -92,7 +93,7 @@ class Comment extends React.Component {
                           paddingRight: 4,
                           color: commentAuthorNameColor
                       }}
-                      onClick={onAuthorNameClick}
+                      onClick={() => { onAuthorNameClick(authorProfilePath); }}
                       className={`${viewerIsAuthor && style.viewer_is_author}
                         ${isEntryAuthor && style.is_entry_author} ${style.author_name}`}
                     />
@@ -104,7 +105,7 @@ class Comment extends React.Component {
                       style={{ display: 'inline-block', cursor: 'pointer' }}
                       userInitials={authorName.match(/\b\w/g).reduce((prev, current) => prev + current, '')}
                       radius={40}
-                      onClick={onAuthorNameClick}
+                      onClick={() => { onAuthorNameClick(authorProfilePath); }}
                       userInitialsStyle={{ fontSize: 20, textTransform: 'uppercase', fontWeight: 500 }}
                     />
                   }
