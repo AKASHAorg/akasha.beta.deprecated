@@ -41,7 +41,7 @@ const initialState = fromJS({
 });
 
 const createDraftRecord = (draftObj) => {
-    const { content, tags, id, akashaId, tx, created_at, updated_at } = draftObj;
+    const { content = {}, tags, id, akashaId, tx, created_at, updated_at } = draftObj;
     const { title, excerpt, licence, draft, wordCount, featuredImage } = content;
     const createdDraft = new Draft({
         id,
@@ -129,8 +129,6 @@ const draftState = createReducer(initialState, {
             errors: state.get('errors').push(new ErrorRecord(error))
         }),
 
-
-
     [types.GET_DRAFT_BY_ID_SUCCESS]: (state, { draft }) => {
         if (!draft) return state;
         const draftIndex = state.get('drafts').findIndex(drft => drft.id === draft.id);
@@ -146,16 +144,9 @@ const draftState = createReducer(initialState, {
         const draftIndex = state.get('drafts').findIndex(drft =>
             drft.id === draft.id
         );
-        let currentDraft;
-        Object.keys(draft).forEach((key) => {
-            if (key.indexOf('.') > -1) {
-                currentDraft = state.getIn(['drafts', draftIndex]).mergeIn(key.split('.'), draft[key]);
-            } else {
-                currentDraft = state.getIn(['drafts', draftIndex]).merge({ [key]: draft[key] });
-            }
-        });
+        const updatedDraft = state.getIn(['drafts', draftIndex]).mergeDeep(draft);
         return state.merge({
-            drafts: state.get('drafts').setIn([draftIndex], createDraftRecord(currentDraft.toJS())),
+            drafts: state.get('drafts').setIn([draftIndex], createDraftRecord(updatedDraft.toJS())),
             flags: state.get('flags').merge(flags)
         });
     },
