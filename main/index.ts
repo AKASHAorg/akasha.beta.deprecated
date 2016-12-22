@@ -65,6 +65,7 @@ export function bootstrapApp() {
                 nodeIntegration: false,
                 preload: resolve(__dirname, 'preloader.js')
             }
+
         });
 
         if (process.env.HOT) {
