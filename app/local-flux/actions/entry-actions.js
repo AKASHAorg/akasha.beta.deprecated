@@ -331,27 +331,27 @@ class EntryActions {
         });
     };
 
-    upvote = (entryId, weight, value, gas) =>
+    upvote = (entryId, entryTitle, weight, value, gas) =>
         this.dispatch((dispatch, getState) => {
             const token = getState().profileState.getIn(['loggedProfile', 'token']);
             dispatch(entryActionCreators.upvote({ votePending: { entryId, value: true } }));
             this.entryService.upvote({
                 token,
                 entryId,
+                extra: { entryTitle },
                 weight,
                 value,
                 gas,
                 onSuccess: (data) => {
                     const entry = getState().entryState.get('entries')
                         .find(entry => entry.get('entryId') === data.entryId);
-                    const entryTitle = entry ?
-                        entry.getIn(['content', 'content', 'title']) :
-                        getState().entryState.get('fullEntry').content.title;
+                    const entryTitle = data.extra.entryTitle;
                     this.transactionActions.listenForMinedTx();
                     this.transactionActions.addToQueue([{
                         tx: data.tx,
                         type: 'upvote',
-                        entryId: data.entryId
+                        entryId: data.entryId,
+                        entryTitle
                     }]);
                     this.appActions.showNotification({
                         id: 'upvotingEntry',
@@ -366,27 +366,27 @@ class EntryActions {
             });
         });
 
-    downvote = (entryId, weight, value, gas) =>
+    downvote = (entryId, entryTitle, weight, value, gas) =>
         this.dispatch((dispatch, getState) => {
             const token = getState().profileState.getIn(['loggedProfile', 'token']);
             dispatch(entryActionCreators.downvote({ votePending: { entryId, value: true } }));
             this.entryService.downvote({
                 token,
                 entryId,
+                extra: { entryTitle },
                 weight,
                 value,
                 gas,
                 onSuccess: (data) => {
                     const entry = getState().entryState.get('entries')
                         .find(entry => entry.get('entryId') === data.entryId);
-                    const entryTitle = entry ?
-                        entry.getIn(['content', 'content', 'title']) :
-                        getState().entryState.get('fullEntry').content.title;
+                    const entryTitle = data.extra.entryTitle;
                     this.transactionActions.listenForMinedTx();
                     this.transactionActions.addToQueue([{
                         tx: data.tx,
                         type: 'downvote',
-                        entryId: data.entryId
+                        entryId: data.entryId,
+                        entryTitle
                     }]);
                     this.appActions.showNotification({
                         id: 'downvotingEntry',
@@ -401,13 +401,10 @@ class EntryActions {
             });
         });
 
-    upvoteSuccess = (entryId, minedSuccessfully) =>
+    upvoteSuccess = (entryId, entryTitle, minedSuccessfully) =>
         this.dispatch((dispatch, getState) => {
             const entry = getState().entryState.get('entries')
                 .find(entry => entry.get('entryId') === entryId);
-            const entryTitle = entry ?
-                entry.getIn(['content', 'content', 'title']) :
-                getState().entryState.get('fullEntry').content.title;
             dispatch(entryActionCreators.upvoteSuccess({
                 votePending: { entryId, value: false }
             }));
@@ -417,13 +414,10 @@ class EntryActions {
             });
         });
 
-    downvoteSuccess = (entryId, minedSuccessfully) =>
+    downvoteSuccess = (entryId, entryTitle, minedSuccessfully) =>
         this.dispatch((dispatch, getState) => {
             const entry = getState().entryState.get('entries')
                 .find(entry => entry.get('entryId') === entryId);
-            const entryTitle = entry ?
-                entry.getIn(['content', 'content', 'title']) :
-                getState().entryState.get('fullEntry').content.title;
             dispatch(entryActionCreators.downvoteSuccess({
                 votePending: { entryId, value: false }
             }));
