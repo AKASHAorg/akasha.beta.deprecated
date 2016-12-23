@@ -23,6 +23,7 @@ class VoteRunner extends Component {
                         }));
                         entryActions.upvote(
                             action.getIn(['payload', 'entryId']),
+                            action.getIn(['payload', 'entryTitle']),
                             action.getIn(['payload', 'weight']),
                             action.getIn(['payload', 'value']),
                             action.get('gas')
@@ -34,6 +35,7 @@ class VoteRunner extends Component {
                         }));
                         entryActions.downvote(
                             action.getIn(['payload', 'entryId']),
+                            action.getIn(['payload', 'entryTitle']),
                             action.getIn(['payload', 'weight']),
                             action.getIn(['payload', 'value']),
                             action.get('gas')
@@ -65,7 +67,7 @@ class VoteRunner extends Component {
             const entry = entries.find(entry => entry.get('entryId') === tx.entryId);
             const publisherAkashaId = entry ?
                 entry.getIn(['entryEth', 'publisher', 'akashaId']) :
-                fullEntry.entryEth.publisher.akashaId;
+                fullEntry ? fullEntry.entryEth.publisher.akashaId : null;
             const loggedAkashaId = loggedProfile.get('akashaId');
             const mined = minedTx.find(mined => mined.tx === tx.tx);
             let minedSuccessfully;
@@ -80,7 +82,7 @@ class VoteRunner extends Component {
             if (typeof entryActions[`${tx.type}Success`] !== 'function') {
                 return console.error(`There is no action "${tx.type}Success" in entryActions!! Please implement "${tx.type}Success" action!!`);
             }
-            entryActions[`${tx.type}Success`](tx.entryId, minedSuccessfully);
+            entryActions[`${tx.type}Success`](tx.entryId, tx.entryTitle, minedSuccessfully);
             entryActions.getScore(tx.entryId);
             entryActions.getVoteOf(loggedProfile.get('akashaId'), tx.entryId);
             if (publisherAkashaId === loggedAkashaId) {
