@@ -8,6 +8,12 @@ import PendingIcon from 'material-ui/svg-icons/action/schedule';
 import { validateTag } from 'utils/dataModule';
 import { formMessages } from 'locale-data/messages';
 
+const BACKSPACE = 'Backspace';
+const COMMA = ',';
+const SEMICOLON = ';';
+const SPACE = ' ';
+const TAB = 'Tab';
+
 class TagsField extends React.Component {
     constructor (props) {
         super(props);
@@ -67,6 +73,20 @@ class TagsField extends React.Component {
         }
     };
 
+    _handleKeyDown = (ev) => {
+        if (ev.key === BACKSPACE && this.state.tagString.length === 0) {
+            this.props.onDelete(this.props.tags.length - 1);
+        }
+        if (ev.key === TAB && this.state.tagString.length > 0) {
+            ev.preventDefault();
+            this._createTag();
+            this.setState({
+                tagString: '',
+                dataSource: []
+            });
+        }
+    }
+
     _handleDeleteTag = (ev, index) => {
         this.props.onDelete(index);
     };
@@ -102,7 +122,7 @@ class TagsField extends React.Component {
         this.props.onTagRegisterRequest(tag);
     };
     _handleTagDetect = (ev) => {
-        const MODIFIER_KEYS = ['Enter', ' ', ',', ';'];
+        const MODIFIER_KEYS = [SPACE, COMMA, SEMICOLON];
         for (let i = 0; i < MODIFIER_KEYS.length; i += 1) {
             if (ev.key === MODIFIER_KEYS[i]) {
                 ev.preventDefault();
@@ -112,17 +132,6 @@ class TagsField extends React.Component {
                     dataSource: []
                 });
             }
-        }
-    };
-    _handleInputBlur = (ev) => {
-        const value = ev.target.value;
-        if (value && value.length > 0) {
-            this.setState({
-                tagString: ''
-            });
-        }
-        if (this.props.onBlur) {
-            this.props.onBlur(ev);
         }
     };
     _handleSelect = (value) => {
@@ -262,6 +271,7 @@ class TagsField extends React.Component {
                       'add a tag (paid)'
                   }
                   onKeyPress={this._handleTagDetect}
+                  onKeyDown={this._handleKeyDown}
                   disabled={currentTags.length >= 10}
                   ref={r => this._tagsInput = r}
                 />

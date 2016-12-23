@@ -543,6 +543,7 @@ interface EntryUpvoteRequest extends AuthRequest {
     entryId: string; // entry address
     weight: number;
     value: number;
+    extra: any;
 }
 interface EntryUpvoteResponse extends MainResponse {
     data: {

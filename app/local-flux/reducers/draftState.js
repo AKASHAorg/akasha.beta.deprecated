@@ -144,7 +144,10 @@ const draftState = createReducer(initialState, {
         const draftIndex = state.get('drafts').findIndex(drft =>
             drft.id === draft.id
         );
-        const updatedDraft = state.getIn(['drafts', draftIndex]).mergeDeep(draft);
+        let updatedDraft = state.getIn(['drafts', draftIndex]).mergeDeep(draft);
+        if (draft.tags) {
+            updatedDraft = updatedDraft.set('tags', draft.tags);
+        }
         return state.merge({
             drafts: state.get('drafts').setIn([draftIndex], createDraftRecord(updatedDraft.toJS())),
             flags: state.get('flags').merge(flags)
