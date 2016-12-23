@@ -8,7 +8,7 @@ const execute = Promise.coroutine(function* (data) {
     }
     const txData = yield index_2.constructed.instance.votes.downvote(data.entryId, data.weight, data.value, data.gas);
     const tx = yield index_1.module.auth.signData(txData, data.token);
-    return { tx, entryId: data.entryId };
+    return { tx, entryId: data.entryId, extra: data.extra };
 });
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = { execute, name: 'downvote' };
