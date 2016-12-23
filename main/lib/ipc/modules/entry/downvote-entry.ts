@@ -15,7 +15,7 @@ const execute = Promise.coroutine(function*(data: EntryUpvoteRequest) {
     }
     const txData = yield contracts.instance.votes.downvote(data.entryId, data.weight, data.value, data.gas);
     const tx = yield userModule.auth.signData(txData, data.token);
-    return { tx, entryId: data.entryId };
+    return { tx, entryId: data.entryId, extra: data.extra };
 });
 
 export default { execute, name: 'downvote' };
