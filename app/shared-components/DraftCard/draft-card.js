@@ -14,7 +14,7 @@ class DraftCard extends Component {
           <Card className="start-xs has_hidden_action" style={{ margin: '5px 5px 16px 5px' }}>
             <CardHeader
               title={headerTitle}
-              subtitle={`${lastUpdated} - ${wordCount} words`}
+              subtitle={`${lastUpdated} - ${wordCount || 0} words`}
               titleStyle={{ fontSize: '16px', fontWeight: '600' }}
               subtitleStyle={{ fontSize: '12px' }}
               style={{ paddingBottom: '4px', cursor: 'default', userSelect: 'none' }}
@@ -73,8 +73,8 @@ DraftCard.propTypes = {
     headerTitle: PropTypes.string.isRequired,
     lastUpdated: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
-    excerpt: PropTypes.string.isRequired,
-    wordCount: PropTypes.number.isRequired,
+    excerpt: PropTypes.string,
+    wordCount: PropTypes.number,
     onDelete: PropTypes.func.isRequired,
     onTitleClick: PropTypes.func.isRequired,
     tags: PropTypes.shape()
