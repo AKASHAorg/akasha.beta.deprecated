@@ -18,4 +18,7 @@ function injectApi() {
     return AkashaApi;
 }
 window['Channel'] = injectApi();
+window['eval'] = global.eval = function () {
+    throw new Error("eval disabled.");
+};
 //# sourceMappingURL=preloader.js.map
