@@ -135,12 +135,12 @@ class TagActions {
     saveTag = tagName =>
         this.dispatch((dispatch, getState) => {
             const akashaId = getState().profileState.getIn(['loggedProfile', 'akashaId']);
-            this.dispatch(tagActionCreators.saveTag({ savingTag: true }));
+            this.dispatch(tagActionCreators.saveTag(tagName, { savingTag: true }));
             this.tagService.saveTag({
                 akashaId,
                 tagName,
                 onSuccess: data =>
-                    this.dispatch(tagActionCreators.saveTagSuccess(data, { savingTag: false })),
+                    this.dispatch(tagActionCreators.saveTagSuccess({ savingTag: false })),
                 onError: error =>
                     this.dispatch(tagActionCreators.saveTagError(error, { savingTag: false }))
             });
