@@ -66,6 +66,11 @@ const entryMessages = defineMessages({
         description: 'placeholder for writing a comment',
         defaultMessage: 'Write a comment'
     },
+    loadingComments: {
+        id: 'app.entry.loadingComments',
+        description: 'message when loading comments for the first time',
+        defaultMessage: 'Loading comments'
+    },
     loadingMoreComments: {
         id: 'app.entry.loadingMoreComments',
         description: 'message for loading more comments',

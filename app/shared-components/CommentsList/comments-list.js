@@ -57,7 +57,8 @@ class CommentsList extends Component {
         }
     }
     render () {
-        const { comments, publishingComments, newlyCreatedComments, intl } = this.props;
+        const { comments, publishingComments, newlyCreatedComments, intl,
+            fetchingComments } = this.props;
         const { loggedProfile, entryAuthorProfile } = this.props;
         return (
           <div>
@@ -92,7 +93,12 @@ class CommentsList extends Component {
                 onAuthorNameClick={this._handleNavigation}
               />
             )}
-            {this.state.loadMoreReq &&
+            {(!this.state.loadMoreReq && fetchingComments) &&
+              <div style={{ padding: '16px 0', textAlign: 'center' }}>
+                {`${intl.formatMessage(entryMessages.loadingComments)}...`}
+              </div>
+            }
+            {(this.state.loadMoreReq && fetchingComments) &&
               <div style={{ padding: '16px 0', textAlign: 'center' }}>
                 {`${intl.formatMessage(entryMessages.loadingMoreComments)}...`}
               </div>
@@ -110,6 +116,7 @@ CommentsList.propTypes = {
     onLoadMoreRequest: React.PropTypes.func,
     commentsCount: React.PropTypes.number,
     fetchLimit: React.PropTypes.number,
+    fetchingComments: React.PropTypes.bool,
     entryId: React.PropTypes.number,
     intl: React.PropTypes.shape()
 };

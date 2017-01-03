@@ -41,7 +41,7 @@ class EntryPage extends Component {
 
         if (params.entryId !== nextProps.params.entryId && entry.get('entryId') !== nextProps.params.entryId) {
             entryActions.getFullEntry(nextProps.params.entryId);
-            commentsActions.unloadComments(parseInt(params.entryId, 10))
+            commentsActions.unloadComments(parseInt(params.entryId, 10));
             this.fetchComments(nextProps.params.entryId);
         }
         if (nextProps.entry && !entry) {
@@ -65,7 +65,7 @@ class EntryPage extends Component {
     }
     fetchComments = (entryId, startId = 0) => {
         const { fetchingComments, commentsActions } = this.props;
-        // if it`s not already fetching comments, return
+        // if it`s already fetching comments, return
         if (fetchingComments) {
             return;
         }
@@ -217,7 +217,7 @@ class EntryPage extends Component {
     render () {
         const { blockNr, canClaimPending, claimPending, comments, entry,
             fetchingEntryBalance, fetchingFullEntry, intl, licences, loggedProfile, profiles,
-            savedEntries, votePending } = this.props;
+            savedEntries, votePending, fetchingComments } = this.props;
         const { publisherTitleShadow } = this.state;
         if (!entry || fetchingFullEntry) {
             return <DataLoader flag size={80} style={{ paddingTop: '120px' }} />;
@@ -326,6 +326,7 @@ class EntryPage extends Component {
                             onLoadMoreRequest={this.fetchComments}
                             onCommenterClick={this._navigateToProfile}
                             entryAuthorProfile={entry.getIn(['entryEth', 'publisher']).profile}
+                            fetchingComments={fetchingComments}
                           />
                         </div>
                       </div>

@@ -4,7 +4,6 @@ import ErrorIcon from 'material-ui/svg-icons/alert/error';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { PanelContainer } from 'shared-components';
 import { generalMessages, setupMessages, profileMessages } from 'locale-data/messages';
-import { is } from 'immutable';
 import PanelHeader from '../../../../components/panel-header';
 
 class CreateProfileStatus extends Component {
@@ -139,9 +138,9 @@ class CreateProfileStatus extends Component {
         transactionActions.listenForMinedTx();
         transactionActions.addToQueue([{ tx, type }]);
     };
-    finishProfilePublishing = (minedTransactions, publishMinedIndex) => {
-        return this.context.router.push('/authenticate/new-profile-complete');
-    };
+    finishProfilePublishing = () =>
+        this.context.router.push('/authenticate/new-profile-complete');
+
     _checkTxIndex = (transactions, transaction) =>
         transactions.findIndex(trans => trans.tx === transaction);
 
