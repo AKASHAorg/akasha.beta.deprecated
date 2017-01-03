@@ -149,17 +149,17 @@ export function getSelectedTagError (error, flags) {
     };
 }
 
-export function saveTag (flags) {
+export function saveTag (tag, flags) {
     return {
         type: types.SAVE_TAG,
+        tag,
         flags
     };
 }
 
-export function saveTagSuccess (data, flags) {
+export function saveTagSuccess (flags) {
     return {
         type: types.SAVE_TAG_SUCCESS,
-        data,
         flags
     };
 }

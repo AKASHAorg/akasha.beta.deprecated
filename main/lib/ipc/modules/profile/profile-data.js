@@ -9,8 +9,14 @@ const entry_count_profile_1 = require('../entry/entry-count-profile');
 const subs_count_1 = require('../tags/subs-count');
 const execute = Promise.coroutine(function* (data) {
     const ipfsHash = yield index_1.constructed.instance.profile.getIpfs(data.profile);
-    const profile = (data.full) ? yield ipfs_1.resolveProfile(ipfsHash, data.resolveImages) :
-        yield ipfs_1.getShortProfile(ipfsHash, data.resolveImages);
+    const profile = (data.full) ?
+        yield ipfs_1.resolveProfile(ipfsHash, data.resolveImages)
+            .timeout(settings_1.FULL_WAIT_TIME)
+            .then((d) => d).catch((e) => null)
+        :
+            yield ipfs_1.getShortProfile(ipfsHash, data.resolveImages)
+                .timeout(settings_1.SHORT_WAIT_TIME)
+                .then((d) => d).catch((e) => null);
     const akashaId = yield index_1.constructed.instance.profile.getId(data.profile);
     const foCount = yield following_count_1.default.execute({ akashaId });
     const fwCount = yield followers_count_1.default.execute({ akashaId });

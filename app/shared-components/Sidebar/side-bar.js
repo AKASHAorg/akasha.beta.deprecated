@@ -55,7 +55,7 @@ class SideBar extends Component {
 
     render () {
         const { style, loggedProfileData, activePanel, notificationsCount, hasFeed,
-            draftsCount } = this.props;
+            draftsCount, selectedTag } = this.props;
         const { router } = this.context;
         const pathName = router.location.pathname;
         const isAddEntryActive = !activePanel &&
@@ -111,7 +111,9 @@ class SideBar extends Component {
             <div style={{ flexGrow: 4, padding: '14px' }} >
               <div title="Stream">
                 <StreamsIcon
-                  onClick={() => (!isStreamActive ? this._handleNavigation('explore/tag') : null)}
+                  onClick={() =>
+                      (!isStreamActive ? this._handleNavigation(`explore/tag/${selectedTag}`) : null)
+                  }
                   isActive={isStreamActive}
                 />
               </div>
@@ -144,7 +146,8 @@ SideBar.propTypes = {
     draftActions: PropTypes.shape(),
     notificationsCount: PropTypes.number,
     draftsCount: PropTypes.number,
-    loggedProfileData: PropTypes.shape()
+    loggedProfileData: PropTypes.shape(),
+    selectedTag: PropTypes.string,
 };
 
 SideBar.contextTypes = {
