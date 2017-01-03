@@ -37,11 +37,11 @@ class EntryPage extends Component {
     }
 
     componentWillReceiveProps (nextProps) {
-        const { params, entry, entryActions,
-            loggedProfile } = this.props;
+        const { params, entry, entryActions, commentsActions, loggedProfile } = this.props;
 
         if (params.entryId !== nextProps.params.entryId && entry.get('entryId') !== nextProps.params.entryId) {
             entryActions.getFullEntry(nextProps.params.entryId);
+            commentsActions.unloadComments(parseInt(params.entryId, 10))
             this.fetchComments(nextProps.params.entryId);
         }
         if (nextProps.entry && !entry) {

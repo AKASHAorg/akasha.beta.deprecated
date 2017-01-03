@@ -12,9 +12,9 @@ class EntryList extends Component {
 
         appActions.showEntryModal(entryData).then(() => {});
     };
-    _navigateToTag = (ev, tag) => {
-        const { loggedProfileData } = this.props;
-        this.context.router.push(`/${loggedProfileData.get('akashaId')}/explore/tag/${tag}`);
+    selectTag = (tag) => {
+        const { tagActions } = this.props;
+        tagActions.saveTag(tag);
     };
     _handleComment = (ev, entryAddress) => {
         const { appActions, entryState } = this.props;
@@ -36,11 +36,6 @@ class EntryList extends Component {
         const { selectedTag, tagActions } = this.props;
         tagActions.addUnsubscribeTagAction(selectedTag);
     };
-
-    selectTag = (tag) => {
-        const { tagActions } = this.props;
-        tagActions.saveTag(tag);
-    }
 
     render () {
         const { loggedProfileData, selectedTag, tagEntries, savedEntries, moreTagEntries,
