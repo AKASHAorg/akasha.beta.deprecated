@@ -41,8 +41,8 @@ class HomeContainer extends React.Component {
     componentWillReceiveProps (nextProps) {
         const { profileActions, settingsActions, entryActions, draftActions, tagActions,
             transactionActions, notificationsActions } = this.props;
-        const { loggedProfile, fetchingLoggedProfile, selectedTag, savingTag, params,
-            userSettings } = nextProps;
+        const { loggedProfile, fetchingLoggedProfile, savingTag, params, userSettings,
+            selectedTag } = nextProps;
 
         if (!loggedProfile.get('account') && !fetchingLoggedProfile) {
             this.context.router.push('/authenticate/');
@@ -62,9 +62,8 @@ class HomeContainer extends React.Component {
         } else if (userSettings && userSettings.lastBlockNr !== this.props.userSettings.lastBlockNr) {
             notificationsActions.setFilter([], userSettings.lastBlockNr);
         }
-        if (this.dataLoaded && selectedTag && !savingTag && this.props.savingTag
-                && params.filter !== 'tag') {
-            this.context.router.push(`/${params.akashaId}/explore/tag`);
+        if (selectedTag !== this.props.selectedTag && params.tag !== selectedTag) {
+            this.context.router.push(`/${params.akashaId}/explore/tag/${selectedTag}`);
         }
         if (nextProps.blockNr !== this.props.blockNr) {
             settingsActions.saveLastBlockNr(loggedProfile.get('akashaId'), nextProps.blockNr);
@@ -102,7 +101,7 @@ class HomeContainer extends React.Component {
 
     render () {
         const { appActions, draftActions, fetchingLoggedProfile, loggedProfileData,
-            profileActions, draftsCount, loggedProfile, activePanel,
+            profileActions, draftsCount, loggedProfile, activePanel, selectedTag,
             params, updatingProfile, notificationsCount, hasFeed } = this.props;
 
         const profileAddress = loggedProfile.get('profile');
@@ -122,6 +121,7 @@ class HomeContainer extends React.Component {
                   hasFeed={hasFeed}
                   profileActions={profileActions}
                   draftsCount={draftsCount}
+                  selectedTag={selectedTag}
                 />
               </div>
               <div className={styles.panelLoader} >

@@ -148,14 +148,14 @@ const tagState = createReducer(initialState, {
             flags: state.get('flags').merge(flags)
         }),
 
-    [types.SAVE_TAG]: (state, { flags }) =>
+    [types.SAVE_TAG]: (state, { tag, flags }) =>
         state.merge({
+            selectedTag: tag,
             flags: state.get('flags').merge(flags)
         }),
 
-    [types.SAVE_TAG_SUCCESS]: (state, { data, flags }) =>
+    [types.SAVE_TAG_SUCCESS]: (state, { flags }) =>
         state.merge({
-            selectedTag: data ? data.tagName : null,
             flags: state.get('flags').merge(flags)
         }),
 

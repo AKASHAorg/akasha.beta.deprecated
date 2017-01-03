@@ -31,6 +31,7 @@ class IpfsIPC extends IpfsEmitter {
             ._getConfig()
             ._setPorts()
             ._getPorts()
+            ._logs()
             ._manager();
     }
 
@@ -234,6 +235,35 @@ class IpfsIPC extends IpfsEmitter {
                     });
             }
         );
+        return this;
+    }
+
+    /**
+     *
+     * @returns {IpfsIPC}
+     * @private
+     */
+    private _logs() {
+        this.registerListener(
+            channels.server.ipfs.logs,
+            (event: any) => {
+                IpfsConnector.getInstance().logger.query(
+                    { start: 0, limit: 10, order: 'desc' },
+                    (err: Error, info: any) => {
+                        let response: MainResponse;
+                        if (err) {
+                            response = ipfsResponse({}, { message: err.message });
+                        } else {
+                            response = ipfsResponse(info);
+                        }
+                        this.fireEvent(
+                            channels.client.ipfs.logs,
+                            response,
+                            event
+                        );
+                    }
+                );
+            });
         return this;
     }
 

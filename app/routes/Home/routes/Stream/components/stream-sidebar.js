@@ -37,7 +37,7 @@ class StreamSidebar extends Component {
     selectTag = (ev, tag) => {
         const { tagActions } = this.props;
         tagActions.saveTag(tag);
-    }
+    };
 
     showMoreNewTags = () => {
         const { tagActions } = this.props;
@@ -90,11 +90,6 @@ class StreamSidebar extends Component {
                     >
                       {intl.formatMessage(tagMessages.subscribedTags)}
                     </small>
-                    {/* <div className="col-xs-4 end-xs">
-                      <FlatButton>
-                        <small>+ADD NEW</small>
-                      </FlatButton>
-                    </div>*/}
                   </Subheader>
                   <div className="start-xs" style={{ paddingLeft: 16 }}>
                     {streamTags.map((tag, key) =>
@@ -141,13 +136,18 @@ class StreamSidebar extends Component {
 }
 
 StreamSidebar.propTypes = {
+    intl: PropTypes.shape(),
+    moreNewTags: PropTypes.bool,
+    newestTags: PropTypes.shape(),
+    params: PropTypes.shape(),
     selectedTag: PropTypes.string,
     streamTags: PropTypes.shape(),
-    newestTags: PropTypes.shape(),
-    moreNewTags: PropTypes.bool,
     subscriptionsCount: PropTypes.number,
     tagActions: PropTypes.shape(),
-    intl: PropTypes.shape()
+};
+
+StreamSidebar.contextTypes = {
+    router: PropTypes.shape()
 };
 
 export default injectIntl(StreamSidebar);
