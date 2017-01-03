@@ -24,6 +24,7 @@ class IpfsIPC extends IpfsEmitter_1.default {
             ._getConfig()
             ._setPorts()
             ._getPorts()
+            ._logs()
             ._manager();
     }
     _start() {
@@ -130,6 +131,21 @@ class IpfsIPC extends IpfsEmitter_1.default {
             })
                 .finally(() => {
                 this.fireEvent(channels_1.default.client.ipfs.getPorts, response, event);
+            });
+        });
+        return this;
+    }
+    _logs() {
+        this.registerListener(channels_1.default.server.ipfs.logs, (event) => {
+            ipfs_connector_1.IpfsConnector.getInstance().logger.query({ start: 0, limit: 10, order: 'desc' }, (err, info) => {
+                let response;
+                if (err) {
+                    response = responses_1.ipfsResponse({}, { message: err.message });
+                }
+                else {
+                    response = responses_1.ipfsResponse(info);
+                }
+                this.fireEvent(channels_1.default.client.ipfs.logs, response, event);
             });
         });
         return this;
