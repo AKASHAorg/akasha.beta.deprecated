@@ -11,45 +11,45 @@ const LIMIT = 5;
 class StreamPage extends Component {
     constructor (props) {
         super(props);
-        const { params } = props;
+        const { params, selectedTag } = props;
         this.state = {
-            filter: params.filter
+            filter: params.filter,
+            tag: params.tag
         };
     }
 
     componentWillMount () {
-        const { entryActions, loggedProfile, selectedTag, params } = this.props;
+        const { entryActions, loggedProfile, params } = this.props;
         entryActions.getEntriesStream(loggedProfile.get('akashaId'));
-        if (selectedTag && params.filter === 'tag') {
-            entryActions.entryTagIterator(selectedTag, 0, LIMIT + 1);
-            entryActions.getTagEntriesCount(selectedTag);
+        if (params.tag && params.filter === 'tag') {
+            entryActions.entryTagIterator(params.tag, 0, LIMIT + 1);
+            entryActions.getTagEntriesCount(params.tag);
         } else if (params.filter === 'bookmarks') {
             entryActions.getSavedEntriesList(LIMIT);
         }
     }
 
     componentWillReceiveProps (nextProps) {
-        const { selectedTag, entryActions } = nextProps;
-        if (selectedTag !== this.props.selectedTag) {
+        const { params, entryActions } = nextProps;
+        if (params.tag && params.tag !== this.props.params.tag) {
             this.setState({
-                filter: 'tag'
+                filter: 'tag',
+                tag: params.tag
             });
             entryActions.clearTagEntries();
-            if (selectedTag) {
-                entryActions.entryTagIterator(selectedTag, 0, LIMIT + 1);
-                entryActions.getTagEntriesCount(selectedTag);
+            if (params.tag) {
+                entryActions.entryTagIterator(params.tag, 0, LIMIT + 1);
+                entryActions.getTagEntriesCount(params.tag);
             }
-        }
-    }
-
-    componentDidUpdate (prevProps, prevState) {
-        const { entryActions, selectedTag } = this.props;
-        if (this.state.filter !== prevState.filter) {
-            switch (this.state.filter) {
+        } else if (params.filter !== this.props.params.filter) {
+            this.setState({
+                filter: params.filter
+            });
+            switch (params.filter) {
                 case 'tag':
                     entryActions.clearSavedEntries();
-                    entryActions.entryTagIterator(selectedTag, 0, LIMIT + 1);
-                    entryActions.getTagEntriesCount(selectedTag);
+                    entryActions.entryTagIterator(this.state.tag, 0, LIMIT + 1);
+                    entryActions.getTagEntriesCount(this.state.tag);
                     break;
                 case 'bookmarks':
                     entryActions.clearTagEntries();
@@ -67,30 +67,23 @@ class StreamPage extends Component {
         entryActions.clearSavedEntries();
     }
 
-    handleTabActivation = (tab) => {
-        const { params } = this.props;
-        this.context.router.push(`/${params.akashaId}/explore/${tab.props.value}`);
-    };
-
     handleFilterChange = (val) => {
-        if (val === this.state.filter) return;
-        this.setState({
-            filter: val
-        });
+        const { params } = this.props;
+        const tag = val === 'tag' && this.state.tag ? `/${this.state.tag}` : '';
+        this.context.router.push(`/${params.akashaId}/explore/${val}${tag}`);
     };
 
     render () {
-        const { loggedProfileData, streamTags, newestTags, selectedTag, entryActions, tagActions,
+        const { loggedProfileData, streamTags, newestTags, entryActions, tagActions,
             moreNewTags, tagEntries, params } = this.props;
+        const { tag } = this.state;
         const subscriptionsCount = parseInt(loggedProfileData.get('subscriptionsCount'), 10);
         return (
           <div className={`${styles.root}`}>
-            <div
-              className={`${styles.streamPageInner}`}
-            >
+            <div className={`${styles.streamPageInner}`}>
               <StreamMenu
                 activeTab={this.state.filter}
-                selectedTag={selectedTag}
+                selectedTag={tag}
                 onChange={this.handleFilterChange}
                 onActive={this.handleTabActivation}
               />
@@ -100,7 +93,7 @@ class StreamPage extends Component {
                 <div className={styles.theStream}>
                   <TheStream
                     entryActions={entryActions}
-                    selectedTag={selectedTag}
+                    selectedTag={tag}
                     tagEntries={tagEntries}
                     params={params}
                   >
@@ -113,11 +106,12 @@ class StreamPage extends Component {
                 >
                   <StreamSidebar
                     subscriptionsCount={subscriptionsCount}
-                    selectedTag={selectedTag}
+                    selectedTag={tag}
                     streamTags={streamTags}
                     newestTags={newestTags}
                     moreNewTags={moreNewTags}
                     tagActions={tagActions}
+                    params={params}
                   />
                 </div>
               </div>

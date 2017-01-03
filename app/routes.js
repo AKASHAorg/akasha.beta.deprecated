@@ -38,7 +38,7 @@ export default (
     </Route>
     <Route component={requireAuth(HomeContainer)} path=":akashaId" >
       <Route component={StreamPageContainer}>
-        <Route component={EntryListContainer} path="explore(/:filter)" />
+        <Route component={EntryListContainer} path="explore(/:filter)(/:tag)" />
       </Route>
       <Route component={PeoplePageContainer} path="people" />
       <Route component={ProfileDetailsContainer} path="profile/:profileAddress" />
