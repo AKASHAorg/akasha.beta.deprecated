@@ -343,7 +343,7 @@ const entryState = createReducer(initialState, {
             commentsCount: parseInt(commentsCount, 10),
             entryId,
             score,
-            content: new EntryContent(content),
+            content: content ? new EntryContent(content) : null,
             entryEth: new EntryEth(entryEth)
         });
         return state.withMutations((stateMap) =>
