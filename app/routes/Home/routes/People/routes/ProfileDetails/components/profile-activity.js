@@ -7,7 +7,7 @@ import { isInViewport } from 'utils/domUtils';
 import { generalMessages } from 'locale-data/messages';
 
 const ENTRIES_LIMIT = 6;
-const PROFILES_LIMIT = 10;
+const PROFILES_LIMIT = 13;
 
 class ProfileActivity extends Component {
     constructor (props) {
@@ -16,6 +16,7 @@ class ProfileActivity extends Component {
         this.lastFollowerIndex = 0;
         this.lastFollowingIndex = 0;
         this.lastEntryIndex = 0;
+        this.firstTimeCheckForMore = false;
         this.trigger = null;
         this.state = {
             activeTab: 'entries'
@@ -92,6 +93,13 @@ class ProfileActivity extends Component {
         }
     }
 
+    componentDidUpdate () {
+        if (this.trigger && !this.firstTimeCheckForMore) {
+            this.firstTimeCheckForMore = true;
+            this.handleScroll();
+        }
+    }
+
     componentWillUnmount () {
         const { profileActions, entryActions, profileData } = this.props;
         profileActions.clearFollowing(profileData.akashaId);
@@ -132,14 +140,10 @@ class ProfileActivity extends Component {
     handleChangeTab = (tab) => {
         this.lastFollowerIndex = 0;
         this.lastFollowingIndex = 0;
+        this.firstTimeCheckForMore = false;
         this.setState({
             activeTab: tab
         });
-    }
-
-    selectTag = (tagName) => {
-        const { tagActions } = this.props;
-        tagActions.saveTag(tag);
     }
 
     showMoreProfileEntries = () => {
@@ -160,8 +164,8 @@ class ProfileActivity extends Component {
 
     renderEntries () {
         const { profileEntries, fetchingProfileEntries, loggedProfileData, votePending, blockNr,
-            savedEntriesIds, entryActions, moreProfileEntries, fetchingMoreProfileEntries,
-            selectTag } = this.props;
+            savedEntriesIds, entryActions, moreProfileEntries,
+            fetchingMoreProfileEntries } = this.props;
         const { palette } = this.context.muiTheme;
         return (<EntryListContainer
           entries={profileEntries}
@@ -377,7 +381,6 @@ ProfileActivity.propTypes = {
     followProfile: PropTypes.func.isRequired,
     unfollowProfile: PropTypes.func.isRequired,
     selectProfile: PropTypes.func.isRequired,
-    selectTag: PropTypes.func.isRequired,
     showPanel: PropTypes.func,
     intl: PropTypes.shape()
 };

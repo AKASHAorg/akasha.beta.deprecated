@@ -13,8 +13,8 @@ class EntryList extends Component {
         appActions.showEntryModal(entryData).then(() => {});
     };
     selectTag = (tag) => {
-        const { tagActions } = this.props;
-        tagActions.saveTag(tag);
+        const { params } = this.props;
+        this.context.router.push(`/${params.akashaId}/explore/tag/${tag}`);
     };
     _handleComment = (ev, entryAddress) => {
         const { appActions, entryState } = this.props;
@@ -73,7 +73,7 @@ class EntryList extends Component {
                 unsubscribeTag={this.unsubscribeTag}
                 registerPending={registerPendingFlag}
                 subscribePending={subscribePendingFlag}
-                selectTag={tagActions.saveTag}
+                selectTag={this.selectTag}
                 publishTag={tagActions.addRegisterTagAction}
               />
             }

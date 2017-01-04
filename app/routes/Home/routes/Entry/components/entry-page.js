@@ -159,14 +159,13 @@ class EntryPage extends Component {
         }
     }
     selectProfile = () => {
-        const { entry, loggedProfile } = this.props;
-        const { router } = this.context;
+        const { entry, params } = this.props;
         const profileAddress = entry.entryEth.publisher.profile;
-        router.push(`/${loggedProfile.get('akashaId')}/profile/${profileAddress}`);
+        this.context.router.push(`/${params.akashaId}/profile/${profileAddress}`);
     };
     _navigateToTag = (ev, tagName) => {
-        const { saveTag } = this.props.tagActions;
-        saveTag(tagName);
+        const { params } = this.props;
+        this.context.router.push(`/${params.akashaId}/explore/tag/${tagName}`);
     }
 
     renderLicenceIcons = () => {
