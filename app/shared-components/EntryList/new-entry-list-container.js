@@ -5,6 +5,11 @@ import { FlatButton } from 'material-ui';
 import { DataLoader, EntryCard } from 'shared-components';
 
 class EntryList extends Component {
+    selectTag = (tag) => {
+        const { params } = this.context.router;
+        this.context.router.push(`/${params.akashaId}/explore/tag/${tag}`);
+    };
+
     render () {
         const { appActions, blockNr, cardStyle, claimPending, canClaimPending, entries,
             entryActions, fetchingEntries, fetchingEntryBalance, fetchingMoreEntries, getTriggerRef,
@@ -53,7 +58,7 @@ class EntryList extends Component {
                       key={key}
                       loggedAkashaId={loggedProfileData.get('akashaId')}
                       selectedTag={selectedTag}
-                      selectTag={tagActions.saveTag}
+                      selectTag={this.selectTag}
                       style={cardStyle}
                       voteEntryPending={voteEntryPending && voteEntryPending.value}
                     />);
@@ -86,6 +91,7 @@ EntryList.propTypes = {
     getTriggerRef: PropTypes.func,
     loggedProfileData: PropTypes.shape(),
     moreEntries: PropTypes.bool,
+    params: PropTypes.shape(),
     savedEntriesIds: PropTypes.shape(),
     selectedTag: PropTypes.string,
     style: PropTypes.shape(),
@@ -94,7 +100,8 @@ EntryList.propTypes = {
 };
 
 EntryList.contextTypes = {
-    muiTheme: PropTypes.shape()
+    muiTheme: PropTypes.shape(),
+    router: PropTypes.shape()
 };
 
 function mapStateToProps (state) {

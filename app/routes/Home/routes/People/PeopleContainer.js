@@ -29,6 +29,7 @@ class PeopleContainer extends Component {
         super(props);
 
         this.trigger = null;
+        this.firstTimeCheckForMore = false;
         this.lastFollowerIndex = 0;
         this.lastFollowingIndex = 0;
         this.state = {
@@ -36,15 +37,9 @@ class PeopleContainer extends Component {
         };
     }
 
-    componentWillMount () {
-        const { profileActions, loggedProfileData } = this.props;
-        // profileActions.followersIterator(
-        //     loggedProfileData.akashaId, this.lastFollowerIndex, LIMIT
-        // );
-        profileActions.getProfileList(RECOMMENDED_PEOPLE);
-    }
-
     componentDidMount () {
+        const { profileActions } = this.props;
+        profileActions.getProfileList(RECOMMENDED_PEOPLE);
         if (this.container) {
             this.container.addEventListener('scroll', throttle(this.handleScroll, 500));
         }
@@ -91,6 +86,13 @@ class PeopleContainer extends Component {
         }
     }
 
+    componentDidUpdate (prevProps, prevState) {
+        if (this.trigger && !this.firstTimeCheckForMore) {
+            this.firstTimeCheckForMore = true;
+            this.handleScroll();
+        }
+    }
+
     componentWillUnmount () {
         const { profileActions, loggedProfileData } = this.props;
         profileActions.clearFollowers(loggedProfileData.akashaId);
@@ -127,6 +129,7 @@ class PeopleContainer extends Component {
     handleChangeTab = (tab) => {
         this.lastFollowerIndex = 0;
         this.lastFollowingIndex = 0;
+        this.firstTimeCheckForMore = false;
         this.setState({
             activeTab: tab
         });

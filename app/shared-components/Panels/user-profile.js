@@ -94,9 +94,9 @@ class UserProfilePanel extends Component {
     };
 
     navigateToTag (tag) {
-        const { hidePanel, tagActions } = this.props;
+        const { hidePanel, params } = this.props;
         hidePanel();
-        tagActions.saveTag(tag);
+        this.context.router.push(`/${params.akashaId}/explore/tag/${tag}`);
     }
 
     navigateToProfile (profileAddress) {
@@ -398,6 +398,7 @@ class UserProfilePanel extends Component {
 UserProfilePanel.propTypes = {
     width: PropTypes.string,
     loggedProfileData: PropTypes.shape(),
+    params: PropTypes.shape(),
     profileActions: PropTypes.shape(),
     profileAddress: PropTypes.string,
     notificationsActions: PropTypes.shape(),

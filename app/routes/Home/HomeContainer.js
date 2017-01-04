@@ -62,8 +62,12 @@ class HomeContainer extends React.Component {
         } else if (userSettings && userSettings.lastBlockNr !== this.props.userSettings.lastBlockNr) {
             notificationsActions.setFilter([], userSettings.lastBlockNr);
         }
-        if (selectedTag !== this.props.selectedTag && params.tag !== selectedTag) {
+        if (selectedTag !== this.props.selectedTag && params.filter === 'tag' &&
+                params.tag !== selectedTag) {
             this.context.router.push(`/${params.akashaId}/explore/tag/${selectedTag}`);
+        }
+        if (params.tag && params.tag !== this.props.params.tag) {
+            tagActions.saveTag(params.tag);
         }
         if (nextProps.blockNr !== this.props.blockNr) {
             settingsActions.saveLastBlockNr(loggedProfile.get('akashaId'), nextProps.blockNr);

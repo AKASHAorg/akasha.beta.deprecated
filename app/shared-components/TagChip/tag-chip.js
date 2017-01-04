@@ -19,10 +19,7 @@ const TagChip = ({ style, onTagClick, tag, selectedTag }, { muiTheme }) => {
     return (
       <Chip
         style={{ ...tagStyle, ...style }}
-        onTouchTap={tag !== selectedTag ?
-            ev => onTagClick(ev, tag) :
-            () => null
-        }
+        onTouchTap={ev => onTagClick(ev, tag)}
       >
         {tag}
       </Chip>

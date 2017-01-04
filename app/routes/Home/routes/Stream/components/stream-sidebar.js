@@ -35,8 +35,8 @@ class StreamSidebar extends Component {
     }
 
     selectTag = (ev, tag) => {
-        const { tagActions } = this.props;
-        tagActions.saveTag(tag);
+        const { params } = this.props;
+        this.context.router.push(`/${params.akashaId}/explore/tag/${tag}`);
     };
 
     showMoreNewTags = () => {

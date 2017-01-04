@@ -70,7 +70,9 @@ class ProfileDetails extends Component {
             imageCreator(backgroundImage[bestMatch].src, profileData.baseUrl) :
             '';
         const profileName = `${profileData.firstName} ${profileData.lastName}`;
-        const userInitials = profileName.match(/\b\w/g).reduce((prev, current) => prev + current, '');
+        const userInitials = profileName.trim() ?
+            profileName.match(/\b\w/g).reduce((prev, current) => prev + current, '') :
+            '';
         const followers = (<FormattedMessage
           id="app.profile.followersCount"
           description="counting a profile's followers"
@@ -113,6 +115,7 @@ class ProfileDetails extends Component {
                   fontWeight: 400,
                   textTransform: 'capitalize',
                   maxWidth: '340px',
+                  height: '48px',
                   ...wrapTextStyle
               }}
             >
@@ -130,7 +133,7 @@ class ProfileDetails extends Component {
             <RaisedButton
               label={isOwnProfile ?
                   intl.formatMessage(generalMessages.edit) :
-                  (!isFollowerPending && isFollower) ?
+                  isFollower ?
                       intl.formatMessage(profileMessages.unfollow) :
                       intl.formatMessage(profileMessages.follow)
               }
@@ -144,7 +147,7 @@ class ProfileDetails extends Component {
                       unfollowProfile(profileData.akashaId) :
                       followProfile(profileData.akashaId)
               }
-              disabled={isFollowerPending || (followProfilePending && followProfilePending.value)}
+              disabled={followProfilePending && followProfilePending.value}
             />
           </div>
         </div>);
