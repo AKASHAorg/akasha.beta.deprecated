@@ -217,16 +217,20 @@ class EntryPage extends Component {
         const { blockNr, canClaimPending, claimPending, comments, entry,
             fetchingEntryBalance, fetchingFullEntry, intl, licences, loggedProfile, profiles,
             savedEntries, votePending, fetchingComments } = this.props;
+        const { palette } = this.context.muiTheme;
         const { publisherTitleShadow } = this.state;
+        let licence, licenceLabel;
         if (!entry || fetchingFullEntry) {
             return <DataLoader flag size={80} style={{ paddingTop: '120px' }} />;
         }
-        const licence = licences ?
-            licences.find(lic => lic.id === entry.content.licence.id) :
-            {};
-        const licenceLabel = licence.parent ?
-            licences.find(lic => lic.id === licence.parent).label :
-            licence.label;
+        if (entry.content) {
+            licence = licences ?
+                licences.find(lic => lic.id === entry.content.licence.id) :
+                {};
+            licenceLabel = licence.parent ?
+                licences.find(lic => lic.id === licence.parent).label :
+                licence.label;
+        }
         const loggedProfileData = profiles.find(prf => prf.get('profile') === loggedProfile.get('profile'));
         const loggedProfileAvatar = loggedProfileData.get('avatar');
         const loggedProfileName = `${loggedProfileData.firstName} ${loggedProfileData.lastName}`;
@@ -248,44 +252,67 @@ class EntryPage extends Component {
                     publisherTitleShadow={publisherTitleShadow}
                     selectProfile={this.selectProfile}
                     timestamp={entry.entryEth.unixStamp}
-                    wordCount={entry.content.wordCount}
+                    wordCount={entry.content ? entry.content.wordCount : 0}
                   />
-                  <EntryPageContent
-                    entry={entry}
-                  />
+                  {entry.content &&
+                    <EntryPageContent
+                      entry={entry}
+                    />
+                  }
+                  {!entry.content &&
+                    <div
+                      style={{
+                          height: '300px',
+                          marginTop: '80px',
+                          display: 'flex',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          fontSize: '16px',
+                          color: palette.disabledColor,
+                      }}
+                    >
+                      {intl.formatMessage(entryMessages.unresolvedEntry)}
+                    </div>
+                  }
                 </div>
-                <div
-                  className={`${styles.entry_infos}`}
-                  style={{ display: 'flex', alignItems: 'center', padding: '8px 0' }}
-                >
-                  <span style={{ textDecoration: 'underline', paddingRight: '10px' }}>
-                    {licenceLabel}
-                  </span>
-                  {this.renderLicenceIcons()}
-                </div>
-                <div className={`${styles.entry_infos}`}>
-                  <div className={`${styles.entry_tags}`}>
-                    {entry.getIn(['content', 'tags']).map((tag, key) =>
-                      <TagChip
-                        key={key}
-                        tag={tag}
-                        onTagClick={this._navigateToTag}
-                      />
-                    )}
+                {entry.content &&
+                  <div
+                    className={`${styles.entry_infos}`}
+                    style={{ display: 'flex', alignItems: 'center', padding: '8px 0' }}
+                  >
+                    <span style={{ textDecoration: 'underline', paddingRight: '10px' }}>
+                        {licenceLabel}
+                    </span>
+                    {this.renderLicenceIcons()}
                   </div>
-                  <EntryPageActions
-                    canClaimPending={canClaimPending}
-                    claimPending={claimEntryPending && claimEntryPending.value}
-                    entry={entry}
-                    fetchingEntryBalance={fetchingEntryBalance}
-                    handleBookmark={this.handleBookmark}
-                    handleClaim={this.handleClaim}
-                    handleDownvote={this.handleDownvote}
-                    handleUpvote={this.handleUpvote}
-                    isOwnEntry={this.isOwnEntry()}
-                    isSaved={isSaved}
-                    votePending={voteEntryPending && voteEntryPending.value}
-                  />
+                }
+                <div className={`${styles.entry_infos}`}>
+                  {entry.content &&
+                    <div className={`${styles.entry_tags}`}>
+                      {entry.getIn(['content', 'tags']).map((tag, key) =>
+                        <TagChip
+                          key={key}
+                          tag={tag}
+                          onTagClick={this._navigateToTag}
+                        />
+                      )}
+                    </div>
+                  }
+                  {entry.content &&
+                    <EntryPageActions
+                      canClaimPending={canClaimPending}
+                      claimPending={claimEntryPending && claimEntryPending.value}
+                      entry={entry}
+                      fetchingEntryBalance={fetchingEntryBalance}
+                      handleBookmark={this.handleBookmark}
+                      handleClaim={this.handleClaim}
+                      handleDownvote={this.handleDownvote}
+                      handleUpvote={this.handleUpvote}
+                      isOwnEntry={this.isOwnEntry()}
+                      isSaved={isSaved}
+                      votePending={voteEntryPending && voteEntryPending.value}
+                    />
+                  }
                   <CommentEditor
                     profileAvatar={loggedProfileAvatar}
                     profileUserInitials={loggedProfileUserInitials}
@@ -356,7 +383,6 @@ EntryPage.propTypes = {
     params: PropTypes.shape(),
     profiles: PropTypes.shape(),
     savedEntries: PropTypes.shape(),
-    tagActions: PropTypes.shape(),
     votePending: PropTypes.shape(),
 };
 EntryPage.contextTypes = {

@@ -1,5 +1,6 @@
 import React from 'react';
 import AvatarEditor from 'react-avatar-editor/dist';
+import AccountIcon from 'material-ui/svg-icons/action/account-circle';
 import AddPhotoIcon from 'material-ui/svg-icons/image/add-a-photo';
 import ClearIcon from 'material-ui/svg-icons/content/clear';
 import { SvgIcon, Slider } from 'material-ui';
@@ -178,7 +179,7 @@ class Avatar extends React.Component {
                     </div>
                   </div>
                 }
-                {!userInitials &&
+                {!userInitials && editable &&
                   <SvgIcon
                     style={{
                         width: radius,
@@ -188,6 +189,16 @@ class Avatar extends React.Component {
                   >
                     <AddPhotoIcon viewBox="-30 -30 86 86" />
                   </SvgIcon>
+                }
+                {!userInitials && !editable &&
+                  <AccountIcon
+                    style={{
+                        width: '99px',
+                        height: '99px',
+                        backgroundColor: palette.disabledColor,
+                        fill: palette.canvasColor
+                    }}
+                  />
                 }
               </div>
             }
