@@ -9,9 +9,11 @@ import {
   } from 'material-ui';
 import { MegadraftEditor, editorStateFromRaw } from 'megadraft';
 import { injectIntl } from 'react-intl';
+import HubIcon from 'material-ui/svg-icons/hardware/device-hub';
 import MoreIcon from 'material-ui/svg-icons/navigation/expand-more';
 import LessIcon from 'material-ui/svg-icons/navigation/expand-less';
 import { Avatar } from 'shared-components';
+import { entryMessages } from 'locale-data/messages';
 import { getWordCount } from 'utils/dataModule'; // eslint-disable-line import/no-unresolved, import/extensions
 import style from './comment.scss';
 
@@ -26,6 +28,9 @@ class Comment extends React.Component {
     componentWillMount () {
         const { comment } = this.props;
         let isExpanded = null;
+        if (!comment.data.content) {
+            return;
+        }
         const editorState = editorStateFromRaw(JSON.parse(comment.data.content));
         const wordCount = getWordCount(editorState.getCurrentContent());
         if (wordCount > 60) {
@@ -75,13 +80,19 @@ class Comment extends React.Component {
             commentAuthorNameColor = palette.commentIsEntryAuthorColor;
         }
         return (
-          <div className={`${style.root}`}>
-            <div className={`row ${style.commentHeader}`}>
+          <div
+            className={`${style.root}`}
+            style={{ position: 'relative', opacity: !content ? 0.5 : 1 }}
+          >
+            <div
+              className={`row ${style.commentHeader}`}
+              style={{ marginBottom: !content ? '8px' : '0px' }}
+            >
               <div className={`col-xs-5 ${style.commentAuthor}`}>
                 <CardHeader
                   style={{ padding: 0 }}
                   titleStyle={{ fontSize: '100%' }}
-                  subtitleStyle={{ fontSize: '80%' }}
+                  subtitleStyle={{ paddingLeft: '2px', fontSize: '80%' }}
                   title={
                     <FlatButton
                       label={authorName}
@@ -98,7 +109,7 @@ class Comment extends React.Component {
                         ${isEntryAuthor && style.is_entry_author} ${style.author_name}`}
                     />
                   }
-                  subtitle={intl.formatRelative(new Date(date))}
+                  subtitle={date && intl.formatRelative(new Date(date))}
                   avatar={
                     <Avatar
                       image={authorAvatar}
@@ -117,13 +128,23 @@ class Comment extends React.Component {
                 </div>
               }
             </div>
-            <div className={`row ${style.commentBody}`} style={expandedStyle}>
-              <MegadraftEditor
-                readOnly
-                editorState={editorStateFromRaw(JSON.parse(content))}
-                sidebarRendererFn={() => null}
-              />
-            </div>
+            {content &&
+              <div className={`row ${style.commentBody}`} style={expandedStyle}>
+                <MegadraftEditor
+                  readOnly
+                  editorState={editorStateFromRaw(JSON.parse(content))}
+                  sidebarRendererFn={() => null}
+                />
+              </div>
+            }
+            {!content &&
+              <IconButton
+                style={{ position: 'absolute', right: '10px', top: '7px' }}
+                tooltip={intl.formatMessage(entryMessages.unresolvedEntry)}
+              >
+                <HubIcon color={palette.accent1Color} />
+              </IconButton>
+            }
             {isExpanded !== null &&
               <div style={{ paddingTop: 16, fontSize: 12, textAlign: 'center' }}>
                 {(this.state.isExpanded === false) &&

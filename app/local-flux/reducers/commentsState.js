@@ -13,7 +13,7 @@ const CommentData = Record({
     parent: null,
     profile: new Map(),
     content: null,
-    date: new Date().toISOString(),
+    date: null,
     ipfsHash: null,
 });
 const Comment = Record({
@@ -49,7 +49,7 @@ const castCommentToRecord = (commentObj) => {
         data: new CommentData({
             active,
             content,
-            date: date || new Date().toISOString(),
+            date,
             ipfsHash,
             parent,
             profile: new Map(profile)
@@ -70,6 +70,7 @@ const commentsState = createReducer(initialState, {
         });
     },
     [types.PUBLISH_COMMENT_OPTIMISTIC]: (state, { comment }) => {
+        comment.data.date = new Date().toISOString();
         const imComment = castCommentToRecord(comment);
         const entryComments = state.get('entryComments').insert(0, imComment);
         return state.set('entryComments', entryComments);

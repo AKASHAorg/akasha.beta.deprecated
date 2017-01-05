@@ -1,5 +1,6 @@
 import React from 'react';
 import AvatarEditor from 'react-avatar-editor/dist';
+import AccountIcon from 'material-ui/svg-icons/action/account-circle';
 import AddPhotoIcon from 'material-ui/svg-icons/image/add-a-photo';
 import ClearIcon from 'material-ui/svg-icons/content/clear';
 import { SvgIcon, Slider } from 'material-ui';
@@ -9,7 +10,8 @@ class Avatar extends React.Component {
         super(props);
         this.state = {
             avatarImage: null,
-            avatarScale: props.avatarScale || 1.2
+            avatarScale: props.avatarScale || 1.2,
+            imageLoaded: false
         };
     }
     componentWillUnmount () {
@@ -57,6 +59,12 @@ class Avatar extends React.Component {
             this.props.onClick(ev);
         }
     }
+    onImageLoad = () => {
+        this.setState({
+            imageLoaded: true
+        });
+    }
+
     render () {
         const {
               radius,
@@ -116,8 +124,13 @@ class Avatar extends React.Component {
                   <img
                     src={avatarImage}
                     style={{
-                        width: radius, height: radius, borderRadius: '50%', imageRendering: 'auto'
+                        display: this.state.imageLoaded ? 'initial' : 'none',
+                        width: radius,
+                        height: radius,
+                        borderRadius: '50%',
+                        imageRendering: 'auto'
                     }}
+                    onLoad={this.onImageLoad}
                   />
                 }
                 {editable &&
@@ -139,7 +152,26 @@ class Avatar extends React.Component {
                     </div>
                   </div>
                 }
-                {!editable && avatarImage &&
+                {!this.state.imageLoaded && !editable &&
+                  <div
+                    style={{
+                        ...avatarEmptyStyle,
+                        width: radius,
+                        height: radius,
+                        border: `1px solid ${palette.borderColor}`
+                    }}
+                  >
+                    <AccountIcon
+                      style={{
+                          width: radius - 1,
+                          height: radius - 1,
+                          backgroundColor: palette.disabledColor,
+                          fill: palette.canvasColor
+                      }}
+                    />
+                  </div>
+                }
+                {!editable &&
                     <div
                       style={{
                           position: 'absolute',
@@ -178,7 +210,7 @@ class Avatar extends React.Component {
                     </div>
                   </div>
                 }
-                {!userInitials &&
+                {!userInitials && editable &&
                   <SvgIcon
                     style={{
                         width: radius,
@@ -188,6 +220,16 @@ class Avatar extends React.Component {
                   >
                     <AddPhotoIcon viewBox="-30 -30 86 86" />
                   </SvgIcon>
+                }
+                {!userInitials && !editable &&
+                  <AccountIcon
+                    style={{
+                        width: radius - 1,
+                        height: radius - 1,
+                        backgroundColor: palette.disabledColor,
+                        fill: palette.canvasColor
+                    }}
+                  />
                 }
               </div>
             }

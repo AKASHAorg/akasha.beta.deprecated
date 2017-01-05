@@ -1,6 +1,7 @@
 import * as Promise from 'bluebird';
 import { constructed as contracts } from '../../contracts/index';
 import { module as userModule } from '../auth/index';
+import pinner, { ObjectType, OperationType } from '../pinner/runner';
 
 /**
  * Follow an akasha profile
@@ -9,6 +10,7 @@ import { module as userModule } from '../auth/index';
 const execute = Promise.coroutine(function*(data: ProfileFollowRequest) {
     const txData = yield contracts.instance.feed.follow(data.akashaId, data.gas);
     const tx = yield userModule.auth.signData(txData, data.token);
+    pinner.execute({ type: ObjectType.PROFILE, id: data.akashaId, operation: OperationType.ADD });
     return { tx, akashaId: data.akashaId };
 });
 
