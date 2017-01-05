@@ -24,7 +24,7 @@ class ModuleEmitter extends AbstractEmitter_1.AbstractEmitter {
     }
     _initMethods(methods) {
         methods.forEach((method) => {
-            if (method.name === 'feed') {
+            if (method.name === 'feed' || method.name === 'fetch') {
                 this.registerListener(channels_1.default.server[this.MODULE_NAME][method.name], (event, data) => {
                     let response;
                     method
