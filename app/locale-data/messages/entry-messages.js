@@ -80,6 +80,11 @@ const entryMessages = defineMessages({
         id: 'app.entry.createdAt',
         description: 'message to display when sorting something',
         defaultMessage: 'Created {createdAt}'
+    },
+    unresolvedEntry: {
+        id: 'app.entry.unresolvedEntry',
+        description: 'Message to display when an entry could not be resolved',
+        defaultMessage: 'There are no peers online right now.'
     }
 });
 export { entryMessages };

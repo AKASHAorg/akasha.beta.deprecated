@@ -44,6 +44,11 @@ class ProfileDetails extends Component {
     }
 
     handleCopyLink = (url) => {
+        const { showNotification } = this.props;
+        showNotification({
+            id: 'linkCopiedToClipboard',
+            duration: 2000
+        });
         let textArea = document.createElement('textarea');
         textArea.value = url;
         textArea.style.position = 'fixed';
@@ -245,6 +250,7 @@ ProfileDetails.propTypes = {
     isFollowerPending: PropTypes.bool,
     isFollower: PropTypes.bool,
     intl: PropTypes.shape(),
+    showNotification: PropTypes.func.isRequired,
     showPanel: PropTypes.func.isRequired
 };
 

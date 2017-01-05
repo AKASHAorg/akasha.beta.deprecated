@@ -25,17 +25,15 @@ class PublishPanel extends React.Component {
             this.panelSize = this.container.getBoundingClientRect();
         }
         if (this.props.draft) {
-            this._populateDraft(this.props.draft);
-            if (this.props.draft.get('tags').size && !this.state.checkingTags) {
-                this._checkExistingTags(this.props.draft.get('tags'));
-            }
+            this._populateDraft(this.props.draft, true);
         }
         document.body.style.overflow = 'hidden';
     }
     componentWillReceiveProps (nextProps) {
         const { draft } = nextProps;
         if (draft && !draft.equals(this.props.draft)) {
-            this._populateDraft(draft);
+            const shouldCheckTags = !this.props.draft;
+            this._populateDraft(draft, shouldCheckTags);
             if (this.state.fetchingDraft) {
                 this.setState({
                     fetchingDraft: false
@@ -47,9 +45,9 @@ class PublishPanel extends React.Component {
         document.body.style.overflow = 'initial';
     }
 
-    _populateDraft = (draft) => {
+    _populateDraft = (draft, checkTags) => {
         const tags = draft.get('tags');
-        if (tags && tags.size > 0 && !this.state.checkingTags) {
+        if (checkTags && tags && tags.size > 0 && !this.state.checkingTags) {
             this._checkExistingTags(tags);
         }
         this.setState({
@@ -132,7 +130,7 @@ class PublishPanel extends React.Component {
                 error: 'Please review the licence'
             });
         }
-        if (!draft.getIn(['content', 'excerpt']) || draft.getIn(['content', 'excerpt']).size < 35) {
+        if (!draft.getIn(['content', 'excerpt']) || draft.getIn(['content', 'excerpt']).length < 35) {
             validationErrors.push({
                 field: 'excerpt',
                 error: 'Please provide a longer excerpt'
@@ -157,12 +155,11 @@ class PublishPanel extends React.Component {
     _handleTagDelete = (index) => {
         const tag = this.state.draft.getIn(['tags', index]);
         const newTags = this.state.draft.get('tags').delete(index);
+        this._handleDraftUpdate({ tags: newTags.toJS() });
         this.setState({
             draft: this.state.draft.set('tags', newTags),
             existingTags: this.state.existingTags.filter(tg => tg !== tag),
             validationErrors: this.state.validationErrors.filter(err => err.field !== 'tags')
-        }, () => {
-            this._handleDraftUpdate({ tags: this.state.draft.get('tags').toJS() });
         });
     };
     _handleDraftUpdate = (obj) => {
@@ -312,6 +309,7 @@ class PublishPanel extends React.Component {
                         validationErrors.filter(ve => ve.field === 'title')
                               .map(err => `${err.error}`)[0]
                     }
+                    errorStyle={{ position: 'absolute', bottom: '-8px' }}
                   />
                 </div>
                 {/* <div className="col-xs-12 field">
@@ -358,6 +356,7 @@ class PublishPanel extends React.Component {
                         validationErrors.filter(ve => ve.field === 'excerpt')
                               .map(err => `${err.error}`)[0]
                     }
+                    errorStyle={{ position: 'absolute', bottom: '-8px' }}
                   />
                 </div>
                 <div className="col-xs-12" style={{ marginBottom: 32 }}>

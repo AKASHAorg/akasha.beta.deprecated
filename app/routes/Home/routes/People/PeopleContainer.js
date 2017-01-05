@@ -41,7 +41,8 @@ class PeopleContainer extends Component {
         const { profileActions } = this.props;
         profileActions.getProfileList(RECOMMENDED_PEOPLE);
         if (this.container) {
-            this.container.addEventListener('scroll', throttle(this.handleScroll, 500));
+            this.container.addEventListener('scroll', this.throttledScrollHandler);
+            window.addEventListener('resize', this.throttledScrollHandler);
         }
     }
 
@@ -97,6 +98,7 @@ class PeopleContainer extends Component {
         const { profileActions, loggedProfileData } = this.props;
         profileActions.clearFollowers(loggedProfileData.akashaId);
         profileActions.clearFollowing(loggedProfileData.akashaId);
+        window.removeEventListener('resize', this.throttledScrollHandler);
     }
 
     handleScroll = () => {
@@ -117,6 +119,8 @@ class PeopleContainer extends Component {
             }
         }
     };
+
+    throttledScrollHandler = throttle(this.handleScroll, 500);
 
     getTabStyle = (tab) => {
         const { palette } = this.context.muiTheme;

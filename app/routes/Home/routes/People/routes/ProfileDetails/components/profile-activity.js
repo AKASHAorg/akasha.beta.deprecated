@@ -30,7 +30,8 @@ class ProfileActivity extends Component {
 
     componentDidMount () {
         if (this.container) {
-            this.container.addEventListener('scroll', throttle(this.handleScroll, 500));
+            this.container.addEventListener('scroll', this.throttledScrollHandler);
+            window.addEventListener('resize', this.throttledScrollHandler);
         }
     }
 
@@ -105,6 +106,7 @@ class ProfileActivity extends Component {
         profileActions.clearFollowing(profileData.akashaId);
         profileActions.clearFollowers(profileData.akashaId);
         entryActions.clearProfileEntries();
+        window.removeEventListener('resize', this.throttledScrollHandler);
     }
 
     handleScroll = () => {
@@ -128,6 +130,8 @@ class ProfileActivity extends Component {
             }
         }
     };
+
+    throttledScrollHandler = throttle(this.handleScroll, 500);
 
     getTabStyle = (tab) => {
         const { palette } = this.context.muiTheme;
