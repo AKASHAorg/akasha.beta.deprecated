@@ -1,6 +1,7 @@
 /* eslint new-cap: ["error", { "capIsNewExceptions": ["Record", "Map"] }]*/
 import { fromJS, Map, Record, List } from 'immutable';
 import * as types from '../constants/CommentsConstants';
+import * as appTypes from '../constants/AppConstants';
 import { createReducer } from './create-reducer';
 
 const ErrorRecord = Record({
@@ -96,6 +97,7 @@ const commentsState = createReducer(initialState, {
             })
         ),
 
+    [appTypes.CLEAN_STORE]: state => initialState,
 });
 
 export default commentsState;

@@ -19,6 +19,8 @@ const panelState = createReducer(initialState, {
         }
         return state;
     },
+
+    [types.CLEAN_STORE]: state => initialState,
 });
 
 export default panelState;

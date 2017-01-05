@@ -187,8 +187,6 @@ class DraftActions {
             onSuccess: result => this.dispatch(draftActionCreators.getDraftByIdSuccess(result)),
             onError: error => this.dispatch(draftActionCreators.getDraftByIdError(error))
         });
-
-    clearDraftState = () => this.dispatch(draftActionCreators.clearDraftState());
 }
 
 export { DraftActions };

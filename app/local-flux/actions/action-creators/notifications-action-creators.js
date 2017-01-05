@@ -40,9 +40,3 @@ export function deleteFeedNotif (index) {
         payload: index
     };
 }
-
-export function clearNotifications () {
-    return {
-        type: types.CLEAR_NOTIFICATIONS
-    };
-}

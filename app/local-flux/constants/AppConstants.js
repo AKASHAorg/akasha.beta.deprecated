@@ -26,3 +26,5 @@ export const DELETE_PENDING_ACTION = 'DELETE_PENDING_ACTION';
 
 export const SHOW_TERMS = 'SHOW_TERMS';
 export const HIDE_TERMS = 'HIDE_TERMS';
+
+export const CLEAN_STORE = 'CLEAN_STORE';

@@ -133,9 +133,3 @@ export function getUserSettingsError (error) {
         error
     };
 }
-
-export function clearUserSettings () {
-    return {
-        type: types.CLEAR_USER_SETTINGS
-    };
-}

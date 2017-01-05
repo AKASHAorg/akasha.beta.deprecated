@@ -2,6 +2,7 @@
 import { fromJS, List, Record, Map, Set } from 'immutable';
 import { createReducer } from './create-reducer';
 import * as types from '../constants/DraftConstants';
+import * as appTypes from '../constants/AppConstants';
 
 const ErrorRecord = Record({
     code: '',
@@ -196,7 +197,7 @@ const draftState = createReducer(initialState, {
             flags: state.get('flags').merge(flags)
         }),
 
-    [types.CLEAR_DRAFT_STATE]: state => initialState,
+    [appTypes.CLEAN_STORE]: state => initialState,
 });
 
 export default draftState;
