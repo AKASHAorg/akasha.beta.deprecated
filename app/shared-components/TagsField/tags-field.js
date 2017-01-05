@@ -2,6 +2,7 @@ import React from 'react';
 import { injectIntl } from 'react-intl';
 import { AutoComplete, Chip, IconButton } from 'material-ui';
 import debounce from 'lodash.debounce';
+import throttle from 'lodash.throttle';
 import AddIcon from 'material-ui/svg-icons/content/add';
 import RemoveIcon from 'material-ui/svg-icons/navigation/close';
 import PendingIcon from 'material-ui/svg-icons/action/schedule';
@@ -17,12 +18,17 @@ const TAB = 'Tab';
 class TagsField extends React.Component {
     constructor (props) {
         super(props);
+        this.inputWidth = null;
         this.state = {
             tagString: '',
             erroredTags: [],
             dataSource: []
         };
         Channel.client.tags.searchTag.on(this.hydrateDataSource);
+    }
+
+    componentDidMount () {
+        this._tagsInput.focus();
     }
 
     componentWillUnmount () {
@@ -64,6 +70,21 @@ class TagsField extends React.Component {
     }, 210);
 
     _handleInputChange = (ev) => {
+        const { intl } = this.props;
+        if (this.state.tagString.length >= 24 && ev.target.value.length >= 24) {
+            this.setState({
+                error: intl.formatMessage(formMessages.tooLongError)
+            });
+            return;
+        }
+        const span = document.createElement('span');
+        span.style.visibility = 'hidden';
+        span.style.fontSize = '16px';
+        span.style.whiteSpace = 'pre';
+        span.innerHTML = ev.target.value;
+        document.body.appendChild(span);
+        this.inputWidth = span.getBoundingClientRect().width + 3 + 'px';
+        document.body.removeChild(span);
         this.setState({
             tagString: ev.target.value,
             error: null
@@ -75,7 +96,7 @@ class TagsField extends React.Component {
 
     _handleKeyDown = (ev) => {
         if (ev.key === BACKSPACE && this.state.tagString.length === 0) {
-            this.props.onDelete(this.props.tags.length - 1);
+            this._delayedDelete();
         }
         if (ev.key === TAB && this.state.tagString.length > 0) {
             ev.preventDefault();
@@ -87,6 +108,8 @@ class TagsField extends React.Component {
         }
     }
 
+    _delayedDelete = throttle(() => this.props.onDelete(this.props.tags.length - 1), 100);
+
     _handleDeleteTag = (ev, index) => {
         this.props.onDelete(index);
     };
@@ -95,6 +118,7 @@ class TagsField extends React.Component {
         const { intl } = this.props;
         const currentTags = this.props.tags;
         const tag = this.state.tagString.trim().toLowerCase();
+        this.inputWidth = null;
         if (currentTags.indexOf(tag) > -1) {
             const errorMessage = intl.formatMessage(formMessages.tagAlreadyAdded, { tag });
             return this.setState({
@@ -241,11 +265,11 @@ class TagsField extends React.Component {
             errorText={this.state.error || errorText}
             underlineStyle={{ bottom: '-4px' }}
             underlineShow={(currentTags.length < 10)}
-            errorStyle={{ bottom: '-18px' }}
+            errorStyle={{ position: 'absolute', bottom: '-20px' }}
             onChange={this._handleInputChange}
             value={this.state.tagString}
             onBlur={this._handleInputBlur}
-            onClick={() => this._tagsInput.focus()}
+            onClick={() => this._tagsInput && this._tagsInput.focus()}
             onNewRequest={this._handleSelect}
             dataSource={this.state.dataSource}
             textFieldStyle={{ minHeight: '48px', height: 'inherit' }}
@@ -260,16 +284,14 @@ class TagsField extends React.Component {
                       border: 'inherit',
                       verticalAlign: 'middle',
                       height: '32px',
-                      width: '70px'
+                      width: this.inputWidth || 0,
+                      minWidth: '70px'
                   }}
                   type="text"
                   onChange={this._handleInputChange}
                   value={this.state.tagString}
-                  placeholder={
-                      currentTags.length < 10 ?
-                      `add a tag (${10 - currentTags.length} max remaining)` :
-                      'add a tag (paid)'
-                  }
+                  maxLength="24"
+                  placeholder="add a tag"
                   onKeyPress={this._handleTagDetect}
                   onKeyDown={this._handleKeyDown}
                   disabled={currentTags.length >= 10}

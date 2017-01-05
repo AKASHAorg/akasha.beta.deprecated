@@ -106,7 +106,7 @@ class AddEntryPage extends Component {
      *   tags: []
      * }
      */
-    _saveDraft = () => {
+    _saveDraft = (showNotification = true) => {
         const { draftActions, params, drafts } = this.props;
         let { defaultLicence } = this.props;
         const draft = this.editor.getRawContent();
@@ -115,8 +115,9 @@ class AddEntryPage extends Component {
         const wordCount = getWordCount(contentState);
         const excerpt = contentState.getPlainText().slice(0, 160).replace(/\r?\n|\r/g, '');
         const akashaId = params.akashaId;
-        const showNotification = true;
-        if (!defaultLicence) defaultLicence = { parent: null, id: '1' };
+        if (!defaultLicence) {
+            defaultLicence = { parent: null, id: '1' };
+        }
         if (params.draftId !== 'new') {
             const draftId = parseInt(params.draftId, 10);
             const currentDraft = this._findCurrentDraft(drafts);
@@ -148,7 +149,7 @@ class AddEntryPage extends Component {
     };
     _setupEntryForPublication = () => {
         const { params } = this.props;
-        this._saveDraft().then((draft) => {
+        this._saveDraft(false).then((draft) => {
             let draftId;
             if (draft.id) {
                 draftId = draft.id;
