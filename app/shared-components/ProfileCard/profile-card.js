@@ -71,7 +71,8 @@ class ProfileCard extends Component {
             textOverflow: 'ellipsis',
             border: '0px',
             outline: 'none',
-            background: 'transparent'
+            background: 'transparent',
+            width: '100%'
         };
         const actionsStyle = {
             display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '0 0 10px'
@@ -81,7 +82,7 @@ class ProfileCard extends Component {
 
         return (
           <Paper
-            style={{ width: '215px', margin: '10px', display: 'flex', flexDirection: 'column' }}
+            style={{ width: '214px', margin: '10px', display: 'flex', flexDirection: 'column' }}
           >
             <div style={{ display: 'flex', justifyContent: 'center', padding: '15px' }}>
               <button
