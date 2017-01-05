@@ -92,7 +92,7 @@ class Comment extends React.Component {
                 <CardHeader
                   style={{ padding: 0 }}
                   titleStyle={{ fontSize: '100%' }}
-                  subtitleStyle={{ fontSize: '80%' }}
+                  subtitleStyle={{ paddingLeft: '2px', fontSize: '80%' }}
                   title={
                     <FlatButton
                       label={authorName}
