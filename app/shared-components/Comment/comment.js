@@ -17,6 +17,8 @@ import { entryMessages } from 'locale-data/messages';
 import { getInitials, getWordCount } from 'utils/dataModule'; // eslint-disable-line import/no-unresolved, import/extensions
 import style from './comment.scss';
 
+const REPLIES_ENABLED = false;
+
 class Comment extends React.Component {
     constructor (props) {
         super(props);
@@ -123,6 +125,11 @@ class Comment extends React.Component {
                   }
                 />
               </div>
+              {!isPublishing && REPLIES_ENABLED &&
+                <div className={'col-xs-7 end-xs'}>
+                  <div onClick={this.props.onReply}>Reply</div>
+                </div>
+              }
               {isPublishing &&
                 <div className={'col-xs-7 end-xs'}>
                   <CircularProgress size={32} />
@@ -148,14 +155,14 @@ class Comment extends React.Component {
             }
             {isExpanded !== null &&
               <div style={{ paddingTop: 16, fontSize: 12, textAlign: 'center' }}>
-                {(this.state.isExpanded === false) &&
+                {(isExpanded === false) &&
                   <IconButton onClick={ev => this._toggleExpanded(ev, true)}>
                     <SvgIcon>
                       <MoreIcon />
                     </SvgIcon>
                   </IconButton>
                 }
-                {this.state.isExpanded &&
+                {isExpanded &&
                   <IconButton onClick={ev => this._toggleExpanded(ev, false)}>
                     <SvgIcon>
                       <LessIcon />
@@ -181,7 +188,8 @@ Comment.propTypes = {
     loggedProfile: React.PropTypes.shape(),
     comment: React.PropTypes.shape(),
     intl: React.PropTypes.shape(),
-    onAuthorNameClick: React.PropTypes.func
+    onAuthorNameClick: React.PropTypes.func,
+    onReply: React.PropTypes.func
 };
 Comment.contextTypes = {
     router: React.PropTypes.shape(),

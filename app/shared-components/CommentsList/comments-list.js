@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
 import { entryMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
 import Comment from '../Comment/comment';
+import { CommentEditor } from 'shared-components';
 
 class CommentsList extends Component {
     constructor (props) {
@@ -38,6 +39,11 @@ class CommentsList extends Component {
     _handleNavigation = (to) => {
         const { loggedProfile } = this.props;
         this.context.router.push(`${loggedProfile.get('akashaId')}/${to}`);
+    }
+    _handleReply = (ev, parentCommentId) => {
+        this.setState({
+            replyTo: parentCommentId
+        });
     }
     _handleScroll = () => {
         const { fetchLimit, commentsCount, onLoadMoreRequest, entryId } = this.props;
@@ -83,15 +89,23 @@ class CommentsList extends Component {
                 onAuthorNameClick={this._handleNavigation}
               />
             )}
-            {comments.map((comment, key) =>
+            {comments.filter(comm => comm.getIn(['data', 'parent']) === '0').map((comment, key) =>
               <Comment
                 key={`${key}-fetchedComments`}
                 comment={comment}
                 loggedProfile={loggedProfile}
                 entryAuthorProfile={entryAuthorProfile}
-                onReply={ev => this._handleReply(ev, 'comment')}
+                onReply={ev => this._handleReply(ev, comment.get('commentId'))}
                 onAuthorNameClick={this._handleNavigation}
-              />
+              >
+                {this.state.replyTo === comment.get('commentId') &&
+                  <CommentEditor
+                    profileAvatar={this.props.profileAvatar}
+                    profileUserInitials={this.props.profileUserInitials}
+                    onCommentCreate={this.props.onReplyCreate}
+                  />
+                }
+              </Comment>
             )}
             {(!this.state.loadMoreReq && fetchingComments) &&
               <div style={{ padding: '16px 0', textAlign: 'center' }}>
