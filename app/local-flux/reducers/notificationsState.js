@@ -1,5 +1,6 @@
 import { fromJS } from 'immutable';
 import * as types from '../constants/NotificationsConstants';
+import * as appTypes from '../constants/AppConstants';
 import { createReducer } from './create-reducer';
 
 const initialState = fromJS({
@@ -57,7 +58,7 @@ const notificationsState = createReducer(initialState, {
         const feedNotifs = state.get('notifFeed').delete(action.payload);
         return state.merge({ notifFeed: feedNotifs });
     },
-    [types.CLEAR_NOTIFICATIONS]: state => initialState,
+    [appTypes.CLEAN_STORE]: state => initialState,
 });
 
 export default notificationsState;

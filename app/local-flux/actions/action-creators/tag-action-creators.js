@@ -203,12 +203,6 @@ export function clearNewestTags () {
     };
 }
 
-export function clearSelectedTag () {
-    return {
-        type: types.CLEAR_SELECTED_TAG
-    };
-}
-
 export function subscribeTag (flags) {
     return {
         type: types.SUBSCRIBE_TAG,

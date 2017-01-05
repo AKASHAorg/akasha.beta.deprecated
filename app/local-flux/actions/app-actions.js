@@ -78,6 +78,8 @@ class AppActions {
     showTerms = () => this.dispatch(appActionCreators.showTerms());
 
     hideTerms = () => this.dispatch(appActionCreators.hideTerms());
+
+    cleanStore = () => this.dispatch(appActionCreators.cleanStore());
 }
 
 export { AppActions };

@@ -1,6 +1,7 @@
 /* eslint new-cap: ["error", { "capIsNewExceptions": ["Record"] }]*/
 import { fromJS, Record, List } from 'immutable';
 import * as types from '../constants/SettingsConstants';
+import * as appTypes from '../constants/AppConstants';
 import * as eProcTypes from '../constants/external-process-constants';
 import { createReducer } from './create-reducer';
 
@@ -199,11 +200,6 @@ const settingsState = createReducer(initialState, {
             errors: state.get('errors').push(new ErrorRecord(error)),
         }),
 
-    [types.CLEAR_USER_SETTINGS]: state =>
-        state.merge({
-            userSettings: new UserSettings()
-        }),
-
     [types.CHANGE_THEME]: (state, action) => state.updateIn(['general', 'theme'], () => action.theme),
 
     [eProcTypes.GET_GETH_OPTIONS_SUCCESS]: (state, action) => {
@@ -250,7 +246,12 @@ const settingsState = createReducer(initialState, {
             ipfs: state.get('ipfs').merge({
                 ports: new Ports()
             })
-        })
+        }),
+
+    [appTypes.CLEAN_STORE]: state =>
+        state.merge({
+            userSettings: new UserSettings()
+        }),
 });
 
 export default settingsState;

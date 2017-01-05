@@ -35,5 +35,3 @@ export const RESET_SETTINGS = 'RESET_SETTINGS';
 
 // general
 export const CHANGE_THEME = 'CHANGE_THEME';
-
-export const CLEAR_USER_SETTINGS = 'CLEAR_USER_SETTINGS';
