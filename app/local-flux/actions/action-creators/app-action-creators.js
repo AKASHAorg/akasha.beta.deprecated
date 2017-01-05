@@ -151,3 +151,9 @@ export function hideTerms () {
         type: types.HIDE_TERMS
     };
 }
+
+export function cleanStore () {
+    return {
+        type: types.CLEAN_STORE
+    }
+}

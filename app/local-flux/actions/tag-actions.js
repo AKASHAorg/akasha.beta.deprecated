@@ -264,8 +264,5 @@ class TagActions {
 
     clearNewestTags = () =>
         this.dispatch(tagActionCreators.clearNewestTags());
-
-    clearSelectedTag = () =>
-        this.dispatch(tagActionCreators.clearSelectedTag());
 }
 export { TagActions };

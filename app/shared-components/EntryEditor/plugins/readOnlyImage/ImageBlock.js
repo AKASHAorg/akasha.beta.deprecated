@@ -41,8 +41,11 @@ class ImageBlock extends Component {
     _getImageSrc = () => {
         const { files, media } = this.props.data;
         const { width } = this.props;
-        const widths = [320, 700, 1280];
-        const fileKey = findClosestMatch(widths[width - 1], files, media);
+        const widths = [320, 700, 1280, 1920];
+        let fileKey = findClosestMatch(widths[width], files, media);
+        if ((media === 'xl' || media === 'xxl') && this.baseNodeRef) {
+            fileKey = findClosestMatch(this.baseNodeRef.parentNode.clientWidth, files, media);
+        }
         // @todo: [code: 3ntry3] get rid of this too;
         return `${window.entry__baseUrl}/${files[fileKey].src}`;
     }
@@ -81,7 +84,7 @@ ImageBlock.propTypes = {
 };
 
 export default withWidth({
-    largeWidth: 1280,
-    mediumWidth: 700,
+    largeWidth: 1920,
+    mediumWidth: 728,
     smallWidth: 320
 })(ImageBlock);

@@ -98,7 +98,6 @@ class SettingsActions {
             onSuccess: data => this.dispatch(settingsActionCreators.getUserSettingsSuccess(data)),
             onError: error => this.dispatch(settingsActionCreators.getUserSettingsError(error))
         });
-
-    clearUserSettings = () => this.dispatch(settingsActionCreators.clearUserSettings());
 }
+
 export { SettingsActions };

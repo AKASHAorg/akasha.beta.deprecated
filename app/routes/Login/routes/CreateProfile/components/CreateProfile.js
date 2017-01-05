@@ -20,7 +20,6 @@ class CreateProfile extends Component {
         this.state = {
             formValues: {
                 firstName: '',
-                lastName: '',
                 akashaId: '',
                 password: '',
                 password2: ''
@@ -224,9 +223,9 @@ class CreateProfile extends Component {
             ref: 'lastName',
             style: { marginLeft: '20px', verticalAlign: 'middle', width: '47%' },
             statePath: 'formValues.lastName',
-            required: true,
+            required: false,
             addValueLink: true,
-            onBlur: this.props.handleValidation('formValues.lastName')
+            // onBlur: this.props.handleValidation('formValues.lastName')
         });
 
         const akashaIdProps = this.getProps({
