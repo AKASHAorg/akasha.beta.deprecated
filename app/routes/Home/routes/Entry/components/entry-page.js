@@ -280,7 +280,7 @@ class EntryPage extends Component {
                     className={`${styles.entry_infos}`}
                     style={{ display: 'flex', alignItems: 'center', padding: '8px 0' }}
                   >
-                    <span style={{ textDecoration: 'underline', paddingRight: '10px' }}>
+                    <span style={{ paddingRight: '10px' }}>
                         {licenceLabel}
                     </span>
                     {this.renderLicenceIcons()}
