@@ -3,7 +3,7 @@ import { constructed as contracts } from '../../contracts/index';
 import { getCommentContent } from './ipfs';
 import { SHORT_WAIT_TIME } from '../../config/settings';
 import getProfile from '../profile/profile-data';
-
+//import { GethConnector } from '@akashaproject/geth-connector';
 /**
  * Get comment data for an entry
  * @type {Function}
