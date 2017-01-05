@@ -10,7 +10,8 @@ class Avatar extends React.Component {
         super(props);
         this.state = {
             avatarImage: null,
-            avatarScale: props.avatarScale || 1.2
+            avatarScale: props.avatarScale || 1.2,
+            imageLoaded: false
         };
     }
     componentWillUnmount () {
@@ -58,6 +59,12 @@ class Avatar extends React.Component {
             this.props.onClick(ev);
         }
     }
+    onImageLoad = () => {
+        this.setState({
+            imageLoaded: true
+        });
+    }
+
     render () {
         const {
               radius,
@@ -117,8 +124,13 @@ class Avatar extends React.Component {
                   <img
                     src={avatarImage}
                     style={{
-                        width: radius, height: radius, borderRadius: '50%', imageRendering: 'auto'
+                        display: this.state.imageLoaded ? 'initial' : 'none',
+                        width: radius,
+                        height: radius,
+                        borderRadius: '50%',
+                        imageRendering: 'auto'
                     }}
+                    onLoad={this.onImageLoad}
                   />
                 }
                 {editable &&
@@ -140,7 +152,26 @@ class Avatar extends React.Component {
                     </div>
                   </div>
                 }
-                {!editable && avatarImage &&
+                {!this.state.imageLoaded && !editable &&
+                  <div
+                    style={{
+                        ...avatarEmptyStyle,
+                        width: radius,
+                        height: radius,
+                        border: `1px solid ${palette.borderColor}`
+                    }}
+                  >
+                    <AccountIcon
+                      style={{
+                          width: radius - 1,
+                          height: radius - 1,
+                          backgroundColor: palette.disabledColor,
+                          fill: palette.canvasColor
+                      }}
+                    />
+                  </div>
+                }
+                {!editable &&
                     <div
                       style={{
                           position: 'absolute',
@@ -193,8 +224,8 @@ class Avatar extends React.Component {
                 {!userInitials && !editable &&
                   <AccountIcon
                     style={{
-                        width: '99px',
-                        height: '99px',
+                        width: radius - 1,
+                        height: radius - 1,
                         backgroundColor: palette.disabledColor,
                         fill: palette.canvasColor
                     }}
