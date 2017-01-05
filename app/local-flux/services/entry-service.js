@@ -318,6 +318,16 @@ class EntryService extends BaseService {
         }, () => {
             Channel.server.entry.claim.send({ entryId, token, gas });
         });
+
+    pinEntry = ({ operation, entryId, onError = () => {}, onSuccess = () => {} }) =>
+        this.openChannel({
+            clientManager: this.clientManager,
+            serverChannel: Channel.server.entry.pin,
+            clientChannel: Channel.client.entry.pin,
+            listenerCb: this.createListener(onError, onSuccess)
+        }, () => {
+            Channel.server.entry.pin.send({ id: entryId, type: 2, operation });
+        });
 }
 
 export { EntryService };

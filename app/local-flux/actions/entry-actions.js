@@ -61,6 +61,7 @@ class EntryActions {
     };
     saveEntry = (akashaId, entryId) => {
         this.dispatch(entryActionCreators.saveEntry({ savingEntry: true }));
+        this.entryService.pinEntry({ operation: 1, entryId });
         this.entryService.saveEntry({
             akashaId,
             entry: { entryId },
@@ -76,6 +77,7 @@ class EntryActions {
     };
     deleteEntry = (akashaId, entryId) => {
         this.dispatch(entryActionCreators.deleteEntry({ deletingEntry: true }));
+        this.entryService.pinEntry({ operation: 2, entryId });
         this.entryService.deleteEntry({
             akashaId,
             entryId,
