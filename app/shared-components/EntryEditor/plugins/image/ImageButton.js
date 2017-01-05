@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { insertDataBlock } from 'megadraft';
-import { IconButton, Dialog, FlatButton, RaisedButton, SelectField, MenuItem } from 'material-ui';
+import { IconButton } from 'material-ui';
 import { getResizedImages, findClosestMatch } from 'utils/imageUtils'; // eslint-disable-line import/no-unresolved, import/extensions
-import PhotoCircle from 'material-ui/svg-icons/image/add-a-photo';
+import PhotoCircle from 'material-ui/svg-icons/image/photo-camera';
 
 export default class BlockButton extends Component {
     constructor (props) {
@@ -28,8 +28,8 @@ export default class BlockButton extends Component {
         const files = this.fileInput.files;
         const filePromises = getResizedImages([files[0].path], { minWidth: 320 });
         Promise.all(filePromises).then((results) => {
-            const files = results[0];
-            const bestKey = findClosestMatch(1280, files);
+            const fileRes = results[0];
+            const bestKey = findClosestMatch(768, fileRes);
             const data = {
                 files: results[0],
                 type: 'image',
@@ -67,12 +67,16 @@ export default class BlockButton extends Component {
                   borderRadius: '50%',
                   border: '1px solid #444'
               }}
+              iconStyle={{
+                  fill: 'transparent',
+                  stroke: '#444',
+                  strokeWidth: '1px',
+                  width: 20,
+                  height: 20
+              }}
+              title="Add an image"
             >
-              <PhotoCircle
-                style={{
-                    transform: 'scale(0.75)'
-                }}
-              />
+              <PhotoCircle />
             </IconButton>
             <input
               ref={((input) => { this.fileInput = input; })}
@@ -87,5 +91,6 @@ export default class BlockButton extends Component {
 BlockButton.propTypes = {
     onChange: React.PropTypes.func,
     editorState: React.PropTypes.shape(),
-    onClick: React.PropTypes.func
+    onClick: React.PropTypes.func,
+    onError: React.PropTypes.func
 };

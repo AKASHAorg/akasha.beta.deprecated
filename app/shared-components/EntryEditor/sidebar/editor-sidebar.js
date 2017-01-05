@@ -67,11 +67,11 @@ class SideBar extends Component {
             return;
         }
         const containerTop =
-            (container.getBoundingClientRect().top + 16) - document.documentElement.clientTop;
+            (container.getBoundingClientRect().top) - document.documentElement.clientTop;
         const cursorNode = element.querySelector('span');
-        const left = cursorNode.offsetLeft - 50;
+        const left = cursorNode.offsetLeft - 46;
         let top = element.getBoundingClientRect().top - containerTop;
-        top = Math.floor(top) + 8;
+        top = Math.floor(top);
 
         this.setState({
             sidebarVisible: true,

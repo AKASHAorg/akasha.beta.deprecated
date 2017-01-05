@@ -5,6 +5,7 @@
  */
  .megadraft-editor .DraftEditor-root {
      font-size: 20px;
+     cursor: text;
  }
 .megadraft-editor {
     [data-block=true],
@@ -43,6 +44,7 @@
     margin: 0 auto;
     margin-top: 8px;
     margin-bottom: 0;
+    cursor: default;
 }
 .megadraft-editor .sidemenu {
     width: auto;
@@ -69,7 +71,7 @@
 }
 .megadraft-editor .sidemenu__items {
     display: inline-block;
-    vertical-align: middle;
+    vertical-align: top;
     overflow: hidden;
     padding: 0;
     max-height: 32px;
@@ -84,6 +86,7 @@
         list-style: none;
         padding: 0;
         overflow: initial;
+        vertical-align: top;
     }
 }
 

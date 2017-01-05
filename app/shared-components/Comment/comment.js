@@ -86,7 +86,7 @@ class Comment extends React.Component {
                     <FlatButton
                       label={authorName}
                       hoverColor="transparent"
-                      style={{ height: 28, lineHeight: '28px' }}
+                      style={{ height: 28, lineHeight: '28px', textAlign: 'left' }}
                       labelStyle={{
                           textTransform: 'capitalize',
                           paddingLeft: 4,

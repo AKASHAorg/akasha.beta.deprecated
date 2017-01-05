@@ -12,7 +12,8 @@ function mapStateToProps (state, ownProps) {
         entriesCount: parseInt(state.profileState.get('profiles').find(prof =>
             prof.get('akashaId') === ownProps.params.akashaId).get('entriesCount'), 10),
         draftsCount: state.draftState.get('draftsCount'),
-        defaultLicence: state.settingsState.getIn(['userSettings', 'defaultLicence'])
+        defaultLicence: state.settingsState.getIn(['userSettings', 'defaultLicence']),
+        selectedTag: state.tagState.get('selectedTag')
     };
 }
 /* eslint-disable no-unused-vars */

@@ -1,20 +1,28 @@
 import React from 'react';
 import { IconButton } from 'material-ui';
-import AddCircle from 'material-ui/svg-icons/content/add-circle-outline';
+import AddCircle from 'material-ui/svg-icons/content/add';
 
 const ToggleButton = (props) => {
-    let style = {
+    const style = {
         opacity: 0,
-        visibility: 'hidden'
+        visibility: 'hidden',
+        padding: 0,
+        width: 32,
+        height: 32,
+        border: '1px solid #444',
+        borderRadius: '50%',
     };
     if (props.open || props.isVisible) {
-        style = {
-            opacity: 1,
-            visibility: 'visible'
-        };
+        style.opacity = 1;
+        style.visibility = 'visible';
     }
     return (
-      <IconButton type="button" style={style} onClick={props.toggle}>
+      <IconButton
+        type="button"
+        style={style}
+        iconStyle={{ transform: `rotate(${props.open ? '135deg' : '0deg'})` }}
+        onClick={props.toggle}
+      >
         <AddCircle />
       </IconButton>
     );
