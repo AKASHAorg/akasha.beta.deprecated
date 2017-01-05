@@ -38,7 +38,7 @@ class EntryPage extends Component {
     }
 
     componentWillReceiveProps (nextProps) {
-        const { params, entry, entryActions, commentsActions, loggedProfile } = this.props;
+        const { params, entry, entryActions, commentsActions, loggedProfile, pendingCommentsActions } = this.props;
 
         if (params.entryId !== nextProps.params.entryId && entry.get('entryId') !== nextProps.params.entryId) {
             entryActions.getFullEntry(nextProps.params.entryId);
@@ -51,6 +51,9 @@ class EntryPage extends Component {
                 entryActions.canClaim(nextProps.entry.get('entryId'));
                 entryActions.getEntryBalance(nextProps.entry.get('entryId'));
             }
+        }
+        if (nextProps.pendingCommentsActions.size !== pendingCommentsActions.size) {
+            this.commentEditor.getWrappedInstance().resetContent();
         }
     }
 
@@ -319,6 +322,7 @@ class EntryPage extends Component {
                     profileAvatar={loggedProfileAvatar}
                     profileUserInitials={loggedProfileUserInitials}
                     onCommentCreate={this._handleCommentCreate}
+                    ref={(editor) => { this.commentEditor = editor; }}
                   />
                   <div id="comments-section" className={`${styles.comments_section}`}>
                     <div>
