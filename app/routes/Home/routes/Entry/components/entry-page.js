@@ -220,7 +220,8 @@ class EntryPage extends Component {
             savedEntries, votePending, fetchingComments } = this.props;
         const { palette } = this.context.muiTheme;
         const { publisherTitleShadow } = this.state;
-        let licence, licenceLabel;
+        let licence;
+        let licenceLabel;
         if (!entry || fetchingFullEntry) {
             return <DataLoader flag size={80} style={{ paddingTop: '120px' }} />;
         }
@@ -282,7 +283,7 @@ class EntryPage extends Component {
                     style={{ display: 'flex', alignItems: 'center', padding: '8px 0' }}
                   >
                     <span style={{ paddingRight: '10px' }}>
-                        {licenceLabel}
+                      {licenceLabel}
                     </span>
                     {this.renderLicenceIcons()}
                   </div>
@@ -331,6 +332,9 @@ class EntryPage extends Component {
                         <div>
                           <CommentsList
                             loggedProfile={loggedProfile}
+                            profileAvatar={loggedProfileAvatar}
+                            profileUserInitials={loggedProfileUserInitials}
+                            onReplyCreate={this._handleCommentCreate}
                             newlyCreatedComments={
                                 comments.filter(comm =>
                                     (!comm.get('tempTx') && !comm.getIn(['data', 'ipfsHash']) &&

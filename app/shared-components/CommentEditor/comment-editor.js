@@ -20,7 +20,6 @@ class CommentEditor extends React.Component {
     }
     _handleCommentCreate = () => {
         this.props.onCommentCreate(editorStateToJSON(this.state.editorState));
-        this._resetEditorState();
     }
     _handleCommentCancel = () => {
         this._resetEditorState();
