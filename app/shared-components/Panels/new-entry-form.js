@@ -129,7 +129,7 @@ class NewEntryFormPanel extends Component {
               <DraftCard
                 key={key}
                 headerTitle={'Draft'}
-                lastUpdated={`Last update ${draft.get('updated_at')}`}
+                lastUpdated={`Last update ${intl.formatRelative(new Date(draft.get('updated_at')))}`}
                 title={draft.getIn(['content', 'title'])}
                 excerpt={draft.getIn(['content', 'excerpt'])}
                 wordCount={draft.getIn(['content', 'wordCount'])}

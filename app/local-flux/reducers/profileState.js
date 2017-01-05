@@ -1,6 +1,7 @@
 /* eslint new-cap: ["error", { "capIsNewExceptions": ["Record"] }]*/
 import { fromJS, List, Record, Map } from 'immutable';
 import * as types from '../constants/ProfileConstants';
+import * as appTypes from '../constants/AppConstants';
 import * as tagTypes from '../constants/TagConstants';
 import { createReducer } from './create-reducer';
 
@@ -501,7 +502,8 @@ const profileState = createReducer(initialState, {
                     parseInt(state.getIn(['profiles', profileIndex, 'subscriptionsCount']), 10) - 1
             })
         });
-    }
+    },
+    [appTypes.CLEAN_STORE]: state => initialState,
 });
 
 export default profileState;

@@ -1,6 +1,7 @@
 /* eslint new-cap: [2, {capIsNewExceptions: ["Record"]}] */
 import { fromJS, List, Map, Record } from 'immutable';
 import * as types from '../constants/TagConstants';
+import * as appTypes from '../constants/AppConstants';
 import * as entryTypes from '../constants/EntryConstants';
 import { createReducer } from './create-reducer';
 
@@ -193,11 +194,6 @@ const tagState = createReducer(initialState, {
             newestTags: new List()
         }),
 
-    [types.CLEAR_SELECTED_TAG]: state =>
-        state.merge({
-            selectedTag: null
-        }),
-
     [entryTypes.GET_ENTRIES_STREAM_SUCCESS]: (state, { data }) => {
         if (state.get('selectedTag') === null) {
             return state.merge({
@@ -239,7 +235,10 @@ const tagState = createReducer(initialState, {
 
     [types.UNSUBSCRIBE_TAG_SUCCESS]: subscribeFlagHandler,
 
-    [types.UNSUBSCRIBE_TAG_ERROR]: subscribeFlagHandler
+    [types.UNSUBSCRIBE_TAG_ERROR]: subscribeFlagHandler,
+
+    [appTypes.CLEAN_STORE]: state => initialState,
+
 });
 
 export default tagState;

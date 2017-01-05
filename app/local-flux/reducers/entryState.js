@@ -2,6 +2,7 @@
 import { fromJS, List, Record, Map } from 'immutable';
 import { createReducer } from './create-reducer';
 import * as types from '../constants/EntryConstants';
+import * as appTypes from '../constants/AppConstants';
 
 const ErrorRecord = Record({
     code: '',
@@ -497,7 +498,9 @@ const entryState = createReducer(initialState, {
 
     [types.CLAIM_SUCCESS]: claimFlagHandler,
 
-    [types.CLAIM_ERROR]: claimFlagHandler
+    [types.CLAIM_ERROR]: claimFlagHandler,
+
+    [appTypes.CLEAN_STORE]: state => initialState,
 });
 
 export default entryState;
