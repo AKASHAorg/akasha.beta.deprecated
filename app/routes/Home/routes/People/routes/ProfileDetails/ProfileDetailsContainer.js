@@ -76,6 +76,7 @@ class ProfileDetailsContainer extends Component {
               followProfile={this.followProfile}
               unfollowProfile={this.unfollowProfile}
               followPending={followPending}
+              showNotification={appActions.showNotification}
               showPanel={appActions.showPanel}
             />
             <ProfileActivity
