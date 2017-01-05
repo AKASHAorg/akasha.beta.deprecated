@@ -1,5 +1,3 @@
-import r from 'ramda';
-
 /**
  * Utility to extract best matching image key given a width
  * @param width <number> a given width
@@ -14,16 +12,16 @@ import r from 'ramda';
  * @returns imageKey <string> a key of obj
  */
 function findClosestMatch (width, obj, initialKey) {
-    let curr = initialKey ? obj[initialKey].width : 0;
     let imageKey = initialKey || '';
-    let diff = Math.abs(width - curr);
-    for (const key of Object.keys(obj)) {
-        const newDiff = Math.abs(width - obj[key].width);
-        if (newDiff < diff) {
-            diff = newDiff;
-            curr = obj[key].width;
+    const sortedKeys = Object.keys(obj).sort((a, b) => obj[a].width > obj[b].width);
+    for (let i = sortedKeys.length - 1; i >= 0; i -= 1) {
+        const key = sortedKeys[i];
+        if (obj[key].width >= width) {
             imageKey = key;
         }
+    }
+    if (!imageKey) {
+        imageKey = sortedKeys[sortedKeys.length - 1];
     }
     return imageKey;
 }
@@ -81,14 +79,14 @@ function extractImageFromContent (content) {
  */
 const imageWidths = [
     {
+        key: 'xxl',
+        res: 1920
+    }, {
         key: 'xl',
         res: 1280
     }, {
-        key: 'lg',
-        res: 1024
-    }, {
         key: 'md',
-        res: 768
+        res: 700
     }, {
         key: 'sm',
         res: 640
@@ -151,8 +149,8 @@ function readImageData (imagePath, canvas, ctx, options) {
             }
             const blobsPromise = [];
             for (let i = availableWidths.length - 1; i >= 0; i -= 1) {
-                canvas.width = availableWidths[i].res;
-                canvas.height = availableWidths[i].res / aspectRatio;
+                ctx.canvas.width = availableWidths[i].res;
+                ctx.canvas.height = availableWidths[i].res / aspectRatio;
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                 blobsPromise.push(convertToBlob(canvas, availableWidths[i]));
             }

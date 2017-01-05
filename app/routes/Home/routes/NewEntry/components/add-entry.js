@@ -175,10 +175,10 @@ class AddEntryPage extends Component {
         return headerTitle;
     }
     _handleDraftDelete = () => {
-        const { params, draftActions } = this.props;
+        const { params, draftActions, selectedTag } = this.props;
         const { draftId } = params;
         draftActions.deleteDraft(parseInt(draftId, 10));
-        this.context.router.replace(`/${params.akashaId}/explore/tag`);
+        this.context.router.replace(`/${params.akashaId}/explore/tag/${selectedTag}`);
     }
     _getDraftContent = () => {
         const { drafts } = this.props;
@@ -317,7 +317,8 @@ AddEntryPage.propTypes = {
     defaultLicence: React.PropTypes.shape(),
     location: React.PropTypes.shape({
         pathname: React.PropTypes.string
-    })
+    }),
+    selectedTag: React.PropTypes.string
 };
 AddEntryPage.contextTypes = {
     router: React.PropTypes.shape()

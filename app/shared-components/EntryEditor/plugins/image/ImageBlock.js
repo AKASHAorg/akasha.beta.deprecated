@@ -36,6 +36,11 @@ class ImageBlock extends Component {
     componentDidMount () {
         this.setImageSrc();
     }
+    componentDidUpdate (prevProps, prevState) {
+        if (prevState.previewImage !== this.state.previewImage) {
+            this.setImageSrc();
+        }
+    }
     // this method will get the `best fit` image based on current container`s width;
     // because we want to be efficient :)
     setImageSrc = () => {
@@ -50,12 +55,8 @@ class ImageBlock extends Component {
         const baseNode = this.baseNodeRef;
         const containerWidth = baseNode.parentNode.clientWidth;
         const imageFiles = this.props.data.files;
-
-        if (!imageKey && imageKey === '') {
+        if (imageKey === 'xl') {
             imageKey = findClosestMatch(containerWidth, imageFiles, this.state.previewImage);
-        }
-        if (imageKey === 'xl' || imageKey === 'lg') {
-            imageKey = 'md';
         }
         this.props.container.updateData({ media: imageKey });
         this.setState({
@@ -125,7 +126,7 @@ class ImageBlock extends Component {
                 width: 700
             };
         }
-        if (previewImage === 'lg') {
+        if (previewImage === 'xl') {
             if (this.baseNodeRef) this.baseNodeRef.parentNode.parentNode.style.float = 'none';
             return {
                 margin: '0 auto',
@@ -156,7 +157,7 @@ class ImageBlock extends Component {
               >
                 <ToolbarGroup>
                   <SelectField
-                    value={(previewImage === 'xl') ? 'lg' : previewImage}
+                    value={(previewImage === 'xxl') ? 'xl' : previewImage}
                     onChange={this._handleSizeChange}
                   >
                     {files.xs &&
@@ -181,14 +182,14 @@ class ImageBlock extends Component {
                         primaryText={'Normal'}
                       />
                     }
-                    {(files.lg || files.xl) &&
+                    {(files.xl || files.xxl) &&
                       <MenuItem
                         leftIcon={
                           <SvgIcon>
                             <ImageSizeLarge />
                           </SvgIcon>
                         }
-                        value={'lg'}
+                        value={'xl'}
                         primaryText={'Large'}
                       />
                     }
@@ -206,10 +207,11 @@ class ImageBlock extends Component {
                   alt=""
                 />
               </CardMedia>
-              <CardText style={{ padding: 0, marginTop: 8 }}>
+              <CardText style={{ padding: 0, marginTop: 8, borderBottom: '1px solid #F5F5F5' }}>
                 <TextField
                   className={`${styles.caption}`}
                   hintText="image caption"
+                  style={{ height: 'auto' }}
                   hintStyle={{
                       textAlign: 'center',
                       color: isCardEnabled ? '#4285f4' : '#DDD',
@@ -252,7 +254,7 @@ ImageBlock.propTypes = {
 };
 
 export default withWidth({
-    largeWidth: 920,
-    mediumWidth: 600,
+    largeWidth: 1920,
+    mediumWidth: 700,
     smallWidth: 320
 })(clickAway(ImageBlock));

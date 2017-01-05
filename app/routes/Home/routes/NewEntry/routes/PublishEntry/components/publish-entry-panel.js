@@ -3,12 +3,9 @@ import { TextField, RaisedButton } from 'material-ui';
 import { injectIntl } from 'react-intl';
 /* eslint import/no-unresolved: 0, import/extensions: 0 */
 import PanelContainer from 'shared-components/PanelContainer/panel-container';
-import ImageUploader from 'shared-components/ImageUploader/image-uploader';
 import LicenceDialog from 'shared-components/Dialogs/licence-dialog';
 import TagsField from 'shared-components/TagsField/tags-field';
 import { TagService } from 'local-flux/services';
-import { findBestMatch } from 'utils/imageUtils';
-import { convertFromRaw } from 'draft-js';
 
 class PublishPanel extends React.Component {
     constructor (props) {
@@ -85,7 +82,7 @@ class PublishPanel extends React.Component {
             draft: this.state.draft.mergeIn(['content', 'licence'], selectedLicence),
             isLicencingOpen: false
         }, () => {
-            this._handleDraftUpdate({ content: {licence: selectedLicence}});
+            this._handleDraftUpdate({ content: { licence: selectedLicence } });
         });
     };
     _publishEntry = () => {
@@ -154,7 +151,7 @@ class PublishPanel extends React.Component {
             draft: this.state.draft.setIn(['tags'], newTags)
         }, () => {
             this._checkExistingTags(newTags);
-            this._handleDraftUpdate({tags: this.state.draft.get('tags').toJS()});
+            this._handleDraftUpdate({ tags: this.state.draft.get('tags').toJS() });
         });
     };
     _handleTagDelete = (index) => {
@@ -165,7 +162,7 @@ class PublishPanel extends React.Component {
             existingTags: this.state.existingTags.filter(tg => tg !== tag),
             validationErrors: this.state.validationErrors.filter(err => err.field !== 'tags')
         }, () => {
-            this._handleDraftUpdate({tags: this.state.draft.get('tags').toJS()});
+            this._handleDraftUpdate({ tags: this.state.draft.get('tags').toJS() });
         });
     };
     _handleDraftUpdate = (obj) => {
@@ -197,7 +194,8 @@ class PublishPanel extends React.Component {
                 );
             });
             return tagsPromise.then((results) => {
-                const existingTags = results.filter(tagObj => tagObj.exists).map(tag => tag.tagName);
+                const existingTags = results.filter(tagObj => tagObj.exists)
+                                            .map(tag => tag.tagName);
                 this.setState({
                     existingTags,
                     checkingTags: false,
@@ -251,8 +249,9 @@ class PublishPanel extends React.Component {
             };
         }
         return {
-            label: licence.parent ? licences.find(licenceObj => licenceObj.id === licence.parent).label :
-                licences.find(licenceObj => licenceObj.id === licence.id).label,
+            label: licence.parent ? licences.find(licenceObj =>
+                licenceObj.id === licence.parent).label :
+                    licences.find(licenceObj => licenceObj.id === licence.id).label,
             description: licence.id ?
                 licences.find(licenceObj => licenceObj.id === licence.id).description :
                 licences.find(licenceObj => licenceObj.id === licence.parent).label
@@ -352,7 +351,9 @@ class PublishPanel extends React.Component {
                     fullWidth
                     value={this.state.draft.content.excerpt}
                     onChange={this._handleExcerptChange}
-                    onBlur={ev => this._handleDraftUpdate({ content: { excerpt: ev.target.value } })}
+                    onBlur={ev => this._handleDraftUpdate({
+                        content: { excerpt: ev.target.value }
+                    })}
                     errorText={
                         validationErrors.filter(ve => ve.field === 'excerpt')
                               .map(err => `${err.error}`)[0]
@@ -392,10 +393,8 @@ PublishPanel.propTypes = {
     profiles: React.PropTypes.shape(),
     loggedProfile: React.PropTypes.shape(),
     registerPending: React.PropTypes.shape(),
-    entryActions: React.PropTypes.shape(),
     licences: React.PropTypes.shape(),
     appActions: React.PropTypes.shape(),
-    intl: React.PropTypes.shape(),
     settingsActions: React.PropTypes.shape(),
     draft: React.PropTypes.shape()
 };

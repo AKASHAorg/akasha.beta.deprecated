@@ -7,7 +7,8 @@ function mapStateToProps (state) {
         loggedProfile: state.profileState.get('loggedProfile'),
         drafts: state.draftState.get('drafts'),
         draftErrors: state.draftState.get('errors'),
-        pendingActions: state.appState.get('pendingActions')
+        pendingActions: state.appState.get('pendingActions'),
+        selectedTag: state.tagState.get('selectedTag')
     };
 }
 

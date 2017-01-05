@@ -35,9 +35,9 @@ class PublishEntryStatus extends React.Component {
         this.timeout = undefined;
     }
     _handleReturn = () => {
-        const { params } = this.props;
+        const { params, selectedTag } = this.props;
         const { router } = this.context;
-        router.replace(`/${params.akashaId}/explore/tag`);
+        router.replace(`/${params.akashaId}/explore/tag/${selectedTag}`);
     }
     _getCurrentAction = () => { // eslint-disable-line consistent-return
         const { pendingActions, params } = this.props;
@@ -114,7 +114,8 @@ PublishEntryStatus.propTypes = {
     params: React.PropTypes.shape(),
     drafts: React.PropTypes.shape(),
     draftErrors: React.PropTypes.shape(),
-    pendingActions: React.PropTypes.shape()
+    pendingActions: React.PropTypes.shape(),
+    selectedTag: React.PropTypes.string
 };
 PublishEntryStatus.contextTypes = {
     router: React.PropTypes.shape()
