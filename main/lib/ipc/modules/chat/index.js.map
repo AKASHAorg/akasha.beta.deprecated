@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","sourceRoot":"","sources":["index.ts"],"names":[],"mappings":";AAAA,wBAAkB,SAAS,CAAC,CAAA;AAC5B,uBAAiB,QAAQ,CAAC,CAAA;AAE1B;kBAAe,CAAC,eAAK,EAAE,cAAI,CAAC,CAAC","sourcesContent":["import fetch from './fetch';\nimport post from './post';\n\nexport default [fetch, post];\n"]}

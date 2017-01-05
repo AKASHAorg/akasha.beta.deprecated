@@ -35,7 +35,9 @@ const channels = {
 
     tx: ['addToQueue', 'emitMined'],
 
-    licenses: ['getLicenceById', 'getLicenses']
+    licenses: ['getLicenceById', 'getLicenses'],
+
+    chat: ['fetch', 'post']
 };
 
 const processes = ['server', 'client'];

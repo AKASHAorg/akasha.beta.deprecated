@@ -12,6 +12,7 @@ const EntryIPC_1 = require('./EntryIPC');
 const CommentsIPC_1 = require('./CommentsIPC');
 const LicensesIPC_1 = require('./LicensesIPC');
 const NotificationsIPC_1 = require('./NotificationsIPC');
+const ChatIPC_1 = require('./ChatIPC');
 function initModules() {
     const logger = Logger_1.default.getInstance();
     const ipcChannels = [
@@ -25,7 +26,8 @@ function initModules() {
         new EntryIPC_1.default(),
         new CommentsIPC_1.default(),
         new LicensesIPC_1.default(),
-        new NotificationsIPC_1.default()
+        new NotificationsIPC_1.default(),
+        new ChatIPC_1.default()
     ];
     return {
         initListeners: (webContents) => {
