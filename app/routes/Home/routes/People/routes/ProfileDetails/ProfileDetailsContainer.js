@@ -57,7 +57,7 @@ class ProfileDetailsContainer extends Component {
             fetchingProfileEntries, loggedProfileData, isFollowerPending, blockNr,
             savedEntriesIds, moreProfileEntries, fetchingMoreProfileEntries, fetchingMoreFollowers,
             fetchingMoreFollowing, tagActions } = this.props;
-        const isFollower = !fetchingProfileData && profileData &&
+        const isFollower = profileData &&
             loggedProfileData.getIn(['isFollower', profileData.get('akashaId')]);
 
         return (<DataLoader
