@@ -1,1 +1,1 @@
-export const TOPICS = ['akasha'];
+export const TOPICS = ['0x414b415348412d616c706861'];

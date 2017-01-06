@@ -5,12 +5,14 @@ const ipfs_connector_1 = require('@akashaproject/ipfs-connector');
 const path_1 = require('path');
 const index_1 = require('./lib/ipc/index');
 const feed_1 = require('./lib/ipc/modules/notifications/feed');
+const fetch_1 = require('./lib/ipc/modules/chat/fetch');
 const menu_1 = require('./menu');
 const Logger_1 = require('./lib/ipc/Logger');
 const check_version_1 = require('./check-version');
 let modules;
 const stopServices = () => {
     feed_1.default.execute({ stop: true });
+    fetch_1.default.execute({ stop: true });
     if (modules) {
         modules.flushAll();
     }
@@ -69,6 +71,7 @@ function bootstrapApp() {
         mainWindow.once('close', (ev) => {
             ev.preventDefault();
             feed_1.default.execute({ stop: true });
+            fetch_1.default.execute({ stop: true });
             modules.flushAll();
             geth_connector_1.GethConnector.getInstance().stop();
             ipfs_connector_1.IpfsConnector.getInstance().stop();

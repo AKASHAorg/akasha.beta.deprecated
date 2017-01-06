@@ -1,1 +1,1 @@
-{"version":3,"file":"settings.js","sourceRoot":"","sources":["settings.ts"],"names":[],"mappings":";AAAa,cAAM,GAAG,CAAC,QAAQ,CAAC,CAAC","sourcesContent":["export const TOPICS = ['akasha'];\n"]}
+{"version":3,"file":"settings.js","sourceRoot":"","sources":["settings.ts"],"names":[],"mappings":";AAAa,cAAM,GAAG,CAAC,4BAA4B,CAAC,CAAC","sourcesContent":["export const TOPICS = ['0x414b415348412d616c706861'];\n"]}
