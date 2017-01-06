@@ -14,7 +14,7 @@ import MoreIcon from 'material-ui/svg-icons/navigation/expand-more';
 import LessIcon from 'material-ui/svg-icons/navigation/expand-less';
 import { Avatar } from 'shared-components';
 import { entryMessages } from 'locale-data/messages';
-import { getWordCount } from 'utils/dataModule'; // eslint-disable-line import/no-unresolved, import/extensions
+import { getInitials, getWordCount } from 'utils/dataModule'; // eslint-disable-line import/no-unresolved, import/extensions
 import style from './comment.scss';
 
 class Comment extends React.Component {
@@ -54,6 +54,7 @@ class Comment extends React.Component {
         const { profile, date, content } = data;
         const { palette } = this.context.muiTheme;
         const authorName = `${profile.get('firstName')} ${profile.get('lastName')}`;
+        const authorInitials = getInitials(profile.get('firstName'), profile.get('lastName'));
         const authorAvatar = (profile.get('avatar') === `${profile.get('baseUrl')}/`) ?
             null : profile.get('avatar');
         const authorProfilePath = `profile/${profile.get('profile')}`;
@@ -114,7 +115,7 @@ class Comment extends React.Component {
                     <Avatar
                       image={authorAvatar}
                       style={{ display: 'inline-block', cursor: 'pointer' }}
-                      userInitials={authorName.match(/\b\w/g).reduce((prev, current) => prev + current, '')}
+                      userInitials={authorInitials}
                       radius={40}
                       onClick={() => { onAuthorNameClick(authorProfilePath); }}
                       userInitialsStyle={{ fontSize: 20, textTransform: 'uppercase', fontWeight: 500 }}

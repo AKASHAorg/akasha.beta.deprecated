@@ -10,6 +10,7 @@ class IpfsService extends BaseService {
     constructor () {
         super();
         this.clientManager = Channel.client.ipfs.manager;
+        this.ipfsLoggerInterval = null;
     }
 
     /**
@@ -110,7 +111,34 @@ class IpfsService extends BaseService {
         }, () =>
                 serverChannel.send(options)
         );
-    }
+    };
+
+    /**
+     *  Retrieve IPFS logs
+     */
+    getLogs = ({ options = {}, onError = () => {}, onSuccess }) => {
+        const serverChannel = Channel.server.ipfs.logs;
+        const clientChannel = Channel.client.ipfs.logs;
+
+        this.openChannel({
+            clientManager: this.clientManager,
+            serverChannel,
+            clientChannel,
+            listenerCb: this.createListener(onError, onSuccess, clientChannel.channelName)
+        }, () => {
+            this.ipfsLoggerInterval = setInterval(() => {
+                serverChannel.send(options);
+            }, 2000);
+        });
+    };
+
+    stopLogger = () => {
+        const serverChannel = Channel.server.ipfs.logs;
+        const clientChannel = Channel.client.ipfs.logs;
+
+        clearInterval(this.ipfsLoggerInterval);
+        this.closeChannel(serverChannel, clientChannel);
+    };
 }
 
 export { IpfsService };

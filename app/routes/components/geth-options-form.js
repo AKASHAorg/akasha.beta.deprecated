@@ -11,40 +11,8 @@ const floatingLabelStyle = {
 const selectStyle = { maxWidth: '120px' };
 
 class GethOptionsForm extends Component {
-
-    renderMiningDetails () {
-        const { intl, onAutodagChange, onFastChange, onMinerThreadsChange } = this.props;
-        const { palette } = this.context.muiTheme;
-        const labelStyle = Object.assign({}, floatingLabelStyle, { color: palette.disabledColor });
-
-        return (<div style={{ marginLeft: '50px' }}>
-          <Checkbox
-            label={intl.formatMessage(setupMessages.gethAutodag)}
-            checked={this.props.autoDag}
-            style={checkboxStyle}
-            onCheck={onAutodagChange}
-          />
-          <Checkbox
-            label={intl.formatMessage(setupMessages.gethFast)}
-            checked={this.props.fast}
-            style={checkboxStyle}
-            onCheck={onFastChange}
-          />
-          <SelectField
-            floatingLabelStyle={labelStyle}
-            floatingLabelText={intl.formatMessage(setupMessages.gethMinerThreads)}
-            value={this.props.minerThreads}
-            onChange={onMinerThreadsChange}
-            style={selectStyle}
-          >
-            <MenuItem key={1} value={1} primaryText="1" />
-            <MenuItem key={2} value={2} primaryText="2" />
-          </SelectField>
-        </div>);
-    }
-
     render () {
-        const { intl, gethSettings, style, onCacheChange, onMineChange } = this.props;
+        const { intl, gethSettings, style, onCacheChange } = this.props;
         const { palette } = this.context.muiTheme;
         const inputStyle = { color: palette.textColor };
         const labelStyle = Object.assign({}, floatingLabelStyle, { color: palette.disabledColor });
@@ -62,13 +30,6 @@ class GethOptionsForm extends Component {
             <MenuItem key={3} value={1536} primaryText="1536 MB" />
             <MenuItem key={4} value={2048} primaryText="2048 MB" />
           </SelectField>
-          <Checkbox
-            label={intl.formatMessage(setupMessages.gethMine)}
-            checked={this.props.mine}
-            style={checkboxStyle}
-            onCheck={onMineChange}
-          />
-          {this.props.mine && this.renderMiningDetails()}
           <TextField
             floatingLabelStyle={labelStyle}
             floatingLabelText={intl.formatMessage(setupMessages.gethDataDirPath)}
@@ -110,16 +71,8 @@ GethOptionsForm.propTypes = {
     intl: PropTypes.shape().isRequired,
     gethSettings: PropTypes.shape().isRequired,
     style: PropTypes.shape(),
-    onAutodagChange: PropTypes.func.isRequired,
-    onFastChange: PropTypes.func.isRequired,
-    onMinerThreadsChange: PropTypes.func.isRequired,
-    onMineChange: PropTypes.func.isRequired,
     onCacheChange: PropTypes.func.isRequired,
     cache: PropTypes.number,
-    mine: PropTypes.bool,
-    autoDag: PropTypes.bool,
-    fast: PropTypes.bool,
-    minerThreads: PropTypes.number,
     showSuccessMessage: PropTypes.bool
 };
 

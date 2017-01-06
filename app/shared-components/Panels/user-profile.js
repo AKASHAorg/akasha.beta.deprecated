@@ -1,8 +1,9 @@
 import React, { PropTypes, Component } from 'react';
 import { colors } from 'material-ui/styles';
 import { Paper, Tabs, Tab, List, ListItem, Avatar } from 'material-ui';
-import UserProfileHeader from './user-profile/user-profile-header';
 import ActionDelete from 'material-ui/svg-icons/action/delete';
+import { getInitials } from 'utils/dataModule';
+import UserProfileHeader from './user-profile/user-profile-header';
 
 const tabStyles = {
     default_tab: {
@@ -115,8 +116,7 @@ class UserProfilePanel extends Component {
 
     _renderFollower (event, index) {
         const { palette } = this.context.muiTheme;
-        const name = `${event.follower.firstName} ${event.follower.lastName}`;
-        const initials = name.match(/\b\w/g).reduce((prev, current) => prev + current, '');
+        const initials = getInitials(event.follower.firstName, event.follower.lastName);
         return (
           <ListItem
             leftAvatar={event.follower.avatar ?
@@ -133,19 +133,21 @@ class UserProfilePanel extends Component {
               <strong
                 onClick={() => {
                     this.navigateToProfile(event.follower.profile);
-                }} style={{ color: colors.darkBlack }}
+                }}
+                style={{ color: colors.darkBlack }}
               >
                 {event.follower.akashaId}
               </strong>
                 }
             secondaryText={
               <p>
-                <span style={{ color: colors.darkBlack }} >
-                            Followed you.
-                        </span><br />
-                        Block {event.blockNumber}
+                <span style={{ color: colors.darkBlack }}>
+                  Followed you.
+                </span>
+                <br />
+                Block {event.blockNumber}
               </p>
-                }
+            }
             secondaryTextLines={2}
             key={eventTypes.FOLLOWING + index + event.blockNumber}
             className="has_hidden_action"
@@ -160,8 +162,7 @@ class UserProfilePanel extends Component {
 
     _renderEntry (event, index) {
         const { palette } = this.context.muiTheme;
-        const name = `${event.author.firstName} ${event.author.lastName}`;
-        const initials = name.match(/\b\w/g).reduce((prev, current) => prev + current, '');
+        const initials = getInitials(event.author.firstName, event.author.lastName);
         return (
           <ListItem
             leftAvatar={event.author.avatar ?
@@ -178,7 +179,8 @@ class UserProfilePanel extends Component {
               <strong
                 onClick={() => {
                     this.navigateToProfile(event.profileAddress);
-                }} style={{ color: colors.darkBlack }}
+                }}
+                style={{ color: colors.darkBlack }}
               >
                 {event.author.akashaId}
               </strong>
@@ -186,21 +188,25 @@ class UserProfilePanel extends Component {
             secondaryText={
               <p>
                 <span style={{ color: colors.darkBlack }} >
-                            Published <span
-                              className="link" onClick={() => {
-                                  this.navigateToEntry(event.entry.entryId);
-                              }}
-                            >
-                              {event.entry.content.title}</span> on tag &nbsp;
-                    <span
-                      className="link" onClick={() => {
-                          this.navigateToTag(event.tag);
-                      }}
-                    >{event.tag}</span>
-                </span><br />
-                        Block {event.blockNumber}
+                  Published&nbsp;
+                  <span
+                    className="link"
+                    onClick={() => { this.navigateToEntry(event.entry.entryId); }}
+                  >
+                    {event.entry.content.title}
+                  </span>
+                  &nbsp;on tag&nbsp;
+                  <span
+                    className="link"
+                    onClick={() => { this.navigateToTag(event.tag); }}
+                  >
+                    {event.tag}
+                  </span>
+                </span>
+                <br />
+                Block {event.blockNumber}
               </p>
-                }
+            }
             secondaryTextLines={2}
             key={eventTypes.PUBLISH + index + event.blockNumber}
             className="has_hidden_action"
@@ -218,8 +224,7 @@ class UserProfilePanel extends Component {
 
     _renderComment (event, index) {
         const { palette } = this.context.muiTheme;
-        const name = `${event.author.firstName} ${event.author.lastName}`;
-        const initials = name.match(/\b\w/g).reduce((prev, current) => prev + current, '');
+        const initials = getInitials(event.author.firstName, event.author.lastName);
         return (
           <ListItem
             leftAvatar={event.author.avatar ?
@@ -244,16 +249,18 @@ class UserProfilePanel extends Component {
             secondaryText={
               <p>
                 <span style={{ color: colors.darkBlack }} >
-                            Commented on <span
-                              className="link" onClick={() => {
-                                  this.navigateToEntry(event.entry.entryId);
-                              }}
-                            >
-                              {event.entry.content.title}</span>
-                </span><br />
-                        Block {event.blockNumber}
+                  Commented on&nbsp;
+                  <span
+                    className="link"
+                    onClick={() => { this.navigateToEntry(event.entry.entryId); }}
+                  >
+                    {event.entry.content.title}
+                  </span>
+                </span>
+                <br />
+                Block {event.blockNumber}
               </p>
-                }
+            }
             secondaryTextLines={2}
             key={eventTypes.COMMENT + index + event.blockNumber}
             className="has_hidden_action"
@@ -274,8 +281,7 @@ class UserProfilePanel extends Component {
         const type = (event.weight > 0) ? 'Upvoted' : 'Downvoted';
         const colorVote = (event.weight > 0) ? palette.accent3Color : palette.accent1Color;
         const voteWeight = (event.weight > 0) ? (`+${event.weight}`) : event.weight;
-        const name = `${event.author.firstName} ${event.author.lastName}`;
-        const initials = name.match(/\b\w/g).reduce((prev, current) => prev + current, '');
+        const initials = getInitials(event.author.firstName, event.author.lastName);
         return (
           <ListItem
             leftAvatar={event.author.avatar ?
@@ -292,26 +298,27 @@ class UserProfilePanel extends Component {
               <strong
                 onClick={() => {
                     this.navigateToProfile(event.profileAddress);
-                }} style={{ color: colors.darkBlack }}
+                }}
+                style={{ color: colors.darkBlack }}
               >
                 {event.author.akashaId}
               </strong>
-                }
+            }
             secondaryText={
               <p>
                 <span style={{ color: colors.darkBlack }} >
                   {type}(<span style={{ color: colorVote }} >{voteWeight}</span>) on&nbsp;
-                    <span
-                      className="link" onClick={() => {
-                          this.navigateToEntry(event.entry.entryId);
-                      }}
-                    >
-                      {event.entry.content.title}
-                    </span>
-                </span><br />
-                        Block {event.blockNumber}
+                  <span
+                    className="link"
+                    onClick={() => { this.navigateToEntry(event.entry.entryId); }}
+                  >
+                    {event.entry.content.title}
+                  </span>
+                </span>
+                <br />
+                Block {event.blockNumber}
               </p>
-                }
+            }
             secondaryTextLines={2}
             key={eventTypes.VOTE + index + event.blockNumber}
             className="has_hidden_action"
