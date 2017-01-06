@@ -137,7 +137,7 @@ class Auth {
         return geth_connector_1.GethConnector.getInstance()
             .web3
             .personal
-            .unlockAccountAndSendTransactionAsync(data, this._read(token).toString('utf8'));
+            .sendTransactionAsync(data, this._read(token).toString('utf8'));
     }
 }
 Object.defineProperty(exports, "__esModule", { value: true });
