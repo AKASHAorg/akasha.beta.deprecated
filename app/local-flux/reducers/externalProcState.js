@@ -48,6 +48,7 @@ const initialState = fromJS({
     gethErrors: new List(),
     gethLogs: new Set(),
     ipfsErrors: new List(),
+    ipfsLogs: new Set(),
     /**
      * syncActionId
      *      0: not started / initial
@@ -66,6 +67,21 @@ const initialState = fromJS({
     ipfsBusyState: false,
     ipfsPortsRequested: false
 });
+
+function buildLogsSet (logs) {
+    const logsSet = new Set(logs)
+        .sort((first, second) => {
+            const firstTimestamp = new Date(first.timestamp).getTime();
+            const secondTimestamp = new Date(second.timestamp).getTime();
+            if (firstTimestamp < secondTimestamp) {
+                return 1;
+            } else if (firstTimestamp > secondTimestamp) {
+                return -1;
+            }
+            return 0;
+        });
+    return logsSet.map(log => new Map(log)).slice(0, 20);
+}
 
 const eProcState = createReducer(initialState, {
     [types.START_GETH]: state =>
@@ -241,19 +257,17 @@ const eProcState = createReducer(initialState, {
             return state;
         }
         const logs = [...action.data, ...state.get('gethLogs').toJS()];
-        let logsSet = new Set(logs)
-            .sort((first, second) => {
-                const firstTimestamp = new Date(first.timestamp).getTime();
-                const secondTimestamp = new Date(second.timestamp).getTime();
-                if (firstTimestamp < secondTimestamp) {
-                    return 1;
-                } else if (firstTimestamp > secondTimestamp) {
-                    return -1;
-                }
-                return 0;
-            });
-        logsSet = logsSet.map(log => new Map(log)).slice(0, 20);
+        const logsSet = buildLogsSet(logs);
         return state.set('gethLogs', logsSet);
+    },
+
+    [types.GET_IPFS_LOGS_SUCCESS]: (state, action) => {
+        if (!R.symmetricDifference(action.data, state.get('ipfsLogs').toJS()).length) {
+            return state;
+        }
+        const logs = [...action.data, ...state.get('ipfsLogs').toJS()];
+        const logsSet = buildLogsSet(logs);
+        return state.set('ipfsLogs', logsSet);
     },
 
     [settingsTypes.SAVE_SETTINGS]: (state, action) => {

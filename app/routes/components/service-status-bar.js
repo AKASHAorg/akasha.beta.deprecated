@@ -409,25 +409,6 @@ class ServiceStatusBar extends Component {
         </div>);
     }
 
-    renderIpfsErrors () {
-        const { intl, ipfsErrors } = this.props;
-
-        if (ipfsErrors.size === 0) {
-            return intl.formatMessage(generalMessages.noErrors);
-        }
-
-        return ipfsErrors.map((error, key) =>
-          <div key={key} style={{ margin: '10px 0', padding: '5px' }} >
-            <span>
-              {error.get('code')}
-            </span>
-            <span style={{ marginLeft: '5px' }}>
-              {error.get('message')}
-            </span>
-          </div>
-        );
-    }
-
     renderGethTitle () {
         const { palette } = this.context.muiTheme;
         const settingsBarColor = this.state.activeTab === GETH_SETTINGS ?
@@ -494,9 +475,10 @@ class ServiceStatusBar extends Component {
           {this.state.activeTab === GETH_LOGS &&
             <LogsList
               eProcActions={eProcActions}
-              timestamp={timestamp}
-              gethLogs={gethLogs}
+              logs={gethLogs}
               style={{ height: '400px', overflowY: 'visible', margin: '0px', paddingTop: '10px' }}
+              timestamp={timestamp}
+              type="geth"
             />
           }
         </Dialog>);
@@ -533,7 +515,8 @@ class ServiceStatusBar extends Component {
     }
 
     renderIpfsDialog () {
-        const { intl, ipfsSettings, settingsActions } = this.props;
+        const { eProcActions, intl, ipfsLogs, ipfsSettings, settingsActions,
+            timestamp } = this.props;
         const { storagePath, showIpfsSuccessMessage, isIpfsFormDirty } = this.state;
         return (<Dialog
           title={this.renderIpfsTitle()}
@@ -555,9 +538,13 @@ class ServiceStatusBar extends Component {
             />
           }
           {this.state.activeTab === IPFS_LOGS &&
-            <div style={{ padding: '20px 0', height: '400px' }}>
-              {this.renderIpfsErrors()}
-            </div>
+            <LogsList
+              eProcActions={eProcActions}
+              logs={ipfsLogs}
+              style={{ height: '400px', overflowY: 'visible', margin: '0px', paddingTop: '10px' }}
+              timestamp={timestamp}
+              type="ipfs"
+            />
           }
         </Dialog>);
     }
@@ -614,7 +601,7 @@ ServiceStatusBar.propTypes = {
     gethStatus: PropTypes.shape().isRequired,
     gethLogs: PropTypes.shape().isRequired,
     ipfsStatus: PropTypes.shape().isRequired,
-    ipfsErrors: PropTypes.shape().isRequired,
+    ipfsLogs: PropTypes.shape().isRequired,
     gethSettings: PropTypes.shape(),
     ipfsSettings: PropTypes.shape(),
     gethBusyState: PropTypes.bool,
@@ -634,7 +621,7 @@ function mapStateToProps (state, ownProps) {
         gethStatus: state.externalProcState.get('gethStatus'),
         gethLogs: state.externalProcState.get('gethLogs'),
         ipfsStatus: state.externalProcState.get('ipfsStatus'),
-        ipfsErrors: state.externalProcState.get('ipfsErrors'),
+        ipfsLogs: state.externalProcState.get('ipfsLogs'),
         gethSettings: state.settingsState.get('geth'),
         ipfsSettings: state.settingsState.get('ipfs'),
         syncActionId: state.externalProcState.get('syncActionId'),
