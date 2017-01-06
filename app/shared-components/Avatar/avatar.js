@@ -4,6 +4,7 @@ import AccountIcon from 'material-ui/svg-icons/action/account-circle';
 import AddPhotoIcon from 'material-ui/svg-icons/image/add-a-photo';
 import ClearIcon from 'material-ui/svg-icons/content/clear';
 import { SvgIcon, Slider } from 'material-ui';
+import { AvatarPlaceholder } from 'shared-components/svg';
 
 class Avatar extends React.Component {
     constructor (props) {
@@ -158,17 +159,13 @@ class Avatar extends React.Component {
                         ...avatarEmptyStyle,
                         width: radius,
                         height: radius,
-                        border: `1px solid ${palette.borderColor}`
+                        border: `1px solid ${palette.borderColor}`,
+                        backgroundColor: palette.avatarBackground
                     }}
                   >
-                    <AccountIcon
-                      style={{
-                          width: radius - 1,
-                          height: radius - 1,
-                          backgroundColor: palette.disabledColor,
-                          fill: palette.canvasColor
-                      }}
-                    />
+                    <SvgIcon viewBox="0 0 32 32" style={{ width: radius, height: radius }}>
+                      <AvatarPlaceholder />
+                    </SvgIcon>
                   </div>
                 }
                 {!editable &&
@@ -194,11 +191,11 @@ class Avatar extends React.Component {
                     border: `1px solid ${palette.borderColor}`
                 }}
               >
-                {this.props.userInitials &&
+                {userInitials &&
                   <div
                     style={{
                         height: '100%',
-                        backgroundColor: this.props.backgroundColor,
+                        backgroundColor: this.props.backgroundColor || palette.avatarBackground,
                         display: 'flex',
                         justifyContent: 'center',
                         alignItems: 'center'
@@ -260,7 +257,6 @@ Avatar.contextTypes = {
 };
 Avatar.defaultProps = {
     radius: 150,
-    backgroundColor: 'rgba(239, 239, 239, 1)',
     avatarEmptyStyle: {
         borderRadius: '50%',
         overflow: 'hidden',

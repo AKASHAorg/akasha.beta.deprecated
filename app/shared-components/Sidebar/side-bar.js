@@ -9,7 +9,8 @@ import {
     StreamsIcon,
     PortalsIcon,
     CommunityIcon,
-    PeopleIcon } from '../svg';
+    PeopleIcon,
+    ChatIcon } from '../svg';
 import LogoButton from '../../routes/components/logo-button';
 
 class SideBar extends Component {
@@ -45,6 +46,10 @@ class SideBar extends Component {
         const path = 'people';
         this._handleNavigation(path);
     }
+    _handleChat = () => {
+        const path = 'chat';
+        this._handleNavigation(path);
+    }
     _handlePanelShow = (panelName) => {
         const { activePanel, appActions } = this.props;
         if (activePanel === panelName.name) {
@@ -65,6 +70,8 @@ class SideBar extends Component {
             pathName.indexOf(`${loggedProfileData.get('akashaId')}/explore/`) !== -1;
         const isPeopleActive = !activePanel &&
             pathName.indexOf(`${loggedProfileData.get('akashaId')}/people`) !== -1;
+        const isChatActive = !activePanel &&
+            pathName.indexOf(`${loggedProfileData.get('akashaId')}/chat`) !== -1;
         const userInitials =
             getInitials(loggedProfileData.get('firstName'), loggedProfileData.get('lastName'));
         const balance = loggedProfileData.get('balance');
@@ -128,6 +135,12 @@ class SideBar extends Component {
                 <PeopleIcon
                   onClick={this._handlePeople}
                   isActive={isPeopleActive}
+                />
+              </div>
+              <div title="Chat">
+                <ChatIcon
+                  onClick={this._handleChat}
+                  isActive={isChatActive}
                 />
               </div>
             </div>

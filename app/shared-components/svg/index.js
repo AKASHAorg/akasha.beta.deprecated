@@ -1,5 +1,7 @@
+import AvatarPlaceholder from './avatar-placeholder';
 import MenuAddEntry from './MenuAddEntry';
 import MenuAkashaLogo from './MenuAkashaLogo';
+import MenuChat from './MenuChat';
 import MenuCommunities from './MenuCommunities';
 import MenuEntries from './MenuEntries';
 import MenuEthereum from './MenuEthereum';
@@ -21,6 +23,7 @@ import EntriesIcon from './IconEntries';
 import SearchIcon from './IconSearch';
 import StreamsIcon from './IconStreams';
 import PortalsIcon from './IconPortals';
+import ChatIcon from './IconChat';
 import CommunityIcon from './IconCommunity';
 import PeopleIcon from './IconPeople';
 import LogoIcon from './IconLogo';
@@ -54,8 +57,8 @@ import EntryUpvote from './entry-upvote';
 import UserDonate from './user-donate';
 
 export {
-    ProfileIcon, AddEntryIcon, EntriesIcon, SearchIcon, StreamsIcon, PortalsIcon,
-    CommunityIcon, PeopleIcon, LogoIcon, MenuAddEntry, MenuAkashaLogo,
+    AvatarPlaceholder, ProfileIcon, AddEntryIcon, EntriesIcon, SearchIcon, StreamsIcon, PortalsIcon,
+    CommunityIcon, PeopleIcon, ChatIcon, LogoIcon, MenuAddEntry, MenuAkashaLogo, MenuChat,
     MenuCommunities, MenuEntries, MenuEthereum, MenuPeople, MenuPortals,
     MenuSearch, MenuStreams, MenuUser, ToolbarComments, ToolbarEthereum,
     ToolbarLogout, ToolbarProfile, ToolbarSettings, ToolbarVotes, ToolbarWallet,

@@ -102,7 +102,7 @@ class StreamPage extends Component {
                 </div>
                 <div
                   className={styles.streamSidebarWrapper}
-                  style={{ backgroundColor: '#F5F5F5' }}
+                  style={{ backgroundColor: '#F3F3F3' }}
                 >
                   <StreamSidebar
                     subscriptionsCount={subscriptionsCount}

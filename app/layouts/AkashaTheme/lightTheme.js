@@ -19,7 +19,8 @@ export default {
         paperShadowColor: Colors.grey400,
         commentAuthorColor: Colors.grey800,
         commentViewerIsAuthorColor: Colors.blueA400,
-        commentIsEntryAuthorColor: Colors.greenA700
+        commentIsEntryAuthorColor: Colors.greenA700,
+        avatarBackground: Colors.grey50
     },
     imageUploader: {
         position: 'relative',

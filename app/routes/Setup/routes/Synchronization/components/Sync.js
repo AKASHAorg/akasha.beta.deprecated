@@ -261,7 +261,7 @@ class SyncStatus extends Component {
               </div>
             }
             {this.state.showGethLogs &&
-              <LogsList eProcActions={eProcActions} timestamp={timestamp} gethLogs={gethLogs} />
+              <LogsList type="geth" eProcActions={eProcActions} timestamp={timestamp} logs={gethLogs} />
             }
           </PanelContainer>
         );

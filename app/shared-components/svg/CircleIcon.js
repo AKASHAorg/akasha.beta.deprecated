@@ -24,7 +24,7 @@ class CircleIcon extends Component {
     };
 
     render () {
-        const { children, disabled, isActive, onClick, tooltip } = this.props;
+        const { children, disabled, iconStyle, isActive, onClick, tooltip } = this.props;
         const { palette } = this.context.muiTheme;
         const { isHovered } = this.state;
         const style = {
@@ -46,7 +46,7 @@ class CircleIcon extends Component {
               tooltip={tooltip}
               style={style}
               disabled={disabled}
-              iconStyle={{ width: '32px', height: '32px', fill: '#000' }}
+              iconStyle={Object.assign({ width: '32px', height: '32px', fill: '#000' }, iconStyle)}
               onClick={onClick}
             >
               {children}
@@ -60,6 +60,7 @@ CircleIcon.propTypes = {
     children: PropTypes.element,
     disabled: PropTypes.bool,
     isActive: PropTypes.bool,
+    iconStyle: PropTypes.shape(),
     onClick: PropTypes.func,
     tooltip: PropTypes.string,
 };
