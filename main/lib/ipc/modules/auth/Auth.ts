@@ -214,6 +214,6 @@ export default class Auth {
         return GethConnector.getInstance()
             .web3
             .personal
-            .unlockAccountAndSendTransactionAsync(data, this._read(token).toString('utf8'));
+            .sendTransactionAsync(data, this._read(token).toString('utf8'));
     }
 }
