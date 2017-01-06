@@ -211,8 +211,14 @@ class EProcActions {
     resetIpfsBusyState = () =>
         setTimeout(() => this.dispatch(externalProcessActionCreators.resetIpfsBusy()), 2000);
 
-    filterLogs = (data, timestamp) => {
+    filterGethLogs = (data, timestamp) => {
         const logs = [...data.gethError, ...data.gethInfo]
+            .filter(log => new Date(log.timestamp).getTime() > timestamp);
+        return logs;
+    }
+
+    filterIpfsLogs = (data, timestamp) => {
+        const logs = [...data.ipfsError, ...data.ipfsInfo]
             .filter(log => new Date(log.timestamp).getTime() > timestamp);
         return logs;
     }
@@ -223,10 +229,22 @@ class EProcActions {
             onError: err => this.dispatch(appActionCreators.showError(err)),
             onSuccess: data =>
                 this.dispatch(externalProcessActionCreators.getGethLogs(
-                    this.filterLogs(data, timestamp)
+                    this.filterGethLogs(data, timestamp)
                 ))
         });
 
-    stopGethLogger = () => this.gethService.stopGethLogger();
+    stopGethLogger = () => this.gethService.stopLogger();
+
+    startIpfsLogger = timestamp =>
+        this.ipfsService.getLogs({
+            options: {},
+            onError: err => this.dispatch(appActionCreators.showError(err)),
+            onSuccess: data =>
+                this.dispatch(externalProcessActionCreators.getIpfsLogs(
+                    this.filterIpfsLogs(data, timestamp)
+                ))
+        });
+
+    stopIpfsLogger = () => this.ipfsService.stopLogger();
 }
 export { EProcActions };

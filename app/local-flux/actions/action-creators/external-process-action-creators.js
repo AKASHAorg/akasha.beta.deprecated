@@ -238,3 +238,10 @@ export function getGethLogs (data) {
         data
     };
 }
+
+export function getIpfsLogs (data) {
+    return {
+        type: types.GET_IPFS_LOGS_SUCCESS,
+        data
+    };
+}
