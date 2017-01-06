@@ -13,15 +13,20 @@ const execute = Promise.coroutine(function*(data: { message: string }) {
         whisperIdentity = yield GethConnector.getInstance().web3.shh.newIdentityAsync();
     }
     const from = yield currentProfile.execute();
-    const payload = JSON.stringify({ message: data.message, from: from.akashaId });
+    const payload = GethConnector.getInstance().web3
+        .fromUtf8(
+            JSON.stringify({
+                message: data.message,
+                akashaId: from.akashaId
+            }));
     const post = yield GethConnector.getInstance().web3
         .shh
         .postAsync({
             from: whisperIdentity,
             topics: TOPICS,
             payload: payload,
-            priority: 500,
-            ttl: 3600
+            ttl: '0x294f0', //47h
+            workToProve: '0x64'
         });
     return { post };
 });

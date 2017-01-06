@@ -5,6 +5,7 @@ import { IpfsConnector } from '@akashaproject/ipfs-connector';
 import { resolve } from 'path';
 import { initModules } from './lib/ipc/index';
 import feed from './lib/ipc/modules/notifications/feed';
+import fetch from './lib/ipc/modules/chat/fetch';
 import { initMenu } from './menu';
 import Logger from './lib/ipc/Logger';
 import updater from './check-version';
@@ -12,6 +13,7 @@ import updater from './check-version';
 let modules;
 const stopServices = () => {
     feed.execute({ stop: true });
+    fetch.execute({ stop: true });
     if (modules) {
         modules.flushAll();
     }
@@ -77,6 +79,7 @@ export function bootstrapApp() {
         mainWindow.once('close', (ev: Event) => {
             ev.preventDefault();
             feed.execute({ stop: true });
+            fetch.execute({ stop: true });
             modules.flushAll();
             GethConnector.getInstance().stop();
             IpfsConnector.getInstance().stop();
