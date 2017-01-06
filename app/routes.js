@@ -2,6 +2,7 @@ import React from 'react';
 import { Route, IndexRoute } from 'react-router';
 import AppContainer from './routes/AppContainer';
 import BootAppContainer from './routes/BootApp/BootAppContainer';
+import ChatContainer from './routes/Home/routes/Chat/ChatContainer';
 import SetupContainer from './routes/Setup/SetupContainer';
 import ConfigurationContainer from './routes/Setup/routes/Configuration/ConfigurationContainer';
 import SynchronizationContainer from './routes/Setup/routes/Synchronization/SynchronizationContainer';
@@ -48,6 +49,7 @@ export default (
         <Route component={PublishEntryCompleteContainer} path="publish-complete" />
       </Route>
       <Route component={EntryPageContainer} path="entry/:entryId" />
+      <Route component={ChatContainer} path="chat" />
     </Route>
   </Route>
 );

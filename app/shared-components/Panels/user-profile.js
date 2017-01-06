@@ -307,7 +307,7 @@ class UserProfilePanel extends Component {
             secondaryText={
               <p>
                 <span style={{ color: colors.darkBlack }} >
-                  {type}(<span style={{ color: colorVote }} >{voteWeight}</span>) on&nbsp;
+                  {type}<span style={{ color: colorVote }} > {voteWeight} </span>on&nbsp;
                   <span
                     className="link"
                     onClick={() => { this.navigateToEntry(event.entry.entryId); }}

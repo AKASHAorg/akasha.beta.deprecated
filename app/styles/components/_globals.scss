@@ -109,3 +109,10 @@ html, body {
 ::-webkit-scrollbar-thumb:window-inactive {
     background: rgba(0, 0, 0, 0.05);
 }
+
+.contentLink {
+    cursor: pointer;
+    &:hover {
+        opacity: 0.8;
+    }
+}

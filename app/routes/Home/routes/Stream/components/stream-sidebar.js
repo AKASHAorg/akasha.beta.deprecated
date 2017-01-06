@@ -75,7 +75,7 @@ class StreamSidebar extends Component {
           <div
             className={'row center-xs'}
             style={{
-                background: '#F5F5F5',
+                background: '#F3F3F3',
                 paddingBottom: '10px'
             }}
           >
