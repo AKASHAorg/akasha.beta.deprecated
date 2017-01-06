@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { IconButton, RaisedButton } from 'material-ui';
 import CopyIcon from 'material-ui/svg-icons/content/content-copy';
 import { generalMessages, profileMessages } from 'locale-data/messages';
+import { getInitials } from 'utils/dataModule';
 import imageCreator, { findBestMatch } from 'utils/imageUtils';
 import { Avatar, PanelContainer } from 'shared-components';
 import { FormattedMessage, injectIntl } from 'react-intl';
@@ -74,9 +75,8 @@ class ProfileDetails extends Component {
         const imageUrl = backgroundImage[bestMatch] ?
             imageCreator(backgroundImage[bestMatch].src, profileData.baseUrl) :
             '';
-        const profileName = `${profileData.firstName} ${profileData.lastName}`;
-        const userInitials = profileName.trim() ?
-            profileName.match(/\b\w/g).reduce((prev, current) => prev + current, '') :
+        const userInitials = profileData.firstName || profileData.lastName ?
+            getInitials(profileData.firstName, profileData.lastName) :
             '';
         const followers = (<FormattedMessage
           id="app.profile.followersCount"

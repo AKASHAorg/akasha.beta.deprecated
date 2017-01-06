@@ -10,6 +10,7 @@ import { injectIntl } from 'react-intl';
 import { LoginDialog, PanelContainer } from 'shared-components';
 import { setupMessages, generalMessages } from 'locale-data/messages'; /* eslint import/no-unresolved: 0*/
 import debounce from 'lodash.debounce';
+import { getInitials } from 'utils/dataModule';
 import PanelHeader from '../../../../components/panel-header';
 
 class Auth extends Component {
@@ -124,7 +125,7 @@ class Auth extends Component {
         return localProfiles.map((profile, index) => {
             const profileAddress = profile.get('ethAddress');
             const profileName = `${profile.get('firstName')} ${profile.get('lastName')}`;
-            const userInitials = profileName.match(/\b\w/g);
+            const userInitials = getInitials(profile.get('firstName'), profile.get('lastName'));
             const avatarImage = profile.get('avatar');
             let avtr;
             if (!profile.get('akashaId')) {
@@ -141,9 +142,7 @@ class Auth extends Component {
             } else {
                 avtr = (
                   <Avatar>
-                    {userInitials &&
-                      ((userInitials.shift() || '') + (userInitials.pop() || '')).toUpperCase()
-                    }
+                    {userInitials}
                     {!userInitials && profile.get('akashaId') &&
                         profile.get('akashaId')
                     }

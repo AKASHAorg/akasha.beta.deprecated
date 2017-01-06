@@ -3,6 +3,7 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import { Paper, FlatButton } from 'material-ui';
 import { Avatar } from 'shared-components';
 import { generalMessages, profileMessages } from 'locale-data/messages';
+import { getInitials } from 'utils/dataModule';
 
 class ProfileCard extends Component {
 
@@ -77,8 +78,7 @@ class ProfileCard extends Component {
         const actionsStyle = {
             display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '0 0 10px'
         };
-        const profileName = `${firstName} ${lastName}`;
-        const userInitials = profileName.match(/\b\w/g).reduce((prev, current) => prev + current, '');
+        const userInitials = getInitials(firstName, lastName);
 
         return (
           <Paper

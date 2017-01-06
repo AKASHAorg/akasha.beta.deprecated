@@ -3,7 +3,7 @@ import { injectIntl } from 'react-intl';
 import { CardHeader, IconButton, SvgIcon } from 'material-ui';
 import CloseIcon from 'material-ui/svg-icons/navigation/close';
 import { Avatar } from 'shared-components';
-import { calculateReadingTime } from 'utils/dataModule';
+import { calculateReadingTime, getInitials } from 'utils/dataModule';
 import imageCreator from 'utils/imageUtils';// eslint-disable-line import/no-unresolved, import/extensions
 import { entryMessages } from 'locale-data/messages';
 import styles from './entry-page-header.scss';
@@ -20,8 +20,7 @@ class EntryPageHeader extends Component {
         const publisherAvatar = publisher.avatar ?
             imageCreator(publisher.avatar, publisherBaseUrl) :
             null;
-        const profileName = `${publisher.firstName} ${publisher.lastName}`;
-        const userInitials = profileName.match(/\b\w/g).reduce((prev, current) => prev + current, '');
+        const userInitials = getInitials(publisher.firstName, publisher.lastName);
         return (
           <button
             style={{
