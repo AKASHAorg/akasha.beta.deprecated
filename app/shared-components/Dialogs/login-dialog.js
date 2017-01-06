@@ -1,5 +1,6 @@
 import React from 'react';
 import { Dialog, TextField, Checkbox, SelectField, MenuItem, Avatar } from 'material-ui';
+import { getInitials } from 'utils/dataModule';
 
 const loginDialog = (props) => {
     const minute = 'min';
@@ -15,8 +16,7 @@ const loginDialog = (props) => {
     const handleUnlockCheck = (ev, isUnlocked) => {
         props.onUnlockCheck(isUnlocked);
     };
-    const profileName = `${profile.get('firstName')} ${profile.get('lastName')}`;
-    const userInitials = profileName.match(/\b\w/g);
+    const userInitials = getInitials(profile.get('firstName'), profile.get('lastName'));
     const avatarImage = profile.get('avatar');
     return (
       <Dialog
@@ -27,24 +27,20 @@ const loginDialog = (props) => {
         contentStyle={{ width: '50%' }}
       >
         {avatarImage &&
-        <Avatar src={avatarImage} size={100} style={{ border: '1px solid #bcbcbc' }} />
-            }
+          <Avatar src={avatarImage} size={100} style={{ border: '1px solid #bcbcbc' }} />
+        }
         {!avatarImage &&
-        <Avatar src={avatarImage} size={100} >
-          {userInitials &&
-                ((userInitials.shift() || '') + (userInitials.pop() || '')).toUpperCase()
-                }
-        </Avatar>
-            }
+          <Avatar src={avatarImage} size={100} >
+            {userInitials}
+          </Avatar>
+        }
         <div className="row" >
           <div className="col-xs-6" >
             <TextField
               disabled
               fullWidth
               floatingLabelText="Name"
-              value={
-                            `${profile.get('firstName')} ${profile.get('lastName')}`
-                        }
+              value={`${profile.get('firstName')} ${profile.get('lastName')}`}
             />
           </div>
           <div className="col-xs-6" >

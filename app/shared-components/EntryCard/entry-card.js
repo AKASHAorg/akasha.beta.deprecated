@@ -8,7 +8,7 @@ import { EntryBookmarkOn, EntryBookmarkOff, EntryComment, EntryDownvote,
     EntryUpvote, ToolbarEthereum } from 'shared-components/svg';
 import { injectIntl } from 'react-intl';
 import { Avatar, EntryVotesPanel, TagChip } from 'shared-components';
-import { calculateReadingTime } from 'utils/dataModule';
+import { calculateReadingTime, getInitials } from 'utils/dataModule';
 import imageCreator from 'utils/imageUtils';
 import { entryMessages } from 'locale-data/messages';
 import styles from './entry-card.scss';
@@ -157,8 +157,7 @@ class EntryCard extends Component {
         const blockNumberDiff = blockNr - entry.getIn(['entryEth', 'blockNr']);
         const publishDate = new Date(entry.getIn(['entryEth', 'unixStamp']) * 1000);
         const publisher = entry.getIn(['entryEth', 'publisher']);
-        const profileName = `${publisher.get('firstName')} ${publisher.get('lastName')}`;
-        const userInitials = profileName.match(/\b\w/g).reduce((prev, current) => prev + current, '');
+        const userInitials = getInitials(publisher.get('firstName'), publisher.get('lastName'));
         const avatar = publisher.get('avatar') ?
             imageCreator(publisher.get('avatar'), publisher.get('baseUrl')) :
             null;
