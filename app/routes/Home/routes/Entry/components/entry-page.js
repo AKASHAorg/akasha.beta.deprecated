@@ -8,6 +8,7 @@ import { AllRightsReserved, CreativeCommonsBY, CreativeCommonsCC, CreativeCommon
     CreativeCommonsSHARE, CreativeCommonsZERO, CreativeCommonsPD,
     CreativeCommonsSA } from 'shared-components/svg';
 import { entryMessages } from 'locale-data/messages';
+import { getInitials } from 'utils/dataModule';
 import EntryPageHeader from './entry-page-header';
 import EntryPageContent from './entry-page-content';
 import EntryPageActions from './entry-page-actions';
@@ -233,8 +234,8 @@ class EntryPage extends Component {
         }
         const loggedProfileData = profiles.find(prf => prf.get('profile') === loggedProfile.get('profile'));
         const loggedProfileAvatar = loggedProfileData.get('avatar');
-        const loggedProfileName = `${loggedProfileData.firstName} ${loggedProfileData.lastName}`;
-        const loggedProfileUserInitials = loggedProfileName.match(/\b\w/g).reduce((prev, current) => prev + current, '');
+        const loggedProfileUserInitials =
+            getInitials(loggedProfileData.firstName, loggedProfileData.lastName);
         const isSaved = entry && !!savedEntries.find(id => id === entry.entryId);
         const claimEntryPending = claimPending && claimPending.find(claim =>
             claim.entryId === entry.entryId);

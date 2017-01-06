@@ -89,7 +89,7 @@ class GethService extends BaseService {
         });
     };
 
-    stopGethLogger = () => {
+    stopLogger = () => {
         const serverChannel = Channel.server.geth.logs;
         const clientChannel = Channel.client.geth.logs;
 

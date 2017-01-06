@@ -111,3 +111,14 @@ export const validateTag = (tagName) => {
     }
     return error;
 }
+
+export function getInitials (firstName, lastName) {
+    if (!firstName && !lastName) {
+        return '';
+    }
+    const profileName = `${firstName} ${lastName}`;
+    return profileName
+        .match(/\b\w/g)
+        .reduce((prev, current) => prev + current, '')
+        .slice(0, 2);
+}

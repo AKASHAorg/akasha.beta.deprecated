@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react';
 import { IconButton, SvgIcon } from 'material-ui';
 import { colors } from 'material-ui/styles';
+import { getInitials } from 'utils/dataModule';
 import Avatar from '../../Avatar/avatar';
 import {
   ToolbarWallet,
@@ -15,9 +16,6 @@ import {
 const UserProfileHeader = (props, { router, muiTheme }) => {
     const { profile, profileAddress, profileActions, showPanel } = props;
     const { palette } = muiTheme;
-    // const avatarImage = `data:image/gif;base64,${
-    //     btoa(String.fromCharCode.apply(null, profile.getIn(['optionalData', 'avatar'])))
-    // }`;
     const avatarImage = profile.get('avatar');
     const svgStyle = {
         style: {
@@ -33,8 +31,7 @@ const UserProfileHeader = (props, { router, muiTheme }) => {
         props.hidePanel();
         router.push(`/${profile.get('profile')}/profile/${profileAddress}`);
     };
-    const profileName = `${profile.get('firstName')} ${profile.get('lastName')}`;
-    const userInitials = profileName.match(/\b\w/g).reduce((prev, current) => prev + current, '');
+    const userInitials = getInitials(profile.get('firstName'), profile.get('lastName'));
     return (
       <div style={props.rootStyle} >
         <div className="row top-xs" >

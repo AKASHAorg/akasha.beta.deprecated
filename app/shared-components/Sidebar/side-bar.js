@@ -1,5 +1,6 @@
 import React, { PropTypes, Component } from 'react';
 import { connect } from 'react-redux';
+import { getInitials } from 'utils/dataModule';
 import {
     ProfileIcon,
     AddEntryIcon,
@@ -64,8 +65,8 @@ class SideBar extends Component {
             pathName.indexOf(`${loggedProfileData.get('akashaId')}/explore/`) !== -1;
         const isPeopleActive = !activePanel &&
             pathName.indexOf(`${loggedProfileData.get('akashaId')}/people`) !== -1;
-        const profileName = `${loggedProfileData.get('firstName')} ${loggedProfileData.get('lastName')}`;
-        const userInitials = profileName.match(/\b\w/g).reduce((prev, current) => prev + current, '');
+        const userInitials =
+            getInitials(loggedProfileData.get('firstName'), loggedProfileData.get('lastName'));
         const balance = loggedProfileData.get('balance');
         const entriesCount = parseInt(loggedProfileData.get('entriesCount'), 10);
         return (
