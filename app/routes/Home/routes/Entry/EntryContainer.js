@@ -17,6 +17,7 @@ function mapStateToProps (state, ownProps) {
         profiles: state.profileState.get('profiles'),
         savedEntries: state.entryState.get('savedEntries').map(entry => entry.get('entryId')),
         votePending: state.entryState.getIn(['flags', 'votePending']),
+        pendingCommentsActions: state.appState.get('pendingActions').filter(action => action.type === 'publishComment')
     };
 }
 
