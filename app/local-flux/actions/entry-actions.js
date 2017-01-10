@@ -1,6 +1,6 @@
+import { AppActions, TransactionActions } from 'local-flux';
 import { EntryService } from '../services';
 import { entryActionCreators } from './action-creators';
-import { AppActions, TransactionActions } from 'local-flux';
 
 let entryActions = null;
 
@@ -81,8 +81,8 @@ class EntryActions {
         this.entryService.deleteEntry({
             akashaId,
             entryId,
-            onSuccess: entryId =>
-                this.dispatch(entryActionCreators.deleteEntrySuccess(entryId, {
+            onSuccess: id =>
+                this.dispatch(entryActionCreators.deleteEntrySuccess(id, {
                     deletingEntry: false
                 })),
             onError: error =>
@@ -206,8 +206,8 @@ class EntryActions {
                 tagName,
                 start,
                 limit,
-                onSuccess: data => {
-                    if (selectedTag === data.tagName) {
+                onSuccess: (data) => {
+                    if (selectedTag === data.tagName || !selectedTag) {
                         dispatch(entryActionCreators.entryTagIteratorSuccess(data, {
                             fetchingTagEntries: false
                         }));
@@ -217,8 +217,7 @@ class EntryActions {
                     fetchingTagEntries: false
                 }))
             });
-        })
-
+        });
     };
 
     moreEntryTagIterator = (tagName, start, limit) => {
@@ -345,19 +344,17 @@ class EntryActions {
                 value,
                 gas,
                 onSuccess: (data) => {
-                    const entry = getState().entryState.get('entries')
-                        .find(entry => entry.get('entryId') === data.entryId);
-                    const entryTitle = data.extra.entryTitle;
+                    const title = data.extra.entryTitle;
                     this.transactionActions.listenForMinedTx();
                     this.transactionActions.addToQueue([{
                         tx: data.tx,
                         type: 'upvote',
                         entryId: data.entryId,
-                        entryTitle
+                        entryTitle: title
                     }]);
                     this.appActions.showNotification({
                         id: 'upvotingEntry',
-                        values: { entryTitle },
+                        values: { entryTitle: title },
                         duration: 3000
                     });
                 },
@@ -380,19 +377,17 @@ class EntryActions {
                 value,
                 gas,
                 onSuccess: (data) => {
-                    const entry = getState().entryState.get('entries')
-                        .find(entry => entry.get('entryId') === data.entryId);
-                    const entryTitle = data.extra.entryTitle;
+                    const title = data.extra.entryTitle;
                     this.transactionActions.listenForMinedTx();
                     this.transactionActions.addToQueue([{
                         tx: data.tx,
                         type: 'downvote',
                         entryId: data.entryId,
-                        entryTitle
+                        entryTitle: title
                     }]);
                     this.appActions.showNotification({
                         id: 'downvotingEntry',
-                        values: { entryTitle },
+                        values: { entryTitle: title },
                         duration: 3000
                     });
                 },
@@ -403,31 +398,25 @@ class EntryActions {
             });
         });
 
-    upvoteSuccess = (entryId, entryTitle, minedSuccessfully) =>
-        this.dispatch((dispatch, getState) => {
-            const entry = getState().entryState.get('entries')
-                .find(entry => entry.get('entryId') === entryId);
-            dispatch(entryActionCreators.upvoteSuccess({
-                votePending: { entryId, value: false }
-            }));
-            this.appActions.showNotification({
-                id: minedSuccessfully ? 'upvoteEntrySuccess' : 'upvoteEntryError',
-                values: { entryTitle }
-            });
+    upvoteSuccess = (entryId, entryTitle, minedSuccessfully) => {
+        this.dispatch(entryActionCreators.upvoteSuccess({
+            votePending: { entryId, value: false }
+        }));
+        this.appActions.showNotification({
+            id: minedSuccessfully ? 'upvoteEntrySuccess' : 'upvoteEntryError',
+            values: { entryTitle }
         });
+    };
 
-    downvoteSuccess = (entryId, entryTitle, minedSuccessfully) =>
-        this.dispatch((dispatch, getState) => {
-            const entry = getState().entryState.get('entries')
-                .find(entry => entry.get('entryId') === entryId);
-            dispatch(entryActionCreators.downvoteSuccess({
-                votePending: { entryId, value: false }
-            }));
-            this.appActions.showNotification({
-                id: minedSuccessfully ? 'downvoteEntrySuccess' : 'downvoteEntryError',
-                values: { entryTitle }
-            });
+    downvoteSuccess = (entryId, entryTitle, minedSuccessfully) => {
+        this.dispatch(entryActionCreators.downvoteSuccess({
+            votePending: { entryId, value: false }
+        }));
+        this.appActions.showNotification({
+            id: minedSuccessfully ? 'downvoteEntrySuccess' : 'downvoteEntryError',
+            values: { entryTitle }
         });
+    };
 
     getEntry = (entryId, full) => {
         this.dispatch(entryActionCreators.getEntry({ fetchingEntry: true }));
@@ -478,7 +467,9 @@ class EntryActions {
         this.entryService.isActive({
             entryId,
             onSuccess: data =>
-                this.dispatch(entryActionCreators.isActiveSuccess(data, { isActivePending: false })),
+                this.dispatch(entryActionCreators.isActiveSuccess(data, {
+                    isActivePending: false
+                })),
             onError: error =>
                 this.dispatch(entryActionCreators.isActiveError(error, { isActivePending: false }))
         });
@@ -490,7 +481,9 @@ class EntryActions {
             akashaId,
             entryId,
             onSuccess: data =>
-                this.dispatch(entryActionCreators.getVoteOfSuccess(data, { fetchingVoteOf: false })),
+                this.dispatch(entryActionCreators.getVoteOfSuccess(data, {
+                    fetchingVoteOf: false
+                })),
             onError: error =>
                 this.dispatch(entryActionCreators.getVoteOfError(error, { fetchingVoteOf: false }))
         });
@@ -532,7 +525,7 @@ class EntryActions {
                 gas,
                 onSuccess: (data) => {
                     const entry = getState().entryState.get('entries')
-                        .find(entry => entry.get('entryId') === data.entryId);
+                        .find(en => en.get('entryId') === data.entryId);
                     const entryTitle = entry ?
                         entry.getIn(['content', 'content', 'title']) :
                         getState().entryState.get('fullEntry').content.title;
@@ -558,7 +551,7 @@ class EntryActions {
     claimSuccess = (entryId, minedSuccessfully) =>
         this.dispatch((dispatch, getState) => {
             const entry = getState().entryState.get('entries')
-                .find(entry => entry.get('entryId') === entryId);
+                .find(en => en.get('entryId') === entryId);
             const entryTitle = entry ?
                 entry.getIn(['content', 'content', 'title']) :
                 getState().entryState.get('fullEntry').content.title;
