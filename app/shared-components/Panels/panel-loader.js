@@ -11,6 +11,7 @@ class PanelLoader extends Component {
         const { panelState, ...other } = this.props;
         const activePanel = panelState.get('activePanel');
         if (activePanel.get('name')) {
+            document.body.style.overflow = 'hidden';
             const Panel = Panels[activePanel.get('name')];
             if (!Panel) {
                 return null;
@@ -24,6 +25,7 @@ class PanelLoader extends Component {
               </div>
             );
         }
+        document.body.style.overflow = 'auto';
         return null;
     }
 }
