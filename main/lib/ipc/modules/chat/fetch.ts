@@ -44,22 +44,23 @@ const execute = Promise.coroutine(function*(data: { stop?: boolean }, cb: any) {
             return { watching: true };
         }
 
-        /*    let current;
-         const collection = [];
-         // fetch initial messages
-         const initial = yield Promise.fromCallback((cb) => {
-         return (GethConnector.getInstance().web3.shh.filter({ topics: TOPICS })).get(cb);
-         });
-         for (let i = 0; i < initial.length; i++) {
-         if (initial[i].hasOwnProperty('payload')) {
-         current = yield transform(initial[i]);
-         collection.push(current);
-         }
-         }
-         if (chat) {
-         return { collection };
-         }
-         cb(null, { collection });*/
+        let current;
+        const collection = [];
+        // fetch initial messages
+        const initial = yield Promise.fromCallback((cb) => {
+            return (GethConnector.getInstance().web3.shh.filter({ topics: TOPICS })).get(cb);
+        });
+        for (let i = 0; i < initial.length; i++) {
+            if (initial[i].hasOwnProperty('payload')) {
+                current = yield transform(initial[i]);
+                collection.push(current);
+            }
+        }
+        if (chat) {
+            return { collection };
+        }
+
+        cb(null, { collection });
 
         // watch for new messages
         chat = GethConnector.getInstance().web3.shh.filter({ topics: TOPICS });

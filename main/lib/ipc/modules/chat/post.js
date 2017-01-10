@@ -23,8 +23,7 @@ const execute = Promise.coroutine(function* (data) {
         from: whisperIdentity,
         topics: settings_1.TOPICS,
         payload: payload,
-        ttl: '0x294f0',
-        workToProve: '0x64'
+        ttl: '0x294f0'
     });
     return { post };
 });
