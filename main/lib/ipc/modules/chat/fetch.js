@@ -42,6 +42,21 @@ const execute = Promise.coroutine(function* (data, cb) {
     if (chat) {
         return { watching: true };
     }
+    let current;
+    const collection = [];
+    const initial = yield Promise.fromCallback((cb) => {
+        return (geth_connector_1.GethConnector.getInstance().web3.shh.filter({ topics: settings_1.TOPICS })).get(cb);
+    });
+    for (let i = 0; i < initial.length; i++) {
+        if (initial[i].hasOwnProperty('payload')) {
+            current = yield transform(initial[i]);
+            collection.push(current);
+        }
+    }
+    if (chat) {
+        return { collection };
+    }
+    cb(null, { collection });
     chat = geth_connector_1.GethConnector.getInstance().web3.shh.filter({ topics: settings_1.TOPICS });
     chat.watch(function (err, data) {
         if (err) {
