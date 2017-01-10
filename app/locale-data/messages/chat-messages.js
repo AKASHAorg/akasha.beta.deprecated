@@ -4,7 +4,7 @@ const chatMessages = defineMessages({
     recommendedChannels: {
         id: 'app.chat.recommendedChannels',
         description: 'chat channels recommended by Akasha',
-        defaultMessage: 'Recommended Whisper channels'
+        defaultMessage: 'Available Whisper channel'
     },
     inputPlaceholder: {
         id: 'app.chat.inputPlaceholder',
