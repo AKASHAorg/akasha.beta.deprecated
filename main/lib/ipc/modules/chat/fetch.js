@@ -39,9 +39,6 @@ const execute = Promise.coroutine(function* (data, cb) {
         }
         return { watching: false };
     }
-    if (chat) {
-        return { watching: true };
-    }
     let current;
     const collection = [];
     const initial = yield Promise.fromCallback((cb) => {

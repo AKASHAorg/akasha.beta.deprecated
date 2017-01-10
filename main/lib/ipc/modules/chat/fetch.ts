@@ -40,10 +40,6 @@ const execute = Promise.coroutine(function*(data: { stop?: boolean }, cb: any) {
             return { watching: false };
         }
 
-        if (chat) {
-            return { watching: true };
-        }
-
         let current;
         const collection = [];
         // fetch initial messages
