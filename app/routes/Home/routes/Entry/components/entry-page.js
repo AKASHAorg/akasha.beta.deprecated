@@ -38,7 +38,7 @@ class EntryPage extends Component {
     }
 
     componentWillReceiveProps (nextProps) {
-        const { params, entry, entryActions, commentsActions, loggedProfile, pendingCommentsActions } = this.props;
+        const { params, entry, entryActions, commentsActions, loggedProfile } = this.props;
 
         if (params.entryId !== nextProps.params.entryId && entry.get('entryId') !== nextProps.params.entryId) {
             entryActions.getFullEntry(nextProps.params.entryId);
@@ -52,8 +52,11 @@ class EntryPage extends Component {
                 entryActions.getEntryBalance(nextProps.entry.get('entryId'));
             }
         }
-        if (nextProps.pendingCommentsActions.size !== pendingCommentsActions.size) {
-            this.commentEditor.getWrappedInstance().resetContent();
+        if ((nextProps.pendingCommentsActions.size > 0)) {
+            const currentComment = nextProps.pendingCommentsActions.find(comm => comm.getIn(['payload', 'entryId']) === params.entryId);
+            if (currentComment && (currentComment.status !== 'needConfirmation') && (currentComment.status !== 'checkAuth')) {
+                this.commentEditor.getWrappedInstance().resetContent();
+            }
         }
     }
 
@@ -393,6 +396,7 @@ EntryPage.propTypes = {
     profiles: PropTypes.shape(),
     savedEntries: PropTypes.shape(),
     votePending: PropTypes.shape(),
+    pendingCommentsActions: PropTypes.shape()
 };
 EntryPage.contextTypes = {
     muiTheme: PropTypes.shape(),

@@ -70,9 +70,9 @@ class DraftCard extends Component {
 }
 
 DraftCard.propTypes = {
-    headerTitle: PropTypes.string.isRequired,
+    headerTitle: PropTypes.string,
     lastUpdated: PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
+    title: PropTypes.string,
     excerpt: PropTypes.string,
     wordCount: PropTypes.number,
     onDelete: PropTypes.func.isRequired,
