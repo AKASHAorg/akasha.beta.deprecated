@@ -66,7 +66,7 @@ class EntryPage extends Component {
 
     componentWillUnmount () {
         const { entryActions, commentsActions, params } = this.props;
-        window.removeEventListener('scroll', this._handleContentScroll);
+        window.removeEventListener('scroll', this._handleContentScroll, { passive: true });
         entryActions.unloadFullEntry();
         commentsActions.unloadComments(parseInt(params.entryId, 10));
     }
