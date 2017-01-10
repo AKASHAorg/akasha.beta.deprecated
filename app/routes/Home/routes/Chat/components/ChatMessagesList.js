@@ -3,7 +3,7 @@ import { DataLoader } from 'shared-components';
 import ChatMessage from './ChatMessage';
 
 class ChatMessagesList extends Component {
-    shouldComponentUpdate (nextProps, nextState) {
+    shouldComponentUpdate (nextProps) {
         if (!nextProps.messages.equals(this.props.messages) ||
                 nextProps.loadingData !== this.props.loadingData) {
             return true;
@@ -14,7 +14,7 @@ class ChatMessagesList extends Component {
     render () {
         const { loadingData, loggedProfileAkashaId, messages, onAuthorClick } = this.props;
         if (loadingData) {
-            return <DataLoader flag={true} style={{ paddingTop: '100px' }} />;
+            return <DataLoader flag style={{ paddingTop: '100px' }} />;
         }
         return (
           <div
@@ -26,9 +26,9 @@ class ChatMessagesList extends Component {
                 padding: '0 30px'
             }}
           >
-            {messages.map((data, key) =>
+            {messages.map(data =>
               <ChatMessage
-                key={key}
+                key={data.messageHash}
                 isOwnMessage={loggedProfileAkashaId === data.akashaId}
                 data={data}
                 onAuthorClick={onAuthorClick}
