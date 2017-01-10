@@ -4,7 +4,7 @@ import { Chip, Subheader, TextField } from 'material-ui';
 import { chatMessages } from 'locale-data/messages';
 import { Avatar } from 'shared-components';
 import { List } from 'immutable';
-import ChatMessagesList from './ChatMessagesList'
+import ChatMessagesList from './ChatMessagesList';
 
 const CHARACTER_LIMIT = 128;
 
@@ -27,9 +27,7 @@ class ChatPage extends Component {
             this.chatInput.focus();
         }
         Channel.client.chat.fetch.on(this.hydrateMessages);
-        // This is needed in order to fetch messages again on reload
-        Channel.server.chat.fetch.send({ stop: true });
-        setTimeout(() => { Channel.server.chat.fetch.send({}); }, 0);
+        Channel.server.chat.fetch.send({});
         // Simulate loading for 1 second in order to fetch enough messages
         setTimeout(() => { this.triggerDataLoaded(); }, 1000);
     }
@@ -51,7 +49,6 @@ class ChatPage extends Component {
     }
 
     componentWillUnmount () {
-        Channel.server.chat.fetch.send({ stop: true });
         Channel.client.chat.fetch.removeListener(this.hydrateMessages);
     }
 
@@ -62,10 +59,20 @@ class ChatPage extends Component {
     };
 
     hydrateMessages = (ev, resp) => {
+        let messages = null;
         if (resp.data && resp.data.message) {
-            const newMessages = this.state.messages.push(resp.data);
+            messages = this.state.messages.push(resp.data);
+        } else if (resp.data && resp.data.collection) {
+            messages = this.state.messages.concat(resp.data.collection);
+        }
+        if (messages) {
+            messages = messages
+                .groupBy(msg => msg.messageHash)
+                .map(arr => arr.first())
+                .toList()
+                .sortBy(msg => msg.timeStamp);
             this.setState({
-                messages: newMessages.sortBy(msg => msg.timeStamp)
+                messages
             });
         }
     }
@@ -204,7 +211,7 @@ class ChatPage extends Component {
                         zIndex: 11,
                         width: '26px',
                         backgroundColor: palette.canvasColor,
-                        left: `calc(50% - 13px)`,
+                        left: 'calc(50% - 13px)',
                         top: '-10px',
                         fontSize: '12px',
                         padding: '0 2px'
