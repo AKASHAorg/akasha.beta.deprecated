@@ -24,7 +24,8 @@ function mapStateToProps (state) {
         moreProfileEntries: state.entryState.get('moreProfileEntries'),
         notificationsState: state.notificationsState,
         panelState: state.panelState,
-        publishedEntries
+        publishedEntries,
+        publishingDrafts: state.appState.get('pendingActions').filter(action => action.type === 'publishEntry')
     };
 }
 

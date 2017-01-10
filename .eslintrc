@@ -14,6 +14,7 @@
         "eqeqeq": ["error", "allow-null"],
         "no-underscore-dangle": ["error", { "allowAfterThis": true }],
         "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+        "react/require-default-props": 0,
         "import/no-extraneous-dependencies": 0,
         "import/prefer-default-export": 0,
         "babel/generator-star-spacing": 1,
