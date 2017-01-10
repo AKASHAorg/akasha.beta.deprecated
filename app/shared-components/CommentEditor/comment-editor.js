@@ -13,6 +13,9 @@ class CommentEditor extends React.Component {
             editorState: editorStateFromRaw(null)
         };
     }
+    resetContent = () => {
+        this._resetEditorState();
+    }
     _handleCommentChange = (editorState) => {
         this.setState({
             editorState
@@ -20,7 +23,6 @@ class CommentEditor extends React.Component {
     }
     _handleCommentCreate = () => {
         this.props.onCommentCreate(editorStateToJSON(this.state.editorState));
-        this._resetEditorState();
     }
     _handleCommentCancel = () => {
         this._resetEditorState();
@@ -74,4 +76,4 @@ CommentEditor.propTypes = {
     onCommentCreate: React.PropTypes.func,
     intl: React.PropTypes.shape()
 };
-export default injectIntl(CommentEditor);
+export default injectIntl(CommentEditor, { withRef: true });

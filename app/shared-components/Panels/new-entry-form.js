@@ -3,11 +3,7 @@ import {
     Paper,
     RaisedButton,
     Tabs,
-    Tab,
-    MenuItem,
-    IconMenu,
-    IconButton } from 'material-ui';
-import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
+    Tab } from 'material-ui';
 import throttle from 'lodash.throttle';
 import { generalMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
 import { DataLoader } from 'shared-components';
@@ -123,7 +119,8 @@ class NewEntryFormPanel extends Component {
         return router.replace(`/${loggedProfileData.get('akashaId')}/draft/new`);
     }
     _getDraftCards = () => {
-        const { drafts, intl, loggedProfileData } = this.props;
+        const { drafts, intl, loggedProfileData, publishingDrafts } = this.props;
+
         return drafts.filter(drft => drft.get('akashaId') === loggedProfileData.get('akashaId'))
             .map((draft, key) =>
               <DraftCard
@@ -135,6 +132,7 @@ class NewEntryFormPanel extends Component {
                 wordCount={draft.getIn(['content', 'wordCount'])}
                 onDelete={() => this._handleDraftDelete(draft.get('id'))}
                 onTitleClick={ev => this._handleDraftEdit(ev, draft.get('id'))}
+                isPublishing={publishingDrafts.findIndex(drft => drft.getIn(['payload', 'draft', 'id']) === draft.get('id')) > -1}
               />
             );
     }
@@ -285,10 +283,12 @@ NewEntryFormPanel.propTypes = {
     fetchingMorePublishedEntries: PropTypes.bool,
     fetchingPublishedEntries: PropTypes.bool,
     intl: PropTypes.shape(),
+    params: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
     moreProfileEntries: PropTypes.bool,
     publishedEntries: PropTypes.shape(),
     rootStyle: PropTypes.shape(),
+    publishingDrafts: PropTypes.shape()
 };
 NewEntryFormPanel.contextTypes = {
     muiTheme: PropTypes.shape(),

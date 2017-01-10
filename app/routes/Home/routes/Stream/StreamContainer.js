@@ -11,14 +11,14 @@ const LIMIT = 5;
 class StreamPage extends Component {
     constructor (props) {
         super(props);
-        const { params, selectedTag } = props;
+        const { params } = props;
         this.state = {
             filter: params.filter,
             tag: params.tag
         };
     }
 
-    componentWillMount () {
+    componentDidMount () {
         const { entryActions, loggedProfile, params } = this.props;
         entryActions.getEntriesStream(loggedProfile.get('akashaId'));
         if (params.tag && params.filter === 'tag') {
@@ -127,7 +127,7 @@ StreamPage.propTypes = {
     streamTags: PropTypes.shape(),
     newestTags: PropTypes.shape(),
     moreNewTags: PropTypes.bool,
-    selectedTag: PropTypes.string,
+    tagActions: PropTypes.shape(),
     tagEntries: PropTypes.shape(),
     entryActions: PropTypes.shape(),
     children: PropTypes.node,

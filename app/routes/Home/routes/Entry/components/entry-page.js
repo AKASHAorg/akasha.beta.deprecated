@@ -52,6 +52,12 @@ class EntryPage extends Component {
                 entryActions.getEntryBalance(nextProps.entry.get('entryId'));
             }
         }
+        if ((nextProps.pendingCommentsActions.size > 0)) {
+            const currentComment = nextProps.pendingCommentsActions.find(comm => comm.getIn(['payload', 'entryId']) === params.entryId);
+            if (currentComment && (currentComment.status !== 'needConfirmation') && (currentComment.status !== 'checkAuth')) {
+                this.commentEditor.getWrappedInstance().resetContent();
+            }
+        }
     }
 
     shouldComponentUpdate (nextProps, nextState) {
@@ -60,7 +66,7 @@ class EntryPage extends Component {
 
     componentWillUnmount () {
         const { entryActions, commentsActions, params } = this.props;
-        window.removeEventListener('scroll', this._handleContentScroll);
+        window.removeEventListener('scroll', this._handleContentScroll, { passive: true });
         entryActions.unloadFullEntry();
         commentsActions.unloadComments(parseInt(params.entryId, 10));
     }
@@ -220,7 +226,8 @@ class EntryPage extends Component {
             savedEntries, votePending, fetchingComments } = this.props;
         const { palette } = this.context.muiTheme;
         const { publisherTitleShadow } = this.state;
-        let licence, licenceLabel;
+        let licence;
+        let licenceLabel;
         if (!entry || fetchingFullEntry) {
             return <DataLoader flag size={80} style={{ paddingTop: '120px' }} />;
         }
@@ -282,7 +289,7 @@ class EntryPage extends Component {
                     style={{ display: 'flex', alignItems: 'center', padding: '8px 0' }}
                   >
                     <span style={{ paddingRight: '10px' }}>
-                        {licenceLabel}
+                      {licenceLabel}
                     </span>
                     {this.renderLicenceIcons()}
                   </div>
@@ -318,6 +325,7 @@ class EntryPage extends Component {
                     profileAvatar={loggedProfileAvatar}
                     profileUserInitials={loggedProfileUserInitials}
                     onCommentCreate={this._handleCommentCreate}
+                    ref={(editor) => { this.commentEditor = editor; }}
                   />
                   <div id="comments-section" className={`${styles.comments_section}`}>
                     <div>
@@ -331,6 +339,9 @@ class EntryPage extends Component {
                         <div>
                           <CommentsList
                             loggedProfile={loggedProfile}
+                            profileAvatar={loggedProfileAvatar}
+                            profileUserInitials={loggedProfileUserInitials}
+                            onReplyCreate={this._handleCommentCreate}
                             newlyCreatedComments={
                                 comments.filter(comm =>
                                     (!comm.get('tempTx') && !comm.getIn(['data', 'ipfsHash']) &&
@@ -385,6 +396,7 @@ EntryPage.propTypes = {
     profiles: PropTypes.shape(),
     savedEntries: PropTypes.shape(),
     votePending: PropTypes.shape(),
+    pendingCommentsActions: PropTypes.shape()
 };
 EntryPage.contextTypes = {
     muiTheme: PropTypes.shape(),

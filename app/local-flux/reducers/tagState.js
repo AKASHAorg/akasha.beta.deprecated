@@ -139,7 +139,7 @@ const tagState = createReducer(initialState, {
 
     [types.GET_SELECTED_TAG_SUCCESS]: (state, { data, flags }) =>
         state.merge({
-            selectedTag: data.tagName || state.get('selectedTag'),
+            selectedTag: (data && data.tagName) || state.get('selectedTag'),
             flags: state.get('flags').merge(flags)
         }),
 

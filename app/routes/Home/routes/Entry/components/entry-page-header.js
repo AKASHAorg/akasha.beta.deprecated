@@ -74,8 +74,6 @@ class EntryPageHeader extends Component {
 
     render () {
         const { publisherTitleShadow, publisher, selectProfile } = this.props;
-        const publisherBaseUrl = publisher.baseUrl;
-        const publisherAvatar = imageCreator(publisher.avatar, publisherBaseUrl);
         return (
           <div
             className={`${styles.entry_publisher_info}`}
@@ -99,7 +97,7 @@ class EntryPageHeader extends Component {
                         padding: 0,
                         fontSize: '16px',
                         fontWeight: '600'
-                      }}
+                    }}
                     onClick={selectProfile}
                   >
                     {`${publisher.firstName} ${publisher.lastName}`}
