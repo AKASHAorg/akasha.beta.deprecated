@@ -154,7 +154,7 @@ const notificationMessages = defineMessages({
     linkCopiedToClipboard: {
         id: 'app.notification.linkCopiedToClipboard',
         description: 'notification to show when user copies profile link',
-        defaultMessage: 'The URL was copied to clipboard'
+        defaultMessage: 'Link copied to clipboard'
     }
 });
 export { notificationMessages };
