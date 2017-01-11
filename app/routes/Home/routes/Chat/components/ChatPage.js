@@ -67,7 +67,7 @@ class ChatPage extends Component {
         }
         if (messages) {
             messages = messages
-                .groupBy(msg => msg.messageHash)
+                .groupBy(msg => msg.messageHash + msg.timeStamp)
                 .map(arr => arr.first())
                 .toList()
                 .sortBy(msg => msg.timeStamp);
@@ -89,7 +89,7 @@ class ChatPage extends Component {
 
     handleInputChange = (ev) => {
         this.setState({
-            currentMessage: ev.target.value
+            currentMessage: ev.target.value.slice(0, CHARACTER_LIMIT)
         });
     };
 
@@ -246,7 +246,6 @@ class ChatPage extends Component {
                     underlineShow={false}
                     multiLine
                     rowsMax={2}
-                    maxLength={128}
                   />
                 </div>
               </div>
