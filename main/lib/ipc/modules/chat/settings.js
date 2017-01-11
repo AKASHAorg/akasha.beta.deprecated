@@ -1,3 +1,3 @@
 "use strict";
-exports.TOPICS = ['0x414b415348412d616c706861'];
+exports.TOPICS = ['0x616b617368612e616c706861'];
 //# sourceMappingURL=settings.js.map
