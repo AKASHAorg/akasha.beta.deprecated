@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { Link } from 'react-router';
+import ReactTooltip from 'react-tooltip';
 import { Card, CardHeader, CardTitle, CardText, CardActions, IconButton, FlatButton,
     SvgIcon } from 'material-ui';
 import WarningIcon from 'material-ui/svg-icons/alert/warning';
@@ -132,13 +132,13 @@ class EntryCard extends Component {
 
     openVotesPanel = () => {
         this.setState({
-           showVotes: true
+            showVotes: true
         });
     };
 
     closeVotesPanel = () => {
         this.setState({
-           showVotes: false
+            showVotes: false
         });
     };
 
@@ -149,19 +149,18 @@ class EntryCard extends Component {
     }
 
     render () {
-        const { blockNr, canClaimPending, claimPending, entry, fetchingEntryBalance, intl, isSaved,
+        const { canClaimPending, claimPending, entry, fetchingEntryBalance, intl, isSaved,
             selectedTag, style, voteEntryPending } = this.props;
         const { palette } = this.context.muiTheme;
         const content = entry.get('content');
         const existingVoteWeight = entry.get('voteWeight') || 0;
-        const blockNumberDiff = blockNr - entry.getIn(['entryEth', 'blockNr']);
         const publishDate = new Date(entry.getIn(['entryEth', 'unixStamp']) * 1000);
         const publisher = entry.getIn(['entryEth', 'publisher']);
         const userInitials = getInitials(publisher.get('firstName'), publisher.get('lastName'));
         const avatar = publisher.get('avatar') ?
             imageCreator(publisher.get('avatar'), publisher.get('baseUrl')) :
             null;
-        const wordCount = content && content.get('wordCount') || 0;
+        const wordCount = (content && content.get('wordCount')) || 0;
         const readingTime = calculateReadingTime(wordCount);
         const upvoteIconColor = existingVoteWeight > 0 ? palette.accent3Color : '';
         const downvoteIconColor = existingVoteWeight < 0 ? palette.accent1Color : '';
@@ -171,8 +170,8 @@ class EntryCard extends Component {
               {intl.formatMessage(entryMessages.published)}
             </span>
             <span
-              title={`Block ${entry.getIn(['entryEth', 'blockNr'])}`}
-              style={{ fontWeight: 600 }}
+              data-tip={`Block ${entry.getIn(['entryEth', 'blockNr'])}`}
+              style={{ display: 'inline-block', fontWeight: 600 }}
             >
               {intl.formatRelative(publishDate)}
             </span>
@@ -240,34 +239,50 @@ class EntryCard extends Component {
               actAsExpander={this.isPossiblyUnsafe()}
             >
               {this.isPossiblyUnsafe() && content &&
-                <IconButton
-                  style={{ position: 'absolute', right: '16px', top: '10px' }}
-                  tooltip="Possibly unsafe content"
-                >
-                  <WarningIcon color={palette.accent1Color} />
-                </IconButton>
+                <div data-tip="Possibly unsafe content">
+                  <IconButton
+                    style={{ position: 'absolute', right: '16px', top: '10px' }}
+                  >
+                    <WarningIcon color={palette.accent1Color} />
+                  </IconButton>
+                </div>
               }
               {!content &&
                 <div>
-                  <IconButton
-                    onTouchTap={this.handleBookmark}
-                    style={{ position: 'absolute', right: '10px', top: '10px' }}
-                    iconStyle={{ width: '20px', height: '20px' }}
-                    tooltip="Bookmark"
+                  <div
+                    data-tip="Bookmark"
+                    style={{
+                        position: 'absolute',
+                        right: '10px',
+                        top: '10px',
+                        display: 'inline-block'
+                    }}
                   >
-                    <SvgIcon viewBox="0 0 20 20">
-                      {isSaved ?
-                        <EntryBookmarkOn /> :
-                        <EntryBookmarkOff />
-                      }
-                    </SvgIcon>
-                  </IconButton>
-                  <IconButton
-                    style={{ position: 'absolute', right: '50px', top: '10px' }}
-                    tooltip={intl.formatMessage(entryMessages.unresolvedEntry)}
+                    <IconButton
+                      onTouchTap={this.handleBookmark}
+                      iconStyle={{ width: '20px', height: '20px' }}
+                    >
+                      <SvgIcon viewBox="0 0 20 20">
+                        {isSaved ?
+                          <EntryBookmarkOn /> :
+                          <EntryBookmarkOff />
+                        }
+                      </SvgIcon>
+                    </IconButton>
+                  </div>
+                  <div
+                    data-tip={intl.formatMessage(entryMessages.unresolvedEntry)}
+                    style={{
+                        position: 'absolute',
+                        right: '50px',
+                        top: '10px',
+                        display: 'inline-block'
+                    }}
                   >
-                    <HubIcon color={palette.accent1Color} />
-                  </IconButton>
+                    <IconButton>
+                      <HubIcon color={palette.accent1Color} />
+                    </IconButton>
+                  </div>
                 </div>
               }
             </CardHeader>
@@ -290,9 +305,9 @@ class EntryCard extends Component {
             {content &&
               <CardText style={{ paddingTop: '4px', paddingBottom: '4px' }} expandable>
                 <div style={{ display: 'flex' }}>
-                  {content.get('tags').map((tag, key) =>
+                  {content.get('tags').map(tag =>
                     <TagChip
-                      key={key}
+                      key={tag}
                       tag={tag}
                       selectedTag={selectedTag}
                       onTagClick={this.selectTag}
@@ -321,16 +336,19 @@ class EntryCard extends Component {
               <CardActions className="col-xs-12">
                 <div style={{ display: 'flex', alignItems: 'center' }} >
                   <div style={{ position: 'relative' }}>
-                    <IconButton
-                      onTouchTap={this.handleUpvote}
-                      iconStyle={{ width: '20px', height: '20px' }}
-                      title={entry.get('active') ? 'Upvote' : 'Voting period has ended'}
-                      disabled={!entry.get('active') || voteEntryPending || existingVoteWeight !== 0}
+                    <div
+                      data-tip={entry.get('active') ? 'Upvote' : 'Voting period has ended'}
                     >
-                      <SvgIcon viewBox="0 0 20 20" >
-                        <EntryUpvote fill={upvoteIconColor} />
-                      </SvgIcon>
-                    </IconButton>
+                      <IconButton
+                        onTouchTap={this.handleUpvote}
+                        iconStyle={{ width: '20px', height: '20px' }}
+                        disabled={!entry.get('active') || voteEntryPending || existingVoteWeight !== 0}
+                      >
+                        <SvgIcon viewBox="0 0 20 20" >
+                          <EntryUpvote fill={upvoteIconColor} />
+                        </SvgIcon>
+                      </IconButton>
+                    </div>
                     {existingVoteWeight > 0 &&
                       <div
                         style={{
@@ -355,16 +373,19 @@ class EntryCard extends Component {
                     />
                   </div>
                   <div style={{ position: 'relative' }}>
-                    <IconButton
-                      onTouchTap={this.handleDownvote}
-                      iconStyle={{ width: '20px', height: '20px' }}
-                      title={entry.get('active') ? 'Downvote' : 'Voting period has ended'}
-                      disabled={!entry.get('active') || voteEntryPending || existingVoteWeight !== 0}
+                    <div
+                      data-tip={entry.get('active') ? 'Downvote' : 'Voting period has ended'}
                     >
-                      <SvgIcon viewBox="0 0 20 20">
-                        <EntryDownvote fill={downvoteIconColor} />
-                      </SvgIcon>
-                    </IconButton>
+                      <IconButton
+                        onTouchTap={this.handleDownvote}
+                        iconStyle={{ width: '20px', height: '20px' }}
+                        disabled={!entry.get('active') || voteEntryPending || existingVoteWeight !== 0}
+                      >
+                        <SvgIcon viewBox="0 0 20 20">
+                          <EntryDownvote fill={downvoteIconColor} />
+                        </SvgIcon>
+                      </IconButton>
+                    </div>
                     {existingVoteWeight < 0 &&
                       <div
                         style={{
@@ -382,52 +403,60 @@ class EntryCard extends Component {
                     }
                   </div>
                   <div>
-                    <IconButton
-                      onTouchTap={this.handleComments}
-                      iconStyle={{ width: '20px', height: '20px' }}
-                      tooltip="Comments"
-                    >
-                      <SvgIcon viewBox="0 0 20 20">
-                        <EntryComment />
-                      </SvgIcon>
-                    </IconButton>
+                    <div data-tip="Comments">
+                      <IconButton
+                        onTouchTap={this.handleComments}
+                        iconStyle={{ width: '20px', height: '20px' }}
+                      >
+                        <SvgIcon viewBox="0 0 20 20">
+                          <EntryComment />
+                        </SvgIcon>
+                      </IconButton>
+                    </div>
                   </div>
                   <div style={{ fontSize: '16px', paddingRight: '5px' }}>
                     {entry.get('commentsCount')}
                   </div>
                   <div style={{ flex: '1 1 auto', textAlign: 'right' }}>
                     {!this.isOwnEntry() &&
-                      <IconButton
-                        onTouchTap={this.handleBookmark}
-                        iconStyle={{ width: '20px', height: '20px' }}
-                        tooltip="Bookmark"
+                      <div
+                        data-tip="Bookmark"
+                        style={{ display: 'inline-block' }}
                       >
-                        <SvgIcon viewBox="0 0 20 20">
-                          {isSaved ?
-                            <EntryBookmarkOn /> :
-                            <EntryBookmarkOff />
-                          }
-                        </SvgIcon>
-                      </IconButton>
+                        <IconButton
+                          onTouchTap={this.handleBookmark}
+                          iconStyle={{ width: '20px', height: '20px' }}
+                        >
+                          <SvgIcon viewBox="0 0 20 20">
+                            {isSaved ?
+                              <EntryBookmarkOn /> :
+                              <EntryBookmarkOff />
+                            }
+                          </SvgIcon>
+                        </IconButton>
+                      </div>
                     }
                     {this.isOwnEntry() && (!canClaimPending || entry.get('canClaim') !== undefined)
                         && (!fetchingEntryBalance || entry.get('balance') !== undefined) &&
                       <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
                         {!entry.get('active') &&
-                          <IconButton
-                            onTouchTap={this.handleClaim}
-                            iconStyle={{
-                                width: '20px',
-                                height: '20px',
-                                fill: !entry.get('canClaim') ? palette.accent3Color : 'currentColor'
-                            }}
-                            tooltip={!entry.get('canClaim') ? 'Already Claimed' : 'Claim'}
-                            disabled={claimPending}
+                          <div
+                            data-tip={!entry.get('canClaim') ? 'Already claimed' : 'Claim'}
                           >
-                            <SvgIcon viewBox="0 0 16 16">
-                              <ToolbarEthereum />
-                            </SvgIcon>
-                          </IconButton>
+                            <IconButton
+                              onTouchTap={this.handleClaim}
+                              iconStyle={{
+                                  width: '20px',
+                                  height: '20px',
+                                  fill: !entry.get('canClaim') ? palette.accent3Color : 'currentColor'
+                              }}
+                              disabled={claimPending}
+                            >
+                              <SvgIcon viewBox="0 0 16 16">
+                                <ToolbarEthereum />
+                              </SvgIcon>
+                            </IconButton>
+                          </div>
                         }
                         {entry.get('balance') !== 'claimed' &&
                           <div style={{ fontSize: '16px', paddingRight: '5px' }}>

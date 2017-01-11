@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import ReactTooltip from 'react-tooltip';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { SvgIcon, FlatButton, Dialog, Toggle, IconButton, Tab, Tabs } from 'material-ui';
@@ -100,6 +101,10 @@ class ServiceStatusBar extends Component {
                 ipfsToggled: nextProps.ipfsStatus.get('spawned')
             });
         }
+    }
+
+    componentDidUpdate () {
+        ReactTooltip.rebuild();
     }
 
     getContainerStyle (state) {
@@ -569,27 +574,35 @@ class ServiceStatusBar extends Component {
         return (<div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           {this.props.gethStatus &&
             <div style={this.getContainerStyle(this.getGethState())}>
-              <IconButton
-                style={buttonStyle}
-                onClick={this.openGethDialog}
-                tooltip={this.getGethTooltip()}
-                iconStyle={iconStyle}
+              <div
+                data-tip={this.getGethTooltip()}
+                style={{ display: 'inline-block', height: '32px' }}
               >
-                {ethereumIcon}
-              </IconButton>
+                <IconButton
+                  style={buttonStyle}
+                  onClick={this.openGethDialog}
+                  iconStyle={iconStyle}
+                >
+                  {ethereumIcon}
+                </IconButton>
+              </div>
               {this.renderGethDialog()}
             </div>
           }
           {this.props.ipfsStatus &&
             <div style={this.getContainerStyle(this.getIpfsState())}>
-              <IconButton
-                style={buttonStyle}
-                onClick={this.openIpfsDialog}
-                tooltip={this.getIpfsTooltip()}
-                iconStyle={iconStyle}
+              <div
+                data-tip={this.getIpfsTooltip()}
+                style={{ display: 'inline-block', height: '32px' }}
               >
-                {ipfsIcon}
-              </IconButton>
+                <IconButton
+                  style={buttonStyle}
+                  onClick={this.openIpfsDialog}
+                  iconStyle={iconStyle}
+                >
+                  {ipfsIcon}
+                </IconButton>
+              </div>
               {this.renderIpfsDialog()}
             </div>
           }
@@ -606,6 +619,7 @@ ServiceStatusBar.propTypes = {
     ipfsSettings: PropTypes.shape(),
     gethBusyState: PropTypes.bool,
     ipfsBusyState: PropTypes.bool,
+    disableStopService: PropTypes.bool,
     eProcActions: PropTypes.shape().isRequired,
     settingsActions: PropTypes.shape().isRequired,
     intl: PropTypes.shape().isRequired,

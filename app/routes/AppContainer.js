@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import ReactTooltip from 'react-tooltip';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { SettingsActions, AppActions, ProfileActions, EProcActions, DraftActions,
@@ -166,6 +167,7 @@ class App extends Component {
             {appState.get('showTerms') &&
               <TermsPanel hideTerms={appActions.hideTerms} />
             }
+            <ReactTooltip delayShow={300} class="generic_tooltip" place="bottom" effect="solid" />
           </div>
         );
     }
