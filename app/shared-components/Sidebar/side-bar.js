@@ -1,5 +1,5 @@
 import React, { PropTypes, Component } from 'react';
-import { connect } from 'react-redux';
+import ReactTooltip from 'react-tooltip';
 import { getInitials } from 'utils/dataModule';
 import {
     ProfileIcon,
@@ -19,7 +19,7 @@ class SideBar extends Component {
         profileActions.getProfileBalance();
     }
     _handleNewEntry = () => {
-        const { activePanel, draftActions, appActions, loggedProfileData,
+        const { activePanel, appActions, loggedProfileData,
             draftsCount } = this.props;
         const entriesCount = parseInt(loggedProfileData.get('entriesCount'), 10);
 
@@ -96,20 +96,20 @@ class SideBar extends Component {
             </div>
             <div style={{ flexGrow: 1, padding: '14px' }} >
               {(entriesCount > 0 || draftsCount > 0) ?
-                <div title="My entries">
+                <div data-tip="My entries" data-place="right">
                   <EntriesIcon
                     onClick={this._handleNewEntry}
                     isActive={activePanel === 'newEntry'}
                   />
                 </div> :
-                <div title="Add new entry">
+                <div data-tip="Add new entry" data-place="right">
                   <AddEntryIcon
                     onClick={this._handleNewEntry}
                     isActive={isAddEntryActive}
                   />
                 </div>
               }
-              <div title="Coming Soon">
+              <div data-tip="Coming Soon" data-place="right">
                 <SearchIcon
                   onClick={this._handleSearch}
                   disabled
@@ -117,7 +117,7 @@ class SideBar extends Component {
               </div>
             </div>
             <div style={{ flexGrow: 4, padding: '14px' }} >
-              <div title="Stream">
+              <div data-tip="Stream" data-place="right">
                 <StreamsIcon
                   onClick={() =>
                       (!isStreamActive ? this._handleNavigation(`explore/tag/${selectedTag}`) : null)
@@ -125,19 +125,19 @@ class SideBar extends Component {
                   isActive={isStreamActive}
                 />
               </div>
-              <div title="Coming Soon">
+              <div data-tip="Coming Soon" data-place="right">
                 <PortalsIcon disabled />
               </div>
-              <div title="Coming Soon">
+              <div data-tip="Coming Soon" data-place="right">
                 <CommunityIcon disabled />
               </div>
-              <div title="People">
+              <div data-tip="People" data-place="right">
                 <PeopleIcon
                   onClick={this._handlePeople}
                   isActive={isPeopleActive}
                 />
               </div>
-              <div title="Chat">
+              <div data-tip="Chat" data-place="right">
                 <ChatIcon
                   onClick={this._handleChat}
                   isActive={isChatActive}
@@ -157,7 +157,6 @@ SideBar.propTypes = {
     appActions: PropTypes.shape(),
     hasFeed: PropTypes.bool,
     profileActions: PropTypes.shape(),
-    draftActions: PropTypes.shape(),
     notificationsCount: PropTypes.number,
     draftsCount: PropTypes.number,
     loggedProfileData: PropTypes.shape(),

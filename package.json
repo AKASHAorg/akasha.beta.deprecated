@@ -202,6 +202,7 @@
     "ethereumjs-util": "5.0.1",
     "lru-cache": "4.0.2",
     "ramda": "0.23.0",
+    "react-tooltip": "^3.2.2",
     "request": "2.79.0",
     "web3": "0.18.0",
     "winston": "2.3.0"

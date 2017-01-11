@@ -1,5 +1,6 @@
 /* eslint import/no-unresolved: 0, import/extensions: 0 */
 import React, { Component, PropTypes } from 'react';
+import ReactTooltip from 'react-tooltip';
 import { Divider, IconButton, SvgIcon, RaisedButton } from 'material-ui';
 import { injectIntl } from 'react-intl';
 import { TagChip, DataLoader, CommentsList, CommentEditor } from 'shared-components';
@@ -271,16 +272,17 @@ class EntryPage extends Component {
                         '0 0 20 20' :
                         '0 0 18 18';
                     return (
-                      <IconButton
-                        key={index}
-                        tooltip={descr.text}
-                        style={{ padding: '6px', width: '30px', height: '30px' }}
-                        iconStyle={{ width: '18px', height: '18px' }}
-                      >
-                        <SvgIcon viewBox={viewBox}>
-                          {React.createElement(licenceIcons[descr.icon])}
-                        </SvgIcon>
-                      </IconButton>
+                      <div data-tip={descr.text}>
+                        <IconButton
+                          key={index}
+                          style={{ padding: '6px', width: '30px', height: '30px' }}
+                          iconStyle={{ width: '18px', height: '18px' }}
+                        >
+                          <SvgIcon viewBox={viewBox}>
+                            {React.createElement(licenceIcons[descr.icon])}
+                          </SvgIcon>
+                        </IconButton>
+                      </div>
                     );
                 }
             })}
@@ -317,6 +319,7 @@ class EntryPage extends Component {
             claim.entryId === entry.entryId);
         const voteEntryPending = votePending && votePending.find(vote =>
               vote.entryId === entry.entryId);
+        ReactTooltip.rebuild();
         return (
           <div className={`${styles.root} row`} >
             <div className="col-xs-12">

@@ -1,4 +1,5 @@
 import React, { PropTypes } from 'react';
+import ReactTooltip from 'react-tooltip';
 import { connect } from 'react-redux';
 import { AppActions, DraftActions, ProfileActions, SettingsActions, EntryActions,
     TransactionActions, TagActions, EProcActions, NotificationsActions } from 'local-flux';
@@ -78,6 +79,7 @@ class HomeContainer extends React.Component {
         const { appActions } = this.props;
         appActions.cleanStore();
         clearInterval(this.interval);
+        ReactTooltip.hide();
     }
     _getLoadingMessage = () => {
         const { fetchingDraftsCount, fetchingLoggedProfile, fetchingProfileData } = this.props;

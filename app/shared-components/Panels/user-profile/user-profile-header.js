@@ -1,4 +1,5 @@
 import React, { PropTypes } from 'react';
+import ReactTooltip from 'react-tooltip';
 import { IconButton, SvgIcon } from 'material-ui';
 import { colors } from 'material-ui/styles';
 import { getInitials } from 'utils/dataModule';
@@ -46,111 +47,118 @@ const UserProfileHeader = (props, { router, muiTheme }) => {
           </div>
           <div className="col-xs-8" style={{ marginTop: '-20px' }} >
             <div className="row end-xs" >
-              <IconButton
-                tooltip="Wallet"
-                style={{ width: '40px', height: '40px' }}
-                iconStyle={svgStyle.style}
-                disabled
-              >
-                <SvgIcon
-                  viewBox={svgStyle.viewBox}
-                  className={'hand-icon'}
-                  color={svgStyle.color}
-                  hoverColor={svgStyle.hoverColor}
+              <div data-tip="Wallet">
+                <IconButton
+                  style={{ width: '40px', height: '40px' }}
+                  iconStyle={svgStyle.style}
+                  disabled
                 >
-                  <ToolbarWallet />
-                </SvgIcon>
-              </IconButton>
-              <IconButton
-                tooltip="Comments"
-                style={{ width: '40px', height: '40px' }}
-                iconStyle={svgStyle.style}
-                disabled
-              >
-                <SvgIcon
-                  viewBox={svgStyle.viewBox}
-                  className={'hand-icon'}
-                  color={svgStyle.color}
-                  hoverColor={svgStyle.hoverColor}
+                  <SvgIcon
+                    viewBox={svgStyle.viewBox}
+                    className={'hand-icon'}
+                    color={svgStyle.color}
+                    hoverColor={svgStyle.hoverColor}
+                  >
+                    <ToolbarWallet />
+                  </SvgIcon>
+                </IconButton>
+              </div>
+              <div data-tip="Comments">
+                <IconButton
+                  style={{ width: '40px', height: '40px' }}
+                  iconStyle={svgStyle.style}
+                  disabled
                 >
-                  <ToolbarComments />
-                </SvgIcon>
-              </IconButton>
-              <IconButton
-                tooltip="Votes"
-                style={{ width: '40px', height: '40px' }}
-                iconStyle={svgStyle.style}
-                disabled
-              >
-                <SvgIcon
-                  viewBox={svgStyle.viewBox}
-                  className={'hand-icon'}
-                  color={svgStyle.color}
-                  hoverColor={svgStyle.hoverColor}
+                  <SvgIcon
+                    viewBox={svgStyle.viewBox}
+                    className={'hand-icon'}
+                    color={svgStyle.color}
+                    hoverColor={svgStyle.hoverColor}
+                  >
+                    <ToolbarComments />
+                  </SvgIcon>
+                </IconButton>
+              </div>
+              <div data-tip="Votes">
+                <IconButton
+                  style={{ width: '40px', height: '40px' }}
+                  iconStyle={svgStyle.style}
+                  disabled
                 >
-                  <ToolbarVotes />
-                </SvgIcon>
-              </IconButton>
-              <IconButton
-                tooltip="Network"
-                style={{ width: '40px', height: '40px' }}
-                iconStyle={svgStyle.style}
-                disabled
-              >
-                <SvgIcon
-                  viewBox={svgStyle.viewBox}
-                  className={'hand-icon'}
-                  color={svgStyle.color}
-                  hoverColor={svgStyle.hoverColor}
+                  <SvgIcon
+                    viewBox={svgStyle.viewBox}
+                    className={'hand-icon'}
+                    color={svgStyle.color}
+                    hoverColor={svgStyle.hoverColor}
+                  >
+                    <ToolbarVotes />
+                  </SvgIcon>
+                </IconButton>
+              </div>
+              <div data-tip="Network">
+                <IconButton
+                  style={{ width: '40px', height: '40px' }}
+                  iconStyle={svgStyle.style}
+                  disabled
                 >
-                  <ToolbarEthereum />
-                </SvgIcon>
-              </IconButton>
-              <IconButton
-                tooltip="Profile"
-                style={{ width: '40px', height: '40px' }}
-                iconStyle={svgStyle.style}
-                onTouchTap={() => { showPanel({ name: 'editProfile', overlay: true }); }}
-              >
-                <SvgIcon
-                  viewBox={svgStyle.viewBox}
-                  className="hand-icon"
-                  color={palette.textColor}
-                  hoverColor={svgStyle.hoverColor}
+                  <SvgIcon
+                    viewBox={svgStyle.viewBox}
+                    className={'hand-icon'}
+                    color={svgStyle.color}
+                    hoverColor={svgStyle.hoverColor}
+                  >
+                    <ToolbarEthereum />
+                  </SvgIcon>
+                </IconButton>
+              </div>
+              <div data-tip="Profile">
+                <IconButton
+                  style={{ width: '40px', height: '40px' }}
+                  iconStyle={svgStyle.style}
+                  onTouchTap={() => { showPanel({ name: 'editProfile', overlay: true }); }}
                 >
-                  <ToolbarProfile />
-                </SvgIcon>
-              </IconButton>
-              <IconButton
-                tooltip="Settings"
-                style={{ width: '40px', height: '40px' }}
-                iconStyle={svgStyle.style}
-                disabled
-              >
-                <SvgIcon
-                  viewBox={svgStyle.viewBox}
-                  className={'hand-icon'}
-                  color={svgStyle.color}
-                  hoverColor={svgStyle.hoverColor}
+                  <SvgIcon
+                    viewBox={svgStyle.viewBox}
+                    className="hand-icon"
+                    color={palette.textColor}
+                    hoverColor={svgStyle.hoverColor}
+                  >
+                    <ToolbarProfile />
+                  </SvgIcon>
+                </IconButton>
+              </div>
+              <div data-tip="Settings">
+                <IconButton
+                  style={{ width: '40px', height: '40px' }}
+                  iconStyle={svgStyle.style}
+                  disabled
                 >
-                  <ToolbarSettings />
-                </SvgIcon>
-              </IconButton>
-              <IconButton
-                tooltip="Logout"
-                style={{ width: '40px', height: '40px' }}
-                iconStyle={svgStyle.style}
-                onTouchTap={() => { profileActions.logout(profileAddress); }}
-              >
-                <SvgIcon
-                  viewBox={svgStyle.viewBox}
-                  className={'hand-icon'}
-                  color={palette.textColor}
-                  hoverColor={svgStyle.hoverColor}
+                  <SvgIcon
+                    viewBox={svgStyle.viewBox}
+                    className={'hand-icon'}
+                    color={svgStyle.color}
+                    hoverColor={svgStyle.hoverColor}
+                  >
+                    <ToolbarSettings />
+                  </SvgIcon>
+                </IconButton>
+              </div>
+              <div data-tip="Logout">
+                <IconButton
+                  style={{ width: '40px', height: '40px' }}
+                  iconStyle={svgStyle.style}
+                  onTouchTap={() => { profileActions.logout(profileAddress); }}
                 >
-                  <ToolbarLogout />
-                </SvgIcon>
-              </IconButton>
+                  <SvgIcon
+                    viewBox={svgStyle.viewBox}
+                    className={'hand-icon'}
+                    color={palette.textColor}
+                    hoverColor={svgStyle.hoverColor}
+                  >
+                    <ToolbarLogout />
+                  </SvgIcon>
+                </IconButton>
+              </div>
             </div>
           </div>
         </div>
@@ -184,7 +192,6 @@ UserProfileHeader.propTypes = {
     profileAddress: PropTypes.string,
     profile: PropTypes.shape(),
     showPanel: PropTypes.func,
-    hidePanel: PropTypes.func
 };
 UserProfileHeader.contextTypes = {
     router: PropTypes.shape(),

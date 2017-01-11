@@ -35,13 +35,12 @@ class ProfileDetails extends Component {
             return {
                 flex: 'none',
                 width: '400px'
-            }
-        } else {
-            return {
-                flex: 'none',
-                height: '200px'
             };
         }
+        return {
+            flex: 'none',
+            height: '200px'
+        };
     }
 
     handleCopyLink = (url) => {
@@ -50,7 +49,7 @@ class ProfileDetails extends Component {
             id: 'linkCopiedToClipboard',
             duration: 2000
         });
-        let textArea = document.createElement('textarea');
+        const textArea = document.createElement('textarea');
         textArea.value = url;
         textArea.style.position = 'fixed';
         textArea.style.top = -99999;
@@ -114,13 +113,14 @@ class ProfileDetails extends Component {
           </div>
           <div style={{ padding: '50px 30px 10px' }}>
             <div
-              title={`${profileData.firstName} ${profileData.lastName}`}
+              data-tip={`${profileData.firstName} ${profileData.lastName}`}
               style={{
                   fontSize: '32px',
                   fontWeight: 400,
                   textTransform: 'capitalize',
                   maxWidth: '340px',
                   height: '48px',
+                  display: 'inline-block',
                   ...wrapTextStyle
               }}
             >
@@ -215,19 +215,20 @@ class ProfileDetails extends Component {
                       }}
                     >
                       <div
-                        title={link.url}
+                        data-tip={link.url}
                         style={{ display: 'inline-block', maxWidth: '100%', ...wrapTextStyle }}
                       >
                         {link.title}
                       </div>
                     </div>
-                    <IconButton
-                      onClick={() => { this.handleCopyLink(link.url) }}
-                      title="Copy link address"
-                      style={{ padding: '6px 12px', height: '36px' }}
-                    >
-                      <CopyIcon  />
-                    </IconButton>
+                    <div data-tip="Copy link address">
+                      <IconButton
+                        onClick={() => { this.handleCopyLink(link.url); }}
+                        style={{ padding: '6px 12px', height: '36px' }}
+                      >
+                        <CopyIcon />
+                      </IconButton>
+                    </div>
                   </div>
                 )}
               </div>
