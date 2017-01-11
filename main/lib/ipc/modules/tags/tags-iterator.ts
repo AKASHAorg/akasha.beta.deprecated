@@ -11,7 +11,7 @@ const execute = Promise.coroutine(function*(data: {start?: number, limit?: numbe
         return { collection: [] };
     }
     let currentName;
-    const maxResults = (data.limit) ? data.limit : 10;
+    const maxResults = (data.limit) ? data.limit : 20;
     const results = [];
     let counter = 0;
     if (!data.start) {
