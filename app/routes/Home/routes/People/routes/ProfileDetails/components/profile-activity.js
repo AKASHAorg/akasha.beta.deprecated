@@ -1,10 +1,8 @@
 import React, { Component, PropTypes } from 'react';
-import { Tab, Tabs, Paper, FlatButton } from 'material-ui';
-import { DataLoader, EntryCard, EntryListContainer, ProfileCard } from 'shared-components';
-import { injectIntl } from 'react-intl';
+import { Tab, Tabs, Paper } from 'material-ui';
+import { DataLoader, EntryListContainer, ProfileCard } from 'shared-components';
 import throttle from 'lodash.throttle';
 import { isInViewport } from 'utils/domUtils';
-import { generalMessages } from 'locale-data/messages';
 
 const ENTRIES_LIMIT = 6;
 const PROFILES_LIMIT = 13;
@@ -158,19 +156,21 @@ class ProfileActivity extends Component {
 
     showMoreFollowers = () => {
         const { profileActions, profileData } = this.props;
-        profileActions.moreFollowersIterator(profileData.akashaId, this.lastFollowerIndex, PROFILES_LIMIT);
+        profileActions.moreFollowersIterator(
+            profileData.akashaId, this.lastFollowerIndex, PROFILES_LIMIT
+        );
     }
 
     showMoreFollowing = () => {
         const { profileActions, profileData } = this.props;
-        profileActions.moreFollowingIterator(profileData.akashaId, this.lastFollowingIndex, PROFILES_LIMIT);
+        profileActions.moreFollowingIterator(
+            profileData.akashaId, this.lastFollowingIndex, PROFILES_LIMIT
+        );
     }
 
     renderEntries () {
-        const { profileEntries, fetchingProfileEntries, loggedProfileData, votePending, blockNr,
-            savedEntriesIds, entryActions, moreProfileEntries,
+        const { profileEntries, fetchingProfileEntries, moreProfileEntries,
             fetchingMoreProfileEntries } = this.props;
-        const { palette } = this.context.muiTheme;
         return (<EntryListContainer
           entries={profileEntries}
           cardStyle={{ width: '670px' }}
@@ -185,7 +185,7 @@ class ProfileActivity extends Component {
     renderFollowers () {
         const { fetchingFollowers, profileData, profileActions, followPending, followProfile,
             unfollowProfile, selectProfile, showPanel, loggedProfileData, isFollowerPending,
-            fetchingMoreFollowers, intl } = this.props;
+            fetchingMoreFollowers } = this.props;
         const { palette } = this.context.muiTheme;
         const followers = profileData.get('followers');
 
@@ -240,7 +240,7 @@ class ProfileActivity extends Component {
     renderFollowing () {
         const { fetchingFollowing, profileData, profileActions, followPending,
             followProfile, unfollowProfile, selectProfile, showPanel, loggedProfileData,
-            isFollowerPending, fetchingMoreFollowing, intl } = this.props;
+            isFollowerPending, fetchingMoreFollowing } = this.props;
         const { palette } = this.context.muiTheme;
         const followings = profileData.get('following');
 
@@ -370,8 +370,6 @@ ProfileActivity.propTypes = {
     profileActions: PropTypes.shape(),
     profileData: PropTypes.shape(),
     profileEntries: PropTypes.shape(),
-    savedEntriesIds: PropTypes.shape(),
-    blockNr: PropTypes.number,
     fetchingFollowers: PropTypes.bool,
     fetchingFollowing: PropTypes.bool,
     fetchingMoreFollowers: PropTypes.bool,
@@ -380,17 +378,15 @@ ProfileActivity.propTypes = {
     fetchingProfileEntries: PropTypes.bool,
     moreProfileEntries: PropTypes.bool,
     followPending: PropTypes.shape(),
-    votePending: PropTypes.shape(),
     isFollowerPending: PropTypes.bool,
     followProfile: PropTypes.func.isRequired,
     unfollowProfile: PropTypes.func.isRequired,
     selectProfile: PropTypes.func.isRequired,
     showPanel: PropTypes.func,
-    intl: PropTypes.shape()
 };
 
 ProfileActivity.contextTypes = {
     muiTheme: PropTypes.shape()
 };
 
-export default injectIntl(ProfileActivity);
+export default ProfileActivity;
