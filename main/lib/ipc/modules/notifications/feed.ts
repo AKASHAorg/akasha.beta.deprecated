@@ -4,18 +4,24 @@ import { filter } from './set-filter';
 import { GethConnector } from '@akashaproject/geth-connector';
 import getProfileData from '../profile/profile-data';
 import getEntry from '../entry/get-entry';
+import currentProfile from '../registry/current-profile';
+import resolveProfile from '../registry/resolve-ethaddress';
 
 let entries;
 let comments;
 let votes;
 let following;
+let tipping;
+
 const eventTypes = {
     VOTE: 'vote',
     COMMENT: 'comment',
     PUBLISH: 'publish',
-    FOLLOWING: 'following'
+    FOLLOWING: 'following',
+    TIPPED: 'gotTipped'
 };
 
+const VALUE_UNIT = 'ether';
 const hydrateWithProfile = (cb, profile, entry, extra) => {
     const queue = [];
     queue.push(getProfileData.execute({ profile: profile }));
@@ -50,6 +56,9 @@ const execute = Promise.coroutine(function*(data: { stop?: boolean }, cb) {
         following.stopWatching(() => {
             following = null;
         });
+        tipping.stopWatching(() => {
+            tipping = null;
+        });
         return { running: false };
     }
 
@@ -58,10 +67,14 @@ const execute = Promise.coroutine(function*(data: { stop?: boolean }, cb) {
     }
 
     const filterBlock = { fromBlock: filter.getBlockNr(), toBlock: 'latest' };
+    const myProfile = yield currentProfile.execute();
+    const profileInstance = contracts.instance.profile.contract.at(myProfile.profileAddress);
     entries = contracts.instance.entries.contract.Publish({}, filterBlock);
     comments = contracts.instance.comments.contract.Commented({}, filterBlock);
     votes = contracts.instance.votes.contract.Vote({}, filterBlock);
     following = contracts.instance.feed.contract.Follow({ following: filter.getMyAddress() }, filterBlock);
+    tipping = profileInstance.Tip({}, filterBlock);
+
     entries.watch((err, entry) => {
         if (err) {
             cb({ message: err.message, type: eventTypes.PUBLISH });
@@ -135,6 +148,21 @@ const execute = Promise.coroutine(function*(data: { stop?: boolean }, cb) {
                         profileAddress: event.args.following
                     }
                 )
+            });
+    });
+
+    tipping.watch((err, event) => {
+        if (err) {
+            cb({ message: err.message, type: eventTypes.TIPPED });
+        }
+        resolveProfile
+            .execute({ ethAddress: event.args.from })
+            .then((profile) => {
+                const ethers = GethConnector.getInstance().web3.fromWei(event.args.value, VALUE_UNIT);
+                cb('', { profile, value: ethers.toString(10), unit: VALUE_UNIT, type: eventTypes.TIPPED })
+            })
+            .catch((e) => {
+                cb({ message: e.message, type: eventTypes.TIPPED });
             });
     });
     return { running: true }
