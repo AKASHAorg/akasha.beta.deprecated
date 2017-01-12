@@ -85,6 +85,16 @@ const entryMessages = defineMessages({
         id: 'app.entry.unresolvedEntry',
         description: 'Message to display when an entry could not be resolved',
         defaultMessage: 'There are no peers online right now.'
+    },
+    newComments: {
+        id: 'app.entry.newComments',
+        description: 'Message to show when new comments were published',
+        defaultMessage: `{count, number} new {count, plural,
+            one {comment}
+            few {comments}
+            many {comments}
+            other {comments}
+        }`
     }
 });
 export { entryMessages };
