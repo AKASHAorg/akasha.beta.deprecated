@@ -128,17 +128,22 @@ const setupMessages = defineMessages({
     downloadingGeth: {
         id: 'app.setup.downloadingGeth',
         description: 'message shown when geth is downloading',
-        defaultMessage: 'Downloading Geth client..'
+        defaultMessage: 'Downloading Geth client...'
     },
     downloadingIpfs: {
         id: 'app.setup.downloadingIpfs',
         description: 'message shown when IPFS is downloading',
-        defaultMessage: 'Downloading IPFS client..'
+        defaultMessage: 'Downloading IPFS client...'
     },
     startingGeth: {
         id: 'app.setup.startingGeth',
         description: 'message shown when Geth is starting',
-        defaultMessage: 'Starting Geth client..'
+        defaultMessage: 'Starting Geth client...'
+    },
+    upgradingGeth: {
+        id: 'app.setup.upgradingGeth',
+        description: 'message shown when Geth is upgrading',
+        defaultMessage: 'Upgrading Geth client...'
     },
     processing: {
         id: 'app.setup.processing',
