@@ -425,9 +425,9 @@ class EntryPage extends Component {
                           <div className="col-xs-12 center-xs">
                             <RaisedButton
                               primary
-                              label={
-                                `${this._getNewCommentsCount()} new comments`
-                              }
+                              label={intl.formatMessage(entryMessages.newComments, {
+                                  count: this._getNewCommentsCount()
+                              })}
                               onClick={this.onRequestNewestComments}
                             />
                           </div>
