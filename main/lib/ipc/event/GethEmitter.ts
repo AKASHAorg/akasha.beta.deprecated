@@ -13,6 +13,7 @@ abstract class GethEmitter extends AbstractEmitter {
             ._fatal()
             ._starting()
             ._started()
+            ._upgrading()
             ._stopped();
     }
 
@@ -107,6 +108,17 @@ abstract class GethEmitter extends AbstractEmitter {
             CONSTANTS.ERROR, (message: string) => {
                 this.fireEvent(channels.client.geth.startService,
                     gethResponse({}, { message })
+                );
+            }
+        );
+        return this;
+    }
+
+    private _upgrading() {
+        GethConnector.getInstance().once(
+            CONSTANTS.UPDATING_BINARY, (message: string) => {
+                this.fireEvent(channels.client.geth.startService,
+                    gethResponse({upgrading: true, message})
                 );
             }
         );
