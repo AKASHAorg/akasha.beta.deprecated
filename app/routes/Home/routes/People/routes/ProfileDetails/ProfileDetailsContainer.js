@@ -35,6 +35,11 @@ class ProfileDetailsContainer extends Component {
         }
     }
 
+    componentWillUnmount () {
+        const { profileActions } = this.props;
+        profileActions.clearOtherProfiles();
+    }
+
     followProfile = (akashaId) => {
         const { profileActions } = this.props;
         profileActions.addFollowProfileAction(akashaId);
@@ -116,14 +121,14 @@ ProfileDetailsContainer.propTypes = {
     entryActions: PropTypes.shape(),
     fetchingFollowers: PropTypes.bool,
     fetchingFollowing: PropTypes.bool,
+    fetchingMoreFollowers: PropTypes.bool,
+    fetchingMoreFollowing: PropTypes.bool,
     fetchingMoreProfileEntries: PropTypes.bool,
     fetchingProfileData: PropTypes.bool,
     fetchingProfileEntries: PropTypes.bool,
     followPending: PropTypes.shape(),
     isFollowerPending: PropTypes.bool,
-    loggedProfile: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
-    loginRequested: PropTypes.bool,
     moreProfileEntries: PropTypes.bool,
     params: PropTypes.shape(),
     profileActions: PropTypes.shape(),
