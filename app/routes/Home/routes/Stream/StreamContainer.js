@@ -68,14 +68,15 @@ class StreamPage extends Component {
     }
 
     handleFilterChange = (val) => {
-        const { params } = this.props;
-        const tag = val === 'tag' && this.state.tag ? `/${this.state.tag}` : '';
-        this.context.router.push(`/${params.akashaId}/explore/${val}${tag}`);
+        const { params, selectedTag } = this.props;
+        const tag = this.state.tag || selectedTag;
+        const tagPath = val === 'tag' && tag ? `/${tag}` : '';
+        this.context.router.push(`/${params.akashaId}/explore/${val}${tagPath}`);
     };
 
     render () {
         const { loggedProfileData, streamTags, newestTags, entryActions, tagActions,
-            moreNewTags, tagEntries, params } = this.props;
+            moreNewTags, tagEntries, params, selectedTag } = this.props;
         const { tag } = this.state;
         const subscriptionsCount = parseInt(loggedProfileData.get('subscriptionsCount'), 10);
         return (
@@ -83,7 +84,7 @@ class StreamPage extends Component {
             <div className={`${styles.streamPageInner}`}>
               <StreamMenu
                 activeTab={this.state.filter}
-                selectedTag={tag}
+                selectedTag={tag || selectedTag}
                 onChange={this.handleFilterChange}
                 onActive={this.handleTabActivation}
               />
@@ -106,7 +107,7 @@ class StreamPage extends Component {
                 >
                   <StreamSidebar
                     subscriptionsCount={subscriptionsCount}
-                    selectedTag={tag}
+                    selectedTag={tag || selectedTag}
                     streamTags={streamTags}
                     newestTags={newestTags}
                     moreNewTags={moreNewTags}
@@ -127,6 +128,7 @@ StreamPage.propTypes = {
     streamTags: PropTypes.shape(),
     newestTags: PropTypes.shape(),
     moreNewTags: PropTypes.bool,
+    selectedTag: PropTypes.string,
     tagActions: PropTypes.shape(),
     tagEntries: PropTypes.shape(),
     entryActions: PropTypes.shape(),

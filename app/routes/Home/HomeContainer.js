@@ -41,7 +41,7 @@ class HomeContainer extends React.Component {
     componentWillReceiveProps (nextProps) {
         const { profileActions, settingsActions, entryActions, draftActions, tagActions,
             transactionActions, notificationsActions } = this.props;
-        const { loggedProfile, fetchingLoggedProfile, savingTag, params, userSettings,
+        const { loggedProfile, fetchingLoggedProfile, params, userSettings,
             selectedTag } = nextProps;
 
         if (!loggedProfile.get('account') && !fetchingLoggedProfile) {
@@ -59,7 +59,8 @@ class HomeContainer extends React.Component {
         }
         if (!userSettings && this.props.userSettings) {
             notificationsActions.setFilter([]);
-        } else if (userSettings && userSettings.lastBlockNr !== this.props.userSettings.lastBlockNr) {
+        } else if (userSettings &&
+                userSettings.lastBlockNr !== this.props.userSettings.lastBlockNr) {
             notificationsActions.setFilter([], userSettings.lastBlockNr);
         }
         if (selectedTag !== this.props.selectedTag && params.filter === 'tag' &&
@@ -74,8 +75,7 @@ class HomeContainer extends React.Component {
         }
     }
     componentWillUnmount () {
-        const { appActions, draftActions, notificationsActions, profileActions, settingsActions,
-            tagActions } = this.props;
+        const { appActions } = this.props;
         appActions.cleanStore();
         clearInterval(this.interval);
     }
@@ -173,6 +173,7 @@ HomeContainer.propTypes = {
     notificationsCount: PropTypes.number,
     hasFeed: PropTypes.bool,
     selectedTag: PropTypes.string,
+    settingsActions: PropTypes.shape(),
     userSettings: PropTypes.shape()
 };
 
