@@ -13,6 +13,10 @@ class CommentEditor extends React.Component {
             editorState: editorStateFromRaw(null)
         };
     }
+    shouldComponentUpdate (nextProps, nextState) {
+        return nextState.editorState !== this.state.editorState;
+    }
+    getBaseNode = () => this.baseNodeRef
     resetContent = () => {
         this._resetEditorState();
     }
@@ -35,7 +39,7 @@ class CommentEditor extends React.Component {
     render () {
         const { profileAvatar, profileUserInitials, intl } = this.props;
         return (
-          <div className={`${styles.comment_writer}`}>
+          <div className={`${styles.comment_writer}`} ref={(baseNode) => { this.baseNodeRef = baseNode; }}>
             <div className={`${styles.avatar_image}`}>
               <Avatar
                 image={profileAvatar}

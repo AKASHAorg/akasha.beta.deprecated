@@ -60,11 +60,23 @@ const castCommentToRecord = (commentObj) => {
 const commentsState = createReducer(initialState, {
     [types.GET_ENTRY_COMMENTS]: flagsHandler,
     [types.GET_ENTRY_COMMENTS_ERROR]: errorHandler,
-    [types.GET_ENTRY_COMMENTS_SUCCESS]: (state, { comments, flags }) => {
+    [types.GET_ENTRY_COMMENTS_SUCCESS]: (state, { comments, options, flags }) => {
+        const { reverse, entryId } = options;
         const comms = comments.collection.map((comment) => {
             comment.data.profile.avatar = `${comment.data.profile.baseUrl}/${comment.data.profile.avatar}`;
             return castCommentToRecord(comment);
         });
+        if (reverse) {
+            const newState = state.setIn(['entryComments'],
+                state.get('entryComments')
+                     .filter(comm => (comm.get('entryId') === entryId && comm.get('commentId') && !comm.get('tempTx')))
+                     .toStack()
+                     .unshift(...comms.reverse())
+                     .toList());
+            return newState.merge({
+                flags: state.get('flags').merge(flags)
+            });
+        }
         return state.merge({
             entryComments: state.get('entryComments').concat(new List(comms)),
             flags: state.get('flags').merge(flags)
