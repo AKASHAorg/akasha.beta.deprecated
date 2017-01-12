@@ -9,7 +9,6 @@ export default class Profile extends BaseContract {
     constructor(instance: any) {
         super();
         this.contract = instance;
-
     }
 
     /**
@@ -50,13 +49,28 @@ export default class Profile extends BaseContract {
      * @param hash
      * @param address
      * @param gas
-     * @returns {any}
+     * @returns {Bluebird<R>}
      */
     public updateHash(hash: string, address: string, gas?: number) {
         const hashTr = this.splitIpfs(hash);
         const profile = this.contract.at(address);
         const extracted = profile.setHash.request(hashTr, { gas });
         return Promise.resolve(extracted.params[0]);
+    }
+
+    /**
+     *
+     * @param receiver
+     * @param value
+     * @param unit
+     * @param gas
+     * @returns {Bluebird<R>}
+     */
+    public sendTip(receiver: string, value: string, unit: string = 'ether', gas: number = 500000){
+        const profile = this.contract.at(receiver);
+        const weiValue = this.gethInstance.web3.toWei(value, unit);
+        const extract = profile['sendTip'].request({ gas, value: weiValue });
+        return Promise.resolve(extract.params[0]);
     }
 
 }

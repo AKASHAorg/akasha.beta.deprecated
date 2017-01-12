@@ -28,6 +28,12 @@ class Profile extends BaseContract_1.default {
         const extracted = profile.setHash.request(hashTr, { gas });
         return Promise.resolve(extracted.params[0]);
     }
+    sendTip(receiver, value, unit = 'ether', gas = 500000) {
+        const profile = this.contract.at(receiver);
+        const weiValue = this.gethInstance.web3.toWei(value, unit);
+        const extract = profile['sendTip'].request({ gas, value: weiValue });
+        return Promise.resolve(extract.params[0]);
+    }
 }
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Profile;
