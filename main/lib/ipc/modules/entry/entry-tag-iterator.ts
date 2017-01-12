@@ -5,7 +5,7 @@ import getEntry from './get-entry';
  * Get entries indexed by tag
  * @type {Function}
  */
-const execute = Promise.coroutine(function*(data: {start?: number, limit?: number, tagName: string }) {
+const execute = Promise.coroutine(function*(data: {start?: number, limit?: number, tagName: string, reverse: boolean }) {
     let currentId = (data.start) ? data.start : yield contracts.instance.entries.getTagEntryFirst(data.tagName);
     if (currentId === '0') {
         return { collection: [], tagName: data.tagName };
@@ -21,7 +21,8 @@ const execute = Promise.coroutine(function*(data: {start?: number, limit?: numbe
     }
 
     while (counter < maxResults) {
-        currentId = yield contracts.instance.entries.getTagEntryNext(data.tagName, currentId);
+        currentId = (data.reverse) ? yield contracts.instance.entries.getTagEntryPrev(data.tagName, currentId):
+            yield contracts.instance.entries.getTagEntryNext(data.tagName, currentId);
         if (currentId === '0') {
             break;
         }

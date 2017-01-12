@@ -1,11 +1,10 @@
 import React, { Component, PropTypes } from 'react';
-import { Subheader, Chip, FlatButton } from 'material-ui';
+import { Subheader, FlatButton } from 'material-ui';
 import { TagChip } from 'shared-components';
 import { injectIntl } from 'react-intl';
 import { tagMessages, generalMessages } from 'locale-data/messages';
-import styles from './stream-sidebar.scss';
 
-const LIMIT = 11;
+const LIMIT = 21;
 
 class StreamSidebar extends Component {
     constructor (props) {
