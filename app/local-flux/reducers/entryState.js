@@ -2,6 +2,7 @@
 import { fromJS, List, Record, Map } from 'immutable';
 import { createReducer } from './create-reducer';
 import * as types from '../constants/EntryConstants';
+import * as commentsTypes from '../constants/CommentsConstants';
 import * as appTypes from '../constants/AppConstants';
 
 const ErrorRecord = Record({
@@ -351,7 +352,14 @@ const entryState = createReducer(initialState, {
             stateMap.set('fullEntry', newEntry).mergeIn(['flags'], flags)
         );
     },
-
+    [commentsTypes.GET_COMMENTS_COUNT_SUCCESS]: (state, { data }) => {
+        if(state.get('fullEntry') && (data.entryId === state.getIn(['fullEntry', 'entryId']))) {
+            return state.merge({
+                fullEntry: state.get('fullEntry').setIn(['commentsCount'], parseInt(data.count, 10))
+            });
+        }
+        return state;
+    },
     [types.UNLOAD_FULL_ENTRY]: state =>
         state.set('fullEntry', null),
 
