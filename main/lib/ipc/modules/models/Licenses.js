@@ -73,7 +73,7 @@ exports.LicencesList = [
             {
                 icon: 'CCBY',
                 text: `Others can distribute, remix, and build upon your work as
-                         long as they credit you`
+                         long as they credit you.`
             },
             {
                 icon: 'CCNC',
@@ -88,7 +88,7 @@ exports.LicencesList = [
             {
                 icon: 'CCBY',
                 text: `Others can distribute, remix, and build upon your work as
-                         long as they credit you`
+                         long as they credit you.`
             },
             {
                 icon: 'CCNC',
@@ -107,7 +107,7 @@ exports.LicencesList = [
             {
                 icon: 'CCBY',
                 text: `Others can distribute, remix, and build upon your work as
-                         long as they credit you`
+                         long as they credit you.`
             },
             {
                 icon: 'CCNC',
