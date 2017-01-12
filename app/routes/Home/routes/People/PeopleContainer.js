@@ -104,6 +104,7 @@ class PeopleContainer extends Component {
         profileActions.clearFollowers(loggedProfileData.akashaId);
         profileActions.clearFollowing(loggedProfileData.akashaId);
         profileActions.clearFollowing(AKASHA_ID);
+        profileActions.clearOtherProfiles();
         window.removeEventListener('resize', this.throttledScrollHandler);
     }
 
@@ -189,7 +190,9 @@ class PeopleContainer extends Component {
             loggedProfileData, followerProfileData, isFollowerPending } = this.props;
         const followings = (followerProfileData && followerProfileData.get('following').toJS()) || [];
 
-        if (!followerProfileData || (!followings.length && !fetchingFollowing)) {
+        if (!followerProfileData || fetchingFollowing) {
+            return <DataLoader flag size={80} style={{ paddingTop: '120px' }} />;
+        } else if (!followings.length) {
             return <div>No profiles</div>;
         }
 
