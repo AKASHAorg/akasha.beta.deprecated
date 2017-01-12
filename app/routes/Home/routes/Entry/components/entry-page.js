@@ -1,12 +1,13 @@
 /* eslint import/no-unresolved: 0, import/extensions: 0 */
 import React, { Component, PropTypes } from 'react';
-import { Divider, IconButton, SvgIcon } from 'material-ui';
+import { Divider, IconButton, SvgIcon, RaisedButton } from 'material-ui';
 import { injectIntl } from 'react-intl';
 import { TagChip, DataLoader, CommentsList, CommentEditor } from 'shared-components';
 import { AllRightsReserved, CreativeCommonsBY, CreativeCommonsCC, CreativeCommonsNCEU,
     CreativeCommonsNCJP, CreativeCommonsNC, CreativeCommonsND, CreativeCommonsREMIX,
     CreativeCommonsSHARE, CreativeCommonsZERO, CreativeCommonsPD,
     CreativeCommonsSA } from 'shared-components/svg';
+import debounce from 'lodash.debounce';
 import { entryMessages } from 'locale-data/messages';
 import { getInitials } from 'utils/dataModule';
 import EntryPageHeader from './entry-page-header';
@@ -21,13 +22,17 @@ class EntryPage extends Component {
         super(props);
         this.state = {
             publisherTitleShadow: false,
-            activeTab: 'all'
+            activeTab: 'all',
+            lastCommentsCount: 0
         };
     }
 
     componentDidMount () {
-        window.addEventListener('scroll', this._handleContentScroll);
-
+        window.addEventListener('scroll', this._handleContentScroll, { passive: true });
+        // treat mouse wheel separately
+        // we should optimize the heck out of this!
+        window.addEventListener('mousewheel', debounce(this._handleMouseWheel, 250), { passive: true });
+        this.checkCommentsInterval = setInterval(this._checkNewComments, 1000 * 5);
         const { entry, entryActions, params, fetchingFullEntry, commentsActions } = this.props;
 
         if ((!entry && !fetchingFullEntry) || entry.get('entryId') !== params.entryId) {
@@ -37,9 +42,9 @@ class EntryPage extends Component {
         }
     }
 
-    componentWillReceiveProps (nextProps) {
-        const { params, entry, entryActions, commentsActions, loggedProfile } = this.props;
-
+    componentWillReceiveProps (nextProps) { // eslint-disable-line max-statements, :D
+        const { params, entry, entryActions, commentsActions, loggedProfile,
+            pendingCommentsActions } = this.props;
         if (params.entryId !== nextProps.params.entryId && entry.get('entryId') !== nextProps.params.entryId) {
             entryActions.getFullEntry(nextProps.params.entryId);
             commentsActions.unloadComments(parseInt(params.entryId, 10));
@@ -51,10 +56,24 @@ class EntryPage extends Component {
                 entryActions.canClaim(nextProps.entry.get('entryId'));
                 entryActions.getEntryBalance(nextProps.entry.get('entryId'));
             }
+            this.setState({
+                lastCommentsCount: nextProps.entry.get('commentsCount')
+            });
+        }
+        if (nextProps.entry && entry) {
+            let pendingCommentsCount = 0;
+            const entryComments = nextProps.comments.filter(comm => comm.get('entryId') === parseInt(nextProps.entry.get('entryId'), 10));
+            if (entryComments.size > 0) {
+                pendingCommentsCount = this._getNewlyCreatedComments(nextProps.comments).size;
+            }
+            if ((this.state.lastCommentsCount + pendingCommentsCount) < nextProps.entry.get('commentsCount')) {
+                this.showNewCommentsNotification();
+            }
         }
         if ((nextProps.pendingCommentsActions.size > 0)) {
+            const prevComment = pendingCommentsActions.find(comm => comm.getIn(['payload', 'entryId']) === params.entryId);
             const currentComment = nextProps.pendingCommentsActions.find(comm => comm.getIn(['payload', 'entryId']) === params.entryId);
-            if (currentComment && (currentComment.status !== 'needConfirmation') && (currentComment.status !== 'checkAuth')) {
+            if (currentComment && prevComment && (prevComment.status === 'checkAuth')) {
                 this.commentEditor.getWrappedInstance().resetContent();
             }
         }
@@ -66,19 +85,45 @@ class EntryPage extends Component {
 
     componentWillUnmount () {
         const { entryActions, commentsActions, params } = this.props;
-        window.removeEventListener('scroll', this._handleContentScroll, { passive: true });
+        window.removeEventListener('scroll', this._handleContentScroll);
+        window.removeEventListener('mousewheel', this._handleMouseWheel);
+        clearInterval(this.checkCommentsInterval);
+        this.checkCommentsInterval = null;
         entryActions.unloadFullEntry();
         commentsActions.unloadComments(parseInt(params.entryId, 10));
     }
-    fetchComments = (entryId, startId = 0) => {
+    onRequestNewestComments = () => {
+        const { entry, comments } = this.props;
+        this.fetchComments(parseInt(entry.get('entryId'), 10), comments.filter(comm =>
+            (comm.getIn(['data', 'active']) && !comm.get('tempTx') &&
+            comm.get('commentId') && comm.getIn(['data', 'ipfsHash']) &&
+            (comm.get('entryId') === parseInt(entry.get('entryId'), 10)))
+        ).first().get('commentId'), true);
+        this.setState({
+            showNewCommentsNotification: false,
+            lastCommentsCount: entry.get('commentsCount')
+        }, () => {
+            const editorBaseNode = this.commentEditor.getWrappedInstance().getBaseNode();
+            editorBaseNode.scrollIntoView({ behavior: 'smooth' });
+        });
+    };
+    showNewCommentsNotification = () => {
+        this.setState({
+            showNewCommentsNotification: true
+        });
+    };
+    fetchComments = (entryId, start = 0, reverse = false) => {
         const { fetchingComments, commentsActions } = this.props;
         // if it`s already fetching comments, return
         if (fetchingComments) {
             return;
         }
-        commentsActions.getEntryComments(entryId, startId, COMMENT_FETCH_LIMIT);
-    }
-
+        commentsActions.getEntryComments(entryId, start, COMMENT_FETCH_LIMIT, reverse);
+    };
+    _checkNewComments = () => {
+        const { commentsActions, entry } = this.props;
+        commentsActions.getCommentsCount(entry.get('entryId'));
+    };
     isOwnEntry = (nextProps) => {
         const { entry, loggedProfile } = nextProps || this.props;
         return entry.entryEth.publisher.akashaId === loggedProfile.get('akashaId');
@@ -165,6 +210,22 @@ class EntryPage extends Component {
             });
         }
     }
+    _handleMouseWheel = (ev) => {
+        if (this.state.showNewCommentsNotification) {
+            const commentsSectionTop = this.commentsSectionRef.getBoundingClientRect().top;
+            if (commentsSectionTop < 84) {
+                this.setState({
+                    newCommentsNotificationPosition: 'fixed',
+                    scrollDirection: (ev.detail < 0) ? 1 : (ev.wheelDelta > 0) ? 1 : -1,
+                });
+            } else if (commentsSectionTop > 84 && (this.state.newCommentsNotificationPosition === 'fixed')) {
+                this.setState({
+                    newCommentsNotificationPosition: 'static',
+                    scrollDirection: (ev.detail < 0) ? 1 : (ev.wheelDelta > 0) ? 1 : -1,
+                });
+            }
+        }
+    }
     selectProfile = () => {
         const { entry, params } = this.props;
         const profileAddress = entry.entryEth.publisher.profile;
@@ -174,7 +235,14 @@ class EntryPage extends Component {
         const { params } = this.props;
         this.context.router.push(`/${params.akashaId}/explore/tag/${tagName}`);
     }
-
+    _getNewlyCreatedComments = comments =>
+        comments.filter(comm => (!comm.get('tempTx') && !comm.getIn(['data', 'ipfsHash']) &&
+            !comm.get('commentId'))
+        );
+    _getNewCommentsCount = () => {
+        const { entry, comments } = this.props;
+        return entry.get('commentsCount') - (this.state.lastCommentsCount + this._getNewlyCreatedComments(comments).size);
+    }
     renderLicenceIcons = () => {
         const { entry, licences } = this.props;
         const licence = licences.find(lic => lic.id === entry.content.licence.id);
@@ -239,6 +307,7 @@ class EntryPage extends Component {
                 licences.find(lic => lic.id === licence.parent).label :
                 licence.label;
         }
+        const entryId = parseInt(entry.get('entryId'), 10);
         const loggedProfileData = profiles.find(prf => prf.get('profile') === loggedProfile.get('profile'));
         const loggedProfileAvatar = loggedProfileData.get('avatar');
         const loggedProfileUserInitials =
@@ -327,11 +396,43 @@ class EntryPage extends Component {
                     onCommentCreate={this._handleCommentCreate}
                     ref={(editor) => { this.commentEditor = editor; }}
                   />
-                  <div id="comments-section" className={`${styles.comments_section}`}>
+                  <div
+                    id="comments-section"
+                    className={`${styles.comments_section}`}
+                    ref={((commentsSectionRef) => {
+                        this.commentsSectionRef = commentsSectionRef;
+                    })}
+                  >
                     <div>
                       <h4>
                         {`${intl.formatMessage(entryMessages.allComments)} (${entry.get('commentsCount')})`}
                       </h4>
+                      {this.state.showNewCommentsNotification && (this._getNewCommentsCount() > 0) &&
+                        <div
+                          style={{
+                              position: this.state.newCommentsNotificationPosition,
+                              top: (this.state.scrollDirection === 1) ? 84 : 32,
+                              textAlign: 'center',
+                              margin: '0 auto',
+                              zIndex: 3,
+                              padding: 8,
+                              marginBottom: 8,
+                              width: 700,
+                              transition: 'top 0.214s ease-in-out'
+                          }}
+                          className="row middle-xs"
+                        >
+                          <div className="col-xs-12 center-xs">
+                            <RaisedButton
+                              primary
+                              label={intl.formatMessage(entryMessages.newComments, {
+                                  count: this._getNewCommentsCount()
+                              })}
+                              onClick={this.onRequestNewestComments}
+                            />
+                          </div>
+                        </div>
+                      }
                       <Divider />
                     </div>
                     <div>
@@ -342,12 +443,7 @@ class EntryPage extends Component {
                             profileAvatar={loggedProfileAvatar}
                             profileUserInitials={loggedProfileUserInitials}
                             onReplyCreate={this._handleCommentCreate}
-                            newlyCreatedComments={
-                                comments.filter(comm =>
-                                    (!comm.get('tempTx') && !comm.getIn(['data', 'ipfsHash']) &&
-                                        !comm.get('commentId'))
-                                )
-                            }
+                            newlyCreatedComments={this._getNewlyCreatedComments(comments)}
                             publishingComments={
                                 comments.filter(comm => (comm.get('tempTx') && comm.getIn('data', 'profile')))
                             }
@@ -355,10 +451,10 @@ class EntryPage extends Component {
                                 comments.filter(comm =>
                                   (comm.getIn(['data', 'active']) && !comm.get('tempTx') &&
                                     comm.get('commentId') && comm.getIn(['data', 'ipfsHash']) &&
-                                  (comm.get('entryId') === parseInt(entry.get('entryId'), 10)))
+                                  (comm.get('entryId') === entryId))
                                 )
                             }
-                            entryId={parseInt(entry.get('entryId'), 10)}
+                            entryId={entryId}
                             commentsCount={entry.get('commentsCount')}
                             fetchLimit={COMMENT_FETCH_LIMIT}
                             onLoadMoreRequest={this.fetchComments}

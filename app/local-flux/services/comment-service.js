@@ -4,7 +4,8 @@ const Channel = window.Channel;
 
 
 class CommentService extends BaseService {
-    getEntryComments = ({ entryId, start, limit, onSuccess, onError }) =>
+
+    getEntryComments = ({ entryId, start, limit, reverse, onSuccess, onError }) =>
         this.openChannel({
             clientManager: Channel.client.comments.manager,
             serverChannel: Channel.server.comments.commentsIterator,
@@ -12,12 +13,22 @@ class CommentService extends BaseService {
             listenerCb: this.createListener(onError, onSuccess)
         }, () => {
             const payload = {
-                entryId, limit
+                entryId, limit, reverse
             };
             if (start) {
                 payload.start = start;
             }
             Channel.server.comments.commentsIterator.send(payload);
+        });
+
+    getCommentsCount = ({ entryId, onSuccess, onError }) =>
+        this.openChannel({
+            clientManager: Channel.client.comments.manager,
+            serverChannel: Channel.server.comments.commentsCount,
+            clientChannel: Channel.client.comments.commentsCount,
+            listenerCb: this.createListener(onError, onSuccess)
+        }, () => {
+            Channel.server.comments.commentsCount.send({ entryId });
         });
 
     publishComment = ({ onSuccess, onError, ...payload }) => {

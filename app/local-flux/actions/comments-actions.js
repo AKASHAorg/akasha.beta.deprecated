@@ -24,15 +24,23 @@ class CommentsActions {
             start,
             limit,
             reverse,
-            onSuccess: data => this.dispatch(commentsActionCreators.getEntryCommentsSuccess(data, {
-                fetchingComments: false
-            })),
+            onSuccess: data => this.dispatch(
+                commentsActionCreators.getEntryCommentsSuccess(data, { reverse, start, entryId }, {
+                    fetchingComments: false
+                })),
             onError: error => this.dispatch(commentsActionCreators.getEntryCommentsError(error, {
                 fetchingComments: false
             }))
         });
     }
-    publishComment = (commentPayload, gas) => {
+    getCommentsCount (entryId) {
+        this.commentService.getCommentsCount({
+            entryId,
+            onSuccess: data => this.dispatch(commentsActionCreators.getCommentsCountSuccess(data)),
+            onError: error => this.dispatch(commentsActionCreators.getCommentsCountError(error))
+        });
+    }
+    publishComment (commentPayload, gas) {
         this.dispatch((dispatch, getState) => {
             const loggedProfile = getState().profileState.get('loggedProfile');
             const loggedProfileData = getState().profileState.get('profiles').find(prf =>

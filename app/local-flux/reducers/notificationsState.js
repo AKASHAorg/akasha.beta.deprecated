@@ -13,27 +13,54 @@ const maxFeed = 64;
 
 const notificationsState = createReducer(initialState, {
     [types.FEED_SUBSCRIPTION_NOTIF]: (state, action) => {
-        let updatedFeed,
-            feedObj;
+        let updatedFeed;
+        let feedObj;
         const hasFeed = !state.get('hasFeed');
         if (action.payload.hasOwnProperty('running')) {
             return state;
         }
-        if (state.get('notifFeed').size > maxFeed) {
+        const notifIndex = action.payload.type === 'publish' ?
+            state.get('notifFeed').findIndex(notif =>
+                notif.author.profile === action.payload.author.profile &&
+                notif.entry.entryId === action.payload.entry.entryId) :
+            -1;
+        if (state.get('notifFeed').size > maxFeed && notifIndex === -1) {
             updatedFeed = state.get('notifFeed').pop();
             feedObj = { notifFeed: updatedFeed.unshift(action.payload), hasFeed };
         } else {
-            feedObj = { notifFeed: state.get('notifFeed').unshift(action.payload), hasFeed };
+            feedObj = {
+                notifFeed: notifIndex === -1 ?
+                    state.get('notifFeed').unshift(action.payload) :
+                    state.get('notifFeed').mergeIn(
+                        [notifIndex],
+                        Object.assign({}, state.getIn(['notifFeed', notifIndex]), {
+                            tag: [].concat(state.getIn(['notifFeed', notifIndex]).tag, action.payload.tag)
+                        })
+                    ),
+                hasFeed
+            };
         }
-
-
         return state.merge(feedObj);
     },
     [types.FEED_YOU_NOTIF]: (state, action) => {
         let updatedFeed;
-        const feedNr = state.get('youNrFeed') + 1;
-        if (state.get('youFeed').size < maxFeed) {
-            updatedFeed = state.get('youFeed').unshift(action.payload);
+        const notifIndex = action.payload.type === 'publish' ?
+            state.get('youFeed').findIndex(notif =>
+                notif.author.profile === action.payload.author.profile &&
+                notif.entry.entryId === action.payload.entry.entryId) :
+            -1;
+        const feedNr = notifIndex === -1 ?
+            state.get('youNrFeed') + 1 :
+            state.get('youNrFeed');
+        if (state.get('youFeed').size < maxFeed || notifIndex !== -1) {
+            updatedFeed = notifIndex === -1 ?
+                state.get('youFeed').unshift(action.payload) :
+                state.get('youFeed').mergeIn(
+                    [notifIndex],
+                    Object.assign({}, state.getIn(['youFeed', notifIndex]), {
+                        tag: [].concat(state.getIn(['youFeed', notifIndex]).tag, action.payload.tag)
+                    })
+                );
         } else {
             updatedFeed = state.get('youFeed').pop();
             updatedFeed = updatedFeed.unshift(action.payload);
@@ -44,7 +71,7 @@ const notificationsState = createReducer(initialState, {
         const feedNr = state.get('youNrFeed') - action.payload;
         return state.merge({ youNrFeed: (feedNr > 0) ? feedNr : 0 });
     },
-    [types.READ_SUBSCRIPTION_NOTIF]: (state, action) => {
+    [types.READ_SUBSCRIPTION_NOTIF]: (state) => {
         if (state.get('hasFeed')) {
             return state.merge({ hasFeed: false });
         }
@@ -58,7 +85,7 @@ const notificationsState = createReducer(initialState, {
         const feedNotifs = state.get('notifFeed').delete(action.payload);
         return state.merge({ notifFeed: feedNotifs });
     },
-    [appTypes.CLEAN_STORE]: state => initialState,
+    [appTypes.CLEAN_STORE]: () => initialState,
 });
 
 export default notificationsState;
