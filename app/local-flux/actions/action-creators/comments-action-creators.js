@@ -7,10 +7,11 @@ export function getEntryComments (flags) {
     };
 }
 
-export function getEntryCommentsSuccess (comments, flags) {
+export function getEntryCommentsSuccess (comments, options, flags) {
     return {
         type: types.GET_ENTRY_COMMENTS_SUCCESS,
         comments,
+        options,
         flags
     };
 }
@@ -23,9 +24,16 @@ export function getEntryCommentsError (error, flags) {
     };
 }
 
-export function getCommentsByEntryError (error) {
+export function getCommentsCountSuccess (data) {
     return {
-        type: types.GET_COMMENTS_BY_ENTRY_ERROR,
+        type: types.GET_COMMENTS_COUNT_SUCCESS,
+        data
+    };
+}
+
+export function getCommentsCountError (error) {
+    return {
+        type: types.GET_COMMENTS_COUNT_ERROR,
         error
     };
 }
