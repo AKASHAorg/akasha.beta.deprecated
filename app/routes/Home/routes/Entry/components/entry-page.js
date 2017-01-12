@@ -25,13 +25,14 @@ class EntryPage extends Component {
             activeTab: 'all',
             lastCommentsCount: 0
         };
+        this.debouncedMouseWheel = debounce(this._handleMouseWheel, 250);
     }
 
     componentDidMount () {
         window.addEventListener('scroll', this._handleContentScroll, { passive: true });
         // treat mouse wheel separately
         // we should optimize the heck out of this!
-        window.addEventListener('mousewheel', debounce(this._handleMouseWheel, 250), { passive: true });
+        window.addEventListener('mousewheel', this.debouncedMouseWheel, { passive: true });
         this.checkCommentsInterval = setInterval(this._checkNewComments, 1000 * 5);
         const { entry, entryActions, params, fetchingFullEntry, commentsActions } = this.props;
 
@@ -86,7 +87,7 @@ class EntryPage extends Component {
     componentWillUnmount () {
         const { entryActions, commentsActions, params } = this.props;
         window.removeEventListener('scroll', this._handleContentScroll);
-        window.removeEventListener('mousewheel', this._handleMouseWheel);
+        window.removeEventListener('mousewheel', this.debouncedMouseWheel);
         clearInterval(this.checkCommentsInterval);
         this.checkCommentsInterval = null;
         entryActions.unloadFullEntry();
@@ -94,11 +95,12 @@ class EntryPage extends Component {
     }
     onRequestNewestComments = () => {
         const { entry, comments } = this.props;
-        this.fetchComments(parseInt(entry.get('entryId'), 10), comments.filter(comm =>
+        const currentComments = comments.filter(comm =>
             (comm.getIn(['data', 'active']) && !comm.get('tempTx') &&
             comm.get('commentId') && comm.getIn(['data', 'ipfsHash']) &&
             (comm.get('entryId') === parseInt(entry.get('entryId'), 10)))
-        ).first().get('commentId'), true);
+        );
+        this.fetchComments(parseInt(entry.get('entryId'), 10), currentComments.size > 0 ? currentComments.first().get('commentId') : 0, true);
         this.setState({
             showNewCommentsNotification: false,
             lastCommentsCount: entry.get('commentsCount')
