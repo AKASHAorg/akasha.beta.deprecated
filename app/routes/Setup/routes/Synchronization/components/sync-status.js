@@ -3,6 +3,12 @@ import { FormattedMessage } from 'react-intl';
 import { setupMessages } from 'locale-data/messages'; /* eslint import/no-unresolved: 0 */
 import { SyncProgressLoader } from 'shared-components';
 
+const statusTextStyle = {
+    fontWeight: 'bold',
+    padding: '5px',
+    fontSize: '18px'
+};
+
 class SyncStatus extends Component {
 
     renderCounter (current, total, message) {
@@ -70,7 +76,15 @@ class SyncStatus extends Component {
                   {intl.formatMessage(setupMessages.syncCompleted)}
                 </div>
               </div>
-                );
+            );
+        } else if (gethStatus.get('upgrading')) {
+            progressBody = (
+              <div>
+                <div style={statusTextStyle} >
+                  {intl.formatMessage(setupMessages.upgradingGeth)}
+                </div>
+              </div>
+            );
         } else if (gethStatus.get('starting')) {
             progressBody = (
               <div>
@@ -78,7 +92,7 @@ class SyncStatus extends Component {
                   {intl.formatMessage(setupMessages.startingGeth)}
                 </div>
               </div>
-                );
+            );
         } else if (gethStatus.get('downloading')) {
             progressBody = (
               <div>
@@ -86,7 +100,7 @@ class SyncStatus extends Component {
                   {intl.formatMessage(setupMessages.downloadingGeth)}
                 </div>
               </div>
-                );
+            );
         } else if (ipfsStatus.get('downloading')) {
             progressBody = (
               <div>
@@ -96,7 +110,7 @@ class SyncStatus extends Component {
                   </div>
                 </div>
               </div>
-                );
+            );
         } else if (syncActionId === 2 || syncActionId === 3) {
             progressBody = (
               <div>
@@ -108,7 +122,7 @@ class SyncStatus extends Component {
                 {this.renderCounter(gethSyncStatus.pulledStates, gethSyncStatus.knownStates,
                       processingMessage)}
               </div>
-                );
+            );
         } else {
             peerInfo = intl.formatMessage(setupMessages.findingPeers);
             progressBody = (
@@ -117,7 +131,7 @@ class SyncStatus extends Component {
                   {peerInfo}
                 </div>
               </div>
-                );
+            );
         }
         return (
           <div style={{ padding: '32px 0', textAlign: 'center' }} >
@@ -134,12 +148,6 @@ SyncStatus.propTypes = {
     gethStatus: PropTypes.shape().isRequired,
     ipfsStatus: PropTypes.shape().isRequired,
     syncActionId: PropTypes.number
-};
-
-const statusTextStyle = {
-    fontWeight: 'bold',
-    padding: '5px',
-    fontSize: '18px'
 };
 
 export default SyncStatus;

@@ -1,7 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { AppActions, EntryActions, TagActions } from 'local-flux';
-import { FlatButton } from 'material-ui';
 import { DataLoader, EntryCard } from 'shared-components';
 
 class EntryList extends Component {
@@ -13,7 +12,7 @@ class EntryList extends Component {
     render () {
         const { appActions, blockNr, cardStyle, claimPending, canClaimPending, entries,
             entryActions, fetchingEntries, fetchingEntryBalance, fetchingMoreEntries, getTriggerRef,
-            loggedProfileData, moreEntries, savedEntriesIds, selectedTag, style, tagActions,
+            loggedProfileData, moreEntries, savedEntriesIds, selectedTag, style,
             votePending } = this.props;
         const { palette } = this.context.muiTheme;
 
@@ -91,11 +90,9 @@ EntryList.propTypes = {
     getTriggerRef: PropTypes.func,
     loggedProfileData: PropTypes.shape(),
     moreEntries: PropTypes.bool,
-    params: PropTypes.shape(),
     savedEntriesIds: PropTypes.shape(),
     selectedTag: PropTypes.string,
     style: PropTypes.shape(),
-    tagActions: PropTypes.shape(),
     votePending: PropTypes.shape()
 };
 
