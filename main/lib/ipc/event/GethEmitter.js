@@ -13,6 +13,7 @@ class GethEmitter extends AbstractEmitter_1.AbstractEmitter {
             ._fatal()
             ._starting()
             ._started()
+            ._upgrading()
             ._stopped();
     }
     _download() {
@@ -56,6 +57,12 @@ class GethEmitter extends AbstractEmitter_1.AbstractEmitter {
     _error() {
         geth_connector_1.GethConnector.getInstance().on(geth_connector_1.CONSTANTS.ERROR, (message) => {
             this.fireEvent(channels_1.default.client.geth.startService, responses_1.gethResponse({}, { message }));
+        });
+        return this;
+    }
+    _upgrading() {
+        geth_connector_1.GethConnector.getInstance().once(geth_connector_1.CONSTANTS.UPDATING_BINARY, (message) => {
+            this.fireEvent(channels_1.default.client.geth.startService, responses_1.gethResponse({ upgrading: true, message }));
         });
         return this;
     }
