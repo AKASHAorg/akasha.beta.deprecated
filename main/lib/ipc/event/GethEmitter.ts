@@ -114,6 +114,11 @@ abstract class GethEmitter extends AbstractEmitter {
         return this;
     }
 
+    /**
+     * Notify when upgrading geth version
+     * @returns {GethEmitter}
+     * @private
+     */
     private _upgrading() {
         GethConnector.getInstance().once(
             CONSTANTS.UPDATING_BINARY, (message: string) => {

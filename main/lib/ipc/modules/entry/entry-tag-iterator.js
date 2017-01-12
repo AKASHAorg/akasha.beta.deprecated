@@ -17,7 +17,8 @@ const execute = Promise.coroutine(function* (data) {
         counter = 1;
     }
     while (counter < maxResults) {
-        currentId = yield index_1.constructed.instance.entries.getTagEntryNext(data.tagName, currentId);
+        currentId = (data.reverse) ? yield index_1.constructed.instance.entries.getTagEntryPrev(data.tagName, currentId) :
+            yield index_1.constructed.instance.entries.getTagEntryNext(data.tagName, currentId);
         if (currentId === '0') {
             break;
         }
