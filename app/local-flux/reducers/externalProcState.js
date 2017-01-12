@@ -12,6 +12,8 @@ const GethStatus = Record({
     spawned: false,
     started: null,
     stopped: null,
+    upgrading: null,
+    message: null,
     startRequested: false,
     blockNr: null
 });
@@ -96,7 +98,10 @@ const eProcState = createReducer(initialState, {
         const syncActionId = state.get('syncActionId') === 3 && newStatus.api ?
             1 :
             state.get('syncActionId');
-
+        if (newStatus.api) {
+            newStatus.upgrading = null;
+            newStatus.message = null;
+        }
         if (newStatus.starting || newStatus.spawned || newStatus.api) {
             newStatus.downloading = null;
         }
@@ -125,6 +130,7 @@ const eProcState = createReducer(initialState, {
 
     [types.STOP_GETH_SUCCESS]: (state, action) => {
         const syncActionId = state.get('syncActionId') === 2 ? state.get('syncActionId') : 3;
+        action.data.upgrading = state.getIn(['gethStatus', 'upgrading']) || null;
         return state.merge({
             gethStatus: new GethStatus(action.data),
             syncActionId
