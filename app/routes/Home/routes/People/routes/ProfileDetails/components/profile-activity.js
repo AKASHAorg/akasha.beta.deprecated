@@ -183,75 +183,45 @@ class ProfileActivity extends Component {
     }
 
     renderFollowers () {
-        const { fetchingFollowers, profileData, profileActions, followPending, followProfile,
-            unfollowProfile, selectProfile, showPanel, loggedProfileData, isFollowerPending,
-            fetchingMoreFollowers } = this.props;
-        const { palette } = this.context.muiTheme;
-        const followers = profileData.get('followers');
+        const { fetchingFollowers, profileData, fetchingMoreFollowers } = this.props;
+        const followers = profileData
+            .get('followers')
+            .map(follower => follower.get('profile'))
+            .toJS();
 
-        return (<DataLoader
-          flag={fetchingFollowers}
-          timeout={200}
-          size={80}
-          style={{ paddingTop: '120px' }}
-        >
-          <div style={{ display: 'flex', flexWrap: 'wrap' }} >
-            {followers.size === 0 &&
-              <div
-                style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    color: palette.disabledColor,
-                    paddingTop: '10px'
-                }}
-              >
-                No followers
-              </div>
-            }
-            {followers.map((follower, key) => {
-                const profile = follower.get('profile').toJS();
-                const followProfilePending = followPending && followPending.find(follow =>
-                    follow.akashaId === profile.akashaId);
-                return profileData &&
-                  <ProfileCard
-                    key={key}
-                    loggedProfileData={loggedProfileData}
-                    profileData={profile}
-                    followProfile={followProfile}
-                    unfollowProfile={unfollowProfile}
-                    followPending={followProfilePending}
-                    isFollowerPending={isFollowerPending}
-                    selectProfile={selectProfile}
-                    showPanel={showPanel}
-                    isFollowerAction={profileActions.isFollower}
-                  />;
-            })}
-            {profileData.get('moreFollowers') &&
-              <DataLoader flag={fetchingMoreFollowers} size={30}>
-                <div style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
-                  <div id="followers" ref={(el) => { this.trigger = el; }} style={{ height: 0 }} />
-                </div>
-              </DataLoader>
-            }
-          </div>
-        </DataLoader>);
+        return this.renderProfileList(
+            followers, fetchingFollowers, fetchingMoreFollowers, profileData.get('moreFollowers'),
+            'No followers'
+        );
     }
 
     renderFollowing () {
-        const { fetchingFollowing, profileData, profileActions, followPending,
-            followProfile, unfollowProfile, selectProfile, showPanel, loggedProfileData,
-            isFollowerPending, fetchingMoreFollowing } = this.props;
+        const { fetchingFollowing, profileData, fetchingMoreFollowing } = this.props;
+        const followings = profileData
+            .get('following')
+            .map(following => following.get('profile'))
+            .toJS();
+
+        return this.renderProfileList(
+            followings, fetchingFollowing, fetchingMoreFollowing, profileData.get('moreFollowing'),
+            'No following'
+        );
+    }
+
+    renderProfileList = (profiles, fetching, fetchingMore, moreProfiles, emptyPlaceholder) => {
+        const { profileData, profileActions, followPending, followProfile, unfollowProfile,
+            selectProfile, showPanel, loggedProfileData, isFollowerPending, sendTip,
+            sendingTip } = this.props;
         const { palette } = this.context.muiTheme;
-        const followings = profileData.get('following');
 
         return (<DataLoader
-          flag={fetchingFollowing}
-          timeout={200}
+          flag={fetching}
+          timeout={700}
           size={80}
           style={{ paddingTop: '120px' }}
         >
           <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-            {followings.size === 0 &&
+            {profiles.length === 0 &&
               <div
                 style={{
                     display: 'flex',
@@ -260,31 +230,34 @@ class ProfileActivity extends Component {
                     paddingTop: '10px'
                 }}
               >
-                No following
+                {emptyPlaceholder}
               </div>
             }
-            {followings.map((following, key) => {
-                const profile = following.get('profile').toJS();
+            {profiles.map((prf) => {
                 const followProfilePending = followPending && followPending.find(follow =>
-                    follow.akashaId === profile.akashaId);
+                    follow.akashaId === prf.akashaId);
+                const sendTipPending = sendingTip && sendingTip.find(flag =>
+                    flag.akashaId === prf.akashaId);
                 return profileData &&
                   <ProfileCard
-                    key={key}
+                    key={prf.akashaId}
                     loggedProfileData={loggedProfileData}
-                    profileData={profile}
+                    profileData={prf}
                     followProfile={followProfile}
                     unfollowProfile={unfollowProfile}
-                    followPending={followProfilePending}
+                    followPending={followProfilePending && followProfilePending.value}
                     isFollowerPending={isFollowerPending}
                     selectProfile={selectProfile}
+                    sendTip={sendTip}
+                    sendTipPending={sendTipPending && sendTipPending.value}
                     showPanel={showPanel}
                     isFollowerAction={profileActions.isFollower}
                   />;
             })}
-            {profileData.get('moreFollowing') &&
-              <DataLoader flag={fetchingMoreFollowing} size={30}>
+            {moreProfiles &&
+              <DataLoader flag={fetchingMore} size={30}>
                 <div style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
-                  <div id="following" ref={(el) => { this.trigger = el; }} style={{ height: 0 }} />
+                  <div ref={(el) => { this.trigger = el; }} style={{ height: 0 }} />
                 </div>
               </DataLoader>
             }
@@ -382,6 +355,8 @@ ProfileActivity.propTypes = {
     followProfile: PropTypes.func.isRequired,
     unfollowProfile: PropTypes.func.isRequired,
     selectProfile: PropTypes.func.isRequired,
+    sendingTip: PropTypes.shape(),
+    sendTip: PropTypes.func.isRequired,
     showPanel: PropTypes.func,
 };
 

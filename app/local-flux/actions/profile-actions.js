@@ -449,6 +449,17 @@ class ProfileActions {
         });
     };
 
+    addSendTipAction = (payload) => {
+        this.appActions.addPendingAction({
+            type: 'sendTip',
+            payload,
+            titleId: 'sendTipTitle',
+            messageId: 'sendTip',
+            gas: 2000000,
+            status: 'needTransferConfirmation'
+        });
+    };
+
     followProfile = (akashaId, gas) =>
         this.dispatch((dispatch, getState) => {
             const loggedProfile = getState().profileState.get('loggedProfile');
@@ -540,6 +551,46 @@ class ProfileActions {
                 this.dispatch(profileActionCreators.isFollowerError(error, {
                     isFollowerPending: false
                 }))
+        });
+    };
+
+    sendTip = (akashaId, receiver, value, gas) =>
+        this.dispatch((dispatch, getState) => {
+            const loggedProfile = getState().profileState.get('loggedProfile');
+            const flagOn = { akashaId, value: true };
+            const flagOff = { akashaId, value: false };
+            this.dispatch(profileActionCreators.sendTip({ sendingTip: flagOn }));
+            this.profileService.sendTip({
+                token: loggedProfile.get('token'),
+                akashaId,
+                receiver,
+                value,
+                gas,
+                onSuccess: (data) => {
+                    this.transactionActions.listenForMinedTx();
+                    this.transactionActions.addToQueue([{
+                        tx: data.tx,
+                        type: 'sendTip',
+                        akashaId: data.akashaId
+                    }]);
+                    this.appActions.showNotification({
+                        id: 'sendingTip',
+                        values: { akashaId: data.akashaId },
+                        duration: 3000
+                    });
+                },
+                onError: error =>
+                    dispatch(profileActionCreators.sendTipError(error, flagOff))
+            });
+        });
+
+    sendTipSuccess = (akashaId, minedSuccessfully) => {
+        this.dispatch(profileActionCreators.sendTipSuccess({
+            sendingTip: { akashaId, value: false }
+        }));
+        this.appActions.showNotification({
+            id: minedSuccessfully ? 'sendTipSuccess' : 'sendTipError',
+            values: { akashaId }
         });
     };
 

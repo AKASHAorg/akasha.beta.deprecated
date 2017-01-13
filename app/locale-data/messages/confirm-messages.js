@@ -138,6 +138,31 @@ const confirmMessages = defineMessages({
         description: 'confirm dialog message for claiming an entry\'s balance',
         defaultMessage: `Are you sure you want to claim this entry\'s balance?
                 {entryTitle}`
+    },
+    sendTipTitle: {
+        id: 'app.confirm.sendTipTitle',
+        description: 'confirm dialog title for sending a tip to someone',
+        defaultMessage: 'Send tip'
+    },
+    sendTip: {
+        id: 'app.confirm.sendTip',
+        description: 'confirm dialog message for sending a tip to someone',
+        defaultMessage: 'Are you sure you want to blabla?'
+    },
+    ethAmountLabel: {
+        id: 'app.confirm.ethAmount',
+        description: 'eth amount input label',
+        defaultMessage: 'AETH amount'
+    },
+    maxEthAmountLabel: {
+        id: 'app.confirm.maxEthAmount',
+        description: 'max eth amount label',
+        defaultMessage: 'max. {balance}'
+    },
+    receiverLabel: {
+        id: 'app.confirm.receiverLabel',
+        description: 'receiver input label',
+        defaultMessage: 'Send AETH to'
     }
 });
 export { confirmMessages };

@@ -1,7 +1,8 @@
 import React, { PropTypes, Component } from 'react';
 import { colors } from 'material-ui/styles';
-import { Paper, Tabs, Tab, List, ListItem, Avatar } from 'material-ui';
+import { Paper, Tabs, Tab, List, ListItem } from 'material-ui';
 import ActionDelete from 'material-ui/svg-icons/action/delete';
+import { Avatar } from 'shared-components';
 import { getInitials } from 'utils/dataModule';
 import UserProfileHeader from './user-profile/user-profile-header';
 
@@ -26,7 +27,8 @@ const eventTypes = {
     VOTE: 'vote',
     COMMENT: 'comment',
     PUBLISH: 'publish',
-    FOLLOWING: 'following'
+    FOLLOWING: 'following',
+    GOT_TIPPED: 'gotTipped'
 };
 class UserProfilePanel extends Component {
     constructor (props) {
@@ -47,24 +49,6 @@ class UserProfilePanel extends Component {
         return {};
     };
 
-    renderFeedNotifications = () => {
-        const feedNotifs = this.props.notificationsState.get('notifFeed');
-        const notifs = [];
-        feedNotifs.forEach((val, index) => {
-            if (val.type === eventTypes.PUBLISH) {
-                return notifs.push(this._renderEntry(val, index));
-            }
-            if (val.type === eventTypes.COMMENT) {
-                return notifs.push(this._renderComment(val, index));
-            }
-            if (val.type === eventTypes.VOTE) {
-                return notifs.push(this._renderVote(val, index));
-            }
-            return null;
-        });
-        return (<List>{notifs}</List>);
-    };
-
     readSubscriptionNotif = () => {
         const { notificationsActions } = this.props;
         notificationsActions.readFeedNotif();
@@ -73,27 +57,6 @@ class UserProfilePanel extends Component {
     readYouNotif = (number) => {
         const { notificationsActions } = this.props;
         notificationsActions.readYouNotif(number);
-    };
-
-    renderYouNotifs = () => {
-        const youNotifs = this.props.notificationsState.get('youFeed');
-        const notifs = [];
-        youNotifs.forEach((val, index) => {
-            if (val.type === eventTypes.PUBLISH) {
-                return notifs.push(this._renderEntry(val, index));
-            }
-            if (val.type === eventTypes.COMMENT) {
-                return notifs.push(this._renderComment(val, index));
-            }
-            if (val.type === eventTypes.VOTE) {
-                return notifs.push(this._renderVote(val, index));
-            }
-            if (val.type === eventTypes.FOLLOWING) {
-                return notifs.push(this._renderFollower(val, index));
-            }
-            return null;
-        });
-        return (<List>{notifs}</List>);
     };
 
     navigateToTag (tag) {
@@ -117,20 +80,9 @@ class UserProfilePanel extends Component {
     }
 
     _renderFollower (event, index) {
-        const { palette } = this.context.muiTheme;
-        const initials = getInitials(event.follower.firstName, event.follower.lastName);
         return (
           <ListItem
-            leftAvatar={event.follower.avatar ?
-              <Avatar src={`${event.follower.baseUrl}/${event.follower.avatar}`} /> :
-              <Avatar style={{ backgroundColor: 'rgba(239, 239, 239, 1)', border: '1px solid' }} >
-                <span
-                  style={{ color: palette.textColor, textTransform: 'uppercase', fontWeight: '500' }}
-                >
-                  {initials}
-                </span>
-              </Avatar>
-            }
+            leftAvatar={this.renderAvatar(event.follower)}
             primaryText={
               <strong
                 onClick={() => {
@@ -163,8 +115,6 @@ class UserProfilePanel extends Component {
     }
 
     _renderEntry (event, index) {
-        const { palette } = this.context.muiTheme;
-        const initials = getInitials(event.author.firstName, event.author.lastName);
         const tags = [].concat(event.tag);
         const tagsMessage = tags.length > 1 ? 'tags' : 'tag';
         const tagsArray = tags.map((tag, key) =>
@@ -175,16 +125,7 @@ class UserProfilePanel extends Component {
         );
         return (
           <ListItem
-            leftAvatar={event.author.avatar ?
-              <Avatar src={`${event.author.baseUrl}/${event.author.avatar}`} /> :
-              <Avatar style={{ backgroundColor: 'rgba(239, 239, 239, 1)', border: '1px solid' }} >
-                <span
-                  style={{ color: palette.textColor, textTransform: 'uppercase', fontWeight: '500' }}
-                >
-                  {initials}
-                </span>
-              </Avatar>
-            }
+            leftAvatar={this.renderAvatar(event.author)}
             primaryText={
               <strong
                 onClick={() => {
@@ -194,7 +135,7 @@ class UserProfilePanel extends Component {
               >
                 {event.author.akashaId}
               </strong>
-                }
+            }
             secondaryText={
               <p>
                 <span style={{ color: colors.darkBlack }} >
@@ -228,20 +169,9 @@ class UserProfilePanel extends Component {
     }
 
     _renderComment (event, index) {
-        const { palette } = this.context.muiTheme;
-        const initials = getInitials(event.author.firstName, event.author.lastName);
         return (
           <ListItem
-            leftAvatar={event.author.avatar ?
-              <Avatar src={`${event.author.baseUrl}/${event.author.avatar}`} /> :
-              <Avatar style={{ backgroundColor: 'rgba(239, 239, 239, 1)', border: '1px solid' }} >
-                <span
-                  style={{ color: palette.textColor, textTransform: 'uppercase', fontWeight: '500' }}
-                >
-                  {initials}
-                </span>
-              </Avatar>
-            }
+            leftAvatar={this.renderAvatar(event.author)}
             primaryText={
               <strong
                 onClick={() => {
@@ -250,7 +180,7 @@ class UserProfilePanel extends Component {
               >
                 {event.author.akashaId}
               </strong>
-                }
+            }
             secondaryText={
               <p>
                 <span style={{ color: colors.darkBlack }} >
@@ -286,19 +216,9 @@ class UserProfilePanel extends Component {
         const type = (event.weight > 0) ? 'Upvoted' : 'Downvoted';
         const colorVote = (event.weight > 0) ? palette.accent3Color : palette.accent1Color;
         const voteWeight = (event.weight > 0) ? (`+${event.weight}`) : event.weight;
-        const initials = getInitials(event.author.firstName, event.author.lastName);
         return (
           <ListItem
-            leftAvatar={event.author.avatar ?
-              <Avatar src={`${event.author.baseUrl}/${event.author.avatar}`} /> :
-              <Avatar style={{ backgroundColor: 'rgba(239, 239, 239, 1)', border: '1px solid' }} >
-                <span
-                  style={{ color: palette.textColor, textTransform: 'uppercase', fontWeight: '500' }}
-                >
-                  {initials}
-                </span>
-              </Avatar>
-            }
+            leftAvatar={this.renderAvatar(event.author)}
             primaryText={
               <strong
                 onClick={() => {
@@ -339,6 +259,114 @@ class UserProfilePanel extends Component {
           />
         );
     }
+
+    _renderTip (event, index) {
+        return (
+          <ListItem
+            leftAvatar={this.renderAvatar(event.profile)}
+            primaryText={
+              <strong
+                onClick={() => {
+                    this.navigateToProfile(event.profile.profile);
+                }}
+                style={{ color: colors.darkBlack }}
+              >
+                {event.profile.akashaId}
+              </strong>
+            }
+            secondaryText={
+              <p>
+                <span style={{ color: colors.darkBlack }} >
+                  Tipped you {event.value} AETH
+                </span>
+                <br />
+                Block {event.blockNumber}
+              </p>
+            }
+            secondaryTextLines={2}
+            key={eventTypes.GOT_TIPPED + index + event.blockNumber}
+            className="has_hidden_action"
+            rightIcon={<ActionDelete
+              className="hidden_action"
+              onClick={() => {
+                  if (this.props.loggedProfileData.get('profile') === event.profileAddress) {
+                      return this.props.notificationsActions.deleteYouNotif(index);
+                  }
+                  return this.props.notificationsActions.deleteFeedNotif(index);
+              }}
+            />}
+          />
+        );
+    }
+
+    renderAvatar (profileData) {
+        const initials = getInitials(profileData.firstName, profileData.lastName);
+        return (
+          <button
+            style={{
+                border: '0px', outline: 'none', background: 'transparent', borderRadius: '50%'
+            }}
+            onClick={() => this.navigateToProfile(profileData.profile)}
+          >
+            <Avatar
+              image={profileData.avatar ?
+                `${profileData.baseUrl}/${profileData.avatar}` :
+                ''
+              }
+              radius={40}
+              userInitials={initials}
+              userInitialsStyle={{
+                  textTransform: 'uppercase',
+                  fontSize: '12px',
+                  fontWeight: '600',
+                  margin: '0px'
+              }}
+            />
+          </button>
+        );
+    }
+
+    renderFeedNotifications = () => {
+        const feedNotifs = this.props.notificationsState.get('notifFeed');
+        const notifs = [];
+        feedNotifs.forEach((val, index) => {
+            if (val.type === eventTypes.PUBLISH) {
+                return notifs.push(this._renderEntry(val, index));
+            }
+            if (val.type === eventTypes.COMMENT) {
+                return notifs.push(this._renderComment(val, index));
+            }
+            if (val.type === eventTypes.VOTE) {
+                return notifs.push(this._renderVote(val, index));
+            }
+            if (val.type === eventTypes.GOT_TIPPED) {
+                return notifs.push(this._renderTip(val, index));
+            }
+            return null;
+        });
+        return (<List>{notifs}</List>);
+    };
+
+    renderYouNotifs = () => {
+        const youNotifs = this.props.notificationsState.get('youFeed');
+        const notifs = [];
+        youNotifs.forEach((val, index) => {
+            if (val.type === eventTypes.PUBLISH) {
+                return notifs.push(this._renderEntry(val, index));
+            }
+            if (val.type === eventTypes.COMMENT) {
+                return notifs.push(this._renderComment(val, index));
+            }
+            if (val.type === eventTypes.VOTE) {
+                return notifs.push(this._renderVote(val, index));
+            }
+            if (val.type === eventTypes.FOLLOWING) {
+                return notifs.push(this._renderFollower(val, index));
+            }
+            return null;
+        });
+        return (<List>{notifs}</List>);
+    };
 
     render () {
         const { loggedProfileData, profileActions, profileAddress, showPanel, hidePanel,

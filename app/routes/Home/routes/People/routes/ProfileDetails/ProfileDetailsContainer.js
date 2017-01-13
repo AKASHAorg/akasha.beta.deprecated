@@ -56,12 +56,18 @@ class ProfileDetailsContainer extends Component {
         router.push(`/${loggedAkashaId}/profile/${address}`);
     }
 
+    sendTip = (profileData) => {
+        const { profileActions } = this.props;
+        const { akashaId, firstName, lastName, profile } = profileData;
+        profileActions.addSendTipAction({ akashaId, firstName, lastName, profile });
+    };
+
     render () {
         const { appActions, profileActions, entryActions, profileData, profiles, profileEntries,
-            votePending, followPending, fetchingFollowers, fetchingFollowing, fetchingProfileData,
+            votePending, followPending, fetchingFollowers, fetchingFollowing,
             fetchingProfileEntries, loggedProfileData, isFollowerPending, blockNr,
             savedEntriesIds, moreProfileEntries, fetchingMoreProfileEntries, fetchingMoreFollowers,
-            fetchingMoreFollowing, tagActions } = this.props;
+            fetchingMoreFollowing, sendingTip, tagActions } = this.props;
         const isFollower = profileData &&
             loggedProfileData.getIn(['isFollower', profileData.get('akashaId')]);
 
@@ -73,16 +79,16 @@ class ProfileDetailsContainer extends Component {
         >
           <div style={{ display: 'flex', height: '100%' }}>
             <ProfileDetails
-              loggedAddress={loggedProfileData.get('profile')}
-              isFollowerPending={isFollowerPending}
-              isFollower={isFollower}
-              profileData={profileData}
-              fetchingProfileData={fetchingProfileData}
-              followProfile={this.followProfile}
-              unfollowProfile={this.unfollowProfile}
               followPending={followPending}
+              followProfile={this.followProfile}
+              isFollower={isFollower}
+              loggedAddress={loggedProfileData.get('profile')}
+              profileData={profileData}
+              sendingTip={sendingTip}
+              sendTip={this.sendTip}
               showNotification={appActions.showNotification}
               showPanel={appActions.showPanel}
+              unfollowProfile={this.unfollowProfile}
             />
             <ProfileActivity
               loggedProfileData={loggedProfileData}
@@ -106,6 +112,8 @@ class ProfileDetailsContainer extends Component {
               unfollowProfile={this.unfollowProfile}
               selectProfile={this.selectProfile}
               selectTag={tagActions.saveTag}
+              sendingTip={sendingTip}
+              sendTip={this.sendTip}
               showPanel={appActions.showPanel}
               isFollowerPending={isFollowerPending}
               votePending={votePending}
@@ -124,7 +132,6 @@ ProfileDetailsContainer.propTypes = {
     fetchingMoreFollowers: PropTypes.bool,
     fetchingMoreFollowing: PropTypes.bool,
     fetchingMoreProfileEntries: PropTypes.bool,
-    fetchingProfileData: PropTypes.bool,
     fetchingProfileEntries: PropTypes.bool,
     followPending: PropTypes.shape(),
     isFollowerPending: PropTypes.bool,
@@ -136,6 +143,7 @@ ProfileDetailsContainer.propTypes = {
     profileEntries: PropTypes.shape(),
     profiles: PropTypes.shape(),
     savedEntriesIds: PropTypes.shape(),
+    sendingTip: PropTypes.shape(),
     tagActions: PropTypes.shape(),
     votePending: PropTypes.shape()
 };
@@ -157,7 +165,6 @@ function mapStateToProps (state, ownProps) {
         fetchingMoreFollowers: state.profileState.getIn(['flags', 'fetchingMoreFollowers']),
         fetchingMoreFollowing: state.profileState.getIn(['flags', 'fetchingMoreFollowing']),
         fetchingMoreProfileEntries: state.entryState.getIn(['flags', 'fetchingMoreProfileEntries']),
-        fetchingProfileData: state.profileState.getIn(['flags', 'fetchingProfileData']),
         fetchingProfileEntries: state.entryState.getIn(['flags', 'fetchingProfileEntries']),
         followPending: state.profileState.getIn(['flags', 'followPending']),
         isFollowerPending: state.profileState.getIn(['flags', 'isFollowerPending']),
@@ -173,6 +180,7 @@ function mapStateToProps (state, ownProps) {
             ).map(entry => entry.get('content')),
         profiles: state.profileState.get('profiles'),
         savedEntriesIds: state.entryState.get('savedEntries').map(entry => entry.get('entryId')),
+        sendingTip: state.profileState.getIn(['flags', 'sendingTip']),
         votePending: state.entryState.getIn(['flags', 'votePending']),
     };
 }

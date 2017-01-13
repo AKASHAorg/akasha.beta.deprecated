@@ -54,6 +54,11 @@ class AppActions {
     hideWeightConfirmDialog = () => {
         this.dispatch(appActionCreators.hideWeightConfirmDialog());
     };
+    showTransferConfirmDialog = resource =>
+        this.dispatch(appActionCreators.showTransferConfirmDialog(resource));
+    hideTransferConfirmDialog = () => {
+        this.dispatch(appActionCreators.hideTransferConfirmDialog());
+    };
     setTimestamp = timestamp =>
         this.dispatch(appActionCreators.setTimestamp(timestamp));
 

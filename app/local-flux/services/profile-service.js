@@ -241,6 +241,23 @@ class ProfileService extends BaseService {
             serverChannel.send({ akashaId, following });
         });
     };
+
+    sendTip = ({ token, akashaId, receiver, value, gas = 2000000, onError, onSuccess }) => {
+        const clientChannel = Channel.client.profile.tip;
+        const serverChannel = Channel.server.profile.tip;
+        this.openChannel({
+            clientManager: this.clientManager,
+            serverChannel,
+            clientChannel,
+            listenerCb: this.createListener(
+                onError,
+                onSuccess,
+                clientChannel.channelName
+            )
+        }, () => {
+            serverChannel.send({ token, akashaId, receiver, value, gas });
+        });
+    };
 }
 
 export { ProfileService };

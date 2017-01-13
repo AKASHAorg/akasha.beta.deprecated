@@ -5,7 +5,8 @@ import { injectIntl } from 'react-intl';
 import { SettingsActions, AppActions, ProfileActions, EProcActions, DraftActions,
     TagActions, EntryActions } from 'local-flux';
 import { getMuiTheme } from 'material-ui/styles';
-import { AuthDialog, WeightConfirmDialog, PublishConfirmDialog } from 'shared-components';
+import { AuthDialog, WeightConfirmDialog, PublishConfirmDialog,
+    TransferConfirmDialog } from 'shared-components';
 import debounce from 'lodash.debounce';
 import TermsPanel from './components/terms-panel';
 import NotificationBar from './components/notification-bar';
@@ -114,6 +115,7 @@ class App extends Component {
         const weightConfirmDialog = appState.get('weightConfirmDialog');
         const isWeightConfirmationDialogVisible = weightConfirmDialog !== null;
         const isPublishConfirmationDialogVisible = appState.get('publishConfirmDialog') !== null;
+        const isTransferConfirmationDialogVisible = appState.get('transferConfirmDialog') !== null;
         let isEntryActive = false;
         if (isWeightConfirmationDialogVisible) {
             const entry = entries.find(entry =>
@@ -163,6 +165,13 @@ class App extends Component {
               profileActions={profileActions}
               isOpen={isPublishConfirmationDialogVisible}
               resource={appState.get('publishConfirmDialog')}
+            />
+            <TransferConfirmDialog
+              appActions={appActions}
+              balance={loggedProfileBalance}
+              getProfileBalance={profileActions.getProfileBalance}
+              isOpen={isTransferConfirmationDialogVisible}
+              resource={appState.get('transferConfirmDialog')}
             />
             {appState.get('showTerms') &&
               <TermsPanel hideTerms={appActions.hideTerms} />

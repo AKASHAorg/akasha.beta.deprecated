@@ -8,13 +8,14 @@ import '../../styles/core.scss';
 import styles from './home.scss';
 import PanelLoaderContainer from './components/panel-loader-container';
 import ClaimRunner from './components/claim-runner';
+import CommentsPublisher from './components/comments-publisher';
 import CommonRunner from './components/common-runner';
 import ProfileUpdater from './components/profile-updater';
 import PublishEntryRunner from './components/publish-entry-runner';
 import TagPublisher from './components/tag-publisher';
+import TipRunner from './components/tip-runner';
 import FollowRunner from './components/follow-runner';
 import VoteRunner from './components/vote-runner';
-import CommentsPublisher from './components/comments-publisher';
 
 class HomeContainer extends React.Component {
     constructor (props) {
@@ -139,13 +140,14 @@ class HomeContainer extends React.Component {
                 {this.props.children}
               </div>
               <ClaimRunner />
+              <CommentsPublisher />
               <CommonRunner />
               <ProfileUpdater />
               <FollowRunner />
               <PublishEntryRunner />
               <TagPublisher />
+              <TipRunner />
               <VoteRunner />
-              <CommentsPublisher />
             </div>
           </DataLoader>
         );
