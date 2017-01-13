@@ -132,8 +132,8 @@ class EntryPage extends Component {
         commentsActions.getEntryComments(entryId, start, COMMENT_FETCH_LIMIT, reverse);
     };
     _checkNewComments = () => {
-        const { commentsActions, entry } = this.props;
-        commentsActions.getCommentsCount(entry.get('entryId'));
+        const { commentsActions, params } = this.props;
+        commentsActions.getCommentsCount(params.entryId);
     };
     isOwnEntry = (nextProps) => {
         const { entry, loggedProfile } = nextProps || this.props;
@@ -415,7 +415,7 @@ class EntryPage extends Component {
                         this.commentsSectionRef = commentsSectionRef;
                     })}
                   >
-                    <div>
+                    <div style={{ position: 'relative', zIndex: 2 }}>
                       <h4>
                         {`${intl.formatMessage(entryMessages.allComments)} (${entry.get('commentsCount')})`}
                       </h4>

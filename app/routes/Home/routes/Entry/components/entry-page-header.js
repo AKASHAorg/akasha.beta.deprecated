@@ -61,7 +61,9 @@ class EntryPageHeader extends Component {
             </span>
             <span style={{ padding: '0 5px' }}>-</span>
             {readingTime.hours &&
-              intl.formatMessage(entryMessages.hoursCount, { hours: readingTime.hours })
+              <span style={{ marginRight: 5 }}>
+                {intl.formatMessage(entryMessages.hoursCount, { hours: readingTime.hours })}
+              </span>
             }
             {intl.formatMessage(entryMessages.minutesCount, { minutes: readingTime.minutes })}
             <span style={{ paddingLeft: '5px' }}>{intl.formatMessage(entryMessages.readTime)}</span>
