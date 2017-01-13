@@ -1,6 +1,6 @@
 /* eslint import/no-unresolved: 0, import/extensions: 0 */
 import React, { Component, PropTypes } from 'react';
-import { Divider, IconButton, SvgIcon, RaisedButton } from 'material-ui';
+import { Divider, IconButton, SvgIcon, FlatButton } from 'material-ui';
 import { injectIntl } from 'react-intl';
 import { TagChip, DataLoader, CommentsList, CommentEditor } from 'shared-components';
 import { AllRightsReserved, CreativeCommonsBY, CreativeCommonsCC, CreativeCommonsNCEU,
@@ -23,9 +23,9 @@ class EntryPage extends Component {
         this.state = {
             publisherTitleShadow: false,
             activeTab: 'all',
-            lastCommentsCount: 0
+            scrollDirection: 0
         };
-        this.debouncedMouseWheel = debounce(this._handleMouseWheel, 250);
+        this.debouncedMouseWheel = debounce(this._handleMouseWheel, 250, { leading: true, maxWait: 500 });
     }
 
     componentDidMount () {
@@ -61,7 +61,19 @@ class EntryPage extends Component {
                 lastCommentsCount: nextProps.entry.get('commentsCount')
             });
         }
-        if (nextProps.entry && entry) {
+        if (entry && nextProps.entry && (nextProps.entry.get('entryId') !== entry.get('entryId'))) {
+            this.setState({
+                lastCommentsCount: nextProps.entry.get('commentsCount')
+            });
+        }
+        if ((nextProps.pendingCommentsActions.size > 0)) {
+            const prevComment = pendingCommentsActions.find(comm => comm.getIn(['payload', 'entryId']) === params.entryId);
+            const currentComment = nextProps.pendingCommentsActions.find(comm => comm.getIn(['payload', 'entryId']) === params.entryId);
+            if (currentComment && prevComment && (prevComment.status === 'checkAuth')) {
+                this.commentEditor.getWrappedInstance().resetContent();
+            }
+        }
+        if (nextProps.entry && entry && (nextProps.entry.get('entryId') === entry.get('entryId'))) {
             let pendingCommentsCount = 0;
             const entryComments = nextProps.comments.filter(comm => comm.get('entryId') === parseInt(nextProps.entry.get('entryId'), 10));
             if (entryComments.size > 0) {
@@ -69,13 +81,6 @@ class EntryPage extends Component {
             }
             if ((this.state.lastCommentsCount + pendingCommentsCount) < nextProps.entry.get('commentsCount')) {
                 this.showNewCommentsNotification();
-            }
-        }
-        if ((nextProps.pendingCommentsActions.size > 0)) {
-            const prevComment = pendingCommentsActions.find(comm => comm.getIn(['payload', 'entryId']) === params.entryId);
-            const currentComment = nextProps.pendingCommentsActions.find(comm => comm.getIn(['payload', 'entryId']) === params.entryId);
-            if (currentComment && prevComment && (prevComment.status === 'checkAuth')) {
-                this.commentEditor.getWrappedInstance().resetContent();
             }
         }
     }
@@ -413,23 +418,27 @@ class EntryPage extends Component {
                         <div
                           style={{
                               position: this.state.newCommentsNotificationPosition,
-                              top: (this.state.scrollDirection === 1) ? 84 : 32,
+                              top: (this.state.scrollDirection > -1) ? 100 : 32,
                               textAlign: 'center',
                               margin: '0 auto',
                               zIndex: 3,
-                              padding: 8,
-                              marginBottom: 8,
+                              padding: 0,
                               width: 700,
-                              transition: 'top 0.214s ease-in-out'
+                              transition: 'top 0.214s ease-in-out',
+                              height: 1
                           }}
                           className="row middle-xs"
                         >
-                          <div className="col-xs-12 center-xs">
-                            <RaisedButton
+                          <div className="col-xs-12 center-xs" style={{ position: 'relative' }}>
+                            <FlatButton
                               primary
                               label={intl.formatMessage(entryMessages.newComments, {
                                   count: this._getNewCommentsCount()
                               })}
+                              hoverColor="#ececec"
+                              backgroundColor="#FFF"
+                              style={{ position: 'absolute', top: -18, zIndex: 2, left: '50%', marginLeft: '-70px' }}
+                              labelStyle={{ fontSize: 12 }}
                               onClick={this.onRequestNewestComments}
                             />
                           </div>
