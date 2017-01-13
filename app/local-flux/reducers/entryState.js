@@ -366,11 +366,11 @@ const entryState = createReducer(initialState, {
         });
         const newState = state.setIn(['fullEntry'], newEntry);
         return newState.merge({
-            flags
+            flags: state.get('flags').merge(flags)
         });
     },
     [commentsTypes.GET_COMMENTS_COUNT_SUCCESS]: (state, { data }) => {
-        if(state.get('fullEntry') && (data.entryId === state.getIn(['fullEntry', 'entryId']))) {
+        if (state.get('fullEntry') && (data.entryId === state.getIn(['fullEntry', 'entryId']))) {
             return state.merge({
                 fullEntry: state.get('fullEntry').setIn(['commentsCount'], parseInt(data.count, 10))
             });
