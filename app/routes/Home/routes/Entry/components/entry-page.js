@@ -24,11 +24,11 @@ class EntryPage extends Component {
         this.state = {
             publisherTitleShadow: false,
             activeTab: 'all',
-            scrollDirection: 0
+            scrollDirection: 1
         };
-        this.debouncedMouseWheel = debounce(this._handleMouseWheel, 250, {
+        this.debouncedMouseWheel = debounce(this._handleMouseWheel, 200, {
             leading: true,
-            maxWait: 500
+            maxWait: 250
         });
     }
 
@@ -224,12 +224,12 @@ class EntryPage extends Component {
     _handleMouseWheel = (ev) => {
         if (this.state.showNewCommentsNotification) {
             const commentsSectionTop = this.commentsSectionRef.getBoundingClientRect().top;
-            if (commentsSectionTop < 84) {
+            if (commentsSectionTop < 45) {
                 this.setState({
                     newCommentsNotificationPosition: 'fixed',
                     scrollDirection: (ev.detail < 0) ? 1 : (ev.wheelDelta > 0) ? 1 : -1, // eslint-disable-line no-nested-ternary, max-len
                 });
-            } else if (commentsSectionTop > 84 && (this.state.newCommentsNotificationPosition === 'fixed')) {
+            } else if (commentsSectionTop > 45 && (this.state.newCommentsNotificationPosition === 'fixed')) {
                 this.setState({
                     newCommentsNotificationPosition: 'static',
                     scrollDirection: (ev.detail < 0) ? 1 : (ev.wheelDelta > 0) ? 1 : -1, // eslint-disable-line no-nested-ternary, max-len
@@ -424,14 +424,16 @@ class EntryPage extends Component {
                           <div
                             style={{
                                 position: this.state.newCommentsNotificationPosition,
-                                top: (this.state.scrollDirection > -1) ? 100 : 32,
+                                top: (this.state.scrollDirection === 1) ? 100 : 32,
+                                transform: 'translate3d(0,0,0)',
                                 textAlign: 'center',
                                 margin: '0 auto',
                                 zIndex: 3,
                                 padding: 0,
                                 width: 700,
-                                transition: 'top 0.214s ease-in-out',
-                                height: 1
+                                transition: (this.state.scrollDirection === 1) ? 'top 0.214s ease-in-out' : 'none',
+                                height: 1,
+                                willChange: 'top'
                             }}
                             className="row middle-xs"
                           >
