@@ -7,13 +7,11 @@ const execute = Promise.coroutine(function* (data) {
     if (currentId === '0') {
         return { collection: [], tagName: data.tagName };
     }
-    let entry;
     const maxResults = (data.limit) ? data.limit : 5;
-    const results = [];
+    const fetchCalls = [];
     let counter = 0;
     if (!data.start) {
-        entry = yield get_entry_1.default.execute({ entryId: currentId });
-        results.push({ entryId: currentId, content: entry });
+        fetchCalls.push(get_entry_1.default.execute({ entryId: currentId }));
         counter = 1;
     }
     while (counter < maxResults) {
@@ -22,10 +20,10 @@ const execute = Promise.coroutine(function* (data) {
         if (currentId === '0') {
             break;
         }
-        entry = yield get_entry_1.default.execute({ entryId: currentId });
-        results.push({ entryId: currentId, content: entry });
+        fetchCalls.push(get_entry_1.default.execute({ entryId: currentId }));
         counter++;
     }
+    const results = yield Promise.all(fetchCalls);
     return { collection: results, tagName: data.tagName, limit: maxResults };
 });
 Object.defineProperty(exports, "__esModule", { value: true });
