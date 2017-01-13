@@ -246,7 +246,7 @@ class AddEntryPage extends Component {
                   targetOrigin={{ horizontal: 'left', vertical: 'top' }}
                   style={{ margin: '4px 0' }}
                 >
-                  <MenuItem primaryText="Delete draft" disabled={isNewDraft} onClick={this._handleDraftDelete} />
+                  <MenuItem primaryText="Delete draft" disabled={isNewDraft} onClick={isNewDraft ? () => {} : this._handleDraftDelete} />
                 </IconMenu>
               </ToolbarGroup>
             </Toolbar>
