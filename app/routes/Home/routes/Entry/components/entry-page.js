@@ -37,7 +37,7 @@ class EntryPage extends Component {
         // treat mouse wheel separately
         // we should optimize the heck out of this!
         window.addEventListener('mousewheel', this.debouncedMouseWheel, { passive: true });
-        this.checkCommentsInterval = setInterval(this._checkNewComments, 1000 * 5);
+        this.checkCommentsInterval = setInterval(this._checkNewComments, 1000 * 15);
         const { entry, entryActions, params, fetchingFullEntry, commentsActions } = this.props;
 
         if ((!entry && !fetchingFullEntry) || entry.get('entryId') !== params.entryId) {
@@ -71,8 +71,8 @@ class EntryPage extends Component {
             });
         }
         if ((nextProps.pendingCommentsActions.size > 0)) {
-            const prevComment = pendingCommentsActions.find(comm => comm.getIn(['payload', 'entryId']) === params.entryId);
-            const currentComment = nextProps.pendingCommentsActions.find(comm => comm.getIn(['payload', 'entryId']) === params.entryId);
+            const prevComment = pendingCommentsActions.findLast(comm => comm.getIn(['payload', 'entryId']) === params.entryId);
+            const currentComment = nextProps.pendingCommentsActions.findLast(comm => comm.getIn(['payload', 'entryId']) === params.entryId);
             if (currentComment && prevComment && (prevComment.status === 'checkAuth')) {
                 this.commentEditor.getWrappedInstance().resetContent();
             }
