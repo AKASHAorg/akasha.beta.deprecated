@@ -11,6 +11,7 @@ import isFollower from './is-follower';
 import isFollowing from './is-following';
 import followingList from './following-list';
 import getProfileList from './get-profile-list';
+import sendTip from './send-tip';
 
 export default [
     currentBalance,
@@ -25,5 +26,6 @@ export default [
     updateProfile,
     followersIterator,
     followingIterator,
-    getProfileList
+    getProfileList,
+    sendTip
 ];

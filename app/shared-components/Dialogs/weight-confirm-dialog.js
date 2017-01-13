@@ -1,4 +1,5 @@
 import React, { PropTypes } from 'react';
+import ReactTooltip from 'react-tooltip';
 import { injectIntl } from 'react-intl';
 import { Dialog, FlatButton, TextField, SvgIcon, IconButton } from 'material-ui';
 import { EntryUpvote, EntryDownvote } from 'shared-components/svg';
@@ -40,6 +41,10 @@ class WeightConfirmDialog extends React.PureComponent {
                 gasAmountError: null
             });
         }
+    }
+
+    componentDidUpdate () {
+        ReactTooltip.rebuild();
     }
 
     getIcon = () => {
@@ -175,17 +180,14 @@ class WeightConfirmDialog extends React.PureComponent {
                   min={minWeight}
                   max={maxWeight}
                 />
-                <IconButton
-                  style={{ position: 'relative', top: '5px' }}
-                  tooltip={
-                    <div style={{ width: '200px', whiteSpace: 'normal' }}>
-                      {intl.formatMessage(confirmMessages.voteWeightDisclaimer)}
-                    </div>
-                  }
-                  tooltipPosition="top-right"
+                <div
+                  style={{ position: 'relative', top: '5px', display: 'inline-block' }}
+                  data-tip={intl.formatMessage(confirmMessages.voteWeightDisclaimer)}
                 >
-                  <InfoIcon />
-                </IconButton>
+                  <IconButton>
+                    <InfoIcon />
+                  </IconButton>
+                </div>
               </div>
               {resource && !voteWeightError &&
                 <div>
@@ -216,17 +218,14 @@ class WeightConfirmDialog extends React.PureComponent {
                   max={4700000}
                   style={{ flex: '1 1 auto' }}
                 />
-                <IconButton
-                  style={{ marginTop: 24, flex: '0 0 auto' }}
-                  tooltip={
-                    <div style={{ width: '200px', whiteSpace: 'normal' }}>
-                      {intl.formatMessage(confirmMessages.gasInputDisclaimer)}
-                    </div>
-                  }
-                  tooltipPosition="top-left"
+                <div
+                  style={{ marginTop: 24, flex: '0 0 auto', display: 'inline-block' }}
+                  data-tip={intl.formatMessage(confirmMessages.gasInputDisclaimer)}
                 >
-                  <InfoIcon />
-                </IconButton>
+                  <IconButton>
+                    <InfoIcon />
+                  </IconButton>
+                </div>
               </div>
               {!active &&
                 <div style={{ color: 'red' }}>

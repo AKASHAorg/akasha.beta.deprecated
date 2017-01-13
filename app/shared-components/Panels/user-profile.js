@@ -36,16 +36,16 @@ class UserProfilePanel extends Component {
         };
     }
 
+    componentDidMount () {
+        this.readSubscriptionNotif();
+    }
+
     getStyle = (identity) => {
         if (identity === this.state.selected) {
             return selectedStyle;
         }
         return {};
     };
-
-    componentDidMount () {
-        this.readSubscriptionNotif();
-    }
 
     renderFeedNotifications = () => {
         const feedNotifs = this.props.notificationsState.get('notifFeed');
@@ -60,6 +60,7 @@ class UserProfilePanel extends Component {
             if (val.type === eventTypes.VOTE) {
                 return notifs.push(this._renderVote(val, index));
             }
+            return null;
         });
         return (<List>{notifs}</List>);
     };
@@ -90,6 +91,7 @@ class UserProfilePanel extends Component {
             if (val.type === eventTypes.FOLLOWING) {
                 return notifs.push(this._renderFollower(val, index));
             }
+            return null;
         });
         return (<List>{notifs}</List>);
     };
@@ -153,7 +155,7 @@ class UserProfilePanel extends Component {
             className="has_hidden_action"
             rightIcon={<ActionDelete
               className="hidden_action"
-              onClick={(e) => {
+              onClick={() => {
                   this.props.notificationsActions.deleteYouNotif(index);
               }}
             />}
@@ -163,6 +165,14 @@ class UserProfilePanel extends Component {
     _renderEntry (event, index) {
         const { palette } = this.context.muiTheme;
         const initials = getInitials(event.author.firstName, event.author.lastName);
+        const tags = [].concat(event.tag);
+        const tagsMessage = tags.length > 1 ? 'tags' : 'tag';
+        const tagsArray = tags.map((tag, key) =>
+          <span key={tag}>
+            <span className="link" onClick={() => { this.navigateToTag(tag); }}>{tag}</span>
+            {key !== tags.length - 1 ? ', ' : ''}
+          </span>
+        );
         return (
           <ListItem
             leftAvatar={event.author.avatar ?
@@ -195,13 +205,8 @@ class UserProfilePanel extends Component {
                   >
                     {event.entry.content.title}
                   </span>
-                  &nbsp;on tag&nbsp;
-                  <span
-                    className="link"
-                    onClick={() => { this.navigateToTag(event.tag); }}
-                  >
-                    {event.tag}
-                  </span>
+                  &nbsp;on {tagsMessage}&nbsp;
+                  {tagsArray}
                 </span>
                 <br />
                 Block {event.blockNumber}
@@ -212,7 +217,7 @@ class UserProfilePanel extends Component {
             className="has_hidden_action"
             rightIcon={<ActionDelete
               className="hidden_action"
-              onClick={(e) => {
+              onClick={() => {
                   if (this.props.loggedProfileData.get('profile') === event.profileAddress) {
                       return this.props.notificationsActions.deleteYouNotif(index);
                   }
@@ -266,7 +271,7 @@ class UserProfilePanel extends Component {
             className="has_hidden_action"
             rightIcon={<ActionDelete
               className="hidden_action"
-              onClick={(e) => {
+              onClick={() => {
                   if (this.props.loggedProfileData.get('profile') === event.profileAddress) {
                       return this.props.notificationsActions.deleteYouNotif(index);
                   }
@@ -324,7 +329,7 @@ class UserProfilePanel extends Component {
             className="has_hidden_action"
             rightIcon={<ActionDelete
               className="hidden_action"
-              onClick={(e) => {
+              onClick={() => {
                   if (this.props.loggedProfileData.get('profile') === event.profileAddress) {
                       return this.props.notificationsActions.deleteYouNotif(index);
                   }
@@ -409,6 +414,7 @@ UserProfilePanel.propTypes = {
     profileActions: PropTypes.shape(),
     profileAddress: PropTypes.string,
     notificationsActions: PropTypes.shape(),
+    notificationsState: PropTypes.shape(),
     showPanel: PropTypes.func,
     hidePanel: PropTypes.func
 };

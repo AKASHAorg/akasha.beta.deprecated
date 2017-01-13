@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import ReactTooltip from 'react-tooltip';
 import { injectIntl } from 'react-intl';
 import { Dialog, FlatButton, RaisedButton, TextField, IconButton } from 'material-ui';
 import { confirmMessages, formMessages, generalMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
@@ -25,6 +26,9 @@ class PublishConfirmDialog extends Component {
                 gasAmountError: null
             });
         }
+    }
+    componentDidUpdate () {
+        ReactTooltip.rebuild();
     }
     onSubmit = (ev) => {
         ev.preventDefault();
@@ -109,13 +113,15 @@ class PublishConfirmDialog extends Component {
                   min={2000000}
                   max={4700000}
                 />
-                <IconButton
+                <div
                   className="col-xs-2"
                   style={{ marginTop: 24 }}
-                  title={intl.formatMessage(confirmMessages.gasInputDisclaimer)}
+                  data-tip={intl.formatMessage(confirmMessages.gasInputDisclaimer)}
                 >
-                  <InfoIcon />
-                </IconButton>
+                  <IconButton>
+                    <InfoIcon />
+                  </IconButton>
+                </div>
               </div>
             </form>
           </Dialog>

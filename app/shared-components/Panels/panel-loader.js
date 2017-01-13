@@ -1,8 +1,11 @@
 import React, { Component, PropTypes } from 'react';
+import ReactTooltip from 'react-tooltip';
 import Panels from './index';
 
-
 class PanelLoader extends Component {
+    componentDidUpdate () {
+        ReactTooltip.rebuild();
+    }
     _handleOverlayClick = () => {
         const { appActions } = this.props;
         appActions.hidePanel();

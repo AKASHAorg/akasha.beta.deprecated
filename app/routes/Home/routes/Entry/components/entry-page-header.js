@@ -54,8 +54,8 @@ class EntryPageHeader extends Component {
               {intl.formatMessage(entryMessages.published)}
             </span>
             <span
-              title={`Block ${entryBlockNr}`}
-              style={{ fontWeight: 600, textDecoration: 'underline' }}
+              data-tip={`Block ${entryBlockNr}`}
+              style={{ fontWeight: 600, textDecoration: 'underline', display: 'inline-block' }}
             >
               {intl.formatRelative(publishDate)}
             </span>
@@ -120,7 +120,6 @@ class EntryPageHeader extends Component {
 }
 
 EntryPageHeader.propTypes = {
-    blockNr: PropTypes.number,
     entryBlockNr: PropTypes.number,
     intl: PropTypes.shape(),
     publisher: PropTypes.shape(),
