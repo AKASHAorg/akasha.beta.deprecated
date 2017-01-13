@@ -239,10 +239,16 @@ class EntryCard extends Component {
               actAsExpander={this.isPossiblyUnsafe()}
             >
               {this.isPossiblyUnsafe() && content &&
-                <div data-tip="Possibly unsafe content">
-                  <IconButton
-                    style={{ position: 'absolute', right: '16px', top: '10px' }}
-                  >
+                <div
+                  data-tip="Possibly unsafe content"
+                  style={{
+                      display: 'inline-block',
+                      position: 'absolute',
+                      right: '16px',
+                      top: '10px'
+                  }}
+                >
+                  <IconButton>
                     <WarningIcon color={palette.accent1Color} />
                   </IconButton>
                 </div>
