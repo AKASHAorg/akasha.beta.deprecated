@@ -348,9 +348,10 @@ const entryState = createReducer(initialState, {
             content: content ? new EntryContent(content) : null,
             entryEth: new EntryEth(entryEth)
         });
-        return state.withMutations((stateMap) =>
-            stateMap.set('fullEntry', newEntry).mergeIn(['flags'], flags)
-        );
+        const newState = state.setIn(['fullEntry'], newEntry);
+        return newState.merge({
+            flags
+        });
     },
     [commentsTypes.GET_COMMENTS_COUNT_SUCCESS]: (state, { data }) => {
         if(state.get('fullEntry') && (data.entryId === state.getIn(['fullEntry', 'entryId']))) {
