@@ -272,9 +272,8 @@ class EntryPage extends Component {
                         '0 0 20 20' :
                         '0 0 18 18';
                     return (
-                      <div data-tip={descr.text}>
+                      <div key={index} data-tip={descr.text}>
                         <IconButton
-                          key={index}
                           style={{ padding: '6px', width: '30px', height: '30px' }}
                           iconStyle={{ width: '18px', height: '18px' }}
                         >
