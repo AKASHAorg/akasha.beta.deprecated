@@ -13,6 +13,7 @@ class ChatPage extends Component {
         super(props);
         this.chatInput = null;
         this.messagesContainer = null;
+        this.timeout = null;
         this.state = {
             currentMessage: '',
             inputFocused: null,
@@ -29,7 +30,7 @@ class ChatPage extends Component {
         Channel.client.chat.fetch.on(this.hydrateMessages);
         Channel.server.chat.fetch.send({});
         // Simulate loading for 1 second in order to fetch enough messages
-        setTimeout(() => { this.triggerDataLoaded(); }, 1000);
+        this.timeout = setTimeout(() => { this.triggerDataLoaded(); }, 1000);
     }
 
     componentDidUpdate (prevProps, prevState) {
@@ -50,6 +51,9 @@ class ChatPage extends Component {
 
     componentWillUnmount () {
         Channel.client.chat.fetch.removeListener(this.hydrateMessages);
+        if (this.timeout) {
+            clearTimeout(this.timeout);
+        }
     }
 
     triggerDataLoaded = () => {
