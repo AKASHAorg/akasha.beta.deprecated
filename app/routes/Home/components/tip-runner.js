@@ -1,8 +1,8 @@
 import { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { AppActions, EntryActions, TransactionActions } from 'local-flux';
+import { AppActions, ProfileActions, TransactionActions } from 'local-flux';
 
-class ClaimRunner extends Component {
+class TipRunner extends Component {
 
     componentWillReceiveProps (nextProps) {
         this.launchActions(nextProps);
@@ -10,29 +10,31 @@ class ClaimRunner extends Component {
     }
 
     launchActions = (nextProps) => {
-        const { pendingActions, appActions, entryActions } = nextProps;
+        const { appActions, pendingActions, profileActions } = nextProps;
         const actions = pendingActions.filter(action =>
-            action.get('status') === 'readyToPublish' && action.get('type') === 'claim');
+            action.get('status') === 'readyToPublish' && action.get('type') === 'sendTip');
         if (actions.size > 0) {
             actions.forEach((action) => {
                 appActions.updatePendingAction(action.merge({
                     status: 'publishing'
                 }));
-                entryActions.claim(
-                    action.getIn(['payload', 'entryId']),
-                    action.get('gas')
+                profileActions.sendTip(
+                    action.getIn(['payload', 'akashaId']),
+                    action.getIn(['payload', 'profile']),
+                    action.getIn(['payload', 'eth']),
+                    action.get('gas'),
                 );
             });
         }
     };
     listenForMinedTx = (nextProps) => {
         const { minedTx, pendingTx, fetchingMined, fetchingPending, deletingPendingTx, appActions,
-            entryActions, transactionActions, loggedProfile, pendingActions } = nextProps;
+            profileActions, transactionActions, loggedProfile, pendingActions } = nextProps;
         const isNotFetching = !fetchingMined && !fetchingPending;
         const pendingTxs = isNotFetching ?
             pendingTx.toJS().filter(tx =>
                 tx.profile === loggedProfile.get('profile') &&
-                tx.type === 'claim' &&
+                tx.type === 'sendTip' &&
                 !!minedTx.find(mined => mined.tx === tx.tx) &&
                 !deletingPendingTx.find(deleting => deleting.tx === tx.tx && deleting.value)
             ) :
@@ -41,22 +43,13 @@ class ClaimRunner extends Component {
         pendingTxs.forEach((tx) => {
             const correspondingAction = pendingActions.find(action =>
                 action.get('type') === tx.type && action.get('status') === 'publishing');
-            const mined = minedTx.find(mned => mned.tx === tx.tx);
+            const mined = minedTx.find(mnd => mnd.tx === tx.tx);
             let minedSuccessfully;
             if (correspondingAction) {
                 minedSuccessfully = mined.cumulativeGasUsed < correspondingAction.get('gas');
             }
             transactionActions.deletePendingTx(tx.tx);
-            // fire success action based on action type
-            // WARNING: action must match `action.type + "Success"`
-            // example: for action.type = 'upvote', success action
-            // should be upvoteSuccess()
-            if (typeof entryActions[`${tx.type}Success`] !== 'function') {
-                return console.error(`There is no action "${tx.type}Success" in entryActions!! Please implement "${tx.type}Success" action!!`);
-            }
-            entryActions[`${tx.type}Success`](tx.entryId, minedSuccessfully);
-            entryActions.canClaim(tx.entryId);
-            entryActions.getEntryBalance(tx.entryId);
+            profileActions.sendTipSuccess(tx.akashaId, minedSuccessfully);
             if (correspondingAction) {
                 appActions.deletePendingAction(correspondingAction.get('id'));
             }
@@ -67,7 +60,7 @@ class ClaimRunner extends Component {
     }
 }
 
-ClaimRunner.propTypes = {
+TipRunner.propTypes = {
     fetchingMined: PropTypes.bool,
     fetchingPending: PropTypes.bool,
     deletingPendingTx: PropTypes.shape(),
@@ -75,7 +68,6 @@ ClaimRunner.propTypes = {
     loggedProfile: PropTypes.shape(),
     transactionActions: PropTypes.shape(),
     appActions: PropTypes.shape(),
-    entryActions: PropTypes.shape()
 };
 
 function mapStateToProps (state) {
@@ -95,7 +87,7 @@ function mapStateToProps (state) {
 function mapDispatchToProps (dispatch) {
     return {
         appActions: new AppActions(dispatch),
-        entryActions: new EntryActions(dispatch),
+        profileActions: new ProfileActions(dispatch),
         transactionActions: new TransactionActions(dispatch),
     };
 }
@@ -103,4 +95,4 @@ function mapDispatchToProps (dispatch) {
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(ClaimRunner);
+)(TipRunner);

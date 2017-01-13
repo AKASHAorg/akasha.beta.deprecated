@@ -176,7 +176,7 @@ class WeightConfirmDialog extends React.PureComponent {
                   floatingLabelFixed
                   floatingLabelText="Vote weight"
                   errorText={voteWeightError && weightErrorText}
-                  errorStyle={{ width: '350px' }}
+                  errorStyle={{ position: 'absolute', bottom: '-8px', width: '350px' }}
                   min={minWeight}
                   max={maxWeight}
                 />
@@ -202,6 +202,9 @@ class WeightConfirmDialog extends React.PureComponent {
                     }
                   </small>
                 </div>
+              }
+              {voteWeightError &&
+                <div style={{ height: '24px' }} />
               }
               <div style={{ display: 'flex' }}>
                 <TextField

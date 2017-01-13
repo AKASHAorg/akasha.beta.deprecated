@@ -146,12 +146,13 @@ class Comment extends React.Component {
               </div>
             }
             {!content &&
-              <IconButton
-                style={{ position: 'absolute', right: '10px', top: '7px' }}
-                tooltip={intl.formatMessage(entryMessages.unresolvedEntry)}
-              >
-                <HubIcon color={palette.accent1Color} />
-              </IconButton>
+              <div data-tip={intl.formatMessage(entryMessages.unresolvedEntry)}>
+                <IconButton
+                  style={{ position: 'absolute', right: '10px', top: '7px' }}
+                >
+                  <HubIcon color={palette.accent1Color} />
+                </IconButton>
+              </div>
             }
             {isExpanded !== null &&
               <div style={{ paddingTop: 16, fontSize: 12, textAlign: 'center' }}>

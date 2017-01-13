@@ -7,6 +7,8 @@ class CommonRunner extends Component {
     componentWillReceiveProps (nextProps) {
         const { pendingActions, publishConfirmDialog, showAuthDialog, appActions,
             loggedProfile } = nextProps;
+        const unconfirmedTransferActions = pendingActions.filter(action =>
+            action.get('status') === 'needTransferConfirmation');
         const unconfirmedWeightActions = pendingActions.filter(action =>
             action.get('status') === 'needWeightConfirmation');
         const unconfirmedActions = pendingActions.filter(action =>
@@ -16,7 +18,9 @@ class CommonRunner extends Component {
         if (!!publishConfirmDialog || !!showAuthDialog) {
             return;
         }
-        if (unconfirmedWeightActions.size > 0) {
+        if (unconfirmedTransferActions.size > 0) {
+            appActions.showTransferConfirmDialog(unconfirmedTransferActions.first());
+        } else if (unconfirmedWeightActions.size > 0) {
             appActions.showWeightConfirmDialog(unconfirmedWeightActions.first());
         } else if (unconfirmedActions.size > 0) {
             appActions.showPublishConfirmDialog(unconfirmedActions.first());

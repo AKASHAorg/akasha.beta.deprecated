@@ -84,6 +84,19 @@ export function hideWeightConfirmDialog () {
     };
 }
 
+export function showTransferConfirmDialog (resource) {
+    return {
+        type: types.SHOW_TRANSFER_CONFIRM_DIALOG,
+        resource
+    };
+}
+
+export function hideTransferConfirmDialog () {
+    return {
+        type: types.HIDE_TRANSFER_CONFIRM_DIALOG
+    };
+}
+
 export function castUpvoteError (error) {
     return {
         type: types.CAST_UPVOTE_ERROR,

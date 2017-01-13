@@ -155,6 +155,21 @@ const notificationMessages = defineMessages({
         id: 'app.notification.linkCopiedToClipboard',
         description: 'notification to show when user copies profile link',
         defaultMessage: 'Link copied to clipboard'
+    },
+    sendingTip: {
+        id: 'app.notification.sendingTip',
+        description: 'Notification to be displayed when tip transaction is sent',
+        defaultMessage: 'Sending tip to {akashaId} ...'
+    },
+    sendTipSuccess: {
+        id: 'app.notification.sendTipSuccess',
+        description: 'Notification to be displayed when tip transaction was successfully mined',
+        defaultMessage: 'You have successfully tipped {akashaId}'
+    },
+    sendTipError: {
+        id: 'app.notification.sendTipError',
+        description: 'Notification to be displayed when tip transaction was mined but was unsuccessfull',
+        defaultMessage: 'Tipping {akashaId} has failed'
     }
 });
 export { notificationMessages };

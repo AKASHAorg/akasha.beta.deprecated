@@ -1,10 +1,11 @@
 import React, { Component, PropTypes } from 'react';
-import { IconButton, RaisedButton } from 'material-ui';
+import { IconButton, RaisedButton, SvgIcon } from 'material-ui';
 import CopyIcon from 'material-ui/svg-icons/content/content-copy';
 import { generalMessages, profileMessages } from 'locale-data/messages';
 import { getInitials } from 'utils/dataModule';
 import imageCreator, { findBestMatch } from 'utils/imageUtils';
 import { Avatar, PanelContainer } from 'shared-components';
+import { UserDonate } from 'shared-components/svg';
 import { FormattedMessage, injectIntl } from 'react-intl';
 
 // Remember to update height and width values inside getBackgroundImageStyle method
@@ -61,13 +62,15 @@ class ProfileDetails extends Component {
     };
 
     renderHeader () {
-        const { isFollowerPending, isFollower, followProfile, unfollowProfile, loggedAddress,
-            followPending, intl, showPanel } = this.props;
+        const { followPending, followProfile, intl, isFollower, loggedAddress, sendingTip, sendTip,
+            showPanel, unfollowProfile } = this.props;
         const profileData = this.props.profileData ?
             this.props.profileData.toJS() :
             {};
         const followProfilePending = followPending && followPending.find(follow =>
             follow.akashaId === profileData.akashaId);
+        const sendingTipPending = sendingTip && sendingTip.find(flag =>
+            flag.akashaId === profileData.akashaId);
         const { backgroundImage, avatar, profile } = profileData;
         const isOwnProfile = profile === loggedAddress;
         const bestMatch = findBestMatch(400, backgroundImage);
@@ -95,6 +98,7 @@ class ProfileDetails extends Component {
               src={imageUrl}
               style={this.getBackgroundImageStyle(backgroundImage[bestMatch])}
               role="presentation"
+              alt=""
             />
           </div>
           <div style={{ position: 'relative' }}>
@@ -112,19 +116,39 @@ class ProfileDetails extends Component {
             />
           </div>
           <div style={{ padding: '50px 30px 10px' }}>
-            <div
-              data-tip={`${profileData.firstName} ${profileData.lastName}`}
-              style={{
-                  fontSize: '32px',
-                  fontWeight: 400,
-                  textTransform: 'capitalize',
-                  maxWidth: '340px',
-                  height: '48px',
-                  display: 'inline-block',
-                  ...wrapTextStyle
-              }}
-            >
-              {`${profileData.firstName} ${profileData.lastName}`}
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <div
+                data-tip={`${profileData.firstName} ${profileData.lastName}`}
+                style={{
+                    fontSize: '32px',
+                    fontWeight: 400,
+                    textTransform: 'capitalize',
+                    maxWidth: isOwnProfile ? '340px' : '282px',
+                    height: '48px',
+                    display: 'inline-block',
+                    ...wrapTextStyle
+                }}
+              >
+                {`${profileData.firstName} ${profileData.lastName}`}
+              </div>
+              {!isOwnProfile &&
+                <div
+                  data-tip={sendingTipPending && sendingTipPending.value ?
+                      'Sending tip ...' :
+                      'Send tip'
+                  }
+                >
+                  <IconButton
+                    style={{ marginLeft: '10px' }}
+                    onClick={() => sendTip(profileData)}
+                    disabled={sendingTipPending && sendingTipPending.value}
+                  >
+                    <SvgIcon viewBox="0 0 18 18">
+                      <UserDonate />
+                    </SvgIcon>
+                  </IconButton>
+                </div>
+              }
             </div>
             <div>
               <div style={{ display: 'flex', flexWrap: 'wrap', fontSize: '16px', fontWeight: 300 }}>
@@ -185,7 +209,7 @@ class ProfileDetails extends Component {
                   {profileData.about.split('\n').map((text, key) =>
                     <span key={key}>
                       {text}
-                      <br/>
+                      <br />
                     </span>
                   )}
                 </div>
@@ -243,16 +267,17 @@ ProfileDetails.contextTypes = {
 };
 
 ProfileDetails.propTypes = {
+    followPending: PropTypes.shape(),
+    followProfile: PropTypes.func,
+    intl: PropTypes.shape(),
+    isFollower: PropTypes.bool,
     loggedAddress: PropTypes.string,
     profileData: PropTypes.shape(),
-    followProfile: PropTypes.func,
-    unfollowProfile: PropTypes.func,
-    followPending: PropTypes.shape(),
-    isFollowerPending: PropTypes.bool,
-    isFollower: PropTypes.bool,
-    intl: PropTypes.shape(),
+    sendingTip: PropTypes.shape(),
+    sendTip: PropTypes.func,
     showNotification: PropTypes.func.isRequired,
-    showPanel: PropTypes.func.isRequired
+    showPanel: PropTypes.func.isRequired,
+    unfollowProfile: PropTypes.func,
 };
 
 export default injectIntl(ProfileDetails);

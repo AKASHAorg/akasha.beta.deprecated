@@ -50,8 +50,34 @@ const initialState = fromJS({
     loggedProfile: new LoggedProfile(),
     errors: new List(),
     fetchingFullLoggedProfile: false,
-    flags: new Map()
+    flags: new Map({
+        followPending: new List(),
+        sendingTip: new List(),
+    })
 });
+
+const tipHandler = (state, { error, flags }) => {
+    const sendingTip = state.getIn(['flags', 'sendingTip']);
+    const index = sendingTip.findIndex(flag =>
+        flag.akashaId === flags.sendingTip.akashaId);
+    if (index === -1) {
+        return state.merge({
+            flags: state.get('flags').merge({
+                sendingTip: state.getIn(['flags', 'sendingTip'])
+                    .push(flags.sendingTip)
+            }),
+            errors: error ?
+                state.get('errors').push(new ErrorRecord(error)) :
+                state.get('errors')
+        });
+    }
+    return state.merge({
+        flags: state.get('flags').mergeIn(['sendingTip', index], flags.sendingTip),
+        errors: error ?
+            state.get('errors').push(new ErrorRecord(error)) :
+            state.get('errors')
+    });
+};
 
 const flagHandler = (state, { flags }) =>
     state.merge({
@@ -164,7 +190,12 @@ const profileState = createReducer(initialState, {
 
     [types.GET_PROFILE_BALANCE_SUCCESS]: (state, { data }) => {
         const loggedProfileAccount = state.getIn(['loggedProfile', 'account']);
-        const profileIndex = state.get('profiles').findIndex(prf => prf.ethAddress === loggedProfileAccount);
+        if (loggedProfileAccount !== data.etherBase) {
+            return state;
+        }
+        const profileIndex = state.get('profiles').findIndex(prf =>
+            prf.akashaId === state.getIn(['loggedProfile', 'akashaId'])
+        );
         return state.mergeIn(['profiles', profileIndex], {
             balance: data.balance
         });
@@ -188,7 +219,10 @@ const profileState = createReducer(initialState, {
 
     [types.RESET_FLAGS]: state =>
         state.merge({
-            flags: new Map()
+            flags: new Map({
+                followPending: new List(),
+                sendingTip: new List()
+            })
         }),
 
     [types.GET_FOLLOWERS_COUNT_SUCCESS]: (state, { akashaId, count }) => {
@@ -320,11 +354,6 @@ const profileState = createReducer(initialState, {
 
     [types.FOLLOW_PROFILE]: (state, { flags }) => {
         const followPending = state.getIn(['flags', 'followPending']);
-        if (followPending === undefined) {
-            return state.merge({
-                flags: state.get('flags').set('followPending', new List([flags.followPending]))
-            });
-        }
         const index = followPending.findIndex(flag =>
             flag.akashaId === flags.followPending.akashaId
         );
@@ -342,11 +371,6 @@ const profileState = createReducer(initialState, {
 
     [types.FOLLOW_PROFILE_ERROR]: (state, { error, flags }) => {
         const followPending = state.getIn(['flags', 'followPending']);
-        if (followPending === undefined) {
-            return state.merge({
-                flags: state.get('flags').set('followPending', new List([flags.followPending]))
-            });
-        }
         const index = followPending.findIndex(flag =>
             flag.akashaId === flags.followPending.akashaId
         );
@@ -358,11 +382,6 @@ const profileState = createReducer(initialState, {
 
     [types.FOLLOW_PROFILE_SUCCESS]: (state, { flags }) => {
         const followPending = state.getIn(['flags', 'followPending']);
-        if (followPending === undefined) {
-            return state.merge({
-                flags: state.get('flags').set('followPending', new List([flags.followPending]))
-            });
-        }
         const index = followPending.findIndex(flag =>
             flag.akashaId === flags.followPending.akashaId
         );
@@ -387,11 +406,6 @@ const profileState = createReducer(initialState, {
 
     [types.UNFOLLOW_PROFILE]: (state, { flags }) => {
         const followPending = state.getIn(['flags', 'followPending']);
-        if (followPending === undefined) {
-            return state.merge({
-                flags: state.get('flags').set('followPending', new List([flags.followPending]))
-            });
-        }
         const index = followPending.findIndex(flag =>
             flag.akashaId === flags.followPending.akashaId
         );
@@ -463,6 +477,12 @@ const profileState = createReducer(initialState, {
 
     [types.IS_FOLLOWER_ERROR]: errorHandler,
 
+    [types.SEND_TIP]: tipHandler,
+
+    [types.SEND_TIP_SUCCESS]: tipHandler,
+
+    [types.SEND_TIP_ERROR]: tipHandler,
+
     [types.CLEAR_FOLLOWERS]: (state, { akashaId }) => {
         const profileIndex = state.get('profiles').findIndex(prf =>
             prf.get('akashaId') === akashaId);
@@ -503,7 +523,7 @@ const profileState = createReducer(initialState, {
             })
         });
     },
-    [appTypes.CLEAN_STORE]: state => initialState,
+    [appTypes.CLEAN_STORE]: () => initialState,
 });
 
 export default profileState;

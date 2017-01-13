@@ -1,7 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import { Paper, FlatButton } from 'material-ui';
+import { FlatButton, IconButton, Paper, SvgIcon } from 'material-ui';
 import { Avatar } from 'shared-components';
+import { UserDonate } from 'shared-components/svg';
 import { generalMessages, profileMessages } from 'locale-data/messages';
 import { getInitials } from 'utils/dataModule';
 
@@ -22,9 +23,14 @@ class ProfileCard extends Component {
         showPanel({ name: 'editProfile', overlay: true });
     }
 
+    sendTip = () => {
+        const { profileData, sendTip } = this.props;
+        sendTip(profileData);
+    }
+
     render () {
         const { followProfile, unfollowProfile, followPending, isFollowerPending, profileData,
-            loggedProfileData, intl } = this.props;
+            loggedProfileData, intl, sendTipPending } = this.props;
         if (!profileData) {
             return null;
         }
@@ -82,8 +88,35 @@ class ProfileCard extends Component {
 
         return (
           <Paper
-            style={{ width: '214px', margin: '10px', display: 'flex', flexDirection: 'column' }}
+            className="has_hidden_action"
+            style={{
+                position: 'relative',
+                width: '214px',
+                margin: '10px',
+                display: 'flex',
+                flexDirection: 'column'
+            }}
           >
+            {!isOwnProfile &&
+              <div
+                className="hidden_action"
+                data-tip={sendTipPending ?
+                    'Sending tip ...' :
+                    'Send tip'
+                }
+                style={{ position: 'absolute', top: 0, right: 0 }}
+              >
+                <IconButton
+                  style={{ marginLeft: '10px' }}
+                  onClick={this.sendTip}
+                  disabled={sendTipPending}
+                >
+                  <SvgIcon viewBox="0 0 18 18">
+                    <UserDonate />
+                  </SvgIcon>
+                </IconButton>
+              </div>
+            }
             <div style={{ display: 'flex', justifyContent: 'center', padding: '15px' }}>
               <button
                 style={{
@@ -135,7 +168,7 @@ class ProfileCard extends Component {
                         unfollowProfile(akashaId) :
                         followProfile(akashaId)
                 }
-                disabled={isFollowerPending || (followPending && followPending.value)}
+                disabled={isFollowerPending || followPending}
               />
             </div>
           </Paper>
@@ -148,10 +181,12 @@ ProfileCard.propTypes = {
     loggedProfileData: PropTypes.shape(),
     followProfile: PropTypes.func,
     unfollowProfile: PropTypes.func,
-    followPending: PropTypes.shape(),
+    followPending: PropTypes.bool,
     isFollowerPending: PropTypes.bool,
     isFollowerAction: PropTypes.func.isRequired,
     selectProfile: PropTypes.func.isRequired,
+    sendTipPending: PropTypes.bool,
+    sendTip: PropTypes.func.isRequired,
     showPanel: PropTypes.func.isRequired,
     intl: PropTypes.shape()
 };

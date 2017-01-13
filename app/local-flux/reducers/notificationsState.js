@@ -21,8 +21,9 @@ const notificationsState = createReducer(initialState, {
         }
         const notifIndex = action.payload.type === 'publish' ?
             state.get('notifFeed').findIndex(notif =>
-                notif.author.profile === action.payload.author.profile &&
-                notif.entry.entryId === action.payload.entry.entryId) :
+                notif.type === 'publish' && notif.entry &&
+                notif.entry.entryId === action.payload.entry.entryId
+            ) :
             -1;
         if (state.get('notifFeed').size > maxFeed && notifIndex === -1) {
             updatedFeed = state.get('notifFeed').pop();

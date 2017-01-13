@@ -40,7 +40,8 @@ const initialState = fromJS({
     timestamp: null,
     notifications: new List(),
     pendingActions: new List(),
-    publishConfirmDialog: null
+    publishConfirmDialog: null,
+    transferConfirmDialog: null
 });
 
 const appState = createReducer(initialState, {
@@ -78,6 +79,12 @@ const appState = createReducer(initialState, {
 
     [types.HIDE_PUBLISH_CONFIRM_DIALOG]: state =>
         state.set('publishConfirmDialog', null),
+
+    [types.SHOW_TRANSFER_CONFIRM_DIALOG]: (state, { resource }) =>
+        state.set('transferConfirmDialog', resource),
+
+    [types.HIDE_TRANSFER_CONFIRM_DIALOG]: state =>
+        state.set('transferConfirmDialog', null),
 
     [types.SET_TIMESTAMP]: (state, action) =>
         state.set('timestamp', action.timestamp),

@@ -1,5 +1,4 @@
 import React, { Component, PropTypes } from 'react';
-import ReactTooltip from 'react-tooltip';
 import { Card, CardHeader, CardTitle, CardText, CardActions, IconButton, FlatButton,
     SvgIcon } from 'material-ui';
 import WarningIcon from 'material-ui/svg-icons/alert/warning';

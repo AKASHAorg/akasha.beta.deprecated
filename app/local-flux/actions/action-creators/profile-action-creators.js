@@ -455,6 +455,30 @@ export function isFollowerError (error, flags) {
     };
 }
 
+export function sendTip (flags) {
+    return {
+        type: types.SEND_TIP,
+        flags
+    };
+}
+
+export function sendTipSuccess (flags) {
+    return {
+        type: types.SEND_TIP_SUCCESS,
+        flags
+    };
+}
+
+export function sendTipError (error, flags) {
+    error.code = 'STE01';
+    return {
+        type: types.SEND_TIP_ERROR,
+        error,
+        flags
+    };
+}
+
+
 export function clearFollowers (akashaId) {
     return {
         type: types.CLEAR_FOLLOWERS,

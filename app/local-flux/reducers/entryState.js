@@ -525,7 +525,7 @@ const entryState = createReducer(initialState, {
 
     [types.CLAIM_ERROR]: claimFlagHandler,
 
-    [appTypes.CLEAN_STORE]: state => initialState,
+    [appTypes.CLEAN_STORE]: () => initialState,
 });
 
 export default entryState;
