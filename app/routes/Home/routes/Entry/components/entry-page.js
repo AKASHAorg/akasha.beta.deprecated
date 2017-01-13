@@ -1,5 +1,6 @@
 /* eslint import/no-unresolved: 0, import/extensions: 0 */
 import React, { Component, PropTypes } from 'react';
+import ReactTooltip from 'react-tooltip';
 import { Divider, IconButton, SvgIcon, FlatButton } from 'material-ui';
 import { injectIntl } from 'react-intl';
 import { TagChip, DataLoader, CommentsList, CommentEditor } from 'shared-components';
@@ -25,7 +26,10 @@ class EntryPage extends Component {
             activeTab: 'all',
             scrollDirection: 0
         };
-        this.debouncedMouseWheel = debounce(this._handleMouseWheel, 250, { leading: true, maxWait: 500 });
+        this.debouncedMouseWheel = debounce(this._handleMouseWheel, 250, {
+            leading: true,
+            maxWait: 500
+        });
     }
 
     componentDidMount () {
@@ -223,12 +227,12 @@ class EntryPage extends Component {
             if (commentsSectionTop < 84) {
                 this.setState({
                     newCommentsNotificationPosition: 'fixed',
-                    scrollDirection: (ev.detail < 0) ? 1 : (ev.wheelDelta > 0) ? 1 : -1,
+                    scrollDirection: (ev.detail < 0) ? 1 : (ev.wheelDelta > 0) ? 1 : -1, // eslint-disable-line no-nested-ternary, max-len
                 });
             } else if (commentsSectionTop > 84 && (this.state.newCommentsNotificationPosition === 'fixed')) {
                 this.setState({
                     newCommentsNotificationPosition: 'static',
-                    scrollDirection: (ev.detail < 0) ? 1 : (ev.wheelDelta > 0) ? 1 : -1,
+                    scrollDirection: (ev.detail < 0) ? 1 : (ev.wheelDelta > 0) ? 1 : -1, // eslint-disable-line no-nested-ternary, max-len
                 });
             }
         }
@@ -272,22 +276,22 @@ class EntryPage extends Component {
         };
         return (
           <div style={{ display: 'inline-flex' }}>
-            {licence.description.map((descr, index) => { // eslint-disable-line consistent-return, array-callback-return, max-len
+            {licence.description.map((descr) => { // eslint-disable-line consistent-return, array-callback-return, max-len
                 if (descr.icon && licenceIcons[descr.icon] !== undefined) {
                     const viewBox = descr.icon === 'CCBY' || descr.icon === 'copyright-1' ?
                         '0 0 20 20' :
                         '0 0 18 18';
                     return (
-                      <IconButton
-                        key={index}
-                        tooltip={descr.text}
-                        style={{ padding: '6px', width: '30px', height: '30px' }}
-                        iconStyle={{ width: '18px', height: '18px' }}
-                      >
-                        <SvgIcon viewBox={viewBox}>
-                          {React.createElement(licenceIcons[descr.icon])}
-                        </SvgIcon>
-                      </IconButton>
+                      <div key={descr.icon} data-tip={descr.text} >
+                        <IconButton
+                          style={{ padding: '6px', width: '30px', height: '30px' }}
+                          iconStyle={{ width: '18px', height: '18px' }}
+                        >
+                          <SvgIcon viewBox={viewBox}>
+                            {React.createElement(licenceIcons[descr.icon])}
+                          </SvgIcon>
+                        </IconButton>
+                      </div>
                     );
                 }
             })}
@@ -324,6 +328,7 @@ class EntryPage extends Component {
             claim.entryId === entry.entryId);
         const voteEntryPending = votePending && votePending.find(vote =>
               vote.entryId === entry.entryId);
+        ReactTooltip.rebuild();
         return (
           <div className={`${styles.root} row`} >
             <div className="col-xs-12">
@@ -373,9 +378,9 @@ class EntryPage extends Component {
                 <div className={`${styles.entry_infos}`}>
                   {entry.content &&
                     <div className={`${styles.entry_tags}`}>
-                      {entry.getIn(['content', 'tags']).map((tag, key) =>
+                      {entry.getIn(['content', 'tags']).map(tag =>
                         <TagChip
-                          key={key}
+                          key={tag}
                           tag={tag}
                           onTagClick={this._navigateToTag}
                         />
@@ -414,35 +419,36 @@ class EntryPage extends Component {
                       <h4>
                         {`${intl.formatMessage(entryMessages.allComments)} (${entry.get('commentsCount')})`}
                       </h4>
-                      {this.state.showNewCommentsNotification && (this._getNewCommentsCount() > 0) &&
-                        <div
-                          style={{
-                              position: this.state.newCommentsNotificationPosition,
-                              top: (this.state.scrollDirection > -1) ? 100 : 32,
-                              textAlign: 'center',
-                              margin: '0 auto',
-                              zIndex: 3,
-                              padding: 0,
-                              width: 700,
-                              transition: 'top 0.214s ease-in-out',
-                              height: 1
-                          }}
-                          className="row middle-xs"
-                        >
-                          <div className="col-xs-12 center-xs" style={{ position: 'relative' }}>
-                            <FlatButton
-                              primary
-                              label={intl.formatMessage(entryMessages.newComments, {
-                                  count: this._getNewCommentsCount()
-                              })}
-                              hoverColor="#ececec"
-                              backgroundColor="#FFF"
-                              style={{ position: 'absolute', top: -18, zIndex: 2, left: '50%', marginLeft: '-70px' }}
-                              labelStyle={{ fontSize: 12 }}
-                              onClick={this.onRequestNewestComments}
-                            />
+                      {this.state.showNewCommentsNotification &&
+                          (this._getNewCommentsCount() > 0) &&
+                          <div
+                            style={{
+                                position: this.state.newCommentsNotificationPosition,
+                                top: (this.state.scrollDirection > -1) ? 100 : 32,
+                                textAlign: 'center',
+                                margin: '0 auto',
+                                zIndex: 3,
+                                padding: 0,
+                                width: 700,
+                                transition: 'top 0.214s ease-in-out',
+                                height: 1
+                            }}
+                            className="row middle-xs"
+                          >
+                            <div className="col-xs-12 center-xs" style={{ position: 'relative' }}>
+                              <FlatButton
+                                primary
+                                label={intl.formatMessage(entryMessages.newComments, {
+                                    count: this._getNewCommentsCount()
+                                })}
+                                hoverColor="#ececec"
+                                backgroundColor="#FFF"
+                                style={{ position: 'absolute', top: -18, zIndex: 2, left: '50%', marginLeft: '-70px' }}
+                                labelStyle={{ fontSize: 12 }}
+                                onClick={this.onRequestNewestComments}
+                              />
+                            </div>
                           </div>
-                        </div>
                       }
                       <Divider />
                     </div>
