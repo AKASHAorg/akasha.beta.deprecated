@@ -64,7 +64,7 @@ export function bootstrapApp() {
             resizable: true,
             show: false,
             webPreferences: {
-                //nodeIntegration: false,
+                nodeIntegration: false,
                 preload: resolve(__dirname, 'preloader.js')
             }
 
@@ -97,9 +97,9 @@ export function bootstrapApp() {
             mainWindow.focus();
         });
 
-        mainWindow.webContents.on('crashed', () => {
+        mainWindow.webContents.on('crashed', (e) => {
             stopServices();
-            modules.logger.getLogger('APP').warn('APP CRASHED');
+            modules.logger.getLogger('APP').warn(`APP CRASHED ${e.message} ${e.stack} ${e}`);
         });
 
         // prevent href link being opened inside app
