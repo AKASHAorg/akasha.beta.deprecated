@@ -27,10 +27,10 @@ export function bootstrapApp() {
     let mainWindow = null;
     const viewHtml = resolve(__dirname, '../app');
     crashReporter.start({
-        productName: 'Akasha',
+        productName: 'AKASHA',
         companyName: 'Akasha Project',
-        submitURL: 'https://github.com/AkashaProject/node-app/',
-        autoSubmit: false
+        submitURL: 'http://46.101.103.114:1127',
+        autoSubmit: true
     });
 
     if (process.env.NODE_ENV === 'development') {
@@ -99,6 +99,7 @@ export function bootstrapApp() {
 
         mainWindow.webContents.on('crashed', (e) => {
             stopServices();
+            console.log(e);
             modules.logger.getLogger('APP').warn(`APP CRASHED ${e.message} ${e.stack} ${e}`);
         });
 
