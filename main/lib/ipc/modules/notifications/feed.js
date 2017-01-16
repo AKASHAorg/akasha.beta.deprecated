@@ -127,7 +127,16 @@ const execute = Promise.coroutine(function* (data, cb) {
             .execute({ ethAddress: event.args.from })
             .then((profile) => {
             const ethers = geth_connector_1.GethConnector.getInstance().web3.fromWei(event.args.value, VALUE_UNIT);
-            cb('', { profile, value: ethers.toString(10), unit: VALUE_UNIT, type: eventTypes.TIPPED });
+            return profile_data_1.default.execute({ profile: profile.profileAddress })
+                .then((resolvedProfile) => {
+                cb('', {
+                    profile: resolvedProfile,
+                    blockNumber: event.blockNumber,
+                    value: ethers.toString(10),
+                    unit: VALUE_UNIT,
+                    type: eventTypes.TIPPED
+                });
+            });
         })
             .catch((e) => {
             cb({ message: e.message, type: eventTypes.TIPPED });
