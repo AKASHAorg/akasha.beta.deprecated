@@ -17,14 +17,20 @@ class ChatMessage extends Component {
 
         return (
           <div style={{ padding: '10px 0', display: 'flex', alignItems: 'flex-start' }}>
-            <Avatar
-              image={authorAvatar}
-              style={{ display: 'inline-block', cursor: 'pointer' }}
-              userInitials={authorInitials}
-              userInitialsStyle={{ fontSize: '20px' }}
-              radius={40}
+            <button
+              style={{
+                  border: '0px', outline: 'none', background: 'transparent', borderRadius: '50%'
+              }}
               onClick={() => { onAuthorClick(profileAddress); }}
-            />
+            >
+              <Avatar
+                image={authorAvatar}
+                style={{ display: 'inline-block', cursor: 'pointer' }}
+                userInitials={authorInitials}
+                userInitialsStyle={{ fontSize: '20px' }}
+                radius={40}
+              />
+            </button>
             <div style={{ display: 'inline-block', padding: '0 10px' }}>
               <div style={{ lineHeight: '14px', fontSize: '12px' }}>
                 <div

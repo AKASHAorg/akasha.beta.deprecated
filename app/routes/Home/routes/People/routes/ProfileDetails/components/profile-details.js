@@ -131,7 +131,7 @@ class ProfileDetails extends Component {
               >
                 {`${profileData.firstName} ${profileData.lastName}`}
               </div>
-              {!isOwnProfile &&
+              {!isOwnProfile && profileData.firstName &&
                 <div
                   data-tip={sendingTipPending && sendingTipPending.value ?
                       'Sending tip ...' :
