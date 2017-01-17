@@ -1,5 +1,7 @@
+import { ProfileActions } from 'local-flux';
 import { NotificationsService } from '../services';
 import * as action from './action-creators/notifications-action-creators';
+
 let notificationsInstance;
 
 class NotificationsActions {
@@ -11,6 +13,7 @@ class NotificationsActions {
         this.emitEvent = false;
         this.currentProfile = null;
         this.notificationsService = new NotificationsService();
+        this.profileActions = new ProfileActions(dispatch);
         notificationsInstance = this;
     }
 
@@ -23,7 +26,7 @@ class NotificationsActions {
         this.notificationsService.setFilter({
             profiles,
             blockNr,
-            onSuccess: (data) => {
+            onSuccess: () => {
                 this.watchFeed();
             }
         });
@@ -38,7 +41,10 @@ class NotificationsActions {
             this.currentProfile = getState().profileState.getIn(['loggedProfile', 'profile']);
             this.notificationsService.listenFeed({
                 onSuccess: (data) => {
-                    if (data.profileAddress === this.currentProfile) {
+                    if (data.type === 'gotTipped') {
+                        this.profileActions.getProfileBalance();
+                    }
+                    if (data.profileAddress === this.currentProfile || data.type === 'gotTipped') {
                         return dispatch(action.receiveYouFeed(data));
                     }
                     return dispatch(action.receiveSubscriptionFeed(data));

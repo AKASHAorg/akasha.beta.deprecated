@@ -123,6 +123,9 @@ class UserProfilePanel extends Component {
             {key !== tags.length - 1 ? ', ' : ''}
           </span>
         );
+        if (!event.entry.content) {
+            return null;
+        }
         return (
           <ListItem
             leftAvatar={this.renderAvatar(event.author)}
@@ -169,6 +172,9 @@ class UserProfilePanel extends Component {
     }
 
     _renderComment (event, index) {
+        if (!event.entry.content) {
+            return null;
+        }
         return (
           <ListItem
             leftAvatar={this.renderAvatar(event.author)}
@@ -216,6 +222,9 @@ class UserProfilePanel extends Component {
         const type = (event.weight > 0) ? 'Upvoted' : 'Downvoted';
         const colorVote = (event.weight > 0) ? palette.accent3Color : palette.accent1Color;
         const voteWeight = (event.weight > 0) ? (`+${event.weight}`) : event.weight;
+        if (!event.entry.content) {
+            return null;
+        }
         return (
           <ListItem
             leftAvatar={this.renderAvatar(event.author)}
@@ -277,7 +286,11 @@ class UserProfilePanel extends Component {
             secondaryText={
               <p>
                 <span style={{ color: colors.darkBlack }} >
-                  Tipped you {event.value} AETH
+                  Tipped you
+                  <strong style={{ color: '#008B8B', padding: '0 5px' }}>
+                    {event.value}
+                  </strong>
+                  AETH
                 </span>
                 <br />
                 Block {event.blockNumber}
@@ -339,9 +352,6 @@ class UserProfilePanel extends Component {
             if (val.type === eventTypes.VOTE) {
                 return notifs.push(this._renderVote(val, index));
             }
-            if (val.type === eventTypes.GOT_TIPPED) {
-                return notifs.push(this._renderTip(val, index));
-            }
             return null;
         });
         return (<List>{notifs}</List>);
@@ -362,6 +372,9 @@ class UserProfilePanel extends Component {
             }
             if (val.type === eventTypes.FOLLOWING) {
                 return notifs.push(this._renderFollower(val, index));
+            }
+            if (val.type === eventTypes.GOT_TIPPED) {
+                return notifs.push(this._renderTip(val, index));
             }
             return null;
         });

@@ -5,6 +5,12 @@ import { Dialog, FlatButton, RaisedButton } from 'material-ui';
 import { confirmMessages, generalMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
 import { SendTipForm } from 'shared-components';
 
+const NOT_ENOUGH_FUNDS = 'notEnoughFunds';
+const AMOUNT_ERROR = 'tipAmountError';
+const DECIMALS_ERROR = 'tipDecimalsError';
+const MIN_AMOUNT = 0.0001;
+const MAX_DECIMALS = 4;
+
 class TransferConfirmDialog extends Component {
     constructor (props) {
         super(props);
@@ -56,15 +62,25 @@ class TransferConfirmDialog extends Component {
     handleEthChange = (ev) => {
         const { balance } = this.props;
         const ethAmount = ev.target.value;
-        if (!Number(ethAmount) || !Number(balance) ||
-                (Number(ethAmount) > Number(balance) - 0.1)) {
+        const ethAmountDecimals = ethAmount.split('.')[1];
+        if (!Number(ethAmount) || Number(ethAmount) < MIN_AMOUNT) {
             this.setState({
-                ethAmountError: true,
+                ethAmountError: { message: AMOUNT_ERROR, minAmount: MIN_AMOUNT },
+                ethAmount
+            });
+        } else if (!Number(balance) || (Number(ethAmount) > Number(balance) - 0.1)) {
+            this.setState({
+                ethAmountError: { message: NOT_ENOUGH_FUNDS },
+                ethAmount
+            });
+        } else if (ethAmountDecimals && ethAmountDecimals.length > MAX_DECIMALS) {
+            this.setState({
+                ethAmountError: { message: DECIMALS_ERROR, maxDecimals: MAX_DECIMALS },
                 ethAmount
             });
         } else {
             this.setState({
-                ethAmountError: false,
+                ethAmountError: null,
                 ethAmount
             });
         }
@@ -99,7 +115,7 @@ class TransferConfirmDialog extends Component {
             label={intl.formatMessage(generalMessages.confirm)}
             primary
             onClick={this.handleConfirm}
-            disabled={gasAmountError || ethAmountError}
+            disabled={gasAmountError || !!ethAmountError}
           />
         ];
         return (

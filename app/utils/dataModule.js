@@ -122,3 +122,10 @@ export function getInitials (firstName, lastName) {
         .reduce((prev, current) => prev + current, '')
         .slice(0, 2);
 }
+
+export function getUrl (url) {
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+        return url;
+    }
+    return `http://${url}`;
+}
