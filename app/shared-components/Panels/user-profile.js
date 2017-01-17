@@ -286,7 +286,11 @@ class UserProfilePanel extends Component {
             secondaryText={
               <p>
                 <span style={{ color: colors.darkBlack }} >
-                  Tipped you {event.value} AETH
+                  Tipped you
+                  <strong style={{ color: '#008B8B', padding: '0 5px' }}>
+                    {event.value}
+                  </strong>
+                  AETH
                 </span>
                 <br />
                 Block {event.blockNumber}

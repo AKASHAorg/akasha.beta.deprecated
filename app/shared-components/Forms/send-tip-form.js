@@ -31,7 +31,9 @@ class SendTipForm extends Component {
                 className="col-xs-10"
                 value={ethAmount}
                 onChange={handleEthChange}
-                errorText={ethAmountError && 'Not enough funds'}
+                errorText={ethAmountError &&
+                    intl.formatMessage(formMessages[ethAmountError.message], ethAmountError)
+                }
                 errorStyle={{ position: 'absolute', bottom: '-8px' }}
                 min={0.0001}
                 max={balance - 0.1}
@@ -81,7 +83,7 @@ SendTipForm.propTypes = {
     balance: PropTypes.string,
     disableReceiverField: PropTypes.bool,
     ethAmount: PropTypes.string,
-    ethAmountError: PropTypes.bool,
+    ethAmountError: PropTypes.shape(),
     gasAmount: PropTypes.number,
     gasAmountError: PropTypes.bool,
     handleEthChange: PropTypes.func,
