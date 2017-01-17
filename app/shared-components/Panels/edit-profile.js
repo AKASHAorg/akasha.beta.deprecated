@@ -18,6 +18,7 @@ class EditProfile extends Component {
         super(props);
         this.getProps = inputFieldMethods.getProps.bind(this);
         const profileData = props.loggedProfileData.toJS();
+        const links = profileData.links;
         this.state = {
             formValues: {
                 firstName: profileData.firstName,
@@ -26,8 +27,8 @@ class EditProfile extends Component {
             about: profileData.about,
             avatar: profileData.avatar,
             backgroundImage: profileData.backgroundImage,
-            links: profileData.links || [],
-            lastCreatedLink: ''
+            links: links || [],
+            lastCreatedLink: links && links.length ? links[links.length - 1].id : '1'
         };
         this.validatorTypes = new UserValidation(props.intl).getSchema();
     }
@@ -37,13 +38,18 @@ class EditProfile extends Component {
     }
 
     handleSubmit = () => {
+        if (this._checkLinks()) {
+            return;
+        }
         const { updateProfileData } = this.props;
         const profileData = Object.assign({}, this.state.formValues);
         const profileImage = this.imageUploader.getWrappedInstance().getImage();
-        const userLinks = this.state.links.filter(link => link.title.length > 0);
 
-        if (userLinks.length > 0) {
-            profileData.links = userLinks;
+        if (this.state.links.length > 0) {
+            profileData.links = this.state.links.map((link) => {
+                delete link.error;
+                return link;
+            });
         }
         if (profileImage) {
             profileData.backgroundImage = profileImage;
@@ -107,11 +113,12 @@ class EditProfile extends Component {
                 title: '',
                 url: '',
                 type: '',
-                id: currentLinks.length
+                id: this.state.lastCreatedLink + 1,
+                error: {}
             });
             this.setState({
                 links: currentLinks,
-                lastCreatedLink: currentLinks.length - 1
+                lastCreatedLink: this.state.lastCreatedLink + 1
             });
         }
     };
@@ -126,12 +133,26 @@ class EditProfile extends Component {
         });
     };
 
+    _hasLinkErrors = () => {
+        if (this.state.links.find(link => link.error && (link.error.title || link.error.url))) {
+            return true;
+        }
+        return false;
+    };
+
     _checkLinks = () => {
         let isEmpty = false;
         this.state.links.forEach((link) => {
             Object.keys(link).forEach((key) => {
                 if (key !== 'id' && key !== 'type' && link[key].length === 0) {
                     isEmpty = true;
+                    const links = r.clone(this.state.links);
+                    const index = r.findIndex(r.propEq('id', link.id))(links);
+                    link.error[key] = true;
+                    links[index] = link;
+                    this.setState({
+                        links
+                    });
                 }
             });
         });
@@ -144,6 +165,7 @@ class EditProfile extends Component {
         const index = r.findIndex(r.propEq('id', linkId))(links);
         const link = links[index];
         link[field] = fieldValue;
+        link.error[field] = fieldValue.length === 0;
         if (field === 'url') {
             if (field.indexOf('akasha://')) {
                 link.type = 'internal';
@@ -239,7 +261,7 @@ class EditProfile extends Component {
                     type="submit"
                     onClick={this._submitForm}
                     style={{ marginLeft: 8 }}
-                    disabled={this.state.submitting || updatingProfile}
+                    disabled={this.state.submitting || updatingProfile || this._hasLinkErrors()}
                     primary
                 />
                 /* eslint-enable */
@@ -314,16 +336,23 @@ class EditProfile extends Component {
                     </IconButton>
                   </div>
                 </div>
-                {!!this.state.links.length && this.state.links.map((link, key) =>
-                  <div key={key} className="row">
+                {!!this.state.links.length && this.state.links.map(link =>
+                  <div key={link.id} className="row">
                     <div className="col-xs-10">
                       <TextField
-                        autoFocus={this.state.lastCreatedLink === key}
+                        autoFocus={
+                            this.state.lastCreatedLink === link.id &&
+                            !loggedProfileData.get('links').find(lnk =>
+                                lnk.id === link.id
+                            )
+                        }
                         fullWidth
                         floatingLabelText={intl.formatMessage(formMessages.title)}
                         value={link.title}
                         floatingLabelStyle={floatLabelStyle}
                         onChange={ev => this._handleLinkChange('title', link.id, ev)}
+                        errorText={link.error && link.error.title && 'Title cannot be empty'}
+                        errorStyle={{ position: 'absolute', bottom: '-10px' }}
                       />
                       <TextField
                         fullWidth
@@ -331,6 +360,8 @@ class EditProfile extends Component {
                         value={link.url}
                         floatingLabelStyle={floatLabelStyle}
                         onChange={ev => this._handleLinkChange('url', link.id, ev)}
+                        errorText={link.error && link.error.url && 'URL cannot be empty'}
+                        errorStyle={{ position: 'absolute', bottom: '-10px' }}
                       />
                     </div>
                     {this.state.links.length > 0 &&
@@ -366,9 +397,7 @@ EditProfile.propTypes = {
     handleValidation: PropTypes.func,
     intl: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
-    profileActions: PropTypes.shape(),
     showPanel: PropTypes.func,
-    fetchingProfileData: PropTypes.bool,
     updateProfileData: PropTypes.func,
     updatingProfile: PropTypes.bool
 };

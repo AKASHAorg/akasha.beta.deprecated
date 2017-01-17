@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { IconButton, RaisedButton, SvgIcon } from 'material-ui';
 import CopyIcon from 'material-ui/svg-icons/content/content-copy';
 import { generalMessages, profileMessages } from 'locale-data/messages';
-import { getInitials } from 'utils/dataModule';
+import { getInitials, getUrl } from 'utils/dataModule';
 import imageCreator, { findBestMatch } from 'utils/imageUtils';
 import { Avatar, PanelContainer } from 'shared-components';
 import { UserDonate } from 'shared-components/svg';
@@ -122,7 +122,6 @@ class ProfileDetails extends Component {
                 style={{
                     fontSize: '32px',
                     fontWeight: 400,
-                    textTransform: 'capitalize',
                     maxWidth: isOwnProfile ? '340px' : '282px',
                     height: '48px',
                     display: 'inline-block',
@@ -220,9 +219,9 @@ class ProfileDetails extends Component {
                 <div style={{ fontSize: '16px', fontWeight: 500 }}>
                   {intl.formatMessage(profileMessages.links)}
                 </div>
-                {profileData.links.map((link, key) =>
+                {profileData.links.map(link =>
                   <div
-                    key={key}
+                    key={link.id}
                     style={{
                         display: 'flex',
                         alignItems: 'center',
@@ -239,7 +238,7 @@ class ProfileDetails extends Component {
                       }}
                     >
                       <div
-                        data-tip={link.url}
+                        data-tip={getUrl(link.url)}
                         style={{ display: 'inline-block', maxWidth: '100%', ...wrapTextStyle }}
                       >
                         {link.title}
@@ -247,7 +246,7 @@ class ProfileDetails extends Component {
                     </div>
                     <div data-tip="Copy link address">
                       <IconButton
-                        onClick={() => { this.handleCopyLink(link.url); }}
+                        onClick={() => { this.handleCopyLink(getUrl(link.url)); }}
                         style={{ padding: '6px 12px', height: '36px' }}
                       >
                         <CopyIcon />

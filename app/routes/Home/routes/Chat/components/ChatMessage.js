@@ -19,7 +19,11 @@ class ChatMessage extends Component {
           <div style={{ padding: '10px 0', display: 'flex', alignItems: 'flex-start' }}>
             <button
               style={{
-                  border: '0px', outline: 'none', background: 'transparent', borderRadius: '50%'
+                  border: '0px',
+                  outline: 'none',
+                  background: 'transparent',
+                  borderRadius: '50%',
+                  width: '52px'
               }}
               onClick={() => { onAuthorClick(profileAddress); }}
             >
@@ -31,7 +35,14 @@ class ChatMessage extends Component {
                 radius={40}
               />
             </button>
-            <div style={{ display: 'inline-block', padding: '0 10px' }}>
+            <div
+              style={{
+                  display: 'inline-block',
+                  padding: '0 10px',
+                  width: 'calc(100% - 52px)',
+                  wordWrap: 'break-word'
+              }}
+            >
               <div style={{ lineHeight: '14px', fontSize: '12px' }}>
                 <div
                   className="contentLink"
