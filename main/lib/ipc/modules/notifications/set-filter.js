@@ -24,6 +24,11 @@ exports.filter = {
     },
     getMyAddress: () => {
         return this._currentAddress;
+    },
+    removeAddress: (rAddress) => {
+        if (exports.filter.hasAddress(rAddress)) {
+            delete this._address[rAddress];
+        }
     }
 };
 const execute = Promise.coroutine(function* (data) {
@@ -37,6 +42,9 @@ const execute = Promise.coroutine(function* (data) {
         data.profiles = temp.collection;
     }
     data.profiles.forEach((profileAddress) => {
+        if (data.exclude && data.exclude.indexOf(profileAddress) !== -1) {
+            return;
+        }
         Object.defineProperty(objectFilter, profileAddress, { value: true });
     });
     Object.defineProperty(objectFilter, myProfile.profileAddress, { value: true });

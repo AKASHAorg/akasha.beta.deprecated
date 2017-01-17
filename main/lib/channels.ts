@@ -31,7 +31,7 @@ const channels = {
     registry: ['fetchRegistered', 'addressOf', 'checkIdFormat', 'getCurrentProfile', 'profileExists', 'registerProfile',
         'getByAddress', 'unregister'],
 
-    notifications: ['me', 'feed', 'setFilter'],
+    notifications: ['me', 'feed', 'setFilter', 'excludeFilter'],
 
     tx: ['addToQueue', 'emitMined'],
 
