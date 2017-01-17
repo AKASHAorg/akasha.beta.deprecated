@@ -18,6 +18,7 @@ class EditProfile extends Component {
         super(props);
         this.getProps = inputFieldMethods.getProps.bind(this);
         const profileData = props.loggedProfileData.toJS();
+        const links = profileData.links;
         this.state = {
             formValues: {
                 firstName: profileData.firstName,
@@ -26,8 +27,8 @@ class EditProfile extends Component {
             about: profileData.about,
             avatar: profileData.avatar,
             backgroundImage: profileData.backgroundImage,
-            links: profileData.links || [],
-            lastCreatedLink: ''
+            links: links || [],
+            lastCreatedLink: links && links.length ? links[links.length - 1].id : '1'
         };
         this.validatorTypes = new UserValidation(props.intl).getSchema();
     }
@@ -112,12 +113,12 @@ class EditProfile extends Component {
                 title: '',
                 url: '',
                 type: '',
-                id: currentLinks.length,
+                id: this.state.lastCreatedLink + 1,
                 error: {}
             });
             this.setState({
                 links: currentLinks,
-                lastCreatedLink: currentLinks.length - 1
+                lastCreatedLink: this.state.lastCreatedLink + 1
             });
         }
     };
@@ -335,11 +336,16 @@ class EditProfile extends Component {
                     </IconButton>
                   </div>
                 </div>
-                {!!this.state.links.length && this.state.links.map((link, key) =>
+                {!!this.state.links.length && this.state.links.map(link =>
                   <div key={link.id} className="row">
                     <div className="col-xs-10">
                       <TextField
-                        autoFocus={this.state.lastCreatedLink === key}
+                        autoFocus={
+                            this.state.lastCreatedLink === link.id &&
+                            !loggedProfileData.get('links').find(lnk =>
+                                lnk.id === link.id
+                            )
+                        }
                         fullWidth
                         floatingLabelText={intl.formatMessage(formMessages.title)}
                         value={link.title}
@@ -391,9 +397,7 @@ EditProfile.propTypes = {
     handleValidation: PropTypes.func,
     intl: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
-    profileActions: PropTypes.shape(),
     showPanel: PropTypes.func,
-    fetchingProfileData: PropTypes.bool,
     updateProfileData: PropTypes.func,
     updatingProfile: PropTypes.bool
 };
