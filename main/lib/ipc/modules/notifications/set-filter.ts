@@ -24,6 +24,11 @@ export const filter = {
     },
     getMyAddress: () => {
         return this._currentAddress;
+    },
+    removeAddress: (rAddress) => {
+        if (filter.hasAddress(rAddress)) {
+            delete this._address[rAddress];
+        }
     }
 };
 /**
@@ -31,7 +36,7 @@ export const filter = {
  * @param data
  * @returns {Bluebird<{done: boolean, watching: any}>}
  */
-const execute = Promise.coroutine(function*(data: { profiles: string[], blockNr?: number}) {
+const execute = Promise.coroutine(function*(data: { profiles: string[], exclude?: string[], blockNr?: number }) {
     const blockNr = (data.blockNr) ? data.blockNr : yield GethConnector.getInstance().web3.eth.getBlockNumberAsync();
     const myProfile = yield currentProfile.execute();
     let objectFilter = {};
@@ -42,6 +47,9 @@ const execute = Promise.coroutine(function*(data: { profiles: string[], blockNr?
         data.profiles = temp.collection;
     }
     data.profiles.forEach((profileAddress) => {
+        if (data.exclude && data.exclude.indexOf(profileAddress) !== -1) {
+            return;
+        }
         Object.defineProperty(objectFilter, profileAddress, { value: true });
     });
     Object.defineProperty(objectFilter, myProfile.profileAddress, { value: true });
