@@ -90,6 +90,16 @@ const formMessages = defineMessages({
         id: 'app.form.rememberPassFor',
         description: 'Label for checkbox to remember password',
         defaultMessage: 'Remember my passphrase for'
+    },
+    tipAmountError: {
+        id: 'app.form.tipAmountError',
+        description: 'Error displayed when the tip amount is smaller than the minimum allowed value',
+        defaultMessage: 'The amount should be at least {minAmount} AETH'
+    },
+    tipDecimalsError: {
+        id: 'app.form.tipDecimalsError',
+        description: 'Error displayed when the tip amount has more decimals than the maximum allowed',
+        defaultMessage: 'The amount should not have more than {maxDecimals} decimals'
     }
 });
 export { formMessages };
