@@ -50,12 +50,13 @@ class EntryPage extends Component {
     componentWillReceiveProps (nextProps) { // eslint-disable-line max-statements, :D
         const { params, entry, entryActions, commentsActions, loggedProfile,
             pendingCommentsActions } = this.props;
+        const newEntryLoaded = entry && entry.get('entryId') !== nextProps.entry.get('entryId');
         if (params.entryId !== nextProps.params.entryId && entry.get('entryId') !== nextProps.params.entryId) {
             entryActions.getFullEntry(nextProps.params.entryId);
             commentsActions.unloadComments(parseInt(params.entryId, 10));
             this.fetchComments(nextProps.params.entryId);
         }
-        if (nextProps.entry && !entry) {
+        if (nextProps.entry && (!entry || newEntryLoaded)) {
             entryActions.getVoteOf(loggedProfile.get('akashaId'), nextProps.entry.get('entryId'));
             if (this.isOwnEntry(nextProps)) {
                 entryActions.canClaim(nextProps.entry.get('entryId'));
