@@ -122,7 +122,6 @@ class ProfileDetails extends Component {
                 style={{
                     fontSize: '32px',
                     fontWeight: 400,
-                    textTransform: 'capitalize',
                     maxWidth: isOwnProfile ? '340px' : '282px',
                     height: '48px',
                     display: 'inline-block',

@@ -38,7 +38,7 @@ class NotificationsActions {
             this.currentProfile = getState().profileState.getIn(['loggedProfile', 'profile']);
             this.notificationsService.listenFeed({
                 onSuccess: (data) => {
-                    if (data.profileAddress === this.currentProfile) {
+                    if (data.profileAddress === this.currentProfile || data.type === 'gotTipped') {
                         return dispatch(action.receiveYouFeed(data));
                     }
                     return dispatch(action.receiveSubscriptionFeed(data));
