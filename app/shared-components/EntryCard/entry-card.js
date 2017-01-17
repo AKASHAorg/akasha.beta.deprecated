@@ -309,17 +309,15 @@ class EntryCard extends Component {
             }
             {content &&
               <CardText style={{ paddingTop: '4px', paddingBottom: '4px' }} expandable>
-                <div style={{ display: 'flex' }}>
-                  {content.get('tags').map(tag =>
-                    <TagChip
-                      key={tag}
-                      tag={tag}
-                      selectedTag={selectedTag}
-                      onTagClick={this.selectTag}
-                      style={{ height: '24px' }}
-                    />
-                  )}
-                </div>
+                {content.get('tags').map(tag =>
+                  <TagChip
+                    key={tag}
+                    tag={tag}
+                    selectedTag={selectedTag}
+                    onTagClick={this.selectTag}
+                    style={{ height: '24px' }}
+                  />
+                )}
               </CardText>
             }
             {content &&
