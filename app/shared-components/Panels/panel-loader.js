@@ -3,8 +3,16 @@ import ReactTooltip from 'react-tooltip';
 import Panels from './index';
 
 class PanelLoader extends Component {
+    componentWillReceiveProps (nextProps) {
+        if (nextProps.panelState.get('activePanel') !== this.props.panelState.get('activePanel')) {
+            ReactTooltip.hide();
+        }
+    }
     componentDidUpdate () {
         ReactTooltip.rebuild();
+    }
+    componentWillUnmount () {
+        ReactTooltip.hide();
     }
     _handleOverlayClick = () => {
         const { appActions } = this.props;
