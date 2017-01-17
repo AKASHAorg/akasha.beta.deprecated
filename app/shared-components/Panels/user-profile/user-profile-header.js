@@ -164,20 +164,30 @@ const UserProfileHeader = (props, { router, muiTheme }) => {
         </div>
         <div className="row start-xs" >
           <div
-            className="col-xs-12 textLink"
+            className="textLink"
             onClick={navigateToProfile}
             style={{
                 fontSize: '36px',
                 fontWeight: 400,
-                textTransform: 'capitalize'
+                textTransform: 'capitalize',
+                overflow: 'hidden',
+                whiteSpace: 'nowrap',
+                textOverflow: 'ellipsis',
+                width: '100%'
             }}
           >
             {`${profile.get('firstName')} ${profile.get('lastName')}`}
           </div>
           <div
-            className="col-xs-12 textLink"
+            className="textLink"
             onClick={navigateToProfile}
-            style={{ fontSize: '20px' }}
+            style={{
+                fontSize: '20px',
+                overflow: 'hidden',
+                whiteSpace: 'nowrap',
+                textOverflow: 'ellipsis',
+                width: '100%'
+            }}
           >
             {`@${profile.get('akashaId')}`}
           </div>
