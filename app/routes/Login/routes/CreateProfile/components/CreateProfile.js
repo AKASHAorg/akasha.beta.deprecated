@@ -24,14 +24,7 @@ class CreateProfile extends Component {
                 password: '',
                 password2: ''
             },
-            links: [
-                {
-                    title: '',
-                    url: '',
-                    type: '',
-                    id: 0
-                }
-            ]
+            links: [],
         };
         this.validatorTypes = new UserValidation(props.intl).getSchema();
         this.serverValidatedFields = ['akashaId'];
@@ -57,19 +50,21 @@ class CreateProfile extends Component {
         this.setState({ opt_details: !this.state.opt_details });
     };
     handleSubmit = () => {
-        if (this.hasErrors()) {
+        if (this.hasErrors() || this._checkLinks()) {
             return;
         }
         const { tempProfileActions } = this.props;
         const profileData = this.state.formValues;
         const optionalData = {};
         const profileImage = this.imageUploader.getWrappedInstance().getImage();
-        const userLinks = this.state.links.filter(link => link.title.length > 0);
         profileData.password = this.state.formValues.password;
         profileData.password2 = this.state.formValues.password2;
         // optional settings
-        if (userLinks.length > 0) {
-            optionalData.links = userLinks;
+        if (this.state.links.length > 0) {
+            optionalData.links = this.state.links.map((link) => {
+                delete link.error;
+                return link;
+            });
         }
         if (profileImage) {
             optionalData.backgroundImage = profileImage;
@@ -117,7 +112,8 @@ class CreateProfile extends Component {
                 title: '',
                 url: '',
                 type: '',
-                id: currentLinks.length
+                id: currentLinks.length,
+                error: {}
             });
             this.setState({
                 links: currentLinks
@@ -126,7 +122,7 @@ class CreateProfile extends Component {
     };
     _handleRemoveLink = (linkId) => {
         let links = this.state.links;
-        if (this.state.links.length > 1) {
+        if (this.state.links.length > 0) {
             links = r.reject(link => link.id === linkId, links);
         }
         for (let i = 0; i < links.length; i += 1) {
@@ -142,6 +138,13 @@ class CreateProfile extends Component {
             Object.keys(link).forEach((key) => {
                 if (key !== 'id' && key !== 'type' && link[key].length === 0) {
                     isEmpty = true;
+                    const links = r.clone(this.state.links);
+                    const index = r.findIndex(r.propEq('id', link.id))(links);
+                    link.error[key] = true;
+                    links[index] = link;
+                    this.setState({
+                        links
+                    });
                 }
             });
         });
@@ -154,6 +157,7 @@ class CreateProfile extends Component {
         const index = r.findIndex(r.propEq('id', linkId))(links);
         const link = links[index];
         link[field] = fieldValue;
+        link.error[field] = fieldValue.length === 0;
         if (field === 'url') {
             if (fieldValue.indexOf('akasha://') === 0) {
                 link.type = 'internal';
@@ -177,7 +181,10 @@ class CreateProfile extends Component {
     hasErrors = () => {
         const { errors } = this.props;
         let hasErrors = false;
-        Object.keys(errors).forEach(key => {
+        if (this.state.links.find(link => link.error && (link.error.title || link.error.url))) {
+            return true;
+        }
+        Object.keys(errors).forEach((key) => {
             if (errors[key] && errors[key].length) {
                 hasErrors = true;
             }
@@ -225,7 +232,6 @@ class CreateProfile extends Component {
             statePath: 'formValues.lastName',
             required: false,
             addValueLink: true,
-            // onBlur: this.props.handleValidation('formValues.lastName')
         });
 
         const akashaIdProps = this.getProps({
@@ -358,7 +364,7 @@ class CreateProfile extends Component {
                   </div>
                 </div>
                 {this.state.links.map((link, key) =>
-                  <div key={key} className="row">
+                  <div key={link.id} className="row">
                     <div className="col-xs-10">
                       <TextField
                         autoFocus={(this.state.links.length - 1) === key}
@@ -367,6 +373,8 @@ class CreateProfile extends Component {
                         value={link.title}
                         floatingLabelStyle={floatLabelStyle}
                         onChange={ev => this._handleLinkChange('title', link.id, ev)}
+                        errorText={link.error && link.error.title && 'Title cannot be empty'}
+                        errorStyle={{ position: 'absolute', bottom: '-10px' }}
                       />
                       <TextField
                         fullWidth
@@ -374,9 +382,11 @@ class CreateProfile extends Component {
                         value={link.url}
                         floatingLabelStyle={floatLabelStyle}
                         onChange={ev => this._handleLinkChange('url', link.id, ev)}
+                        errorText={link.error && link.error.url && 'URL cannot be empty'}
+                        errorStyle={{ position: 'absolute', bottom: '-10px' }}
                       />
                     </div>
-                    {this.state.links.length > 1 &&
+                    {this.state.links.length > 0 &&
                       <div className="col-xs-2 center-xs">
                         <IconButton
                           title={intl.formatMessage(profileMessages.removeLinkButtonTitle)}
@@ -422,8 +432,6 @@ class CreateProfile extends Component {
 
 CreateProfile.propTypes = {
     appActions: PropTypes.shape(),
-    style: PropTypes.shape(),
-    customValidate: React.PropTypes.func,
     errors: React.PropTypes.shape(),
     tempProfileActions: React.PropTypes.shape(),
     clearValidations: React.PropTypes.func,
