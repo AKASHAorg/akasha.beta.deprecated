@@ -211,7 +211,7 @@ class ProfileActivity extends Component {
     renderProfileList = (profiles, fetching, fetchingMore, moreProfiles, emptyPlaceholder) => {
         const { profileData, profileActions, followPending, followProfile, unfollowProfile,
             selectProfile, showPanel, loggedProfileData, isFollowerPending, sendTip,
-            sendingTip } = this.props;
+            sendingTip, settingsActions, mutedList } = this.props;
         const { palette } = this.context.muiTheme;
 
         return (<DataLoader
@@ -238,8 +238,11 @@ class ProfileActivity extends Component {
                     follow.akashaId === prf.akashaId);
                 const sendTipPending = sendingTip && sendingTip.find(flag =>
                     flag.akashaId === prf.akashaId);
+                const isMuted = mutedList && mutedList.indexOf(prf.profile) !== -1;
                 return profileData &&
                   <ProfileCard
+                    disableNotifFrom={settingsActions.disableNotifFrom}
+                    enableNotifFrom={settingsActions.enableNotifFrom}
                     key={prf.akashaId}
                     loggedProfileData={loggedProfileData}
                     profileData={prf}
@@ -247,6 +250,7 @@ class ProfileActivity extends Component {
                     unfollowProfile={unfollowProfile}
                     followPending={followProfilePending && followProfilePending.value}
                     isFollowerPending={isFollowerPending}
+                    isMuted={isMuted}
                     selectProfile={selectProfile}
                     sendTip={sendTip}
                     sendTipPending={sendTipPending && sendTipPending.value}
@@ -350,6 +354,7 @@ ProfileActivity.propTypes = {
     fetchingMoreProfileEntries: PropTypes.bool,
     fetchingProfileEntries: PropTypes.bool,
     moreProfileEntries: PropTypes.bool,
+    mutedList: PropTypes.arrayOf(PropTypes.string),
     followPending: PropTypes.shape(),
     isFollowerPending: PropTypes.bool,
     followProfile: PropTypes.func.isRequired,
@@ -357,6 +362,7 @@ ProfileActivity.propTypes = {
     selectProfile: PropTypes.func.isRequired,
     sendingTip: PropTypes.shape(),
     sendTip: PropTypes.func.isRequired,
+    settingsActions: PropTypes.shape(),
     showPanel: PropTypes.func,
 };
 

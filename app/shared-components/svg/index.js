@@ -55,6 +55,7 @@ import EntryCommentReply from './entry-comment-reply';
 import EntryDownvote from './entry-downvote';
 import EntryUpvote from './entry-upvote';
 import UserDonate from './user-donate';
+import UserMore from './user-more';
 
 export {
     AvatarPlaceholder, ProfileIcon, AddEntryIcon, EntriesIcon, SearchIcon, StreamsIcon, PortalsIcon,
@@ -68,5 +69,5 @@ export {
     CreativeCommonsNCJP, CreativeCommonsNC, CreativeCommonsND,
     CreativeCommonsREMIX, CreativeCommonsSHARE, CreativeCommonsZERO,
     CreativeCommonsPD, CreativeCommonsSA, EntryUpvote, EntryDownvote, EntryComment,
-    EntryCommentReply, EntryBookmarkOn, EntryBookmarkOff, UserDonate
+    EntryCommentReply, EntryBookmarkOn, EntryBookmarkOff, UserDonate, UserMore
 };
