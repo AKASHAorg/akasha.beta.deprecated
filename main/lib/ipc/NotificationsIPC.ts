@@ -7,7 +7,7 @@ class NotificationsIPC extends ModuleEmitter {
     constructor() {
         super();
         this.MODULE_NAME = 'notifications';
-        this.DEFAULT_MANAGED = ['feed', 'setFilter', 'excludeFilter'];
+        this.DEFAULT_MANAGED = ['feed', 'setFilter', 'excludeFilter', 'includeFilter'];
     }
 
     public initListeners(webContents: WebContents) {
