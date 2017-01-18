@@ -22,10 +22,11 @@ class NotificationsActions {
      * @param profiles
      * @param blockNr
      */
-    setFilter (profiles, blockNr) {
+    setFilter (profiles, blockNr, exclude) {
         this.notificationsService.setFilter({
             profiles,
             blockNr,
+            exclude,
             onSuccess: () => {
                 this.watchFeed();
             }
@@ -78,6 +79,22 @@ class NotificationsActions {
             onSuccess: () => {
                 this.emitEvent = false;
             }
+        });
+    }
+
+    includeFilter (profiles) {
+        this.notificationsService.includeFilter({
+            profiles,
+            onError: () => { },
+            onSuccess: () => { }
+        });
+    }
+
+    excludeFilter (profiles) {
+        this.notificationsService.excludeFilter({
+            profiles,
+            onError: () => { },
+            onSuccess: () => { }
         });
     }
 }
