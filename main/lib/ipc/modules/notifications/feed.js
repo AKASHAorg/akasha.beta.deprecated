@@ -7,6 +7,7 @@ const profile_data_1 = require('../profile/profile-data');
 const get_entry_1 = require('../entry/get-entry');
 const current_profile_1 = require('../registry/current-profile');
 const resolve_ethaddress_1 = require('../registry/resolve-ethaddress');
+const queue_1 = require('./queue');
 let entries;
 let comments;
 let votes;
@@ -21,12 +22,12 @@ const eventTypes = {
 };
 const VALUE_UNIT = 'ether';
 const hydrateWithProfile = (cb, profile, entry, extra) => {
-    const queue = [];
-    queue.push(profile_data_1.default.execute({ profile: profile }));
-    queue.push(get_entry_1.default.execute({ entryId: entry }));
-    Promise.all(queue)
+    const batch = [];
+    batch.push(profile_data_1.default.execute({ profile: profile }));
+    batch.push(get_entry_1.default.execute({ entryId: entry }));
+    Promise.all(batch)
         .then((result) => {
-        cb('', Object.assign(extra, { author: result[0], entry: result[1] }));
+        queue_1.default.push(cb, Object.assign(extra, { author: result[0], entry: result[1] }));
     })
         .catch((error) => {
         cb({ message: error.message }, extra);
@@ -111,7 +112,7 @@ const execute = Promise.coroutine(function* (data, cb) {
         profile_data_1.default
             .execute({ profile: event.args.follower })
             .then((data) => {
-            cb('', {
+            queue_1.default.push(cb, {
                 type: eventTypes.FOLLOWING,
                 blockNumber: event.blockNumber,
                 follower: data,
@@ -129,7 +130,7 @@ const execute = Promise.coroutine(function* (data, cb) {
             const ethers = geth_connector_1.GethConnector.getInstance().web3.fromWei(event.args.value, VALUE_UNIT);
             return profile_data_1.default.execute({ profile: profile.profileAddress })
                 .then((resolvedProfile) => {
-                cb('', {
+                queue_1.default.push(cb, {
                     profile: resolvedProfile,
                     blockNumber: event.blockNumber,
                     value: ethers.toString(10),
