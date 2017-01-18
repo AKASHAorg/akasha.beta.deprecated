@@ -32,7 +32,7 @@ exports.filter = {
     },
     appendAddress: (aAddress) => {
         if (!exports.filter.hasAddress(aAddress)) {
-            Object.defineProperty(this._address, aAddress, { value: true });
+            Object.defineProperty(this._address, aAddress, { configurable: true, writable: false, value: true, enumerable: true });
         }
     }
 };
@@ -50,9 +50,9 @@ const execute = Promise.coroutine(function* (data) {
         if (data.exclude && data.exclude.indexOf(profileAddress) !== -1) {
             return;
         }
-        Object.defineProperty(objectFilter, profileAddress, { value: true });
+        Object.defineProperty(objectFilter, profileAddress, { configurable: true, writable: false, value: true, enumerable: true });
     });
-    Object.defineProperty(objectFilter, myProfile.profileAddress, { value: true });
+    Object.defineProperty(objectFilter, myProfile.profileAddress, { configurable: true, writable: false, value: true, enumerable: true });
     exports.filter.setMyAddress(myProfile.profileAddress);
     exports.filter.setAddress(objectFilter);
     objectFilter = null;
