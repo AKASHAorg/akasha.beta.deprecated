@@ -6,6 +6,7 @@ import getProfileData from '../profile/profile-data';
 import getEntry from '../entry/get-entry';
 import currentProfile from '../registry/current-profile';
 import resolveProfile from '../registry/resolve-ethaddress';
+import queue from './queue';
 
 let entries;
 let comments;
@@ -23,12 +24,12 @@ const eventTypes = {
 
 const VALUE_UNIT = 'ether';
 const hydrateWithProfile = (cb, profile, entry, extra) => {
-    const queue = [];
-    queue.push(getProfileData.execute({ profile: profile }));
-    queue.push(getEntry.execute({ entryId: entry }));
-    Promise.all(queue)
+    const batch = [];
+    batch.push(getProfileData.execute({ profile: profile }));
+    batch.push(getEntry.execute({ entryId: entry }));
+    Promise.all(batch)
         .then((result) => {
-            cb('', Object.assign(extra, { author: result[0], entry: result[1] }))
+            queue.push(cb, Object.assign(extra, { author: result[0], entry: result[1] }));
         })
         .catch((error) => {
             cb({ message: error.message }, extra)
@@ -140,7 +141,8 @@ const execute = Promise.coroutine(function*(data: { stop?: boolean }, cb) {
         getProfileData
             .execute({ profile: event.args.follower })
             .then((data) => {
-                cb('',
+                queue.push(
+                    cb,
                     {
                         type: eventTypes.FOLLOWING,
                         blockNumber: event.blockNumber,
@@ -161,13 +163,16 @@ const execute = Promise.coroutine(function*(data: { stop?: boolean }, cb) {
                 const ethers = GethConnector.getInstance().web3.fromWei(event.args.value, VALUE_UNIT);
                 return getProfileData.execute({ profile: profile.profileAddress })
                     .then((resolvedProfile) => {
-                        cb('', {
-                            profile: resolvedProfile,
-                            blockNumber: event.blockNumber,
-                            value: ethers.toString(10),
-                            unit: VALUE_UNIT,
-                            type: eventTypes.TIPPED
-                        })
+                        queue.push(
+                            cb,
+                            {
+                                profile: resolvedProfile,
+                                blockNumber: event.blockNumber,
+                                value: ethers.toString(10),
+                                unit: VALUE_UNIT,
+                                type: eventTypes.TIPPED
+                            }
+                        );
                     });
             })
             .catch((e) => {
