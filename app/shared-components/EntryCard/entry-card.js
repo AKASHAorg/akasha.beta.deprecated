@@ -145,6 +145,31 @@ class EntryCard extends Component {
         this.setState({
             expanded
         });
+    };
+
+    renderPlaceholder = () => {
+        const { intl } = this.props;
+        const { palette } = this.context.muiTheme;
+        return (
+          <Card style={{ margin: '5px 5px 16px 5px', width: '640px', paddingTop: '8px' }}>
+            <CardText style={{ position: 'relative' }}>
+              {intl.formatMessage(entryMessages.unresolvedEntry)}
+              <div
+                data-tip={intl.formatMessage(entryMessages.unresolvedEntry)}
+                style={{
+                    position: 'absolute',
+                    right: '10px',
+                    top: '2px',
+                    display: 'inline-block'
+                }}
+              >
+                <IconButton>
+                  <HubIcon color={palette.accent1Color} />
+                </IconButton>
+              </div>
+            </CardText>
+          </Card>
+        );
     }
 
     render () {
@@ -155,6 +180,9 @@ class EntryCard extends Component {
         const existingVoteWeight = entry.get('voteWeight') || 0;
         const publishDate = new Date(entry.getIn(['entryEth', 'unixStamp']) * 1000);
         const publisher = entry.getIn(['entryEth', 'publisher']);
+        if (!publisher) {
+            return this.renderPlaceholder();
+        }
         const userInitials = getInitials(publisher.get('firstName'), publisher.get('lastName'));
         const avatar = publisher.get('avatar') ?
             imageCreator(publisher.get('avatar'), publisher.get('baseUrl')) :
