@@ -29,6 +29,11 @@ exports.filter = {
         if (exports.filter.hasAddress(rAddress)) {
             delete this._address[rAddress];
         }
+    },
+    appendAddress: (aAddress) => {
+        if (!exports.filter.hasAddress(aAddress)) {
+            Object.defineProperty(this._address, aAddress, { value: true });
+        }
     }
 };
 const execute = Promise.coroutine(function* (data) {
