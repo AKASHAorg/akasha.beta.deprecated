@@ -174,7 +174,8 @@ exports.getFullContent = Promise.coroutine(function* (hash) {
     catch (err) {
         draft = null;
     }
-    const data = Object.assign({}, root, { draft: draft });
+    const shortContent = yield exports.getShortContent(hash);
+    const data = Object.assign({}, root, shortContent, { draft: draft });
     records_1.entries.setFull(hash, data);
     tmp = null;
     draft = null;
