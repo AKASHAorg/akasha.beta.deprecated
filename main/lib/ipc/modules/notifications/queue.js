@@ -3,7 +3,7 @@ class Notifications {
     constructor() {
         this.queue = [];
         this.COLLECT_TIME = 3000;
-        this.BATCH_SIZE = 8;
+        this.BATCH_SIZE = 3;
     }
     push(cb, notification) {
         if (this._timeout) {
