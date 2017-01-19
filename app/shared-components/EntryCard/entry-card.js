@@ -235,7 +235,17 @@ class EntryCard extends Component {
                   style={{ border: '0px', outline: 'none', background: 'transparent', padding: 0 }}
                   onClick={this.selectProfile}
                 >
-                  {`${publisher.get('firstName')} ${publisher.get('lastName')}`}
+                  <div
+                    style={{
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        maxWidth: '470px',
+                        textAlign: 'left'
+                    }}
+                  >
+                    {`${publisher.get('firstName')} ${publisher.get('lastName')}`}
+                  </div>
                 </button>
               }
               subtitle={cardSubtitle}

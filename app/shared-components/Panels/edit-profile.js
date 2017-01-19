@@ -38,7 +38,7 @@ class EditProfile extends Component {
     }
 
     handleSubmit = () => {
-        if (this._checkLinks()) {
+        if (this._checkLinks() || this._hasErrors()) {
             return;
         }
         const { updateProfileData } = this.props;
@@ -133,12 +133,16 @@ class EditProfile extends Component {
         });
     };
 
-    _hasLinkErrors = () => {
-        if (this.state.links.find(link => link.error && (link.error.title || link.error.url))) {
-            return true;
-        }
-        return false;
-    };
+    _hasErrors = () => {
+        const { errors } = this.props;
+        let hasErrors = false;
+        Object.keys(errors).forEach((key) => {
+            if (errors[key] && errors[key].length) {
+                hasErrors = true;
+            }
+        });
+        return hasErrors;
+    }
 
     _checkLinks = () => {
         let isEmpty = false;
@@ -261,7 +265,7 @@ class EditProfile extends Component {
                     type="submit"
                     onClick={this._submitForm}
                     style={{ marginLeft: 8 }}
-                    disabled={this.state.submitting || updatingProfile || this._hasLinkErrors()}
+                    disabled={updatingProfile || this._hasErrors()}
                     primary
                 />
                 /* eslint-enable */
@@ -394,6 +398,7 @@ class EditProfile extends Component {
 
 EditProfile.propTypes = {
     clearValidations: PropTypes.func,
+    errors: PropTypes.shape(),
     handleValidation: PropTypes.func,
     intl: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),

@@ -176,7 +176,7 @@ class ProfileDetails extends Component {
           </div>
           <div style={{ padding: '5px 30px 10px' }}>
             <div
-              data-tip={`${profileData.firstName} ${profileData.lastName}`}
+              data-tip={`${profileData.firstName} ${profileData.lastName}`.slice(0, 60)}
               style={{
                   fontSize: '32px',
                   fontWeight: 400,
@@ -243,7 +243,7 @@ class ProfileDetails extends Component {
                 <div style={{ fontSize: '16px', fontWeight: 500 }}>
                   {intl.formatMessage(profileMessages.about)}
                 </div>
-                <div style={{ fontSize: '16px', fontWeight: 300 }}>
+                <div style={{ fontSize: '16px', fontWeight: 300, wordWrap: 'break-word' }}>
                   {profileData.about.split('\n').map((text, key) =>
                     <span key={key}>
                       {text}
@@ -277,7 +277,7 @@ class ProfileDetails extends Component {
                       }}
                     >
                       <div
-                        data-tip={getUrl(link.url)}
+                        data-tip={getUrl(link.url).slice(0, 60)}
                         style={{ display: 'inline-block', maxWidth: '100%', ...wrapTextStyle }}
                       >
                         {link.title}
