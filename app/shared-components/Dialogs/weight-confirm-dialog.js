@@ -115,23 +115,18 @@ class WeightConfirmDialog extends React.PureComponent {
     }
 
     render () {
-        const { isOpen, voteCost, balance, isActivePending, resource, active, minWeight, maxWeight,
+        const { isOpen, voteCost, isActivePending, resource, active, minWeight, maxWeight,
             intl } = this.props;
         const { gasAmount, gasAmountError, voteWeight, voteWeightError } = this.state;
         const { palette } = this.context.muiTheme;
-        const fee = 0.0001;
         const payload = resource ?
             resource.get('payload').toJS() :
             {};
         const { entryTitle, publisherAkashaId } = payload;
         const voteWeightCost = voteCost.get(Math.abs(voteWeight).toString());
-        const shortBalance = balance ? balance.slice(0, 6) : '';
         const weightErrorText = voteWeightError === WEIGHT_LIMIT_ERROR ?
             intl.formatMessage(formMessages.voteWeightError, { minWeight, maxWeight }) :
             intl.formatMessage(formMessages.notEnoughFunds);
-        const voteFundsDestination = resource && resource.type === 'upvote' ?
-            'Author' :
-            'Faucet';
         const title = resource && resource.type === 'upvote' ?
             intl.formatMessage(confirmMessages.upvoteTitle) :
             intl.formatMessage(confirmMessages.downvoteTitle);
@@ -158,7 +153,17 @@ class WeightConfirmDialog extends React.PureComponent {
             actions={dialogActions}
           >
             <div style={{ color: palette.textColor }}>
-              <div style={{ fontSize: '18px' }}>{entryTitle}</div>
+              <div
+                data-tip={entryTitle && entryTitle.slice(0, 60)}
+                style={{
+                    fontSize: '18px',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis'
+                }}
+              >
+                {entryTitle}
+              </div>
               <small>by {publisherAkashaId}</small>
               <div style={{ position: 'relative' }}>
                 <div style={{ position: 'absolute', top: '39px' }}>

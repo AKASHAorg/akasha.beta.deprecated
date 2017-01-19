@@ -302,9 +302,9 @@ class EntryPage extends Component {
     };
 
     render () {
-        const { blockNr, canClaimPending, claimPending, comments, entry,
-            fetchingEntryBalance, fetchingFullEntry, intl, licences, loggedProfile, profiles,
-            savedEntries, votePending, fetchingComments } = this.props;
+        const { blockNr, canClaimPending, claimPending, comments, entry, fetchingEntryBalance,
+            fetchingFullEntry, intl, licences, loggedProfile, profiles, savedEntries, votePending,
+            fetchingComments } = this.props;
         const { palette } = this.context.muiTheme;
         const { publisherTitleShadow } = this.state;
         let licence;
