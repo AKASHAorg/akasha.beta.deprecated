@@ -138,7 +138,8 @@ class EntryPage extends Component {
     };
     isOwnEntry = (nextProps) => {
         const { entry, loggedProfile } = nextProps || this.props;
-        return entry.entryEth.publisher.akashaId === loggedProfile.get('akashaId');
+        const publisher = entry.entryEth.publisher;
+        return publisher && publisher.akashaId === loggedProfile.get('akashaId');
     };
 
     handleUpvote = () => {
@@ -301,9 +302,9 @@ class EntryPage extends Component {
     };
 
     render () {
-        const { blockNr, canClaimPending, claimPending, comments, entry,
-            fetchingEntryBalance, fetchingFullEntry, intl, licences, loggedProfile, profiles,
-            savedEntries, votePending, fetchingComments } = this.props;
+        const { blockNr, canClaimPending, claimPending, comments, entry, fetchingEntryBalance,
+            fetchingFullEntry, intl, licences, loggedProfile, profiles, savedEntries, votePending,
+            fetchingComments } = this.props;
         const { palette } = this.context.muiTheme;
         const { publisherTitleShadow } = this.state;
         let licence;
@@ -335,15 +336,17 @@ class EntryPage extends Component {
             <div className="col-xs-12">
               <div className={`${styles.entry_page_inner}`}>
                 <div id="content-section" className={`${styles.content_section}`}>
-                  <EntryPageHeader
-                    blockNr={blockNr}
-                    entryBlockNr={entry.entryEth.blockNr}
-                    publisher={entry.entryEth.publisher}
-                    publisherTitleShadow={publisherTitleShadow}
-                    selectProfile={this.selectProfile}
-                    timestamp={entry.entryEth.unixStamp}
-                    wordCount={entry.content ? entry.content.wordCount : 0}
-                  />
+                  {entry.entryEth && entry.entryEth.publisher &&
+                    <EntryPageHeader
+                      blockNr={blockNr}
+                      entryBlockNr={entry.entryEth.blockNr}
+                      publisher={entry.entryEth.publisher}
+                      publisherTitleShadow={publisherTitleShadow}
+                      selectProfile={this.selectProfile}
+                      timestamp={entry.entryEth.unixStamp}
+                      wordCount={entry.content ? entry.content.wordCount : 0}
+                    />
+                  }
                   {entry.content &&
                     <EntryPageContent
                       entry={entry}

@@ -220,7 +220,7 @@ class CreateProfile extends Component {
             statePath: 'formValues.firstName',
             required: true,
             addValueLink: true,
-            onFocus: this.props.clearValidations,
+            onChange: this.props.clearValidations,
             onBlur: this.props.handleValidation('formValues.firstName')
         });
 
@@ -232,6 +232,8 @@ class CreateProfile extends Component {
             statePath: 'formValues.lastName',
             required: false,
             addValueLink: true,
+            onChange: this.props.clearValidations,
+            onBlur: this.props.handleValidation('formValues.lastName')
         });
 
         const akashaIdProps = this.getProps({

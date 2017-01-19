@@ -102,7 +102,17 @@ class EntryPageHeader extends Component {
                     }}
                     onClick={selectProfile}
                   >
-                    {`${publisher.firstName} ${publisher.lastName}`}
+                    <div
+                      style={{
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          maxWidth: '620px',
+                          textAlign: 'left'
+                      }}
+                    >
+                      {`${publisher.firstName} ${publisher.lastName}`}
+                    </div>
                   </button>
                 }
                 subtitle={this.renderSubtitle()}

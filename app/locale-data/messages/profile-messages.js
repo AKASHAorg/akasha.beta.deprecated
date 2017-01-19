@@ -148,5 +148,25 @@ export const profileMessages = defineMessages({
         id: 'app.profile.interestingPeople',
         description: 'Label for interesting people tab',
         defaultMessage: 'Interesting people'
+    },
+    sendTip: {
+        id: 'app.profile.sendTip',
+        description: 'tooltip for send tip button',
+        defaultMessage: 'Send tip'
+    },
+    sendingTip: {
+        id: 'app.profile.sendingTip',
+        description: 'tooltip for send tip button when waiting for transaction',
+        defaultMessage: 'Sending tip ...'
+    },
+    disableNotifications: {
+        id: 'app.profile.disableNotifications',
+        description: 'tooltip for disable notifications button',
+        defaultMessage: 'Disable notifications'
+    },
+    enableNotifications: {
+        id: 'app.profile.enableNotifications',
+        description: 'tooltip for enable notifications button',
+        defaultMessage: 'Enable notifications'
     }
 });
