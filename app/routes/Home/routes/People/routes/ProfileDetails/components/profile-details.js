@@ -1,6 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import { IconButton, RaisedButton, SvgIcon } from 'material-ui';
 import CopyIcon from 'material-ui/svg-icons/content/content-copy';
+import NotificationsActiveIcon from 'material-ui/svg-icons/social/notifications-active';
+import NotificationsDisabledIcon from 'material-ui/svg-icons/social/notifications-off';
 import { generalMessages, profileMessages } from 'locale-data/messages';
 import { getInitials, getUrl } from 'utils/dataModule';
 import imageCreator, { findBestMatch } from 'utils/imageUtils';
@@ -61,9 +63,19 @@ class ProfileDetails extends Component {
         document.body.removeChild(textArea);
     };
 
+    toggleNotifications = () => {
+        const { disableNotifFrom, enableNotifFrom, isMuted, profileData } = this.props;
+        const { akashaId, profile } = profileData.toJS();
+        if (isMuted) {
+            enableNotifFrom(akashaId, profile);
+        } else {
+            disableNotifFrom(akashaId, profile);
+        }
+    };
+
     renderHeader () {
-        const { followPending, followProfile, intl, isFollower, loggedAddress, sendingTip, sendTip,
-            showPanel, unfollowProfile } = this.props;
+        const { followPending, followProfile, intl, isFollower, isMuted, loggedAddress, sendingTip,
+            sendTip, showPanel, unfollowProfile } = this.props;
         const profileData = this.props.profileData ?
             this.props.profileData.toJS() :
             {};
@@ -92,7 +104,7 @@ class ProfileDetails extends Component {
           values={{ followersCount: profileData.followersCount || 0 }}
         />);
 
-        return (<div>
+        return (<div style={{ height: '100%' }}>
           <div style={imageWrapperStyle}>
             <img
               src={imageUrl}
@@ -101,7 +113,14 @@ class ProfileDetails extends Component {
               alt=""
             />
           </div>
-          <div style={{ position: 'relative' }}>
+          <div
+            style={{
+                position: 'relative',
+                display: 'flex',
+                justifyContent: 'flex-end',
+                height: '52px'
+            }}
+          >
             <Avatar
               image={avatar}
               radius={100}
@@ -112,51 +131,71 @@ class ProfileDetails extends Component {
                   fontWeight: '600',
                   margin: '0px'
               }}
-              style={{ position: 'absolute', left: '30px', bottom: '-50px' }}
+              style={{ position: 'absolute', left: '30px', top: '-50px' }}
             />
-          </div>
-          <div style={{ padding: '50px 30px 10px' }}>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
+            {!isOwnProfile && isFollower &&
               <div
-                data-tip={`${profileData.firstName} ${profileData.lastName}`}
-                style={{
-                    fontSize: '32px',
-                    fontWeight: 400,
-                    maxWidth: isOwnProfile ? '340px' : '282px',
-                    height: '48px',
-                    display: 'inline-block',
-                    ...wrapTextStyle
-                }}
+                data-tip={isMuted ?
+                    intl.formatMessage(profileMessages.enableNotifications) :
+                    intl.formatMessage(profileMessages.disableNotifications)
+                }
               >
-                {`${profileData.firstName} ${profileData.lastName}`}
-              </div>
-              {!isOwnProfile && profileData.firstName &&
-                <div
-                  data-tip={sendingTipPending && sendingTipPending.value ?
-                      'Sending tip ...' :
-                      'Send tip'
-                  }
+                <IconButton
+                  iconStyle={{ width: '20px', height: '20px' }}
+                  style={{ width: '32px', height: '32px', padding: '4px', margin: '10px 5px' }}
+                  onClick={this.toggleNotifications}
                 >
-                  <IconButton
-                    style={{ marginLeft: '10px' }}
-                    onClick={() => sendTip(profileData)}
-                    disabled={sendingTipPending && sendingTipPending.value}
-                  >
-                    <SvgIcon viewBox="0 0 18 18">
-                      <UserDonate />
-                    </SvgIcon>
-                  </IconButton>
-                </div>
-              }
-            </div>
-            <div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', fontSize: '16px', fontWeight: 300 }}>
-                <span style={{ display: 'inline-block', maxWidth: '340px', ...wrapTextStyle }}>
-                  {`@${profileData.akashaId}`}
-                  <span style={{ margin: '0 5px' }}>-</span>
-                </span>
-                {followers}
+                  <SvgIcon viewBox="0 0 18 18">
+                    {isMuted ?
+                      <NotificationsActiveIcon /> :
+                      <NotificationsDisabledIcon />
+                    }
+                  </SvgIcon>
+                </IconButton>
               </div>
+            }
+            {!isOwnProfile &&
+              <div
+                data-tip={sendingTipPending && sendingTipPending.value ?
+                    intl.formatMessage(profileMessages.sendingTip) :
+                    intl.formatMessage(profileMessages.sendTip)
+                }
+              >
+                <IconButton
+                  iconStyle={{ width: '20px', height: '20px' }}
+                  style={{ width: '32px', height: '32px', padding: '4px', margin: '10px 5px' }}
+                  onClick={() => sendTip(profileData)}
+                  disabled={sendingTipPending && sendingTipPending.value}
+                >
+                  <SvgIcon viewBox="0 0 18 18">
+                    <UserDonate />
+                  </SvgIcon>
+                </IconButton>
+              </div>
+            }
+          </div>
+          <div style={{ padding: '5px 30px 10px' }}>
+            <div
+              data-tip={`${profileData.firstName} ${profileData.lastName}`.slice(0, 60)}
+              style={{
+                  fontSize: '32px',
+                  fontWeight: 400,
+                  maxWidth: '340px',
+                  height: '36px',
+                  lineHeight: '36px',
+                  display: 'inline-block',
+                  overflowY: 'hidden',
+                  ...wrapTextStyle
+              }}
+            >
+              {`${profileData.firstName} ${profileData.lastName}`}
+            </div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', fontSize: '16px', fontWeight: 300 }}>
+              <span style={{ display: 'inline-block', maxWidth: '340px', ...wrapTextStyle }}>
+                {`@${profileData.akashaId}`}
+                <span style={{ margin: '0 5px' }}>-</span>
+              </span>
+              {followers}
             </div>
             <RaisedButton
               label={isOwnProfile ?
@@ -204,7 +243,7 @@ class ProfileDetails extends Component {
                 <div style={{ fontSize: '16px', fontWeight: 500 }}>
                   {intl.formatMessage(profileMessages.about)}
                 </div>
-                <div style={{ fontSize: '16px', fontWeight: 300 }}>
+                <div style={{ fontSize: '16px', fontWeight: 300, wordWrap: 'break-word' }}>
                   {profileData.about.split('\n').map((text, key) =>
                     <span key={key}>
                       {text}
@@ -238,7 +277,7 @@ class ProfileDetails extends Component {
                       }}
                     >
                       <div
-                        data-tip={getUrl(link.url)}
+                        data-tip={getUrl(link.url).slice(0, 60)}
                         style={{ display: 'inline-block', maxWidth: '100%', ...wrapTextStyle }}
                       >
                         {link.title}
@@ -266,10 +305,13 @@ ProfileDetails.contextTypes = {
 };
 
 ProfileDetails.propTypes = {
+    disableNotifFrom: PropTypes.func.isRequired,
+    enableNotifFrom: PropTypes.func.isRequired,
     followPending: PropTypes.shape(),
     followProfile: PropTypes.func,
     intl: PropTypes.shape(),
     isFollower: PropTypes.bool,
+    isMuted: PropTypes.bool,
     loggedAddress: PropTypes.string,
     profileData: PropTypes.shape(),
     sendingTip: PropTypes.shape(),

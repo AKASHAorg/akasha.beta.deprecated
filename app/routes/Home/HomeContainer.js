@@ -61,9 +61,10 @@ class HomeContainer extends React.Component {
         }
         if (!userSettings && this.props.userSettings) {
             notificationsActions.setFilter([]);
-        } else if (userSettings &&
-                userSettings.lastBlockNr !== this.props.userSettings.lastBlockNr) {
-            notificationsActions.setFilter([], userSettings.lastBlockNr);
+        } else if (userSettings && userSettings.akashaId !== this.props.userSettings.akashaId) {
+            notificationsActions.setFilter(
+                [], userSettings.lastBlockNr, userSettings.notifications.muted
+            );
         }
         if (selectedTag !== this.props.selectedTag && params.filter === 'tag' &&
                 params.tag !== selectedTag) {

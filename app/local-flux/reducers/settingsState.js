@@ -33,10 +33,15 @@ const IpfsSettings = Record({
     storagePath: null,
 });
 
+const Notifications = Record({
+    muted: []
+});
+
 const UserSettings = Record({
     akashaId: null,
     lastBlockNr: null,
-    defaultLicence: null
+    defaultLicence: null,
+    notifications: new Notifications()
 });
 
 const GeneralSettings = Record({
@@ -190,10 +195,11 @@ const settingsState = createReducer(initialState, {
         return state;
     },
 
-    [types.GET_USER_SETTINGS_SUCCESS]: (state, { data }) =>
-        state.merge({
-            userSettings: data ? new UserSettings(data) : null
-        }),
+    [types.GET_USER_SETTINGS_SUCCESS]: (state, { data }) => {
+        return state.merge({
+            userSettings: data ? new UserSettings(data) : new UserSettings()
+        });
+    },
 
     [types.GET_USER_SETTINGS_ERROR]: (state, { error }) =>
         state.merge({

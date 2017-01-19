@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { AppActions, EntryActions, ProfileActions, TagActions } from 'local-flux';
+import { AppActions, EntryActions, ProfileActions, SettingsActions, TagActions } from 'local-flux';
 import { DataLoader } from 'shared-components';
 import ProfileDetails from './components/profile-details';
 import ProfileActivity from './components/profile-activity';
@@ -67,9 +67,12 @@ class ProfileDetailsContainer extends Component {
             votePending, followPending, fetchingFollowers, fetchingFollowing,
             fetchingProfileEntries, loggedProfileData, isFollowerPending, blockNr,
             savedEntriesIds, moreProfileEntries, fetchingMoreProfileEntries, fetchingMoreFollowers,
-            fetchingMoreFollowing, sendingTip, tagActions } = this.props;
+            fetchingMoreFollowing, sendingTip, tagActions, settingsActions,
+            mutedList } = this.props;
         const isFollower = profileData &&
             loggedProfileData.getIn(['isFollower', profileData.get('akashaId')]);
+        const isMuted = profileData && mutedList &&
+            mutedList.indexOf(profileData.get('profile')) !== -1;
 
         return (<DataLoader
           flag={!profileData}
@@ -79,9 +82,12 @@ class ProfileDetailsContainer extends Component {
         >
           <div style={{ display: 'flex', height: '100%' }}>
             <ProfileDetails
+              disableNotifFrom={settingsActions.disableNotifFrom}
+              enableNotifFrom={settingsActions.enableNotifFrom}
               followPending={followPending}
               followProfile={this.followProfile}
               isFollower={isFollower}
+              isMuted={isMuted}
               loggedAddress={loggedProfileData.get('profile')}
               profileData={profileData}
               sendingTip={sendingTip}
@@ -107,6 +113,7 @@ class ProfileDetailsContainer extends Component {
               fetchingMoreProfileEntries={fetchingMoreProfileEntries}
               fetchingProfileEntries={fetchingProfileEntries}
               moreProfileEntries={moreProfileEntries}
+              mutedList={mutedList}
               followPending={followPending}
               followProfile={this.followProfile}
               unfollowProfile={this.unfollowProfile}
@@ -114,6 +121,7 @@ class ProfileDetailsContainer extends Component {
               selectTag={tagActions.saveTag}
               sendingTip={sendingTip}
               sendTip={this.sendTip}
+              settingsActions={settingsActions}
               showPanel={appActions.showPanel}
               isFollowerPending={isFollowerPending}
               votePending={votePending}
@@ -137,6 +145,7 @@ ProfileDetailsContainer.propTypes = {
     isFollowerPending: PropTypes.bool,
     loggedProfileData: PropTypes.shape(),
     moreProfileEntries: PropTypes.bool,
+    mutedList: PropTypes.arrayOf(PropTypes.string),
     params: PropTypes.shape(),
     profileActions: PropTypes.shape(),
     profileData: PropTypes.shape(),
@@ -144,6 +153,7 @@ ProfileDetailsContainer.propTypes = {
     profiles: PropTypes.shape(),
     savedEntriesIds: PropTypes.shape(),
     sendingTip: PropTypes.shape(),
+    settingsActions: PropTypes.shape(),
     tagActions: PropTypes.shape(),
     votePending: PropTypes.shape()
 };
@@ -173,6 +183,7 @@ function mapStateToProps (state, ownProps) {
             profile.get('profile') === state.profileState.getIn(['loggedProfile', 'profile'])),
         loginRequested: state.profileState.getIn(['flags', 'loginRequested']),
         moreProfileEntries: state.entryState.get('moreProfileEntries'),
+        mutedList: state.settingsState.get('userSettings').notifications.muted,
         profileData,
         profileEntries: state.entryState.get('entries').filter(entry =>
             entry.get('type') === 'profileEntry'
@@ -190,6 +201,7 @@ function mapDispatchToProps (dispatch) {
         appActions: new AppActions(dispatch),
         entryActions: new EntryActions(dispatch),
         profileActions: new ProfileActions(dispatch),
+        settingsActions: new SettingsActions(dispatch),
         tagActions: new TagActions(dispatch)
     };
 }

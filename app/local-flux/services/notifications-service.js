@@ -10,8 +10,8 @@ class NotificationsService extends BaseService {
     setFilter ({
         profiles = [],
         blockNr = 0,
-        onError = () => {
-        },
+        exclude = [],
+        onError = () => { },
         onSuccess
     }) {
         this.openChannel({
@@ -24,7 +24,7 @@ class NotificationsService extends BaseService {
                 Channel.client.notifications.setFilter.channelName
             )
         }, () => {
-            Channel.server.notifications.setFilter.send({ profiles, blockNr });
+            Channel.server.notifications.setFilter.send({ profiles, blockNr, exclude });
         });
     }
 
@@ -40,6 +40,36 @@ class NotificationsService extends BaseService {
             )
         }, () => {
             Channel.server.notifications.feed.send({ stop });
+        });
+    }
+
+    includeFilter ({ profiles, onError, onSuccess }) {
+        this.openChannel({
+            clientManager: this.clientManager,
+            serverChannel: Channel.server.notifications.includeFilter,
+            clientChannel: Channel.client.notifications.includeFilter,
+            listenerCb: this.createListener(
+                onError,
+                onSuccess,
+                Channel.client.notifications.includeFilter.channelName
+            )
+        }, () => {
+            Channel.server.notifications.includeFilter.send({ profiles });
+        });
+    }
+
+    excludeFilter ({ profiles, onError, onSuccess }) {
+        this.openChannel({
+            clientManager: this.clientManager,
+            serverChannel: Channel.server.notifications.excludeFilter,
+            clientChannel: Channel.client.notifications.excludeFilter,
+            listenerCb: this.createListener(
+                onError,
+                onSuccess,
+                Channel.client.notifications.excludeFilter.channelName
+            )
+        }, () => {
+            Channel.server.notifications.excludeFilter.send({ profiles });
         });
     }
 

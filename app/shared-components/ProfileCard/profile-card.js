@@ -1,16 +1,36 @@
 import React, { Component, PropTypes } from 'react';
 import { injectIntl, FormattedMessage } from 'react-intl';
+import ReactTooltip from 'react-tooltip';
 import { FlatButton, IconButton, Paper, SvgIcon } from 'material-ui';
+import NotificationsActiveIcon from 'material-ui/svg-icons/social/notifications-active';
+import NotificationsDisabledIcon from 'material-ui/svg-icons/social/notifications-off';
 import { Avatar } from 'shared-components';
-import { UserDonate } from 'shared-components/svg';
+import { UserDonate, UserMore } from 'shared-components/svg';
 import { generalMessages, profileMessages } from 'locale-data/messages';
 import { getInitials } from 'utils/dataModule';
 
 class ProfileCard extends Component {
-
+    state = {
+        actionsExpanded: false
+    };
     componentWillMount () {
         const { isFollowerAction, loggedProfileData, profileData } = this.props;
         isFollowerAction(loggedProfileData.get('akashaId'), profileData.akashaId);
+    }
+
+    shouldComponentUpdate (nextProps, nextState) {
+        const { followPending, isFollowerPending, isMuted,
+            sendTipPending } = this.props;
+        const { actionsExpanded } = this.state;
+        if (followPending !== nextProps.followPending ||
+            isFollowerPending !== nextProps.isFollowerPending ||
+            isMuted !== nextProps.isMuted ||
+            sendTipPending !== nextProps.sendTipPending ||
+            actionsExpanded !== nextState.actionsExpanded
+        ) {
+            return true;
+        }
+        return false;
     }
 
     selectProfile = () => {
@@ -28,9 +48,85 @@ class ProfileCard extends Component {
         sendTip(profileData);
     }
 
+    toggleNotifications = () => {
+        const { disableNotifFrom, enableNotifFrom, isMuted, profileData } = this.props;
+        const { akashaId, profile } = profileData;
+        if (isMuted) {
+            enableNotifFrom(akashaId, profile);
+        } else {
+            disableNotifFrom(akashaId, profile);
+        }
+    };
+
+    toggleMoreActions = () => {
+        this.setState({
+            actionsExpanded: !this.state.actionsExpanded
+        }, () => ReactTooltip.rebuild());
+    };
+
+    renderHeaderActions = () => {
+        const { intl, isMuted, loggedProfileData, profileData, sendTipPending } = this.props;
+        const isFollower = loggedProfileData.getIn(['isFollower', profileData.akashaId]);
+        return (
+          <div style={{ position: 'absolute', top: 10, right: 10 }}>
+            <IconButton
+              onClick={this.toggleMoreActions}
+              iconStyle={{ width: '20px', height: '20px' }}
+              style={{ width: '32px', height: '32px', padding: '4px', marginBottom: '5px' }}
+            >
+              <SvgIcon viewBox="0 0 18 18">
+                <UserMore />
+              </SvgIcon>
+            </IconButton>
+            {this.state.actionsExpanded &&
+              <div>
+                <div
+                  data-tip={sendTipPending ?
+                      intl.formatMessage(profileMessages.sendingTip) :
+                      intl.formatMessage(profileMessages.sendTip)
+                  }
+                >
+                  <IconButton
+                    onClick={this.sendTip}
+                    disabled={sendTipPending}
+                    iconStyle={{ width: '20px', height: '20px' }}
+                    style={{ width: '32px', height: '32px', padding: '4px', margin: '5px 0' }}
+                  >
+                    <SvgIcon viewBox="0 0 18 18">
+                      <UserDonate />
+                    </SvgIcon>
+                  </IconButton>
+                </div>
+                {isFollower &&
+                  <div
+                    data-tip={isMuted ?
+                        intl.formatMessage(profileMessages.enableNotifications) :
+                        intl.formatMessage(profileMessages.disableNotifications)
+                    }
+                  >
+                    <IconButton
+                      onClick={this.toggleNotifications}
+                      iconStyle={{ width: '20px', height: '20px' }}
+                      style={{ width: '32px', height: '32px', padding: '4px', margin: '5px 0' }}
+                    >
+                      <SvgIcon viewBox="0 0 18 18">
+                        {isMuted ?
+                          <NotificationsActiveIcon /> :
+                          <NotificationsDisabledIcon />
+                        }
+                      </SvgIcon>
+                    </IconButton>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        );
+    };
+
     render () {
         const { followProfile, unfollowProfile, followPending, isFollowerPending, profileData,
-            loggedProfileData, intl, sendTipPending } = this.props;
+            loggedProfileData, intl } = this.props;
         if (!profileData) {
             return null;
         }
@@ -97,26 +193,7 @@ class ProfileCard extends Component {
                 flexDirection: 'column'
             }}
           >
-            {!isOwnProfile &&
-              <div
-                className="hidden_action"
-                data-tip={sendTipPending ?
-                    'Sending tip ...' :
-                    'Send tip'
-                }
-                style={{ position: 'absolute', top: 0, right: 0 }}
-              >
-                <IconButton
-                  style={{ marginLeft: '10px' }}
-                  onClick={this.sendTip}
-                  disabled={sendTipPending}
-                >
-                  <SvgIcon viewBox="0 0 18 18">
-                    <UserDonate />
-                  </SvgIcon>
-                </IconButton>
-              </div>
-            }
+            {!isOwnProfile && this.renderHeaderActions()}
             <div style={{ display: 'flex', justifyContent: 'center', padding: '15px' }}>
               <button
                 style={{
@@ -178,12 +255,15 @@ class ProfileCard extends Component {
 
 ProfileCard.propTypes = {
     profileData: PropTypes.shape(),
+    disableNotifFrom: PropTypes.func,
+    enableNotifFrom: PropTypes.func,
     loggedProfileData: PropTypes.shape(),
     followProfile: PropTypes.func,
     unfollowProfile: PropTypes.func,
     followPending: PropTypes.bool,
     isFollowerPending: PropTypes.bool,
     isFollowerAction: PropTypes.func.isRequired,
+    isMuted: PropTypes.bool,
     selectProfile: PropTypes.func.isRequired,
     sendTipPending: PropTypes.bool,
     sendTip: PropTypes.func.isRequired,

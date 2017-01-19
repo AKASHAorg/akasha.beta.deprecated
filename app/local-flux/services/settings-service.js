@@ -49,10 +49,62 @@ class SettingsService extends BaseService {
     }
     getUserSettings = ({ akashaId, onSuccess, onError }) => {
         settingsDB.user.where('akashaId').equals(akashaId).toArray()
-            .then(data => {
+            .then((data) => {
                 onSuccess(data[0]);
             })
             .catch(reason => onError(reason));
+    };
+
+    disableNotifFrom = ({ loggedAkashaId, akashaId, profileAddress, onError, onSuccess }) => {
+        settingsDB.user
+            .where('akashaId')
+            .equals(loggedAkashaId)
+            .toArray()
+            .then((data) => {
+                if (!data[0]) {
+                    settingsDB.user
+                        .put({ loggedAkashaId, notifications: { muted: [profileAddress] } })
+                        .then(updated => updated ? onSuccess(profileAddress) : onError())
+                        .catch(reason => onError(reason, akashaId));
+                    return;
+                }
+                const mutedList = (data[0].notifications && data[0].notifications.muted) || [];
+                if (mutedList.findIndex(muted => muted === profileAddress) !== -1) {
+                    onError({}, akashaId);
+                } else {
+                    const newMutedList = [...mutedList, profileAddress];
+                    settingsDB.user
+                        .update(loggedAkashaId, { notifications: { muted: newMutedList } })
+                        .then(updated => updated ? onSuccess(akashaId) : onError())
+                        .catch(reason => onError(reason, akashaId));
+                }
+            })
+            .catch(reason => onError(reason, akashaId));
+    };
+
+    enableNotifFrom = ({ loggedAkashaId, akashaId, profileAddress, onError, onSuccess }) => {
+        settingsDB.user
+            .where('akashaId')
+            .equals(loggedAkashaId)
+            .toArray()
+            .then((data) => {
+                if (!data[0] || !data[0].notifications || !data[0].notifications.muted) {
+                    onError({}, akashaId);
+                    return;
+                }
+                const mutedList = data[0].notifications.muted || [];
+                const index = mutedList.findIndex(muted => muted === profileAddress);
+                if (index === -1) {
+                    onError({}, akashaId);
+                } else {
+                    mutedList.splice(index, 1);
+                    settingsDB.user
+                        .update(loggedAkashaId, { notifications: { muted: mutedList } })
+                        .then(updated => updated ? onSuccess(akashaId) : onError())
+                        .catch(reason => onError(reason, akashaId));
+                }
+            })
+            .catch(reason => onError(reason, akashaId));
     };
 }
 

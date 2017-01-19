@@ -124,6 +124,9 @@ html, body {
     display: flex !important;
     align-items: center !important;
     z-index: 2000 !important;
+    max-width: 500px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 
     &.place-top {
         &::after {

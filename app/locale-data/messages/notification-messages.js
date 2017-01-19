@@ -170,6 +170,26 @@ const notificationMessages = defineMessages({
         id: 'app.notification.sendTipError',
         description: 'Notification to be displayed when tip transaction was mined but was unsuccessfull',
         defaultMessage: 'Tipping {akashaId} has failed'
+    },
+    notificationsEnabledSuccess: {
+        id: 'app.notification.notificationsEnabledSuccess',
+        description: 'message to be displayed when notifications were enabled for a specific user',
+        defaultMessage: 'Notifications enabled for {akashaId}'
+    },
+    notificationsEnabledError: {
+        id: 'app.notification.notificationsEnabledError',
+        description: 'message to be displayed when enabling notifications for a specific user has failed',
+        defaultMessage: 'Enabling notifications for {akashaId} has failed'
+    },
+    notificationsDisabledSuccess: {
+        id: 'app.notification.notificationsDisabledSuccess',
+        description: 'message to be displayed when notifications were disabled for a specific user',
+        defaultMessage: 'Notifications disabled for {akashaId}'
+    },
+    notificationsDisabledError: {
+        id: 'app.notification.notificationsDisabledError',
+        description: 'message to be displayed when disabling notifications for a specific user has failed',
+        defaultMessage: 'Disabling notifications for {akashaId} has failed'
     }
 });
 export { notificationMessages };

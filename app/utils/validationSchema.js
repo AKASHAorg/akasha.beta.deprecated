@@ -11,8 +11,8 @@ class UserValidation {
         const { formatMessage } = this.intl;
 
         return strategy.createSchema({
-            firstName: 'required|min:3',
-            lastName: 'required|min:3',
+            firstName: 'required|min:3|max:32',
+            lastName: 'max:32',
             /**
              * regex: /^(?:[a-zA-Z0-9]+(?:.(?!$))?)+$/
              *  - allow alphanumeric

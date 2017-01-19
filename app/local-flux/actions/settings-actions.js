@@ -1,3 +1,4 @@
+import { AppActions, NotificationsActions } from 'local-flux';
 import { settingsActionCreators } from './action-creators';
 import { SettingsService } from '../services';
 
@@ -9,6 +10,8 @@ class SettingsActions {
             return settingsActions;
         }
         this.settingsService = new SettingsService();
+        this.appActions = new AppActions(dispatch);
+        this.notificationActions = new NotificationsActions(dispatch);
         this.dispatch = dispatch;
         settingsActions = this;
     }
@@ -97,6 +100,52 @@ class SettingsActions {
             akashaId,
             onSuccess: data => this.dispatch(settingsActionCreators.getUserSettingsSuccess(data)),
             onError: error => this.dispatch(settingsActionCreators.getUserSettingsError(error))
+        });
+
+    disableNotifFrom = (akashaId, profileAddress) =>
+        this.dispatch((dispatch, getState) => {
+            this.notificationActions.excludeFilter([profileAddress]);
+            const loggedAkashaId = getState().profileState.getIn(['loggedProfile', 'akashaId']);
+            this.settingsService.disableNotifFrom({
+                loggedAkashaId,
+                akashaId,
+                profileAddress,
+                onSuccess: (data) => {
+                    this.getUserSettings(loggedAkashaId);
+                    this.appActions.showNotification({
+                        id: 'notificationsDisabledSuccess',
+                        values: { akashaId: data },
+                        duration: 3000
+                    });
+                },
+                onError: (error, id) => this.appActions.showNotification({
+                    id: 'notificationsDisabledError',
+                    values: { akashaId: id }
+                })
+            });
+        });
+
+    enableNotifFrom = (akashaId, profileAddress) =>
+        this.dispatch((dispatch, getState) => {
+            this.notificationActions.includeFilter([profileAddress]);
+            const loggedAkashaId = getState().profileState.getIn(['loggedProfile', 'akashaId']);
+            this.settingsService.enableNotifFrom({
+                loggedAkashaId,
+                akashaId,
+                profileAddress,
+                onSuccess: (data) => {
+                    this.getUserSettings(loggedAkashaId);
+                    this.appActions.showNotification({
+                        id: 'notificationsEnabledSuccess',
+                        values: { akashaId: data },
+                        duration: 3000
+                    });
+                },
+                onError: (error, id) => this.appActions.showNotification({
+                    id: 'notificationsEnabledError',
+                    values: { akashaId: id }
+                })
+            });
         });
 }
 

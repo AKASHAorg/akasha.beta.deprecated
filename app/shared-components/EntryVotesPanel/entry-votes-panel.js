@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import ReactTooltip from 'react-tooltip';
 import { Dialog, List, ListItem, SvgIcon } from 'material-ui';
 import { EntryDownvote, EntryUpvote, ToolbarVotes } from 'shared-components/svg';
 
@@ -20,6 +21,7 @@ class EntryVotesPanel extends Component {
     componentDidMount () {
         const { entryId } = this.props;
         serverChannel.send({ entryId });
+        ReactTooltip.rebuild();
     }
 
     componentWillUnmount () {
@@ -46,11 +48,12 @@ class EntryVotesPanel extends Component {
             contentStyle={{ maxWidth: 300 }}
             title={
               <div style={{ display: 'flex', alignItems: 'center', paddingLeft: '40px' }}>
-                <SvgIcon viewBox="0 0 16 16" style={{ marginRight: '14px' }}>
+                <SvgIcon viewBox="0 0 16 16" style={{ marginRight: '14px', flex: '0 0 auto' }}>
                   <ToolbarVotes />
                 </SvgIcon>
                 <span
                   style={{ display: 'inline-block', textOverflow: 'ellipsis', overflowX: 'hidden' }}
+                  data-tip={entryTitle && entryTitle.slice(0, 60)}
                 >
                   {entryTitle}
                 </span>
@@ -73,14 +76,14 @@ class EntryVotesPanel extends Component {
                             width: '20px',
                             height: '20px',
                             margin: '14px',
-                            fill: parseInt(vote.score) < 0 ?
+                            fill: parseInt(vote.score, 10) < 0 ?
                                 palette.accent1Color :
                                 palette.accent3Color
                         }}
                       >
-                        {parseInt(vote.score) < 0 ?
-                            <EntryDownvote /> :
-                            <EntryUpvote />
+                        {parseInt(vote.score, 10) < 0 ?
+                          <EntryDownvote /> :
+                          <EntryUpvote />
                         }
                       </SvgIcon>
                     }
