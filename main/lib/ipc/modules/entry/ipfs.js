@@ -10,8 +10,9 @@ exports.max_size = 200 * 1000;
 exports.EXCERPT = 'excerpt';
 exports.FEATURED_IMAGE = 'featuredImage';
 exports.DRAFT_PART = 'draft-part';
+exports.PREVIOUS_VERSION = 'previous-version';
 class IpfsEntry {
-    create(content, tags) {
+    create(content, tags, previous) {
         const ipfsApiRequests = [];
         this.entryLinks = [];
         this.draft = Object.assign({}, content.draft);
@@ -30,6 +31,13 @@ class IpfsEntry {
         ipfsApiRequests.push(ipfs_connector_1.IpfsConnector.getInstance().api
             .add(content.excerpt)
             .then((obj) => this.entryLinks.push(Object.assign({}, obj, { name: exports.EXCERPT }))));
+        if (previous && previous.hash) {
+            ipfs_connector_1.IpfsConnector.getInstance().api
+                .getStats(previous.hash)
+                .then((stats) => {
+                this.entryLinks.push({ hash: stats.Hash, size: stats.CumulativeSize, name: exports.PREVIOUS_VERSION });
+            });
+        }
         return Promise.all(ipfsApiRequests)
             .then(() => this._uploadMediaDraft())
             .then((parts) => {
@@ -39,8 +47,22 @@ class IpfsEntry {
                 licence: this.licence,
                 tags: this.tags,
                 title: this.title,
-                wordCount: this.wordCount
+                wordCount: this.wordCount,
+                version: (previous && previous.hasOwnProperty('version')) ? ++previous.version : 0
             }, this.entryLinks).then((node) => node.hash);
+        });
+    }
+    edit(content, tags, previousHash) {
+        return ipfs_connector_1.IpfsConnector.getInstance().api
+            .get(previousHash)
+            .then((data) => {
+            if (content.hasOwnProperty('version')) {
+                delete content.version;
+            }
+            return this.create(content, tags, {
+                hash: previousHash,
+                version: (data.version) ? data.version : 0
+            });
         });
     }
     _filterForImages() {

@@ -9,11 +9,12 @@ import { constructed as contracts } from '../../contracts/index';
  * @type {Function}
  */
 const execute = Promise.coroutine(function*(data: EntryCreateRequest) {
-    const ipfsEntry = new IpfsEntry();
+    let ipfsEntry = new IpfsEntry();
     data.tags = uniq(data.tags);
     const hash = yield ipfsEntry.create(data.content, data.tags);
     const txData = yield contracts.instance.entries.publish(hash, data.tags, data.gas);
     const tx = yield userModule.auth.signData(txData, data.token);
+    ipfsEntry = null;
     return { tx };
 });
 

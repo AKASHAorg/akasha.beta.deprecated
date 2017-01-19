@@ -10,6 +10,7 @@ export const max_size = 200 * 1000;
 export const EXCERPT = 'excerpt';
 export const FEATURED_IMAGE = 'featuredImage';
 export const DRAFT_PART = 'draft-part';
+export const PREVIOUS_VERSION = 'previous-version';
 
 class IpfsEntry {
 
@@ -25,9 +26,10 @@ class IpfsEntry {
      *
      * @param content
      * @param tags
-     * @returns {any}
+     * @param previous
+     * @returns {Bluebird<U>}
      */
-    create(content: any, tags: any[]) {
+    create(content: any, tags: any[], previous?: { hash: string, version: number }) {
         const ipfsApiRequests = [];
         this.entryLinks = [];
         this.draft = Object.assign({}, content.draft);
@@ -50,6 +52,14 @@ class IpfsEntry {
                 .add(content.excerpt)
                 .then((obj) => this.entryLinks.push(Object.assign({}, obj, { name: EXCERPT }))));
 
+        if (previous && previous.hash) {
+            IpfsConnector.getInstance().api
+                .getStats(previous.hash)
+                .then((stats) => {
+                    this.entryLinks.push({ hash: stats.Hash, size: stats.CumulativeSize, name: PREVIOUS_VERSION });
+                });
+        }
+
         return Promise.all(ipfsApiRequests)
             .then(() => this._uploadMediaDraft())
             .then((parts) => {
@@ -59,8 +69,34 @@ class IpfsEntry {
                         licence: this.licence,
                         tags: this.tags,
                         title: this.title,
-                        wordCount: this.wordCount
+                        wordCount: this.wordCount,
+                        version: (previous && previous.hasOwnProperty('version')) ? ++previous.version : 0
                     }, this.entryLinks).then((node) => node.hash)
+            });
+    }
+
+    /**
+     *
+     * @param content
+     * @param tags
+     * @param previousHash
+     */
+    edit(content: any, tags: any[], previousHash) {
+        return IpfsConnector.getInstance().api
+            .get(previousHash)
+            .then((data) => {
+                if (content.hasOwnProperty('version')) {
+                    delete content.version;
+                }
+
+                return this.create(
+                    content,
+                    tags,
+                    {
+                        hash: previousHash,
+                        version: (data.version) ? data.version : 0
+                    }
+                );
             });
     }
 

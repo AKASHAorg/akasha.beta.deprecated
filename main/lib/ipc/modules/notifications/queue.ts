@@ -2,7 +2,7 @@ class Notifications {
     public queue = [];
     private _timeout;
     private COLLECT_TIME = 3000;
-    private BATCH_SIZE = 8;
+    private BATCH_SIZE = 3;
 
     public push(cb: any, notification?: any) {
         if (this._timeout) {

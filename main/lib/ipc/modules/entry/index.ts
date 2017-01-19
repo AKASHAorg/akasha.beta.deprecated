@@ -20,6 +20,7 @@ import getEntriesStream from './entry-stream';
 import getEntryBalance from './get-entry-balance';
 import getEntryList from './get-entry-list';
 import runner from '../pinner/index';
+import editEntry from './edit-entry';
 
 export default [
     entryCountProfile,
@@ -43,5 +44,6 @@ export default [
     isActive,
     getEntryBalance,
     getEntryList,
+    editEntry,
     runner[0]
 ]

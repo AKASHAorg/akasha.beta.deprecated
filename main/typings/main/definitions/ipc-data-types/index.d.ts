@@ -521,6 +521,10 @@ interface EntryCreateRequest extends AuthRequest {
     tags: string[];
 }
 
+interface EntryEditRequest extends EntryCreateRequest{
+    entryId: string;
+}
+
 interface EntryCreateResponse extends MainResponse {
     data: {
         tx: string;
