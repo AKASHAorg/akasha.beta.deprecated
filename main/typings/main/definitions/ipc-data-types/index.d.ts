@@ -628,6 +628,7 @@ interface EntriesOfResponse extends MainResponse {
 interface EntryGetRequest {
     entryId: string;
     full?: boolean;
+    version?: number;
 }
 
 interface EntryGetResponse extends MainResponse {

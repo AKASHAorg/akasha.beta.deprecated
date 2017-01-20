@@ -1,6 +1,6 @@
 import { IpfsConnector } from '@akashaproject/ipfs-connector';
 import * as Promise from 'bluebird';
-import { isEmpty } from 'ramda';
+import { isEmpty, is } from 'ramda';
 import { entries } from '../models/records';
 
 export const DRAFT_BLOCKS = 'blocks';
@@ -178,7 +178,7 @@ class IpfsEntry {
  * @returns {any}
  */
 export const getShortContent = Promise.coroutine(function*(hash) {
-    if (entries.getShort(hash)) {
+    if (entries.hasShort(hash)) {
         return Promise.resolve(entries.getShort(hash));
     }
     const response = {
@@ -200,25 +200,56 @@ export const getShortContent = Promise.coroutine(function*(hash) {
     return data;
 });
 
+/**
+ *
+ * @type {Function}
+ */
+const findVersion = Promise.coroutine(function*(hash: string, version: number) {
+    const root = yield IpfsConnector.getInstance().api.get(hash);
+    if (!root.hasOwnProperty('version')) {
+        throw new Error('Cannot find version ' + version);
+    }
+
+    if (root.version === version) {
+        return hash;
+    }
+    const depth = root.version - version;
+    if (depth < 0) {
+        throw new Error('This version doesn\'t exist ' + version);
+    }
+    const linkPath = [];
+    for (let i = 0; i < depth; i++) {
+        linkPath.push(PREVIOUS_VERSION);
+    }
+    const seek = yield IpfsConnector.getInstance().api.findLinkPath(hash, linkPath);
+    return seek[0].multihash;
+});
 
 /**
  *
  * @param hash
  * @returns {any}
  */
-export const getFullContent = Promise.coroutine(function*(hash) {
-    if (entries.getFull(hash)) {
-        return Promise.resolve(entries.getFull(hash));
+export const getFullContent = Promise.coroutine(function*(hash: string, version?: number) {
+    const indexedVersion = (is(Number, version)) ? `${hash}/v/${version}` : hash;
+
+    if (entries.hasFull(indexedVersion)) {
+        return Promise.resolve(entries.getFull(indexedVersion));
     }
     let tmp;
     let draft;
-    const root = yield IpfsConnector.getInstance().api.get(hash);
+    let rootHash = hash;
+    if (is(Number, version)) {
+        rootHash = yield findVersion(hash, version);
+    }
+
+    const root = yield IpfsConnector.getInstance().api.get(rootHash);
     const parts = [];
     const draftParts = [];
     for (let i = 0; i < root.draftParts; i++) {
         parts.push(DRAFT_PART + i);
     }
-    const extraData = yield IpfsConnector.getInstance().api.findLinks(hash, parts);
+    const extraData = yield IpfsConnector.getInstance().api.findLinks(rootHash, parts);
     for (let y = 0; y < extraData.length; y++) {
         tmp = yield IpfsConnector.getInstance().api.getObject(extraData[y].multihash, true);
         draftParts.push(tmp);
@@ -236,9 +267,9 @@ export const getFullContent = Promise.coroutine(function*(hash) {
     } catch (err) {
         draft = null;
     }
-    const shortContent = yield getShortContent(hash);
+    const shortContent = yield getShortContent(rootHash);
     const data = Object.assign({}, root, shortContent, { draft: draft });
-    entries.setFull(hash, data);
+    entries.setFull(indexedVersion, data);
     tmp = null;
     draft = null;
     return data;

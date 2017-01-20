@@ -122,7 +122,7 @@ class IpfsEntry {
     }
 }
 exports.getShortContent = Promise.coroutine(function* (hash) {
-    if (records_1.entries.getShort(hash)) {
+    if (records_1.entries.hasShort(hash)) {
         return Promise.resolve(records_1.entries.getShort(hash));
     }
     const response = {
@@ -143,19 +143,43 @@ exports.getShortContent = Promise.coroutine(function* (hash) {
     records_1.entries.setShort(hash, data);
     return data;
 });
-exports.getFullContent = Promise.coroutine(function* (hash) {
-    if (records_1.entries.getFull(hash)) {
-        return Promise.resolve(records_1.entries.getFull(hash));
+const findVersion = Promise.coroutine(function* (hash, version) {
+    const root = yield ipfs_connector_1.IpfsConnector.getInstance().api.get(hash);
+    if (!root.hasOwnProperty('version')) {
+        throw new Error('Cannot find version ' + version);
+    }
+    if (root.version === version) {
+        return hash;
+    }
+    const depth = root.version - version;
+    if (depth < 0) {
+        throw new Error('This version doesn\'t exist ' + version);
+    }
+    const linkPath = [];
+    for (let i = 0; i < depth; i++) {
+        linkPath.push(exports.PREVIOUS_VERSION);
+    }
+    const seek = yield ipfs_connector_1.IpfsConnector.getInstance().api.findLinkPath(hash, linkPath);
+    return seek[0].multihash;
+});
+exports.getFullContent = Promise.coroutine(function* (hash, version) {
+    const indexedVersion = (ramda_1.is(Number, version)) ? `${hash}/v/${version}` : hash;
+    if (records_1.entries.hasFull(indexedVersion)) {
+        return Promise.resolve(records_1.entries.getFull(indexedVersion));
     }
     let tmp;
     let draft;
-    const root = yield ipfs_connector_1.IpfsConnector.getInstance().api.get(hash);
+    let rootHash = hash;
+    if (ramda_1.is(Number, version)) {
+        rootHash = yield findVersion(hash, version);
+    }
+    const root = yield ipfs_connector_1.IpfsConnector.getInstance().api.get(rootHash);
     const parts = [];
     const draftParts = [];
     for (let i = 0; i < root.draftParts; i++) {
         parts.push(exports.DRAFT_PART + i);
     }
-    const extraData = yield ipfs_connector_1.IpfsConnector.getInstance().api.findLinks(hash, parts);
+    const extraData = yield ipfs_connector_1.IpfsConnector.getInstance().api.findLinks(rootHash, parts);
     for (let y = 0; y < extraData.length; y++) {
         tmp = yield ipfs_connector_1.IpfsConnector.getInstance().api.getObject(extraData[y].multihash, true);
         draftParts.push(tmp);
@@ -174,9 +198,9 @@ exports.getFullContent = Promise.coroutine(function* (hash) {
     catch (err) {
         draft = null;
     }
-    const shortContent = yield exports.getShortContent(hash);
+    const shortContent = yield exports.getShortContent(rootHash);
     const data = Object.assign({}, root, shortContent, { draft: draft });
-    records_1.entries.setFull(hash, data);
+    records_1.entries.setFull(indexedVersion, data);
     tmp = null;
     draft = null;
     return data;
