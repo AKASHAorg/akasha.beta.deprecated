@@ -61,13 +61,16 @@ class PublishEntryStatus extends React.Component {
     render () {
         const { drafts, params, draftErrors } = this.props;
         const draftToPublish = drafts.find(draft =>
-        draft.id === parseInt(params.draftId, 10));
-
+            draft.id === parseInt(params.draftId, 10));
+        const isUpdateAction = draftToPublish && !!draftToPublish.get('entryId');
+        const actionType = isUpdateAction ?
+            'Updating' :
+            'Publishing';
 
         return (
           <PanelContainer
             showBorder
-            title="Publishing entry"
+            title={isUpdateAction ? 'Updating entry' : 'Publishing entry'}
             actions={[
                 /* eslint-disable */
                 <RaisedButton key="back-to-stream" label="Back to Home" primary onClick={this._handleReturn} />
@@ -92,7 +95,7 @@ class PublishEntryStatus extends React.Component {
                     <CircularProgress size={80} />
                   </div>
                   <div className="col-xs-12 center-xs">
-                    <h3>Publishing &quot;{draftToPublish.getIn(['content', 'title'])}&quot;</h3>
+                    <h3>{actionType} &quot;{draftToPublish.getIn(['content', 'title'])}&quot;</h3>
                     <p>Current Action: {this._getCurrentAction()}</p>
                     <p>This entry is being published. You will be redirected to home in {REDIRECT_TIMEOUT} seconds.</p>
                     {(draftErrors.size > 0) &&
@@ -111,9 +114,9 @@ class PublishEntryStatus extends React.Component {
     }
 }
 PublishEntryStatus.propTypes = {
-    params: React.PropTypes.shape(),
     drafts: React.PropTypes.shape(),
     draftErrors: React.PropTypes.shape(),
+    params: React.PropTypes.shape(),
     pendingActions: React.PropTypes.shape(),
     selectedTag: React.PropTypes.string
 };

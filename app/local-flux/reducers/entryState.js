@@ -18,6 +18,7 @@ const EntryContent = Record({
     licence: {},
     tags: [],
     title: '',
+    version: null,
     wordCount: null
 });
 
@@ -346,8 +347,13 @@ const entryState = createReducer(initialState, {
     [types.GET_ENTRY_SUCCESS]: (state, { data, flags }) => {
         const entryIndex = state.get('entries').findIndex(entry =>
             entry.get('entryId') === data.entryId);
+        if (entryIndex === -1) {
+            return state.merge({
+                flags: state.get('flags').merge(flags)
+            });
+        }
         return state.merge({
-            entries: state.get('entries').mergeIn([entryIndex], data),
+            entries: state.get('entries').mergeDeepIn([entryIndex], { content: data }),
             flags: state.get('flags').merge(flags)
         });
     },

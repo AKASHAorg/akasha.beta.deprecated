@@ -86,6 +86,16 @@ const confirmMessages = defineMessages({
         description: 'confirm dialog message for entry publishing',
         defaultMessage: 'Are you sure you want to publish "{title}"?'
     },
+    publishNewEntryVersionTitle: {
+        id: 'app.confirm.publishNewEntryVersionTitle',
+        description: 'confirm dialog title for publishing new entry version',
+        defaultMessage: 'Update entry'
+    },
+    publishNewEntryVersion: {
+        id: 'app.confirm.publishNewEntryVersion',
+        description: 'confirm dialog message for publishing new entry version',
+        defaultMessage: 'Are you sure you want to update "{title}"?'
+    },
     upvoteWeightDisclaimer: {
         id: 'app.confirm.upvoteWeightDisclaimer',
         description: 'disclaimer for choosing an entry upvote weight',
