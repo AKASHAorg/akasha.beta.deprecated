@@ -23,11 +23,17 @@ class Entries {
     getFull(hash) {
         return this._entries.get(`${this.FULL_PREFIX}${hash}`);
     }
+    hasFull(hash) {
+        return this._entries.has(`${this.FULL_PREFIX}${hash}`);
+    }
     setShort(hash, data) {
         this._entries.set(`${this.SHORT_PREFIX}${hash}`, data);
     }
     getShort(hash) {
         return this._entries.get(`${this.SHORT_PREFIX}${hash}`);
+    }
+    hasShort(hash) {
+        return this._entries.has(`${this.SHORT_PREFIX}${hash}`);
     }
     get records() {
         return this._entries;

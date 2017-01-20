@@ -18,7 +18,7 @@ const execute = Promise.coroutine(function*(data: EntryGetRequest) {
         .timeout(SHORT_WAIT_TIME)
         .then((d) => d).catch((e) => null);
     const content = (data.full) ?
-        yield getFullContent(entryEth.ipfsHash)
+        yield getFullContent(entryEth.ipfsHash, data.version)
             .timeout(FULL_WAIT_TIME)
             .then((d) => d).catch((e) => null)
         :
