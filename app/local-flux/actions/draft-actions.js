@@ -108,21 +108,24 @@ class DraftActions {
             const token = loggedProfile.get('token');
             const flagOn = { draftId: draft.get('id'), value: true };
             const flagOff = { draftId: draft.get('id'), value: false };
+            const draftObj = draft.toJS();
             dispatch(draftActionCreators.publishDraft({ publishPending: flagOn }));
             this.entryService.publishEntry({
-                draftObj: draft.toJS(),
+                draftObj,
                 token,
                 gas,
                 onSuccess: (data) => {
                     this.transactionActions.listenForMinedTx();
                     this.transactionActions.addToQueue([{
                         tx: data.tx,
-                        type: 'publishEntry',
-                        draftId: draft.get('id')
+                        type: draftObj.entryId ? 'publishNewEntryVersion' : 'publishEntry',
+                        draftId: draftObj.id,
+                        entryId: draftObj.entryId
                     }]);
                     this.appActions.showNotification({
-                        id: 'publishingEntry',
-                        values: { title: draft.getIn(['content', 'title']) }
+                        id: draftObj.entryId ? 'publishingNewEntryVersion' : 'publishingEntry',
+                        values: { title: draftObj.content.title },
+                        duration: 3000
                     });
                     hashHistory.replace(`/${draft.get('akashaId')}/draft/${draft.get('id')}/publish-status`);
                 },
@@ -142,6 +145,17 @@ class DraftActions {
         }));
         this.appActions.showNotification({
             id: 'draftPublishedSuccessfully',
+            values: { title }
+        });
+        this.deleteDraft(draftId);
+    };
+
+    publishNewEntryVersionSuccess = (draftId, title) => {
+        this.dispatch(draftActionCreators.publishDraftSuccess({
+            publishPending: { draftId, value: false }
+        }));
+        this.appActions.showNotification({
+            id: 'newVersionPublishedSuccessfully',
             values: { title }
         });
         this.deleteDraft(draftId);

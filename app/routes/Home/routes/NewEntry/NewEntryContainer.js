@@ -1,18 +1,19 @@
 import { connect } from 'react-redux';
-import { AppActions, ProfileActions, DraftActions } from 'local-flux';
+import { AppActions, DraftActions, EntryActions, ProfileActions } from 'local-flux';
 import AddEntryPage from './components/add-entry';
 
 function mapStateToProps (state, ownProps) {
     return {
-        loggedProfile: state.profileState.get('loggedProfile'),
-        draftState: state.draftState,
+        defaultLicence: state.settingsState.getIn(['userSettings', 'defaultLicence']),
         drafts: state.draftState.get('drafts'),
-        savingDraft: state.draftState.getIn(['flags', 'savingDraft']),
-        errors: state.draftState.get('errors'),
+        draftsCount: state.draftState.get('draftsCount'),
         entriesCount: parseInt(state.profileState.get('profiles').find(prof =>
             prof.get('akashaId') === ownProps.params.akashaId).get('entriesCount'), 10),
-        draftsCount: state.draftState.get('draftsCount'),
-        defaultLicence: state.settingsState.getIn(['userSettings', 'defaultLicence']),
+        errors: state.draftState.get('errors'),
+        fetchingFullEntry: state.entryState.getIn(['flags', 'fetchingFullEntry']),
+        fullEntry: state.entryState.get('fullEntry'),
+        loggedProfile: state.profileState.get('loggedProfile'),
+        savingDraft: state.draftState.getIn(['flags', 'savingDraft']),
         selectedTag: state.tagState.get('selectedTag')
     };
 }
@@ -20,8 +21,9 @@ function mapStateToProps (state, ownProps) {
 function mapDispatchToProps (dispatch) {
     return {
         appActions: new AppActions(dispatch),
+        draftActions: new DraftActions(dispatch),
+        entryActions: new EntryActions(dispatch),
         profileActions: new ProfileActions(dispatch),
-        draftActions: new DraftActions(dispatch)
     };
 }
 

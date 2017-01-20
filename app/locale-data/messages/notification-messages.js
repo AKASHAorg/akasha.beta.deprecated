@@ -66,6 +66,16 @@ const notificationMessages = defineMessages({
         description: 'Notification for when entry is publishing',
         defaultMessage: 'Publishing "{title}".'
     },
+    publishingNewEntryVersion: {
+        id: 'app.notification.publishingNewEntryVersion',
+        description: 'Notification for when a new entry version is publishing',
+        defaultMessage: 'Updating "{title}".'
+    },
+    newVersionPublishedSuccessfully: {
+        id: 'app.notification.newVersionPublishedSuccessfully',
+        description: 'Notification for when a new version was published',
+        defaultMessage: 'Entry updated successfully'
+    },
     draftPublishedSuccessfully: {
         id: 'app.notification.draftPublishedSuccessfully',
         description: 'Notification for when draft successfully registered/published',
@@ -190,6 +200,6 @@ const notificationMessages = defineMessages({
         id: 'app.notification.notificationsDisabledError',
         description: 'message to be displayed when disabling notifications for a specific user has failed',
         defaultMessage: 'Disabling notifications for {akashaId} has failed'
-    }
+    },
 });
 export { notificationMessages };

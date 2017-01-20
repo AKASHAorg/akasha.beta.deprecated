@@ -102,6 +102,7 @@ class EntryPage extends Component {
         this.checkCommentsInterval = null;
         entryActions.unloadFullEntry();
         commentsActions.unloadComments(parseInt(params.entryId, 10));
+        ReactTooltip.hide();
     }
     onRequestNewestComments = () => {
         const { entry, comments } = this.props;
@@ -119,6 +120,7 @@ class EntryPage extends Component {
             editorBaseNode.scrollIntoView({ behavior: 'smooth' });
         });
     };
+
     showNewCommentsNotification = () => {
         this.setState({
             showNewCommentsNotification: true
@@ -239,6 +241,12 @@ class EntryPage extends Component {
             }
         }
     }
+    handleEdit = () => {
+        const { entry, loggedProfile } = this.props;
+        const { router } = this.context;
+        const akashaId = loggedProfile.get('akashaId');
+        router.push(`/${akashaId}/draft/new?editEntry=${entry.get('entryId')}`);
+    };
     selectProfile = () => {
         const { entry, params } = this.props;
         const profileAddress = entry.entryEth.publisher.profile;
@@ -330,7 +338,6 @@ class EntryPage extends Component {
             claim.entryId === entry.entryId);
         const voteEntryPending = votePending && votePending.find(vote =>
               vote.entryId === entry.entryId);
-        ReactTooltip.rebuild();
         return (
           <div className={`${styles.root} row`} >
             <div className="col-xs-12">
@@ -339,7 +346,10 @@ class EntryPage extends Component {
                   {entry.entryEth && entry.entryEth.publisher &&
                     <EntryPageHeader
                       blockNr={blockNr}
+                      handleEdit={this.handleEdit}
                       entryBlockNr={entry.entryEth.blockNr}
+                      isActive={entry.active}
+                      isOwnEntry={this.isOwnEntry()}
                       publisher={entry.entryEth.publisher}
                       publisherTitleShadow={publisherTitleShadow}
                       selectProfile={this.selectProfile}
