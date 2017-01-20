@@ -23,15 +23,15 @@ const DraftContent = Record({
     licence: new DraftLicence()
 });
 
-
 const Draft = Record({
     id: null,
     content: new DraftContent(),
     tags: new List(),
     akashaId: null,
+    entryId: null,
     tx: null,
     created_at: null,
-    updated_at: null
+    updated_at: null,
 });
 
 const initialState = fromJS({
@@ -42,11 +42,12 @@ const initialState = fromJS({
 });
 
 const createDraftRecord = (draftObj) => {
-    const { content = {}, tags, id, akashaId, tx, created_at, updated_at } = draftObj;
+    const { content = {}, tags, id, akashaId, entryId, tx, created_at, updated_at } = draftObj;
     const { title, excerpt, licence, draft, wordCount, featuredImage } = content;
     const createdDraft = new Draft({
         id,
         akashaId,
+        entryId,
         tx,
         created_at,
         updated_at,
@@ -197,7 +198,7 @@ const draftState = createReducer(initialState, {
             flags: state.get('flags').merge(flags)
         }),
 
-    [appTypes.CLEAN_STORE]: state => initialState,
+    [appTypes.CLEAN_STORE]: () => initialState,
 });
 
 export default draftState;

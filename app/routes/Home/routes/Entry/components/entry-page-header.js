@@ -2,11 +2,19 @@ import React, { Component, PropTypes } from 'react';
 import { injectIntl } from 'react-intl';
 import { CardHeader, IconButton, SvgIcon } from 'material-ui';
 import CloseIcon from 'material-ui/svg-icons/navigation/close';
+import EditIcon from 'material-ui/svg-icons/image/edit';
 import { Avatar } from 'shared-components';
 import { calculateReadingTime, getInitials } from 'utils/dataModule';
 import imageCreator from 'utils/imageUtils';// eslint-disable-line import/no-unresolved, import/extensions
 import { entryMessages } from 'locale-data/messages';
 import styles from './entry-page-header.scss';
+
+const buttonStyle= {
+    width: '40px',
+    height: '40px',
+    padding: '8px',
+    margin: '4px'
+};
 
 class EntryPageHeader extends Component {
 
@@ -75,7 +83,8 @@ class EntryPageHeader extends Component {
     }
 
     render () {
-        const { publisherTitleShadow, publisher, selectProfile } = this.props;
+        const { handleEdit, isActive, isOwnEntry, publisherTitleShadow, publisher,
+            selectProfile } = this.props;
         return (
           <div
             className={`${styles.entry_publisher_info}`}
@@ -84,8 +93,9 @@ class EntryPageHeader extends Component {
             <div
               className={`${styles.entry_publisher_info_inner}`}
               style={{
+                  position: 'relative',
                   boxShadow: publisherTitleShadow ?
-                      '0px 15px 28px -15px #DDD, 0 12px 15px -15px #000000' : 'none'
+                      '0px 15px 28px -15px #DDD, 0 12px 15px -15px #000000' : 'none',
               }}
             >
               <CardHeader
@@ -107,7 +117,7 @@ class EntryPageHeader extends Component {
                           whiteSpace: 'nowrap',
                           overflow: 'hidden',
                           textOverflow: 'ellipsis',
-                          maxWidth: '620px',
+                          maxWidth: '570px',
                           textAlign: 'left'
                       }}
                     >
@@ -116,14 +126,29 @@ class EntryPageHeader extends Component {
                   </button>
                 }
                 subtitle={this.renderSubtitle()}
-                style={{ width: '93%', display: 'inline-block' }}
               />
-              <div style={{ width: '7%', display: 'inline-block' }} >
-                <IconButton onClick={this.handleBackNavigation} >
-                  <SvgIcon>
-                    <CloseIcon />
-                  </SvgIcon>
-                </IconButton>
+              <div style={{ position: 'absolute', top: 0, right: 0, height: 80, display: 'flex', alignItems: 'center' }} >
+                {isOwnEntry &&
+                  <div
+                    data-tip={isActive ?
+                        'Edit entry' :
+                        'This entry can no longer be edited'
+                    }
+                  >
+                    <IconButton onClick={handleEdit} style={buttonStyle}>
+                      <SvgIcon>
+                        <EditIcon />
+                      </SvgIcon>
+                    </IconButton>
+                  </div>
+                }
+                <div data-tip="Close">
+                  <IconButton onClick={this.handleBackNavigation} style={buttonStyle}>
+                    <SvgIcon>
+                      <CloseIcon />
+                    </SvgIcon>
+                  </IconButton>
+                </div>
               </div>
             </div>
           </div>
@@ -133,7 +158,10 @@ class EntryPageHeader extends Component {
 
 EntryPageHeader.propTypes = {
     entryBlockNr: PropTypes.number,
+    handleEdit: PropTypes.func,
     intl: PropTypes.shape(),
+    isActive: PropTypes.bool,
+    isOwnEntry: PropTypes.bool,
     publisher: PropTypes.shape(),
     publisherTitleShadow: PropTypes.bool,
     selectProfile: PropTypes.func,

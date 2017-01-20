@@ -1,9 +1,14 @@
 import React, { Component, PropTypes } from 'react';
+import ReactTooltip from 'react-tooltip';
 import { connect } from 'react-redux';
 import { AppActions, EntryActions, TagActions } from 'local-flux';
 import { DataLoader, EntryCard } from 'shared-components';
 
 class EntryList extends Component {
+    componentWillUnmount () {
+        ReactTooltip.hide();
+    }
+
     selectTag = (tag) => {
         const { params } = this.context.router;
         this.context.router.push(`/${params.akashaId}/explore/tag/${tag}`);

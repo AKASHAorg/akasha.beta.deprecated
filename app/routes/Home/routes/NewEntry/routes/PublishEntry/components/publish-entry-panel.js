@@ -85,19 +85,20 @@ class PublishPanel extends React.Component {
     };
     _publishEntry = () => {
         const { draftActions, appActions } = this.props;
+        const draft = this.state.draft.toJS();
         this.setState({
             validationErrors: []
         });
         this._validateEntry(() => {
-            draftActions.updateDraft(this.state.draft.toJS());
+            draftActions.updateDraft(draft);
             appActions.addPendingAction({
-                type: 'publishEntry',
+                type: draft.entryId ? 'publishNewEntryVersion' : 'publishEntry',
                 payload: {
-                    title: this.state.draft.getIn(['content', 'title']),
-                    draft: this.state.draft.toJS()
+                    title: draft.content.title,
+                    draft
                 },
-                titleId: 'publishEntryTitle',
-                messageId: 'publishEntry',
+                titleId: draft.entryId ? 'publishNewEntryVersionTitle' : 'publishEntryTitle',
+                messageId: draft.entryId ? 'publishNewEntryVersion' : 'publishEntry',
                 gas: 4000000,
                 status: 'needConfirmation'
             });
@@ -164,9 +165,10 @@ class PublishPanel extends React.Component {
     };
     _handleDraftUpdate = (obj) => {
         const { draftActions, params } = this.props;
+        const newDraft = this.state.draft.mergeDeep(obj).toJS();
         draftActions.updateDraft({
             id: parseInt(params.draftId, 10),
-            ...obj
+            ...newDraft
         });
     };
     _checkExistingTags = (tags) => {
@@ -264,7 +266,7 @@ class PublishPanel extends React.Component {
           <div ref={(container) => { this.container = container; }} className="mdfckr-container">
             <PanelContainer
               showBorder
-              title="Publish a New Entry"
+              title={draft && draft.entryId ? 'Publish a new version' : 'Publish a new entry'}
               style={{
                   left: '50%',
                   marginLeft: '-320px',
@@ -281,7 +283,7 @@ class PublishPanel extends React.Component {
                 />,
                 <RaisedButton // eslint-disable-line indent
                   key="publish"
-                  label="Publish"
+                  label={draft && draft.entryId ? 'Update' : 'Publish'}
                   primary
                   style={{ marginLeft: 8 }}
                   onTouchTap={this._publishEntry}
@@ -339,6 +341,7 @@ class PublishPanel extends React.Component {
                         validationErrors.filter(ve => ve.field === 'tags')
                               .map(err => `${err.error}`)[0]
                     }
+                    disabled={!!draft.entryId}
                   />
                 </div>
                 <div className="col-xs-12" style={{ marginBottom: 32 }}>

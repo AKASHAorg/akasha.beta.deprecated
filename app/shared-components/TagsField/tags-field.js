@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
 import { injectIntl } from 'react-intl';
 import { AutoComplete, Chip, IconButton } from 'material-ui';
 import debounce from 'lodash.debounce';
@@ -28,16 +28,10 @@ class TagsField extends React.Component {
     }
 
     componentDidMount () {
-        this._tagsInput.focus();
+        if (this._tagsInput) {
+            this._tagsInput.focus();
+        }
     }
-
-    componentWillUnmount () {
-        Channel.client.tags.searchTag.removeListener(this.hydrateDataSource);
-    }
-
-    hydrateDataSource = (ev, result) => {
-        this.setState({ dataSource: result.data.collection });
-    };
 
     componentWillReceiveProps (nextProps) {
         const { checkExistingTags, existingTags, registerPending } = nextProps;
@@ -59,11 +53,21 @@ class TagsField extends React.Component {
             });
         }
     }
+
+    componentWillUnmount () {
+        Channel.client.tags.searchTag.removeListener(this.hydrateDataSource);
+    }
+
+    hydrateDataSource = (ev, result) => {
+        this.setState({ dataSource: result.data.collection });
+    };
+
     _checkTagAutocomplete = (value) => {
         if (this.props.onRequestTagAutocomplete) {
             this.props.onRequestTagAutocomplete(value);
         }
     };
+
     _delayedReq = debounce(() => {
         this._checkTagAutocomplete(this.state.tagString);
         Channel.server.tags.searchTag.send({ tagName: this.state.tagString, limit: 3 });
@@ -172,7 +176,7 @@ class TagsField extends React.Component {
     };
     render () {
         const currentTags = this.props.tags;
-        const { registerPending, existingTags, errorText } = this.props;
+        const { registerPending, existingTags, errorText, disabled } = this.props;
         const { erroredTags } = this.state;
         const tags = currentTags.map((tag, key) => {
             const tagExists = existingTags.indexOf(tag) > -1;
@@ -239,6 +243,7 @@ class TagsField extends React.Component {
                     onClick={ev => this._handleTagRegister(ev, tag)}
                     style={tagActionButtonStyle}
                     disableTouchRipple
+                    disabled={disabled}
                   >
                     {!tagIsPending && !erroredTag &&
                       <AddIcon title={'Register tag'} />
@@ -250,6 +255,7 @@ class TagsField extends React.Component {
                   title={'Remove tag'}
                   style={{ ...tagActionButtonStyle, marginLeft: 0 }}
                   disableTouchRipple
+                  disabled={disabled}
                 >
                   <RemoveIcon />
                 </IconButton>
@@ -276,7 +282,7 @@ class TagsField extends React.Component {
           >
             <div>
               {tags}
-              {(currentTags.length < 10) &&
+              {!disabled && currentTags.length < 10 &&
                 <input
                   style={{
                       display: 'inline-block',
@@ -295,7 +301,7 @@ class TagsField extends React.Component {
                   onKeyPress={this._handleTagDetect}
                   onKeyDown={this._handleKeyDown}
                   disabled={currentTags.length >= 10}
-                  ref={r => this._tagsInput = r}
+                  ref={(r) => { this._tagsInput = r; }}
                 />
               }
             </div>
@@ -304,17 +310,17 @@ class TagsField extends React.Component {
     }
 }
 TagsField.propTypes = {
-    checkExistingTags: React.PropTypes.func,
-    errorText: React.PropTypes.string,
-    tags: React.PropTypes.arrayOf(React.PropTypes.string),
-    onTagAdded: React.PropTypes.func,
-    onDelete: React.PropTypes.func,
-    existingTags: React.PropTypes.arrayOf(React.PropTypes.string),
-    registerPending: React.PropTypes.shape(),
-    onRequestTagAutocomplete: React.PropTypes.func,
-    onBlur: React.PropTypes.func,
-    onTagRegisterRequest: React.PropTypes.func,
-    intl: React.PropTypes.shape()
+    checkExistingTags: PropTypes.func,
+    disabled: PropTypes.bool,
+    errorText: PropTypes.string,
+    tags: PropTypes.arrayOf(PropTypes.string),
+    onTagAdded: PropTypes.func,
+    onDelete: PropTypes.func,
+    existingTags: PropTypes.arrayOf(PropTypes.string),
+    registerPending: PropTypes.shape(),
+    onRequestTagAutocomplete: PropTypes.func,
+    onTagRegisterRequest: PropTypes.func,
+    intl: PropTypes.shape()
 };
 
 export default injectIntl(TagsField);

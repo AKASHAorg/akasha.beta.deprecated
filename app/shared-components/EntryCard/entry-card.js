@@ -3,6 +3,7 @@ import { Card, CardHeader, CardTitle, CardText, CardActions, IconButton, FlatBut
     SvgIcon } from 'material-ui';
 import WarningIcon from 'material-ui/svg-icons/alert/warning';
 import HubIcon from 'material-ui/svg-icons/hardware/device-hub';
+import EditIcon from 'material-ui/svg-icons/image/edit';
 import { EntryBookmarkOn, EntryBookmarkOff, EntryComment, EntryDownvote,
     EntryUpvote, ToolbarEthereum } from 'shared-components/svg';
 import { injectIntl } from 'react-intl';
@@ -49,6 +50,12 @@ class EntryCard extends Component {
         return false;
     }
 
+    onExpandChange = (expanded) => {
+        this.setState({
+            expanded
+        });
+    };
+
     isOwnEntry = () => {
         const { entry, loggedAkashaId } = this.props;
         return entry.getIn(['entryEth', 'publisher', 'akashaId']) === loggedAkashaId;
@@ -68,7 +75,8 @@ class EntryCard extends Component {
     };
 
     selectTag = (ev, tag) => {
-        const { selectTag } = this.props;
+        const { hidePanel, selectTag } = this.props;
+        hidePanel();
         selectTag(tag);
     };
 
@@ -97,7 +105,8 @@ class EntryCard extends Component {
 
     handleComments = () => {
         const { router } = this.context;
-        const { entry, loggedAkashaId } = this.props;
+        const { entry, hidePanel, loggedAkashaId } = this.props;
+        hidePanel();
         router.push(`/${loggedAkashaId}/entry/${entry.get('entryId')}#comments-section`);
     };
 
@@ -123,6 +132,13 @@ class EntryCard extends Component {
         entryActions.addClaimAction(payload);
     };
 
+    handleEdit = () => {
+        const { entry, hidePanel, loggedAkashaId } = this.props;
+        const { router } = this.context;
+        hidePanel();
+        router.push(`/${loggedAkashaId}/draft/new?editEntry=${entry.get('entryId')}`);
+    };
+
     _handleEntryNavigation = () => {
         const { entry, hidePanel, loggedAkashaId } = this.props;
         hidePanel();
@@ -138,12 +154,6 @@ class EntryCard extends Component {
     closeVotesPanel = () => {
         this.setState({
             showVotes: false
-        });
-    };
-
-    onExpandChange = (expanded) => {
-        this.setState({
-            expanded
         });
     };
 
@@ -287,6 +297,30 @@ class EntryCard extends Component {
                 >
                   <IconButton>
                     <WarningIcon color={palette.accent1Color} />
+                  </IconButton>
+                </div>
+              }
+              {this.isOwnEntry() &&
+                <div
+                  data-tip={entry.get('active') ?
+                      'Edit entry' :
+                      'This entry can no longer be edited'
+                  }
+                  style={{
+                      display: 'inline-block',
+                      position: 'absolute',
+                      right: '16px',
+                      top: '10px'
+                  }}
+                >
+                  <IconButton
+                    onTouchTap={this.handleEdit}
+                    iconStyle={{ width: '20px', height: '20px' }}
+                    disabled={!entry.get('active')}
+                  >
+                    <SvgIcon viewBox="0 0 20 20">
+                      <EditIcon />
+                    </SvgIcon>
                   </IconButton>
                 </div>
               }
@@ -479,11 +513,9 @@ class EntryCard extends Component {
                     }
                     {this.isOwnEntry() && (!canClaimPending || entry.get('canClaim') !== undefined)
                         && (!fetchingEntryBalance || entry.get('balance') !== undefined) &&
-                      <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+                      <div style={{ display: 'inline-flex', justifyContent: 'flex-end', alignItems: 'center' }}>
                         {!entry.get('active') &&
-                          <div
-                            data-tip={!entry.get('canClaim') ? 'Already claimed' : 'Claim'}
-                          >
+                          <div data-tip={!entry.get('canClaim') ? 'Already claimed' : 'Claim'}>
                             <IconButton
                               onTouchTap={this.handleClaim}
                               iconStyle={{
