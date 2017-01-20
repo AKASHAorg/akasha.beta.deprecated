@@ -25,5 +25,9 @@ class Notifications {
             this.push(cb);
         }
     }
+
+    public clear() {
+        this.queue.length = 0;
+    }
 }
 export default new Notifications();

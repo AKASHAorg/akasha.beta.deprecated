@@ -38,6 +38,7 @@ const execute = Promise.coroutine(function* (data, cb) {
         return { running: false };
     }
     if (data.stop && entries) {
+        queue_1.default.clear();
         entries.stopWatching(() => {
             entries = null;
         });
