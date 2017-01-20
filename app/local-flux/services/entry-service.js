@@ -2,7 +2,8 @@ import entriesDB from './db/entry';
 import BaseService from './base-service';
 
 const Channel = window.Channel;
-
+const PUBLISH = 'publish';
+const EDIT_ENTRY = 'editEntry';
 
 /**
  * Entry service
@@ -22,19 +23,42 @@ class EntryService extends BaseService {
      *
      */
     publishEntry = ({ draftObj, token, gas, onError, onSuccess }) => {
+        const channelName = draftObj.entryId ? EDIT_ENTRY : PUBLISH;
         this.openChannel({
             clientManager: this.clientManager,
-            serverChannel: Channel.server.entry.publish,
-            clientChannel: Channel.client.entry.publish,
+            serverChannel: Channel.server.entry[channelName],
+            clientChannel: Channel.client.entry[channelName],
             listenerCb: this.createListener(onError, onSuccess)
         }, () =>
-            Channel.server.entry.publish.send({
+            Channel.server.entry[channelName].send({
+                entryId: draftObj.entryId,
                 content: draftObj.content,
                 tags: draftObj.tags,
                 token,
                 gas
-            }));
+            })
+        );
     };
+
+    /**
+     *  Edit an existing entry
+     *
+     */
+    // editEntry = ({ draftObj, token, gas, onError, onSuccess }) => {
+    //     this.openChannel({
+    //         clientManager: this.clientManager,
+    //         serverChannel: Channel.server.entry.editEntry,
+    //         clientChannel: Channel.client.entry.editEntry,
+    //         listenerCb: this.createListener(onError, onSuccess)
+    //     }, () =>
+    //         Channel.server.entry.editEntry.send({
+    //             entryId: draftObj.entryId,
+    //             content: draftObj.content,
+    //             tags: draftObj.tags,
+    //             token,
+    //             gas
+    //         }));
+    // };
 
     getEntriesCount = ({ akashaId, onError, onSuccess }) => {
         this.openChannel({
@@ -69,21 +93,6 @@ class EntryService extends BaseService {
             .first()
             .then(entries => onSuccess(entries))
             .catch(reason => onError(reason));
-
-    getSortedEntries = ({ sortBy }) =>
-        new Promise((resolve) => {
-            let entries = [];
-            if (sortBy === 'rating') {
-                entries = generateEntries(1);
-                return resolve(entries);
-            }
-            if (sortBy === 'top') {
-                entries = generateEntries(3);
-                return resolve(entries);
-            }
-            entries = generateEntries(2);
-            return resolve(entries);
-        });
 
     saveEntry = ({ akashaId, entry, onError, onSuccess }) =>
         entriesDB.savedEntries.where('akashaId').equals(akashaId)
