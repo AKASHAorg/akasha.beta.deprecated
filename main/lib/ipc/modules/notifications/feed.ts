@@ -45,6 +45,9 @@ const execute = Promise.coroutine(function*(data: { stop?: boolean }, cb) {
     }
 
     if (data.stop && entries) {
+        // clear all pending notifs
+        queue.clear();
+
         entries.stopWatching(() => {
             entries = null;
         });

@@ -25,6 +25,9 @@ class Notifications {
             this.push(cb);
         }
     }
+    clear() {
+        this.queue.length = 0;
+    }
 }
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = new Notifications();
