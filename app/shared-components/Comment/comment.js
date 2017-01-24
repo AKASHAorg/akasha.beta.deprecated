@@ -12,12 +12,13 @@ import { injectIntl } from 'react-intl';
 import HubIcon from 'material-ui/svg-icons/hardware/device-hub';
 import MoreIcon from 'material-ui/svg-icons/navigation/expand-more';
 import LessIcon from 'material-ui/svg-icons/navigation/expand-less';
+import { EntryCommentReply } from 'shared-components/svg';
 import { Avatar } from 'shared-components';
 import { entryMessages } from 'locale-data/messages';
 import { getInitials, getWordCount } from 'utils/dataModule'; // eslint-disable-line import/no-unresolved, import/extensions
 import style from './comment.scss';
 
-const REPLIES_ENABLED = false;
+const REPLIES_ENABLED = true;
 
 class Comment extends React.Component {
     constructor (props) {
@@ -50,7 +51,7 @@ class Comment extends React.Component {
     }
     render () {
         const { isPublishing, comment,
-            children, intl, onAuthorNameClick, entryAuthorProfile, loggedProfile } = this.props;
+            children, intl, onAuthorNameClick, entryAuthorProfile, loggedProfile, showReplyButton } = this.props;
         const { isExpanded } = this.state;
         const { data } = comment;
         const { profile, date, content } = data;
@@ -84,6 +85,7 @@ class Comment extends React.Component {
         }
         return (
           <div
+            id={`comment-${comment.get('commentId')}`}
             className={`${style.root}`}
             style={{ position: 'relative', opacity: !content ? 0.5 : 1 }}
           >
@@ -125,9 +127,15 @@ class Comment extends React.Component {
                   }
                 />
               </div>
-              {!isPublishing && REPLIES_ENABLED &&
+              {!isPublishing && REPLIES_ENABLED && showReplyButton &&
                 <div className={'col-xs-7 end-xs'}>
-                  <div onClick={this.props.onReply}>Reply</div>
+                  <div>
+                    <IconButton onClick={this.props.onReply}>
+                      <SvgIcon>
+                        <EntryCommentReply />
+                      </SvgIcon>
+                    </IconButton>
+                  </div>
                 </div>
               }
               {isPublishing &&
@@ -190,7 +198,8 @@ Comment.propTypes = {
     comment: React.PropTypes.shape(),
     intl: React.PropTypes.shape(),
     onAuthorNameClick: React.PropTypes.func,
-    onReply: React.PropTypes.func
+    onReply: React.PropTypes.func,
+    showReplyButton: React.PropTypes.bool
 };
 Comment.contextTypes = {
     router: React.PropTypes.shape(),

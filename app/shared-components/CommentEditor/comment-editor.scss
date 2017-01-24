@@ -12,11 +12,13 @@
     margin-top: 8px;
 }
 .comment_editor {
-    width: 636px;
-    margin-left: 16px;
-    vertical-align: middle;
-    border: 1px solid #DDD;
-    padding: 0 8px;
+    width: 100%;
+    &_inner {
+        margin-left: 8px;
+        border: 1px solid #DDD;
+        padding-left: 16px;
+        padding: 0 8px;
+    }
     :global {
         .megadraft {
             .megadraft-editor {

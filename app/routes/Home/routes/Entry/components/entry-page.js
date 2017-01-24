@@ -16,7 +16,7 @@ import EntryPageContent from './entry-page-content';
 import EntryPageActions from './entry-page-actions';
 import styles from './entry-page.scss';
 
-const COMMENT_FETCH_LIMIT = 7;
+const COMMENT_FETCH_LIMIT = 50;
 
 class EntryPage extends Component {
     constructor (props) {
@@ -48,8 +48,7 @@ class EntryPage extends Component {
     }
 
     componentWillReceiveProps (nextProps) { // eslint-disable-line max-statements, :D
-        const { params, entry, entryActions, commentsActions, loggedProfile,
-            pendingCommentsActions } = this.props;
+        const { params, entry, entryActions, commentsActions, loggedProfile } = this.props;
         const newEntryLoaded = entry && entry.get('entryId') !== nextProps.entry.get('entryId');
         if (params.entryId !== nextProps.params.entryId && entry.get('entryId') !== nextProps.params.entryId) {
             entryActions.getFullEntry(nextProps.params.entryId);
@@ -66,32 +65,30 @@ class EntryPage extends Component {
                 lastCommentsCount: nextProps.entry.get('commentsCount')
             });
         }
+        // this will pass only the first time a new entry loaded
         if (entry && nextProps.entry && (nextProps.entry.get('entryId') !== entry.get('entryId'))) {
             this.setState({
                 lastCommentsCount: nextProps.entry.get('commentsCount')
             });
         }
-        if ((nextProps.pendingCommentsActions.size > 0)) {
-            const prevComment = pendingCommentsActions.findLast(comm => comm.getIn(['payload', 'entryId']) === params.entryId);
-            const currentComment = nextProps.pendingCommentsActions.findLast(comm => comm.getIn(['payload', 'entryId']) === params.entryId);
-            if (currentComment && prevComment && (prevComment.status === 'checkAuth')) {
-                this.commentEditor.getWrappedInstance().resetContent();
-            }
-        }
-        if (nextProps.entry && entry && (nextProps.entry.get('entryId') === entry.get('entryId'))) {
-            let pendingCommentsCount = 0;
-            const entryComments = nextProps.comments.filter(comm => comm.get('entryId') === parseInt(nextProps.entry.get('entryId'), 10));
-            if (entryComments.size > 0) {
-                pendingCommentsCount = this._getNewlyCreatedComments(nextProps.comments).size;
-            }
-            if ((this.state.lastCommentsCount + pendingCommentsCount) < nextProps.entry.get('commentsCount')) {
-                this.showNewCommentsNotification();
-            }
-        }
+        this._resetEditors(nextProps);
+        this._onCommentsCountChange(nextProps);
     }
 
     shouldComponentUpdate (nextProps, nextState) {
         return (nextProps !== this.props) || (nextState !== this.state);
+    }
+
+    componentDidUpdate (prevProps) {
+        // target the first new comment loaded and scroll into view
+        const { newCommentsIds } = this.props;
+        if ((prevProps.newCommentsIds.size > 0) && (newCommentsIds.size === 0)) {
+            const targetId = prevProps.newCommentsIds.first();
+            const node = document.getElementById(`comment-${targetId}`);
+            if (node) {
+                node.scrollIntoViewIfNeeded(true);
+            }
+        }
     }
 
     componentWillUnmount () {
@@ -105,19 +102,17 @@ class EntryPage extends Component {
         ReactTooltip.hide();
     }
     onRequestNewestComments = () => {
-        const { entry, comments } = this.props;
-        const currentComments = comments.filter(comm =>
-            (comm.getIn(['data', 'active']) && !comm.get('tempTx') &&
-            comm.get('commentId') && comm.getIn(['data', 'ipfsHash']) &&
-            (comm.get('entryId') === parseInt(entry.get('entryId'), 10)))
-        );
-        this.fetchComments(parseInt(entry.get('entryId'), 10), currentComments.size > 0 ? currentComments.first().get('commentId') : 0, true);
+        const { entry, comments, newCommentsIds, commentsActions } = this.props;
+        let targetParentComment = comments.find(comment => comment.get('commentId') === parseInt(newCommentsIds.first(), 10));
+
+        do {
+            targetParentComment = comments.find(comment => comment.get('commentId') === parseInt(targetParentComment.getIn(['data', 'parent']), 10));
+        } while (targetParentComment && targetParentComment.getIn(['data', 'parent']) !== '0');
+
         this.setState({
-            showNewCommentsNotification: false,
             lastCommentsCount: entry.get('commentsCount')
         }, () => {
-            const editorBaseNode = this.commentEditor.getWrappedInstance().getBaseNode();
-            editorBaseNode.scrollIntoView({ behavior: 'smooth' });
+            commentsActions.clearNewCommentsIds();
         });
     };
 
@@ -129,15 +124,47 @@ class EntryPage extends Component {
     fetchComments = (entryId, start = 0, reverse = false) => {
         const { fetchingComments, commentsActions } = this.props;
         // if it`s already fetching comments, return
-        if (fetchingComments) {
-            return;
+        if (!fetchingComments) {
+            commentsActions.getEntryComments(entryId, start, COMMENT_FETCH_LIMIT, reverse);
         }
-        commentsActions.getEntryComments(entryId, start, COMMENT_FETCH_LIMIT, reverse);
     };
+    _resetEditors = (nextProps) => {
+        const { pendingCommentsActions, params } = this.props;
+        if ((nextProps.pendingCommentsActions.size > 0)) {
+            const prevComment = pendingCommentsActions.findLast(comm => comm.getIn(['payload', 'entryId']) === params.entryId);
+            const currentComment = nextProps.pendingCommentsActions.findLast(comm => comm.getIn(['payload', 'entryId']) === params.entryId);
+            if (currentComment && prevComment && (prevComment.status === 'checkAuth')) {
+                this.commentEditor.resetContent();
+                this.commentsListRef.resetReplies();
+            }
+        }
+    }
     _checkNewComments = () => {
         const { commentsActions, params } = this.props;
         commentsActions.getCommentsCount(params.entryId);
     };
+    _onCommentsCountChange = (nextProps) => {
+        const { entry, commentsActions, comments } = this.props;
+        if (nextProps.entry && entry && (nextProps.entry.get('entryId') === entry.get('entryId'))) {
+            let pendingCommentsCount = 0;
+            const entryComments = nextProps.comments.filter(comm => comm.get('entryId') === parseInt(nextProps.entry.get('entryId'), 10));
+
+            if (entryComments.size > 0) {
+                pendingCommentsCount = this._getNewlyCreatedComments(nextProps.comments).size;
+            }
+
+            if ((this.state.lastCommentsCount + pendingCommentsCount) < nextProps.entry.get('commentsCount')) {
+                // new comments will be loaded automatically but if can be shown,
+                // ie. comment.data.parent = 0 or parent already loaded, show a notification
+                // else do nothing as it will load on scroll
+                console.log(this.state.lastCommentsCount, pendingCommentsCount, nextProps.fetchingComments, 'comments count');
+                if ((comments.size === nextProps.comments.size) && !nextProps.fetchingComments) {
+                    console.log('fetching new comments');
+                    commentsActions.fetchNewComments(entry.get('entryId'));
+                }
+            }
+        }
+    }
     isOwnEntry = (nextProps) => {
         const { entry, loggedProfile } = nextProps || this.props;
         const publisher = entry.entryEth.publisher;
@@ -216,24 +243,29 @@ class EntryPage extends Component {
          * prevent setting state on every frame
          */
         if ((scrollTop > 0) && !this.state.publisherTitleShadow) {
+            console.info('triggered content scroll to setup entry header shadow');
             this.setState({
                 publisherTitleShadow: true
             });
         } else if ((scrollTop === 0) && this.state.publisherTitleShadow) {
+            console.info('triggered content scroll to setup entry header shadow');
             this.setState({
                 publisherTitleShadow: false
             });
         }
     }
     _handleMouseWheel = (ev) => {
-        if (this.state.showNewCommentsNotification) {
+        const { newCommentsIds } = this.props;
+        if (newCommentsIds.size > 0) {
             const commentsSectionTop = this.commentsSectionRef.getBoundingClientRect().top;
             if (commentsSectionTop < 45) {
+                console.info('triggered mouse wheel to reposition new comments button');
                 this.setState({
                     newCommentsNotificationPosition: 'fixed',
                     scrollDirection: (ev.detail < 0) ? 1 : (ev.wheelDelta > 0) ? 1 : -1, // eslint-disable-line no-nested-ternary, max-len
                 });
             } else if (commentsSectionTop > 45 && (this.state.newCommentsNotificationPosition === 'fixed')) {
+                console.info('triggered mouse wheel to reposition new comments button');
                 this.setState({
                     newCommentsNotificationPosition: 'static',
                     scrollDirection: (ev.detail < 0) ? 1 : (ev.wheelDelta > 0) ? 1 : -1, // eslint-disable-line no-nested-ternary, max-len
@@ -261,8 +293,8 @@ class EntryPage extends Component {
             !comm.get('commentId'))
         );
     _getNewCommentsCount = () => {
-        const { entry, comments } = this.props;
-        return entry.get('commentsCount') - (this.state.lastCommentsCount + this._getNewlyCreatedComments(comments).size);
+        const { newCommentsIds } = this.props;
+        return newCommentsIds.size;
     }
     renderLicenceIcons = () => {
         const { entry, licences } = this.props;
@@ -310,9 +342,9 @@ class EntryPage extends Component {
     };
 
     render () {
-        const { blockNr, canClaimPending, claimPending, comments, entry, fetchingEntryBalance,
-            fetchingFullEntry, intl, licences, loggedProfile, profiles, savedEntries, votePending,
-            fetchingComments } = this.props;
+        const { blockNr, canClaimPending, claimPending, comments, entry,
+            fetchingEntryBalance, fetchingFullEntry, intl, licences, loggedProfile, profiles,
+            savedEntries, votePending, fetchingComments, newCommentsIds } = this.props;
         const { palette } = this.context.muiTheme;
         const { publisherTitleShadow } = this.state;
         let licence;
@@ -421,6 +453,7 @@ class EntryPage extends Component {
                     profileUserInitials={loggedProfileUserInitials}
                     onCommentCreate={this._handleCommentCreate}
                     ref={(editor) => { this.commentEditor = editor; }}
+                    intl={intl}
                   />
                   <div
                     id="comments-section"
@@ -433,38 +466,37 @@ class EntryPage extends Component {
                       <h4>
                         {`${intl.formatMessage(entryMessages.allComments)} (${entry.get('commentsCount')})`}
                       </h4>
-                      {this.state.showNewCommentsNotification &&
-                          (this._getNewCommentsCount() > 0) &&
-                          <div
-                            style={{
-                                position: this.state.newCommentsNotificationPosition,
-                                top: (this.state.scrollDirection === 1) ? 100 : 32,
-                                transform: 'translate3d(0,0,0)',
-                                textAlign: 'center',
-                                margin: '0 auto',
-                                zIndex: 3,
-                                padding: 0,
-                                width: 700,
-                                transition: (this.state.scrollDirection === 1) ? 'top 0.214s ease-in-out' : 'none',
-                                height: 1,
-                                willChange: 'top'
-                            }}
-                            className="row middle-xs"
-                          >
-                            <div className="col-xs-12 center-xs" style={{ position: 'relative' }}>
-                              <FlatButton
-                                primary
-                                label={intl.formatMessage(entryMessages.newComments, {
-                                    count: this._getNewCommentsCount()
-                                })}
-                                hoverColor="#ececec"
-                                backgroundColor="#FFF"
-                                style={{ position: 'absolute', top: -18, zIndex: 2, left: '50%', marginLeft: '-70px' }}
-                                labelStyle={{ fontSize: 12 }}
-                                onClick={this.onRequestNewestComments}
-                              />
-                            </div>
+                      {(this._getNewCommentsCount() > 0) &&
+                        <div
+                          style={{
+                              position: this.state.newCommentsNotificationPosition,
+                              top: (this.state.scrollDirection === 1) ? 100 : 32,
+                              transform: 'translate3d(0,0,0)',
+                              textAlign: 'center',
+                              margin: '0 auto',
+                              zIndex: 3,
+                              padding: 0,
+                              width: 700,
+                              transition: (this.state.scrollDirection === 1) ? 'top 0.214s ease-in-out' : 'none',
+                              height: 1,
+                              willChange: 'top'
+                          }}
+                          className="row middle-xs"
+                        >
+                          <div className="col-xs-12 center-xs" style={{ position: 'relative' }}>
+                            <FlatButton
+                              primary
+                              label={intl.formatMessage(entryMessages.newComments, {
+                                  count: this._getNewCommentsCount()
+                              })}
+                              hoverColor="#ececec"
+                              backgroundColor="#FFF"
+                              style={{ position: 'absolute', top: -18, zIndex: 2, left: '50%', marginLeft: '-70px' }}
+                              labelStyle={{ fontSize: 12 }}
+                              onClick={this.onRequestNewestComments}
+                            />
                           </div>
+                        </div>
                       }
                       <Divider />
                     </div>
@@ -472,21 +504,12 @@ class EntryPage extends Component {
                       <div>
                         <div>
                           <CommentsList
+                            ref={(cList) => { this.commentsListRef = cList; }}
                             loggedProfile={loggedProfile}
                             profileAvatar={loggedProfileAvatar}
                             profileUserInitials={loggedProfileUserInitials}
                             onReplyCreate={this._handleCommentCreate}
-                            newlyCreatedComments={this._getNewlyCreatedComments(comments)}
-                            publishingComments={
-                                comments.filter(comm => (comm.get('tempTx') && comm.getIn('data', 'profile')))
-                            }
-                            comments={
-                                comments.filter(comm =>
-                                  (comm.getIn(['data', 'active']) && !comm.get('tempTx') &&
-                                    comm.get('commentId') && comm.getIn(['data', 'ipfsHash']) &&
-                                  (comm.get('entryId') === entryId))
-                                )
-                            }
+                            comments={comments.filter(comm => !newCommentsIds.includes(`${comm.get('commentId')}`))}
                             entryId={entryId}
                             commentsCount={entry.get('commentsCount')}
                             fetchLimit={COMMENT_FETCH_LIMIT}
@@ -494,6 +517,7 @@ class EntryPage extends Component {
                             onCommenterClick={this._navigateToProfile}
                             entryAuthorProfile={entry.getIn(['entryEth', 'publisher']).profile}
                             fetchingComments={fetchingComments}
+                            intl={intl}
                           />
                         </div>
                       </div>
@@ -525,7 +549,8 @@ EntryPage.propTypes = {
     profiles: PropTypes.shape(),
     savedEntries: PropTypes.shape(),
     votePending: PropTypes.shape(),
-    pendingCommentsActions: PropTypes.shape()
+    pendingCommentsActions: PropTypes.shape(),
+    newCommentsIds: PropTypes.shape()
 };
 EntryPage.contextTypes = {
     muiTheme: PropTypes.shape(),

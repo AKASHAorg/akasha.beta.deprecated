@@ -66,6 +66,11 @@ const entryMessages = defineMessages({
         description: 'placeholder for writing a comment',
         defaultMessage: 'Write a comment'
     },
+    writeReplyTo: {
+        id: 'app.entry.writeReplyTo',
+        description: 'placeholder for writing a reply to someone {name}',
+        defaultMessage: 'Write a reply to {name}'
+    },
     loadingComments: {
         id: 'app.entry.loadingComments',
         description: 'message when loading comments for the first time',

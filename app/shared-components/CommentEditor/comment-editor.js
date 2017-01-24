@@ -10,7 +10,7 @@ class CommentEditor extends React.Component {
     constructor (props) {
         super(props);
         this.state = {
-            editorState: editorStateFromRaw(null)
+            editorState: editorStateFromRaw(this.props.initialEditorContent)
         };
     }
     shouldComponentUpdate (nextProps, nextState) {
@@ -30,6 +30,7 @@ class CommentEditor extends React.Component {
     }
     _handleCommentCancel = () => {
         this._resetEditorState();
+        if (this.props.onCancel) this.props.onCancel();
     }
     _resetEditorState = () => {
         this.setState({
@@ -37,10 +38,13 @@ class CommentEditor extends React.Component {
         });
     }
     render () {
-        const { profileAvatar, profileUserInitials, intl } = this.props;
+        const { profileAvatar, profileUserInitials, intl, showPublishActions } = this.props;
+        let { placeholder } = this.props;
+        if (!placeholder) placeholder = `${intl.formatMessage(entryMessages.writeComment)}...`;
+
         return (
-          <div className={`${styles.comment_writer}`} ref={(baseNode) => { this.baseNodeRef = baseNode; }}>
-            <div className={`${styles.avatar_image}`}>
+          <div className={`${styles.comment_writer} row`} ref={(baseNode) => { this.baseNodeRef = baseNode; }}>
+            <div className={`${styles.avatar_image} col-xs-1 start-xs`}>
               <Avatar
                 image={profileAvatar}
                 userInitials={profileUserInitials}
@@ -48,16 +52,18 @@ class CommentEditor extends React.Component {
                 userInitialsStyle={{ fontSize: 22, textTransform: 'uppercase', fontWeight: 500 }}
               />
             </div>
-            <div className={`${styles.comment_editor}`}>
-              <MegadraftEditor
-                placeholder={`${intl.formatMessage(entryMessages.writeComment)}...`}
-                editorState={this.state.editorState}
-                onChange={this._handleCommentChange}
-                sidebarRendererFn={() => null}
-              />
+            <div className={`${styles.comment_editor} col-xs-11`}>
+              <div className={`${styles.comment_editor_inner}`}>
+                <MegadraftEditor
+                  placeholder={placeholder}
+                  editorState={this.state.editorState}
+                  onChange={this._handleCommentChange}
+                  sidebarRendererFn={() => null}
+                />
+              </div>
             </div>
-            {this.state.editorState.getCurrentContent().hasText() &&
-            <div className={`${styles.comment_publish_actions} end-xs`}>
+            {(this.state.editorState.getCurrentContent().hasText() || showPublishActions) &&
+            <div className={`${styles.comment_publish_actions} col-xs-12 end-xs`}>
               <RaisedButton
                 label={intl.formatMessage(generalMessages.cancel)}
                 onClick={this._handleCommentCancel}
@@ -78,6 +84,10 @@ CommentEditor.propTypes = {
     profileAvatar: React.PropTypes.string,
     profileUserInitials: React.PropTypes.string,
     onCommentCreate: React.PropTypes.func,
-    intl: React.PropTypes.shape()
+    intl: React.PropTypes.shape(),
+    placeholder: React.PropTypes.string,
+    showPublishActions: React.PropTypes.bool,
+    onCancel: React.PropTypes.func,
+    initialEditorContent: React.PropTypes.shape()
 };
-export default injectIntl(CommentEditor, { withRef: true });
+export default CommentEditor;

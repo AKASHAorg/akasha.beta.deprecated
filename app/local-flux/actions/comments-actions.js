@@ -33,6 +33,52 @@ class CommentsActions {
             }))
         });
     }
+    fetchNewComments (entryId) {
+        this.dispatch((dispatch, getState) => {
+            const entryComments = getState().commentsState.get('entryComments')
+                    .filter(comm => (comm.get('entryId') === parseInt(entryId, 10)) && comm.get('commentId') && !comm.get('tempTx'));
+            const fetchingComments = getState().commentsState.getIn(['flags', 'fetchingComments']);
+            let lastCommentId;
+            if (entryComments.size > 0) {
+                lastCommentId = entryComments.first().get('commentId');
+            } else {
+                lastCommentId = '0';
+            }
+            // we need a separate channel to have a different listener for this
+            if (!fetchingComments) {
+                this.commentService.getNewEntryComments({
+                    entryId,
+                    start: lastCommentId,
+                    limit: null,
+                    reverse: true,
+                    onSuccess: (data) => {
+                        data.collection.forEach((comment) => {
+                            if (comment.data.parent === '0') {
+                                this.dispatch(
+                                    commentsActionCreators.fetchNewCommentsSuccess(comment)
+                                );
+                            } else {
+                                const parentLoaded = entryComments.findIndex(comm => comm.get('commentId') === parseInt(comment.data.parent, 10)) > -1;
+                                if (parentLoaded) {
+                                    this.dispatch(
+                                        commentsActionCreators.fetchNewCommentsSuccess(comment)
+                                    );
+                                }
+                            }
+                        });
+                    },
+                    onError: error => this.dispatch(
+                        commentsActionCreators.getEntryCommentsError(error, {
+                            fetchingComments: false
+                        })
+                    )
+                });
+            }
+        });
+    }
+    clearNewCommentsIds () {
+        this.dispatch(commentsActionCreators.clearNewCommentsIds());
+    }
     getCommentsCount (entryId) {
         this.commentService.getCommentsCount({
             entryId,

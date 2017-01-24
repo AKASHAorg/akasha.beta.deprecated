@@ -24,6 +24,19 @@ export function getEntryCommentsError (error, flags) {
     };
 }
 
+export function fetchNewCommentsSuccess (comment) {
+    return {
+        type: types.FETCH_NEW_COMMENTS_SUCCESS,
+        comment
+    };
+}
+
+export function clearNewCommentsIds () {
+    return {
+        type: types.CLEAR_NEW_COMMENTS_IDS_SUCCESS
+    };
+}
+
 export function getCommentsCountSuccess (data) {
     return {
         type: types.GET_COMMENTS_COUNT_SUCCESS,

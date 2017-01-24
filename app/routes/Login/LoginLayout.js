@@ -27,7 +27,7 @@ const LoginLayout = (props) => {
         </div>
         <div
           style={{
-              backgroundColor: theme === 'light' ? '#f3f3f3' : '#252525',
+              backgroundColor: theme === 'light' ? '#f0f0f0' : '#252525',
               padding: 0,
               flex: '7 7 auto'
           }}
