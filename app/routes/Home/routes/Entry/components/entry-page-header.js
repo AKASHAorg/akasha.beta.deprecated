@@ -1,20 +1,22 @@
 import React, { Component, PropTypes } from 'react';
 import { injectIntl } from 'react-intl';
-import { CardHeader, IconButton, SvgIcon } from 'material-ui';
+import { CardHeader, IconButton, SvgIcon, FlatButton } from 'material-ui';
 import CloseIcon from 'material-ui/svg-icons/navigation/close';
 import EditIcon from 'material-ui/svg-icons/image/edit';
 import { Avatar } from 'shared-components';
-import { calculateReadingTime, getInitials } from 'utils/dataModule';
-import imageCreator from 'utils/imageUtils';// eslint-disable-line import/no-unresolved, import/extensions
-import { entryMessages } from 'locale-data/messages';
+import { calculateReadingTime, getInitials } from 'utils/dataModule'; // eslint-disable-line import/no-unresolved, import/extensions
+import imageCreator from 'utils/imageUtils'; // eslint-disable-line import/no-unresolved, import/extensions
+import { entryMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
 import styles from './entry-page-header.scss';
 
-const buttonStyle= {
+const buttonStyle = {
     width: '40px',
     height: '40px',
     padding: '8px',
     margin: '4px'
 };
+
+const FLOATING_COMMENTS_BUTTON_ACTIVE = false;
 
 class EntryPageHeader extends Component {
 
@@ -84,11 +86,22 @@ class EntryPageHeader extends Component {
 
     render () {
         const { handleEdit, isActive, isOwnEntry, publisherTitleShadow, publisher,
-            selectProfile } = this.props;
+            selectProfile, intl, commentsSectionTop } = this.props;
+        const isScrollingDown = (this.props.scrollDirection === -1);
+        let newCommentsButtonTop = 0;
+        if (isScrollingDown) {
+            newCommentsButtonTop = 32;
+        }
+        if (!isScrollingDown) {
+            if (commentsSectionTop > 0) {
+                newCommentsButtonTop = 32;
+            } else {
+                newCommentsButtonTop = 110;
+            }
+        }
         return (
           <div
             className={`${styles.entry_publisher_info}`}
-            style={{ backgroundColor: '#FFF' }}
           >
             <div
               className={`${styles.entry_publisher_info_inner}`}
@@ -96,6 +109,8 @@ class EntryPageHeader extends Component {
                   position: 'relative',
                   boxShadow: publisherTitleShadow ?
                       '0px 15px 28px -15px #DDD, 0 12px 15px -15px #000000' : 'none',
+                  transform: 'translate3d(0,0,0)',
+                  willChange: 'box-shadow'
               }}
             >
               <CardHeader
@@ -126,8 +141,44 @@ class EntryPageHeader extends Component {
                   </button>
                 }
                 subtitle={this.renderSubtitle()}
+                style={{
+                    backgroundColor: '#FFF',
+                    zIndex: 5
+                }}
               />
-              <div style={{ position: 'absolute', top: 0, right: 0, height: 80, display: 'flex', alignItems: 'center' }} >
+              {(this.props.newCommentsCount > 0) && FLOATING_COMMENTS_BUTTON_ACTIVE &&
+                <div
+                  style={{
+                      position: 'absolute',
+                      top: newCommentsButtonTop,
+                      transform: 'translate3d(0,0,0)',
+                      textAlign: 'center',
+                      margin: '0 auto',
+                      zIndex: 1,
+                      padding: 0,
+                      width: 700,
+                      transition: isScrollingDown ? 'top 0.214s ease-in-out' : 'none',
+                      height: 1,
+                      willChange: 'top'
+                  }}
+                  className="row middle-xs"
+                >
+                  <div className="col-xs-12 center-xs" style={{ position: 'relative' }}>
+                    <FlatButton
+                      primary
+                      label={intl.formatMessage(entryMessages.newComments, {
+                          count: this.props.newCommentsCount
+                      })}
+                      hoverColor="#ececec"
+                      backgroundColor="#FFF"
+                      style={{ position: 'absolute', top: -18, zIndex: 2, left: '50%', marginLeft: '-70px' }}
+                      labelStyle={{ fontSize: 12 }}
+                      onClick={this.props.onRequestNewestComments}
+                    />
+                  </div>
+                </div>
+              }
+              <div style={{ position: 'absolute', top: 0, right: 0, height: 80, display: 'flex', alignItems: 'center', zIndex: 5 }} >
                 {isOwnEntry &&
                   <div
                     data-tip={isActive ?
@@ -166,7 +217,11 @@ EntryPageHeader.propTypes = {
     publisherTitleShadow: PropTypes.bool,
     selectProfile: PropTypes.func,
     timestamp: PropTypes.number,
-    wordCount: PropTypes.number
+    wordCount: PropTypes.number,
+    newCommentsCount: PropTypes.number,
+    onRequestNewestComments: PropTypes.func,
+    scrollDirection: PropTypes.number
+
 };
 
 EntryPageHeader.contextTypes = {

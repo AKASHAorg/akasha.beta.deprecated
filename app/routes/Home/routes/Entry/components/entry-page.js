@@ -26,17 +26,13 @@ class EntryPage extends Component {
             activeTab: 'all',
             scrollDirection: 1
         };
-        this.debouncedMouseWheel = debounce(this._handleMouseWheel, 200, {
-            leading: true,
-            maxWait: 250
-        });
     }
 
     componentDidMount () {
         window.addEventListener('scroll', this._handleContentScroll, { passive: true });
         // treat mouse wheel separately
         // we should optimize the heck out of this!
-        window.addEventListener('mousewheel', this.debouncedMouseWheel, { passive: true });
+        // window.addEventListener('mousewheel', this.debouncedMouseWheel, { passive: true });
         this.checkCommentsInterval = setInterval(this._checkNewComments, 1000 * 15);
         const { entry, entryActions, params, fetchingFullEntry, commentsActions } = this.props;
 
@@ -94,14 +90,14 @@ class EntryPage extends Component {
     componentWillUnmount () {
         const { entryActions, commentsActions, params } = this.props;
         window.removeEventListener('scroll', this._handleContentScroll);
-        window.removeEventListener('mousewheel', this.debouncedMouseWheel);
+        // window.removeEventListener('mousewheel', this.debouncedMouseWheel);
         clearInterval(this.checkCommentsInterval);
         this.checkCommentsInterval = null;
         entryActions.unloadFullEntry();
         commentsActions.unloadComments(parseInt(params.entryId, 10));
         ReactTooltip.hide();
     }
-    onRequestNewestComments = () => {
+    requestNewestComments = () => {
         const { entry, comments, newCommentsIds, commentsActions } = this.props;
         let targetParentComment = comments.find(comment => comment.get('commentId') === parseInt(newCommentsIds.first(), 10));
 
@@ -157,9 +153,7 @@ class EntryPage extends Component {
                 // new comments will be loaded automatically but if can be shown,
                 // ie. comment.data.parent = 0 or parent already loaded, show a notification
                 // else do nothing as it will load on scroll
-                console.log(this.state.lastCommentsCount, pendingCommentsCount, nextProps.fetchingComments, 'comments count');
                 if ((comments.size === nextProps.comments.size) && !nextProps.fetchingComments) {
-                    console.log('fetching new comments');
                     commentsActions.fetchNewComments(entry.get('entryId'));
                 }
             }
@@ -243,12 +237,10 @@ class EntryPage extends Component {
          * prevent setting state on every frame
          */
         if ((scrollTop > 0) && !this.state.publisherTitleShadow) {
-            console.info('triggered content scroll to setup entry header shadow');
             this.setState({
                 publisherTitleShadow: true
             });
         } else if ((scrollTop === 0) && this.state.publisherTitleShadow) {
-            console.info('triggered content scroll to setup entry header shadow');
             this.setState({
                 publisherTitleShadow: false
             });
@@ -256,21 +248,18 @@ class EntryPage extends Component {
     }
     _handleMouseWheel = (ev) => {
         const { newCommentsIds } = this.props;
+        let scrollDirection = -1;
+        if (ev.detail < 0) {
+            scrollDirection = 1;
+        }
+        if (ev.nativeEvent.wheelDelta > 0) {
+            scrollDirection = 1;
+        }
         if (newCommentsIds.size > 0) {
-            const commentsSectionTop = this.commentsSectionRef.getBoundingClientRect().top;
-            if (commentsSectionTop < 45) {
-                console.info('triggered mouse wheel to reposition new comments button');
-                this.setState({
-                    newCommentsNotificationPosition: 'fixed',
-                    scrollDirection: (ev.detail < 0) ? 1 : (ev.wheelDelta > 0) ? 1 : -1, // eslint-disable-line no-nested-ternary, max-len
-                });
-            } else if (commentsSectionTop > 45 && (this.state.newCommentsNotificationPosition === 'fixed')) {
-                console.info('triggered mouse wheel to reposition new comments button');
-                this.setState({
-                    newCommentsNotificationPosition: 'static',
-                    scrollDirection: (ev.detail < 0) ? 1 : (ev.wheelDelta > 0) ? 1 : -1, // eslint-disable-line no-nested-ternary, max-len
-                });
-            }
+            this.setState({
+                commentsSectionTop: this.commentsSectionRef.getBoundingClientRect().top,
+                scrollDirection
+            });
         }
     }
     handleEdit = () => {
@@ -346,7 +335,7 @@ class EntryPage extends Component {
             fetchingFullEntry, intl, licences, loggedProfile, profiles, savedEntries, votePending,
             fetchingComments, newCommentsIds } = this.props;
         const { palette } = this.context.muiTheme;
-        const { publisherTitleShadow } = this.state;
+        const { publisherTitleShadow, scrollDirection, commentsSectionTop } = this.state;
         let licence;
         let licenceLabel;
         if (!entry || fetchingFullEntry) {
@@ -371,7 +360,7 @@ class EntryPage extends Component {
         const voteEntryPending = votePending && votePending.find(vote =>
               vote.entryId === entry.entryId);
         return (
-          <div className={`${styles.root} row`} >
+          <div className={`${styles.root} row`}>
             <div className="col-xs-12">
               <div className={`${styles.entry_page_inner}`}>
                 <div id="content-section" className={`${styles.content_section}`}>
@@ -387,6 +376,11 @@ class EntryPage extends Component {
                       selectProfile={this.selectProfile}
                       timestamp={entry.entryEth.unixStamp}
                       wordCount={entry.content ? entry.content.wordCount : 0}
+                      newCommentsCount={this._getNewCommentsCount()}
+                      scrollDirection={scrollDirection}
+                      onRequestNewestComments={this.requestNewestComments}
+                      intl={intl}
+                      commentsSectionTop={commentsSectionTop}
                     />
                   }
                   {entry.content &&
@@ -469,15 +463,14 @@ class EntryPage extends Component {
                       {(this._getNewCommentsCount() > 0) &&
                         <div
                           style={{
-                              position: this.state.newCommentsNotificationPosition,
-                              top: (this.state.scrollDirection === 1) ? 100 : 32,
+                              position: 'absolute',
+                              top: 40,
                               transform: 'translate3d(0,0,0)',
                               textAlign: 'center',
                               margin: '0 auto',
-                              zIndex: 3,
+                              zIndex: 1,
                               padding: 0,
                               width: 700,
-                              transition: (this.state.scrollDirection === 1) ? 'top 0.214s ease-in-out' : 'none',
                               height: 1,
                               willChange: 'top'
                           }}
@@ -493,11 +486,11 @@ class EntryPage extends Component {
                               backgroundColor="#FFF"
                               style={{ position: 'absolute', top: -18, zIndex: 2, left: '50%', marginLeft: '-70px' }}
                               labelStyle={{ fontSize: 12 }}
-                              onClick={this.onRequestNewestComments}
+                              onClick={this.requestNewestComments}
                             />
                           </div>
                         </div>
-                      }
+                    }
                       <Divider />
                     </div>
                     <div>
