@@ -24,7 +24,7 @@ class CommentService extends BaseService {
     getNewEntryComments = ({ entryId, start, limit, reverse, onSuccess, onError }) => {
         Channel.client.comments.manager.once((ev, res) => {
             // if (res.error) return onError(res.error);
-            Channel.client.comments.commentsIterator.on((evnt, resp) => {
+            Channel.client.comments.commentsIterator.once((evnt, resp) => {
                 if (resp.error) return onError(resp.error);
                 return onSuccess(resp.data);
             });
