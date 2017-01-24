@@ -36,7 +36,7 @@ class NotificationsActions {
     /**
      * Enable feed subscription
      */
-    watchFeed () {
+    watchFeed (options = { stop: false }) {
         this.dispatch((dispatch, getState) => {
             this.emitEvent = true;
             this.currentProfile = getState().profileState.getIn(['loggedProfile', 'profile']);
@@ -49,7 +49,8 @@ class NotificationsActions {
                         return dispatch(action.receiveYouFeed(data));
                     }
                     return dispatch(action.receiveSubscriptionFeed(data));
-                }
+                },
+                stop: options.stop
             });
         });
     }
