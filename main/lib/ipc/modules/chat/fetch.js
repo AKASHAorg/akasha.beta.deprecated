@@ -39,10 +39,19 @@ const execute = Promise.coroutine(function* (data, cb) {
         }
         return { watching: false };
     }
+    if (data.channel && chat) {
+        chat.stopWatching(() => {
+            chat = null;
+        });
+        yield Promise.delay(250);
+    }
     let current;
     const collection = [];
+    const topic = (data.channel) ?
+        geth_connector_1.GethConnector.getInstance().web3.fromUtf8(data.channel) : settings_1.default.getDefaultTopic();
+    settings_1.default.setActive(topic);
     const initial = yield Promise.fromCallback((cb) => {
-        return (geth_connector_1.GethConnector.getInstance().web3.shh.filter({ topics: settings_1.TOPICS })).get(cb);
+        return (geth_connector_1.GethConnector.getInstance().web3.shh.filter({ topics: [topic] })).get(cb);
     });
     for (let i = 0; i < initial.length; i++) {
         if (initial[i].hasOwnProperty('payload')) {
@@ -54,7 +63,7 @@ const execute = Promise.coroutine(function* (data, cb) {
         return { collection };
     }
     cb(null, { collection });
-    chat = geth_connector_1.GethConnector.getInstance().web3.shh.filter({ topics: settings_1.TOPICS });
+    chat = geth_connector_1.GethConnector.getInstance().web3.shh.filter({ topics: [topic] });
     chat.watch(function (err, data) {
         if (err) {
             return cb(err);

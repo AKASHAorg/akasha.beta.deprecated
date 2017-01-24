@@ -1,5 +1,5 @@
 import * as Promise from 'bluebird';
-import { TOPICS } from './settings';
+import settings from './settings';
 import { GethConnector } from '@akashaproject/geth-connector';
 import { constructed as contracts } from '../../contracts/index';
 import { generalSettings, BASE_URL } from '../../config/settings';
@@ -30,7 +30,7 @@ const transform = Promise.coroutine(function*(data: { payload: string, sent: num
     return Object.assign({}, obj, response, userMedia);
 });
 
-const execute = Promise.coroutine(function*(data: { stop?: boolean }, cb: any) {
+const execute = Promise.coroutine(function*(data: { stop?: boolean, channel?: string }, cb: any) {
         if (data.stop) {
             if (chat) {
                 chat.stopWatching(() => {
@@ -40,11 +40,20 @@ const execute = Promise.coroutine(function*(data: { stop?: boolean }, cb: any) {
             return { watching: false };
         }
 
+        if (data.channel && chat) {
+            chat.stopWatching(() => {
+                chat = null;
+            });
+            yield Promise.delay(250);
+        }
         let current;
         const collection = [];
+        const topic = (data.channel) ?
+            GethConnector.getInstance().web3.fromUtf8(data.channel) : settings.getDefaultTopic();
+        settings.setActive(topic);
         // fetch initial messages
         const initial = yield Promise.fromCallback((cb) => {
-            return (GethConnector.getInstance().web3.shh.filter({ topics: TOPICS })).get(cb);
+            return (GethConnector.getInstance().web3.shh.filter({ topics: [topic] })).get(cb);
         });
         for (let i = 0; i < initial.length; i++) {
             if (initial[i].hasOwnProperty('payload')) {
@@ -59,7 +68,7 @@ const execute = Promise.coroutine(function*(data: { stop?: boolean }, cb: any) {
         cb(null, { collection });
 
         // watch for new messages
-        chat = GethConnector.getInstance().web3.shh.filter({ topics: TOPICS });
+        chat = GethConnector.getInstance().web3.shh.filter({ topics: [topic] });
         chat.watch(function (err, data) {
             if (err) {
                 return cb(err);

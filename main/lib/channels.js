@@ -27,7 +27,7 @@ const channels = {
     notifications: ['me', 'feed', 'setFilter', 'excludeFilter', 'includeFilter'],
     tx: ['addToQueue', 'emitMined'],
     licenses: ['getLicenceById', 'getLicenses'],
-    chat: ['fetch', 'post']
+    chat: ['fetch', 'post', 'join', 'leave', 'getCurrentChannels']
 };
 const processes = ['server', 'client'];
 const mem = os_1.totalmem().toLocaleString();

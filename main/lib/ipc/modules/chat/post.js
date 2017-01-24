@@ -11,6 +11,8 @@ const execute = Promise.coroutine(function* (data) {
     if (!whisperIdentity) {
         whisperIdentity = yield geth_connector_1.GethConnector.getInstance().web3.shh.newIdentityAsync();
     }
+    const topic = settings_1.default.getActive();
+    const ttl = (settings_1.default.isDefaultActive()) ? '0x7080' : '0x15180';
     const from = yield current_profile_1.default.execute();
     const payload = geth_connector_1.GethConnector.getInstance().web3
         .fromUtf8(JSON.stringify({
@@ -21,11 +23,11 @@ const execute = Promise.coroutine(function* (data) {
         .shh
         .postAsync({
         from: whisperIdentity,
-        topics: settings_1.TOPICS,
+        topics: [topic],
         payload: payload,
-        ttl: '0x294f0'
+        ttl: ttl
     });
-    return { post };
+    return { post, topic: geth_connector_1.GethConnector.getInstance().web3.toUtf8(topic) };
 });
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = { execute, name: 'post' };
