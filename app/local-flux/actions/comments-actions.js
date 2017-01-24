@@ -24,10 +24,17 @@ class CommentsActions {
             start,
             limit,
             reverse,
-            onSuccess: data => this.dispatch(
-                commentsActionCreators.getEntryCommentsSuccess(data, { reverse, start, entryId }, {
-                    fetchingComments: false
-                })),
+            onSuccess: (data) => {
+                this.dispatch((dispatch, getState) => {
+                    const isfetchingComments = getState().commentsState.getIn(['flags', 'fetchingComments']);
+                    if (isfetchingComments) {
+                        dispatch(commentsActionCreators.getEntryCommentsSuccess(data,
+                            { reverse, start, entryId },
+                            { fetchingComments: false }
+                        ));
+                    }
+                });
+            },
             onError: error => this.dispatch(commentsActionCreators.getEntryCommentsError(error, {
                 fetchingComments: false
             }))
