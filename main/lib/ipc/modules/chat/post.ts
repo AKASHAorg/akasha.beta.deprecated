@@ -1,5 +1,5 @@
 import * as Promise from 'bluebird';
-import { TOPICS } from './settings';
+import settings from './settings';
 import { GethConnector } from '@akashaproject/geth-connector';
 import currentProfile from '../registry/current-profile';
 
@@ -12,6 +12,8 @@ const execute = Promise.coroutine(function*(data: { message: string }) {
     if (!whisperIdentity) {
         whisperIdentity = yield GethConnector.getInstance().web3.shh.newIdentityAsync();
     }
+    const topic = settings.getActive();
+    const ttl = (settings.isDefaultActive()) ? '0x7080' : '0x15180';
     const from = yield currentProfile.execute();
     const payload = GethConnector.getInstance().web3
         .fromUtf8(
@@ -23,11 +25,11 @@ const execute = Promise.coroutine(function*(data: { message: string }) {
         .shh
         .postAsync({
             from: whisperIdentity,
-            topics: TOPICS,
+            topics: [topic],
             payload: payload,
-            ttl: '0x294f0'
+            ttl: ttl
         });
-    return { post };
+    return { post, topic: GethConnector.getInstance().web3.toUtf8(topic) };
 });
 
 export default { execute, name: 'post' };

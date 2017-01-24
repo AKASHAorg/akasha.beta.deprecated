@@ -7,7 +7,7 @@ class ChatIPC extends ModuleEmitter {
     constructor() {
         super();
         this.MODULE_NAME = 'chat';
-        this.DEFAULT_MANAGED = ['fetch', 'post'];
+        this.DEFAULT_MANAGED = ['fetch', 'post', 'join', 'leave', 'getCurrentChannels'];
     }
 
     public initListeners(webContents: WebContents) {
