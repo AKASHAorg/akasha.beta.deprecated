@@ -8,6 +8,7 @@ function mapStateToProps (state, ownProps) {
         canClaimPending: state.entryState.getIn(['flags', 'canClaimPending']),
         claimPending: state.entryState.getIn(['flags', 'claimPending']),
         comments: state.commentsState.get('entryComments'),
+        newCommentsIds: state.commentsState.get('newCommentsIds'),
         entry: state.entryState.get('fullEntry'),
         fetchingFullEntry: state.entryState.getIn(['flags', 'fetchingFullEntry']),
         fetchingComments: state.commentsState.getIn(['flags', 'fetchingComments']),

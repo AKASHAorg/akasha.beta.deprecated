@@ -62,7 +62,7 @@ class AddEntryPage extends Component {
     }
 
     // display an alert when leaving route
-    onPageLeave = (nextLocation) => {
+    onPageLeave = (nextLocation) => { // eslint-disable-line consistent-return
         const nextIsPublish = nextLocation.pathname.includes('/publish');
         if (this.state.shouldBeSaved && !this.waitingConfirm && !nextIsPublish) {
             if (this.alertDialog) {

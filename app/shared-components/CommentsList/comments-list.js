@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
 import { entryMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
+import { CommentEditor, CommentThread } from 'shared-components';
+import { Divider } from 'material-ui';
 import Comment from '../Comment/comment';
-import { CommentEditor } from 'shared-components';
 
 class CommentsList extends Component {
     constructor (props) {
@@ -11,7 +12,6 @@ class CommentsList extends Component {
         this.state = {
             loadedCommentsCount: this.props.comments.size,
             loadMoreReq: false,
-            publishingComments: this.props.publishingComments
         };
     }
     componentDidMount () {
@@ -36,6 +36,9 @@ class CommentsList extends Component {
     componentWillUnmount () {
         window.removeEventListener('scroll', this._handleScroll);
     }
+    resetReplies = () => {
+        this._resetReplyTo();
+    }
     _handleNavigation = (to) => {
         const { loggedProfile } = this.props;
         this.context.router.push(`${loggedProfile.get('akashaId')}/${to}`);
@@ -43,6 +46,14 @@ class CommentsList extends Component {
     _handleReply = (ev, parentCommentId) => {
         this.setState({
             replyTo: parentCommentId
+        });
+    }
+    _handleReplyCancel = () => {
+        this._resetReplyTo();
+    }
+    _resetReplyTo = () => {
+        this.setState({
+            replyTo: null
         });
     }
     _handleScroll = () => {
@@ -54,6 +65,7 @@ class CommentsList extends Component {
         const shouldTriggerEvent = (scrollY + innerHeight + bottomOffset) >= scrollHeight;
         if (shouldTriggerEvent && (commentsCount > fetchLimit) && !this.state.loadMoreReq) {
             if (onLoadMoreRequest && lastLoadedCommentId > 1) {
+                console.info('triggered scroll event to load more comments');
                 this.setState({
                     loadMoreReq: true
                 }, () => {
@@ -63,50 +75,26 @@ class CommentsList extends Component {
         }
     }
     render () {
-        const { comments, publishingComments, newlyCreatedComments, intl,
-            fetchingComments } = this.props;
-        const { loggedProfile, entryAuthorProfile } = this.props;
+        const { comments, intl, loggedProfile, entryAuthorProfile, fetchingComments, profileAvatar,
+            profileUserInitials, onReplyCreate } = this.props;
         return (
           <div>
-            {publishingComments.map((comment, key) =>
-              <Comment
-                key={`${key}-publishingComments`}
-                comment={comment}
+            {comments.size > 0 &&
+              <CommentThread
+                parentId="0"
+                depth={1}
+                comments={comments}
+                replyTo={this.state.replyTo}
                 loggedProfile={loggedProfile}
                 entryAuthorProfile={entryAuthorProfile}
-                isPublishing
-                onAuthorNameClick={this._handleNavigation}
-                onReply={ev => this._handleReply(ev, 'comment')}
+                profileAvatar={profileAvatar}
+                profileUserInitials={profileUserInitials}
+                onReply={this._handleReply}
+                onReplyCreate={onReplyCreate}
+                onReplyCancel={this._handleReplyCancel}
+                intl={intl}
               />
-            )}
-            {newlyCreatedComments.map((comment, key) =>
-              <Comment
-                key={`${key}-newComments`}
-                comment={comment}
-                loggedProfile={loggedProfile}
-                entryAuthorProfile={entryAuthorProfile}
-                onReply={ev => this._handleReply(ev, 'comment')}
-                onAuthorNameClick={this._handleNavigation}
-              />
-            )}
-            {comments.filter(comm => comm.getIn(['data', 'parent']) === '0').map((comment, key) =>
-              <Comment
-                key={`${key}-fetchedComments`}
-                comment={comment}
-                loggedProfile={loggedProfile}
-                entryAuthorProfile={entryAuthorProfile}
-                onReply={ev => this._handleReply(ev, comment.get('commentId'))}
-                onAuthorNameClick={this._handleNavigation}
-              >
-                {this.state.replyTo === comment.get('commentId') &&
-                  <CommentEditor
-                    profileAvatar={this.props.profileAvatar}
-                    profileUserInitials={this.props.profileUserInitials}
-                    onCommentCreate={this.props.onReplyCreate}
-                  />
-                }
-              </Comment>
-            )}
+            }
             {(!this.state.loadMoreReq && fetchingComments) &&
               <div style={{ padding: '16px 0', textAlign: 'center' }}>
                 {`${intl.formatMessage(entryMessages.loadingComments)}...`}
@@ -125,16 +113,17 @@ CommentsList.propTypes = {
     comments: React.PropTypes.shape(),
     loggedProfile: React.PropTypes.shape(),
     entryAuthorProfile: React.PropTypes.string,
-    publishingComments: React.PropTypes.shape(),
-    newlyCreatedComments: React.PropTypes.shape(),
     onLoadMoreRequest: React.PropTypes.func,
     commentsCount: React.PropTypes.number,
     fetchLimit: React.PropTypes.number,
     fetchingComments: React.PropTypes.bool,
     entryId: React.PropTypes.number,
-    intl: React.PropTypes.shape()
+    intl: React.PropTypes.shape(),
+    profileAvatar: React.PropTypes.string,
+    profileUserInitials: React.PropTypes.string,
+    onReplyCreate: React.PropTypes.func
 };
 CommentsList.contextTypes = {
     router: React.PropTypes.shape()
 };
-export default injectIntl(CommentsList);
+export default CommentsList;
