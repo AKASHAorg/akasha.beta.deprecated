@@ -12,9 +12,9 @@ import { injectIntl } from 'react-intl';
 import HubIcon from 'material-ui/svg-icons/hardware/device-hub';
 import MoreIcon from 'material-ui/svg-icons/navigation/expand-more';
 import LessIcon from 'material-ui/svg-icons/navigation/expand-less';
-import { EntryCommentReply } from 'shared-components/svg';
-import { Avatar } from 'shared-components';
-import { entryMessages } from 'locale-data/messages';
+import { EntryCommentReply } from 'shared-components/svg'; // eslint-disable-line import/no-unresolved, import/extensions
+import { Avatar, ProfileHoverCard } from 'shared-components'; // eslint-disable-line import/no-unresolved, import/extensions
+import { entryMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
 import { getInitials, getWordCount } from 'utils/dataModule'; // eslint-disable-line import/no-unresolved, import/extensions
 import style from './comment.scss';
 
@@ -25,7 +25,8 @@ class Comment extends React.Component {
         super(props);
         this.state = {
             isExpanded: null,
-            editorState: null
+            editorState: null,
+            hoverCardOpen: false
         };
     }
     componentWillMount () {
@@ -41,6 +42,16 @@ class Comment extends React.Component {
         }
         this.setState({
             isExpanded
+        });
+    }
+    _handleMouseEnter = (ev) => {
+        this.setState({
+            hoverCardOpen: true
+        });
+    }
+    _handleMouseLeave = (ev) => {
+        this.setState({
+            hoverCardOpen: false
         });
     }
     _toggleExpanded = (ev, isExpanded) => {
@@ -99,20 +110,29 @@ class Comment extends React.Component {
                   titleStyle={{ fontSize: '100%' }}
                   subtitleStyle={{ paddingLeft: '2px', fontSize: '80%' }}
                   title={
-                    <FlatButton
-                      label={authorName}
-                      hoverColor="transparent"
-                      style={{ height: 28, lineHeight: '28px', textAlign: 'left' }}
-                      labelStyle={{
-                          textTransform: 'capitalize',
-                          paddingLeft: 4,
-                          paddingRight: 4,
-                          color: commentAuthorNameColor
-                      }}
-                      onClick={() => { onAuthorNameClick(authorProfilePath); }}
-                      className={`${viewerIsAuthor && style.viewer_is_author}
-                        ${isEntryAuthor && style.is_entry_author} ${style.author_name}`}
-                    />
+                    <div
+                      style={{ position: 'relative' }}
+                      onMouseLeave={this._handleMouseLeave}
+                    >
+                      <FlatButton
+                        label={authorName}
+                        hoverColor="transparent"
+                        style={{ height: 28, lineHeight: '28px', textAlign: 'left' }}
+                        labelStyle={{
+                            textTransform: 'capitalize',
+                            paddingLeft: 4,
+                            paddingRight: 4,
+                            color: commentAuthorNameColor
+                        }}
+                        onClick={() => { onAuthorNameClick(authorProfilePath); }}
+                        className={`${viewerIsAuthor && style.viewer_is_author}
+                          ${isEntryAuthor && style.is_entry_author} ${style.author_name}`}
+                        onMouseEnter={this._handleMouseEnter}
+                      />
+                      <ProfileHoverCard
+                        open={this.state.hoverCardOpen}
+                      />
+                    </div>
                   }
                   subtitle={date && intl.formatRelative(new Date(date))}
                   avatar={
@@ -123,6 +143,7 @@ class Comment extends React.Component {
                       radius={40}
                       onClick={() => { onAuthorNameClick(authorProfilePath); }}
                       userInitialsStyle={{ fontSize: 20, textTransform: 'uppercase', fontWeight: 500 }}
+                      onMouseEnter={this._handleMouseEnter}
                     />
                   }
                 />

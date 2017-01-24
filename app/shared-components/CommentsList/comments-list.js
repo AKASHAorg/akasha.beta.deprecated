@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
-import { injectIntl } from 'react-intl';
 import { entryMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
-import { CommentEditor, CommentThread } from 'shared-components';
-import { Divider } from 'material-ui';
-import Comment from '../Comment/comment';
+import { CommentThread } from 'shared-components';
 
 class CommentsList extends Component {
     constructor (props) {

@@ -19,6 +19,7 @@ export LogsList from './LogsList/logs-list';
 export PanelContainer from './PanelContainer/panel-container';
 export PublishConfirmDialog from './Dialogs/publish-confirm-dialog';
 export ProfileCard from './ProfileCard/profile-card';
+export ProfileHoverCard from './ProfileHoverCard/profile-hover-card';
 export SendTipForm from './Forms/send-tip-form';
 export Sidebar from './Sidebar/side-bar';
 export SyncProgressLoader from './Loaders/sync-progress';
