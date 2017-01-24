@@ -78,8 +78,9 @@ class HomeContainer extends React.Component {
         }
     }
     componentWillUnmount () {
-        const { appActions } = this.props;
+        const { appActions, notificationsActions } = this.props;
         appActions.cleanStore();
+        notificationsActions.watchFeed({ stop: true });
         clearInterval(this.interval);
         ReactTooltip.hide();
     }
