@@ -392,16 +392,25 @@ export function getFullEntrySuccess (data, flags) {
         flags
     };
 }
-export function unloadFullEntry () {
-    return {
-        type: types.UNLOAD_FULL_ENTRY
-    };
-}
+
 export function getFullEntryError (error, flags) {
     return {
         type: types.GET_FULL_ENTRY_ERROR,
         error,
         flags
+    };
+}
+
+export function setLatestVersion (data) {
+    return {
+        type: types.SET_LATEST_VERSION,
+        data
+    };
+}
+
+export function unloadFullEntry () {
+    return {
+        type: types.UNLOAD_FULL_ENTRY
     };
 }
 

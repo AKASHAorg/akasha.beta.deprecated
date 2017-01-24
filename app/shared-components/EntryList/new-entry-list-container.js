@@ -9,6 +9,23 @@ class EntryList extends Component {
         ReactTooltip.hide();
     }
 
+    getExistingDraft = (entryId) => {
+        const { drafts } = this.props;
+        return drafts.find(draft => draft.get('entryId') === entryId);
+    }
+
+    handleEdit = (entryId) => {
+        const { loggedProfileData } = this.props;
+        const { router } = this.context;
+        const akashaId = loggedProfileData.get('akashaId');
+        const existingDraft = this.getExistingDraft(entryId);
+        if (existingDraft) {
+            router.push(`/${akashaId}/draft/${existingDraft.get('id')}`);
+        } else {
+            router.push(`/${akashaId}/draft/new?editEntry=${entryId}`);
+        }
+    };
+
     selectTag = (tag) => {
         const { params } = this.context.router;
         this.context.router.push(`/${params.akashaId}/explore/tag/${tag}`);
@@ -44,7 +61,7 @@ class EntryList extends Component {
                     No entries
                   </div>
                 }
-                {entries && entries.map((entry, key) => {
+                {entries && entries.map((entry) => {
                     const voteEntryPending = votePending && votePending.find(vote =>
                         vote.entryId === entry.get('entryId'));
                     const claimEntryPending = claimPending && claimPending.find(claim =>
@@ -56,10 +73,12 @@ class EntryList extends Component {
                       claimPending={claimEntryPending && claimEntryPending.value}
                       entry={entry}
                       entryActions={entryActions}
+                      existingDraft={this.getExistingDraft(entry.get('entryId'))}
                       fetchingEntryBalance={fetchingEntryBalance}
+                      handleEdit={this.handleEdit}
                       hidePanel={appActions.hidePanel}
                       isSaved={isSaved}
-                      key={key}
+                      key={entry.get('entryId')}
                       loggedAkashaId={loggedProfileData.get('akashaId')}
                       selectedTag={selectedTag}
                       selectTag={this.selectTag}
@@ -87,6 +106,7 @@ EntryList.propTypes = {
     cardStyle: PropTypes.shape(),
     canClaimPending: PropTypes.bool,
     claimPending: PropTypes.shape(),
+    drafts: PropTypes.shape(),
     entries: PropTypes.shape(),
     entryActions: PropTypes.shape(),
     fetchingEntries: PropTypes.bool,
@@ -111,6 +131,7 @@ function mapStateToProps (state) {
         blockNr: state.externalProcState.getIn(['gethStatus', 'blockNr']),
         canClaimPending: state.entryState.getIn(['flags', 'canClaimPending']),
         claimPending: state.entryState.getIn(['flags', 'claimPending']),
+        drafts: state.draftState.get('drafts'),
         fetchingEntryBalance: state.entryState.getIn(['flags', 'fetchingEntryBalance']),
         loggedProfileData: state.profileState.get('profiles').find(prf =>
             prf.get('profile') === state.profileState.getIn(['loggedProfile', 'profile'])),
