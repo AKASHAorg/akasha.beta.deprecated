@@ -1,5 +1,7 @@
 import strategy from 'react-validatorjs-strategy';
+import XRegExp from 'xregexp';
 import { formMessages, validationMessages } from 'locale-data/messages';
+
 /* eslint import/no-unresolved: 0 */
 
 class UserValidation {
@@ -9,10 +11,10 @@ class UserValidation {
 
     getSchema () {
         const { formatMessage } = this.intl;
-
+        const regExp = XRegExp('^(?:[\\pL]+(?:[\\pL\\p{Common}])*?)+$');
         return strategy.createSchema({
-            firstName: 'required|min:3|max:32',
-            lastName: 'max:32',
+            firstName: ['required', 'min:3', 'max:32', `regex:${regExp}`],
+            lastName: ['max:32', `regex:${regExp}`],
             /**
              * regex: /^(?:[a-zA-Z0-9]+(?:.(?!$))?)+$/
              *  - allow alphanumeric
@@ -27,6 +29,7 @@ class UserValidation {
             required: formatMessage(validationMessages.required),
             min: formatMessage(validationMessages.min),
             max: formatMessage(validationMessages.max),
+            regex: formatMessage(validationMessages.invalidCharacters),
             'same.password2': formatMessage(validationMessages.passphraseNotMatching),
         }, (validator) => {
             validator.setAttributeNames({
