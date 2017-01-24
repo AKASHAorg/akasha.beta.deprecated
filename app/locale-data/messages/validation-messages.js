@@ -19,6 +19,11 @@ const validationMessages = defineMessages({
                         Do not translate :attribute or :max!`,
         defaultMessage: ':attribute must not have more than :max characters.'
     },
+    invalidCharacters: {
+        id: 'app.validator.invalidCharacters',
+        description: 'When a field does not start with a letter or contains invalid characters',
+        defaultMessage: ':attribute must start with a letter and only contain valid characters'
+    },
     passphraseNotMatching: {
         id: 'app.validator.passphraseNotMatching',
         description: 'When the passphrase field is different than this one.',

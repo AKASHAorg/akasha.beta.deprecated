@@ -1,4 +1,5 @@
 import r from 'ramda';
+import XRegExp from 'xregexp';
 
 // this module provides various data manipulation methods
 export const inputFieldMethods = {
@@ -110,17 +111,32 @@ export const validateTag = (tagName) => {
         error = 'tooShortError';
     }
     return error;
-}
+};
 
-export function getInitials (firstName, lastName) {
+export function getInitials (firstName, lastName = '') {
     if (!firstName && !lastName) {
         return '';
     }
-    const profileName = `${firstName} ${lastName}`;
-    return profileName
-        .match(/\b\w/g)
-        .reduce((prev, current) => prev + current, '')
-        .slice(0, 2);
+    const unicodeLetter = XRegExp('^\\pL');
+    const lastNameMatch = lastName && lastName.match(unicodeLetter);
+    const lastNameInitial = lastNameMatch && lastNameMatch[0] ? lastNameMatch[0] : '';
+    const firstNameMatch = firstName && firstName.match(unicodeLetter);
+    const firstNameInitial = lastNameInitial ?
+        (firstNameMatch && firstNameMatch[0] ? firstNameMatch[0] : '') :
+        firstName
+            .split(' ')
+            .map((str) => {
+                const chars = str.match(unicodeLetter);
+                if (chars && chars[0]) {
+                    return chars[0];
+                }
+                return '';
+            })
+            .reduce((prev, current) => prev + current, '');
+    const initials = `${firstNameInitial}${lastNameInitial}`;
+    return initials ?
+        initials.slice(0, 2) :
+        '';
 }
 
 export function getUrl (url) {
