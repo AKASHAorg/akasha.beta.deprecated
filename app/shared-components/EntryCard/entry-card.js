@@ -7,7 +7,7 @@ import EditIcon from 'material-ui/svg-icons/image/edit';
 import { EntryBookmarkOn, EntryBookmarkOff, EntryComment, EntryDownvote,
     EntryUpvote, ToolbarEthereum } from 'shared-components/svg';
 import { injectIntl } from 'react-intl';
-import { Avatar, EntryVotesPanel, TagChip } from 'shared-components';
+import { Avatar, EntryVersionsPanel, EntryVotesPanel, TagChip } from 'shared-components';
 import { calculateReadingTime, getInitials } from 'utils/dataModule';
 import imageCreator from 'utils/imageUtils';
 import { entryMessages } from 'locale-data/messages';
@@ -19,7 +19,8 @@ class EntryCard extends Component {
 
         this.state = {
             expanded: false,
-            showVotes: false
+            showVotes: false,
+            showVersions: false
         };
     }
 
@@ -43,7 +44,8 @@ class EntryCard extends Component {
             isSaved !== this.props.isSaved ||
             voteEntryPending !== this.props.voteEntryPending ||
             nextState.expanded !== this.state.expanded ||
-            nextState.showVotes !== this.state.showVotes
+            nextState.showVotes !== this.state.showVotes ||
+            nextState.showVersions !== this.state.showVersions
         ) {
             return true;
         }
@@ -133,17 +135,19 @@ class EntryCard extends Component {
     };
 
     handleEdit = () => {
-        const { entry, hidePanel, loggedAkashaId } = this.props;
-        const { router } = this.context;
+        const { entry, handleEdit, hidePanel } = this.props;
         hidePanel();
-        router.push(`/${loggedAkashaId}/draft/new?editEntry=${entry.get('entryId')}`);
+        handleEdit(entry.get('entryId'));
     };
 
-    _handleEntryNavigation = () => {
+    handleEntryNavigation = (tar, ev, version) => {
         const { entry, hidePanel, loggedAkashaId } = this.props;
         hidePanel();
-        this.context.router.push(`/${loggedAkashaId}/entry/${entry.get('entryId')}`);
+        const query = version !== undefined ? `?version=${version}` : '';
+        this.context.router.push(`/${loggedAkashaId}/entry/${entry.get('entryId')}${query}`);
     };
+
+    getVersion = version => this.handleEntryNavigation(null, null, version);
 
     openVotesPanel = () => {
         this.setState({
@@ -154,6 +158,18 @@ class EntryCard extends Component {
     closeVotesPanel = () => {
         this.setState({
             showVotes: false
+        });
+    };
+
+    openVersionsPanel = () => {
+        this.setState({
+            showVersions: true
+        });
+    };
+
+    closeVersionsPanel = () => {
+        this.setState({
+            showVersions: false
         });
     };
 
@@ -182,29 +198,26 @@ class EntryCard extends Component {
         );
     }
 
-    render () {
-        const { canClaimPending, claimPending, entry, fetchingEntryBalance, intl, isSaved,
-            selectedTag, style, voteEntryPending } = this.props;
-        const { palette } = this.context.muiTheme;
+    renderSubtitle = () => {
+        const { entry, intl } = this.props;
         const content = entry.get('content');
-        const existingVoteWeight = entry.get('voteWeight') || 0;
         const publishDate = new Date(entry.getIn(['entryEth', 'unixStamp']) * 1000);
-        const publisher = entry.getIn(['entryEth', 'publisher']);
-        if (!publisher) {
-            return this.renderPlaceholder();
-        }
-        const userInitials = getInitials(publisher.get('firstName'), publisher.get('lastName'));
-        const avatar = publisher.get('avatar') ?
-            imageCreator(publisher.get('avatar'), publisher.get('baseUrl')) :
-            null;
         const wordCount = (content && content.get('wordCount')) || 0;
         const readingTime = calculateReadingTime(wordCount);
-        const upvoteIconColor = existingVoteWeight > 0 ? palette.accent3Color : '';
-        const downvoteIconColor = existingVoteWeight < 0 ? palette.accent1Color : '';
-        const cardSubtitle = (
+        const latestVersion = content && content.get('version');
+        const publishedMessage = latestVersion ?
+          (<span>
+            <span onClick={this.openVersionsPanel} className="link">
+              {intl.formatMessage(entryMessages.published)}
+            </span>
+            <span> *</span>
+          </span>) :
+          intl.formatMessage(entryMessages.published);
+
+        return (
           <div>
             <span style={{ paddingRight: '5px' }}>
-              {intl.formatMessage(entryMessages.published)}
+              {publishedMessage}
             </span>
             <span
               data-tip={`Block ${entry.getIn(['entryEth', 'blockNr'])}`}
@@ -223,6 +236,26 @@ class EntryCard extends Component {
             </span>
           </div>
         );
+    };
+
+    render () {
+        const { canClaimPending, claimPending, entry, existingDraft, fetchingEntryBalance, intl,
+            isSaved, selectedTag, style, voteEntryPending } = this.props;
+        const { palette } = this.context.muiTheme;
+        const content = entry.get('content');
+        const latestVersion = content.get('version');
+        const existingVoteWeight = entry.get('voteWeight') || 0;
+        const publisher = entry.getIn(['entryEth', 'publisher']);
+        if (!publisher) {
+            return this.renderPlaceholder();
+        }
+        const userInitials = getInitials(publisher.get('firstName'), publisher.get('lastName'));
+        const avatar = publisher.get('avatar') ?
+            imageCreator(publisher.get('avatar'), publisher.get('baseUrl')) :
+            null;
+        const upvoteIconColor = existingVoteWeight > 0 ? palette.accent3Color : '';
+        const downvoteIconColor = existingVoteWeight < 0 ? palette.accent1Color : '';
+
         return (
           <Card
             className="start-xs"
@@ -258,7 +291,7 @@ class EntryCard extends Component {
                   </div>
                 </button>
               }
-              subtitle={cardSubtitle}
+              subtitle={this.renderSubtitle()}
               avatar={
                 <button
                   style={{
@@ -376,7 +409,7 @@ class EntryCard extends Component {
                     maxHeight: '80px',
                     overflow: 'hidden'
                 }}
-                onClick={this._handleEntryNavigation}
+                onClick={this.handleEntryNavigation}
               />
             }
             {content &&
@@ -402,7 +435,7 @@ class EntryCard extends Component {
                     fontSize: '16px'
                 }}
                 expandable
-                onClick={this._handleEntryNavigation}
+                onClick={this.handleEntryNavigation}
               >
                 {content.get('excerpt')}
               </CardText>
@@ -549,6 +582,17 @@ class EntryCard extends Component {
                 }
               </CardActions>
             }
+            {latestVersion && this.state.showVersions &&
+              <EntryVersionsPanel
+                closeVersionsPanel={this.closeVersionsPanel}
+                currentVersion={latestVersion}
+                existingDraft={existingDraft}
+                getVersion={this.getVersion}
+                handleEdit={this.handleEdit}
+                isOwnEntry={this.isOwnEntry()}
+                latestVersion={latestVersion}
+              />
+            }
           </Card>
         );
     }
@@ -560,7 +604,9 @@ EntryCard.propTypes = {
     claimPending: PropTypes.bool,
     entry: PropTypes.shape(),
     entryActions: PropTypes.shape(),
+    existingDraft: PropTypes.shape(),
     fetchingEntryBalance: PropTypes.bool,
+    handleEdit: PropTypes.func,
     hidePanel: PropTypes.func,
     intl: PropTypes.shape(),
     isSaved: PropTypes.bool,

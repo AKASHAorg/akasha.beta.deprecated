@@ -65,6 +65,7 @@ const initialState = fromJS({
     entriesStream: new EntriesStream(),
     entries: new List(),
     fullEntry: null,
+    fullEntryLatestVersion: null,
     savedEntries: new List(),
     moreProfileEntries: false,
     moreSavedEntries: false,
@@ -371,10 +372,19 @@ const entryState = createReducer(initialState, {
             entryEth: new EntryEth(entryEth)
         });
         const newState = state.setIn(['fullEntry'], newEntry);
+        const fullEntry = state.get('fullEntry');
+        const latestVersion = fullEntry && data.entryId !== fullEntry.get('entryId') ?
+            data.content.version || null :
+            Math.max(state.get('fullEntryLatestVersion'), data.content && data.content.version) || null;
         return newState.merge({
-            flags: state.get('flags').merge(flags)
+            flags: state.get('flags').merge(flags),
+            fullEntryLatestVersion: latestVersion
         });
     },
+    [types.SET_LATEST_VERSION]: (state, { data }) =>
+        state.merge({
+            fullEntryLatestVersion: data
+        }),
     [commentsTypes.GET_COMMENTS_COUNT_SUCCESS]: (state, { data }) => {
         if (state.get('fullEntry') && (data.entryId === state.getIn(['fullEntry', 'entryId']))) {
             return state.merge({
@@ -383,8 +393,10 @@ const entryState = createReducer(initialState, {
         }
         return state;
     },
-    [types.UNLOAD_FULL_ENTRY]: state =>
-        state.set('fullEntry', null),
+    [types.UNLOAD_FULL_ENTRY]: (state) => {
+        const newState = state.set('fullEntry', null);
+        return newState.set('fullEntryLatestVersion', null);
+    },
 
     [types.GET_SCORE]: flagHandler,
 

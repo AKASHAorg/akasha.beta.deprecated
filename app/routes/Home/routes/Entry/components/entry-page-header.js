@@ -3,7 +3,7 @@ import { injectIntl } from 'react-intl';
 import { CardHeader, IconButton, SvgIcon, FlatButton } from 'material-ui';
 import CloseIcon from 'material-ui/svg-icons/navigation/close';
 import EditIcon from 'material-ui/svg-icons/image/edit';
-import { Avatar } from 'shared-components';
+import { Avatar, EntryVersionsPanel } from 'shared-components';
 import { calculateReadingTime, getInitials } from 'utils/dataModule'; // eslint-disable-line import/no-unresolved, import/extensions
 import imageCreator from 'utils/imageUtils'; // eslint-disable-line import/no-unresolved, import/extensions
 import { entryMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
@@ -19,6 +19,22 @@ const buttonStyle = {
 const FLOATING_COMMENTS_BUTTON_ACTIVE = false;
 
 class EntryPageHeader extends Component {
+
+    state = {
+        showVersions: false,
+    };
+
+    openVersionsPanel = () => {
+        this.setState({
+            showVersions: true
+        });
+    };
+
+    closeVersionsPanel = () => {
+        this.setState({
+            showVersions: false
+        });
+    };
 
     handleBackNavigation = () => {
         this.context.router.goBack();
@@ -55,17 +71,25 @@ class EntryPageHeader extends Component {
     };
 
     renderSubtitle = () => {
-        const { entryBlockNr, intl, timestamp, wordCount } = this.props;
+        const { entryBlockNr, intl, latestVersion, timestamp, wordCount } = this.props;
         const publishDate = new Date(timestamp * 1000);
         const readingTime = calculateReadingTime(wordCount);
+        const publishedMessage = latestVersion ?
+          (<span>
+            <span onClick={this.openVersionsPanel} className="link">
+              {intl.formatMessage(entryMessages.published)}
+            </span>
+            <span> *</span>
+          </span>) :
+          intl.formatMessage(entryMessages.published);
         return (
           <div style={{ fontSize: '12px' }}>
             <span style={{ paddingRight: '5px' }}>
-              {intl.formatMessage(entryMessages.published)}
+              {publishedMessage}
             </span>
             <span
               data-tip={`Block ${entryBlockNr}`}
-              style={{ fontWeight: 600, textDecoration: 'underline', display: 'inline-block' }}
+              style={{ fontWeight: 600, display: 'inline-block' }}
             >
               {intl.formatRelative(publishDate)}
             </span>
@@ -85,8 +109,9 @@ class EntryPageHeader extends Component {
     }
 
     render () {
-        const { handleEdit, isActive, isOwnEntry, publisherTitleShadow, publisher,
-            selectProfile, intl, commentsSectionTop } = this.props;
+        const { currentVersion, existingDraft, getVersion, handleEdit, isActive, isOwnEntry,
+            latestVersion, publisherTitleShadow, publisher, selectProfile, intl,
+            commentsSectionTop } = this.props;
         const isScrollingDown = (this.props.scrollDirection === -1);
         let newCommentsButtonTop = 0;
         if (isScrollingDown) {
@@ -99,6 +124,7 @@ class EntryPageHeader extends Component {
                 newCommentsButtonTop = 110;
             }
         }
+
         return (
           <div
             className={`${styles.entry_publisher_info}`}
@@ -203,17 +229,33 @@ class EntryPageHeader extends Component {
                 </div>
               </div>
             </div>
+            {!!latestVersion && this.state.showVersions &&
+              <EntryVersionsPanel
+                closeVersionsPanel={this.closeVersionsPanel}
+                currentVersion={currentVersion}
+                existingDraft={existingDraft}
+                getVersion={getVersion}
+                handleEdit={handleEdit}
+                isOwnEntry={isOwnEntry}
+                latestVersion={latestVersion}
+              />
+            }
           </div>
         );
     }
 }
 
 EntryPageHeader.propTypes = {
+    commentsSectionTop: PropTypes.number,
+    currentVersion: PropTypes.number,
     entryBlockNr: PropTypes.number,
+    existingDraft: PropTypes.shape(),
+    getVersion: PropTypes.func,
     handleEdit: PropTypes.func,
     intl: PropTypes.shape(),
     isActive: PropTypes.bool,
     isOwnEntry: PropTypes.bool,
+    latestVersion: PropTypes.number,
     publisher: PropTypes.shape(),
     publisherTitleShadow: PropTypes.bool,
     selectProfile: PropTypes.func,

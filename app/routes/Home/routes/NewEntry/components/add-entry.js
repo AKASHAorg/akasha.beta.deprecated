@@ -8,7 +8,7 @@ import {
     MenuItem } from 'material-ui';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import { getWordCount } from 'utils/dataModule'; // eslint-disable-line import/no-unresolved, import/extensions
-import { AlertDialog, EntryEditor } from 'shared-components'; // eslint-disable-line import/no-unresolved, import/extensions
+import { AlertDialog, EntryEditor, EntryVersionsPanel } from 'shared-components'; // eslint-disable-line import/no-unresolved, import/extensions
 import { generalMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
 import { injectIntl } from 'react-intl';
 
@@ -18,7 +18,10 @@ class AddEntryPage extends Component {
         this.state = {
             isNewDraft: false,
             fetchingDraft: false,
-            errors: {}
+            errors: {},
+            showVersions: false,
+            requestLatestVersion: false,
+            shouldBeSaved: true
         };
     }
 
@@ -29,13 +32,14 @@ class AddEntryPage extends Component {
             this.getDraft(params.draftId);
         }
         if (params.draftId === 'new' && location.query.editEntry) {
-            entryActions.getFullEntry(location.query.editEntry);
+            const version = location.query.version && Number(location.query.version);
+            entryActions.getFullEntry(location.query.editEntry, version);
         }
     }
 
     componentWillReceiveProps (nextProps) {
-        const { drafts, location, params } = nextProps;
-        const currentDraft = this._findCurrentDraft(drafts);
+        const { drafts, entryActions, fullEntry, location, params } = nextProps;
+        const currentDraft = this._findCurrentDraft(drafts, fullEntry);
         const currentPathName = this.props.location.pathname;
         if (params.draftId === 'new') {
             this.setState({
@@ -47,6 +51,19 @@ class AddEntryPage extends Component {
         } else {
             this.setState({
                 isNewDraft: false
+            });
+        }
+        if (params.draftId !== this.props.params.draftId) {
+            this.setState({
+                requestLatestVersion: false,
+                showVersions: false,
+                shouldBeSaved: true
+            });
+        }
+        if (!this.state.requestLatestVersion && currentDraft && currentDraft.entryId) {
+            entryActions.getLatestVersion(currentDraft.entryId);
+            this.setState({
+                requestLatestVersion: true
             });
         }
         if (currentPathName.includes('/publish') || currentPathName.includes('/publish-status')) {
@@ -98,12 +115,13 @@ class AddEntryPage extends Component {
         return draft;
     };
 
-    _findCurrentDraft = (drafts) => {
+    _findCurrentDraft = (drafts, entry) => {
         const { fullEntry, location, params } = this.props;
+        let newEntry = entry || fullEntry;
         if (location.query.editEntry) {
-            const entry = fullEntry && fullEntry.toJS();
-            if (entry) {
-                return this.convertEntryToDraft(entry);
+            newEntry = newEntry && newEntry.toJS();
+            if (newEntry) {
+                return this.convertEntryToDraft(newEntry);
             }
             return null;
         }
@@ -202,8 +220,9 @@ class AddEntryPage extends Component {
     };
 
     _getHeaderTitle = () => {
-        const { savingDraft, entriesCount, drafts, draftsCount, location } = this.props;
-        const { fetchingDraft, draftMissing, isNewDraft } = this.state;
+        const { savingDraft, entriesCount, drafts, draftsCount, location,
+            latestVersion } = this.props;
+        const { fetchingDraft, draftMissing, isNewDraft, shouldBeSaved } = this.state;
         let headerTitle = 'First entry';
         const draft = this._findCurrentDraft(drafts);
         if (savingDraft) {
@@ -213,7 +232,23 @@ class AddEntryPage extends Component {
         } else if (draftMissing) {
             headerTitle = 'Draft is missing';
         } else if (!!location.query.editEntry || (draft && draft.entryId)) {
-            headerTitle = 'Edit entry';
+            headerTitle = (
+              <div>
+                Editing&nbsp;
+                {latestVersion ?
+                  <span
+                    className="link"
+                    onClick={this.openVersionsPanel}
+                    style={{ fontWeight: 400 }}
+                  >
+                    entry
+                  </span> :
+                  'entry'
+                }
+                <span style={{ padding: '0 5px' }}>-</span>
+                {shouldBeSaved ? 'changes will be saved locally' : 'changes saved locally'}
+              </div>
+            );
         } else if (!isNewDraft || entriesCount > 0 || draftsCount > 0) {
             headerTitle = 'New entry';
         }
@@ -246,6 +281,28 @@ class AddEntryPage extends Component {
             id: 'editorMessage',
             values: { errorMessage },
             duration: 3000
+        });
+    };
+
+    getVersion = (version) => {
+        const { drafts, params } = this.props;
+        const currentDraft = this._findCurrentDraft(drafts);
+        if (!currentDraft || !currentDraft.entryId) {
+            return null;
+        }
+        const query = version !== undefined ? `?version=${version}` : '';
+        return this.context.router.push(`/${params.akashaId}/entry/${currentDraft.entryId}${query}`);
+    };
+
+    openVersionsPanel = () => {
+        this.setState({
+            showVersions: true
+        });
+    };
+
+    closeVersionsPanel = () => {
+        this.setState({
+            showVersions: false
         });
     };
 
@@ -286,7 +343,7 @@ class AddEntryPage extends Component {
     };
 
     render () {
-        const { drafts, savingDraft } = this.props;
+        const { drafts, latestVersion, savingDraft } = this.props;
         const { fetchingDraft, draftMissing, isNewDraft } = this.state;
         const currentDraft = this._findCurrentDraft(drafts);
         return (
@@ -304,7 +361,7 @@ class AddEntryPage extends Component {
               }}
             >
               <ToolbarGroup>
-                <h3 style={{ fontWeight: '200' }}>{this._getHeaderTitle()}</h3>
+                <h3 style={{ fontWeight: 300, fontSize: '16px' }}>{this._getHeaderTitle()}</h3>
               </ToolbarGroup>
               <ToolbarGroup>
                 <FlatButton
@@ -362,6 +419,16 @@ class AddEntryPage extends Component {
                 />
               </div>
             }
+            {!!latestVersion && this.state.showVersions &&
+              <EntryVersionsPanel
+                closeVersionsPanel={this.closeVersionsPanel}
+                latestVersion={latestVersion}
+                existingDraft={currentDraft}
+                getVersion={this.getVersion}
+                handleEdit={this.closeVersionsPanel}
+                isOwnEntry
+              />
+            }
           </div>
         );
     }
@@ -377,6 +444,7 @@ AddEntryPage.propTypes = {
     entryActions: PropTypes.shape(),
     fetchingFullEntry: PropTypes.bool,
     fullEntry: PropTypes.shape(),
+    latestVersion: PropTypes.number,
     intl: PropTypes.shape(),
     location: PropTypes.shape({
         query: PropTypes.shape(),

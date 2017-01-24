@@ -3,23 +3,30 @@ import { AppActions, CommentsActions, EntryActions, TagActions, ProfileActions }
 import EntryPage from './components/entry-page';
 
 function mapStateToProps (state, ownProps) {
+    const drafts = state.draftState.get('drafts');
+    const entry = state.entryState.get('fullEntry');
+    const existingDraft = entry &&
+        drafts.find(draft => draft.get('entryId') === entry.get('entryId'));
     return {
         blockNr: state.externalProcState.getIn(['gethStatus', 'blockNr']),
         canClaimPending: state.entryState.getIn(['flags', 'canClaimPending']),
         claimPending: state.entryState.getIn(['flags', 'claimPending']),
         comments: state.commentsState.get('entryComments'),
-        newCommentsIds: state.commentsState.get('newCommentsIds'),
-        entry: state.entryState.get('fullEntry'),
+        drafts: state.draftState.get('drafts'),
+        entry,
+        existingDraft,
         fetchingFullEntry: state.entryState.getIn(['flags', 'fetchingFullEntry']),
         fetchingComments: state.commentsState.getIn(['flags', 'fetchingComments']),
         fetchingEntryBalance: state.entryState.getIn(['flags', 'fetchingEntryBalance']),
+        followingsList: state.profileState.get('followingsList'),
+        latestVersion: state.entryState.get('fullEntryLatestVersion'),
         licences: state.entryState.get('licences'),
         loggedProfile: state.profileState.get('loggedProfile'),
+        newCommentsIds: state.commentsState.get('newCommentsIds'),
+        pendingCommentsActions: state.appState.get('pendingActions').filter(action => action.type === 'publishComment'),
         profiles: state.profileState.get('profiles'),
-        followingsList: state.profileState.get('followingsList'),
-        savedEntries: state.entryState.get('savedEntries').map(entry => entry.get('entryId')),
+        savedEntries: state.entryState.get('savedEntries').map(entr => entr.get('entryId')),
         votePending: state.entryState.getIn(['flags', 'votePending']),
-        pendingCommentsActions: state.appState.get('pendingActions').filter(action => action.type === 'publishComment')
     };
 }
 
