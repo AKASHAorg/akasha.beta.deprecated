@@ -131,6 +131,7 @@ class Avatar extends React.Component {
                         imageRendering: 'auto'
                     }}
                     onLoad={this.onImageLoad}
+                    onClick={this._handleAvatarClick}
                   />
                 }
                 {editable &&
@@ -162,22 +163,10 @@ class Avatar extends React.Component {
                         backgroundColor: palette.avatarBackground
                     }}
                   >
-                    <SvgIcon viewBox="0 0 32 32" style={{ width: radius, height: radius }}>
+                    <SvgIcon viewBox="0 0 32 32" style={{ width: radius, height: radius }} onClick={this._handleAvatarClick}>
                       <AvatarPlaceholder />
                     </SvgIcon>
                   </div>
-                }
-                {!editable &&
-                  <div
-                    style={{
-                        position: 'absolute',
-                        width: '100%',
-                        height: '100%',
-                        top: 0,
-                        left: 0
-                    }}
-                    onClick={this._handleAvatarClick}
-                  />
                 }
               </div>
             }
@@ -202,7 +191,7 @@ class Avatar extends React.Component {
                     }}
                   >
                     <div style={userInitialsAlignStyle} />
-                    <div style={userInitialsWrapperStyle}>
+                    <div style={userInitialsWrapperStyle} onClick={this._handleAvatarClick}>
                       <h3 style={userInitialsStyle}>{userInitials}</h3>
                     </div>
                   </div>
@@ -219,7 +208,7 @@ class Avatar extends React.Component {
                   </SvgIcon>
                 }
                 {!userInitials && !editable &&
-                  <SvgIcon viewBox="0 0 32 32" style={{ width: radius, height: radius }}>
+                  <SvgIcon viewBox="0 0 32 32" style={{ width: radius, height: radius }} onClick={this._handleAvatarClick}>
                     <AvatarPlaceholder />
                   </SvgIcon>
                 }

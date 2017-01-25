@@ -277,6 +277,27 @@ class EntryPage extends Component {
         const { params } = this.props;
         this.context.router.push(`/${params.akashaId}/explore/tag/${tagName}`);
     }
+    _navigateToProfile = (ev, profileHash) => {
+        const { params } = this.props;
+        this.context.router.push(`${params.akashaId}/profile/${profileHash}`);
+    }
+    _handleTip = (ev, profileData) => {
+        const { profileActions } = this.props;
+        profileActions.addSendTipAction({
+            akashaId: profileData.get('akashaId'),
+            firstName: profileData.get('firstName'),
+            lastName: profileData.get('lastName'),
+            profile: profileData.get('profile')
+        });
+    }
+    _handleFollow = (ev, akashaId) => {
+        const { profileActions } = this.props;
+        profileActions.addFollowProfileAction(akashaId);
+    }
+    _handleUnfollow = (ev, akashaId) => {
+        const { profileActions } = this.props;
+        profileActions.addUnfollowProfileAction(akashaId);
+    }
     _getNewlyCreatedComments = comments =>
         comments.filter(comm => (!comm.get('tempTx') && !comm.getIn(['data', 'ipfsHash']) &&
             !comm.get('commentId'))
@@ -510,6 +531,9 @@ class EntryPage extends Component {
                             onCommenterClick={this._navigateToProfile}
                             entryAuthorProfile={entry.getIn(['entryEth', 'publisher']).profile}
                             fetchingComments={fetchingComments}
+                            onTip={this._handleTip}
+                            onFollow={this._handleFollow}
+                            onUnfollow={this._handleUnfollow}
                             intl={intl}
                           />
                         </div>
@@ -540,6 +564,7 @@ EntryPage.propTypes = {
     loggedProfile: PropTypes.shape(),
     params: PropTypes.shape(),
     profiles: PropTypes.shape(),
+    profileActions: PropTypes.shape(),
     savedEntries: PropTypes.shape(),
     votePending: PropTypes.shape(),
     pendingCommentsActions: PropTypes.shape(),

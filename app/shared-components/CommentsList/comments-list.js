@@ -73,7 +73,7 @@ class CommentsList extends Component {
     }
     render () {
         const { comments, intl, loggedProfile, entryAuthorProfile, fetchingComments, profileAvatar,
-            profileUserInitials, onReplyCreate } = this.props;
+            profileUserInitials, onReplyCreate, onCommenterClick, onTip, onFollow, onUnfollow } = this.props;
         return (
           <div>
             {comments.size > 0 &&
@@ -90,6 +90,10 @@ class CommentsList extends Component {
                 onReplyCreate={onReplyCreate}
                 onReplyCancel={this._handleReplyCancel}
                 intl={intl}
+                onAuthorNameClick={onCommenterClick}
+                onTip={onTip}
+                onFollow={onFollow}
+                onUnfollow={onUnfollow}
               />
             }
             {(!this.state.loadMoreReq && fetchingComments) &&
@@ -118,7 +122,11 @@ CommentsList.propTypes = {
     intl: React.PropTypes.shape(),
     profileAvatar: React.PropTypes.string,
     profileUserInitials: React.PropTypes.string,
-    onReplyCreate: React.PropTypes.func
+    onReplyCreate: React.PropTypes.func,
+    onCommenterClick: React.PropTypes.func,
+    onTip: React.PropTypes.func,
+    onFollow: React.PropTypes.func,
+    onUnfollow: React.PropTypes.func
 };
 CommentsList.contextTypes = {
     router: React.PropTypes.shape()

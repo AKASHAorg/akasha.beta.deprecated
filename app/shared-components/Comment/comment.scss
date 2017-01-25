@@ -1,5 +1,16 @@
 .root {
     margin-bottom: 16px;
+    .rootInner {
+        &:hover {
+            .commentActions {
+                opacity: 1
+            }
+        }
+        .commentActions {
+            opacity: 0.3;
+        }
+        
+    }
 }
 .commentHeader {
     padding-top: 8px;
