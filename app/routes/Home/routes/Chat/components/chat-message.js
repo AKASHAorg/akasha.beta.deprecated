@@ -5,9 +5,40 @@ import imageCreator from 'utils/imageUtils';
 import { FormattedTime } from 'react-intl';
 
 class ChatMessage extends Component {
+    renderMessage = () => {
+        const { palette } = this.context.muiTheme;
+        const { navigateToChannel } = this.props;
+        const { message } = this.props.data;
+        const containsLink = message.match(/(^|\s)#[a-z0-9][a-z0-9\-_]+(\s|$)/g);
+        if (!containsLink) {
+            return message;
+        }
+        const words = message.split(/\s/);
+        const parts = words.map((word, index) => {
+            if (word.match(/^#[a-z0-9][a-z0-9\-_]+/) && word.length <= 33) {
+                return (
+                  <span
+                    key={index}
+                    className="textLink"
+                    style={{ color: palette.primary1Color }}
+                    onClick={() => navigateToChannel(word.slice(1))}
+                  >
+                    {`${word} `}
+                  </span>
+                );
+            }
+            return <span key={index}>{word} </span>;
+        });
+        return (
+          <div>
+            {parts}
+          </div>
+        );
+    };
+
     render () {
         const { data, isOwnMessage, onAuthorClick } = this.props;
-        const { akashaId, avatar, baseUrl, firstName, lastName, message, profileAddress,
+        const { avatar, baseUrl, firstName, lastName, profileAddress,
             timeStamp } = data;
         const { palette } = this.context.muiTheme;
         const authorAvatar = avatar ?
@@ -57,7 +88,9 @@ class ChatMessage extends Component {
                 </div>
                 <FormattedTime value={new Date(timeStamp * 1000)} />
               </div>
-              <div style={{ paddingTop: '5px', lineHeight: '18px' }}>{message}</div>
+              <div style={{ paddingTop: '5px', lineHeight: '18px' }}>
+                {this.renderMessage()}
+              </div>
             </div>
           </div>
         );
@@ -71,6 +104,7 @@ ChatMessage.contextTypes = {
 ChatMessage.propTypes = {
     data: PropTypes.shape(),
     isOwnMessage: PropTypes.bool,
+    navigateToChannel: PropTypes.func,
     onAuthorClick: PropTypes.func
 };
 

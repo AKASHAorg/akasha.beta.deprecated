@@ -47,7 +47,8 @@ class SideBar extends Component {
         this._handleNavigation(path);
     }
     _handleChat = () => {
-        const path = 'chat';
+        const { activeChannel } = this.props;
+        const path = `chat/channel/${activeChannel}`;
         this._handleNavigation(path);
     }
     _handlePanelShow = (panelName) => {
@@ -152,6 +153,7 @@ class SideBar extends Component {
     }
 }
 SideBar.propTypes = {
+    activeChannel: PropTypes.string,
     activePanel: PropTypes.string,
     style: PropTypes.shape(),
     appActions: PropTypes.shape(),

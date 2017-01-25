@@ -71,6 +71,11 @@ const generalMessages = defineMessages({
         description: 'confirm button label',
         defaultMessage: 'Confirm'
     },
+    join: {
+        id: 'app.general.join',
+        description: 'join button label',
+        defaultMessage: 'Join'
+    },
     pause: {
         id: 'app.general.pause',
         description: 'pause button label',

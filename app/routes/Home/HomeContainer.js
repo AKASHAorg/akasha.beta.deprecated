@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import ReactTooltip from 'react-tooltip';
 import { connect } from 'react-redux';
-import { AppActions, DraftActions, ProfileActions, SettingsActions, EntryActions,
+import { AppActions, ChatActions, DraftActions, ProfileActions, SettingsActions, EntryActions,
     TransactionActions, TagActions, EProcActions, NotificationsActions } from 'local-flux';
 import { DataLoader, Sidebar } from 'shared-components';
 import '../../styles/core.scss';
@@ -41,10 +41,10 @@ class HomeContainer extends React.Component {
         profileActions.getLoggedProfile();
     }
     componentWillReceiveProps (nextProps) {
-        const { profileActions, settingsActions, entryActions, draftActions, tagActions,
-            transactionActions, notificationsActions } = this.props;
-        const { loggedProfile, fetchingLoggedProfile, params, userSettings,
-            selectedTag } = nextProps;
+        const { chatActions, profileActions, settingsActions, entryActions, draftActions,
+            tagActions, transactionActions, notificationsActions } = this.props;
+        const { joinedChannels, loggedProfile, fetchingLoggedProfile, params, recentChannels,
+            userSettings, selectedTag } = nextProps;
 
         if (!loggedProfile.get('account') && !fetchingLoggedProfile) {
             this.context.router.push('/authenticate/');
@@ -58,6 +58,15 @@ class HomeContainer extends React.Component {
             entryActions.getSavedEntries(loggedProfile.get('akashaId'));
             tagActions.getSelectedTag(loggedProfile.get('akashaId'));
             settingsActions.getUserSettings(loggedProfile.get('akashaId'));
+            chatActions.getJoinedChannels(loggedProfile.get('akashaId'));
+            chatActions.getRecentChannels(loggedProfile.get('akashaId'));
+            chatActions.getCurrentChannels();
+        }
+        if (joinedChannels.size > 1 && this.props.joinedChannels.size <= 1) {
+            chatActions.joinChannels(joinedChannels.toJS());
+        }
+        if (recentChannels.size && !this.props.recentChannels.size) {
+            chatActions.joinChannels(recentChannels.toJS());
         }
         if (!userSettings && this.props.userSettings) {
             notificationsActions.setFilter([]);
@@ -104,7 +113,7 @@ class HomeContainer extends React.Component {
     };
 
     render () {
-        const { appActions, draftActions, fetchingLoggedProfile, loggedProfileData,
+        const { activeChannel, appActions, draftActions, fetchingLoggedProfile, loggedProfileData,
             profileActions, draftsCount, loggedProfile, activePanel, selectedTag,
             params, updatingProfile, notificationsCount, hasFeed } = this.props;
 
@@ -117,6 +126,7 @@ class HomeContainer extends React.Component {
             <div className={styles.root} >
               <div className={styles.sideBar} >
                 <Sidebar
+                  activeChannel={activeChannel}
                   activePanel={activePanel}
                   appActions={appActions}
                   draftActions={draftActions}
@@ -157,8 +167,10 @@ class HomeContainer extends React.Component {
 }
 
 HomeContainer.propTypes = {
+    activeChannel: PropTypes.string,
     appActions: PropTypes.shape(),
     blockNr: PropTypes.number,
+    chatActions: PropTypes.shape(),
     entryActions: PropTypes.shape(),
     eProcActions: PropTypes.shape(),
     profileActions: PropTypes.shape(),
@@ -170,11 +182,13 @@ HomeContainer.propTypes = {
     fetchingLoggedProfile: PropTypes.bool,
     fetchingProfileData: PropTypes.bool,
     fetchingDraftsCount: PropTypes.bool,
+    joinedChannels: PropTypes.shape(),
     loggedProfile: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
     updatingProfile: PropTypes.bool,
     transactionActions: PropTypes.shape(),
     params: PropTypes.shape(),
+    recentChannels: PropTypes.shape(),
     notificationsActions: PropTypes.shape(),
     notificationsCount: PropTypes.number,
     hasFeed: PropTypes.bool,
@@ -189,6 +203,7 @@ HomeContainer.contextTypes = {
 /* eslint-disable no-unused-vars */
 function mapStateToProps (state, ownProps) {
     return {
+        activeChannel: state.chatState.get('activeChannel'),
         blockNr: state.externalProcState.getIn(['gethStatus', 'blockNr']),
         fetchingLoggedProfile: state.profileState.getIn(['flags', 'fetchingLoggedProfile']),
         fetchingProfileData: state.profileState.getIn(['flags', 'fetchingProfileData']),
@@ -196,6 +211,7 @@ function mapStateToProps (state, ownProps) {
         fetchingPublishedEntries: state.draftState.get('fetchingPublishedEntries'),
         fetchingPublishingDrafts: state.draftState.getIn(['flags', 'fetchingPublishingDrafts']),
         activePanel: state.panelState.get('activePanel').get('name'),
+        joinedChannels: state.chatState.get('joinedChannels'),
         loginRequested: state.profileState.getIn(['flags', 'loginRequested']),
         loggedProfile: state.profileState.get('loggedProfile'),
         loggedProfileData: state.profileState.get('profiles').find(profile =>
@@ -204,6 +220,7 @@ function mapStateToProps (state, ownProps) {
         draftsCount: state.draftState.get('draftsCount'),
         notificationsCount: state.notificationsState.get('youNrFeed'),
         hasFeed: state.notificationsState.get('hasFeed'),
+        recentChannels: state.chatState.get('recentChannels'),
         selectedTag: state.tagState.get('selectedTag'),
         savingTag: state.tagState.getIn(['flags', 'savingTag']),
         userSettings: state.settingsState.get('userSettings')
@@ -213,6 +230,7 @@ function mapStateToProps (state, ownProps) {
 function mapDispatchToProps (dispatch) {
     return {
         appActions: new AppActions(dispatch),
+        chatActions: new ChatActions(dispatch),
         draftActions: new DraftActions(dispatch),
         entryActions: new EntryActions(dispatch),
         eProcActions: new EProcActions(dispatch),

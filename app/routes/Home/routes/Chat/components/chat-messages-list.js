@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { DataLoader } from 'shared-components';
-import ChatMessage from './ChatMessage';
+import ChatMessage from './chat-message';
 
 class ChatMessagesList extends Component {
     shouldComponentUpdate (nextProps) {
@@ -12,7 +12,8 @@ class ChatMessagesList extends Component {
     }
 
     render () {
-        const { loadingData, loggedProfileAkashaId, messages, onAuthorClick } = this.props;
+        const { loadingData, loggedProfileAkashaId, messages, navigateToChannel,
+            onAuthorClick } = this.props;
         if (loadingData) {
             return <DataLoader flag style={{ paddingTop: '100px' }} />;
         }
@@ -31,6 +32,7 @@ class ChatMessagesList extends Component {
                 key={data.messageHash}
                 isOwnMessage={loggedProfileAkashaId === data.akashaId}
                 data={data}
+                navigateToChannel={navigateToChannel}
                 onAuthorClick={onAuthorClick}
               />
             )}
@@ -43,6 +45,7 @@ ChatMessagesList.propTypes = {
     loadingData: PropTypes.bool,
     loggedProfileAkashaId: PropTypes.string,
     messages: PropTypes.shape(),
+    navigateToChannel: PropTypes.func,
     onAuthorClick: PropTypes.func
 };
 

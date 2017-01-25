@@ -1,5 +1,6 @@
 export {
     AppActions,
+    ChatActions,
     CommentsActions,
     DraftActions,
     EProcActions,

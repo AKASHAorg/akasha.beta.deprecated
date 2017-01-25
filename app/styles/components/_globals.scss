@@ -78,12 +78,12 @@ html, body {
 }
 
 .has_hidden_action {
-    .hidden_action {
+    &:not(:hover) .hidden_action {
         display: none !important;
     }
     &:hover {
         .hidden_action {
-            display: block !important;
+            display: block;
         }
     }
 }
