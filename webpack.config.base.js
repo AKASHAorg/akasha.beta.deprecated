@@ -5,6 +5,7 @@
 const path = require('path');
 const cssnano = require('cssnano');
 const webpack = require('webpack');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 const webpackConfig = {
     module: {
@@ -41,20 +42,16 @@ webpackConfig.module.loaders.push({
 
 
 webpackConfig.sassLoader = {
-    includePaths: path.join(__dirname, 'app')
+    includePaths: [path.join(__dirname, 'app')]
 };
 
 
 // File Loaders
 /* eslint-disable */
 webpackConfig.module.loaders.push(
-  { test: /\.woff(\?.*)?$/,  loader: 'file?name=font/[name].[ext]' },
-  { test: /\.woff2(\?.*)?$/, loader: 'file?name=font/[name].[ext]' },
-  { test: /\.otf(\?.*)?$/,   loader: 'file?name=font/[name].[ext]' },
-  { test: /\.ttf(\?.*)?$/,   loader: 'file?name=font/[name].[ext]' },
-  { test: /\.eot(\?.*)?$/,   loader: 'file?name=font/[name].[ext]' },
-  { test: /\.svg(\?.*)?$/,   loader: 'file?name=font/[name].[ext]' },
-  { test: /\.(png|jpg)$/,    loader: 'file?name=images/[name].[ext]' }
+    { test: /\.woff2(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=10000&mimetype=application/font-woff2&name=fonts/[name].[ext]' },
+    { test: /\.svg(\?v=\d+\.\d+\.\d+)?$/, loader: 'url?limit=10000&mimetype=image/svg+xml&name=fonts/[name].[ext]' },
+    { test: /\.(png|jpg)$/, loader: 'url-loader' }
 );
 
 module.exports = webpackConfig;
