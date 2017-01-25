@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { AppActions, CommentsActions, EntryActions, TagActions } from 'local-flux';
+import { AppActions, CommentsActions, EntryActions, TagActions, ProfileActions } from 'local-flux';
 import EntryPage from './components/entry-page';
 
 function mapStateToProps (state, ownProps) {
@@ -27,7 +27,8 @@ function mapDispatchToProps (dispatch) {
         appActions: new AppActions(dispatch),
         commentsActions: new CommentsActions(dispatch),
         entryActions: new EntryActions(dispatch),
-        tagActions: new TagActions(dispatch)
+        tagActions: new TagActions(dispatch),
+        profileActions: new ProfileActions(dispatch),
     };
 }
 

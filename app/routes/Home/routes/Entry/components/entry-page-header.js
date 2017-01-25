@@ -102,6 +102,7 @@ class EntryPageHeader extends Component {
         return (
           <div
             className={`${styles.entry_publisher_info}`}
+            style={{ backgroundColor: '#FFF' }}
           >
             <div
               className={`${styles.entry_publisher_info_inner}`}

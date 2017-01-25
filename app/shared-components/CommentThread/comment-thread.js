@@ -16,7 +16,8 @@ class CommentThread extends Component {
     }
     render () {
         const { comments, parentId, replyTo, loggedProfile, entryAuthorProfile, profileAvatar,
-            profileUserInitials, onReplyCreate, intl, depth, onReplyCancel } = this.props;
+            profileUserInitials, onReplyCreate, intl, depth, onReplyCancel, onAuthorNameClick,
+            onTip, onFollow, onUnfollow } = this.props;
         let filteredComments = comments.filter(comm => comm.data.parent === parentId);
         if (depth > 1) {
             filteredComments = filteredComments.reverse();
@@ -28,9 +29,13 @@ class CommentThread extends Component {
             loggedProfile={loggedProfile}
             entryAuthorProfile={entryAuthorProfile}
             onReply={ev => this._onReply(ev, comment.commentId)}
-            onAuthorNameClick={this._handleNavigation}
+            onAuthorNameClick={onAuthorNameClick}
+            onTip={onTip}
+            onFollow={onFollow}
+            onUnfollow={onUnfollow}
             showReplyButton={(depth <= 2)}
             isPublishing={comment.get('isPublishing')}
+            intl={intl}
           >
             <CommentThread
               comments={comments}
@@ -42,6 +47,10 @@ class CommentThread extends Component {
               profileUserInitials={profileUserInitials}
               onReply={this._onReply}
               onReplyCreate={onReplyCreate}
+              onAuthorNameClick={onAuthorNameClick}
+              onTip={onTip}
+              onFollow={onFollow}
+              onUnfollow={onUnfollow}
               intl={intl}
               depth={(depth + 1)}
               onReplyCancel={onReplyCancel}
@@ -84,6 +93,10 @@ CommentThread.propTypes = {
     onReply: React.PropTypes.func,
     intl: React.PropTypes.shape(),
     depth: React.PropTypes.number,
-    onReplyCancel: React.PropTypes.func
+    onReplyCancel: React.PropTypes.func,
+    onAuthorNameClick: React.PropTypes.func,
+    onTip: React.PropTypes.func,
+    onFollow: React.PropTypes.func,
+    onUnfollow: React.PropTypes.func
 };
 export default CommentThread;

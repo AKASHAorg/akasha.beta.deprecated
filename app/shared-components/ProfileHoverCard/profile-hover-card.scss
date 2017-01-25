@@ -1,8 +1,51 @@
-.root {
+.rootWrapper {
+    padding-top: 10px;
     display: none;
-}
-.popover {
     position: absolute;
-    display: block;
-    top: 16px;
+    top: 28px;
+    width: 350px;
+    z-index: 10;
+    &.popover {
+        display: block;
+    }
+}
+.root {
+    padding: 16px;
+    :global {
+        .caret-up {
+            border-bottom-color: #FFF;
+            margin-top: -25px;
+            margin-bottom: 16px;
+            position: relative;
+            z-index: 1;
+            &:after {
+                content: "";
+                position: absolute;
+                width: 15px;
+                height: 15px;
+                left: -8px;
+                top: 3px;
+                transform: rotate(45deg);
+                box-shadow: -2px -2px 3px 0px rgba(202,202,202,0.5);
+                z-index: 0;
+            }
+        }
+    }
+    .cardBody {
+        margin-top: 8px;
+        .profileName {
+            font-size: 18px;
+            font-weight: 300;
+            cursor: pointer;
+            -webkit-user-select: none;
+            user-select: none;
+            &:hover {
+                color: #9c9c9c;
+            }
+        }
+        .profileDetails {
+            font-size: 12px;
+            font-weight: 300;
+        }
+    }
 }

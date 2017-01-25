@@ -26,30 +26,33 @@ class Comment extends React.Component {
         this.state = {
             isExpanded: null,
             editorState: null,
-            hoverCardOpen: false
+            hoverCardOpen: false,
         };
     }
     componentWillMount () {
+        const { loggedProfile } = this.props;
+        console.log(loggedProfile, 'loggedProfile');
+    }
+    componentDidMount () {
         const { comment } = this.props;
-        let isExpanded = null;
-        if (!comment.data.content) {
-            return;
+        let { isExpanded } = this.state;
+        const contentHeight = this.editorWrapperRef.getBoundingClientRect().height;
+        if (comment.data && !comment.data.content) {
+            isExpanded = null;
         }
-        const editorState = editorStateFromRaw(JSON.parse(comment.data.content));
-        const wordCount = getWordCount(editorState.getCurrentContent());
-        if (wordCount > 60) {
+        if (contentHeight > 155) {
             isExpanded = false;
         }
-        this.setState({
+        return this.setState({ // eslint-disable-line react/no-did-mount-set-state
             isExpanded
         });
     }
-    _handleMouseEnter = (ev) => {
+    _handleMouseEnter = () => {
         this.setState({
             hoverCardOpen: true
         });
     }
-    _handleMouseLeave = (ev) => {
+    _handleMouseLeave = () => {
         this.setState({
             hoverCardOpen: false
         });
@@ -61,8 +64,8 @@ class Comment extends React.Component {
         });
     }
     render () {
-        const { isPublishing, comment,
-            children, intl, onAuthorNameClick, entryAuthorProfile, loggedProfile, showReplyButton } = this.props;
+        const { isPublishing, comment, children, intl, onAuthorNameClick, entryAuthorProfile,
+          loggedProfile, showReplyButton, onTip, onFollow, onUnfollow } = this.props;
         const { isExpanded } = this.state;
         const { data } = comment;
         const { profile, date, content } = data;
@@ -71,7 +74,6 @@ class Comment extends React.Component {
         const authorInitials = getInitials(profile.get('firstName'), profile.get('lastName'));
         const authorAvatar = (profile.get('avatar') === `${profile.get('baseUrl')}/`) ?
             null : profile.get('avatar');
-        const authorProfilePath = `profile/${profile.get('profile')}`;
         const isEntryAuthor = entryAuthorProfile === profile.get('profile');
         const viewerIsAuthor = loggedProfile.get('profile') === profile.get('profile');
         let commentAuthorNameColor = palette.commentAuthorColor;
@@ -94,114 +96,128 @@ class Comment extends React.Component {
         if (isEntryAuthor) {
             commentAuthorNameColor = palette.commentIsEntryAuthorColor;
         }
+        console.log(profile.toJS(), 'profile')
         return (
           <div
             id={`comment-${comment.get('commentId')}`}
             className={`${style.root}`}
             style={{ position: 'relative', opacity: !content ? 0.5 : 1 }}
           >
-            <div
-              className={`row ${style.commentHeader}`}
-              style={{ marginBottom: !content ? '8px' : '0px' }}
-            >
-              <div className={`col-xs-5 ${style.commentAuthor}`}>
-                <CardHeader
-                  style={{ padding: 0 }}
-                  titleStyle={{ fontSize: '100%' }}
-                  subtitleStyle={{ paddingLeft: '2px', fontSize: '80%' }}
-                  title={
-                    <div
-                      style={{ position: 'relative' }}
-                      onMouseLeave={this._handleMouseLeave}
-                    >
-                      <FlatButton
-                        label={authorName}
-                        hoverColor="transparent"
-                        style={{ height: 28, lineHeight: '28px', textAlign: 'left' }}
-                        labelStyle={{
-                            textTransform: 'capitalize',
-                            paddingLeft: 4,
-                            paddingRight: 4,
-                            color: commentAuthorNameColor
-                        }}
-                        onClick={() => { onAuthorNameClick(authorProfilePath); }}
-                        className={`${viewerIsAuthor && style.viewer_is_author}
-                          ${isEntryAuthor && style.is_entry_author} ${style.author_name}`}
+            <div className={`${style.rootInner}`}>
+              <div
+                className={`row ${style.commentHeader}`}
+                style={{ marginBottom: !content ? '8px' : '0px' }}
+              >
+                <div className={`col-xs-5 ${style.commentAuthor}`}>
+                  <CardHeader
+                    style={{ padding: 0 }}
+                    titleStyle={{ fontSize: '100%' }}
+                    subtitleStyle={{ paddingLeft: '2px', fontSize: '80%' }}
+                    title={
+                      <div
+                        style={{ position: 'relative' }}
+                        onMouseLeave={this._handleMouseLeave}
+                      >
+                        <FlatButton
+                          label={authorName}
+                          hoverColor="transparent"
+                          style={{ height: 28, lineHeight: '28px', textAlign: 'left' }}
+                          labelStyle={{
+                              textTransform: 'capitalize',
+                              paddingLeft: 4,
+                              paddingRight: 4,
+                              color: commentAuthorNameColor
+                          }}
+                          onClick={ev => onAuthorNameClick(ev, profile.get('profile'))}
+                          className={`${viewerIsAuthor && style.viewer_is_author}
+                            ${isEntryAuthor && style.is_entry_author} ${style.author_name}`}
+                          onMouseEnter={this._handleMouseEnter}
+                        />
+                        <ProfileHoverCard
+                          open={this.state.hoverCardOpen}
+                          profile={profile}
+                          intl={intl}
+                          onTip={ev => onTip(ev, profile)}
+                          onFollow={ev => onFollow(ev, profile.get('akashaId'))}
+                          onAuthorNameClick={ev => onAuthorNameClick(ev, profile.get('profile'))}
+                          showCardActions={!viewerIsAuthor}
+                          onUnfollow={ev => onUnfollow(ev, profile.get('akashaId'))}
+                        />
+                      </div>
+                    }
+                    subtitle={date && intl.formatRelative(new Date(date))}
+                    avatar={
+                      <Avatar
+                        image={authorAvatar}
+                        style={{ display: 'inline-block', cursor: 'pointer' }}
+                        userInitials={authorInitials}
+                        radius={40}
+                        onClick={ev => onAuthorNameClick(ev, profile.get('profile'))}
+                        userInitialsStyle={{ fontSize: 20, textTransform: 'uppercase', fontWeight: 500 }}
                         onMouseEnter={this._handleMouseEnter}
                       />
-                      <ProfileHoverCard
-                        open={this.state.hoverCardOpen}
-                      />
+                    }
+                  />
+                </div>
+                {!isPublishing && REPLIES_ENABLED && showReplyButton &&
+                  <div className={'col-xs-7 end-xs'}>
+                    <div className={`${style.commentActions}`}>
+                      <IconButton onClick={this.props.onReply}>
+                        <SvgIcon>
+                          <EntryCommentReply />
+                        </SvgIcon>
+                      </IconButton>
                     </div>
-                  }
-                  subtitle={date && intl.formatRelative(new Date(date))}
-                  avatar={
-                    <Avatar
-                      image={authorAvatar}
-                      style={{ display: 'inline-block', cursor: 'pointer' }}
-                      userInitials={authorInitials}
-                      radius={40}
-                      onClick={() => { onAuthorNameClick(authorProfilePath); }}
-                      userInitialsStyle={{ fontSize: 20, textTransform: 'uppercase', fontWeight: 500 }}
-                      onMouseEnter={this._handleMouseEnter}
-                    />
-                  }
-                />
+                  </div>
+                }
+                {isPublishing &&
+                  <div className={'col-xs-7 end-xs'}>
+                    <CircularProgress size={32} />
+                  </div>
+                }
               </div>
-              {!isPublishing && REPLIES_ENABLED && showReplyButton &&
-                <div className={'col-xs-7 end-xs'}>
-                  <div>
-                    <IconButton onClick={this.props.onReply}>
+              {content &&
+                <div
+                  ref={(editorWrap) => { this.editorWrapperRef = editorWrap; }}
+                  className={`row ${style.commentBody}`}
+                  style={expandedStyle}
+                >
+                  <MegadraftEditor
+                    readOnly
+                    editorState={editorStateFromRaw(JSON.parse(content))}
+                    sidebarRendererFn={() => null}
+                  />
+                </div>
+              }
+              {!content &&
+                <div data-tip={intl.formatMessage(entryMessages.unresolvedEntry)}>
+                  <IconButton
+                    style={{ position: 'absolute', right: '10px', top: '7px' }}
+                  >
+                    <HubIcon color={palette.accent1Color} />
+                  </IconButton>
+                </div>
+              }
+              {isExpanded !== null &&
+                <div style={{ fontSize: 12, textAlign: 'center' }}>
+                  {(isExpanded === false) &&
+                    <IconButton onClick={ev => this._toggleExpanded(ev, true)}>
                       <SvgIcon>
-                        <EntryCommentReply />
+                        <MoreIcon />
                       </SvgIcon>
                     </IconButton>
-                  </div>
+                  }
+                  {isExpanded &&
+                    <IconButton onClick={ev => this._toggleExpanded(ev, false)}>
+                      <SvgIcon>
+                        <LessIcon />
+                      </SvgIcon>
+                    </IconButton>
+                  }
                 </div>
               }
-              {isPublishing &&
-                <div className={'col-xs-7 end-xs'}>
-                  <CircularProgress size={32} />
-                </div>
-              }
+              <Divider />
             </div>
-            {content &&
-              <div className={`row ${style.commentBody}`} style={expandedStyle}>
-                <MegadraftEditor
-                  readOnly
-                  editorState={editorStateFromRaw(JSON.parse(content))}
-                  sidebarRendererFn={() => null}
-                />
-              </div>
-            }
-            {!content &&
-              <div data-tip={intl.formatMessage(entryMessages.unresolvedEntry)}>
-                <IconButton
-                  style={{ position: 'absolute', right: '10px', top: '7px' }}
-                >
-                  <HubIcon color={palette.accent1Color} />
-                </IconButton>
-              </div>
-            }
-            {isExpanded !== null &&
-              <div style={{ paddingTop: 16, fontSize: 12, textAlign: 'center' }}>
-                {(isExpanded === false) &&
-                  <IconButton onClick={ev => this._toggleExpanded(ev, true)}>
-                    <SvgIcon>
-                      <MoreIcon />
-                    </SvgIcon>
-                  </IconButton>
-                }
-                {isExpanded &&
-                  <IconButton onClick={ev => this._toggleExpanded(ev, false)}>
-                    <SvgIcon>
-                      <LessIcon />
-                    </SvgIcon>
-                  </IconButton>
-                }
-              </div>
-            }
-            <Divider />
             {children &&
               <div className={`${style.commentReply}`}>
                 {children}
@@ -220,11 +236,14 @@ Comment.propTypes = {
     intl: React.PropTypes.shape(),
     onAuthorNameClick: React.PropTypes.func,
     onReply: React.PropTypes.func,
-    showReplyButton: React.PropTypes.bool
+    showReplyButton: React.PropTypes.bool,
+    onTip: React.PropTypes.func,
+    onFollow: React.PropTypes.func,
+    onUnfollow: React.PropTypes.func
 };
 Comment.contextTypes = {
     router: React.PropTypes.shape(),
     muiTheme: React.PropTypes.shape()
 };
 
-export default injectIntl(Comment);
+export default Comment;
