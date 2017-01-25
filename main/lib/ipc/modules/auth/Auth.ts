@@ -108,7 +108,7 @@ export default class Auth {
                 return GethConnector.getInstance()
                     .web3
                     .personal
-                    .unlockAccountAsync(acc, Buffer.from(pass).toString('utf8'));
+                    .unlockAccountAsync(acc, Buffer.from(pass).toString('utf8'), 1000);
             })
             .then((unlocked: boolean) => {
                 if (!unlocked) {

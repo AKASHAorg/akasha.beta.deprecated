@@ -119,6 +119,11 @@ class Entries extends BaseContract_1.default {
             .entryExists
             .callAsync(entryId).then((result) => result);
     }
+    getPublished(filter) {
+        const Published = this.contract.Publish({}, { fromBlock: filter.fromBlock, toBlock: filter.toBlock });
+        Published.getAsync = Promise.promisify(Published.get);
+        return Published.getAsync();
+    }
 }
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Entries;

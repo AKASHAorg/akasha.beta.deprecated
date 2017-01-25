@@ -2,7 +2,8 @@ import * as Promise from 'bluebird';
 import currentProfile from '../registry/current-profile';
 import getFollowingList from '../profile/following-list';
 import { GethConnector } from '@akashaproject/geth-connector';
-
+import { wild } from '../models/records';
+import { FOLLOWING_LIST } from '../../config/settings';
 export const filter = {
     _address: {},
     _blockNr: 0,
@@ -54,6 +55,7 @@ const execute = Promise.coroutine(function*(data: { profiles: string[], exclude?
     if (!data.profiles.length) {
         temp = yield getFollowingList.execute({ akashaId: myProfile.akashaId });
         data.profiles = temp.collection;
+        wild.setFull(FOLLOWING_LIST, temp.collection);
     }
     data.profiles.forEach((profileAddress) => {
         if (data.exclude && data.exclude.indexOf(profileAddress) !== -1) {

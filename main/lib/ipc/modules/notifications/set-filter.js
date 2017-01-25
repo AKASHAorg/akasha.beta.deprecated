@@ -3,6 +3,8 @@ const Promise = require('bluebird');
 const current_profile_1 = require('../registry/current-profile');
 const following_list_1 = require('../profile/following-list');
 const geth_connector_1 = require('@akashaproject/geth-connector');
+const records_1 = require('../models/records');
+const settings_1 = require('../../config/settings');
 exports.filter = {
     _address: {},
     _blockNr: 0,
@@ -45,6 +47,7 @@ const execute = Promise.coroutine(function* (data) {
     if (!data.profiles.length) {
         temp = yield following_list_1.default.execute({ akashaId: myProfile.akashaId });
         data.profiles = temp.collection;
+        records_1.wild.setFull(settings_1.FOLLOWING_LIST, temp.collection);
     }
     data.profiles.forEach((profileAddress) => {
         if (data.exclude && data.exclude.indexOf(profileAddress) !== -1) {
