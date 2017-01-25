@@ -60,7 +60,7 @@ class Auth {
             return geth_connector_1.GethConnector.getInstance()
                 .web3
                 .personal
-                .unlockAccountAsync(acc, Buffer.from(pass).toString('utf8'));
+                .unlockAccountAsync(acc, Buffer.from(pass).toString('utf8'), 1000);
         })
             .then((unlocked) => {
             if (!unlocked) {

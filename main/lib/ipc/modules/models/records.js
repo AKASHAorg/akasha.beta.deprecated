@@ -35,6 +35,15 @@ class Entries {
     hasShort(hash) {
         return this._entries.has(`${this.SHORT_PREFIX}${hash}`);
     }
+    removeFull(hash) {
+        this._entries.del(`${this.FULL_PREFIX}${hash}`);
+    }
+    removeShort(hash) {
+        this._entries.del(`${this.SHORT_PREFIX}${hash}`);
+    }
+    flush() {
+        this._entries.reset();
+    }
     get records() {
         return this._entries;
     }

@@ -21,6 +21,7 @@ import getEntryBalance from './get-entry-balance';
 import getEntryList from './get-entry-list';
 import runner from '../pinner/index';
 import editEntry from './edit-entry';
+import followingStreamIterator from './following-stream-iterator';
 
 export default [
     entryCountProfile,
@@ -45,5 +46,6 @@ export default [
     getEntryBalance,
     getEntryList,
     editEntry,
+    followingStreamIterator,
     runner[0]
 ]
