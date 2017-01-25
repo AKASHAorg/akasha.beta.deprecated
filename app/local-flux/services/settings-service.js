@@ -63,7 +63,7 @@ class SettingsService extends BaseService {
             .then((data) => {
                 if (!data[0]) {
                     settingsDB.user
-                        .put({ loggedAkashaId, notifications: { muted: [profileAddress] } })
+                        .put({ akashaId: loggedAkashaId, notifications: { muted: [profileAddress] } })
                         .then(updated => updated ? onSuccess(profileAddress) : onError())
                         .catch(reason => onError(reason, akashaId));
                     return;

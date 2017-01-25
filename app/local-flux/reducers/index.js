@@ -1,6 +1,7 @@
 import { combineReducers } from 'redux';
 import { routerReducer as routing } from 'react-router-redux';
 import appState from './appState';
+import chatState from './chatState';
 import commentsState from './commentsState';
 import draftState from './draftState';
 import entryState from './entryState';
@@ -15,6 +16,7 @@ import transactionState from './transactionState';
 
 const rootReducer = combineReducers({
     appState,
+    chatState,
     commentsState,
     draftState,
     entryState,

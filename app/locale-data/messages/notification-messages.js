@@ -201,5 +201,10 @@ const notificationMessages = defineMessages({
         description: 'message to be displayed when disabling notifications for a specific user has failed',
         defaultMessage: 'Disabling notifications for {akashaId} has failed'
     },
+    channelStarred: {
+        id: 'app.notification.channelStarred',
+        description: 'message to be displayed when a chat channel was starred',
+        defaultMessage: '#{channel} was starred'
+    }
 });
 export { notificationMessages };

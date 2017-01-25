@@ -1,4 +1,5 @@
 export { AppActions } from './app-actions';
+export { ChatActions } from './chat-actions';
 export { CommentsActions } from './comments-actions';
 export { DraftActions } from './draft-actions';
 export { EntryActions } from './entry-actions';

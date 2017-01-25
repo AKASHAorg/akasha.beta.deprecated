@@ -40,7 +40,7 @@ class EntryPage extends Component {
         this.checkCommentsInterval = setInterval(this._checkNewComments, 1000 * 15);
         const { entry, entryActions, params, fetchingFullEntry, commentsActions } = this.props;
 
-        if ((!entry && !fetchingFullEntry) || entry.get('entryId') !== params.entryId) {
+        if ((!entry && !fetchingFullEntry) || (entry && entry.get('entryId') !== params.entryId)) {
             entryActions.getFullEntry(params.entryId);
             commentsActions.unloadComments(parseInt(params.entryId, 10), null);
             this.fetchComments(params.entryId);
