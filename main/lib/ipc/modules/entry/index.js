@@ -23,6 +23,7 @@ const get_entry_list_1 = require('./get-entry-list');
 const index_1 = require('../pinner/index');
 const edit_entry_1 = require('./edit-entry');
 const following_stream_iterator_1 = require('./following-stream-iterator');
+const all_stream_iterator_1 = require('./all-stream-iterator');
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = [
     entry_count_profile_1.default,
@@ -48,6 +49,7 @@ exports.default = [
     get_entry_list_1.default,
     edit_entry_1.default,
     following_stream_iterator_1.default,
+    all_stream_iterator_1.default,
     index_1.default[0]
 ];
 //# sourceMappingURL=index.js.map

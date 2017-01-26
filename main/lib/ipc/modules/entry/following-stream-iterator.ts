@@ -2,8 +2,8 @@ import * as Promise from 'bluebird';
 import { constructed as contracts } from '../../contracts/index';
 import getFollowingList from '../profile/following-list';
 import currentProfile from '../registry/current-profile';
-import { wild } from '../models/records';
-import { FOLLOWING_LIST, BLOCK_INTERVAL } from '../../config/settings';
+import { mixed } from '../models/records';
+import { FOLLOWING_LIST, BLOCK_INTERVAL, F_STREAM_I } from '../../config/settings';
 import { GethConnector } from '@akashaproject/geth-connector';
 import getEntry from './get-entry';
 
@@ -27,30 +27,38 @@ const fetch = Promise.coroutine(function*(entries, following, toBlock, limit) {
 
 const execute = Promise.coroutine(function*(data: { limit?: number, toBlock?: number, purgeCache?: boolean }) {
     if (data.purgeCache) {
-        wild.removeFull(FOLLOWING_LIST);
+        mixed.removeFull(FOLLOWING_LIST);
     }
-    if (!wild.hasFull(FOLLOWING_LIST)) {
+    if (!mixed.hasFull(FOLLOWING_LIST)) {
         const myProfile = yield currentProfile.execute();
         const following = yield getFollowingList.execute({ akashaId: myProfile.akashaId });
-        wild.setFull(FOLLOWING_LIST, following.collection);
+        mixed.setFull(FOLLOWING_LIST, following.collection);
     }
     let toBlock = (data.toBlock) ? data.toBlock :
         yield GethConnector.getInstance()
             .web3
             .eth
             .getBlockNumberAsync();
+    const indexBlock = toBlock;
+    const following = mixed.getFull(FOLLOWING_LIST);
 
-    const following = wild.getFull(FOLLOWING_LIST);
-    const entries = new Set();
     const limit = (data.limit) ? data.limit : 5;
-    let lastBlock;
-    while (entries.size < limit && toBlock > 0) {
-        lastBlock = yield fetch(entries, following, toBlock, limit);
-        toBlock -= BLOCK_INTERVAL;
+    let lastBlock, entries, cache;
+    if (mixed.hasFull(`${F_STREAM_I}${data.toBlock}`)) {
+        cache = mixed.getFull(`${F_STREAM_I}${data.toBlock}`);
+        entries = cache.entries;
+        lastBlock = cache.lastBlock;
+    } else {
+        entries = new Set();
+        while (entries.size < limit && toBlock > 0) {
+            lastBlock = yield fetch(entries, following, toBlock, limit);
+            toBlock -= BLOCK_INTERVAL;
+        }
+        mixed.setFull(`${F_STREAM_I}${indexBlock}`, { entries, lastBlock });
     }
 
     const collection = yield Promise.all(Array.from(entries).map((entryId) => getEntry.execute({ entryId })));
-    return { collection, toBlock: lastBlock };
+    return { collection, toBlock: data.toBlock, lastBlock: lastBlock };
 });
 
 export default { execute, name: 'followingStreamIterator' };
