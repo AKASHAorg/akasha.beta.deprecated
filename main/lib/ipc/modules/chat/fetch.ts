@@ -50,6 +50,7 @@ const execute = Promise.coroutine(function*(data: { stop?: boolean, channel?: st
         const collection = [];
         const topic = (data.channel) ?
             GethConnector.getInstance().web3.fromUtf8(data.channel) : settings.getDefaultTopic();
+        const channel = (data.channel) ? data.channel: null;
         settings.setActive(topic);
         // fetch initial messages
         const initial = yield Promise.fromCallback((cb) => {
@@ -62,10 +63,10 @@ const execute = Promise.coroutine(function*(data: { stop?: boolean, channel?: st
             }
         }
         if (chat) {
-            return { collection };
+            return { collection, channel: channel };
         }
 
-        cb(null, { collection });
+        cb(null, { collection, channel: channel });
 
         // watch for new messages
         chat = GethConnector.getInstance().web3.shh.filter({ topics: [topic] });
@@ -74,8 +75,8 @@ const execute = Promise.coroutine(function*(data: { stop?: boolean, channel?: st
                 return cb(err);
             }
             if (data.hasOwnProperty('payload')) {
-                transform(data).then((resp) => {
-                    cb(null, resp);
+                transform(data).then((message) => {
+                    cb(null, {message: message, channel: channel});
                 });
             }
         });

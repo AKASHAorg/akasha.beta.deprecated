@@ -49,6 +49,7 @@ const execute = Promise.coroutine(function* (data, cb) {
     const collection = [];
     const topic = (data.channel) ?
         geth_connector_1.GethConnector.getInstance().web3.fromUtf8(data.channel) : settings_1.default.getDefaultTopic();
+    const channel = (data.channel) ? data.channel : null;
     settings_1.default.setActive(topic);
     const initial = yield Promise.fromCallback((cb) => {
         return (geth_connector_1.GethConnector.getInstance().web3.shh.filter({ topics: [topic] })).get(cb);
@@ -60,17 +61,17 @@ const execute = Promise.coroutine(function* (data, cb) {
         }
     }
     if (chat) {
-        return { collection };
+        return { collection, channel: channel };
     }
-    cb(null, { collection });
+    cb(null, { collection, channel: channel });
     chat = geth_connector_1.GethConnector.getInstance().web3.shh.filter({ topics: [topic] });
     chat.watch(function (err, data) {
         if (err) {
             return cb(err);
         }
         if (data.hasOwnProperty('payload')) {
-            transform(data).then((resp) => {
-                cb(null, resp);
+            transform(data).then((message) => {
+                cb(null, { message: message, channel: channel });
             });
         }
     });
