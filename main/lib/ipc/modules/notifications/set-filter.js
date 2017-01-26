@@ -47,7 +47,7 @@ const execute = Promise.coroutine(function* (data) {
     if (!data.profiles.length) {
         temp = yield following_list_1.default.execute({ akashaId: myProfile.akashaId });
         data.profiles = temp.collection;
-        records_1.wild.setFull(settings_1.FOLLOWING_LIST, temp.collection);
+        records_1.mixed.setFull(settings_1.FOLLOWING_LIST, temp.collection);
     }
     data.profiles.forEach((profileAddress) => {
         if (data.exclude && data.exclude.indexOf(profileAddress) !== -1) {
