@@ -159,7 +159,6 @@
     "postcss-modules-values": "1.2.2",
     "radium": "0.18.1",
     "react": "15.4.2",
-    "react-addons-css-transition-group": "^15.4.2",
     "react-addons-perf": "15.4.2",
     "react-addons-test-utils": "15.4.2",
     "react-avatar-editor": "7.1.0",
