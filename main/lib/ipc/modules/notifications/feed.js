@@ -7,12 +7,15 @@ const profile_data_1 = require('../profile/profile-data');
 const get_entry_1 = require('../entry/get-entry');
 const current_profile_1 = require('../registry/current-profile');
 const resolve_ethaddress_1 = require('../registry/resolve-ethaddress');
+const address_of_akashaid_1 = require('../registry/address-of-akashaid');
+const settings_1 = require('../../config/settings');
 const queue_1 = require('./queue');
 let entries;
 let comments;
 let votes;
 let following;
 let tipping;
+let mention;
 const eventTypes = {
     VOTE: 'vote',
     COMMENT: 'comment',
@@ -33,6 +36,32 @@ const hydrateWithProfile = (cb, profile, entry, extra) => {
         cb({ message: error.message }, extra);
     });
 };
+const emitMention = Promise.coroutine(function* (event, akashaId, cb) {
+    let message;
+    const unmarshall = geth_connector_1.GethConnector.getInstance().web3.toUtf8(event.payload);
+    try {
+        message = JSON.parse(unmarshall);
+    }
+    catch (err) {
+        cb(err);
+    }
+    if (!message.hasOwnProperty('mention') || message.mention.indexOf(akashaId) === -1) {
+        return null;
+    }
+    if (!message.hasOwnProperty('akashaId')
+        || !message.hasOwnProperty('mentionType')
+        || !message.hasOwnProperty('entryId')) {
+        return null;
+    }
+    const sender = yield address_of_akashaid_1.default.execute([{ akashaId: message.akashaId }]);
+    return hydrateWithProfile(cb, sender.collection[0], message.entryId, {
+        type: message.mentionType,
+        profileAddress: sender.collection[0],
+        timeStamp: event.sent,
+        hash: event.hash,
+        commentId: message.commentId
+    });
+});
 const execute = Promise.coroutine(function* (data, cb) {
     if (!index_1.constructed.instance) {
         return { running: false };
@@ -54,6 +83,9 @@ const execute = Promise.coroutine(function* (data, cb) {
         tipping.stopWatching(() => {
             tipping = null;
         });
+        mention.stopWatching(() => {
+            mention = null;
+        });
         return { running: false };
     }
     if (entries) {
@@ -67,6 +99,7 @@ const execute = Promise.coroutine(function* (data, cb) {
     votes = index_1.constructed.instance.votes.contract.Vote({}, filterBlock);
     following = index_1.constructed.instance.feed.contract.Follow({ following: set_filter_1.filter.getMyAddress() }, filterBlock);
     tipping = profileInstance.Tip({}, filterBlock);
+    mention = geth_connector_1.GethConnector.getInstance().web3.shh.filter({ topics: [settings_1.MENTION_CHANNEL] });
     entries.watch((err, entry) => {
         if (err) {
             cb({ message: err.message, type: eventTypes.PUBLISH });
@@ -143,6 +176,14 @@ const execute = Promise.coroutine(function* (data, cb) {
             .catch((e) => {
             cb({ message: e.message, type: eventTypes.TIPPED });
         });
+    });
+    mention.watch(function (err, event) {
+        if (err) {
+            return cb(err);
+        }
+        if (event.hasOwnProperty('payload')) {
+            emitMention(event, myProfile.akashaId, cb);
+        }
     });
     return { running: true };
 });
