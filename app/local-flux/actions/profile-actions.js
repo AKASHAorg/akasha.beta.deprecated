@@ -415,7 +415,13 @@ class ProfileActions {
             }
         });
     };
-
+    getFollowingsList = (akashaId) => {
+        this.profileService.getFollowingsList({
+            akashaId,
+            onSuccess: data => this.dispatch(profileActionCreators.getFollowingsListSuccess(data)),
+            onError: error => this.dispatch(profileActionCreators.getFollowingsListError(error))
+        });
+    }
     addUpdateProfileDataAction = (profileData) => {
         this.appActions.addPendingAction({
             type: 'updateProfile',
@@ -427,10 +433,10 @@ class ProfileActions {
         });
     }
 
-    addFollowProfileAction = (akashaId) => {
+    addFollowProfileAction = (akashaId, profile) => {
         this.appActions.addPendingAction({
             type: 'followProfile',
-            payload: { akashaId },
+            payload: { akashaId, profile },
             titleId: 'followProfileTitle',
             messageId: 'followProfile',
             gas: 2000000,
@@ -438,10 +444,10 @@ class ProfileActions {
         });
     };
 
-    addUnfollowProfileAction = (akashaId) => {
+    addUnfollowProfileAction = (akashaId, profile) => {
         this.appActions.addPendingAction({
             type: 'unfollowProfile',
-            payload: { akashaId },
+            payload: { akashaId, profile },
             titleId: 'unfollowProfileTitle',
             messageId: 'unfollowProfile',
             gas: 2000000,
@@ -460,7 +466,7 @@ class ProfileActions {
         });
     };
 
-    followProfile = (akashaId, gas) =>
+    followProfile = (akashaId, gas, profile) =>
         this.dispatch((dispatch, getState) => {
             const loggedProfile = getState().profileState.get('loggedProfile');
             const flagOn = { akashaId, value: true };
@@ -475,7 +481,8 @@ class ProfileActions {
                     this.transactionActions.addToQueue([{
                         tx: data.tx,
                         type: 'followProfile',
-                        akashaId: data.akashaId
+                        akashaId: data.akashaId,
+                        profile
                     }]);
                     this.appActions.showNotification({
                         id: 'followingProfile',
@@ -488,8 +495,8 @@ class ProfileActions {
             });
         });
 
-    followProfileSuccess = (akashaId) => {
-        this.dispatch(profileActionCreators.followProfileSuccess({
+    followProfileSuccess = (akashaId, profile) => {
+        this.dispatch(profileActionCreators.followProfileSuccess(profile, {
             followPending: { akashaId, value: false }
         }));
         this.appActions.showNotification({
@@ -498,7 +505,7 @@ class ProfileActions {
         });
     };
 
-    unfollowProfile = (akashaId, gas) =>
+    unfollowProfile = (akashaId, gas, profile) =>
         this.dispatch((dispatch, getState) => {
             const loggedProfile = getState().profileState.get('loggedProfile');
             const flagOn = { akashaId, value: true };
@@ -513,7 +520,8 @@ class ProfileActions {
                     this.transactionActions.addToQueue([{
                         tx: data.tx,
                         type: 'unfollowProfile',
-                        akashaId: data.akashaId
+                        akashaId: data.akashaId,
+                        profile
                     }]);
                     this.appActions.showNotification({
                         id: 'unfollowingProfile',
@@ -526,8 +534,8 @@ class ProfileActions {
             });
         });
 
-    unfollowProfileSuccess = (akashaId) => {
-        this.dispatch(profileActionCreators.unfollowProfileSuccess({
+    unfollowProfileSuccess = (akashaId, profile) => {
+        this.dispatch(profileActionCreators.unfollowProfileSuccess(profile, {
             followPending: { akashaId, value: false }
         }));
         this.appActions.showNotification({

@@ -17,7 +17,7 @@ class CommentThread extends Component {
     render () {
         const { comments, parentId, replyTo, loggedProfile, entryAuthorProfile, profileAvatar,
             profileUserInitials, onReplyCreate, intl, depth, onReplyCancel, onAuthorNameClick,
-            onTip, onFollow, onUnfollow } = this.props;
+            onTip, onFollow, onUnfollow, followingsList } = this.props;
         let filteredComments = comments.filter(comm => comm.data.parent === parentId);
         if (depth > 1) {
             filteredComments = filteredComments.reverse();
@@ -27,6 +27,7 @@ class CommentThread extends Component {
             key={`${comment.commentId}-fetchedComments`}
             comment={comment}
             loggedProfile={loggedProfile}
+            followingsList={followingsList}
             entryAuthorProfile={entryAuthorProfile}
             onReply={ev => this._onReply(ev, comment.commentId)}
             onAuthorNameClick={onAuthorNameClick}
@@ -42,6 +43,7 @@ class CommentThread extends Component {
               parentId={`${comment.commentId}`}
               replyTo={replyTo}
               loggedProfile={loggedProfile}
+              followingsList={followingsList}
               entryAuthorProfile={entryAuthorProfile}
               profileAvatar={profileAvatar}
               profileUserInitials={profileUserInitials}
@@ -86,6 +88,7 @@ CommentThread.propTypes = {
     parentId: React.PropTypes.string,
     replyTo: React.PropTypes.number,
     loggedProfile: React.PropTypes.shape(),
+    followingsList: React.PropTypes.shape(),
     entryAuthorProfile: React.PropTypes.string,
     profileAvatar: React.PropTypes.string,
     profileUserInitials: React.PropTypes.string,

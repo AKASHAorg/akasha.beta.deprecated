@@ -355,6 +355,20 @@ export function followingIteratorSuccess (data, flags) {
     };
 }
 
+export function getFollowingsListSuccess (data) {
+    return {
+        type: types.GET_FOLLOWINGS_LIST_SUCCESS,
+        data
+    };
+}
+
+export function getFollowingsListError (error) {
+    return {
+        type: types.GET_FOLLOWINGS_LIST_ERROR,
+        error
+    };
+}
+
 export function followingIteratorError (error, flags) {
     return {
         type: types.FOLLOWING_ITERATOR_ERROR,
@@ -393,9 +407,10 @@ export function followProfile (flags) {
     };
 }
 
-export function followProfileSuccess (flags) {
+export function followProfileSuccess (profile, flags) {
     return {
         type: types.FOLLOW_PROFILE_SUCCESS,
+        profile,
         flags
     };
 }
@@ -416,9 +431,10 @@ export function unfollowProfile (flags) {
     };
 }
 
-export function unfollowProfileSuccess (flags) {
+export function unfollowProfileSuccess (profile, flags) {
     return {
         type: types.UNFOLLOW_PROFILE_SUCCESS,
+        profile,
         flags
     };
 }

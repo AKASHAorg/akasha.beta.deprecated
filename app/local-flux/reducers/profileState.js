@@ -53,7 +53,8 @@ const initialState = fromJS({
     flags: new Map({
         followPending: new List(),
         sendingTip: new List(),
-    })
+    }),
+    followingsList: new List()
 });
 
 const tipHandler = (state, { error, flags }) => {
@@ -330,6 +331,11 @@ const profileState = createReducer(initialState, {
 
     [types.FOLLOWING_ITERATOR_ERROR]: errorHandler,
 
+    [types.GET_FOLLOWINGS_LIST_SUCCESS]: (state, { data }) =>
+        state.setIn(['followingsList'], new List(data.collection)),
+
+    [types.GET_FOLLOWINGS_LIST_ERROR]: errorHandler,
+
     [types.MORE_FOLLOWING_ITERATOR]: flagHandler,
 
     [types.MORE_FOLLOWING_ITERATOR_SUCCESS]: (state, { data, flags }) => {
@@ -380,7 +386,7 @@ const profileState = createReducer(initialState, {
         });
     },
 
-    [types.FOLLOW_PROFILE_SUCCESS]: (state, { flags }) => {
+    [types.FOLLOW_PROFILE_SUCCESS]: (state, { profile, flags }) => {
         const followPending = state.getIn(['flags', 'followPending']);
         const index = followPending.findIndex(flag =>
             flag.akashaId === flags.followPending.akashaId
@@ -392,6 +398,7 @@ const profileState = createReducer(initialState, {
 
         if (profileIndex === -1) {
             return state.merge({
+                followingsList: state.get('followingsList').push(profile),
                 flags: state.get('flags').mergeIn(['followPending', index], flags.followPending)
             });
         }
@@ -400,6 +407,7 @@ const profileState = createReducer(initialState, {
                 followers: state.getIn(['profiles', profileIndex, 'followers'])
                     .insert(0, fromJS({ profile: loggedProfileData }))
             }),
+            followingsList: state.get('followingsList').push(profile),
             flags: state.get('flags').mergeIn(['followPending', index], flags.followPending)
         });
     },
@@ -431,7 +439,7 @@ const profileState = createReducer(initialState, {
         });
     },
 
-    [types.UNFOLLOW_PROFILE_SUCCESS]: (state, { flags }) => {
+    [types.UNFOLLOW_PROFILE_SUCCESS]: (state, { profile, flags }) => {
         const { akashaId } = flags.followPending;
         const index = state.getIn(['flags', 'followPending']).findIndex(flag =>
             flag.akashaId === akashaId
@@ -447,6 +455,7 @@ const profileState = createReducer(initialState, {
                     following: state.getIn(['profiles', loggedProfileIndex, 'following'])
                         .filter(following => following.getIn(['profile', 'akashaId']) !== akashaId)
                 }),
+                followingsList: state.get('followingsList').delete(state.get('followingsList').findIndex(pro => pro === profile)),
                 flags: state.get('flags').mergeIn(['followPending', index], flags.followPending)
             });
         }
@@ -456,6 +465,7 @@ const profileState = createReducer(initialState, {
                     follower.getIn(['profile', 'akashaId']) !== loggedProfileData.get('akashaId')
                 )
             }),
+            followingsList: state.get('followingsList').delete(state.get('followingsList').findIndex(pro => pro === profile)),
             flags: state.get('flags').mergeIn(['followPending', index], flags.followPending)
         });
     },

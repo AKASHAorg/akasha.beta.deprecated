@@ -1,16 +1,24 @@
 import React from 'react';
 import { IconButton, RaisedButton, SvgIcon, Paper } from 'material-ui';
 import { Avatar } from 'shared-components';
+import { getInitials } from 'utils/dataModule'; // eslint-disable-line import/no-unresolved, import/extensions
+import { UserDonate } from 'shared-components/svg'; // eslint-disable-line import/no-unresolved, import/extensions
+import { profileMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
 import styles from './profile-hover-card.scss';
-import { getInitials } from 'utils/dataModule';
-import { UserDonate } from 'shared-components/svg';
 
 const ProfileHoverCard = (props) => {
-    const { profile, open, onAuthorNameClick, onTip, onFollow, intl, showCardActions } = props;
+    const { profile, open, onAuthorNameClick, onTip, onFollow, onUnfollow, intl, showCardActions,
+      isFollowing, anchorNode, followDisabled } = props;
     const profileInitials = getInitials(profile.get('firstName'), profile.get('lastName'));
     const profileAvatar = (profile.get('avatar') === `${profile.get('baseUrl')}/`) ? null : profile.get('avatar');
     return (
-      <div className={`${styles.rootWrapper} ${open ? styles.popover : ''}`}>
+      <div
+        className={`${styles.rootWrapper} ${open ? styles.popover : ''}`}
+        style={{
+            left: anchorNode ? anchorNode.offsetLeft : 0,
+            top: anchorNode ? (anchorNode.getBoundingClientRect().height - 8) : 28
+        }}
+      >
         <Paper
           zDepth={2}
           className={`${styles.root}`}
@@ -27,7 +35,7 @@ const ProfileHoverCard = (props) => {
               />
             </div>
             {showCardActions &&
-            <div className={`${styles.cardActions} col-xs-9 end-xs`}>
+            <div className={`${styles.cardActions} col-xs-9`}>
               <div className="row end-xs">
                 <div className={`${styles.tipButton} col-xs-3`}>
                   <IconButton data-tip="Send tip" onClick={onTip}>
@@ -36,11 +44,12 @@ const ProfileHoverCard = (props) => {
                     </SvgIcon>
                   </IconButton>
                 </div>
-                <div className={`${styles.followButton} col-xs-5`}>
+                <div className={`${styles.followButton} ${isFollowing ? 'col-xs-6' : 'col-xs-5'}`}>
                   <RaisedButton
-                    label={`Follow`}
-                    primary
-                    onClick={onFollow}
+                    label={isFollowing ? intl.formatMessage(profileMessages.unfollow) : intl.formatMessage(profileMessages.follow)}
+                    primary={!isFollowing}
+                    onClick={isFollowing ? onUnfollow : onFollow}
+                    disabled={followDisabled}
                   />
                 </div>
               </div>
@@ -49,10 +58,14 @@ const ProfileHoverCard = (props) => {
           </div>
           <div className={`${styles.cardBody} row`}>
             <div
-              className={`${styles.profileName} col-xs-12`}
-              onClick={onAuthorNameClick}
+              className="col-xs-12"
             >
-              {profile.get('firstName')} {profile.get('lastName')}
+              <div
+                onClick={onAuthorNameClick}
+                className={`${styles.profileName}`}
+              >
+                {profile.get('firstName')} {profile.get('lastName')}
+              </div>
             </div>
             <div className={`${styles.profileDetails} col-xs-12`}>
               @{profile.get('akashaId')} - {profile.get('followersCount')} followers
@@ -67,9 +80,13 @@ ProfileHoverCard.propTypes = {
     onAuthorNameClick: React.PropTypes.func,
     onTip: React.PropTypes.func,
     onFollow: React.PropTypes.func,
+    onUnfollow: React.PropTypes.func,
     open: React.PropTypes.bool,
     intl: React.PropTypes.shape().isRequired,
-    showCardActions: React.PropTypes.bool
+    showCardActions: React.PropTypes.bool,
+    isFollowing: React.PropTypes.bool,
+    anchorNode: React.PropTypes.shape(),
+    followDisabled: React.PropTypes.bool
 };
 
 export default ProfileHoverCard;

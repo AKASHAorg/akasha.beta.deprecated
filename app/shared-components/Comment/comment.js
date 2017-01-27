@@ -8,14 +8,13 @@ import {
     CircularProgress
   } from 'material-ui';
 import { MegadraftEditor, editorStateFromRaw } from 'megadraft';
-import { injectIntl } from 'react-intl';
 import HubIcon from 'material-ui/svg-icons/hardware/device-hub';
 import MoreIcon from 'material-ui/svg-icons/navigation/expand-more';
 import LessIcon from 'material-ui/svg-icons/navigation/expand-less';
 import { EntryCommentReply } from 'shared-components/svg'; // eslint-disable-line import/no-unresolved, import/extensions
 import { Avatar, ProfileHoverCard } from 'shared-components'; // eslint-disable-line import/no-unresolved, import/extensions
 import { entryMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
-import { getInitials, getWordCount } from 'utils/dataModule'; // eslint-disable-line import/no-unresolved, import/extensions
+import { getInitials } from 'utils/dataModule'; // eslint-disable-line import/no-unresolved, import/extensions
 import style from './comment.scss';
 
 const REPLIES_ENABLED = true;
@@ -27,11 +26,8 @@ class Comment extends React.Component {
             isExpanded: null,
             editorState: null,
             hoverCardOpen: false,
+            followDisabled: false
         };
-    }
-    componentWillMount () {
-        const { loggedProfile } = this.props;
-        console.log(loggedProfile, 'loggedProfile');
     }
     componentDidMount () {
         const { comment } = this.props;
@@ -47,9 +43,38 @@ class Comment extends React.Component {
             isExpanded
         });
     }
-    _handleMouseEnter = () => {
+    componentWillReceiveProps = (nextProps) => {
+        const { comment, followingsList } = this.props;
+        const nextFollowingsList = nextProps.followingsList;
+        const profile = comment.data.profile;
+        const willFollow = nextFollowingsList.includes(profile);
+        const willUnfollow = !nextFollowingsList.includes(profile);
+        if ((willFollow || willUnfollow) && (nextFollowingsList.size !== followingsList.size)) {
+            this.setState({
+                followDisabled: false
+            });
+        }
+    }
+    _handleFollow = (ev, akashaId, profile) => {
+        const { onFollow } = this.props;
         this.setState({
-            hoverCardOpen: true
+            followDisabled: true
+        }, () => {
+            onFollow(ev, akashaId, profile);
+        });
+    }
+    _handleUnfollow = (ev, akashaId, profile) => {
+        const { onUnfollow } = this.props;
+        this.setState({
+            followDisabled: true
+        }, () => {
+            onUnfollow(ev, akashaId, profile);
+        });
+    }
+    _handleMouseEnter = (ev) => {
+        this.setState({
+            hoverCardOpen: true,
+            hoverNode: ev.currentTarget
         });
     }
     _handleMouseLeave = () => {
@@ -65,7 +90,7 @@ class Comment extends React.Component {
     }
     render () {
         const { isPublishing, comment, children, intl, onAuthorNameClick, entryAuthorProfile,
-          loggedProfile, showReplyButton, onTip, onFollow, onUnfollow } = this.props;
+          loggedProfile, showReplyButton, onTip, followingsList } = this.props;
         const { isExpanded } = this.state;
         const { data } = comment;
         const { profile, date, content } = data;
@@ -78,6 +103,7 @@ class Comment extends React.Component {
         const viewerIsAuthor = loggedProfile.get('profile') === profile.get('profile');
         let commentAuthorNameColor = palette.commentAuthorColor;
         let expandedStyle = {};
+        const isFollowing = followingsList.includes(profile.get('profile'));
         if (isExpanded === false) {
             expandedStyle = {
                 maxHeight: 155,
@@ -96,7 +122,6 @@ class Comment extends React.Component {
         if (isEntryAuthor) {
             commentAuthorNameColor = palette.commentIsEntryAuthorColor;
         }
-        console.log(profile.toJS(), 'profile')
         return (
           <div
             id={`comment-${comment.get('commentId')}`}
@@ -113,10 +138,11 @@ class Comment extends React.Component {
                     style={{ padding: 0 }}
                     titleStyle={{ fontSize: '100%' }}
                     subtitleStyle={{ paddingLeft: '2px', fontSize: '80%' }}
+                    onMouseLeave={this._handleMouseLeave}
                     title={
                       <div
                         style={{ position: 'relative' }}
-                        onMouseLeave={this._handleMouseLeave}
+                        onMouseEnter={this._handleMouseEnter}
                       >
                         <FlatButton
                           label={authorName}
@@ -131,17 +157,6 @@ class Comment extends React.Component {
                           onClick={ev => onAuthorNameClick(ev, profile.get('profile'))}
                           className={`${viewerIsAuthor && style.viewer_is_author}
                             ${isEntryAuthor && style.is_entry_author} ${style.author_name}`}
-                          onMouseEnter={this._handleMouseEnter}
-                        />
-                        <ProfileHoverCard
-                          open={this.state.hoverCardOpen}
-                          profile={profile}
-                          intl={intl}
-                          onTip={ev => onTip(ev, profile)}
-                          onFollow={ev => onFollow(ev, profile.get('akashaId'))}
-                          onAuthorNameClick={ev => onAuthorNameClick(ev, profile.get('profile'))}
-                          showCardActions={!viewerIsAuthor}
-                          onUnfollow={ev => onUnfollow(ev, profile.get('akashaId'))}
                         />
                       </div>
                     }
@@ -157,7 +172,21 @@ class Comment extends React.Component {
                         onMouseEnter={this._handleMouseEnter}
                       />
                     }
-                  />
+                  >
+                    <ProfileHoverCard
+                      open={this.state.hoverCardOpen}
+                      profile={profile}
+                      intl={intl}
+                      onTip={ev => onTip(ev, profile)}
+                      onFollow={ev => this._handleFollow(ev, profile.get('akashaId'), profile.get('profile'))}
+                      onUnfollow={ev => this._handleUnfollow(ev, profile.get('akashaId'), profile.get('profile'))}
+                      onAuthorNameClick={ev => onAuthorNameClick(ev, profile.get('profile'))}
+                      showCardActions={!viewerIsAuthor}
+                      isFollowing={isFollowing}
+                      followDisabled={this.state.followDisabled}
+                      anchorNode={this.state.hoverNode}
+                    />
+                  </CardHeader>
                 </div>
                 {!isPublishing && REPLIES_ENABLED && showReplyButton &&
                   <div className={'col-xs-7 end-xs'}>
@@ -232,6 +261,7 @@ Comment.propTypes = {
     isPublishing: React.PropTypes.bool,
     entryAuthorProfile: React.PropTypes.string,
     loggedProfile: React.PropTypes.shape(),
+    followingsList: React.PropTypes.shape(),
     comment: React.PropTypes.shape(),
     intl: React.PropTypes.shape(),
     onAuthorNameClick: React.PropTypes.func,
@@ -239,7 +269,7 @@ Comment.propTypes = {
     showReplyButton: React.PropTypes.bool,
     onTip: React.PropTypes.func,
     onFollow: React.PropTypes.func,
-    onUnfollow: React.PropTypes.func
+    onUnfollow: React.PropTypes.func,
 };
 Comment.contextTypes = {
     router: React.PropTypes.shape(),

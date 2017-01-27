@@ -54,7 +54,7 @@ const confirmMessages = defineMessages({
     followProfile: {
         id: 'app.confirm.followProfile',
         description: 'confirm dialog message for following a profile',
-        defaultMessage: 'Are you sure you want to follow "{akashaId}"?'
+        defaultMessage: 'Are you sure you want to follow "@{akashaId}"?'
     },
     unfollowProfileTitle: {
         id: 'app.confirm.unfollowProfileTitle',
@@ -64,7 +64,7 @@ const confirmMessages = defineMessages({
     unfollowProfile: {
         id: 'app.confirm.unfollowProfile',
         description: 'confirm dialog message for unfollowing a profile',
-        defaultMessage: 'Are you sure you want to unfollow "{akashaId}"?'
+        defaultMessage: 'Are you sure you want to unfollow "@{akashaId}"?'
     },
     updateProfileTitle: {
         id: 'app.confirm.updateProfileTitle',
@@ -99,7 +99,7 @@ const confirmMessages = defineMessages({
     upvoteWeightDisclaimer: {
         id: 'app.confirm.upvoteWeightDisclaimer',
         description: 'disclaimer for choosing an entry upvote weight',
-        defaultMessage: '{publisherAkashaId} will receive {eth} AETH from your +{voteWeight} vote'
+        defaultMessage: '@{publisherAkashaId} will receive {eth} AETH from your +{voteWeight} vote'
     },
     downvoteWeightDisclaimer: {
         id: 'app.confirm.downvoteWeightDisclaimer',

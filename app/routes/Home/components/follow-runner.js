@@ -62,12 +62,15 @@ class FollowRunner extends Component {
             const profile = profiles.find(prf => prf.get('akashaId') === tx.akashaId);
             const profileAddress = profile ? profile.get('profile') : null;
             const correspondingAction = pendingActions.find(action =>
-                action.get('type') === tx.type && action.get('status') === 'publishing');
+                action.get('type') === tx.type &&
+                    action.get('status') === 'publishing' &&
+                        action.getIn(['payload', 'akashaId']) === tx.akashaId
+            );
             transactionActions.deletePendingTx(tx.tx);
             if (tx.type === 'followProfile') {
-                profileActions.followProfileSuccess(tx.akashaId);
+                profileActions.followProfileSuccess(tx.akashaId, correspondingAction.getIn(['payload', 'profile']));
             } else {
-                profileActions.unfollowProfileSuccess(tx.akashaId);
+                profileActions.unfollowProfileSuccess(tx.akashaId, correspondingAction.getIn(['payload', 'profile']));
             }
             profileActions.getProfileData([{ profile: loggedProfile }], true);
             if (profileAddress) {

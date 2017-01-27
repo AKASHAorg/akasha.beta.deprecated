@@ -190,6 +190,14 @@ class ProfileService extends BaseService {
             this.createListener(onError, onSuccess),
             () => Channel.server.profile.followingIterator.send({ akashaId, start, limit })
         );
+    getFollowingsList = ({ akashaId, onSuccess, onError }) => {
+        this.openChannel({
+            clientManager: this.clientManager,
+            serverChannel: Channel.server.profile.getFollowingList,
+            clientChannel: Channel.client.profile.getFollowingList,
+            listenerCb: this.createListener(onError, onSuccess)
+        }, () => Channel.server.profile.getFollowingList.send({ akashaId }));
+    };
 
     follow = ({ token, akashaId, gas = 2000000, onError = () => {}, onSuccess }) => {
         const clientChannel = Channel.client.profile.followProfile;
@@ -200,8 +208,7 @@ class ProfileService extends BaseService {
             clientChannel,
             listenerCb: this.createListener(
                 onError,
-                onSuccess,
-                clientChannel.channelName
+                onSuccess
             )
         }, () => {
             serverChannel.send({ token, akashaId, gas });

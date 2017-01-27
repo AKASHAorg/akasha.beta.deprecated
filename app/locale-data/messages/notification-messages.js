@@ -14,22 +14,22 @@ const notificationMessages = defineMessages({
     followingProfile: {
         id: 'app.notification.followingProfile',
         description: 'Notification to be displayed when follow transaction is sent',
-        defaultMessage: 'Following {akashaId} ...'
+        defaultMessage: 'Following @{akashaId} ...'
     },
     followProfileSuccess: {
         id: 'app.notification.followProfileSuccess',
         description: 'Notification to be displayed when follow transaction was mined',
-        defaultMessage: 'You are now following {akashaId}'
+        defaultMessage: 'You are now following @{akashaId}'
     },
     unfollowingProfile: {
         id: 'app.notification.unfollowingProfile',
         description: 'Notification to be displayed when unfollow transaction is sent',
-        defaultMessage: 'Unfollowing {akashaId} ...'
+        defaultMessage: 'Unfollowing @{akashaId} ...'
     },
     unfollowProfileSuccess: {
         id: 'app.notification.unfollowProfileSuccess',
         description: 'Notification to be displayed when unfollow transaction was mined',
-        defaultMessage: 'You are not following {akashaId} anymore'
+        defaultMessage: 'You are not following @{akashaId} anymore'
     },
     registeringTag: {
         id: 'app.notification.registeringTag',
@@ -169,37 +169,37 @@ const notificationMessages = defineMessages({
     sendingTip: {
         id: 'app.notification.sendingTip',
         description: 'Notification to be displayed when tip transaction is sent',
-        defaultMessage: 'Sending tip to {akashaId} ...'
+        defaultMessage: 'Sending tip to @{akashaId} ...'
     },
     sendTipSuccess: {
         id: 'app.notification.sendTipSuccess',
         description: 'Notification to be displayed when tip transaction was successfully mined',
-        defaultMessage: 'You have successfully tipped {akashaId}'
+        defaultMessage: 'You have successfully tipped @{akashaId}'
     },
     sendTipError: {
         id: 'app.notification.sendTipError',
         description: 'Notification to be displayed when tip transaction was mined but was unsuccessfull',
-        defaultMessage: 'Tipping {akashaId} has failed'
+        defaultMessage: 'Tipping @{akashaId} has failed'
     },
     notificationsEnabledSuccess: {
         id: 'app.notification.notificationsEnabledSuccess',
         description: 'message to be displayed when notifications were enabled for a specific user',
-        defaultMessage: 'Notifications enabled for {akashaId}'
+        defaultMessage: 'Notifications enabled for @{akashaId}'
     },
     notificationsEnabledError: {
         id: 'app.notification.notificationsEnabledError',
         description: 'message to be displayed when enabling notifications for a specific user has failed',
-        defaultMessage: 'Enabling notifications for {akashaId} has failed'
+        defaultMessage: 'Enabling notifications for @{akashaId} has failed'
     },
     notificationsDisabledSuccess: {
         id: 'app.notification.notificationsDisabledSuccess',
         description: 'message to be displayed when notifications were disabled for a specific user',
-        defaultMessage: 'Notifications disabled for {akashaId}'
+        defaultMessage: 'Notifications disabled for @{akashaId}'
     },
     notificationsDisabledError: {
         id: 'app.notification.notificationsDisabledError',
         description: 'message to be displayed when disabling notifications for a specific user has failed',
-        defaultMessage: 'Disabling notifications for {akashaId} has failed'
+        defaultMessage: 'Disabling notifications for @{akashaId} has failed'
     },
     channelStarred: {
         id: 'app.notification.channelStarred',
