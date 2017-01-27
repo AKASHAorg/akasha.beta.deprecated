@@ -1,6 +1,7 @@
 /* eslint new-cap: ["error", { "capIsNewExceptions": ["Record", "Map"] }]*/
 import { fromJS, Record, List } from 'immutable';
 import * as types from '../constants/ChatConstants';
+import * as appTypes from '../constants/AppConstants';
 import { createReducer } from './create-reducer';
 
 const ErrorRecord = Record({
@@ -88,6 +89,8 @@ const chatState = createReducer(initialState, {
             activeChannel: channel,
             flags: state.get('flags').merge(flags)
         }),
+
+    [appTypes.CLEAN_STORE]: () => initialState,
 });
 
 export default chatState;
