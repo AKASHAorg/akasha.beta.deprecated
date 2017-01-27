@@ -57,6 +57,7 @@ const emitMention = Promise.coroutine(function* (event, akashaId, cb) {
     return hydrateWithProfile(cb, sender.collection[0], message.entryId, {
         type: message.mentionType,
         profileAddress: sender.collection[0],
+        receiver: akashaId,
         timeStamp: event.sent,
         hash: event.hash,
         commentId: message.commentId
@@ -66,26 +67,28 @@ const execute = Promise.coroutine(function* (data, cb) {
     if (!index_1.constructed.instance) {
         return { running: false };
     }
-    if (data.stop && entries) {
+    if (data.stop) {
         queue_1.default.clear();
-        entries.stopWatching(() => {
-            entries = null;
-        });
-        comments.stopWatching(() => {
-            comments = null;
-        });
-        votes.stopWatching(() => {
-            votes = null;
-        });
-        following.stopWatching(() => {
-            following = null;
-        });
-        tipping.stopWatching(() => {
-            tipping = null;
-        });
-        mention.stopWatching(() => {
-            mention = null;
-        });
+        if (entries) {
+            entries.stopWatching(() => {
+                entries = null;
+            });
+            comments.stopWatching(() => {
+                comments = null;
+            });
+            votes.stopWatching(() => {
+                votes = null;
+            });
+            following.stopWatching(() => {
+                following = null;
+            });
+            tipping.stopWatching(() => {
+                tipping = null;
+            });
+            mention.stopWatching(() => {
+                mention = null;
+            });
+        }
         return { running: false };
     }
     if (entries) {

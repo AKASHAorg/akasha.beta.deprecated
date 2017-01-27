@@ -127,6 +127,13 @@ abstract class GethEmitter extends AbstractEmitter {
                 );
             }
         );
+        GethConnector.getInstance().once(
+            CONSTANTS.BINARY_CORRUPTED, (message: string) => {
+                this.fireEvent(channels.client.geth.startService,
+                    gethResponse({}, { message })
+                );
+            }
+        );
         return this;
     }
 }

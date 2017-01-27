@@ -68,6 +68,7 @@ const emitMention = Promise.coroutine(function*(event, akashaId, cb) {
         {
             type: message.mentionType,
             profileAddress: sender.collection[0],
+            receiver: akashaId,
             timeStamp: event.sent,
             hash: event.hash,
             commentId: message.commentId
@@ -83,28 +84,29 @@ const execute = Promise.coroutine(function*(data: { stop?: boolean }, cb) {
         return { running: false };
     }
 
-    if (data.stop && entries) {
+    if (data.stop) {
         // clear all pending notifs
         queue.clear();
-
-        entries.stopWatching(() => {
-            entries = null;
-        });
-        comments.stopWatching(() => {
-            comments = null;
-        });
-        votes.stopWatching(() => {
-            votes = null;
-        });
-        following.stopWatching(() => {
-            following = null;
-        });
-        tipping.stopWatching(() => {
-            tipping = null;
-        });
-        mention.stopWatching(() => {
-            mention = null;
-        });
+        if (entries) {
+            entries.stopWatching(() => {
+                entries = null;
+            });
+            comments.stopWatching(() => {
+                comments = null;
+            });
+            votes.stopWatching(() => {
+                votes = null;
+            });
+            following.stopWatching(() => {
+                following = null;
+            });
+            tipping.stopWatching(() => {
+                tipping = null;
+            });
+            mention.stopWatching(() => {
+                mention = null;
+            });
+        }
         return { running: false };
     }
 

@@ -14,7 +14,7 @@ const execute = Promise.coroutine(function*(data: { channels: string[] }) {
         settings.TOPICS.add(GethConnector.getInstance().web3.fromUtf8(chan));
     });
 
-    return { channels: data.channels, numChannels: settings.TOPICS.size };
+    return Promise.resolve({ channels: data.channels, numChannels: settings.TOPICS.size });
 });
 
 export default { execute, name: 'join' };

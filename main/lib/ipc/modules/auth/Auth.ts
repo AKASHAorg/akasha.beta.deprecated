@@ -9,7 +9,7 @@ export default class Auth {
     private _encrypted: Buffer;
     private _decipher: Decipher;
     private _cipher: Cipher;
-    private _session: {address: string, expiration: Date, vrs: {v: string, r: string, s: string}};
+    private _session: { address: string, expiration: Date, vrs: { v: string, r: string, s: string } };
     private _task;
 
     /**

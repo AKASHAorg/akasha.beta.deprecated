@@ -27,6 +27,7 @@ class Notifications {
     }
 
     public clear() {
+        clearTimeout(this._timeout);
         this.queue.length = 0;
     }
 }

@@ -50,7 +50,7 @@ const execute = Promise.coroutine(function*(data: { stop?: boolean, channel?: st
         const collection = [];
         const topic = (data.channel) ?
             GethConnector.getInstance().web3.fromUtf8(data.channel) : settings.getDefaultTopic();
-        const channel = (data.channel) ? data.channel: null;
+        const channel = (data.channel) ? data.channel : null;
         settings.setActive(topic);
         // fetch initial messages
         const initial = yield Promise.fromCallback((cb) => {
@@ -76,7 +76,7 @@ const execute = Promise.coroutine(function*(data: { stop?: boolean, channel?: st
             }
             if (data.hasOwnProperty('payload')) {
                 transform(data).then((message) => {
-                    cb(null, {message: message, channel: channel});
+                    cb(null, { message: message, channel: channel });
                 });
             }
         });
