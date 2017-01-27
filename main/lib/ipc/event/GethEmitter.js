@@ -64,6 +64,9 @@ class GethEmitter extends AbstractEmitter_1.AbstractEmitter {
         geth_connector_1.GethConnector.getInstance().once(geth_connector_1.CONSTANTS.UPDATING_BINARY, (message) => {
             this.fireEvent(channels_1.default.client.geth.startService, responses_1.gethResponse({ upgrading: true, message }));
         });
+        geth_connector_1.GethConnector.getInstance().once(geth_connector_1.CONSTANTS.BINARY_CORRUPTED, (message) => {
+            this.fireEvent(channels_1.default.client.geth.startService, responses_1.gethResponse({}, { message }));
+        });
         return this;
     }
 }

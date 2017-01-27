@@ -9,7 +9,7 @@ const execute = Promise.coroutine(function* (data) {
     data.channels.forEach((chan) => {
         settings_1.default.TOPICS.add(geth_connector_1.GethConnector.getInstance().web3.fromUtf8(chan));
     });
-    return { channels: data.channels, numChannels: settings_1.default.TOPICS.size };
+    return Promise.resolve({ channels: data.channels, numChannels: settings_1.default.TOPICS.size });
 });
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = { execute, name: 'join' };
