@@ -1,5 +1,5 @@
 import { AppActions, TransactionActions } from 'local-flux';
-import { EntryService } from '../services';
+import { EntryService, ProfileService } from '../services';
 import { entryActionCreators } from './action-creators';
 
 let entryActions = null;
@@ -14,6 +14,7 @@ class EntryActions {
         this.appActions = new AppActions(dispatch);
         this.transactionActions = new TransactionActions(dispatch);
         this.entryService = new EntryService();
+        this.profileService = new ProfileService();
         entryActions = this;
     }
 
@@ -115,10 +116,18 @@ class EntryActions {
             const entries = savedEntries.reverse().slice(0, limit).toJS();
             this.entryService.getEntryList({
                 entries,
-                onSuccess: data =>
+                onSuccess: data => {
+                    const akashaIds = [];
+                    data.collection && data.collection.forEach(entry => {
+                        if (entry.entryEth.publisher.akashaId) {
+                            akashaIds.push({ akashaId: entry.entryEth.publisher.akashaId });
+                        }
+                    });
+                    this.profileService.saveAkashaIds(akashaIds);
                     this.dispatch(entryActionCreators.getSavedEntriesListSuccess(data, {
                         fetchingSavedEntriesList: false
-                    })),
+                    }));
+                },
                 onError: error =>
                     this.dispatch(entryActionCreators.getSavedEntriesListError(error, {
                         fetchingSavedEntriesList: false
@@ -139,10 +148,18 @@ class EntryActions {
             const entries = savedEntries.reverse().slice(startIndex, startIndex + limit).toJS();
             this.entryService.moreEntryList({
                 entries,
-                onSuccess: data =>
+                onSuccess: data => {
+                    const akashaIds = [];
+                    data.collection && data.collection.forEach(entry => {
+                        if (entry.entryEth.publisher.akashaId) {
+                            akashaIds.push({ akashaId: entry.entryEth.publisher.akashaId });
+                        }
+                    });
+                    this.profileService.saveAkashaIds(akashaIds);
                     this.dispatch(entryActionCreators.moreSavedEntriesListSuccess(data, {
                         fetchingMoreSavedEntriesList: false
-                    })),
+                    }))
+                },
                 onError: error =>
                     this.dispatch(entryActionCreators.moreSavedEntriesListError(error, {
                         fetchingMoreSavedEntriesList: false
@@ -207,6 +224,13 @@ class EntryActions {
                 start,
                 limit,
                 onSuccess: (data) => {
+                    const akashaIds = [];
+                    data.collection && data.collection.forEach(entry => {
+                        if (entry.entryEth.publisher.akashaId) {
+                            akashaIds.push({ akashaId: entry.entryEth.publisher.akashaId });
+                        }
+                    });
+                    this.profileService.saveAkashaIds(akashaIds);
                     if (selectedTag === data.tagName || !selectedTag) {
                         dispatch(entryActionCreators.entryTagIteratorSuccess(data, {
                             fetchingTagEntries: false
@@ -226,9 +250,18 @@ class EntryActions {
             tagName,
             start,
             limit,
-            onSuccess: data => this.dispatch(entryActionCreators.moreEntryTagIteratorSuccess(data, {
-                fetchingMoreTagEntries: false
-            })),
+            onSuccess: data => {
+                const akashaIds = [];
+                data.collection && data.collection.forEach(entry => {
+                    if (entry.entryEth.publisher.akashaId) {
+                        akashaIds.push({ akashaId: entry.entryEth.publisher.akashaId });
+                    }
+                });
+                this.profileService.saveAkashaIds(akashaIds);
+                this.dispatch(entryActionCreators.moreEntryTagIteratorSuccess(data, {
+                    fetchingMoreTagEntries: false
+                }));
+            },
             onError: error => this.dispatch(entryActionCreators.moreEntryTagIteratorError(error, {
                 fetchingMoreTagEntries: false
             }))
@@ -240,9 +273,18 @@ class EntryActions {
         this.entryService.allStreamIterator({
             limit,
             toBlock,
-            onSuccess: data => this.dispatch(entryActionCreators.allStreamIteratorSuccess(data, {
-                fetchingAllStream: false
-            })),
+            onSuccess: data => {
+                const akashaIds = [];
+                data.collection && data.collection.forEach(entry => {
+                    if (entry.entryEth.publisher.akashaId) {
+                        akashaIds.push({ akashaId: entry.entryEth.publisher.akashaId });
+                    }
+                });
+                this.profileService.saveAkashaIds(akashaIds);
+                this.dispatch(entryActionCreators.allStreamIteratorSuccess(data, {
+                    fetchingAllStream: false
+                }))
+            },
             onError: error => this.dispatch(entryActionCreators.allStreamIteratorError(error, {
                 fetchingAllStream: false
             }))
@@ -254,10 +296,18 @@ class EntryActions {
         this.entryService.allStreamIterator({
             toBlock,
             limit,
-            onSuccess: data =>
+            onSuccess: data => {
+                const akashaIds = [];
+                data.collection && data.collection.forEach(entry => {
+                    if (entry.entryEth.publisher.akashaId) {
+                        akashaIds.push({ akashaId: entry.entryEth.publisher.akashaId });
+                    }
+                });
+                this.profileService.saveAkashaIds(akashaIds);
                 this.dispatch(entryActionCreators.moreAllStreamIteratorSuccess(data, {
                     fetchingMoreAllStream: false
-                })),
+                }))
+            },
             onError: error =>
                 this.dispatch(entryActionCreators.moreAllStreamIteratorError(error, {
                     fetchingMoreAllStream: false
@@ -473,6 +523,11 @@ class EntryActions {
             onSuccess: (data) => {
                 // @todo: [code: 3ntry3] get rid of this asap!!
                 // we need this to load images from ipfs
+                if (data.entryEth.publisher.akashaId) {
+                    this.profileService.saveAkashaIds([{
+                        akashaId: data.entryEth.publisher.akashaId
+                    }]);
+                }
                 window.entry__baseUrl = data.baseUrl;
                 this.dispatch(entryActionCreators.getFullEntrySuccess(data, {
                     fetchingFullEntry: false

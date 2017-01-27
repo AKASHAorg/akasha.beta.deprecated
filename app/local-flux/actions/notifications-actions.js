@@ -72,6 +72,14 @@ class NotificationsActions {
 
     deleteFeedNotif = index => this.dispatch(action.deleteFeedNotif(index));
 
+    sendMention = (mention, entryId) =>
+        this.notificationsService.mention({
+            mention,
+            entryId,
+            onSuccess: () => {},
+            onError: () => {}
+        });
+
     /**
      * Stop subscription
      */

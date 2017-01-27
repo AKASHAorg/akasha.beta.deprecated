@@ -325,12 +325,15 @@ class ProfileActions {
                     fetchingFollowers: false
                 })),
             onSuccess: (data) => {
+                const akashaIds = [];
                 data.collection.forEach((item) => {
+                    akashaIds.push({ akashaId: item.profile.akashaId });
                     if (item.profile.avatar) {
                         item.profile.avatar =
                             imageCreator(item.profile.avatar, item.profile.baseUrl);
                     }
                 });
+                this.profileService.saveAkashaIds(akashaIds);
                 this.dispatch(profileActionCreators.followersIteratorSuccess(data, {
                     fetchingFollowers: false
                 }));
@@ -351,12 +354,15 @@ class ProfileActions {
                     fetchingMoreFollowers: false
                 })),
             onSuccess: (data) => {
+                const akashaIds = [];
                 data.collection.forEach((item) => {
+                    akashaIds.push({ akashaId: item.profile.akashaId });
                     if (item.profile.avatar) {
                         item.profile.avatar =
                             imageCreator(item.profile.avatar, item.profile.baseUrl);
                     }
                 });
+                this.profileService.saveAkashaIds(akashaIds);
                 this.dispatch(profileActionCreators.moreFollowersIteratorSuccess(data, {
                     fetchingMoreFollowers: false
                 }));
@@ -377,12 +383,15 @@ class ProfileActions {
                     fetchingFollowing: false
                 })),
             onSuccess: (data) => {
+                const akashaIds = [];
                 data.collection.forEach((item) => {
+                    akashaIds.push({ akashaId: item.profile.akashaId });
                     if (item.profile.avatar) {
                         item.profile.avatar =
                             imageCreator(item.profile.avatar, item.profile.baseUrl);
                     }
                 });
+                this.profileService.saveAkashaIds(akashaIds);
                 this.dispatch(profileActionCreators.followingIteratorSuccess(data, {
                     fetchingFollowing: false
                 }));
@@ -403,12 +412,15 @@ class ProfileActions {
                     fetchingMoreFollowing: false
                 })),
             onSuccess: (data) => {
+                const akashaIds = [];
                 data.collection.forEach((item) => {
+                    akashaIds.push({ akashaId: item.profile.akashaId });
                     if (item.profile.avatar) {
                         item.profile.avatar =
                             imageCreator(item.profile.avatar, item.profile.baseUrl);
                     }
                 });
+                this.profileService.saveAkashaIds(akashaIds);
                 this.dispatch(profileActionCreators.moreFollowingIteratorSuccess(data, {
                     fetchingMoreFollowing: false
                 }));
