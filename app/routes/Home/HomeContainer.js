@@ -42,9 +42,11 @@ class HomeContainer extends React.Component {
     }
     componentWillReceiveProps (nextProps) {
         const { chatActions, profileActions, settingsActions, entryActions, draftActions,
-            tagActions, transactionActions, notificationsActions } = this.props;
+            tagActions, transactionActions, notificationsActions, followingsList } = this.props;
         const { joinedChannels, loggedProfile, fetchingLoggedProfile, params, recentChannels,
-            userSettings, selectedTag } = nextProps;
+            userSettings, selectedTag, loggedProfileData } = nextProps;
+
+        const currentLoggedProfileData = this.props.loggedProfileData;
 
         if (!loggedProfile.get('account') && !fetchingLoggedProfile) {
             this.context.router.push('/authenticate/');
@@ -67,6 +69,9 @@ class HomeContainer extends React.Component {
         }
         if (recentChannels.size && !this.props.recentChannels.size) {
             chatActions.joinChannels(recentChannels.toJS());
+        }
+        if (!currentLoggedProfileData && loggedProfileData && followingsList.size <= parseInt(loggedProfileData.get('followingCount'), 10)) {
+            profileActions.getFollowingsList(loggedProfile.get('akashaId'));
         }
         if (!userSettings && this.props.userSettings) {
             notificationsActions.setFilter([]);
@@ -173,6 +178,7 @@ HomeContainer.propTypes = {
     chatActions: PropTypes.shape(),
     entryActions: PropTypes.shape(),
     eProcActions: PropTypes.shape(),
+    followingsList: PropTypes.shape(),
     profileActions: PropTypes.shape(),
     tagActions: PropTypes.shape(),
     activePanel: PropTypes.string,
@@ -216,6 +222,7 @@ function mapStateToProps (state, ownProps) {
         loggedProfile: state.profileState.get('loggedProfile'),
         loggedProfileData: state.profileState.get('profiles').find(profile =>
             profile.get('profile') === state.profileState.getIn(['loggedProfile', 'profile'])),
+        followingsList: state.profileState.get('followingsList'),
         updatingProfile: state.profileState.getIn(['flags', 'updatingProfile']),
         draftsCount: state.draftState.get('draftsCount'),
         notificationsCount: state.notificationsState.get('youNrFeed'),

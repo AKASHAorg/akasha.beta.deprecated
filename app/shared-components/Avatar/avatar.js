@@ -79,7 +79,8 @@ class Avatar extends React.Component {
               userInitialsWrapperStyle,
               offsetBorder,
               backgroundColor,
-              style } = this.props;
+              style,
+              ...other } = this.props;
         const palette = this.context.muiTheme.palette;
         let avatarImage;
 
@@ -94,6 +95,7 @@ class Avatar extends React.Component {
         return (
           <div
             style={Object.assign({ maxWidth: radius, maxHeight: radius, position: 'relative' }, style)}
+            {...other}
           >
             {editable && !avatarImage &&
               <input

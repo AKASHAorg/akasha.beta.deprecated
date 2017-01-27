@@ -8,7 +8,7 @@ import { AllRightsReserved, CreativeCommonsBY, CreativeCommonsCC, CreativeCommon
     CreativeCommonsNCJP, CreativeCommonsNC, CreativeCommonsND, CreativeCommonsREMIX,
     CreativeCommonsSHARE, CreativeCommonsZERO, CreativeCommonsPD,
     CreativeCommonsSA } from 'shared-components/svg';
-import debounce from 'lodash.debounce';
+import debounce from 'lodash.debounce'; // eslint-disable-line no-unused-vars
 import { entryMessages } from 'locale-data/messages';
 import { getInitials } from 'utils/dataModule';
 import EntryPageHeader from './entry-page-header';
@@ -17,6 +17,7 @@ import EntryPageActions from './entry-page-actions';
 import styles from './entry-page.scss';
 
 const COMMENT_FETCH_LIMIT = 50;
+const CHECK_NEW_COMMENTS_INTERVAL = 15; // in seconds
 
 class EntryPage extends Component {
     constructor (props) {
@@ -29,14 +30,13 @@ class EntryPage extends Component {
     }
 
     componentDidMount () {
-        window.addEventListener('scroll', this._handleContentScroll, { passive: true });
-        // treat mouse wheel separately
-        // we should optimize the heck out of this!
-        // window.addEventListener('mousewheel', this.debouncedMouseWheel, { passive: true });
-        this.checkCommentsInterval = setInterval(this._checkNewComments, 1000 * 15);
         const { entry, entryActions, params, fetchingFullEntry, commentsActions } = this.props;
-
-        if ((!entry && !fetchingFullEntry) || (entry && entry.get('entryId') !== params.entryId)) {
+        window.addEventListener('scroll', this._handleContentScroll, { passive: true });
+        this.checkCommentsInterval = setInterval(
+            this._checkNewComments,
+            CHECK_NEW_COMMENTS_INTERVAL * 1000
+        );
+        if ((!entry && !fetchingFullEntry) || entry.get('entryId') !== params.entryId) {
             entryActions.getFullEntry(params.entryId);
             commentsActions.unloadComments(parseInt(params.entryId, 10), null);
             this.fetchComments(params.entryId);
@@ -290,13 +290,13 @@ class EntryPage extends Component {
             profile: profileData.get('profile')
         });
     }
-    _handleFollow = (ev, akashaId) => {
+    _handleFollow = (ev, akashaId, profile) => {
         const { profileActions } = this.props;
-        profileActions.addFollowProfileAction(akashaId);
+        profileActions.addFollowProfileAction(akashaId, profile);
     }
-    _handleUnfollow = (ev, akashaId) => {
+    _handleUnfollow = (ev, akashaId, profile) => {
         const { profileActions } = this.props;
-        profileActions.addUnfollowProfileAction(akashaId);
+        profileActions.addUnfollowProfileAction(akashaId, profile);
     }
     _getNewlyCreatedComments = comments =>
         comments.filter(comm => (!comm.get('tempTx') && !comm.getIn(['data', 'ipfsHash']) &&
@@ -354,7 +354,7 @@ class EntryPage extends Component {
     render () {
         const { blockNr, canClaimPending, claimPending, comments, entry, fetchingEntryBalance,
             fetchingFullEntry, intl, licences, loggedProfile, profiles, savedEntries, votePending,
-            fetchingComments, newCommentsIds } = this.props;
+            fetchingComments, newCommentsIds, followingsList } = this.props;
         const { palette } = this.context.muiTheme;
         const { publisherTitleShadow, scrollDirection, commentsSectionTop } = this.state;
         let licence;
@@ -520,6 +520,8 @@ class EntryPage extends Component {
                           <CommentsList
                             ref={(cList) => { this.commentsListRef = cList; }}
                             loggedProfile={loggedProfile}
+                            loggedProfileData={loggedProfileData}
+                            followingsList={followingsList}
                             profileAvatar={loggedProfileAvatar}
                             profileUserInitials={loggedProfileUserInitials}
                             onReplyCreate={this._handleCommentCreate}
@@ -559,6 +561,7 @@ EntryPage.propTypes = {
     fetchingComments: PropTypes.bool,
     fetchingEntryBalance: PropTypes.bool,
     fetchingFullEntry: PropTypes.bool,
+    followingsList: PropTypes.shape(),
     intl: PropTypes.shape(),
     licences: PropTypes.shape(),
     loggedProfile: PropTypes.shape(),
