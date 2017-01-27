@@ -110,7 +110,7 @@ class ChatService extends BaseService {
                 if (!data[0]) {
                     chatDB.channels
                         .put({ akashaId: loggedAkashaId, recentChannels: [channel] })
-                        .then(updated => updated ? onSuccess(channel) : onError(''))
+                        .then(updated => updated ? onSuccess([channel]) : onError(''))
                         .catch(error => onError(error));
                     return;
                 }
