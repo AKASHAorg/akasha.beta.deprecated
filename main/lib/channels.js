@@ -24,7 +24,7 @@ const channels = {
         'getFollowingList', 'getProfileList', 'tip'],
     registry: ['fetchRegistered', 'addressOf', 'checkIdFormat', 'getCurrentProfile', 'profileExists', 'registerProfile',
         'getByAddress', 'unregister'],
-    notifications: ['me', 'feed', 'setFilter', 'excludeFilter', 'includeFilter'],
+    notifications: ['me', 'feed', 'setFilter', 'excludeFilter', 'includeFilter', 'mention'],
     tx: ['addToQueue', 'emitMined'],
     licenses: ['getLicenceById', 'getLicenses'],
     chat: ['fetch', 'post', 'join', 'leave', 'getCurrentChannels']

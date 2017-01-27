@@ -6,6 +6,8 @@ import getProfileData from '../profile/profile-data';
 import getEntry from '../entry/get-entry';
 import currentProfile from '../registry/current-profile';
 import resolveProfile from '../registry/resolve-ethaddress';
+import addressOf from '../registry/address-of-akashaid';
+import { MENTION_CHANNEL } from '../../config/settings';
 import queue from './queue';
 
 let entries;
@@ -13,6 +15,7 @@ let comments;
 let votes;
 let following;
 let tipping;
+let mention;
 
 const eventTypes = {
     VOTE: 'vote',
@@ -23,6 +26,8 @@ const eventTypes = {
 };
 
 const VALUE_UNIT = 'ether';
+
+
 const hydrateWithProfile = (cb, profile, entry, extra) => {
     const batch = [];
     batch.push(getProfileData.execute({ profile: profile }));
@@ -35,6 +40,40 @@ const hydrateWithProfile = (cb, profile, entry, extra) => {
             cb({ message: error.message }, extra)
         });
 };
+
+const emitMention = Promise.coroutine(function*(event, akashaId, cb) {
+    let message;
+    const unmarshall = GethConnector.getInstance().web3.toUtf8(event.payload);
+
+    try {
+        message = JSON.parse(unmarshall);
+    } catch (err) {
+        cb(err);
+    }
+
+    if (!message.hasOwnProperty('mention') || message.mention.indexOf(akashaId) === -1) {
+        return null;
+    }
+
+    if (!message.hasOwnProperty('akashaId')
+        || !message.hasOwnProperty('mentionType')
+        || !message.hasOwnProperty('entryId')) {
+        return null;
+    }
+    const sender = yield addressOf.execute([{ akashaId: message.akashaId }]);
+    return hydrateWithProfile(
+        cb,
+        sender.collection[0],
+        message.entryId,
+        {
+            type: message.mentionType,
+            profileAddress: sender.collection[0],
+            timeStamp: event.sent,
+            hash: event.hash,
+            commentId: message.commentId
+        }
+    );
+});
 /**
  * Get total number of your follows
  * @type {Function}
@@ -63,6 +102,9 @@ const execute = Promise.coroutine(function*(data: { stop?: boolean }, cb) {
         tipping.stopWatching(() => {
             tipping = null;
         });
+        mention.stopWatching(() => {
+            mention = null;
+        });
         return { running: false };
     }
 
@@ -78,6 +120,7 @@ const execute = Promise.coroutine(function*(data: { stop?: boolean }, cb) {
     votes = contracts.instance.votes.contract.Vote({}, filterBlock);
     following = contracts.instance.feed.contract.Follow({ following: filter.getMyAddress() }, filterBlock);
     tipping = profileInstance.Tip({}, filterBlock);
+    mention = GethConnector.getInstance().web3.shh.filter({ topics: [MENTION_CHANNEL] });
 
     entries.watch((err, entry) => {
         if (err) {
@@ -181,6 +224,15 @@ const execute = Promise.coroutine(function*(data: { stop?: boolean }, cb) {
             .catch((e) => {
                 cb({ message: e.message, type: eventTypes.TIPPED });
             });
+    });
+
+    mention.watch(function (err, event) {
+        if (err) {
+            return cb(err);
+        }
+        if (event.hasOwnProperty('payload')) {
+            emitMention(event, myProfile.akashaId, cb);
+        }
     });
     return { running: true }
 });

@@ -3,14 +3,16 @@ import settings from './settings';
 import { GethConnector } from '@akashaproject/geth-connector';
 import currentProfile from '../registry/current-profile';
 
-let whisperIdentity;
+export const whisperIdentity = {
+    from: ''
+};
 const execute = Promise.coroutine(function*(data: { message: string }) {
     if (data.message.length > 128) {
         throw new Error("Max message length allowed is 128");
     }
 
-    if (!whisperIdentity) {
-        whisperIdentity = yield GethConnector.getInstance().web3.shh.newIdentityAsync();
+    if (!whisperIdentity.from) {
+        whisperIdentity.from = yield GethConnector.getInstance().web3.shh.newIdentityAsync();
     }
     const topic = settings.getActive();
     const ttl = (settings.isDefaultActive()) ? '0x7080' : '0x15180';
@@ -24,7 +26,7 @@ const execute = Promise.coroutine(function*(data: { message: string }) {
     const post = yield GethConnector.getInstance().web3
         .shh
         .postAsync({
-            from: whisperIdentity,
+            from: whisperIdentity.from,
             topics: [topic],
             payload: payload,
             ttl: ttl
