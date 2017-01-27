@@ -16,6 +16,7 @@ export ImageUploader from './ImageUploader/image-uploader';
 export IpfsSettingsForm from './Forms/ipfs-settings-form';
 export LoginDialog from './Dialogs/login-dialog';
 export LogsList from './LogsList/logs-list';
+export MentionDecorators from './Decorators/mention-decorator';
 export PanelContainer from './PanelContainer/panel-container';
 export PublishConfirmDialog from './Dialogs/publish-confirm-dialog';
 export ProfileCard from './ProfileCard/profile-card';

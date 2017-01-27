@@ -8,21 +8,25 @@ import {
     SvgIcon,
     CircularProgress
   } from 'material-ui';
-import { MegadraftEditor, editorStateFromRaw } from 'megadraft';
+import { DraftJS, MegadraftEditor, editorStateFromRaw } from 'megadraft';
 import HubIcon from 'material-ui/svg-icons/hardware/device-hub';
 import MoreIcon from 'material-ui/svg-icons/navigation/expand-more';
 import LessIcon from 'material-ui/svg-icons/navigation/expand-less';
 import { EntryCommentReply } from 'shared-components/svg'; // eslint-disable-line import/no-unresolved, import/extensions
-import { Avatar, ProfileHoverCard } from 'shared-components'; // eslint-disable-line import/no-unresolved, import/extensions
+import { Avatar, MentionDecorators, ProfileHoverCard } from 'shared-components'; // eslint-disable-line import/no-unresolved, import/extensions
 import { entryMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
 import { getInitials } from 'utils/dataModule'; // eslint-disable-line import/no-unresolved, import/extensions
 import style from './comment.scss';
 
+const { CompositeDecorator, EditorState } = DraftJS;
 const REPLIES_ENABLED = true;
 
 class Comment extends React.Component {
     constructor (props) {
         super(props);
+
+        const decorators = new CompositeDecorator([MentionDecorators.nonEditableDecorator]);
+        this.editorState = EditorState.createEmpty(decorators);
         this.state = {
             isExpanded: null,
             hoverCardOpen: false,
@@ -51,34 +55,30 @@ class Comment extends React.Component {
             ReactTooltip.hide();
         }
     }
-    _handleFollow = (ev, akashaId, profile) => {
-        const { onFollow } = this.props;
-        onFollow(ev, akashaId, profile);
-    }
-    _handleUnfollow = (ev, akashaId, profile) => {
-        const { onUnfollow } = this.props;
-        onUnfollow(ev, akashaId, profile);
-    }
+
     _handleMouseEnter = (ev) => {
         this.setState({
             hoverCardOpen: true,
             hoverNode: ev.currentTarget
         });
-    }
+    };
+
     _handleMouseLeave = () => {
         this.setState({
             hoverCardOpen: false
         });
-    }
+    };
+
     _toggleExpanded = (ev, isExpanded) => {
         ev.preventDefault();
         this.setState({
             isExpanded
         });
-    }
+    };
+
     render () {
         const { isPublishing, comment, children, intl, onAuthorNameClick, entryAuthorProfile,
-          loggedProfile, showReplyButton, onTip, followingsList, followPending } = this.props;
+          loggedProfile, showReplyButton } = this.props;
         const { isExpanded } = this.state;
         const { data } = comment;
         const { profile, date, content } = data;
@@ -91,7 +91,6 @@ class Comment extends React.Component {
         const viewerIsAuthor = loggedProfile.get('profile') === profile.get('profile');
         let commentAuthorNameColor = palette.commentAuthorColor;
         let expandedStyle = {};
-        const isFollowing = followingsList.includes(profile.get('profile'));
         if (isExpanded === false) {
             expandedStyle = {
                 maxHeight: 155,
@@ -179,14 +178,6 @@ class Comment extends React.Component {
                     {this.state.hoverCardOpen &&
                       <ProfileHoverCard
                         profile={profile.toJS()}
-                        intl={intl}
-                        onTip={ev => onTip(ev, profile.toJS())}
-                        onFollow={ev => this._handleFollow(ev, profile.get('akashaId'), profile.get('profile'))}
-                        onUnfollow={ev => this._handleUnfollow(ev, profile.get('akashaId'), profile.get('profile'))}
-                        onAuthorNameClick={ev => onAuthorNameClick(ev, profile.get('profile'))}
-                        showCardActions={!viewerIsAuthor}
-                        isFollowing={isFollowing}
-                        followDisabled={followPending}
                         anchorNode={this.state.hoverNode}
                       />
                     }
@@ -217,7 +208,7 @@ class Comment extends React.Component {
                 >
                   <MegadraftEditor
                     readOnly
-                    editorState={editorStateFromRaw(JSON.parse(content))}
+                    editorState={EditorState.push(this.editorState, editorStateFromRaw(content).getCurrentContent())}
                     sidebarRendererFn={() => null}
                   />
                 </div>
@@ -267,19 +258,14 @@ class Comment extends React.Component {
 }
 Comment.propTypes = {
     children: React.PropTypes.node,
-    isPublishing: React.PropTypes.bool,
-    entryAuthorProfile: React.PropTypes.string,
-    loggedProfile: React.PropTypes.shape(),
-    followingsList: React.PropTypes.shape(),
-    followPending: React.PropTypes.bool,
     comment: React.PropTypes.shape(),
+    entryAuthorProfile: React.PropTypes.string,
     intl: React.PropTypes.shape(),
+    isPublishing: React.PropTypes.bool,
+    loggedProfile: React.PropTypes.shape(),
     onAuthorNameClick: React.PropTypes.func,
     onReply: React.PropTypes.func,
     showReplyButton: React.PropTypes.bool,
-    onTip: React.PropTypes.func,
-    onFollow: React.PropTypes.func,
-    onUnfollow: React.PropTypes.func,
 };
 Comment.contextTypes = {
     router: React.PropTypes.shape(),

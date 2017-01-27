@@ -9,7 +9,7 @@
         .commentActions {
             opacity: 0.3;
         }
-        
+
     }
 }
 .commentHeader {
@@ -39,6 +39,9 @@
                 }
             .DraftEditor-root {
                 font-size: 16px;
+            }
+            .DraftEditor-editorContainer {
+                position: initial;
             }
         }
     }

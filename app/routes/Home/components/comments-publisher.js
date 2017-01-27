@@ -1,6 +1,6 @@
 import { Component } from 'react';
 import { connect } from 'react-redux';
-import { AppActions, CommentsActions, TransactionActions } from 'local-flux';
+import { AppActions, CommentsActions, NotificationsActions, TransactionActions } from 'local-flux';
 
 class CommentsPublisher extends Component {
     componentWillReceiveProps (nextProps) {
@@ -29,7 +29,8 @@ class CommentsPublisher extends Component {
     }
     listenForMinedTx = (nextProps) => {
         const { minedTx, pendingTx, fetchingMined, fetchingPending, deletingPendingTx, appActions,
-            transactionActions, commentsActions, loggedProfile, pendingActions } = nextProps;
+            transactionActions, commentsActions, loggedProfile, pendingActions,
+            notificationsActions } = nextProps;
         const isNotFetching = !fetchingMined && !fetchingPending;
         const pendingSubsTxs = isNotFetching ?
             pendingTx.toJS().filter(tx =>
@@ -43,6 +44,9 @@ class CommentsPublisher extends Component {
             const correspondingAction = pendingActions.find(action =>
                 action.get('type') === tx.type && action.get('status') === 'publishing');
             transactionActions.deletePendingTx(tx.tx);
+            if (tx.mentions && tx.mentions.length) {
+                notificationsActions.sendMention(tx.mentions, tx.entryId);
+            }
             // fire success action based on action type
             // WARNING: action must match `action.type + "Success"`
             // example: for action.type = 'registerTag', success action
@@ -70,7 +74,7 @@ function mapStateToProps (state) {
             prf.get('profile') === state.profileState.getIn(['loggedProfile', 'profile'])),
         pendingActions: state.appState.get('pendingActions'),
         pendingTx: state.transactionState.get('pending'),
-        minedTx: state.transactionState.get('mined')
+        minedTx: state.transactionState.get('mined'),
     };
 }
 
@@ -78,6 +82,7 @@ function mapDispatchToProps (dispatch) {
     return {
         appActions: new AppActions(dispatch),
         commentsActions: new CommentsActions(dispatch),
+        notificationsActions: new NotificationsActions(dispatch),
         transactionActions: new TransactionActions(dispatch),
     };
 }

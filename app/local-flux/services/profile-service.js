@@ -1,4 +1,5 @@
 import BaseService from './base-service';
+import profileDB from './db/profile';
 
 const Channel = window.Channel;
 /**
@@ -264,6 +265,22 @@ class ProfileService extends BaseService {
         }, () => {
             serverChannel.send({ token, akashaId, receiver, value, gas });
         });
+    };
+
+    saveAkashaIds = akashaIds =>
+        profileDB.knownAkashaIds
+            .bulkPut(akashaIds)
+            .catch(error => console.error(error));
+
+    searchInKnownAkashaIds = ({ search, onSuccess }) => {
+        if (search && search.length) {
+            profileDB.knownAkashaIds
+                .where('akashaId')
+                .startsWith(search)
+                .toArray()
+                .then(data => onSuccess(data.slice(0, 5).map(obj => obj.akashaId)))
+                .catch(err => console.error(err));
+        }
     };
 }
 

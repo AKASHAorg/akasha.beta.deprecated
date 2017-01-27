@@ -1,5 +1,6 @@
 .comment_writer {
     padding: 16px 0;
+    position: relative;
 }
 .avatar_image,
 .comment_editor {
@@ -18,6 +19,7 @@
         border: 1px solid #DDD;
         padding-left: 16px;
         padding: 0 8px;
+        position: relative;
     }
     :global {
         .megadraft {
