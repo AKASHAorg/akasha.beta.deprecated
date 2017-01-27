@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
-import ReactCSSTransitionGroup from 'react-addons-css-transition-group'
 import { Comment, CommentEditor } from 'shared-components';
 import { Divider } from 'material-ui';
 import { entryMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
-import styles from './comment-thread.scss';
 
 class CommentThread extends Component {
     componentDidUpdate () {
