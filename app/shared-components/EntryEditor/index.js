@@ -53,6 +53,10 @@ class EntryEditor extends Component {
         }
     };
     _handleTitleChange = (ev) => {
+        const { onChange } = this.props;
+        if (onChange) {
+            onChange();
+        }
         this.setState({
             title: ev.target.value
         });

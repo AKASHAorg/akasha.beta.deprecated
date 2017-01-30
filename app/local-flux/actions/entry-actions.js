@@ -429,11 +429,13 @@ class EntryActions {
                 this.dispatch(entryActionCreators.getEntryError(error, { fetchingEntry: false }))
         });
     };
-    getFullEntry = (entryId, full = true) => {
+
+    getFullEntry = (entryId, version, full = true) => {
         this.dispatch(entryActionCreators.getFullEntry({ fetchingFullEntry: true }));
         this.entryService.getEntry({
             entryId,
             full,
+            version,
             onSuccess: (data) => {
                 // @todo: [code: 3ntry3] get rid of this asap!!
                 // we need this to load images from ipfs
@@ -448,9 +450,20 @@ class EntryActions {
                 }))
         });
     }
+
+    getLatestVersion = (entryId) =>
+        this.entryService.getEntry({
+            entryId,
+            onSuccess: (data) => this.setLatestVersion(data.content.version),
+            onError: (error) => this.dispatch(entryActionCreators.getEntryError(error))
+        });
+
+    setLatestVersion = (version) => this.dispatch(entryActionCreators.setLatestVersion(version));
+
     unloadFullEntry = () => {
         this.dispatch(entryActionCreators.unloadFullEntry());
     }
+
     getScore = (entryId) => {
         this.dispatch(entryActionCreators.getScore({ fetchingScore: true }));
         this.entryService.getScore({

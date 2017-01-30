@@ -30,24 +30,37 @@ class EntryPage extends Component {
     }
 
     componentDidMount () {
-        const { entry, entryActions, params, fetchingFullEntry, commentsActions } = this.props;
+        const { entry, entryActions, location, params, commentsActions } = this.props;
         window.addEventListener('scroll', this._handleContentScroll, { passive: true });
         this.checkCommentsInterval = setInterval(
             this._checkNewComments,
             CHECK_NEW_COMMENTS_INTERVAL * 1000
         );
-        if ((!entry && !fetchingFullEntry) || entry.get('entryId') !== params.entryId) {
-            entryActions.getFullEntry(params.entryId);
+        const { version } = location.query;
+        if (!entry || entry.get('entryId') !== params.entryId ||
+                (version !== undefined && entry.content.version !== version)) {
+            const versionNr = isNaN(Number(version)) ? null : Number(version);
+            entryActions.getFullEntry(params.entryId, versionNr);
             commentsActions.unloadComments(parseInt(params.entryId, 10), null);
             this.fetchComments(params.entryId);
         }
     }
 
     componentWillReceiveProps (nextProps) { // eslint-disable-line max-statements, :D
-        const { params, entry, entryActions, commentsActions, loggedProfile } = this.props;
-        const newEntryLoaded = entry && entry.get('entryId') !== nextProps.entry.get('entryId');
-        if (params.entryId !== nextProps.params.entryId && entry.get('entryId') !== nextProps.params.entryId) {
-            entryActions.getFullEntry(nextProps.params.entryId);
+        const { params, entry, entryActions, fetchingFullEntry, commentsActions,
+            location, loggedProfile } = this.props;
+        const newEntryLoaded = entry && (entry.get('entryId') !== nextProps.entry.get('entryId') ||
+            (entry.content && nextProps.entry.content &&
+            entry.content.version !== nextProps.entry.content.version)
+        );
+        const { version } = nextProps.location.query;
+        if (!nextProps.fetchingFullEntry && fetchingFullEntry) {
+            entryActions.getLatestVersion(nextProps.params.entryId);
+        }
+        if ((params.entryId !== nextProps.params.entryId && entry.get('entryId') !== nextProps.params.entryId) ||
+                (version !== undefined && version !== location.query.version)) {
+            const versionNr = isNaN(Number(version)) ? null : Number(version);
+            entryActions.getFullEntry(nextProps.params.entryId, versionNr);
             commentsActions.unloadComments(parseInt(params.entryId, 10));
             this.fetchComments(nextProps.params.entryId);
         }
@@ -263,10 +276,16 @@ class EntryPage extends Component {
         }
     }
     handleEdit = () => {
-        const { entry, loggedProfile } = this.props;
+        const { existingDraft, entry, loggedProfile } = this.props;
         const { router } = this.context;
         const akashaId = loggedProfile.get('akashaId');
-        router.push(`/${akashaId}/draft/new?editEntry=${entry.get('entryId')}`);
+        if (existingDraft) {
+            router.push(`/${akashaId}/draft/${existingDraft.get('id')}`);
+        } else {
+            const { version } = entry.content;
+            const query = `editEntry=${entry.get('entryId')}&version=${version}`;
+            router.push(`/${akashaId}/draft/new?${query}`);
+        }
     };
     selectProfile = () => {
         const { entry, params } = this.props;
@@ -305,6 +324,12 @@ class EntryPage extends Component {
     _getNewCommentsCount = () => {
         const { newCommentsIds } = this.props;
         return newCommentsIds.size;
+    }
+    getVersion = (version) => {
+        const { entry, loggedProfile } = this.props;
+        const loggedAkashaId = loggedProfile.get('akashaId');
+        const query = version !== undefined ? `?version=${version}` : '';
+        this.context.router.replace(`/${loggedAkashaId}/entry/${entry.get('entryId')}${query}`);
     }
     renderLicenceIcons = () => {
         const { entry, licences } = this.props;
@@ -352,9 +377,10 @@ class EntryPage extends Component {
     };
 
     render () {
-        const { blockNr, canClaimPending, claimPending, comments, entry, fetchingEntryBalance,
-            fetchingFullEntry, intl, licences, loggedProfile, profiles, savedEntries, votePending,
-            fetchingComments, newCommentsIds, followingsList } = this.props;
+        const { blockNr, canClaimPending, claimPending, comments, entry, existingDraft,
+            fetchingEntryBalance, fetchingFullEntry, intl, licences, loggedProfile,
+            profiles, savedEntries, votePending, fetchingComments, newCommentsIds,
+            followingsList, latestVersion } = this.props;
         const { palette } = this.context.muiTheme;
         const { publisherTitleShadow, scrollDirection, commentsSectionTop } = this.state;
         let licence;
@@ -388,10 +414,14 @@ class EntryPage extends Component {
                   {entry.entryEth && entry.entryEth.publisher &&
                     <EntryPageHeader
                       blockNr={blockNr}
+                      currentVersion={entry && entry.content && entry.content.version}
+                      getVersion={this.getVersion}
                       handleEdit={this.handleEdit}
                       entryBlockNr={entry.entryEth.blockNr}
+                      existingDraft={existingDraft}
                       isActive={entry.active}
                       isOwnEntry={this.isOwnEntry()}
+                      latestVersion={latestVersion}
                       publisher={entry.entryEth.publisher}
                       publisherTitleShadow={publisherTitleShadow}
                       selectProfile={this.selectProfile}
@@ -558,12 +588,15 @@ EntryPage.propTypes = {
     commentsActions: PropTypes.shape(),
     entry: PropTypes.shape(),
     entryActions: PropTypes.shape(),
+    existingDraft: PropTypes.shape(),
     fetchingComments: PropTypes.bool,
     fetchingEntryBalance: PropTypes.bool,
     fetchingFullEntry: PropTypes.bool,
     followingsList: PropTypes.shape(),
+    latestVersion: PropTypes.number,
     intl: PropTypes.shape(),
     licences: PropTypes.shape(),
+    location: PropTypes.shape(),
     loggedProfile: PropTypes.shape(),
     params: PropTypes.shape(),
     profiles: PropTypes.shape(),

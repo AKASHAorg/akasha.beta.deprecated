@@ -250,12 +250,12 @@ class EntryService extends BaseService {
             Channel.server.entry.downvote.send({ token, entryId, extra, weight, value, gas });
         });
 
-    getEntry = ({ entryId, full = false, onError = () => {}, onSuccess }) => {
+    getEntry = ({ entryId, full = false, version = null , onError = () => {}, onSuccess }) => {
         this.registerListener(
             Channel.client.entry.getEntry,
             this.createListener(onError, onSuccess)
         );
-        Channel.server.entry.getEntry.send({ entryId, full });
+        Channel.server.entry.getEntry.send({ entryId, full, version });
     };
 
     getScore = ({ entryId, onError = () => {}, onSuccess }) => {
