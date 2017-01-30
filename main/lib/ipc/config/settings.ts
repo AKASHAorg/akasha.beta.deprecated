@@ -18,8 +18,8 @@ export const MENTION_TYPE = {
 export const SEARCH_PROVIDER = 'search-provider';
 export const searchProvider = '0xsearchService'; // @Todo: replace this with the real whisper identity
 export const handshakeTimeout = 10; //nr of seconds
-export const HANDSHAKE_REQUEST = 'handshakeRequest';
-export const HANDSHAKE_RESPONSE = 'handshakeResponse';
+export const HANDSHAKE_REQUEST = '0x68616e647368616b6552657175657374';
+export const HANDSHAKE_RESPONSE = '0x68616e647368616b65526573706f6e7365';
 export const HANDSHAKE_DONE= 'handshakeDone';
 // default settings
 generalSettings.set(BASE_URL, 'http://127.0.0.1:8080/ipfs');

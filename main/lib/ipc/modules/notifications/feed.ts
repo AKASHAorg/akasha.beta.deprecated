@@ -79,7 +79,7 @@ const emitMention = Promise.coroutine(function*(event, akashaId, cb) {
  * Get total number of your follows
  * @type {Function}
  */
-const execute = Promise.coroutine(function*(data: { stop?: boolean }, cb) {
+const execute = Promise.coroutine(function*(data: { stop?: boolean, newerThan?: number }, cb) {
     if (!contracts.instance) {
         return { running: false };
     }
@@ -227,12 +227,13 @@ const execute = Promise.coroutine(function*(data: { stop?: boolean }, cb) {
                 cb({ message: e.message, type: eventTypes.TIPPED });
             });
     });
-
+    const newerThan = (data.newerThan) ? data.newerThan: 0;
     mention.watch(function (err, event) {
         if (err) {
             return cb(err);
         }
         if (event.hasOwnProperty('payload')) {
+            if(event.sent < newerThan){ return; }
             emitMention(event, myProfile.akashaId, cb);
         }
     });
