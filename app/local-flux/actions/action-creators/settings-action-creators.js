@@ -133,3 +133,17 @@ export function getUserSettingsError (error) {
         error
     };
 }
+
+export function saveLatestMentionSuccess (data) {
+    return {
+        type: types.SAVE_LATEST_MENTION_SUCCESS,
+        data
+    };
+}
+
+export function saveLatestMentionError (error) {
+    return {
+        type: types.SAVE_LATEST_MENTION_ERROR,
+        error
+    };
+}

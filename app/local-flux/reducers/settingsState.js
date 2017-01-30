@@ -40,6 +40,7 @@ const Notifications = Record({
 const UserSettings = Record({
     akashaId: null,
     lastBlockNr: null,
+    latestMention: null,
     defaultLicence: null,
     notifications: new Notifications()
 });
@@ -202,6 +203,18 @@ const settingsState = createReducer(initialState, {
     },
 
     [types.GET_USER_SETTINGS_ERROR]: (state, { error }) =>
+        state.merge({
+            errors: state.get('errors').push(new ErrorRecord(error)),
+        }),
+
+    [types.SAVE_LATEST_MENTION_SUCCESS]: (state, { data }) =>
+        state.merge({
+            userSettings: state.get('userSettings').merge({
+                latestMention: data
+            })
+        }),
+
+    [types.SAVE_LATEST_MENTION_ERROR]: (state, { error }) =>
         state.merge({
             errors: state.get('errors').push(new ErrorRecord(error)),
         }),
