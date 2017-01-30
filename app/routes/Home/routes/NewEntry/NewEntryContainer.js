@@ -12,6 +12,7 @@ function mapStateToProps (state, ownProps) {
         errors: state.draftState.get('errors'),
         fetchingFullEntry: state.entryState.getIn(['flags', 'fetchingFullEntry']),
         fullEntry: state.entryState.get('fullEntry'),
+        latestVersion: state.entryState.get('fullEntryLatestVersion'),
         loggedProfile: state.profileState.get('loggedProfile'),
         savingDraft: state.draftState.getIn(['flags', 'savingDraft']),
         selectedTag: state.tagState.get('selectedTag')

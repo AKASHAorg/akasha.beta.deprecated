@@ -100,6 +100,31 @@ const entryMessages = defineMessages({
             many {comments}
             other {comments}
         }`
-    }
+    },
+    versionHistory: {
+        id: 'app.entry.versionHistory',
+        description: 'version history dialog title',
+        defaultMessage: 'Version history'
+    },
+    versionNumber: {
+        id: 'app.entry.versionNumber',
+        description: 'label for version number',
+        defaultMessage: 'Version {index}'
+    },
+    originalVersion: {
+        id: 'app.entry.originalVersion',
+        description: 'label for original version',
+        defaultMessage: 'Original version'
+    },
+    localVersion: {
+        id: 'app.entry.localVersion',
+        description: 'label for local version',
+        defaultMessage: 'Local version'
+    },
+    continueEditing: {
+        id: 'app.entry.continueEditing',
+        description: 'label for continue editing button',
+        defaultMessage: 'Continue editing'
+    },
 });
 export { entryMessages };

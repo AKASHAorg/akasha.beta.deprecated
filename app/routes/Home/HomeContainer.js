@@ -57,6 +57,7 @@ class HomeContainer extends React.Component {
             transactionActions.getMinedTransactions();
             transactionActions.getPendingTransactions();
             draftActions.getDraftsCount(loggedProfile.get('akashaId'));
+            draftActions.getDrafts(loggedProfile.get('akashaId'));
             entryActions.getSavedEntries(loggedProfile.get('akashaId'));
             tagActions.getSelectedTag(loggedProfile.get('akashaId'));
             settingsActions.getUserSettings(loggedProfile.get('akashaId'));
@@ -92,9 +93,8 @@ class HomeContainer extends React.Component {
         }
     }
     componentWillUnmount () {
-        const { appActions, notificationsActions } = this.props;
+        const { appActions } = this.props;
         appActions.cleanStore();
-        notificationsActions.watchFeed({ stop: true });
         clearInterval(this.interval);
         ReactTooltip.hide();
     }
