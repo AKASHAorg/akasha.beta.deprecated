@@ -4,7 +4,7 @@ const geth_connector_1 = require('@akashaproject/geth-connector');
 const ethereumjs_util_1 = require('ethereumjs-util');
 const index_1 = require('../../contracts/index');
 const Promise = require('bluebird');
-const randomBytesAsync = Promise.promisify(crypto_1.randomBytes);
+exports.randomBytesAsync = Promise.promisify(crypto_1.randomBytes);
 class Auth {
     generateKey(pass) {
         try {
@@ -22,7 +22,7 @@ class Auth {
         }
     }
     _generateRandom() {
-        return randomBytesAsync(64).then((buff) => {
+        return exports.randomBytesAsync(64).then((buff) => {
             this._cipher = crypto_1.createCipher('aes-256-ctr', buff.toString('hex'));
             this._decipher = crypto_1.createDecipher('aes-256-ctr', buff.toString('hex'));
             return true;
@@ -66,7 +66,7 @@ class Auth {
             if (!unlocked) {
                 throw new Error(`invalid password`);
             }
-            return randomBytesAsync(64);
+            return exports.randomBytesAsync(64);
         })
             .then((buff) => {
             const token = geth_connector_1.GethConnector.getInstance()

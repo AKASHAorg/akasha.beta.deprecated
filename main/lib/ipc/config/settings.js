@@ -13,5 +13,12 @@ exports.MENTION_TYPE = {
     COMMENT: 'commentMention',
     ENTRY: 'entryMention'
 };
+exports.SEARCH_PROVIDER = 'search-provider';
+exports.searchProvider = '0xsearchService';
+exports.handshakeTimeout = 10;
+exports.HANDSHAKE_REQUEST = 'handshakeRequest';
+exports.HANDSHAKE_RESPONSE = 'handshakeResponse';
+exports.HANDSHAKE_DONE = 'handshakeDone';
 exports.generalSettings.set(exports.BASE_URL, 'http://127.0.0.1:8080/ipfs');
+exports.generalSettings.set(exports.HANDSHAKE_DONE, false);
 //# sourceMappingURL=settings.js.map
