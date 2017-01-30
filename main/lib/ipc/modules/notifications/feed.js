@@ -180,11 +180,15 @@ const execute = Promise.coroutine(function* (data, cb) {
             cb({ message: e.message, type: eventTypes.TIPPED });
         });
     });
+    const newerThan = (data.newerThan) ? data.newerThan : 0;
     mention.watch(function (err, event) {
         if (err) {
             return cb(err);
         }
         if (event.hasOwnProperty('payload')) {
+            if (event.sent < newerThan) {
+                return;
+            }
             emitMention(event, myProfile.akashaId, cb);
         }
     });

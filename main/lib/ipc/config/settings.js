@@ -16,8 +16,8 @@ exports.MENTION_TYPE = {
 exports.SEARCH_PROVIDER = 'search-provider';
 exports.searchProvider = '0xsearchService';
 exports.handshakeTimeout = 10;
-exports.HANDSHAKE_REQUEST = 'handshakeRequest';
-exports.HANDSHAKE_RESPONSE = 'handshakeResponse';
+exports.HANDSHAKE_REQUEST = '0x68616e647368616b6552657175657374';
+exports.HANDSHAKE_RESPONSE = '0x68616e647368616b65526573706f6e7365';
 exports.HANDSHAKE_DONE = 'handshakeDone';
 exports.generalSettings.set(exports.BASE_URL, 'http://127.0.0.1:8080/ipfs');
 exports.generalSettings.set(exports.HANDSHAKE_DONE, false);
