@@ -15,5 +15,12 @@ export const MENTION_TYPE = {
     COMMENT: 'commentMention',
     ENTRY: 'entryMention'
 };
+export const SEARCH_PROVIDER = 'search-provider';
+export const searchProvider = '0xsearchService'; // @Todo: replace this with the real whisper identity
+export const handshakeTimeout = 10; //nr of seconds
+export const HANDSHAKE_REQUEST = 'handshakeRequest';
+export const HANDSHAKE_RESPONSE = 'handshakeResponse';
+export const HANDSHAKE_DONE= 'handshakeDone';
 // default settings
 generalSettings.set(BASE_URL, 'http://127.0.0.1:8080/ipfs');
+generalSettings.set(HANDSHAKE_DONE, false);

@@ -4,7 +4,7 @@ import { fromRpcSig, ecrecover, toBuffer, bufferToHex, pubToAddress, unpad } fro
 import { constructed as contracts } from '../../contracts/index';
 import * as Promise from 'bluebird';
 
-const randomBytesAsync = Promise.promisify(randomBytes);
+export const randomBytesAsync = Promise.promisify(randomBytes);
 export default class Auth {
     private _encrypted: Buffer;
     private _decipher: Decipher;
