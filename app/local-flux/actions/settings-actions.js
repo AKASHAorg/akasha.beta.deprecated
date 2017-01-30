@@ -1,6 +1,6 @@
-import { AppActions, NotificationsActions } from 'local-flux';
+import { AppActions } from 'local-flux';
 import { settingsActionCreators } from './action-creators';
-import { SettingsService } from '../services';
+import { NotificationsService, SettingsService } from '../services';
 
 let settingsActions = null;
 
@@ -11,7 +11,7 @@ class SettingsActions {
         }
         this.settingsService = new SettingsService();
         this.appActions = new AppActions(dispatch);
-        this.notificationActions = new NotificationsActions(dispatch);
+        this.notificationsService = new NotificationsService();
         this.dispatch = dispatch;
         settingsActions = this;
     }
@@ -86,14 +86,27 @@ class SettingsActions {
                 blockNr
             });
         }
-    }
+    };
+
+    saveLatestMention = (akashaId, timestamp) => {
+        if (akashaId && timestamp) {
+            this.settingsService.saveLatestMention({
+                akashaId,
+                timestamp,
+                onSuccess: time =>
+                    this.dispatch(settingsActionCreators.saveLatestMentionSuccess(time)),
+                onError: error =>
+                    this.dispatch(settingsActionCreators.saveLatestMentionError(error))
+            });
+        }
+    };
 
     saveDefaultEntryLicence = (akashaId, licenceObj) => {
         this.settingsService.saveDefaultLicence({
             akashaId,
             licenceObj
         });
-    }
+    };
 
     getUserSettings = akashaId =>
         this.settingsService.getUserSettings({
@@ -104,7 +117,7 @@ class SettingsActions {
 
     disableNotifFrom = (akashaId, profileAddress) =>
         this.dispatch((dispatch, getState) => {
-            this.notificationActions.excludeFilter([profileAddress]);
+            this.notificationService.excludeFilter({ profiles: [profileAddress] });
             const loggedAkashaId = getState().profileState.getIn(['loggedProfile', 'akashaId']);
             this.settingsService.disableNotifFrom({
                 loggedAkashaId,

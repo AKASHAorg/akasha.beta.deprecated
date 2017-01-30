@@ -39,6 +39,24 @@ class SettingsService extends BaseService {
             })
             .catch(reason => null);
     };
+
+    saveLatestMention = ({ akashaId, timestamp, onSuccess, onError }) => {
+        settingsDB.user.where('akashaId').equals(akashaId).toArray()
+            .then((data) => {
+                const result = data[0] || {};
+                result.latestMention = timestamp;
+                settingsDB.user
+                    .put({ akashaId, ...result })
+                    .then((updated) => {
+                        if (updated) {
+                            onSuccess(timestamp);
+                        }
+                    })
+                    .catch(error => onError(error));
+            })
+            .catch(error => onError(error));
+    };
+
     saveDefaultLicence = ({ akashaId, licenceObj }) => {
         settingsDB.user.where('akashaId').equals(akashaId).toArray()
             .then((data) => {

@@ -1,4 +1,5 @@
 import React, { PropTypes, Component } from 'react';
+import { injectIntl } from 'react-intl';
 import { colors } from 'material-ui/styles';
 import { Paper, Tabs, Tab, List, ListItem } from 'material-ui';
 import ActionDelete from 'material-ui/svg-icons/action/delete';
@@ -28,7 +29,8 @@ const eventTypes = {
     COMMENT: 'comment',
     PUBLISH: 'publish',
     FOLLOWING: 'following',
-    GOT_TIPPED: 'gotTipped'
+    GOT_TIPPED: 'gotTipped',
+    MENTION: 'entryMention'
 };
 class UserProfilePanel extends Component {
     constructor (props) {
@@ -301,12 +303,49 @@ class UserProfilePanel extends Component {
             className="has_hidden_action"
             rightIcon={<ActionDelete
               className="hidden_action"
-              onClick={() => {
-                  if (this.props.loggedProfileData.get('profile') === event.profileAddress) {
-                      return this.props.notificationsActions.deleteYouNotif(index);
-                  }
-                  return this.props.notificationsActions.deleteFeedNotif(index);
-              }}
+              onClick={() => this.props.notificationsActions.deleteYouNotif(index)}
+            />}
+          />
+        );
+    }
+
+    _renderMention (event, index) {
+        const { intl } = this.props;
+        const timestamp = event.timeStamp * 1000;
+        return (
+          <ListItem
+            leftAvatar={this.renderAvatar(event.author)}
+            primaryText={
+              <strong
+                onClick={() => {
+                    this.navigateToProfile(event.author.profile);
+                }}
+                style={{ color: colors.darkBlack }}
+              >
+                {event.author.akashaId}
+              </strong>
+            }
+            secondaryText={
+              <p>
+                <span style={{ color: colors.darkBlack }} >
+                  Mentioned you in a&nbsp;
+                  <span
+                    className="link"
+                    onClick={() => { this.navigateToEntry(event.entry.entryId); }}
+                  >
+                    comment
+                  </span>
+                </span>
+                <br />
+                {intl.formatRelative(timestamp)}
+              </p>
+            }
+            secondaryTextLines={2}
+            key={eventTypes.MENTION + index + event.timeStamp}
+            className="has_hidden_action"
+            rightIcon={<ActionDelete
+              className="hidden_action"
+              onClick={() => this.props.notificationsActions.deleteYouNotif(index)}
             />}
           />
         );
@@ -375,6 +414,9 @@ class UserProfilePanel extends Component {
             }
             if (val.type === eventTypes.GOT_TIPPED) {
                 return notifs.push(this._renderTip(val, index));
+            }
+            if (val.type === eventTypes.MENTION) {
+                return notifs.push(this._renderMention(val, index));
             }
             return null;
         });
@@ -450,6 +492,7 @@ class UserProfilePanel extends Component {
 }
 UserProfilePanel.propTypes = {
     width: PropTypes.string,
+    intl: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
     params: PropTypes.shape(),
     profileActions: PropTypes.shape(),
@@ -463,4 +506,4 @@ UserProfilePanel.contextTypes = {
     muiTheme: PropTypes.shape(),
     router: PropTypes.shape()
 };
-export default UserProfilePanel;
+export default injectIntl(UserProfilePanel);

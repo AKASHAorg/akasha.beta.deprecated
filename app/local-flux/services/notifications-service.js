@@ -28,7 +28,7 @@ class NotificationsService extends BaseService {
         });
     }
 
-    listenFeed ({ onError = () => {}, onSuccess, stop = false }) {
+    listenFeed ({ onError = () => {}, onSuccess, stop = false, newerThan = null }) {
         this.openChannel({
             clientManager: this.clientManager,
             serverChannel: Channel.server.notifications.feed,
@@ -39,7 +39,7 @@ class NotificationsService extends BaseService {
                 Channel.client.notifications.setFilter.feed
             )
         }, () => {
-            Channel.server.notifications.feed.send({ stop });
+            Channel.server.notifications.feed.send({ stop, newerThan });
         });
     }
 
@@ -58,7 +58,7 @@ class NotificationsService extends BaseService {
         });
     }
 
-    excludeFilter ({ profiles, onError, onSuccess }) {
+    excludeFilter ({ profiles, onError = () => {}, onSuccess = () => {} }) {
         this.openChannel({
             clientManager: this.clientManager,
             serverChannel: Channel.server.notifications.excludeFilter,

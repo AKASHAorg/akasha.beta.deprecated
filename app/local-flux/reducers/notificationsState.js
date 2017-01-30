@@ -47,7 +47,7 @@ const notificationsState = createReducer(initialState, {
         let updatedFeed;
         const notifIndex = action.payload.type === 'publish' ?
             state.get('youFeed').findIndex(notif =>
-                notif.author.profile === action.payload.author.profile &&
+                notif.author && notif.author.profile === action.payload.author.profile &&
                 notif.entry.entryId === action.payload.entry.entryId) :
             -1;
         const feedNr = notifIndex === -1 ?
