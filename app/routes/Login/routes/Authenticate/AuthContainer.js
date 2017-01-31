@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { ProfileActions, TempProfileActions } from 'local-flux';
+import { ProfileActions, SettingsActions, TempProfileActions } from 'local-flux';
 import Auth from './components/Auth';
 
 function mapStateToProps (state, ownProps) {
@@ -12,13 +12,15 @@ function mapStateToProps (state, ownProps) {
         localProfilesFetched: state.profileState.get('flags').get('localProfilesFetched'),
         fetchingLocalProfiles: state.profileState.get('flags').get('fetchingLocalProfiles'),
         gethStatus: state.externalProcState.get('gethStatus'),
-        ipfsStatus: state.externalProcState.get('ipfsStatus')
+        ipfsStatus: state.externalProcState.get('ipfsStatus'),
+        passwordPreference: state.settingsState.get('userSettings').passwordPreference
     };
 }
 
 function mapDispatchToProps (dispatch) {
     return {
         profileActions: new ProfileActions(dispatch),
+        settingsActions: new SettingsActions(dispatch),
         tempProfileActions: new TempProfileActions(dispatch)
     };
 }

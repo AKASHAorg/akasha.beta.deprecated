@@ -134,6 +134,12 @@ export function getUserSettingsError (error) {
     };
 }
 
+export function cleanUserSettings () {
+    return {
+        type: types.CLEAN_USER_SETTINGS
+    };
+}
+
 export function saveLatestMentionSuccess (data) {
     return {
         type: types.SAVE_LATEST_MENTION_SUCCESS,
@@ -144,6 +150,20 @@ export function saveLatestMentionSuccess (data) {
 export function saveLatestMentionError (error) {
     return {
         type: types.SAVE_LATEST_MENTION_ERROR,
+        error
+    };
+}
+
+export function savePasswordPreferenceSuccess (data) {
+    return {
+        type: types.SAVE_PASSWORD_PREFERENCE_SUCCESS,
+        data
+    };
+}
+
+export function savePasswordPreferenceError (error) {
+    return {
+        type: types.SAVE_PASSWORD_PREFERENCE_ERROR,
         error
     };
 }

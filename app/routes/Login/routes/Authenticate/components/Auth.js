@@ -41,7 +41,8 @@ class Auth extends Component {
             loginErrors,
             gethStatus,
             ipfsStatus,
-            fetchingLocalProfiles } = nextProps;
+            fetchingLocalProfiles,
+            passwordPreference } = nextProps;
         const oldIpfsStatus = this.props.ipfsStatus;
         const ipfsStatusChanged = (ipfsStatus.get('started') && !oldIpfsStatus.get('started'))
             || (ipfsStatus.get('spawned') && !oldIpfsStatus.get('spawned'));
@@ -56,7 +57,6 @@ class Auth extends Component {
                 loggedProfile.get('account') === this.state.selectedProfile.get('ethAddress')) {
                 this.context.router.replace(`/${this.state.selectedProfile.get('akashaId')}/explore/tag`);
             }
-
             if (tempProfile.get('akashaId') !== '') {
                 return this.context.router.push('/authenticate/new-profile-status');
             }
@@ -64,6 +64,13 @@ class Auth extends Component {
         if ((ipfsStatus.get('started') || ipfsStatus.get('spawned')) && localProfiles.size > 0
                 && (profilesChanged || ipfsStatusChanged || fetchingLocalProfilesChanged)) {
             profileActions.getProfileData(localProfiles.toJS());
+        }
+        if (passwordPreference.remember !== this.props.passwordPreference.remember ||
+                passwordPreference.time !== this.props.passwordPreference.time) {
+            this.setState({
+                unlockTimer: passwordPreference.time || 5,
+                unlockIsChecked: passwordPreference.remember || false
+            });
         }
         return null;
     }
@@ -100,15 +107,23 @@ class Auth extends Component {
     };
     handleModalClose = () => {
         this.props.profileActions.clearLoginErrors();
-        this.setState(({ openModal: false }));
+        this.setState(({
+            openModal: false,
+            selectedProfile: null
+        }));
     };
     handleLogin = debounce(() => {
-        const { profileActions } = this.props;
+        const { profileActions, settingsActions } = this.props;
         const selectedProfile = this.state.selectedProfile;
         let unlockInterval = 1;
         if (this.state.unlockIsChecked) {
             unlockInterval = this.state.unlockTimer;
         }
+        const passwordPreference = {
+            remember: this.state.unlockIsChecked,
+            time: this.state.unlockTimer
+        };
+        settingsActions.savePasswordPreference(passwordPreference, selectedProfile.get('akashaId'));
         profileActions.login({
             account: selectedProfile.get('ethAddress'),
             password: this.state.password,
@@ -200,6 +215,7 @@ class Auth extends Component {
     };
     _handleUnlockTimerChange = (key, payload) => {
         this.setState({
+            unlockIsChecked: true,
             unlockTimer: payload,
         });
     };
@@ -209,7 +225,7 @@ class Auth extends Component {
         });
     };
     render () {
-        const { gethStatus, intl, ipfsStatus, loginRequested, style } = this.props;
+        const { gethStatus, intl, ipfsStatus, settingsActions, style } = this.props;
         const { openModal } = this.state;
         const isServiceStopped = !gethStatus.get('api') || gethStatus.get('stopped')
             || (!ipfsStatus.get('started') && !ipfsStatus.get('spawned'));
@@ -255,6 +271,8 @@ class Auth extends Component {
             {this.state.selectedProfile &&
               <LoginDialog
                 profile={selectedProfile}
+                cleanUserSettings={settingsActions.cleanUserSettings}
+                getUserSettings={settingsActions.getUserSettings}
                 isOpen={openModal}
                 modalActions={modalActions}
                 title={'Log In'}
@@ -283,7 +301,8 @@ Auth.propTypes = {
     fetchingLocalProfiles: React.PropTypes.bool,
     loggedProfile: React.PropTypes.shape().isRequired,
     loginErrors: React.PropTypes.shape().isRequired,
-    loginRequested: React.PropTypes.bool,
+    passwordPreference: React.PropTypes.shape(),
+    settingsActions: React.PropTypes.shape(),
     style: React.PropTypes.shape(),
     intl: React.PropTypes.shape(),
 };

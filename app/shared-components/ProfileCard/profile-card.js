@@ -20,12 +20,13 @@ class ProfileCard extends Component {
 
     shouldComponentUpdate (nextProps, nextState) {
         const { followPending, isFollowerPending, isMuted,
-            sendTipPending } = this.props;
+            sendTipPending, loggedProfileData } = this.props;
         const { actionsExpanded } = this.state;
         if (followPending !== nextProps.followPending ||
             isFollowerPending !== nextProps.isFollowerPending ||
             isMuted !== nextProps.isMuted ||
             sendTipPending !== nextProps.sendTipPending ||
+            !loggedProfileData.equals(nextProps.loggedProfileData) ||
             actionsExpanded !== nextState.actionsExpanded
         ) {
             return true;

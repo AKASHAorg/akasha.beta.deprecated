@@ -43,6 +43,7 @@ class App extends Component {
         }, 0);
     }
     componentWillReceiveProps (nextProps) {
+        const { passwordPreference } = this.props;
         const showAuthDialog = nextProps.appState.get('showAuthDialog');
 
         if (nextProps.theme !== this.props.theme) {
@@ -55,6 +56,11 @@ class App extends Component {
                 rememberPasswordChecked: false,
                 rememberTime: 5,
                 userPassword: ''
+            });
+        } else if (showAuthDialog && !this.props.appState.get('showAuthDialog')) {
+            this.setState({
+                rememberPasswordChecked: passwordPreference.remember,
+                rememberTime: passwordPreference.time || 5
             });
         }
     }
@@ -70,11 +76,13 @@ class App extends Component {
         appActions.clearErrors();
     };
     _handleConfirmation = debounce(() => {
-        const { loggedProfile, profileActions } = this.props;
+        const { loggedProfile, profileActions, settingsActions } = this.props;
         const { rememberTime, userPassword, rememberPasswordChecked } = this.state;
         const account = loggedProfile.get('account');
         const akashaId = loggedProfile.get('akashaId');
         const remember = rememberPasswordChecked ? rememberTime : 1;
+        const passwordPreference = { remember: rememberPasswordChecked, time: rememberTime };
+        settingsActions.savePasswordPreference(passwordPreference);
         profileActions.login({
             account, password: userPassword, rememberTime: remember, akashaId, reauthenticate: true
         });
@@ -96,6 +104,7 @@ class App extends Component {
     };
     _setRememberTime = (ev, index, value) => {
         this.setState({
+            rememberPasswordChecked: true,
             rememberTime: value
         });
     };
@@ -200,7 +209,8 @@ App.propTypes = {
     theme: PropTypes.string,
     children: PropTypes.element,
     intl: PropTypes.shape(),
-    fullEntry: PropTypes.shape()
+    fullEntry: PropTypes.shape(),
+    passwordPreference: PropTypes.shape()
 };
 App.contextTypes = {
     router: React.PropTypes.shape()
@@ -221,6 +231,7 @@ function mapStateToProps (state) {
         isActivePending: state.entryState.getIn(['flags', 'isActivePending']),
         entries: state.entryState.get('entries'),
         fullEntry: state.entryState.get('fullEntry'),
+        passwordPreference: state.settingsState.getIn(['userSettings', 'passwordPreference']),
         routeState: state.reduxAsyncConnect,
         theme: state.settingsState.get('general').get('theme')
     };

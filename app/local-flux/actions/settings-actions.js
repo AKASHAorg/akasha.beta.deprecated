@@ -108,12 +108,28 @@ class SettingsActions {
         });
     };
 
+    savePasswordPreference = (preference, akashaId) =>
+        this.dispatch((dispatch, getState) => {
+            const loggedAkashaId = getState().profileState.getIn(['loggedProfile', 'akashaId']);
+            this.settingsService.savePasswordPreference({
+                akashaId: akashaId || loggedAkashaId,
+                preference,
+                onSuccess: data =>
+                    dispatch(settingsActionCreators.savePasswordPreferenceSuccess(data)),
+                onError: error =>
+                    dispatch(settingsActionCreators.savePasswordPreferenceError(error))
+            });
+        });
+
     getUserSettings = akashaId =>
         this.settingsService.getUserSettings({
             akashaId,
             onSuccess: data => this.dispatch(settingsActionCreators.getUserSettingsSuccess(data)),
             onError: error => this.dispatch(settingsActionCreators.getUserSettingsError(error))
         });
+
+    cleanUserSettings = () =>
+        this.dispatch(settingsActionCreators.cleanUserSettings());
 
     disableNotifFrom = (akashaId, profileAddress) =>
         this.dispatch((dispatch, getState) => {

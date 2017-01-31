@@ -37,7 +37,7 @@ class SettingsService extends BaseService {
                 result.lastBlockNr = blockNr;
                 settingsDB.user.put({ akashaId, ...result });
             })
-            .catch(reason => null);
+            .catch(() => null);
     };
 
     saveLatestMention = ({ akashaId, timestamp, onSuccess, onError }) => {
@@ -64,7 +64,27 @@ class SettingsService extends BaseService {
                 result.defaultLicence = licenceObj;
                 settingsDB.user.put({ akashaId, ...result });
             });
-    }
+    };
+
+    savePasswordPreference = ({ akashaId, preference, onSuccess, onError }) =>
+        settingsDB.user
+            .where('akashaId')
+            .equals(akashaId)
+            .toArray()
+            .then((data) => {
+                const result = data[0] || {};
+                result.passwordPreference = preference;
+                settingsDB.user
+                    .put({ akashaId, ...result })
+                    .then((updated) => {
+                        if (updated) {
+                            onSuccess(preference);
+                        }
+                    })
+                    .catch(error => onError(error));
+            })
+            .catch(error => onError(error));
+
     getUserSettings = ({ akashaId, onSuccess, onError }) => {
         settingsDB.user.where('akashaId').equals(akashaId).toArray()
             .then((data) => {
