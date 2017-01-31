@@ -169,6 +169,9 @@ class EditProfile extends Component {
         const index = r.findIndex(r.propEq('id', linkId))(links);
         const link = links[index];
         link[field] = fieldValue;
+        if (!link.error) {
+            link.error = {};
+        }
         link.error[field] = fieldValue.length === 0;
         if (field === 'url') {
             if (field.indexOf('akasha://')) {

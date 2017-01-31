@@ -241,7 +241,7 @@ class EntryPage extends Component {
             titleId: 'publishCommentTitle',
             messageId: 'publishComment',
             gas: 2000000,
-            status: 'needConfirmation'
+            status: 'checkAuth'
         });
     }
     _handleContentScroll = (ev) => {

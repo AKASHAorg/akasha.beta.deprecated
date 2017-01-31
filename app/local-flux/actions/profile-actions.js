@@ -429,7 +429,7 @@ class ProfileActions {
             titleId: 'updateProfileTitle',
             messageId: 'updateProfile',
             gas: 2000000,
-            status: 'needConfirmation'
+            status: 'checkAuth'
         });
     }
 
@@ -440,7 +440,7 @@ class ProfileActions {
             titleId: 'followProfileTitle',
             messageId: 'followProfile',
             gas: 2000000,
-            status: 'needConfirmation'
+            status: 'checkAuth'
         });
     };
 
@@ -451,7 +451,7 @@ class ProfileActions {
             titleId: 'unfollowProfileTitle',
             messageId: 'unfollowProfile',
             gas: 2000000,
-            status: 'needConfirmation'
+            status: 'checkAuth'
         });
     };
 

@@ -50,7 +50,7 @@ class SendTipForm extends Component {
               {ethAmountError &&
                 <div style={{ height: '24px', width: '100%' }} />
               }
-              <TextField
+              {/* <TextField
                 type="number"
                 floatingLabelFixed
                 floatingLabelText={intl.formatMessage(confirmMessages.gasInputLabel)}
@@ -73,6 +73,7 @@ class SendTipForm extends Component {
                   <InfoIcon />
                 </IconButton>
               </div>
+              */}
             </div>
           </form>
         );

@@ -22,7 +22,7 @@ class TagActions {
             titleId: 'registerTagTitle',
             messageId: 'registerTag',
             gas: 2000000,
-            status: 'needConfirmation'
+            status: 'checkAuth'
         });
     }
     updatePendingTag = (tagObj) => {
@@ -247,7 +247,7 @@ class TagActions {
             titleId: 'subscribeTagTitle',
             messageId: 'subscribeTag',
             gas: 2000000,
-            status: 'needConfirmation'
+            status: 'checkAuth'
         });
     }
 
@@ -258,7 +258,7 @@ class TagActions {
             titleId: 'unsubscribeTagTitle',
             messageId: 'unsubscribeTag',
             gas: 2000000,
-            status: 'needConfirmation'
+            status: 'checkAuth'
         });
     }
 
