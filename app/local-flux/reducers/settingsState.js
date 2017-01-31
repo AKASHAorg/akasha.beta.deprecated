@@ -37,12 +37,18 @@ const Notifications = Record({
     muted: []
 });
 
+const PasswordPreference = Record({
+    remember: false,
+    time: null
+});
+
 const UserSettings = Record({
     akashaId: null,
     lastBlockNr: null,
     latestMention: null,
     defaultLicence: null,
-    notifications: new Notifications()
+    notifications: new Notifications(),
+    passwordPreference: new PasswordPreference()
 });
 
 const GeneralSettings = Record({
@@ -207,6 +213,10 @@ const settingsState = createReducer(initialState, {
             errors: state.get('errors').push(new ErrorRecord(error)),
         }),
 
+    [types.CLEAN_USER_SETTINGS]: state => {
+        return state.set('userSettings', new UserSettings());
+    },
+
     [types.SAVE_LATEST_MENTION_SUCCESS]: (state, { data }) =>
         state.merge({
             userSettings: state.get('userSettings').merge({
@@ -217,6 +227,16 @@ const settingsState = createReducer(initialState, {
     [types.SAVE_LATEST_MENTION_ERROR]: (state, { error }) =>
         state.merge({
             errors: state.get('errors').push(new ErrorRecord(error)),
+        }),
+
+    [types.SAVE_PASSWORD_PREFERENCE_SUCCESS]: (state, { data }) => {
+        const userSettings = state.get('userSettings').set('passwordPreference', data);
+        return state.set('userSettings', userSettings);
+    },
+
+    [types.SAVE_PASSWORD_PREFERENCE_ERROR]: (state, { error }) =>
+        state.merge({
+            errors: state.get('errors').push(new ErrorRecord(error))
         }),
 
     [types.CHANGE_THEME]: (state, action) => state.updateIn(['general', 'theme'], () => action.theme),

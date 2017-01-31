@@ -67,19 +67,20 @@ class Avatar extends React.Component {
 
     render () {
         const {
-              radius,
-              editable,
-              image,
-              userInitials,
-              userInitialsStyle,
-              avatarEmptyStyle,
-              avatarClearStyle,
-              dialogHandlerStyle,
-              userInitialsAlignStyle,
-              userInitialsWrapperStyle,
-              offsetBorder,
-              backgroundColor,
-              style } = this.props;
+            radius,
+            editable,
+            image,
+            userInitials,
+            userInitialsStyle,
+            avatarEmptyStyle,
+            avatarClearStyle,
+            dialogHandlerStyle,
+            userInitialsAlignStyle,
+            userInitialsWrapperStyle,
+            offsetBorder,
+            backgroundColor,
+            style,
+            onMouseEnter } = this.props;
         const palette = this.context.muiTheme.palette;
         let avatarImage;
 
@@ -93,7 +94,10 @@ class Avatar extends React.Component {
         }
         return (
           <div
-            style={Object.assign({ maxWidth: radius, maxHeight: radius, position: 'relative' }, style)}
+            style={
+              Object.assign({ maxWidth: radius, maxHeight: radius, position: 'relative' }, style)
+            }
+            onMouseEnter={onMouseEnter}
           >
             {editable && !avatarImage &&
               <input
@@ -234,7 +238,8 @@ Avatar.propTypes = {
     offsetBorder: React.PropTypes.string,
     clearAvatarImage: React.PropTypes.func,
     style: React.PropTypes.shape(),
-    onClick: React.PropTypes.func
+    onClick: React.PropTypes.func,
+    onMouseEnter: React.PropTypes.func,
 };
 Avatar.contextTypes = {
     muiTheme: React.PropTypes.object

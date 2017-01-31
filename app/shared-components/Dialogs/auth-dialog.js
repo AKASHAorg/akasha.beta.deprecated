@@ -25,7 +25,7 @@ function AuthDialog (props) {
     const minute = 'min';
     return (
       <Dialog
-        contentStyle={{ width: '40%', maxWidth: 'none' }}
+        contentStyle={{ width: '40%', maxWidth: '520px' }}
         actions={dialogActions}
         title={intl.formatMessage(formMessages.confirmPassphrase)}
         open={isVisible}
@@ -52,13 +52,14 @@ function AuthDialog (props) {
             <div className="col-xs-3 start-xs" style={{ paddingLeft: 0, display: 'flex' }}>
               <SelectField
                 value={rememberTime}
-                style={{ width: 100 }}
+                style={{ width: 120 }}
                 onChange={onRememberTimeChange}
               >
                 <MenuItem value={5} primaryText={`5 ${minute}`} />
                 <MenuItem value={10} primaryText={`10 ${minute}`} />
                 <MenuItem value={15} primaryText={`15 ${minute}`} />
                 <MenuItem value={30} primaryText={`30 ${minute}`} />
+                <MenuItem value={60} primaryText="1 hour" />
               </SelectField>
             </div>
           </div>

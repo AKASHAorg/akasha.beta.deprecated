@@ -491,7 +491,9 @@ class ProfileActions {
                     });
                 },
                 onError: error =>
-                    dispatch(profileActionCreators.followProfileError(error, flagOff))
+                    dispatch(profileActionCreators.followProfileError(error, {
+                        followPending: flagOff
+                    }))
             });
         });
 
