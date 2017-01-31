@@ -211,7 +211,7 @@ class WeightConfirmDialog extends React.PureComponent {
               {voteWeightError &&
                 <div style={{ height: '24px' }} />
               }
-              <div style={{ display: 'flex' }}>
+              {/* <div style={{ display: 'flex' }}>
                 <TextField
                   type="number"
                   floatingLabelFixed
@@ -235,6 +235,7 @@ class WeightConfirmDialog extends React.PureComponent {
                   </IconButton>
                 </div>
               </div>
+              */}
               {!active &&
                 <div style={{ color: 'red' }}>
                   <small>

@@ -312,7 +312,7 @@ class EntryActions {
             gas: 2000000,
             titleId: 'claimTitle',
             messageId: 'claim',
-            status: 'needConfirmation'
+            status: 'checkAuth'
         });
 
     voteCost = (weight) => {
