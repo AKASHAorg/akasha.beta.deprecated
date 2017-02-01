@@ -71,28 +71,48 @@ class EntryPageHeader extends Component {
     };
 
     renderSubtitle = () => {
-        const { entryBlockNr, intl, latestVersion, timestamp, wordCount } = this.props;
+        const { currentVersion, entryBlockNr, intl, latestVersion, timestamp,
+            wordCount } = this.props;
         const publishDate = new Date(timestamp * 1000);
         const readingTime = calculateReadingTime(wordCount);
-        const publishedMessage = latestVersion ?
-          (<span>
-            <span onClick={this.openVersionsPanel} className="link">
-              {intl.formatMessage(entryMessages.published)}
-            </span>
-            <span> *</span>
-          </span>) :
-          intl.formatMessage(entryMessages.published);
+        const isOlderVersion = latestVersion && latestVersion !== currentVersion;
+        let publishedMessage;
+        if (!latestVersion) {
+            publishedMessage = intl.formatMessage(entryMessages.published);
+        } else if (isOlderVersion) {
+            publishedMessage = (
+              <span>
+                <span>{intl.formatMessage(entryMessages.olderVersion)} </span>
+                <span onClick={this.openVersionsPanel} className="link">
+                  {intl.formatMessage(entryMessages.version)}
+                </span>
+                <span> *</span>
+              </span>
+            );
+        } else {
+            publishedMessage = (
+              <span>
+                <span onClick={this.openVersionsPanel} className="link">
+                  {intl.formatMessage(entryMessages.published)}
+                </span>
+                <span> *</span>
+              </span>
+            );
+        }
+
         return (
           <div style={{ fontSize: '12px' }}>
             <span style={{ paddingRight: '5px' }}>
               {publishedMessage}
             </span>
-            <span
-              data-tip={`Block ${entryBlockNr}`}
-              style={{ fontWeight: 600, display: 'inline-block' }}
-            >
-              {intl.formatRelative(publishDate)}
-            </span>
+            {!isOlderVersion &&
+              <span
+                data-tip={`Block ${entryBlockNr}`}
+                style={{ fontWeight: 600, display: 'inline-block' }}
+              >
+                {intl.formatRelative(publishDate)}
+              </span>
+            }
             <span style={{ padding: '0 5px' }}>-</span>
             {readingTime.hours &&
               <span style={{ marginRight: 5 }}>

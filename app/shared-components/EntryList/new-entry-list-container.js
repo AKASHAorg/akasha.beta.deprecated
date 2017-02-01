@@ -1,6 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import ReactTooltip from 'react-tooltip';
 import { connect } from 'react-redux';
+import { injectIntl } from 'react-intl';
+import { entryMessages } from 'locale-data/messages';
 import { AppActions, EntryActions, TagActions } from 'local-flux';
 import { DataLoader, EntryCard } from 'shared-components';
 
@@ -34,8 +36,8 @@ class EntryList extends Component {
     render () {
         const { appActions, blockNr, cardStyle, claimPending, canClaimPending, entries,
             entryActions, fetchingEntries, fetchingEntryBalance, fetchingMoreEntries, getTriggerRef,
-            loggedProfileData, moreEntries, savedEntriesIds, selectedTag, style,
-            votePending } = this.props;
+            intl, loggedProfileData, moreEntries, placeholderMessage, savedEntriesIds,
+            selectedTag, style, votePending } = this.props;
         const { palette } = this.context.muiTheme;
 
         return (
@@ -58,7 +60,7 @@ class EntryList extends Component {
                         paddingTop: '10px'
                     }}
                   >
-                    No entries
+                    {placeholderMessage || intl.formatMessage(entryMessages.noEntries)}
                   </div>
                 }
                 {entries && entries.map((entry) => {
@@ -113,8 +115,10 @@ EntryList.propTypes = {
     fetchingEntryBalance: PropTypes.bool,
     fetchingMoreEntries: PropTypes.bool,
     getTriggerRef: PropTypes.func,
+    intl: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
     moreEntries: PropTypes.bool,
+    placeholderMessage: PropTypes.string,
     savedEntriesIds: PropTypes.shape(),
     selectedTag: PropTypes.string,
     style: PropTypes.shape(),
@@ -152,4 +156,4 @@ function mapDispatchToProps (dispatch) {
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(EntryList);
+)(injectIntl(EntryList));

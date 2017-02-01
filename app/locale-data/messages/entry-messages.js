@@ -126,5 +126,25 @@ const entryMessages = defineMessages({
         description: 'label for continue editing button',
         defaultMessage: 'Continue editing'
     },
+    version: {
+        id: 'app.entry.version',
+        description: 'entry version',
+        defaultMessage: 'version'
+    },
+    olderVersion: {
+        id: 'app.entry.olderVersion',
+        description: 'entry subtitle for reading older versions',
+        defaultMessage: 'You are now viewing an older'
+    },
+    noEntries: {
+        id: 'app.entry.noEntries',
+        description: 'placeholder for empty entry list',
+        defaultMessage: 'No entries'
+    },
+    noNewEntries: {
+        id: 'app.entry.noNewEntries',
+        description: 'placeholder for empty latest entries list',
+        defaultMessage: 'No new entries'
+    },
 });
 export { entryMessages };
