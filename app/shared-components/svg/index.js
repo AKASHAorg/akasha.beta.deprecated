@@ -37,6 +37,7 @@ import ImageSizeXS from './ImageSizeXS';
 import ImageSizeXXL from './ImageSizeXXL';
 import AddImage from './add-image';
 import AllRightsReserved from './all-rights-reserved';
+import ChatChannelInfo from './chat-channel-info';
 import CreativeCommonsBY from './creative-commons-by';
 import CreativeCommonsCC from './creative-commons-cc';
 import CreativeCommonsNCEU from './creative-commons-nc-eu';
@@ -65,7 +66,7 @@ export {
     ToolbarLogout, ToolbarProfile, ToolbarSettings, ToolbarVotes, ToolbarWallet,
     StatusBarEthereum, StatusBarIpfs, ImageSizeLarge, ImageSizeMedium,
     ImageSizeSmall, ImageSizeXL, ImageSizeXS, ImageSizeXXL, AddImage, AllRightsReserved,
-    CreativeCommonsBY, CreativeCommonsCC, CreativeCommonsNCEU,
+    ChatChannelInfo, CreativeCommonsBY, CreativeCommonsCC, CreativeCommonsNCEU,
     CreativeCommonsNCJP, CreativeCommonsNC, CreativeCommonsND,
     CreativeCommonsREMIX, CreativeCommonsSHARE, CreativeCommonsZERO,
     CreativeCommonsPD, CreativeCommonsSA, EntryUpvote, EntryDownvote, EntryComment,
