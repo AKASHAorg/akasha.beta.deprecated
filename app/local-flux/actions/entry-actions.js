@@ -235,6 +235,35 @@ class EntryActions {
         });
     };
 
+    allStreamIterator = (limit, toBlock) => {
+        this.dispatch(entryActionCreators.allStreamIterator({ fetchingAllStream: true }));
+        this.entryService.allStreamIterator({
+            limit,
+            toBlock,
+            onSuccess: data => this.dispatch(entryActionCreators.allStreamIteratorSuccess(data, {
+                fetchingAllStream: false
+            })),
+            onError: error => this.dispatch(entryActionCreators.allStreamIteratorError(error, {
+                fetchingAllStream: false
+            }))
+        });
+    };
+
+    moreAllStreamIterator = (toBlock, limit) => {
+        this.dispatch(entryActionCreators.moreAllStreamIterator({ fetchingMoreAllStream: true }));
+        this.entryService.allStreamIterator({
+            toBlock,
+            limit,
+            onSuccess: data =>
+                this.dispatch(entryActionCreators.moreAllStreamIteratorSuccess(data, {
+                    fetchingMoreAllStream: false
+                })),
+            onError: error =>
+                this.dispatch(entryActionCreators.moreAllStreamIteratorError(error, {
+                    fetchingMoreAllStream: false
+                }))
+        });
+    };
 
     getTagEntriesCount = (tagName) => {
         this.dispatch(entryActionCreators.getTagEntriesCount({ fetchingTagEntriesCount: true }));
@@ -279,6 +308,9 @@ class EntryActions {
                 }))
         });
     };
+
+    clearAllStream = () =>
+        this.dispatch(entryActionCreators.clearAllStream());
 
     clearTagEntries = () =>
         this.dispatch(entryActionCreators.clearTagEntries());

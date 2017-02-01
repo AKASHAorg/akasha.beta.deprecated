@@ -6,13 +6,19 @@ function mapStateToProps (state) {
     const savedEntries = state.entryState.get('entries')
             .filter(entry => entry.get('type') === 'savedEntry');
     return {
+        allStreamEntries: state.entryState.get('entries')
+            .filter(entry => entry.get('type') === 'allStreamEntry')
+            .map(entry => entry.get('content')),
         entriesStream: state.entryState.get('entriesStream'),
+        fetchingAllStream: state.entryState.getIn(['flags', 'fetchingAllStream']),
+        fetchingMoreAllStream: state.entryState.getIn(['flags', 'fetchingMoreAllStream']),
         fetchingTagEntries: state.entryState.getIn(['flags', 'fetchingTagEntries']),
         fetchingMoreTagEntries: state.entryState.getIn(['flags', 'fetchingMoreTagEntries']),
         fetchingSavedEntriesList: state.entryState.getIn(['flags', 'fetchingSavedEntriesList']),
         fetchingMoreSavedEntriesList: state.entryState.getIn(['flags', 'fetchingMoreSavedEntriesList']),
         loggedProfileData: state.profileState.get('profiles').find(prf =>
             prf.get('profile') === state.profileState.getIn(['loggedProfile', 'profile'])),
+        moreAllStreamEntries: state.entryState.get('moreAllStreamEntries'),
         moreSavedEntries: state.entryState.get('savedEntries').size > savedEntries.size &&
             !state.entryState.getIn(['flags', 'fetchingSavedEntriesList']),
         moreTagEntries: state.entryState.get('moreTagEntries'),

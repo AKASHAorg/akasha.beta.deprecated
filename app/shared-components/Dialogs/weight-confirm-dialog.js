@@ -47,6 +47,11 @@ class WeightConfirmDialog extends React.PureComponent {
         ReactTooltip.rebuild();
     }
 
+    onSubmit = (ev) => {
+        ev.preventDefault();
+        this.handleConfirm();
+    }
+
     getIcon = () => {
         const { isOpen } = this.props;
         const actionType = isOpen ? this.props.resource.type : 'default';
@@ -117,7 +122,7 @@ class WeightConfirmDialog extends React.PureComponent {
     render () {
         const { isOpen, voteCost, isActivePending, resource, active, minWeight, maxWeight,
             intl } = this.props;
-        const { gasAmount, gasAmountError, voteWeight, voteWeightError } = this.state;
+        const { gasAmountError, voteWeight, voteWeightError } = this.state;
         const { palette } = this.context.muiTheme;
         const payload = resource ?
             resource.get('payload').toJS() :
@@ -166,33 +171,35 @@ class WeightConfirmDialog extends React.PureComponent {
               </div>
               <small>by {publisherAkashaId}</small>
               <div style={{ position: 'relative' }}>
-                <div style={{ position: 'absolute', top: '39px' }}>
-                  <SvgIcon viewBox="0 0 20 20" style={{ marginRight: '10px' }}>
-                    {this.getIcon()}
-                  </SvgIcon>
-                </div>
-                <TextField
-                  type="number"
-                  value={voteWeight}
-                  onChange={this.handleVoteWeightChange}
-                  style={{ width: '150px' }}
-                  inputStyle={{ paddingLeft: '34px' }}
-                  autoFocus
-                  floatingLabelFixed
-                  floatingLabelText="Vote weight"
-                  errorText={voteWeightError && weightErrorText}
-                  errorStyle={{ position: 'absolute', bottom: '-8px', width: '350px' }}
-                  min={minWeight}
-                  max={maxWeight}
-                />
-                <div
-                  style={{ position: 'relative', top: '5px', display: 'inline-block' }}
-                  data-tip={intl.formatMessage(confirmMessages.voteWeightDisclaimer)}
-                >
-                  <IconButton>
-                    <InfoIcon />
-                  </IconButton>
-                </div>
+                <form onSubmit={this.onSubmit}>
+                  <div style={{ position: 'absolute', top: '39px' }}>
+                    <SvgIcon viewBox="0 0 20 20" style={{ marginRight: '10px' }}>
+                      {this.getIcon()}
+                    </SvgIcon>
+                  </div>
+                  <TextField
+                    type="number"
+                    value={voteWeight}
+                    onChange={this.handleVoteWeightChange}
+                    style={{ width: '150px' }}
+                    inputStyle={{ paddingLeft: '34px' }}
+                    autoFocus
+                    floatingLabelFixed
+                    floatingLabelText="Vote weight"
+                    errorText={voteWeightError && weightErrorText}
+                    errorStyle={{ position: 'absolute', bottom: '-8px', width: '350px' }}
+                    min={minWeight}
+                    max={maxWeight}
+                  />
+                  <div
+                    style={{ position: 'relative', top: '5px', display: 'inline-block' }}
+                    data-tip={intl.formatMessage(confirmMessages.voteWeightDisclaimer)}
+                  >
+                    <IconButton>
+                      <InfoIcon />
+                    </IconButton>
+                  </div>
+                </form>
               </div>
               {resource && !voteWeightError &&
                 <div>

@@ -56,13 +56,21 @@ class ChatChannel extends Component {
         }
     }
 
-    componentDidUpdate (prevProps, prevState) {
+    componentWillUpdate (nextProps, nextState) {
+        if (this.messagesContainer && (this.state.messages.size !== nextState.messages.size ||
+                this.state.loadingData !== nextState.loadingData)) {
+            const { scrollHeight, scrollTop, clientHeight } = this.messagesContainer;
+            this.shouldScrollDown = (scrollHeight - scrollTop) === clientHeight;
+        }
+    }
+
+    componentDidUpdate () {
         if (!this.messagesContainer) {
             return null;
         }
-        if (this.state.messages.size !== prevState.messages.size ||
-                this.state.loadingData !== prevState.loadingData) {
+        if (this.shouldScrollDown) {
             this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
+            this.shouldScrollDown = false;
         }
         if (!this.state.isScrollable &&
                 this.messagesContainer.scrollHeight > this.messagesContainer.clientHeight) {
