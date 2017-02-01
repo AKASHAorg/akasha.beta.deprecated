@@ -59,7 +59,7 @@ class StreamSidebar extends Component {
               <TagChip
                 key={key}
                 tag={tag.get('tagName')}
-                selectedTag={selectedTag}
+                isSelected={selectedTag === tag.get('tagName')}
                 onTagClick={this.selectTag}
               />
             )}
@@ -95,7 +95,7 @@ class StreamSidebar extends Component {
                       <TagChip
                         key={key}
                         tag={tag.get('tagName')}
-                        selectedTag={selectedTag}
+                        isSelected={selectedTag === tag.get('tagName')}
                         onTagClick={this.selectTag}
                       />
                     )}
@@ -113,7 +113,7 @@ class StreamSidebar extends Component {
                     key={key}
                     onTagClick={this.selectTag}
                     tag={tag.get('tagName')}
-                    selectedTag={selectedTag}
+                    isSelected={selectedTag === tag.get('tagName')}
                   />
                 )}
               </div>

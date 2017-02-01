@@ -1,10 +1,30 @@
 import React, { Component, PropTypes } from 'react';
-import { Avatar } from 'shared-components';
-import { getInitials } from 'utils/dataModule';
-import imageCreator from 'utils/imageUtils';
+import { injectIntl } from 'react-intl';
+import { fromJS } from 'immutable';
+import { Avatar, ProfileHoverCard } from 'shared-components'; // eslint-disable-line import/no-unresolved, import/extensions
+import { getInitials } from 'utils/dataModule';  // eslint-disable-line import/no-unresolved, import/extensions
+import imageCreator from 'utils/imageUtils';  // eslint-disable-line import/no-unresolved, import/extensions
 import { FormattedTime } from 'react-intl';
 
 class ChatMessage extends Component {
+    state = {
+        hoverCardOpen: false,
+        hoverNode: null
+    };
+
+    handleMouseEnter = (ev) => {
+        this.setState({
+            hoverCardOpen: true,
+            hoverNode: ev.currentTarget
+        });
+    }
+
+    handleMouseLeave = () => {
+        this.setState({
+            hoverCardOpen: false
+        });
+    }
+
     renderMessage = () => {
         const { palette } = this.context.muiTheme;
         const { navigateToChannel } = this.props;
@@ -37,17 +57,23 @@ class ChatMessage extends Component {
     };
 
     render () {
-        const { data, isOwnMessage, onAuthorClick } = this.props;
-        const { avatar, baseUrl, firstName, lastName, profileAddress,
+        const { data, intl, isOwnMessage, onAuthorClick } = this.props;
+        const { akashaId, avatar, baseUrl, firstName, lastName, profileAddress,
             timeStamp } = data;
         const { palette } = this.context.muiTheme;
         const authorAvatar = avatar ?
             imageCreator(avatar, baseUrl) :
             null;
         const authorInitials = getInitials(firstName, lastName);
-
+        const profile = fromJS({
+            akashaId,
+            avatar: authorAvatar,
+            firstName,
+            lastName,
+            profile: profileAddress
+        });
         return (
-          <div style={{ padding: '10px 0', display: 'flex', alignItems: 'flex-start' }}>
+          <div style={{ position: 'relative', padding: '10px 0', display: 'flex', alignItems: 'flex-start' }}>
             <button
               style={{
                   border: '0px',
@@ -57,6 +83,8 @@ class ChatMessage extends Component {
                   width: '52px'
               }}
               onClick={() => { onAuthorClick(profileAddress); }}
+              onMouseEnter={this.handleMouseEnter}
+              onMouseLeave={this.handleMouseLeave}
             >
               <Avatar
                 image={authorAvatar}
@@ -84,7 +112,7 @@ class ChatMessage extends Component {
                       color: isOwnMessage ? palette.commentViewerIsAuthorColor : palette.textColor
                   }}
                 >
-                  {`${firstName} ${lastName}`}
+                  @{akashaId}
                 </div>
                 <FormattedTime value={new Date(timeStamp * 1000)} />
               </div>
@@ -92,6 +120,20 @@ class ChatMessage extends Component {
                 {this.renderMessage()}
               </div>
             </div>
+            {/* <ProfileHoverCard
+              open={this.state.hoverCardOpen}
+              profile={profile}
+              intl={intl}
+              onTip={ev => onTip(ev, profile)}
+              onFollow={ev => this._handleFollow(ev, profile.get('akashaId'), profile.get('profile'))}
+              onUnfollow={ev => this._handleUnfollow(ev, profile.get('akashaId'), profile.get('profile'))}
+              onAuthorNameClick={ev => onAuthorNameClick(ev, profile.get('profile'))}
+              showCardActions={!isOwnMessage}
+              isFollowing={false}
+              followDisabled={this.state.followDisabled}
+              anchorNode={this.state.hoverNode}
+            />
+            */}
           </div>
         );
     }
@@ -103,9 +145,10 @@ ChatMessage.contextTypes = {
 
 ChatMessage.propTypes = {
     data: PropTypes.shape(),
+    intl: PropTypes.shape(),
     isOwnMessage: PropTypes.bool,
     navigateToChannel: PropTypes.func,
     onAuthorClick: PropTypes.func
 };
 
-export default ChatMessage;
+export default injectIntl(ChatMessage);
