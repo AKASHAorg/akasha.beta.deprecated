@@ -133,7 +133,7 @@ class SettingsActions {
 
     disableNotifFrom = (akashaId, profileAddress) =>
         this.dispatch((dispatch, getState) => {
-            this.notificationService.excludeFilter({ profiles: [profileAddress] });
+            this.notificationsService.excludeFilter({ profiles: [profileAddress] });
             const loggedAkashaId = getState().profileState.getIn(['loggedProfile', 'akashaId']);
             this.settingsService.disableNotifFrom({
                 loggedAkashaId,
@@ -156,7 +156,7 @@ class SettingsActions {
 
     enableNotifFrom = (akashaId, profileAddress) =>
         this.dispatch((dispatch, getState) => {
-            this.notificationActions.includeFilter([profileAddress]);
+            this.notificationsService.includeFilter({ profiles: [profileAddress] });
             const loggedAkashaId = getState().profileState.getIn(['loggedProfile', 'akashaId']);
             this.settingsService.enableNotifFrom({
                 loggedAkashaId,

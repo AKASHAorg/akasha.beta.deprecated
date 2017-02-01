@@ -26,7 +26,7 @@ const StreamMenu = (props, { muiTheme }) =>
         />
         <Tab
           label={
-            <div style={{ display: 'flex' }} data-tip={props.selectedTag}>
+            <div style={{ display: 'flex' }}>
               <div
                 style={{
                     flex: '1 1 auto',
