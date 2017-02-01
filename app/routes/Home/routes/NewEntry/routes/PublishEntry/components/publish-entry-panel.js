@@ -131,10 +131,16 @@ class PublishPanel extends React.Component {
                 error: 'Please review the licence'
             });
         }
-        if (!draft.getIn(['content', 'excerpt']) || draft.getIn(['content', 'excerpt']).length < 35) {
+        if (!draft.getIn(['content', 'excerpt']) || draft.getIn(['content', 'excerpt']).length < 30) {
             validationErrors.push({
                 field: 'excerpt',
-                error: 'Please provide a longer excerpt'
+                error: 'Please provide a longer excerpt (min. 30 characters)'
+            });
+        }
+        if (!draft.getIn(['content', 'excerpt']) || draft.getIn(['content', 'excerpt']).length > 160) {
+            validationErrors.push({
+                field: 'excerpt',
+                error: 'Excerpt is too long (max. 160 characters)'
             });
         }
         if (validationErrors.length > 0) {
@@ -150,19 +156,27 @@ class PublishPanel extends React.Component {
             draft: this.state.draft.setIn(['tags'], newTags)
         }, () => {
             this._checkExistingTags(newTags);
-            this._handleDraftUpdate({ tags: this.state.draft.get('tags').toJS() });
+            this._handleTagsUpdate({ tags: this.state.draft.get('tags').toJS() });
         });
     };
     _handleTagDelete = (index) => {
         const tag = this.state.draft.getIn(['tags', index]);
         const newTags = this.state.draft.get('tags').delete(index);
-        this._handleDraftUpdate({ tags: newTags.toJS() });
+        this._handleTagsUpdate({ tags: newTags.toJS() });
         this.setState({
             draft: this.state.draft.set('tags', newTags),
             existingTags: this.state.existingTags.filter(tg => tg !== tag),
             validationErrors: this.state.validationErrors.filter(err => err.field !== 'tags')
         });
     };
+    _handleTagsUpdate = (tagsObj) => {
+        const {draftActions, params} = this.props;
+        const newDraft = this.state.draft.merge(tagsObj).toJS();
+        draftActions.updateDraft({
+            id: parseInt(params.draftId, 10),
+            ...newDraft
+        })
+    }
     _handleDraftUpdate = (obj) => {
         const { draftActions, params } = this.props;
         const newDraft = this.state.draft.mergeDeep(obj).toJS();

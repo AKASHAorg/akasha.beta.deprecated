@@ -95,7 +95,7 @@ class Comment extends React.Component {
         const { data } = comment;
         const { profile, date, content } = data;
         const { palette } = this.context.muiTheme;
-        const authorAkashaId = `@${profile.get('akashaId')}`;
+        const authorAkashaId = `${profile.get('akashaId')}`;
         const authorInitials = getInitials(profile.get('firstName'), profile.get('lastName'));
         const authorAvatar = (profile.get('avatar') === `${profile.get('baseUrl')}/`) ?
             null : profile.get('avatar');
