@@ -46,7 +46,7 @@ ChatMessagesList.propTypes = {
     loggedProfileAkashaId: PropTypes.string,
     messages: PropTypes.shape(),
     navigateToChannel: PropTypes.func,
-    onAuthorClick: PropTypes.func
+    onAuthorClick: PropTypes.func,
 };
 
 export default ChatMessagesList;

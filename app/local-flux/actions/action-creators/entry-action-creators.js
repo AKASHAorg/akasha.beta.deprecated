@@ -246,6 +246,54 @@ export function moreEntryTagIteratorError (error, flags) {
     };
 }
 
+export function allStreamIterator (flags) {
+    return {
+        type: types.ALL_STREAM_ITERATOR,
+        flags
+    };
+}
+
+export function allStreamIteratorSuccess (data, flags) {
+    return {
+        type: types.ALL_STREAM_ITERATOR_SUCCESS,
+        data,
+        flags
+    };
+}
+
+export function allStreamIteratorError (error, flags) {
+    error.code = 'ASIE01';
+    return {
+        type: types.ALL_STREAM_ITERATOR_ERROR,
+        error,
+        flags
+    };
+}
+
+export function moreAllStreamIterator (flags) {
+    return {
+        type: types.MORE_ALL_STREAM_ITERATOR,
+        flags
+    };
+}
+
+export function moreAllStreamIteratorSuccess (data, flags) {
+    return {
+        type: types.MORE_ALL_STREAM_ITERATOR_SUCCESS,
+        data,
+        flags
+    };
+}
+
+export function moreAllStreamIteratorError (error, flags) {
+    error.code = 'MASIE01';
+    return {
+        type: types.MORE_ALL_STREAM_ITERATOR_ERROR,
+        error,
+        flags
+    };
+}
+
 export function getTagEntriesCount (flags) {
     return {
         type: types.GET_TAG_ENTRIES_COUNT,
@@ -267,6 +315,12 @@ export function getTagEntriesCountError (error, flags) {
         type: types.GET_TAG_ENTRIES_COUNT_ERROR,
         error,
         flags
+    };
+}
+
+export function clearAllStream () {
+    return {
+        type: types.CLEAR_ALL_STREAM
     };
 }
 

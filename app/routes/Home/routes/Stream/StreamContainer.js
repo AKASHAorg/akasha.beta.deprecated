@@ -7,6 +7,7 @@ import StreamSidebar from './components/stream-sidebar';
 import styles from './stream-container.scss';
 
 const LIMIT = 5;
+const ALL_STREAM_LIMIT = 10;
 
 class StreamPage extends Component {
     constructor (props) {
@@ -24,13 +25,13 @@ class StreamPage extends Component {
         if (params.tag && params.filter === 'tag') {
             entryActions.entryTagIterator(params.tag, 0, LIMIT + 1);
             entryActions.getTagEntriesCount(params.tag);
-        } else if (params.filter === 'bookmarks') {
-            entryActions.getSavedEntriesList(LIMIT);
+        } else if (params.filter === 'allEntries') {
+            entryActions.allStreamIterator(ALL_STREAM_LIMIT + 1);
         }
     }
 
     componentWillReceiveProps (nextProps) {
-        const { params, entryActions } = nextProps;
+        const { params, entryActions, fetchingSavedEntries } = nextProps;
         if (params.tag && params.tag !== this.props.params.tag) {
             this.setState({
                 filter: 'tag',
@@ -46,18 +47,28 @@ class StreamPage extends Component {
                 filter: params.filter
             });
             switch (params.filter) {
+                case 'allEntries':
+                    entryActions.clearSavedEntries();
+                    entryActions.clearTagEntries();
+                    entryActions.allStreamIterator(ALL_STREAM_LIMIT + 1);
+                    break;
                 case 'tag':
                     entryActions.clearSavedEntries();
+                    entryActions.clearAllStream();
                     entryActions.entryTagIterator(this.state.tag, 0, LIMIT + 1);
                     entryActions.getTagEntriesCount(this.state.tag);
                     break;
                 case 'bookmarks':
                     entryActions.clearTagEntries();
+                    entryActions.clearAllStream();
                     entryActions.getSavedEntriesList(LIMIT);
                     break;
                 default:
                     break;
             }
+        } else if (params.filter === 'bookmarks' && !fetchingSavedEntries &&
+                this.props.fetchingSavedEntries) {
+            entryActions.getSavedEntriesList(LIMIT);
         }
     }
 
@@ -75,8 +86,8 @@ class StreamPage extends Component {
     };
 
     render () {
-        const { loggedProfileData, streamTags, newestTags, entryActions, tagActions,
-            moreNewTags, tagEntries, params, selectedTag } = this.props;
+        const { lastAllStreamBlock, loggedProfileData, streamTags, newestTags, entryActions,
+            tagActions, moreNewTags, tagEntries, params, selectedTag } = this.props;
         const { tag } = this.state;
         const subscriptionsCount = parseInt(loggedProfileData.get('subscriptionsCount'), 10);
         return (
@@ -94,6 +105,7 @@ class StreamPage extends Component {
                 <div className={styles.theStream}>
                   <TheStream
                     entryActions={entryActions}
+                    lastAllStreamBlock={lastAllStreamBlock}
                     selectedTag={tag}
                     tagEntries={tagEntries}
                     params={params}
@@ -123,6 +135,8 @@ class StreamPage extends Component {
 }
 
 StreamPage.propTypes = {
+    fetchingSavedEntries: PropTypes.bool,
+    lastAllStreamBlock: PropTypes.number,
     loggedProfile: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
     streamTags: PropTypes.shape(),
@@ -142,6 +156,8 @@ StreamPage.contextTypes = {
 /* eslint-disable no-unused-vars */
 function mapStateToProps (state, ownProps) {
     return {
+        fetchingSavedEntries: state.entryState.getIn(['flags', 'fetchingSavedEntries']),
+        lastAllStreamBlock: state.entryState.get('lastAllStreamBlock'),
         loggedProfile: state.profileState.get('loggedProfile'),
         loggedProfileData: state.profileState.get('profiles').find(prf =>
             prf.get('profile') === state.profileState.getIn(['loggedProfile', 'profile'])),
@@ -151,6 +167,9 @@ function mapStateToProps (state, ownProps) {
         selectedTag: state.tagState.get('selectedTag'),
         tagEntries: state.entryState.get('entries')
             .filter(entry => entry.get('type') === 'tagEntry')
+            .map(entry => entry.get('content')),
+        allStreamEntries: state.entryState.get('entries')
+            .filter(entry => entry.get('type') === 'allStreamEntry')
             .map(entry => entry.get('content')),
     };
 }

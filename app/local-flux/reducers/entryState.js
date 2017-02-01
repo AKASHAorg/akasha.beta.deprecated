@@ -66,7 +66,9 @@ const initialState = fromJS({
     entries: new List(),
     fullEntry: null,
     fullEntryLatestVersion: null,
+    lastAllStreamBlock: null,
     savedEntries: new List(),
+    moreAllStreamEntries: false,
     moreProfileEntries: false,
     moreSavedEntries: false,
     moreTagEntries: false,
@@ -309,6 +311,51 @@ const entryState = createReducer(initialState, {
 
     [types.MORE_ENTRY_TAG_ITERATOR_ERROR]: errorHandler,
 
+    [types.ALL_STREAM_ITERATOR]: flagHandler,
+
+    [types.ALL_STREAM_ITERATOR_SUCCESS]: (state, { data, flags }) => {
+        const moreAllStreamEntries = data.limit === data.collection.length;
+        const newEntries = moreAllStreamEntries ?
+            fromJS(data.collection.slice(0, -1).map((entry) => {
+                return { content: entry, entryId: entry.entryId };
+            })) :
+            fromJS(data.collection.map((entry) => {
+                return { content: entry, entryId: entry.entryId };
+            }));
+        return state.merge({
+            entries: state.get('entries')
+                .filter(entry => entry.get('type') !== 'allStreamEntry')
+                .concat(newEntries.map(entry => entry.set('type', 'allStreamEntry'))),
+            lastAllStreamBlock: data.lastBlock,
+            moreAllStreamEntries,
+            flags: state.get('flags').merge(flags)
+        });
+    },
+
+    [types.ALL_STREAM_ITERATOR_ERROR]: errorHandler,
+
+    [types.MORE_ALL_STREAM_ITERATOR]: flagHandler,
+
+    [types.MORE_ALL_STREAM_ITERATOR_SUCCESS]: (state, { data, flags }) => {
+        const moreAllStreamEntries = data.limit === data.collection.length;
+        const newEntries = moreAllStreamEntries ?
+            fromJS(data.collection.slice(0, -1).map((entry) => {
+                return { content: entry, entryId: entry.entryId };
+            })) :
+            fromJS(data.collection.map((entry) => {
+                return { content: entry, entryId: entry.entryId };
+            }));
+        return state.merge({
+            entries: state.get('entries').concat(newEntries.map(entry =>
+                entry.set('type', 'allStreamEntry'))),
+            lastAllStreamBlock: data.lastBlock,
+            moreAllStreamEntries,
+            flags: state.get('flags').merge(flags)
+        });
+    },
+
+    [types.MORE_ALL_STREAM_ITERATOR_ERROR]: errorHandler,
+
     [types.GET_TAG_ENTRIES_COUNT]: flagHandler,
 
     [types.GET_TAG_ENTRIES_COUNT_SUCCESS]: (state, { data, flags }) =>
@@ -449,6 +496,13 @@ const entryState = createReducer(initialState, {
         const fullEntry = oldFullEntry && data.entryId === oldFullEntry.entryId ?
             oldFullEntry.set('voteWeight', data.weight) :
             oldFullEntry;
+        if (!state.getIn(['entries', entryIndex, 'content'])) {
+            return state.merge({
+                entries: state.get('entries'),
+                flags: state.get('flags').merge(flags),
+                fullEntry
+            });
+        }
         return state.merge({
             entries: entryIndex === -1 ?
                 state.get('entries') :
@@ -521,6 +575,11 @@ const entryState = createReducer(initialState, {
             fullEntry
         });
     },
+
+    [types.CLEAR_ALL_STREAM]: state =>
+        state.merge({
+            entries: state.get('entries').filter(entry => entry.get('type') !== 'allStreamEntry')
+        }),
 
     [types.CLEAR_TAG_ENTRIES]: state =>
         state.merge({

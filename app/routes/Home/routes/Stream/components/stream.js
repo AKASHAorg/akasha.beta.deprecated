@@ -4,6 +4,7 @@ import throttle from 'lodash.throttle';
 import styles from './stream.scss';
 
 const LIMIT = 5;
+const ALL_STREAM_LIMIT = 10;
 
 class Stream extends React.Component {
     constructor (props) {
@@ -32,22 +33,32 @@ class Stream extends React.Component {
         }
     }
 
+    getTriggerRef = (element) => {
+        this.trigger = element;
+    };
+
     handleScroll = () => {
         if (!this.trigger) {
             return null;
         }
 
         if (isInViewport(this.trigger)) {
-            if (this.props.params.filter === 'tag') {
-                this.showMoreTagEntries();
-            } else {
-                this.showMoreSavedEntries();
+            switch (this.props.params.filter) {
+                case 'tag':
+                    return this.showMoreTagEntries();
+                case 'bookmarks':
+                    return this.showMoreSavedEntries();
+                case 'allEntries':
+                    return this.showMoreAllStream();
+                default:
+                    return null;
             }
         }
     };
 
-    getTriggerRef = (element) => {
-        this.trigger = element;
+    showMoreAllStream = () => {
+        const { entryActions, lastAllStreamBlock } = this.props;
+        entryActions.moreAllStreamIterator(lastAllStreamBlock - 1, ALL_STREAM_LIMIT + 1);
     };
 
     showMoreTagEntries = () => {
@@ -76,6 +87,7 @@ class Stream extends React.Component {
 }
 Stream.propTypes = {
     entryActions: PropTypes.shape(),
+    lastAllStreamBlock: PropTypes.number,
     selectedTag: PropTypes.string,
     tagEntries: PropTypes.shape(),
     params: PropTypes.shape(),

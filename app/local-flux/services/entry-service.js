@@ -173,6 +173,17 @@ class EntryService extends BaseService {
             () => Channel.server.entry.entryTagIterator.send({ tagName, start, limit })
         );
 
+    allStreamIterator = ({ limit, toBlock, onError = () => {}, onSuccess }) => {
+        this.openChannel({
+            clientManager: this.clientManager,
+            serverChannel: Channel.server.entry.allStreamIterator,
+            clientChannel: Channel.client.entry.allStreamIterator,
+            listenerCb: this.createListener(onError, onSuccess)
+        }, () => {
+            Channel.server.entry.allStreamIterator.send({ limit, toBlock });
+        });
+    };
+
     getTagEntriesCount = ({
         tagName, onError = () => {
         }, onSuccess
