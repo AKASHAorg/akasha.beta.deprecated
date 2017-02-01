@@ -68,4 +68,4 @@ export const entries = new Entries();
 export const profiles = new Entries();
 export const comments = new Entries();
 export const mixed = new Entries();
-mixed.setOptions({max: 256, maxAge: 1000 * 60 * 30});
+mixed.setOptions({max: 256, maxAge: 1000 * 60 * 15});

@@ -11,8 +11,16 @@ import getEntry from './get-entry';
 const fetch = Promise.coroutine(function*(entries, following, toBlock, limit) {
     const fromBlock = toBlock - BLOCK_INTERVAL;
     const filter = { fromBlock: (fromBlock > 0) ? fromBlock : 0, toBlock: toBlock };
-    const events = yield contracts.instance.entries.getPublished(filter);
-    let lastBlock;
+    let rounds = limit;
+    let events, lastBlock;
+    while (rounds--) {
+        events = yield contracts.instance.entries.getPublished(filter);
+        yield Promise.delay(5);
+    }
+
+    events.sort((a, b) => {
+        return b.blockNumber - a.blockNumber;
+    });
     for (let i = 0; i < events.length; i++) {
         if (following.indexOf(events[i].args.author) !== -1) {
             entries.add(events[i].args.entryId.toString());

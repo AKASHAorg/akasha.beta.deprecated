@@ -52,5 +52,5 @@ exports.entries = new Entries();
 exports.profiles = new Entries();
 exports.comments = new Entries();
 exports.mixed = new Entries();
-exports.mixed.setOptions({ max: 256, maxAge: 1000 * 60 * 30 });
+exports.mixed.setOptions({ max: 256, maxAge: 1000 * 60 * 15 });
 //# sourceMappingURL=records.js.map
