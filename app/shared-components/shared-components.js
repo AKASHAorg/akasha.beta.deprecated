@@ -7,7 +7,6 @@ export CommentsList from './CommentsList/comments-list';
 export CommentThread from './CommentThread/comment-thread';
 export DataLoader from './Loaders/data-loader';
 export EntryCard from './EntryCard/entry-card';
-export EntryContent from './EntryContent/entry-content';
 export EntryEditor from './EntryEditor';
 export EntryListContainer from './EntryList/new-entry-list-container';
 export EntryVersionsPanel from './EntryVersionsPanel/entry-versions-panel';

@@ -69,7 +69,7 @@ const formMessages = defineMessages({
     alphanumericError: {
         id: 'app.form.alphanumericError',
         description: 'Error displayed when a tag contains invalid characters',
-        defaultMessage: 'Tags can contain only letters, numbers, one dash ( - ) or one underscore ( _ ).'
+        defaultMessage: 'Tags can contain only letters, numbers, and one dash ( - ) or underscore ( _ ) between characters.'
     },
     tooShortError: {
         id: 'app.form.tooShortError',
