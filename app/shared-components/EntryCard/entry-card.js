@@ -418,7 +418,7 @@ class EntryCard extends Component {
                   <TagChip
                     key={tag}
                     tag={tag}
-                    selectedTag={selectedTag}
+                    isSelected={selectedTag === tag}
                     onTagClick={this.selectTag}
                     style={{ height: '24px' }}
                   />

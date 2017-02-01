@@ -3,7 +3,7 @@ import { injectIntl } from 'react-intl';
 import { IconButton, SvgIcon, TextField } from 'material-ui';
 import { chatMessages } from 'locale-data/messages';
 import { Avatar } from 'shared-components';
-import { EntryBookmarkOn, EntryBookmarkOff } from 'shared-components/svg';
+import { ChatChannelInfo, EntryBookmarkOn, EntryBookmarkOff } from 'shared-components/svg';
 import { List } from 'immutable';
 import ChatMessagesList from './chat-messages-list';
 
@@ -170,7 +170,7 @@ class ChatChannel extends Component {
     }
 
     renderHeader = () => {
-        const { joinedChannels } = this.props;
+        const { intl, joinedChannels } = this.props;
         const { palette } = this.context.muiTheme;
         const activeChannel = this.getActiveChannel();
         const isChannelSaved = joinedChannels.indexOf(activeChannel) !== -1;
@@ -193,10 +193,19 @@ class ChatChannel extends Component {
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center' }}>
-              #{activeChannel}
+              <span style={{ marginRight: '10px' }}>#{activeChannel}</span>
+              {activeChannel !== joinedChannels.first() &&
+                <SvgIcon
+                  viewBox="0 0 30 30"
+                  style={{ width: '18px', height: '18px' }}
+                  data-tip={intl.formatMessage(chatMessages.channelDisclaimer)}
+                >
+                  <ChatChannelInfo />
+                </SvgIcon>
+              }
               {activeChannel !== joinedChannels.first() &&
                 <IconButton
-                  style={{ height: '28px', width: '28px', padding: '7px', marginLeft: '10px' }}
+                  style={{ height: '28px', width: '28px', padding: '7px' }}
                   iconStyle={{ height: '14px', width: '14px' }}
                   onClick={this.handleStartAction}
                 >

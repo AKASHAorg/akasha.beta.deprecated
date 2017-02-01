@@ -9,7 +9,7 @@ const StreamMenu = (props, { muiTheme }) =>
         value={props.activeTab}
         tabItemContainerStyle={{ backgroundColor: 'transparent', width: '400px' }}
         onChange={props.onChange}
-        style={{ paddingLeft: '50px' }}
+        style={{ paddingLeft: '72px' }}
         inkBarStyle={{ backgroundColor: muiTheme.palette.primary1Color }}
       >
         <Tab
@@ -26,12 +26,12 @@ const StreamMenu = (props, { muiTheme }) =>
         />
         <Tab
           label={
-            <div style={{ display: 'flex' }}>
+            <div style={{ display: 'flex' }} data-tip={props.selectedTag}>
               <div
                 style={{
                     flex: '1 1 auto',
                     paddingRight: '10px',
-                    maxWidth: '190px',
+                    maxWidth: '122px',
                     overflowX: 'hidden',
                     textOverflow: 'ellipsis'
                 }}
@@ -43,7 +43,7 @@ const StreamMenu = (props, { muiTheme }) =>
                     transform: 'rotate(-45deg)',
                     flex: '0 0 auto',
                     position: 'relative',
-                    top: '-5px',
+                    top: '-2px',
                     height: '20px',
                     width: '20px'
                 }}

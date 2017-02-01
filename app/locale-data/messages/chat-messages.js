@@ -9,7 +9,7 @@ const chatMessages = defineMessages({
     recentChannels: {
         id: 'app.chat.recentChannels',
         description: 'header for recent channels list',
-        defaultMessage: 'Channels'
+        defaultMessage: 'Recent channels'
     },
     joinChannel: {
         id: 'app.chat.joinChannel',
@@ -45,6 +45,11 @@ const chatMessages = defineMessages({
         id: 'app.chat.channelTooLongError',
         description: 'error message displayed when the channel name is too long',
         defaultMessage: 'Channel name must not have more than 32 characters'
+    },
+    channelDisclaimer: {
+        id: 'app.chat.channelDisclaimer',
+        description: 'disclaimer for custom chat channels',
+        defaultMessage: 'This channel is ephemeral, messages will disappear in 24h since publishing'
     }
 });
 
