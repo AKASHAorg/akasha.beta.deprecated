@@ -62,7 +62,7 @@ class CommentThread extends Component {
                   profileUserInitials={profileUserInitials}
                   onCommentCreate={editorState => onReplyCreate(editorState, `${comment.commentId}`)}
                   placeholder={intl.formatMessage(entryMessages.writeReplyTo, {
-                      name: `${comment.getIn(['data', 'profile', 'firstName'])} ${comment.getIn(['data', 'profile', 'lastName'])}`
+                      name: `@${comment.getIn(['data', 'profile', 'akashaId'])}`
                   })}
                   ref={(editor) => { this.commentEditorRef = editor; }}
                   intl={intl}

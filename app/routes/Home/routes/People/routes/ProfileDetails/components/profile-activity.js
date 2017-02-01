@@ -324,11 +324,11 @@ class ProfileActivity extends Component {
               style={{
                   position: 'absolute',
                   top: '0px',
-                  left: '45px',
+                  left: 0,
                   right: '-7px',
                   bottom: '0px',
                   overflowY: 'auto',
-                  padding: '30px 0'
+                  padding: '30px 0px 30px 45px'
               }}
               ref={(el) => { this.container = el; }}
             >
