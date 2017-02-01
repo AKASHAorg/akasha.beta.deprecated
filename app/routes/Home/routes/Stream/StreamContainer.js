@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import ReactTooltip from 'react-tooltip';
 import { EntryActions, TagActions } from 'local-flux';
 import { connect } from 'react-redux';
 import TheStream from './components/stream';
@@ -76,6 +77,7 @@ class StreamPage extends Component {
         const { entryActions } = this.props;
         entryActions.clearTagEntries();
         entryActions.clearSavedEntries();
+        ReactTooltip.rebuild();
     }
 
     handleFilterChange = (val) => {

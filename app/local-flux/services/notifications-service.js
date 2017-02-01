@@ -43,7 +43,7 @@ class NotificationsService extends BaseService {
         });
     }
 
-    includeFilter ({ profiles, onError, onSuccess }) {
+    includeFilter ({ profiles, onError = () => {}, onSuccess = () => {} }) {
         this.openChannel({
             clientManager: this.clientManager,
             serverChannel: Channel.server.notifications.includeFilter,
