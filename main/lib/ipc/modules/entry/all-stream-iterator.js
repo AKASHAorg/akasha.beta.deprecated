@@ -8,8 +8,15 @@ const get_entry_1 = require('./get-entry');
 const fetch = Promise.coroutine(function* (entries, toBlock, limit) {
     const fromBlock = toBlock - settings_1.BLOCK_INTERVAL;
     const filter = { fromBlock: (fromBlock > 0) ? fromBlock : 0, toBlock: toBlock };
-    const events = yield index_1.constructed.instance.entries.getPublished(filter);
-    let lastBlock;
+    let rounds = limit;
+    let events, lastBlock;
+    while (rounds--) {
+        events = yield index_1.constructed.instance.entries.getPublished(filter);
+        yield Promise.delay(25);
+    }
+    events.sort((a, b) => {
+        return b.blockNumber - a.blockNumber;
+    });
     for (let i = 0; i < events.length; i++) {
         entries.add(events[i].args.entryId.toString());
         if (entries.size === limit) {
@@ -42,7 +49,7 @@ const execute = Promise.coroutine(function* (data) {
         records_1.mixed.setFull(`${settings_1.A_STREAM_I}${indexBlock}`, { entries, lastBlock });
     }
     const collection = yield Promise.all(Array.from(entries).map((entryId) => get_entry_1.default.execute({ entryId })));
-    return { collection, toBlock: data.toBlock, lastBlock: lastBlock };
+    return { collection, toBlock: data.toBlock, lastBlock: lastBlock, limit };
 });
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = { execute, name: 'allStreamIterator' };

@@ -9,8 +9,17 @@ import getEntry from './get-entry';
 const fetch = Promise.coroutine(function*(entries, toBlock, limit) {
     const fromBlock = toBlock - BLOCK_INTERVAL;
     const filter = { fromBlock: (fromBlock > 0) ? fromBlock : 0, toBlock: toBlock };
-    const events = yield contracts.instance.entries.getPublished(filter);
-    let lastBlock;
+    let rounds = limit;
+    let events, lastBlock;
+    while (rounds--) {
+        events = yield contracts.instance.entries.getPublished(filter);
+        yield Promise.delay(25);
+    }
+
+    events.sort((a, b) => {
+        return b.blockNumber - a.blockNumber;
+    });
+
     for (let i = 0; i < events.length; i++) {
         entries.add(events[i].args.entryId.toString());
         if (entries.size === limit) {
@@ -45,7 +54,7 @@ const execute = Promise.coroutine(function*(data: { limit?: number, toBlock?: nu
     }
 
     const collection = yield Promise.all(Array.from(entries).map((entryId) => getEntry.execute({ entryId })));
-    return { collection, toBlock: data.toBlock, lastBlock: lastBlock };
+    return { collection, toBlock: data.toBlock, lastBlock: lastBlock, limit };
 });
 
 export default { execute, name: 'allStreamIterator' };
