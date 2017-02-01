@@ -91,14 +91,6 @@ class NotificationsActions {
             }
         });
     }
-
-    includeFilter (profiles) {
-        this.notificationsService.includeFilter({
-            profiles,
-            onError: () => { },
-            onSuccess: () => { }
-        });
-    }
 }
 
 export { NotificationsActions };

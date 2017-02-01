@@ -197,7 +197,7 @@ class ChatChannel extends Component {
               {activeChannel !== joinedChannels.first() &&
                 <SvgIcon
                   viewBox="0 0 30 30"
-                  style={{ width: '18px', height: '18px' }}
+                  style={{ width: '22px', height: '22px', marginRight: '5px' }}
                   data-tip={intl.formatMessage(chatMessages.channelDisclaimer)}
                 >
                   <ChatChannelInfo />
@@ -205,8 +205,8 @@ class ChatChannel extends Component {
               }
               {activeChannel !== joinedChannels.first() &&
                 <IconButton
-                  style={{ height: '28px', width: '28px', padding: '7px' }}
-                  iconStyle={{ height: '14px', width: '14px' }}
+                  style={{ height: '28px', width: '28px', padding: '5px' }}
+                  iconStyle={{ height: '18px', width: '18px' }}
                   onClick={this.handleStartAction}
                 >
                   <SvgIcon viewBox="0 0 18 18">
