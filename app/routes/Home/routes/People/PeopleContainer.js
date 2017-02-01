@@ -313,7 +313,7 @@ class PeopleContainer extends Component {
               inkBarStyle={{ backgroundColor: palette.primary1Color }}
             >
               <Tab
-                label="Latest"
+                label="Latest people"
                 style={this.getTabStyle('newest')}
                 value="newest"
               />

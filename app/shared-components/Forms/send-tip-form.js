@@ -4,7 +4,16 @@ import { TextField, IconButton } from 'material-ui';
 import InfoIcon from 'material-ui/svg-icons/action/info-outline';
 import { confirmMessages, formMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
 
+const ENTER = 'Enter';
+
 class SendTipForm extends Component {
+    handleKeyDown = (ev) => {
+        const { onSubmit } = this.props;
+        if (ev.key === ENTER) {
+            onSubmit(ev);
+        }
+    };
+
     render () {
         const { balance, disableReceiverField, ethAmount, ethAmountError, gasAmount,
             gasAmountError, handleEthChange, handleGasChange, intl, onSubmit,
@@ -31,12 +40,14 @@ class SendTipForm extends Component {
                 className="col-xs-10"
                 value={ethAmount}
                 onChange={handleEthChange}
+                onKeyDown={this.handleKeyDown}
                 errorText={ethAmountError &&
                     intl.formatMessage(formMessages[ethAmountError.message], ethAmountError)
                 }
                 errorStyle={{ position: 'absolute', bottom: '-8px' }}
                 min={0.0001}
                 max={balance - 0.1}
+                autoFocus
               />
               {!ethAmountError &&
                 <div style={{ paddingLeft: '7px' }}>

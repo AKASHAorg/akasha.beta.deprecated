@@ -1,27 +1,17 @@
 import React, { Component, PropTypes } from 'react';
-import { FlatButton } from 'material-ui';
-import { DataLoader, EntryCard, EntryListContainer } from 'shared-components';
+import { injectIntl } from 'react-intl';
+import { entryMessages } from 'locale-data/messages';
+import { EntryListContainer } from 'shared-components';
 import QuickEntryEditor from './quick-entry-editor';
 import TagSearch from './tag-search';
 
 class EntryList extends Component {
 
-    _navigateToEntry = (ev, entryData) => {
-        ev.preventDefault();
-        const { appActions } = this.props;
-
-        appActions.showEntryModal(entryData).then(() => {});
-    };
     selectTag = (tag) => {
         const { params } = this.props;
         this.context.router.push(`/${params.akashaId}/explore/tag/${tag}`);
     };
-    _handleComment = (ev, entryAddress) => {
-        const { appActions, entryState } = this.props;
-        const entry = entryState.get('published').find(entry =>
-          entry.get('address') === entryAddress);
-        appActions.showEntryModal(entry, { section: 'comments' });
-    };
+
     _handleEditorFullScreen = (ev, draft) => {
         const { entryActions, loggedProfileData } = this.props;
         entryActions.createDraft(loggedProfileData.get('akashaId'), draft);
@@ -38,13 +28,39 @@ class EntryList extends Component {
     };
 
     render () {
-        const { loggedProfileData, selectedTag, tagEntries, savedEntries, moreTagEntries,
-            moreSavedEntries, tagEntriesCount, entriesStream, subscribePending, params,
-            entryActions, fetchingTagEntries, fetchingMoreTagEntries, registerPending,
-            fetchingSavedEntriesList, fetchingMoreSavedEntriesList, getTriggerRef, tagActions } = this.props;
-        const { palette } = this.context.muiTheme;
-        const entries = params.filter === 'tag' ? tagEntries : savedEntries;
-        const moreEntries = params.filter === 'tag' ? moreTagEntries : moreSavedEntries;
+        const { allStreamEntries, entriesStream, fetchingAllStream, fetchingMoreAllStream,
+            fetchingMoreSavedEntriesList, fetchingMoreTagEntries, fetchingSavedEntriesList,
+            fetchingTagEntries, getTriggerRef, intl, loggedProfileData, moreAllStreamEntries,
+            moreSavedEntries, moreTagEntries, params, registerPending, savedEntries, selectedTag,
+            subscribePending, tagActions, tagEntries, tagEntriesCount } = this.props;
+        let entries = [];
+        let moreEntries;
+        let fetchingEntries;
+        let fetchingMoreEntries;
+        let placeholderMessage;
+        switch (params.filter) {
+            case 'tag':
+                entries = tagEntries;
+                moreEntries = moreTagEntries;
+                fetchingEntries = fetchingTagEntries;
+                fetchingMoreEntries = fetchingMoreTagEntries;
+                break;
+            case 'bookmarks':
+                entries = savedEntries;
+                moreEntries = moreSavedEntries;
+                fetchingEntries = fetchingSavedEntriesList;
+                fetchingMoreEntries = fetchingMoreSavedEntriesList;
+                break;
+            case 'allEntries':
+                entries = allStreamEntries;
+                moreEntries = moreAllStreamEntries;
+                fetchingEntries = fetchingAllStream;
+                fetchingMoreEntries = fetchingMoreAllStream;
+                placeholderMessage = intl.formatMessage(entryMessages.noNewEntries);
+                break;
+            default:
+                break;
+        }
         const subscriptions = parseInt(loggedProfileData.get('subscriptionsCount'), 10) > 0 ?
             entriesStream.get('tags') :
             null;
@@ -52,10 +68,6 @@ class EntryList extends Component {
             tag.tagName === selectedTag);
         const subscribePendingFlag = subscribePending && subscribePending.find(subs =>
             subs.tagName === selectedTag);
-        const fetchingEntries = params.filter === 'tag' ? fetchingTagEntries : fetchingSavedEntriesList;
-        const fetchingMoreEntries = params.filter === 'tag' ?
-            fetchingMoreTagEntries :
-            fetchingMoreSavedEntriesList;
         return (
           <div
             style={{
@@ -89,6 +101,7 @@ class EntryList extends Component {
               fetchingMoreEntries={fetchingMoreEntries}
               getTriggerRef={getTriggerRef}
               moreEntries={moreEntries}
+              placeholderMessage={placeholderMessage}
             />
           </div>
         );
@@ -96,15 +109,19 @@ class EntryList extends Component {
 }
 
 EntryList.propTypes = {
-    appActions: PropTypes.shape(),
+    allStreamEntries: PropTypes.shape(),
     entriesStream: PropTypes.shape(),
     entryActions: PropTypes.shape(),
-    fetchingTagEntries: PropTypes.bool,
+    fetchingAllStream: PropTypes.bool,
+    fetchingMoreAllStream: PropTypes.bool,
     fetchingMoreTagEntries: PropTypes.bool,
-    fetchingSavedEntriesList: PropTypes.bool,
     fetchingMoreSavedEntriesList: PropTypes.bool,
+    fetchingTagEntries: PropTypes.bool,
+    fetchingSavedEntriesList: PropTypes.bool,
     getTriggerRef: PropTypes.func,
+    intl: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
+    moreAllStreamEntries: PropTypes.bool,
     moreSavedEntries: PropTypes.bool,
     moreTagEntries: PropTypes.bool,
     params: PropTypes.shape(),
@@ -120,4 +137,4 @@ EntryList.contextTypes = {
     muiTheme: PropTypes.shape(),
     router: PropTypes.shape()
 };
-export default EntryList;
+export default injectIntl(EntryList);

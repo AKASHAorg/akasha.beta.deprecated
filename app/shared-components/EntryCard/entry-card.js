@@ -243,7 +243,7 @@ class EntryCard extends Component {
             isSaved, selectedTag, style, voteEntryPending } = this.props;
         const { palette } = this.context.muiTheme;
         const content = entry.get('content');
-        const latestVersion = content.get('version');
+        const latestVersion = content && content.get('version');
         const existingVoteWeight = entry.get('voteWeight') || 0;
         const publisher = entry.getIn(['entryEth', 'publisher']);
         if (!publisher) {

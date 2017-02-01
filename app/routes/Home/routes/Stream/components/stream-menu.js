@@ -14,6 +14,12 @@ const StreamMenu = (props, { muiTheme }) =>
       >
         <Tab
           onActive={props.onActive}
+          label="Latest entries"
+          value="allEntries"
+          style={{ color: '#444' }}
+        />
+        <Tab
+          onActive={props.onActive}
           label="BOOKMARKS"
           value="bookmarks"
           style={{ color: '#444' }}
@@ -23,11 +29,11 @@ const StreamMenu = (props, { muiTheme }) =>
             <div style={{ display: 'flex' }}>
               <div
                 style={{
-                  flex: '1 1 auto',
-                  paddingRight: '10px',
-                  maxWidth: '190px',
-                  overflowX: 'hidden',
-                  textOverflow: 'ellipsis'
+                    flex: '1 1 auto',
+                    paddingRight: '10px',
+                    maxWidth: '190px',
+                    overflowX: 'hidden',
+                    textOverflow: 'ellipsis'
                 }}
               >
                 {props.selectedTag}
