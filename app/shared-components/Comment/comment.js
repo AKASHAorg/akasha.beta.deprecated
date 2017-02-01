@@ -95,7 +95,7 @@ class Comment extends React.Component {
         const { data } = comment;
         const { profile, date, content } = data;
         const { palette } = this.context.muiTheme;
-        const authorName = `${profile.get('firstName')} ${profile.get('lastName')}`;
+        const authorAkashaId = `@${profile.get('akashaId')}`;
         const authorInitials = getInitials(profile.get('firstName'), profile.get('lastName'));
         const authorAvatar = (profile.get('avatar') === `${profile.get('baseUrl')}/`) ?
             null : profile.get('avatar');
@@ -136,7 +136,7 @@ class Comment extends React.Component {
                 <div className={`col-xs-5 ${style.commentAuthor}`}>
                   <CardHeader
                     style={{ padding: 0 }}
-                    titleStyle={{ fontSize: '100%' }}
+                    titleStyle={{ fontSize: '100%', height: 24 }}
                     subtitleStyle={{ paddingLeft: '2px', fontSize: '80%' }}
                     onMouseLeave={this._handleMouseLeave}
                     title={
@@ -145,11 +145,11 @@ class Comment extends React.Component {
                         onMouseEnter={this._handleMouseEnter}
                       >
                         <FlatButton
-                          label={authorName}
+                          label={authorAkashaId}
                           hoverColor="transparent"
                           style={{ height: 28, lineHeight: '28px', textAlign: 'left' }}
                           labelStyle={{
-                              textTransform: 'capitalize',
+                              textTransform: 'initial',
                               paddingLeft: 4,
                               paddingRight: 4,
                               color: commentAuthorNameColor
