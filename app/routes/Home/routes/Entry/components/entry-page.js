@@ -16,7 +16,7 @@ import EntryPageContent from './entry-page-content';
 import EntryPageActions from './entry-page-actions';
 import styles from './entry-page.scss';
 
-const COMMENT_FETCH_LIMIT = 50;
+const COMMENT_FETCH_LIMIT = 25;
 const CHECK_NEW_COMMENTS_INTERVAL = 15; // in seconds
 
 class EntryPage extends Component {
