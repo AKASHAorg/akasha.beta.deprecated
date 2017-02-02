@@ -4,7 +4,8 @@ import EntryList from './components/entry-list';
 
 function mapStateToProps (state) {
     const savedEntries = state.entryState.get('entries')
-            .filter(entry => entry.get('type') === 'savedEntry');
+        .filter(entry => entry.get('type') === 'savedEntry')
+        .map(entry => entry.get('content'));
     return {
         allStreamEntries: state.entryState.get('entries')
             .filter(entry => entry.get('type') === 'allStreamEntry')

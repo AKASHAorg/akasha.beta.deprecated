@@ -176,7 +176,9 @@ const entryState = createReducer(initialState, {
         state.merge({
             entries: state.get('entries')
                 .filter(entry => entry.get('type') !== 'savedEntry')
-                .concat(fromJS(data.collection).map(entry => entry.set('type', 'savedEntry'))),
+                .concat(fromJS(data.collection.map((entry) => {
+                    return { content: entry, entryId: entry.entryId, type: 'savedEntry' };
+                }))),
             flags: state.get('flags').merge(flags)
         }),
 
