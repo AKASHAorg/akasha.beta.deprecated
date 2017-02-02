@@ -114,7 +114,7 @@ const entryMessages = defineMessages({
     originalVersion: {
         id: 'app.entry.originalVersion',
         description: 'label for original version',
-        defaultMessage: 'Original version'
+        defaultMessage: 'Original'
     },
     localVersion: {
         id: 'app.entry.localVersion',

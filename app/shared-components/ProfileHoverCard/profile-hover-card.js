@@ -19,6 +19,11 @@ class ProfileHoverCard extends React.Component {
           isFollowing, anchorNode, followDisabled, leftOffsetCorrection = 0 } = this.props;
         const profileInitials = getInitials(profile.firstName, profile.lastName);
         const profileAvatar = imageCreator(profile.avatar, profile.baseUrl);
+
+        if(!open) {
+            return null;
+        }
+
         return (
           <div
             className={`${styles.rootWrapper} ${open ? styles.popover : ''}`}

@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { injectIntl } from 'react-intl';
 import { entryMessages } from 'locale-data/messages';
 import { EntryListContainer } from 'shared-components';
+import { List } from 'immutable';
 import QuickEntryEditor from './quick-entry-editor';
 import TagSearch from './tag-search';
 
@@ -33,7 +34,7 @@ class EntryList extends Component {
             fetchingTagEntries, getTriggerRef, intl, loggedProfileData, moreAllStreamEntries,
             moreSavedEntries, moreTagEntries, params, registerPending, savedEntries, selectedTag,
             subscribePending, tagActions, tagEntries, tagEntriesCount } = this.props;
-        let entries = [];
+        let entries = new List();
         let moreEntries;
         let fetchingEntries;
         let fetchingMoreEntries;

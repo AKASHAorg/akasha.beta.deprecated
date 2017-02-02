@@ -24,7 +24,6 @@ class Comment extends React.Component {
         super(props);
         this.state = {
             isExpanded: null,
-            editorState: null,
             hoverCardOpen: false,
             followDisabled: false
         };
