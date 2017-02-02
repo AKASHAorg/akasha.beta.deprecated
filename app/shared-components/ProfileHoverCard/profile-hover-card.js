@@ -3,6 +3,7 @@ import { IconButton, RaisedButton, SvgIcon, Paper } from 'material-ui';
 import { Avatar } from 'shared-components';
 import ReactTooltip from 'react-tooltip';
 import { getInitials } from 'utils/dataModule'; // eslint-disable-line import/no-unresolved, import/extensions
+import imageCreator from 'utils/imageUtils';
 import { UserDonate } from 'shared-components/svg'; // eslint-disable-line import/no-unresolved, import/extensions
 import { profileMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
 import styles from './profile-hover-card.scss';
@@ -15,15 +16,15 @@ class ProfileHoverCard extends React.Component {
     }
     render() {
         const { profile, open, onAuthorNameClick, onTip, onFollow, onUnfollow, intl, showCardActions,
-          isFollowing, anchorNode, followDisabled } = this.props;
-        const profileInitials = getInitials(profile.get('firstName'), profile.get('lastName'));
-        const profileAvatar = (profile.get('avatar') === `${profile.get('baseUrl')}/`) ? null : profile.get('avatar');
+          isFollowing, anchorNode, followDisabled, leftOffsetCorrection = 0 } = this.props;
+        const profileInitials = getInitials(profile.firstName, profile.lastName);
+        const profileAvatar = imageCreator(profile.avatar, profile.baseUrl);
         return (
           <div
             className={`${styles.rootWrapper} ${open ? styles.popover : ''}`}
             style={{
-                left: anchorNode ? anchorNode.offsetLeft : 0,
-                top: anchorNode ? (anchorNode.getBoundingClientRect().height - 8) : 28
+                left: anchorNode ? anchorNode.offsetLeft + leftOffsetCorrection : 0,
+                top: anchorNode ? anchorNode.offsetTop + (anchorNode.getBoundingClientRect().height - 8) : 28
             }}
           >
             <Paper
@@ -71,11 +72,11 @@ class ProfileHoverCard extends React.Component {
                     onClick={onAuthorNameClick}
                     className={`${styles.profileName}`}
                   >
-                    {profile.get('firstName')} {profile.get('lastName')}
+                    {profile.firstName} {profile.lastName}
                   </div>
                 </div>
                 <div className={`${styles.profileDetails} col-xs-12`}>
-                  @{profile.get('akashaId')} - {profile.get('followersCount')} followers
+                  @{profile.akashaId} - {profile.followersCount} followers
                 </div>
               </div>
             </Paper>

@@ -303,10 +303,10 @@ class EntryPage extends Component {
     _handleTip = (ev, profileData) => {
         const { profileActions } = this.props;
         profileActions.addSendTipAction({
-            akashaId: profileData.get('akashaId'),
-            firstName: profileData.get('firstName'),
-            lastName: profileData.get('lastName'),
-            profile: profileData.get('profile')
+            akashaId: profileData.akashaId,
+            firstName: profileData.firstName,
+            lastName: profileData.lastName,
+            profile: profileData.profile
         });
     }
     _handleFollow = (ev, akashaId, profile) => {
@@ -432,6 +432,10 @@ class EntryPage extends Component {
                       onRequestNewestComments={this.requestNewestComments}
                       intl={intl}
                       commentsSectionTop={commentsSectionTop}
+                      followingsList={followingsList}
+                      onFollow={this._handleFollow}
+                      onUnfollow={this._handleUnfollow}
+                      onTip={this._handleTip}
                     />
                   }
                   {entry.content &&
