@@ -46,6 +46,12 @@ function findBestMatch (width, obj, initialKey) {
 
 function imageCreator (arrayBuffer, baseUrl) {
     if (baseUrl && typeof arrayBuffer === 'string') {
+        if(arrayBuffer.includes(`${baseUrl}`) && arrayBuffer !== `${baseUrl}/`) {
+            return `${arrayBuffer}`;
+        }
+        if(arrayBuffer === `${baseUrl}/` || arrayBuffer.length === 0) {
+            return null;
+        }
         return `${baseUrl}/${arrayBuffer}`;
     }
 

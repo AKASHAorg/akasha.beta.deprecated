@@ -175,9 +175,9 @@ class Comment extends React.Component {
                   >
                     <ProfileHoverCard
                       open={this.state.hoverCardOpen}
-                      profile={profile}
+                      profile={profile.toJS()}
                       intl={intl}
-                      onTip={ev => onTip(ev, profile)}
+                      onTip={ev => onTip(ev, profile.toJS())}
                       onFollow={ev => this._handleFollow(ev, profile.get('akashaId'), profile.get('profile'))}
                       onUnfollow={ev => this._handleUnfollow(ev, profile.get('akashaId'), profile.get('profile'))}
                       onAuthorNameClick={ev => onAuthorNameClick(ev, profile.get('profile'))}

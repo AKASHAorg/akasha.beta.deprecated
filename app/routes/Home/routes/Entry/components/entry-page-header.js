@@ -3,7 +3,7 @@ import { injectIntl } from 'react-intl';
 import { CardHeader, IconButton, SvgIcon, FlatButton } from 'material-ui';
 import CloseIcon from 'material-ui/svg-icons/navigation/close';
 import EditIcon from 'material-ui/svg-icons/image/edit';
-import { Avatar, EntryVersionsPanel } from 'shared-components';
+import { Avatar, EntryVersionsPanel, ProfileHoverCard } from 'shared-components';
 import { calculateReadingTime, getInitials } from 'utils/dataModule'; // eslint-disable-line import/no-unresolved, import/extensions
 import imageCreator from 'utils/imageUtils'; // eslint-disable-line import/no-unresolved, import/extensions
 import { entryMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
@@ -22,8 +22,21 @@ class EntryPageHeader extends Component {
 
     state = {
         showVersions: false,
+        hoverCardOpen: false,
+        followDisabled: false
     };
-
+    componentWillReceiveProps = (nextProps) => {
+        const { publisher, followingsList } = this.props;
+        const nextFollowingsList = nextProps.followingsList;
+        const profile = publisher.profile;
+        const willFollow = nextFollowingsList.includes(profile);
+        const willUnfollow = !nextFollowingsList.includes(profile);
+        if ((willFollow || willUnfollow) && (nextFollowingsList.size !== followingsList.size)) {
+            this.setState({
+                followDisabled: false
+            });
+        }
+    }
     openVersionsPanel = () => {
         this.setState({
             showVersions: true
@@ -40,6 +53,38 @@ class EntryPageHeader extends Component {
         this.context.router.goBack();
     }
 
+    showProfileHoverCard = (ev) => {
+        this.setState({
+            hoverCardOpen: true,
+            hoverNode: ev.target
+        });
+    }
+    hideProfileHoverCard = () => {
+        this.setState({
+            hoverCardOpen: false,
+            hoverNode: null
+        });
+    }
+    handleTip = (ev) => {
+        const { onTip, publisher } = this.props;
+        onTip(ev, publisher);
+    }
+    _handleFollow = (ev) => {
+        const { onFollow, publisher } = this.props;
+        this.setState({
+            followDisabled: true
+        }, () => {
+            onFollow(ev, publisher.akashaId, publisher.profile);
+        });
+    }
+    _handleUnfollow = (ev) => {
+        const { onUnfollow, publisher } = this.props;
+        this.setState({
+            followDisabled: true
+        }, () => {
+            onUnfollow(ev, publisher.akashaId, publisher.profile);
+        });
+    }
     renderAvatar = () => {
         const { publisher, selectProfile } = this.props;
         const publisherBaseUrl = publisher.baseUrl;
@@ -48,15 +93,9 @@ class EntryPageHeader extends Component {
             null;
         const userInitials = getInitials(publisher.firstName, publisher.lastName);
         return (
-          <button
-            style={{
-                border: '0px', outline: 'none', background: 'transparent', borderRadius: '50%'
-            }}
-            onClick={selectProfile}
-          >
             <Avatar
               image={publisherAvatar}
-              style={{ display: 'inline-block' }}
+              style={{ display: 'inline-block', cursor: 'pointer' }}
               radius={40}
               userInitials={userInitials}
               userInitialsStyle={{
@@ -65,8 +104,9 @@ class EntryPageHeader extends Component {
                   fontWeight: '600',
                   margin: '0px'
               }}
+              onMouseEnter={this.showProfileHoverCard}
+              onClick={selectProfile}
             />
-          </button>
         );
     };
 
@@ -131,7 +171,7 @@ class EntryPageHeader extends Component {
     render () {
         const { currentVersion, existingDraft, getVersion, handleEdit, isActive, isOwnEntry,
             latestVersion, publisherTitleShadow, publisher, selectProfile, intl,
-            commentsSectionTop } = this.props;
+            commentsSectionTop, followingsList} = this.props;
         const isScrollingDown = (this.props.scrollDirection === -1);
         let newCommentsButtonTop = 0;
         if (isScrollingDown) {
@@ -144,7 +184,7 @@ class EntryPageHeader extends Component {
                 newCommentsButtonTop = 110;
             }
         }
-
+        const isFollowing = followingsList.includes(publisher.profile);
         return (
           <div
             className={`${styles.entry_publisher_info}`}
@@ -157,7 +197,8 @@ class EntryPageHeader extends Component {
                   boxShadow: publisherTitleShadow ?
                       '0px 15px 28px -15px #DDD, 0 12px 15px -15px #000000' : 'none',
                   transform: 'translate3d(0,0,0)',
-                  willChange: 'box-shadow'
+                  willChange: 'box-shadow',
+                  padding: 16
               }}
             >
               <CardHeader
@@ -173,6 +214,7 @@ class EntryPageHeader extends Component {
                         fontWeight: '600'
                     }}
                     onClick={selectProfile}
+                    onMouseEnter={this.showProfileHoverCard}
                   >
                     <div
                       style={{
@@ -187,12 +229,28 @@ class EntryPageHeader extends Component {
                     </div>
                   </button>
                 }
+                onMouseLeave={this.hideProfileHoverCard}
                 subtitle={this.renderSubtitle()}
                 style={{
                     backgroundColor: '#FFF',
-                    zIndex: 5
+                    zIndex: 5,
+                    padding: 0
                 }}
-              />
+              >
+                <ProfileHoverCard
+                  open={this.state.hoverCardOpen}
+                  profile={publisher}
+                  intl={intl}
+                  onTip={this.handleTip}
+                  onFollow={this._handleFollow}
+                  onUnfollow={this._handleUnfollow}
+                  onAuthorNameClick={selectProfile}
+                  showCardActions={!isOwnEntry}
+                  isFollowing={isFollowing}
+                  followDisabled={this.state.followDisabled}
+                  anchorNode={this.state.hoverNode}
+                />
+              </CardHeader>
               {(this.props.newCommentsCount > 0) && FLOATING_COMMENTS_BUTTON_ACTIVE &&
                 <div
                   style={{
@@ -283,8 +341,8 @@ EntryPageHeader.propTypes = {
     wordCount: PropTypes.number,
     newCommentsCount: PropTypes.number,
     onRequestNewestComments: PropTypes.func,
-    scrollDirection: PropTypes.number
-
+    scrollDirection: PropTypes.number,
+    followingsList: PropTypes.shape()
 };
 
 EntryPageHeader.contextTypes = {
