@@ -26,7 +26,7 @@ export default class BlockButton extends Component {
     _handleImageAdd = (ev) => {
         ev.persist();
         const files = this.fileInput.files;
-        const filePromises = getResizedImages([files[0].path], { minWidth: 320 });
+        const filePromises = getResizedImages(files, { minWidth: 320 });
         Promise.all(filePromises).then((results) => {
             const fileRes = results[0];
             let bestKey = findClosestMatch(768, fileRes);

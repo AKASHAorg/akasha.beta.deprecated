@@ -1,3 +1,5 @@
+import pica from 'pica/dist/pica.js';
+
 /**
  * Utility to extract best matching image key given a width
  * @param width <number> a given width
@@ -46,10 +48,10 @@ function findBestMatch (width, obj, initialKey) {
 
 function imageCreator (arrayBuffer, baseUrl) {
     if (baseUrl && typeof arrayBuffer === 'string') {
-        if(arrayBuffer.includes(`${baseUrl}`) && arrayBuffer !== `${baseUrl}/`) {
+        if (arrayBuffer.includes(`${baseUrl}`) && arrayBuffer !== `${baseUrl}/`) {
             return `${arrayBuffer}`;
         }
-        if(arrayBuffer === `${baseUrl}/` || arrayBuffer.length === 0) {
+        if (arrayBuffer === `${baseUrl}/` || arrayBuffer.length === 0) {
             return null;
         }
         return `${baseUrl}/${arrayBuffer}`;
@@ -177,6 +179,38 @@ function readImageData (imagePath, canvas, ctx, options) {
         img.src = imagePath;
     });
 }
+const settings = {
+    extentions: ['jpg', 'jpeg', 'png', 'svg'],
+    defaultQuality: 3,
+    alphaChannel: false,
+    unsharpAmount: 50,
+    unsharpRadius: 0.6,
+    unsharpThreshold: 2,
+    animatedGifSupport: true,
+    imageWidths: [{
+        key: 'xxl',
+        res: 1920
+    }, {
+        key: 'xl',
+        res: 1280
+    }, {
+        key: 'md',
+        res: 700
+    }, {
+        key: 'sm',
+        res: 640
+    }, {
+        key: 'xs',
+        res: 320
+    }]
+};
+const resizeAnimatedGifFile = (imagePath, options) => {
+    // resize gif
+};
+
+const resizeImage = (imagePath, options) => {
+    // resize image
+};
 /**
  * Utility to resize images using Html5 canvas
  * @param {Array} imagePaths Path(s) returned from a dialog window
@@ -201,16 +235,40 @@ function readImageData (imagePath, canvas, ctx, options) {
  *       });
  *   ).catch(reason => reason {string} 'Image height is smaller than minimum allowed of 200 pixels')
  */
-function getResizedImages (imagePaths, options) {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
+const getResizedImages = (inputFiles, options) => {
+    const gifFilePaths = [];
+    const imageFilePaths = [];
     const promises = [];
-    for (let i = imagePaths.length - 1; i >= 0; i--) {
-        const path = imagePaths[i];
-        promises.push(readImageData(path, canvas, ctx, options));
+    Array.from(inputFiles).forEach((file) => {
+        const fileName = file.name;
+        const ext = fileName.split('.')[fileName.length - 1];
+        if (ext === 'gif') return gifFilePaths.push(file.path);
+        return imageFilePaths.push(file.path);
+    });
+
+    for (let i = gifFilePaths.length - 1; i >= 0; i -= 1) {
+        const filePath = gifFilePaths[i];
+        promises.push(resizeAnimatedGifFile(filePath, options));
     }
+
+    for (let i = imageFilePaths.length - 1; i >= 0; i -= 1) {
+        const imagePath = imageFilePaths[i];
+        promises.push(resizeImage(imagePath, options));
+    }
+
     return promises;
-}
+};
+
+// function getResizedImages (imagePaths, options) {
+//     const canvas = document.createElement('canvas');
+//     const ctx = canvas.getContext('2d');
+//     const promises = [];
+//     for (let i = imagePaths.length - 1; i >= 0; i--) {
+//         const path = imagePaths[i];
+//         promises.push(readImageData(path, canvas, ctx, options));
+//     }
+//     return promises;
+// }
 
 export default imageCreator;
 export { getResizedImages, extractImageFromContent, findBestMatch, findClosestMatch };
