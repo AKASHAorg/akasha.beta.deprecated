@@ -8,6 +8,7 @@ export default {
     palette: {
         primary1Color: '#4285f4',
         textColor: '#4c4c4c',
+        secondaryTextColor: '#757575',
         alternateTextColor: Colors.white,
         canvasColor: Colors.white,
         borderColor: Colors.grey300,
@@ -20,7 +21,8 @@ export default {
         commentAuthorColor: Colors.grey800,
         commentViewerIsAuthorColor: Colors.blueA400,
         commentIsEntryAuthorColor: Colors.greenA700,
-        avatarBackground: Colors.grey50
+        avatarBackground: Colors.grey50,
+        linkColor: '#008B8B'
     },
     imageUploader: {
         position: 'relative',

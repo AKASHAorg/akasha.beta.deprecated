@@ -6,6 +6,8 @@ import ActionDelete from 'material-ui/svg-icons/action/delete';
 import { Avatar } from 'shared-components';
 import { getInitials } from 'utils/dataModule';
 import UserProfileHeader from './user-profile/user-profile-header';
+import { CommentNotification, EntryNotification, FollowNotification, MentionNotification,
+    TipNotification, VoteNotification } from './notifications';
 
 const tabStyles = {
     default_tab: {
@@ -61,292 +63,175 @@ class UserProfilePanel extends Component {
         notificationsActions.readYouNotif(number);
     };
 
-    navigateToTag (tag) {
+    navigateToTag = (tag) => {
         const { hidePanel, params } = this.props;
         hidePanel();
         this.context.router.push(`/${params.akashaId}/explore/tag/${tag}`);
-    }
+    };
 
-    navigateToProfile (profileAddress) {
+    navigateToProfile = (profileAddress) => {
         const { router } = this.context;
         const loggedAkashaId = this.props.loggedProfileData.get('akashaId');
         this.props.hidePanel();
         router.push(`/${loggedAkashaId}/profile/${profileAddress}`);
-    }
+    };
 
-    navigateToEntry (entryId) {
+    navigateToEntry = (entryId) => {
         const { router } = this.context;
         const loggedAkashaId = this.props.loggedProfileData.get('akashaId');
         this.props.hidePanel();
         router.push(`/${loggedAkashaId}/entry/${entryId}`);
+    };
+
+    isMuted = (profileAddress) => {
+        const { mutedList } = this.props;
+        return mutedList && mutedList.indexOf(profileAddress) !== -1;
     }
 
     _renderFollower (event, index) {
+        const { notificationsActions, settingsActions } = this.props;
         return (
-          <ListItem
-            leftAvatar={this.renderAvatar(event.follower)}
-            primaryText={
-              <strong
-                onClick={() => {
-                    this.navigateToProfile(event.follower.profile);
-                }}
-                style={{ color: colors.darkBlack }}
-              >
-                {event.follower.akashaId}
-              </strong>
-                }
-            secondaryText={
-              <p>
-                <span style={{ color: colors.darkBlack }}>
-                  Followed you.
-                </span>
-                <br />
-                Block {event.blockNumber}
-              </p>
-            }
-            secondaryTextLines={2}
+          <FollowNotification
+            blockNumber={event.blockNumber}
+            deleteNotif={notificationsActions.deleteYouNotif}
+            disableNotifications={settingsActions.disableNotifFrom}
+            enableNotifications={settingsActions.enableNotifFrom}
+            index={index}
+            isMuted={this.isMuted(event.follower.profile)}
+            navigateToProfile={this.navigateToProfile}
+            profile={event.follower}
             key={eventTypes.FOLLOWING + index + event.blockNumber}
-            className="has_hidden_action"
-            rightIcon={<ActionDelete
-              className="hidden_action"
-              onClick={() => {
-                  this.props.notificationsActions.deleteYouNotif(index);
-              }}
-            />}
-          />);
+          />
+        );
     }
 
     _renderEntry (event, index) {
-        const tags = [].concat(event.tag);
-        const tagsMessage = tags.length > 1 ? 'tags' : 'tag';
-        const tagsArray = tags.map((tag, key) =>
-          <span key={tag}>
-            <span className="link" onClick={() => { this.navigateToTag(tag); }}>{tag}</span>
-            {key !== tags.length - 1 ? ', ' : ''}
-          </span>
-        );
+        const { loggedProfileData, notificationsActions, settingsActions } = this.props;
+        const isOwnNotif = loggedProfileData.get('profile') === event.profileAddress;
+        const deleteNotif = isOwnNotif ?
+            notificationsActions.deleteYouNotif :
+            notificationsActions.deleteFeedNotif;
+
         if (!event.entry.content) {
             return null;
         }
+
         return (
-          <ListItem
-            leftAvatar={this.renderAvatar(event.author)}
-            primaryText={
-              <strong
-                onClick={() => {
-                    this.navigateToProfile(event.profileAddress);
-                }}
-                style={{ color: colors.darkBlack }}
-              >
-                {event.author.akashaId}
-              </strong>
-            }
-            secondaryText={
-              <p>
-                <span style={{ color: colors.darkBlack }} >
-                  Published&nbsp;
-                  <span
-                    className="link"
-                    onClick={() => { this.navigateToEntry(event.entry.entryId); }}
-                  >
-                    {event.entry.content.title}
-                  </span>
-                  &nbsp;on {tagsMessage}&nbsp;
-                  {tagsArray}
-                </span>
-                <br />
-                Block {event.blockNumber}
-              </p>
-            }
-            secondaryTextLines={2}
+          <EntryNotification
+            blockNumber={event.blockNumber}
+            deleteNotif={deleteNotif}
+            disableNotifications={settingsActions.disableNotifFrom}
+            enableNotifications={settingsActions.enableNotifFrom}
+            entry={event.entry}
+            index={index}
+            isMuted={this.isMuted(event.author.profile)}
+            isOwnNotif={isOwnNotif}
+            navigateToEntry={this.navigateToEntry}
+            navigateToProfile={this.navigateToProfile}
+            navigateToTag={this.navigateToTag}
+            profile={event.author}
+            tags={event.tag}
             key={eventTypes.PUBLISH + index + event.blockNumber}
-            className="has_hidden_action"
-            rightIcon={<ActionDelete
-              className="hidden_action"
-              onClick={() => {
-                  if (this.props.loggedProfileData.get('profile') === event.profileAddress) {
-                      return this.props.notificationsActions.deleteYouNotif(index);
-                  }
-                  return this.props.notificationsActions.deleteFeedNotif(index);
-              }}
-            />}
-          />);
+          />
+        );
     }
 
     _renderComment (event, index) {
+        const { loggedProfileData, notificationsActions, settingsActions } = this.props;
+        const isOwnNotif = loggedProfileData.get('profile') === event.profileAddress;
+        const deleteNotif = isOwnNotif ?
+            notificationsActions.deleteYouNotif :
+            notificationsActions.deleteFeedNotif;
+
         if (!event.entry.content) {
             return null;
         }
+
         return (
-          <ListItem
-            leftAvatar={this.renderAvatar(event.author)}
-            primaryText={
-              <strong
-                onClick={() => {
-                    this.navigateToProfile(event.profileAddress);
-                }} style={{ color: colors.darkBlack }}
-              >
-                {event.author.akashaId}
-              </strong>
-            }
-            secondaryText={
-              <p>
-                <span style={{ color: colors.darkBlack }} >
-                  Commented on&nbsp;
-                  <span
-                    className="link"
-                    onClick={() => { this.navigateToEntry(event.entry.entryId); }}
-                  >
-                    {event.entry.content.title}
-                  </span>
-                </span>
-                <br />
-                Block {event.blockNumber}
-              </p>
-            }
-            secondaryTextLines={2}
+          <CommentNotification
+            blockNumber={event.blockNumber}
+            deleteNotif={deleteNotif}
+            disableNotifications={settingsActions.disableNotifFrom}
+            enableNotifications={settingsActions.enableNotifFrom}
+            index={index}
+            isMuted={this.isMuted(event.author.profile)}
+            isOwnNotif={isOwnNotif}
+            navigateToEntry={this.navigateToEntry}
+            navigateToProfile={this.navigateToProfile}
+            profile={event.author}
+            entry={event.entry}
             key={eventTypes.COMMENT + index + event.blockNumber}
-            className="has_hidden_action"
-            rightIcon={<ActionDelete
-              className="hidden_action"
-              onClick={() => {
-                  if (this.props.loggedProfileData.get('profile') === event.profileAddress) {
-                      return this.props.notificationsActions.deleteYouNotif(index);
-                  }
-                  return this.props.notificationsActions.deleteFeedNotif(index);
-              }}
-            />}
-          />);
+          />
+        );
     }
 
     _renderVote (event, index) {
-        const { palette } = this.context.muiTheme;
-        const type = (event.weight > 0) ? 'Upvoted' : 'Downvoted';
-        const colorVote = (event.weight > 0) ? palette.accent3Color : palette.accent1Color;
-        const voteWeight = (event.weight > 0) ? (`+${event.weight}`) : event.weight;
+        const { loggedProfileData, notificationsActions, settingsActions } = this.props;
+        const isOwnNotif = loggedProfileData.get('profile') === event.profileAddress;
+        const deleteNotif = isOwnNotif ?
+            notificationsActions.deleteYouNotif :
+            notificationsActions.deleteFeedNotif;
         if (!event.entry.content) {
             return null;
         }
+
         return (
-          <ListItem
-            leftAvatar={this.renderAvatar(event.author)}
-            primaryText={
-              <strong
-                onClick={() => {
-                    this.navigateToProfile(event.profileAddress);
-                }}
-                style={{ color: colors.darkBlack }}
-              >
-                {event.author.akashaId}
-              </strong>
-            }
-            secondaryText={
-              <p>
-                <span style={{ color: colors.darkBlack }} >
-                  {type}<span style={{ color: colorVote }} > {voteWeight} </span>on&nbsp;
-                  <span
-                    className="link"
-                    onClick={() => { this.navigateToEntry(event.entry.entryId); }}
-                  >
-                    {event.entry.content.title}
-                  </span>
-                </span>
-                <br />
-                Block {event.blockNumber}
-              </p>
-            }
-            secondaryTextLines={2}
+          <VoteNotification
+            blockNumber={event.blockNumber}
+            deleteNotif={deleteNotif}
+            disableNotifications={settingsActions.disableNotifFrom}
+            enableNotifications={settingsActions.enableNotifFrom}
+            entry={event.entry}
+            index={index}
+            isMuted={this.isMuted(event.author.profile)}
+            isOwnNotif={isOwnNotif}
+            navigateToEntry={this.navigateToEntry}
+            navigateToProfile={this.navigateToProfile}
+            profile={event.author}
+            weight={event.weight}
             key={eventTypes.VOTE + index + event.blockNumber}
-            className="has_hidden_action"
-            rightIcon={<ActionDelete
-              className="hidden_action"
-              onClick={() => {
-                  if (this.props.loggedProfileData.get('profile') === event.profileAddress) {
-                      return this.props.notificationsActions.deleteYouNotif(index);
-                  }
-                  return this.props.notificationsActions.deleteFeedNotif(index);
-              }}
-            />}
           />
         );
     }
 
     _renderTip (event, index) {
+        const { notificationsActions, settingsActions } = this.props;
         return (
-          <ListItem
-            leftAvatar={this.renderAvatar(event.profile)}
-            primaryText={
-              <strong
-                onClick={() => {
-                    this.navigateToProfile(event.profile.profile);
-                }}
-                style={{ color: colors.darkBlack }}
-              >
-                {event.profile.akashaId}
-              </strong>
-            }
-            secondaryText={
-              <p>
-                <span style={{ color: colors.darkBlack }} >
-                  Tipped you
-                  <strong style={{ color: '#008B8B', padding: '0 5px' }}>
-                    {event.value}
-                  </strong>
-                  AETH
-                </span>
-                <br />
-                Block {event.blockNumber}
-              </p>
-            }
-            secondaryTextLines={2}
+          <TipNotification
+            blockNumber={event.blockNumber}
+            deleteNotif={notificationsActions.deleteYouNotif}
+            disableNotifications={settingsActions.disableNotifFrom}
+            enableNotifications={settingsActions.enableNotifFrom}
+            index={index}
+            isMuted={this.isMuted(event.profile.profile)}
+            navigateToProfile={this.navigateToProfile}
+            profile={event.profile}
+            value={event.value}
             key={eventTypes.GOT_TIPPED + index + event.blockNumber}
-            className="has_hidden_action"
-            rightIcon={<ActionDelete
-              className="hidden_action"
-              onClick={() => this.props.notificationsActions.deleteYouNotif(index)}
-            />}
           />
         );
     }
 
     _renderMention (event, index) {
-        const { intl } = this.props;
-        const timestamp = event.timeStamp * 1000;
+        const { intl, notificationsActions, settingsActions } = this.props;
+        if (!event.entry.content) {
+            return null;
+        }
+
         return (
-          <ListItem
-            leftAvatar={this.renderAvatar(event.author)}
-            primaryText={
-              <strong
-                onClick={() => {
-                    this.navigateToProfile(event.author.profile);
-                }}
-                style={{ color: colors.darkBlack }}
-              >
-                {event.author.akashaId}
-              </strong>
-            }
-            secondaryText={
-              <p>
-                <span style={{ color: colors.darkBlack }} >
-                  Mentioned you in a&nbsp;
-                  <span
-                    className="link"
-                    onClick={() => { this.navigateToEntry(event.entry.entryId); }}
-                  >
-                    comment
-                  </span>
-                </span>
-                <br />
-                {intl.formatRelative(timestamp)}
-              </p>
-            }
-            secondaryTextLines={2}
+          <MentionNotification
+            deleteNotif={notificationsActions.deleteYouNotif}
+            disableNotifications={settingsActions.disableNotifFrom}
+            enableNotifications={settingsActions.enableNotifFrom}
+            entry={event.entry}
+            index={index}
+            intl={intl}
+            isMuted={this.isMuted(event.author.profile)}
+            navigateToEntry={this.navigateToEntry}
+            navigateToProfile={this.navigateToProfile}
+            profile={event.author}
+            timestamp={event.timeStamp}
             key={eventTypes.MENTION + index + event.timeStamp}
-            className="has_hidden_action"
-            rightIcon={<ActionDelete
-              className="hidden_action"
-              onClick={() => this.props.notificationsActions.deleteYouNotif(index)}
-            />}
           />
         );
     }
@@ -497,8 +382,10 @@ UserProfilePanel.propTypes = {
     params: PropTypes.shape(),
     profileActions: PropTypes.shape(),
     profileAddress: PropTypes.string,
+    mutedList: PropTypes.arrayOf(PropTypes.string),
     notificationsActions: PropTypes.shape(),
     notificationsState: PropTypes.shape(),
+    settingsActions: PropTypes.shape(),
     showPanel: PropTypes.func,
     hidePanel: PropTypes.func
 };

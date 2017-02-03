@@ -15,7 +15,7 @@ const notificationsState = createReducer(initialState, {
     [types.FEED_SUBSCRIPTION_NOTIF]: (state, action) => {
         let updatedFeed;
         let feedObj;
-        const hasFeed = !state.get('hasFeed');
+        // const hasFeed = !state.get('hasFeed');
         if (action.payload.hasOwnProperty('running')) {
             return state;
         }
@@ -27,7 +27,7 @@ const notificationsState = createReducer(initialState, {
             -1;
         if (state.get('notifFeed').size > maxFeed && notifIndex === -1) {
             updatedFeed = state.get('notifFeed').pop();
-            feedObj = { notifFeed: updatedFeed.unshift(action.payload), hasFeed };
+            feedObj = { notifFeed: updatedFeed.unshift(action.payload), hasFeed: true };
         } else {
             feedObj = {
                 notifFeed: notifIndex === -1 ?
@@ -38,7 +38,7 @@ const notificationsState = createReducer(initialState, {
                             tag: [].concat(state.getIn(['notifFeed', notifIndex]).tag, action.payload.tag)
                         })
                     ),
-                hasFeed
+                hasFeed: true
             };
         }
         return state.merge(feedObj);

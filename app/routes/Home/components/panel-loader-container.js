@@ -1,6 +1,7 @@
 import { connect } from 'react-redux';
 import PanelLoader from 'shared-components/Panels/panel-loader';
-import { AppActions, ProfileActions, EntryActions, DraftActions, NotificationsActions, TagActions } from 'local-flux';
+import { AppActions, ProfileActions, EntryActions, DraftActions, NotificationsActions,
+    SettingsActions, TagActions } from 'local-flux';
 
 function mapStateToProps (state) {
     const loggedProfile = state.profileState.get('loggedProfile');
@@ -22,6 +23,7 @@ function mapStateToProps (state) {
             profile.get('profile') === state.profileState.getIn(['loggedProfile', 'profile'])),
         loginRequested: state.profileState.getIn(['flags', 'loginRequested']),
         moreProfileEntries: state.entryState.get('moreProfileEntries'),
+        mutedList: state.settingsState.get('userSettings').notifications.muted,
         notificationsState: state.notificationsState,
         panelState: state.panelState,
         publishedEntries,
@@ -36,6 +38,7 @@ function mapDispatchToProps (dispatch) {
         entryActions: new EntryActions(dispatch),
         draftActions: new DraftActions(dispatch),
         notificationsActions: new NotificationsActions(dispatch),
+        settingsActions: new SettingsActions(dispatch),
         tagActions: new TagActions(dispatch),
     };
 }
