@@ -92,7 +92,7 @@ class PublishConfirmDialog extends Component {
             open={isOpen}
             actions={dialogActions}
           >
-            <p>
+            <p style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
               {intl.formatMessage(
                   confirmMessages[resource.get('messageId')], resource.get('payload').toJS()
               )}
