@@ -44,10 +44,7 @@ class TipRunner extends Component {
             const correspondingAction = pendingActions.find(action =>
                 action.get('type') === tx.type && action.get('status') === 'publishing');
             const mined = minedTx.find(mnd => mnd.tx === tx.tx);
-            let minedSuccessfully;
-            if (correspondingAction) {
-                minedSuccessfully = mined.cumulativeGasUsed < correspondingAction.get('gas');
-            }
+            const minedSuccessfully = mined.cumulativeGasUsed < tx.gas;
             transactionActions.deletePendingTx(tx.tx);
             profileActions.sendTipSuccess(tx.akashaId, minedSuccessfully);
             if (correspondingAction) {
