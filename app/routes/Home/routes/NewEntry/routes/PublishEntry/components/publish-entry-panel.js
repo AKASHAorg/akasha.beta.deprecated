@@ -7,6 +7,10 @@ import LicenceDialog from 'shared-components/Dialogs/licence-dialog';
 import TagsField from 'shared-components/TagsField/tags-field';
 import { TagService } from 'local-flux/services';
 
+const MAX_TITLE_LENGTH = 100;
+const MIN_EXCERPT_LENGTH = 30;
+const MAX_EXCERPT_LENGTH = 160;
+
 class PublishPanel extends React.Component {
     constructor (props) {
         super(props);
@@ -107,10 +111,15 @@ class PublishPanel extends React.Component {
     _validateEntry = (cb) => {
         const { draft, existingTags } = this.state;
         const validationErrors = this.state.validationErrors.slice();
-        if (!draft.getIn(['content', 'title']) || draft.getIn(['content', 'title']) === '') {
+        if (!draft.getIn(['content', 'title']) || draft.getIn(['content', 'title']).trim() === '') {
             validationErrors.push({
                 field: 'title',
                 error: 'Title must not be empty'
+            });
+        } else if (draft.getIn(['content', 'title']).trim().length > MAX_TITLE_LENGTH) {
+            validationErrors.push({
+                field: 'title',
+                error: `Title is too long (max. ${MAX_TITLE_LENGTH} characters)`
             });
         }
         if (!existingTags || existingTags.length === 0) {
@@ -131,16 +140,18 @@ class PublishPanel extends React.Component {
                 error: 'Please review the licence'
             });
         }
-        if (!draft.getIn(['content', 'excerpt']) || draft.getIn(['content', 'excerpt']).length < 30) {
+        if (!draft.getIn(['content', 'excerpt']) ||
+                draft.getIn(['content', 'excerpt']).trim().length < MIN_EXCERPT_LENGTH) {
             validationErrors.push({
                 field: 'excerpt',
-                error: 'Please provide a longer excerpt (min. 30 characters)'
+                error: `Please provide a longer excerpt (min. ${MIN_EXCERPT_LENGTH} characters)`
             });
         }
-        if (!draft.getIn(['content', 'excerpt']) || draft.getIn(['content', 'excerpt']).length > 160) {
+        if (!draft.getIn(['content', 'excerpt']) ||
+                draft.getIn(['content', 'excerpt']).trim().length > MAX_EXCERPT_LENGTH) {
             validationErrors.push({
                 field: 'excerpt',
-                error: 'Excerpt is too long (max. 160 characters)'
+                error: `Excerpt is too long (max. ${MAX_EXCERPT_LENGTH} characters)`
             });
         }
         if (validationErrors.length > 0) {
