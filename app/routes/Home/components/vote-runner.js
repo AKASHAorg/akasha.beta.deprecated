@@ -70,10 +70,7 @@ class VoteRunner extends Component {
                 fullEntry ? fullEntry.entryEth.publisher.akashaId : null;
             const loggedAkashaId = loggedProfile.get('akashaId');
             const mined = minedTx.find(mined => mined.tx === tx.tx);
-            let minedSuccessfully;
-            if (correspondingAction) {
-                minedSuccessfully = mined.cumulativeGasUsed < correspondingAction.get('gas');
-            }
+            const minedSuccessfully = mined.cumulativeGasUsed < tx.gas;
             transactionActions.deletePendingTx(tx.tx);
             // fire success action based on action type
             // WARNING: action must match `action.type + "Success"`

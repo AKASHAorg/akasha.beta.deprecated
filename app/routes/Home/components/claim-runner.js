@@ -42,10 +42,7 @@ class ClaimRunner extends Component {
             const correspondingAction = pendingActions.find(action =>
                 action.get('type') === tx.type && action.get('status') === 'publishing');
             const mined = minedTx.find(mned => mned.tx === tx.tx);
-            let minedSuccessfully;
-            if (correspondingAction) {
-                minedSuccessfully = mined.cumulativeGasUsed < correspondingAction.get('gas');
-            }
+            const minedSuccessfully = mined.cumulativeGasUsed < tx.gas;
             transactionActions.deletePendingTx(tx.tx);
             // fire success action based on action type
             // WARNING: action must match `action.type + "Success"`
@@ -54,7 +51,7 @@ class ClaimRunner extends Component {
             if (typeof entryActions[`${tx.type}Success`] !== 'function') {
                 return console.error(`There is no action "${tx.type}Success" in entryActions!! Please implement "${tx.type}Success" action!!`);
             }
-            entryActions[`${tx.type}Success`](tx.entryId, minedSuccessfully);
+            entryActions[`${tx.type}Success`](tx.entryId, tx.title, minedSuccessfully);
             entryActions.canClaim(tx.entryId);
             entryActions.getEntryBalance(tx.entryId);
             if (correspondingAction) {

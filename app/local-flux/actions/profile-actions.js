@@ -581,7 +581,8 @@ class ProfileActions {
                     this.transactionActions.addToQueue([{
                         tx: data.tx,
                         type: 'sendTip',
-                        akashaId: data.akashaId
+                        akashaId: data.akashaId,
+                        gas
                     }]);
                     this.appActions.showNotification({
                         id: 'sendingTip',

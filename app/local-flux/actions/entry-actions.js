@@ -382,7 +382,8 @@ class EntryActions {
                         tx: data.tx,
                         type: 'upvote',
                         entryId: data.entryId,
-                        entryTitle: title
+                        entryTitle: title,
+                        gas
                     }]);
                     this.appActions.showNotification({
                         id: 'upvotingEntry',
@@ -415,7 +416,8 @@ class EntryActions {
                         tx: data.tx,
                         type: 'downvote',
                         entryId: data.entryId,
-                        entryTitle: title
+                        entryTitle: title,
+                        gas
                     }]);
                     this.appActions.showNotification({
                         id: 'downvotingEntry',
@@ -578,7 +580,9 @@ class EntryActions {
                     this.transactionActions.addToQueue([{
                         tx: data.tx,
                         type: 'claim',
-                        entryId: data.entryId
+                        entryId: data.entryId,
+                        gas,
+                        title: entryTitle
                     }]);
                     this.appActions.showNotification({
                         id: 'claiming',
@@ -593,20 +597,15 @@ class EntryActions {
             });
         });
 
-    claimSuccess = (entryId, minedSuccessfully) =>
-        this.dispatch((dispatch, getState) => {
-            const entry = getState().entryState.get('entries')
-                .find(en => en.get('entryId') === entryId);
-            const entryTitle = entry ?
-                entry.getIn(['content', 'content', 'title']) :
-                getState().entryState.get('fullEntry').content.title;
-            dispatch(entryActionCreators.claimSuccess({
-                claimPending: { entryId, value: false }
-            }));
-            this.appActions.showNotification({
-                id: minedSuccessfully ? 'claimSuccess' : 'claimError',
-                values: { entryTitle }
-            });
+    claimSuccess = (entryId, entryTitle, minedSuccessfully) => {
+        this.dispatch(entryActionCreators.claimSuccess({
+            claimPending: { entryId, value: false }
+        }));
+        this.appActions.showNotification({
+            id: minedSuccessfully ? 'claimSuccess' : 'claimError',
+            values: { entryTitle }
         });
+    }
 }
+
 export { EntryActions };
