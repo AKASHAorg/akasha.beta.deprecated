@@ -112,7 +112,7 @@ class ChatMessage extends Component {
                       color: isOwnMessage ? palette.commentViewerIsAuthorColor : palette.textColor
                   }}
                 >
-                  @{akashaId}
+                  {akashaId}
                 </div>
                 <FormattedTime value={new Date(timeStamp * 1000)} />
               </div>

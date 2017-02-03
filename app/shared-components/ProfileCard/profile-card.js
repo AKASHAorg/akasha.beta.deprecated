@@ -13,6 +13,7 @@ class ProfileCard extends Component {
     state = {
         actionsExpanded: false
     };
+
     componentWillMount () {
         const { isFollowerAction, loggedProfileData, profileData } = this.props;
         isFollowerAction(loggedProfileData.get('akashaId'), profileData.akashaId);

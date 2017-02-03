@@ -64,21 +64,13 @@ class NotificationsActions {
         });
     }
 
-    readFeedNotif () {
-        this.dispatch(action.readSubscriptionFeed());
-    }
+    readFeedNotif = () => this.dispatch(action.readSubscriptionFeed());
 
-    readYouNotif (number) {
-        this.dispatch(action.readYouNotif(number));
-    }
+    readYouNotif = number => this.dispatch(action.readYouNotif(number));
 
-    deleteYouNotif (index) {
-        this.dispatch(action.deleteYouNotif(index));
-    }
+    deleteYouNotif = index => this.dispatch(action.deleteYouNotif(index));
 
-    deleteFeedNotif (index) {
-        this.dispatch(action.deleteFeedNotif(index));
-    }
+    deleteFeedNotif = index => this.dispatch(action.deleteFeedNotif(index));
 
     /**
      * Stop subscription
