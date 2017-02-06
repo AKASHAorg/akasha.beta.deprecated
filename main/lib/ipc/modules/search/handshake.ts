@@ -45,7 +45,7 @@ const execute = Promise.coroutine(function*(data: { provider?: string, timeout?:
     if (!init) {
         throw new Error('Could not send handshake request.');
     }
-    const response = yield Promise.delay(timeout * 10000).then(() => {
+    const response = yield Promise.delay(timeout * 1000).then(() => {
         return Promise.fromCallback(
             (cb) => {
                 GethConnector.getInstance()
@@ -59,11 +59,9 @@ const execute = Promise.coroutine(function*(data: { provider?: string, timeout?:
     if (!response.length) {
         throw new Error('Search service timed out.');
     }
-    let actual;
     for (let i = 0; i < response.length; i++) {
         if (response[i].hasOwnProperty('payload')) {
-            actual = GethConnector.getInstance().web3.toUtf8(response[i].payload);
-            if (equals(payload, actual)) {
+            if (equals(payload, response[i].payload)) {
                 generalSettings.set(HANDSHAKE_DONE, true);
                 break;
             }

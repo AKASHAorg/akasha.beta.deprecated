@@ -33,7 +33,7 @@ const execute = Promise.coroutine(function* (data) {
     if (!init) {
         throw new Error('Could not send handshake request.');
     }
-    const response = yield Promise.delay(timeout * 10000).then(() => {
+    const response = yield Promise.delay(timeout * 1000).then(() => {
         return Promise.fromCallback((cb) => {
             geth_connector_1.GethConnector.getInstance()
                 .web3
@@ -45,11 +45,9 @@ const execute = Promise.coroutine(function* (data) {
     if (!response.length) {
         throw new Error('Search service timed out.');
     }
-    let actual;
     for (let i = 0; i < response.length; i++) {
         if (response[i].hasOwnProperty('payload')) {
-            actual = geth_connector_1.GethConnector.getInstance().web3.toUtf8(response[i].payload);
-            if (ramda_1.equals(payload, actual)) {
+            if (ramda_1.equals(payload, response[i].payload)) {
                 settings_1.generalSettings.set(settings_1.HANDSHAKE_DONE, true);
                 break;
             }
