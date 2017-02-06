@@ -11,11 +11,17 @@ class CommentThread extends Component {
     }
     _onReply = (ev, commentId) => {
         if (this.props.onReply) this.props.onReply(ev, commentId);
+    };
+    followPending = (akashaId) => {
+        const { followPending } = this.props;
+        const followProfilePending = followPending && followPending.find(follow =>
+            follow.akashaId === akashaId);
+        return followProfilePending && followProfilePending.value;
     }
     render () {
         const { comments, parentId, replyTo, loggedProfile, entryAuthorProfile, profileAvatar,
             profileUserInitials, onReplyCreate, intl, depth, onReplyCancel, onAuthorNameClick,
-            onTip, onFollow, onUnfollow, followingsList } = this.props;
+            onTip, onFollow, onUnfollow, followingsList, followPending } = this.props;
         let filteredComments = comments.filter(comm => comm.data.parent === parentId);
         if (depth > 1) {
             filteredComments = filteredComments.reverse();
@@ -26,6 +32,7 @@ class CommentThread extends Component {
             comment={comment}
             loggedProfile={loggedProfile}
             followingsList={followingsList}
+            followPending={this.followPending(comment.data.profile.get('akashaId'))}
             entryAuthorProfile={entryAuthorProfile}
             onReply={ev => this._onReply(ev, comment.commentId)}
             onAuthorNameClick={onAuthorNameClick}
@@ -42,6 +49,7 @@ class CommentThread extends Component {
               replyTo={replyTo}
               loggedProfile={loggedProfile}
               followingsList={followingsList}
+              followPending={followPending}
               entryAuthorProfile={entryAuthorProfile}
               profileAvatar={profileAvatar}
               profileUserInitials={profileUserInitials}

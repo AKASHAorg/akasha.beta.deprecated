@@ -19,24 +19,11 @@ const buttonStyle = {
 const FLOATING_COMMENTS_BUTTON_ACTIVE = false;
 
 class EntryPageHeader extends Component {
-
     state = {
         showVersions: false,
         hoverCardOpen: false,
-        followDisabled: false
     };
-    componentWillReceiveProps = (nextProps) => {
-        const { publisher, followingsList } = this.props;
-        const nextFollowingsList = nextProps.followingsList;
-        const profile = publisher.profile;
-        const willFollow = nextFollowingsList.includes(profile);
-        const willUnfollow = !nextFollowingsList.includes(profile);
-        if ((willFollow || willUnfollow) && (nextFollowingsList.size !== followingsList.size)) {
-            this.setState({
-                followDisabled: false
-            });
-        }
-    }
+
     openVersionsPanel = () => {
         this.setState({
             showVersions: true
@@ -71,19 +58,11 @@ class EntryPageHeader extends Component {
     }
     _handleFollow = (ev) => {
         const { onFollow, publisher } = this.props;
-        this.setState({
-            followDisabled: true
-        }, () => {
-            onFollow(ev, publisher.akashaId, publisher.profile);
-        });
+        onFollow(ev, publisher.akashaId, publisher.profile);
     }
     _handleUnfollow = (ev) => {
         const { onUnfollow, publisher } = this.props;
-        this.setState({
-            followDisabled: true
-        }, () => {
-            onUnfollow(ev, publisher.akashaId, publisher.profile);
-        });
+        onUnfollow(ev, publisher.akashaId, publisher.profile);
     }
     renderAvatar = () => {
         const { publisher, selectProfile } = this.props;
@@ -171,7 +150,7 @@ class EntryPageHeader extends Component {
     render () {
         const { currentVersion, existingDraft, getVersion, handleEdit, isActive, isOwnEntry,
             latestVersion, publisherTitleShadow, publisher, selectProfile, intl,
-            commentsSectionTop, followingsList} = this.props;
+            commentsSectionTop, followingsList, followPending } = this.props;
         const isScrollingDown = (this.props.scrollDirection === -1);
         let newCommentsButtonTop = 0;
         if (isScrollingDown) {
@@ -237,19 +216,20 @@ class EntryPageHeader extends Component {
                     padding: 0
                 }}
               >
-                <ProfileHoverCard
-                  open={this.state.hoverCardOpen}
-                  profile={publisher}
-                  intl={intl}
-                  onTip={this.handleTip}
-                  onFollow={this._handleFollow}
-                  onUnfollow={this._handleUnfollow}
-                  onAuthorNameClick={selectProfile}
-                  showCardActions={!isOwnEntry}
-                  isFollowing={isFollowing}
-                  followDisabled={this.state.followDisabled}
-                  anchorNode={this.state.hoverNode}
-                />
+                {this.state.hoverCardOpen &&
+                  <ProfileHoverCard
+                    profile={publisher}
+                    intl={intl}
+                    onTip={this.handleTip}
+                    onFollow={this._handleFollow}
+                    onUnfollow={this._handleUnfollow}
+                    onAuthorNameClick={selectProfile}
+                    showCardActions={!isOwnEntry}
+                    isFollowing={isFollowing}
+                    followDisabled={followPending}
+                    anchorNode={this.state.hoverNode}
+                  />
+                }
               </CardHeader>
               {(this.props.newCommentsCount > 0) && FLOATING_COMMENTS_BUTTON_ACTIVE &&
                 <div
@@ -342,7 +322,8 @@ EntryPageHeader.propTypes = {
     newCommentsCount: PropTypes.number,
     onRequestNewestComments: PropTypes.func,
     scrollDirection: PropTypes.number,
-    followingsList: PropTypes.shape()
+    followingsList: PropTypes.shape(),
+    followPending: PropTypes.bool,
 };
 
 EntryPageHeader.contextTypes = {

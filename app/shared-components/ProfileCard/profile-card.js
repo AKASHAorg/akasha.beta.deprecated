@@ -14,19 +14,14 @@ class ProfileCard extends Component {
         actionsExpanded: false
     };
 
-    componentWillMount () {
-        const { isFollowerAction, loggedProfileData, profileData } = this.props;
-        isFollowerAction(loggedProfileData.get('akashaId'), profileData.akashaId);
-    }
-
     shouldComponentUpdate (nextProps, nextState) {
-        const { followPending, isFollowerPending, isMuted,
+        const { followPending, isFollower, isMuted,
             sendTipPending, loggedProfileData } = this.props;
         const { actionsExpanded } = this.state;
         if (followPending !== nextProps.followPending ||
-            isFollowerPending !== nextProps.isFollowerPending ||
             isMuted !== nextProps.isMuted ||
             sendTipPending !== nextProps.sendTipPending ||
+            isFollower !== nextProps.isFollower ||
             !loggedProfileData.equals(nextProps.loggedProfileData) ||
             actionsExpanded !== nextState.actionsExpanded
         ) {
@@ -127,15 +122,14 @@ class ProfileCard extends Component {
     };
 
     render () {
-        const { followProfile, unfollowProfile, followPending, isFollowerPending, profileData,
-            loggedProfileData, intl } = this.props;
+        const { followProfile, unfollowProfile, followPending, intl, isFollower,
+            loggedProfileData, profileData } = this.props;
         if (!profileData) {
             return null;
         }
         const { avatar, akashaId, firstName, lastName, entriesCount, followersCount,
-            followingCount } = profileData;
+            followingCount, profile } = profileData;
         const isOwnProfile = akashaId === loggedProfileData.get('akashaId');
-        const isFollower = loggedProfileData.getIn(['isFollower', akashaId]);
         const entriesCountMessage = (<FormattedMessage
           id="app.profile.entriesCount"
           description="counting a profile's entries"
@@ -244,10 +238,10 @@ class ProfileCard extends Component {
                 onClick={() => isOwnProfile ?
                     this.openEditPanel() :
                     isFollower ?
-                        unfollowProfile(akashaId) :
-                        followProfile(akashaId)
+                        unfollowProfile(akashaId, profile) :
+                        followProfile(akashaId, profile)
                 }
-                disabled={isFollowerPending || followPending}
+                disabled={followPending}
               />
             </div>
           </Paper>
@@ -263,8 +257,7 @@ ProfileCard.propTypes = {
     followProfile: PropTypes.func,
     unfollowProfile: PropTypes.func,
     followPending: PropTypes.bool,
-    isFollowerPending: PropTypes.bool,
-    isFollowerAction: PropTypes.func.isRequired,
+    isFollower: PropTypes.bool,
     isMuted: PropTypes.bool,
     selectProfile: PropTypes.func.isRequired,
     sendTipPending: PropTypes.bool,

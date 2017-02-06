@@ -380,7 +380,7 @@ class EntryPage extends Component {
         const { blockNr, canClaimPending, claimPending, comments, entry, existingDraft,
             fetchingEntryBalance, fetchingFullEntry, intl, licences, loggedProfile,
             profiles, savedEntries, votePending, fetchingComments, newCommentsIds,
-            followingsList, latestVersion } = this.props;
+            followingsList, followPending, latestVersion } = this.props;
         const { palette } = this.context.muiTheme;
         const { publisherTitleShadow, scrollDirection, commentsSectionTop } = this.state;
         let licence;
@@ -406,6 +406,8 @@ class EntryPage extends Component {
             claim.entryId === entry.entryId);
         const voteEntryPending = votePending && votePending.find(vote =>
               vote.entryId === entry.entryId);
+        const followAuthorPending = followPending && followPending.find(follow =>
+            follow.akashaId === entry.entryEth.publisher.akashaId);
         return (
           <div className={`${styles.root} row`}>
             <div className="col-xs-12">
@@ -436,6 +438,7 @@ class EntryPage extends Component {
                       onFollow={this._handleFollow}
                       onUnfollow={this._handleUnfollow}
                       onTip={this._handleTip}
+                      followPending={followAuthorPending && followAuthorPending.value}
                     />
                   }
                   {entry.content &&
@@ -556,6 +559,7 @@ class EntryPage extends Component {
                             loggedProfile={loggedProfile}
                             loggedProfileData={loggedProfileData}
                             followingsList={followingsList}
+                            followPending={followPending}
                             profileAvatar={loggedProfileAvatar}
                             profileUserInitials={loggedProfileUserInitials}
                             onReplyCreate={this._handleCommentCreate}
@@ -597,6 +601,7 @@ EntryPage.propTypes = {
     fetchingEntryBalance: PropTypes.bool,
     fetchingFullEntry: PropTypes.bool,
     followingsList: PropTypes.shape(),
+    followPending: PropTypes.shape(),
     latestVersion: PropTypes.number,
     intl: PropTypes.shape(),
     licences: PropTypes.shape(),

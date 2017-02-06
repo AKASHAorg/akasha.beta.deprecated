@@ -18,13 +18,14 @@ class FollowRunner extends Component {
         if (actions.size > 0) {
             actions.forEach((action) => {
                 const actionType = action.get('type');
+                const payload = action.get('payload') ? action.get('payload').toJS() : {};
                 switch (actionType) {
                     case 'followProfile':
                         appActions.updatePendingAction(action.merge({
                             status: 'publishing'
                         }));
                         profileActions.followProfile(
-                            action.getIn(['payload', 'akashaId']), action.get('gas')
+                            payload.akashaId, action.get('gas'), payload.profile
                         );
                         break;
                     case 'unfollowProfile':
@@ -32,7 +33,7 @@ class FollowRunner extends Component {
                             status: 'publishing'
                         }));
                         profileActions.unfollowProfile(
-                            action.getIn(['payload', 'akashaId']), action.get('gas')
+                            payload.akashaId, action.get('gas'), payload.profile
                         );
                         break;
                     default:
@@ -63,14 +64,14 @@ class FollowRunner extends Component {
             const profileAddress = profile ? profile.get('profile') : null;
             const correspondingAction = pendingActions.find(action =>
                 action.get('type') === tx.type &&
-                    action.get('status') === 'publishing' &&
-                        action.getIn(['payload', 'akashaId']) === tx.akashaId
+                action.get('status') === 'publishing' &&
+                action.getIn(['payload', 'akashaId']) === tx.akashaId
             );
             transactionActions.deletePendingTx(tx.tx);
             if (tx.type === 'followProfile') {
-                profileActions.followProfileSuccess(tx.akashaId, correspondingAction.getIn(['payload', 'profile']));
+                profileActions.followProfileSuccess(tx.akashaId, tx.followedProfile);
             } else {
-                profileActions.unfollowProfileSuccess(tx.akashaId, correspondingAction.getIn(['payload', 'profile']));
+                profileActions.unfollowProfileSuccess(tx.akashaId, tx.unfollowedProfile);
             }
             profileActions.getProfileData([{ profile: loggedProfile }], true);
             if (profileAddress) {

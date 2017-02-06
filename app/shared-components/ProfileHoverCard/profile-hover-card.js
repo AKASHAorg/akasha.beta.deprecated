@@ -1,7 +1,6 @@
 import React from 'react';
 import { IconButton, RaisedButton, SvgIcon, Paper } from 'material-ui';
 import { Avatar } from 'shared-components';
-import ReactTooltip from 'react-tooltip';
 import { getInitials } from 'utils/dataModule'; // eslint-disable-line import/no-unresolved, import/extensions
 import imageCreator from 'utils/imageUtils';
 import { UserDonate } from 'shared-components/svg'; // eslint-disable-line import/no-unresolved, import/extensions
@@ -9,27 +8,20 @@ import { profileMessages } from 'locale-data/messages'; // eslint-disable-line i
 import styles from './profile-hover-card.scss';
 
 class ProfileHoverCard extends React.Component {
-    componentDidUpdate(prevProps, prevState) {
-        if(this.props.open) {
-            ReactTooltip.rebuild();
-        }
-    }
-    render() {
-        const { profile, open, onAuthorNameClick, onTip, onFollow, onUnfollow, intl, showCardActions,
-          isFollowing, anchorNode, followDisabled, leftOffsetCorrection = 0 } = this.props;
+    render () {
+        const { profile, onAuthorNameClick, onTip, onFollow, onUnfollow, intl,
+            showCardActions, isFollowing, anchorNode, followDisabled } = this.props;
         const profileInitials = getInitials(profile.firstName, profile.lastName);
         const profileAvatar = imageCreator(profile.avatar, profile.baseUrl);
 
-        if(!open) {
-            return null;
-        }
-
         return (
           <div
-            className={`${styles.rootWrapper} ${open ? styles.popover : ''}`}
+            className={`${styles.rootWrapper} ${styles.popover}`}
             style={{
-                left: anchorNode ? anchorNode.offsetLeft + leftOffsetCorrection : 0,
-                top: anchorNode ? anchorNode.offsetTop + (anchorNode.getBoundingClientRect().height - 8) : 28
+                left: anchorNode ? anchorNode.offsetLeft : 0,
+                top: anchorNode ?
+                    anchorNode.offsetTop + (anchorNode.getBoundingClientRect().height - 8) :
+                    28
             }}
           >
             <Paper
@@ -59,7 +51,10 @@ class ProfileHoverCard extends React.Component {
                     </div>
                     <div className={`${styles.followButton} ${isFollowing ? 'col-xs-6' : 'col-xs-5'}`}>
                       <RaisedButton
-                        label={isFollowing ? intl.formatMessage(profileMessages.unfollow) : intl.formatMessage(profileMessages.follow)}
+                        label={isFollowing ?
+                            intl.formatMessage(profileMessages.unfollow) :
+                            intl.formatMessage(profileMessages.follow)
+                        }
                         primary={!isFollowing}
                         onClick={isFollowing ? onUnfollow : onFollow}
                         disabled={followDisabled}
@@ -95,12 +90,11 @@ ProfileHoverCard.propTypes = {
     onTip: React.PropTypes.func,
     onFollow: React.PropTypes.func,
     onUnfollow: React.PropTypes.func,
-    open: React.PropTypes.bool,
     intl: React.PropTypes.shape().isRequired,
     showCardActions: React.PropTypes.bool,
     isFollowing: React.PropTypes.bool,
     anchorNode: React.PropTypes.shape(),
-    followDisabled: React.PropTypes.bool
+    followDisabled: React.PropTypes.bool,
 };
 
 export default ProfileHoverCard;

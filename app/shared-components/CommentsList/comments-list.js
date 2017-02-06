@@ -74,7 +74,7 @@ class CommentsList extends Component {
     render () {
         const { comments, intl, loggedProfile, entryAuthorProfile, fetchingComments, profileAvatar,
             profileUserInitials, onReplyCreate, onCommenterClick, onTip, onFollow, onUnfollow,
-            followingsList } = this.props;
+            followingsList, followPending } = this.props;
         return (
           <div>
             {comments.size > 0 &&
@@ -85,6 +85,7 @@ class CommentsList extends Component {
                 replyTo={this.state.replyTo}
                 loggedProfile={loggedProfile}
                 followingsList={followingsList}
+                followPending={followPending}
                 entryAuthorProfile={entryAuthorProfile}
                 profileAvatar={profileAvatar}
                 profileUserInitials={profileUserInitials}
@@ -121,6 +122,7 @@ CommentsList.propTypes = {
     fetchLimit: React.PropTypes.number,
     fetchingComments: React.PropTypes.bool,
     followingsList: React.PropTypes.shape(),
+    followPending: React.PropTypes.shape(),
     entryId: React.PropTypes.number,
     intl: React.PropTypes.shape(),
     profileAvatar: React.PropTypes.string,
