@@ -6,14 +6,6 @@ import ProfileDetails from './components/profile-details';
 import ProfileActivity from './components/profile-activity';
 
 class ProfileDetailsContainer extends Component {
-    constructor (props) {
-        super(props);
-
-        this.state = {
-            isFollowerRequested: false
-        };
-    }
-
     componentWillMount () {
         const { profileActions, params } = this.props;
         const { profileAddress } = params;
@@ -21,17 +13,12 @@ class ProfileDetailsContainer extends Component {
     }
 
     componentWillReceiveProps (nextProps) {
-        const { profiles, profileActions, params, profileData, loggedProfileData } = nextProps;
+        const { profiles, profileActions, params } = nextProps;
         if (params.profileAddress !== this.props.params.profileAddress) {
             profileActions.getProfileData([{ profile: params.profileAddress }], true);
             if (profiles.size > 1) {
                 profileActions.clearOtherProfiles();
             }
-        } else if (!this.state.isFollowerRequested && profileData && profileData.get('akashaId')) {
-            profileActions.isFollower(loggedProfileData.get('akashaId'), profileData.get('akashaId'));
-            this.setState({
-                isFollowerRequested: true
-            });
         }
     }
 
@@ -40,14 +27,14 @@ class ProfileDetailsContainer extends Component {
         profileActions.clearOtherProfiles();
     }
 
-    followProfile = (akashaId) => {
+    followProfile = (akashaId, profile) => {
         const { profileActions } = this.props;
-        profileActions.addFollowProfileAction(akashaId);
+        profileActions.addFollowProfileAction(akashaId, profile);
     }
 
-    unfollowProfile = (akashaId) => {
+    unfollowProfile = (akashaId, profile) => {
         const { profileActions } = this.props;
-        profileActions.addUnfollowProfileAction(akashaId);
+        profileActions.addUnfollowProfileAction(akashaId, profile);
     }
 
     selectProfile = (address) => {
@@ -64,13 +51,12 @@ class ProfileDetailsContainer extends Component {
 
     render () {
         const { appActions, profileActions, entryActions, profileData, profiles, profileEntries,
-            votePending, followPending, fetchingFollowers, fetchingFollowing,
-            fetchingProfileEntries, loggedProfileData, isFollowerPending, blockNr,
+            votePending, followingsList, followPending, fetchingFollowers, fetchingFollowing,
+            fetchingProfileEntries, loggedProfileData, blockNr,
             savedEntriesIds, moreProfileEntries, fetchingMoreProfileEntries, fetchingMoreFollowers,
             fetchingMoreFollowing, sendingTip, tagActions, settingsActions,
             mutedList } = this.props;
-        const isFollower = profileData &&
-            loggedProfileData.getIn(['isFollower', profileData.get('akashaId')]);
+        const isFollower = profileData && followingsList.includes(profileData.get('profile'));
         const isMuted = profileData && mutedList &&
             mutedList.indexOf(profileData.get('profile')) !== -1;
 
@@ -112,6 +98,7 @@ class ProfileDetailsContainer extends Component {
               fetchingMoreFollowing={fetchingMoreFollowing}
               fetchingMoreProfileEntries={fetchingMoreProfileEntries}
               fetchingProfileEntries={fetchingProfileEntries}
+              followingsList={followingsList}
               moreProfileEntries={moreProfileEntries}
               mutedList={mutedList}
               followPending={followPending}
@@ -123,7 +110,6 @@ class ProfileDetailsContainer extends Component {
               sendTip={this.sendTip}
               settingsActions={settingsActions}
               showPanel={appActions.showPanel}
-              isFollowerPending={isFollowerPending}
               votePending={votePending}
             />
           </div>
@@ -141,8 +127,8 @@ ProfileDetailsContainer.propTypes = {
     fetchingMoreFollowing: PropTypes.bool,
     fetchingMoreProfileEntries: PropTypes.bool,
     fetchingProfileEntries: PropTypes.bool,
+    followingsList: PropTypes.shape(),
     followPending: PropTypes.shape(),
-    isFollowerPending: PropTypes.bool,
     loggedProfileData: PropTypes.shape(),
     moreProfileEntries: PropTypes.bool,
     mutedList: PropTypes.arrayOf(PropTypes.string),
@@ -176,6 +162,7 @@ function mapStateToProps (state, ownProps) {
         fetchingMoreFollowing: state.profileState.getIn(['flags', 'fetchingMoreFollowing']),
         fetchingMoreProfileEntries: state.entryState.getIn(['flags', 'fetchingMoreProfileEntries']),
         fetchingProfileEntries: state.entryState.getIn(['flags', 'fetchingProfileEntries']),
+        followingsList: state.profileState.get('followingsList'),
         followPending: state.profileState.getIn(['flags', 'followPending']),
         isFollowerPending: state.profileState.getIn(['flags', 'isFollowerPending']),
         loggedProfile: state.profileState.get('loggedProfile'),

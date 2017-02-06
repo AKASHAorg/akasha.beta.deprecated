@@ -211,8 +211,8 @@ class ProfileDetails extends Component {
               onClick={() => isOwnProfile ?
                   showPanel({ name: 'editProfile', overlay: true }) :
                   isFollower ?
-                      unfollowProfile(profileData.akashaId) :
-                      followProfile(profileData.akashaId)
+                      unfollowProfile(profileData.akashaId, profileData.profile) :
+                      followProfile(profileData.akashaId, profileData.profile)
               }
               disabled={followProfilePending && followProfilePending.value}
             />

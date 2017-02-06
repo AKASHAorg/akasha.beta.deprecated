@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactTooltip from 'react-tooltip';
 import {
     CardHeader,
     Divider,
@@ -25,7 +26,6 @@ class Comment extends React.Component {
         this.state = {
             isExpanded: null,
             hoverCardOpen: false,
-            followDisabled: false
         };
     }
     componentDidMount () {
@@ -42,33 +42,22 @@ class Comment extends React.Component {
             isExpanded
         });
     }
-    componentWillReceiveProps = (nextProps) => {
-        const { comment, followingsList } = this.props;
-        const nextFollowingsList = nextProps.followingsList;
-        const profile = comment.data.profile;
-        const willFollow = nextFollowingsList.includes(profile);
-        const willUnfollow = !nextFollowingsList.includes(profile);
-        if ((willFollow || willUnfollow) && (nextFollowingsList.size !== followingsList.size)) {
-            this.setState({
-                followDisabled: false
-            });
+
+    componentDidUpdate (prevProps, prevState) {
+        if (this.state.hoverCardOpen && !prevState.hoverCardOpen) {
+            ReactTooltip.rebuild();
+        }
+        if (!this.state.hoverCardOpen && prevState.hoverCardOpen) {
+            ReactTooltip.hide();
         }
     }
     _handleFollow = (ev, akashaId, profile) => {
         const { onFollow } = this.props;
-        this.setState({
-            followDisabled: true
-        }, () => {
-            onFollow(ev, akashaId, profile);
-        });
+        onFollow(ev, akashaId, profile);
     }
     _handleUnfollow = (ev, akashaId, profile) => {
         const { onUnfollow } = this.props;
-        this.setState({
-            followDisabled: true
-        }, () => {
-            onUnfollow(ev, akashaId, profile);
-        });
+        onUnfollow(ev, akashaId, profile);
     }
     _handleMouseEnter = (ev) => {
         this.setState({
@@ -89,7 +78,7 @@ class Comment extends React.Component {
     }
     render () {
         const { isPublishing, comment, children, intl, onAuthorNameClick, entryAuthorProfile,
-          loggedProfile, showReplyButton, onTip, followingsList } = this.props;
+          loggedProfile, showReplyButton, onTip, followingsList, followPending } = this.props;
         const { isExpanded } = this.state;
         const { data } = comment;
         const { profile, date, content } = data;
@@ -172,19 +161,20 @@ class Comment extends React.Component {
                       />
                     }
                   >
-                    <ProfileHoverCard
-                      open={this.state.hoverCardOpen}
-                      profile={profile.toJS()}
-                      intl={intl}
-                      onTip={ev => onTip(ev, profile.toJS())}
-                      onFollow={ev => this._handleFollow(ev, profile.get('akashaId'), profile.get('profile'))}
-                      onUnfollow={ev => this._handleUnfollow(ev, profile.get('akashaId'), profile.get('profile'))}
-                      onAuthorNameClick={ev => onAuthorNameClick(ev, profile.get('profile'))}
-                      showCardActions={!viewerIsAuthor}
-                      isFollowing={isFollowing}
-                      followDisabled={this.state.followDisabled}
-                      anchorNode={this.state.hoverNode}
-                    />
+                    {this.state.hoverCardOpen &&
+                      <ProfileHoverCard
+                        profile={profile.toJS()}
+                        intl={intl}
+                        onTip={ev => onTip(ev, profile.toJS())}
+                        onFollow={ev => this._handleFollow(ev, profile.get('akashaId'), profile.get('profile'))}
+                        onUnfollow={ev => this._handleUnfollow(ev, profile.get('akashaId'), profile.get('profile'))}
+                        onAuthorNameClick={ev => onAuthorNameClick(ev, profile.get('profile'))}
+                        showCardActions={!viewerIsAuthor}
+                        isFollowing={isFollowing}
+                        followDisabled={followPending}
+                        anchorNode={this.state.hoverNode}
+                      />
+                    }
                   </CardHeader>
                 </div>
                 {!isPublishing && REPLIES_ENABLED && showReplyButton &&
@@ -261,6 +251,7 @@ Comment.propTypes = {
     entryAuthorProfile: React.PropTypes.string,
     loggedProfile: React.PropTypes.shape(),
     followingsList: React.PropTypes.shape(),
+    followPending: React.PropTypes.bool,
     comment: React.PropTypes.shape(),
     intl: React.PropTypes.shape(),
     onAuthorNameClick: React.PropTypes.func,

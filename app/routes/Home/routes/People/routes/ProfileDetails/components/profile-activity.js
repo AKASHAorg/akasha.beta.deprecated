@@ -209,9 +209,9 @@ class ProfileActivity extends Component {
     }
 
     renderProfileList = (profiles, fetching, fetchingMore, moreProfiles, emptyPlaceholder) => {
-        const { profileData, profileActions, followPending, followProfile, unfollowProfile,
-            selectProfile, showPanel, loggedProfileData, isFollowerPending, sendTip,
-            sendingTip, settingsActions, mutedList } = this.props;
+        const { profileData, followingsList, followPending, followProfile,
+            unfollowProfile, selectProfile, showPanel, loggedProfileData,
+            sendTip, sendingTip, settingsActions, mutedList } = this.props;
         const { palette } = this.context.muiTheme;
 
         return (<DataLoader
@@ -236,6 +236,7 @@ class ProfileActivity extends Component {
             {profiles.map((prf) => {
                 const followProfilePending = followPending && followPending.find(follow =>
                     follow.akashaId === prf.akashaId);
+                const isFollower = followingsList.includes(prf.profile);
                 const sendTipPending = sendingTip && sendingTip.find(flag =>
                     flag.akashaId === prf.akashaId);
                 const isMuted = mutedList && mutedList.indexOf(prf.profile) !== -1;
@@ -249,13 +250,12 @@ class ProfileActivity extends Component {
                     followProfile={followProfile}
                     unfollowProfile={unfollowProfile}
                     followPending={followProfilePending && followProfilePending.value}
-                    isFollowerPending={isFollowerPending}
+                    isFollower={isFollower}
                     isMuted={isMuted}
                     selectProfile={selectProfile}
                     sendTip={sendTip}
                     sendTipPending={sendTipPending && sendTipPending.value}
                     showPanel={showPanel}
-                    isFollowerAction={profileActions.isFollower}
                   />;
             })}
             {moreProfiles &&
@@ -355,8 +355,8 @@ ProfileActivity.propTypes = {
     fetchingProfileEntries: PropTypes.bool,
     moreProfileEntries: PropTypes.bool,
     mutedList: PropTypes.arrayOf(PropTypes.string),
+    followingsList: PropTypes.shape(),
     followPending: PropTypes.shape(),
-    isFollowerPending: PropTypes.bool,
     followProfile: PropTypes.func.isRequired,
     unfollowProfile: PropTypes.func.isRequired,
     selectProfile: PropTypes.func.isRequired,

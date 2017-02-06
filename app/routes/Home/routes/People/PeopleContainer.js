@@ -149,14 +149,14 @@ class PeopleContainer extends Component {
         });
     }
 
-    followProfile = (akashaId) => {
+    followProfile = (akashaId, profile) => {
         const { profileActions } = this.props;
-        profileActions.addFollowProfileAction(akashaId);
+        profileActions.addFollowProfileAction(akashaId, profile);
     };
 
-    unfollowProfile = (akashaId) => {
+    unfollowProfile = (akashaId, profile) => {
         const { profileActions } = this.props;
-        profileActions.addUnfollowProfileAction(akashaId);
+        profileActions.addUnfollowProfileAction(akashaId, profile);
     };
 
     selectProfile = (address) => {
@@ -235,7 +235,7 @@ class PeopleContainer extends Component {
     }
 
     renderProfileList = (profiles, fetching, fetchingMore, moreProfiles, emptyPlaceholder) => {
-        const { appActions, profileActions, followPending, isFollowerPending, loggedProfileData,
+        const { appActions, followingsList, followPending, loggedProfileData,
             mutedList, sendingTip, settingsActions } = this.props;
         const { palette } = this.context.muiTheme;
 
@@ -261,6 +261,7 @@ class PeopleContainer extends Component {
             {profiles.map((prf) => {
                 const followProfilePending = followPending && followPending.find(follow =>
                     follow.akashaId === prf.akashaId);
+                const isFollower = followingsList.includes(prf.profile);
                 const sendTipPending = sendingTip && sendingTip.find(flag =>
                     flag.akashaId === prf.akashaId);
                 const isMuted = mutedList && mutedList.indexOf(prf.profile) !== -1;
@@ -274,13 +275,12 @@ class PeopleContainer extends Component {
                     followProfile={this.followProfile}
                     unfollowProfile={this.unfollowProfile}
                     followPending={followProfilePending && followProfilePending.value}
-                    isFollowerPending={isFollowerPending}
+                    isFollower={isFollower}
                     isMuted={isMuted}
                     selectProfile={this.selectProfile}
                     sendTip={this.sendTip}
                     sendTipPending={sendTipPending && sendTipPending.value}
                     showPanel={appActions.showPanel}
-                    isFollowerAction={profileActions.isFollower}
                   />;
             })}
             {moreProfiles &&
@@ -373,8 +373,9 @@ PeopleContainer.propTypes = {
     fetchingMoreFollowers: PropTypes.bool,
     fetchingMoreFollowing: PropTypes.bool,
     isFollowerPending: PropTypes.bool,
-    followPending: PropTypes.shape(),
     followerProfileData: PropTypes.shape(),
+    followingsList: PropTypes.shape(),
+    followPending: PropTypes.shape(),
     mutedList: PropTypes.arrayOf(PropTypes.string),
     profileActions: PropTypes.shape(),
     params: PropTypes.shape(),
@@ -400,6 +401,7 @@ function mapStateToProps (state, ownProps) {
         isFollowerPending: state.profileState.getIn(['flags', 'isFollowerPending']),
         followerProfileData: state.profileState.get('profiles').find(profile =>
             profile.get('akashaId') === AKASHA_ID),
+        followingsList: state.profileState.get('followingsList'),
         followPending: state.profileState.getIn(['flags', 'followPending']),
         mutedList: state.settingsState.get('userSettings').notifications.muted,
         sendingTip: state.profileState.getIn(['flags', 'sendingTip']),

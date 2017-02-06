@@ -482,7 +482,7 @@ class ProfileActions {
                         tx: data.tx,
                         type: 'followProfile',
                         akashaId: data.akashaId,
-                        profile
+                        followedProfile: profile
                     }]);
                     this.appActions.showNotification({
                         id: 'followingProfile',
@@ -523,7 +523,7 @@ class ProfileActions {
                         tx: data.tx,
                         type: 'unfollowProfile',
                         akashaId: data.akashaId,
-                        profile
+                        unfollowedProfile: profile
                     }]);
                     this.appActions.showNotification({
                         id: 'unfollowingProfile',
