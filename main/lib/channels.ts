@@ -38,7 +38,9 @@ const channels = {
 
     licenses: ['getLicenceById', 'getLicenses'],
 
-    chat: ['fetch', 'post', 'join', 'leave', 'getCurrentChannels']
+    chat: ['fetch', 'post', 'join', 'leave', 'getCurrentChannels'],
+
+    search: ['handshake', 'query']
 };
 
 const processes = ['server', 'client'];

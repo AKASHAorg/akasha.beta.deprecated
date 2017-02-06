@@ -16,11 +16,13 @@ export const MENTION_TYPE = {
     ENTRY: 'entryMention'
 };
 export const SEARCH_PROVIDER = 'search-provider';
-export const searchProvider = '0xsearchService'; // @Todo: replace this with the real whisper identity
+export const searchProvider = '0x04735643c67843cffbd4c8e750fccca6fb9d07fc2a759099f484fc04dfb7ad33fcf71b92fe94e8d880017d6a6cf8bb2e072d67fcf56b83d26fd470d3dc6df45f47';
 export const handshakeTimeout = 10; //nr of seconds
 export const HANDSHAKE_REQUEST = '0x68616e647368616b6552657175657374';
 export const HANDSHAKE_RESPONSE = '0x68616e647368616b65526573706f6e7365';
 export const HANDSHAKE_DONE= 'handshakeDone';
+
+export const SEARCH_REQUEST = '0x5345415243485f52455155455354';
 // default settings
 generalSettings.set(BASE_URL, 'http://127.0.0.1:8080/ipfs');
 generalSettings.set(HANDSHAKE_DONE, false);
