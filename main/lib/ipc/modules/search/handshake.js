@@ -6,9 +6,7 @@ const settings_1 = require('../../config/settings');
 const Auth_1 = require('../auth/Auth');
 const post_1 = require('../chat/post');
 const execute = Promise.coroutine(function* (data) {
-    const provider = (data.provider) ? data.provider : settings_1.searchProvider;
     const timeout = (data.timeout) ? data.timeout : settings_1.handshakeTimeout;
-    settings_1.generalSettings.set(settings_1.SEARCH_PROVIDER, provider);
     const seed = yield Auth_1.randomBytesAsync(32);
     const message = geth_connector_1.GethConnector.getInstance()
         .web3
@@ -26,7 +24,6 @@ const execute = Promise.coroutine(function* (data) {
         .postAsync({
         from: post_1.whisperIdentity.from,
         topics: [settings_1.HANDSHAKE_REQUEST],
-        to: provider,
         payload: payload,
         ttl: ttl
     });
@@ -48,6 +45,7 @@ const execute = Promise.coroutine(function* (data) {
     for (let i = 0; i < response.length; i++) {
         if (response[i].hasOwnProperty('payload')) {
             if (ramda_1.equals(payload, response[i].payload)) {
+                settings_1.generalSettings.set(settings_1.SEARCH_PROVIDER, response[i].from);
                 settings_1.generalSettings.set(settings_1.HANDSHAKE_DONE, true);
                 break;
             }
