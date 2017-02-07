@@ -20,6 +20,10 @@ declare module 'ethereumjs-util' {
     export function pubToAddress(pubKey: string, sanitize?: boolean): Buffer
 
     export function unpad(data: Buffer | string): Buffer | string
+
+    export function hashPersonalMessage(data: Buffer): Buffer
+
+    export function addHexPrefix(data: string): string
 }
 
 

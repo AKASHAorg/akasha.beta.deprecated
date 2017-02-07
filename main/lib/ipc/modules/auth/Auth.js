@@ -36,6 +36,9 @@ class Auth {
         });
     }
     _read(token) {
+        if (!this.isLogged(token)) {
+            throw new Error('Token is not valid');
+        }
         const result = Buffer.concat([this._decipher.update(this._encrypted), this._decipher.final()]);
         this._encrypt(result);
         return result;
@@ -69,12 +72,11 @@ class Auth {
             return exports.randomBytesAsync(64);
         })
             .then((buff) => {
-            const token = geth_connector_1.GethConnector.getInstance()
-                .web3
-                .sha3(buff.toString('hex'), { encoding: 'hex' });
+            const token = ethereumjs_util_1.addHexPrefix(buff.toString('hex'));
             return this._signSession(acc, token)
                 .then((signedString) => {
                 const expiration = new Date();
+                const clientToken = ethereumjs_util_1.hashPersonalMessage(buff);
                 expiration.setMinutes(expiration.getMinutes() + timer);
                 geth_connector_1.GethConnector.getInstance().web3.personal.lockAccountAsync(acc);
                 geth_connector_1.GethConnector.getInstance().web3.eth.defaultAccount = acc;
@@ -84,7 +86,7 @@ class Auth {
                     vrs: ethereumjs_util_1.fromRpcSig(signedString)
                 };
                 this._task = setTimeout(() => this._flushSession(), 1000 * 60 * timer);
-                return { token, expiration, account: acc };
+                return { token: ethereumjs_util_1.addHexPrefix(clientToken.toString('hex')), expiration, account: acc };
             });
         })
             .catch((err) => {
@@ -112,7 +114,6 @@ class Auth {
         try {
             pubKey = ethereumjs_util_1.bufferToHex(ethereumjs_util_1.ecrecover(ethereumjs_util_1.toBuffer(token), v, r, s));
             ethAddr = ethereumjs_util_1.pubToAddress(pubKey);
-            console.log(ethereumjs_util_1.bufferToHex(ethAddr), this._session.address);
             return ethereumjs_util_1.bufferToHex(ethAddr) === this._session.address;
         }
         catch (err) {
