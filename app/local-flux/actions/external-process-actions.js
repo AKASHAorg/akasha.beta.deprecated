@@ -112,19 +112,20 @@ class EProcActions {
     startIPFS = () => {
         this.dispatch(externalProcessActionCreators.startIPFS());
         this.dispatch((dispatch, getState) => {
-            const ipfsSettings = getState().settingsState.get('ipfs').toJS();
+            const storagePath = getState().settingsState.getIn(['ipfs', 'storagePath']);
             this.ipfsService.start({
-                options: ipfsSettings,
+                options: { storagePath } ,
                 onError: (err, data) => {
                     dispatch(externalProcessActionCreators.startIPFSError(err, data));
                     this.resetIpfsBusyState();
                 },
                 onSuccess: (data) => {
+                    setTimeout(() => this.getIpfsStatus(), 500);
+                    dispatch(externalProcessActionCreators.startIPFSSuccess(data));
                     if (data.started) {
                         this.getIpfsPorts();
                         this.resetIpfsBusyState();
                     }
-                    dispatch(externalProcessActionCreators.startIPFSSuccess(data));
                 }
             });
         });
@@ -158,6 +159,16 @@ class EProcActions {
             });
         }, 2000);
     };
+    setIpfsPorts = (ports, restart) =>
+        this.ipfsService.setPorts({
+            ports,
+            restart,
+            onError: err => this.dispatch(externalProcessActionCreators.setIpfsPortsError(err)),
+            onSuccess: data => this.dispatch(
+                externalProcessActionCreators.setIpfsPortsSuccess(data)
+            )
+        });
+
     registerStopIpfsListener = () => {
         this.ipfsService.registerStopListener({
             onError: (err) => {
@@ -172,7 +183,6 @@ class EProcActions {
     };
     stopIPFS = () => {
         this.dispatch(externalProcessActionCreators.stopIPFS());
-        this.dispatch(externalProcessActionCreators.resetIpfsPorts());
         if (this.ipfsPortsRequest) {
             clearTimeout(this.ipfsPortsRequest);
         }

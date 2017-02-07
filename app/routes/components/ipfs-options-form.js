@@ -12,7 +12,9 @@ const textFieldStyle = { display: 'block', width: '120px' };
 class IpfsOptionsForm extends Component {
     render () {
         const { palette } = this.context.muiTheme;
-        const { intl, style, ipfsSettings, storagePath, onIpfsStorageChange } = this.props;
+        const { intl, ipfsPortsRequested, ipfsApi, style, apiPort, gatewayPort, swarmPort,
+            storagePath, onIpfsApiPortChange, onIpfsGatewayPortChange, onIpfsSwarmPortChange,
+            onIpfsStorageChange } = this.props;
         const inputStyle = { color: palette.textColor };
         const labelStyle = Object.assign({}, floatingLabelStyle, { color: palette.disabledColor });
 
@@ -26,40 +28,43 @@ class IpfsOptionsForm extends Component {
             onClick={onIpfsStorageChange}
             fullWidth
           />
-          {ipfsSettings.get('ports').apiPort &&
+          {apiPort &&
             <TextField
               floatingLabelStyle={labelStyle}
               floatingLabelText={intl.formatMessage(setupMessages.ipfsApiPort)}
               floatingLabelFixed
-              value={ipfsSettings.get('ports').apiPort || ''}
+              value={apiPort}
               inputStyle={inputStyle}
               type="number"
+              onChange={onIpfsApiPortChange}
               style={textFieldStyle}
-              disabled
+              disabled={!ipfsApi || ipfsPortsRequested}
             />
           }
-          {ipfsSettings.get('ports').gatewayPort &&
+          {gatewayPort &&
             <TextField
               floatingLabelStyle={labelStyle}
               floatingLabelText={intl.formatMessage(setupMessages.ipfsGatewayPort)}
               floatingLabelFixed
-              value={ipfsSettings.get('ports').gatewayPort || ''}
+              value={gatewayPort}
+              onChange={onIpfsGatewayPortChange}
               inputStyle={inputStyle}
               type="number"
               style={textFieldStyle}
-              disabled
+              disabled={!ipfsApi || ipfsPortsRequested}
             />
           }
-          {ipfsSettings.get('ports').swarmPort &&
+          {swarmPort &&
             <TextField
               floatingLabelStyle={labelStyle}
               floatingLabelText={intl.formatMessage(setupMessages.ipfsSwarmPort)}
               floatingLabelFixed
-              value={ipfsSettings.get('ports').swarmPort || ''}
+              value={swarmPort}
+              onChange={onIpfsSwarmPortChange}
               inputStyle={inputStyle}
               type="number"
               style={textFieldStyle}
-              disabled
+              disabled={!ipfsApi || ipfsPortsRequested}
             />
           }
           {this.props.showSuccessMessage &&
@@ -72,9 +77,16 @@ class IpfsOptionsForm extends Component {
 }
 
 IpfsOptionsForm.propTypes = {
+    apiPort: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    gatewayPort: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    swarmPort: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     intl: PropTypes.shape().isRequired,
-    ipfsSettings: PropTypes.shape().isRequired,
+    ipfsPortsRequested: PropTypes.bool,
+    ipfsSpawned: PropTypes.bool,
     style: PropTypes.shape(),
+    onIpfsApiPortChange: PropTypes.func,
+    onIpfsGatewayPortChange: PropTypes.func,
+    onIpfsSwarmPortChange: PropTypes.func,
     onIpfsStorageChange: PropTypes.func,
     storagePath: PropTypes.string,
     showSuccessMessage: PropTypes.bool

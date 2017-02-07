@@ -105,8 +105,8 @@ class Config extends Component {
         return (
           <DataLoader flag={fetchingFlags} size={80} style={{ paddingTop: '150px' }}>
             <PanelContainer
-                showBorder
-                actions={[
+              showBorder
+              actions={[
                 /* eslint-disable */
                 <RaisedButton
                     key="next"
@@ -117,64 +117,64 @@ class Config extends Component {
                     onClick={this.handleSubmit}
                 />
                 /* eslint-enable */
-                ]}
-                header={<PanelHeader title={'AKASHA'} />}
+              ]}
+              header={<PanelHeader title={'AKASHA'} />}
             >
-                <h1 style={{ fontWeight: '400' }} className="col-xs-12" >
+              <h1 style={{ fontWeight: '400' }} className="col-xs-12" >
                 {intl.formatMessage(setupMessages.firstTimeSetupTitle)}
-                </h1>
-                <div className="col-xs-12">
+              </h1>
+              <div className="col-xs-12">
                 <p>
-                    {intl.formatMessage(setupMessages.akashaNextGenNetwork)}
+                  {intl.formatMessage(setupMessages.akashaNextGenNetwork)}
                 </p>
                 <p>
-                    {intl.formatMessage(setupMessages.youHaveNotHeared)}
+                  {intl.formatMessage(setupMessages.youHaveNotHeared)}
                 </p>
                 <p>
-                    {intl.formatMessage(setupMessages.ifYouHaveEth)}
+                  {intl.formatMessage(setupMessages.ifYouHaveEth)}
                 </p>
-                </div>
-                <div style={{ paddingLeft: '12px' }} className="col-xs-12" >
+              </div>
+              <div style={{ paddingLeft: '12px' }} className="col-xs-12" >
                 <RadioButtonGroup
-                    defaultSelected={defaultSelected}
-                    name="installType"
-                    onChange={this.handleChange}
+                  defaultSelected={defaultSelected}
+                  name="installType"
+                  onChange={this.handleChange}
                 >
-                    <RadioButton
+                  <RadioButton
                     label={intl.formatMessage(setupMessages.expressSetup)}
                     style={radioStyle}
                     value={'express'}
-                    />
-                    <RadioButton
+                  />
+                  <RadioButton
                     label={intl.formatMessage(setupMessages.advancedSetup)}
                     style={radioStyle}
                     value={'advanced'}
-                    />
+                  />
                 </RadioButtonGroup>
                 {isAdvanced &&
-                    <div>
+                  <div>
                     <GethSettingsForm
-                        intl={intl}
-                        gethSettings={gethSettings}
-                        handleGethDatadir={this.handleGethDatadir}
-                        handleGethCacheSize={this.handleGethCacheSize}
+                      intl={intl}
+                      gethSettings={gethSettings}
+                      handleGethDatadir={this.handleGethDatadir}
+                      handleGethCacheSize={this.handleGethCacheSize}
                     />
                     <IpfsSettingsForm
-                        intl={intl}
-                        ipfsSettings={ipfsSettings}
-                        handleIpfsPath={this.handleIpfsPath}
+                      intl={intl}
+                      ipfsSettings={ipfsSettings}
+                      handleIpfsPath={this.handleIpfsPath}
                     />
                     <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                        <FlatButton
+                      <FlatButton
                         label={intl.formatMessage(generalMessages.reset)}
                         onClick={settingsActions.resetSettings}
-                        />
+                      />
                     </div>
-                    </div>
+                  </div>
                 }
-                </div>
+              </div>
             </PanelContainer>
-            </DataLoader>
+          </DataLoader>
         );
     }
 }
@@ -188,7 +188,6 @@ Config.propTypes = {
     isAdvanced: PropTypes.bool.isRequired,
     configFlags: PropTypes.shape(),
     fetchingFlags: PropTypes.bool,
-    style: PropTypes.shape(),
     intl: PropTypes.shape(),
     eProcActions: PropTypes.shape()
 };
@@ -196,16 +195,6 @@ Config.propTypes = {
 Config.contextTypes = {
     muiTheme: React.PropTypes.shape().isRequired,
     router: React.PropTypes.object
-};
-
-Config.defaultProps = {
-    style: {
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        position: 'relative'
-    }
 };
 
 export default injectIntl(Config);

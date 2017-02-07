@@ -40,7 +40,7 @@ class App extends Component {
         setTimeout(() => {
             eProcActions.getGethOptions();
             eProcActions.getIpfsConfig();
-        }, 0);
+        }, 200);
     }
     componentWillReceiveProps (nextProps) {
         const { passwordPreference } = this.props;

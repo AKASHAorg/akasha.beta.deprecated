@@ -162,9 +162,24 @@ export function getIpfsPortsSuccess (data) {
 }
 
 export function getIpfsPortsError (error) {
-    error.code = 'PIE';
+    error.code = 'GIPE01';
     return {
         type: types.GET_IPFS_PORTS_ERROR,
+        error
+    };
+}
+
+export function setIpfsPortsSuccess (data) {
+    return {
+        type: types.SET_IPFS_PORTS_SUCCESS,
+        data
+    };
+}
+
+export function setIpfsPortsError (error) {
+    error.code = 'SIPE01';
+    return {
+        type: types.SET_IPFS_PORTS_ERROR,
         error
     };
 }
