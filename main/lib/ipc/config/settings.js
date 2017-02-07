@@ -14,7 +14,6 @@ exports.MENTION_TYPE = {
     ENTRY: 'entryMention'
 };
 exports.SEARCH_PROVIDER = 'search-provider';
-exports.searchProvider = '0x04735643c67843cffbd4c8e750fccca6fb9d07fc2a759099f484fc04dfb7ad33fcf71b92fe94e8d880017d6a6cf8bb2e072d67fcf56b83d26fd470d3dc6df45f47';
 exports.handshakeTimeout = 10;
 exports.HANDSHAKE_REQUEST = '0x68616e647368616b6552657175657374';
 exports.HANDSHAKE_RESPONSE = '0x68616e647368616b65526573706f6e7365';
