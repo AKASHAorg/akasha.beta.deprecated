@@ -19,6 +19,7 @@ exports.HANDSHAKE_REQUEST = '0x68616e647368616b6552657175657374';
 exports.HANDSHAKE_RESPONSE = '0x68616e647368616b65526573706f6e7365';
 exports.HANDSHAKE_DONE = 'handshakeDone';
 exports.SEARCH_REQUEST = '0x5345415243485f52455155455354';
+exports.BACKUP_KEYS_NAME = 'akasha_keystore.zip';
 exports.generalSettings.set(exports.BASE_URL, 'http://127.0.0.1:8080/ipfs');
 exports.generalSettings.set(exports.HANDSHAKE_DONE, false);
 //# sourceMappingURL=settings.js.map

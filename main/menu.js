@@ -40,6 +40,7 @@ function initMenu(mainWindow) {
                     }]).popup(mainWindow);
             });
         }
+        const version = electron_1.app.getVersion();
         const template = [
             {
                 label: 'Edit',
@@ -152,6 +153,9 @@ function initMenu(mainWindow) {
                         click() {
                             electron_1.shell.openExternal('http://akasha.world');
                         }
+                    },
+                    {
+                        label: `Version ${version}`
                     }
                 ]
             }

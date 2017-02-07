@@ -28,7 +28,8 @@ const channels = {
     tx: ['addToQueue', 'emitMined'],
     licenses: ['getLicenceById', 'getLicenses'],
     chat: ['fetch', 'post', 'join', 'leave', 'getCurrentChannels'],
-    search: ['handshake', 'query']
+    search: ['handshake', 'query'],
+    utils: ['backupKeys']
 };
 const processes = ['server', 'client'];
 const mem = os_1.totalmem().toLocaleString();

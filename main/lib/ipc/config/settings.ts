@@ -22,6 +22,8 @@ export const HANDSHAKE_RESPONSE = '0x68616e647368616b65526573706f6e7365';
 export const HANDSHAKE_DONE= 'handshakeDone';
 
 export const SEARCH_REQUEST = '0x5345415243485f52455155455354';
+
+export const BACKUP_KEYS_NAME = 'akasha_keystore.zip';
 // default settings
 generalSettings.set(BASE_URL, 'http://127.0.0.1:8080/ipfs');
 generalSettings.set(HANDSHAKE_DONE, false);
