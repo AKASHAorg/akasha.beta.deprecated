@@ -40,7 +40,9 @@ const channels = {
 
     chat: ['fetch', 'post', 'join', 'leave', 'getCurrentChannels'],
 
-    search: ['handshake', 'query']
+    search: ['handshake', 'query'],
+
+    utils: ['backupKeys']
 };
 
 const processes = ['server', 'client'];

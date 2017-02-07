@@ -13,6 +13,8 @@ import LicensesIPC from './LicensesIPC';
 import NotificationsIPC from './NotificationsIPC';
 import ChatIPC from './ChatIPC';
 import SearchIPC from './SearchIPC';
+import UtilsIPC from './UtilsIPC';
+
 import WebContents = Electron.WebContents;
 
 export function initModules() {
@@ -30,7 +32,8 @@ export function initModules() {
         new LicensesIPC(),
         new NotificationsIPC(),
         new ChatIPC(),
-        new SearchIPC()
+        new SearchIPC(),
+        new UtilsIPC()
     ];
     return {
         initListeners: (webContents: WebContents) => {

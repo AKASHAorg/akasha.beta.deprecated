@@ -34,7 +34,7 @@ export async function initMenu(mainWindow: any) {
             }]).popup(mainWindow);
         });
     }
-
+    const version = app.getVersion();
     const template: any = [
         {
             label: 'Edit',
@@ -148,6 +148,9 @@ export async function initMenu(mainWindow: any) {
                     click () {
                         shell.openExternal('http://akasha.world')
                     }
+                },
+                {
+                    label: `Version ${version}`
                 }
             ]
         }
