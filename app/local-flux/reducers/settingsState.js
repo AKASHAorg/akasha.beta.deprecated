@@ -273,12 +273,18 @@ const settingsState = createReducer(initialState, {
         });
     },
 
-    [eProcTypes.GET_IPFS_PORTS_SUCCESS]: (state, action) =>
-        state.merge({
+    [eProcTypes.GET_IPFS_PORTS_SUCCESS]: (state, action) => {
+        const ports = {
+            apiPort: Number(action.data.apiPort),
+            gatewayPort: Number(action.data.gatewayPort),
+            swarmPort: Number(action.data.swarmPort)
+        };
+        return state.merge({
             ipfs: state.get('ipfs').merge({
-                ports: new Ports(action.data)
+                ports: new Ports(ports)
             })
-        }),
+        });
+    },
 
     [eProcTypes.RESET_IPFS_PORTS]: state =>
         state.merge({

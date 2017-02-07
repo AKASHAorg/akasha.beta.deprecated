@@ -45,9 +45,12 @@ const IPFS_LOGS = 'IPFS_LOGS';
 class ServiceStatusBar extends Component {
     constructor (props) {
         super(props);
-
+        this.savingIpfsSettings = false;
         this.state = {
             activeTab: null,
+            apiPort: props.ipfsSettings.getIn(['ports', 'apiPort']),
+            gatewayPort: props.ipfsSettings.getIn(['ports', 'gatewayPort']),
+            swarmPort: props.ipfsSettings.getIn(['ports', 'swarmPort']),
             isGethDialogOpen: false,
             isIpfsDialogOpen: false,
             gethToggled: props.gethStatus.get('spawned'),
@@ -85,11 +88,15 @@ class ServiceStatusBar extends Component {
                 showGethSuccessMessage: this.state.isGethDialogOpen
             });
         }
-        if (ipfsSettings.toJS().storagePath !== nextIpfsSettings.toJS().storagePath) {
+        if (JSON.stringify(ipfsSettings.toJS()) !== JSON.stringify(nextIpfsSettings.toJS())) {
             this.setState({
+                apiPort: nextIpfsSettings.getIn(['ports', 'apiPort']),
+                gatewayPort: nextIpfsSettings.getIn(['ports', 'gatewayPort']),
+                swarmPort: nextIpfsSettings.getIn(['ports', 'swarmPort']),
                 storagePath: nextIpfsSettings.get('storagePath'),
-                showIpfsSuccessMessage: this.state.isIpfsDialogOpen
+                showIpfsSuccessMessage: this.savingIpfsSettings && this.state.isIpfsDialogOpen
             });
+            this.savingIpfsSettings = false;
         }
         if (nextProps.gethStatus.get('spawned') !== this.props.gethStatus.get('spawned')) {
             this.setState({
@@ -226,6 +233,9 @@ class ServiceStatusBar extends Component {
             isIpfsDialogOpen: false,
             activeTab: null,
             storagePath: this.props.ipfsSettings.get('storagePath'),
+            apiPort: this.props.ipfsSettings.getIn(['ports', 'apiPort']),
+            gatewayPort: this.props.ipfsSettings.getIn(['ports', 'gatewayPort']),
+            swarmPort: this.props.ipfsSettings.getIn(['ports', 'swarmPort']),
             isIpfsFormDirty: false,
             showIpfsSuccessMessage: false
         });
@@ -256,15 +266,21 @@ class ServiceStatusBar extends Component {
     };
 
     onIpfsToggle = () => {
-        const { eProcActions } = this.props;
+        const { eProcActions, ipfsSettings } = this.props;
         const { ipfsToggled } = this.state;
         if (ipfsToggled) {
+            this.setState({
+                apiPort: ipfsSettings.getIn(['ports', 'apiPort']),
+                gatewayPort: ipfsSettings.getIn(['ports', 'gatewayPort']),
+                swarmPort: ipfsSettings.getIn(['ports', 'swarmPort']),
+            });
             eProcActions.stopIPFS();
         } else {
             eProcActions.startIPFS();
         }
         this.setState({
-            ipfsToggled: !ipfsToggled
+            ipfsToggled: !ipfsToggled,
+            showIpfsSuccessMessage: false
         });
     };
 
@@ -303,6 +319,27 @@ class ServiceStatusBar extends Component {
         });
     };
 
+    onIpfsApiPortChange = (ev) => {
+        this.setState({
+            apiPort: ev.target.value,
+            isIpfsFormDirty: true
+        });
+    };
+
+    onIpfsGatewayPortChange = (ev) => {
+        this.setState({
+            gatewayPort: ev.target.value,
+            isIpfsFormDirty: true
+        });
+    };
+
+    onIpfsSwarmPortChange = (ev) => {
+        this.setState({
+            swarmPort: ev.target.value,
+            isIpfsFormDirty: true
+        });
+    };
+
     onIpfsStorageChange = (ev) => {
         ev.stopPropagation();
         ev.target.blur();
@@ -336,10 +373,20 @@ class ServiceStatusBar extends Component {
     };
 
     saveIpfsOptions = () => {
-        const { settingsActions } = this.props;
-        const { storagePath } = this.state;
-
-        settingsActions.saveSettings('ipfs', { storagePath });
+        const { eProcActions, ipfsStatus, settingsActions } = this.props;
+        const { apiPort, gatewayPort, swarmPort, storagePath } = this.state;
+        const ports = {
+            apiPort: Number(apiPort) || null,
+            gatewayPort: Number(gatewayPort) || null,
+            swarmPort: Number(swarmPort) || null
+        };
+        const newSettings = { storagePath };
+        if (ipfsStatus.get('api')) {
+            newSettings.ports = ports;
+            eProcActions.setIpfsPorts(ports);
+        }
+        settingsActions.saveSettings('ipfs', newSettings);
+        this.savingIpfsSettings = true;
         this.setState({
             showIpfsSuccessMessage: false,
             isIpfsFormDirty: false
@@ -416,12 +463,6 @@ class ServiceStatusBar extends Component {
 
     renderGethTitle () {
         const { palette } = this.context.muiTheme;
-        const settingsBarColor = this.state.activeTab === GETH_SETTINGS ?
-            palette.accent1Color :
-            palette.primary1Color;
-        const logsBarColor = this.state.activeTab === GETH_LOGS ?
-            palette.accent1Color :
-            palette.primary1Color;
 
         return (<div style={{ width: '100%' }}>
           <Tabs
@@ -491,12 +532,6 @@ class ServiceStatusBar extends Component {
 
     renderIpfsTitle () {
         const { palette } = this.context.muiTheme;
-        const settingsBarColor = this.state.activeTab === IPFS_SETTINGS ?
-            palette.accent1Color :
-            palette.primary1Color;
-        const logsBarColor = this.state.activeTab === IPFS_LOGS ?
-            palette.accent1Color :
-            palette.primary1Color;
 
         return (<div style={{ width: '100%' }}>
           <Tabs
@@ -520,9 +555,10 @@ class ServiceStatusBar extends Component {
     }
 
     renderIpfsDialog () {
-        const { eProcActions, intl, ipfsLogs, ipfsSettings, settingsActions,
+        const { eProcActions, intl, ipfsLogs, ipfsPortsRequested, ipfsStatus, settingsActions,
             timestamp } = this.props;
-        const { storagePath, showIpfsSuccessMessage, isIpfsFormDirty } = this.state;
+        const { apiPort, gatewayPort, swarmPort, storagePath, showIpfsSuccessMessage,
+            isIpfsFormDirty } = this.state;
         return (<Dialog
           title={this.renderIpfsTitle()}
           actions={this.getIpfsActions()}
@@ -533,12 +569,19 @@ class ServiceStatusBar extends Component {
         >
           {this.state.activeTab === IPFS_SETTINGS &&
             <IpfsOptionsForm
+              apiPort={apiPort}
+              gatewayPort={gatewayPort}
+              swarmPort={swarmPort}
               intl={intl}
-              ipfsSettings={ipfsSettings}
+              ipfsPortsRequested={ipfsPortsRequested}
+              ipfsApi={ipfsStatus.get('api')}
               settingsActions={settingsActions}
               style={{ height: '400px' }}
               storagePath={storagePath}
               onIpfsStorageChange={this.onIpfsStorageChange}
+              onIpfsApiPortChange={this.onIpfsApiPortChange}
+              onIpfsGatewayPortChange={this.onIpfsGatewayPortChange}
+              onIpfsSwarmPortChange={this.onIpfsSwarmPortChange}
               showSuccessMessage={showIpfsSuccessMessage && !isIpfsFormDirty}
             />
           }
@@ -617,6 +660,7 @@ ServiceStatusBar.propTypes = {
     ipfsLogs: PropTypes.shape().isRequired,
     gethSettings: PropTypes.shape(),
     ipfsSettings: PropTypes.shape(),
+    ipfsPortsRequested: PropTypes.bool,
     gethBusyState: PropTypes.bool,
     ipfsBusyState: PropTypes.bool,
     disableStopService: PropTypes.bool,
@@ -638,6 +682,7 @@ function mapStateToProps (state, ownProps) {
         ipfsLogs: state.externalProcState.get('ipfsLogs'),
         gethSettings: state.settingsState.get('geth'),
         ipfsSettings: state.settingsState.get('ipfs'),
+        ipfsPortsRequested: state.externalProcState.get('ipfsPortsRequested'),
         syncActionId: state.externalProcState.get('syncActionId'),
         gethBusyState: state.externalProcState.get('gethBusyState'),
         ipfsBusyState: state.externalProcState.get('ipfsBusyState'),

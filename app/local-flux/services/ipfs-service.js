@@ -21,17 +21,12 @@ class IpfsService extends BaseService {
     start = ({ options = {}, onError = () => {}, onSuccess }) => {
         const serverChannel = Channel.server.ipfs.startService;
         const clientChannel = Channel.client.ipfs.startService;
-        const ipfsOptions = {};
-        Object.keys(options).forEach((key) => {
-            if (key !== 'name' && key !== 'ports' && options[key] !== null) {
-                ipfsOptions[key] = options[key];
-            }
-        });
+
         this.registerListener(
             clientChannel,
             this.createListener(onError, onSuccess, clientChannel.channelName)
         );
-        serverChannel.send(ipfsOptions);
+        serverChannel.send(options);
     };
     /**
      * Register stop ipfs listener
@@ -110,6 +105,20 @@ class IpfsService extends BaseService {
             listenerCb: this.createListener(onError, onSuccess)
         }, () =>
                 serverChannel.send(options)
+        );
+    };
+
+    setPorts = ({ ports, restart = false, onError = () => {}, onSuccess }) => {
+        const clientChannel = Channel.client.ipfs.setPorts;
+        const serverChannel = Channel.server.ipfs.setPorts;
+        const portsObj = { api: ports.apiPort, gateway: ports.gatewayPort, swarm: ports.swarmPort};
+        return this.openChannel({
+            clientManager: this.clientManager,
+            serverChannel,
+            clientChannel,
+            listenerCb: this.createListener(onError, onSuccess)
+        }, () =>
+            serverChannel.send({ ports: portsObj, restart })
         );
     };
 
