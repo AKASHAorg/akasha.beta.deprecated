@@ -57,7 +57,7 @@ function imageCreator (arrayBuffer, baseUrl) {
         return `${baseUrl}/${arrayBuffer}`;
     }
 
-    const blobFile = new Blob([arrayBuffer], { type: 'image/jpg' });
+    const blobFile = new Blob(arrayBuffer, { type: 'image/jpg' });
     return window.URL.createObjectURL(blobFile);
 }
 /**
@@ -122,8 +122,10 @@ const settings = {
 
 const resizeAnimatedGif = (arrayBuffer, options) => {
     // resize gif
-    const streamReader = new StreamReader(arrayBuffer.data);
-    console.log(streamReader.readAscii(10));
+    const uint8Arr = new Uint8Array(arrayBuffer.data);
+    const streamReader = new StreamReader(new Uint8Array(arrayBuffer.data));
+    console.log(new Uint8Array(arrayBuffer.data), 'the buffer');
+    console.log(streamReader.readAscii(6), 'read 3 ascii');
     if (streamReader.readAscii(6) != 'GIF89a') {
         console.log('this is not an animated gif file');
     }
@@ -164,6 +166,7 @@ const getImageData = (imagePath, image, canvas, ctx, options) => {
             }
             try {
                 ctx.drawImage(image, 0, 0, image.width, image.height); // this actually contains compressed file data;
+                console.log(ctx.getImageData(0, 0, image.width, image.height));
                 return resolve(canvasToArray(canvas, image.width, image.height)); // uncompressed file;
             } catch (exception) {
                 console.error(exception);
@@ -174,7 +177,7 @@ const getImageData = (imagePath, image, canvas, ctx, options) => {
     });
 };
 // method to resize static (non animated gifs) images;
-const resizeImage = (uint8Array, options, gifFile) => {
+const resizeImage = (arrayBuffer, options, gifFile) => {
     const { actualWidth, actualHeight } = options;
     const aspectRatio = actualWidth / actualHeight;
     const imageWidths = settings.imageWidths.filter(widthObj => widthObj.res <= actualWidth);
@@ -192,7 +195,7 @@ const resizeImage = (uint8Array, options, gifFile) => {
             try {
                 console.time(`resize to ${widthObj.res} took`);
                 return pica.resizeBuffer({
-                    src: uint8Array,
+                    src: arrayBuffer,
                     width: actualWidth,
                     height: actualHeight,
                     toWidth: widthObj.res,
@@ -200,7 +203,7 @@ const resizeImage = (uint8Array, options, gifFile) => {
                 }, (err, output) => {
                     console.timeEnd(`resize to ${widthObj.res} took`);
                     imageObject[widthObj.key] = {
-                        src: output,
+                        src: new Uint8Array(output),
                         width: widthObj.res,
                         height: widthObj.res / aspectRatio
                     };
@@ -219,7 +222,7 @@ const resizeImage = (uint8Array, options, gifFile) => {
 };
 /**
  * Utility to resize images using Html5 canvas
- * @param {Array} imagePaths Path(s) returned from a dialog window
+ * @param {Array} imagePaths Path(s) returned from file input
  * @param {Object} options
  * @param {Number} options.minHeight Minimum allowed height
  * @param {Number} options.minWidth Minimum allowed width
@@ -264,10 +267,11 @@ const getResizedImages = (inputFiles, options) => {
     for (let i = gifFilePaths.length - 1; i >= 0; i -= 1) {
         const imagePath = gifFilePaths[i];
         // promises.push(resizeAnimatedGifFile(filePath, tempCanvas, image, options));
-        const p = getImageData(imagePath, image, ctx, options).then((imageData) => {
+        const p = getImageData(imagePath, image, tempCanvas, ctx, options).then((imageData) => {
             // imageData should be the original animated gif Uint8Array
-            resizeAnimatedGif(imageData, options);
+            return resizeAnimatedGif(imageData, options);
         });
+        promises.push(p);
     }
 
     for (let i = imageFilePaths.length - 1; i >= 0; i -= 1) {
