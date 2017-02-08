@@ -28,8 +28,7 @@ export default class BlockButton extends Component {
         const files = this.fileInput.files;
         const filePromises = getResizedImages(files, { minWidth: 320 });
         Promise.all(filePromises).then((results) => {
-            const fileRes = results[0];
-            let bestKey = findClosestMatch(768, fileRes);
+            let bestKey = findClosestMatch(768, results[0]);
             if (bestKey === 'xl' || bestKey === 'xxl') {
                 bestKey = 'md';
             }
@@ -46,8 +45,7 @@ export default class BlockButton extends Component {
             this.fileInput.value = '';
             this.setState({
                 isAddingImage: false,
-                dialogOpen: false,
-                fileName: ''
+                dialogOpen: false
             });
             // verify if editor is in focus and blur;
             if (document.activeElement.contentEditable === 'true') {

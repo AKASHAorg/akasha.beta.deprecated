@@ -1,5 +1,5 @@
 import pica from 'pica/dist/pica.js';
-
+import StreamReader from './stream-reader';
 /**
  * Utility to extract best matching image key given a width
  * @param width <number> a given width
@@ -85,108 +85,23 @@ function extractImageFromContent (content) {
 /**
  * @TODO Move this to a config file
  */
-const imageWidths = [
-    {
-        key: 'xxl',
-        res: 1920
-    }, {
-        key: 'xl',
-        res: 1280
-    }, {
-        key: 'md',
-        res: 700
-    }, {
-        key: 'sm',
-        res: 640
-    }, {
-        key: 'xs',
-        res: 320
-    }
-];
 
-function convertToBlob (canvas, widthObj) {
-    return new Promise((resolve) => {
-        const blobCb = (canvasWidth, canvasHeight) => (blob) => {
-            const reader = new FileReader();
-            reader.onloadend = () =>
-                resolve({
-                    key: widthObj.key,
-                    src: new Uint8Array(reader.result),
-                    width: canvasWidth,
-                    height: canvasHeight
-                });
-            reader.readAsArrayBuffer(blob);
-        };
-        canvas.toBlob(blobCb(canvas.width, canvas.height), 'image/jpg', '0.9');
-    });
-}
-
-function readImageData (imagePath, canvas, ctx, options) {
-    return new Promise((resolve, reject) => {
-        const availableWidths = [];
-        let resizeWidths = imageWidths;
-        const img = new Image();
-        const { minWidth, minHeight } = options;
-        if (options.imageWidths) {
-            resizeWidths = imageWidths.filter((width) => {
-                for (let i = options.imageWidths.length - 1; i >= 0; i -= 1) {
-                    if (width.key === options.imageWidths[i]) {
-                        return true;
-                    }
-                }
-                return false;
-            });
-        }
-        img.onload = () => {
-            const imgWidth = img.width;
-            const imgHeight = img.height;
-            if (imgHeight < minHeight) {
-                reject(
-                    `Image height is smaller than minimum allowed of ${minHeight} pixels`
-                );
-            } else if (imgWidth < minWidth) {
-                reject(
-                    `Image width is smaller than minimum allowed of ${minWidth} pixels`
-                );
-            }
-            const aspectRatio = imgWidth / imgHeight;
-            for (let i = resizeWidths.length - 1; i >= 0; i -= 1) {
-                if (img.width >= resizeWidths[i].res) {
-                    availableWidths.push(resizeWidths[i]);
-                }
-            }
-            const blobsPromise = [];
-            for (let i = availableWidths.length - 1; i >= 0; i -= 1) {
-                ctx.canvas.width = availableWidths[i].res;
-                ctx.canvas.height = availableWidths[i].res / aspectRatio;
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                blobsPromise.push(convertToBlob(canvas, availableWidths[i]));
-            }
-            Promise.all(blobsPromise).then((imageArray) => {
-                // an imageArray contains an object for each available key
-                // [{key: 'sm', width: 320, ....}]
-                const imageObj = {};
-                imageArray.forEach((imgObj) => {
-                    imageObj[imgObj.key] = {
-                        src: imgObj.src,
-                        width: imgObj.width,
-                        height: imgObj.height
-                    };
-                });
-                return resolve(imageObj);
-            });
-        };
-        img.src = imagePath;
-    });
-}
 const settings = {
     extentions: ['jpg', 'jpeg', 'png', 'svg'],
     defaultQuality: 3,
+    minWidth: 360,
+    minHeight: null,
     alphaChannel: false,
     unsharpAmount: 50,
     unsharpRadius: 0.6,
     unsharpThreshold: 2,
     animatedGifSupport: true,
+    /**
+     * Handling multiple files uploaded at once
+     * if true, the resize method will return array
+     * if false, return only one object
+     */
+    multiple: false,
     imageWidths: [{
         key: 'xxl',
         res: 1920
@@ -204,12 +119,103 @@ const settings = {
         res: 320
     }]
 };
-const resizeAnimatedGifFile = (imagePath, options) => {
+
+const resizeAnimatedGif = (arrayBuffer, options) => {
     // resize gif
+    const streamReader = new StreamReader(arrayBuffer.data);
+    console.log(streamReader.readAscii(10));
+    if (streamReader.readAscii(6) != 'GIF89a') {
+        console.log('this is not an animated gif file');
+    }
 };
 
-const resizeImage = (imagePath, options) => {
-    // resize image
+const getImageHeight = (targetWidth, width, height) => {
+    return targetWidth / (width / height);
+};
+// return pixel data from an image;
+const canvasToArray = (canvas, width, height) => {
+    return new Promise((resolve) => {
+        const blobCb = () => (blob) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                return resolve({
+                    data: reader.result,
+                    width,
+                    height
+                });
+            };
+            reader.readAsArrayBuffer(blob);
+        };
+        canvas.toBlob(blobCb(), 'image/jpg', '0.9');
+    });
+};
+
+const getImageData = (imagePath, image, canvas, ctx, options) => {
+    return new Promise((resolve, reject) => {
+        image.onload = () => {
+            const imageWidth = image.width;
+            const imageHeight = image.height;
+
+            if (options && imageWidth < options.minWidth) {
+                return reject(`Please provide an image with minimum width of ${options.minWidth} pixels`);
+            }
+            if (options && imageHeight < options.minHeight) {
+                return reject(`Please provide an image with minimum height of ${options.minHeight} pixels`);
+            }
+            try {
+                ctx.drawImage(image, 0, 0, image.width, image.height); // this actually contains compressed file data;
+                return resolve(canvasToArray(canvas, image.width, image.height)); // uncompressed file;
+            } catch (exception) {
+                console.error(exception);
+                return reject(exception);
+            }
+        };
+        image.src = imagePath;
+    });
+};
+// method to resize static (non animated gifs) images;
+const resizeImage = (uint8Array, options, gifFile) => {
+    const { actualWidth, actualHeight } = options;
+    const aspectRatio = actualWidth / actualHeight;
+    const imageWidths = settings.imageWidths.filter(widthObj => widthObj.res <= actualWidth);
+    const imageObject = {};
+    if (gifFile) {
+        imageObject.gif = gifFile;
+    }
+    let p = Promise.resolve();
+    /**
+     * Sequential processing is recommended by pica.
+     * see https://github.com/nodeca/pica#api
+     */
+    imageWidths.forEach((widthObj) => {
+        p = p.then(() => {
+            try {
+                console.time(`resize to ${widthObj.res} took`);
+                return pica.resizeBuffer({
+                    src: uint8Array,
+                    width: actualWidth,
+                    height: actualHeight,
+                    toWidth: widthObj.res,
+                    toHeight: Math.round(getImageHeight(widthObj.res, actualWidth, actualHeight)),
+                }, (err, output) => {
+                    console.timeEnd(`resize to ${widthObj.res} took`);
+                    imageObject[widthObj.key] = {
+                        src: output,
+                        width: widthObj.res,
+                        height: widthObj.res / aspectRatio
+                    };
+                    return imageObject;
+                });
+            } catch (exception) {
+                return Promise.reject(exception);
+            }
+        });
+    });
+    return p.then(() => {
+        console.log('resulted image object =>', imageObject);
+        console.groupEnd();
+        return imageObject;
+    });
 };
 /**
  * Utility to resize images using Html5 canvas
@@ -220,18 +226,18 @@ const resizeImage = (imagePath, options) => {
  * @param {Array} options.imageWidths Resize using keys in this array only
  * @returns {Array} promises Array of promises for each passed path
  *
- * @example
- *  const filePromises = getResizedImages([/path/to/image.jpg, /path/to/image2.png], {
- *       minWidth: 250,
- *       minHeight: 200,
+ * @example usage
+ *  const filePromises = resizeImage([/path/to/image.jpg, /path/to/image2.png], {
+ *      minWidth: 250,
+ *      minHeight: 200,,
+ *      ...settings
  *  });
  *   Promise.all(filePromises).then(results =>
  *       results.forEach(result => {
  *          result is an array containing all image variants for a given path
- *          result[0].dataUrl {base64 imageData}
+ *          result[0].src     {Uint8Array}
  *          result[0].height  {resulting height after resize}
  *          result[0].width   {resulting width after resize}
- *          result[0].key     {key}
  *       });
  *   ).catch(reason => reason {string} 'Image height is smaller than minimum allowed of 200 pixels')
  */
@@ -239,36 +245,45 @@ const getResizedImages = (inputFiles, options) => {
     const gifFilePaths = [];
     const imageFilePaths = [];
     const promises = [];
+    console.group('resize results and timings:');
     Array.from(inputFiles).forEach((file) => {
         const fileName = file.name;
-        const ext = fileName.split('.')[fileName.length - 1];
-        if (ext === 'gif') return gifFilePaths.push(file.path);
-        return imageFilePaths.push(file.path);
+        const ext = fileName.split('.')[fileName.split('.').length - 1].toLowerCase();
+        console.log('original image', file.name, 'has a size of:', Math.floor(file.size / 1024), 'KiB');
+        if (ext === 'gif' && settings.animatedGifSupport) return gifFilePaths.push(file.path);
+        if (settings.extentions.includes(ext)) {
+            return imageFilePaths.push(file.path);
+        }
+        return Promise.reject(`Specified image format is not supported. Please use one of following formats: ${settings.extentions.join(', ')}`);
     });
 
+    const image = new Image(); // an image to be used to read data; only create it once and reuse it
+    const tempCanvas = document.createElement('canvas'); // create a canvas and reuse it wherever you need
+    const ctx = tempCanvas.getContext('2d');
+
     for (let i = gifFilePaths.length - 1; i >= 0; i -= 1) {
-        const filePath = gifFilePaths[i];
-        promises.push(resizeAnimatedGifFile(filePath, options));
+        const imagePath = gifFilePaths[i];
+        // promises.push(resizeAnimatedGifFile(filePath, tempCanvas, image, options));
+        const p = getImageData(imagePath, image, ctx, options).then((imageData) => {
+            // imageData should be the original animated gif Uint8Array
+            resizeAnimatedGif(imageData, options);
+        });
     }
 
     for (let i = imageFilePaths.length - 1; i >= 0; i -= 1) {
-        const imagePath = imageFilePaths[i];
-        promises.push(resizeImage(imagePath, options));
+        const imagePath = imageFilePaths[i]; // string
+        const p = getImageData(imagePath, image, tempCanvas, ctx, options).then((imageData) => {
+            // image data of the original unresized file.
+            console.log('original file data =>', imageData);
+            const { height, width, data } = imageData;
+            options.actualWidth = width;
+            options.actualHeight = height;
+            return resizeImage(data, options);
+        });
+        promises.push(p);
     }
-
     return promises;
 };
-
-// function getResizedImages (imagePaths, options) {
-//     const canvas = document.createElement('canvas');
-//     const ctx = canvas.getContext('2d');
-//     const promises = [];
-//     for (let i = imagePaths.length - 1; i >= 0; i--) {
-//         const path = imagePaths[i];
-//         promises.push(readImageData(path, canvas, ctx, options));
-//     }
-//     return promises;
-// }
 
 export default imageCreator;
 export { getResizedImages, extractImageFromContent, findBestMatch, findClosestMatch };
