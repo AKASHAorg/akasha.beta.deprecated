@@ -24,6 +24,7 @@ class EntryService extends BaseService {
      */
     publishEntry = ({ draftObj, token, gas, onError, onSuccess }) => {
         const channelName = draftObj.entryId ? EDIT_ENTRY : PUBLISH;
+        draftObj.content.draft = JSON.parse(draftObj.content.draft);
         this.openChannel({
             clientManager: this.clientManager,
             serverChannel: Channel.server.entry[channelName],

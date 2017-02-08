@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { MegadraftEditor, editorStateFromRaw } from 'megadraft';
+import { MegadraftEditor, editorStateFromRaw, editorStateToJSON } from 'megadraft';
 import { convertToRaw } from 'draft-js';
 import EditorSidebar from './sidebar/editor-sidebar';
 import styles from './style.scss';
@@ -12,8 +12,13 @@ class EntryEditor extends Component {
         sidebarOpen: false
     };
     componentWillMount () {
+        let { content } = this.props;
+        console.log(typeof content);
+        if (typeof content === 'string') {
+            content = JSON.parse(this.props.content);
+        }
         this.setState({
-            editorState: editorStateFromRaw(this.props.content),
+            editorState: editorStateFromRaw(content),
             title: this.props.title
         });
     }
@@ -23,10 +28,13 @@ class EntryEditor extends Component {
         }
     }
     componentWillReceiveProps (nextProps) {
-        const { content } = nextProps;
-        if (content !== this.props.content) {
+        let { content } = nextProps;
+        if (typeof content === 'string') {
+            content = JSON.parse(content);
+        }
+        if (content && !this.props.content) {
             this.setState({
-                editorState: editorStateFromRaw(nextProps.content),
+                editorState: editorStateFromRaw(content),
                 title: nextProps.title
             });
         }
@@ -38,10 +46,11 @@ class EntryEditor extends Component {
             (nextState.editorState !== this.state.editorState) ||
             (nextState.sidebarOpen !== this.state.sidebarOpen);
     }
-    getRawContent = () => convertToRaw(this.state.editorState.getCurrentContent());
+    getRawContent = () => editorStateToJSON(this.state.editorState);
     getContent = () => this.state.editorState.getCurrentContent();
     getTitle = () => this.state.title;
     _handleEditorChange = (editorState) => {
+        console.log('chnge?');
         this.setState({
             editorState,
         });
@@ -162,7 +171,10 @@ EntryEditor.propTypes = {
     title: PropTypes.string,
     editorRef: PropTypes.func,
     readOnly: PropTypes.bool,
-    content: PropTypes.shape(),
+    content: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.shape()
+    ]),
     showTitle: PropTypes.bool,
     onAutosave: PropTypes.func,
     editorPlaceholder: PropTypes.string,
