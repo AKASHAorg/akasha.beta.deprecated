@@ -5,7 +5,6 @@ import {
     Tabs,
     Tab } from 'material-ui';
 import throttle from 'lodash.throttle';
-import { generalMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
 import { DataLoader } from 'shared-components';
 import { injectIntl } from 'react-intl';
 import { isInViewport } from 'utils/domUtils'; // eslint-disable-line import/no-unresolved, import/extensions

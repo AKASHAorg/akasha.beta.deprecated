@@ -383,19 +383,26 @@ class EntryPage extends Component {
             followingsList, followPending, latestVersion } = this.props;
         const { palette } = this.context.muiTheme;
         const { publisherTitleShadow, scrollDirection, commentsSectionTop } = this.state;
+        let currentVersion;
         let licence;
         let licenceLabel;
         if (!entry || fetchingFullEntry) {
             return <DataLoader flag size={80} style={{ paddingTop: '120px' }} />;
         }
         if (entry.content) {
+            currentVersion = entry.content.version;
             licence = licences ?
                 licences.find(lic => lic.id === entry.content.licence.id) :
                 {};
             licenceLabel = licence.parent ?
                 licences.find(lic => lic.id === licence.parent).label :
                 licence.label;
+        } else {
+            currentVersion = location.query.version ?
+                Number(location.query.version) :
+                latestVersion;
         }
+        console.log('current version', currentVersion);
         const entryId = parseInt(entry.get('entryId'), 10);
         const loggedProfileData = profiles.find(prf => prf.get('profile') === loggedProfile.get('profile'));
         const loggedProfileAvatar = loggedProfileData.get('avatar');
@@ -416,7 +423,7 @@ class EntryPage extends Component {
                   {entry.entryEth && entry.entryEth.publisher &&
                     <EntryPageHeader
                       blockNr={blockNr}
-                      currentVersion={entry && entry.content && entry.content.version}
+                      currentVersion={currentVersion}
                       getVersion={this.getVersion}
                       handleEdit={this.handleEdit}
                       entryBlockNr={entry.entryEth.blockNr}

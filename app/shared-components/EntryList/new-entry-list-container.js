@@ -34,12 +34,12 @@ class EntryList extends Component {
     };
 
     render () {
-        const { appActions, blockNr, cardStyle, claimPending, canClaimPending, entries,
-            entryActions, fetchingEntries, fetchingEntryBalance, fetchingMoreEntries, getTriggerRef,
-            intl, loggedProfileData, moreEntries, placeholderMessage, savedEntriesIds,
-            selectedTag, style, votePending } = this.props;
+        const { appActions, blockNr, cardStyle, claimPending, canClaimPending, defaultTimeout,
+            entries, entryActions, fetchingEntries, fetchingEntryBalance, fetchingMoreEntries,
+            getTriggerRef, intl, loggedProfileData, moreEntries, placeholderMessage,
+            savedEntriesIds, selectedTag, style, votePending } = this.props;
         const { palette } = this.context.muiTheme;
-
+        const timeout = defaultTimeout === undefined ? 700 : defaultTimeout;
         return (
           <div
             style={Object.assign({}, {
@@ -49,7 +49,12 @@ class EntryList extends Component {
                 alignItems: 'center'
             }, style)}
           >
-            <DataLoader flag={fetchingEntries} timeout={700} size={80} style={{ paddingTop: '120px' }}>
+            <DataLoader
+              flag={fetchingEntries}
+              timeout={timeout}
+              size={80}
+              style={{ paddingTop: '120px' }}
+            >
               <div>
                 {entries.size === 0 &&
                   <div
@@ -108,6 +113,7 @@ EntryList.propTypes = {
     cardStyle: PropTypes.shape(),
     canClaimPending: PropTypes.bool,
     claimPending: PropTypes.shape(),
+    defaultTimeout: PropTypes.number,
     drafts: PropTypes.shape(),
     entries: PropTypes.shape(),
     entryActions: PropTypes.shape(),

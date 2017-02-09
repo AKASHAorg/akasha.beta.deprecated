@@ -10,6 +10,7 @@ export { IpfsService } from './ipfs-service';
 export { NotificationsService } from './notifications-service';
 export { ProfileService } from './profile-service';
 export { RegistryService } from './registry-service';
+export { SearchService } from './search-service';
 export { SettingsService } from './settings-service';
 export { TagService } from './tag-service';
 export { TransactionService } from './transaction-service';

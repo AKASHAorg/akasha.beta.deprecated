@@ -1,8 +1,9 @@
 import React, { PropTypes } from 'react';
 import ReactTooltip from 'react-tooltip';
 import { connect } from 'react-redux';
-import { AppActions, ChatActions, DraftActions, ProfileActions, SettingsActions, EntryActions,
-    TransactionActions, TagActions, EProcActions, NotificationsActions } from 'local-flux';
+import { AppActions, ChatActions, DraftActions, ProfileActions, SearchActions,
+    SettingsActions, EntryActions, TransactionActions, TagActions, EProcActions,
+    NotificationsActions } from 'local-flux';
 import { DataLoader, Sidebar } from 'shared-components';
 import '../../styles/core.scss';
 import styles from './home.scss';
@@ -37,8 +38,9 @@ class HomeContainer extends React.Component {
         }
     }
     componentDidMount () {
-        const { profileActions } = this.props;
+        const { profileActions, searchActions } = this.props;
         profileActions.getLoggedProfile();
+        searchActions.handshake();
     }
     componentWillReceiveProps (nextProps) {
         const { chatActions, profileActions, settingsActions, entryActions, draftActions,
@@ -199,6 +201,7 @@ HomeContainer.propTypes = {
     notificationsActions: PropTypes.shape(),
     notificationsCount: PropTypes.number,
     hasFeed: PropTypes.bool,
+    searchActions: PropTypes.shape(),
     selectedTag: PropTypes.string,
     settingsActions: PropTypes.shape(),
     userSettings: PropTypes.shape()
@@ -244,6 +247,7 @@ function mapDispatchToProps (dispatch) {
         eProcActions: new EProcActions(dispatch),
         notificationsActions: new NotificationsActions(dispatch),
         profileActions: new ProfileActions(dispatch),
+        searchActions: new SearchActions(dispatch),
         settingsActions: new SettingsActions(dispatch),
         tagActions: new TagActions(dispatch),
         transactionActions: new TransactionActions(dispatch)

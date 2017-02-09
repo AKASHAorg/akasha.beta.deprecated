@@ -1,5 +1,4 @@
 import React, { PropTypes, Component } from 'react';
-import ReactTooltip from 'react-tooltip';
 import { getInitials } from 'utils/dataModule';
 import {
     ProfileIcon,
@@ -32,6 +31,11 @@ class SideBar extends Component {
             this.context.router.push(`/${loggedProfileData.get('akashaId')}/draft/new`);
         }
     };
+
+    _handleProfile = () => this._handlePanelShow({ name: 'userProfile', overlay: true });
+
+    _handleSearch = () => this._handlePanelShow({ name: 'search', overlay: true });
+
     _handleNavigation = (to) => {
         const { appActions, loggedProfileData } = this.props;
         const basePath = loggedProfileData.get('akashaId');
@@ -86,7 +90,7 @@ class SideBar extends Component {
                 userInitials={userInitials}
                 hasFeed={hasFeed}
                 notificationsCount={notificationsCount}
-                onClick={() => this._handlePanelShow({ name: 'userProfile', overlay: true })}
+                onClick={this._handleProfile}
               />
             </div>
             <div style={{ flexGrow: 0, fontSize: '14px', fontWeight: '100', fontFamily: 'Roboto' }}>
@@ -110,10 +114,10 @@ class SideBar extends Component {
                   />
                 </div>
               }
-              <div data-tip="Coming Soon" data-place="right">
+              <div data-tip="Search" data-place="right">
                 <SearchIcon
                   onClick={this._handleSearch}
-                  disabled
+                  isActive={activePanel === 'search'}
                 />
               </div>
             </div>

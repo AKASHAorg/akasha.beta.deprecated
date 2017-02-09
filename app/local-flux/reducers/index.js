@@ -9,6 +9,7 @@ import externalProcState from './externalProcState';
 import notificationsState from './notificationsState';
 import panelState from './panelState';
 import profileState from './profileState';
+import searchState from './searchState';
 import settingsState from './settingsState';
 import tagState from './tagState';
 import tempProfileState from './tempProfileState';
@@ -24,6 +25,7 @@ const rootReducer = combineReducers({
     notificationsState,
     panelState,
     profileState,
+    searchState,
     settingsState,
     tagState,
     tempProfileState,
