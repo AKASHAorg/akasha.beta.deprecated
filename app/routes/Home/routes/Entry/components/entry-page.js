@@ -402,7 +402,6 @@ class EntryPage extends Component {
                 Number(location.query.version) :
                 latestVersion;
         }
-        console.log('current version', currentVersion);
         const entryId = parseInt(entry.get('entryId'), 10);
         const loggedProfileData = profiles.find(prf => prf.get('profile') === loggedProfile.get('profile'));
         const loggedProfileAvatar = loggedProfileData.get('avatar');

@@ -14,6 +14,7 @@ import settingsState from './settingsState';
 import tagState from './tagState';
 import tempProfileState from './tempProfileState';
 import transactionState from './transactionState';
+import utilsState from './utilsState';
 
 const rootReducer = combineReducers({
     appState,
@@ -25,12 +26,13 @@ const rootReducer = combineReducers({
     notificationsState,
     panelState,
     profileState,
+    routing,
     searchState,
     settingsState,
     tagState,
     tempProfileState,
     transactionState,
-    routing,
+    utilsState
 });
 
 export default rootReducer;

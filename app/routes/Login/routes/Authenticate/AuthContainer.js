@@ -1,9 +1,10 @@
 import { connect } from 'react-redux';
-import { ProfileActions, SettingsActions, TempProfileActions } from 'local-flux';
+import { ProfileActions, SettingsActions, TempProfileActions, UtilsActions } from 'local-flux';
 import Auth from './components/Auth';
 
 function mapStateToProps (state, ownProps) {
     return {
+        backupPending: state.utilsState.getIn(['flags', 'backupPending']),
         tempProfile: state.tempProfileState.get('tempProfile'),
         localProfiles: state.profileState.get('profiles'),
         loggedProfile: state.profileState.get('loggedProfile'),
@@ -21,7 +22,8 @@ function mapDispatchToProps (dispatch) {
     return {
         profileActions: new ProfileActions(dispatch),
         settingsActions: new SettingsActions(dispatch),
-        tempProfileActions: new TempProfileActions(dispatch)
+        tempProfileActions: new TempProfileActions(dispatch),
+        utilsActions: new UtilsActions(dispatch)
     };
 }
 

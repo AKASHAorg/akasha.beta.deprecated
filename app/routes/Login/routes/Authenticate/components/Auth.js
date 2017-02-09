@@ -225,7 +225,8 @@ class Auth extends Component {
         });
     };
     render () {
-        const { gethStatus, intl, ipfsStatus, settingsActions, style } = this.props;
+        const { backupPending, gethStatus, intl, ipfsStatus, settingsActions, style,
+            utilsActions } = this.props;
         const { openModal } = this.state;
         const isServiceStopped = !gethStatus.get('api') || gethStatus.get('stopped')
             || (!ipfsStatus.get('started') && !ipfsStatus.get('spawned'));
@@ -253,6 +254,12 @@ class Auth extends Component {
             actions={[
                 /* eslint-disable */
                 <RaisedButton
+                  key="backup"
+                  label={intl.formatMessage(generalMessages.backup)}
+                  onClick={utilsActions.backupKeys}
+                  disabled={backupPending}
+                />,
+                <RaisedButton
                   key="createNewIdentity"
                   label={intl.formatMessage(generalMessages.createNewIdentityLabel)}
                   primary
@@ -275,7 +282,7 @@ class Auth extends Component {
                 getUserSettings={settingsActions.getUserSettings}
                 isOpen={openModal}
                 modalActions={modalActions}
-                title={'Log In'}
+                title={intl.formatMessage(setupMessages.logInTitle)}
                 onPasswordChange={this._handlePasswordChange}
                 onKeyPress={this._handleDialogKeyPress}
                 onUnlockTimerChange={this._handleUnlockTimerChange}
@@ -291,25 +298,27 @@ class Auth extends Component {
 }
 
 Auth.propTypes = {
-    profileActions: React.PropTypes.shape().isRequired,
-    tempProfileActions: React.PropTypes.shape().isRequired,
-    tempProfile: React.PropTypes.shape().isRequired,
-    localProfiles: React.PropTypes.shape().isRequired,
+    backupPending: PropTypes.bool,
+    fetchingLocalProfiles: PropTypes.bool,
     gethStatus: PropTypes.shape().isRequired,
+    intl: PropTypes.shape(),
     ipfsStatus: PropTypes.shape().isRequired,
-    localProfilesFetched: React.PropTypes.bool,
-    fetchingLocalProfiles: React.PropTypes.bool,
-    loggedProfile: React.PropTypes.shape().isRequired,
-    loginErrors: React.PropTypes.shape().isRequired,
-    passwordPreference: React.PropTypes.shape(),
-    settingsActions: React.PropTypes.shape(),
-    style: React.PropTypes.shape(),
-    intl: React.PropTypes.shape(),
+    localProfiles: PropTypes.shape().isRequired,
+    localProfilesFetched: PropTypes.bool,
+    loggedProfile: PropTypes.shape().isRequired,
+    loginErrors: PropTypes.shape().isRequired,
+    passwordPreference: PropTypes.shape(),
+    profileActions: PropTypes.shape().isRequired,
+    settingsActions: PropTypes.shape(),
+    style: PropTypes.shape(),
+    tempProfile: PropTypes.shape().isRequired,
+    tempProfileActions: PropTypes.shape().isRequired,
+    utilsActions: PropTypes.shape()
 };
 
 Auth.contextTypes = {
-    muiTheme: React.PropTypes.shape(),
-    router: React.PropTypes.shape()
+    muiTheme: PropTypes.shape(),
+    router: PropTypes.shape()
 };
 
 Auth.defaultProps = {

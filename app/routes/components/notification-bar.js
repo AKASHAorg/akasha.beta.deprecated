@@ -82,7 +82,14 @@ class NotificationBar extends Component {
             '';
         return (
           <Snackbar
-            style={{ maxWidth: 500 }}
+            style={{ maxWidth: '80%' }}
+            bodyStyle={{ maxWidth: 'none' }}
+            contentStyle={{
+                whiteSpace: 'nowrap',
+                textOverflow: 'ellipsis',
+                maxWidth: '100%',
+                overflow: 'hidden'
+            }}
             autoHideDuration={this._getAutoHideDuration(notifications.first())}
             action={this._getActionLabel(notifications.first())}
             onActionTouchTap={ev => this._handleActionTouchTap(ev, notifications.first())}

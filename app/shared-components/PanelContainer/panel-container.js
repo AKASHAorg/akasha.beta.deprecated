@@ -79,16 +79,17 @@ class PanelContainer extends React.Component {
                   bottom: 0,
                   left: 0,
                   right: 0,
+                  display: 'flex',
                   padding: '12px 24px',
                   background: muiTheme.palette.canvasColor,
                   margin: 0,
                   boxShadow: `0px -1px 3px -1px ${muiTheme.palette.paperShadowColor}`
               }}
             >
-              <div className="col-xs-5 start-xs">
+              <div style={{ flex: '1 1 auto', display: 'flex', justifyContent: 'flex-start' }}>
                 {this.props.leftActions}
               </div>
-              <div className="col-xs-7 end-xs">
+              <div style={{ flex: '1 1 auto', display: 'flex', justifyContent: 'flex-end' }}>
                 {this.props.actions}
               </div>
             </div>
