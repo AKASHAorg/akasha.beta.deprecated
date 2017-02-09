@@ -149,7 +149,8 @@ const tempProfileState = createReducer(initialState, {
 
     [types.REQUEST_FUND_FROM_FAUCET_ERROR]: (state, { error }) =>
         state.merge({
-            errors: state.get('errors').push(new ErrorRecord(error))
+            errors: state.get('errors').push(new ErrorRecord(error)),
+            tempProfile: state.get('tempProfile').setIn(['currentStatus', 'faucetRequested'], false)
         }),
 
     [types.LISTEN_PUBLISH_TX]: state =>

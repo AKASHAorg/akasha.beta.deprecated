@@ -57,7 +57,7 @@ function imageCreator (arrayBuffer, baseUrl) {
         return `${baseUrl}/${arrayBuffer}`;
     }
 
-    const blobFile = new Blob(arrayBuffer, { type: 'image/jpg' });
+    const blobFile = new Blob([arrayBuffer]);
     return window.URL.createObjectURL(blobFile);
 }
 /**
@@ -120,15 +120,44 @@ const settings = {
     }]
 };
 
-const resizeAnimatedGif = (arrayBuffer, options) => {
+const resizeAnimatedGif = (dataUri, options) => {
     // resize gif
-    const uint8Arr = new Uint8Array(arrayBuffer.data);
-    const streamReader = new StreamReader(new Uint8Array(arrayBuffer.data));
-    console.log(new Uint8Array(arrayBuffer.data), 'the buffer');
-    console.log(streamReader.readAscii(6), 'read 3 ascii');
-    if (streamReader.readAscii(6) != 'GIF89a') {
-        console.log('this is not an animated gif file');
+    const byteString = atob(dataUri.split(',')[1]);
+    const mimeString = dataUri.split(',')[0].split(':')[1].split(';')[0];
+    const arrBuff = new ArrayBuffer(byteString.length);
+    const imgArr = new Uint8Array(arrBuff);
+    for (let i = 0; i < byteString.length; i += 1) {
+        imgArr[i] = byteString.charCodeAt(i);
     }
+    const streamReader = new StreamReader(imgArr);
+    return new Promise((resolve, reject) => {
+        if (streamReader.readAscii(3) !== 'GIF') {
+            console.log('it is not an animated gif. Not sure if this is an image, actually!');
+            return reject('Gif file not recognised!');
+        }
+        const frameCount = streamReader.getFrameNumber();
+        console.log(frameCount, 'the frames');
+        // resize 1 frame for presentation;
+        return resizeImage(imgArr, options).then((imageObj) => {
+            if (frameCount > 0) {
+                // it`s animated
+                imageObj.gif = {
+                    width: options.actualWidth,
+                    height: options.actualHeight,
+                    src: imgArr
+                };
+            }
+            return resolve(imageObj);
+        });
+    });
+
+    // const uint8Arr = new Uint8Array(arrayBuffer.data);
+    // const streamReader = new StreamReader(new Uint8Array(arrayBuffer.data));
+    // console.log(new Uint8Array(arrayBuffer.data), 'the buffer');
+    // console.log(streamReader.readAscii(6), 'read 3 ascii');
+    // if (streamReader.readAscii(6) != 'GIF89a') {
+    //     console.log('this is not an animated gif file');
+    // }
 };
 
 const getImageHeight = (targetWidth, width, height) => {
@@ -151,27 +180,34 @@ const canvasToArray = (canvas, width, height) => {
         canvas.toBlob(blobCb(), 'image/jpg', '0.9');
     });
 };
+const getRawDataUrl = (file) => {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            return resolve(reader.result);
+        };
+        try {
+            reader.readAsDataURL(file);
+        } catch (exception) {
+            console.error(exception);
+            reject(exception);
+        }
+    });
+};
 
-const getImageData = (imagePath, image, canvas, ctx, options) => {
+const getImageSize = (imagePath, image, options) => {
     return new Promise((resolve, reject) => {
         image.onload = () => {
             const imageWidth = image.width;
             const imageHeight = image.height;
-
+            console.log('onLoad');
             if (options && imageWidth < options.minWidth) {
                 return reject(`Please provide an image with minimum width of ${options.minWidth} pixels`);
             }
             if (options && imageHeight < options.minHeight) {
                 return reject(`Please provide an image with minimum height of ${options.minHeight} pixels`);
             }
-            try {
-                ctx.drawImage(image, 0, 0, image.width, image.height); // this actually contains compressed file data;
-                console.log(ctx.getImageData(0, 0, image.width, image.height));
-                return resolve(canvasToArray(canvas, image.width, image.height)); // uncompressed file;
-            } catch (exception) {
-                console.error(exception);
-                return reject(exception);
-            }
+            return resolve({ width: imageWidth, height: imageHeight });
         };
         image.src = imagePath;
     });
@@ -245,44 +281,47 @@ const resizeImage = (arrayBuffer, options, gifFile) => {
  *   ).catch(reason => reason {string} 'Image height is smaller than minimum allowed of 200 pixels')
  */
 const getResizedImages = (inputFiles, options) => {
-    const gifFilePaths = [];
-    const imageFilePaths = [];
+    const gifFiles = [];
+    const imageFiles = [];
     const promises = [];
     console.group('resize results and timings:');
     Array.from(inputFiles).forEach((file) => {
         const fileName = file.name;
         const ext = fileName.split('.')[fileName.split('.').length - 1].toLowerCase();
         console.log('original image', file.name, 'has a size of:', Math.floor(file.size / 1024), 'KiB');
-        if (ext === 'gif' && settings.animatedGifSupport) return gifFilePaths.push(file.path);
+        if (ext === 'gif' && settings.animatedGifSupport) return gifFiles.push(file);
         if (settings.extentions.includes(ext)) {
-            return imageFilePaths.push(file.path);
+            return imageFiles.push(file);
         }
         return Promise.reject(`Specified image format is not supported. Please use one of following formats: ${settings.extentions.join(', ')}`);
     });
-
-    const image = new Image(); // an image to be used to read data; only create it once and reuse it
-    const tempCanvas = document.createElement('canvas'); // create a canvas and reuse it wherever you need
-    const ctx = tempCanvas.getContext('2d');
-
-    for (let i = gifFilePaths.length - 1; i >= 0; i -= 1) {
-        const imagePath = gifFilePaths[i];
-        // promises.push(resizeAnimatedGifFile(filePath, tempCanvas, image, options));
-        const p = getImageData(imagePath, image, tempCanvas, ctx, options).then((imageData) => {
+    const image = new Image();
+    // resize gifs
+    for (let i = gifFiles.length - 1; i >= 0; i -= 1) {
+        const imageFile = gifFiles[i];
+        const p = getRawDataUrl(imageFile, options).then((imageDataUrl) => {
             // imageData should be the original animated gif Uint8Array
-            return resizeAnimatedGif(imageData, options);
+            console.log('imageDataUrl');
+            return getImageSize(imageFile.path, image, options).then((size) => {
+                const { height, width } = size;
+                options.actualHeight = height;
+                options.actualWidth = width;
+                console.log(size, 'the size');
+                return resizeAnimatedGif(imageDataUrl, options);
+            });
         });
         promises.push(p);
     }
-
-    for (let i = imageFilePaths.length - 1; i >= 0; i -= 1) {
-        const imagePath = imageFilePaths[i]; // string
-        const p = getImageData(imagePath, image, tempCanvas, ctx, options).then((imageData) => {
-            // image data of the original unresized file.
-            console.log('original file data =>', imageData);
-            const { height, width, data } = imageData;
-            options.actualWidth = width;
-            options.actualHeight = height;
-            return resizeImage(data, options);
+    // resize static images
+    for (let i = imageFiles.length - 1; i >= 0; i -= 1) {
+        const imageFile = imageFiles[i]; // string
+        const p = getRawDataUrl(imageFile, options).then((imageDataUrl) => {
+            return getImageSize(imageFile.path, image, options).then((size) => {
+                const { height, width } = size;
+                options.actualWidth = width;
+                options.actualHeight = height;
+                return resizeImage(imageDataUrl, options);
+            });
         });
         promises.push(p);
     }
