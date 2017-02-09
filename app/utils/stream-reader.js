@@ -1,28 +1,14 @@
+/**
+ * https://github.com/geelen/x-gif/blob/gh-pages/src/stream_reader.js
+ */
 export default class StreamReader {
     constructor (arrayBuffer) {
         this.data = new Uint8Array(arrayBuffer);
         this.index = 0;
-        this.log(`TOTAL LENGTH: ${this.data.length}`);
-    }
-
-    finished () {
-        return this.index >= this.data.length;
     }
 
     readByte () {
-        return this.data[this.index += 1];
-    }
-
-    peekByte () {
-        return this.data[this.index];
-    }
-
-    skipBytes (n) {
-        this.index += n;
-    }
-
-    peekBit (i) {
-        return !!(this.peekByte() & (1 << 8 - i));
+        return this.data[this.index++];
     }
 
     readAscii (n) {
@@ -32,19 +18,22 @@ export default class StreamReader {
         }
         return s;
     }
-
-    isNext (array) {
-        for (let i = 0; i < array.length; i += 1) {
-            if (array[i] !== this.data[this.index + i]) return false;
+    getFrameNumber () {
+        const length = this.data.length;
+        let i;
+        let len;
+        let frames = 0;
+        for (i = 0, len = length - 3; i < len; ++i) {
+            if (this.data[i] === 0x00 && this.data[i + 1] === 0x21 && this.data[i + 2] === 0xF9) {
+                const blocklength = this.data[i + 3];
+                const afterblock = i + 4 + blocklength;
+                if (afterblock + 1 < length &&
+                    this.data[afterblock] === 0x00 &&
+                    (this.data[afterblock + 1] === 0x2C || this.data[afterblock + 1] === 0x21)) {
+                    frames += 1;
+                }
+            }
         }
-        return true;
-    }
-
-    log (str) {
-    //  console.log(this.index + ": " + str);
-    }
-
-    error (str) {
-        console.error(`${this.index}: ${str}`);
+        return frames;
     }
 }
