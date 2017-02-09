@@ -2,8 +2,8 @@ import React, { Component, PropTypes } from 'react';
 import ReactTooltip from 'react-tooltip';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { SettingsActions, AppActions, ProfileActions, EProcActions, DraftActions,
-    TagActions, EntryActions } from 'local-flux';
+import { AppActions, DraftActions, EntryActions, EProcActions,
+    ProfileActions, SettingsActions, TagActions } from 'local-flux';
 import { getMuiTheme } from 'material-ui/styles';
 import { AuthDialog, WeightConfirmDialog, PublishConfirmDialog,
     TransferConfirmDialog } from 'shared-components';
@@ -127,8 +127,8 @@ class App extends Component {
         const isTransferConfirmationDialogVisible = appState.get('transferConfirmDialog') !== null;
         let isEntryActive = false;
         if (isWeightConfirmationDialogVisible) {
-            const entry = entries.find(entry =>
-                entry.get('entryId') === weightConfirmDialog.getIn(['payload', 'entryId']));
+            const entry = entries.find(entr =>
+                entr.get('entryId') === weightConfirmDialog.getIn(['payload', 'entryId']));
             isEntryActive = entry ?
                 entry.getIn(['content', 'active']) :
                 fullEntry.active;
@@ -238,13 +238,13 @@ function mapStateToProps (state) {
 }
 function mapDispatchToProps (dispatch) {
     return {
+        appActions: new AppActions(dispatch),
+        draftActions: new DraftActions(dispatch),
+        entryActions: new EntryActions(dispatch),
+        eProcActions: new EProcActions(dispatch),
         profileActions: new ProfileActions(dispatch),
         settingsActions: new SettingsActions(dispatch),
-        appActions: new AppActions(dispatch),
-        eProcActions: new EProcActions(dispatch),
-        entryActions: new EntryActions(dispatch),
         tagActions: new TagActions(dispatch),
-        draftActions: new DraftActions(dispatch)
     };
 }
 export default connect(

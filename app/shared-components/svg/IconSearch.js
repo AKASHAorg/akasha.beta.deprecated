@@ -1,88 +1,34 @@
-import React, { PropTypes, Component } from 'react';
+import React, { PropTypes } from 'react';
 import { SvgIcon } from 'material-ui';
 import { colors } from 'material-ui/styles';
 import CircleIcon from './CircleIcon';
 import { MenuSearch } from '../svg';
 
-
-export default class IconSearch extends Component {
-    state = {
-        muiTheme: this.context.muiTheme
-    };
-
-    static propTypes = {
-        disabled: PropTypes.bool,
-        style: PropTypes.object,
-        iconStyle: PropTypes.object,
-        viewBox: PropTypes.string,
-        hoverColor: PropTypes.string,
-        color: PropTypes.string
-    };
-
-    static defaultProps = {
-        style: {
-            width: '32px',
-            height: '32px',
-            borderWidth: '1px',
-            borderStyle: 'solid',
-            borderRadius: '50%'
-        },
-        viewBox: '0 0 32 32',
-        color: colors.lightBlack,
-        hoverColor: colors.darkBlack
-    };
-
-    static contextTypes = {
-        muiTheme: React.PropTypes.object
-    };
-
-    static childContextTypes = {
-        muiTheme: React.PropTypes.object
-    };
-
-    getChildContext () {
-        return {
-            muiTheme: this.state.muiTheme
-        };
-    }
-
-    render () {
-        let { disabled, style, iconStyle, viewBox, hoverColor, color, tooltip,
-            ...other } = this.props;
-        const {
-            baseTheme: {
-                palette
-            }
-        } = this.state.muiTheme;
-
-        style = Object.assign(style, {
-            borderColor: colors.faintBlack,
-            ':hover': {
-                borderColor: palette.primary1Color
-            }
-        }
+const IconSearch = (props) => {
+    const { disabled, iconStyle, isActive, onClick } = props;
+    return (
+      <CircleIcon
+        disabled={disabled}
+        isActive={isActive}
+        onClick={onClick}
+      >
+        <SvgIcon
+          color={colors.lightBlack}
+          hoverColor={colors.darkBlack}
+          style={iconStyle}
+          viewBox="0 0 32 32"
+        >
+          <MenuSearch />
+        </SvgIcon>
+      </CircleIcon>
     );
+};
 
-        return (
-          <CircleIcon
-            onClick={this._handleClick}
-            tooltip={tooltip}
-            disabled={disabled}
-          >
-            <SvgIcon
-              color={color}
-              hoverColor={hoverColor}
-              style={iconStyle}
-              viewBox={viewBox}
-              {...other}
-            >
-              <MenuSearch />
-            </SvgIcon>
-          </CircleIcon>
-        );
-    }
-    _handleClick = (ev) => {
-        if (this.props.onClick) return this.props.onClick(ev);
-    }
-}
+IconSearch.propTypes = {
+    disabled: PropTypes.bool,
+    iconStyle: PropTypes.shape(),
+    isActive: PropTypes.bool,
+    onClick: PropTypes.func.isRequired
+};
 
+export default IconSearch;

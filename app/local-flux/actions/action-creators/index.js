@@ -6,6 +6,7 @@ import * as entryActionCreators from './entry-action-creators';
 import * as externalProcessActionCreators from './external-process-action-creators';
 import * as notificationsActionCreators from './notifications-action-creators';
 import * as profileActionCreators from './profile-action-creators';
+import * as searchActionCreators from './search-action-creators';
 import * as settingsActionCreators from './settings-action-creators';
 import * as tagActionCreators from './tag-action-creators';
 import * as tempProfileActionCreators from './temp-profile-action-creators';
@@ -21,6 +22,7 @@ export {
     externalProcessActionCreators,
     notificationsActionCreators,
     profileActionCreators,
+    searchActionCreators,
     settingsActionCreators,
     tagActionCreators,
     tempProfileActionCreators,

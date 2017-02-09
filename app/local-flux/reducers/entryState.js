@@ -4,6 +4,7 @@ import { createReducer } from './create-reducer';
 import * as types from '../constants/EntryConstants';
 import * as commentsTypes from '../constants/CommentsConstants';
 import * as appTypes from '../constants/AppConstants';
+import * as searchTypes from '../constants/SearchConstants';
 
 const ErrorRecord = Record({
     code: '',
@@ -71,6 +72,7 @@ const initialState = fromJS({
     moreAllStreamEntries: false,
     moreProfileEntries: false,
     moreSavedEntries: false,
+    moreSearchEntries: false,
     moreTagEntries: false,
     tagEntriesCount: new Map(),
     entriesCount: 0, // entries published by a logged profile
@@ -134,6 +136,15 @@ const errorHandler = (state, { error, flags }) =>
         flags: state.get('flags').merge(flags)
     });
 
+const querySuccessHandler = (state, { data }) => {
+    const newSearchEntries = fromJS(data.collection.map(entry => (
+        { content: entry, entryId: entry.entryId, type: 'searchEntry' }
+    )));
+    return state.merge({
+        entries: state.get('entries').concat(newSearchEntries),
+    });
+};
+
 /**
  * State of the entries and drafts
  */
@@ -176,9 +187,9 @@ const entryState = createReducer(initialState, {
         state.merge({
             entries: state.get('entries')
                 .filter(entry => entry.get('type') !== 'savedEntry')
-                .concat(fromJS(data.collection.map((entry) => {
-                    return { content: entry, entryId: entry.entryId, type: 'savedEntry' };
-                }))),
+                .concat(fromJS(data.collection.map(entry => (
+                    { content: entry, entryId: entry.entryId, type: 'savedEntry' }
+                )))),
             flags: state.get('flags').merge(flags)
         }),
 
@@ -199,12 +210,12 @@ const entryState = createReducer(initialState, {
     [types.ENTRY_PROFILE_ITERATOR_SUCCESS]: (state, { data, flags }) => {
         const moreProfileEntries = data.limit === data.collection.length;
         const newProfileEntries = moreProfileEntries ?
-            fromJS(data.collection.slice(0, -1).map((entry) => {
-                return { content: entry, entryId: entry.entryId };
-            })) :
-            fromJS(data.collection.map((entry) => {
-                return { content: entry, entryId: entry.entryId };
-            }));
+            fromJS(data.collection.slice(0, -1).map(entry => (
+                { content: entry, entryId: entry.entryId }
+            ))) :
+            fromJS(data.collection.map(entry => (
+                { content: entry, entryId: entry.entryId }
+            )));
         return state.merge({
             entries: state.get('entries')
                 .filter(entry =>
@@ -224,12 +235,12 @@ const entryState = createReducer(initialState, {
     [types.MORE_ENTRY_PROFILE_ITERATOR_SUCCESS]: (state, { data, flags }) => {
         const moreProfileEntries = data.limit === data.collection.length;
         const newProfileEntries = moreProfileEntries ?
-            fromJS(data.collection.slice(0, -1).map((entry) => {
-                return { content: entry, entryId: entry.entryId };
-            })) :
-            fromJS(data.collection.map((entry) => {
-                return { content: entry, entryId: entry.entryId };
-            }));
+            fromJS(data.collection.slice(0, -1).map(entry => (
+                { content: entry, entryId: entry.entryId }
+            ))) :
+            fromJS(data.collection.map(entry => (
+                { content: entry, entryId: entry.entryId }
+            )));
         return state.merge({
             entries: state.get('entries').concat(newProfileEntries.map(entry =>
                 entry.merge({ type: 'profileEntry', akashaId: data.akashaId }))),
@@ -275,12 +286,12 @@ const entryState = createReducer(initialState, {
     [types.ENTRY_TAG_ITERATOR_SUCCESS]: (state, { data, flags }) => {
         const moreTagEntries = data.limit === data.collection.length;
         const newTagEntries = moreTagEntries ?
-            fromJS(data.collection.slice(0, -1).map((entry) => {
-                return { content: entry, entryId: entry.entryId };
-            })) :
-            fromJS(data.collection.map((entry) => {
-                return { content: entry, entryId: entry.entryId };
-            }));
+            fromJS(data.collection.slice(0, -1).map(entry => (
+                { content: entry, entryId: entry.entryId }
+            ))) :
+            fromJS(data.collection.map(entry => (
+                { content: entry, entryId: entry.entryId }
+            )));
         return state.merge({
             entries: state.get('entries')
                 .filter(entry => entry.get('type') !== 'tagEntry')
@@ -297,12 +308,12 @@ const entryState = createReducer(initialState, {
     [types.MORE_ENTRY_TAG_ITERATOR_SUCCESS]: (state, { data, flags }) => {
         const moreTagEntries = data.limit === data.collection.length;
         const newTagEntries = moreTagEntries ?
-            fromJS(data.collection.slice(0, -1).map((entry) => {
-                return { content: entry, entryId: entry.entryId };
-            })) :
-            fromJS(data.collection.map((entry) => {
-                return { content: entry, entryId: entry.entryId };
-            }));
+            fromJS(data.collection.slice(0, -1).map(entry => (
+                { content: entry, entryId: entry.entryId }
+            ))) :
+            fromJS(data.collection.map(entry => (
+                { content: entry, entryId: entry.entryId }
+            )));
         return state.merge({
             entries: state.get('entries').concat(newTagEntries.map(entry =>
                 entry.set('type', 'tagEntry'))),
@@ -318,12 +329,12 @@ const entryState = createReducer(initialState, {
     [types.ALL_STREAM_ITERATOR_SUCCESS]: (state, { data, flags }) => {
         const moreAllStreamEntries = data.limit === data.collection.length;
         const newEntries = moreAllStreamEntries ?
-            fromJS(data.collection.slice(0, -1).map((entry) => {
-                return { content: entry, entryId: entry.entryId };
-            })) :
-            fromJS(data.collection.map((entry) => {
-                return { content: entry, entryId: entry.entryId };
-            }));
+            fromJS(data.collection.slice(0, -1).map(entry => (
+                { content: entry, entryId: entry.entryId }
+            ))) :
+            fromJS(data.collection.map(entry => (
+                { content: entry, entryId: entry.entryId }
+            )));
         return state.merge({
             entries: state.get('entries')
                 .filter(entry => entry.get('type') !== 'allStreamEntry')
@@ -341,12 +352,12 @@ const entryState = createReducer(initialState, {
     [types.MORE_ALL_STREAM_ITERATOR_SUCCESS]: (state, { data, flags }) => {
         const moreAllStreamEntries = data.limit === data.collection.length;
         const newEntries = moreAllStreamEntries ?
-            fromJS(data.collection.slice(0, -1).map((entry) => {
-                return { content: entry, entryId: entry.entryId };
-            })) :
-            fromJS(data.collection.map((entry) => {
-                return { content: entry, entryId: entry.entryId };
-            }));
+            fromJS(data.collection.slice(0, -1).map(entry => (
+                { content: entry, entryId: entry.entryId }
+            ))) :
+            fromJS(data.collection.map(entry => (
+                { content: entry, entryId: entry.entryId }
+            )));
         return state.merge({
             entries: state.get('entries').concat(newEntries.map(entry =>
                 entry.set('type', 'allStreamEntry'))),
@@ -603,6 +614,15 @@ const entryState = createReducer(initialState, {
     [types.CLAIM_SUCCESS]: claimFlagHandler,
 
     [types.CLAIM_ERROR]: claimFlagHandler,
+
+    [searchTypes.QUERY_SUCCESS]: querySuccessHandler,
+
+    [searchTypes.MORE_QUERY_SUCCESS]: querySuccessHandler,
+
+    [searchTypes.RESET_RESULTS]: state =>
+        state.merge({
+            entries: state.get('entries').filter(entry => entry.get('type') !== 'searchEntry')
+        }),
 
     [appTypes.CLEAN_STORE]: () => initialState,
 });

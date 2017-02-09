@@ -72,20 +72,20 @@ class EntryPageHeader extends Component {
             null;
         const userInitials = getInitials(publisher.firstName, publisher.lastName);
         return (
-            <Avatar
-              image={publisherAvatar}
-              style={{ display: 'inline-block', cursor: 'pointer' }}
-              radius={40}
-              userInitials={userInitials}
-              userInitialsStyle={{
-                  textTransform: 'uppercase',
-                  fontSize: '12px',
-                  fontWeight: '600',
-                  margin: '0px'
-              }}
-              onMouseEnter={this.showProfileHoverCard}
-              onClick={selectProfile}
-            />
+          <Avatar
+            image={publisherAvatar}
+            style={{ display: 'inline-block', cursor: 'pointer' }}
+            radius={40}
+            userInitials={userInitials}
+            userInitialsStyle={{
+                textTransform: 'uppercase',
+                fontSize: '12px',
+                fontWeight: '600',
+                margin: '0px'
+            }}
+            onMouseEnter={this.showProfileHoverCard}
+            onClick={selectProfile}
+          />
         );
     };
 
@@ -320,7 +320,10 @@ EntryPageHeader.propTypes = {
     timestamp: PropTypes.number,
     wordCount: PropTypes.number,
     newCommentsCount: PropTypes.number,
+    onFollow: PropTypes.func,
     onRequestNewestComments: PropTypes.func,
+    onTip: PropTypes.func,
+    onUnfollow: PropTypes.func,
     scrollDirection: PropTypes.number,
     followingsList: PropTypes.shape(),
     followPending: PropTypes.bool,

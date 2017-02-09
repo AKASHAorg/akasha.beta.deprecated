@@ -1,8 +1,7 @@
 import React, { PropTypes, Component } from 'react';
 import { injectIntl } from 'react-intl';
 import { colors } from 'material-ui/styles';
-import { Paper, Tabs, Tab, List, ListItem } from 'material-ui';
-import ActionDelete from 'material-ui/svg-icons/action/delete';
+import { Paper, Tabs, Tab, List } from 'material-ui';
 import { Avatar } from 'shared-components';
 import { getInitials } from 'utils/dataModule';
 import UserProfileHeader from './user-profile/user-profile-header';

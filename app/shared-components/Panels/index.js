@@ -1,9 +1,11 @@
-import userProfile from './user-profile';
-import newEntry from './new-entry-form';
 import editProfile from './edit-profile';
+import newEntry from './new-entry-form';
+import search from './search';
+import userProfile from './user-profile';
 
 export default {
     editProfile,
     newEntry,
+    search,
     userProfile
 };

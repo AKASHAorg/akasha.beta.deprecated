@@ -7,6 +7,7 @@ export {
     EntryActions,
     NotificationsActions,
     ProfileActions,
+    SearchActions,
     SettingsActions,
     TagActions,
     TempProfileActions,
