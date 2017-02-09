@@ -11,6 +11,7 @@ import * as settingsActionCreators from './settings-action-creators';
 import * as tagActionCreators from './tag-action-creators';
 import * as tempProfileActionCreators from './temp-profile-action-creators';
 import * as transactionActionCreators from './transaction-action-creators';
+import * as utilsActionCreators from './utils-action-creators';
 import * as validationActionCreators from './validation-action-creators';
 
 export {
@@ -27,5 +28,6 @@ export {
     tagActionCreators,
     tempProfileActionCreators,
     transactionActionCreators,
+    utilsActionCreators,
     validationActionCreators
 };

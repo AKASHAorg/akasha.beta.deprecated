@@ -205,6 +205,16 @@ const notificationMessages = defineMessages({
         id: 'app.notification.channelStarred',
         description: 'message to be displayed when a chat channel was starred',
         defaultMessage: '#{channel} was starred'
+    },
+    backupSuccess: {
+        id: 'app.notification.backupSuccess',
+        description: 'message to display when the keystore backup was generated successfully',
+        defaultMessage: 'Backup was generated at {path}'
+    },
+    backupError: {
+        id: 'app.notification.backupError',
+        description: 'message to display when the keystore backup was unsuccessful',
+        defaultMessage: 'Generating backup has failed. Try again'
     }
 });
 export { notificationMessages };

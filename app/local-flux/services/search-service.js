@@ -1,5 +1,7 @@
 import BaseService from './base-service';
 
+const Channel = window.Channel;
+
 class SearchService extends BaseService {
     handshake = ({ onError, onSuccess }) => {
         this.registerListener(
