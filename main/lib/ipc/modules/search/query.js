@@ -7,16 +7,14 @@ const get_entry_1 = require('../entry/get-entry');
 const ramda_1 = require('ramda');
 const records_1 = require('../models/records');
 const execute = Promise.coroutine(function* (data) {
-    let results;
     let cached;
     if (records_1.mixed.hasShort(data.text)) {
         cached = records_1.mixed.getShort(data.text);
-        results = ramda_1.slice(data.offset, data.pageSize + data.offset, cached.results).map((entryId) => {
-            return get_entry_1.default.execute({ entryId });
-        });
     }
     else {
-        const requestPayLoad = geth_connector_1.GethConnector.getInstance().web3.fromUtf8(JSON.stringify(data));
+        const requestPayLoad = geth_connector_1.GethConnector.getInstance()
+            .web3
+            .fromUtf8(JSON.stringify({ text: data.text, offset: 0 }));
         if (!post_1.whisperIdentity.from) {
             post_1.whisperIdentity.from = yield geth_connector_1.GethConnector.getInstance().web3.shh.newIdentityAsync();
         }
@@ -59,7 +57,6 @@ const execute = Promise.coroutine(function* (data) {
         if (!jsonResponse || !jsonResponse.entries) {
             throw new Error('Invalid response from search service.');
         }
-        console.log(jsonResponse.entries);
         cached = {
             text: data.text,
             total: jsonResponse.count,
@@ -67,10 +64,10 @@ const execute = Promise.coroutine(function* (data) {
         };
         records_1.mixed.setShort(data.text, cached);
         jsonResponse = null;
-        results = ramda_1.slice(0, data.pageSize, cached.results).map((entryId) => {
-            return get_entry_1.default.execute({ entryId });
-        });
     }
+    const results = ramda_1.slice(data.offset, data.pageSize + data.offset, cached.results).map((entryId) => {
+        return get_entry_1.default.execute({ entryId });
+    });
     const collection = yield Promise.all(results);
     return { collection, total: cached.total, from: data };
 });

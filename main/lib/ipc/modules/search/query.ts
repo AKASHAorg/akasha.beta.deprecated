@@ -8,15 +8,13 @@ import { mixed } from '../models/records';
 
 
 const execute = Promise.coroutine(function*(data: { text: string, pageSize: number, offset: number }) {
-    let results;
     let cached;
     if (mixed.hasShort(data.text)) {
         cached = mixed.getShort(data.text);
-        results = slice(data.offset, data.pageSize + data.offset, cached.results).map((entryId) => {
-            return getEntry.execute({ entryId });
-        });
     } else {
-        const requestPayLoad = GethConnector.getInstance().web3.fromUtf8(JSON.stringify(data));
+        const requestPayLoad = GethConnector.getInstance()
+            .web3
+            .fromUtf8(JSON.stringify({ text: data.text, offset: 0 }));
         if (!whisperIdentity.from) {
             whisperIdentity.from = yield GethConnector.getInstance().web3.shh.newIdentityAsync();
         }
@@ -64,7 +62,6 @@ const execute = Promise.coroutine(function*(data: { text: string, pageSize: numb
         if (!jsonResponse || !jsonResponse.entries) {
             throw new Error('Invalid response from search service.')
         }
-        console.log(jsonResponse.entries);
 
         cached = {
             text: data.text,
@@ -74,10 +71,10 @@ const execute = Promise.coroutine(function*(data: { text: string, pageSize: numb
 
         mixed.setShort(data.text, cached);
         jsonResponse = null;
-        results = slice(0, data.pageSize, cached.results).map((entryId) => {
-            return getEntry.execute({ entryId });
-        });
     }
+    const results = slice(data.offset, data.pageSize + data.offset, cached.results).map((entryId) => {
+        return getEntry.execute({ entryId });
+    });
     const collection = yield Promise.all(results);
     return { collection, total: cached.total, from: data };
 });
