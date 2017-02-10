@@ -2,12 +2,14 @@ import React, { Component } from 'react';
 import withWidth from 'material-ui/utils/withWidth';
 import { findClosestMatch } from 'utils/imageUtils'; // eslint-disable-line import/no-unresolved, import/extensions
 import styles from './image-block.scss';
+import PlayIcon from 'material-ui/svg-icons/av/play-circle-outline';
 
 class ImageBlock extends Component {
     constructor (props) {
         super(props);
         this.state = {
-            loading: true
+            loading: true,
+            isPlaying: false
         };
     }
     _getBaseNodeStyle = () => {
@@ -38,6 +40,14 @@ class ImageBlock extends Component {
         }
         return {};
     }
+    _handleImageClick = (ev) => {
+        const { files } = this.props.data;
+        if (files.gif) {
+            this.setState({
+                isPlaying: !this.state.isPlaying
+            });
+        }
+    }
     _getImageSrc = () => {
         const { files, media } = this.props.data;
         const { width } = this.props;
@@ -47,10 +57,14 @@ class ImageBlock extends Component {
             fileKey = findClosestMatch(this.baseNodeRef.parentNode.clientWidth, files, media);
         }
         // @todo: [code: 3ntry3] get rid of this too;
+        if (files.gif && this.state.isPlaying) {
+            fileKey = 'gif';
+        }
         return `${window.entry__baseUrl}/${files[fileKey].src}`;
     }
     render () {
-        const { caption, } = this.props.data;
+        const { caption, files } = this.props.data;
+        const { isPlaying } = this.state;
         const baseNodeStyle = this._getBaseNodeStyle();
         return (
           <div
@@ -60,8 +74,27 @@ class ImageBlock extends Component {
             <div
               className={`${styles.rootInner}`}
             >
-              <div className={`${styles.image}`} >
-                <img src={this._getImageSrc()} role="presentation" />
+              <div
+                className={`${styles.image}`}
+                onClick={this._handleImageClick}
+              >
+                {files.gif &&
+                  <PlayIcon
+                    style={{
+                        position: 'absolute',
+                        bottom: 8,
+                        left: 8,
+                        fill: '#FFF',
+                        color: '#FFF',
+                        height: 64,
+                        width: 64,
+                        opacity: isPlaying ? 0 : 0.8,
+                        filter: `blur(${isPlaying ? '3px' : '0'})`,
+                        transition: 'opacity 0.218s ease-in-out, blur 0.218s ease-in-out'
+                    }}
+                  />
+                }
+                <img src={this._getImageSrc()} alt="" />
               </div>
               <div className={`${styles.caption}`} >
                 <small>{caption}</small>
