@@ -9,6 +9,7 @@ import {
     Toolbar,
     ToolbarGroup } from 'material-ui';
 import withWidth from 'material-ui/utils/withWidth';
+import PlayIcon from 'material-ui/svg-icons/av/play-circle-outline';
 import {
   ImageSizeXS,
   ImageSizeLarge,
@@ -90,7 +91,7 @@ class ImageBlock extends Component {
     _handleImageClick = (ev) => {
         ev.stopPropagation();
         this.setState({
-            isCardEnabled: true
+            isCardEnabled: true,
         }, () => {
             this.props.blockProps.setReadOnly(true);
             window.addEventListener('keyup', this._removeImageContainer);
@@ -197,15 +198,42 @@ class ImageBlock extends Component {
                 </ToolbarGroup>
               </Toolbar>
               <CardMedia
-                style={{
-                    boxShadow: isCardEnabled ? '0 0 0 3px #4285f4' : 'none'
-                }}
+                
                 onClick={this._handleImageClick}
               >
-                <img
-                  src={imageSrc}
-                  alt=""
-                />
+                <div
+                  style={{
+                      boxShadow: isCardEnabled ? '0 0 0 3px #4285f4' : 'none',
+                      position: 'relative'
+                  }}
+                >
+                  {files.gif &&
+                    <div
+                      style={{
+                          position: 'absolute',
+                          bottom: 0,
+                          left: 8,
+                      }}
+                    >
+                      <PlayIcon
+                        style={{
+                            fill: '#FFF',
+                            color: '#FFF',
+                            height: 64,
+                            width: 64,
+                            opacity: isCardEnabled ? 0 : 0.8,
+                            filter: `blur(${isCardEnabled ? '3px' : '0'})`,
+                            transition: 'opacity 0.218s ease-in-out, blur 0.218s ease-in-out'
+                        }}
+                      />
+                    </div>
+                  }
+                  <img
+                    src={(isCardEnabled && files.gif) ? imageCreator(files.gif.src) : imageSrc}
+                    alt=""
+                    style={{ width: '100%', display: 'block' }}
+                  />
+                </div>
               </CardMedia>
               <CardText style={{ padding: 0, marginTop: 8, borderBottom: '1px solid #F5F5F5' }}>
                 <TextField

@@ -28,11 +28,15 @@ export default class BlockButton extends Component {
         const files = this.fileInput.files;
         const filePromises = getResizedImages(files, { minWidth: 320 });
         Promise.all(filePromises).then((results) => {
-            console.log(results, 'the results :)');
             let bestKey = findClosestMatch(768, results[0]);
             console.log(bestKey, 'the best key');
             if (bestKey === 'xl' || bestKey === 'xxl') {
                 bestKey = 'md';
+            }
+            if (bestKey === 'gif' && results[0].gif) {
+                const res = Object.assign({}, results[0]);
+                delete res.gif;
+                bestKey = findClosestMatch(results[0].gif.width, res);
             }
             const data = {
                 files: results[0],
