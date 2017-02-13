@@ -134,24 +134,14 @@ const convertToArray = (dataUrl) => {
 };
 const canvasToArray = canvas =>
     new Promise((resolve, reject) => {
-        const blobCb = (canvasWidth, canvasHeight) => (blob) => {
-            const reader = new FileReader();
-            reader.onloadend = () =>
-                resolve({
-                    src: new Uint8Array(reader.result),
-                    width: canvasWidth,
-                    height: canvasHeight
-                });
-
-            try {
-                reader.readAsArrayBuffer(blob);
-            } catch (exception) {
-                console.error(exception);
-                reject(exception);
-            }
-        };
         try {
-            canvas.toBlob(blobCb(canvas.width, canvas.height), 'image/jpg', '0.9');
+            const canvasData = canvas.toDataURL('image/jpeg', 0.7);
+            const canvasArray = convertToArray(canvasData);
+            return resolve({
+                src: canvasArray.value,
+                width: canvas.width,
+                height: canvas.height
+            });
         } catch (exception) {
             console.log(exception);
             reject(exception);
@@ -218,7 +208,7 @@ const resizeAnimatedGif = (dataUrl, image, options) => {
     const streamReader = new StreamReader(imageArray.value);
     return new Promise((resolve, reject) => {
         if (streamReader.readAscii(3) !== 'GIF') {
-            console.log('it is not an animated gif. Not sure if this is an image, actually!');
+            console.log('It is not an animated gif. Not sure if this is an image, actually!');
             return reject('Gif file not recognised!');
         }
         const frameCount = streamReader.getFrameNumber();
@@ -296,44 +286,68 @@ const getImageSize = (imagePath, options) => {
 const getResizedImages = (inputFiles, options) => {
     const gifFiles = [];
     const imageFiles = [];
-    const promises = [];
+    // const promises = [];
     console.group('resize results and timings:');
-    Array.from(inputFiles).forEach((file) => {
+    const gifPromises = Array.from(inputFiles).filter((file) => {
         const fileName = file.name;
         const ext = fileName.split('.')[fileName.split('.').length - 1].toLowerCase();
         console.log('original image', file.name, 'has a size of:', Math.floor(file.size / 1024), 'KiB');
-        if (ext === 'gif' && settings.animatedGifSupport) return gifFiles.push(file);
-        if (settings.extentions.includes(ext)) {
-            return imageFiles.push(file);
-        }
-        return Promise.reject(`Specified image format is not supported. Please use one of following formats: ${settings.extentions.join(', ')}`);
-    });
-    // resize gifs
-    for (let i = gifFiles.length - 1; i >= 0; i -= 1) {
-        const imageFile = gifFiles[i];
-        const p = getRawDataUrl(imageFile, options).then(imageDataUrl =>
+        // treat gif extention as it is animated gif to prevent double processing
+        return (ext === 'gif' && settings.animatedGifSupport);
+    }).map(imageFile =>
+        getRawDataUrl(imageFile, options).then(imageDataUrl =>
             // imageData should be the original animated gif Uint8Array
             getImageSize(imageFile.path, options).then((size) => {
                 const { height, width } = size;
                 options.actualHeight = height;
                 options.actualWidth = width;
-                console.log(size, 'the size');
+                console.info(`original image size ${width}px width x ${height}px height.`);
                 return resizeAnimatedGif(imageDataUrl, size.imageObj, options);
-            }));
-        promises.push(p);
-    }
-    // resize static images
-    for (let i = imageFiles.length - 1; i >= 0; i -= 1) {
-        const imageFile = imageFiles[i]; // string
-        const p = getImageSize(imageFile.path, options).then((results) => {
+            })));
+    const imagePromises = Array.from(inputFiles).filter((file) => {
+        const fileName = file.name;
+        const ext = fileName.split('.')[fileName.split('.').length - 1].toLowerCase();
+        return settings.extentions.includes(ext);
+    }).map(imageFile =>
+        getImageSize(imageFile.path, options).then((results) => {
             const { height, width } = results;
             options.actualWidth = width;
             options.actualHeight = height;
             return resizeImage(results.imageObj, options);
-        });
-        promises.push(p);
-    }
-    return promises;
+        }));
+    return [...gifPromises, ...imagePromises];
+
+    // Array.from(inputFiles).forEach((file) => {
+    //     const fileName = file.name;
+    //     const ext = fileName.split('.')[fileName.split('.').length - 1].toLowerCase();
+    //     console.log('original image', file.name, 'has a size of:', Math.floor(file.size / 1024), 'KiB');
+    //     if (ext === 'gif' && settings.animatedGifSupport) return gifFiles.push(file);
+    //     if (settings.extentions.includes(ext)) {
+    //         return imageFiles.push(file);
+    //     }
+    //     return Promise.reject(`Specified image format is not supported. Please use one of following formats: ${settings.extentions.join(', ')}`);
+    // });
+    // // resize gifs
+    // for (let i = gifFiles.length - 1; i >= 0; i -= 1) {
+    //     const imageFile = gifFiles[i];
+    //     const p = getRawDataUrl(imageFile, options).then(imageDataUrl =>
+    //         // imageData should be the original animated gif Uint8Array
+    //         getImageSize(imageFile.path, options).then((size) => {
+    //             const { height, width } = size;
+    //             options.actualHeight = height;
+    //             options.actualWidth = width;
+    //             console.info(`original image size ${width}px width x ${height}px height.`);
+    //             return resizeAnimatedGif(imageDataUrl, size.imageObj, options);
+    //         }));
+    //     promises.push(p);
+    // }
+    // // resize static images
+    // for (let i = imageFiles.length - 1; i >= 0; i -= 1) {
+    //     const imageFile = imageFiles[i]; // string
+    //     const p = 
+    //     promises.push(p);
+    // }
+    // return promises;
 };
 
 export default imageCreator;

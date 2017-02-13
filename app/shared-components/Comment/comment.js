@@ -114,7 +114,7 @@ class Comment extends React.Component {
           <div
             id={`comment-${comment.get('commentId')}`}
             className={`${style.root}`}
-            style={{ position: 'relative', opacity: !content ? 0.5 : 1 }}
+            style={{ position: 'relative' }}
           >
             <div className={`${style.rootInner}`}>
               <div
@@ -129,7 +129,10 @@ class Comment extends React.Component {
                     onMouseLeave={this._handleMouseLeave}
                     title={
                       <div
-                        style={{ position: 'relative' }}
+                        style={{
+                            position: 'relative',
+                            opacity: !content ? 0.5 : 1
+                        }}
                         onMouseEnter={this._handleMouseEnter}
                       >
                         <FlatButton
@@ -148,11 +151,23 @@ class Comment extends React.Component {
                         />
                       </div>
                     }
-                    subtitle={date && intl.formatRelative(new Date(date))}
+                    subtitle={
+                      <div
+                        style={{
+                            opacity: !content ? 0.5 : 1
+                        }}
+                      >
+                        {date && intl.formatRelative(new Date(date))}
+                      </div>
+                    }
                     avatar={
                       <Avatar
                         image={authorAvatar}
-                        style={{ display: 'inline-block', cursor: 'pointer' }}
+                        style={{
+                            display: 'inline-block',
+                            cursor: 'pointer',
+                            opacity: !content ? 0.5 : 1
+                        }}
                         userInitials={authorInitials}
                         radius={40}
                         onClick={ev => onAuthorNameClick(ev, profile.get('profile'))}
@@ -177,7 +192,7 @@ class Comment extends React.Component {
                     }
                   </CardHeader>
                 </div>
-                {!isPublishing && REPLIES_ENABLED && showReplyButton &&
+                {!isPublishing && REPLIES_ENABLED && showReplyButton && content &&
                   <div className={'col-xs-7 end-xs'}>
                     <div className={`${style.commentActions}`}>
                       <IconButton onClick={this.props.onReply}>
@@ -210,7 +225,12 @@ class Comment extends React.Component {
               {!content &&
                 <div data-tip={intl.formatMessage(entryMessages.unresolvedEntry)}>
                   <IconButton
-                    style={{ position: 'absolute', right: '10px', top: '7px' }}
+                    style={{
+                        position: 'absolute',
+                        right: '10px',
+                        top: '7px',
+                        opacity: 0.5
+                    }}
                   >
                     <HubIcon color={palette.accent1Color} />
                   </IconButton>

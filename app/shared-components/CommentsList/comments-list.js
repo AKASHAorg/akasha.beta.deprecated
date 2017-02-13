@@ -62,7 +62,6 @@ class CommentsList extends Component {
         const shouldTriggerEvent = (scrollY + innerHeight + bottomOffset) >= scrollHeight;
         if (shouldTriggerEvent && (commentsCount > fetchLimit) && !this.state.loadMoreReq) {
             if (onLoadMoreRequest && lastLoadedCommentId > 1) {
-                console.info('triggered scroll event to load more comments');
                 this.setState({
                     loadMoreReq: true
                 }, () => {
@@ -75,6 +74,7 @@ class CommentsList extends Component {
         const { comments, intl, loggedProfile, entryAuthorProfile, fetchingComments, profileAvatar,
             profileUserInitials, onReplyCreate, onCommenterClick, onTip, onFollow, onUnfollow,
             followingsList, followPending } = this.props;
+        console.count('number of renders in comments-list');
         return (
           <div>
             {comments.size > 0 &&
