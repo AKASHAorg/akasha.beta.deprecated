@@ -4,8 +4,8 @@ import { Divider } from 'material-ui';
 import { entryMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
 
 class CommentThread extends Component {
-    componentDidUpdate () {
-        if (this.props.replyTo && this.commentEditorRef) {
+    componentDidUpdate (prevProps) {
+        if (this.props.replyTo && prevProps.replyTo !== this.props.replyTo && this.commentEditorRef) {
             this.commentEditorRef.getBaseNode().scrollIntoViewIfNeeded(false);
         }
     }
