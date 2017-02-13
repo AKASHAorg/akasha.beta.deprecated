@@ -9,7 +9,7 @@ import {
     Toolbar,
     ToolbarGroup } from 'material-ui';
 import withWidth from 'material-ui/utils/withWidth';
-import PlayIcon from 'material-ui/svg-icons/av/play-circle-outline';
+import PlayIcon from 'material-ui/svg-icons/av/play-arrow';
 import {
   ImageSizeXS,
   ImageSizeLarge,
@@ -211,19 +211,21 @@ class ImageBlock extends Component {
                     <div
                       style={{
                           position: 'absolute',
-                          bottom: 0,
-                          left: 8,
+                          top: '50%',
+                          left: '50%',
+                          marginTop: '-48px',
+                          marginLeft: '-48px'
                       }}
                     >
                       <PlayIcon
                         style={{
                             fill: '#FFF',
                             color: '#FFF',
-                            height: 64,
-                            width: 64,
-                            opacity: isCardEnabled ? 0 : 0.8,
-                            filter: `blur(${isCardEnabled ? '3px' : '0'})`,
-                            transition: 'opacity 0.218s ease-in-out, blur 0.218s ease-in-out'
+                            height: 96,
+                            width: 96,
+                            opacity: isCardEnabled ? 0 : 1,
+                            filter: `blur(${isCardEnabled ? '3px' : '0'}) drop-shadow(0 0 2px #444)`,
+                            transition: 'opacity 0.218s ease-in-out, blur 0.218s ease-in-out',
                         }}
                       />
                     </div>

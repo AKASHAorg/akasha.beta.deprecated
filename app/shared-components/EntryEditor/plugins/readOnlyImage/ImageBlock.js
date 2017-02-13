@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import withWidth from 'material-ui/utils/withWidth';
 import { findClosestMatch } from 'utils/imageUtils'; // eslint-disable-line import/no-unresolved, import/extensions
 import styles from './image-block.scss';
-import PlayIcon from 'material-ui/svg-icons/av/play-circle-outline';
+import PlayIcon from 'material-ui/svg-icons/av/play-arrow';
 
 class ImageBlock extends Component {
     constructor (props) {
@@ -82,14 +82,16 @@ class ImageBlock extends Component {
                   <PlayIcon
                     style={{
                         position: 'absolute',
-                        bottom: 8,
-                        left: 8,
+                        top: '50%',
+                        left: '50%',
+                        marginTop: '-48px',
+                        marginLeft: '-48px',
                         fill: '#FFF',
                         color: '#FFF',
-                        height: 64,
-                        width: 64,
-                        opacity: isPlaying ? 0 : 0.8,
-                        filter: `blur(${isPlaying ? '3px' : '0'})`,
+                        height: 96,
+                        width: 96,
+                        opacity: isPlaying ? 0 : 1,
+                        filter: `blur(${isPlaying ? '3px' : '0'}) drop-shadow(0 0 2px #444)`,
                         transition: 'opacity 0.218s ease-in-out, blur 0.218s ease-in-out'
                     }}
                   />

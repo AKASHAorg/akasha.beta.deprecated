@@ -1,6 +1,5 @@
 import React, { Component, PropTypes } from 'react';
 import { MegadraftEditor, editorStateFromRaw, editorStateToJSON } from 'megadraft';
-import { convertToRaw } from 'draft-js';
 import EditorSidebar from './sidebar/editor-sidebar';
 import styles from './style.scss';
 import imagePlugin from './plugins/image/image-plugin';
@@ -13,7 +12,6 @@ class EntryEditor extends Component {
     };
     componentWillMount () {
         let { content } = this.props;
-        console.log(typeof content);
         if (typeof content === 'string') {
             content = JSON.parse(this.props.content);
         }
@@ -50,7 +48,6 @@ class EntryEditor extends Component {
     getContent = () => this.state.editorState.getCurrentContent();
     getTitle = () => this.state.title;
     _handleEditorChange = (editorState) => {
-        console.log('chnge?');
         this.setState({
             editorState,
         });
