@@ -49,7 +49,7 @@ class CommentsActions {
             if (entryComments.size > 0) {
                 lastCommentId = entryComments.first().get('commentId');
             } else {
-                lastCommentId = '0';
+                lastCommentId = 0;
             }
             // we need a separate channel to have a different listener for this
             if (!fetchingComments) {

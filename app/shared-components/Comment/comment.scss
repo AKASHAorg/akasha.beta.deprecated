@@ -29,6 +29,14 @@
     padding: 0 8px;
     :global {
         .megadraft-editor {
+            .paragraph,
+                h2,
+                h1,
+                blockquote,
+                .public-DraftStyleDefault-ul,
+                .public-DraftStyleDefault-ol {
+                    width: 100%;
+                }
             .DraftEditor-root {
                 font-size: 16px;
             }
