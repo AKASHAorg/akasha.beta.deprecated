@@ -26,7 +26,6 @@ class CommentThread extends Component {
         if (depth > 1) {
             filteredComments = filteredComments.reverse();
         }
-        console.count('number of renders in comments-thread');
         const comms = filteredComments.map(comment =>
           <Comment
             key={`${comment.commentId}-fetchedComments`}

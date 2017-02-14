@@ -60,7 +60,13 @@ class ImageBlock extends Component {
             imageKey = findClosestMatch(containerWidth, imageFiles, this.state.previewImage);
         }
         this.props.container.updateData({ media: imageKey });
-        this.setState({
+        if (typeof imageFiles[imageKey].src === 'string') {
+            return this.setState({
+                previewImage: imageKey,
+                imageSrc: `${window.entry__baseUrl}/${imageFiles[imageKey].src}`
+            });
+        }
+        return this.setState({
             previewImage: imageKey,
             imageSrc: imageCreator(imageFiles[imageKey].src)
         });
@@ -140,6 +146,18 @@ class ImageBlock extends Component {
         const { isCardEnabled, imageSrc, previewImage } = this.state;
         const { files, caption } = this.props.data;
         const baseNodeStyle = this._getBaseNodeStyle();
+        let imageSource;
+        if (isCardEnabled && files.gif) {
+            if (typeof files.gif.src === 'string') {
+                imageSource = imageCreator(files.gif.src, window.entry__baseUrl);
+            } else if (typeof files.gif.src === 'object') {
+                imageSource = imageCreator(files.gif.src);
+            } else {
+                imageSource = imageSrc;
+            }
+        } else {
+            imageSource = imageSrc;
+        }
         return (
           <div
             ref={(baseNode) => { this.baseNodeRef = baseNode; }}
@@ -231,7 +249,7 @@ class ImageBlock extends Component {
                     </div>
                   }
                   <img
-                    src={(isCardEnabled && files.gif) ? imageCreator(files.gif.src) : imageSrc}
+                    src={imageSource}
                     alt=""
                     style={{ width: '100%', display: 'block' }}
                   />
