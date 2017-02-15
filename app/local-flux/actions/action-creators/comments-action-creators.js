@@ -24,10 +24,11 @@ export function getEntryCommentsError (error, flags) {
     };
 }
 
-export function fetchNewCommentsSuccess (comment) {
+export function fetchNewCommentsSuccess (comment, options) {
     return {
         type: types.FETCH_NEW_COMMENTS_SUCCESS,
-        comment
+        comment,
+        options
     };
 }
 
