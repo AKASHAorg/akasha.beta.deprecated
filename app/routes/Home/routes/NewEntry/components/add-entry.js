@@ -103,6 +103,15 @@ class AddEntryPage extends Component {
         }
     };
 
+    getVersion = (version) => {
+        const { drafts, params } = this.props;
+        const currentDraft = this._findCurrentDraft(drafts);
+        if (!currentDraft || !currentDraft.entryId) {
+            return null;
+        }
+        const query = version !== undefined ? `?version=${version}` : '';
+        return this.context.router.push(`/${params.akashaId}/entry/${currentDraft.entryId}${query}`);
+    };
     convertEntryToDraft = (entry) => {
         if (!entry || !entry.content) {
             return null;
@@ -110,7 +119,7 @@ class AddEntryPage extends Component {
         const draft = {};
         const { tags, ...content } = entry.content;
         draft.content = content;
-        draft.tags = entry.content.tags;
+        draft.tags = tags;
         draft.entryId = entry.entryId;
         return draft;
     };
@@ -219,7 +228,7 @@ class AddEntryPage extends Component {
         });
     };
 
-    _getHeaderTitle = () => {
+    _getHeaderTitle = () => { // eslint-disable-line complexity
         const { savingDraft, entriesCount, drafts, draftsCount, location,
             latestVersion } = this.props;
         const { fetchingDraft, draftMissing, isNewDraft, shouldBeSaved } = this.state;
@@ -283,17 +292,6 @@ class AddEntryPage extends Component {
             duration: 3000
         });
     };
-
-    getVersion = (version) => {
-        const { drafts, params } = this.props;
-        const currentDraft = this._findCurrentDraft(drafts);
-        if (!currentDraft || !currentDraft.entryId) {
-            return null;
-        }
-        const query = version !== undefined ? `?version=${version}` : '';
-        return this.context.router.push(`/${params.akashaId}/entry/${currentDraft.entryId}${query}`);
-    };
-
     openVersionsPanel = () => {
         this.setState({
             showVersions: true

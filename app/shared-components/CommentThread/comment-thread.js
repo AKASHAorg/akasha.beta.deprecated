@@ -28,7 +28,7 @@ class CommentThread extends Component {
         }
         const comms = filteredComments.map(comment =>
           <Comment
-            key={`${comment.commentId}-fetchedComments`}
+            key={`${comment.commentId || comment.tempTx}-fetchedComments`}
             comment={comment}
             loggedProfile={loggedProfile}
             followingsList={followingsList}

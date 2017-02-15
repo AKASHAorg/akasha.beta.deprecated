@@ -40,7 +40,7 @@ class CommentsActions {
             }))
         });
     }
-    fetchNewComments (entryId) {
+    fetchNewComments (entryId, options) {
         this.dispatch((dispatch, getState) => {
             const entryComments = getState().commentsState.get('entryComments')
                     .filter(comm => (comm.get('entryId') === parseInt(entryId, 10)) && comm.get('commentId') && !comm.get('tempTx'));
@@ -62,13 +62,13 @@ class CommentsActions {
                         data.collection.forEach((comment) => {
                             if (comment.data.parent === '0') {
                                 this.dispatch(
-                                    commentsActionCreators.fetchNewCommentsSuccess(comment)
+                                    commentsActionCreators.fetchNewCommentsSuccess(comment, options)
                                 );
                             } else {
                                 const parentLoaded = entryComments.findIndex(comm => comm.get('commentId') === parseInt(comment.data.parent, 10)) > -1;
                                 if (parentLoaded) {
                                     this.dispatch(
-                                        commentsActionCreators.fetchNewCommentsSuccess(comment)
+                                        commentsActionCreators.fetchNewCommentsSuccess(comment, options)
                                     );
                                 }
                             }
@@ -144,6 +144,7 @@ class CommentsActions {
         this.dispatch(commentsActionCreators.publishCommentSuccess({
             registerPending: { entryId: tx.entryId, tx, value: false }
         }));
+        this.fetchNewComments(tx.entryId, { autoload: true });
         this.appActions.showNotification({
             id: 'commentPublishedSuccessfully'
         });

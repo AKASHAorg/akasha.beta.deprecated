@@ -86,7 +86,7 @@ const commentsState = createReducer(initialState, {
         });
     },
 
-    [types.FETCH_NEW_COMMENTS_SUCCESS]: (state, { comment }) => {
+    [types.FETCH_NEW_COMMENTS_SUCCESS]: (state, { comment, options }) => {
         const comms = castCommentToRecord(comment);
         const newState = state.setIn(['entryComments'],
             state.get('entryComments')
@@ -95,7 +95,10 @@ const commentsState = createReducer(initialState, {
                  .unshift(comms)
                  .toList()
         );
-        return newState.setIn(['newCommentsIds'], state.get('newCommentsIds').union([comment.commentId]));
+        if (!options || (options && !options.autoload)) {
+            return newState.setIn(['newCommentsIds'], state.get('newCommentsIds').union([comment.commentId]));
+        }
+        return newState;
     },
 
     [types.CLEAR_NEW_COMMENTS_IDS_SUCCESS]: state =>
@@ -117,7 +120,7 @@ const commentsState = createReducer(initialState, {
             return state;
         }
         return state.merge({
-            entryComments: state.get('entryComments').setIn([index, 'tempTx'], null).setIn([index, 'isPublishing'], false)
+            entryComments: state.get('entryComments').setIn([index, 'isPublishing'], false)
         });
     },
     [types.UNLOAD_COMMENTS]: (state, { entryId, commentId }) =>

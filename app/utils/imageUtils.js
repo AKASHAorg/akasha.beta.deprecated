@@ -216,7 +216,7 @@ const resizeAnimatedGif = (dataUrl, image, options) => {
             return reject('Gif file not recognised!');
         }
         const frameCount = streamReader.getFrameNumber();
-        console.log(frameCount, 'the frames');
+        console.log('number of frames:', frameCount);
         // resize 1 frame for presentation;
         return resizeImage(image, options).then((imageObj) => {
             if (frameCount > 0) {
