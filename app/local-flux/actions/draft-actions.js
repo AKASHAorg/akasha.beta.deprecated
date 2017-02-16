@@ -102,10 +102,12 @@ class DraftActions {
         return this.throttledUpdateDraft(draft);
     };
 
-    publishDraft = (draft, gas = 4000000) => {
+    publishDraft = (payload, gas = 4000000) => {
         this.dispatch((dispatch, getState) => {
             const loggedProfile = getState().profileState.get('loggedProfile');
             const token = loggedProfile.get('token');
+            const draft = payload.get('draft');
+            const mentions = payload.get('mentions');
             const flagOn = { draftId: draft.get('id'), value: true };
             const flagOff = { draftId: draft.get('id'), value: false };
             const draftObj = draft.toJS();
@@ -120,7 +122,8 @@ class DraftActions {
                         tx: data.tx,
                         type: draftObj.entryId ? 'publishNewEntryVersion' : 'publishEntry',
                         draftId: draftObj.id,
-                        entryId: draftObj.entryId
+                        entryId: draftObj.entryId,
+                        mentions
                     }]);
                     this.appActions.showNotification({
                         id: draftObj.entryId ? 'publishingNewEntryVersion' : 'publishingEntry',

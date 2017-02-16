@@ -45,7 +45,9 @@ class CommentsPublisher extends Component {
                 action.get('type') === tx.type && action.get('status') === 'publishing');
             transactionActions.deletePendingTx(tx.tx);
             if (tx.mentions && tx.mentions.length) {
-                notificationsActions.sendMention(tx.mentions, tx.entryId);
+                // Using hardcoded string to simulate comment id. This is used for sending
+                // the correct notification type.
+                notificationsActions.sendMention(tx.mentions, tx.entryId, 'fakeCommentId');
             }
             // fire success action based on action type
             // WARNING: action must match `action.type + "Success"`

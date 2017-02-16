@@ -1,6 +1,7 @@
 import { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { DraftActions, AppActions, TransactionActions, EntryActions } from 'local-flux';
+import { AppActions, DraftActions, EntryActions, NotificationsActions,
+    TransactionActions } from 'local-flux';
 
 class PublishEntryRunner extends Component {
     componentWillReceiveProps (nextProps) {
@@ -8,7 +9,7 @@ class PublishEntryRunner extends Component {
         this.listenMinedTx(nextProps);
     }
     launchActions = (nextProps) => {
-        const { appActions, draftActions, entryActions, pendingActions } = nextProps;
+        const { appActions, draftActions, pendingActions } = nextProps;
         const actions = pendingActions.filter(action => action.get('status') === 'readyToPublish');
         if (actions.size > 0) {
             actions.forEach((action) => {
@@ -19,7 +20,10 @@ class PublishEntryRunner extends Component {
                         appActions.updatePendingAction(action.mergeDeep({
                             status: 'publishing'
                         }));
-                        draftActions.publishDraft(action.getIn(['payload', 'draft']), action.get('gas'));
+                        draftActions.publishDraft(
+                            action.get('payload'),
+                            action.get('gas'),
+                        );
                         break;
                     default:
                         break;
@@ -30,7 +34,7 @@ class PublishEntryRunner extends Component {
     listenMinedTx = (nextProps) => {
         const { minedTx, pendingTx, fetchingMined, fetchingPending, deletingPendingTx, appActions,
             draftActions, transactionActions, loggedProfile, fullEntryId,
-            pendingActions, entryActions } = nextProps;
+            pendingActions, entryActions, notificationsActions } = nextProps;
         const isNotFetching = !fetchingMined && !fetchingPending;
         const pendingTxs = isNotFetching ?
             pendingTx.toJS().filter(tx =>
@@ -45,6 +49,7 @@ class PublishEntryRunner extends Component {
             const correspondingAction = pendingActions.find(action =>
                 action.get('type') === tx.type && action.get('status') === 'publishing');
             transactionActions.deletePendingTx(tx.tx);
+            notificationsActions.sendMention(tx.mentions, tx.entryId);
             // fire success action based on action type
             // WARNING: action must match `action.type + "Success"`
             // example: for action.type = 'registerTag', success action
@@ -56,7 +61,9 @@ class PublishEntryRunner extends Component {
                 );
             } else {
                 draftActions[`${tx.type}Success`](tx.draftId);
-                appActions.deletePendingAction(correspondingAction.get('id'));
+                if (correspondingAction) {
+                    appActions.deletePendingAction(correspondingAction.get('id'));
+                }
                 entryActions.getEntriesStream(loggedProfile.get('akashaId'));
 
                 if (fullEntryId && fullEntryId === tx.entryId) {
@@ -103,6 +110,7 @@ function mapDispatchToProps (dispatch) {
         draftActions: new DraftActions(dispatch),
         appActions: new AppActions(dispatch),
         entryActions: new EntryActions(dispatch),
+        notificationsActions: new NotificationsActions(dispatch),
         transactionActions: new TransactionActions(dispatch)
     };
 }

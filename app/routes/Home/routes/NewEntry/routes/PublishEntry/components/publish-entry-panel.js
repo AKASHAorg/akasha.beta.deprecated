@@ -1,11 +1,16 @@
 import React from 'react';
 import { TextField, RaisedButton } from 'material-ui';
 import { injectIntl } from 'react-intl';
+import { MentionDecorators } from 'shared-components';
+import { DraftJS, editorStateFromRaw } from 'megadraft';
+import { getMentionsFromEditorState } from 'utils/editorUtils';
 /* eslint import/no-unresolved: 0, import/extensions: 0 */
 import PanelContainer from 'shared-components/PanelContainer/panel-container';
 import LicenceDialog from 'shared-components/Dialogs/licence-dialog';
 import TagsField from 'shared-components/TagsField/tags-field';
 import { TagService } from 'local-flux/services';
+
+const { CompositeDecorator, EditorState } = DraftJS;
 
 const MAX_TITLE_LENGTH = 100;
 const MIN_EXCERPT_LENGTH = 30;
@@ -94,12 +99,18 @@ class PublishPanel extends React.Component {
             validationErrors: []
         });
         this._validateEntry(() => {
+            const decorators = new CompositeDecorator([MentionDecorators.nonEditableDecorator]);
+            const content = editorStateFromRaw(JSON.parse(draft.content.draft)).getCurrentContent();
+            const editorState = EditorState.createWithContent(content, decorators);
+            const mentions = getMentionsFromEditorState(editorState);
             draftActions.updateDraft(draft);
+
             appActions.addPendingAction({
                 type: draft.entryId ? 'publishNewEntryVersion' : 'publishEntry',
                 payload: {
                     title: draft.content.title,
-                    draft
+                    draft,
+                    mentions
                 },
                 titleId: draft.entryId ? 'publishNewEntryVersionTitle' : 'publishEntryTitle',
                 messageId: draft.entryId ? 'publishNewEntryVersion' : 'publishEntry',
@@ -181,12 +192,12 @@ class PublishPanel extends React.Component {
         });
     };
     _handleTagsUpdate = (tagsObj) => {
-        const {draftActions, params} = this.props;
+        const { draftActions, params } = this.props;
         const newDraft = this.state.draft.merge(tagsObj).toJS();
         draftActions.updateDraft({
             id: parseInt(params.draftId, 10),
             ...newDraft
-        })
+        });
     }
     _handleDraftUpdate = (obj) => {
         const { draftActions, params } = this.props;

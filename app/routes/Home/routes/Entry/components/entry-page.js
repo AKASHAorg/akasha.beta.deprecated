@@ -12,6 +12,7 @@ import { AllRightsReserved, CreativeCommonsBY, CreativeCommonsCC, CreativeCommon
 import debounce from 'lodash.debounce'; // eslint-disable-line no-unused-vars
 import { entryMessages } from 'locale-data/messages';
 import { getInitials } from 'utils/dataModule';
+import { getMentionsFromEditorState } from 'utils/editorUtils';
 import EntryPageHeader from './entry-page-header';
 import EntryPageContent from './entry-page-content';
 import EntryPageActions from './entry-page-actions';
@@ -227,28 +228,9 @@ class EntryPage extends Component {
         entryActions.addClaimAction(payload);
     };
 
-    getMentions = (editorState) => {
-        const mentions = [];
-        const blocksArray = editorState.getCurrentContent().getBlocksAsArray();
-
-        blocksArray.forEach((block) => {
-            const blockTree = editorState.getBlockTree(block.key);
-            blockTree.forEach((el) => {
-                if (el.decoratorKey) {
-                    const akashaId = block.text.slice(el.start + 1, el.end);
-                    if (mentions.indexOf(akashaId) === -1) {
-                        mentions.push(akashaId);
-                    }
-                }
-            });
-        });
-
-        return mentions;
-    };
-
     _handleCommentCreate = (editorState, parent) => {
         const { appActions, entry } = this.props;
-        const mentions = this.getMentions(editorState);
+        const mentions = getMentionsFromEditorState(editorState);
         const payload = {
             content: editorStateToJSON(editorState),
             entryId: entry.get('entryId'),

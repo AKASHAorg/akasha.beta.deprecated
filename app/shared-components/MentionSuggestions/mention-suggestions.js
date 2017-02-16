@@ -1,10 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import { DraftJS } from 'megadraft';
 import { ProfileService } from 'local-flux/services';
-import getSearchText from '../../utils/get-search-text';
+import getSearchText from './utils/get-search-text';
 import styles from './mention-suggestions.scss';
-
-const SUGGESTIONS_REGEX = /(^|[^@\w])@(\w{3,32})\b/g;
 
 const { EditorState, Modifier } = DraftJS;
 
@@ -132,9 +130,15 @@ class MentionSuggestions extends Component {
                 ' ',
             );
         } else {
+            const selection = mentionReplacedContent.getSelectionAfter();
+            const newSelection = selection.merge({
+                anchorOffset: selection.anchorOffset + 1,
+                focusOffset: selection.focusOffset + 1,
+                hasFocus: true
+            });
             mentionReplacedContent = Modifier.insertText(
                 mentionReplacedContent,
-                mentionReplacedContent.getSelectionAfter().set('hasFocus', true),
+                newSelection,
                 '',
             );
         }

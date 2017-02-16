@@ -72,10 +72,11 @@ class NotificationsActions {
 
     deleteFeedNotif = index => this.dispatch(action.deleteFeedNotif(index));
 
-    sendMention = (mention, entryId) =>
+    sendMention = (mention, entryId, commentId) =>
         this.notificationsService.mention({
             mention,
             entryId,
+            commentId,
             onSuccess: () => {},
             onError: () => {}
         });

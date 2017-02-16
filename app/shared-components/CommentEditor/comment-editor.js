@@ -1,9 +1,8 @@
 import React, { Component, PropTypes } from 'react';
-import { Avatar, MentionDecorators } from 'shared-components';
+import { Avatar, MentionDecorators, MentionSuggestions } from 'shared-components';
 import { MegadraftEditor, DraftJS } from 'megadraft';
 import { RaisedButton } from 'material-ui';
 import { entryMessages, generalMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
-import MentionSuggestions from './plugins/mentions/mention-suggestions';
 import styles from './comment-editor.scss';
 
 const { CompositeDecorator, EditorState } = DraftJS;
@@ -28,7 +27,7 @@ class CommentEditor extends Component {
 
     setSuggestionsRef = (el) => {
         this.suggestionsComponent = el;
-    }
+    };
 
     getBaseNode = () => this.baseNodeRef;
 
@@ -133,9 +132,5 @@ CommentEditor.propTypes = {
     showPublishActions: PropTypes.bool,
     onCancel: PropTypes.func,
 };
-
-// MentionComponent.propTypes = {
-//     children: PropTypes.oneOfType([PropTypes.element, PropTypes.arrayOf(PropTypes.element)])
-// };
 
 export default CommentEditor;
