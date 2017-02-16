@@ -22,21 +22,29 @@ class CommentService extends BaseService {
         });
     // a separate listener should be used here!
     getNewEntryComments = ({ entryId, start, limit, reverse, onSuccess, onError }) => {
-        Channel.client.comments.manager.once((ev, res) => {
-            // if (res.error) return onError(res.error);
-            Channel.client.comments.commentsIterator.once((evnt, resp) => {
-                if (resp.error) return onError(resp.error);
-                return onSuccess(resp.data);
-            });
-            const payload = {
-                entryId, limit, reverse
-            };
-            if (start) {
-                payload.start = start;
-            }
-            Channel.server.comments.commentsIterator.send(payload);
+        this.openChannel({
+            clientManager: Channel.client.comments.manager,
+            serverChannel: Channel.server.comments.commentsIterator,
+            clientChannel: Channel.client.comments.commentsIterator,
+            listenerCb: this.createListener(onError, onSuccess)
+        }, () => {
+            Channel.server.comments.commentsIterator.send({ entryId, start, limit, reverse });
         });
-        Channel.server.comments.commentsIterator.enable();
+        // Channel.client.comments.manager.once((ev, res) => {
+        //     // if (res.error) return onError(res.error);
+        //     Channel.client.comments.commentsIterator.once((evnt, resp) => {
+        //         if (resp.error) return onError(resp.error);
+        //         return onSuccess(resp.data);
+        //     });
+        //     const payload = {
+        //         entryId, limit, reverse
+        //     };
+        //     if (start) {
+        //         payload.start = start;
+        //     }
+        //     Channel.server.comments.commentsIterator.send(payload);
+        // });
+        // Channel.server.comments.commentsIterator.enable();
     }
 
     getCommentsCount = ({ entryId, onSuccess, onError }) =>
