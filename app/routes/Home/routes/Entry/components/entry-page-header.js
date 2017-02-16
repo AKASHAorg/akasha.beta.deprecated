@@ -252,7 +252,7 @@ class EntryPageHeader extends Component {
                         'This entry can no longer be edited'
                     }
                   >
-                    <IconButton onClick={handleEdit} style={buttonStyle}>
+                    <IconButton onClick={handleEdit} style={buttonStyle} disabled={!isActive}>
                       <SvgIcon>
                         <EditIcon />
                       </SvgIcon>
