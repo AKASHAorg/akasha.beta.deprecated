@@ -13,13 +13,15 @@ class ImageUploader extends Component {
     }
     componentDidMount () {
         const { initialImageLink, minHeight, minWidth } = this.props;
-        if (initialImageLink) {
+        if (initialImageLink && initialImageLink.includes('/ipfs/')) {
             const filePromises = getResizedImages([initialImageLink], {
-                minWidth: minWidth,
-                minHeight: minHeight
+                minWidth,
+                minHeight,
+                ipfsFile: true
             });
             return Promise.all(filePromises)
-                .then(results =>
+                .then(results => {
+                    console.log(results, 'res');
                     this.setState({
                         imageFile: results,
                         isNewImage: true,
@@ -27,7 +29,7 @@ class ImageUploader extends Component {
                     }, () => {
                         this.fileInput.value = '';
                     })
-                ).catch((err) => {
+                }).catch((err) => {
                     console.error(err);
                     return this.setState({
                         error: err
@@ -62,17 +64,13 @@ class ImageUploader extends Component {
         return this.props.initialImage;
     }
     _handleDialogOpen = () => {
-        const filePaths = Array.from(this.fileInput.files).map(file => file.path);
-        console.info('uploaded image size',
-            Array.from(this.fileInput.files).map(file => `${Math.round(file.size / 1024)} KB`)
-        );
-        if (filePaths.length === 0) {
+        if (this.fileInput.files.length === 0) {
             return this.setState({
                 imageFile: null,
                 isNewImage: true
             });
         }
-        const filePromises = getResizedImages(filePaths, {
+        const filePromises = getResizedImages(this.fileInput.files, {
             minWidth: this.props.minWidth,
             minHeight: this.props.minHeight
         });
