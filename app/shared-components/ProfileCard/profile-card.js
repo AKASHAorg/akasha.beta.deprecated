@@ -62,8 +62,7 @@ class ProfileCard extends Component {
     };
 
     renderHeaderActions = () => {
-        const { intl, isMuted, loggedProfileData, profileData, sendTipPending } = this.props;
-        const isFollower = loggedProfileData.getIn(['isFollower', profileData.akashaId]);
+        const { intl, isFollower, isMuted, sendTipPending } = this.props;
         return (
           <div style={{ position: 'absolute', top: 10, right: 10 }}>
             <IconButton
