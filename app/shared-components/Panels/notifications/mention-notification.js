@@ -3,7 +3,8 @@ import Notification from './notification';
 
 const MentionNotification = (props, context) => {
     const { deleteNotif, disableNotifications, enableNotifications, entry, index, intl,
-        isMuted, navigateToEntry, navigateToProfile, profile, timestamp, type } = props;
+        isMuted, isOwnNotif, navigateToEntry, navigateToProfile, profile,
+        timestamp, type } = props;
     const { palette } = context.muiTheme;
     const message = (
       <div>
@@ -31,6 +32,7 @@ const MentionNotification = (props, context) => {
         disableNotifications={disableNotifications}
         enableNotifications={enableNotifications}
         isMuted={isMuted}
+        isOwnNotif={isOwnNotif}
         message={message}
         navigateToProfile={navigateToProfile}
         profile={profile}
@@ -50,6 +52,7 @@ MentionNotification.propTypes = {
     index: PropTypes.number,
     intl: PropTypes.shape(),
     isMuted: PropTypes.bool,
+    isOwnNotif: PropTypes.bool,
     navigateToEntry: PropTypes.func,
     navigateToProfile: PropTypes.func,
     profile: PropTypes.shape(),

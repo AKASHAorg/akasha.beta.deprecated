@@ -29,7 +29,7 @@ class Comment extends React.Component {
         this.editorState = EditorState.createEmpty(decorators);
         this.state = {
             isExpanded: null,
-            hoverCardOpen: false,
+            anchorHovered: false,
         };
     }
     componentDidMount () {
@@ -48,24 +48,24 @@ class Comment extends React.Component {
     }
 
     componentDidUpdate (prevProps, prevState) {
-        if (this.state.hoverCardOpen && !prevState.hoverCardOpen) {
+        if (this.state.anchorHovered && !prevState.anchorHovered) {
             ReactTooltip.rebuild();
         }
-        if (!this.state.hoverCardOpen && prevState.hoverCardOpen) {
+        if (!this.state.anchorHovered && prevState.anchorHovered) {
             ReactTooltip.hide();
         }
     }
 
     _handleMouseEnter = (ev) => {
         this.setState({
-            hoverCardOpen: true,
+            anchorHovered: true,
             hoverNode: ev.currentTarget
         });
     };
 
     _handleMouseLeave = () => {
         this.setState({
-            hoverCardOpen: false
+            anchorHovered: false
         });
     };
 
@@ -175,12 +175,11 @@ class Comment extends React.Component {
                       />
                     }
                   >
-                    {this.state.hoverCardOpen &&
-                      <ProfileHoverCard
-                        profile={profile.toJS()}
-                        anchorNode={this.state.hoverNode}
-                      />
-                    }
+                    <ProfileHoverCard
+                      anchorHovered={this.state.anchorHovered}
+                      profile={profile.toJS()}
+                      anchorNode={this.state.hoverNode}
+                    />
                   </CardHeader>
                 </div>
                 {!isPublishing && REPLIES_ENABLED && showReplyButton && content &&

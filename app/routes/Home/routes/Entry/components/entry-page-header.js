@@ -21,7 +21,7 @@ const FLOATING_COMMENTS_BUTTON_ACTIVE = false;
 class EntryPageHeader extends Component {
     state = {
         showVersions: false,
-        hoverCardOpen: false,
+        anchorHovered: false,
     };
 
     openVersionsPanel = () => {
@@ -42,14 +42,14 @@ class EntryPageHeader extends Component {
 
     showProfileHoverCard = (ev) => {
         this.setState({
-            hoverCardOpen: true,
+            anchorHovered: true,
             hoverNode: ev.target
         });
     };
 
     hideProfileHoverCard = () => {
         this.setState({
-            hoverCardOpen: false,
+            anchorHovered: false,
             hoverNode: null
         });
     };
@@ -205,12 +205,11 @@ class EntryPageHeader extends Component {
                     padding: 0
                 }}
               >
-                {this.state.hoverCardOpen &&
-                  <ProfileHoverCard
-                    anchorNode={this.state.hoverNode}
-                    profile={publisher}
-                  />
-                }
+                <ProfileHoverCard
+                  anchorHovered={this.state.anchorHovered}
+                  anchorNode={this.state.hoverNode}
+                  profile={publisher}
+                />
               </CardHeader>
               {(this.props.newCommentsCount > 0) && FLOATING_COMMENTS_BUTTON_ACTIVE &&
                 <div

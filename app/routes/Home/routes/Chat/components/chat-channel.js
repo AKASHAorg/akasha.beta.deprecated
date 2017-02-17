@@ -1,12 +1,13 @@
 import React, { Component, PropTypes } from 'react';
 import { injectIntl } from 'react-intl';
 import { IconButton, SvgIcon, TextField } from 'material-ui';
-import { chatMessages } from 'locale-data/messages';
-import { Avatar } from 'shared-components';
-import { ChatChannelInfo, EntryBookmarkOn, EntryBookmarkOff } from 'shared-components/svg';
+import { chatMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
+import { Avatar, ProfileHoverCard } from 'shared-components';
+import { ChatChannelInfo, EntryBookmarkOn, EntryBookmarkOff } from 'shared-components/svg'; // eslint-disable-line import/no-unresolved, import/extensions
 import { List } from 'immutable';
 import ChatMessagesList from './chat-messages-list';
 
+const Channel = window.Channel;
 const CHARACTER_LIMIT = 128;
 
 class ChatChannel extends Component {
@@ -43,10 +44,13 @@ class ChatChannel extends Component {
         if (params.channel !== this.props.params.channel) {
             chatActions.saveRecentChannel(params.channel || defaultChannel);
             this.setState({
+                anchorHovered: false,
+                hoverNode: null,
+                hoverProfile: null,
                 inputFocused: null,
                 isScrollable: false,
                 loadingData: true,
-                messages: new List()
+                messages: new List(),
             }, () => {
                 clearTimeout(this.timeout);
                 this.timeout = setTimeout(() => { this.triggerDataLoaded(); }, 1000);
@@ -66,7 +70,7 @@ class ChatChannel extends Component {
 
     componentDidUpdate () {
         if (!this.messagesContainer) {
-            return null;
+            return;
         }
         if (this.shouldScrollDown) {
             this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
@@ -87,9 +91,34 @@ class ChatChannel extends Component {
         }
     }
 
-    triggerDataLoaded = () => {
+    onInputFocus = () => {
         this.setState({
-            loadingData: false
+            inputFocused: true
+        });
+    };
+
+    onInputBlur = () => {
+        this.setState({
+            inputFocused: false
+        });
+    };
+
+    getActiveChannel = () => {
+        const { defaultChannel, params } = this.props;
+        return params.channel || defaultChannel;
+    };
+
+    showProfileHoverCard = (target, profile) => {
+        this.setState({
+            anchorHovered: true,
+            hoverNode: target,
+            hoverProfile: profile
+        });
+    };
+
+    hideProfileHoverCard = () => {
+        this.setState({
+            anchorHovered: false,
         });
     };
 
@@ -142,21 +171,10 @@ class ChatChannel extends Component {
         this.context.router.push(`${loggedProfileAkashaId}/profile/${profileAddress}`);
     }
 
-    onInputFocus = () => {
+    triggerDataLoaded = () => {
         this.setState({
-            inputFocused: true
+            loadingData: false
         });
-    };
-
-    onInputBlur = () => {
-        this.setState({
-            inputFocused: false
-        });
-    };
-
-    getActiveChannel = () => {
-        const { defaultChannel, params } = this.props;
-        return params.channel || defaultChannel;
     };
 
     handleStartAction = () => {
@@ -226,7 +244,6 @@ class ChatChannel extends Component {
         const { intl, loggedProfileAddress, loggedProfileAkashaId,
             loggedProfileAvatar, loggedProfileInitials, navigateToChannel } = this.props;
         const { palette } = this.context.muiTheme;
-
         return (
           <div
             style={{
@@ -237,6 +254,7 @@ class ChatChannel extends Component {
                 display: 'flex',
                 flexDirection: 'column'
             }}
+            ref={(el) => { this.container = el; }}
           >
             {this.renderHeader()}
             <div style={{ position: 'relative', flex: '1 1 auto', zIndex: 10 }}>
@@ -257,6 +275,8 @@ class ChatChannel extends Component {
                   messages={this.state.messages}
                   navigateToChannel={navigateToChannel}
                   onAuthorClick={this.navigateToProfile}
+                  showProfileHoverCard={this.showProfileHoverCard}
+                  hideProfileHoverCard={this.hideProfileHoverCard}
                 />
               </div>
             </div>
@@ -330,6 +350,12 @@ class ChatChannel extends Component {
                 />
               </div>
             </div>
+            <ProfileHoverCard
+              profile={this.state.hoverProfile}
+              anchorHovered={this.state.anchorHovered}
+              anchorNode={this.state.hoverNode}
+              containerNode={this.container}
+            />
           </div>
         );
     }

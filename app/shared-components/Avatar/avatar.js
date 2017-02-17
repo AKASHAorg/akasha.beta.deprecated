@@ -80,7 +80,8 @@ class Avatar extends React.Component {
             offsetBorder,
             backgroundColor,
             style,
-            onMouseEnter } = this.props;
+            onMouseEnter,
+            onMouseLeave } = this.props;
         const palette = this.context.muiTheme.palette;
         let avatarImage;
 
@@ -98,6 +99,7 @@ class Avatar extends React.Component {
               Object.assign({ maxWidth: radius, maxHeight: radius, position: 'relative' }, style)
             }
             onMouseEnter={onMouseEnter}
+            onMouseLeave={onMouseLeave}
           >
             {editable && !avatarImage &&
               <input
@@ -240,6 +242,7 @@ Avatar.propTypes = {
     style: React.PropTypes.shape(),
     onClick: React.PropTypes.func,
     onMouseEnter: React.PropTypes.func,
+    onMouseLeave: React.PropTypes.func,
 };
 Avatar.contextTypes = {
     muiTheme: React.PropTypes.object

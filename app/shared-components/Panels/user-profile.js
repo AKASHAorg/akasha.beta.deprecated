@@ -213,10 +213,11 @@ class UserProfilePanel extends Component {
     }
 
     _renderMention (event, index) {
-        const { intl, notificationsActions, settingsActions } = this.props;
+        const { intl, loggedProfileData, notificationsActions, settingsActions } = this.props;
         if (!event.entry.content) {
             return null;
         }
+        const isOwnNotif = loggedProfileData.get('profile') === event.profileAddress;
 
         return (
           <MentionNotification
@@ -227,6 +228,7 @@ class UserProfilePanel extends Component {
             index={index}
             intl={intl}
             isMuted={this.isMuted(event.author.profile)}
+            isOwnNotif={isOwnNotif}
             navigateToEntry={this.navigateToEntry}
             navigateToProfile={this.navigateToProfile}
             profile={event.author}

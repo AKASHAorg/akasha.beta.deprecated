@@ -17,7 +17,8 @@ class MentionComponent extends Component {
         addressOfServer.enable();
         this.state = {
             exists: false,
-            hoverCardOpen: false,
+            fetchingData: true,
+            anchorHovered: false,
             profileAddress: null,
             profileData: null
         };
@@ -106,13 +107,13 @@ class MentionComponent extends Component {
 
     handleMouseEnter = () => {
         this.setState({
-            hoverCardOpen: true
+            anchorHovered: true
         });
     };
 
     handleMouseLeave = () => {
         this.setState({
-            hoverCardOpen: false
+            anchorHovered: false
         });
     };
 
@@ -135,11 +136,12 @@ class MentionComponent extends Component {
             >
               {children}
             </span>
-            {nonEditable && this.state.exists && this.state.hoverCardOpen &&
+            {nonEditable && this.state.exists &&
               <ProfileHoverCard
+                anchorHovered={this.state.anchorHovered}
                 anchorNode={this.container}
                 loading={this.state.fetchingData}
-                profile={this.state.profileData}
+                profile={this.state.profileData || {}}
               />
             }
           </div>
