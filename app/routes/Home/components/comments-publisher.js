@@ -57,6 +57,8 @@ class CommentsPublisher extends Component {
                 console.error(`There is no action "${tx.type}Success" in commentsActions!! Please implement "${tx.type}Success" action!!`);
             } else {
                 commentsActions[`${tx.type}Success`](tx);
+            }
+            if (correspondingAction) {
                 appActions.deletePendingAction(correspondingAction.get('id'));
             }
         });

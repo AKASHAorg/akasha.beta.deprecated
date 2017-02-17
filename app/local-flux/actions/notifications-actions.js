@@ -49,11 +49,12 @@ class NotificationsActions {
                     if (data.type === 'gotTipped') {
                         this.profileActions.getProfileBalance();
                     }
-                    if (data.type === 'entryMention' && data.timeStamp > timeStamp) {
+                    if ((data.type === 'entryMention' || data.type === 'commentMention')
+                            && data.timeStamp > timeStamp) {
                         this.settingsActions.saveLatestMention(akashaId, data.timeStamp);
                     }
                     if (data.profileAddress === this.currentProfile || data.type === 'gotTipped' ||
-                            data.type === 'entryMention') {
+                            data.type === 'entryMention' || data.type === 'commentMention') {
                         return dispatch(action.receiveYouFeed(data));
                     }
                     return dispatch(action.receiveSubscriptionFeed(data));
