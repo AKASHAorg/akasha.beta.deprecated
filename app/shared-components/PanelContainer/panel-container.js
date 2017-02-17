@@ -14,7 +14,8 @@ class PanelContainer extends React.Component {
         (this.props !== nextProps);
     }
     _handleScroll = () => {
-        const scrollTop = this.panelContent.scrollTop;
+        const panelNode = this.panelContent;
+        const scrollTop = panelNode && panelNode.scrollTop;
         if (scrollTop >= 24) {
             this.setState({
                 isHeaderShrinked: true
