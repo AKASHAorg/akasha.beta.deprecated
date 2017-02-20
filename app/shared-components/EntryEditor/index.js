@@ -1,24 +1,32 @@
 import React, { Component, PropTypes } from 'react';
-import { MegadraftEditor, editorStateFromRaw, editorStateToJSON } from 'megadraft';
-import { convertToRaw } from 'draft-js';
+import { MegadraftEditor, editorStateFromRaw, editorStateToJSON, DraftJS } from 'megadraft';
+import { MentionDecorators, MentionSuggestions } from 'shared-components';
 import EditorSidebar from './sidebar/editor-sidebar';
 import styles from './style.scss';
 import imagePlugin from './plugins/image/image-plugin';
 
+const { CompositeDecorator, EditorState } = DraftJS;
+
 class EntryEditor extends Component {
-    state = {
-        editorState: editorStateFromRaw(null),
-        title: '',
-        sidebarOpen: false
-    };
+    constructor (props) {
+        super(props);
+
+        const decorators = new CompositeDecorator([MentionDecorators.editableDecorator]);
+        this.state = {
+            editorState: EditorState.createEmpty(decorators),
+            title: '',
+            sidebarOpen: false
+        };
+    }
+
     componentWillMount () {
         let { content } = this.props;
-        console.log(typeof content);
         if (typeof content === 'string') {
             content = JSON.parse(this.props.content);
         }
+        const newEditorState = this.getUpdatedEditorState(this.state.editorState, content);
         this.setState({
-            editorState: editorStateFromRaw(content),
+            editorState: newEditorState,
             title: this.props.title
         });
     }
@@ -33,8 +41,9 @@ class EntryEditor extends Component {
             content = JSON.parse(content);
         }
         if (content && !this.props.content) {
+            const newEditorState = this.getUpdatedEditorState(this.state.editorState, content);
             this.setState({
-                editorState: editorStateFromRaw(content),
+                editorState: newEditorState,
                 title: nextProps.title
             });
         }
@@ -46,11 +55,22 @@ class EntryEditor extends Component {
             (nextState.editorState !== this.state.editorState) ||
             (nextState.sidebarOpen !== this.state.sidebarOpen);
     }
+
+    setSuggestionsRef = (el) => {
+        this.suggestionsComponent = el;
+    };
+
+    getUpdatedEditorState = (editorState, rawContent) =>
+        EditorState.push(editorState, editorStateFromRaw(rawContent).getCurrentContent());
+
     getRawContent = () => editorStateToJSON(this.state.editorState);
     getContent = () => this.state.editorState.getCurrentContent();
     getTitle = () => this.state.title;
     _handleEditorChange = (editorState) => {
-        console.log('chnge?');
+        const isOpen = this.suggestionsComponent.getIsOpen();
+        if (editorState.getLastChangeType() === 'split-block' && isOpen) {
+            return;
+        }
         this.setState({
             editorState,
         });
@@ -137,22 +157,30 @@ class EntryEditor extends Component {
                   </div>
                 </div>
               }
-              <MegadraftEditor
-                ref={(edtr) => {
-                    this.editor = edtr;
-                    if (this.props.editorRef) {
-                        this.props.editorRef(this);
-                    }
-                }}
-                readOnly={readOnly}
-                sidebarRendererFn={this._renderSidebar}
-                editorState={this.state.editorState}
-                onChange={this._handleEditorChange}
-                plugins={[imagePlugin]}
-                placeholder={this.state.sidebarOpen ? '' : editorPlaceholder}
-                tabIndex="0"
-                hasFocus={this._checkEditorFocus()}
-              />
+              <div style={{ position: 'relative' }} ref={(el) => { this.container = el; }}>
+                <MegadraftEditor
+                  ref={(edtr) => {
+                      this.editor = edtr;
+                      if (this.props.editorRef) {
+                          this.props.editorRef(this);
+                      }
+                  }}
+                  readOnly={readOnly}
+                  sidebarRendererFn={this._renderSidebar}
+                  editorState={this.state.editorState}
+                  onChange={this._handleEditorChange}
+                  plugins={[imagePlugin]}
+                  placeholder={this.state.sidebarOpen ? '' : editorPlaceholder}
+                  tabIndex="0"
+                  hasFocus={this._checkEditorFocus()}
+                />
+                <MentionSuggestions
+                  ref={this.setSuggestionsRef}
+                  editorState={this.state.editorState}
+                  onChange={this._handleEditorChange}
+                  parentRef={this.container}
+                />
+              </div>
             </div>
           </div>
         );

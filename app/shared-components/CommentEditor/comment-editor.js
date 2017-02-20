@@ -1,42 +1,74 @@
-import React from 'react';
-import { Avatar } from 'shared-components';
-import { MegadraftEditor, editorStateFromRaw, editorStateToJSON } from 'megadraft';
+import React, { Component, PropTypes } from 'react';
+import { Avatar, MentionDecorators, MentionSuggestions } from 'shared-components';
+import { MegadraftEditor, DraftJS } from 'megadraft';
 import { RaisedButton } from 'material-ui';
-import { injectIntl } from 'react-intl';
 import { entryMessages, generalMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
 import styles from './comment-editor.scss';
 
-class CommentEditor extends React.Component {
+const { CompositeDecorator, EditorState } = DraftJS;
+
+class CommentEditor extends Component {
     constructor (props) {
         super(props);
+
+        this.container = null;
+        this.editor = null;
+
+        this.decorators = new CompositeDecorator([MentionDecorators.editableDecorator]);
+
         this.state = {
-            editorState: editorStateFromRaw(this.props.initialEditorContent)
+            editorState: EditorState.createEmpty(this.decorators),
         };
     }
+
     shouldComponentUpdate (nextProps, nextState) {
         return nextState.editorState !== this.state.editorState;
     }
-    getBaseNode = () => this.baseNodeRef
+
+    setSuggestionsRef = (el) => {
+        this.suggestionsComponent = el;
+    };
+
+    getBaseNode = () => this.baseNodeRef;
+
+    getEditorRef = (el) => {
+        this.editor = el;
+    }
+
+    getContainerRef = (el) => {
+        this.container = el;
+    }
+
     resetContent = () => {
         this._resetEditorState();
-    }
+    };
+
     _handleCommentChange = (editorState) => {
+        // Ignore "Enter" key press if suggestions list is opened
+        const isOpen = this.suggestionsComponent.getIsOpen();
+        if (editorState.getLastChangeType() === 'split-block' && isOpen) {
+            return;
+        }
         this.setState({
-            editorState
+            editorState,
         });
-    }
+    };
+
     _handleCommentCreate = () => {
-        this.props.onCommentCreate(editorStateToJSON(this.state.editorState));
-    }
+        this.props.onCommentCreate(this.state.editorState);
+    };
+
     _handleCommentCancel = () => {
         this._resetEditorState();
         if (this.props.onCancel) this.props.onCancel();
-    }
+    };
+
     _resetEditorState = () => {
         this.setState({
-            editorState: editorStateFromRaw(null)
+            editorState: EditorState.createEmpty(this.decorators)
         });
-    }
+    };
+
     render () {
         const { profileAvatar, profileUserInitials, intl, showPublishActions } = this.props;
         let { placeholder } = this.props;
@@ -53,12 +85,23 @@ class CommentEditor extends React.Component {
               />
             </div>
             <div className={`${styles.comment_editor} col-xs-11`}>
-              <div className={`${styles.comment_editor_inner}`}>
+              <div
+                className={`${styles.comment_editor_inner}`}
+                ref={this.getContainerRef}
+                onFocus={this.onContainerFocus}
+              >
                 <MegadraftEditor
+                  ref={this.getEditorRef}
                   placeholder={placeholder}
                   editorState={this.state.editorState}
                   onChange={this._handleCommentChange}
                   sidebarRendererFn={() => null}
+                />
+                <MentionSuggestions
+                  ref={this.setSuggestionsRef}
+                  editorState={this.state.editorState}
+                  onChange={this._handleCommentChange}
+                  parentRef={this.container}
                 />
               </div>
             </div>
@@ -70,7 +113,7 @@ class CommentEditor extends React.Component {
               />
               <RaisedButton
                 label={intl.formatMessage(generalMessages.publish)}
-                onClick={() => this._handleCommentCreate(null)}
+                onClick={this._handleCommentCreate}
                 primary
                 style={{ marginLeft: 8 }}
               />
@@ -81,13 +124,13 @@ class CommentEditor extends React.Component {
     }
 }
 CommentEditor.propTypes = {
-    profileAvatar: React.PropTypes.string,
-    profileUserInitials: React.PropTypes.string,
-    onCommentCreate: React.PropTypes.func,
-    intl: React.PropTypes.shape(),
-    placeholder: React.PropTypes.string,
-    showPublishActions: React.PropTypes.bool,
-    onCancel: React.PropTypes.func,
-    initialEditorContent: React.PropTypes.shape()
+    profileAvatar: PropTypes.string,
+    profileUserInitials: PropTypes.string,
+    onCommentCreate: PropTypes.func,
+    intl: PropTypes.shape(),
+    placeholder: PropTypes.string,
+    showPublishActions: PropTypes.bool,
+    onCancel: PropTypes.func,
 };
+
 export default CommentEditor;

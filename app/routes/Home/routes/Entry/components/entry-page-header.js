@@ -21,7 +21,7 @@ const FLOATING_COMMENTS_BUTTON_ACTIVE = false;
 class EntryPageHeader extends Component {
     state = {
         showVersions: false,
-        hoverCardOpen: false,
+        anchorHovered: false,
     };
 
     openVersionsPanel = () => {
@@ -38,32 +38,22 @@ class EntryPageHeader extends Component {
 
     handleBackNavigation = () => {
         this.context.router.goBack();
-    }
+    };
 
     showProfileHoverCard = (ev) => {
         this.setState({
-            hoverCardOpen: true,
+            anchorHovered: true,
             hoverNode: ev.target
         });
-    }
+    };
+
     hideProfileHoverCard = () => {
         this.setState({
-            hoverCardOpen: false,
+            anchorHovered: false,
             hoverNode: null
         });
-    }
-    handleTip = (ev) => {
-        const { onTip, publisher } = this.props;
-        onTip(ev, publisher);
-    }
-    _handleFollow = (ev) => {
-        const { onFollow, publisher } = this.props;
-        onFollow(ev, publisher.akashaId, publisher.profile);
-    }
-    _handleUnfollow = (ev) => {
-        const { onUnfollow, publisher } = this.props;
-        onUnfollow(ev, publisher.akashaId, publisher.profile);
-    }
+    };
+
     renderAvatar = () => {
         const { publisher, selectProfile } = this.props;
         const publisherBaseUrl = publisher.baseUrl;
@@ -150,7 +140,7 @@ class EntryPageHeader extends Component {
     render () {
         const { currentVersion, existingDraft, getVersion, handleEdit, isActive, isOwnEntry,
             latestVersion, publisherTitleShadow, publisher, selectProfile, intl,
-            commentsSectionTop, followingsList, followPending } = this.props;
+            commentsSectionTop } = this.props;
         const isScrollingDown = (this.props.scrollDirection === -1);
         let newCommentsButtonTop = 0;
         if (isScrollingDown) {
@@ -163,7 +153,6 @@ class EntryPageHeader extends Component {
                 newCommentsButtonTop = 110;
             }
         }
-        const isFollowing = followingsList.includes(publisher.profile);
         return (
           <div
             className={`${styles.entry_publisher_info}`}
@@ -216,20 +205,11 @@ class EntryPageHeader extends Component {
                     padding: 0
                 }}
               >
-                {this.state.hoverCardOpen &&
-                  <ProfileHoverCard
-                    profile={publisher}
-                    intl={intl}
-                    onTip={this.handleTip}
-                    onFollow={this._handleFollow}
-                    onUnfollow={this._handleUnfollow}
-                    onAuthorNameClick={selectProfile}
-                    showCardActions={!isOwnEntry}
-                    isFollowing={isFollowing}
-                    followDisabled={followPending}
-                    anchorNode={this.state.hoverNode}
-                  />
-                }
+                <ProfileHoverCard
+                  anchorHovered={this.state.anchorHovered}
+                  anchorNode={this.state.hoverNode}
+                  profile={publisher}
+                />
               </CardHeader>
               {(this.props.newCommentsCount > 0) && FLOATING_COMMENTS_BUTTON_ACTIVE &&
                 <div
@@ -271,7 +251,7 @@ class EntryPageHeader extends Component {
                         'This entry can no longer be edited'
                     }
                   >
-                    <IconButton onClick={handleEdit} style={buttonStyle}>
+                    <IconButton onClick={handleEdit} style={buttonStyle} disabled={!isActive}>
                       <SvgIcon>
                         <EditIcon />
                       </SvgIcon>
@@ -314,19 +294,14 @@ EntryPageHeader.propTypes = {
     isActive: PropTypes.bool,
     isOwnEntry: PropTypes.bool,
     latestVersion: PropTypes.number,
+    newCommentsCount: PropTypes.number,
+    onRequestNewestComments: PropTypes.func,
     publisher: PropTypes.shape(),
     publisherTitleShadow: PropTypes.bool,
+    scrollDirection: PropTypes.number,
     selectProfile: PropTypes.func,
     timestamp: PropTypes.number,
     wordCount: PropTypes.number,
-    newCommentsCount: PropTypes.number,
-    onFollow: PropTypes.func,
-    onRequestNewestComments: PropTypes.func,
-    onTip: PropTypes.func,
-    onUnfollow: PropTypes.func,
-    scrollDirection: PropTypes.number,
-    followingsList: PropTypes.shape(),
-    followPending: PropTypes.bool,
 };
 
 EntryPageHeader.contextTypes = {

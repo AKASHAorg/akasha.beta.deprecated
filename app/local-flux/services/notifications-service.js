@@ -1,5 +1,7 @@
 import BaseService from './base-service';
 
+const Channel = window.Channel;
+
 class NotificationsService extends BaseService {
     constructor () {
         super();
@@ -72,6 +74,23 @@ class NotificationsService extends BaseService {
             Channel.server.notifications.excludeFilter.send({ profiles });
         });
     }
+
+    mention = ({ mention, entryId, commentId, onSuccess = () => {}, onError = () => {} }) => {
+        const clientChannel = Channel.client.notifications.mention;
+        const serverChannel = Channel.server.notifications.mention;
+        this.openChannel({
+            clientManager: this.clientManager,
+            serverChannel,
+            clientChannel,
+            listenerCb: this.createListener(
+                onError,
+                onSuccess,
+                clientChannel.channelName
+            )
+        }, () => {
+            serverChannel.send({ mention, entryId, commentId });
+        });
+    };
 
 }
 export { NotificationsService };

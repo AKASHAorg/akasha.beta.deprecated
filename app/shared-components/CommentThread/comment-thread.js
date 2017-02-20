@@ -4,70 +4,59 @@ import { Divider } from 'material-ui';
 import { entryMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
 
 class CommentThread extends Component {
-    componentDidUpdate () {
-        if (this.props.replyTo && this.commentEditorRef) {
+    componentDidUpdate (prevProps) {
+        if (this.props.replyTo && prevProps.replyTo !== this.props.replyTo && this.commentEditorRef) {
             this.commentEditorRef.getBaseNode().scrollIntoViewIfNeeded(false);
         }
     }
+
     _onReply = (ev, commentId) => {
         if (this.props.onReply) this.props.onReply(ev, commentId);
     };
-    followPending = (akashaId) => {
-        const { followPending } = this.props;
-        const followProfilePending = followPending && followPending.find(follow =>
-            follow.akashaId === akashaId);
-        return followProfilePending && followProfilePending.value;
-    }
+
     render () {
         const { comments, parentId, replyTo, loggedProfile, entryAuthorProfile, profileAvatar,
             profileUserInitials, onReplyCreate, intl, depth, onReplyCancel, onAuthorNameClick,
-            onTip, onFollow, onUnfollow, followingsList, followPending } = this.props;
+            profiles, profileActions } = this.props;
         let filteredComments = comments.filter(comm => comm.data.parent === parentId);
         if (depth > 1) {
             filteredComments = filteredComments.reverse();
         }
         const comms = filteredComments.map(comment =>
           <Comment
-            key={`${comment.commentId}-fetchedComments`}
+            key={`${comment.commentId || comment.tempTx}-fetchedComments`}
             comment={comment}
-            loggedProfile={loggedProfile}
-            followingsList={followingsList}
-            followPending={this.followPending(comment.data.profile.get('akashaId'))}
             entryAuthorProfile={entryAuthorProfile}
-            onReply={ev => this._onReply(ev, comment.commentId)}
-            onAuthorNameClick={onAuthorNameClick}
-            onTip={onTip}
-            onFollow={onFollow}
-            onUnfollow={onUnfollow}
-            showReplyButton={(depth <= 2)}
-            isPublishing={comment.get('isPublishing')}
             intl={intl}
+            isPublishing={comment.get('isPublishing')}
+            loggedProfile={loggedProfile}
+            onAuthorNameClick={onAuthorNameClick}
+            onReply={ev => this._onReply(ev, comment.commentId)}
+            showReplyButton={(depth <= 2)}
           >
             <CommentThread
               comments={comments}
               parentId={`${comment.commentId}`}
               replyTo={replyTo}
               loggedProfile={loggedProfile}
-              followingsList={followingsList}
-              followPending={followPending}
               entryAuthorProfile={entryAuthorProfile}
               profileAvatar={profileAvatar}
               profileUserInitials={profileUserInitials}
               onReply={this._onReply}
               onReplyCreate={onReplyCreate}
               onAuthorNameClick={onAuthorNameClick}
-              onTip={onTip}
-              onFollow={onFollow}
-              onUnfollow={onUnfollow}
               intl={intl}
               depth={(depth + 1)}
               onReplyCancel={onReplyCancel}
+              profiles={profiles}
+              profileActions={profileActions}
             />
             {replyTo === comment.commentId && comment.commentId &&
               <div>
                 <CommentEditor
                   profileAvatar={profileAvatar}
                   profileUserInitials={profileUserInitials}
+                  profileactions={profileActions}
                   onCommentCreate={editorState => onReplyCreate(editorState, `${comment.commentId}`)}
                   placeholder={intl.formatMessage(entryMessages.writeReplyTo, {
                       name: `@${comment.getIn(['data', 'profile', 'akashaId'])}`
@@ -94,7 +83,6 @@ CommentThread.propTypes = {
     parentId: React.PropTypes.string,
     replyTo: React.PropTypes.number,
     loggedProfile: React.PropTypes.shape(),
-    followingsList: React.PropTypes.shape(),
     entryAuthorProfile: React.PropTypes.string,
     profileAvatar: React.PropTypes.string,
     profileUserInitials: React.PropTypes.string,
@@ -104,8 +92,7 @@ CommentThread.propTypes = {
     depth: React.PropTypes.number,
     onReplyCancel: React.PropTypes.func,
     onAuthorNameClick: React.PropTypes.func,
-    onTip: React.PropTypes.func,
-    onFollow: React.PropTypes.func,
-    onUnfollow: React.PropTypes.func
+    profileActions: React.PropTypes.shape(),
+    profiles: React.PropTypes.shape()
 };
 export default CommentThread;

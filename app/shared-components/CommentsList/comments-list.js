@@ -62,7 +62,6 @@ class CommentsList extends Component {
         const shouldTriggerEvent = (scrollY + innerHeight + bottomOffset) >= scrollHeight;
         if (shouldTriggerEvent && (commentsCount > fetchLimit) && !this.state.loadMoreReq) {
             if (onLoadMoreRequest && lastLoadedCommentId > 1) {
-                console.info('triggered scroll event to load more comments');
                 this.setState({
                     loadMoreReq: true
                 }, () => {
@@ -73,8 +72,8 @@ class CommentsList extends Component {
     }
     render () {
         const { comments, intl, loggedProfile, entryAuthorProfile, fetchingComments, profileAvatar,
-            profileUserInitials, onReplyCreate, onCommenterClick, onTip, onFollow, onUnfollow,
-            followingsList, followPending } = this.props;
+            profileUserInitials, onReplyCreate, onCommenterClick, profiles,
+            profileActions } = this.props;
         return (
           <div>
             {comments.size > 0 &&
@@ -84,8 +83,6 @@ class CommentsList extends Component {
                 comments={comments}
                 replyTo={this.state.replyTo}
                 loggedProfile={loggedProfile}
-                followingsList={followingsList}
-                followPending={followPending}
                 entryAuthorProfile={entryAuthorProfile}
                 profileAvatar={profileAvatar}
                 profileUserInitials={profileUserInitials}
@@ -94,9 +91,8 @@ class CommentsList extends Component {
                 onReplyCancel={this._handleReplyCancel}
                 intl={intl}
                 onAuthorNameClick={onCommenterClick}
-                onTip={onTip}
-                onFollow={onFollow}
-                onUnfollow={onUnfollow}
+                profiles={profiles}
+                profileActions={profileActions}
               />
             }
             {(!this.state.loadMoreReq && fetchingComments) &&
@@ -116,22 +112,19 @@ class CommentsList extends Component {
 CommentsList.propTypes = {
     comments: React.PropTypes.shape(),
     loggedProfile: React.PropTypes.shape(),
+    profiles: React.PropTypes.shape(),
+    profileActions: React.PropTypes.shape(),
     entryAuthorProfile: React.PropTypes.string,
     onLoadMoreRequest: React.PropTypes.func,
     commentsCount: React.PropTypes.number,
     fetchLimit: React.PropTypes.number,
     fetchingComments: React.PropTypes.bool,
-    followingsList: React.PropTypes.shape(),
-    followPending: React.PropTypes.shape(),
     entryId: React.PropTypes.number,
     intl: React.PropTypes.shape(),
     profileAvatar: React.PropTypes.string,
     profileUserInitials: React.PropTypes.string,
     onReplyCreate: React.PropTypes.func,
     onCommenterClick: React.PropTypes.func,
-    onTip: React.PropTypes.func,
-    onFollow: React.PropTypes.func,
-    onUnfollow: React.PropTypes.func
 };
 CommentsList.contextTypes = {
     router: React.PropTypes.shape()

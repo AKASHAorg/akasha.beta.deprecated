@@ -13,27 +13,29 @@ class ImageUploader extends Component {
     }
     componentDidMount () {
         const { initialImageLink, minHeight, minWidth } = this.props;
-        if (initialImageLink) {
+        if (initialImageLink && initialImageLink.includes('/ipfs/')) {
             const filePromises = getResizedImages([initialImageLink], {
-                minWidth: minWidth,
-                minHeight: minHeight
+                minWidth,
+                minHeight,
+                ipfsFile: true
             });
             return Promise.all(filePromises)
-                .then(results =>
+                .then((results) => {
                     this.setState({
                         imageFile: results,
                         isNewImage: true,
                         error: null
                     }, () => {
                         this.fileInput.value = '';
-                    })
-                ).catch((err) => {
+                    });
+                }).catch((err) => {
                     console.error(err);
                     return this.setState({
                         error: err
                     });
                 });
         }
+        return null;
     }
     componentWillReceiveProps (nextProps) {
         if (nextProps.initialImage && nextProps.initialImage.files) {
@@ -62,17 +64,13 @@ class ImageUploader extends Component {
         return this.props.initialImage;
     }
     _handleDialogOpen = () => {
-        const filePaths = Array.from(this.fileInput.files).map(file => file.path);
-        console.info('uploaded image size',
-            Array.from(this.fileInput.files).map(file => `${Math.round(file.size / 1024)} KB`)
-        );
-        if (filePaths.length === 0) {
+        if (this.fileInput.files.length === 0) {
             return this.setState({
                 imageFile: null,
                 isNewImage: true
             });
         }
-        const filePromises = getResizedImages(filePaths, {
+        const filePromises = getResizedImages(this.fileInput.files, {
             minWidth: this.props.minWidth,
             minHeight: this.props.minHeight
         });
@@ -96,9 +94,6 @@ class ImageUploader extends Component {
         const containerWidth = this.container.getBoundingClientRect().width;
         const bestKey = findClosestMatch(containerWidth, imageObj);
         const imageSrc = imageCreator(imageObj[bestKey].src);
-
-        console.info(`showing "${bestKey}" image with width "${imageObj[bestKey].width}px" and height "${imageObj[bestKey].height}px"`);
-
         return imageSrc;
     }
     _handleClearImage = () => {
@@ -134,11 +129,11 @@ class ImageUploader extends Component {
               <div>
                 {multiFiles &&
                    this.state.imageFile.map((image, key) =>
-                     <img src={this._getImageSrc(image)} key={key} style={imageStyle} role="presentation" />
+                     <img src={this._getImageSrc(image)} key={key} style={imageStyle} alt="" />
                    )
                 }
                 {!multiFiles &&
-                  <img src={this._getImageSrc(this.state.imageFile[0])} style={imageStyle} role="presentation" />
+                  <img src={this._getImageSrc(this.state.imageFile[0])} style={imageStyle} alt="" />
                 }
                 <div style={clearImageButtonStyle}>
                   <RaisedButton
@@ -155,7 +150,7 @@ class ImageUploader extends Component {
               <div>
                 <img
                   src={this.state.initialImageFile}
-                  role="presentation"
+                  alt=""
                   style={imageStyle}
                 />
                 <div style={clearImageButtonStyle}>
@@ -173,7 +168,7 @@ class ImageUploader extends Component {
               <div>
                 <img
                   src={initialImageLink}
-                  role="presentation"
+                  alt=""
                   style={imageStyle}
                 />
                 <div style={clearImageButtonStyle}>

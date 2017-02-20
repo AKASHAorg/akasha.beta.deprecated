@@ -31,7 +31,8 @@ const eventTypes = {
     PUBLISH: 'publish',
     FOLLOWING: 'following',
     GOT_TIPPED: 'gotTipped',
-    MENTION: 'entryMention'
+    ENTRY_MENTION: 'entryMention',
+    COMMENT_MENTION: 'commentMention'
 };
 class UserProfilePanel extends Component {
     constructor (props) {
@@ -212,10 +213,11 @@ class UserProfilePanel extends Component {
     }
 
     _renderMention (event, index) {
-        const { intl, notificationsActions, settingsActions } = this.props;
+        const { intl, loggedProfileData, notificationsActions, settingsActions } = this.props;
         if (!event.entry.content) {
             return null;
         }
+        const isOwnNotif = loggedProfileData.get('profile') === event.profileAddress;
 
         return (
           <MentionNotification
@@ -226,11 +228,13 @@ class UserProfilePanel extends Component {
             index={index}
             intl={intl}
             isMuted={this.isMuted(event.author.profile)}
+            isOwnNotif={isOwnNotif}
             navigateToEntry={this.navigateToEntry}
             navigateToProfile={this.navigateToProfile}
             profile={event.author}
             timestamp={event.timeStamp}
-            key={eventTypes.MENTION + index + event.timeStamp}
+            type={event.type}
+            key={event.type + index + event.timeStamp}
           />
         );
     }
@@ -299,7 +303,8 @@ class UserProfilePanel extends Component {
             if (val.type === eventTypes.GOT_TIPPED) {
                 return notifs.push(this._renderTip(val, index));
             }
-            if (val.type === eventTypes.MENTION) {
+            if (val.type === eventTypes.ENTRY_MENTION ||
+                    val.type === eventTypes.COMMENT_MENTION) {
                 return notifs.push(this._renderMention(val, index));
             }
             return null;

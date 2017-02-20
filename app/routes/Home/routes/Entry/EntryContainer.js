@@ -18,8 +18,6 @@ function mapStateToProps (state, ownProps) {
         fetchingFullEntry: state.entryState.getIn(['flags', 'fetchingFullEntry']),
         fetchingComments: state.commentsState.getIn(['flags', 'fetchingComments']),
         fetchingEntryBalance: state.entryState.getIn(['flags', 'fetchingEntryBalance']),
-        followingsList: state.profileState.get('followingsList'),
-        followPending: state.profileState.getIn(['flags', 'followPending']),
         latestVersion: state.entryState.get('fullEntryLatestVersion'),
         licences: state.entryState.get('licences'),
         loggedProfile: state.profileState.get('loggedProfile'),
