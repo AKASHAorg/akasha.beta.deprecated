@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { Avatar, MentionDecorators, MentionSuggestions } from 'shared-components';
-import { MegadraftEditor, DraftJS } from 'megadraft';
+import { MegadraftEditor, DraftJS, createTypeStrategy } from 'megadraft';
+import Link from 'megadraft/lib/components/Link';
 import { RaisedButton } from 'material-ui';
 import { entryMessages, generalMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
 import styles from './comment-editor.scss';
@@ -14,7 +15,10 @@ class CommentEditor extends Component {
         this.container = null;
         this.editor = null;
 
-        this.decorators = new CompositeDecorator([MentionDecorators.editableDecorator]);
+        this.decorators = new CompositeDecorator([MentionDecorators.editableDecorator, {
+            strategy: createTypeStrategy('LINK'),
+            component: Link
+        }]);
 
         this.state = {
             editorState: EditorState.createEmpty(this.decorators),

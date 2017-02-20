@@ -6,11 +6,14 @@ import {
     IconButton,
     IconMenu,
     MenuItem } from 'material-ui';
+import { DraftJS } from 'megadraft';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import { getWordCount } from 'utils/dataModule'; // eslint-disable-line import/no-unresolved, import/extensions
 import { AlertDialog, EntryEditor, EntryVersionsPanel } from 'shared-components'; // eslint-disable-line import/no-unresolved, import/extensions
 import { generalMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
 import { injectIntl } from 'react-intl';
+
+const { convertToRaw } = DraftJS;
 
 class AddEntryPage extends Component {
     constructor (props) {

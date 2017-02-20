@@ -10,7 +10,7 @@ import LicenceDialog from 'shared-components/Dialogs/licence-dialog';
 import TagsField from 'shared-components/TagsField/tags-field';
 import { TagService } from 'local-flux/services';
 
-const { CompositeDecorator, EditorState } = DraftJS;
+const { CompositeDecorator, EditorState, convertToRaw } = DraftJS;
 
 const MAX_TITLE_LENGTH = 100;
 const MIN_EXCERPT_LENGTH = 30;
@@ -104,7 +104,9 @@ class PublishPanel extends React.Component {
             const editorState = EditorState.createWithContent(content, decorators);
             const mentions = getMentionsFromEditorState(editorState);
             draftActions.updateDraft(draft);
-
+            if (typeof draft.content.draft === 'string') {
+                draft.content.draft = convertToRaw(content);
+            }
             appActions.addPendingAction({
                 type: draft.entryId ? 'publishNewEntryVersion' : 'publishEntry',
                 payload: {

@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
-import { MegadraftEditor, editorStateFromRaw, editorStateToJSON, DraftJS } from 'megadraft';
+import { MegadraftEditor, editorStateFromRaw, editorStateToJSON, DraftJS, createTypeStrategy } from 'megadraft';
+import Link from 'megadraft/lib/components/Link';
 import { MentionDecorators, MentionSuggestions } from 'shared-components';
 import EditorSidebar from './sidebar/editor-sidebar';
 import styles from './style.scss';
@@ -11,7 +12,10 @@ class EntryEditor extends Component {
     constructor (props) {
         super(props);
 
-        const decorators = new CompositeDecorator([MentionDecorators.editableDecorator]);
+        const decorators = new CompositeDecorator([MentionDecorators.editableDecorator, {
+            strategy: createTypeStrategy('LINK'),
+            component: Link
+        }]);
         this.state = {
             editorState: EditorState.createEmpty(decorators),
             title: '',
