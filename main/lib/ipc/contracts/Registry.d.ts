@@ -1,6 +1,6 @@
 /// <reference types="bluebird" />
-import BaseContract from './BaseContract';
-import * as Promise from 'bluebird';
+import BaseContract from "./BaseContract";
+import * as Promise from "bluebird";
 export default class Registry extends BaseContract {
     constructor(instance: any);
     profileExists(id: string): any;

@@ -1,6 +1,6 @@
 import { IpfsConnector } from '@akashaproject/ipfs-connector';
 import * as Promise from 'bluebird';
-import { isEmpty, is } from 'ramda';
+import { isEmpty, is, values } from 'ramda';
 import { entries } from '../models/records';
 
 export const DRAFT_BLOCKS = 'blocks';
@@ -126,12 +126,12 @@ class IpfsEntry {
         imageEntities.forEach((element, index) => {
             const keys = Object.keys(element.data.files).sort();
             keys.forEach((imSize) => {
-                if (!Buffer.isBuffer(element.data.files[imSize].src)) {
+                if (!element.data.files[imSize].src) {
                     return false;
                 }
                 uploads.push(
                     IpfsConnector.getInstance().api
-                        .add(element.data.files[imSize].src, true)
+                        .add(Buffer.from(values(element.data.files[imSize].src)), true)
                         .then(
                             (obj) => {
                                 this.entryLinks.push(Object.assign({}, obj, { name: (imSize + index) }));
