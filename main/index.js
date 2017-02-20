@@ -1,14 +1,14 @@
 "use strict";
-const electron_1 = require('electron');
-const geth_connector_1 = require('@akashaproject/geth-connector');
-const ipfs_connector_1 = require('@akashaproject/ipfs-connector');
-const path_1 = require('path');
-const index_1 = require('./lib/ipc/index');
-const feed_1 = require('./lib/ipc/modules/notifications/feed');
-const fetch_1 = require('./lib/ipc/modules/chat/fetch');
-const menu_1 = require('./menu');
-const Logger_1 = require('./lib/ipc/Logger');
-const check_version_1 = require('./check-version');
+const electron_1 = require("electron");
+const geth_connector_1 = require("@akashaproject/geth-connector");
+const ipfs_connector_1 = require("@akashaproject/ipfs-connector");
+const path_1 = require("path");
+const index_1 = require("./lib/ipc/index");
+const feed_1 = require("./lib/ipc/modules/notifications/feed");
+const fetch_1 = require("./lib/ipc/modules/chat/fetch");
+const menu_1 = require("./menu");
+const Logger_1 = require("./lib/ipc/Logger");
+const check_version_1 = require("./check-version");
 let modules;
 const stopServices = () => {
     feed_1.default.execute({ stop: true });

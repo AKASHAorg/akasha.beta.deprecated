@@ -1,8 +1,8 @@
 "use strict";
-const ipfs_connector_1 = require('@akashaproject/ipfs-connector');
-const records_1 = require('../models/records');
-const ramda_1 = require('ramda');
-const Promise = require('bluebird');
+const ipfs_connector_1 = require("@akashaproject/ipfs-connector");
+const records_1 = require("../models/records");
+const ramda_1 = require("ramda");
+const Promise = require("bluebird");
 exports.ProfileSchema = {
     AVATAR: 'avatar',
     LINKS: 'links',

@@ -1,6 +1,6 @@
 "use strict";
-const Promise = require('bluebird');
-const profile_data_1 = require('./profile-data');
+const Promise = require("bluebird");
+const profile_data_1 = require("./profile-data");
 const execute = Promise.coroutine(function* (data) {
     const pool = data.map((profile) => {
         return profile_data_1.default.execute(profile);

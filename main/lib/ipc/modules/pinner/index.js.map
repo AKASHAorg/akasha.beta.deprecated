@@ -1,1 +1,1 @@
-{"version":3,"file":"index.js","sourceRoot":"","sources":["index.ts"],"names":[],"mappings":";AAAA,yBAAmB,UAAU,CAAC,CAAA;AAE9B;kBAAe,CAAE,gBAAM,CAAE,CAAC","sourcesContent":["import runner from './runner';\n\nexport default [ runner ];\n"]}
+{"version":3,"file":"index.js","sourceRoot":"","sources":["index.ts"],"names":[],"mappings":";AAAA,qCAA8B;;AAE9B,kBAAe,CAAE,gBAAM,CAAE,CAAC","sourcesContent":["import runner from './runner';\n\nexport default [ runner ];\n"]}

@@ -1,7 +1,7 @@
 "use strict";
-const Promise = require('bluebird');
-const index_1 = require('../../contracts/index');
-const geth_connector_1 = require('@akashaproject/geth-connector');
+const Promise = require("bluebird");
+const index_1 = require("../../contracts/index");
+const geth_connector_1 = require("@akashaproject/geth-connector");
 const execute = Promise.coroutine(function* (data) {
     const entryFund = yield index_1.constructed.instance.entries.getEntryFund(data.entryId);
     const weiBalance = yield geth_connector_1.GethConnector.getInstance().web3.eth.getBalanceAsync(entryFund);

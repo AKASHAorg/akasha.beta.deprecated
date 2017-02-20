@@ -1,11 +1,11 @@
 "use strict";
-const Promise = require('bluebird');
-const geth_connector_1 = require('@akashaproject/geth-connector');
-const settings_1 = require('../../config/settings');
-const path_1 = require('path');
-const fs_1 = require('fs');
-const electron_1 = require('electron');
-const archiver = require('archiver');
+const Promise = require("bluebird");
+const geth_connector_1 = require("@akashaproject/geth-connector");
+const settings_1 = require("../../config/settings");
+const path_1 = require("path");
+const fs_1 = require("fs");
+const electron_1 = require("electron");
+const archiver = require("archiver");
 const execute = Promise.coroutine(function* (data) {
     const dataDir = yield geth_connector_1.GethConnector.getInstance().web3.admin.getDatadirAsync();
     const keyDir = path_1.join(dataDir, 'keystore/');

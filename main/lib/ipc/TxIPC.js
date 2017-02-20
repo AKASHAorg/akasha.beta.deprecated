@@ -1,8 +1,8 @@
 "use strict";
-const geth_connector_1 = require('@akashaproject/geth-connector');
-const ModuleEmitter_1 = require('./event/ModuleEmitter');
-const channels_1 = require('../channels');
-const responses_1 = require('./event/responses');
+const geth_connector_1 = require("@akashaproject/geth-connector");
+const ModuleEmitter_1 = require("./event/ModuleEmitter");
+const channels_1 = require("../channels");
+const responses_1 = require("./event/responses");
 class TxIPC extends ModuleEmitter_1.default {
     constructor() {
         super();

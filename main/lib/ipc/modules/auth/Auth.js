@@ -1,9 +1,9 @@
 "use strict";
-const crypto_1 = require('crypto');
-const geth_connector_1 = require('@akashaproject/geth-connector');
-const ethereumjs_util_1 = require('ethereumjs-util');
-const index_1 = require('../../contracts/index');
-const Promise = require('bluebird');
+const crypto_1 = require("crypto");
+const geth_connector_1 = require("@akashaproject/geth-connector");
+const ethereumjs_util_1 = require("ethereumjs-util");
+const index_1 = require("../../contracts/index");
+const Promise = require("bluebird");
 exports.randomBytesAsync = Promise.promisify(crypto_1.randomBytes);
 class Auth {
     generateKey(pass) {

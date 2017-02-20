@@ -1,8 +1,8 @@
 "use strict";
-const Promise = require('bluebird');
-const index_1 = require('../auth/index');
-const ipfs_1 = require('./ipfs');
-const index_2 = require('../../contracts/index');
+const Promise = require("bluebird");
+const index_1 = require("../auth/index");
+const ipfs_1 = require("./ipfs");
+const index_2 = require("../../contracts/index");
 const execute = Promise.coroutine(function* (data) {
     const active = yield index_2.constructed.instance.entries.isMutable(data.entryId);
     if (!active) {

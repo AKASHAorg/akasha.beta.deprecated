@@ -1,6 +1,6 @@
 "use strict";
-const Promise = require('bluebird');
-const get_entry_1 = require('./get-entry');
+const Promise = require("bluebird");
+const get_entry_1 = require("./get-entry");
 const execute = Promise.coroutine(function* (data) {
     const pool = data.map((entryObj) => {
         return get_entry_1.default.execute(entryObj);

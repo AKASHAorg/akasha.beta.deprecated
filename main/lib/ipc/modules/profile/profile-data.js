@@ -1,12 +1,12 @@
 "use strict";
-const Promise = require('bluebird');
-const index_1 = require('../../contracts/index');
-const ipfs_1 = require('./ipfs');
-const settings_1 = require('../../config/settings');
-const following_count_1 = require('./following-count');
-const followers_count_1 = require('./followers-count');
-const entry_count_profile_1 = require('../entry/entry-count-profile');
-const subs_count_1 = require('../tags/subs-count');
+const Promise = require("bluebird");
+const index_1 = require("../../contracts/index");
+const ipfs_1 = require("./ipfs");
+const settings_1 = require("../../config/settings");
+const following_count_1 = require("./following-count");
+const followers_count_1 = require("./followers-count");
+const entry_count_profile_1 = require("../entry/entry-count-profile");
+const subs_count_1 = require("../tags/subs-count");
 const execute = Promise.coroutine(function* (data) {
     const ipfsHash = yield index_1.constructed.instance.profile.getIpfs(data.profile);
     const profile = (data.full) ?

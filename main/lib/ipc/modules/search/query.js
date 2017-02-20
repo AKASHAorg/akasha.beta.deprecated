@@ -1,11 +1,11 @@
 "use strict";
-const Promise = require('bluebird');
-const geth_connector_1 = require('@akashaproject/geth-connector');
-const post_1 = require('../chat/post');
-const settings_1 = require('../../config/settings');
-const get_entry_1 = require('../entry/get-entry');
-const ramda_1 = require('ramda');
-const records_1 = require('../models/records');
+const Promise = require("bluebird");
+const geth_connector_1 = require("@akashaproject/geth-connector");
+const post_1 = require("../chat/post");
+const settings_1 = require("../../config/settings");
+const get_entry_1 = require("../entry/get-entry");
+const ramda_1 = require("ramda");
+const records_1 = require("../models/records");
 const execute = Promise.coroutine(function* (data) {
     let cached;
     if (records_1.mixed.hasShort(data.text)) {

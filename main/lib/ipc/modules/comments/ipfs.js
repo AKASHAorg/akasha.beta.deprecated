@@ -1,7 +1,7 @@
 "use strict";
-const ipfs_connector_1 = require('@akashaproject/ipfs-connector');
-const records_1 = require('../models/records');
-const settings_1 = require('../../config/settings');
+const ipfs_connector_1 = require("@akashaproject/ipfs-connector");
+const records_1 = require("../models/records");
+const settings_1 = require("../../config/settings");
 function create(data) {
     const date = (new Date()).toJSON();
     const constructed = {

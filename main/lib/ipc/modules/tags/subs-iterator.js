@@ -1,6 +1,6 @@
 "use strict";
-const Promise = require('bluebird');
-const index_1 = require('../../contracts/index');
+const Promise = require("bluebird");
+const index_1 = require("../../contracts/index");
 const execute = Promise.coroutine(function* (data) {
     let currentId = (data.start) ? data.start : yield index_1.constructed.instance.subs.subsFirst(data.akashaId);
     if (currentId === '0') {

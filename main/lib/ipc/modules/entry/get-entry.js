@@ -1,10 +1,10 @@
 "use strict";
-const Promise = require('bluebird');
-const index_1 = require('../../contracts/index');
-const ipfs_1 = require('./ipfs');
-const settings_1 = require('../../config/settings');
-const comments_count_1 = require('../comments/comments-count');
-const profile_data_1 = require('../profile/profile-data');
+const Promise = require("bluebird");
+const index_1 = require("../../contracts/index");
+const ipfs_1 = require("./ipfs");
+const settings_1 = require("../../config/settings");
+const comments_count_1 = require("../comments/comments-count");
+const profile_data_1 = require("../profile/profile-data");
 const execute = Promise.coroutine(function* (data) {
     const entryEth = yield index_1.constructed.instance.entries.getEntry(data.entryId);
     const active = yield index_1.constructed.instance.entries.isMutable(data.entryId);

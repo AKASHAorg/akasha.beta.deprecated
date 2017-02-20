@@ -1,10 +1,10 @@
 "use strict";
-const Promise = require('bluebird');
-const current_profile_1 = require('../registry/current-profile');
-const following_list_1 = require('../profile/following-list');
-const geth_connector_1 = require('@akashaproject/geth-connector');
-const records_1 = require('../models/records');
-const settings_1 = require('../../config/settings');
+const Promise = require("bluebird");
+const current_profile_1 = require("../registry/current-profile");
+const following_list_1 = require("../profile/following-list");
+const geth_connector_1 = require("@akashaproject/geth-connector");
+const records_1 = require("../models/records");
+const settings_1 = require("../../config/settings");
 exports.filter = {
     _address: {},
     _blockNr: 0,

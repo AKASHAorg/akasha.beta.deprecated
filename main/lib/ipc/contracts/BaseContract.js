@@ -1,6 +1,6 @@
 "use strict";
-const geth_connector_1 = require('@akashaproject/geth-connector');
-const Promise = require('bluebird');
+const geth_connector_1 = require("@akashaproject/geth-connector");
+const Promise = require("bluebird");
 class BaseContract {
     constructor() {
         this.gethInstance = geth_connector_1.GethConnector.getInstance();
