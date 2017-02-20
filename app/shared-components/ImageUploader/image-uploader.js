@@ -20,15 +20,14 @@ class ImageUploader extends Component {
                 ipfsFile: true
             });
             return Promise.all(filePromises)
-                .then(results => {
-                    console.log(results, 'res');
+                .then((results) => {
                     this.setState({
                         imageFile: results,
                         isNewImage: true,
                         error: null
                     }, () => {
                         this.fileInput.value = '';
-                    })
+                    });
                 }).catch((err) => {
                     console.error(err);
                     return this.setState({
@@ -36,6 +35,7 @@ class ImageUploader extends Component {
                     });
                 });
         }
+        return null;
     }
     componentWillReceiveProps (nextProps) {
         if (nextProps.initialImage && nextProps.initialImage.files) {
@@ -94,9 +94,6 @@ class ImageUploader extends Component {
         const containerWidth = this.container.getBoundingClientRect().width;
         const bestKey = findClosestMatch(containerWidth, imageObj);
         const imageSrc = imageCreator(imageObj[bestKey].src);
-
-        console.info(`showing "${bestKey}" image with width "${imageObj[bestKey].width}px" and height "${imageObj[bestKey].height}px"`);
-
         return imageSrc;
     }
     _handleClearImage = () => {
@@ -132,11 +129,11 @@ class ImageUploader extends Component {
               <div>
                 {multiFiles &&
                    this.state.imageFile.map((image, key) =>
-                     <img src={this._getImageSrc(image)} key={key} style={imageStyle} role="presentation" />
+                     <img src={this._getImageSrc(image)} key={key} style={imageStyle} alt="" />
                    )
                 }
                 {!multiFiles &&
-                  <img src={this._getImageSrc(this.state.imageFile[0])} style={imageStyle} role="presentation" />
+                  <img src={this._getImageSrc(this.state.imageFile[0])} style={imageStyle} alt="" />
                 }
                 <div style={clearImageButtonStyle}>
                   <RaisedButton
@@ -153,7 +150,7 @@ class ImageUploader extends Component {
               <div>
                 <img
                   src={this.state.initialImageFile}
-                  role="presentation"
+                  alt=""
                   style={imageStyle}
                 />
                 <div style={clearImageButtonStyle}>
@@ -171,7 +168,7 @@ class ImageUploader extends Component {
               <div>
                 <img
                   src={initialImageLink}
-                  role="presentation"
+                  alt=""
                   style={imageStyle}
                 />
                 <div style={clearImageButtonStyle}>
