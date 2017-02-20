@@ -10,6 +10,11 @@ profileDB.version(1).stores({
     tempProfile: '&akashaId, currentStatus'
 });
 
+// Add a new table: knownAkashaIds
+profileDB.version(2).stores({
+    knownAkashaIds: '&akashaId'
+});
+
 //
 // Ugrading to a new version
 //

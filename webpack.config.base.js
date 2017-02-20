@@ -27,7 +27,7 @@ const webpackConfig = {
         modulesDirectories: ['node_modules', 'constants', 'local-flux', 'shared-components', 'locale-data', 'utils']
     },
     plugins: [],
-    externals: [new webpack.ExternalsPlugin('commonjs2', ['electron'])]
+    externals: [new webpack.ExternalsPlugin('commonjs2', ['electron', 'pica'])]
 };
 
 webpackConfig.module.loaders.push({

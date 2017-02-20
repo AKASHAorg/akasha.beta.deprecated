@@ -1,30 +1,10 @@
 import React, { Component, PropTypes } from 'react';
-import { injectIntl } from 'react-intl';
-import { fromJS } from 'immutable';
-import { Avatar, ProfileHoverCard } from 'shared-components'; // eslint-disable-line import/no-unresolved, import/extensions
+import { FormattedTime } from 'react-intl';
+import { Avatar } from 'shared-components'; // eslint-disable-line import/no-unresolved, import/extensions
 import { getInitials } from 'utils/dataModule';  // eslint-disable-line import/no-unresolved, import/extensions
 import imageCreator from 'utils/imageUtils';  // eslint-disable-line import/no-unresolved, import/extensions
-import { FormattedTime } from 'react-intl';
 
 class ChatMessage extends Component {
-    state = {
-        hoverCardOpen: false,
-        hoverNode: null
-    };
-
-    handleMouseEnter = (ev) => {
-        this.setState({
-            hoverCardOpen: true,
-            hoverNode: ev.currentTarget
-        });
-    }
-
-    handleMouseLeave = () => {
-        this.setState({
-            hoverCardOpen: false
-        });
-    }
-
     renderMessage = () => {
         const { palette } = this.context.muiTheme;
         const { navigateToChannel } = this.props;
@@ -57,7 +37,8 @@ class ChatMessage extends Component {
     };
 
     render () {
-        const { data, intl, isOwnMessage, onAuthorClick } = this.props;
+        const { data, isOwnMessage, onAuthorClick, showProfileHoverCard,
+            hideProfileHoverCard } = this.props;
         const { akashaId, avatar, baseUrl, firstName, lastName, profileAddress,
             timeStamp } = data;
         const { palette } = this.context.muiTheme;
@@ -65,35 +46,26 @@ class ChatMessage extends Component {
             imageCreator(avatar, baseUrl) :
             null;
         const authorInitials = getInitials(firstName, lastName);
-        const profile = fromJS({
+        const profile = {
             akashaId,
-            avatar: authorAvatar,
+            avatar,
+            baseUrl,
             firstName,
             lastName,
             profile: profileAddress
-        });
+        };
         return (
           <div style={{ position: 'relative', padding: '10px 0', display: 'flex', alignItems: 'flex-start' }}>
-            <button
-              style={{
-                  border: '0px',
-                  outline: 'none',
-                  background: 'transparent',
-                  borderRadius: '50%',
-                  width: '52px'
-              }}
+            <Avatar
+              image={authorAvatar}
+              style={{ display: 'inline-block', cursor: 'pointer' }}
+              userInitials={authorInitials}
+              userInitialsStyle={{ fontSize: '20px' }}
+              radius={40}
               onClick={() => { onAuthorClick(profileAddress); }}
-              onMouseEnter={this.handleMouseEnter}
-              onMouseLeave={this.handleMouseLeave}
-            >
-              <Avatar
-                image={authorAvatar}
-                style={{ display: 'inline-block', cursor: 'pointer' }}
-                userInitials={authorInitials}
-                userInitialsStyle={{ fontSize: '20px' }}
-                radius={40}
-              />
-            </button>
+              onMouseEnter={ev => showProfileHoverCard(ev.currentTarget, profile)}
+              onMouseLeave={hideProfileHoverCard}
+            />
             <div
               style={{
                   display: 'inline-block',
@@ -111,6 +83,8 @@ class ChatMessage extends Component {
                       paddingRight: '5px',
                       color: isOwnMessage ? palette.commentViewerIsAuthorColor : palette.textColor
                   }}
+                  onMouseEnter={ev => showProfileHoverCard(ev.currentTarget, profile)}
+                  onMouseLeave={hideProfileHoverCard}
                 >
                   {akashaId}
                 </div>
@@ -120,20 +94,6 @@ class ChatMessage extends Component {
                 {this.renderMessage()}
               </div>
             </div>
-            {/* <ProfileHoverCard
-              open={this.state.hoverCardOpen}
-              profile={profile}
-              intl={intl}
-              onTip={ev => onTip(ev, profile)}
-              onFollow={ev => this._handleFollow(ev, profile.get('akashaId'), profile.get('profile'))}
-              onUnfollow={ev => this._handleUnfollow(ev, profile.get('akashaId'), profile.get('profile'))}
-              onAuthorNameClick={ev => onAuthorNameClick(ev, profile.get('profile'))}
-              showCardActions={!isOwnMessage}
-              isFollowing={false}
-              followDisabled={this.state.followDisabled}
-              anchorNode={this.state.hoverNode}
-            />
-            */}
           </div>
         );
     }
@@ -145,10 +105,11 @@ ChatMessage.contextTypes = {
 
 ChatMessage.propTypes = {
     data: PropTypes.shape(),
-    intl: PropTypes.shape(),
     isOwnMessage: PropTypes.bool,
     navigateToChannel: PropTypes.func,
-    onAuthorClick: PropTypes.func
+    onAuthorClick: PropTypes.func,
+    showProfileHoverCard: PropTypes.func,
+    hideProfileHoverCard: PropTypes.func,
 };
 
-export default injectIntl(ChatMessage);
+export default ChatMessage;

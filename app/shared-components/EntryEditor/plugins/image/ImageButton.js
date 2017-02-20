@@ -26,12 +26,16 @@ export default class BlockButton extends Component {
     _handleImageAdd = (ev) => {
         ev.persist();
         const files = this.fileInput.files;
-        const filePromises = getResizedImages([files[0].path], { minWidth: 320 });
+        const filePromises = getResizedImages(files, { minWidth: 320 });
         Promise.all(filePromises).then((results) => {
-            const fileRes = results[0];
-            let bestKey = findClosestMatch(768, fileRes);
+            let bestKey = findClosestMatch(768, results[0]);
             if (bestKey === 'xl' || bestKey === 'xxl') {
                 bestKey = 'md';
+            }
+            if (bestKey === 'gif' && results[0].gif) {
+                const res = Object.assign({}, results[0]);
+                delete res.gif;
+                bestKey = findClosestMatch(results[0].gif.width, res);
             }
             const data = {
                 files: results[0],
@@ -46,8 +50,7 @@ export default class BlockButton extends Component {
             this.fileInput.value = '';
             this.setState({
                 isAddingImage: false,
-                dialogOpen: false,
-                fileName: ''
+                dialogOpen: false
             });
             // verify if editor is in focus and blur;
             if (document.activeElement.contentEditable === 'true') {

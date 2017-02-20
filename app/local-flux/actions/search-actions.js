@@ -1,5 +1,5 @@
 import { searchActionCreators } from './action-creators';
-import { SearchService } from '../services';
+import { ProfileService, SearchService } from '../services';
 
 let searchActions = null;
 const MAX_RETRIES = 3;
@@ -9,6 +9,7 @@ class SearchActions {
         if (searchActions) {
             return searchActions;
         }
+        this.profileService = new ProfileService();
         this.searchService = new SearchService();
         this.dispatch = dispatch;
         this.handshakeRetries = 0;
@@ -42,9 +43,18 @@ class SearchActions {
         this.dispatch(searchActionCreators.query(text, { queryPending: true }));
         this.searchService.query({
             text,
-            onSuccess: data => this.dispatch(searchActionCreators.querySuccess(data, {
-                queryPending: false
-            })),
+            onSuccess: data => {
+                const akashaIds = [];
+                data.collection && data.collection.forEach(entry => {
+                    if (entry.entryEth.publisher.akashaId) {
+                        akashaIds.push({ akashaId: entry.entryEth.publisher.akashaId });
+                    }
+                });
+                this.profileService.saveAkashaIds(akashaIds);
+                this.dispatch(searchActionCreators.querySuccess(data, {
+                    queryPending: false
+                }));
+            },
             onError: error => this.dispatch(searchActionCreators.queryError(error, {
                 queryPending: false
             }))
@@ -56,9 +66,18 @@ class SearchActions {
         this.searchService.query({
             text,
             offset,
-            onSuccess: data => this.dispatch(searchActionCreators.moreQuerySuccess(data, {
-                moreQueryPending: false
-            })),
+            onSuccess: data => {
+                const akashaIds = [];
+                data.collection && data.collection.forEach(entry => {
+                    if (entry.entryEth.publisher.akashaId) {
+                        akashaIds.push({ akashaId: entry.entryEth.publisher.akashaId });
+                    }
+                });
+                this.profileService.saveAkashaIds(akashaIds);
+                this.dispatch(searchActionCreators.moreQuerySuccess(data, {
+                    moreQueryPending: false
+                }));
+            },
             onError: error => this.dispatch(searchActionCreators.moreQueryError(error, {
                 moreQueryPending: false
             }))

@@ -3,6 +3,7 @@ import React, { Component, PropTypes } from 'react';
 import ReactTooltip from 'react-tooltip';
 import { Divider, IconButton, SvgIcon, FlatButton } from 'material-ui';
 import { injectIntl } from 'react-intl';
+import { editorStateToJSON } from 'megadraft';
 import { TagChip, DataLoader, CommentsList, CommentEditor } from 'shared-components';
 import { AllRightsReserved, CreativeCommonsBY, CreativeCommonsCC, CreativeCommonsNCEU,
     CreativeCommonsNCJP, CreativeCommonsNC, CreativeCommonsND, CreativeCommonsREMIX,
@@ -11,6 +12,7 @@ import { AllRightsReserved, CreativeCommonsBY, CreativeCommonsCC, CreativeCommon
 import debounce from 'lodash.debounce'; // eslint-disable-line no-unused-vars
 import { entryMessages } from 'locale-data/messages';
 import { getInitials } from 'utils/dataModule';
+import { getMentionsFromEditorState } from 'utils/editorUtils';
 import EntryPageHeader from './entry-page-header';
 import EntryPageContent from './entry-page-content';
 import EntryPageActions from './entry-page-actions';
@@ -166,7 +168,7 @@ class EntryPage extends Component {
                 // new comments will be loaded automatically but if can be shown,
                 // ie. comment.data.parent = 0 or parent already loaded, show a notification
                 // else do nothing as it will load on scroll
-                if ((comments.size === nextProps.comments.size) && !nextProps.fetchingComments) {
+                if ((comments.size <= nextProps.comments.size) && !nextProps.fetchingComments) {
                     commentsActions.fetchNewComments(entry.get('entryId'));
                 }
             }
@@ -228,9 +230,11 @@ class EntryPage extends Component {
 
     _handleCommentCreate = (editorState, parent) => {
         const { appActions, entry } = this.props;
+        const mentions = getMentionsFromEditorState(editorState);
         const payload = {
-            content: editorState,
-            entryId: entry.get('entryId')
+            content: editorStateToJSON(editorState),
+            entryId: entry.get('entryId'),
+            mentions
         };
         if (parent) {
             payload.parent = parent;
@@ -300,23 +304,6 @@ class EntryPage extends Component {
         const { params } = this.props;
         this.context.router.push(`${params.akashaId}/profile/${profileHash}`);
     }
-    _handleTip = (ev, profileData) => {
-        const { profileActions } = this.props;
-        profileActions.addSendTipAction({
-            akashaId: profileData.akashaId,
-            firstName: profileData.firstName,
-            lastName: profileData.lastName,
-            profile: profileData.profile
-        });
-    }
-    _handleFollow = (ev, akashaId, profile) => {
-        const { profileActions } = this.props;
-        profileActions.addFollowProfileAction(akashaId, profile);
-    }
-    _handleUnfollow = (ev, akashaId, profile) => {
-        const { profileActions } = this.props;
-        profileActions.addUnfollowProfileAction(akashaId, profile);
-    }
     _getNewlyCreatedComments = comments =>
         comments.filter(comm => (!comm.get('tempTx') && !comm.getIn(['data', 'ipfsHash']) &&
             !comm.get('commentId'))
@@ -380,7 +367,7 @@ class EntryPage extends Component {
         const { blockNr, canClaimPending, claimPending, comments, entry, existingDraft,
             fetchingEntryBalance, fetchingFullEntry, intl, licences, loggedProfile,
             profiles, savedEntries, votePending, fetchingComments, newCommentsIds,
-            followingsList, followPending, latestVersion } = this.props;
+            profileActions, latestVersion } = this.props;
         const { palette } = this.context.muiTheme;
         const { publisherTitleShadow, scrollDirection, commentsSectionTop } = this.state;
         let currentVersion;
@@ -398,7 +385,7 @@ class EntryPage extends Component {
                 licences.find(lic => lic.id === licence.parent).label :
                 licence.label;
         } else {
-            currentVersion = location.query.version ?
+            currentVersion = location.query && location.query.version ?
                 Number(location.query.version) :
                 latestVersion;
         }
@@ -412,8 +399,6 @@ class EntryPage extends Component {
             claim.entryId === entry.entryId);
         const voteEntryPending = votePending && votePending.find(vote =>
               vote.entryId === entry.entryId);
-        const followAuthorPending = followPending && followPending.find(follow =>
-            follow.akashaId === entry.entryEth.publisher.akashaId);
         return (
           <div className={`${styles.root} row`}>
             <div className="col-xs-12">
@@ -421,30 +406,24 @@ class EntryPage extends Component {
                 <div id="content-section" className={`${styles.content_section}`}>
                   {entry.entryEth && entry.entryEth.publisher &&
                     <EntryPageHeader
-                      blockNr={blockNr}
+                      commentsSectionTop={commentsSectionTop}
                       currentVersion={currentVersion}
-                      getVersion={this.getVersion}
-                      handleEdit={this.handleEdit}
                       entryBlockNr={entry.entryEth.blockNr}
                       existingDraft={existingDraft}
+                      getVersion={this.getVersion}
+                      handleEdit={this.handleEdit}
+                      intl={intl}
                       isActive={entry.active}
                       isOwnEntry={this.isOwnEntry()}
                       latestVersion={latestVersion}
+                      newCommentsCount={this._getNewCommentsCount()}
+                      onRequestNewestComments={this.requestNewestComments}
                       publisher={entry.entryEth.publisher}
                       publisherTitleShadow={publisherTitleShadow}
+                      scrollDirection={scrollDirection}
                       selectProfile={this.selectProfile}
                       timestamp={entry.entryEth.unixStamp}
                       wordCount={entry.content ? entry.content.wordCount : 0}
-                      newCommentsCount={this._getNewCommentsCount()}
-                      scrollDirection={scrollDirection}
-                      onRequestNewestComments={this.requestNewestComments}
-                      intl={intl}
-                      commentsSectionTop={commentsSectionTop}
-                      followingsList={followingsList}
-                      onFollow={this._handleFollow}
-                      onUnfollow={this._handleUnfollow}
-                      onTip={this._handleTip}
-                      followPending={followAuthorPending && followAuthorPending.value}
                     />
                   }
                   {entry.content &&
@@ -564,12 +543,12 @@ class EntryPage extends Component {
                             ref={(cList) => { this.commentsListRef = cList; }}
                             loggedProfile={loggedProfile}
                             loggedProfileData={loggedProfileData}
-                            followingsList={followingsList}
-                            followPending={followPending}
                             profileAvatar={loggedProfileAvatar}
                             profileUserInitials={loggedProfileUserInitials}
                             onReplyCreate={this._handleCommentCreate}
                             comments={comments.filter(comm => !newCommentsIds.includes(`${comm.get('commentId')}`))}
+                            profiles={profiles}
+                            profileActions={profileActions}
                             entryId={entryId}
                             commentsCount={entry.get('commentsCount')}
                             fetchLimit={COMMENT_FETCH_LIMIT}
@@ -577,9 +556,6 @@ class EntryPage extends Component {
                             onCommenterClick={this._navigateToProfile}
                             entryAuthorProfile={entry.getIn(['entryEth', 'publisher']).profile}
                             fetchingComments={fetchingComments}
-                            onTip={this._handleTip}
-                            onFollow={this._handleFollow}
-                            onUnfollow={this._handleUnfollow}
                             intl={intl}
                           />
                         </div>
@@ -606,8 +582,6 @@ EntryPage.propTypes = {
     fetchingComments: PropTypes.bool,
     fetchingEntryBalance: PropTypes.bool,
     fetchingFullEntry: PropTypes.bool,
-    followingsList: PropTypes.shape(),
-    followPending: PropTypes.shape(),
     latestVersion: PropTypes.number,
     intl: PropTypes.shape(),
     licences: PropTypes.shape(),

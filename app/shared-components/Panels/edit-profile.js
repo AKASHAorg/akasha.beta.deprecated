@@ -239,7 +239,7 @@ class EditProfile extends Component {
             value: this.state.formValues.lastName,
             onBlur: this.props.handleValidation('formValues.lastName')
         });
-        const key = findBestMatch(400, this.state.backgroundImage);
+        const key = findBestMatch(1920, this.state.backgroundImage);
         const backgroundImageLink = this.state.backgroundImage && key &&
             imageCreator(this.state.backgroundImage[key].src, loggedProfileData.get('baseUrl'));
 

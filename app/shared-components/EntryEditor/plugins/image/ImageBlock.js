@@ -9,6 +9,7 @@ import {
     Toolbar,
     ToolbarGroup } from 'material-ui';
 import withWidth from 'material-ui/utils/withWidth';
+import PlayIcon from 'material-ui/svg-icons/av/play-arrow';
 import {
   ImageSizeXS,
   ImageSizeLarge,
@@ -59,7 +60,13 @@ class ImageBlock extends Component {
             imageKey = findClosestMatch(containerWidth, imageFiles, this.state.previewImage);
         }
         this.props.container.updateData({ media: imageKey });
-        this.setState({
+        if (typeof imageFiles[imageKey].src === 'string') {
+            return this.setState({
+                previewImage: imageKey,
+                imageSrc: `${window.entry__baseUrl}/${imageFiles[imageKey].src}`
+            });
+        }
+        return this.setState({
             previewImage: imageKey,
             imageSrc: imageCreator(imageFiles[imageKey].src)
         });
@@ -90,7 +97,7 @@ class ImageBlock extends Component {
     _handleImageClick = (ev) => {
         ev.stopPropagation();
         this.setState({
-            isCardEnabled: true
+            isCardEnabled: true,
         }, () => {
             this.props.blockProps.setReadOnly(true);
             window.addEventListener('keyup', this._removeImageContainer);
@@ -139,6 +146,18 @@ class ImageBlock extends Component {
         const { isCardEnabled, imageSrc, previewImage } = this.state;
         const { files, caption } = this.props.data;
         const baseNodeStyle = this._getBaseNodeStyle();
+        let imageSource;
+        if (isCardEnabled && files.gif) {
+            if (typeof files.gif.src === 'string') {
+                imageSource = imageCreator(files.gif.src, window.entry__baseUrl);
+            } else if (typeof files.gif.src === 'object') {
+                imageSource = imageCreator(files.gif.src);
+            } else {
+                imageSource = imageSrc;
+            }
+        } else {
+            imageSource = imageSrc;
+        }
         return (
           <div
             ref={(baseNode) => { this.baseNodeRef = baseNode; }}
@@ -197,15 +216,44 @@ class ImageBlock extends Component {
                 </ToolbarGroup>
               </Toolbar>
               <CardMedia
-                style={{
-                    boxShadow: isCardEnabled ? '0 0 0 3px #4285f4' : 'none'
-                }}
+                
                 onClick={this._handleImageClick}
               >
-                <img
-                  src={imageSrc}
-                  alt=""
-                />
+                <div
+                  style={{
+                      boxShadow: isCardEnabled ? '0 0 0 3px #4285f4' : 'none',
+                      position: 'relative'
+                  }}
+                >
+                  {files.gif &&
+                    <div
+                      style={{
+                          position: 'absolute',
+                          top: '50%',
+                          left: '50%',
+                          marginTop: '-48px',
+                          marginLeft: '-48px'
+                      }}
+                    >
+                      <PlayIcon
+                        style={{
+                            fill: '#FFF',
+                            color: '#FFF',
+                            height: 96,
+                            width: 96,
+                            opacity: isCardEnabled ? 0 : 1,
+                            filter: `blur(${isCardEnabled ? '3px' : '0'}) drop-shadow(0 0 2px #444)`,
+                            transition: 'opacity 0.218s ease-in-out, blur 0.218s ease-in-out',
+                        }}
+                      />
+                    </div>
+                  }
+                  <img
+                    src={imageSource}
+                    alt=""
+                    style={{ width: '100%', display: 'block' }}
+                  />
+                </div>
               </CardMedia>
               <CardText style={{ padding: 0, marginTop: 8, borderBottom: '1px solid #F5F5F5' }}>
                 <TextField
