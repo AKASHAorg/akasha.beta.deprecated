@@ -1,15 +1,15 @@
 "use strict";
-const Profile_1 = require('./Profile');
-const Registry_1 = require('./Registry');
-const Tags_1 = require('./Tags');
-const Feed_1 = require('./Feed');
-const Faucet_1 = require('./Faucet');
-const Entries_1 = require('./Entries');
-const Comments_1 = require('./Comments');
-const Subs_1 = require('./Subs');
-const Votes_1 = require('./Votes');
-const RegistryStore_1 = require('./RegistryStore');
-const contracts_js_1 = require('@akashaproject/contracts.js');
+const Profile_1 = require("./Profile");
+const Registry_1 = require("./Registry");
+const Tags_1 = require("./Tags");
+const Feed_1 = require("./Feed");
+const Faucet_1 = require("./Faucet");
+const Entries_1 = require("./Entries");
+const Comments_1 = require("./Comments");
+const Subs_1 = require("./Subs");
+const Votes_1 = require("./Votes");
+const RegistryStore_1 = require("./RegistryStore");
+const contracts_js_1 = require("@akashaproject/contracts.js");
 class Contracts {
     init(web3) {
         const factory = new contracts_js_1.default.Class(web3);

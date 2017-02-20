@@ -1,9 +1,9 @@
 "use strict";
-const electron_1 = require('electron');
-const TagsIPC_1 = require('../lib/ipc/TagsIPC');
-const chai_1 = require('chai');
-const channels_1 = require('../lib/channels');
-const helpers = require('./helpers');
+const electron_1 = require("electron");
+const TagsIPC_1 = require("../lib/ipc/TagsIPC");
+const chai_1 = require("chai");
+const channels_1 = require("../lib/channels");
+const helpers = require("./helpers");
 class TagsIPCtest extends TagsIPC_1.default {
     constructor() {
         super(...arguments);

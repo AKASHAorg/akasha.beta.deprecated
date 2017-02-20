@@ -1,6 +1,6 @@
 "use strict";
-const Promise = require('bluebird');
-const index_1 = require('../../contracts/index');
+const Promise = require("bluebird");
+const index_1 = require("../../contracts/index");
 const execute = Promise.coroutine(function* (data) {
     if (!data.limit) {
         data.limit = 1;

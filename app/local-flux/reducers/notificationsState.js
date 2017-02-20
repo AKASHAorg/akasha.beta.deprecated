@@ -29,8 +29,10 @@ const notificationsState = createReducer(initialState, {
             updatedFeed = state.get('notifFeed').pop();
             feedObj = { notifFeed: updatedFeed.unshift(action.payload), hasFeed: true };
         } else {
+            const shouldAddTag = notifIndex !== -1 &&
+                state.getIn(['notifFeed', notifIndex, 'tag']).indexOf(action.payload.tag) === -1;
             feedObj = {
-                notifFeed: notifIndex === -1 ?
+                notifFeed: !shouldAddTag ?
                     state.get('notifFeed').unshift(action.payload) :
                     state.get('notifFeed').mergeIn(
                         [notifIndex],

@@ -1,6 +1,6 @@
 "use strict";
-const crypto_1 = require('crypto');
-const os_1 = require('os');
+const crypto_1 = require("crypto");
+const os_1 = require("os");
 const hashPath = (...path) => {
     const hash = crypto_1.createHash('sha256');
     path.forEach((segment) => {

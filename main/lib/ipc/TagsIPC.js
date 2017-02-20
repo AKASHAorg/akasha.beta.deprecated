@@ -1,6 +1,6 @@
 "use strict";
-const ModuleEmitter_1 = require('./event/ModuleEmitter');
-const index_1 = require('./modules/tags/index');
+const ModuleEmitter_1 = require("./event/ModuleEmitter");
+const index_1 = require("./modules/tags/index");
 class TagsIPC extends ModuleEmitter_1.default {
     constructor() {
         super();

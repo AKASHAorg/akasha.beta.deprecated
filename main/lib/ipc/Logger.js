@@ -1,8 +1,8 @@
 "use strict";
-const path_1 = require('path');
-const winston_1 = require('winston');
-const fs_1 = require('fs');
-const electron_1 = require('electron');
+const path_1 = require("path");
+const winston_1 = require("winston");
+const fs_1 = require("fs");
+const electron_1 = require("electron");
 const symbolEnforcer = Symbol();
 const symbol = Symbol();
 class AppLogger {

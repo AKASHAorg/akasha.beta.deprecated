@@ -1,12 +1,12 @@
 "use strict";
-const geth_connector_1 = require('@akashaproject/geth-connector');
-const GethEmitter_1 = require('./event/GethEmitter');
-const channels_1 = require('../channels');
-const Logger_1 = require('./Logger');
-const responses_1 = require('./event/responses');
-const path_1 = require('path');
-const electron_1 = require('electron');
-const genesis_1 = require('./config/genesis');
+const geth_connector_1 = require("@akashaproject/geth-connector");
+const GethEmitter_1 = require("./event/GethEmitter");
+const channels_1 = require("../channels");
+const Logger_1 = require("./Logger");
+const responses_1 = require("./event/responses");
+const path_1 = require("path");
+const electron_1 = require("electron");
+const genesis_1 = require("./config/genesis");
 class GethIPC extends GethEmitter_1.default {
     constructor() {
         super();

@@ -1,11 +1,11 @@
 "use strict";
-const IpfsEmitter_1 = require('./event/IpfsEmitter');
-const ipfs_connector_1 = require('@akashaproject/ipfs-connector');
-const Logger_1 = require('./Logger');
-const channels_1 = require('../channels');
-const responses_1 = require('./event/responses');
-const settings_1 = require('./config/settings');
-const electron_1 = require('electron');
+const IpfsEmitter_1 = require("./event/IpfsEmitter");
+const ipfs_connector_1 = require("@akashaproject/ipfs-connector");
+const Logger_1 = require("./Logger");
+const channels_1 = require("../channels");
+const responses_1 = require("./event/responses");
+const settings_1 = require("./config/settings");
+const electron_1 = require("electron");
 class IpfsIPC extends IpfsEmitter_1.default {
     constructor() {
         super();

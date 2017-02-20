@@ -1,7 +1,7 @@
 "use strict";
-const index_1 = require('../auth/index');
-const Promise = require('bluebird');
-const index_2 = require('../../contracts/index');
+const index_1 = require("../auth/index");
+const Promise = require("bluebird");
+const index_2 = require("../../contracts/index");
 const execute = Promise.coroutine(function* (data) {
     if (data.weight < 1 || data.weight > 10) {
         throw new Error("Vote weight value must be between 1-10");

@@ -1,7 +1,7 @@
 "use strict";
-const settings_1 = require('./settings');
-const Promise = require('bluebird');
-const geth_connector_1 = require('@akashaproject/geth-connector');
+const settings_1 = require("./settings");
+const Promise = require("bluebird");
+const geth_connector_1 = require("@akashaproject/geth-connector");
 const execute = Promise.coroutine(function* (data) {
     if (!data.channels || !data.channels.length) {
         throw new Error('Must provide at least a channel');

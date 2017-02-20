@@ -1,10 +1,10 @@
 "use strict";
-const Promise = require('bluebird');
-const settings_1 = require('./settings');
-const geth_connector_1 = require('@akashaproject/geth-connector');
-const index_1 = require('../../contracts/index');
-const settings_2 = require('../../config/settings');
-const ipfs_1 = require('../profile/ipfs');
+const Promise = require("bluebird");
+const settings_1 = require("./settings");
+const geth_connector_1 = require("@akashaproject/geth-connector");
+const index_1 = require("../../contracts/index");
+const settings_2 = require("../../config/settings");
+const ipfs_1 = require("../profile/ipfs");
 let chat;
 const transform = Promise.coroutine(function* (data) {
     let obj, rootHash, userMedia;
