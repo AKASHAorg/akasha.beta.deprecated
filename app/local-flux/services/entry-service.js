@@ -24,7 +24,6 @@ class EntryService extends BaseService {
      */
     publishEntry = ({ draftObj, token, gas, onError, onSuccess }) => {
         const channelName = draftObj.entryId ? EDIT_ENTRY : PUBLISH;
-        draftObj.content.draft = JSON.parse(draftObj.content.draft);
         this.openChannel({
             clientManager: this.clientManager,
             serverChannel: Channel.server.entry[channelName],
@@ -40,26 +39,6 @@ class EntryService extends BaseService {
             })
         );
     };
-
-    /**
-     *  Edit an existing entry
-     *
-     */
-    // editEntry = ({ draftObj, token, gas, onError, onSuccess }) => {
-    //     this.openChannel({
-    //         clientManager: this.clientManager,
-    //         serverChannel: Channel.server.entry.editEntry,
-    //         clientChannel: Channel.client.entry.editEntry,
-    //         listenerCb: this.createListener(onError, onSuccess)
-    //     }, () =>
-    //         Channel.server.entry.editEntry.send({
-    //             entryId: draftObj.entryId,
-    //             content: draftObj.content,
-    //             tags: draftObj.tags,
-    //             token,
-    //             gas
-    //         }));
-    // };
 
     getEntriesCount = ({ akashaId, onError, onSuccess }) => {
         this.openChannel({

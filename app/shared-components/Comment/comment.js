@@ -8,7 +8,8 @@ import {
     SvgIcon,
     CircularProgress
   } from 'material-ui';
-import { DraftJS, MegadraftEditor, editorStateFromRaw } from 'megadraft';
+import { DraftJS, MegadraftEditor, editorStateFromRaw, createTypeStrategy } from 'megadraft';
+import Link from 'megadraft/lib/components/Link';
 import HubIcon from 'material-ui/svg-icons/hardware/device-hub';
 import MoreIcon from 'material-ui/svg-icons/navigation/expand-more';
 import LessIcon from 'material-ui/svg-icons/navigation/expand-less';
@@ -25,7 +26,10 @@ class Comment extends React.Component {
     constructor (props) {
         super(props);
 
-        const decorators = new CompositeDecorator([MentionDecorators.nonEditableDecorator]);
+        const decorators = new CompositeDecorator([MentionDecorators.nonEditableDecorator, {
+            strategy: createTypeStrategy('LINK'),
+            component: Link
+        }]);
         this.editorState = EditorState.createEmpty(decorators);
         this.state = {
             isExpanded: null,

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { MegadraftEditor, editorStateFromRaw, DraftJS } from 'megadraft';
+import { MegadraftEditor, editorStateFromRaw, DraftJS, createTypeStrategy } from 'megadraft';
+import Link from 'megadraft/lib/components/Link';
 import { MentionDecorators } from 'shared-components';
 import readOnlyImagePlugin from 'shared-components/EntryEditor/plugins/readOnlyImage/read-only-image-plugin';
 import styles from './entry-page-content.scss';
@@ -8,7 +9,10 @@ const { CompositeDecorator, EditorState } = DraftJS;
 
 class EntryPageContent extends Component {
     componentWillMount () {
-        const decorators = new CompositeDecorator([MentionDecorators.nonEditableDecorator]);
+        const decorators = new CompositeDecorator([MentionDecorators.nonEditableDecorator, {
+            strategy: createTypeStrategy('LINK'),
+            component: Link
+        }]);
         this.editorState = EditorState.createEmpty(decorators);
     }
 
