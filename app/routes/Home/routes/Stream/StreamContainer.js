@@ -28,6 +28,8 @@ class StreamPage extends Component {
             entryActions.getTagEntriesCount(params.tag);
         } else if (params.filter === 'allEntries') {
             entryActions.allStreamIterator(ALL_STREAM_LIMIT + 1);
+        } else if (params.filter === 'bookmarks') {
+            entryActions.getSavedEntriesList(LIMIT);
         }
     }
 
