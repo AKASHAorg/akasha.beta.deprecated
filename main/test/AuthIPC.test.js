@@ -1,9 +1,9 @@
 "use strict";
-const electron_1 = require('electron');
-const helpers_1 = require('./helpers');
-const chai_1 = require('chai');
-const channels_1 = require('../lib/channels');
-const timers_1 = require('timers');
+const electron_1 = require("electron");
+const helpers_1 = require("./helpers");
+const chai_1 = require("chai");
+const channels_1 = require("../lib/channels");
+const timers_1 = require("timers");
 describe('AuthIPC', function () {
     this.timeout(120000);
     before(function (done) {

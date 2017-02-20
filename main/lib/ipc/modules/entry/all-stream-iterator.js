@@ -1,10 +1,10 @@
 "use strict";
-const Promise = require('bluebird');
-const index_1 = require('../../contracts/index');
-const records_1 = require('../models/records');
-const settings_1 = require('../../config/settings');
-const geth_connector_1 = require('@akashaproject/geth-connector');
-const get_entry_1 = require('./get-entry');
+const Promise = require("bluebird");
+const index_1 = require("../../contracts/index");
+const records_1 = require("../models/records");
+const settings_1 = require("../../config/settings");
+const geth_connector_1 = require("@akashaproject/geth-connector");
+const get_entry_1 = require("./get-entry");
 const fetch = Promise.coroutine(function* (entries, toBlock, limit) {
     const fromBlock = toBlock - settings_1.BLOCK_INTERVAL;
     const filter = { fromBlock: (fromBlock > 0) ? fromBlock : 0, toBlock: toBlock };

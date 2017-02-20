@@ -1,7 +1,7 @@
 "use strict";
-const electron_1 = require('electron');
-const fs_1 = require('fs');
-const path_1 = require('path');
+const electron_1 = require("electron");
+const fs_1 = require("fs");
+const path_1 = require("path");
 const writeGenesisFile = () => {
     const genesis = {
         "alloc": {},

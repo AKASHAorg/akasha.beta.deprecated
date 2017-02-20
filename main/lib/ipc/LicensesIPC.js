@@ -1,8 +1,8 @@
 "use strict";
-const ModuleEmitter_1 = require('./event/ModuleEmitter');
-const channels_1 = require('../channels');
-const responses_1 = require('./event/responses');
-const Licenses_1 = require('./modules/models/Licenses');
+const ModuleEmitter_1 = require("./event/ModuleEmitter");
+const channels_1 = require("../channels");
+const responses_1 = require("./event/responses");
+const Licenses_1 = require("./modules/models/Licenses");
 class LicensesIPC extends ModuleEmitter_1.default {
     constructor() {
         super();

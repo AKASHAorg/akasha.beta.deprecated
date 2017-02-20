@@ -1,8 +1,8 @@
 "use strict";
-const Promise = require('bluebird');
-const index_1 = require('../../contracts/index');
-const following_count_1 = require('../profile/following-count');
-const subs_count_1 = require('../tags/subs-count');
+const Promise = require("bluebird");
+const index_1 = require("../../contracts/index");
+const following_count_1 = require("../profile/following-count");
+const subs_count_1 = require("../tags/subs-count");
 exports.DEFAULT_TAG = 'akasha';
 const execute = Promise.coroutine(function* (data) {
     let fCount = yield following_count_1.default.execute({ akashaId: data.akashaId });

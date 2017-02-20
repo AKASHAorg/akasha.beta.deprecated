@@ -37,7 +37,7 @@ export async function initMenu(mainWindow: any) {
     const version = app.getVersion();
     const template: any = [
         {
-            label: 'Edit',
+            label  : 'Edit',
             submenu: [
                 {
                     role: 'undo'
@@ -72,7 +72,7 @@ export async function initMenu(mainWindow: any) {
             ]
         },
         {
-            label: 'View',
+            label  : 'View',
             submenu: [
                 {
                     role: 'reload'
@@ -95,7 +95,7 @@ export async function initMenu(mainWindow: any) {
             ]
         },
         {
-            role: 'window',
+            role   : 'window',
             submenu: [
                 {
                     role: 'minimize'
@@ -106,7 +106,7 @@ export async function initMenu(mainWindow: any) {
             ]
         },
         {
-            role: 'help',
+            role   : 'help',
             submenu: [
                 {
                     label: 'Learn More',
@@ -158,7 +158,7 @@ export async function initMenu(mainWindow: any) {
 
     if (process.platform === 'darwin') {
         template.unshift({
-            label: app.getName(),
+            label  : app.getName(),
             submenu: [
                 {
                     role: 'about'
@@ -167,7 +167,7 @@ export async function initMenu(mainWindow: any) {
                     type: 'separator'
                 },
                 {
-                    role: 'services',
+                    role   : 'services',
                     submenu: []
                 },
                 {
@@ -193,25 +193,25 @@ export async function initMenu(mainWindow: any) {
         // Window menu.
         template[3].submenu = [
             {
-                label: 'Close',
+                label      : 'Close',
                 accelerator: 'CmdOrCtrl+W',
-                role: 'close'
+                role       : 'close'
             },
             {
-                label: 'Minimize',
+                label      : 'Minimize',
                 accelerator: 'CmdOrCtrl+M',
-                role: 'minimize'
+                role       : 'minimize'
             },
             {
                 label: 'Zoom',
-                role: 'zoom'
+                role : 'zoom'
             },
             {
                 type: 'separator'
             },
             {
                 label: 'Bring All to Front',
-                role: 'front'
+                role : 'front'
             }
         ]
     }

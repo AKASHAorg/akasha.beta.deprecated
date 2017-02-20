@@ -1,10 +1,10 @@
 "use strict";
-const electron_1 = require('electron');
-const EntryIPC_1 = require('../lib/ipc/EntryIPC');
-const chai_1 = require('chai');
-const channels_1 = require('../lib/channels');
-const helpers = require('./helpers');
-const entryContent_1 = require('./fixtures/entryContent');
+const electron_1 = require("electron");
+const EntryIPC_1 = require("../lib/ipc/EntryIPC");
+const chai_1 = require("chai");
+const channels_1 = require("../lib/channels");
+const helpers = require("./helpers");
+const entryContent_1 = require("./fixtures/entryContent");
 class EntryIPCtest extends EntryIPC_1.default {
     constructor() {
         super(...arguments);

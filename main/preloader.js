@@ -1,6 +1,6 @@
 "use strict";
-const channels_1 = require('./lib/channels');
-const ipcPreloader_1 = require('./ipcPreloader');
+const channels_1 = require("./lib/channels");
+const ipcPreloader_1 = require("./ipcPreloader");
 function injectApi() {
     const AkashaApi = Object.assign({}, channels_1.default);
     Object.keys(channels_1.default.client).forEach((module) => {

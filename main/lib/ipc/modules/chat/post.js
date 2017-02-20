@@ -1,8 +1,8 @@
 "use strict";
-const Promise = require('bluebird');
-const settings_1 = require('./settings');
-const geth_connector_1 = require('@akashaproject/geth-connector');
-const current_profile_1 = require('../registry/current-profile');
+const Promise = require("bluebird");
+const settings_1 = require("./settings");
+const geth_connector_1 = require("@akashaproject/geth-connector");
+const current_profile_1 = require("../registry/current-profile");
 exports.whisperIdentity = {
     from: ''
 };

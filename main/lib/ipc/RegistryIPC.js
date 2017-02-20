@@ -1,6 +1,6 @@
 "use strict";
-const ModuleEmitter_1 = require('./event/ModuleEmitter');
-const index_1 = require('./modules/registry/index');
+const ModuleEmitter_1 = require("./event/ModuleEmitter");
+const index_1 = require("./modules/registry/index");
 class RegistryIPC extends ModuleEmitter_1.default {
     constructor() {
         super();

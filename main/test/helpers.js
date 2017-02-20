@@ -1,12 +1,12 @@
 "use strict";
-const Logger_1 = require('../lib/ipc/Logger');
-const GethIPC_1 = require('../lib/ipc/GethIPC');
-const IpfsIPC_1 = require('../lib/ipc/IpfsIPC');
-const TxIPC_1 = require('../lib/ipc/TxIPC');
-const electron_1 = require('electron');
-const chai_1 = require('chai');
-const channels_1 = require('../lib/channels');
-const AuthIPC_1 = require('../lib/ipc/AuthIPC');
+const Logger_1 = require("../lib/ipc/Logger");
+const GethIPC_1 = require("../lib/ipc/GethIPC");
+const IpfsIPC_1 = require("../lib/ipc/IpfsIPC");
+const TxIPC_1 = require("../lib/ipc/TxIPC");
+const electron_1 = require("electron");
+const chai_1 = require("chai");
+const channels_1 = require("../lib/channels");
+const AuthIPC_1 = require("../lib/ipc/AuthIPC");
 class AuthIPCtest extends AuthIPC_1.default {
     constructor() {
         super(...arguments);

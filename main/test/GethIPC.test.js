@@ -1,8 +1,8 @@
 "use strict";
-const electron_1 = require('electron');
-const helpers_1 = require('./helpers');
-const chai_1 = require('chai');
-const channels_1 = require('../lib/channels');
+const electron_1 = require("electron");
+const helpers_1 = require("./helpers");
+const chai_1 = require("chai");
+const channels_1 = require("../lib/channels");
 describe('GethIPC', function () {
     this.timeout(60000);
     before(function (done) {
