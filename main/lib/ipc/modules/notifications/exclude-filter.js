@@ -1,6 +1,6 @@
 "use strict";
-const Promise = require('bluebird');
-const set_filter_1 = require('./set-filter');
+const Promise = require("bluebird");
+const set_filter_1 = require("./set-filter");
 const execute = Promise.coroutine(function* (data) {
     data.profiles.forEach((profileAddress) => {
         set_filter_1.filter.removeAddress(profileAddress);

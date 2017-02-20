@@ -1,7 +1,7 @@
 "use strict";
-const electron_1 = require('electron');
-const compareVersions = require('compare-versions');
-const ipfs_connector_1 = require('@akashaproject/ipfs-connector');
+const electron_1 = require("electron");
+const compareVersions = require("compare-versions");
+const ipfs_connector_1 = require("@akashaproject/ipfs-connector");
 class UpdateChecker {
     setWindow(activeWindow) {
         this.browserWindow = activeWindow;

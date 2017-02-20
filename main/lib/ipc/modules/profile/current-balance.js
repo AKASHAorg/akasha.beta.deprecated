@@ -1,6 +1,6 @@
 "use strict";
-const Promise = require('bluebird');
-const geth_connector_1 = require('@akashaproject/geth-connector');
+const Promise = require("bluebird");
+const geth_connector_1 = require("@akashaproject/geth-connector");
 const execute = Promise.coroutine(function* (data) {
     const etherBase = (data.etherBase) ? data.etherBase : geth_connector_1.GethConnector.getInstance().web3.eth.defaultAccount;
     const unit = (data.unit) ? data.unit : 'ether';

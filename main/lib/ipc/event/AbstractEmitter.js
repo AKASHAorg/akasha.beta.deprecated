@@ -1,5 +1,5 @@
 "use strict";
-const AbstractListener_1 = require('./AbstractListener');
+const AbstractListener_1 = require("./AbstractListener");
 class AbstractEmitter extends AbstractListener_1.AbstractListener {
     fireEvent(channel, data, event) {
         if (event) {

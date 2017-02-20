@@ -1,8 +1,8 @@
 "use strict";
-const AbstractEmitter_1 = require('./AbstractEmitter');
-const ipfs_connector_1 = require('@akashaproject/ipfs-connector');
-const responses_1 = require('./responses');
-const channels_1 = require('../../channels');
+const AbstractEmitter_1 = require("./AbstractEmitter");
+const ipfs_connector_1 = require("@akashaproject/ipfs-connector");
+const responses_1 = require("./responses");
+const channels_1 = require("../../channels");
 const peerId = '/ip4/46.101.103.114/tcp/4001/ipfs/QmYfXRuVWMWFRJxUSFPHtScTNR9CU2samRsTK15VFJPpvh';
 class IpfsEmitter extends AbstractEmitter_1.AbstractEmitter {
     attachEmitters() {

@@ -1,9 +1,9 @@
 "use strict";
-const electron_1 = require('electron');
-const RegistryIPC_1 = require('../lib/ipc/RegistryIPC');
-const chai_1 = require('chai');
-const channels_1 = require('../lib/channels');
-const helpers = require('./helpers');
+const electron_1 = require("electron");
+const RegistryIPC_1 = require("../lib/ipc/RegistryIPC");
+const chai_1 = require("chai");
+const channels_1 = require("../lib/channels");
+const helpers = require("./helpers");
 class RegistryIPCtest extends RegistryIPC_1.default {
     constructor() {
         super(...arguments);

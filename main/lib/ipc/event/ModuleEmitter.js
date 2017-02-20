@@ -1,7 +1,7 @@
 "use strict";
-const AbstractEmitter_1 = require('./AbstractEmitter');
-const channels_1 = require('../../channels');
-const responses_1 = require('./responses');
+const AbstractEmitter_1 = require("./AbstractEmitter");
+const channels_1 = require("../../channels");
+const responses_1 = require("./responses");
 class ModuleEmitter extends AbstractEmitter_1.AbstractEmitter {
     _manager() {
         this.registerListener(channels_1.default.server[this.MODULE_NAME].manager, (event, data) => {

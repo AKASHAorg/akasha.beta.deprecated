@@ -1,7 +1,7 @@
 "use strict";
-const Promise = require('bluebird');
-const index_1 = require('../../contracts/index');
-const get_entry_1 = require('./get-entry');
+const Promise = require("bluebird");
+const index_1 = require("../../contracts/index");
+const get_entry_1 = require("./get-entry");
 const execute = Promise.coroutine(function* (data) {
     let currentId = (data.start) ? data.start : yield index_1.constructed.instance.entries.getTagEntryFirst(data.tagName);
     if (currentId === '0') {

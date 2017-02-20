@@ -1,7 +1,7 @@
 "use strict";
-const Promise = require('bluebird');
-const index_1 = require('../../contracts/index');
-const profile_data_1 = require('./profile-data');
+const Promise = require("bluebird");
+const index_1 = require("../../contracts/index");
+const profile_data_1 = require("./profile-data");
 const execute = Promise.coroutine(function* (data) {
     let currentId = (data.start) ? data.start : yield index_1.constructed.instance.feed.getFollowersFirst(data.akashaId);
     if (currentId === '0') {

@@ -1,10 +1,10 @@
 "use strict";
-const Promise = require('bluebird');
-const ramda_1 = require('ramda');
-const geth_connector_1 = require('@akashaproject/geth-connector');
-const settings_1 = require('../../config/settings');
-const Auth_1 = require('../auth/Auth');
-const post_1 = require('../chat/post');
+const Promise = require("bluebird");
+const ramda_1 = require("ramda");
+const geth_connector_1 = require("@akashaproject/geth-connector");
+const settings_1 = require("../../config/settings");
+const Auth_1 = require("../auth/Auth");
+const post_1 = require("../chat/post");
 const execute = Promise.coroutine(function* (data) {
     const timeout = (data.timeout) ? data.timeout : settings_1.handshakeTimeout;
     const seed = yield Auth_1.randomBytesAsync(32);

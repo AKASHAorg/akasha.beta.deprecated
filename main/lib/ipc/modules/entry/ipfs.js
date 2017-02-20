@@ -1,8 +1,8 @@
 "use strict";
-const ipfs_connector_1 = require('@akashaproject/ipfs-connector');
-const Promise = require('bluebird');
-const ramda_1 = require('ramda');
-const records_1 = require('../models/records');
+const ipfs_connector_1 = require("@akashaproject/ipfs-connector");
+const Promise = require("bluebird");
+const ramda_1 = require("ramda");
+const records_1 = require("../models/records");
 exports.DRAFT_BLOCKS = 'blocks';
 exports.ATOMIC_TYPE = 'atomic';
 exports.IMAGE_TYPE = 'image';

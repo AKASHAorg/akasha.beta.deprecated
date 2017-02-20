@@ -1,13 +1,14 @@
-import * as Promise from 'bluebird';
-import getProfileData from './profile-data';
+import * as Promise from "bluebird";
+import getProfileData from "./profile-data";
 
 /**
  *
  * @type {Function}
  */
 const execute = Promise.coroutine(function*(data: ProfileDataRequest[]) {
+
     const pool = data.map((profile) => {
-        return getProfileData.execute(profile);
+        return getProfileData.executeri(profile);
     });
     const collection = yield Promise.all(pool);
     return { collection: collection, resolve: data };

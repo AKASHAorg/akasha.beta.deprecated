@@ -1,6 +1,6 @@
 "use strict";
-const ModuleEmitter_1 = require('./event/ModuleEmitter');
-const index_1 = require('./modules/search/index');
+const ModuleEmitter_1 = require("./event/ModuleEmitter");
+const index_1 = require("./modules/search/index");
 class SearchIPC extends ModuleEmitter_1.default {
     constructor() {
         super();

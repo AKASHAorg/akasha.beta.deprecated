@@ -1,5 +1,5 @@
 "use strict";
-const LRU = require('lru-cache');
+const LRU = require("lru-cache");
 class Entries {
     constructor() {
         this.options = { max: 64, maxAge: 1000 * 60 * 60 };

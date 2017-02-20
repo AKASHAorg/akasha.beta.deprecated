@@ -1,6 +1,6 @@
 "use strict";
-const BaseContract_1 = require('./BaseContract');
-const Promise = require('bluebird');
+const BaseContract_1 = require("./BaseContract");
+const Promise = require("bluebird");
 class RegistryStore extends BaseContract_1.default {
     constructor(instance) {
         super();

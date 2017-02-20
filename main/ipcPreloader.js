@@ -1,5 +1,5 @@
 "use strict";
-const electron_1 = require('electron');
+const electron_1 = require("electron");
 class GenericApi {
     constructor(channel, channelName) {
         this.channel = channel;

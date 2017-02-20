@@ -1,10 +1,10 @@
 "use strict";
-const Promise = require('bluebird');
-const geth_connector_1 = require('@akashaproject/geth-connector');
-const current_profile_1 = require('../registry/current-profile');
-const post_1 = require('../chat/post');
-const settings_1 = require('../../config/settings');
-const ramda_1 = require('ramda');
+const Promise = require("bluebird");
+const geth_connector_1 = require("@akashaproject/geth-connector");
+const current_profile_1 = require("../registry/current-profile");
+const post_1 = require("../chat/post");
+const settings_1 = require("../../config/settings");
+const ramda_1 = require("ramda");
 const execute = Promise.coroutine(function* (data) {
     if (data.mention.length > 10) {
         throw new Error('Can mention max 10 users');

@@ -1,8 +1,8 @@
 "use strict";
-const index_1 = require('../auth/index');
-const ipfs_1 = require('../profile/ipfs');
-const Promise = require('bluebird');
-const index_2 = require('../../contracts/index');
+const index_1 = require("../auth/index");
+const ipfs_1 = require("../profile/ipfs");
+const Promise = require("bluebird");
+const index_2 = require("../../contracts/index");
 const execute = Promise.coroutine(function* (data) {
     const ipfsHash = yield ipfs_1.create(data.ipfs);
     const txData = yield index_2.constructed.instance.registry.register(data.akashaId, ipfsHash, data.gas);

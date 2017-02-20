@@ -1,10 +1,10 @@
 "use strict";
-const geth_connector_1 = require('@akashaproject/geth-connector');
-const AbstractEmitter_1 = require('./AbstractEmitter');
-const channels_1 = require('../../channels');
-const responses_1 = require('./responses');
-const index_1 = require('../contracts/index');
-const index_2 = require('../modules/index');
+const geth_connector_1 = require("@akashaproject/geth-connector");
+const AbstractEmitter_1 = require("./AbstractEmitter");
+const channels_1 = require("../../channels");
+const responses_1 = require("./responses");
+const index_1 = require("../contracts/index");
+const index_2 = require("../modules/index");
 const peers = require('../config/peers.json');
 class GethEmitter extends AbstractEmitter_1.AbstractEmitter {
     attachEmitters() {
