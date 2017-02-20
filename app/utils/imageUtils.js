@@ -288,8 +288,7 @@ const getImageSize = (imagePath, options) => {
  *       });
  *   ).catch(reason => reason {string} 'Image height is smaller than minimum allowed of 200 pixels')
  */
-const getResizedImages = (fileList, options) => {
-    let inputFiles = fileList;
+const getResizedImages = (inputFiles, options) => {
     // const promises = [];
     console.group('resize results and timings:');
     // handle ipfs files here
