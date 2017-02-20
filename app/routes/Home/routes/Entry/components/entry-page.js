@@ -385,7 +385,7 @@ class EntryPage extends Component {
                 licences.find(lic => lic.id === licence.parent).label :
                 licence.label;
         } else {
-            currentVersion = location.query.version ?
+            currentVersion = location.query && location.query.version ?
                 Number(location.query.version) :
                 latestVersion;
         }
