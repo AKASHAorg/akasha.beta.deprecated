@@ -85,11 +85,11 @@ class IpfsEntry {
         imageEntities.forEach((element, index) => {
             const keys = Object.keys(element.data.files).sort();
             keys.forEach((imSize) => {
-                if (!Buffer.isBuffer(element.data.files[imSize].src)) {
+                if (!element.data.files[imSize].src) {
                     return false;
                 }
                 uploads.push(ipfs_connector_1.IpfsConnector.getInstance().api
-                    .add(element.data.files[imSize].src, true)
+                    .add(Buffer.from(ramda_1.values(element.data.files[imSize].src)), true)
                     .then((obj) => {
                     this.entryLinks.push(Object.assign({}, obj, { name: (imSize + index) }));
                     this.draft[exports.DRAFT_BLOCKS][blockIndex[index]].data.files[imSize].src = obj.hash;

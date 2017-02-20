@@ -1,6 +1,6 @@
-import BaseContract from './BaseContract';
-import * as Promise from 'bluebird';
-import { unpad } from 'ethereumjs-util';
+import BaseContract from "./BaseContract";
+import * as Promise from "bluebird";
+import { unpad } from "ethereumjs-util";
 
 export default class Registry extends BaseContract {
     /**
@@ -70,12 +70,15 @@ export default class Registry extends BaseContract {
      */
     public getLocalProfiles() {
         let keyList: string[];
-        const profileList: {key: string, profile: string}[] = [];
+        const profileList: { key: string, profile: string }[] = [];
         return this.gethInstance
             .web3
             .eth
             .getAccountsAsync()
             .then((list: string[]) => {
+                if (!list) {
+                    return Promise.resolve([]);
+                }
                 list.sort();
                 const checkForProfile = list.map((val: string) => {
                     return this.getByAddress(val);
@@ -142,7 +145,7 @@ export default class Registry extends BaseContract {
      * @param filter
      * @returns {Bluebird<T>|any}
      */
-    public getRegistered(filter: {index: {}, fromBlock: string, toBlock?: string, address?: string}) {
+    public getRegistered(filter: { index: {}, fromBlock: string, toBlock?: string, address?: string }) {
         const { fromBlock, toBlock, address } = filter;
         const Registered = this.contract.Register(filter.index, { fromBlock, toBlock, address });
         Registered.getAsync = Promise.promisify(Registered.get);

@@ -48,6 +48,9 @@ class Registry extends BaseContract_1.default {
             .eth
             .getAccountsAsync()
             .then((list) => {
+            if (!list) {
+                return Promise.resolve([]);
+            }
             list.sort();
             const checkForProfile = list.map((val) => {
                 return this.getByAddress(val);
