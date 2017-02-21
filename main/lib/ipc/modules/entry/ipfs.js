@@ -88,8 +88,12 @@ class IpfsEntry {
                 if (!element.data.files[imSize].src) {
                     return false;
                 }
+                const mediaData = Buffer.isBuffer(element.data.files[imSize].src) ?
+                    element.data.files[imSize].src
+                    :
+                        Buffer.from(ramda_1.values(element.data.files[imSize].src));
                 uploads.push(ipfs_connector_1.IpfsConnector.getInstance().api
-                    .add(Buffer.from(ramda_1.values(element.data.files[imSize].src)), true)
+                    .add(mediaData, true)
                     .then((obj) => {
                     this.entryLinks.push(Object.assign({}, obj, { name: (imSize + index) }));
                     this.draft[exports.DRAFT_BLOCKS][blockIndex[index]].data.files[imSize].src = obj.hash;
