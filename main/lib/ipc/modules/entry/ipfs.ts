@@ -129,9 +129,13 @@ class IpfsEntry {
                 if (!element.data.files[imSize].src) {
                     return false;
                 }
+                const mediaData = Buffer.isBuffer(element.data.files[imSize].src) ?
+                    element.data.files[imSize].src
+                    :
+                    Buffer.from(values(element.data.files[imSize].src));
                 uploads.push(
                     IpfsConnector.getInstance().api
-                        .add(Buffer.from(values(element.data.files[imSize].src)), true)
+                        .add(mediaData, true)
                         .then(
                             (obj) => {
                                 this.entryLinks.push(Object.assign({}, obj, { name: (imSize + index) }));
