@@ -202,6 +202,7 @@ class TagsField extends React.Component {
             }
             const style = {
                 display: 'inline-block',
+                backgroundColor: 'rgba(0,0,0,0)',
                 border: '1px solid',
                 borderColor,
                 borderRadius: 3,
@@ -221,7 +222,6 @@ class TagsField extends React.Component {
             return (
               <Chip
                 key={key}
-                backgroundColor="transparent"
                 style={style}
                 title={erroredTagMessage}
                 labelStyle={{
@@ -309,6 +309,7 @@ class TagsField extends React.Component {
         );
     }
 }
+
 TagsField.propTypes = {
     checkExistingTags: PropTypes.func,
     disabled: PropTypes.bool,
