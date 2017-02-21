@@ -90,6 +90,7 @@ class CreateProfile extends Component {
                 console.log('must correct some errors!', this.state);
             } else {
                 delete data.password2;
+                data.password = new TextEncoder('utf-8').encode(data.password);
                 tempProfileActions.createTempProfile(data);
             }
         });
