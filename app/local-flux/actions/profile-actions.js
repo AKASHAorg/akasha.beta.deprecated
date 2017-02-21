@@ -204,7 +204,7 @@ class ProfileActions {
         }));
         this.profileService.getProfileList({
             profiles,
-            onSuccess: data => {
+            onSuccess: (data) => {
                 data.collection.forEach((item) => {
                     if (item.avatar) {
                         item.avatar = imageCreator(item.avatar, item.baseUrl);

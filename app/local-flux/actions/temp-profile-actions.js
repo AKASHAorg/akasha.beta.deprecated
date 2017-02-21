@@ -208,7 +208,6 @@ class TempProfileActions {
         });
 
     tempLogin = ({ account, password, rememberTime, akashaId, registering = true }) => {
-        password = new TextEncoder('utf-8').encode(password);
         this.dispatch(tempProfileActionCreators.login());
         this.authService.login({
             account,

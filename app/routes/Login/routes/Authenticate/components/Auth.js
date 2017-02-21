@@ -209,7 +209,11 @@ class Auth extends Component {
         });
     };
     _handleDialogKeyPress = (ev) => {
+        const { profileActions, loginErrors } = this.props;
         if (ev.key === 'Enter') {
+            if (loginErrors.size > 0) {
+                profileActions.clearLoginErrors();
+            }
             this.handleLogin();
         }
     };
