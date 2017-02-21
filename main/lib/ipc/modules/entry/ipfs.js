@@ -85,7 +85,7 @@ class IpfsEntry {
         imageEntities.forEach((element, index) => {
             const keys = Object.keys(element.data.files).sort();
             keys.forEach((imSize) => {
-                if (!element.data.files[imSize].src) {
+                if (!element.data.files[imSize].src || ramda_1.is(String, element.data.files[imSize].src)) {
                     return false;
                 }
                 const mediaData = Buffer.isBuffer(element.data.files[imSize].src) ?
