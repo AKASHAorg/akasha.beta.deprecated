@@ -204,7 +204,7 @@ class NewEntryFormPanel extends Component {
                 <Tabs
                   value={this.state.tabsValue}
                   onChange={this._handleTabsChange}
-                  inkBarStyle={{ backgroundColor: palette.primary1Color }}
+                  inkBarStyle={{ backgroundColor: palette.primary1Color, zIndex: 2 }}
                 >
                   <Tab label="Drafts" value="drafts" style={tabStyle} />
                   <Tab label="Listed" value="listed" style={tabStyle} />
