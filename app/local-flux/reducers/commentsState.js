@@ -87,6 +87,7 @@ const commentsState = createReducer(initialState, {
     },
 
     [types.FETCH_NEW_COMMENTS_SUCCESS]: (state, { comment, options }) => {
+        comment.data.profile.avatar = `${comment.data.profile.baseUrl}/${comment.data.profile.avatar}`;
         const comms = castCommentToRecord(comment);
         const newState = state.setIn(['entryComments'],
             state.get('entryComments')
