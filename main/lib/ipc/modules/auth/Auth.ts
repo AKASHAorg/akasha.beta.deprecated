@@ -1,5 +1,5 @@
-import { createCipher, createDecipher, randomBytes, Decipher, Cipher } from 'crypto';
-import { GethConnector, gethHelper } from '@akashaproject/geth-connector';
+import { createCipher, createDecipher, randomBytes, Decipher, Cipher } from "crypto";
+import { GethConnector, gethHelper } from "@akashaproject/geth-connector";
 import {
     addHexPrefix,
     fromRpcSig,
@@ -9,9 +9,9 @@ import {
     pubToAddress,
     unpad,
     hashPersonalMessage
-} from 'ethereumjs-util';
-import { constructed as contracts } from '../../contracts/index';
-import * as Promise from 'bluebird';
+} from "ethereumjs-util";
+import { constructed as contracts } from "../../contracts/index";
+import * as Promise from "bluebird";
 
 export const randomBytesAsync = Promise.promisify(randomBytes);
 export default class Auth {
@@ -28,6 +28,9 @@ export default class Auth {
      */
     public generateKey(pass: any) {
         try {
+            if (!Buffer.isBuffer(pass)) {
+                throw new Error("Incorrect password format");
+            }
             const transformed = Buffer.from(pass).toString('utf8');
             return GethConnector.getInstance()
                 .web3
@@ -137,7 +140,7 @@ export default class Auth {
                         this._session = {
                             expiration,
                             address: acc,
-                            vrs: fromRpcSig(signedString)
+                            vrs    : fromRpcSig(signedString)
                         };
                         this._task = setTimeout(() => this._flushSession(), 1000 * 60 * timer);
                         return { token: addHexPrefix(clientToken.toString('hex')), expiration, account: acc };
