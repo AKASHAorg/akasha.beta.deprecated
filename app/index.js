@@ -7,12 +7,15 @@ import { syncHistoryWithStore } from 'react-router-redux';
 import en from 'react-intl/locale-data/en';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import ReactPerf from 'react-addons-perf';
+import rootSaga from './local-flux/sagas';
 import routes from './routes';
 import configureStore from './local-flux/store/configureStore';
+import sagaMiddleware from './local-flux/store/sagaMiddleware';
 // import { ruMessages } from './locale-data/ru';
 
 addLocaleData([...en]);
 const store = configureStore();
+sagaMiddleware.run(rootSaga);
 const history = syncHistoryWithStore(hashHistory, store);
 
 window.Perf = ReactPerf;

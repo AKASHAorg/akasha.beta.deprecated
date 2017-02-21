@@ -237,16 +237,20 @@ class EProcActions {
     }
 
     startGethLogger = timestamp =>
-        this.gethService.getLogs({
-            options: {},
-            onError: err => this.dispatch(appActionCreators.showError(err)),
-            onSuccess: data =>
-                this.dispatch(externalProcessActionCreators.getGethLogs(
-                    this.filterGethLogs(data, timestamp)
-                ))
-        });
+        this.dispatch({ type: 'START_GETH_LOGGER', payload: { timestamp }});
+        // this.gethService.getLogs({
+        //     options: {},
+        //     onError: err => this.dispatch(appActionCreators.showError(err)),
+        //     onSuccess: data =>
+        //         this.dispatch(externalProcessActionCreators.getGethLogs(
+        //             this.filterGethLogs(data, timestamp)
+        //         ))
+        // });
 
-    stopGethLogger = () => this.gethService.stopLogger();
+    stopGethLogger = () => {
+        // this.gethService.stopLogger();
+        this.dispatch({ type: 'STOP_GETH_LOGGER' });
+    };
 
     startIpfsLogger = timestamp =>
         this.ipfsService.getLogs({

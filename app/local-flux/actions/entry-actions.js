@@ -216,32 +216,32 @@ class EntryActions {
         });
 
     entryTagIterator = (tagName, start, limit) => {
-        this.dispatch((dispatch, getState) => {
-            const selectedTag = getState().tagState.get('selectedTag');
-            this.dispatch(entryActionCreators.entryTagIterator({ fetchingTagEntries: true }));
-            this.entryService.entryTagIterator({
-                tagName,
-                start,
-                limit,
-                onSuccess: (data) => {
-                    const akashaIds = [];
-                    data.collection && data.collection.forEach(entry => {
-                        if (entry.entryEth.publisher && entry.entryEth.publisher.akashaId) {
-                            akashaIds.push({ akashaId: entry.entryEth.publisher.akashaId });
-                        }
-                    });
-                    this.profileService.saveAkashaIds(akashaIds);
-                    if (selectedTag === data.tagName || !selectedTag) {
-                        dispatch(entryActionCreators.entryTagIteratorSuccess(data, {
-                            fetchingTagEntries: false
-                        }));
-                    }
-                },
-                onError: error => dispatch(entryActionCreators.entryTagIteratorError(error, {
-                    fetchingTagEntries: false
-                }))
-            });
-        });
+        // this.dispatch((dispatch, getState) => {
+        //     const selectedTag = getState().tagState.get('selectedTag');
+        //     this.dispatch(entryActionCreators.entryTagIterator({ fetchingTagEntries: true }));
+        //     this.entryService.entryTagIterator({
+        //         tagName,
+        //         start,
+        //         limit,
+        //         onSuccess: (data) => {
+        //             const akashaIds = [];
+        //             data.collection && data.collection.forEach(entry => {
+        //                 if (entry.entryEth.publisher.akashaId) {
+        //                     akashaIds.push({ akashaId: entry.entryEth.publisher.akashaId });
+        //                 }
+        //             });
+        //             this.profileService.saveAkashaIds(akashaIds);
+        //             if (selectedTag === data.tagName || !selectedTag) {
+        //                 dispatch(entryActionCreators.entryTagIteratorSuccess(data, {
+        //                     fetchingTagEntries: false
+        //                 }));
+        //             }
+        //         },
+        //         onError: error => dispatch(entryActionCreators.entryTagIteratorError(error, {
+        //             fetchingTagEntries: false
+        //         }))
+        //     });
+        // });
     };
 
     moreEntryTagIterator = (tagName, start, limit) => {
