@@ -1,4 +1,4 @@
-export declare const generalSettings: Map<any, any>;
+export declare const generalSettings: any;
 export declare const BASE_URL = "baseUrl";
 export declare const SHORT_WAIT_TIME = 10000;
 export declare const FULL_WAIT_TIME = 15000;
