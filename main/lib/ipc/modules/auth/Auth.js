@@ -8,6 +8,9 @@ exports.randomBytesAsync = Promise.promisify(crypto_1.randomBytes);
 class Auth {
     generateKey(pass) {
         try {
+            if (!Buffer.isBuffer(pass)) {
+                throw new Error("Incorrect password format");
+            }
             const transformed = Buffer.from(pass).toString('utf8');
             return geth_connector_1.GethConnector.getInstance()
                 .web3
