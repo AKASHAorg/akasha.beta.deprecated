@@ -39,7 +39,10 @@ class Comment extends React.Component {
     componentDidMount () {
         const { comment } = this.props;
         let { isExpanded } = this.state;
-        const contentHeight = this.editorWrapperRef.getBoundingClientRect().height;
+        let contentHeight;
+        if (this.editorWrapperRef) {
+            contentHeight = this.editorWrapperRef.getBoundingClientRect().height;
+        }
         if (comment.data && !comment.data.content) {
             isExpanded = null;
         }
@@ -217,15 +220,16 @@ class Comment extends React.Component {
                 </div>
               }
               {!content &&
-                <div data-tip={intl.formatMessage(entryMessages.unresolvedEntry)}>
-                  <IconButton
-                    style={{
-                        position: 'absolute',
-                        right: '10px',
-                        top: '7px',
-                        opacity: 0.5
-                    }}
-                  >
+                <div
+                  data-tip={intl.formatMessage(entryMessages.unresolvedEntry)}
+                  style={{
+                      position: 'absolute',
+                      right: '10px',
+                      top: '7px',
+                      opacity: 0.5
+                  }}
+                >
+                  <IconButton>
                     <HubIcon color={palette.accent1Color} />
                   </IconButton>
                 </div>
