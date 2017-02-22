@@ -23,7 +23,9 @@ function getCommentContent(hash) {
         .then((data) => {
         records_1.comments.setFull(hash, data);
         return data;
-    }).catch((e) => null);
+    }).catch((e) => {
+        return { content: null };
+    });
 }
 exports.getCommentContent = getCommentContent;
 //# sourceMappingURL=ipfs.js.map
