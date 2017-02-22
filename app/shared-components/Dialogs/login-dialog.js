@@ -45,6 +45,7 @@ class LoginDialog extends Component {
                   fullWidth
                   floatingLabelText="Name"
                   value={`${profile.get('firstName')} ${profile.get('lastName')}`}
+                  style={{ cursor: 'default' }}
                 />
               </div>
               <div className="col-xs-6" >
@@ -52,6 +53,7 @@ class LoginDialog extends Component {
                   disabled
                   floatingLabelText="Akasha Id"
                   value={`${profile.get('akashaId')}`}
+                  style={{ cursor: 'default' }}
                   fullWidth
                 />
               </div>
@@ -61,6 +63,7 @@ class LoginDialog extends Component {
               fullWidth
               floatingLabelText="Ethereum address"
               value={profile.get('ethAddress')}
+              style={{ cursor: 'default' }}
             />
             <TextField
               type="password"

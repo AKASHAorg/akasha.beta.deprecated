@@ -3,7 +3,7 @@ import { TextField, Dialog, RaisedButton, Checkbox, SelectField, MenuItem } from
 import { formMessages, generalMessages } from '../../locale-data/messages';
 
 function AuthDialog (props) {
-    const { intl, loginErrors, onCancel, loginRequested, onPasswordChange,
+    const { intl, loginErrors, onCancel, onPasswordChange,
       password, onSubmit, isVisible, rememberTime, rememberChecked, onRememberPasswordCheck,
       onRememberTimeChange } = props;
     const handleSubmit = (ev) => {
@@ -78,7 +78,6 @@ AuthDialog.propTypes = {
     onCancel: PropTypes.func,
     password: PropTypes.string,
     loginErrors: PropTypes.shape(),
-    loginRequested: PropTypes.bool,
     intl: PropTypes.shape()
 };
 
