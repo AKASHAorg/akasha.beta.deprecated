@@ -1,5 +1,6 @@
 import { appActionCreators } from './action-creators';
 import { AppService } from '../services';
+import * as types from '../constants/AppConstants';
 
 let appActions = null;
 
@@ -85,6 +86,12 @@ class AppActions {
     hideTerms = () => this.dispatch(appActionCreators.hideTerms());
 
     cleanStore = () => this.dispatch(appActionCreators.cleanStore());
+}
+
+export function bootstrapApp () {
+    return {
+        type: types.BOOTSTRAP_APP
+    };
 }
 
 export { AppActions };

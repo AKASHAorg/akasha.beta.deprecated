@@ -1,6 +1,7 @@
 import { AppActions } from 'local-flux';
 import { settingsActionCreators } from './action-creators';
 import { NotificationsService, SettingsService } from '../services';
+import * as types from '../constants/SettingsConstants';
 
 let settingsActions = null;
 
@@ -177,5 +178,27 @@ class SettingsActions {
             });
         });
 }
+
+export function generalSettingsRequest () {
+    return {
+        type: types.GENERAL_SETTINGS_REQUEST,
+    };
+}
+
+export function generalSettingsSuccess (data) {
+    return {
+        type: types.GENERAL_SETTINGS_SUCCESS,
+        data
+    };
+}
+
+export function generalSettingsError (error) {
+    error.code = '';
+    return {
+        type: types.GENERAL_SETTINGS_ERROR,
+        error
+    };
+}
+
 
 export { SettingsActions };

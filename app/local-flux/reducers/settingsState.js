@@ -71,7 +71,8 @@ const initialState = fromJS({
     isAdvanced: false,
     fetchingFlags: false,
     fetchingGethSettings: false,
-    fetchingIpfsSettings: false
+    fetchingIpfsSettings: false,
+    generalSettingsPending: false
 });
 
 const settingsState = createReducer(initialState, {
@@ -213,9 +214,8 @@ const settingsState = createReducer(initialState, {
             errors: state.get('errors').push(new ErrorRecord(error)),
         }),
 
-    [types.CLEAN_USER_SETTINGS]: state => {
-        return state.set('userSettings', new UserSettings());
-    },
+    [types.CLEAN_USER_SETTINGS]: state =>
+        state.set('userSettings', new UserSettings()),
 
     [types.SAVE_LATEST_MENTION_SUCCESS]: (state, { data }) =>
         state.merge({
@@ -240,6 +240,21 @@ const settingsState = createReducer(initialState, {
         }),
 
     [types.CHANGE_THEME]: (state, action) => state.updateIn(['general', 'theme'], () => action.theme),
+
+    [types.GENERAL_SETTINGS_REQUEST]: state =>
+        state.set('generalSettingsPending', true),
+
+    [types.GENERAL_SETTINGS_SUCCESS]: (state, { data }) =>
+        state.merge({
+            generalSettings: new GeneralSettings(data),
+            generalSettingsPending: false
+        }),
+
+    [types.GENERAL_SETTINGS_ERROR]: (state, { error }) =>
+        state.merge({
+            errors: state.get('errors').push(new ErrorRecord(error)),
+            generalSettingsPending: false
+        }),
 
     [eProcTypes.GET_GETH_OPTIONS_SUCCESS]: (state, action) => {
         const gethSettings = Object.assign({}, state.get('geth').toJS());

@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { AppActions, DraftActions, EntryActions, EProcActions,
     ProfileActions, SettingsActions, TagActions } from 'local-flux';
+import { bootstrapApp } from 'local-flux/actions/app-actions';
 import { getMuiTheme } from 'material-ui/styles';
 import { AuthDialog, WeightConfirmDialog, PublishConfirmDialog,
     TransferConfirmDialog } from 'shared-components';
@@ -28,19 +29,20 @@ class App extends Component {
         muiTheme: getMuiTheme(this.state.theme === 'light' ? lightTheme : darkTheme)
     });
     componentWillMount () {
-        const { eProcActions, settingsActions } = this.props;
-        eProcActions.registerStopGethListener();
-        eProcActions.registerStopIpfsListener();
-        settingsActions.getSettings('general');
+        // const { eProcActions, settingsActions } = this.props;
+        // eProcActions.registerStopGethListener();
+        // eProcActions.registerStopIpfsListener();
+        // settingsActions.getSettings('general');
     }
     componentDidMount () {
-        const { appActions, eProcActions } = this.props;
-        const timestamp = new Date().getTime();
-        appActions.setTimestamp(timestamp);
-        setTimeout(() => {
-            eProcActions.getGethOptions();
-            eProcActions.getIpfsConfig();
-        }, 200);
+        // const { appActions, eProcActions } = this.props;
+        // const timestamp = new Date().getTime();
+        this.props.bootstrapApp();
+        // appActions.setTimestamp(timestamp);
+        // setTimeout(() => {
+            // eProcActions.getGethOptions();
+            // eProcActions.getIpfsConfig();
+        // }, 200);
     }
     componentWillReceiveProps (nextProps) {
         const { passwordPreference } = this.props;
@@ -193,6 +195,7 @@ class App extends Component {
 App.propTypes = {
     appState: PropTypes.shape(),
     appActions: PropTypes.shape(),
+    bootstrapApp: PropTypes.func,
     entryActions: PropTypes.shape(),
     eProcActions: PropTypes.shape(),
     loginErrors: PropTypes.shape(),
@@ -245,6 +248,7 @@ function mapDispatchToProps (dispatch) {
         profileActions: new ProfileActions(dispatch),
         settingsActions: new SettingsActions(dispatch),
         tagActions: new TagActions(dispatch),
+        bootstrapApp: () => dispatch(bootstrapApp())
     };
 }
 export default connect(

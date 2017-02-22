@@ -1,5 +1,6 @@
 import throttle from 'lodash.throttle';
 import { GethService, IpfsService } from '../services';
+import * as types from '../constants/external-process-constants';
 import {
     externalProcessActionCreators,
     appActionCreators } from './action-creators';
@@ -7,7 +8,6 @@ import {
 let eProcActions = null;
 /**
  * External processes actions (Geth, IPFS)
- *
  */
 class EProcActions {
     constructor (dispatch) { // eslint-disable-line consistent-return
@@ -50,18 +50,18 @@ class EProcActions {
         });
     };
 
-    registerStopGethListener = () => {
-        this.gethService.registerStopListener({
-            onError: (err) => {
-                this.dispatch(externalProcessActionCreators.stopGethError(err));
-                this.resetGethBusyState();
-            },
-            onSuccess: (data) => {
-                this.dispatch(externalProcessActionCreators.stopGethSuccess(data));
-                this.resetGethBusyState();
-            }
-        });
-    };
+    // registerStopGethListener = () => {
+    //     this.gethService.registerStopListener({
+    //         onError: (err) => {
+    //             this.dispatch(externalProcessActionCreators.stopGethError(err));
+    //             this.resetGethBusyState();
+    //         },
+    //         onSuccess: (data) => {
+    //             this.dispatch(externalProcessActionCreators.stopGethSuccess(data));
+    //             this.resetGethBusyState();
+    //         }
+    //     });
+    // };
 
     stopGeth = () => {
         this.dispatch(externalProcessActionCreators.stopGeth());
@@ -172,18 +172,18 @@ class EProcActions {
             )
         });
 
-    registerStopIpfsListener = () => {
-        this.ipfsService.registerStopListener({
-            onError: (err) => {
-                this.dispatch(externalProcessActionCreators.stopIPFSError(err));
-                this.resetIpfsBusyState();
-            },
-            onSuccess: (data) => {
-                this.dispatch(externalProcessActionCreators.stopIPFSSuccess(data));
-                this.resetIpfsBusyState();
-            }
-        });
-    };
+    // registerStopIpfsListener = () => {
+    //     this.ipfsService.registerStopListener({
+    //         onError: (err) => {
+    //             this.dispatch(externalProcessActionCreators.stopIPFSError(err));
+    //             this.resetIpfsBusyState();
+    //         },
+    //         onSuccess: (data) => {
+    //             this.dispatch(externalProcessActionCreators.stopIPFSSuccess(data));
+    //             this.resetIpfsBusyState();
+    //         }
+    //     });
+    // };
     stopIPFS = () => {
         this.dispatch(externalProcessActionCreators.stopIPFS());
         if (this.ipfsPortsRequest) {
@@ -236,8 +236,8 @@ class EProcActions {
         return logs;
     }
 
-    startGethLogger = timestamp =>
-        this.dispatch({ type: 'START_GETH_LOGGER', payload: { timestamp }});
+    startGethLogger = () =>
+        this.dispatch({ type: types.START_GETH_LOGGER });
         // this.gethService.getLogs({
         //     options: {},
         //     onError: err => this.dispatch(appActionCreators.showError(err)),
@@ -249,7 +249,7 @@ class EProcActions {
 
     stopGethLogger = () => {
         // this.gethService.stopLogger();
-        this.dispatch({ type: 'STOP_GETH_LOGGER' });
+        this.dispatch({ type: types.STOP_GETH_LOGGER });
     };
 
     startIpfsLogger = timestamp =>
@@ -264,4 +264,84 @@ class EProcActions {
 
     stopIpfsLogger = () => this.ipfsService.stopLogger();
 }
+
+export function getGethOptionsSuccess (data) {
+    return {
+        type: types.GET_GETH_OPTIONS_SUCCESS,
+        data
+    };
+}
+
+export function getGethOptionsError (error) {
+    error.code = 'GGOE';
+    return {
+        type: types.GET_GETH_OPTIONS_ERROR,
+        error
+    };
+}
+
+export function getIpfsConfigSuccess (data) {
+    return {
+        type: types.GET_IPFS_CONFIG_SUCCESS,
+        data
+    };
+}
+
+export function getIpfsConfigError (error) {
+    error.code = 'CIE';
+    return {
+        type: types.GET_IPFS_CONFIG_ERROR,
+        error
+    };
+}
+
+export function resetGethBusy () {
+    return {
+        type: types.RESET_GETH_BUSY
+    };
+}
+
+export function resetIpfsBusy () {
+    return {
+        type: types.RESET_IPFS_BUSY
+    };
+}
+
+export function stopGethSuccess (data) {
+    return {
+        type: types.STOP_GETH_SUCCESS,
+        data
+    };
+}
+
+export function stopGethError (error) {
+    error.code = 'SGE02';
+    return {
+        type: types.STOP_GETH_ERROR,
+        error
+    };
+}
+
+export function stopIPFSSuccess (data) {
+    return {
+        type: types.STOP_IPFS_SUCCESS,
+        data
+    };
+}
+
+export function stopIPFSError (error) {
+    error.code = 'SIE02';
+    return {
+        type: types.STOP_IPFS_ERROR,
+        error
+    };
+}
+
+export function getGethLogsSuccess (data) {
+    return {
+        type: types.GET_GETH_LOGS_SUCCESS,
+        data
+    };
+}
+
 export { EProcActions };

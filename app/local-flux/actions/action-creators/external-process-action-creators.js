@@ -15,20 +15,20 @@ export function getGethStatusError (error) {
     };
 }
 
-export function getGethOptionsSuccess (data) {
-    return {
-        type: types.GET_GETH_OPTIONS_SUCCESS,
-        data
-    };
-}
+// export function getGethOptionsSuccess (data) {
+//     return {
+//         type: types.GET_GETH_OPTIONS_SUCCESS,
+//         data
+//     };
+// }
 
-export function getGethOptionsError (error) {
-    error.code = 'GGOE';
-    return {
-        type: types.GET_GETH_OPTIONS_ERROR,
-        error
-    };
-}
+// export function getGethOptionsError (error) {
+//     error.code = 'GGOE';
+//     return {
+//         type: types.GET_GETH_OPTIONS_ERROR,
+//         error
+//     };
+// }
 
 export function startGeth () {
     return {
@@ -57,20 +57,20 @@ export function stopGeth () {
     };
 }
 
-export function stopGethSuccess (data) {
-    return {
-        type: types.STOP_GETH_SUCCESS,
-        data
-    };
-}
+// export function stopGethSuccess (data) {
+//     return {
+//         type: types.STOP_GETH_SUCCESS,
+//         data
+//     };
+// }
 
-export function stopGethError (error) {
-    error.code = 'SGE02';
-    return {
-        type: types.STOP_GETH_ERROR,
-        error
-    };
-}
+// export function stopGethError (error) {
+//     error.code = 'SGE02';
+//     return {
+//         type: types.STOP_GETH_ERROR,
+//         error
+//     };
+// }
 
 export function getSyncStatusSuccess (data) {
     return {
@@ -133,21 +133,6 @@ export function startIPFSError (error, data) {
     };
 }
 
-export function getIpfsConfigSuccess (data) {
-    return {
-        type: types.GET_IPFS_CONFIG_SUCCESS,
-        data
-    };
-}
-
-export function getIpfsConfigError (error) {
-    error.code = 'CIE';
-    return {
-        type: types.GET_IPFS_CONFIG_ERROR,
-        error
-    };
-}
-
 export function getIpfsPorts () {
     return {
         type: types.GET_IPFS_PORTS
@@ -190,20 +175,20 @@ export function resetIpfsPorts () {
     };
 }
 
-export function stopIPFSSuccess (data) {
-    return {
-        type: types.STOP_IPFS_SUCCESS,
-        data
-    };
-}
+// export function stopIPFSSuccess (data) {
+//     return {
+//         type: types.STOP_IPFS_SUCCESS,
+//         data
+//     };
+// }
 
-export function stopIPFSError (error) {
-    error.code = 'SIE02';
-    return {
-        type: types.STOP_IPFS_ERROR,
-        error
-    };
-}
+// export function stopIPFSError (error) {
+//     error.code = 'SIE02';
+//     return {
+//         type: types.STOP_IPFS_ERROR,
+//         error
+//     };
+// }
 
 export function startSync () {
     return {
@@ -247,12 +232,12 @@ export function resetIpfsBusy () {
     };
 }
 
-export function getGethLogs (data) {
-    return {
-        type: types.GET_GETH_LOGS_SUCCESS,
-        data
-    };
-}
+// export function getGethLogsSuccess (data) {
+//     return {
+//         type: types.GET_GETH_LOGS_SUCCESS,
+//         data
+//     };
+// }
 
 export function getIpfsLogs (data) {
     return {

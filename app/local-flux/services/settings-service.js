@@ -25,7 +25,8 @@ class SettingsService extends BaseService {
         settingsDB[options.table].where('name').equals(options.table).toArray()
             .then((data) => {
                 onSuccess(data[0] || {}, options.table);
-            }).catch((reason) => {
+            })
+            .catch((reason) => {
                 onError(reason, options.table);
             });
     }
@@ -146,4 +147,11 @@ class SettingsService extends BaseService {
     };
 }
 
-export { SettingsService };
+const getGeneralSettings = () =>
+    new Promise((resolve, reject) =>
+        settingsDB.general.where('name').equals('general').toArray()
+            .then(data => resolve(data[0] || {}))
+            .catch(error => reject(error))
+    );
+
+export { SettingsService, getGeneralSettings };

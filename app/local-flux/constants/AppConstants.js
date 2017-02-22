@@ -31,3 +31,5 @@ export const SHOW_TERMS = 'SHOW_TERMS';
 export const HIDE_TERMS = 'HIDE_TERMS';
 
 export const CLEAN_STORE = 'CLEAN_STORE';
+
+export const BOOTSTRAP_APP = 'BOOTSTRAP_APP';
