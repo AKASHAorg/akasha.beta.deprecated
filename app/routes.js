@@ -38,7 +38,7 @@ export default (
       <Route component={CreateProfileStatusContainer} path="new-profile-status" />
       <Route component={CreateProfileCompleteContainer} path="new-profile-complete" />
     </Route>
-    <Route component={requireAuth(HomeContainer)} path=":akashaId" >
+    {/** <Route component={requireAuth(HomeContainer)} path=":akashaId" >
       <Route component={StreamPageContainer}>
         <Route component={EntryListContainer} path="explore(/:filter)(/:tag)" />
       </Route>
@@ -54,6 +54,6 @@ export default (
         <IndexRoute component={ChatChannel} />
         <Route component={ChatChannel} path="channel(/:channel)" />
       </Route>
-    </Route>
+    </Route>*/}
   </Route>
 );

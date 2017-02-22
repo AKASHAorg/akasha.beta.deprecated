@@ -1,73 +1,14 @@
 /* eslint new-cap: [2, {capIsNewExceptions: ["Record"]}] */
-import { fromJS, Record, List, Map, Set } from 'immutable';
+import { Record, Map, Set, fromJS } from 'immutable';
 import { createReducer } from './create-reducer';
 import * as types from '../constants/external-process-constants';
 import * as settingsTypes from '../constants/SettingsConstants';
+import { GethStatusModel, IpfsStatusModel } from './models';
 import R from 'ramda';
 
-const GethStatus = Record({
-    downloading: null,
-    starting: null,
-    api: false,
-    spawned: false,
-    started: null,
-    stopped: null,
-    upgrading: null,
-    message: null,
-    startRequested: false,
-    blockNr: null
-});
-
-const GethSyncStatus = Record({
-    currentBlock: null,
-    highestBlock: null,
-    startingBlock: null,
-    peerCount: null,
-    knownStates: null,
-    pulledStates: null,
-    synced: false
-});
-
-const ErrorRecord = Record({
-    code: 0,
-    fatal: false,
-    message: ''
-});
-
-const IpfsStatus = Record({
-    downloading: null,
-    api: false,
-    spawned: false,
-    started: null,
-    stopped: null,
-    startRequested: false
-});
-
 const initialState = fromJS({
-    gethStatus: new GethStatus(),
-    gethSyncStatus: new GethSyncStatus(),
-    ipfsStatus: new IpfsStatus(),
-    gethErrors: new List(),
-    gethLogs: new Set(),
-    ipfsErrors: new List(),
-    ipfsLogs: new Set(),
-    /**
-     * syncActionId
-     *      0: not started / initial
-     *      1: syncing
-     *      2: paused
-     *      3: stopped
-     *      4: finished
-     */
-    syncActionId: 0,
-    /**
-     * gethBusyState is used to disable consecutive actions on geth service
-     *      false: geth is started/stopped
-     *      true: geth is starting/stopping
-     */
-    gethBusyState: false,
-    ipfsBusyState: false,
-    ipfsPortsRequested: false
+    geth: new GethStatusModel(),
+    ipfs: new IpfsStatusModel()
 });
 
 function buildLogsSet (logs) {
@@ -87,14 +28,14 @@ function buildLogsSet (logs) {
 
 const eProcState = createReducer(initialState, {
     [types.START_GETH]: state =>
-        state.merge({
-            gethStarting: true,
-            gethStatus: state.get('gethStatus').merge({ startRequested: true }),
-            gethErrors: state.get('gethErrors').clear(),
+        state.mergeIn(['geth'], {
+            status: state.mergeIn(['geth', 'status'], { startRequested: false }),
+            errors: state.get(['geth', 'errors']).clear(),
             gethBusyState: true
         }),
 
     [types.START_GETH_SUCCESS]: (state, action) => {
+        console.log(state, action)
         const newStatus = action.data;
         const syncActionId = state.get('syncActionId') === 3 && newStatus.api ?
             1 :
