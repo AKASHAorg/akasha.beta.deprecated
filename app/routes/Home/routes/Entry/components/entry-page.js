@@ -367,7 +367,7 @@ class EntryPage extends Component {
         const { blockNr, canClaimPending, claimPending, comments, entry, existingDraft,
             fetchingEntryBalance, fetchingFullEntry, intl, licences, loggedProfile,
             profiles, savedEntries, votePending, fetchingComments, newCommentsIds,
-            profileActions, latestVersion } = this.props;
+            profileActions, latestVersion, location } = this.props;
         const { palette } = this.context.muiTheme;
         const { publisherTitleShadow, scrollDirection, commentsSectionTop } = this.state;
         let currentVersion;
