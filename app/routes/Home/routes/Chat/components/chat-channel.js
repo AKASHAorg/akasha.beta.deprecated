@@ -16,6 +16,7 @@ class ChatChannel extends Component {
         this.chatInput = null;
         this.messagesContainer = null;
         this.timeout = null;
+        this.profileHoverTimeout = null;
         this.state = {
             currentMessage: '',
             inputFocused: null,
@@ -110,13 +111,21 @@ class ChatChannel extends Component {
 
     showProfileHoverCard = (target, profile) => {
         this.setState({
-            anchorHovered: true,
             hoverNode: target,
             hoverProfile: profile
         });
+        this.profileHoverTimeout = setTimeout(() => {
+            this.setState({
+                anchorHovered: true,
+            });
+        }, 500);
     };
 
     hideProfileHoverCard = () => {
+        if (this.profileHoverTimeout) {
+            clearTimeout(this.profileHoverTimeout);
+            this.profileHoverTimeout = null;
+        }
         this.setState({
             anchorHovered: false,
         });

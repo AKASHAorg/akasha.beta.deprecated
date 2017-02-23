@@ -84,7 +84,8 @@ class PanelContainer extends React.Component {
                   padding: '12px 24px',
                   background: muiTheme.palette.canvasColor,
                   margin: 0,
-                  boxShadow: `0px -1px 3px -1px ${muiTheme.palette.paperShadowColor}`
+                  boxShadow: `0px -1px 3px -1px ${muiTheme.palette.paperShadowColor}`,
+                  zIndex: 1
               }}
             >
               <div style={{ flex: '1 1 auto', display: 'flex', justifyContent: 'flex-start' }}>

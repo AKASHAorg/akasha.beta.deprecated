@@ -35,6 +35,7 @@ class Comment extends React.Component {
             isExpanded: null,
             anchorHovered: false,
         };
+        this.timeout = null;
     }
     componentDidMount () {
         const { comment } = this.props;
@@ -65,14 +66,24 @@ class Comment extends React.Component {
 
     _handleMouseEnter = (ev) => {
         this.setState({
-            anchorHovered: true,
             hoverNode: ev.currentTarget
+        }, () => {
+            this.timeout = setTimeout(() => {
+                this.setState({
+                    anchorHovered: true,
+                });
+            }, 500);
         });
     };
 
     _handleMouseLeave = () => {
+        if (this.timeout) {
+            clearTimeout(this.timeout);
+            this.timeout = null;
+        }
         this.setState({
-            anchorHovered: false
+            anchorHovered: false,
+            hoverNode: null
         });
     };
 
