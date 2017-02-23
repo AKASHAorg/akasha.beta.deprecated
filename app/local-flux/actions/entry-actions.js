@@ -543,7 +543,11 @@ class EntryActions {
     getLatestVersion = (entryId) =>
         this.entryService.getEntry({
             entryId,
-            onSuccess: (data) => this.setLatestVersion(data.content.version),
+            onSuccess: (data) => {
+                if (data.content) {
+                    this.setLatestVersion(data.content.version);
+                }
+            },
             onError: (error) => this.dispatch(entryActionCreators.getEntryError(error))
         });
 
