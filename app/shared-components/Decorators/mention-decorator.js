@@ -22,6 +22,7 @@ class MentionComponent extends Component {
             profileAddress: null,
             profileData: null
         };
+        this.timeout = null;
     }
 
     componentDidMount () {
@@ -106,12 +107,18 @@ class MentionComponent extends Component {
     };
 
     handleMouseEnter = () => {
-        this.setState({
-            anchorHovered: true
-        });
+        this.timeout = setTimeout(() => {
+            this.setState({
+                anchorHovered: true,
+            });
+        }, 500);
     };
 
     handleMouseLeave = () => {
+        if (this.timeout) {
+            clearTimeout(this.timeout);
+            this.timeout = null;
+        }
         this.setState({
             anchorHovered: false
         });
