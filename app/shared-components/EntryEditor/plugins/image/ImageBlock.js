@@ -237,7 +237,7 @@ class ImageBlock extends Component {
                     >
                       <PlayIcon
                         style={{
-                            fill: '#FFF',
+                            fill: 'rgba(255, 255, 255, 0.86)',
                             color: '#FFF',
                             height: 96,
                             width: 96,

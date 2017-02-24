@@ -139,7 +139,7 @@ const convertToArray = (dataUrl) => {
 const canvasToArray = canvas =>
     new Promise((resolve, reject) => {
         try {
-            const canvasData = canvas.toDataURL('image/jpeg', 0.8);
+            const canvasData = canvas.toDataURL('image/png', 0.8);
             const canvasArray = convertToArray(canvasData);
             return resolve({
                 src: canvasArray.value,
@@ -170,18 +170,20 @@ const resizeImage = (image, options) => {
             const targetHeight = (actualHeight * widthObj.res) / actualWidth;
             ctx.canvas.width = targetWidth;
             ctx.canvas.height = targetHeight;
+            ctx.fillStyle = 'white';
             return new Promise((resolve, reject) => {
                 try {
-                    console.time(`resize to ${widthObj.res} took`);
+                    // console.time(`resize to ${widthObj.res} took`);
                     /**
                      * pica.resizeCanvas(from, to, options, cb)
                      */
                     pica.resizeCanvas(image, canvas, {
-                        quality: 3
+                        quality: 3,
+                        alpha: true
                     }, (err) => {
-                        console.timeEnd(`resize to ${widthObj.res} took`);
+                        // console.timeEnd(`resize to ${widthObj.res} took`);
                         if (err) {
-                            console.error(err);
+                            // console.error(err);
                             return Promise.reject(err);
                         }
                         return canvasToArray(canvas).then((result) => {
@@ -200,8 +202,8 @@ const resizeImage = (image, options) => {
         });
     });
     return p.then((img) => {
-        console.log('resulted image object =>', imageObject);
-        console.groupEnd();
+        // console.log('resulted image object =>', imageObject);
+        // console.groupEnd();
         return img;
     });
 };
@@ -212,11 +214,11 @@ const resizeAnimatedGif = (dataUrl, image, options) => {
     const streamReader = new StreamReader(imageArray.value);
     return new Promise((resolve, reject) => {
         if (streamReader.readAscii(3) !== 'GIF') {
-            console.log('It is not an animated gif. Not sure if this is an image, actually!');
+            // console.log('It is not an animated gif. Not sure if this is an image, actually!');
             return reject('Gif file not recognised!');
         }
         const frameCount = streamReader.getFrameNumber();
-        console.log('number of frames:', frameCount);
+        // console.log('number of frames:', frameCount);
         // resize 1 frame for presentation;
         return resizeImage(image, options).then((imageObj) => {
             if (frameCount > 0) {
@@ -290,7 +292,7 @@ const getImageSize = (imagePath, options) => {
  */
 const getResizedImages = (inputFiles, options) => {
     // const promises = [];
-    console.group('resize results and timings:');
+    // console.group('resize results and timings:');
     // handle ipfs files here
     if (options && options.ipfsFile) {
         // fileList is only a string => eg. http://localhost:8080/ipfs/ipfs_hash
@@ -306,7 +308,7 @@ const getResizedImages = (inputFiles, options) => {
     const gifPromises = Array.from(inputFiles).filter((file) => {
         const fileName = file.name;
         const ext = fileName.split('.')[fileName.split('.').length - 1].toLowerCase();
-        console.log('original image', file.name, 'has a size of:', Math.floor(file.size / 1024), 'KiB');
+        // console.log('original image', file.name, 'has a size of:', Math.floor(file.size / 1024), 'KiB');
         // treat gif extention as it is animated gif to prevent double processing
         return (ext === 'gif' && settings.animatedGifSupport);
     }).map(imageFile =>
@@ -316,7 +318,7 @@ const getResizedImages = (inputFiles, options) => {
                 const { height, width } = size;
                 options.actualHeight = height;
                 options.actualWidth = width;
-                console.info(`original image size ${width}px width x ${height}px height.`);
+                // console.info(`original image size ${width}px width x ${height}px height.`);
                 return resizeAnimatedGif(imageDataUrl, size.imageObj, options);
             })));
     const imagePromises = Array.from(inputFiles).filter((file) => {
