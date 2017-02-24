@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
+import { connect } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
-import { injectIntl } from 'react-intl';
+import { AppActions, ProfileActions } from 'local-flux';
 import { Dialog, FlatButton, RaisedButton } from 'material-ui';
 import { confirmMessages, generalMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
 import { SendTipForm } from 'shared-components';
@@ -22,29 +23,23 @@ class TransferConfirmDialog extends Component {
         };
     }
 
-    componentWillReceiveProps (nextProps) {
-        const { getProfileBalance, isOpen, resource } = nextProps;
-        if (isOpen && !this.props.isOpen) {
-            getProfileBalance();
-            this.setState({
-                ethAmount: '0.0001',
-                gasAmount: resource.get('gas')
-            });
-        }
-        if (!isOpen && this.props.isOpen) {
-            this.setState({
-                ethAmountError: null,
-                gasAmountError: null
-            });
-        }
+    componentWillMount () {
+        const { profileActions, resource } = this.props;
+        profileActions.getProfileBalance();
+        this.setState({
+            gasAmount: resource.get('gas')
+        });
     }
+
     componentDidUpdate () {
         ReactTooltip.rebuild();
     }
+
     onSubmit = (ev) => {
         ev.preventDefault();
         this.handleConfirm();
     };
+
     handleGasChange = (ev) => {
         const gasAmount = ev.target.value;
         if (gasAmount < 2000000 || gasAmount > 4700000) {
@@ -59,6 +54,7 @@ class TransferConfirmDialog extends Component {
             });
         }
     };
+
     handleEthChange = (ev) => {
         const { balance } = this.props;
         const ethAmount = ev.target.value;
@@ -85,6 +81,7 @@ class TransferConfirmDialog extends Component {
             });
         }
     };
+
     handleConfirm = () => {
         const { resource, appActions } = this.props;
         const updatedResource = resource.toJS();
@@ -94,13 +91,15 @@ class TransferConfirmDialog extends Component {
         appActions.hideTransferConfirmDialog();
         appActions.updatePendingAction(updatedResource);
     };
+
     handleAbort = () => {
         const { resource, appActions } = this.props;
         appActions.deletePendingAction(resource.get('id'));
         appActions.hideTransferConfirmDialog();
     };
+
     render () {
-        const { balance, resource, intl, isOpen } = this.props;
+        const { balance, resource, intl } = this.props;
         const { ethAmount, ethAmountError, gasAmount, gasAmountError } = this.state;
         if (!resource) {
             return null;
@@ -127,7 +126,7 @@ class TransferConfirmDialog extends Component {
                 {intl.formatMessage(confirmMessages[resource.get('titleId')])}
               </div>
             }
-            open={isOpen}
+            open
             actions={dialogActions}
           >
             <SendTipForm
@@ -150,10 +149,27 @@ class TransferConfirmDialog extends Component {
 TransferConfirmDialog.propTypes = {
     appActions: PropTypes.shape(),
     balance: PropTypes.string,
-    getProfileBalance: PropTypes.func,
     intl: PropTypes.shape(),
-    isOpen: PropTypes.bool,
+    profileActions: PropTypes.shape(),
     resource: PropTypes.shape(),
 };
 
-export default injectIntl(TransferConfirmDialog);
+function mapStateToProps (state) {
+    return {
+        balance: state.profileState
+            .get('profiles')
+            .find(prf =>
+                prf.get('profile') === state.profileState.getIn(['loggedProfile', 'profile']))
+            .get('balance'),
+        resource: state.appState.get('transferConfirmDialog'),
+    };
+}
+
+function mapDispatchToProps (dispatch) {
+    return {
+        appActions: new AppActions(dispatch),
+        profileActions: new ProfileActions(dispatch)
+    };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(TransferConfirmDialog);

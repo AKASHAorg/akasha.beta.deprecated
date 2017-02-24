@@ -10,6 +10,7 @@ class NotificationBar extends Component {
             notifications: this.props.appState.get('notifications')
         };
     }
+
     componentWillReceiveProps (nextProps) {
         const notifications = nextProps.appState.get('notifications'); // array (List)
         if (notifications.size > 0) {
@@ -18,12 +19,14 @@ class NotificationBar extends Component {
             });
         }
     }
+
     _getAutoHideDuration = (notification) => {
         if (notification && notification.get('duration')) {
             return notification.get('duration');
         }
         return null;
-    }
+    };
+
     _getActionLabel = (notification) => {
         const { palette } = this.context.muiTheme;
         let message;
@@ -42,7 +45,8 @@ class NotificationBar extends Component {
                 break;
         }
         return <span style={{ color: palette.accent2Color }}>{message}</span>;
-    }
+    };
+
     _handleActionTouchTap = (ev, notification) => {
         ev.preventDefault();
         const { appActions } = this.props;
@@ -56,7 +60,8 @@ class NotificationBar extends Component {
             default:
                 return this._hideNotification('clickAway', notification);
         }
-    }
+    };
+
     _hideNotification = (reason, notification) => {
         const { appActions } = this.props;
         const notifications = this.state.notifications;
@@ -66,7 +71,7 @@ class NotificationBar extends Component {
         }, () => {
             appActions.hideNotification(notification);
         });
-    }
+    };
 
     render () {
         const { intl } = this.props;
