@@ -6,6 +6,10 @@
 .entry_page_inner {
     margin: 0 auto;
 }
+.content_section {
+    z-index: 10;
+    position: relative;
+}
 .entry_infos {
     max-width: 700px;
     margin: 0 auto;
