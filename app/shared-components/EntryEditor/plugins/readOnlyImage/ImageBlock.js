@@ -111,7 +111,7 @@ class ImageBlock extends Component {
                         marginTop: '-48px',
                         marginLeft: '-48px',
                         fill: '#FFF',
-                        color: '#FFF',
+                        color: 'rgba(255, 255, 255, 0.86)',
                         height: 96,
                         width: 96,
                         opacity: isPlaying ? 0 : 1,
