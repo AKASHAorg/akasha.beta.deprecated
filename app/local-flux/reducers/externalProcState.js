@@ -1,5 +1,5 @@
 /* eslint new-cap: [2, {capIsNewExceptions: ["Record"]}] */
-import { Record, Map, Set, fromJS } from 'immutable';
+import { Record, Map, Set, List, fromJS } from 'immutable';
 import { createReducer } from './create-reducer';
 import * as types from '../constants/external-process-constants';
 import * as settingsTypes from '../constants/SettingsConstants';
@@ -29,13 +29,14 @@ function buildLogsSet (logs) {
 const eProcState = createReducer(initialState, {
     [types.START_GETH]: state =>
         state.mergeIn(['geth'], {
-            status: state.mergeIn(['geth', 'status'], { startRequested: false }),
-            errors: state.get(['geth', 'errors']).clear(),
-            gethBusyState: true
+            status: state.mergeIn(['geth', 'flags'], {
+                startRequested: false,
+                gethBusyState: true
+            }),
+            errors: state.setIn(['geth', 'errors'], new List()),
         }),
 
     [types.START_GETH_SUCCESS]: (state, action) => {
-        console.log(state, action)
         const newStatus = action.data;
         const syncActionId = state.get('syncActionId') === 3 && newStatus.api ?
             1 :
