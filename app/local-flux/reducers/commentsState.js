@@ -72,7 +72,7 @@ const commentsState = createReducer(initialState, {
         if (reverse) {
             const newState = state.setIn(['entryComments'],
                 state.get('entryComments')
-                     .filter(comm => (comm.get('entryId') === entryId && comm.get('commentId') && !comm.get('tempTx')))
+                     .filter(comm => (comm.get('entryId') === parseInt(entryId, 10) && comm.get('commentId') && !comm.get('tempTx')))
                      .toStack()
                      .unshift(...comms.reverse())
                      .toList());
@@ -122,6 +122,14 @@ const commentsState = createReducer(initialState, {
         }
         return state.merge({
             entryComments: state.get('entryComments').setIn([index, 'isPublishing'], false)
+        });
+    },
+    [types.PUBLISH_COMMENT_ERROR]: (state, { error, flags }) => {
+        error.fatal = true;
+        error.code = 'PCE';
+        return state.merge({
+            errors: state.get('errors').push(new ErrorRecord(error)),
+            flags: state.get('flags').merge(flags)
         });
     },
     [types.UNLOAD_COMMENTS]: (state, { entryId, commentId }) =>

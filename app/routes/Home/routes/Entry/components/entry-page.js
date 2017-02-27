@@ -27,7 +27,8 @@ class EntryPage extends Component {
         this.state = {
             publisherTitleShadow: false,
             activeTab: 'all',
-            scrollDirection: 1
+            scrollDirection: 1,
+            hasErrors: false
         };
     }
 
@@ -50,11 +51,23 @@ class EntryPage extends Component {
 
     componentWillReceiveProps (nextProps) { // eslint-disable-line max-statements, :D
         const { params, entry, entryActions, fetchingFullEntry, commentsActions,
-            location, loggedProfile } = this.props;
+            location, loggedProfile, appActions } = this.props;
         const newEntryLoaded = entry && (entry.get('entryId') !== nextProps.entry.get('entryId') ||
             (entry.content && nextProps.entry.content &&
             entry.content.version !== nextProps.entry.content.version)
         );
+        if (nextProps.commentErrors.size > 0 && !this.state.hasErrors) {
+            this.setState({
+                hasErrors: true
+            }, () =>
+                appActions.showError(nextProps.commentErrors.first())
+            );
+        }
+        if (nextProps.commentErrors.size === 0 && this.state.hasErrors) {
+            this.setState({
+                hasErrors: false
+            });
+        }
         const { version } = nextProps.location.query;
         if (!nextProps.fetchingFullEntry && fetchingFullEntry) {
             entryActions.getLatestVersion(nextProps.params.entryId);
@@ -112,24 +125,29 @@ class EntryPage extends Component {
         commentsActions.unloadComments(parseInt(params.entryId, 10));
         ReactTooltip.hide();
     }
+    getVersion = (version) => {
+        const { entry, loggedProfile } = this.props;
+        const loggedAkashaId = loggedProfile.get('akashaId');
+        const query = version !== undefined ? `?version=${version}` : '';
+        this.context.router.replace(`/${loggedAkashaId}/entry/${entry.get('entryId')}${query}`);
+    }
+    showNewCommentsNotification = () => {
+        this.setState({
+            showNewCommentsNotification: true
+        });
+    };
     requestNewestComments = () => {
         const { entry, comments, newCommentsIds, commentsActions } = this.props;
         let targetParentComment = comments.find(comment => comment.get('commentId') === parseInt(newCommentsIds.first(), 10));
-
+        const findComments = comment => comment.get('commentId') === parseInt(targetParentComment.getIn(['data', 'parent']), 10);
         do {
-            targetParentComment = comments.find(comment => comment.get('commentId') === parseInt(targetParentComment.getIn(['data', 'parent']), 10));
+            targetParentComment = comments.find(findComments);
         } while (targetParentComment && targetParentComment.getIn(['data', 'parent']) !== '0');
 
         this.setState({
             lastCommentsCount: entry.get('commentsCount')
         }, () => {
             commentsActions.clearNewCommentsIds();
-        });
-    };
-
-    showNewCommentsNotification = () => {
-        this.setState({
-            showNewCommentsNotification: true
         });
     };
     fetchComments = (entryId, start = 0, reverse = false) => {
@@ -304,19 +322,15 @@ class EntryPage extends Component {
         const { params } = this.props;
         this.context.router.push(`${params.akashaId}/profile/${profileHash}`);
     }
-    _getNewlyCreatedComments = comments =>
-        comments.filter(comm => (!comm.get('tempTx') && !comm.getIn(['data', 'ipfsHash']) &&
-            !comm.get('commentId'))
+    _getNewlyCreatedComments = (comments) => {
+        const { entry } = this.props;
+        return comments.filter(comm => (comm.get('tempTx') && !comm.getIn(['data', 'ipfsHash']) &&
+            !comm.get('commentId') && comm.get('entryId') === entry.get('entryId'))
         );
+    }
     _getNewCommentsCount = () => {
         const { newCommentsIds } = this.props;
         return newCommentsIds.size;
-    }
-    getVersion = (version) => {
-        const { entry, loggedProfile } = this.props;
-        const loggedAkashaId = loggedProfile.get('akashaId');
-        const query = version !== undefined ? `?version=${version}` : '';
-        this.context.router.replace(`/${loggedAkashaId}/entry/${entry.get('entryId')}${query}`);
     }
     renderLicenceIcons = () => {
         const { entry, licences } = this.props;
@@ -364,7 +378,7 @@ class EntryPage extends Component {
     };
 
     render () {
-        const { blockNr, canClaimPending, claimPending, comments, entry, existingDraft,
+        const { canClaimPending, claimPending, comments, entry, existingDraft,
             fetchingEntryBalance, fetchingFullEntry, intl, licences, loggedProfile,
             profiles, savedEntries, votePending, fetchingComments, newCommentsIds,
             profileActions, latestVersion, location } = this.props;
@@ -546,7 +560,7 @@ class EntryPage extends Component {
                             profileAvatar={loggedProfileAvatar}
                             profileUserInitials={loggedProfileUserInitials}
                             onReplyCreate={this._handleCommentCreate}
-                            comments={comments.filter(comm => !newCommentsIds.includes(`${comm.get('commentId')}`))}
+                            comments={comments.filter(comm => (!newCommentsIds.includes(`${comm.get('commentId')}`) && comm.get('entryId') === entryId))}
                             profiles={profiles}
                             profileActions={profileActions}
                             entryId={entryId}
@@ -571,7 +585,6 @@ class EntryPage extends Component {
 }
 EntryPage.propTypes = {
     appActions: PropTypes.shape(),
-    blockNr: PropTypes.number,
     canClaimPending: PropTypes.bool,
     claimPending: PropTypes.shape(),
     comments: PropTypes.shape(),

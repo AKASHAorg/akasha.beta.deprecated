@@ -12,6 +12,7 @@ function mapStateToProps (state, ownProps) {
         canClaimPending: state.entryState.getIn(['flags', 'canClaimPending']),
         claimPending: state.entryState.getIn(['flags', 'claimPending']),
         comments: state.commentsState.get('entryComments'),
+        commentErrors: state.commentsState.get('errors'),
         drafts: state.draftState.get('drafts'),
         entry,
         existingDraft,
