@@ -6,6 +6,7 @@ import SyncStatus from './components/Sync';
 
 function mapStateToProps (state, ownProps) {
     return {
+        gethStarting: state.externalProcState.get('gethStarting'),
         gethStatus: state.externalProcState.get('gethStatus'),
         gethErrors: state.externalProcState.get('gethErrors'),
         gethLogs: state.externalProcState.get('gethLogs'),

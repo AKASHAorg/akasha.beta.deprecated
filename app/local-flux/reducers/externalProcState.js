@@ -88,6 +88,7 @@ function buildLogsSet (logs) {
 const eProcState = createReducer(initialState, {
     [types.START_GETH]: state =>
         state.merge({
+            gethStarting: true,
             gethStatus: state.get('gethStatus').merge({ startRequested: true }),
             gethErrors: state.get('gethErrors').clear(),
             gethBusyState: true
@@ -105,11 +106,12 @@ const eProcState = createReducer(initialState, {
         if (newStatus.starting || newStatus.spawned || newStatus.api) {
             newStatus.downloading = null;
         }
-        if (newStatus.started || newStatus.spawned) {
+        if (newStatus.api) {
             newStatus.starting = null;
             newStatus.stopped = null;
         }
         return state.merge({
+            gethStarting: false,
             gethStatus: state.get('gethStatus').merge(newStatus),
             gethErrors: state.get('gethErrors').clear(),
             syncActionId
@@ -118,6 +120,7 @@ const eProcState = createReducer(initialState, {
 
     [types.START_GETH_ERROR]: (state, action) =>
         state.merge({
+            gethStarting: false,
             gethErrors: state.get('gethErrors').push(new ErrorRecord(action.error))
         }),
 

@@ -183,6 +183,7 @@ class SyncStatus extends Component {
             ipfsPortsRequested,
             syncActionId,
             eProcActions,
+            gethStarting,
             timestamp
         } = this.props;
 
@@ -251,6 +252,7 @@ class SyncStatus extends Component {
                 {ipfsErrorCards}
                 {!gethErrorCards && !ipfsErrorCards &&
                   <SyncStatusLoader
+                    gethStarting={gethStarting}
                     gethStatus={gethStatus}
                     gethSyncStatus={gethSyncStatus}
                     ipfsStatus={ipfsStatus}
@@ -278,6 +280,7 @@ SyncStatus.propTypes = {
     gethStatus: PropTypes.shape().isRequired,
     ipfsStatus: PropTypes.shape().isRequired,
     gethErrors: PropTypes.shape().isRequired,
+    gethStarting: PropTypes.bool,
     gethLogs: PropTypes.shape().isRequired,
     ipfsErrors: PropTypes.shape().isRequired,
     gethSyncStatus: PropTypes.shape().isRequired,
