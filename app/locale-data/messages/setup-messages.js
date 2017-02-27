@@ -225,6 +225,16 @@ const setupMessages = defineMessages({
         description: 'finding peers status',
         defaultMessage: 'Finding peers'
     },
+    launchingServices: {
+        id: 'app.setup.launchingServices',
+        description: 'message to display when both services are stopped',
+        defaultMessage: 'Launching services'
+    },
+    waitingForServices: {
+        id: 'app.setup.waitingForServices',
+        description: 'default message to display in sync status',
+        defaultMessage: 'Waiting for services'
+    },
     onePeer: {
         id: 'app.setup.onePeer',
         description: 'singular form of peers',
