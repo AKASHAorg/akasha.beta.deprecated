@@ -29,7 +29,8 @@ class SyncStatus extends Component {
     }
 
     render () {
-        const { intl, gethSyncStatus, gethStatus, ipfsStatus, syncActionId } = this.props;
+        const { intl, gethSyncStatus, gethStatus, ipfsStatus, syncActionId,
+            gethStarting } = this.props;
         let blockProgress;
         let currentProgress;
         let progressBody;
@@ -85,10 +86,10 @@ class SyncStatus extends Component {
                 </div>
               </div>
             );
-        } else if (gethStatus.get('starting')) {
+        } else if (gethStatus.get('starting') || gethStarting) {
             progressBody = (
               <div>
-                <div style={statusTextStyle} >
+                <div style={statusTextStyle}>
                   {intl.formatMessage(setupMessages.startingGeth)}
                 </div>
               </div>
@@ -123,12 +124,28 @@ class SyncStatus extends Component {
                       processingMessage)}
               </div>
             );
-        } else {
+        } else if (gethStatus.get('api') && !gethSyncStatus.get('peerCount')) {
             peerInfo = intl.formatMessage(setupMessages.findingPeers);
             progressBody = (
               <div>
                 <div style={statusTextStyle} >
                   {peerInfo}
+                </div>
+              </div>
+            );
+        } else if (!gethStatus.get('api') && !ipfsStatus.get('spawned')) {
+            progressBody = (
+              <div>
+                <div style={statusTextStyle} >
+                  {intl.formatMessage(setupMessages.launchingServices)}
+                </div>
+              </div>
+            );
+        } else {
+            progressBody = (
+              <div>
+                <div style={statusTextStyle}>
+                  {intl.formatMessage(setupMessages.waitingForServices)}
                 </div>
               </div>
             );
@@ -144,6 +161,7 @@ class SyncStatus extends Component {
 
 SyncStatus.propTypes = {
     intl: PropTypes.shape().isRequired,
+    gethStarting: PropTypes.bool,
     gethSyncStatus: PropTypes.shape().isRequired,
     gethStatus: PropTypes.shape().isRequired,
     ipfsStatus: PropTypes.shape().isRequired,
