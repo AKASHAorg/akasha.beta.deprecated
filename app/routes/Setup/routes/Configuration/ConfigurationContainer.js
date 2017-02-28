@@ -1,30 +1,20 @@
 import { connect } from 'react-redux';
+import { saveConfiguration } from 'local-flux/actions/settings-actions'; // eslint-disable-line import/no-unresolved, import/extensions
 import Configuration from './components/Configuration';
-import {
-    SettingsActions,
-    EProcActions } from 'local-flux';
 
 function mapStateToProps (state, ownProps) {
     return {
-        gethSettings: state.settingsState.get('geth'),
+        configurationSaved: state.settingsState.getIn(['general', 'configurationSaved']),
         defaultGethSettings: state.settingsState.get('defaultGethSettings'),
-        ipfsSettings: state.settingsState.get('ipfs'),
         defaultIpfsSettings: state.settingsState.get('defaultIpfsSettings'),
-        configFlags: state.settingsState.get('flags'),
-        fetchingFlags: state.settingsState.get('fetchingFlags'),
-        isAdvanced: state.settingsState.get('isAdvanced'),
-        userSettings: state.settingsState.get('userSettings')
-    };
-}
-
-function mapDispatchToProps (dispatch) {
-    return {
-        eProcActions: new EProcActions(dispatch),
-        settingsActions: new SettingsActions(dispatch),
+        gethSettings: state.settingsState.get('geth'),
+        ipfsSettings: state.settingsState.get('ipfs'),
     };
 }
 
 export default connect(
     mapStateToProps,
-    mapDispatchToProps
+    {
+        saveConfiguration
+    }
 )(Configuration);

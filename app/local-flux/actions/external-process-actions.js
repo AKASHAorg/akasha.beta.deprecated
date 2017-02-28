@@ -50,19 +50,6 @@ class EProcActions {
         });
     };
 
-    // registerStopGethListener = () => {
-    //     this.gethService.registerStopListener({
-    //         onError: (err) => {
-    //             this.dispatch(externalProcessActionCreators.stopGethError(err));
-    //             this.resetGethBusyState();
-    //         },
-    //         onSuccess: (data) => {
-    //             this.dispatch(externalProcessActionCreators.stopGethSuccess(data));
-    //             this.resetGethBusyState();
-    //         }
-    //     });
-    // };
-
     stopGeth = () => {
         this.dispatch(externalProcessActionCreators.stopGeth());
         this.gethService.stop({ options: {} });
@@ -172,18 +159,6 @@ class EProcActions {
             )
         });
 
-    // registerStopIpfsListener = () => {
-    //     this.ipfsService.registerStopListener({
-    //         onError: (err) => {
-    //             this.dispatch(externalProcessActionCreators.stopIPFSError(err));
-    //             this.resetIpfsBusyState();
-    //         },
-    //         onSuccess: (data) => {
-    //             this.dispatch(externalProcessActionCreators.stopIPFSSuccess(data));
-    //             this.resetIpfsBusyState();
-    //         }
-    //     });
-    // };
     stopIPFS = () => {
         this.dispatch(externalProcessActionCreators.stopIPFS());
         if (this.ipfsPortsRequest) {

@@ -78,6 +78,7 @@ class DataLoader extends Component {
 }
 
 DataLoader.propTypes = {
+    children: PropTypes.element,
     flag: PropTypes.bool,
     timeout: PropTypes.number,
     size: PropTypes.number,

@@ -1,6 +1,5 @@
 import React, { PropTypes } from 'react';
-import ServiceStatusBar from './service-status-bar';
-import LogoButton from './logo-button';
+import { LogoButton, ServiceStatusBar } from 'shared-components';
 
 function PanelHeader ({ title, disableStopService, noStatusBar, noLogoButton }) {
     return (
@@ -11,7 +10,9 @@ function PanelHeader ({ title, disableStopService, noStatusBar, noLogoButton }) 
               <LogoButton />
             </div>
           }
-          <div style={{ fontWeight: '300', flex: '1 1 auto', marginLeft: '10px' }} >{title}</div>
+          <div style={{ fontWeight: '300', flex: '1 1 auto', marginLeft: '10px' }} >
+            {title}
+          </div>
           {!noStatusBar &&
             <div style={{ flex: '0 0 auto' }} >
               <ServiceStatusBar disableStopService={disableStopService} />

@@ -6,12 +6,11 @@ import ContentAddIcon from 'material-ui/svg-icons/content/add';
 import CancelIcon from 'material-ui/svg-icons/navigation/cancel';
 import ErrorIcon from 'material-ui/svg-icons/alert/error';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import { Avatar, ImageUploader, PanelContainer } from 'shared-components';
+import { Avatar, ImageUploader, PanelContainer, PanelHeader } from 'shared-components';
 import { profileMessages, formMessages, generalMessages } from 'locale-data/messages'; /* eslint import/no-unresolved: 0*/
 import { inputFieldMethods } from '../../../../../utils/dataModule';
 import validationProvider from '../../../../../utils/validationProvider';
 import { UserValidation } from '../../../../../utils/validationSchema';
-import PanelHeader from '../../../../components/panel-header';
 
 class CreateProfile extends Component {
     constructor (props) {

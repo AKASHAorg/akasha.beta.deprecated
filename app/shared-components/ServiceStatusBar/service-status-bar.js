@@ -4,12 +4,10 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { SvgIcon, FlatButton, Dialog, Toggle, IconButton, Tab, Tabs } from 'material-ui';
 import { StatusBarEthereum, StatusBarIpfs } from 'shared-components/svg';
-import { LogsList } from 'shared-components';
+import { GethOptionsForm, IpfsOptionsForm, LogsList } from 'shared-components';
 import ServiceState from 'constants/ServiceState';
 import { EProcActions, SettingsActions } from 'local-flux';
 import { generalMessages } from 'locale-data/messages';
-import GethOptionsForm from './geth-options-form';
-import IpfsOptionsForm from './ipfs-options-form';
 
 const containerStyle = {
     border: '2px solid',

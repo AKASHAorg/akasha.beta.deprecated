@@ -1,9 +1,8 @@
 import React, { Component, PropTypes } from 'react';
-import { PanelContainer } from 'shared-components';
+import { PanelContainer, PanelHeader } from 'shared-components';
 import { RaisedButton, TextField } from 'material-ui';
 import { injectIntl } from 'react-intl';
 import { setupMessages, generalMessages, profileMessages, formMessages } from 'locale-data/messages';
-import PanelHeader from '../../../../components/panel-header';
 
 class CreateProfileComplete extends Component {
     componentWillMount () {

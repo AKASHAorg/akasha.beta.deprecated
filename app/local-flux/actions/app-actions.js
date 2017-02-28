@@ -1,5 +1,4 @@
 import { appActionCreators } from './action-creators';
-import { AppService } from '../services';
 import * as types from '../constants/AppConstants';
 
 let appActions = null;
@@ -10,16 +9,10 @@ class AppActions {
             return appActions;
         }
         this.dispatch = dispatch;
-        this.appService = new AppService();
         this.pendingActionId = 1;
         appActions = this;
     }
-    checkForUpdates = () =>
-        this.appService.checkForUpdates().then(hasUpdates =>
-            this.dispatch(appActionCreators.checkForUpdates(hasUpdates))
-        );
 
-    updateApp = () => {};
     showError = (error) => {
         this.dispatch(appActionCreators.showError(error));
     };

@@ -5,33 +5,37 @@ import { setupMessages } from 'locale-data/messages'; // eslint-disable-line imp
 class IpfsSettingsForm extends Component {
     handleDialogOpen = () => {
         this.directoryField.click();
-    }
+    };
+
     _addDirectory = (node) => {
         if (node) {
             node.webkitdirectory = true;
             this.directoryField = node;
         }
-    }
+    };
+
     _handleIpfsPath = () => {
         const ipfsPath = this.directoryField.files[0].path;
         if (this.props.handleIpfsPath) {
             this.props.handleIpfsPath(ipfsPath);
         }
-    }
+    };
+
     render () {
-        const { intl, ipfsSettings } = this.props;
+        const { intl, storagePath } = this.props;
         const { muiTheme } = this.context;
         const errorStyle = { color: muiTheme.palette.disabledColor };
         const floatingLabelStyle = { color: muiTheme.palette.disabledColor, zIndex: 0 };
         const inputStyle = { color: muiTheme.palette.textColor };
+
         return (
           <div style={{ position: 'relative' }}>
             <TextField
               errorStyle={errorStyle}
               errorText={intl.formatMessage(setupMessages.changeIpfsStoragePath)}
               floatingLabelStyle={floatingLabelStyle}
-              floatingLabelText={'IPFS Path'}
-              value={ipfsSettings.get('storagePath') || ''}
+              floatingLabelText={intl.formatMessage(setupMessages.ipfsStoragePath)}
+              value={storagePath || ''}
               inputStyle={inputStyle}
               onClick={this.handleDialogOpen}
               onFocus={this.handleDialogOpen}
@@ -39,13 +43,9 @@ class IpfsSettingsForm extends Component {
               fullWidth
             />
             <input
-              ref={(directoryField) => { this._addDirectory(directoryField); }}
+              ref={this._addDirectory}
               onChange={this._handleIpfsPath}
-              style={{
-                  opacity: 0,
-                  height: 0,
-                  width: 0
-              }}
+              style={{ opacity: 0, height: 0, width: 0 }}
               type="file"
             />
           </div>
@@ -54,9 +54,9 @@ class IpfsSettingsForm extends Component {
 }
 
 IpfsSettingsForm.propTypes = {
+    handleIpfsPath: PropTypes.func.isRequired,
     intl: PropTypes.shape().isRequired,
-    ipfsSettings: PropTypes.shape().isRequired,
-    handleIpfsPath: PropTypes.func.isRequired
+    storagePath: PropTypes.string.isRequired,
 };
 
 IpfsSettingsForm.contextTypes = {

@@ -52,7 +52,8 @@ const UserSettings = Record({
 });
 
 const GeneralSettings = Record({
-    theme: 'light'
+    theme: 'light',
+    configurationSaved: false
 });
 
 const Flags = Record({
@@ -246,7 +247,7 @@ const settingsState = createReducer(initialState, {
 
     [types.GENERAL_SETTINGS_SUCCESS]: (state, { data }) =>
         state.merge({
-            generalSettings: new GeneralSettings(data),
+            general: new GeneralSettings(data),
             generalSettingsPending: false
         }),
 
@@ -254,6 +255,17 @@ const settingsState = createReducer(initialState, {
         state.merge({
             errors: state.get('errors').push(new ErrorRecord(error)),
             generalSettingsPending: false
+        }),
+
+
+    [types.GENERAL_SETTINGS_SAVE_SUCCESS]: (state, { data }) =>
+        state.merge({
+            general: state.get('general').merge(data)
+        }),
+
+    [types.GENERAL_SETTINGS_SAVE_ERROR]: (state, { error }) =>
+        state.merge({
+            errors: state.get('errors').push(new ErrorRecord(error))
         }),
 
     [eProcTypes.GET_GETH_OPTIONS_SUCCESS]: (state, action) => {

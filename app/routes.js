@@ -1,7 +1,6 @@
 import React from 'react';
-import { Route, IndexRoute } from 'react-router';
+import { Route, IndexRoute, IndexRedirect } from 'react-router';
 import AppContainer from './routes/AppContainer';
-import BootAppContainer from './routes/BootApp/BootAppContainer';
 import ChatChannel from './routes/Home/routes/Chat/components/chat-channel';
 import ChatContainer from './routes/Home/routes/Chat/ChatContainer';
 import SetupContainer from './routes/Setup/SetupContainer';
@@ -26,8 +25,7 @@ import requireAuth from './require-auth';
 
 export default (
   <Route component={AppContainer} path="/" > {/** displays errors and various info */}
-
-    <IndexRoute component={BootAppContainer} />
+    <IndexRedirect to="/setup" />
     <Route component={SetupContainer} path="setup" >
       <IndexRoute component={ConfigurationContainer} />
       <Route component={SynchronizationContainer} path="sync-status" />

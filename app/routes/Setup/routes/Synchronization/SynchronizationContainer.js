@@ -2,6 +2,7 @@ import { connect } from 'react-redux';
 import {
     EProcActions,
     SettingsActions } from 'local-flux';
+import { saveGeneralSettings } from 'local-flux/actions/settings-actions';
 import SyncStatus from './components/Sync';
 
 function mapStateToProps (state, ownProps) {
@@ -12,7 +13,7 @@ function mapStateToProps (state, ownProps) {
         gethLogs: state.externalProcState.get('gethLogs'),
         ipfsStatus: state.externalProcState.get('ipfsStatus'),
         ipfsErrors: state.externalProcState.get('ipfsErrors'),
-        configFlags: state.settingsState.get('flags'),
+        configurationSaved: state.settingsState.getIn(['general', 'configurationSaved']),
         gethSettings: state.settingsState.get('geth'),
         fetchingGethSettings: state.settingsState.get('fetchingGethSettings'),
         fetchingIpfsSettings: state.settingsState.get('fetchingIpfsSettings'),
@@ -28,7 +29,8 @@ function mapStateToProps (state, ownProps) {
 function mapDispatchToProps (dispatch) {
     return {
         eProcActions: new EProcActions(dispatch),
-        settingsActions: new SettingsActions(dispatch)
+        settingsActions: new SettingsActions(dispatch),
+        saveGeneralSettings: payload => dispatch(saveGeneralSettings(payload)),
     };
 }
 export default connect(

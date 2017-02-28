@@ -28,7 +28,6 @@ const PendingAction = Record({
 
 const initialState = fromJS({
     error: new ErrorRecord(),
-    updates: null,
     appLoading: false,
     appUpdating: false,
     showAuthDialog: null,
@@ -45,12 +44,6 @@ const initialState = fromJS({
 });
 
 const appState = createReducer(initialState, {
-    [types.CHECK_FOR_UPDATES]: (state, action) =>
-        state.merge({ updates: action.hasUpdates }),
-
-    [types.UPDATE_APP]: (state, action) =>
-        state.set('appUpdating', action.updating),
-
     [types.SHOW_ERROR]: (state, action) =>
         state.merge({ error: new ErrorRecord(action.error) }),
 

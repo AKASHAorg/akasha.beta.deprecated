@@ -4,7 +4,7 @@ import Setup from './components/setup';
 
 function mapStateToProps (state, ownProps) {
     return {
-        configFlags: state.settingsState.get('flags'),
+        generalSettingsPending: state.settingsState.get('generalSettingsPending'),
         theme: state.settingsState.getIn(['general', 'theme'])
     };
 }

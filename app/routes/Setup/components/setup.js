@@ -1,37 +1,32 @@
 import React, { Component, PropTypes } from 'react';
-import { Tutorials } from 'shared-components';
+import { DataLoader, Tutorials } from 'shared-components';
 
 class Setup extends Component {
     componentDidMount () {
         const { settingsActions } = this.props;
-        settingsActions.getSettings('flags');
         settingsActions.getSettings('geth');
         settingsActions.getSettings('ipfs');
     }
 
     render () {
-        const { theme } = this.props;
+        const { generalSettingsPending, theme } = this.props;
         return (
-          <div style={{ display: 'flex', padding: 0, overflow: 'hidden' }}>
-            <div
-              style={{
-                  padding: 0,
-                  flex: '5 5 auto',
-                  maxWidth: '640px'
-              }}
-            >
-              {this.props.children}
+          <DataLoader flag={generalSettingsPending} size={80} style={{ paddingTop: '-50px' }}>
+            <div style={{ display: 'flex', padding: 0, overflow: 'hidden' }}>
+              <div style={{ padding: 0, flex: '5 5 auto', maxWidth: '640px' }}>
+                {this.props.children}
+              </div>
+              <div
+                style={{
+                    backgroundColor: theme === 'light' ? '#f3f3f3' : '#252525',
+                    padding: 0,
+                    flex: '7 7 auto'
+                }}
+              >
+                <Tutorials theme={theme} />
+              </div>
             </div>
-            <div
-              style={{
-                  backgroundColor: theme === 'light' ? '#f3f3f3' : '#252525',
-                  padding: 0,
-                  flex: '7 7 auto'
-              }}
-            >
-              <Tutorials theme={theme} />
-            </div>
-          </div>
+          </DataLoader>
         );
     }
 }
@@ -39,6 +34,7 @@ class Setup extends Component {
 Setup.propTypes = {
     settingsActions: PropTypes.shape().isRequired,
     children: PropTypes.element,
+    generalSettingsPending: PropTypes.bool,
     theme: PropTypes.string
 };
 

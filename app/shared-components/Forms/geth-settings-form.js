@@ -5,21 +5,24 @@ import { setupMessages } from 'locale-data/messages'; // eslint-disable-line imp
 class GethSettingsForm extends Component {
     _handleDialogOpen = () => {
         this.gethDirPath.click();
-    }
+    };
+
     _handleGethPath = () => {
         const files = this.gethDirPath.files[0].path;
         if (this.props.handleGethDatadir) {
             this.props.handleGethDatadir(files);
         }
-    }
+    };
+
     _addDirectory = (node) => {
         if (node) {
             node.webkitdirectory = true;
             this.gethDirPath = node;
         }
-    }
+    };
+
     render () {
-        const { intl, gethSettings, handleGethCacheSize } = this.props;
+        const { cache, datadir, handleGethCacheSize, intl } = this.props;
         const { muiTheme } = this.context;
         const errorStyle = {
             color: muiTheme.palette.disabledColor,
@@ -37,7 +40,7 @@ class GethSettingsForm extends Component {
               errorText={intl.formatMessage(setupMessages.changeGethCacheSize)}
               floatingLabelStyle={floatingLabelStyle}
               floatingLabelText={intl.formatMessage(setupMessages.gethCacheSize)}
-              value={gethSettings.get('cache') || 512}
+              value={cache || 512}
               onChange={handleGethCacheSize}
               style={selectStyle}
             >
@@ -51,7 +54,7 @@ class GethSettingsForm extends Component {
               errorText={intl.formatMessage(setupMessages.changeGethDataDir)}
               floatingLabelStyle={floatingLabelStyle}
               floatingLabelText={intl.formatMessage(setupMessages.gethDataDirPath)}
-              value={gethSettings.get('datadir') || ''}
+              value={datadir || ''}
               inputStyle={inputStyle}
               onClick={this._handleDialogOpen}
               onFocus={this._handleDialogOpen}
@@ -59,23 +62,21 @@ class GethSettingsForm extends Component {
             />
             <input
               type="file"
-              ref={(gethDirPath) => { this._addDirectory(gethDirPath); }}
+              ref={this._addDirectory}
               onChange={this._handleGethPath}
-              style={{
-                  opacity: 0,
-                  width: 0,
-                  height: 0
-              }}
+              style={{ opacity: 0, width: 0, height: 0 }}
             />
-          </div>);
+          </div>
+        );
     }
 }
 
 GethSettingsForm.propTypes = {
-    intl: PropTypes.shape(),
-    gethSettings: PropTypes.shape(),
+    cache: PropTypes.number,
+    datadir: PropTypes.string,
     handleGethDatadir: PropTypes.func,
-    handleGethCacheSize: PropTypes.func
+    handleGethCacheSize: PropTypes.func,
+    intl: PropTypes.shape(),
 };
 
 GethSettingsForm.contextTypes = {

@@ -2,7 +2,7 @@ import { call, fork, put, take } from 'redux-saga/effects';
 import * as types from '../constants/AppConstants';
 import { createActionChannels } from './helpers';
 import { getGethOptions, getIpfsConfig, registerEProcListeners, toggleGethLogger } from './external-process-saga';
-import { getGeneralSettings } from './settings-saga';
+import { getGeneralSettings, watchSettingsActions } from './settings-saga';
 
 function* registerListeners () {
     yield fork(registerEProcListeners);
@@ -24,6 +24,7 @@ export default function* rootSaga () {
     createActionChannels();
     yield fork(registerListeners);
     yield fork(watchBootstrapApp);
+    yield fork(watchSettingsActions);
     // This should be moved away
     yield fork(toggleGethLogger);
 }

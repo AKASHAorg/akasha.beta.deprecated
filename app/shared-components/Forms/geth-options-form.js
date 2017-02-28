@@ -1,8 +1,7 @@
 import React, { Component, PropTypes } from 'react';
-import { TextField, Checkbox, SelectField, MenuItem } from 'material-ui';
-import { setupMessages } from 'locale-data/messages';
+import { TextField, SelectField, MenuItem } from 'material-ui';
+import { setupMessages } from 'locale-data/messages';  // eslint-disable-line import/no-unresolved, import/extensions
 
-const checkboxStyle = { marginTop: '20px' };
 const floatingLabelStyle = {
     cursor: 'default',
     overflowX: 'visible',

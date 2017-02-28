@@ -147,11 +147,59 @@ class SettingsService extends BaseService {
     };
 }
 
-const getGeneralSettings = () =>
+export const getGeneralSettings = () =>
     new Promise((resolve, reject) =>
         settingsDB.general.where('name').equals('general').toArray()
             .then(data => resolve(data[0] || {}))
             .catch(error => reject(error))
     );
 
-export { SettingsService, getGeneralSettings };
+export const saveGeneralSettings = payload =>
+    new Promise((resolve, reject) => {
+        settingsDB.general.where('name').equals('general').toArray()
+            .then((data) => {
+                if (data.length) {
+                    settingsDB.general.where('name').equals('general').modify(payload)
+                        .then(() => resolve(payload))
+                        .catch(error => reject(error));
+                } else {
+                    settingsDB.general.put({ name: 'general', ...payload })
+                        .then(() => resolve(payload))
+                        .catch(error => reject(error));
+                }
+            });
+    });
+
+export const saveGethSettings = payload =>
+    new Promise((resolve, reject) => {
+        settingsDB.geth.where('name').equals('geth').toArray()
+            .then((data) => {
+                if (data.length) {
+                    settingsDB.geth.where('name').equals('geth').modify(payload)
+                        .then(() => resolve(payload))
+                        .catch(error => reject(error));
+                } else {
+                    settingsDB.geth.put({ name: 'geth', ...payload })
+                        .then(() => resolve(payload))
+                        .catch(error => reject(error));
+                }
+            });
+    });
+
+export const saveIpfsSettings = payload =>
+    new Promise((resolve, reject) => {
+        settingsDB.ipfs.where('name').equals('ipfs').toArray()
+            .then((data) => {
+                if (data.length) {
+                    settingsDB.ipfs.where('name').equals('ipfs').modify(payload)
+                        .then(() => resolve(payload))
+                        .catch(error => reject(error));
+                } else {
+                    settingsDB.ipfs.put({ name: 'ipfs', ...payload })
+                        .then(() => resolve(payload))
+                        .catch(error => reject(error));
+                }
+            });
+    });
+
+export { SettingsService };

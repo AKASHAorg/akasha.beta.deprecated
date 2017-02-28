@@ -1,10 +1,8 @@
 import React, { Component, PropTypes } from 'react';
-import { RaisedButton, Paper, FlatButton } from 'material-ui';
+import { RaisedButton, Paper } from 'material-ui';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import { setupMessages, generalMessages } from 'locale-data/messages'; /* eslint import/no-unresolved: 0 */
-import PanelContainer from 'shared-components/PanelContainer/panel-container'; /* eslint import/no-unresolved: 0 */
-import { LogsList } from 'shared-components';
-import PanelHeader from '../../../../components/panel-header';
+import { LogsList, PanelContainer, PanelHeader } from 'shared-components';
 import SyncStatusLoader from './sync-status';
 
 class SyncStatus extends Component {
@@ -53,15 +51,13 @@ class SyncStatus extends Component {
         }
     }
     componentWillUpdate (nextProps) {
-        const { gethStatus, configFlags, gethBusyState, fetchingGethSettings } = nextProps;
-        const shouldReconfigure = configFlags.get('requestStartupChange') && !gethStatus.get('spawned')
+        const { gethStatus, configurationSaved, gethBusyState, fetchingGethSettings } = nextProps;
+        const shouldReconfigure = !configurationSaved && !gethStatus.get('spawned')
             && !gethBusyState && !fetchingGethSettings;
 
         if (shouldReconfigure) {
-            return this.context.router.push('setup');
+            this.context.router.push('setup');
         }
-
-        return null;
     }
     componentWillUnmount () {
         const { eProcActions } = this.props;
@@ -91,7 +87,7 @@ class SyncStatus extends Component {
         }
     }
     handleCancel = () => {
-        const { eProcActions, settingsActions, gethStatus, ipfsStatus } = this.props;
+        const { eProcActions, saveGeneralSettings, gethStatus, ipfsStatus } = this.props;
         if (gethStatus.get('spawned')) {
             eProcActions.stopSync();
             eProcActions.cancelSync();
@@ -99,7 +95,8 @@ class SyncStatus extends Component {
         if (ipfsStatus.get('spawned')) {
             eProcActions.stopIPFS();
         }
-        settingsActions.saveSettings('flags', { requestStartupChange: true });
+        saveGeneralSettings({ configurationSaved: false });
+        // settingsActions.saveSettings('flags', { requestStartupChange: true });
     };
     handlePause = () => {
         const { syncActionId, eProcActions, ipfsStatus } = this.props;
@@ -289,7 +286,8 @@ SyncStatus.propTypes = {
     gethBusyState: PropTypes.bool,
     ipfsBusyState: PropTypes.bool,
     ipfsPortsRequested: PropTypes.bool,
-    timestamp: PropTypes.number
+    timestamp: PropTypes.number,
+    saveGeneralSettings: PropTypes.func,
 };
 
 SyncStatus.contextTypes = {
