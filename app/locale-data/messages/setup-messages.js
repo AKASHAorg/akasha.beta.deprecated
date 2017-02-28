@@ -235,6 +235,11 @@ const setupMessages = defineMessages({
         description: 'default message to display in sync status',
         defaultMessage: 'Waiting for services'
     },
+    waitingForGeth: {
+        id: 'app.setup.waitingForGeth',
+        description: 'message to display when synchronization is in default state',
+        defaultMessage: 'Waiting for geth client'
+    },
     onePeer: {
         id: 'app.setup.onePeer',
         description: 'singular form of peers',

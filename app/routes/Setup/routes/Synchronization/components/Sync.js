@@ -144,7 +144,7 @@ class SyncStatus extends Component {
                 labels.action = intl.formatMessage(generalMessages.nextButtonLabel);
                 break;
             default:
-                labels.title = intl.formatMessage(setupMessages.synchronizing);
+                labels.title = intl.formatMessage(setupMessages.waitingForGeth);
                 labels.action = intl.formatMessage(generalMessages.pause);
         }
         return labels;
