@@ -86,7 +86,6 @@ class Config extends Component {
         settingsActions.saveSettings('geth', geth);
         settingsActions.saveSettings('ipfs', ipfs);
         settingsActions.saveSettings('flags', { requestStartupChange: false });
-        eProcActions.startSync();
         this.context.router.push('setup/sync-status');
     };
 

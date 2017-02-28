@@ -42,6 +42,9 @@ class EProcActions {
             },
             onSuccess: (data) => {
                 this.dispatch(externalProcessActionCreators.startGethSuccess(data));
+                if (data.api) {
+                    this.startSync();
+                }
                 this.resetGethBusyState();
             }
         });
