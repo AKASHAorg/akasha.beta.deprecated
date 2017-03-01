@@ -1,166 +1,127 @@
 /* eslint new-cap: [2, {capIsNewExceptions: ["Record"]}] */
-import { Record, Map, Set, List, fromJS } from 'immutable';
+import { Map, Set, fromJS } from 'immutable';
 import { createReducer } from './create-reducer';
 import * as types from '../constants/external-process-constants';
 import * as settingsTypes from '../constants/SettingsConstants';
-import { GethStatusModel, IpfsStatusModel } from './models';
+import { GethModel, IpfsModel } from './models';
+import { ErrorRecord } from './records';
 import R from 'ramda';
 
 const initialState = fromJS({
-    geth: new GethStatusModel(),
-    ipfs: new IpfsStatusModel()
+    geth: new GethModel(),
+    ipfs: new IpfsModel()
 });
 
-function buildLogsSet (logs) {
-    const logsSet = new Set(logs)
-        .sort((first, second) => {
-            const firstTimestamp = new Date(first.timestamp).getTime();
-            const secondTimestamp = new Date(second.timestamp).getTime();
-            if (firstTimestamp < secondTimestamp) {
-                return 1;
-            } else if (firstTimestamp > secondTimestamp) {
-                return -1;
-            }
-            return 0;
-        });
-    return logsSet.map(log => new Map(log)).slice(0, 20);
-}
+// function buildLogsSet (logs) {
+//     const logsSet = new Set(logs)
+//         .sort((first, second) => {
+//             const firstTimestamp = new Date(first.timestamp).getTime();
+//             const secondTimestamp = new Date(second.timestamp).getTime();
+//             if (firstTimestamp < secondTimestamp) {
+//                 return 1;
+//             } else if (firstTimestamp > secondTimestamp) {
+//                 return -1;
+//             }
+//             return 0;
+//         });
+//     return logsSet.map(log => new Map(log)).slice(0, 20);
+// }
 
 const eProcState = createReducer(initialState, {
     [types.START_GETH]: state =>
         state.mergeIn(['geth'], {
-            status: state.mergeIn(['geth', 'flags'], {
-                startRequested: false,
-                gethBusyState: true
+            flags: state.getIn(['geth', 'flags']).merge({
+                startRequested: true,
+                busyState: true
             }),
-            errors: state.setIn(['geth', 'errors'], new List()),
         }),
 
-    [types.START_GETH_SUCCESS]: (state, action) => {
-        const newStatus = action.data;
-        const syncActionId = state.get('syncActionId') === 3 && newStatus.api ?
-            1 :
-            state.get('syncActionId');
-        if (newStatus.api) {
-            newStatus.upgrading = null;
-            newStatus.message = null;
-        }
-        if (newStatus.starting || newStatus.spawned || newStatus.api) {
-            newStatus.downloading = null;
-        }
-        if (newStatus.api) {
-            newStatus.starting = null;
-            newStatus.stopped = null;
-        }
-        return state.merge({
-            gethStarting: false,
-            gethStatus: state.get('gethStatus').merge(newStatus),
-            gethErrors: state.get('gethErrors').clear(),
-            syncActionId
+    [types.START_GETH_SUCCESS]: (state, { data }) => {
+        const newStatus = state.get('geth').calculateStatus(data);
+        const syncActionId = state.get('geth').getSyncActionId(data);
+        return state.mergeIn(['geth'], {
+            status: state.getIn(['geth', 'status']).merge(newStatus),
+            flags: state.getIn(['geth', 'flags']).setIn(['syncActionId'], syncActionId)
         });
     },
 
-    [types.START_GETH_ERROR]: (state, action) =>
-        state.merge({
-            gethStarting: false,
-            gethErrors: state.get('gethErrors').push(new ErrorRecord(action.error))
-        }),
-
     [types.STOP_GETH]: state =>
-        state.merge({
-            gethStatus: state.get('gethStatus').merge({ startRequested: false }),
-            gethErrors: state.get('gethErrors').clear(),
-            gethBusyState: true
+        state.mergeIn(['geth'], {
+            flags: state.getIn(['geth', 'flags']).merge({
+                startRequested: false,
+                busyState: true
+            }),
         }),
 
     [types.STOP_GETH_SUCCESS]: (state, action) => {
-        const syncActionId = state.get('syncActionId') === 2 ? state.get('syncActionId') : 3;
-        action.data.upgrading = state.getIn(['gethStatus', 'upgrading']) || null;
-        return state.merge({
-            gethStatus: new GethStatus(action.data),
-            syncActionId
+        const syncActionId = state.get('geth').getSyncActionId();
+        return state.mergeIn(['geth'], {
+            status: state.getIn(['geth', 'status']).merge(action.data),
+            flags: state.getIn(['geth', 'flags']).setIn(['syncActionId'], syncActionId)
         });
     },
-
-    [types.STOP_GETH_ERROR]: (state, action) =>
-        state.get('gethErrors').push(new ErrorRecord(action.error)),
 
     [types.GET_GETH_STATUS_SUCCESS]: (state, action) =>
-        state.merge({ gethStatus: state.get('gethStatus').merge(action.data) }),
-
-    [types.GET_IPFS_STATUS_SUCCESS]: (state, action) =>
-        state.merge({ ipfsStatus: state.get('ipfsStatus').merge(action.data) }),
-
-    [types.START_IPFS_SUCCESS]: (state, action) => {
-        const ipfsStatus = action.data;
-        if (ipfsStatus.started || ipfsStatus.spawned) {
-            ipfsStatus.downloading = null;
-        }
-        return state.merge({
-            ipfsStatus: new IpfsStatus(action.data),
-            ipfsErrors: state.get('ipfsErrors').clear()
-        });
-    },
-
-    [types.START_IPFS_ERROR]: (state, action) => {
-        const ipfsStatus = Object.assign({}, new IpfsStatus().toJS(), action.data);
-        return state.merge({
-            ipfsErrors: state.get('ipfsErrors').push(new ErrorRecord(action.error)),
-            ipfsStatus: state.get('ipfsStatus').merge(ipfsStatus)
-        });
-    },
-
-    [types.START_IPFS]: state =>
-        state.merge({
-            ipfsStatus: state.get('ipfsStatus').merge({ startRequested: true }),
-            ipfsErrors: state.get('ipfsErrors').clear(),
-            ipfsBusyState: true
+        state.mergeIn(['geth'], {
+            status: state.getIn(['geth', 'status']).merge(action.data)
         }),
 
+    [types.START_IPFS]: state =>
+        state.mergeIn(['ipfs'], {
+            flags: state.getIn(['ipfs', 'flags']).merge({
+                startRequested: true,
+                busyState: true
+            })
+        }),
+
+    [types.START_IPFS_SUCCESS]: (state, action) => {
+        const ipfsStatus = state.get('ipfs').computeStatus(action.data);
+        return state.mergeIn(['ipfs'], {
+            status: state.getIn(['ipfs', 'status']).merge(ipfsStatus),
+        });
+    },
+
+
     [types.STOP_IPFS]: state =>
-        state.merge({
-            ipfsStatus: state.get('ipfsStatus').merge({ startRequested: false }),
-            ipfsErrors: state.get('ipfsErrors').clear(),
-            ipfsBusyState: true
+        state.mergeIn(['ipfs'], {
+            flags: state.getIn(['ipfs', 'flags']).merge({
+                startRequested: false,
+                busyState: true
+            }),
         }),
 
     [types.STOP_IPFS_SUCCESS]: state =>
-        state.merge({
-            ipfsStatus: new IpfsStatus(),
-            ipfsPortsRequested: false
-        }),
-
-    [types.STOP_IPFS_ERROR]: (state, action) =>
-        state.merge({
-            ipfsErrors: state.get('ipfsErrors').push(new ErrorRecord(action.error)),
-            ipfsPortsRequested: false
+        state.mergeIn(['ipfs'], {
+            status: state.getIn(['ipfs', 'status']).clear(),
+            flags: state.getIn(['ipfs', 'flags']).setIn(['portsRequested'], false)
         }),
 
     [types.GET_IPFS_STATUS_SUCCESS]: (state, action) =>
-        state.merge({ ipfsStatus: new IpfsStatus(action.data) }),
+        state.mergeIn(['ipfs'], {
+            status: state.getIn(['ipfs', 'status']).merge(action.data)
+        }),
+
+        // ============> no tests for
 
     [types.GET_IPFS_PORTS]: state =>
-        state.set('ipfsPortsRequested', true),
+        state.setIn(['ipfs', 'flags', 'portsRequested'], true),
 
     [types.GET_IPFS_PORTS_SUCCESS]: state =>
-        state.set('ipfsPortsRequested', false),
+        state.setIn(['ipfs', 'flags', 'portsRequested'], false),
 
     [types.GET_IPFS_PORTS_ERROR]: state =>
-        state.set('ipfsPortsRequested', false),
-
-    [types.SET_IPFS_PORTS_ERROR]: (state, { error }) =>
-        state.merge({
-            ipfsErrors: state.get('ipfsErrors').push(new ErrorRecord(error))
-        }),
+        state.setIn(['ipfs', 'flags', 'portsRequested'], false),
 
     [types.GET_SYNC_STATUS_SUCCESS]: (state, action) =>
-        state.merge({ gethSyncStatus: new GethSyncStatus(action.data) }),
-
-    [types.SYNC_ACTIVE]: state =>
-        state.merge({
-            syncActionId: 1
+        state.mergeIn(['geth'], {
+            status: state.getIn(['geth', 'status']).merge(action.data)
         }),
 
+    [types.SYNC_ACTIVE]: state =>
+        state.getIn(['geth', 'flags']).setIn(['syncActionId'], 1),
+
+
+        // ===========> refactor below
     [types.SYNC_STOPPED]: state =>
         state.merge({
             syncActionId: 3,

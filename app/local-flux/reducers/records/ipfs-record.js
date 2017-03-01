@@ -6,16 +6,18 @@ const IpfsStatus = Record({
     spawned: false,
     started: null,
     stopped: null,
-    startRequested: false
 });
-
-const IpfsStatusRecord = Record({
-    status: new IpfsStatus(),
-    errors: new List(),
-    logs: new Set(),
-    isBusy: false,
+const IpfsFlags = Record({
+    startRequested: false,
+    busyState: false,
     portsRequested: false
 });
 
-export default IpfsStatusRecord;
+const IpfsRecord = Record({
+    status: new IpfsStatus(),
+    flags: new IpfsFlags(),
+    logs: new Set(),
+});
+
+export default IpfsRecord;
 export { IpfsStatus };

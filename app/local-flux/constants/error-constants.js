@@ -1,0 +1,1 @@
+export const START_GETH_ERROR = 'START_GETH_ERROR';

@@ -8,7 +8,6 @@ const GethStatus = Record({
     started: null,
     stopped: null,
     upgrading: null,
-    message: null,
     blockNr: null
 });
 const GethSyncStatus = Record({
@@ -20,18 +19,21 @@ const GethSyncStatus = Record({
     pulledStates: null,
     synced: false
 });
-const GethStatusRecord = Record({
-    status: new GethStatus(),
-    syncStatus: new GethSyncStatus(),
-    errors: new List(),
-    logs: new Set(),
-    flags: new Record({
-        // @TODO: Document this flag
-        gethBusyState: false,
-        // @TODO: Document this flag
-        startRequested: false
-    }),
+
+const GethFlags = Record({
+    // @TODO: Document this flag
+    busyState: false,
+    // @TODO: Document this flag
+    startRequested: false,
+    syncActionId: 0
 });
 
-export default GethStatusRecord;
-export { GethStatus, GethSyncStatus };
+const GethRecord = Record({
+    status: new GethStatus(),
+    syncStatus: new GethSyncStatus(),
+    logs: new Set(),
+    flags: new GethFlags(),
+});
+
+export default GethRecord;
+export { GethStatus, GethSyncStatus, GethFlags };

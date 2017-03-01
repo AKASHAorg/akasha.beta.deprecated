@@ -5,6 +5,7 @@ import chatState from './chatState';
 import commentsState from './commentsState';
 import draftState from './draftState';
 import entryState from './entryState';
+import errorReducer from './error-reducer';
 import externalProcState from './externalProcState';
 import notificationsState from './notificationsState';
 import panelState from './panelState';
@@ -22,6 +23,7 @@ const rootReducer = combineReducers({
     commentsState,
     draftState,
     entryState,
+    errorReducer,
     externalProcState,
     notificationsState,
     panelState,

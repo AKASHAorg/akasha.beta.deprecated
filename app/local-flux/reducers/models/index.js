@@ -1,7 +1,7 @@
-import GethStatusModel from './geth-status-model';
-import IpfsStatusModel from './ipfs-status-model';
+import GethModel from './geth-model';
+import IpfsModel from './ipfs-model';
 
 export {
-    GethStatusModel,
-    IpfsStatusModel
+    GethModel,
+    IpfsModel
 };

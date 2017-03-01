@@ -1,10 +1,14 @@
-import GethStatusRecord, { GethStatus, GethSyncStatus } from './geth-status-record';
-import IpfsStatusRecord, { IpfsStatus } from './ipfs-status-record';
+// keep this alphabetically sorted
+import ErrorRecord from './error-record';
+import GethRecord, { GethStatus, GethSyncStatus } from './geth-record';
+import IpfsRecord, { IpfsStatus } from './ipfs-record';
 
+// keep this alphabetically sorted
 export {
-    GethStatusRecord,
+    ErrorRecord,
+    GethRecord,
     GethStatus,
     GethSyncStatus,
-    IpfsStatusRecord,
+    IpfsRecord,
     IpfsStatus
 };
