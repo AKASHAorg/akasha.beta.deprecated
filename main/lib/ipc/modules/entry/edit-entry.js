@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const Promise = require("bluebird");
 const index_1 = require("../auth/index");
 const ipfs_1 = require("./ipfs");
@@ -16,6 +17,5 @@ const execute = Promise.coroutine(function* (data) {
     ipfsEntry = null;
     return { tx, entryId: data.entryId };
 });
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = { execute, name: 'editEntry' };
 //# sourceMappingURL=edit-entry.js.map

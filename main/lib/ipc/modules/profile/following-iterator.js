@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const Promise = require("bluebird");
 const index_1 = require("../../contracts/index");
 const profile_data_1 = require("./profile-data");
@@ -30,6 +31,5 @@ const execute = Promise.coroutine(function* (data) {
     }
     return { collection: results, akashaId: data.akashaId, limit: maxResults };
 });
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = { execute, name: 'followingIterator' };
 //# sourceMappingURL=following-iterator.js.map

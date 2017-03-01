@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const Promise = require("bluebird");
 const settings_1 = require("./settings");
 const geth_connector_1 = require("@akashaproject/geth-connector");
@@ -31,6 +32,5 @@ const execute = Promise.coroutine(function* (data) {
     });
     return { post, topic: geth_connector_1.GethConnector.getInstance().web3.toUtf8(topic) };
 });
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = { execute, name: 'post' };
 //# sourceMappingURL=post.js.map

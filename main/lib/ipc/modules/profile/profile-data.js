@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const Promise = require("bluebird");
 const index_1 = require("../../contracts/index");
 const ipfs_1 = require("./ipfs");
@@ -32,6 +33,5 @@ const execute = Promise.coroutine(function* (data) {
         profile: data.profile
     }, profile);
 });
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = { execute, name: 'getProfileData' };
 //# sourceMappingURL=profile-data.js.map

@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const Logger_1 = require("../lib/ipc/Logger");
 const GethIPC_1 = require("../lib/ipc/GethIPC");
 const IpfsIPC_1 = require("../lib/ipc/IpfsIPC");

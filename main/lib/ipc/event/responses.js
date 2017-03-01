@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const geth_connector_1 = require("@akashaproject/geth-connector");
 const ipfs_connector_1 = require("@akashaproject/ipfs-connector");
 exports.gethResponse = (data, error) => {

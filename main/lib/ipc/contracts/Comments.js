@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const BaseContract_1 = require("./BaseContract");
 const Promise = require("bluebird");
 class Comments extends BaseContract_1.default {
@@ -65,6 +66,5 @@ class Comments extends BaseContract_1.default {
             .then((result) => result.toString());
     }
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Comments;
 //# sourceMappingURL=Comments.js.map

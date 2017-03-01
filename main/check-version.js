@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const electron_1 = require("electron");
 const compareVersions = require("compare-versions");
 const ipfs_connector_1 = require("@akashaproject/ipfs-connector");
@@ -36,6 +37,5 @@ ${repo}
         });
     }
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = new UpdateChecker();
 //# sourceMappingURL=check-version.js.map

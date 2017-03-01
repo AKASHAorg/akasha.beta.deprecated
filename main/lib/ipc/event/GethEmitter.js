@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const geth_connector_1 = require("@akashaproject/geth-connector");
 const AbstractEmitter_1 = require("./AbstractEmitter");
 const channels_1 = require("../../channels");
@@ -70,6 +71,5 @@ class GethEmitter extends AbstractEmitter_1.AbstractEmitter {
         return this;
     }
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = GethEmitter;
 //# sourceMappingURL=GethEmitter.js.map

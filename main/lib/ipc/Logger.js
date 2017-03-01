@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const path_1 = require("path");
 const winston_1 = require("winston");
 const fs_1 = require("fs");
@@ -71,6 +72,5 @@ class AppLogger {
         return this.loggers[name];
     }
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = AppLogger;
 //# sourceMappingURL=Logger.js.map

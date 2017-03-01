@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const channels_1 = require("./lib/channels");
 const ipcPreloader_1 = require("./ipcPreloader");
 function injectApi() {
@@ -18,7 +19,7 @@ function injectApi() {
     return AkashaApi;
 }
 window['Channel'] = injectApi();
-window['eval'] = global.eval = function () {
+window['eval'] = function () {
     throw new Error("eval disabled.");
 };
 //# sourceMappingURL=preloader.js.map
