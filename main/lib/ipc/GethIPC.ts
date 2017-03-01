@@ -95,7 +95,15 @@ class GethIPC extends GethEmitter {
     private _start() {
         this.registerListener(
             channels.server.geth.startService,
-            (event: IpcMainEvent, data: GethStartRequest) => {
+            (event: any, data: GethStartRequest) => {
+                if(GethConnector.getInstance().serviceStatus.process){
+                    this.fireEvent(
+                        channels.client.geth.startService,
+                        gethResponse({}, { message: 'Service is already started.' }),
+                        event
+                    );
+                    return null;
+                }
                 GethConnector.getInstance().writeGenesis(
                     getGenesisPath(),
                     (err: Error, stdout: any) => {
