@@ -338,19 +338,11 @@ class ServiceStatusBar extends Component {
         });
     };
 
-    onIpfsStorageChange = (ev) => {
-        ev.stopPropagation();
-        ev.target.blur();
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.webkitdirectory = true;
-        input.addEventListener('change', (e) => {
-            this.setState({
-                storagePath: e.target.files[0].path,
-                isIpfsFormDirty: true
-            });
+    onIpfsStorageChange = (path) => {
+        this.setState({
+            storagePath: path,
+            isIpfsFormDirty: true
         });
-        input.click();
     };
 
     saveGethOptions = () => {

@@ -59,7 +59,7 @@ const setupMessages = defineMessages({
     changeGethCacheSize: {
         id: 'app.setup.changeGethCacheSize',
         description: 'geth cache size input label',
-        defaultMessage: 'Change Geth cache size (min. 512MB)'
+        defaultMessage: 'Change geth cache size (min. 512MB)'
     },
     gethCacheSizeError: {
         id: 'app.setup.gethCacheSizeError',
