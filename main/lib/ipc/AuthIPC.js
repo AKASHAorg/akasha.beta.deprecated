@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const ModuleEmitter_1 = require("./event/ModuleEmitter");
 const geth_connector_1 = require("@akashaproject/geth-connector");
 const channels_1 = require("../channels");
@@ -106,6 +107,5 @@ class AuthIPC extends ModuleEmitter_1.default {
         return this;
     }
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = AuthIPC;
 //# sourceMappingURL=AuthIPC.js.map

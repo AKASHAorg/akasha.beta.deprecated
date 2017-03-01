@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const Promise = require("bluebird");
 const index_1 = require("../../contracts/index");
 const records_1 = require("../models/records");
@@ -51,6 +52,5 @@ const execute = Promise.coroutine(function* (data) {
     const collection = yield Promise.all(Array.from(entries).map((entryId) => get_entry_1.default.execute({ entryId })));
     return { collection, toBlock: data.toBlock, lastBlock: lastBlock, limit };
 });
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = { execute, name: 'allStreamIterator' };
 //# sourceMappingURL=all-stream-iterator.js.map

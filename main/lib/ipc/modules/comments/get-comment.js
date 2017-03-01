@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const Promise = require("bluebird");
 const index_1 = require("../../contracts/index");
 const ipfs_1 = require("./ipfs");
@@ -13,6 +14,5 @@ const execute = Promise.coroutine(function* (data) {
     ethData.profile = profile;
     return { data: Object.assign(ethData, content), entryId: data.entryId, commentId: data.commentId };
 });
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = { execute, name: 'getComment' };
 //# sourceMappingURL=get-comment.js.map

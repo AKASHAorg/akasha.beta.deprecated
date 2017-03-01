@@ -2,6 +2,7 @@ import Channel from './lib/channels';
 import { ApiRequest, ApiListener } from './ipcPreloader';
 
 function injectApi() {
+
     const AkashaApi = Object.assign({}, Channel);
 
     Object.keys(Channel.client).forEach((module) => {
@@ -25,6 +26,6 @@ function injectApi() {
 }
 window['Channel'] = injectApi();
 
-window['eval'] = global.eval = function() {
+window['eval'] = function () {
     throw new Error("eval disabled.");
 };
