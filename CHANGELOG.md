@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.6.0"></a>
+# [0.6.0](https://github.com/AkashaProject/node-app/compare/v0.5.0...v0.6.0) (2017-03-02)
+
+
+### Bug Fixes
+
+* **comments:** fix tooltip position on unresolved comments icon ([e2341ac](https://github.com/AkashaProject/node-app/commit/e2341ac))
+* **entry:** fix version error when entry content is unresolved ([96553ea](https://github.com/AkashaProject/node-app/commit/96553ea))
+* **entry comments:** fix comments filtering by entryId ([c8039a2](https://github.com/AkashaProject/node-app/commit/c8039a2))
+* **image utils:** preserve alpha channel when resizing images ([ea76c6f](https://github.com/AkashaProject/node-app/commit/ea76c6f))
+* **mentions:** profile hover card overlaps with other components ([b74801d](https://github.com/AkashaProject/node-app/commit/b74801d))
+* fix react warnings ([cc9456a](https://github.com/AkashaProject/node-app/commit/cc9456a))
+* fix unresolved author errors ([46ed9a4](https://github.com/AkashaProject/node-app/commit/46ed9a4))
+* fix unresolved publisher error and react warnings ([7248487](https://github.com/AkashaProject/node-app/commit/7248487))
+
+
+
 <a name="0.5.0"></a>
 # [0.5.0](https://github.com/AkashaProject/node-app/compare/v0.3.0...v0.5.0) (2017-02-21)
 
