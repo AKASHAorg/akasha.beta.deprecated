@@ -4,7 +4,7 @@
   "private": true,
   "description": "Akasha platform",
   "main": "main.js",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "scripts": {
     "test": "cross-env NODE_ENV=test BABEL_DISABLE_CACHE=1 mocha --compilers js:babel-register --recursive test/**/*.spec.js",
     "test-watch": "npm test -- --watch",
@@ -218,8 +218,6 @@
     "electron": "1.6.1"
   },
   "build": {
-    "appId": "org.develar.ElectronReact",
-    "category": "public.app-category.network",
     "dmg": {
       "contents": [
         {
@@ -275,10 +273,10 @@
     },
     "nsis": {
       "oneClick": true
+    },
+    "directories": {
+      "buildResources": "resources",
+      "output": "release"
     }
-  },
-  "directories": {
-    "buildResources": "resources",
-    "output": "release"
   }
 }
