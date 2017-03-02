@@ -71,6 +71,14 @@ class EntryPageHeader extends Component {
 
     renderAvatar = () => {
         const { publisher, selectProfile } = this.props;
+        if (!publisher) {
+            return (
+              <Avatar
+                style={{ display: 'inline-block', cursor: 'pointer' }}
+                radius={40}
+              />
+            );
+        }
         const publisherBaseUrl = publisher.baseUrl;
         const publisherAvatar = publisher.avatar ?
             imageCreator(publisher.avatar, publisherBaseUrl) :
@@ -186,7 +194,7 @@ class EntryPageHeader extends Component {
             >
               <CardHeader
                 avatar={this.renderAvatar()}
-                title={
+                title={publisher ?
                   <button
                     style={{
                         border: '0px',
@@ -210,7 +218,8 @@ class EntryPageHeader extends Component {
                     >
                       {`${publisher.firstName} ${publisher.lastName}`}
                     </div>
-                  </button>
+                  </button> :
+                  <div style={{ height: '22px' }} />
                 }
                 onMouseLeave={this.hideProfileHoverCard}
                 subtitle={this.renderSubtitle()}
@@ -220,11 +229,13 @@ class EntryPageHeader extends Component {
                     padding: 0
                 }}
               >
-                <ProfileHoverCard
-                  anchorHovered={this.state.anchorHovered}
-                  anchorNode={this.state.hoverNode}
-                  profile={publisher}
-                />
+                {publisher &&
+                  <ProfileHoverCard
+                    anchorHovered={this.state.anchorHovered}
+                    anchorNode={this.state.hoverNode}
+                    profile={publisher}
+                  />
+                }
               </CardHeader>
               {(this.props.newCommentsCount > 0) && FLOATING_COMMENTS_BUTTON_ACTIVE &&
                 <div
