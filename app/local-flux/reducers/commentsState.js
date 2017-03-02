@@ -66,7 +66,10 @@ const commentsState = createReducer(initialState, {
     [types.GET_ENTRY_COMMENTS_SUCCESS]: (state, { comments, options, flags }) => {
         const { reverse, entryId } = options;
         const comms = comments.collection.map((comment) => {
-            comment.data.profile.avatar = `${comment.data.profile.baseUrl}/${comment.data.profile.avatar}`;
+            if (comment.data.profile) {
+                comment.data.profile.avatar =
+                    `${comment.data.profile.baseUrl}/${comment.data.profile.avatar}`;
+            }
             return castCommentToRecord(comment);
         });
         if (reverse) {
@@ -87,7 +90,10 @@ const commentsState = createReducer(initialState, {
     },
 
     [types.FETCH_NEW_COMMENTS_SUCCESS]: (state, { comment, options }) => {
-        comment.data.profile.avatar = `${comment.data.profile.baseUrl}/${comment.data.profile.avatar}`;
+        if (comment.data.profile) {
+            comment.data.profile.avatar =
+                `${comment.data.profile.baseUrl}/${comment.data.profile.avatar}`;
+        }
         const comms = castCommentToRecord(comment);
         const newState = state.setIn(['entryComments'],
             state.get('entryComments')
