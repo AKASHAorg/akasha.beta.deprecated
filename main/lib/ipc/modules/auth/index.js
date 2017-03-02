@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const Auth_1 = require("./Auth");
 class User {
     init() {

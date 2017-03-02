@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 class Notifications {
     constructor() {
         this.queue = [];
@@ -31,5 +30,6 @@ class Notifications {
         this.queue.length = 0;
     }
 }
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = new Notifications();
 //# sourceMappingURL=queue.js.map

@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const AbstractEmitter_1 = require("./AbstractEmitter");
 const channels_1 = require("../../channels");
 const responses_1 = require("./responses");
@@ -69,5 +68,6 @@ class ModuleEmitter extends AbstractEmitter_1.AbstractEmitter {
         });
     }
 }
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ModuleEmitter;
 //# sourceMappingURL=ModuleEmitter.js.map

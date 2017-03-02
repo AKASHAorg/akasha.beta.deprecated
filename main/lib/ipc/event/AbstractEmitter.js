@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const AbstractListener_1 = require("./AbstractListener");
 class AbstractEmitter extends AbstractListener_1.AbstractListener {
     fireEvent(channel, data, event) {

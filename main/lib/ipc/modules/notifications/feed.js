@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const Promise = require("bluebird");
 const index_1 = require("../../contracts/index");
 const set_filter_1 = require("./set-filter");
@@ -195,5 +194,6 @@ const execute = Promise.coroutine(function* (data, cb) {
     });
     return { running: true };
 });
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = { execute, name: 'feed' };
 //# sourceMappingURL=feed.js.map

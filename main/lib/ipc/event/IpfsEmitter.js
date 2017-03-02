@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const AbstractEmitter_1 = require("./AbstractEmitter");
 const ipfs_connector_1 = require("@akashaproject/ipfs-connector");
 const responses_1 = require("./responses");
@@ -60,5 +59,6 @@ class IpfsEmitter extends AbstractEmitter_1.AbstractEmitter {
         return this;
     }
 }
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = IpfsEmitter;
 //# sourceMappingURL=IpfsEmitter.js.map

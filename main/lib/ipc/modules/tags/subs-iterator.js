@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const Promise = require("bluebird");
 const index_1 = require("../../contracts/index");
 const execute = Promise.coroutine(function* (data) {
@@ -27,5 +26,6 @@ const execute = Promise.coroutine(function* (data) {
     }
     return { collection: results, akashaId: data.akashaId, limit: maxResults };
 });
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = { execute, name: 'tagSubIterator' };
 //# sourceMappingURL=subs-iterator.js.map

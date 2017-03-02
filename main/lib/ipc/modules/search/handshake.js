@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const Promise = require("bluebird");
 const ramda_1 = require("ramda");
 const geth_connector_1 = require("@akashaproject/geth-connector");
@@ -57,5 +56,6 @@ const execute = Promise.coroutine(function* (data) {
     }
     return { searchService: init };
 });
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = { execute, name: 'handshake' };
 //# sourceMappingURL=handshake.js.map

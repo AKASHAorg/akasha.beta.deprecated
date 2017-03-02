@@ -87,7 +87,7 @@
     "@types/archiver": "0.15.37",
     "@types/bluebird": "3.0.37",
     "@types/chai": "3.4.35",
-    "@types/electron": "1.4.32",
+    "@types/electron": "1.4.33",
     "@types/lru-cache": "4.0.0",
     "@types/mocha": "2.2.39",
     "@types/node": "7.0.5",
@@ -114,7 +114,7 @@
     "babel-runtime": "6.23.0",
     "chai": "3.5.0",
     "co-mocha": "1.2.0",
-    "concurrently": "3.3.0",
+    "concurrently": "3.4.0",
     "cross-env": "3.1.4",
     "css-loader": "0.26.2",
     "css-modules-require-hook": "4.0.5",
@@ -124,8 +124,8 @@
     "dexie": "1.5.1",
     "draft-js": "0.10.0",
     "draft-js-export-html": "0.5.2",
-    "electron": "1.4.15",
-    "electron-builder": "14.4.0",
+    "electron": "1.6.1",
+    "electron-builder": "14.5.3",
     "electron-mocha": "3.3.0",
     "electron-rebuild": "1.5.7",
     "enzyme": "2.7.1",
@@ -176,7 +176,7 @@
     "redux-devtools": "3.3.2",
     "redux-devtools-dock-monitor": "1.1.1",
     "redux-devtools-log-monitor": "1.2.0",
-    "redux-logger": "2.8.1",
+    "redux-logger": "2.8.2",
     "redux-thunk": "2.2.0",
     "rimraf": "2.6.1",
     "sass-loader": "4.1.1",
@@ -184,7 +184,7 @@
     "source-map-support": "0.4.11",
     "standard-version": "4.0.0",
     "style-loader": "0.13.2",
-    "tslint": "4.4.2",
+    "tslint": "4.5.1",
     "typescript": "2.2.1",
     "url-loader": "0.5.8",
     "validatorjs": "3.11.0",
@@ -215,7 +215,7 @@
     "npm": ">=3.x"
   },
   "engines": {
-    "electron": "1.4.15"
+    "electron": "1.6.1"
   },
   "build": {
     "appId": "org.develar.ElectronReact",

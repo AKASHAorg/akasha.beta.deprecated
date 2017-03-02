@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const electron_1 = require("electron");
 const TagsIPC_1 = require("../lib/ipc/TagsIPC");
 const chai_1 = require("chai");

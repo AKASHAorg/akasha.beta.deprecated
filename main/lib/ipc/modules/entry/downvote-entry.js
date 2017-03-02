@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const index_1 = require("../auth/index");
 const Promise = require("bluebird");
 const index_2 = require("../../contracts/index");
@@ -11,5 +10,6 @@ const execute = Promise.coroutine(function* (data) {
     const tx = yield index_1.module.auth.signData(txData, data.token);
     return { tx, entryId: data.entryId, extra: data.extra };
 });
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = { execute, name: 'downvote' };
 //# sourceMappingURL=downvote-entry.js.map

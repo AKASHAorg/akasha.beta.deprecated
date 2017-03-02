@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const entry_count_profile_1 = require("./entry-count-profile");
 const entry_count_tag_1 = require("./entry-count-tag");
 const entry_tag_iterator_1 = require("./entry-tag-iterator");
@@ -25,6 +24,7 @@ const index_1 = require("../pinner/index");
 const edit_entry_1 = require("./edit-entry");
 const following_stream_iterator_1 = require("./following-stream-iterator");
 const all_stream_iterator_1 = require("./all-stream-iterator");
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = [
     entry_count_profile_1.default,
     entry_count_tag_1.default,

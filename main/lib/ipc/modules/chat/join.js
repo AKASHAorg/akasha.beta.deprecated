@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const settings_1 = require("./settings");
 const Promise = require("bluebird");
 const geth_connector_1 = require("@akashaproject/geth-connector");
@@ -12,5 +11,6 @@ const execute = Promise.coroutine(function* (data) {
     });
     return Promise.resolve({ channels: data.channels, numChannels: settings_1.default.TOPICS.size });
 });
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = { execute, name: 'join' };
 //# sourceMappingURL=join.js.map

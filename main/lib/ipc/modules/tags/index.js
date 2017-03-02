@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const check_format_1 = require("./check-format");
 const create_tag_1 = require("./create-tag");
 const exists_tag_1 = require("./exists-tag");
@@ -14,6 +13,7 @@ const tags_iterator_1 = require("./tags-iterator");
 const subs_iterator_1 = require("./subs-iterator");
 const is_subscribed_1 = require("./is-subscribed");
 const search_tag_1 = require("./search-tag");
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = [
     check_format_1.default,
     create_tag_1.default,

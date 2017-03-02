@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const Promise = require("bluebird");
 const index_1 = require("../../contracts/index");
 const following_count_1 = require("../profile/following-count");
@@ -42,5 +41,6 @@ const execute = Promise.coroutine(function* (data) {
     }
     return { profiles: followedProfiles, tags: subbedTags, akashaId: data.akashaId };
 });
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = { execute, name: 'getEntriesStream' };
 //# sourceMappingURL=entry-stream.js.map

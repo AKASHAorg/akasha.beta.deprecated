@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const Promise = require("bluebird");
 const geth_connector_1 = require("@akashaproject/geth-connector");
 const settings_1 = require("../../config/settings");
@@ -23,5 +22,6 @@ const execute = Promise.coroutine(function* (data) {
     yield Promise.delay(2000);
     return { target: target };
 });
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = { execute, name: 'backupKeys' };
 //# sourceMappingURL=backup-keystore.js.map

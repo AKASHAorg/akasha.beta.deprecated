@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const crypto_1 = require("crypto");
 const geth_connector_1 = require("@akashaproject/geth-connector");
 const ethereumjs_util_1 = require("ethereumjs-util");
@@ -145,5 +144,6 @@ class Auth {
             .sendTransactionAsync(data, this._read(token).toString('utf8'));
     }
 }
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Auth;
 //# sourceMappingURL=Auth.js.map

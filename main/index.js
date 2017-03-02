@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const electron_1 = require("electron");
 const geth_connector_1 = require("@akashaproject/geth-connector");
 const ipfs_connector_1 = require("@akashaproject/ipfs-connector");
@@ -62,6 +61,7 @@ function bootstrapApp() {
             resizable: true,
             show: false,
             webPreferences: {
+                nodeIntegration: false,
                 preload: path_1.resolve(__dirname, 'preloader.js')
             }
         });

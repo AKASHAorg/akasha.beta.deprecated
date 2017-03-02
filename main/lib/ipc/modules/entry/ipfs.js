@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const ipfs_connector_1 = require("@akashaproject/ipfs-connector");
 const Promise = require("bluebird");
 const ramda_1 = require("ramda");
@@ -210,5 +209,6 @@ exports.getFullContent = Promise.coroutine(function* (hash, version) {
     draft = null;
     return data;
 });
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = IpfsEntry;
 //# sourceMappingURL=ipfs.js.map

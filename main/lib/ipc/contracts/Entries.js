@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const BaseContract_1 = require("./BaseContract");
 const Promise = require("bluebird");
 const ethereumjs_util_1 = require("ethereumjs-util");
@@ -126,5 +125,6 @@ class Entries extends BaseContract_1.default {
         return Published.getAsync();
     }
 }
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Entries;
 //# sourceMappingURL=Entries.js.map
