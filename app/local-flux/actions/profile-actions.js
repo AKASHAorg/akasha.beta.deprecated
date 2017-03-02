@@ -327,10 +327,12 @@ class ProfileActions {
             onSuccess: (data) => {
                 const akashaIds = [];
                 data.collection.forEach((item) => {
-                    akashaIds.push({ akashaId: item.profile.akashaId });
-                    if (item.profile.avatar) {
-                        item.profile.avatar =
-                            imageCreator(item.profile.avatar, item.profile.baseUrl);
+                    if (item.profile) {
+                        akashaIds.push({ akashaId: item.profile.akashaId });
+                        if (item.profile.avatar) {
+                            item.profile.avatar =
+                                imageCreator(item.profile.avatar, item.profile.baseUrl);
+                        }
                     }
                 });
                 this.profileService.saveAkashaIds(akashaIds);
@@ -356,10 +358,12 @@ class ProfileActions {
             onSuccess: (data) => {
                 const akashaIds = [];
                 data.collection.forEach((item) => {
-                    akashaIds.push({ akashaId: item.profile.akashaId });
-                    if (item.profile.avatar) {
-                        item.profile.avatar =
-                            imageCreator(item.profile.avatar, item.profile.baseUrl);
+                    if (item.profile) {
+                        akashaIds.push({ akashaId: item.profile.akashaId });
+                        if (item.profile.avatar) {
+                            item.profile.avatar =
+                                imageCreator(item.profile.avatar, item.profile.baseUrl);
+                        }
                     }
                 });
                 this.profileService.saveAkashaIds(akashaIds);
@@ -385,10 +389,12 @@ class ProfileActions {
             onSuccess: (data) => {
                 const akashaIds = [];
                 data.collection.forEach((item) => {
-                    akashaIds.push({ akashaId: item.profile.akashaId });
-                    if (item.profile.avatar) {
-                        item.profile.avatar =
-                            imageCreator(item.profile.avatar, item.profile.baseUrl);
+                    if (item.profile) {
+                        akashaIds.push({ akashaId: item.profile.akashaId });
+                        if (item.profile.avatar) {
+                            item.profile.avatar =
+                                imageCreator(item.profile.avatar, item.profile.baseUrl);
+                        }
                     }
                 });
                 this.profileService.saveAkashaIds(akashaIds);
@@ -414,10 +420,12 @@ class ProfileActions {
             onSuccess: (data) => {
                 const akashaIds = [];
                 data.collection.forEach((item) => {
-                    akashaIds.push({ akashaId: item.profile.akashaId });
-                    if (item.profile.avatar) {
-                        item.profile.avatar =
-                            imageCreator(item.profile.avatar, item.profile.baseUrl);
+                    if (item.profile) {
+                        akashaIds.push({ akashaId: item.profile.akashaId });
+                        if (item.profile.avatar) {
+                            item.profile.avatar =
+                                imageCreator(item.profile.avatar, item.profile.baseUrl);
+                        }
                     }
                 });
                 this.profileService.saveAkashaIds(akashaIds);

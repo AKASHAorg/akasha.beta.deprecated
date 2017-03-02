@@ -56,6 +56,9 @@ class MentionComponent extends Component {
             addressOfClient.removeListener(this.handleAddressOf);
             getProfileDataClient.removeListener(this.handleProfileData);
         }
+        if (this.timeout) {
+            clearTimeout(this.timeout);
+        }
     }
 
     setContainerRef = (el) => {
