@@ -200,7 +200,7 @@ class EntryPage extends Component {
 
     handleUpvote = () => {
         const { entry, entryActions } = this.props;
-        const akashaId = entry.entryEth.publisher.akashaId;
+        const akashaId = entry.entryEth.publisher ? entry.entryEth.publisher.akashaId : null;
         const payload = {
             publisherAkashaId: akashaId,
             entryTitle: entry.content.title,

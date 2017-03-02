@@ -119,7 +119,7 @@ class EntryActions {
                 onSuccess: data => {
                     const akashaIds = [];
                     data.collection && data.collection.forEach(entry => {
-                        if (entry.entryEth.publisher.akashaId) {
+                        if (entry.entryEth.publisher && entry.entryEth.publisher.akashaId) {
                             akashaIds.push({ akashaId: entry.entryEth.publisher.akashaId });
                         }
                     });
@@ -151,7 +151,7 @@ class EntryActions {
                 onSuccess: data => {
                     const akashaIds = [];
                     data.collection && data.collection.forEach(entry => {
-                        if (entry.entryEth.publisher.akashaId) {
+                        if (entry.entryEth.publisher && entry.entryEth.publisher.akashaId) {
                             akashaIds.push({ akashaId: entry.entryEth.publisher.akashaId });
                         }
                     });
@@ -226,7 +226,7 @@ class EntryActions {
                 onSuccess: (data) => {
                     const akashaIds = [];
                     data.collection && data.collection.forEach(entry => {
-                        if (entry.entryEth.publisher.akashaId) {
+                        if (entry.entryEth.publisher && entry.entryEth.publisher.akashaId) {
                             akashaIds.push({ akashaId: entry.entryEth.publisher.akashaId });
                         }
                     });
@@ -253,7 +253,7 @@ class EntryActions {
             onSuccess: data => {
                 const akashaIds = [];
                 data.collection && data.collection.forEach(entry => {
-                    if (entry.entryEth.publisher.akashaId) {
+                    if (entry.entryEth.publisher && entry.entryEth.publisher.akashaId) {
                         akashaIds.push({ akashaId: entry.entryEth.publisher.akashaId });
                     }
                 });
@@ -276,7 +276,7 @@ class EntryActions {
             onSuccess: data => {
                 const akashaIds = [];
                 data.collection && data.collection.forEach(entry => {
-                    if (entry.entryEth.publisher.akashaId) {
+                    if (entry.entryEth.publisher && entry.entryEth.publisher.akashaId) {
                         akashaIds.push({ akashaId: entry.entryEth.publisher.akashaId });
                     }
                 });
@@ -299,7 +299,7 @@ class EntryActions {
             onSuccess: data => {
                 const akashaIds = [];
                 data.collection && data.collection.forEach(entry => {
-                    if (entry.entryEth.publisher.akashaId) {
+                    if (entry.entryEth.publisher && entry.entryEth.publisher.akashaId) {
                         akashaIds.push({ akashaId: entry.entryEth.publisher.akashaId });
                     }
                 });

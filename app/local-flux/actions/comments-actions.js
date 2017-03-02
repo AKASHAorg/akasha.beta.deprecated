@@ -31,7 +31,7 @@ class CommentsActions {
                     let newCollection = [];
                     if (data.collection) {
                         newCollection = data.collection.map((comm) => {
-                            if (comm.data.profile.akashaId) {
+                            if (comm.data.profile && comm.data.profile.akashaId) {
                                 akashaIds.push({ akashaId: comm.data.profile.akashaId });
                             }
                             comm.data.content = JSON.parse(comm.data.content);
@@ -75,7 +75,7 @@ class CommentsActions {
                     onSuccess: (data) => {
                         const akashaIds = [];
                         data.collection.forEach((comment) => {
-                            if (comment.data.profile.akashaId) {
+                            if (comm.data.profile && comm.data.profile.akashaId) {
                                 akashaIds.push({ akashaId: comment.data.profile.akashaId });
                             }
                             comment.data.content = JSON.parse(comment.data.content);
