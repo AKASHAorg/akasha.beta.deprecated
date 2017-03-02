@@ -64,16 +64,21 @@ class Comment extends React.Component {
         }
     }
 
+    componentWillUnmount () {
+        if (this.timeout) {
+            clearTimeout(this.timeout);
+        }
+    }
+
     _handleMouseEnter = (ev) => {
         this.setState({
             hoverNode: ev.currentTarget
-        }, () => {
-            this.timeout = setTimeout(() => {
-                this.setState({
-                    anchorHovered: true,
-                });
-            }, 500);
         });
+        this.timeout = setTimeout(() => {
+            this.setState({
+                anchorHovered: true,
+            });
+        }, 500);
     };
 
     _handleMouseLeave = () => {
