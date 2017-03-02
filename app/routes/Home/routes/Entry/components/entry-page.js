@@ -413,33 +413,32 @@ class EntryPage extends Component {
             claim.entryId === entry.entryId);
         const voteEntryPending = votePending && votePending.find(vote =>
               vote.entryId === entry.entryId);
+        const publisher = entry.getIn(['entryEth', 'publisher']);
         return (
           <div className={`${styles.root} row`}>
             <div className="col-xs-12">
               <div className={`${styles.entry_page_inner}`}>
                 <div id="content-section" className={`${styles.content_section}`}>
-                  {entry.entryEth && entry.entryEth.publisher &&
-                    <EntryPageHeader
-                      commentsSectionTop={commentsSectionTop}
-                      currentVersion={currentVersion}
-                      entryBlockNr={entry.entryEth.blockNr}
-                      existingDraft={existingDraft}
-                      getVersion={this.getVersion}
-                      handleEdit={this.handleEdit}
-                      intl={intl}
-                      isActive={entry.active}
-                      isOwnEntry={this.isOwnEntry()}
-                      latestVersion={latestVersion}
-                      newCommentsCount={this._getNewCommentsCount()}
-                      onRequestNewestComments={this.requestNewestComments}
-                      publisher={entry.entryEth.publisher}
-                      publisherTitleShadow={publisherTitleShadow}
-                      scrollDirection={scrollDirection}
-                      selectProfile={this.selectProfile}
-                      timestamp={entry.entryEth.unixStamp}
-                      wordCount={entry.content ? entry.content.wordCount : 0}
-                    />
-                  }
+                  <EntryPageHeader
+                    commentsSectionTop={commentsSectionTop}
+                    currentVersion={currentVersion}
+                    entryBlockNr={entry.entryEth.blockNr}
+                    existingDraft={existingDraft}
+                    getVersion={this.getVersion}
+                    handleEdit={this.handleEdit}
+                    intl={intl}
+                    isActive={entry.active}
+                    isOwnEntry={this.isOwnEntry()}
+                    latestVersion={latestVersion}
+                    newCommentsCount={this._getNewCommentsCount()}
+                    onRequestNewestComments={this.requestNewestComments}
+                    publisher={publisher}
+                    publisherTitleShadow={publisherTitleShadow}
+                    scrollDirection={scrollDirection}
+                    selectProfile={this.selectProfile}
+                    timestamp={entry.entryEth.unixStamp}
+                    wordCount={entry.content ? entry.content.wordCount : 0}
+                  />
                   {entry.content &&
                     <EntryPageContent
                       entry={entry}
@@ -568,7 +567,7 @@ class EntryPage extends Component {
                             fetchLimit={COMMENT_FETCH_LIMIT}
                             onLoadMoreRequest={this.fetchComments}
                             onCommenterClick={this._navigateToProfile}
-                            entryAuthorProfile={entry.getIn(['entryEth', 'publisher']).profile}
+                            entryAuthorProfile={publisher && publisher.profile}
                             fetchingComments={fetchingComments}
                             intl={intl}
                           />

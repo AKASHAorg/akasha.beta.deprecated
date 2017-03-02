@@ -521,13 +521,13 @@ class EntryActions {
             full,
             version,
             onSuccess: (data) => {
-                // @todo: [code: 3ntry3] get rid of this asap!!
-                // we need this to load images from ipfs
-                if (data.entryEth.publisher.akashaId) {
+                if (data.entryEth.publisher && data.entryEth.publisher.akashaId) {
                     this.profileService.saveAkashaIds([{
                         akashaId: data.entryEth.publisher.akashaId
                     }]);
                 }
+                // @todo: [code: 3ntry3] get rid of this asap!!
+                // we need this to load images from ipfs
                 window.entry__baseUrl = data.baseUrl;
                 this.dispatch(entryActionCreators.getFullEntrySuccess(data, {
                     fetchingFullEntry: false
