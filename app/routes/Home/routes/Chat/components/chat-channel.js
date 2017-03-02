@@ -90,6 +90,9 @@ class ChatChannel extends Component {
         if (this.timeout) {
             clearTimeout(this.timeout);
         }
+        if (this.profileHoverTimeout) {
+            clearTimeout(this.profileHoverTimeout);
+        }
     }
 
     onInputFocus = () => {
