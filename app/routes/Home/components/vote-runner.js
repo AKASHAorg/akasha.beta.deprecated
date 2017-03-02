@@ -67,7 +67,9 @@ class VoteRunner extends Component {
             const entry = entries.find(entry => entry.get('entryId') === tx.entryId);
             const publisherAkashaId = entry ?
                 entry.getIn(['entryEth', 'publisher', 'akashaId']) :
-                fullEntry ? fullEntry.entryEth.publisher.akashaId : null;
+                fullEntry && fullEntry.entryEth.publisher ?
+                    fullEntry.entryEth.publisher.akashaId :
+                    null;
             const loggedAkashaId = loggedProfile.get('akashaId');
             const mined = minedTx.find(mined => mined.tx === tx.tx);
             const minedSuccessfully = mined.cumulativeGasUsed < tx.gas;
