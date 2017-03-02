@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const ModuleEmitter_1 = require("./event/ModuleEmitter");
 const index_1 = require("./modules/utils/index");
 class UtilsIPC extends ModuleEmitter_1.default {
@@ -14,5 +13,6 @@ class UtilsIPC extends ModuleEmitter_1.default {
         this._manager();
     }
 }
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = UtilsIPC;
 //# sourceMappingURL=UtilsIPC.js.map

@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const genesis_1 = require("./config/genesis");
 const GethIPC_1 = require("./GethIPC");
 const IpfsIPC_1 = require("./IpfsIPC");

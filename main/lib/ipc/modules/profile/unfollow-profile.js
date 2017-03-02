@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const Promise = require("bluebird");
 const index_1 = require("../../contracts/index");
 const index_2 = require("../auth/index");
@@ -12,5 +11,6 @@ const execute = Promise.coroutine(function* (data) {
     runner_1.default.execute({ type: runner_1.ObjectType.PROFILE, id: data.akashaId, operation: runner_1.OperationType.REMOVE });
     return { tx, akashaId: data.akashaId };
 });
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = { execute, name: 'unFollowProfile' };
 //# sourceMappingURL=unfollow-profile.js.map

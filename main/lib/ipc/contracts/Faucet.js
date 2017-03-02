@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const BaseContract_1 = require("./BaseContract");
 const Promise = require("bluebird");
 class Faucet extends BaseContract_1.default {
@@ -19,5 +18,6 @@ class Faucet extends BaseContract_1.default {
         this.contract.canClaim.callAsync(idAddress);
     }
 }
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Faucet;
 //# sourceMappingURL=Faucet.js.map

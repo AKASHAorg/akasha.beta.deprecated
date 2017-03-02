@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const channels_1 = require("./lib/channels");
 const ipcPreloader_1 = require("./ipcPreloader");
 function injectApi() {

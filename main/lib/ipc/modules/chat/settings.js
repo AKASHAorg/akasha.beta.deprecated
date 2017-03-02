@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 class ChatSettings {
     constructor() {
         this.TOPICS = new Set();
@@ -23,5 +22,6 @@ class ChatSettings {
         return this.defaultTopic === this.activeChannel;
     }
 }
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = new ChatSettings();
 //# sourceMappingURL=settings.js.map

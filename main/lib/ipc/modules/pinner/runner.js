@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const Promise = require("bluebird");
 const ipfs_connector_1 = require("@akashaproject/ipfs-connector");
 const index_1 = require("../../contracts/index");
@@ -46,5 +45,6 @@ const execute = Promise.coroutine(function* (data) {
     });
     return { pin, id: data.id };
 });
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = { execute, name: 'pin' };
 //# sourceMappingURL=runner.js.map

@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const geth_connector_1 = require("@akashaproject/geth-connector");
 const ModuleEmitter_1 = require("./event/ModuleEmitter");
 const channels_1 = require("../channels");
@@ -53,5 +52,6 @@ class TxIPC extends ModuleEmitter_1.default {
         });
     }
 }
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = TxIPC;
 //# sourceMappingURL=TxIPC.js.map

@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const current_balance_1 = require("./current-balance");
 const follow_profile_1 = require("./follow-profile");
 const followers_count_1 = require("./followers-count");
@@ -14,6 +13,7 @@ const is_following_1 = require("./is-following");
 const following_list_1 = require("./following-list");
 const get_profile_list_1 = require("./get-profile-list");
 const send_tip_1 = require("./send-tip");
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = [
     current_balance_1.default,
     follow_profile_1.default,

@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const index_1 = require("../auth/index");
 const ipfs_1 = require("./ipfs");
 const ramda_1 = require("ramda");
@@ -14,5 +13,6 @@ const execute = Promise.coroutine(function* (data) {
     ipfsEntry = null;
     return { tx };
 });
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = { execute, name: 'publish' };
 //# sourceMappingURL=publish-entry.js.map

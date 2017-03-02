@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const index_1 = require("../auth/index");
 const ipfs_1 = require("./ipfs");
 const Promise = require("bluebird");
@@ -11,5 +10,6 @@ const execute = Promise.coroutine(function* (data) {
     const tx = yield index_1.module.auth.signData(txData, data.token);
     return { tx };
 });
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = { execute, name: 'update' };
 //# sourceMappingURL=update-entry.js.map

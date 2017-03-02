@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const ModuleEmitter_1 = require("./event/ModuleEmitter");
 const channels_1 = require("../channels");
 const responses_1 = require("./event/responses");
@@ -32,5 +31,6 @@ class LicensesIPC extends ModuleEmitter_1.default {
         return this;
     }
 }
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = LicensesIPC;
 //# sourceMappingURL=LicensesIPC.js.map

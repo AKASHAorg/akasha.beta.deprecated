@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const Profile_1 = require("./Profile");
 const Registry_1 = require("./Registry");
 const Tags_1 = require("./Tags");

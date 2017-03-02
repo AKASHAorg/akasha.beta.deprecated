@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const crypto_1 = require("crypto");
 const os_1 = require("os");
 const hashPath = (...path) => {
@@ -45,5 +44,6 @@ Object.keys(channels).forEach((attr) => {
         });
     });
 });
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = { client: EVENTS.client, server: EVENTS.server };
 //# sourceMappingURL=channels.js.map
