@@ -5,12 +5,6 @@ All notable changes to this project will be documented in this file. See [standa
 <a name="0.5.1"></a>
 ## [0.5.1](https://github.com/AkashaProject/node-app/compare/v0.6.0...v0.5.1) (2017-03-02)
 
-
-
-<a name="0.6.0"></a>
-# [0.6.0](https://github.com/AkashaProject/node-app/compare/v0.5.0...v0.6.0) (2017-03-02)
-
-
 ### Bug Fixes
 
 * **comments:** fix tooltip position on unresolved comments icon ([e2341ac](https://github.com/AkashaProject/node-app/commit/e2341ac))
