@@ -24,6 +24,13 @@ class EntryPageHeader extends Component {
         anchorHovered: false,
     };
     timeout = null
+
+    componentWillUnmount () {
+        if (this.timeout) {
+            clearTimeout(this.timeout);
+        }
+    }
+
     openVersionsPanel = () => {
         this.setState({
             showVersions: true
@@ -43,13 +50,12 @@ class EntryPageHeader extends Component {
     showProfileHoverCard = (ev) => {
         this.setState({
             hoverNode: ev.currentTarget
-        }, () => {
-            this.timeout = setTimeout(() => {
-                this.setState({
-                    anchorHovered: true,
-                });
-            }, 500);
-        });
+        })
+        this.timeout = setTimeout(() => {
+            this.setState({
+                anchorHovered: true,
+            });
+        }, 500);
     };
 
     hideProfileHoverCard = () => {
