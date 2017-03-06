@@ -75,7 +75,7 @@ class CommentsActions {
                     onSuccess: (data) => {
                         const akashaIds = [];
                         data.collection.forEach((comment) => {
-                            if (comm.data.profile && comm.data.profile.akashaId) {
+                            if (comment.data.profile && comment.data.profile.akashaId) {
                                 akashaIds.push({ akashaId: comment.data.profile.akashaId });
                             }
                             comment.data.content = JSON.parse(comment.data.content);
