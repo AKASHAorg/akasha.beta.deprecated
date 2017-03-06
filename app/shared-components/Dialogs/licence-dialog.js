@@ -121,7 +121,7 @@ class LicenceDialog extends React.Component {
             autoScrollBodyContent
             actions={
               <div className="row middle-xs">
-                <div className="col-xs-6">
+                <div className="col-xs-6 start-xs" style={{ paddingLeft: 24 }}>
                   <Checkbox label="Set as default licence" onCheck={this._handleDefaultLicenceSet} />
                 </div>
                 <div className="col-xs-6 end-xs">
