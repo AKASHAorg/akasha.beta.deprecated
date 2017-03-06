@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const Promise = require("bluebird");
 const index_1 = require("../../contracts/index");
 const geth_connector_1 = require("@akashaproject/geth-connector");
@@ -11,6 +12,5 @@ const execute = Promise.coroutine(function* (data) {
     const balance = geth_connector_1.GethConnector.getInstance().web3.fromWei(weiAmount, 'ether');
     return { balance: balance.toString(10), unit: 'ether', entryId: data.entryId };
 });
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = { execute, name: 'getEntryBalance' };
 //# sourceMappingURL=get-entry-balance.js.map

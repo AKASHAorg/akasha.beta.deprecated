@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const ModuleEmitter_1 = require("./event/ModuleEmitter");
 const index_1 = require("./modules/chat/index");
 class ChatIPC extends ModuleEmitter_1.default {
@@ -13,6 +14,5 @@ class ChatIPC extends ModuleEmitter_1.default {
         this._manager();
     }
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = ChatIPC;
 //# sourceMappingURL=ChatIPC.js.map

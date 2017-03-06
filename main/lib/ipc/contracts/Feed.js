@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const BaseContract_1 = require("./BaseContract");
 const Promise = require("bluebird");
 class Feed extends BaseContract_1.default {
@@ -93,6 +94,5 @@ class Feed extends BaseContract_1.default {
         return this.contract.getFollowersById.callAsync(idTr, indexId);
     }
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Feed;
 //# sourceMappingURL=Feed.js.map

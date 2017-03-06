@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const Promise = require("bluebird");
 const current_profile_1 = require("../registry/current-profile");
 const following_list_1 = require("../profile/following-list");
@@ -61,6 +62,5 @@ const execute = Promise.coroutine(function* (data) {
     objectFilter = null;
     return { done: true, watching: data.profiles };
 });
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = { execute, name: 'setFilter' };
 //# sourceMappingURL=set-filter.js.map

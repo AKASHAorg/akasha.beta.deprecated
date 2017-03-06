@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.generalSettings = new Map();
 exports.BASE_URL = 'baseUrl';
 exports.SHORT_WAIT_TIME = 10000;

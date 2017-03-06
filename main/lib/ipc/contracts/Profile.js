@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const BaseContract_1 = require("./BaseContract");
 const Promise = require("bluebird");
 class Profile extends BaseContract_1.default {
@@ -35,6 +36,5 @@ class Profile extends BaseContract_1.default {
         return Promise.resolve(extract.params[0]);
     }
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Profile;
 //# sourceMappingURL=Profile.js.map

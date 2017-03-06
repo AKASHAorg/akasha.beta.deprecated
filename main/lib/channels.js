@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const crypto_1 = require("crypto");
 const os_1 = require("os");
 const hashPath = (...path) => {
@@ -32,18 +33,17 @@ const channels = {
     utils: ['backupKeys']
 };
 const processes = ['server', 'client'];
-const mem = os_1.totalmem().toLocaleString();
+const name = os_1.hostname();
 const EVENTS = { client: {}, server: {} };
 Object.keys(channels).forEach((attr) => {
     channels[attr].forEach((endpoint) => {
         processes.forEach((proc) => {
             if (!EVENTS[proc].hasOwnProperty(attr)) {
-                EVENTS[proc][attr] = { manager: hashPath(proc, attr, mem, 'manager') };
+                EVENTS[proc][attr] = { manager: hashPath(proc, attr, name, 'manager') };
             }
-            EVENTS[proc][attr][endpoint] = hashPath(proc, attr, mem, endpoint);
+            EVENTS[proc][attr][endpoint] = hashPath(proc, attr, name, endpoint);
         });
     });
 });
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = { client: EVENTS.client, server: EVENTS.server };
 //# sourceMappingURL=channels.js.map

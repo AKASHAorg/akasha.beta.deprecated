@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const geth_connector_1 = require("@akashaproject/geth-connector");
 const GethEmitter_1 = require("./event/GethEmitter");
 const channels_1 = require("../channels");
@@ -148,6 +149,5 @@ class GethIPC extends GethEmitter_1.default {
         return this;
     }
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = GethIPC;
 //# sourceMappingURL=GethIPC.js.map

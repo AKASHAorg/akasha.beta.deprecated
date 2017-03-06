@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const Promise = require("bluebird");
 const index_1 = require("../../contracts/index");
 const current_profile_1 = require("../registry/current-profile");
@@ -15,6 +16,5 @@ const execute = Promise.coroutine(function* (data) {
     const tx = yield index_2.module.auth.signData(txData, data.token);
     return { tx };
 });
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = { execute, name: 'updateProfileData' };
 //# sourceMappingURL=update-profile.js.map
