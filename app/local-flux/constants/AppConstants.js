@@ -1,3 +1,5 @@
+export const APP_READY = 'APP_READY';
+
 export const SHOW_ERROR = 'SHOW_ERROR';
 export const CLEAR_ERRORS = 'CLEAR_ERRORS';
 export const SHOW_PANEL = 'SHOW_PANEL';

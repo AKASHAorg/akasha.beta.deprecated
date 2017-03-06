@@ -3,10 +3,9 @@ import ReactTooltip from 'react-tooltip';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { AppActions } from 'local-flux';
-import { bootstrapApp } from 'local-flux/actions/app-actions';
 import { getMuiTheme } from 'material-ui/styles';
-import { AuthDialog, WeightConfirmDialog, PublishConfirmDialog,
-    TransferConfirmDialog } from 'shared-components';
+import { AuthDialog, DataLoader, PublishConfirmDialog,
+    TransferConfirmDialog, WeightConfirmDialog } from 'shared-components';
 import TermsPanel from './components/terms-panel';
 import NotificationBar from './components/notification-bar';
 import lightTheme from '../layouts/AkashaTheme/lightTheme';
@@ -24,10 +23,6 @@ class App extends Component {
         muiTheme: getMuiTheme(this.state.theme === 'light' ? lightTheme : darkTheme)
     });
 
-    componentDidMount () {
-        this.props.bootstrapApp();
-    }
-
     componentWillReceiveProps (nextProps) {
         if (nextProps.theme !== this.props.theme) {
             this.setState({
@@ -37,7 +32,7 @@ class App extends Component {
     }
 
     render () {
-        const { appState, appActions, intl } = this.props;
+        const { appState, appActions, appReady, intl  } = this.props;
         const isAuthDialogVisible = !!appState.get('showAuthDialog');
         const weightConfirmDialog = appState.get('weightConfirmDialog');
         const isWeightConfirmationDialogVisible = weightConfirmDialog !== null;
@@ -45,30 +40,32 @@ class App extends Component {
         const isTransferConfirmationDialogVisible = appState.get('transferConfirmDialog') !== null;
 
         return (
-          <div className="fill-height" >
-            {this.props.children}
-            <NotificationBar
-              appState={appState}
-              appActions={appActions}
-            />
-            {isAuthDialogVisible && <AuthDialog intl={intl} />}
-            {isWeightConfirmationDialogVisible && <WeightConfirmDialog intl={intl} />}
-            {isPublishConfirmationDialogVisible && <PublishConfirmDialog intl={intl} />}
-            {isTransferConfirmationDialogVisible && <TransferConfirmDialog intl={intl} />}
-            {appState.get('showTerms') && <TermsPanel hideTerms={appActions.hideTerms} />}
-            <ReactTooltip delayShow={300} class="generic_tooltip" place="bottom" effect="solid" />
-          </div>
+          <DataLoader flag={!appReady} size={80} style={{ paddingTop: '-50px' }}>
+            <div className="fill-height" >
+              {this.props.children}
+              <NotificationBar
+                appState={appState}
+                appActions={appActions}
+              />
+              {isAuthDialogVisible && <AuthDialog intl={intl} />}
+              {isWeightConfirmationDialogVisible && <WeightConfirmDialog intl={intl} />}
+              {isPublishConfirmationDialogVisible && <PublishConfirmDialog intl={intl} />}
+              {isTransferConfirmationDialogVisible && <TransferConfirmDialog intl={intl} />}
+              {appState.get('showTerms') && <TermsPanel hideTerms={appActions.hideTerms} />}
+              <ReactTooltip delayShow={300} class="generic_tooltip" place="bottom" effect="solid" />
+            </div>
+          </DataLoader>
         );
     }
 }
 
 App.propTypes = {
+    appReady: PropTypes.bool,
     appState: PropTypes.shape(),
     appActions: PropTypes.shape(),
-    bootstrapApp: PropTypes.func,
-    theme: PropTypes.string,
     children: PropTypes.element,
     intl: PropTypes.shape(),
+    theme: PropTypes.string,
 };
 
 App.childContextTypes = {
@@ -77,6 +74,7 @@ App.childContextTypes = {
 
 function mapStateToProps (state) {
     return {
+        appReady: state.appState.get('appReady'),
         appState: state.appState,
         theme: state.settingsState.get('general').get('theme')
     };
@@ -85,7 +83,6 @@ function mapStateToProps (state) {
 function mapDispatchToProps (dispatch) {
     return {
         appActions: new AppActions(dispatch),
-        bootstrapApp: () => dispatch(bootstrapApp())
     };
 }
 

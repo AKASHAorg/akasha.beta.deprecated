@@ -27,6 +27,7 @@ const PendingAction = Record({
 });
 
 const initialState = fromJS({
+    appReady: false,
     error: new ErrorRecord(),
     appLoading: false,
     appUpdating: false,
@@ -44,6 +45,9 @@ const initialState = fromJS({
 });
 
 const appState = createReducer(initialState, {
+    [types.APP_READY]: state =>
+        state.set('appReady', true),
+
     [types.SHOW_ERROR]: (state, action) =>
         state.merge({ error: new ErrorRecord(action.error) }),
 

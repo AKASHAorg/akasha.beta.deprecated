@@ -179,6 +179,18 @@ class SettingsActions {
         });
 }
 
+export function getSettingsRequest () {
+    return {
+        type: types.SETTINGS_REQUEST
+    };
+}
+
+export function getSettingsSuccess () {
+    return {
+        type: types.SETTINGS_SUCCESS
+    };
+}
+
 export function saveConfiguration (payload) {
     return {
         type: types.SAVE_CONFIGURATION,
@@ -263,12 +275,53 @@ export function generalSettingsSuccess (data) {
 }
 
 export function generalSettingsError (error) {
-    error.code = '';
+    error.code = 'GSE01';
     return {
         type: types.GENERAL_SETTINGS_ERROR,
         error
     };
 }
 
+export function gethSettingsRequest () {
+    return {
+        type: types.GETH_SETTINGS_REQUEST,
+    };
+}
+
+export function gethSettingsSuccess (data) {
+    return {
+        type: types.GETH_SETTINGS_SUCCESS,
+        data
+    };
+}
+
+export function gethSettingsError (error) {
+    error.code = 'GETHSE01';
+    return {
+        type: types.GETH_SETTINGS_ERROR,
+        error
+    };
+}
+
+export function ipfsSettingsRequest () {
+    return {
+        type: types.IPFS_SETTINGS_REQUEST,
+    };
+}
+
+export function ipfsSettingsSuccess (data) {
+    return {
+        type: types.IPFS_SETTINGS_SUCCESS,
+        data
+    };
+}
+
+export function ipfsSettingsError (error) {
+    error.code = 'ISE01';
+    return {
+        type: types.IPFS_SETTINGS_ERROR,
+        error
+    };
+}
 
 export { SettingsActions };

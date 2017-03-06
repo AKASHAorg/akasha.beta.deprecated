@@ -1,6 +1,11 @@
 import { defineMessages } from 'react-intl';
 
 const generalMessages = defineMessages({
+    akasha: {
+        id: 'app.general.akasha',
+        description: 'AKASHA',
+        defaultMessage: 'AKASHA'
+    },
     by: {
         id: 'app.general.by',
         description: 'entry is written `by`',

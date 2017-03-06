@@ -27,7 +27,7 @@ class LogoButton extends Component {
           className={className}
           icon={<LogoIcon logoStyle={logoStyle} viewBox={viewBox} />}
           hoverColor="transparent"
-          // onClick={this.onClick}
+          onClick={this.onClick}
           style={buttonStyle}
         />);
     }

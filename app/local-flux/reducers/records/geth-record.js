@@ -1,38 +1,41 @@
 import { Record, OrderedSet } from 'immutable';
 
 const GethStatus = Record({
-    downloading: null,
-    starting: null,
     api: false,
+    blockNr: null,
+    downloading: null,
+    message: null,
     spawned: false,
     started: null,
+    starting: null,
     stopped: null,
     upgrading: null,
-    blockNr: null
 });
+
 const GethSyncStatus = Record({
+    api: null,
     currentBlock: null,
     highestBlock: null,
-    startingBlock: null,
-    peerCount: null,
     knownStates: null,
+    peerCount: null,
     pulledStates: null,
+    spawned: null,
+    startingBlock: null,
     synced: false
 });
 
 const GethFlags = Record({
     // @TODO: Document this flag
     busyState: false,
-    // @TODO: Document this flag
-    startRequested: false,
-    syncActionId: 0
+    gethStarting: false,
 });
 
 const GethRecord = Record({
-    status: new GethStatus(),
-    syncStatus: new GethSyncStatus(),
-    logs: new OrderedSet(),
     flags: new GethFlags(),
+    logs: new OrderedSet(),
+    status: new GethStatus(),
+    syncActionId: 0,
+    syncStatus: new GethSyncStatus(),
 });
 
 export default GethRecord;

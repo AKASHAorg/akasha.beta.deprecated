@@ -68,8 +68,8 @@ class ServiceStatusBar extends Component {
 
     componentWillMount () {
         const { eProcActions } = this.props;
-        eProcActions.getGethStatus();
-        eProcActions.getIpfsStatus();
+        // eProcActions.getGethStatus();
+        // eProcActions.getIpfsStatus();
     }
 
     componentWillReceiveProps (nextProps) {
@@ -666,16 +666,16 @@ ServiceStatusBar.contextTypes = {
 
 function mapStateToProps (state, ownProps) {
     return {
-        gethStatus: state.externalProcState.get('gethStatus'),
-        gethLogs: state.externalProcState.get('gethLogs'),
-        ipfsStatus: state.externalProcState.get('ipfsStatus'),
-        ipfsLogs: state.externalProcState.get('ipfsLogs'),
+        gethStatus: state.externalProcState.getIn(['geth', 'status']),
+        gethLogs: state.externalProcState.getIn(['geth', 'logs']),
+        ipfsStatus: state.externalProcState.getIn(['ipfs', 'status']),
+        ipfsLogs: state.externalProcState.getIn(['ipfs', 'logs']),
         gethSettings: state.settingsState.get('geth'),
         ipfsSettings: state.settingsState.get('ipfs'),
-        ipfsPortsRequested: state.externalProcState.get('ipfsPortsRequested'),
-        syncActionId: state.externalProcState.get('syncActionId'),
-        gethBusyState: state.externalProcState.get('gethBusyState'),
-        ipfsBusyState: state.externalProcState.get('ipfsBusyState'),
+        ipfsPortsRequested: state.externalProcState.getIn(['ipfs', 'portsRequested']),
+        syncActionId: state.externalProcState.getIn(['geth', 'syncActionId']),
+        gethBusyState: state.externalProcState.getIn(['geth', 'busyState']),
+        ipfsBusyState: state.externalProcState.getIn(['ipfs', 'busyState']),
         timestamp: state.appState.get('timestamp'),
         disableStopService: ownProps.disableStopService
     };

@@ -3,6 +3,7 @@ import { put, take } from 'redux-saga/effects';
 
 const Channel = window.Channel;
 export const actionChannels = {};
+export const enabledChannels = [];
 
 // this function creates an event channel from a given ipc client channel
 export function createActionChannel (channel) {
@@ -35,11 +36,11 @@ export function createActionChannels () {
     // TODO: After refactoring, remove the following lines and uncomment the ones above
     const modules = Object.keys(Channel.client);
     modules.forEach((module) => { actionChannels[module] = {}; });
-    const gethChannels = ['logs', 'options', 'stopService'];
+    const gethChannels = ['logs', 'options', 'startService', 'status', 'stopService', 'syncStatus'];
     gethChannels.forEach((channel) => {
         actionChannels.geth[channel] = createActionChannel(Channel.client.geth[channel]);
     });
-    const ipfsChannels = ['getConfig', 'stopService'];
+    const ipfsChannels = ['getConfig', 'startService', 'status', 'stopService'];
     ipfsChannels.forEach((channel) => {
         actionChannels.ipfs[channel] = createActionChannel(Channel.client.ipfs[channel]);
     });
@@ -47,14 +48,12 @@ export function createActionChannels () {
 
 export function enableChannel (channel, mananger) {
     const promise = new Promise((resolve, reject) => {
+        if (enabledChannels.indexOf(channel.channel) !== -1) {
+            resolve();
+            return;
+        }
         mananger.once((ev, resp) => {
-            // if (resp.data.channel === channel.channel && resp.data.listen) {
-            //     console.log('resolve promise');
-            //     resolve();
-            // } else {
-            //     console.log('reject promise');
-            //     reject();
-            // }
+            enabledChannels.push(channel.channel);
             resolve();
         });
         channel.enable();

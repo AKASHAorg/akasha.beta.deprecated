@@ -1,39 +1,39 @@
 import { connect } from 'react-redux';
-import {
-    EProcActions,
-    SettingsActions } from 'local-flux';
-import { saveGeneralSettings } from 'local-flux/actions/settings-actions';
+import { saveGeneralSettings } from 'local-flux/actions/settings-actions'; // eslint-disable-line import/no-unresolved, import/extensions
+import { gethGetSyncStatus, gethPauseSync, gethResumeSync, gethStart, gethStartLogger, gethStop,
+    gethStopLogger, gethStopSync, ipfsStart,
+    ipfsStop } from 'local-flux/actions/external-process-actions'; // eslint-disable-line import/no-unresolved, import/extensions
 import SyncStatus from './components/Sync';
 
 function mapStateToProps (state, ownProps) {
     return {
-        gethStarting: state.externalProcState.get('gethStarting'),
-        gethStatus: state.externalProcState.get('gethStatus'),
-        gethErrors: state.externalProcState.get('gethErrors'),
-        gethLogs: state.externalProcState.get('gethLogs'),
-        ipfsStatus: state.externalProcState.get('ipfsStatus'),
-        ipfsErrors: state.externalProcState.get('ipfsErrors'),
         configurationSaved: state.settingsState.getIn(['general', 'configurationSaved']),
-        gethSettings: state.settingsState.get('geth'),
-        fetchingGethSettings: state.settingsState.get('fetchingGethSettings'),
-        fetchingIpfsSettings: state.settingsState.get('fetchingIpfsSettings'),
-        gethSyncStatus: state.externalProcState.get('gethSyncStatus'),
-        syncActionId: state.externalProcState.get('syncActionId'),
-        gethBusyState: state.externalProcState.get('gethBusyState'),
-        ipfsBusyState: state.externalProcState.get('ipfsBusyState'),
-        ipfsPortsRequested: state.externalProcState.get('ipfsPortsRequested'),
+        gethBusyState: state.externalProcState.getIn(['geth', 'flags', 'busyState']),
+        gethLogs: state.externalProcState.getIn(['geth', 'logs']),
+        gethStarting: state.externalProcState.getIn(['geth', 'gethStarting']),
+        gethStatus: state.externalProcState.getIn(['geth', 'status']),
+        gethSyncStatus: state.externalProcState.getIn(['geth', 'syncStatus']),
+        ipfsBusyState: state.externalProcState.getIn(['ipfs', 'flags', 'busyState']),
+        ipfsPortsRequested: state.externalProcState.getIn(['ipfs', 'portsRequested']),
+        ipfsStatus: state.externalProcState.getIn(['ipfs', 'status']),
+        syncActionId: state.externalProcState.getIn(['geth', 'syncActionId']),
         timestamp: state.appState.get('timestamp')
     };
 }
 
-function mapDispatchToProps (dispatch) {
-    return {
-        eProcActions: new EProcActions(dispatch),
-        settingsActions: new SettingsActions(dispatch),
-        saveGeneralSettings: payload => dispatch(saveGeneralSettings(payload)),
-    };
-}
 export default connect(
     mapStateToProps,
-    mapDispatchToProps
+    {
+        gethGetSyncStatus,
+        gethPauseSync,
+        gethResumeSync,
+        gethStart,
+        gethStartLogger,
+        gethStop,
+        gethStopLogger,
+        gethStopSync,
+        ipfsStart,
+        ipfsStop,
+        saveGeneralSettings,
+    }
 )(SyncStatus);

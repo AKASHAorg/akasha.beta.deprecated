@@ -22,7 +22,8 @@ export default {
         commentViewerIsAuthorColor: Colors.blueA400,
         commentIsEntryAuthorColor: Colors.greenA700,
         avatarBackground: Colors.grey50,
-        linkColor: '#008B8B'
+        linkColor: '#008B8B',
+        tutorialsBackgroundColor: '#f0f0f0',
     },
     imageUploader: {
         position: 'relative',

@@ -9,4 +9,5 @@ export { profileMessages } from './profile-messages';
 export { searchMessages } from './search-messages';
 export { setupMessages } from './setup-messages';
 export { tagMessages } from './tag-messages';
+export { tutorialMessages } from './tutorial-messages';
 export { validationMessages } from './validation-messages';

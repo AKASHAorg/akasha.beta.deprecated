@@ -1,30 +1,39 @@
-import { call, fork, put, take } from 'redux-saga/effects';
-import * as types from '../constants/AppConstants';
+import { call, fork, put } from 'redux-saga/effects';
+import * as actions from 'local-flux/actions/app-actions'; // eslint-disable-line import/no-unresolved, import/extensions
 import { createActionChannels } from './helpers';
-import { getGethOptions, getIpfsConfig, registerEProcListeners, toggleGethLogger } from './external-process-saga';
-import { getGeneralSettings, watchSettingsActions } from './settings-saga';
+import { gethGetOptions, gethGetStatus, ipfsGetConfig, ipfsGetStatus, registerEProcListeners,
+    watchEProcActions } from './external-process-saga';
+import { getSettings, watchSettingsActions } from './settings-saga';
 
 function* registerListeners () {
     yield fork(registerEProcListeners);
 }
 
-function* bootstrapApp () {
-    yield put({ type: 'SET_TIMESTAMP', timestamp: new Date().getTime() });
-    yield fork(getGeneralSettings);
-    yield fork(getGethOptions);
-    yield fork(getIpfsConfig);
+function* launchActions () {
+    const timestamp = new Date().getTime();
+    yield put(actions.setTimestamp(timestamp));
+    // from local db
+    yield fork(getSettings);
+
+    // from geth.options channel
+    yield fork(gethGetOptions);
+    // from ipfs.getConfig channel
+    yield fork(ipfsGetConfig);
+
+    yield fork(gethGetStatus);
+    yield fork(ipfsGetStatus);
 }
 
-function* watchBootstrapApp () {
-    yield take(types.BOOTSTRAP_APP);
-    yield call(bootstrapApp);
+function* bootstrapApp () {
+    // the appReady action will be dispatched after these actions will be called
+    yield call(launchActions);
+    yield put(actions.appReady());
 }
 
 export default function* rootSaga () {
     createActionChannels();
     yield fork(registerListeners);
-    yield fork(watchBootstrapApp);
+    yield fork(bootstrapApp);
+    yield fork(watchEProcActions);
     yield fork(watchSettingsActions);
-    // This should be moved away
-    yield fork(toggleGethLogger);
 }

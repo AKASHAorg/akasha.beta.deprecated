@@ -73,10 +73,18 @@ const initialState = fromJS({
     fetchingFlags: false,
     fetchingGethSettings: false,
     fetchingIpfsSettings: false,
-    generalSettingsPending: false
+    generalSettingsPending: false,
+    settingsPending: false
 });
 
 const settingsState = createReducer(initialState, {
+    [types.SETTINGS_REQUEST]: state =>
+        state.set('settingsPending', true),
+
+    [types.SETTINGS_SUCCESS]: state =>
+        state.set('settingsPending', false),
+
+    //should be removed
     [types.GET_SETTINGS_SUCCESS]: (state, action) => {
         let data = {};
         if (action.table === 'geth') {
@@ -114,6 +122,54 @@ const settingsState = createReducer(initialState, {
     [types.GET_SETTINGS_ERROR]: (state, action) =>
         state.merge({
             errors: state.get('errors').push(new ErrorRecord(action.error))
+        }),
+
+    [types.GETH_SETTINGS_REQUEST]: state =>
+        state.set('gethSettingsPending', true),
+
+    [types.GETH_SETTINGS_SUCCESS]: (state, { data }) => {
+        const defaultSettings = new GethSettings().toJS();
+        const newSettings = {};
+        Object.keys(data).forEach((key) => {
+            if (key !== 'name' && data[key] !== defaultSettings[key]) {
+                newSettings[key] = data[key];
+            }
+        });
+
+        return state.merge({
+            geth: state.get('geth').merge(newSettings),
+            gethSettingsPending: false
+        });
+    },
+
+    [types.GETH_SETTINGS_ERROR]: (state, { error }) =>
+        state.merge({
+            errors: state.get('errors').push(new ErrorRecord(error)),
+            gethSettingsPending: false
+        }),
+
+    [types.IPFS_SETTINGS_REQUEST]: state =>
+        state.set('ipfsSettingsPending', true),
+
+    [types.IPFS_SETTINGS_SUCCESS]: (state, { data }) => {
+        const defaultSettings = new IpfsSettings().toJS();
+        const newSettings = {};
+        Object.keys(data).forEach((key) => {
+            if (key !== 'name' && data[key] !== defaultSettings[key]) {
+                newSettings[key] = data[key];
+            }
+        });
+
+        return state.merge({
+            ipfs: state.get('ipfs').merge(newSettings),
+            ipfsSettingsPending: false
+        });
+    },
+
+    [types.IPFS_SETTINGS_ERROR]: (state, { error }) =>
+        state.merge({
+            errors: state.get('errors').push(new ErrorRecord(error)),
+            ipfsSettingsPending: false
         }),
 
     [types.SAVE_SETTINGS_SUCCESS]: (state, action) => {
@@ -268,7 +324,7 @@ const settingsState = createReducer(initialState, {
             errors: state.get('errors').push(new ErrorRecord(error))
         }),
 
-    [eProcTypes.GET_GETH_OPTIONS_SUCCESS]: (state, action) => {
+    [eProcTypes.GETH_GET_OPTIONS_SUCCESS]: (state, action) => {
         const gethSettings = Object.assign({}, state.get('geth').toJS());
         const initialSettings = new GethSettings().toJS();
 
@@ -284,7 +340,7 @@ const settingsState = createReducer(initialState, {
         });
     },
 
-    [eProcTypes.GET_IPFS_CONFIG_SUCCESS]: (state, action) => {
+    [eProcTypes.IPFS_GET_CONFIG_SUCCESS]: (state, action) => {
         const ipfsSettings = Object.assign({}, state.get('ipfs').toJS());
         const initialSettings = new IpfsSettings().toJS();
 

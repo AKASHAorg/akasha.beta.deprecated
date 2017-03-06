@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { setupMessages } from 'locale-data/messages'; /* eslint import/no-unresolved: 0 */
+import { setupMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
 import { SyncProgressLoader } from 'shared-components';
 
 const statusTextStyle = {
@@ -10,6 +10,15 @@ const statusTextStyle = {
 };
 
 class SyncStatus extends Component {
+
+    renderMessage (message) {
+        const { intl } = this.props;
+        return (
+          <div style={statusTextStyle}>
+            {intl.formatMessage(message)}
+          </div>
+        );
+    }
 
     renderCounter (current, total, message) {
         if (!current || !total) {
@@ -28,20 +37,14 @@ class SyncStatus extends Component {
         </div>);
     }
 
-    render () {
-        const { intl, gethSyncStatus, gethStatus, ipfsStatus, syncActionId,
-            gethStarting } = this.props;
-        let blockProgress;
-        let currentProgress;
-        let progressBody;
+    renderProgressBody () {
+        const { gethStarting, gethStatus, gethSyncStatus, intl, ipfsStatus,
+            syncActionId } = this.props;
         let peerInfo;
         const synchronizingMessage = intl.formatMessage(setupMessages.synchronizing);
         const processingMessage = intl.formatMessage(setupMessages.processing);
 
         if (gethSyncStatus && gethSyncStatus.get('peerCount') > 0 && gethSyncStatus.get('highestBlock') > 0) {
-            blockProgress = gethSyncStatus;
-            currentProgress = ((blockProgress.get('currentBlock') - blockProgress.get('startingBlock')) /
-                (blockProgress.get('highestBlock') - blockProgress.get('startingBlock'))) * 100;
             peerInfo = (
               <FormattedMessage
                 id="app.setup.peerCount"
@@ -58,112 +61,73 @@ class SyncStatus extends Component {
                 values={{ peerCount: gethSyncStatus.get('peerCount') }}
               />
             );
-            progressBody = (
+            return (
               <div>
-                <div style={statusTextStyle} >
+                <div style={statusTextStyle}>
                   {peerInfo}
                 </div>
-                {this.renderCounter(blockProgress.currentBlock, blockProgress.highestBlock,
+                {this.renderCounter(gethSyncStatus.currentBlock, gethSyncStatus.highestBlock,
                   synchronizingMessage)}
                 {this.renderCounter(gethSyncStatus.pulledStates, gethSyncStatus.knownStates,
                   processingMessage)}
               </div>
             );
         } else if (syncActionId === 4) {
-            currentProgress = 100;
-            progressBody = (
-              <div>
-                <div style={statusTextStyle} >
-                  {intl.formatMessage(setupMessages.syncCompleted)}
-                </div>
-              </div>
-            );
+            return this.renderMessage(setupMessages.syncCompleted);
         } else if (gethStatus.get('upgrading')) {
-            progressBody = (
-              <div>
-                <div style={statusTextStyle} >
-                  {intl.formatMessage(setupMessages.upgradingGeth)}
-                </div>
-              </div>
-            );
+            return this.renderMessage(setupMessages.upgradingGeth);
         } else if (gethStatus.get('starting') || gethStarting) {
-            progressBody = (
-              <div>
-                <div style={statusTextStyle}>
-                  {intl.formatMessage(setupMessages.startingGeth)}
-                </div>
-              </div>
-            );
+            return this.renderMessage(setupMessages.startingGeth);
         } else if (gethStatus.get('downloading')) {
-            progressBody = (
-              <div>
-                <div style={statusTextStyle} >
-                  {intl.formatMessage(setupMessages.downloadingGeth)}
-                </div>
-              </div>
-            );
+            return this.renderMessage(setupMessages.downloadingGeth);
         } else if (ipfsStatus.get('downloading')) {
-            progressBody = (
-              <div>
-                <div>
-                  <div style={statusTextStyle} >
-                    {intl.formatMessage(setupMessages.downloadingIpfs)}
-                  </div>
-                </div>
-              </div>
-            );
+            return this.renderMessage(setupMessages.downloadingIpfs);
         } else if (syncActionId === 2 || syncActionId === 3) {
-            progressBody = (
+            return (
               <div>
-                <div style={statusTextStyle} >
-                  {intl.formatMessage(setupMessages.disconnected)}
-                </div>
+                {this.renderMessage(setupMessages.disconnected)}
                 {this.renderCounter(gethSyncStatus.currentBlock, gethSyncStatus.highestBlock,
                       synchronizingMessage)}
                 {this.renderCounter(gethSyncStatus.pulledStates, gethSyncStatus.knownStates,
                       processingMessage)}
               </div>
             );
-        } else if (gethStatus.get('api') && !gethSyncStatus.get('peerCount')) {
-            peerInfo = intl.formatMessage(setupMessages.findingPeers);
-            progressBody = (
-              <div>
-                <div style={statusTextStyle} >
-                  {peerInfo}
-                </div>
-              </div>
-            );
+        } else if (gethStatus.get('api')) {
+            return this.renderMessage(setupMessages.findingPeers);
         } else if (!gethStatus.get('api') && !ipfsStatus.get('spawned')) {
-            progressBody = (
-              <div>
-                <div style={statusTextStyle} >
-                  {intl.formatMessage(setupMessages.launchingServices)}
-                </div>
-              </div>
-            );
-        } else {
-            progressBody = (
-              <div>
-                <div style={statusTextStyle}>
-                  {intl.formatMessage(setupMessages.waitingForServices)}
-                </div>
-              </div>
-            );
+            return this.renderMessage(setupMessages.launchingServices);
         }
+        return this.renderMessage(setupMessages.waitingForServices);
+    }
+
+    render () {
+        const { gethSyncStatus, syncActionId } = this.props;
+        let blockProgress;
+        let currentProgress;
+
+        if (gethSyncStatus && gethSyncStatus.get('peerCount') > 0 &&
+                gethSyncStatus.get('highestBlock') > 0) {
+            blockProgress = gethSyncStatus;
+            currentProgress = ((blockProgress.get('currentBlock') - blockProgress.get('startingBlock')) /
+                (blockProgress.get('highestBlock') - blockProgress.get('startingBlock'))) * 100;
+        } else if (syncActionId === 4) {
+            currentProgress = 100;
+        }
+
         return (
           <div style={{ padding: '32px 0', textAlign: 'center' }} >
             <SyncProgressLoader value={currentProgress} />
-            {progressBody}
+            {this.renderProgressBody()}
           </div>
         );
     }
 }
 
 SyncStatus.propTypes = {
-    intl: PropTypes.shape().isRequired,
     gethStarting: PropTypes.bool,
-    gethSyncStatus: PropTypes.shape().isRequired,
     gethStatus: PropTypes.shape().isRequired,
+    gethSyncStatus: PropTypes.shape().isRequired,
+    intl: PropTypes.shape().isRequired,
     ipfsStatus: PropTypes.shape().isRequired,
     syncActionId: PropTypes.number
 };

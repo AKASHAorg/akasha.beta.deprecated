@@ -58,13 +58,12 @@ class PanelContainer extends React.Component {
               className="row"
               style={Object.assign({
                   position: 'absolute',
-                  top: 56,
-                  bottom: 56,
+                  top: 80,
+                  bottom: 60,
                   left: 0,
                   right: 0,
                   overflowY: 'auto',
                   overflowX: 'hidden',
-                  padding: '32px 24px',
                   margin: 0
               }, contentStyle)}
               ref={(panelContent) => { this.panelContent = panelContent; }}

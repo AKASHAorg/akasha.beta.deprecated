@@ -1,4 +1,7 @@
 import React, { Component, PropTypes } from 'react';
+import { connect } from 'react-redux';
+import { injectIntl } from 'react-intl';
+import { tutorialMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
 import styles from './tutorials.scss';
 
 class Tutorials extends Component {
@@ -7,33 +10,22 @@ class Tutorials extends Component {
         this.state = {
             currentSlide: 3
         };
+        const { intl } = props;
         this.slides = [{
-            title: 'The Language of Freedom',
-            content: `With AKASHA your thoughts and ideas will echo throughout humanity's existence,
-                thanks to a planetary-scale network immune to censorship by design. The information
-                lives and spreads across the network without relying on a particular entity,
-                not even us.`,
+            title: intl.formatMessage(tutorialMessages.akashaTitle),
+            content: intl.formatMessage(tutorialMessages.akashaContent),
             iconClassName: 'intro_akasha'
         }, {
-            title: 'Powered By Ethereum',
-            content: `Ethereum allowed us to build a new kind of application that removes the need
-                to blindly trust server administrators. Thanks to its transparent properties we
-                have strong authentication, identity, verifiability, voting and
-                micro-transactions.`,
+            title: intl.formatMessage(tutorialMessages.ethereumTitle),
+            content: intl.formatMessage(tutorialMessages.ethereumContent),
             iconClassName: 'intro_ethereum'
         }, {
-            title: 'Enhanced By The Inter-Planetary File System',
-            content: `Thanks to the Inter-Planetary File System (IPFS) we removed also the need
-                for servers to distribute and store your content. This allows users to circumvent
-                traditional censorship blockades and empowers people with real freedom of
-                expression.`,
+            title: intl.formatMessage(tutorialMessages.ipfsTitle),
+            content: intl.formatMessage(tutorialMessages.ipfsContent),
             iconClassName: 'intro_ipfs'
         }, {
-            title: 'Towards A Better Web In Service Of Humanity',
-            content: `The future isn't some place where we are going to go but a place we get to
-                create. We deserve a better web and we now have the tools to make it happen.
-                Together we can create a world where freedom of expression on the web is a right,
-                not a feature.`,
+            title: intl.formatMessage(tutorialMessages.webTitle),
+            content: intl.formatMessage(tutorialMessages.webContent),
             iconClassName: 'web'
         }];
     }
@@ -53,7 +45,7 @@ class Tutorials extends Component {
         const slider = this.slides.map((slide, key) =>
           <div
             className={`${styles.slide_item} ${styles[theme]} row between-xs`}
-            key={key}
+            key={slide.iconClassName}
             style={{ opacity: (key === this.state.currentSlide) ? 1 : 0 }}
           >
             <div className="col-xs-12">
@@ -80,7 +72,14 @@ class Tutorials extends Component {
 }
 
 Tutorials.propTypes = {
-    theme: PropTypes.string
+    intl: PropTypes.shape(),
+    theme: PropTypes.string,
 };
 
-export default Tutorials;
+function mapStateToProps (state) {
+    return {
+        theme: state.settingsState.getIn(['general', 'theme'])
+    };
+}
+
+export default connect(mapStateToProps)(injectIntl(Tutorials));

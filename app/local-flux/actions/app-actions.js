@@ -13,6 +13,8 @@ class AppActions {
         appActions = this;
     }
 
+    bootstrapApp
+
     showError = (error) => {
         this.dispatch(appActionCreators.showError(error));
     };
@@ -81,9 +83,16 @@ class AppActions {
     cleanStore = () => this.dispatch(appActionCreators.cleanStore());
 }
 
-export function bootstrapApp () {
+export function appReady () {
     return {
-        type: types.BOOTSTRAP_APP
+        type: types.APP_READY
+    };
+}
+
+export function setTimestamp (timestamp) {
+    return {
+        type: types.SET_TIMESTAMP,
+        timestamp
     };
 }
 

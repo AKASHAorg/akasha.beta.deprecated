@@ -3,7 +3,13 @@ import * as settingsService from '../services/settings-service';
 import * as actions from '../actions/settings-actions';
 import * as types from '../constants/SettingsConstants';
 
-export function* getGeneralSettings () {
+export function* getSettings () {
+    yield fork(getGeneralSettings);
+    yield fork(getGethSettings);
+    yield fork(getIpfsSettings);
+}
+
+function* getGeneralSettings () {
     yield put(actions.generalSettingsRequest());
     try {
         const resp = yield apply(settingsService, settingsService.getGeneralSettings);
@@ -13,49 +19,59 @@ export function* getGeneralSettings () {
     }
 }
 
+function* getGethSettings () {
+    yield put(actions.gethSettingsRequest());
+    try {
+        const resp = yield apply(settingsService, settingsService.getGethSettings);
+        yield put(actions.gethSettingsSuccess(resp));
+    } catch (error) {
+        yield put(actions.gethSettingsError({ message: error.toString() }));
+    }
+}
+
+function* getIpfsSettings () {
+    yield put(actions.ipfsSettingsRequest());
+    try {
+        const resp = yield apply(settingsService, settingsService.getIpfsSettings);
+        yield put(actions.ipfsSettingsSuccess(resp));
+    } catch (error) {
+        yield put(actions.ipfsSettingsError({ message: error.toString() }));
+    }
+}
+
 export function* saveGeneralSettings (payload) {
     try {
         const resp = yield apply(settingsService, settingsService.saveGeneralSettings, [payload]);
-        console.log('save general settings success');
         yield put(actions.saveGeneralSettingsSuccess(resp));
     } catch (error) {
-        console.error('saga - save general settings error');
         yield put(actions.saveGeneralSettingsError({ message: error.toString() }));
     }
 }
 
 export function* saveGethSettings (payload) {
     try {
-        console.log('save geth settings');
         const resp = yield apply(settingsService, settingsService.saveGethSettings, [payload]);
-        console.log('save geth settings success');
         yield put(actions.saveGethSettingsSuccess(resp));
     } catch (error) {
-        console.error('saga - save geth settings error');
         yield put(actions.saveGethSettingsError({ message: error.toString() }));
     }
 }
 
 export function* saveIpfsSettings (payload) {
     try {
-        console.log('save ipfs settings');
         const resp = yield apply(settingsService, settingsService.saveIpfsSettings, [payload]);
-        console.log('save ipfs settings success');
         yield put(actions.saveIpfsSettingsSuccess(resp));
     } catch (error) {
-        console.error('saga - save ipfs settings error');
         yield put(actions.saveIpfsSettingsError({ message: error.toString() }));
     }
 }
 
 function* saveConfiguration (action) {
     try {
-        console.log('save configuration');
         yield [
             call(saveGethSettings, action.payload.geth),
             call(saveIpfsSettings, action.payload.ipfs)
         ];
-        console.log('save general settings');
         yield call(saveGeneralSettings, { configurationSaved: true });
     } catch (error) {
         console.error('saga - save configuration error');

@@ -53,6 +53,7 @@ class DataLoader extends Component {
 
     render () {
         const { size, style } = this.props;
+
         if (this.state.loading) {
             return (<div
               style={Object.assign({

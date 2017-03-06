@@ -168,7 +168,7 @@ const setupMessages = defineMessages({
     syncPaused: {
         id: 'app.setup.syncPaused',
         description: 'state of block sync',
-        defaultMessage: 'Syncronization is paused'
+        defaultMessage: 'Synchronization is paused'
     },
     syncResuming: {
         id: 'app.setup.syncResuming',

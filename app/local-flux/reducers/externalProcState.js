@@ -14,33 +14,36 @@ const eProcState = createReducer(initialState, {
     [types.GETH_START]: state =>
         state.mergeIn(['geth'], {
             flags: state.getIn(['geth', 'flags']).merge({
-                startRequested: true,
-                busyState: true
+                busyState: true,
+                gethStarting: true,
             }),
         }),
 
     [types.GETH_START_SUCCESS]: (state, { data }) => {
         const newStatus = state.get('geth').calculateStatus(data);
-        const syncActionId = state.get('geth').getSyncActionId(data);
         return state.mergeIn(['geth'], {
+            flags: state.getIn(['geth', 'flags']).merge({
+                gethStarting: false,
+            }),
             status: state.getIn(['geth', 'status']).merge(newStatus),
-            flags: state.getIn(['geth', 'flags']).setIn(['syncActionId'], syncActionId)
+            syncActionId: 1
         });
     },
 
     [types.GETH_STOP]: state =>
         state.mergeIn(['geth'], {
             flags: state.getIn(['geth', 'flags']).merge({
-                startRequested: false,
                 busyState: true
             }),
         }),
 
     [types.GETH_STOP_SUCCESS]: (state, action) => {
-        const syncActionId = state.get('geth').getSyncActionId();
+        const oldSyncActionId = state.getIn(['geth', 'syncActionId']);
+        const syncActionId = oldSyncActionId === 2 ? oldSyncActionId : 3;
+        action.data.upgrading = state.getIn(['geth', 'status', 'upgrading']) || null;
         return state.mergeIn(['geth'], {
             status: state.getIn(['geth', 'status']).merge(action.data),
-            flags: state.getIn(['geth', 'flags']).setIn(['syncActionId'], syncActionId)
+            syncActionId
         });
     },
 
@@ -52,7 +55,6 @@ const eProcState = createReducer(initialState, {
     [types.IPFS_START]: state =>
         state.mergeIn(['ipfs'], {
             flags: state.getIn(['ipfs', 'flags']).merge({
-                startRequested: true,
                 busyState: true
             })
         }),
@@ -67,7 +69,6 @@ const eProcState = createReducer(initialState, {
     [types.IPFS_STOP]: state =>
         state.mergeIn(['ipfs'], {
             flags: state.getIn(['ipfs', 'flags']).merge({
-                startRequested: false,
                 busyState: true
             }),
         }),
@@ -96,49 +97,40 @@ const eProcState = createReducer(initialState, {
 
         // </=========== See @ISSUE #253 =========>
 
-    [types.GETH_GET_SYNC_STATUS_SUCCESS]: (state, action) =>
-        state.mergeIn(['geth'], {
-            status: state.getIn(['geth', 'status']).merge(action.data)
-        }),
+    [types.GETH_GET_SYNC_STATUS_SUCCESS]: (state, action) => {
+        const syncActionId = action.data.synced ? 4 : state.getIn(['geth', 'syncActionId']);
+        return state.mergeIn(['geth'], {
+            syncActionId,
+            syncStatus: state.getIn(['geth', 'syncStatus']).merge(action.data),
+        });
+    },
 
-    [types.GETH_SYNC_ACTIVE]: state =>
-        state.getIn(['geth', 'flags']).setIn(['syncActionId'], 1),
-
-    [types.GETH_SYNC_STOPPED]: state =>
+    [types.GETH_STOP_SYNC]: state =>
         state.mergeIn(['geth'], {
-            flags: state.getIn(['geth', 'flags']).merge({
-                syncActionId: 3,
-            }),
+            syncActionId: 3,
             syncStatus: state.getIn(['geth', 'syncStatus']).merge({
                 peerCount: null,
                 synced: false
             })
         }),
 
-    [types.GETH_SYNC_PAUSED]: state =>
+    [types.GETH_PAUSE_SYNC]: state =>
         state.mergeIn(['geth'], {
-            flags: state.getIn(['geth', 'flags']).merge({
-                syncActionId: 3,
-            }),
+            syncActionId: 2,
             syncStatus: state.getIn(['geth', 'syncStatus']).merge({
                 peerCount: null,
                 synced: false
             })
         }),
 
-    [types.GETH_SYNC_RESUME]: state =>
+    [types.GETH_RESUME_SYNC]: state =>
         state.mergeIn(['geth'], {
-            flags: state.getIn(['geth', 'flags']).merge({
-                syncActionId: 1,
-            }),
+            syncActionId: 1,
             syncStatus: state.getIn(['geth', 'syncStatus']).merge({
                 peerCount: null,
                 synced: false
             })
         }),
-
-    [types.GETH_SYNC_FINISHED]: state =>
-        state.getIn(['geth', 'flags']).setIn(['syncActionId'], 4),
 
     [types.GETH_RESET_BUSY]: state =>
         state.mergeIn(['geth'], {
@@ -154,12 +146,16 @@ const eProcState = createReducer(initialState, {
 
     [types.GETH_GET_LOGS_SUCCESS]: (state, action) =>
         state.mergeIn(['geth'], {
-            logs: state.getIn(['geth', 'logs']).union(action.data.map(log => new LogRecord(log)))
+            logs: state.getIn(['geth', 'logs'])
+                .union(action.data.map(log => new LogRecord(log)))
+                .takeLast(20)
         }),
+
     [types.IPFS_GET_LOGS_SUCCESS]: (state, action) =>
         state.mergeIn(['ipfs'], {
             logs: state.getIn(['ipfs', 'logs']).union(action.data.map(log => new LogRecord(log)))
         }),
+
 });
 
 export default eProcState;

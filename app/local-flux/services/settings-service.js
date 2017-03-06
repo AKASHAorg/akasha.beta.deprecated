@@ -147,12 +147,18 @@ class SettingsService extends BaseService {
     };
 }
 
-export const getGeneralSettings = () =>
+const getSettings = table =>
     new Promise((resolve, reject) =>
-        settingsDB.general.where('name').equals('general').toArray()
+        settingsDB[table].where('name').equals(table).toArray()
             .then(data => resolve(data[0] || {}))
             .catch(error => reject(error))
     );
+
+export const getGeneralSettings = () => getSettings('general');
+
+export const getGethSettings = () => getSettings('geth');
+
+export const getIpfsSettings = () => getSettings('ipfs');
 
 export const saveGeneralSettings = payload =>
     new Promise((resolve, reject) => {

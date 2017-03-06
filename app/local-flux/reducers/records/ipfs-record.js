@@ -8,7 +8,6 @@ const IpfsStatus = Record({
     stopped: null,
 });
 const IpfsFlags = Record({
-    startRequested: false,
     busyState: false,
     portsRequested: false
 });

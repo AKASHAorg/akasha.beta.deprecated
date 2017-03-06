@@ -2,18 +2,20 @@ import React, { PropTypes } from 'react';
 import CircularProgress from './circular-progress';
 import { MenuEthereum } from '../svg';
 
-function SyncProgress ({ innerIconStyle, value, strokeWidth }, { muiTheme }) {
-    const defaultIconStyle = {
-        fill: muiTheme.palette.textColor
-    };
+function SyncProgress ({ value, strokeWidth }, { muiTheme }) {
     return (
-      <CircularProgress mode="determinate" strokeWidth={strokeWidth} size={3} value={value} >
-        <MenuEthereum style={innerIconStyle || defaultIconStyle} />
+      <CircularProgress
+        mode="determinate"
+        strokeWidth={strokeWidth}
+        size={3}
+        value={value}
+      >
+        <MenuEthereum style={{ fill: muiTheme.palette.textColor }} />
       </CircularProgress>
     );
 }
+
 SyncProgress.propTypes = {
-    innerIconStyle: PropTypes.object,
     strokeWidth: PropTypes.number,
     value: PropTypes.number
 };
