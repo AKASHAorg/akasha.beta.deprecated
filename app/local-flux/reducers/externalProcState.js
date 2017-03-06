@@ -1,17 +1,13 @@
 /* eslint new-cap: [2, {capIsNewExceptions: ["Record"]}] */
-import { Record, fromJS, OrderedSet } from 'immutable';
+import { fromJS } from 'immutable';
 import { createReducer } from './create-reducer';
 import * as types from '../constants/external-process-constants';
 import { GethModel, IpfsModel } from './models';
+import { LogRecord } from './records';
 
 const initialState = fromJS({
     geth: new GethModel(),
     ipfs: new IpfsModel()
-});
-
-const LogRecord = Record({
-    timestamp: Date.now(),
-    message: ''
 });
 
 const eProcState = createReducer(initialState, {

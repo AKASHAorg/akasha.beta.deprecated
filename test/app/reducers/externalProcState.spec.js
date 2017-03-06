@@ -268,14 +268,17 @@ describe('ExternalProcState Reducer', function() {
                     timestamp: this.now + 5,
                     message: ''
                 }, {
-                    timestamp: this.now + 40,
-                    message: 'should be last'
+                    timestamp: this.now + 30,
+                    message: 'same timestamp but different log!'
+                }, {
+                    timestamp: this.now + 30,
+                    message: ''
                 }]
             });
             expect(modifiedState.getIn(['geth', 'logs'])).to.have.size(6);
         });
     });
     describe.skip(`should handle ${types.IPFS_GET_LOGS_SUCCESS}`, () => {
-
+        it.skip(`should be same as ${types.GETH_GET_LOGS_SUCCESS}`);
     });
 });
