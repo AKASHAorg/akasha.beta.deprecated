@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const Promise = require("bluebird");
 const index_1 = require("../../contracts/index");
 const execute = Promise.coroutine(function* (data) {
@@ -6,6 +7,5 @@ const execute = Promise.coroutine(function* (data) {
     const akashaId = yield index_1.constructed.instance.profile.getId(profileAddress);
     return { profileAddress, akashaId };
 });
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = { execute, name: 'getByAddress' };
 //# sourceMappingURL=resolve-ethaddress.js.map

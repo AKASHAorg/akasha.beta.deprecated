@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const Promise = require("bluebird");
 const geth_connector_1 = require("@akashaproject/geth-connector");
 const current_profile_1 = require("../registry/current-profile");
@@ -33,6 +34,5 @@ const execute = Promise.coroutine(function* (data) {
     });
     return { post, mention };
 });
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = { execute, name: 'mention' };
 //# sourceMappingURL=mention.js.map

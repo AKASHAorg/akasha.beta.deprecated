@@ -1,5 +1,5 @@
 import { createHash } from 'crypto';
-import { totalmem } from 'os';
+import { hostname } from 'os';
 const hashPath = (...path: string[]) => {
     const hash = createHash('sha256');
     path.forEach((segment) => {
@@ -46,15 +46,15 @@ const channels = {
 };
 
 const processes = ['server', 'client'];
-const mem = totalmem().toLocaleString();
+const name = hostname();
 const EVENTS: any = { client: {}, server: {} };
 Object.keys(channels).forEach((attr) => {
     channels[attr].forEach((endpoint: string) => {
         processes.forEach((proc) => {
             if (!EVENTS[proc].hasOwnProperty(attr)) {
-                EVENTS[proc][attr] = { manager: hashPath(proc, attr, mem, 'manager') };
+                EVENTS[proc][attr] = { manager: hashPath(proc, attr, name, 'manager') };
             }
-            EVENTS[proc][attr][endpoint] = hashPath(proc, attr, mem, endpoint);
+            EVENTS[proc][attr][endpoint] = hashPath(proc, attr, name, endpoint);
         });
     });
 });

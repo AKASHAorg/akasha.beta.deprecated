@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const BaseContract_1 = require("./BaseContract");
 const Promise = require("bluebird");
 class RegistryStore extends BaseContract_1.default {
@@ -15,6 +16,5 @@ class RegistryStore extends BaseContract_1.default {
         this.contract.has_store.callAsync(id, owner);
     }
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = RegistryStore;
 //# sourceMappingURL=RegistryStore.js.map

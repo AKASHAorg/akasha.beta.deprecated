@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const ModuleEmitter_1 = require("./event/ModuleEmitter");
 const index_1 = require("./modules/tags/index");
 class TagsIPC extends ModuleEmitter_1.default {
@@ -13,6 +14,5 @@ class TagsIPC extends ModuleEmitter_1.default {
         this._manager();
     }
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = TagsIPC;
 //# sourceMappingURL=TagsIPC.js.map

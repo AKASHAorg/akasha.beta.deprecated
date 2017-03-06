@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const BaseContract_1 = require("./BaseContract");
 const Promise = require("bluebird");
 class Subs extends BaseContract_1.default {
@@ -51,6 +52,5 @@ class Subs extends BaseContract_1.default {
         return this.contract.isSubscribed.callAsync(idTr, tagName);
     }
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = Subs;
 //# sourceMappingURL=Subs.js.map

@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const geth_connector_1 = require("@akashaproject/geth-connector");
 const Promise = require("bluebird");
 class BaseContract {
@@ -44,6 +45,5 @@ class BaseContract {
         });
     }
 }
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = BaseContract;
 //# sourceMappingURL=BaseContract.js.map

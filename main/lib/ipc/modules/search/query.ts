@@ -6,7 +6,6 @@ import getEntry from '../entry/get-entry';
 import { slice } from 'ramda';
 import { mixed } from '../models/records';
 
-
 const execute = Promise.coroutine(function*(data: { text: string, pageSize: number, offset: number }) {
     let cached;
     if (mixed.hasShort(data.text)) {

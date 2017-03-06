@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const Promise = require("bluebird");
 const geth_connector_1 = require("@akashaproject/geth-connector");
 const post_1 = require("../chat/post");
@@ -71,6 +72,5 @@ const execute = Promise.coroutine(function* (data) {
     const collection = yield Promise.all(results);
     return { collection, total: cached.total, from: data };
 });
-Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = { execute, name: 'query' };
 //# sourceMappingURL=query.js.map
