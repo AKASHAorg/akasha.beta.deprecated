@@ -28,28 +28,28 @@ describe('ExternalProcState Reducer', function() {
             expect(modifiedState.equals(initialState)).to.be.true;
         });
     });
-    describe(`should handle ${types.START_GETH}`, () => {
+    describe(`should handle ${types.GETH_START}`, () => {
         it('should set startRequested flag to true', () => {
-            modifiedState = EProcReducer(modifiedState, { type: types.START_GETH });
+            modifiedState = EProcReducer(modifiedState, { type: types.GETH_START });
             expect(modifiedState.getIn(['geth', 'flags', 'startRequested'])).to.be.true;
         });
         it('flags should be an Immutable.Record instance', () => {
-            modifiedState = EProcReducer(modifiedState, { type: types.START_GETH });
+            modifiedState = EProcReducer(modifiedState, { type: types.GETH_START });
             expect(modifiedState.getIn(['geth', 'flags'])).to.be.instanceof(Record);
         });
     });
-    describe(`should handle ${types.START_GETH_SUCCESS}`, () => {
+    describe(`should handle ${types.GETH_START_SUCCESS}`, () => {
         it('should set status to starting', () => {
             modifiedState = EProcReducer(modifiedState, {
-                type: types.START_GETH_SUCCESS,
+                type: types.GETH_START_SUCCESS,
                 data: gethStatus
             });
             expect(modifiedState.getIn(['geth', 'status', 'starting'])).to.be.true;
         });
     });
-    describe(`should handle ${types.STOP_GETH}`, () => {
+    describe(`should handle ${types.GETH_STOP}`, () => {
         beforeEach(() => {
-            modifiedState = EProcReducer(modifiedState, {type: types.STOP_GETH});
+            modifiedState = EProcReducer(modifiedState, {type: types.GETH_STOP});
         });
         it('should set startRequested flag to false', () => {
             expect(modifiedState.getIn(['geth', 'flags', 'startRequested'])).to.be.false;
@@ -58,8 +58,8 @@ describe('ExternalProcState Reducer', function() {
             expect(modifiedState.getIn(['geth', 'flags', 'busyState'])).to.be.true;
         });
     });
-    describe(`should handle ${types.STOP_GETH_SUCCESS}`, () => {
-        modifiedState = EProcReducer(modifiedState, {type: types.STOP_GETH_SUCCESS});
+    describe(`should handle ${types.GETH_STOP_SUCCESS}`, () => {
+        modifiedState = EProcReducer(modifiedState, {type: types.GETH_STOP_SUCCESS});
         it('flags should be always am Immutable.Record instance', () => {
             expect(modifiedState.getIn(['geth', 'flags'])).to.be.instanceof(Record);
         });
@@ -67,10 +67,10 @@ describe('ExternalProcState Reducer', function() {
             expect(modifiedState.getIn(['geth', 'status'])).to.be.instanceof(Record);
         });
     });
-    describe(`should handle ${types.GET_GETH_STATUS_SUCCESS}`, () => {
+    describe(`should handle ${types.GETH_GET_STATUS_SUCCESS}`, () => {
         beforeEach(() => {
             modifiedState = EProcReducer(modifiedState, {
-                type: types.GET_GETH_STATUS_SUCCESS,
+                type: types.GETH_GET_STATUS_SUCCESS,
                 data: {
                   stopped: true
                 }
@@ -86,9 +86,9 @@ describe('ExternalProcState Reducer', function() {
             expect(modifiedState.getIn(['geth', 'status'])).to.have.keys(Object.keys(gethStatus));
         });
     });
-    describe(`should handle ${types.START_IPFS}`, () => {
+    describe(`should handle ${types.IPFS_START}`, () => {
         beforeEach(() => {
-            modifiedState = EProcReducer(modifiedState, { type: types.START_IPFS });
+            modifiedState = EProcReducer(modifiedState, { type: types.IPFS_START });
         });
         it('flags should be always an Immutable.Record instance', () => {
             expect(modifiedState.getIn(['ipfs', 'flags'])).to.be.instanceof(Record);
@@ -100,22 +100,22 @@ describe('ExternalProcState Reducer', function() {
             expect(modifiedState.getIn(['ipfs', 'flags', 'busyState'])).to.be.true;
         });
     });
-    describe(`should handle ${types.START_IPFS_SUCCESS}`, () => {
+    describe(`should handle ${types.IPFS_START_SUCCESS}`, () => {
         beforeEach(() => {
             modifiedState = EProcReducer(modifiedState, {
-                type: types.START_IPFS_SUCCESS,
+                type: types.IPFS_START_SUCCESS,
                 data: ipfsStatus
             });
         });
         it('ipfs.get("status") should always return a Record instance', () => {
             expect(modifiedState.getIn(['ipfs', 'status'])).to.be.instanceof(Record);
         });
-        it(`should have keys: ${Object.keys(ipfsStatus)}`, () => {
+        it(`ipfs.get("status") should have keys: ${Object.keys(ipfsStatus)}`, () => {
             expect(modifiedState.getIn(['ipfs', 'status'])).to.have.keys(Object.keys(ipfsStatus));
         });
         it('should switch started flag to true', () => {
             modifiedState = EProcReducer(modifiedState, {
-                type: types.START_IPFS_SUCCESS,
+                type: types.IPFS_START_SUCCESS,
                 data: {
                   started: true
                 }
@@ -123,15 +123,159 @@ describe('ExternalProcState Reducer', function() {
             expect(modifiedState.getIn(['ipfs', 'status', 'started'])).to.be.true;
         });
     });
-    describe(`should handle ${types.GET_IPFS_STATUS_SUCCESS}`, () => {
+    describe(`should handle ${types.IPFS_GET_STATUS_SUCCESS}`, () => {
         beforeEach(() => {
-            modifiedState = EProcReducer(modifiedState, { type: types.GET_IPFS_STATUS_SUCCESS, data: ipfsStatus })
+            modifiedState = EProcReducer(modifiedState, { type: types.IPFS_GET_STATUS_SUCCESS, data: ipfsStatus })
         });
         it('ipfs.get("status") should always return a record', () => {
             expect(modifiedState.getIn(['ipfs', 'status'])).to.be.instanceof(Record);
         });
-        it(`should have keys: ${Object.keys(ipfsStatus)}`, () => {
+        it(`ipfs.get("status") should have keys: ${Object.keys(ipfsStatus)}`, () => {
             expect(modifiedState.getIn(['ipfs', 'status'])).to.have.keys(Object.keys(ipfsStatus));
         });
+    });
+    describe(`should handle ${types.IPFS_GET_PORTS}`, () => {
+        beforeEach(() => {
+            modifiedState = EProcReducer(modifiedState, {
+              type: types.IPFS_GET_PORTS
+            });
+        });
+        it('should set portsRequested flag to true', () => {
+            expect(modifiedState.getIn(['ipfs', 'flags', 'portsRequested'])).to.be.true;
+        });
+        it('ipfs.get("flags") should always return a Record instance', () => {
+            expect(modifiedState.getIn(['ipfs', 'flags'])).to.be.instanceof(Record);
+        });
+    });
+    describe(`should handle ${types.IPFS_GET_PORTS_SUCCESS}`, () => {
+        beforeEach(() => {
+            modifiedState = EProcReducer(modifiedState, {
+                type: types.IPFS_GET_PORTS_SUCCESS
+            });
+        });
+        it('should set portsRequested flag to false', () => {
+            expect(modifiedState.getIn(['ipfs', 'flags', 'portsRequested'])).to.be.false;
+        });
+        it('ipfs.get("flags") should always return a Record instance', () => {
+            expect(modifiedState.getIn(['ipfs', 'flags'])).to.be.instanceof(Record);
+        });
+    });
+    describe.skip(`should handle ${types.GETH_GET_SYNC_STATUS_SUCCESS}`, () => {
+        it('should be tested later!');
+    });
+    describe.skip(`should handle ${types.GETH_SYNC_ACTIVE}`, () => {
+        it('should also be tested later!');
+    });
+    describe(`should handle ${types.GETH_SYNC_STOPPED}`, () => {
+        beforeEach(() => {
+            modifiedState = EProcReducer(modifiedState, {
+                type: types.GETH_SYNC_STOPPED
+            });
+        });
+        it('should set syncActionId in flags to 3', () => {
+            expect(modifiedState.getIn(['geth', 'flags', 'syncActionId'])).to.equal(3);
+        });
+        it('should set peerCount in syncStatus to null', () => {
+            expect(modifiedState.getIn(['geth', 'syncStatus', 'peerCount'])).to.be.null;
+        });
+        it('should set synced flag in syncstatus to false', () => {
+            expect(modifiedState.getIn(['geth', 'syncStatus', 'synced'])).to.be.false;
+        });
+        it('geth.get("flags") should always return a Record', () => {
+            expect(modifiedState.getIn(['geth', 'flags'])).to.be.instanceof(Record);
+        });
+        it('geth.get("syncStatus") should always return a Record', () => {
+            expect(modifiedState.getIn(['geth', 'syncStatus'])).to.be.instanceof(Record);
+        });
+    });
+    describe(`should handle ${types.GETH_SYNC_PAUSED}`, () => {
+        beforeEach(() => {
+            modifiedState = EProcReducer(modifiedState, {
+                type: types.GETH_SYNC_PAUSED
+            });
+        });
+        it('should set syncActionId in flags to value => 3', () => {
+            expect(modifiedState.getIn(['geth', 'flags', 'syncActionId'])).to.equal(3);
+        });
+        it('should set peerCount in syncStatus to null', () => {
+            expect(modifiedState.getIn(['geth', 'syncStatus', 'peerCount'])).to.be.null;
+        });
+        it('should set synced in syncStatus to false', () => {
+            expect(modifiedState.getIn(['geth', 'syncStatus', 'synced'])).to.be.false;
+        });
+        it('geth.get("flags") should always return a Record', () => {
+            expect(modifiedState.getIn(['geth', 'flags'])).to.be.instanceof(Record);
+        });
+        it('geth.get("syncStatus") should return a Record', () => {
+            expect(modifiedState.getIn(['geth', 'syncStatus'])).to.be.instanceof(Record)
+        });
+    });
+    describe(`should handle ${types.GETH_SYNC_RESUME}`, () => {
+        beforeEach(() => {
+            modifiedState = EProcReducer(modifiedState, {
+                type: types.GETH_SYNC_RESUME
+            });
+        });
+        it('should set flags.syncActionId flag to 1', () => {
+            expect(modifiedState.getIn(['geth', 'flags', 'syncActionId'])).to.equal(1);
+        });
+        it('should set syncStatus.peercount to null', () => {
+            expect(modifiedState.getIn(['geth', 'syncStatus', 'peerCount'])).to.be.null;
+        });
+        it('should set syncStatus.synced to false', () => {
+            expect(modifiedState.getIn(['geth', 'syncStatus', 'synced'])).to.be.false;
+        });
+        it('geth.flags should always return a Record', () => {
+            expect(modifiedState.getIn(['geth', 'flags'])).to.be.instanceof(Record);
+        });
+        it('geth.status should always return a Record', () => {
+            expect(modifiedState.getIn(['geth', 'status'])).to.be.instanceof(Record);
+        });
+    });
+    describe.skip(`should handle ${types.GETH_SYNC_FINISHED}`, () => {});
+    describe.skip(`should handle ${types.GETH_RESET_BUSY}`, () => {});
+    describe.skip(`should handle ${types.IPFS_RESET_BUSY}`, () => {});
+    describe(`should handle ${types.GETH_GET_LOGS_SUCCESS}`, () => {
+        beforeEach(() => {
+          this.now = Date.now();
+          modifiedState = EProcReducer(modifiedState, {
+              type: types.GETH_GET_LOGS_SUCCESS,
+              data: [{
+                  timestamp: this.now,
+                  message: 'should be always first'
+                }, {
+                  timestamp: this.now + 10,
+                  message: ''
+                }, {
+                  timestamp: this.now + 20,
+                  message: ''
+                }, {
+                  timestamp: this.now + 30,
+                  message: ''
+                }]
+          });
+        });
+        it('should create new records in geth.logs', () => {
+            expect(modifiedState.getIn(['geth', 'logs'])).to.have.size(4)
+        });
+        it('should contain only unique records', () => {
+            modifiedState = EProcReducer(modifiedState, {
+                type: types.GETH_GET_LOGS_SUCCESS,
+                data: [{
+                    timestamp: this.now + 10, // intentionally duplicate
+                    message: ''
+                }, {
+                    timestamp: this.now + 5,
+                    message: ''
+                }, {
+                    timestamp: this.now + 40,
+                    message: 'should be last'
+                }]
+            });
+            expect(modifiedState.getIn(['geth', 'logs'])).to.have.size(6);
+        });
+    });
+    describe.skip(`should handle ${types.IPFS_GET_LOGS_SUCCESS}`, () => {
+
     });
 });

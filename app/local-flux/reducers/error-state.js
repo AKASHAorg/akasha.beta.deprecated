@@ -1,11 +1,10 @@
 import { Record, Set } from 'immutable';
 import { createReducer } from './create-reducer';
 import { ErrorRecord } from './records';
+import { ErrorModel } from './models';
 import * as types from '../constants/error-constants';
 
-const initialState = new Record({
-    errors: new Set(),
-});
+const initialState = new ErrorModel();
 const pushNewError = (state, { error }) => {
     return state.merge({
         errors: state.get('errors').push(new ErrorRecord(error))

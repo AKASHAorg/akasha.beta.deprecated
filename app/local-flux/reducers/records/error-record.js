@@ -7,4 +7,9 @@ const ErrorRecord = Record({
     from: {}
 });
 
+const ErrorState = Record({
+    errors: new Set()
+});
+
 export default ErrorRecord;
+export { ErrorState };

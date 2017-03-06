@@ -1,4 +1,4 @@
-import { Record, List, Set } from 'immutable';
+import { Record, OrderedSet } from 'immutable';
 
 const GethStatus = Record({
     downloading: null,
@@ -31,7 +31,7 @@ const GethFlags = Record({
 const GethRecord = Record({
     status: new GethStatus(),
     syncStatus: new GethSyncStatus(),
-    logs: new Set(),
+    logs: new OrderedSet(),
     flags: new GethFlags(),
 });
 

@@ -5,7 +5,7 @@ import chatState from './chatState';
 import commentsState from './commentsState';
 import draftState from './draftState';
 import entryState from './entryState';
-import errorReducer from './error-reducer';
+import errorReducer from './error-state';
 import externalProcState from './externalProcState';
 import notificationsState from './notificationsState';
 import panelState from './panelState';
