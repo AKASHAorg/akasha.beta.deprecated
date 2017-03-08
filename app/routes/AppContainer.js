@@ -2,10 +2,10 @@ import React, { Component, PropTypes } from 'react';
 import ReactTooltip from 'react-tooltip';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { AppActions } from 'local-flux';
 import { getMuiTheme } from 'material-ui/styles';
-import { AuthDialog, DataLoader, PublishConfirmDialog,
+import { AuthDialog, DataLoader, GethDetailsModal, IpfsDetailsModal, PublishConfirmDialog,
     TransferConfirmDialog, WeightConfirmDialog } from 'shared-components';
+import { hideNotification, hideTerms } from 'local-flux/actions/app-actions'; // eslint-disable-line import/no-unresolved, import/extensions
 import TermsPanel from './components/terms-panel';
 import NotificationBar from './components/notification-bar';
 import lightTheme from '../layouts/AkashaTheme/lightTheme';
@@ -32,26 +32,33 @@ class App extends Component {
     }
 
     render () {
-        const { appState, appActions, appReady, intl  } = this.props;
+        /* eslint-disable */
+        const { appState, appReady, hideNotification, hideTerms, intl } = this.props;
+        /* eslint-disable */
         const isAuthDialogVisible = !!appState.get('showAuthDialog');
         const weightConfirmDialog = appState.get('weightConfirmDialog');
         const isWeightConfirmationDialogVisible = weightConfirmDialog !== null;
         const isPublishConfirmationDialogVisible = appState.get('publishConfirmDialog') !== null;
         const isTransferConfirmationDialogVisible = appState.get('transferConfirmDialog') !== null;
+        const showGethDetailsModal = appState.get('showGethDetailsModal');
+        const showIpfsDetailsModal = appState.get('showIpfsDetailsModal');
 
         return (
           <DataLoader flag={!appReady} size={80} style={{ paddingTop: '-50px' }}>
             <div className="fill-height" >
               {this.props.children}
               <NotificationBar
-                appState={appState}
-                appActions={appActions}
+                hideNotification={hideNotification}
+                intl={intl}
+                notifications={appState.get('notifications')}
               />
+              {showGethDetailsModal && <GethDetailsModal />}
+              {showIpfsDetailsModal && <IpfsDetailsModal />}
               {isAuthDialogVisible && <AuthDialog intl={intl} />}
               {isWeightConfirmationDialogVisible && <WeightConfirmDialog intl={intl} />}
               {isPublishConfirmationDialogVisible && <PublishConfirmDialog intl={intl} />}
               {isTransferConfirmationDialogVisible && <TransferConfirmDialog intl={intl} />}
-              {appState.get('showTerms') && <TermsPanel hideTerms={appActions.hideTerms} />}
+              {appState.get('showTerms') && <TermsPanel hideTerms={hideTerms} />}
               <ReactTooltip delayShow={300} class="generic_tooltip" place="bottom" effect="solid" />
             </div>
           </DataLoader>
@@ -62,8 +69,9 @@ class App extends Component {
 App.propTypes = {
     appReady: PropTypes.bool,
     appState: PropTypes.shape(),
-    appActions: PropTypes.shape(),
     children: PropTypes.element,
+    hideNotification: PropTypes.func,
+    hideTerms: PropTypes.func,
     intl: PropTypes.shape(),
     theme: PropTypes.string,
 };
@@ -76,17 +84,14 @@ function mapStateToProps (state) {
     return {
         appReady: state.appState.get('appReady'),
         appState: state.appState,
-        theme: state.settingsState.get('general').get('theme')
-    };
-}
-
-function mapDispatchToProps (dispatch) {
-    return {
-        appActions: new AppActions(dispatch),
+        theme: state.settingsState.getIn(['general', 'theme'])
     };
 }
 
 export default connect(
     mapStateToProps,
-    mapDispatchToProps
+    {
+        hideNotification,
+        hideTerms
+    }
 )(injectIntl(App));

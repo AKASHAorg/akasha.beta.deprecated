@@ -272,29 +272,31 @@ class Auth extends Component {
                 /* eslint-enable */
             ]}
           >
-            {gethStatus.get('api') && (ipfsStatus.get('started') || ipfsStatus.get('spawned')) ?
-              <List className="col-xs-12">
-                { localProfiles }
-              </List> :
-              <div> {this.getPlaceholderMessage()} </div>
-            }
-            {this.state.selectedProfile &&
-              <LoginDialog
-                profile={selectedProfile}
-                cleanUserSettings={settingsActions.cleanUserSettings}
-                getUserSettings={settingsActions.getUserSettings}
-                isOpen={openModal}
-                modalActions={modalActions}
-                title={intl.formatMessage(setupMessages.logInTitle)}
-                onPasswordChange={this._handlePasswordChange}
-                onKeyPress={this._handleDialogKeyPress}
-                onUnlockTimerChange={this._handleUnlockTimerChange}
-                onUnlockCheck={this._handleUnlockCheck}
-                unlockTimerKey={this.state.unlockTimer}
-                isUnlockedChecked={this.state.unlockIsChecked}
-                loginErrors={this.props.loginErrors}
-              />
-            }
+            <div style={{ width: '100%', padding: '12px 24px' }}>
+              {gethStatus.get('api') && (ipfsStatus.get('started') || ipfsStatus.get('spawned')) ?
+                <List className="col-xs-12">
+                  {localProfiles}
+                </List> :
+                <div> {this.getPlaceholderMessage()} </div>
+              }
+              {this.state.selectedProfile &&
+                <LoginDialog
+                  profile={selectedProfile}
+                  cleanUserSettings={settingsActions.cleanUserSettings}
+                  getUserSettings={settingsActions.getUserSettings}
+                  isOpen={openModal}
+                  modalActions={modalActions}
+                  title={intl.formatMessage(setupMessages.logInTitle)}
+                  onPasswordChange={this._handlePasswordChange}
+                  onKeyPress={this._handleDialogKeyPress}
+                  onUnlockTimerChange={this._handleUnlockTimerChange}
+                  onUnlockCheck={this._handleUnlockCheck}
+                  unlockTimerKey={this.state.unlockTimer}
+                  isUnlockedChecked={this.state.unlockIsChecked}
+                  loginErrors={this.props.loginErrors}
+                />
+                }
+            </div>
           </PanelContainer>
         );
     }

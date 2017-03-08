@@ -29,12 +29,12 @@ const PendingAction = Record({
 const initialState = fromJS({
     appReady: false,
     error: new ErrorRecord(),
-    appLoading: false,
-    appUpdating: false,
     showAuthDialog: null,
     showEntry: {
         modal: false
     },
+    showGethDetailsModal: false,
+    showIpfsDetailsModal: false,
     showTerms: false,
     weightConfirmDialog: null,
     timestamp: null,
@@ -141,6 +141,12 @@ const appState = createReducer(initialState, {
         state.merge({
             showTerms: false
         }),
+
+    [types.TOGGLE_GETH_DETAILS_MODAL]: state =>
+        state.set('showGethDetailsModal', !state.get('showGethDetailsModal')),
+
+    [types.TOGGLE_IPFS_DETAILS_MODAL]: state =>
+        state.set('showIpfsDetailsModal', !state.get('showIpfsDetailsModal')),
 
 });
 

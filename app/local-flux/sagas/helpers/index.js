@@ -40,7 +40,7 @@ export function createActionChannels () {
     gethChannels.forEach((channel) => {
         actionChannels.geth[channel] = createActionChannel(Channel.client.geth[channel]);
     });
-    const ipfsChannels = ['getConfig', 'startService', 'status', 'stopService'];
+    const ipfsChannels = ['getConfig', 'getPorts', 'setPorts', 'logs', 'startService', 'status', 'stopService'];
     ipfsChannels.forEach((channel) => {
         actionChannels.ipfs[channel] = createActionChannel(Channel.client.ipfs[channel]);
     });

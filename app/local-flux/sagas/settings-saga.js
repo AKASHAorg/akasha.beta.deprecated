@@ -1,13 +1,8 @@
 import { apply, call, fork, put, take } from 'redux-saga/effects';
 import * as settingsService from '../services/settings-service';
 import * as actions from '../actions/settings-actions';
+import * as appActions from '../actions/app-actions';
 import * as types from '../constants/SettingsConstants';
-
-export function* getSettings () {
-    yield fork(getGeneralSettings);
-    yield fork(getGethSettings);
-    yield fork(getIpfsSettings);
-}
 
 function* getGeneralSettings () {
     yield put(actions.generalSettingsRequest());
@@ -39,6 +34,12 @@ function* getIpfsSettings () {
     }
 }
 
+export function* getSettings () {
+    yield fork(getGeneralSettings);
+    yield fork(getGethSettings);
+    yield fork(getIpfsSettings);
+}
+
 export function* saveGeneralSettings (payload) {
     try {
         const resp = yield apply(settingsService, settingsService.saveGeneralSettings, [payload]);
@@ -48,29 +49,38 @@ export function* saveGeneralSettings (payload) {
     }
 }
 
-export function* saveGethSettings (payload) {
+export function* gethSaveSettings (payload) {
     try {
-        const resp = yield apply(settingsService, settingsService.saveGethSettings, [payload]);
-        yield put(actions.saveGethSettingsSuccess(resp));
+        const resp = yield apply(settingsService, settingsService.gethSaveSettings, [payload]);
+        yield put(actions.gethSaveSettingsSuccess(resp));
+        yield put(appActions.showNotification({
+            id: 'saveGethSettingsSuccess'
+        }));
     } catch (error) {
-        yield put(actions.saveGethSettingsError({ message: error.toString() }));
+        yield put(actions.gethSaveSettingsError({ message: error.toString() }));
     }
 }
 
-export function* saveIpfsSettings (payload) {
+export function* ipfsSaveSettings (payload) {
     try {
+        if (payload.ports) {
+            delete payload.ports;
+        }
         const resp = yield apply(settingsService, settingsService.saveIpfsSettings, [payload]);
-        yield put(actions.saveIpfsSettingsSuccess(resp));
+        yield put(actions.ipfsSaveSettingsSuccess(resp));
+        yield put(appActions.showNotification({
+            id: 'saveIpfsSettingsSuccess'
+        }));
     } catch (error) {
-        yield put(actions.saveIpfsSettingsError({ message: error.toString() }));
+        yield put(actions.ipfsSaveSettingsError({ message: error.toString() }));
     }
 }
 
 function* saveConfiguration (action) {
     try {
         yield [
-            call(saveGethSettings, action.payload.geth),
-            call(saveIpfsSettings, action.payload.ipfs)
+            call(gethSaveSettings, action.payload.geth),
+            call(ipfsSaveSettings, action.payload.ipfs)
         ];
         yield call(saveGeneralSettings, { configurationSaved: true });
     } catch (error) {
@@ -78,24 +88,26 @@ function* saveConfiguration (action) {
     }
 }
 
+// WATCHERS
+
 function* watchGeneralSettingsSave () {
     while (true) {
-        const action = yield take(types.GENERAL_SETTINGS_SAVE_REQUEST);
+        const action = yield take(types.GENERAL_SETTINGS_SAVE);
         yield fork(saveGeneralSettings, action.payload);
     }
 }
 
-function* watchGethSettingsSave () {
+function* watchGethSaveSettings () {
     while (true) {
-        const action = yield take(types.GETH_SETTINGS_SAVE_REQUEST);
-        yield fork(saveGethSettings, action.payload);
+        const action = yield take(types.GETH_SAVE_SETTINGS);
+        yield fork(gethSaveSettings, action.payload);
     }
 }
 
 function* watchIpfsSettingsSave () {
     while (true) {
-        const action = yield take(types.IPFS_SETTINGS_SAVE_REQUEST);
-        yield fork(saveIpfsSettings, action.payload);
+        const action = yield take(types.IPFS_SAVE_SETTINGS);
+        yield fork(ipfsSaveSettings, action.payload);
     }
 }
 
@@ -109,6 +121,6 @@ function* watchSaveConfiguration () {
 export function* watchSettingsActions () {
     yield fork(watchSaveConfiguration);
     yield fork(watchGeneralSettingsSave);
-    yield fork(watchGethSettingsSave);
+    yield fork(watchGethSaveSettings);
     yield fork(watchIpfsSettingsSave);
 }

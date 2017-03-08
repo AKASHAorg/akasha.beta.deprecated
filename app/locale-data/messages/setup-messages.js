@@ -285,18 +285,6 @@ const setupMessages = defineMessages({
         description: 'panel title when identity registered',
         defaultMessage: 'Identity Registered!'
     },
-    saveGethSettingsSuccess: {
-        id: 'app.setup.saveGethSettingsSuccess',
-        description: 'Geth settings successfully saved',
-        defaultMessage: `You have successfully saved your settings. You need to restart your geth
-                        client for your changes to be applied.`
-    },
-    saveIpfsSettingsSuccess: {
-        id: 'app.setup.saveIpfsSettingsSuccess',
-        description: 'IPFS settings successfully saved',
-        defaultMessage: `You have successfully saved your settings. You need to restart your IPFS
-                        client for your changes to be applied.`
-    },
     gethStopped: {
         id: 'app.setup.gethStopped',
         description: 'message to be displayed when geth is stopped and profiles cannot be loaded',

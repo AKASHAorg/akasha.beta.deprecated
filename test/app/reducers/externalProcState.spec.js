@@ -3,7 +3,7 @@ import chaiIM from 'chai-immutable';
 import EProcReducer from '../../../app/local-flux/reducers/externalProcState';
 import { GethModel, IpfsModel } from '../../../app/local-flux/reducers/models';
 import { ErrorRecord, GethStatus } from '../../../app/local-flux/reducers/records';
-import * as types from '../../../app/local-flux/constants/external-process-constants';
+import * as types from '../../../app/local-flux/constants';
 import { gethStatus, gethSyncStatus, gethStart, gethStartError } from '../response-data/geth';
 import { ipfsStatus } from '../response-data/ipfs';
 import { fromJS, Map, Record } from 'immutable';

@@ -179,18 +179,6 @@ class SettingsActions {
         });
 }
 
-export function getSettingsRequest () {
-    return {
-        type: types.SETTINGS_REQUEST
-    };
-}
-
-export function getSettingsSuccess () {
-    return {
-        type: types.SETTINGS_SUCCESS
-    };
-}
-
 export function saveConfiguration (payload) {
     return {
         type: types.SAVE_CONFIGURATION,
@@ -200,7 +188,7 @@ export function saveConfiguration (payload) {
 
 export function saveGeneralSettings (payload) {
     return {
-        type: types.GENERAL_SETTINGS_SAVE_REQUEST,
+        type: types.GENERAL_SETTINGS_SAVE,
         payload
     };
 }
@@ -211,7 +199,6 @@ export function saveGeneralSettingsSuccess (data) {
         data
     };
 }
-
 export function saveGeneralSettingsError (error) {
     return {
         type: types.GENERAL_SETTINGS_SAVE_ERROR,
@@ -219,51 +206,51 @@ export function saveGeneralSettingsError (error) {
     };
 }
 
-export function saveGethSettings (payload) {
+export function gethSaveSettings (payload) {
     return {
-        type: types.GETH_SETTINGS_SAVE_REQUEST,
+        type: types.GETH_SAVE_SETTINGS,
         payload
     };
 }
 
-export function saveGethSettingsSuccess (data) {
+export function gethSaveSettingsSuccess (data) {
     return {
-        type: types.GETH_SETTINGS_SAVE_SUCCESS,
+        type: types.GETH_SAVE_SETTINGS_SUCCESS,
         data
     };
 }
 
-export function saveGethSettingsError (error) {
+export function gethSaveSettingsError (error) {
     return {
-        type: types.GETH_SETTINGS_SAVE_ERROR,
+        type: types.GETH_SAVE_SETTINGS_ERROR,
         error
     };
 }
 
-export function saveIpfsSettings (payload) {
+export function ipfsSaveSettings (payload) {
     return {
-        type: types.IPFS_SETTINGS_SAVE_REQUEST,
+        type: types.IPFS_SAVE_SETTINGS,
         payload
     };
 }
 
-export function saveIpfsSettingsSuccess (data) {
+export function ipfsSaveSettingsSuccess (data) {
     return {
-        type: types.IPFS_SETTINGS_SAVE_SUCCESS,
+        type: types.IPFS_SAVE_SETTINGS_SUCCESS,
         data
     };
 }
 
-export function saveIpfsSettingsError (error) {
+export function ipfsSaveSettingsError (error) {
     return {
-        type: types.IPFS_SETTINGS_SAVE_ERROR,
+        type: types.IPFS_SAVE_SETTINGS_ERROR,
         error
     };
 }
 
 export function generalSettingsRequest () {
     return {
-        type: types.GENERAL_SETTINGS_REQUEST,
+        type: types.GENERAL_SETTINGS,
     };
 }
 
@@ -284,7 +271,7 @@ export function generalSettingsError (error) {
 
 export function gethSettingsRequest () {
     return {
-        type: types.GETH_SETTINGS_REQUEST,
+        type: types.GETH_SETTINGS,
     };
 }
 
@@ -305,7 +292,7 @@ export function gethSettingsError (error) {
 
 export function ipfsSettingsRequest () {
     return {
-        type: types.IPFS_SETTINGS_REQUEST,
+        type: types.IPFS_SETTINGS,
     };
 }
 

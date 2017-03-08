@@ -14,8 +14,8 @@ const listStyle = {
 class LogsList extends Component {
 
     componentWillMount () {
-        const { startLogger, timestamp } = this.props;
-        startLogger(timestamp);
+        const { startLogger } = this.props;
+        startLogger();
     }
 
     componentWillUnmount () {
@@ -87,7 +87,6 @@ LogsList.propTypes = {
     startLogger: PropTypes.func.isRequired,
     stopLogger: PropTypes.func.isRequired,
     style: PropTypes.shape(),
-    timestamp: PropTypes.number,
 };
 
 LogsList.contextTypes = {

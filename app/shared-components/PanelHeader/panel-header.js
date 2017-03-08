@@ -1,7 +1,9 @@
 import React, { PropTypes } from 'react';
+import { injectIntl } from 'react-intl';
 import { LogoButton, ServiceStatusBar } from 'shared-components';
+import { generalMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
 
-function PanelHeader ({ title, disableStopService, noStatusBar, noLogoButton }) {
+function PanelHeader ({ disableStopService, intl, noStatusBar, noLogoButton, title }) {
     return (
       <div className="col-xs-12">
         <div className="row middle-xs" style={{ display: 'flex' }} >
@@ -11,7 +13,7 @@ function PanelHeader ({ title, disableStopService, noStatusBar, noLogoButton }) 
             </div>
           }
           <div style={{ fontWeight: '300', flex: '1 1 auto', marginLeft: '10px' }} >
-            {title}
+            {title || intl.formatMessage(generalMessages.akasha)}
           </div>
           {!noStatusBar &&
             <div style={{ flex: '0 0 auto' }} >
@@ -24,14 +26,11 @@ function PanelHeader ({ title, disableStopService, noStatusBar, noLogoButton }) 
 }
 
 PanelHeader.propTypes = {
-    title: PropTypes.node.isRequired,
     disableStopService: PropTypes.bool,
+    intl: PropTypes.shape(),
     noStatusBar: PropTypes.bool,
-    noLogoButton: PropTypes.bool
+    noLogoButton: PropTypes.bool,
+    title: PropTypes.node.isRequired,
 };
 
-PanelHeader.defaultProps = {
-    title: 'AKASHA'
-};
-
-export default PanelHeader;
+export default injectIntl(PanelHeader);

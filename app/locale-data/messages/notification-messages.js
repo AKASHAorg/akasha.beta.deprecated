@@ -215,6 +215,25 @@ const notificationMessages = defineMessages({
         id: 'app.notification.backupError',
         description: 'message to display when the keystore backup was unsuccessful',
         defaultMessage: 'Generating backup has failed. Try again'
-    }
+    },
+    saveGethSettingsSuccess: {
+        id: 'app.notification.saveGethSettingsSuccess',
+        description: 'Geth settings successfully saved',
+        defaultMessage: `You have successfully saved your settings. You need to restart your geth
+                        service for your changes to be applied.`
+    },
+    saveIpfsSettingsSuccess: {
+        id: 'app.notification.saveIpfsSettingsSuccess',
+        description: 'IPFS settings successfully saved',
+        defaultMessage: `You have successfully saved your settings. You need to restart your IPFS
+                        service for your changes to be applied.`
+    },
+    setIpfsPortsSuccess: {
+        id: 'app.notification.setIpfsPortsSuccess',
+        description: 'IPFS ports successfully set',
+        defaultMessage: `You have successfully set the IPFS ports. You need to restart your IPFS
+                        service for your changes to be applied.`
+    },
+
 });
 export { notificationMessages };

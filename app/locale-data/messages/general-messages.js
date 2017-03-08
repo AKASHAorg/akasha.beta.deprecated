@@ -6,6 +6,11 @@ const generalMessages = defineMessages({
         description: 'AKASHA',
         defaultMessage: 'AKASHA'
     },
+    ok: {
+        id: 'app.general.ok',
+        description: 'Ok',
+        defaultMessage: 'Ok'
+    },
     by: {
         id: 'app.general.by',
         description: 'entry is written `by`',

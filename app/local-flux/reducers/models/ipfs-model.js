@@ -1,7 +1,7 @@
 import { IpfsRecord } from '../records';
 
 class IpfsModel extends IpfsRecord {
-    computeStatus (newStatus) {
+    static computeStatus (newStatus) {
         if (newStatus.started || newStatus.spawned) {
             newStatus.downloading = null;
         }

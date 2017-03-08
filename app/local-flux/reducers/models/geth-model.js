@@ -1,7 +1,7 @@
 import { GethRecord } from '../records';
 
 class GethModel extends GethRecord {
-    calculateStatus (newStatus) {
+    static computeStatus (newStatus) {
         if (newStatus.api) {
             newStatus.upgrading = null;
             newStatus.message = null;

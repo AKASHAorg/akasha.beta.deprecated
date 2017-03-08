@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react';
+import React, { PropTypes } from 'react';
 import { TextField } from 'material-ui';
 import { setupMessages } from 'locale-data/messages';
 import { PathInputField } from 'shared-components';
@@ -76,17 +76,16 @@ export default function IpfsOptionsForm (props, { muiTheme }) {
 IpfsOptionsForm.propTypes = {
     apiPort: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     gatewayPort: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-    swarmPort: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     intl: PropTypes.shape().isRequired,
+    ipfsApi: PropTypes.bool,
     ipfsPortsRequested: PropTypes.bool,
-    ipfsSpawned: PropTypes.bool,
-    style: PropTypes.shape(),
     onIpfsApiPortChange: PropTypes.func,
     onIpfsGatewayPortChange: PropTypes.func,
-    onIpfsSwarmPortChange: PropTypes.func,
     onIpfsStorageChange: PropTypes.func,
+    onIpfsSwarmPortChange: PropTypes.func,
     storagePath: PropTypes.string,
-    showSuccessMessage: PropTypes.bool
+    style: PropTypes.shape(),
+    swarmPort: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 };
 
 IpfsOptionsForm.contextTypes = {

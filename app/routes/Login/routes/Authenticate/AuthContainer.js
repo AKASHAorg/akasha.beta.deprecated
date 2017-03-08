@@ -12,8 +12,8 @@ function mapStateToProps (state, ownProps) {
         loginRequested: state.profileState.getIn(['flags', 'loginRequested']),
         localProfilesFetched: state.profileState.get('flags').get('localProfilesFetched'),
         fetchingLocalProfiles: state.profileState.get('flags').get('fetchingLocalProfiles'),
-        gethStatus: state.externalProcState.get('gethStatus'),
-        ipfsStatus: state.externalProcState.get('ipfsStatus'),
+        gethStatus: state.externalProcState.getIn(['geth', 'status']),
+        ipfsStatus: state.externalProcState.getIn(['geth', 'status']),
         passwordPreference: state.settingsState.get('userSettings').passwordPreference
     };
 }

@@ -58,13 +58,14 @@ class PanelContainer extends React.Component {
               className="row"
               style={Object.assign({
                   position: 'absolute',
-                  top: 80,
+                  top: isHeaderShrinked ? 56 : 80,
                   bottom: 60,
                   left: 0,
                   right: 0,
                   overflowY: 'auto',
                   overflowX: 'hidden',
-                  margin: 0
+                  margin: 0,
+                  transition: 'all 0.118s ease-in-out',
               }, contentStyle)}
               ref={(panelContent) => { this.panelContent = panelContent; }}
               onScroll={this._handleScroll}

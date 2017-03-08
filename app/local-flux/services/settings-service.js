@@ -154,58 +154,28 @@ const getSettings = table =>
             .catch(error => reject(error))
     );
 
+const saveSettings = (table, payload) =>
+    new Promise((resolve, reject) => {
+        settingsDB[table].where('name').equals(table).toArray()
+            .then((data) => {
+                if (data.length) {
+                    settingsDB[table].where('name').equals(table).modify(payload)
+                        .then(() => resolve(payload))
+                        .catch(error => reject(error));
+                } else {
+                    settingsDB[table].put({ name: table, ...payload })
+                        .then(() => resolve(payload))
+                        .catch(error => reject(error));
+                }
+            });
+    });
+
 export const getGeneralSettings = () => getSettings('general');
-
 export const getGethSettings = () => getSettings('geth');
-
 export const getIpfsSettings = () => getSettings('ipfs');
 
-export const saveGeneralSettings = payload =>
-    new Promise((resolve, reject) => {
-        settingsDB.general.where('name').equals('general').toArray()
-            .then((data) => {
-                if (data.length) {
-                    settingsDB.general.where('name').equals('general').modify(payload)
-                        .then(() => resolve(payload))
-                        .catch(error => reject(error));
-                } else {
-                    settingsDB.general.put({ name: 'general', ...payload })
-                        .then(() => resolve(payload))
-                        .catch(error => reject(error));
-                }
-            });
-    });
-
-export const saveGethSettings = payload =>
-    new Promise((resolve, reject) => {
-        settingsDB.geth.where('name').equals('geth').toArray()
-            .then((data) => {
-                if (data.length) {
-                    settingsDB.geth.where('name').equals('geth').modify(payload)
-                        .then(() => resolve(payload))
-                        .catch(error => reject(error));
-                } else {
-                    settingsDB.geth.put({ name: 'geth', ...payload })
-                        .then(() => resolve(payload))
-                        .catch(error => reject(error));
-                }
-            });
-    });
-
-export const saveIpfsSettings = payload =>
-    new Promise((resolve, reject) => {
-        settingsDB.ipfs.where('name').equals('ipfs').toArray()
-            .then((data) => {
-                if (data.length) {
-                    settingsDB.ipfs.where('name').equals('ipfs').modify(payload)
-                        .then(() => resolve(payload))
-                        .catch(error => reject(error));
-                } else {
-                    settingsDB.ipfs.put({ name: 'ipfs', ...payload })
-                        .then(() => resolve(payload))
-                        .catch(error => reject(error));
-                }
-            });
-    });
+export const saveGeneralSettings = payload => saveSettings('general', payload);
+export const gethSaveSettings = payload => saveSettings('geth', payload);
+export const saveIpfsSettings = payload => saveSettings('ipfs', payload);
 
 export { SettingsService };

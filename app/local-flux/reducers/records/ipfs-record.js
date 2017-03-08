@@ -1,4 +1,4 @@
-import { Record, List, Set } from 'immutable';
+import { Record, OrderedSet } from 'immutable';
 
 const IpfsStatus = Record({
     downloading: null,
@@ -7,15 +7,18 @@ const IpfsStatus = Record({
     started: null,
     stopped: null,
 });
+
 const IpfsFlags = Record({
     busyState: false,
-    portsRequested: false
+    ipfsStarting: false,
+    portsRequested: false,
+    settingPorts: false
 });
 
 const IpfsRecord = Record({
     status: new IpfsStatus(),
     flags: new IpfsFlags(),
-    logs: new Set(),
+    logs: new OrderedSet(),
 });
 
 export default IpfsRecord;

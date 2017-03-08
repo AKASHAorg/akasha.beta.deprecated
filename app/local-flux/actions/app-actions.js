@@ -96,4 +96,36 @@ export function setTimestamp (timestamp) {
     };
 }
 
+export function toggleGethDetailsModal () {
+    return {
+        type: types.TOGGLE_GETH_DETAILS_MODAL
+    };
+}
+
+export function toggleIpfsDetailsModal () {
+    return {
+        type: types.TOGGLE_IPFS_DETAILS_MODAL
+    };
+}
+
+export function showNotification (notification) {
+    return {
+        type: types.SHOW_NOTIFICATION,
+        notification
+    };
+}
+
+export function hideNotification (notification) {
+    return {
+        type: types.HIDE_NOTIFICATION,
+        notification
+    };
+}
+
+export function hideTerms () {
+    return {
+        type: types.HIDE_TERMS
+    };
+}
+
 export { AppActions };
