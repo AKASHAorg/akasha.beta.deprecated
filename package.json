@@ -261,12 +261,14 @@
       ]
     },
     "linux": {
+      "category": "Network",
       "target": [
         "deb",
         "zip"
       ]
     },
     "mac": {
+      "category": "public.app-category.social-networking",
       "target": [
         "dmg",
         "zip"
