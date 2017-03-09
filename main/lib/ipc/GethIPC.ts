@@ -33,8 +33,7 @@ class GethIPC extends GethEmitter {
             datadir: join(datadir, 'akasha-alpha'),
             ipcpath: join(datadir, 'akasha-alpha', 'geth.ipc'),
             networkid: 511337,
-            shh: '',
-            light: ''
+            shh: ''
         });
         // register listeners
         this._start()
