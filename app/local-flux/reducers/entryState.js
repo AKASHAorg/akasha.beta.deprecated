@@ -197,13 +197,14 @@ const entryState = createReducer(initialState, {
 
     [types.MORE_SAVED_ENTRIES_LIST_ERROR]: errorHandler,
 
-    [types.MORE_SAVED_ENTRIES_LIST_SUCCESS]: (state, { data, flags }) => {
-        const entries = fromJS(data.collection).map(entry => entry.set('type', 'savedEntry'));
-        return state.merge({
-            entries: state.get('entries').concat(entries),
+    [types.MORE_SAVED_ENTRIES_LIST_SUCCESS]: (state, { data, flags }) =>
+        state.merge({
+            entries: state.get('entries')
+                .concat(fromJS(data.collection.map(entry => (
+                    { content: entry, entryId: entry.entryId, type: 'savedEntry' }
+                )))),
             flags: state.get('flags').merge(flags)
-        });
-    },
+        }),
 
     [types.ENTRY_PROFILE_ITERATOR]: flagHandler,
 
