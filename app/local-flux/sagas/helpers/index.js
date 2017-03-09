@@ -1,7 +1,7 @@
 import { eventChannel } from 'redux-saga';
 import { put, take } from 'redux-saga/effects';
 
-const Channel = window.Channel;
+const Channel = global.Channel;
 export const actionChannels = {};
 export const enabledChannels = [];
 
@@ -11,7 +11,7 @@ export function createActionChannel (channel) {
         const handler = (ev, resp) => {
             emit(resp);
         };
-
+        console.log(channel);
         channel.on(handler);
 
         const unsubscribe = () => {
@@ -43,6 +43,14 @@ export function createActionChannels () {
     const ipfsChannels = ['getConfig', 'startService', 'status', 'stopService'];
     ipfsChannels.forEach((channel) => {
         actionChannels.ipfs[channel] = createActionChannel(Channel.client.ipfs[channel]);
+    });
+    const authChannels = ['generateEthKey', 'login'];
+    authChannels.forEach((channel) => {
+        actionChannels.auth[channel] = createActionChannel(Channel.client.auth[channel]);
+    });
+    const txChannels = ['addToQueue', 'emitMined'];
+    txChannels.forEach((channel) => {
+        actionChannels.tx[channel] = createActionChannel(Channel.client.tx[channel]);
     });
 }
 

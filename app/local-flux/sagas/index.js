@@ -4,6 +4,7 @@ import { createActionChannels } from './helpers';
 import { gethGetOptions, gethGetStatus, ipfsGetConfig, ipfsGetStatus, registerEProcListeners,
     watchEProcActions } from './external-process-saga';
 import { getSettings, watchSettingsActions } from './settings-saga';
+import { watchTempProfileActions } from './temp-profile-saga';
 
 function* registerListeners () {
     yield fork(registerEProcListeners);
@@ -36,4 +37,7 @@ export default function* rootSaga () {
     yield fork(bootstrapApp);
     yield fork(watchEProcActions);
     yield fork(watchSettingsActions);
+    yield fork(watchTempProfileActions);
+    // This should be moved away
+    // yield fork(toggleGethLogger);
 }

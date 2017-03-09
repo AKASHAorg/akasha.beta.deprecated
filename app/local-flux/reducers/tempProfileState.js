@@ -1,6 +1,6 @@
 /* eslint new-cap: ["error", { "capIsNewExceptions": ["Record"] }]*/
 import { fromJS, List, Record } from 'immutable';
-import * as types from '../constants/TempProfileConstants';
+import * as types from '../constants/temp-profile-constants';
 import { createReducer } from './create-reducer';
 
 const ErrorRecord = Record({
