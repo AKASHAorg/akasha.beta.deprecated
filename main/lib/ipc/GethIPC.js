@@ -27,7 +27,8 @@ class GethIPC extends GethEmitter_1.default {
             datadir: path_1.join(datadir, 'akasha-alpha'),
             ipcpath: path_1.join(datadir, 'akasha-alpha', 'geth.ipc'),
             networkid: 511337,
-            shh: ''
+            shh: '',
+            light: ''
         });
         this._start()
             ._restart()
