@@ -1,52 +1,59 @@
+import { spy } from 'sinon';
+
 const EventEmitter = require('events');
 
 class BasicChannel extends EventEmitter {
     constructor (channelName) {
         super();
         this.channelName = channelName;
-        this.payload = null;
-        this.response = null;
-    }
-    send (payload) {
-        this.payload = payload;
-        this.emit(this.channelName, this.response);
     }
     on (listener) {
-        this.on(this.channelName, listener);
+        return super.on(this.channelName, listener);
     }
     once (listener) {
-        this.once(this.channelName, listener);
+        return super.once(this.channelName, listener);
     }
-    setResponse (response) {
-        this.response = response;
+    triggerResponse (response) {
+        return super.emit(this.channelName, response);
     }
-    getResponse () {
-        return this.response;
+    enable () {
+        return super.emit('manager', {});
     }
-    getPayload () {
-        return this.payload;
+    disable () {
+        return super.emit('manager', {});
     }
 }
 
-export const Channel = {
-    server: {
-        auth: {
-            generateEthKey: new BasicChannel('generateEthKey')
+const generateTheChannel = () => {
+    const channel = {
+        server: {},
+        client: {}
+    };
+    const modules = [
+        'auth.generateEthKey', 'auth.requestEther', 'auth.manager', 'auth.login',
+        'geth.logs', 'geth.options', 'geth.startService', 'geth.status', 'geth.syncStatus', 'geth.stopService',
+        'ipfs.getConfig', 'ipfs.startService', 'ipfs.status', 'ipfs.stopService',
+        'tx.addToQueue', 'tx.emitMined'
+    ];
+    for (let i = modules.length - 1; i >= 0; i -= 1) {
+        const module = modules[i];
+        const parts = module.split('.');
+        if (!channel.server[parts[0]]) {
+            channel.server[parts[0]] = {};
         }
-    },
-    client: {
-        auth: {
-            manager: new BasicChannel('manager'),
-            generateEthKey: new BasicChannel('generateEthKey')
-        },
-        geth: {
-            logs: new BasicChannel('logs'),
-            options: new BasicChannel('options'),
-            stopService: new BasicChannel('stopService')
-        },
-        ipfs: {
-            getConfig: new BasicChannel('getConfig'),
-            stopService: new BasicChannel('stopService')
+        channel.server[parts[0]][parts[1]] = {
+            send: spy(),
+            enable: spy(),
+            disable: spy()
+        };
+        if (!channel.client[parts[0]]) {
+            channel.client[parts[0]] = {};
         }
+        channel.client[parts[0]][parts[1]] = new BasicChannel(module);
     }
+    return channel;
 };
+
+const Channel = generateTheChannel();
+global.Channel = Channel;
+export default Channel;

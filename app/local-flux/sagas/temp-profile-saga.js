@@ -10,7 +10,6 @@ const Channel = global.Channel;
  * Create temp profile in database
  */
 export function* createTempProfile (data) {
-    console.log('creating temp profile');
     try {
         const tempProfile = yield apply(
             registryService,
@@ -32,10 +31,9 @@ export function* createTempProfile (data) {
 
 
 export function* createEthAddress (tempProfile) {
-    console.log('creating a key!');
     const channel = Channel.server.auth.generateEthKey;
-    yield call(enableChannel, channel, Channel.client.auth.manager);
     if (!tempProfile.address) {
+        yield call(enableChannel, channel, Channel.client.auth.manager);
         yield call([channel, channel.send], { password: tempProfile.password });
         const response = yield take(actionChannels.auth.generateEthKey);
         if (!response.error) {

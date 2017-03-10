@@ -41,7 +41,7 @@ const initialState = fromJS({
 
 const tempProfileState = createReducer(initialState, {
     // start saving a new temp profile to database
-    [types.CREATE_TEMP_PROFILE]: (state, { profileData }) =>
+    [types.TEMP_PROFILE_CREATE]: (state, { profileData }) =>
         state.merge({
             tempProfile: new TempProfile({
                 ...profileData,

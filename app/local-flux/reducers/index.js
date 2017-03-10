@@ -13,7 +13,7 @@ import profileState from './profileState';
 import searchState from './searchState';
 import settingsState from './settingsState';
 import tagState from './tagState';
-import tempProfileState from './tempProfileState';
+import tempProfileState from './temp-profile-state';
 import transactionState from './transactionState';
 import utilsState from './utilsState';
 

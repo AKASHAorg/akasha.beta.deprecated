@@ -1,12 +1,13 @@
 export const gethStatus = {
-    downloading: false,
-    upgrading: false,
-    starting: true,
     api: false,
+    blockNr: 0,
+    downloading: false,
+    message: '',
     spawned: false,
     started: false,
+    starting: false,
     stopped: false,
-    blockNr: 0
+    upgrading: false,
 };
 
 export const gethSyncStatus = {
@@ -29,4 +30,9 @@ export const gethStartError = {
     from: {},
     message: 'error starting geth service',
     fatal: true
+};
+
+export const gethStop = {
+    started: false,
+    stopped: true
 };

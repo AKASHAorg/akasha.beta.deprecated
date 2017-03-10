@@ -5,3 +5,11 @@ export const tempProfileData = {
     password: 'asdasdasd',
     password2: 'asdasdasd'
 };
+
+export const requestEtherSuccess = {
+    tx: '0x0123123123'
+};
+
+export const generateEthKeySuccess = {
+    address: '0x00ethaddress'
+};

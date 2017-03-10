@@ -11,7 +11,6 @@ export function createActionChannel (channel) {
         const handler = (ev, resp) => {
             emit(resp);
         };
-        console.log(channel);
         channel.on(handler);
 
         const unsubscribe = () => {

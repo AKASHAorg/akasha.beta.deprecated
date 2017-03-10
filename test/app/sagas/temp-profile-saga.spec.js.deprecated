@@ -1,0 +1,68 @@
+import chai from 'chai';
+import { spy } from 'sinon';
+import { apply, call, take, put, fork } from 'redux-saga/effects';
+import Channel from '../helpers/channels.js';
+import { watchTempProfileActions, createTempProfile, createEthAddress } from '../../../app/local-flux/sagas/temp-profile-saga';
+import * as tempProfileActions from '../../../app/local-flux/actions/temp-profile-actions';
+import * as registryService from '../../../app/local-flux/services/registry-service';
+import { createActionChannels, actionChannels, enableChannel } from '../../../app/local-flux/sagas/helpers';
+import { tempProfileData } from '../response-data/temp-profile';
+const { expect } = chai;
+const getState = () => state;
+
+createActionChannels(Channel);
+
+describe('temp-profile-saga', () => {
+    describe('createTempProfile saga', () => {
+        const createTempProfileSaga = createTempProfile(tempProfileData);
+        let next;
+        it('should create temp profile in db', () => {
+            next = createTempProfileSaga.next();
+            expect(next.value).to.eql(apply(registryService, registryService.createTempProfile, [tempProfileData]))
+        });
+        it('should fire tempProfileCreateSuccess action', () => {
+            const dbResult = { id: 1 }
+            next = createTempProfileSaga.next(tempProfileData);
+            expect(next.value).to.eql(put(tempProfileActions.tempProfileCreateSuccess(tempProfileData)));
+        });
+    });
+    describe('createEthAddress saga', () => {
+        describe('profile being created does not have address already created (creating)', () => {
+            const generateKeyServerChannel = global.Channel.server.auth.generateEthKey;
+            const createEthAddressSaga = createEthAddress(tempProfileData);
+            let next;
+            it('should enable generateKey channel', () => {
+                next = createEthAddressSaga.next(tempProfileData);
+                expect(next.value).to.eql(call(enableChannel, generateKeyServerChannel, Channel.client.auth.manager));
+            });
+            it('should send request to main through generateKey channel', () => {
+                next = createEthAddressSaga.next(tempProfileData);
+                expect(next.value).to.eql(call([generateKeyServerChannel, generateKeyServerChannel.send], { password: tempProfileData.password }));
+            });
+            it('should wait for response', () => {
+                next = createEthAddressSaga.next(tempProfileData);
+                expect(next.value).to.eql(take(actionChannels.auth.generateEthKey));
+            })
+            describe('when response does not contain error key', () => {
+                it('should update temp profile with the address from response', () => {
+                    next = createEthAddressSaga.next(tempProfileData);
+                    expect(next.value).to.eql(apply(registryService, registryService.updateTempProfile, [tempProfileData]));
+                });
+                it('should fire success action', () => {
+                    next = createEthAddressSaga.next(tempProfileData);
+                    expect(next.value).to.eql(put(tempProfileActions.ethAddressCreateSuccess(tempProfileData)));
+                });
+            });
+        });
+        describe('profile being created already have an eth address (resuming)', () => {
+            const generateKeyServerChannel = global.Channel.server.auth.generateEthKey;
+            const tmpProfileData = Object.assign({}, tempProfileData, { address: '0x0123123123'});
+            const createEthAddressSaga = createEthAddress(tmpProfileData);
+            let next;
+            it('should fire success action', () => {
+                next = createEthAddressSaga.next(tempProfileData);
+                expect(next.value).to.eql(put(tempProfileActions.ethAddressCreateSuccess(tmpProfileData)));
+            });
+        });
+    });
+});
