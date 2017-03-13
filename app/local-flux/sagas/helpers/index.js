@@ -9,6 +9,7 @@ export const enabledChannels = [];
 export function createActionChannel (channel) {
     return eventChannel((emit) => {
         const handler = (ev, resp) => {
+            console.log('response on', channel.channel, 'is', resp);
             emit(resp);
         };
         channel.on(handler);

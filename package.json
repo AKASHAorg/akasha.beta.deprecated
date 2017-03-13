@@ -6,7 +6,7 @@
   "main": "main.js",
   "version": "0.5.2",
   "scripts": {
-    "test": "cross-env NODE_ENV=test BABEL_DISABLE_CACHE=1 mocha --compilers js:babel-register -R nyan --recursive test/**/*.spec.js",
+    "test": "cross-env NODE_ENV=test BABEL_DISABLE_CACHE=1 mocha --compilers js:babel-register -R nyan test/app/setup.js --recursive test/**/*.spec.js",
     "test-watch": "npm test -- --watch",
     "test-e2e": "cross-env NODE_ENV=test BABEL_DISABLE_CACHE=1 mocha --compilers js:babel-register --require ./test/setup.js ./test/e2e.js",
     "debug-ipc": "ELECTRON_RUN_AS_NODE=true node_modules/.bin/electron node_modules/node-inspector/bin/inspector.js --no-preload --web-port 8181",
@@ -167,6 +167,7 @@
     "postcss-modules-local-by-default": "1.1.1",
     "postcss-modules-scope": "1.0.2",
     "postcss-modules-values": "1.2.2",
+    "proxyquire": "^1.7.11",
     "react": "15.5.4",
     "react-addons-perf": "15.4.2",
     "react-addons-test-utils": "15.5.1",

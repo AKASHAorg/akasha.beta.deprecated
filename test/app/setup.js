@@ -1,11 +1,17 @@
-import 'babel-polyfill';
-import { jsdom } from 'jsdom';
-import hook from 'css-modules-require-hook';
+// import 'babel-polyfill';
+// import { jsdom } from 'jsdom';
+// import hook from 'css-modules-require-hook';
+import Channel from './helpers/channels';
+import { createActionChannels } from '../../app/local-flux/sagas/helpers';
 
-hook({
-    generateScopedName: '[name]__[local]___[hash:base64:5]'
+before('init Channel', () => {
+    createActionChannels(Channel);
 });
 
-global.document = jsdom('<!doctype html><html><body></body></html>');
-global.window = global.document.defaultView;
-global.navigator = global.window.navigator;
+// hook({
+//     generateScopedName: '[name]__[local]___[hash:base64:5]'
+// });
+
+// global.document = jsdom('<!doctype html><html><body></body></html>');
+// global.window = global.document.defaultView;
+// global.navigator = global.window.navigator;

@@ -4,8 +4,6 @@ import EProcReducer from '../../../app/local-flux/reducers/externalProcState';
 import { GethModel, IpfsModel } from '../../../app/local-flux/reducers/models';
 import { ErrorRecord, GethStatus } from '../../../app/local-flux/reducers/records';
 import * as types from '../../../app/local-flux/constants';
-import { gethStatus, gethSyncStatus, gethStart, gethStartError } from '../response-data/geth';
-import * as types from '../../../app/local-flux/constants/external-process-constants';
 import { gethStatus, gethSyncStatus, gethStart, gethStop, gethStartError } from '../response-data/geth';
 import { ipfsStatus } from '../response-data/ipfs';
 import { fromJS, Map, Record } from 'immutable';
@@ -99,7 +97,7 @@ describe('ExternalProcState Reducer', function() {
             expect(modifiedState.getIn(['ipfs', 'flags'])).to.be.instanceof(Record);
         });
         it('should set startRequested flag to true', () => {
-            expect(modifiedState.getIn(['ipfs', 'flags', 'startRequested'])).to.be.true;
+            expect(modifiedState.getIn(['ipfs', 'flags', 'ipfsStarting'])).to.be.true;
         });
         it('should set busyState flag to true', () => {
             expect(modifiedState.getIn(['ipfs', 'flags', 'busyState'])).to.be.true;
@@ -155,7 +153,8 @@ describe('ExternalProcState Reducer', function() {
     describe(`should handle ${types.IPFS_GET_PORTS_SUCCESS}`, () => {
         beforeEach(() => {
             modifiedState = EProcReducer(modifiedState, {
-                type: types.IPFS_GET_PORTS_SUCCESS
+                type: types.IPFS_GET_PORTS_SUCCESS,
+                data: ipfsStatus
             });
         });
         it('should set portsRequested flag to false', () => {
@@ -171,14 +170,14 @@ describe('ExternalProcState Reducer', function() {
     describe.skip(`should handle ${types.GETH_SYNC_ACTIVE}`, () => {
         it('should also be tested later!');
     });
-    describe(`should handle ${types.GETH_SYNC_STOPPED}`, () => {
+    describe(`should handle ${types.GETH_STOP_SYNC}`, () => {
         beforeEach(() => {
             modifiedState = EProcReducer(modifiedState, {
-                type: types.GETH_SYNC_STOPPED
+                type: types.GETH_STOP_SYNC
             });
         });
-        it('should set syncActionId in flags to 3', () => {
-            expect(modifiedState.getIn(['geth', 'flags', 'syncActionId'])).to.equal(3);
+        it('should set syncActionId to 3', () => {
+            expect(modifiedState.getIn(['geth', 'syncActionId'])).to.equal(3);
         });
         it('should set peerCount in syncStatus to null', () => {
             expect(modifiedState.getIn(['geth', 'syncStatus', 'peerCount'])).to.be.null;
@@ -193,14 +192,14 @@ describe('ExternalProcState Reducer', function() {
             expect(modifiedState.getIn(['geth', 'syncStatus'])).to.be.instanceof(Record);
         });
     });
-    describe(`should handle ${types.GETH_SYNC_PAUSED}`, () => {
+    describe(`should handle ${types.GETH_PAUSE_SYNC}`, () => {
         beforeEach(() => {
             modifiedState = EProcReducer(modifiedState, {
-                type: types.GETH_SYNC_PAUSED
+                type: types.GETH_PAUSE_SYNC
             });
         });
-        it('should set syncActionId in flags to value => 3', () => {
-            expect(modifiedState.getIn(['geth', 'flags', 'syncActionId'])).to.equal(3);
+        it('should set syncActionId in flags to value => 2', () => {
+            expect(modifiedState.getIn(['geth', 'syncActionId'])).to.equal(2);
         });
         it('should set peerCount in syncStatus to null', () => {
             expect(modifiedState.getIn(['geth', 'syncStatus', 'peerCount'])).to.be.null;
@@ -215,14 +214,14 @@ describe('ExternalProcState Reducer', function() {
             expect(modifiedState.getIn(['geth', 'syncStatus'])).to.be.instanceof(Record)
         });
     });
-    describe(`should handle ${types.GETH_SYNC_RESUME}`, () => {
+    describe(`should handle ${types.GETH_RESUME_SYNC}`, () => {
         beforeEach(() => {
             modifiedState = EProcReducer(modifiedState, {
-                type: types.GETH_SYNC_RESUME
+                type: types.GETH_RESUME_SYNC
             });
         });
         it('should set flags.syncActionId flag to 1', () => {
-            expect(modifiedState.getIn(['geth', 'flags', 'syncActionId'])).to.equal(1);
+            expect(modifiedState.getIn(['geth', 'syncActionId'])).to.equal(1);
         });
         it('should set syncStatus.peercount to null', () => {
             expect(modifiedState.getIn(['geth', 'syncStatus', 'peerCount'])).to.be.null;

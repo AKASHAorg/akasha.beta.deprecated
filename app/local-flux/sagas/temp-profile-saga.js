@@ -36,6 +36,7 @@ export function* createEthAddress (tempProfile) {
         yield call(enableChannel, channel, Channel.client.auth.manager);
         yield call([channel, channel.send], { password: tempProfile.password });
         const response = yield take(actionChannels.auth.generateEthKey);
+        console.log('createEth response', response);
         if (!response.error) {
             tempProfile.address = response.data.address;
             tempProfile = yield apply(
@@ -139,39 +140,39 @@ function* watchEthAddressCreate () {
     }
 }
 
-function* watchFaucetRequest () {
-    while (true) {
-        const action = yield take(types.ETH_ADDRESS_CREATE_SUCCESS);
-        yield fork(faucetRequest, action.data);
-    }
-}
+// function* watchFaucetRequest () {
+//     while (true) {
+//         const action = yield take(types.ETH_ADDRESS_CREATE_SUCCESS);
+//         yield fork(faucetRequest, action.data);
+//     }
+// }
 
-function* watchFaucetTxMined () {
-    while (true) {
-        const action = yield take(types.FUND_FROM_FAUCET_SUCCESS);
-        yield fork(listenFaucetTx, action.data);
-    }
-}
+// function* watchFaucetTxMined () {
+//     while (true) {
+//         const action = yield take(types.FUND_FROM_FAUCET_SUCCESS);
+//         yield fork(listenFaucetTx, action.data);
+//     }
+// }
 
-function* watchTempProfileLogin () {
-    while (true) {
-        const action = yield take(types.FAUCET_TX_MINED);
-        yield fork(tempProfileLogin, action.data);
-    }
-}
-function* watchTempProfilePublish () {
-    while (true) {
-        const action = yield take(types.TEMP_PROFILE_LOGIN_SUCCESS);
-        yield fork(tempProfilePublish, action.data);
-    }
-}
+// function* watchTempProfileLogin () {
+//     while (true) {
+//         const action = yield take(types.FAUCET_TX_MINED);
+//         yield fork(tempProfileLogin, action.data);
+//     }
+// }
+// function* watchTempProfilePublish () {
+//     while (true) {
+//         const action = yield take(types.TEMP_PROFILE_LOGIN_SUCCESS);
+//         yield fork(tempProfilePublish, action.data);
+//     }
+// }
 export function* watchTempProfileActions () {
     yield fork(watchProfileCreate);
     yield fork(watchEthAddressCreate);
-    yield fork(watchFaucetRequest);
-    yield fork(watchFaucetTxMined);
-    yield fork(watchTempProfileLogin);
-    yield fork(watchTempProfilePublish);
+    // yield fork(watchFaucetRequest);
+    // yield fork(watchFaucetTxMined);
+    // yield fork(watchTempProfileLogin);
+    // yield fork(watchTempProfilePublish);
 }
 
 
