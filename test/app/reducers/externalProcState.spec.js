@@ -51,9 +51,6 @@ describe('ExternalProcState Reducer', function() {
         beforeEach(() => {
             modifiedState = EProcReducer(modifiedState, {type: types.GETH_STOP});
         });
-        it.skip('should set startRequested flag to false', () => {
-            expect(modifiedState.getIn(['geth', 'flags', 'startRequested'])).to.be.false;
-        });
         it('should set busyState flag to true', () => {
             expect(modifiedState.getIn(['geth', 'flags', 'busyState'])).to.be.true;
         });

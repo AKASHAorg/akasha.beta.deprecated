@@ -9,7 +9,6 @@ export const enabledChannels = [];
 export function createActionChannel (channel) {
     return eventChannel((emit) => {
         const handler = (ev, resp) => {
-            console.log('response on', channel.channel, 'is', resp);
             emit(resp);
         };
         channel.on(handler);
@@ -44,7 +43,7 @@ export function createActionChannels () {
     ipfsChannels.forEach((channel) => {
         actionChannels.ipfs[channel] = createActionChannel(Channel.client.ipfs[channel]);
     });
-    const authChannels = ['generateEthKey', 'login'];
+    const authChannels = ['generateEthKey', 'login', 'requestEther'];
     authChannels.forEach((channel) => {
         actionChannels.auth[channel] = createActionChannel(Channel.client.auth[channel]);
     });

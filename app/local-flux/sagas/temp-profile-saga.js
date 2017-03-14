@@ -1,4 +1,4 @@
-import { take, fork, call, apply, put, cancelled } from 'redux-saga/effects';
+import { take, fork, call, apply, put } from 'redux-saga/effects';
 import { actionChannels, enableChannel } from './helpers';
 import * as types from '../constants/temp-profile-constants';
 import * as tempProfileActions from '../actions/temp-profile-actions';
@@ -9,7 +9,7 @@ const Channel = global.Channel;
 /**
  * Create temp profile in database
  */
-export function* createTempProfile (data) {
+function* createTempProfile (data) {
     try {
         const tempProfile = yield apply(
             registryService,
@@ -20,72 +20,63 @@ export function* createTempProfile (data) {
     } catch (ex) {
         console.error(ex);
         yield put(tempProfileActions.tempProfileCreateError(ex));
-    } finally {
-        if (yield cancelled()) {
-            // cleanup database
-            yield apply(registryService, registryService.removeTempProfile);
-            yield put(tempProfileActions.tempProfileAbortSuccess());
-        }
     }
 }
 
-
-export function* createEthAddress (tempProfile) {
+function* ethAddressRequest (tempProfile) {
     const channel = Channel.server.auth.generateEthKey;
-    if (!tempProfile.address) {
-        yield call(enableChannel, channel, Channel.client.auth.manager);
-        yield call([channel, channel.send], { password: tempProfile.password });
-        const response = yield take(actionChannels.auth.generateEthKey);
-        console.log('createEth response', response);
-        if (!response.error) {
-            tempProfile.address = response.data.address;
-            tempProfile = yield apply(
-                registryService,
-                registryService.updateTempProfile,
-                [tempProfile]
-            );
-            yield put(tempProfileActions.ethAddressCreateSuccess(tempProfile));
-        } else {
-            console.error(response.error);
-            yield put(tempProfileActions.ethAddressCreateError(response.error));
-        }
-    }
-    yield put(tempProfileActions.ethAddressCreateSuccess(tempProfile));
+    yield call(enableChannel, channel, Channel.client.auth.manager);
+    yield call([channel, channel.send], { password: tempProfile.password });
 }
 
-export function* faucetRequest (tempProfile) {
-    console.log('Receiving some love!!');
+function* createEthAddress (tempProfile) {
+    const response = yield take(actionChannels.auth.generateEthKey);
+    if (!response.error) {
+        tempProfile.address = response.data.address;
+        tempProfile = yield apply(
+            registryService,
+            registryService.updateTempProfile,
+            [tempProfile]
+        );
+        yield put(tempProfileActions.ethAddressCreateSuccess(tempProfile));
+    } else {
+        console.error(response.error);
+        yield put(tempProfileActions.ethAddressCreateError(response.error));
+    }
+}
+
+function* faucetRequest (tempProfile) {
     const channel = Channel.server.auth.requestEther;
-    if (!tempProfile.currentStatus.faucetRequested || !tempProfile.currentStatus.faucetTx) {
-        yield call([channel, channel.send], { address: tempProfile.address });
-        const response = yield take(actionChannels.auth.requestEther);
-        if (!response.error) {
-            tempProfile.currentStatus.faucetRequested = true;
-            tempProfile.currentStatus.faucetTx = response.data.tx;
-            tempProfile = yield apply(
-                registryService,
-                registryService.updateTempProfile,
-                [tempProfile]
-            );
-            yield put(tempProfileActions.faucetRequestSuccess(tempProfile));
-        } else {
-            console.error(response.error);
-        }
-    }
-    yield put(tempProfileActions.faucetRequestSuccess(tempProfile));
+    yield call([channel, channel.send], { address: tempProfile.address });
 }
 
-
-function* listenFaucetTx (tempProfile) {
-    console.log('listen for faucet tx everytime, no matter what!');
-    const channel = Channel.server.tx.addToQueue;
-    yield call([channel, channel.send], { tx: tempProfile.currentStatus.faucetTx });
-    const response = yield take(actionChannels.tx.emitMined);
-    if (!response.error && response.data.tx === tempProfile.currentStatus.faucetTx) {
-        yield put(tempProfileActions.faucetTxMined(tempProfile));
+function* faucetSuccess (tempProfile) {
+    // console.log(actionChannels);
+    const response = yield take(actionChannels.auth.requestEther);
+    if (!response.error) {
+        tempProfile.currentStatus.faucetRequested = true;
+        tempProfile.currentStatus.faucetTx = response.data.tx;
+        tempProfile = yield apply(
+            registryService,
+            registryService.updateTempProfile,
+            [tempProfile]
+        );
+        yield put(tempProfileActions.faucetRequestSuccess(tempProfile));
     } else {
         console.error(response.error);
     }
+}
+
+function* listenFaucetTx (tempProfile) {
+    // console.log('listen for faucet tx everytime, no matter what!');
+    // const channel = Channel.server.tx.addToQueue;
+    // yield call([channel, channel.send], { tx: tempProfile.currentStatus.faucetTx });
+    // const response = yield take(actionChannels.tx.emitMined);
+    // if (!response.error && response.data.tx === tempProfile.currentStatus.faucetTx) {
+    //     yield put(tempProfileActions.faucetTxMined(tempProfile));
+    // } else {
+    //     console.error(response.error);
+    // }
 }
 function* tempProfileLogin (tempProfile) {
     console.log('temp profile login! do it everytime!');
@@ -136,23 +127,33 @@ function* watchProfileCreate () {
 function* watchEthAddressCreate () {
     while (true) {
         const action = yield take(types.TEMP_PROFILE_CREATE_SUCCESS);
-        yield fork(createEthAddress, action.data);
+        if (!action.data.address) {
+            yield fork(createEthAddress, action.data);
+            yield fork(ethAddressRequest, action.data);
+        } else {
+            yield put(tempProfileActions.ethAddressCreateSuccess(action.data));
+        }
     }
 }
 
-// function* watchFaucetRequest () {
-//     while (true) {
-//         const action = yield take(types.ETH_ADDRESS_CREATE_SUCCESS);
-//         yield fork(faucetRequest, action.data);
-//     }
-// }
+function* watchFaucetRequest () {
+    while (true) {
+        const action = yield take(types.ETH_ADDRESS_CREATE_SUCCESS);
+        if (!action.data.currentStatus.faucetRequested || !action.data.currentStatus.faucetTx) {
+            yield fork(faucetSuccess, action.data);
+            yield fork(faucetRequest, action.data);
+        } else {
+            yield put(tempProfileActions.faucetRequestSuccess(action.data));
+        }
+    }
+}
 
-// function* watchFaucetTxMined () {
-//     while (true) {
-//         const action = yield take(types.FUND_FROM_FAUCET_SUCCESS);
-//         yield fork(listenFaucetTx, action.data);
-//     }
-// }
+function* watchFaucetTxMined () {
+    while (true) {
+        const action = yield take(types.FUND_FROM_FAUCET_SUCCESS);
+        yield fork(listenFaucetTx, action.data);
+    }
+}
 
 // function* watchTempProfileLogin () {
 //     while (true) {
@@ -169,7 +170,7 @@ function* watchEthAddressCreate () {
 export function* watchTempProfileActions () {
     yield fork(watchProfileCreate);
     yield fork(watchEthAddressCreate);
-    // yield fork(watchFaucetRequest);
+    yield fork(watchFaucetRequest);
     // yield fork(watchFaucetTxMined);
     // yield fork(watchTempProfileLogin);
     // yield fork(watchTempProfilePublish);

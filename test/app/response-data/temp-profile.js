@@ -3,7 +3,13 @@ export const tempProfileData = {
     lastName: 'test',
     akashaId: 'i.m.tester',
     password: 'asdasdasd',
-    password2: 'asdasdasd'
+    password2: 'asdasdasd',
+    currentStatus: {
+        faucetRequested: false,
+        faucetTx: null,
+        publishRequested: false,
+        publishRequest: null
+    }
 };
 
 export const requestEtherSuccess = {

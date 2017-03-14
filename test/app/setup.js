@@ -1,10 +1,12 @@
 // import 'babel-polyfill';
 // import { jsdom } from 'jsdom';
 // import hook from 'css-modules-require-hook';
+import sinon from 'sinon';
 import Channel from './helpers/channels';
 import { createActionChannels } from '../../app/local-flux/sagas/helpers';
 
-before('init Channel', () => {
+before('init tests', function () {
+    this.sandbox = sinon.sandbox.create();
     createActionChannels(Channel);
 });
 

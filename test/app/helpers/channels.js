@@ -6,26 +6,26 @@ class BasicChannel extends EventEmitter {
     constructor (channelName) {
         super();
         this.channel = channelName;
-        this.channelName = channelName;
     }
     on (ev, listener) {
         if (typeof ev === 'function') {
             listener = ev;
-            ev = this.channelName;
+            ev = this.channel;
         }
         return super.on(ev, data => listener({}, data));
     }
     once (listener) {
-        return super.once(this.channelName, res => listener({}, res));
+        return super.once(this.channel, res => listener({}, res));
     }
-    triggerResponse (response) {
-        return super.emit(this.channelName, response);
+    triggerResponse (response, cb) {
+        this.emit(this.channel, response);
+        if (cb) cb();
     }
     enable () {
-        return super.emit(this.channelName, {});
+        return this.emit(this.channel, {});
     }
     disable () {
-        return super.emit(this.channelName, {});
+        return this.emit(this.channel, {});
     }
 }
 
@@ -35,7 +35,7 @@ const generateTheChannel = () => {
         client: {}
     };
     const modules = [
-        'auth.generateEthKey', 'auth.requestEther', 'auth.login',
+        'auth.generateEthKey', 'auth.requestEther', 'auth.manager', 'auth.login',
         'geth.logs', 'geth.options', 'geth.startService', 'geth.status', 'geth.syncStatus', 'geth.stopService',
         'ipfs.getConfig', 'ipfs.getPorts', 'ipfs.setPorts', 'ipfs.logs', 'ipfs.startService', 'ipfs.status', 'ipfs.stopService',
         'tx.addToQueue', 'tx.emitMined'
@@ -60,6 +60,5 @@ const generateTheChannel = () => {
 };
 
 const Channel = generateTheChannel();
-Channel.client.auth.manager = new BasicChannel('auth.manager');
 global.Channel = Channel;
 export default Channel;
