@@ -48,11 +48,6 @@ const appState = createReducer(initialState, {
     [types.APP_READY]: state =>
         state.set('appReady', true),
 
-    [types.SHOW_ERROR]: (state, action) =>
-        state.merge({ error: new ErrorRecord(action.error) }),
-
-    [types.CLEAR_ERRORS]: () => initialState,
-
     [types.SHOW_AUTH_DIALOG]: (state, { actionId }) =>
         state.set('showAuthDialog', actionId),
 

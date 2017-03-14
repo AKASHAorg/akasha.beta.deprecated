@@ -305,7 +305,7 @@ function* watchIpfsStartRequest () {
 }
 
 function* watchGethStatusRequest () {
-    while (yield take(types.GETH_STATUS)) {
+    while (yield take(types.GETH_GET_STATUS)) {
         yield call(gethGetStatus);
     }
 }

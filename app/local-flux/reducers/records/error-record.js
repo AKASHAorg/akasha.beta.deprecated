@@ -1,14 +1,19 @@
-import { Record } from 'immutable';
+import { List, Map, Record } from 'immutable';
 
 const ErrorRecord = Record({
     code: null,
+    id: null,
     message: '',
+    messageId: '',
     fatal: false,
     from: {}
 });
 
 const ErrorState = Record({
-    errors: new Set()
+    allIds: new List(),
+    byId: new Map(),
+    fatalErrors: new List(),
+    nonFatalErrors: new List(),
 });
 
 export default ErrorRecord;

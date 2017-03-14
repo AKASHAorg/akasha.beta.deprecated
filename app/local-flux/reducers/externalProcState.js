@@ -17,9 +17,16 @@ const eProcState = createReducer(initialState, {
                 busyState: true,
                 gethStarting: true,
             }),
+            status: state.getIn(['geth', 'status']).merge({
+                stopped: false
+            })
         }),
 
     [types.GETH_START_SUCCESS]: (state, { data }) => {
+        // if geth was stopped, ignore this action
+        if (state.getIn(['geth', 'status', 'stopped'])) {
+            return state;
+        }
         const syncActionId = state.getIn(['geth', 'syncActionId']) === 4 ? 4 : 1;
         const newStatus = GethModel.computeStatus(data);
         return state.mergeIn(['geth'], {

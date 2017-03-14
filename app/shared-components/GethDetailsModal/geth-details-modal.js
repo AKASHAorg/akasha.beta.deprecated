@@ -144,7 +144,7 @@ class GethDetailsModal extends Component {
             autodag: (mine && autoDag) ? '' : false,
             fast: (mine && fast) ? '' : false,
             minerthreads: mine ? minerThreads : null
-        });
+        }, true);
         this.setState({
             isGethFormDirty: false,
         });

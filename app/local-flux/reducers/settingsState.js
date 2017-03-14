@@ -1,15 +1,10 @@
 /* eslint new-cap: ["error", { "capIsNewExceptions": ["Record"] }]*/
 import { fromJS, Record, List } from 'immutable';
-import * as types from '../constants/SettingsConstants';
+import * as types from '../constants';
+import * as settingsTypes from '../constants/SettingsConstants';
 import * as appTypes from '../constants/AppConstants';
 import * as eProcTypes from '../constants';
 import { createReducer } from './create-reducer';
-
-const ErrorRecord = Record({
-    code: null,
-    fatal: false,
-    message: ''
-});
 
 const GethSettings = Record({
     autodag: null,
@@ -68,7 +63,6 @@ const initialState = fromJS({
     ipfs: new IpfsSettings(),
     defaultIpfsSettings: new IpfsSettings(),
     flags: new Flags(),
-    errors: new List(),
     userSettings: new UserSettings(),
     general: new GeneralSettings(),
     isAdvanced: false,
@@ -99,9 +93,8 @@ const settingsState = createReducer(initialState, {
         });
     },
 
-    [types.GETH_SETTINGS_ERROR]: (state, { error }) =>
+    [types.GETH_SETTINGS_ERROR]: state =>
         state.merge({
-            errors: state.get('errors').push(new ErrorRecord(error)),
             gethSettingsPending: false
         }),
 
@@ -123,9 +116,8 @@ const settingsState = createReducer(initialState, {
         });
     },
 
-    [types.IPFS_SETTINGS_ERROR]: (state, { error }) =>
+    [types.IPFS_SETTINGS_ERROR]: state =>
         state.merge({
-            errors: state.get('errors').push(new ErrorRecord(error)),
             ipfsSettingsPending: false
         }),
 
@@ -161,96 +153,32 @@ const settingsState = createReducer(initialState, {
             flags: state.get('flags').merge({ savingIpfsSettings: false })
         }),
 
-    [types.SAVE_SETTINGS_SUCCESS]: (state, action) => {
-        switch (action.table) {
-            case 'geth':
-                return state.merge({
-                    geth: state.get('geth').merge(action.settings)
-                });
-            case 'ipfs':
-                return state.merge({
-                    ipfs: state.get('ipfs').merge(action.settings)
-                });
-            case 'userSettings':
-                return state.merge({ userSettings: new UserSettings(action.settings) });
-            case 'flags': {
-                return state.merge({ flags: action.settings });
-            }
-            case 'general': {
-                return state.updateIn(['general', 'theme'], () => action.settings.theme);
-            }
-            default:
-                return state;
-        }
-    },
-
-    [types.SAVE_SETTINGS_ERROR]: (state, action) =>
-        state.merge({
-            errors: state.get('errors').push(new ErrorRecord(action.error))
-        }),
-
-    [types.SETUP_ADVANCED_SETTINGS]: (state, action) =>
-        state.set('isAdvanced', action.isAdvanced),
-
-    [types.SETUP_GETH_DATADIR]: (state, action) =>
-        state.updateIn(['geth', 'datadir'], () => action.path),
-
-    [types.SETUP_GETH_IPCPATH]: (state, action) =>
-        state.updateIn(['geth', 'ipcpath'], () => action.path),
-
-    [types.SETUP_GETH_CACHE_SIZE]: (state, action) =>
-        state.updateIn(['geth', 'cache'], () => action.size),
-
-    [types.SETUP_IPFS_PATH]: (state, action) =>
-        state.merge({
-            ipfs: state.get('ipfs').merge({ storagePath: action.storagePath })
-        }),
-
-    [types.SETUP_IPFS_GATEWAY_PORT]: (state, action) =>
-        state.updateIn(['ipfs', 'gatewayPort'], () => action.port),
-
-    [types.RESET_SETTINGS]: state =>
-        state.merge({
-            geth: state.get('defaultGethSettings'),
-            ipfs: state.get('defaultIpfsSettings')
-        }),
-
-    [types.GET_USER_SETTINGS_SUCCESS]: (state, { data }) =>
+    [settingsTypes.GET_USER_SETTINGS_SUCCESS]: (state, { data }) =>
         state.merge({
             userSettings: data ? new UserSettings(data) : new UserSettings()
         }),
 
-    [types.GET_USER_SETTINGS_ERROR]: (state, { error }) =>
-        state.merge({
-            errors: state.get('errors').push(new ErrorRecord(error)),
-        }),
-
-    [types.CLEAN_USER_SETTINGS]: state =>
+    [settingsTypes.CLEAN_USER_SETTINGS]: state =>
         state.set('userSettings', new UserSettings()),
 
-    [types.SAVE_LATEST_MENTION_SUCCESS]: (state, { data }) =>
+    [settingsTypes.SAVE_LATEST_MENTION_SUCCESS]: (state, { data }) =>
         state.merge({
             userSettings: state.get('userSettings').merge({
                 latestMention: data
             })
         }),
 
-    [types.SAVE_LATEST_MENTION_ERROR]: (state, { error }) =>
+    [settingsTypes.SAVE_LATEST_MENTION_ERROR]: (state, { error }) =>
         state.merge({
             errors: state.get('errors').push(new ErrorRecord(error)),
         }),
 
-    [types.SAVE_PASSWORD_PREFERENCE_SUCCESS]: (state, { data }) => {
+    [settingsTypes.SAVE_PASSWORD_PREFERENCE_SUCCESS]: (state, { data }) => {
         const userSettings = state.get('userSettings').set('passwordPreference', data);
         return state.set('userSettings', userSettings);
     },
 
-    [types.SAVE_PASSWORD_PREFERENCE_ERROR]: (state, { error }) =>
-        state.merge({
-            errors: state.get('errors').push(new ErrorRecord(error))
-        }),
-
-    [types.CHANGE_THEME]: (state, action) => state.updateIn(['general', 'theme'], () => action.theme),
+    [settingsTypes.CHANGE_THEME]: (state, action) => state.updateIn(['general', 'theme'], () => action.theme),
 
     [types.GENERAL_SETTINGS]: state =>
         state.set('generalSettingsPending', true),
@@ -261,21 +189,14 @@ const settingsState = createReducer(initialState, {
             generalSettingsPending: false
         }),
 
-    [types.GENERAL_SETTINGS_ERROR]: (state, { error }) =>
+    [types.GENERAL_SETTINGS_ERROR]: state =>
         state.merge({
-            errors: state.get('errors').push(new ErrorRecord(error)),
             generalSettingsPending: false
         }),
-
 
     [types.GENERAL_SETTINGS_SAVE_SUCCESS]: (state, { data }) =>
         state.merge({
             general: state.get('general').merge(data)
-        }),
-
-    [types.GENERAL_SETTINGS_SAVE_ERROR]: (state, { error }) =>
-        state.merge({
-            errors: state.get('errors').push(new ErrorRecord(error))
         }),
 
     [eProcTypes.GETH_GET_OPTIONS_SUCCESS]: (state, action) => {

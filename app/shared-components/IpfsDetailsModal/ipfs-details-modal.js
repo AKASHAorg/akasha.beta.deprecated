@@ -154,7 +154,7 @@ class IpfsDetailsModal extends Component {
             swarm: Number(swarmPort) || null
         };
         if (storagePath !== ipfsSettings.get('storagePath')) {
-            ipfsSaveSettings({ storagePath });
+            ipfsSaveSettings({ storagePath }, true);
         } else if (ipfsStatus.get('api')) {
             ipfsSetPorts(ports);
         }

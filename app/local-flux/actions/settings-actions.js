@@ -1,7 +1,8 @@
 import { AppActions } from 'local-flux';
 import { settingsActionCreators } from './action-creators';
 import { NotificationsService, SettingsService } from '../services';
-import * as types from '../constants/SettingsConstants';
+import * as types from '../constants';
+import { action } from './helpers';
 
 let settingsActions = null;
 
@@ -179,136 +180,61 @@ class SettingsActions {
         });
 }
 
-export function saveConfiguration (payload) {
-    return {
-        type: types.SAVE_CONFIGURATION,
-        payload
-    };
-}
+export const generalSettingsError = error => {
+    error.code = 'GSE02';
+    error.messageId = 'generalSettings';
+    return action(types.GENERAL_SETTINGS_ERROR, { error });
+};
 
-export function saveGeneralSettings (payload) {
-    return {
-        type: types.GENERAL_SETTINGS_SAVE,
-        payload
-    };
-}
+export const generalSettingsRequest = () => action(types.GENERAL_SETTINGS);
+export const generalSettingsSuccess = data => action(types.GENERAL_SETTINGS_SUCCESS, { data });
+export const gethSaveSettings = (payload, showNotification) =>
+    action(types.GETH_SAVE_SETTINGS, { payload, showNotification });
 
-export function saveGeneralSettingsSuccess (data) {
-    return {
-        type: types.GENERAL_SETTINGS_SAVE_SUCCESS,
-        data
-    };
-}
-export function saveGeneralSettingsError (error) {
-    return {
-        type: types.GENERAL_SETTINGS_SAVE_ERROR,
-        error
-    };
-}
+export const gethSaveSettingsError = error => {
+    error.code = 'GSSE01';
+    error.messageId = 'gethSaveSettings';
+    return action(types.GETH_SAVE_SETTINGS_ERROR, { error });
+};
 
-export function gethSaveSettings (payload) {
-    return {
-        type: types.GETH_SAVE_SETTINGS,
-        payload
-    };
-}
+export const gethSaveSettingsSuccess = data => action(types.GETH_SAVE_SETTINGS_SUCCESS, { data });
 
-export function gethSaveSettingsSuccess (data) {
-    return {
-        type: types.GETH_SAVE_SETTINGS_SUCCESS,
-        data
-    };
-}
+export const gethSettingsError = error => {
+    error.code = 'GSE03';
+    error.messageId = 'gethSettings';
+    return action(types.GETH_SETTINGS_ERROR, { error });
+};
 
-export function gethSaveSettingsError (error) {
-    return {
-        type: types.GETH_SAVE_SETTINGS_ERROR,
-        error
-    };
-}
+export const gethSettingsRequest = () => action(types.GETH_SETTINGS);
+export const gethSettingsSuccess = data => action(types.GETH_SETTINGS_SUCCESS, { data });
+export const ipfsSaveSettings = (payload, showNotification) =>
+    action(types.IPFS_SAVE_SETTINGS, { payload, showNotification });
 
-export function ipfsSaveSettings (payload) {
-    return {
-        type: types.IPFS_SAVE_SETTINGS,
-        payload
-    };
-}
+export const ipfsSaveSettingsError = error => {
+    error.code = 'ISSE01';
+    error.messageId = 'ipfsSaveSettings';
+    return action(types.IPFS_SAVE_SETTINGS_ERROR, { error });
+};
 
-export function ipfsSaveSettingsSuccess (data) {
-    return {
-        type: types.IPFS_SAVE_SETTINGS_SUCCESS,
-        data
-    };
-}
+export const ipfsSaveSettingsSuccess = data => action(types.IPFS_SAVE_SETTINGS_SUCCESS, { data });
 
-export function ipfsSaveSettingsError (error) {
-    return {
-        type: types.IPFS_SAVE_SETTINGS_ERROR,
-        error
-    };
-}
-
-export function generalSettingsRequest () {
-    return {
-        type: types.GENERAL_SETTINGS,
-    };
-}
-
-export function generalSettingsSuccess (data) {
-    return {
-        type: types.GENERAL_SETTINGS_SUCCESS,
-        data
-    };
-}
-
-export function generalSettingsError (error) {
-    error.code = 'GSE01';
-    return {
-        type: types.GENERAL_SETTINGS_ERROR,
-        error
-    };
-}
-
-export function gethSettingsRequest () {
-    return {
-        type: types.GETH_SETTINGS,
-    };
-}
-
-export function gethSettingsSuccess (data) {
-    return {
-        type: types.GETH_SETTINGS_SUCCESS,
-        data
-    };
-}
-
-export function gethSettingsError (error) {
-    error.code = 'GETHSE01';
-    return {
-        type: types.GETH_SETTINGS_ERROR,
-        error
-    };
-}
-
-export function ipfsSettingsRequest () {
-    return {
-        type: types.IPFS_SETTINGS,
-    };
-}
-
-export function ipfsSettingsSuccess (data) {
-    return {
-        type: types.IPFS_SETTINGS_SUCCESS,
-        data
-    };
-}
-
-export function ipfsSettingsError (error) {
+export const ipfsSettingsError = error => {
     error.code = 'ISE01';
-    return {
-        type: types.IPFS_SETTINGS_ERROR,
-        error
-    };
-}
+    error.message = 'ipfsSettings';
+    return action(types.IPFS_SETTINGS_ERROR, { error });
+};
+
+export const ipfsSettingsSuccess = data => action(types.IPFS_SETTINGS_SUCCESS, { data });
+export const ipfsSettingsRequest = () => action(types.IPFS_SETTINGS);
+export const saveConfiguration = payload => action(types.SAVE_CONFIGURATION, { payload });
+export const saveGeneralSettings = payload => action(types.GENERAL_SETTINGS_SAVE, { payload });
+
+export const saveGeneralSettingsError = error => {
+    error.code = 'SGSE01';
+    error.messageId = 'saveGeneralSettings';
+    return action(types.GENERAL_SETTINGS_SAVE_ERROR, { error });
+};
+
+export const saveGeneralSettingsSuccess = data => action(types.GENERAL_SETTINGS_SAVE_SUCCESS, { data });
 
 export { SettingsActions };

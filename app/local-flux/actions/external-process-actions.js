@@ -1,286 +1,113 @@
 import * as types from '../constants';
+import { action } from './helpers';
 
-export function getGethOptionsSuccess (data) {
-    return {
-        type: types.GET_GETH_OPTIONS_SUCCESS,
-        data
-    };
-}
+export const gethGetLogsSuccess = data => action(types.GETH_GET_LOGS_SUCCESS, { data });
 
-export function getGethOptionsError (error) {
-    error.code = 'GGOE';
-    return {
-        type: types.GET_GETH_OPTIONS_ERROR,
-        error
-    };
-}
+export const gethGetOptionsError = (error) => {
+    error.code = 'GGOE01';
+    error.messageId = 'gethGetOptions';
+    return action(types.GETH_GET_OPTIONS_ERROR, { error });
+};
 
-export function getIpfsConfigSuccess (data) {
-    return {
-        type: types.GET_IPFS_CONFIG_SUCCESS,
-        data
-    };
-}
+export const gethGetOptionsSuccess = data => action(types.GETH_GET_OPTIONS_SUCCESS, { data });
+export const gethGetStatus = () => action(types.GETH_GET_STATUS);
 
-export function getIpfsConfigError (error) {
-    error.code = 'CIE';
-    return {
-        type: types.GET_IPFS_CONFIG_ERROR,
-        error
-    };
-}
+export const gethGetStatusError = (error) => {
+    error.code = 'GGSE01';
+    error.messageId = 'gethGetStatus';
+    return action(types.GETH_GET_STATUS_ERROR, { error });
+};
 
-export function ipfsGetPorts () {
-    return {
-        type: types.IPFS_GET_PORTS
-    };
-}
+export const gethGetStatusSuccess = data => action(types.GETH_GET_STATUS_SUCCESS, { data });
+export const gethGetSyncStatus = () => action(types.GETH_GET_SYNC_STATUS);
 
-export function ipfsGetPortsSuccess (data) {
-    return {
-        type: types.IPFS_GET_PORTS_SUCCESS,
-        data
-    };
-}
+export const gethGetSyncStatusError = (error) => {
+    error.code = 'GGSSE01';
+    error.messageId = 'gethGetSyncStatus';
+    return action(types.GETH_GET_SYNC_STATUS_ERROR, { error });
+};
 
-export function ipfsGetPortsError (error) {
+export const gethGetSyncStatusSuccess = data =>
+    action(types.GETH_GET_SYNC_STATUS_SUCCESS, { data });
+export const gethPauseSync = () => action(types.GETH_PAUSE_SYNC);
+export const gethResetBusy = () => action(types.GETH_RESET_BUSY);
+export const gethResumeSync = () => action(types.GETH_RESUME_SYNC);
+export const gethStart = () => action(types.GETH_START);
+
+export const gethStartError = (data, error) => {
+    error.code = 'GSE01';
+    error.messageId = 'gethStart';
+    return action(types.GETH_START_ERROR, { data, error });
+};
+
+export const gethStartLogger = () => action(types.GETH_START_LOGGER);
+export const gethStartSuccess = data => action(types.GETH_START_SUCCESS, { data });
+export const gethStop = () => action(types.GETH_STOP);
+
+export const gethStopError = (error) => {
+    error.code = 'GSTE01';
+    error.messageId = 'gethStop';
+    return action(types.GETH_STOP_ERROR, { error });
+};
+
+export const gethStopLogger = () => action(types.GETH_STOP_LOGGER);
+export const gethStopSuccess = data => action(types.GETH_STOP_SUCCESS, { data });
+export const gethStopSync = () => action(types.GETH_STOP_SYNC);
+
+export const ipfsGetConfigError = (error) => {
+    error.code = 'IGCE01';
+    error.messageId = 'ipfsGetConfig';
+    return action(types.IPFS_GET_CONFIG_ERROR, { error });
+};
+
+export const ipfsGetConfigSuccess = data => action(types.IPFS_GET_CONFIG_SUCCESS, { data });
+export const ipfsGetLogsSuccess = data => action(types.IPFS_GET_LOGS_SUCCESS, { data });
+export const ipfsGetPorts = () => action(types.IPFS_GET_PORTS);
+
+export const ipfsGetPortsError = (error) => {
     error.code = 'IGPE01';
-    return {
-        type: types.IPFS_GET_PORTS_ERROR,
-        error
-    };
-}
+    error.messageId = 'ipfsGetPorts';
+    return action(types.IPFS_GET_PORTS_ERROR, { error });
+};
 
-export function ipfsSetPorts (ports) {
-    return {
-        type: types.IPFS_SET_PORTS,
-        ports
-    };
-}
+export const ipfsGetPortsSuccess = data => action(types.IPFS_GET_PORTS_SUCCESS, { data });
+export const ipfsGetStatus = () => action(types.IPFS_GET_STATUS);
 
-export function ipfsSetPortsSuccess (data) {
-    return {
-        type: types.IPFS_SET_PORTS_SUCCESS,
-        data
-    };
-}
+export const ipfsGetStatusError = (error) => {
+    error.code = 'IGSE01';
+    error.messageId = 'ipfsGetStatus';
+    return action(types.IPFS_GET_STATUS_ERROR, { error });
+};
 
-export function ipfsSetPortsError (error) {
+export const ipfsGetStatusSuccess = data => action(types.IPFS_GET_STATUS_SUCCESS, { data });
+export const ipfsResetBusy = () => action(types.IPFS_RESET_BUSY);
+export const ipfsResetPorts = () => action(types.IPFS_RESET_PORTS);
+export const ipfsSetPorts = ports => action(types.IPFS_SET_PORTS, { ports });
+
+export const ipfsSetPortsError = (error) => {
     error.code = 'ISPE01';
-    return {
-        type: types.IPFS_SET_PORTS_ERROR,
-        error
-    };
-}
+    error.messageId = 'ipfsSetPorts';
+    return action(types.IPFS_SET_PORTS_ERROR, { error });
+};
 
-export function ipfsResetPorts () {
-    return {
-        type: types.IPFS_RESET_PORTS
-    };
-}
+export const ipfsSetPortsSuccess = data => action(types.IPFS_SET_PORTS_SUCCESS, { data });
+export const ipfsStart = () => action(types.IPFS_START);
 
-export function gethResetBusy () {
-    return {
-        type: types.RESET_GETH_BUSY
-    };
-}
+export const ipfsStartError = (data, error) => {
+    error.code = 'ISE01';
+    error.messageId = 'ipfsStart';
+    return action(types.IPFS_START_ERROR, { data, error });
+};
 
-export function resetIpfsBusy () {
-    return {
-        type: types.RESET_IPFS_BUSY
-    };
-}
+export const ipfsStartLogger = () => action(types.IPFS_START_LOGGER);
+export const ipfsStartSuccess = data => action(types.IPFS_START_SUCCESS, { data });
+export const ipfsStop = () => action(types.IPFS_STOP);
 
-export function stopGethSuccess (data) {
-    return {
-        type: types.STOP_GETH_SUCCESS,
-        data
-    };
-}
-
-export function ipfsGetLogsSuccess (data) {
-    return {
-        type: types.IPFS_GET_LOGS_SUCCESS,
-        data
-    };
-}
-
-export function gethPauseSync () {
-    return {
-        type: types.GETH_PAUSE_SYNC
-    };
-}
-
-export function gethResumeSync () {
-    return {
-        type: types.GETH_RESUME_SYNC
-    };
-}
-
-export function gethStart () {
-    return {
-        type: types.GETH_START
-    };
-}
-
-export function gethStartSuccess (data) {
-    return {
-        type: types.GETH_START_SUCCESS,
-        data
-    };
-}
-
-export function gethStartError (data, error) {
-    return {
-        type: types.GETH_START_ERROR,
-        data,
-        error
-    };
-}
-
-export function gethStartLogger () {
-    return {
-        type: types.GETH_START_LOGGER
-    };
-}
-
-export function gethStopLogger () {
-    return {
-        type: types.GETH_STOP_LOGGER
-    };
-}
-
-export function ipfsStartLogger () {
-    return {
-        type: types.IPFS_START_LOGGER
-    };
-}
-
-export function ipfsStopLogger () {
-    return {
-        type: types.IPFS_STOP_LOGGER
-    };
-}
-
-export function gethStop () {
-    return {
-        type: types.STOP_IPFS_SUCCESS,
-        data
-    };
-}
-
-export function stopIPFSError (error) {
-    error.code = 'SIE02';
-    return {
-        type: types.STOP_IPFS_ERROR,
-        error
-    };
-}
-
-export function gethStopSync () {
-    return {
-        type: types.GETH_STOP_SYNC
-    };
-}
-
-export function ipfsStart () {
-    return {
-        type: types.IPFS_START
-    };
-}
-
-export function ipfsStartSuccess (data) {
-    return {
-        type: types.IPFS_START_SUCCESS,
-        data
-    };
-}
-
-export function ipfsStartError (data, error) {
-    return {
-        type: types.IPFS_START_ERROR,
-        data,
-        error
-    };
-}
-
-export function ipfsStop () {
-    return {
-        type: types.IPFS_STOP
-    };
-}
-
-export function ipfsStopSuccess (data) {
-    return {
-        type: types.IPFS_STOP_SUCCESS,
-        data
-    };
-}
-
-export function ipfsStopError (error) {
+export const ipfsStopError = (error) => {
     error.code = 'ISTE01';
-    return {
-        type: types.IPFS_STOP_ERROR,
-        error
-    };
-}
+    error.messageId = 'ipfsStopError';
+    return action(types.IPFS_STOP_ERROR, { error });
+};
 
-export function gethGetStatus () {
-    return {
-        type: types.GETH_GET_STATUS
-    };
-}
-
-export function gethGetStatusError (error) {
-    return {
-        type: types.GETH_GET_STATUS_ERROR,
-        error
-    };
-}
-
-export function gethGetStatusSuccess (data) {
-    return {
-        type: types.GETH_GET_STATUS_SUCCESS,
-        data
-    };
-}
-
-export function ipfsGetStatus () {
-    return {
-        type: types.IPFS_GET_STATUS
-    };
-}
-
-export function ipfsGetStatusError (error) {
-    return {
-        type: types.IPFS_GET_STATUS_ERROR,
-        error
-    };
-}
-
-export function ipfsGetStatusSuccess (data) {
-    return {
-        type: types.IPFS_GET_STATUS_SUCCESS,
-        data
-    };
-}
-
-export function gethGetSyncStatus () {
-    return {
-        type: types.GETH_GET_SYNC_STATUS
-    };
-}
-
-export function gethGetSyncStatusSuccess (data) {
-    return {
-        type: types.GETH_GET_SYNC_STATUS_SUCCESS,
-        data
-    };
-}
-
-export function gethGetSyncStatusError (error) {
-    return {
-        type: types.GETH_GET_SYNC_STATUS_ERROR,
-        error
-    };
-}
+export const ipfsStopLogger = () => action(types.IPFS_STOP_LOGGER);
+export const ipfsStopSuccess = data => action(types.IPFS_STOP_SUCCESS, { data });

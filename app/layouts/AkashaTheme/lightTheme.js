@@ -22,6 +22,7 @@ export default {
         commentViewerIsAuthorColor: Colors.blueA400,
         commentIsEntryAuthorColor: Colors.greenA700,
         avatarBackground: Colors.grey50,
+        errorColor: Colors.orange900,
         linkColor: '#008B8B',
         tutorialsBackgroundColor: '#f0f0f0',
     },

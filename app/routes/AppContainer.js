@@ -6,8 +6,11 @@ import { getMuiTheme } from 'material-ui/styles';
 import { AuthDialog, DataLoader, GethDetailsModal, IpfsDetailsModal, PublishConfirmDialog,
     TransferConfirmDialog, WeightConfirmDialog } from 'shared-components';
 import { hideNotification, hideTerms } from 'local-flux/actions/app-actions'; // eslint-disable-line import/no-unresolved, import/extensions
+import { errorDeleteFatal, errorDeleteNonFatal } from 'local-flux/actions/error-actions'; // eslint-disable-line import/no-unresolved, import/extensions
 import TermsPanel from './components/terms-panel';
 import NotificationBar from './components/notification-bar';
+import ErrorBar from './components/error-bar'; // eslint-disable-line import/no-unresolved, import/extensions
+import FatalErrorModal from './components/fatal-error-modal'; // eslint-disable-line import/no-unresolved, import/extensions
 import lightTheme from '../layouts/AkashaTheme/lightTheme';
 import darkTheme from '../layouts/AkashaTheme/darkTheme';
 
@@ -33,7 +36,8 @@ class App extends Component {
 
     render () {
         /* eslint-disable */
-        const { appState, appReady, hideNotification, hideTerms, intl } = this.props;
+        const { appState, appReady, errorDeleteFatal, errorDeleteNonFatal, errorState,
+            hideNotification, hideTerms, intl } = this.props;
         /* eslint-disable */
         const isAuthDialogVisible = !!appState.get('showAuthDialog');
         const weightConfirmDialog = appState.get('weightConfirmDialog');
@@ -52,6 +56,20 @@ class App extends Component {
                 intl={intl}
                 notifications={appState.get('notifications')}
               />
+              {!!errorState.get('nonFatalErrors').size &&
+                <ErrorBar
+                  deleteError={errorDeleteNonFatal}
+                  error={errorState.getIn(['byId', errorState.get('nonFatalErrors').first()])}
+                  intl={intl}
+                />
+              }
+              {!!errorState.get('fatalErrors').size &&
+                <FatalErrorModal
+                  deleteError={errorDeleteFatal}
+                  error={errorState.getIn(['byId', errorState.get('fatalErrors').first()])}
+                  intl={intl}
+                />
+              }
               {showGethDetailsModal && <GethDetailsModal />}
               {showIpfsDetailsModal && <IpfsDetailsModal />}
               {isAuthDialogVisible && <AuthDialog intl={intl} />}
@@ -70,6 +88,9 @@ App.propTypes = {
     appReady: PropTypes.bool,
     appState: PropTypes.shape(),
     children: PropTypes.element,
+    errorDeleteFatal: PropTypes.func,
+    errorDeleteNonFatal: PropTypes.func,
+    errorState: PropTypes.shape(),
     hideNotification: PropTypes.func,
     hideTerms: PropTypes.func,
     intl: PropTypes.shape(),
@@ -84,6 +105,7 @@ function mapStateToProps (state) {
     return {
         appReady: state.appState.get('appReady'),
         appState: state.appState,
+        errorState: state.errorState,
         theme: state.settingsState.getIn(['general', 'theme'])
     };
 }
@@ -91,6 +113,8 @@ function mapStateToProps (state) {
 export default connect(
     mapStateToProps,
     {
+        errorDeleteFatal,
+        errorDeleteNonFatal,
         hideNotification,
         hideTerms
     }

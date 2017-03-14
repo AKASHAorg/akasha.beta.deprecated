@@ -31,7 +31,9 @@ class SyncStatus extends Component {
 
         if (gethIsSyncing && !this.interval) {
             this.interval = setInterval(() => {
-                gethGetSyncStatus();
+                if (syncActionId === 1) {
+                    gethGetSyncStatus();
+                }
             }, 2000);
         }
         if (gethSynced && ipfsSpawned && !ipfsPortsRequested) {

@@ -2,7 +2,7 @@ import { apply, call, fork, put, take } from 'redux-saga/effects';
 import * as settingsService from '../services/settings-service';
 import * as actions from '../actions/settings-actions';
 import * as appActions from '../actions/app-actions';
-import * as types from '../constants/SettingsConstants';
+import * as types from '../constants';
 
 function* getGeneralSettings () {
     yield put(actions.generalSettingsRequest());
@@ -49,28 +49,32 @@ export function* saveGeneralSettings (payload) {
     }
 }
 
-export function* gethSaveSettings (payload) {
+export function* gethSaveSettings (payload, showNotification) {
     try {
         const resp = yield apply(settingsService, settingsService.gethSaveSettings, [payload]);
         yield put(actions.gethSaveSettingsSuccess(resp));
-        yield put(appActions.showNotification({
-            id: 'saveGethSettingsSuccess'
-        }));
+        if (showNotification) {
+            yield put(appActions.showNotification({
+                id: 'saveGethSettingsSuccess'
+            }));
+        }
     } catch (error) {
         yield put(actions.gethSaveSettingsError({ message: error.toString() }));
     }
 }
 
-export function* ipfsSaveSettings (payload) {
+export function* ipfsSaveSettings (payload, showNotification) {
     try {
         if (payload.ports) {
             delete payload.ports;
         }
         const resp = yield apply(settingsService, settingsService.saveIpfsSettings, [payload]);
         yield put(actions.ipfsSaveSettingsSuccess(resp));
-        yield put(appActions.showNotification({
-            id: 'saveIpfsSettingsSuccess'
-        }));
+        if (showNotification) {
+            yield put(appActions.showNotification({
+                id: 'saveIpfsSettingsSuccess'
+            }));
+        }
     } catch (error) {
         yield put(actions.ipfsSaveSettingsError({ message: error.toString() }));
     }
@@ -100,14 +104,14 @@ function* watchGeneralSettingsSave () {
 function* watchGethSaveSettings () {
     while (true) {
         const action = yield take(types.GETH_SAVE_SETTINGS);
-        yield fork(gethSaveSettings, action.payload);
+        yield fork(gethSaveSettings, action.payload, action.showNotification);
     }
 }
 
 function* watchIpfsSettingsSave () {
     while (true) {
         const action = yield take(types.IPFS_SAVE_SETTINGS);
-        yield fork(ipfsSaveSettings, action.payload);
+        yield fork(ipfsSaveSettings, action.payload, action.showNotification);
     }
 }
 
