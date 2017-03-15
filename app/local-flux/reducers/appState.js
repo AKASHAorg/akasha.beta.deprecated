@@ -37,7 +37,7 @@ const initialState = fromJS({
     showIpfsDetailsModal: false,
     showTerms: false,
     weightConfirmDialog: null,
-    timestamp: null,
+    timestamp: 0,
     notifications: new List(),
     pendingActions: new List(),
     publishConfirmDialog: null,

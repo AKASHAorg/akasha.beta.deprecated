@@ -1,6 +1,7 @@
 import * as types from '../constants';
 import { action } from './helpers';
 
+export const gethGetLogs = () => action(types.GETH_GET_LOGS);
 export const gethGetLogsSuccess = data => action(types.GETH_GET_LOGS_SUCCESS, { data });
 
 export const gethGetOptionsError = (error) => {
@@ -61,6 +62,7 @@ export const ipfsGetConfigError = (error) => {
 };
 
 export const ipfsGetConfigSuccess = data => action(types.IPFS_GET_CONFIG_SUCCESS, { data });
+export const ipfsGetLogs = () => action(types.IPFS_GET_LOGS);
 export const ipfsGetLogsSuccess = data => action(types.IPFS_GET_LOGS_SUCCESS, { data });
 export const ipfsGetPorts = () => action(types.IPFS_GET_PORTS);
 
