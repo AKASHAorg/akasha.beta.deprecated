@@ -47,6 +47,10 @@ export function createActionChannels () {
     authChannels.forEach((channel) => {
         actionChannels.auth[channel] = createActionChannel(Channel.client.auth[channel]);
     });
+    const registryChannels = ['registerProfile'];
+    registryChannels.forEach((channel) => {
+        actionChannels.registry[channel] = createActionChannel(Channel.client.registry[channel]);
+    });
     const txChannels = ['addToQueue', 'emitMined'];
     txChannels.forEach((channel) => {
         actionChannels.tx[channel] = createActionChannel(Channel.client.tx[channel]);

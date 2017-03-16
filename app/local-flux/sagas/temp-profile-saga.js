@@ -1,6 +1,6 @@
 import { take, fork, call, apply, put } from 'redux-saga/effects';
 import { actionChannels, enableChannel } from './helpers';
-import * as types from '../constants/temp-profile-constants';
+import * as types from '../constants';
 import * as tempProfileActions from '../actions/temp-profile-actions';
 import * as registryService from '../services/registry-service';
 
@@ -18,18 +18,22 @@ function* createTempProfile (data) {
         );
         yield put(tempProfileActions.tempProfileCreateSuccess(tempProfile));
     } catch (ex) {
-        console.error(ex);
         yield put(tempProfileActions.tempProfileCreateError(ex));
     }
 }
-
-function* ethAddressRequest (tempProfile) {
+/**
+ * Request main to create an address (key)
+ */
+function* createEthAddressRequest (tempProfile) {
     const channel = Channel.server.auth.generateEthKey;
+    yield put(tempProfileActions.ethAddressCreate(tempProfile));
     yield call(enableChannel, channel, Channel.client.auth.manager);
     yield call([channel, channel.send], { password: tempProfile.password });
 }
-
-function* createEthAddress (tempProfile) {
+/**
+ * Listen on generateEthKey channel
+ */
+function* createEthAddressListener (tempProfile) {
     const response = yield take(actionChannels.auth.generateEthKey);
     if (!response.error) {
         tempProfile.address = response.data.address;
@@ -40,83 +44,122 @@ function* createEthAddress (tempProfile) {
         );
         yield put(tempProfileActions.ethAddressCreateSuccess(tempProfile));
     } else {
-        console.error(response.error);
         yield put(tempProfileActions.ethAddressCreateError(response.error));
     }
 }
-
+/**
+ * Request faucet for initial aeth supply
+ */
 function* faucetRequest (tempProfile) {
     const channel = Channel.server.auth.requestEther;
+    yield put(tempProfileActions.faucetRequest(tempProfile));
     yield call([channel, channel.send], { address: tempProfile.address });
 }
-
-function* faucetSuccess (tempProfile) {
-    // console.log(actionChannels);
+/**
+ * Listen for faucet transaction id
+ */
+function* faucetRequestListener (tempProfile) {
     const response = yield take(actionChannels.auth.requestEther);
     if (!response.error) {
         tempProfile.currentStatus.faucetRequested = true;
         tempProfile.currentStatus.faucetTx = response.data.tx;
-        tempProfile = yield apply(
-            registryService,
-            registryService.updateTempProfile,
-            [tempProfile]
-        );
-        yield put(tempProfileActions.faucetRequestSuccess(tempProfile));
+        try {
+            tempProfile = yield apply(
+                registryService,
+                registryService.updateTempProfile,
+                [tempProfile]
+            );
+            yield put(tempProfileActions.faucetRequestSuccess(tempProfile));
+        } catch (error) {
+            yield put(tempProfileActions.faucetRequestError(error));
+        }
     } else {
-        console.error(response.error);
+        yield put(tempProfileActions.faucetRequestError(response.error));
     }
 }
-
-function* listenFaucetTx (tempProfile) {
-    // console.log('listen for faucet tx everytime, no matter what!');
-    // const channel = Channel.server.tx.addToQueue;
-    // yield call([channel, channel.send], { tx: tempProfile.currentStatus.faucetTx });
-    // const response = yield take(actionChannels.tx.emitMined);
-    // if (!response.error && response.data.tx === tempProfile.currentStatus.faucetTx) {
-    //     yield put(tempProfileActions.faucetTxMined(tempProfile));
-    // } else {
-    //     console.error(response.error);
-    // }
+/**
+ * Add transactions to queue
+ */
+function* addTxToQueue ([tx, action]) {
+    const channel = Channel.server.tx.addToQueue;
+    yield put(tempProfileActions[action]());
+    yield call([channel, channel.send], { tx });
 }
-function* tempProfileLogin (tempProfile) {
-    console.log('temp profile login! do it everytime!');
+/**
+ * Listen faucet transaction for mined event
+ */
+function* listenFaucetTx (tempProfile) {
+    const response = yield take(actionChannels.tx.emitMined);
+    if (!response.error && response.data.tx === tempProfile.currentStatus.faucetTx) {
+        yield put(tempProfileActions.tempProfileFaucetTxMinedSuccess(tempProfile));
+    } else {
+        yield put(tempProfileActions.faucetRequestError(response.error));
+    }
+}
+/**
+ * Request main to log in tempProfile
+ */
+function* tempProfileLoginRequest (tempProfile) {
     const channel = Channel.server.auth.login;
+    yield put(tempProfileActions.tempProfileLogin(tempProfile));
     yield call([channel, channel.send], {
         account: tempProfile.account,
         password: tempProfile.password,
         registering: true
     });
+}
+/**
+ * Listen when tempProfile was logged in
+ */
+function* tempProfileLoginListener (tempProfile) {
     const response = yield take(actionChannels.auth.login);
     if (!response.error) {
         yield put(tempProfileActions.tempProfileLoginSuccess(tempProfile));
     } else {
-        console.error(response.error);
         yield put(tempProfileActions.tempProfileLoginError(response.error));
     }
 }
-
-function* tempProfilePublish (tempProfile) {
-    console.log('publish!!');
+/**
+ * Request main to publish temp profile
+ */
+function* tempProfilePublishRequest (tempProfile) {
     const channel = Channel.server.registry.registerProfile;
-    if (!tempProfile.currentStatus.publishTx || tempProfile.currentStatus.publishRequested) {
-        yield call(enableChannel, channel, Channel.client.registry.manager);
-        yield call([channel, channel.send], tempProfile);
-        const response = take(actionChannels.registry.registerProfile);
-        if (!response.error) {
-            tempProfile.currentStatus.publishTx = response.data.tx;
-            tempProfile.currentStatus.publishRequested = true;
-            yield put(tempProfileActions.tempProfileUpdate(tempProfile));
-        } else {
-            yield put(tempProfileActions.publishTempProfileError(response.error));
-        }
+    yield put(tempProfileActions.tempProfilePublish(tempProfile));
+    yield call(enableChannel, channel, Channel.client.registry.manager);
+    yield call([channel, channel.send], tempProfile);
+}
+/**
+ * Listen for profile published event and receive transaction id
+ */
+function* tempProfilePublishListener (tempProfile) {
+    const response = yield take(actionChannels.registry.registerProfile);
+    if (!response.error) {
+        tempProfile.currentStatus.publishTx = response.data.tx;
+        tempProfile.currentStatus.publishRequested = true;
+        tempProfile = yield apply(
+            registryService,
+            registryService.updateTempProfile,
+            [tempProfile]
+        );
+        yield put(tempProfileActions.tempProfilePublishSuccess(tempProfile));
     } else {
-        yield put(tempProfileActions.publishTempProfileSuccess(tempProfile));
+        yield put(tempProfileActions.tempProfilePublishError(response.error));
     }
 }
-
-function* listenPublishTx () {}
-function* removeTempProfile () {}
-
+/**
+ * Listen when publish transaction is mined
+ */
+function* publishTxListener (tempProfile) {
+    const response = yield take(actionChannels.tx.emitMined);
+    if (!response.error && response.data.tx === tempProfile.currentStatus.publishTx) {
+        yield put(tempProfileActions.tempProfilePublishTxMinedSuccess(tempProfile));
+    } else if (response.error && response.error.from.tx === tempProfile.currentStatus.publishTx) {
+        yield put(tempProfileActions.tempProfilePublishError(response.error));
+    }
+}
+/**
+ * ... watchers ...
+ */
 function* watchProfileCreate () {
     while (true) {
         const action = yield take(types.TEMP_PROFILE_CREATE);
@@ -128,8 +171,8 @@ function* watchEthAddressCreate () {
     while (true) {
         const action = yield take(types.TEMP_PROFILE_CREATE_SUCCESS);
         if (!action.data.address) {
-            yield fork(createEthAddress, action.data);
-            yield fork(ethAddressRequest, action.data);
+            yield fork(createEthAddressListener, action.data);
+            yield fork(createEthAddressRequest, action.data);
         } else {
             yield put(tempProfileActions.ethAddressCreateSuccess(action.data));
         }
@@ -140,10 +183,10 @@ function* watchFaucetRequest () {
     while (true) {
         const action = yield take(types.ETH_ADDRESS_CREATE_SUCCESS);
         if (!action.data.currentStatus.faucetRequested || !action.data.currentStatus.faucetTx) {
-            yield fork(faucetSuccess, action.data);
+            yield fork(faucetRequestListener, action.data);
             yield fork(faucetRequest, action.data);
         } else {
-            yield put(tempProfileActions.faucetRequestSuccess(action.data));
+            yield put(tempProfileActions.faucetRequest(action.data));
         }
     }
 }
@@ -152,55 +195,58 @@ function* watchFaucetTxMined () {
     while (true) {
         const action = yield take(types.FUND_FROM_FAUCET_SUCCESS);
         yield fork(listenFaucetTx, action.data);
+        yield fork(addTxToQueue, [action.data.currentStatus.faucetTx, 'tempProfileFaucetTxMined']);
     }
 }
 
-// function* watchTempProfileLogin () {
-//     while (true) {
-//         const action = yield take(types.FAUCET_TX_MINED);
-//         yield fork(tempProfileLogin, action.data);
-//     }
-// }
-// function* watchTempProfilePublish () {
-//     while (true) {
-//         const action = yield take(types.TEMP_PROFILE_LOGIN_SUCCESS);
-//         yield fork(tempProfilePublish, action.data);
-//     }
-// }
+function* watchTempProfileLogin () {
+    while (true) {
+        const action = yield take(types.TEMP_PROFILE_FAUCET_TX_MINED_SUCCESS);
+        yield fork(tempProfileLoginListener, action.data);
+        yield fork(tempProfileLoginRequest, action.data);
+    }
+}
+
+function* watchTempProfilePublish () {
+    while (true) {
+        const action = yield take(types.TEMP_PROFILE_LOGIN_SUCCESS);
+        if (!action.data.currentStatus.publishRequested || !action.data.currentStatus.publishTx) {
+            yield fork(tempProfilePublishListener, action.data);
+            yield fork(tempProfilePublishRequest, action.data);
+        } else {
+            yield put(tempProfileActions.tempProfilePublishSuccess(action.data));
+        }
+    }
+}
+
+function* watchPublishTxMined () {
+    while (true) {
+        const action = yield take(types.TEMP_PROFILE_PUBLISH_SUCCESS);
+        yield fork(publishTxListener, action.data);
+        yield fork(addTxToQueue, [action.data.currentStatus.publishTx, 'tempProfilePublishTxMined']);
+    }
+}
+
+function* watchTempProfileRemove () {
+    while (true) {
+        const action = yield take(types.TEMP_PROFILE_PUBLISH_TX_MINED_SUCCESS);
+        yield put(tempProfileActions.tempProfileDelete());
+        try {
+            yield call([registryService, registryService.deleteTempProfile], action.data);
+            yield put(tempProfileActions.tempProfileDeleteSuccess());
+        } catch (err) {
+            yield put(tempProfileActions.tempProfileDeleteError());
+        }
+    }
+}
+
 export function* watchTempProfileActions () {
     yield fork(watchProfileCreate);
     yield fork(watchEthAddressCreate);
     yield fork(watchFaucetRequest);
-    // yield fork(watchFaucetTxMined);
-    // yield fork(watchTempProfileLogin);
-    // yield fork(watchTempProfilePublish);
+    yield fork(watchFaucetTxMined);
+    yield fork(watchTempProfileLogin);
+    yield fork(watchTempProfilePublish);
+    yield fork(watchPublishTxMined);
+    yield fork(watchTempProfileRemove);
 }
-
-
-/**
- * Steps:
- *
- * 1. Create a temp profile in indexedDB
- *   1.1 Fire created action on success
- *
- * 2. Create eth address
- *   2.1. Update temp profile in indexedDB
- *   2.2. Fire address created action on success
- *
- * 3. Request fund from faucet
- *   3.1 Update temp profile in indexedDB
- *   3.2 Fire funds requested action on success
- *
- * 4. Listen for faucet tx to be mined
- *   4.1 update temp profile in indexedDB
- *   4.2 Fire faucet mined on success
- *
- * 5. Login with temp profile
- *
- * 6. Publish profile to blockchain
- *   6.1 update temp profile
- *
- * 7. Listen for publish tx to be mined
- *
- * 8. Remove temp profile from db
- */

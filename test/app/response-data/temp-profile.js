@@ -8,7 +8,7 @@ export const tempProfileData = {
         faucetRequested: false,
         faucetTx: null,
         publishRequested: false,
-        publishRequest: null
+        publishTx: null
     }
 };
 

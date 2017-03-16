@@ -6,6 +6,7 @@ class BasicChannel extends EventEmitter {
     constructor (channelName) {
         super();
         this.channel = channelName;
+        this.response = null;
     }
     on (ev, listener) {
         if (typeof ev === 'function') {
@@ -18,7 +19,7 @@ class BasicChannel extends EventEmitter {
         return super.once(this.channel, res => listener({}, res));
     }
     triggerResponse (response, cb) {
-        this.emit(this.channel, response);
+        super.emit(this.channel, response);
         if (cb) cb();
     }
     enable () {
@@ -38,7 +39,8 @@ const generateTheChannel = () => {
         'auth.generateEthKey', 'auth.requestEther', 'auth.manager', 'auth.login',
         'geth.logs', 'geth.options', 'geth.startService', 'geth.status', 'geth.syncStatus', 'geth.stopService',
         'ipfs.getConfig', 'ipfs.getPorts', 'ipfs.setPorts', 'ipfs.logs', 'ipfs.startService', 'ipfs.status', 'ipfs.stopService',
-        'tx.addToQueue', 'tx.emitMined'
+        'registry.registerProfile', 'registry.manager',
+        'tx.addToQueue', 'tx.emitMined',
     ];
     for (let i = modules.length - 1; i >= 0; i -= 1) {
         const module = modules[i];
