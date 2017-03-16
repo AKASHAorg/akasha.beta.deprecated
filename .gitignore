@@ -39,3 +39,6 @@ electron-api/gabi-play
 intl/messages
 tmp
 jsconfig.json
+*.p12
+*.cer
+*.pfx
