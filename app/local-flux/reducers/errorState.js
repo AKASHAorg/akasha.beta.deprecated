@@ -50,6 +50,39 @@ const errorState = createReducer(initialState, {
     [types.IPFS_SETTINGS_ERROR]: addNewError,
     [types.IPFS_START_ERROR]: addNewError,
     [types.IPFS_STOP_ERROR]: addNewError,
+    // an error occured when saving temp profile to IndexedDb
+    [types.TEMP_PROFILE_CREATE_ERROR]: (state, { error }) =>
+        state.merge({
+            errors: state.get('errors').push(new ErrorRecord(error))
+        }),
+    // error updating temp profile to IndexedDB
+    [types.TEMP_PROFILE_UPDATE_ERROR]: (state, { error }) =>
+        state.merge({
+            errors: state.get('errors').push(new ErrorRecord(error))
+        }),
+    // error getting temp profile from indexedDB
+    [types.TEMP_PROFILE_GET_ERROR]: (state, { error }) =>
+        state.merge({
+            errors: state.get('errors').push(new ErrorRecord(error))
+        }),
+    // error deleting temp profile from indexedDB.
+    [types.TEMP_PROFILE_DELETE_ERROR]: (state, { error }) =>
+        state.merge({
+            errors: state.get('errors').push(new ErrorRecord(error))
+        }),
+    [types.ETH_ADDRESS_CREATE_ERROR]: (state, { error }) =>
+        state.merge({
+            errors: state.get('errors').push(new ErrorRecord(error))
+        }),
+    [types.REQUEST_FUND_FROM_FAUCET_ERROR]: (state, { error }) =>
+        state.merge({
+            errors: state.get('errors').push(new ErrorRecord(error)),
+            tempProfile: state.get('tempProfile').setIn(['currentStatus', 'faucetRequested'], false)
+        }),
+    [types.PUBLISH_PROFILE_ERROR]: (state, { error }) =>
+        state.merge({
+            errors: state.get('errors').push(new ErrorRecord(error))
+        }),
 });
 
 export default errorState;

@@ -136,12 +136,16 @@ function* tempProfilePublishListener (tempProfile) {
     if (!response.error) {
         tempProfile.currentStatus.publishTx = response.data.tx;
         tempProfile.currentStatus.publishRequested = true;
-        tempProfile = yield apply(
-            registryService,
-            registryService.updateTempProfile,
-            [tempProfile]
-        );
-        yield put(tempProfileActions.tempProfilePublishSuccess(tempProfile));
+        try {
+            tempProfile = yield apply(
+                registryService,
+                registryService.updateTempProfile,
+                [tempProfile]
+            );
+            yield put(tempProfileActions.tempProfilePublishSuccess(tempProfile));
+        } catch (error) {
+            yield put(tempProfileActions.tempProfilePublishError(error));
+        }
     } else {
         yield put(tempProfileActions.tempProfilePublishError(response.error));
     }
@@ -186,7 +190,7 @@ function* watchFaucetRequest () {
             yield fork(faucetRequestListener, action.data);
             yield fork(faucetRequest, action.data);
         } else {
-            yield put(tempProfileActions.faucetRequest(action.data));
+            yield put(tempProfileActions.faucetRequestSuccess(action.data));
         }
     }
 }
@@ -235,7 +239,7 @@ function* watchTempProfileRemove () {
             yield call([registryService, registryService.deleteTempProfile], action.data);
             yield put(tempProfileActions.tempProfileDeleteSuccess());
         } catch (err) {
-            yield put(tempProfileActions.tempProfileDeleteError());
+            yield put(tempProfileActions.tempProfileDeleteError(err));
         }
     }
 }
