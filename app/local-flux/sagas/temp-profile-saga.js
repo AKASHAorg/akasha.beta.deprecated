@@ -61,8 +61,8 @@ function* faucetRequest (tempProfile) {
 function* faucetRequestListener (tempProfile) {
     const response = yield take(actionChannels.auth.requestEther);
     if (!response.error) {
-        tempProfile.currentStatus.faucetRequested = true;
-        tempProfile.currentStatus.faucetTx = response.data.tx;
+        tempProfile.status.faucetRequested = true;
+        tempProfile.status.faucetTx = response.data.tx;
         try {
             tempProfile = yield apply(
                 registryService,
@@ -90,7 +90,7 @@ function* addTxToQueue ([tx, action]) {
  */
 function* listenFaucetTx (tempProfile) {
     const response = yield take(actionChannels.tx.emitMined);
-    if (!response.error && response.data.tx === tempProfile.currentStatus.faucetTx) {
+    if (!response.error && response.data.tx === tempProfile.status.faucetTx) {
         yield put(tempProfileActions.tempProfileFaucetTxMinedSuccess(tempProfile));
     } else {
         yield put(tempProfileActions.faucetRequestError(response.error));
@@ -134,8 +134,8 @@ function* tempProfilePublishRequest (tempProfile) {
 function* tempProfilePublishListener (tempProfile) {
     const response = yield take(actionChannels.registry.registerProfile);
     if (!response.error) {
-        tempProfile.currentStatus.publishTx = response.data.tx;
-        tempProfile.currentStatus.publishRequested = true;
+        tempProfile.status.publishTx = response.data.tx;
+        tempProfile.status.publishRequested = true;
         try {
             tempProfile = yield apply(
                 registryService,
@@ -155,9 +155,9 @@ function* tempProfilePublishListener (tempProfile) {
  */
 function* publishTxListener (tempProfile) {
     const response = yield take(actionChannels.tx.emitMined);
-    if (!response.error && response.data.tx === tempProfile.currentStatus.publishTx) {
+    if (!response.error && response.data.tx === tempProfile.status.publishTx) {
         yield put(tempProfileActions.tempProfilePublishTxMinedSuccess(tempProfile));
-    } else if (response.error && response.error.from.tx === tempProfile.currentStatus.publishTx) {
+    } else if (response.error && response.error.from.tx === tempProfile.status.publishTx) {
         yield put(tempProfileActions.tempProfilePublishError(response.error));
     }
 }
@@ -186,7 +186,7 @@ function* watchEthAddressCreate () {
 function* watchFaucetRequest () {
     while (true) {
         const action = yield take(types.ETH_ADDRESS_CREATE_SUCCESS);
-        if (!action.data.currentStatus.faucetRequested || !action.data.currentStatus.faucetTx) {
+        if (!action.data.status.faucetRequested || !action.data.status.faucetTx) {
             yield fork(faucetRequestListener, action.data);
             yield fork(faucetRequest, action.data);
         } else {
@@ -199,7 +199,7 @@ function* watchFaucetTxMined () {
     while (true) {
         const action = yield take(types.FUND_FROM_FAUCET_SUCCESS);
         yield fork(listenFaucetTx, action.data);
-        yield fork(addTxToQueue, [action.data.currentStatus.faucetTx, 'tempProfileFaucetTxMined']);
+        yield fork(addTxToQueue, [action.data.status.faucetTx, 'tempProfileFaucetTxMined']);
     }
 }
 
@@ -214,7 +214,7 @@ function* watchTempProfileLogin () {
 function* watchTempProfilePublish () {
     while (true) {
         const action = yield take(types.TEMP_PROFILE_LOGIN_SUCCESS);
-        if (!action.data.currentStatus.publishRequested || !action.data.currentStatus.publishTx) {
+        if (!action.data.status.publishRequested || !action.data.status.publishTx) {
             yield fork(tempProfilePublishListener, action.data);
             yield fork(tempProfilePublishRequest, action.data);
         } else {
@@ -227,7 +227,7 @@ function* watchPublishTxMined () {
     while (true) {
         const action = yield take(types.TEMP_PROFILE_PUBLISH_SUCCESS);
         yield fork(publishTxListener, action.data);
-        yield fork(addTxToQueue, [action.data.currentStatus.publishTx, 'tempProfilePublishTxMined']);
+        yield fork(addTxToQueue, [action.data.status.publishTx, 'tempProfilePublishTxMined']);
     }
 }
 

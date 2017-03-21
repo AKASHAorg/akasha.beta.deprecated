@@ -1,12 +1,9 @@
 // import BaseService from './base-service';
 import profileDB from './db/profile';
 
-// const Channel = window.Channel;
-
 /**
  * Create a temporary profile in indexedDB
  * Notice: use `Table.add()` to prevent accidental update of the publishing temp profile
- * 
  * @param {object} profileData - Data of the profile created
  * @param {object} currentStatus - Current status of the profile creation process
  */
@@ -20,15 +17,36 @@ export const createTempProfile = profileData =>
         // key already exists in the object store
         profileDB.tempProfile.where('akashaId').equals(profileData.akashaId).first()
     );
+/**
+ * update temp profile
+ * handles temp profile nested updates
+ * @param tempProfile <Object> with key/val that must be updated
+ * @param status <Object> Optional, status of the temp profile
+ * @return Promise => when resolved => profileData
+ */
 
-export const updateTempProfile = changes =>
-    profileDB.tempProfile.toArray().then(tmpProfile =>
-        profileDB.tempProfile
-            .update(tmpProfile[0].akashaId, {
-                ...changes
-            })
-    );
-
+export const updateTempProfile = (tempProfile, status) =>
+    profileDB.tempProfile
+        .where('akashaId')
+        .equals(tempProfile.akashaId)
+        .modify((tmpProf) => {
+            Object.keys(tempProfile).forEach((key) => {
+                tmpProf[key] = tempProfile[key];
+            });
+            if (status && typeof status === 'object') {
+                Object.keys(status).forEach((key) => {
+                    tmpProf.status[key] = status[key];
+                });
+            }
+        }).then((updated) => {
+            if (updated) {
+                return profileDB.tempProfile
+                    .where('akashaId')
+                    .equals(tempProfile.akashaId)
+                    .first();
+            }
+            return tempProfile;
+        });
 /**
  * Delete temporary profile. Called after profile was successfully created
  */
@@ -41,8 +59,7 @@ export const deleteTempProfile = akashaId =>
  * @return promise
  */
 export const getTempProfile = () =>
-    profileDB.tempProfile.toArray();
-
+    profileDB.tempProfile.toCollection().first();
 /**
  * Registry Service.
  * default open channels => ['getCurrentProfile', 'getByAddress']

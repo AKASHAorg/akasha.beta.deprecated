@@ -21,7 +21,7 @@ describe('ExternalProcState Reducer', () => {  // eslint-disable-line max-statem
     describe('INITIAL STATE', () => {
         modifiedState = EProcReducer(undefined, {});
         it('should return initialState when action is undefined', () => {
-            expect(modifiedState.equals(initialState)).to.be.true;
+            expect(modifiedState).to.eql(initialState);
         });
     });
     describe(types.GETH_START, () => {

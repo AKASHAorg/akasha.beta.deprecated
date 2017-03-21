@@ -4,13 +4,12 @@ import sinon from 'sinon';
 import SagaTester from 'redux-saga-tester';
 import * as tempProfileActions from '../../../app/local-flux/actions/temp-profile-actions';
 import { tempProfileData } from '../response-data/temp-profile';
-import tempProfileState from '../../../app/local-flux/reducers/temp-profile-state';
 import * as registryService from '../../../app/local-flux/services/registry-service';
 import { watchTempProfileActions } from '../../../app/local-flux/sagas/temp-profile-saga';
 
 chai.use(chaiIM);
 
-const initialState = tempProfileState(undefined, {});
+const initialState = {};
 
 describe('In `temp-profile-saga`,', () => {
     describe('when no errors are thrown,', () => { // eslint-disable-line max-statements
@@ -21,7 +20,7 @@ describe('In `temp-profile-saga`,', () => {
         const profileData = JSON.parse(JSON.stringify(tempProfileData));
         before(() => {
             createProfileStub = sinon.stub(registryService, 'createTempProfile', prof => prof);
-            updateProfileStub = sinon.stub(registryService, 'updateTempProfile', profile => profile);
+            updateProfileStub = sinon.stub(registryService, 'updateTempProfile', (profile, status) => Object.assign({}, profile, status));
             deleteProfileStub = sinon.stub(registryService, 'deleteTempProfile', profile => profile);
             sagaTester = new SagaTester({
                 initialState,
@@ -48,6 +47,7 @@ describe('In `temp-profile-saga`,', () => {
             const successAction = calledActions.find(ac =>
                 ac.type === action.type
             );
+            expect(successAction).to.be.an('object');
             expect(successAction.type).to.equal(action.type);
         });
         it(`should fire ${tempProfileActions.tempProfileCreateSuccess().type} with profileData payload`, () => {
@@ -81,8 +81,8 @@ describe('In `temp-profile-saga`,', () => {
             );
             expect(expectedAction).to.be.a('object');
             expect(expectedAction).to.have.property('data');
-            expect(expectedAction).to.have.deep.property('data.currentStatus.faucetTx').and.to.be.a('string');
-            expect(expectedAction).to.have.deep.property('data.currentStatus.faucetRequested').and.to.equal(true);
+            expect(expectedAction).to.have.deep.property('data.status.faucetTx').and.to.be.a('string');
+            expect(expectedAction).to.have.deep.property('data.status.faucetRequested').and.to.equal(true);
         });
         it(`should trigger ${tempProfileActions.tempProfileFaucetTxMined().type} once`, () => {
             const expectedAction = sagaTester.getLatestCalledAction();
@@ -129,7 +129,7 @@ describe('In `temp-profile-saga`,', () => {
                 ac.type === tempProfileActions.tempProfilePublishSuccess().type
             );
             expect(expectedAction).to.be.a('object');
-            expect(expectedAction).to.have.deep.property('data.currentStatus.publishTx').and.to.be.a('string');
+            expect(expectedAction).to.have.deep.property('data.status.publishTx').and.to.be.a('string');
         });
         it('should add publish transaction to queue once', () => {
             const expectedActionType = tempProfileActions.tempProfilePublishTxMined().type;
@@ -190,7 +190,7 @@ describe('In `temp-profile-saga`,', () => {
 
             sagaTester = new SagaTester({
                 initialState,
-                reducers: tempProfileState
+                reducers: state => state
             });
             sagaTester.start(watchTempProfileActions);
         });

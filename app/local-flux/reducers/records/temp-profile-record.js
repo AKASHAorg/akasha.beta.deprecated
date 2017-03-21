@@ -5,6 +5,7 @@ const TempProfileStatus = Record({
     publishRequested: false,
     faucetTx: null,
     publishTx: null,
+    currentAction: null
 });
 
 const TempProfile = Record({
@@ -16,8 +17,8 @@ const TempProfile = Record({
     avatar: null,
     backgroundImage: [],
     about: null,
-    links: [],
-    currentStatus: new TempProfileStatus()
+    links: []
 });
 
+export { TempProfileStatus };
 export default TempProfile;

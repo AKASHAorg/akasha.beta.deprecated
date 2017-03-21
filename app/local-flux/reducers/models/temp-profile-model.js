@@ -1,3 +1,16 @@
-import { TempProfileRecord } from '../records';
+import { Record } from 'immutable';
+import { TempProfileRecord, TempProfileStatus } from '../records';
 
-export default class TempProfileModel extends TempProfileRecord {}
+const TempProfileModelRecord = Record({
+    tempProfile: new TempProfileRecord(),
+    status: new TempProfileStatus()
+});
+
+export default class TempProfileModel extends TempProfileModelRecord {
+    static createTempProfile (profileData) {
+        return new TempProfileRecord(profileData);
+    }
+    static createStatus (status) {
+        return new TempProfileStatus(status);
+    }
+}

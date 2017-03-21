@@ -4,7 +4,7 @@ export const tempProfileData = {
     akashaId: 'i.m.tester',
     password: 'asdasdasd',
     password2: 'asdasdasd',
-    currentStatus: {
+    status: {
         faucetRequested: false,
         faucetTx: null,
         publishRequested: false,

@@ -1,74 +1,95 @@
-/* eslint new-cap: ["error", { "capIsNewExceptions": ["Record"] }]*/
-import { fromJS, List, Record } from 'immutable';
-import * as types from '../constants/temp-profile-constants';
+import * as types from '../constants';
 import { createReducer } from './create-reducer';
 import { TempProfileModel } from './models';
 
 const initialState = new TempProfileModel();
 
 const tempProfileState = createReducer(initialState, {
-    // start saving a new temp profile to database
-    [types.TEMP_PROFILE_CREATE]: (state, { profileData }) =>
-        state.setIn(['tempProfile'], state.get('tempProfile').castToRecord(profileData)),
-    // temp profile saved to IndexedDB successfully
-    [types.TEMP_PROFILE_CREATE_SUCCESS]: (state, { profileData }) =>
-        state,
-    // update temp profile in IndexedDB
-    [types.TEMP_PROFILE_UPDATE_SUCCESS]: (state, { tempProfile }) => {
-        const { currentStatus, ...other } = tempProfile;
+    // save a new temp profile to database
+    [types.TEMP_PROFILE_CREATE]: (state, { data }) => {
+        const { status, ...profile } = data;
+        const newState = state.merge({
+            tempProfile: TempProfileModel.createTempProfile(profile),
+            status: TempProfileModel.createStatus({
+                currentAction: types.TEMP_PROFILE_CREATE
+            })
+        });
+        return newState;
+    },
+
+    [types.TEMP_PROFILE_CREATE_SUCCESS]: (state) => {
+        const newState = state.mergeIn(['status'], {
+            currentAction: types.TEMP_PROFILE_CREATE_SUCCESS
+        });
+        return newState;
+    },
+
+    [types.ETH_ADDRESS_CREATE]: state =>
+        state.mergeIn(['status'], {
+            currentAction: types.ETH_ADDRESS_CREATE
+        }),
+
+    [types.ETH_ADDRESS_CREATE_SUCCESS]: (state, { data }) => {
+        const { status, address } = data;
+        const newState = state.merge({
+            tempProfile: state.get('tempProfile').setIn(['address'], address),
+            status: state.get('status').setIn(['currentAction'], status.currentAction)
+        });
+        return newState;
+    },
+
+    [types.FUND_FROM_FAUCET]: state =>
+        state.mergeIn(['status'], {
+            faucetRequested: true,
+            currentAction: types.FUND_FROM_FAUCET
+        }),
+
+    [types.FUND_FROM_FAUCET_SUCCESS]: (state, { data }) => {
+        const { status } = data;
         return state.merge({
-            tempProfile: state.get('tempProfile').mergeDeep({
-                ...other,
-                currentStatus: state.getIn(['tempProfile', 'currentStatus'])
-                                    .merge(new TempProfileStatus(currentStatus))
+            status: state.get('status').merge({
+                faucetTx: status.faucetTx,
+                currentAction: types.FUND_FROM_FAUCET_SUCCESS
             })
         });
     },
-    // get saved temp profile from indexedDB
-    [types.TEMP_PROFILE_GET_SUCCESS]: (state, { profile }) => {
-        if (profile) {
-            const { currentStatus, ...other } = profile;
-            return state.merge({
-                tempProfile: new TempProfile({
-                    ...other,
-                    currentStatus: new TempProfileStatus(currentStatus)
-                })
-            });
-        }
-        return state;
+    [types.TEMP_PROFILE_FAUCET_TX_MINED]: state =>
+        state.mergeIn(['status'], {
+            currentAction: types.TEMP_PROFILE_FAUCET_TX_MINED
+        }),
+    [types.TEMP_PROFILE_FAUCET_TX_MINED_SUCCESS]: state =>
+        state.mergeIn(['status'], {
+            currentAction: types.TEMP_PROFILE_FAUCET_TX_MINED_SUCCESS
+        }),
+    [types.TEMP_PROFILE_LOGIN]: state =>
+        state.mergeIn(['status'], {
+            currentAction: types.TEMP_PROFILE_LOGIN
+        }),
+    [types.TEMP_PROFILE_LOGIN_SUCCESS]: state =>
+        state.mergeIn(['status'], {
+            currentAction: types.TEMP_PROFILE_LOGIN_SUCCESS
+        }),
+    [types.TEMP_PROFILE_PUBLISH]: state =>
+        state.mergeIn(['status'], {
+            publishRequested: true,
+            currentAction: types.TEMP_PROFILE_PUBLISH
+        }),
+    [types.TEMP_PROFILE_PUBLISH_SUCCESS]: (state, { data }) => {
+        const { status } = data;
+        return state.mergeIn(['status'], {
+            publishTx: status.publishTx,
+            currentAction: types.TEMP_PROFILE_PUBLISH_SUCCESS
+        });
     },
-    // delete temp profile from indexedDB. Usually after profile was successfully published
-    [types.TEMP_PROFILE_DELETE_SUCCESS]: state =>
-        state.set('tempProfile', new TempProfile()),
-
-    [types.ETH_ADDRESS_CREATE]: state =>
-        state,
-
-    [types.ETH_ADDRESS_CREATE_SUCCESS]: (state, { data }) =>
-        state,
-
-    [types.FUND_FROM_FAUCET]: state =>
-        state.mergeDeepIn(['tempProfile', 'currentStatus'], {
-            faucetRequested: true
+    [types.TEMP_PROFILE_PUBLISH_TX_MINED]: state =>
+        state.mergeIn(['status'], {
+            currentAction: types.TEMP_PROFILE_PUBLISH_TX_MINED
         }),
-
-    [types.LISTEN_FAUCET_TX]: state =>
-        state.mergeDeepIn(['tempProfile', 'currentStatus'], {
-            listeningFaucetTx: true
+    [types.TEMP_PROFILE_PUBLISH_TX_MINED_SUCCESS]: state =>
+        state.mergeIn(['status'], {
+            currentAction: types.TEMP_PROFILE_PUBLISH_TX_MINED_SUCCESS
         }),
-
-    [types.REQUEST_FUND_FROM_FAUCET_SUCCESS]: (state, { data }) =>
-        state,
-    [types.LISTEN_PUBLISH_TX]: state =>
-        state,
-
-    [types.PUBLISH_PROFILE]: state =>
-        state.mergeIn(['tempProfile', 'currentStatus'], {
-            publishRequested: true
-        }),
-
-    [types.PUBLISH_PROFILE_SUCCESS]: (state, { profileData }) =>
-        state,
+    [types.TEMP_PROFILE_DELETE_SUCCESS]: state => state.clear()
 });
 
 export default tempProfileState;
