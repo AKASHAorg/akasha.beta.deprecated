@@ -39,8 +39,7 @@ class IpfsIPC extends IpfsEmitter_1.default {
     }
     _stop() {
         this.registerListener(channels_1.default.server.ipfs.stopService, (event, data) => {
-            const signal = (data) ? data.signal : 'SIGINT';
-            ipfs_connector_1.IpfsConnector.getInstance().stop(signal);
+            ipfs_connector_1.IpfsConnector.getInstance().stop();
         });
         return this;
     }
@@ -100,7 +99,7 @@ class IpfsIPC extends IpfsEmitter_1.default {
             ipfs_connector_1.IpfsConnector.getInstance()
                 .setPorts(data.ports, data.restart)
                 .then(() => {
-                response = responses_1.ipfsResponse({ set: true });
+                response = responses_1.ipfsResponse({ set: true, ports: data.ports });
             })
                 .catch((err) => {
                 response = responses_1.ipfsResponse({}, {

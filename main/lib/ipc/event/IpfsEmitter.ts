@@ -2,6 +2,7 @@ import { AbstractEmitter } from './AbstractEmitter';
 import { IpfsConnector, ipfsEvents } from '@akashaproject/ipfs-connector';
 import { ipfsResponse } from './responses';
 import channels from '../../channels';
+import * as Promise from 'bluebird';
 
 const peerId = '/ip4/46.101.103.114/tcp/4001/ipfs/QmYfXRuVWMWFRJxUSFPHtScTNR9CU2samRsTK15VFJPpvh';
 abstract class IpfsEmitter extends AbstractEmitter {
@@ -30,14 +31,29 @@ abstract class IpfsEmitter extends AbstractEmitter {
             ipfsEvents.SERVICE_STARTED,
             () => {
                 this.fireEvent(channels.client.ipfs.startService, ipfsResponse({ started: true }));
+
                 IpfsConnector.getInstance()
-                    .api
-                    .apiClient
-                    .bootstrap
-                    .add(peerId, (err, data) => {
-                        if(err){
-                            console.log('add ipfs peer err ', err);
+                    .checkVersion()
+                    .then(isValid => {
+                        if (!isValid) {
+                            IpfsConnector.getInstance().stop();
+                            return Promise.delay(5000).then(() => {
+                                return IpfsConnector.getInstance()
+                                    .downloadManager
+                                    .deleteBin()
+                                    .delay(1000)
+                                    .then(() => IpfsConnector.getInstance().start())
+                            })
                         }
+                        return IpfsConnector.getInstance()
+                            .api
+                            .apiClient
+                            .bootstrap
+                            .add(peerId, (err, data) => {
+                                if (err) {
+                                    console.log('add ipfs peer err ', err);
+                                }
+                            });
                     })
             }
         );
