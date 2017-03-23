@@ -25,7 +25,7 @@ const stopServices = () => {
 };
 export function bootstrapApp() {
     let mainWindow = null;
-    const viewHtml = resolve(__dirname, '../app');
+    const viewHtml = resolve(__dirname, '..');
     if (process.env.NODE_ENV !== 'development') {
         crashReporter.start({
             productName: 'AKASHA',
@@ -73,9 +73,9 @@ export function bootstrapApp() {
         });
 
         if (process.env.HOT) {
-            mainWindow.loadURL(`file://${viewHtml}/hot-dev-app.html`);
+            mainWindow.loadURL(`file://${viewHtml}/app/hot-dev-app.html`);
         } else {
-            mainWindow.loadURL(`file://${viewHtml}/app.html`);
+            mainWindow.loadURL(`file://${viewHtml}/dist/app.html`);
         }
 
         mainWindow.once('close', (ev: Event) => {
