@@ -257,6 +257,7 @@
       "package.json"
     ],
     "win": {
+      "certificateSubjectName": "AKASHA International GmbH",
       "target": [
         "nsis",
         "zip"
