@@ -21,8 +21,6 @@ const history = createHashHistory();
 
 window.Perf = ReactPerf;
 
-console.log(store.getState());
-
 // function hashLinkScroll () {
 //     const { hash } = window.location;
 //     if (hash.split('#')[2]) {
