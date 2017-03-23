@@ -25,7 +25,7 @@ const stopServices = () => {
 };
 function bootstrapApp() {
     let mainWindow = null;
-    const viewHtml = path_1.resolve(__dirname, '../app');
+    const viewHtml = path_1.resolve(__dirname, '..');
     if (process.env.NODE_ENV !== 'development') {
         electron_1.crashReporter.start({
             productName: 'AKASHA',
@@ -66,10 +66,10 @@ function bootstrapApp() {
             }
         });
         if (process.env.HOT) {
-            mainWindow.loadURL(`file://${viewHtml}/hot-dev-app.html`);
+            mainWindow.loadURL(`file://${viewHtml}/app/hot-dev-app.html`);
         }
         else {
-            mainWindow.loadURL(`file://${viewHtml}/app.html`);
+            mainWindow.loadURL(`file://${viewHtml}/dist/app.html`);
         }
         mainWindow.once('close', (ev) => {
             ev.preventDefault();
