@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, IndexRoute, IndexRedirect } from 'react-router';
+import { Route } from 'react-router-dom';
 import requireAuth from './require-auth';
 
 import { AppContainer, ConfigurationContainer, SynchronizationContainer } from './containers';
@@ -7,7 +7,7 @@ import AuthContainer from './routes/Login/routes/Authenticate/AuthContainer';
 import ChatChannel from './routes/Home/routes/Chat/components/chat-channel';
 import ChatContainer from './routes/Home/routes/Chat/ChatContainer';
 import CreateProfileCompleteContainer from './routes/Login/routes/CreateProfileComplete/CreateProfileCompleteContainer';
-import CreateProfileContainer from './routes/Login/routes/CreateProfile/CreateProfileContainer';
+import CreateProfileContainer from './containers/create-profile-container';
 import CreateProfileStatusContainer from './routes/Login/routes/CreateProfileStatus/CreateProfileStatusContainer';
 import EntryListContainer from './routes/Home/routes/Stream/routes/EntryList/EntryListContainer';
 import EntryPageContainer from './routes/Home/routes/Entry/EntryContainer';
@@ -24,13 +24,13 @@ import StreamPageContainer from './routes/Home/routes/Stream/StreamContainer';
 
 export default (
   <Route component={AppContainer} path="/" > {/** displays errors and various info */}
-    <IndexRedirect to="setup" />
+    {/**<IndexRedirect to="setup" />*/}
     <Route component={Setup} path="setup" >
-      <IndexRoute component={ConfigurationContainer} />
+      {/**<IndexRoute component={ConfigurationContainer} />*/}
       <Route component={SynchronizationContainer} path="sync-status" />
     </Route>
     <Route component={LoginLayout} path="authenticate">
-      <IndexRoute component={AuthContainer} />
+      {/*<IndexRoute component={AuthContainer} />*/}
       <Route component={CreateProfileContainer} path="new-profile" />
       <Route component={CreateProfileStatusContainer} path="new-profile-status" />
       <Route component={CreateProfileCompleteContainer} path="new-profile-complete" />

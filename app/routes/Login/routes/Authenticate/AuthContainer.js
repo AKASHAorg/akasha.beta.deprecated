@@ -20,10 +20,10 @@ function mapStateToProps (state, ownProps) {
 
 function mapDispatchToProps (dispatch) {
     return {
-        profileActions: new ProfileActions(dispatch),
-        settingsActions: new SettingsActions(dispatch),
-        tempProfileActions: new TempProfileActions(dispatch),
-        utilsActions: new UtilsActions(dispatch)
+        // profileActions: new ProfileActions(dispatch),
+        // settingsActions: new SettingsActions(dispatch),
+        // tempProfileActions: new TempProfileActions(dispatch),
+        // utilsActions: new UtilsActions(dispatch)
     };
 }
 
