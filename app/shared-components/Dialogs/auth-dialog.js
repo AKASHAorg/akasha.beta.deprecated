@@ -1,9 +1,9 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { TextField, Dialog, RaisedButton, Checkbox, SelectField, MenuItem } from 'material-ui';
-import { AppActions, ProfileActions, SettingsActions } from 'local-flux';
-import { formMessages, generalMessages } from 'locale-data/messages';
 import debounce from 'lodash.debounce';
+import { AppActions, ProfileActions, SettingsActions } from '../../local-flux';
+import { formMessages, generalMessages } from '../../locale-data/messages';
 
 class AuthDialog extends Component {
     state = {

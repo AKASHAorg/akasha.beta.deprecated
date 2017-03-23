@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { injectIntl } from 'react-intl';
 import { TextField, IconButton } from 'material-ui';
 import InfoIcon from 'material-ui/svg-icons/action/info-outline';
-import { confirmMessages, formMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
+import { confirmMessages, formMessages } from '../../locale-data/messages';
 
 const ENTER = 'Enter';
 

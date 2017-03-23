@@ -342,6 +342,8 @@ describe('external process saga', function test () {
                 'IPFS_RESET_BUSY was not called once');
         });
         it('should dispatch IPFS_STOP_ERROR and IPFS_RESET_BUSY', async () => {
+            expect(sagaTester.numCalled(types.IPFS_RESET_BUSY)).to.equal(0,
+                'IPFS_RESET_BUSY was called before ipfsStop');
             sagaTester.dispatch(actions.ipfsStop());
             const clientChannel = global.Channel.client.ipfs.stopService;
             const resp = { data: { }, error: { message: 'test' } };

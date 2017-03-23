@@ -8,12 +8,12 @@ import * as types from '../constants';
 const Channel = global.Channel;
 
 function* gethResetBusyState () {
-    yield call(reduxSaga.delay, 2000);
+    yield apply(reduxSaga, reduxSaga.delay, [2000]);
     yield put(actions.gethResetBusy());
 }
 
 function* ipfsResetBusyState () {
-    yield call(reduxSaga.delay, 2000);
+    yield apply(reduxSaga, reduxSaga.delay, [2000]);
     yield put(actions.ipfsResetBusy());
 }
 
@@ -23,7 +23,7 @@ function* gethStartLogger () {
     while (true) {
         yield put(actions.gethGetLogs());
         yield apply(channel, channel.send, [{}]);
-        yield call(reduxSaga.delay, 2000);
+        yield apply(reduxSaga, reduxSaga.delay, [2000]);
     }
 }
 
@@ -33,20 +33,20 @@ function* ipfsStartLogger () {
     while (true) {
         yield put(actions.ipfsGetLogs());
         yield apply(channel, channel.send, [{}]);
-        yield call(reduxSaga.delay, 2000);
+        yield apply(reduxSaga, reduxSaga.delay, [2000]);
     }
 }
 
 export function* gethGetOptions () {
     const channel = Channel.server.geth.options;
-    yield call(reduxSaga.delay, 200);
+    yield apply(reduxSaga, reduxSaga.delay, [200]);
     yield call(enableChannel, channel, Channel.client.geth.manager);
     yield apply(channel, channel.send, [{}]);
 }
 
 export function* ipfsGetConfig () {
     const channel = Channel.server.ipfs.getConfig;
-    yield call(reduxSaga.delay, 200);
+    yield apply(reduxSaga, reduxSaga.delay, [200]);
     yield call(enableChannel, channel, Channel.client.ipfs.manager);
     yield apply(channel, channel.send, [{}]);
 }

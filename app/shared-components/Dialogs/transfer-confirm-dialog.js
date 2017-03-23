@@ -1,10 +1,10 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
-import { AppActions, ProfileActions } from 'local-flux';
 import { Dialog, FlatButton, RaisedButton } from 'material-ui';
-import { confirmMessages, generalMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
-import { SendTipForm } from 'shared-components';
+import { AppActions, ProfileActions } from '../../local-flux';
+import { confirmMessages, generalMessages } from '../../locale-data/messages';
+import { SendTipForm } from '../';
 
 const NOT_ENOUGH_FUNDS = 'notEnoughFunds';
 const AMOUNT_ERROR = 'tipAmountError';

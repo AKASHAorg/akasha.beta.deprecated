@@ -1,6 +1,6 @@
 import BaseService from './base-service';
 
-const Channel = window.Channel;
+const Channel = global.Channel;
 
 class ValidationService extends BaseService {
     constructor () {

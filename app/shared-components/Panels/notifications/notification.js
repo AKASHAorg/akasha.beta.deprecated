@@ -4,9 +4,9 @@ import { ListItem, SvgIcon } from 'material-ui';
 import NotificationsActiveIcon from 'material-ui/svg-icons/social/notifications-active';
 import NotificationsDisabledIcon from 'material-ui/svg-icons/social/notifications-off';
 import ActionDelete from 'material-ui/svg-icons/action/delete';
-import { Avatar } from 'shared-components';
-import { UserMore } from 'shared-components/svg';
-import { getInitials } from 'utils/dataModule';
+import { Avatar } from '../../';
+import { UserMore } from '../../svg';
+import { getInitials } from '../../../utils/dataModule';
 
 class Notification extends Component {
     state = {

@@ -1,6 +1,6 @@
 import React, { PropTypes, Component } from 'react';
-import { LogoButton } from 'shared-components';
-import { getInitials } from 'utils/dataModule';
+import { LogoButton } from '../';
+import { getInitials } from '../../utils/dataModule';
 import {
     ProfileIcon,
     AddEntryIcon,
@@ -10,7 +10,7 @@ import {
     PortalsIcon,
     CommunityIcon,
     PeopleIcon,
-    ChatIcon } from 'shared-components/svg';
+    ChatIcon } from '../svg';
 
 class SideBar extends Component {
     componentWillMount () {

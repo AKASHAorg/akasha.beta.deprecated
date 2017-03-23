@@ -3,9 +3,9 @@ import { connect } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
 import { Dialog, FlatButton, TextField, SvgIcon, IconButton } from 'material-ui';
 import InfoIcon from 'material-ui/svg-icons/action/info-outline';
-import { EntryUpvote, EntryDownvote } from 'shared-components/svg';
-import { AppActions, EntryActions } from 'local-flux';
-import { confirmMessages, formMessages, generalMessages } from 'locale-data/messages';
+import { EntryUpvote, EntryDownvote } from '../svg';
+import { AppActions, EntryActions } from '../../local-flux';
+import { confirmMessages, formMessages, generalMessages } from '../../locale-data/messages';
 import style from './weight-confirm-dialog.scss';
 
 const WEIGHT_LIMIT_ERROR = 'WEIGHT_LIMIT_ERROR';

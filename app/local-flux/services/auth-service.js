@@ -1,7 +1,7 @@
 import BaseService from './base-service';
 import profileDB from './db/profile';
 
-const Channel = window.Channel;
+const Channel = global.Channel;
 /**
  * Auth Service.
  * default open channels => ['login', 'logout', 'requestEther']

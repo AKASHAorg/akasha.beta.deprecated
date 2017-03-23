@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import { MenuItem, SelectField } from 'material-ui';
-import { setupMessages } from 'locale-data/messages';  // eslint-disable-line import/no-unresolved, import/extensions
+import { setupMessages } from '../../locale-data/messages';
 
 export default function GethCacheSelect ({ cache, hasErrorText, intl, onChange }, { muiTheme }) {
     const labelStyle = {

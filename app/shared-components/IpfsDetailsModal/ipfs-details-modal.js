@@ -2,12 +2,12 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { Dialog, FlatButton, Tab, Tabs, Toggle } from 'material-ui';
-import { IpfsOptionsForm, LogsList } from 'shared-components';
-import { generalMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
+import { IpfsOptionsForm, LogsList } from '../';
+import { generalMessages } from '../../locale-data/messages';
 import { ipfsSetPorts, ipfsStart, ipfsStartLogger, ipfsStop,
-    ipfsStopLogger } from 'local-flux/actions/external-process-actions'; // eslint-disable-line import/no-unresolved, import/extensions
-import { toggleIpfsDetailsModal } from 'local-flux/actions/app-actions'; // eslint-disable-line import/no-unresolved, import/extensions
-import { ipfsSaveSettings } from 'local-flux/actions/settings-actions'; // eslint-disable-line import/no-unresolved, import/extensions
+    ipfsStopLogger } from '../../local-flux/actions/external-process-actions';
+import { toggleIpfsDetailsModal } from '../../local-flux/actions/app-actions';
+import { ipfsSaveSettings } from '../../local-flux/actions/settings-actions';
 
 const toggleStyle = {
     display: 'block',

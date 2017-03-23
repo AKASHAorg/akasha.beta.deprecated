@@ -1,7 +1,8 @@
-import React, { PropTypes } from 'react';
+/*import React, { PropTypes } from 'react';
+import muiThemeable from 'material-ui/styles/muiThemeable';
 import { Tutorials } from 'shared-components';
 
-export default function Setup ({ children }, { muiTheme }) {
+function Setup ({ children, muiTheme }) {
     const { palette } = muiTheme;
     return (
       <div style={{ display: 'flex', padding: 0, overflow: 'hidden' }}>
@@ -23,8 +24,7 @@ export default function Setup ({ children }, { muiTheme }) {
 
 Setup.propTypes = {
     children: PropTypes.element,
+    muiTheme: PropTypes.shape()
 };
 
-Setup.contextTypes = {
-    muiTheme: React.PropTypes.shape(),
-};
+export default muiThemeable()(Setup);*/

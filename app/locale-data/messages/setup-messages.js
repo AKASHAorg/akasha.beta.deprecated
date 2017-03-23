@@ -100,7 +100,7 @@ const setupMessages = defineMessages({
         id: 'app.setup.akashaNextGenNetwork',
         description: 'akasha next gen description',
         defaultMessage: `AKASHA is a next-generation social blogging network powered by a new
-                        kind of world computers known as Ethereum and the
+                        kind of world computer known as Ethereum and the
                         Inter Planetary File System.`
     },
     youHaveNotHeared: {

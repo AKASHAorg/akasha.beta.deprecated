@@ -37,8 +37,10 @@ const generateTheChannel = () => {
     };
     const modules = [
         'auth.generateEthKey', 'auth.requestEther', 'auth.manager', 'auth.login',
+        'entry.votesIterator',
         'geth.logs', 'geth.options', 'geth.startService', 'geth.status', 'geth.syncStatus', 'geth.stopService',
         'ipfs.getConfig', 'ipfs.getPorts', 'ipfs.setPorts', 'ipfs.logs', 'ipfs.startService', 'ipfs.status', 'ipfs.stopService',
+        'profile.getProfileData',
         'registry.registerProfile', 'registry.manager',
         'tx.addToQueue', 'tx.emitMined',
     ];

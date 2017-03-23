@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import { TextField } from 'material-ui';
-import { setupMessages } from 'locale-data/messages';
-import { PathInputField } from 'shared-components';
+import { setupMessages } from '../../locale-data/messages';
+import { PathInputField } from '../';
 
 const floatingLabelStyle = {
     cursor: 'default',

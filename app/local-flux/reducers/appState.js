@@ -1,48 +1,10 @@
-/* eslint new-cap: ["error", { "capIsNewExceptions": ["Record", "Map"] }]*/
-import { fromJS, Record, List } from 'immutable';
+import { fromJS } from 'immutable';
+import { AppRecord, Notification, PendingAction } from './records';
 import * as types from '../constants/AppConstants';
 import * as profileTypes from '../constants/ProfileConstants';
 import { createReducer } from './create-reducer';
 
-const ErrorRecord = Record({
-    code: 0,
-    fatal: null,
-    message: ''
-});
-
-const Notification = Record({
-    id: null,
-    values: new Map(),
-    duration: null
-});
-
-const PendingAction = Record({
-    id: null,
-    type: null,
-    payload: new Map(),
-    titleId: null,
-    messageId: null,
-    gas: null,
-    status: null
-});
-
-const initialState = fromJS({
-    appReady: false,
-    error: new ErrorRecord(),
-    showAuthDialog: null,
-    showEntry: {
-        modal: false
-    },
-    showGethDetailsModal: false,
-    showIpfsDetailsModal: false,
-    showTerms: false,
-    weightConfirmDialog: null,
-    timestamp: 0,
-    notifications: new List(),
-    pendingActions: new List(),
-    publishConfirmDialog: null,
-    transferConfirmDialog: null
-});
+const initialState = new AppRecord();
 
 const appState = createReducer(initialState, {
     [types.APP_READY]: state =>
@@ -53,12 +15,6 @@ const appState = createReducer(initialState, {
 
     [types.HIDE_AUTH_DIALOG]: state =>
         state.set('showAuthDialog', null),
-
-    [types.SHOW_ENTRY_MODAL]: (state, action) =>
-        state.set('showEntry', { modal: true, ...action.entryData, ...action.options }),
-
-    [types.HIDE_ENTRY_MODAL]: state =>
-        state.set('showEntry', { modal: false }),
 
     [types.SHOW_WEIGHT_CONFIRM_DIALOG]: (state, { resource }) =>
         state.set('weightConfirmDialog', resource),

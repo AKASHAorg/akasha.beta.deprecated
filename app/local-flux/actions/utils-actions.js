@@ -1,6 +1,6 @@
 import { utilsActionCreators } from './action-creators';
 import { UtilsService } from '../services';
-import { AppActions } from 'local-flux';
+import { AppActions } from './';
 
 let utilsActions = null;
 

@@ -25,8 +25,6 @@ class AppActions {
         this.dispatch(appActionCreators.showPublishConfirmDialog(resource));
     hidePublishConfirmDialog = () =>
         this.dispatch(appActionCreators.hidePublishConfirmDialog());
-    showEntryModal = (entryData, options = {}) =>
-        Promise.resolve(this.dispatch(appActionCreators.showEntryModal(entryData, options)));
     hideEntryModal = () =>
         Promise.resolve(this.dispatch(appActionCreators.hideEntryModal()));
     showWeightConfirmDialog = resource =>
@@ -109,6 +107,13 @@ export function hideNotification (notification) {
 export function hideTerms () {
     return {
         type: types.HIDE_TERMS
+    };
+}
+
+export function showTerms () {
+    console.log('show terms');
+    return {
+        type: types.SHOW_TERMS
     };
 }
 

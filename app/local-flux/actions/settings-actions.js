@@ -1,4 +1,4 @@
-import { AppActions } from 'local-flux';
+import { AppActions } from './';
 import { settingsActionCreators } from './action-creators';
 import { NotificationsService, SettingsService } from '../services';
 import * as types from '../constants';

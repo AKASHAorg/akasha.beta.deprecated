@@ -65,7 +65,7 @@ class PanelContainer extends React.Component {
                   overflowY: 'auto',
                   overflowX: 'hidden',
                   margin: 0,
-                  transition: 'all 0.118s ease-in-out',
+                  transition: 'top 0.118s ease-in-out',
               }, contentStyle)}
               ref={(panelContent) => { this.panelContent = panelContent; }}
               onScroll={this._handleScroll}

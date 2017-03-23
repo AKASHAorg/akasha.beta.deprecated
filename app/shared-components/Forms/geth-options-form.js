@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import { TextField } from 'material-ui';
-import { setupMessages } from 'locale-data/messages';  // eslint-disable-line import/no-unresolved, import/extensions
-import { GethCacheSelectField, PathInputField } from 'shared-components';
+import { setupMessages } from '../../locale-data/messages';
+import { GethCacheSelectField, PathInputField } from '../';
 
 const floatingLabelStyle = {
     cursor: 'default',

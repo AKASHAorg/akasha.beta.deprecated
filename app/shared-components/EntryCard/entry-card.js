@@ -1,16 +1,16 @@
 import React, { Component, PropTypes } from 'react';
+import { injectIntl } from 'react-intl';
 import { Card, CardHeader, CardTitle, CardText, CardActions, IconButton, FlatButton,
     SvgIcon } from 'material-ui';
 import WarningIcon from 'material-ui/svg-icons/alert/warning';
 import HubIcon from 'material-ui/svg-icons/hardware/device-hub';
 import EditIcon from 'material-ui/svg-icons/image/edit';
 import { EntryBookmarkOn, EntryBookmarkOff, EntryComment, EntryDownvote,
-    EntryUpvote, ToolbarEthereum } from 'shared-components/svg';
-import { injectIntl } from 'react-intl';
-import { Avatar, EntryVersionsPanel, EntryVotesPanel, TagChip } from 'shared-components';
-import { calculateReadingTime, getInitials } from 'utils/dataModule';
-import imageCreator from 'utils/imageUtils';
-import { entryMessages } from 'locale-data/messages';
+    EntryUpvote, ToolbarEthereum } from '../svg';
+import { Avatar, EntryVersionsPanel, EntryVotesPanel, TagChip } from '../';
+import { calculateReadingTime, getInitials } from '../../utils/dataModule';
+import imageCreator from '../../utils/imageUtils';
+import { entryMessages } from '../../locale-data/messages';
 import styles from './entry-card.scss';
 
 class EntryCard extends Component {

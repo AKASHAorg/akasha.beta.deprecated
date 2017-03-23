@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react';
+/*import React, { Component, PropTypes } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { setupMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
 import { SyncProgressLoader } from 'shared-components';
@@ -132,4 +132,4 @@ SyncStatus.propTypes = {
     syncActionId: PropTypes.number
 };
 
-export default SyncStatus;
+export default SyncStatus;*/

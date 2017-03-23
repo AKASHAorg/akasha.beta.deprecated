@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { hoursMinutesSeconds } from 'utils/dateFormatter';
+import { hoursMinutesSeconds } from '../../utils/dateFormatter';
 
 const listStyle = {
     paddingLeft: 4,

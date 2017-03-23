@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { Comment, CommentEditor } from 'shared-components';
+import { Comment, CommentEditor } from '../';
 import { Divider } from 'material-ui';
-import { entryMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
+import { entryMessages } from '../../locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
 
 class CommentThread extends Component {
     componentDidUpdate (prevProps) {

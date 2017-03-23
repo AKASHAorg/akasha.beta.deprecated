@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { Dialog, TextField, Checkbox, SelectField, MenuItem, Avatar } from 'material-ui';
-import { getInitials } from 'utils/dataModule';
+import { getInitials } from '../../utils/dataModule';
 
 class LoginDialog extends Component {
     componentDidMount () {

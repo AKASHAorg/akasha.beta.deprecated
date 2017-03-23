@@ -2,9 +2,9 @@ import React, { Component, PropTypes } from 'react';
 import ReactTooltip from 'react-tooltip';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { entryMessages } from 'locale-data/messages';
-import { AppActions, EntryActions, TagActions } from 'local-flux';
-import { DataLoader, EntryCard } from 'shared-components';
+import { entryMessages } from '../../locale-data/messages';
+import { AppActions, EntryActions, TagActions } from '../../local-flux';
+import { DataLoader, EntryCard } from '../';
 
 class EntryList extends Component {
     componentWillUnmount () {

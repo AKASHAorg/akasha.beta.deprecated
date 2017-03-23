@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { Card, CardHeader, CardTitle, CardText, IconButton, CircularProgress } from 'material-ui';
 import DeleteIcon from 'material-ui/svg-icons/action/delete';
-import { TagChip } from 'shared-components';
+import { TagChip } from '../';
 import styles from './draft-card.scss';
 
 class DraftCard extends Component {

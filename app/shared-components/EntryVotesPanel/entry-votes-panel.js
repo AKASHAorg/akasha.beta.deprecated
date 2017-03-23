@@ -1,10 +1,10 @@
 import React, { Component, PropTypes } from 'react';
 import ReactTooltip from 'react-tooltip';
 import { Dialog, List, ListItem, SvgIcon } from 'material-ui';
-import { EntryDownvote, EntryUpvote, ToolbarVotes } from 'shared-components/svg';
+import { EntryDownvote, EntryUpvote, ToolbarVotes } from '../svg';
 
-const serverChannel = Channel.server.entry.votesIterator;
-const clientChannel = Channel.client.entry.votesIterator;
+const serverChannel = global.Channel.server.entry.votesIterator;
+const clientChannel = global.Channel.client.entry.votesIterator;
 
 class EntryVotesPanel extends Component {
     constructor (props) {

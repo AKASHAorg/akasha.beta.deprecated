@@ -16,9 +16,9 @@ import {
   ImageSizeMedium,
   ImageSizeSmall,
   ImageSizeXL,
-  ImageSizeXXL } from 'shared-components/svg'; // eslint-disable-line import/no-unresolved, import/extensions
-import imageCreator, { findClosestMatch } from 'utils/imageUtils'; // eslint-disable-line import/no-unresolved, import/extensions
-import clickAway from 'utils/clickAway'; // eslint-disable-line import/no-unresolved, import/extensions
+  ImageSizeXXL } from '../../../svg';
+import imageCreator, { findClosestMatch } from '../../../../utils/imageUtils';
+import clickAway from '../../../../utils/clickAway';
 import styles from './image-block.scss';
 
 class ImageBlock extends Component {
@@ -216,7 +216,7 @@ class ImageBlock extends Component {
                 </ToolbarGroup>
               </Toolbar>
               <CardMedia
-                
+
                 onClick={this._handleImageClick}
               >
                 <div

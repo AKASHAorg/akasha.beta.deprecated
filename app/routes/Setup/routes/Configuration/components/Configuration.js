@@ -1,6 +1,7 @@
-import React, { Component, PropTypes } from 'react';
+/*import React, { Component, PropTypes } from 'react';
 import { injectIntl } from 'react-intl';
 import { FlatButton, RadioButton, RadioButtonGroup, RaisedButton } from 'material-ui';
+import muiThemeable from 'material-ui/styles/muiThemeable';
 import { setupMessages, generalMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
 import { GethCacheSelectField, PanelContainer, PanelHeader,
     PathInputField } from 'shared-components';
@@ -87,10 +88,10 @@ class Config extends Component {
     };
 
     render () {
-        const { intl } = this.props;
+        const { intl, muiTheme } = this.props;
         const { cache, gethDataDir, ipfsPath, isAdvanced } = this.state;
         const radioStyle = { marginTop: '10px', marginBottom: '10px' };
-
+        console.log('canvas color', muiTheme.palette.canvasColor);
         return (
           <PanelContainer
             showBorder
@@ -100,7 +101,7 @@ class Config extends Component {
                 key="next"
                 label={intl.formatMessage(generalMessages.nextButtonLabel)}
                 primary
-                backgroundColor={this.context.muiTheme.raisedButton.secondaryColor}
+                backgroundColor={muiTheme.palette.secondaryColor}
                 style={{ marginLeft: '12px' }}
                 onClick={this.handleSubmit}
               />
@@ -108,7 +109,7 @@ class Config extends Component {
             ]}
             header={<PanelHeader title={'AKASHA'} />}
           >
-            <div style={{ padding: '0 24px', marginRight: '7px' }}>
+            <div style={{ padding: '0 24px', marginRight: '7px', backgroundColor: muiTheme.palette.canvasColor }}>
               <h1 style={{ fontWeight: '400' }}>
                 {intl.formatMessage(setupMessages.firstTimeSetupTitle)}
               </h1>
@@ -182,12 +183,12 @@ Config.propTypes = {
     gethSettings: PropTypes.shape().isRequired,
     intl: PropTypes.shape(),
     ipfsSettings: PropTypes.shape().isRequired,
+    muiTheme: PropTypes.shape(),
     saveConfiguration: PropTypes.func.isRequired,
 };
 
 Config.contextTypes = {
-    muiTheme: React.PropTypes.shape().isRequired,
-    router: React.PropTypes.object
+    router: PropTypes.shape()
 };
 
-export default injectIntl(Config);
+export default muiThemeable()(injectIntl(Config));*/

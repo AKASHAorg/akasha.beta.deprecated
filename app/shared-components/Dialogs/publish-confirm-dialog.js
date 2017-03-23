@@ -1,10 +1,10 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
-import { AppActions } from 'local-flux';
 import { Dialog, FlatButton, RaisedButton, TextField, IconButton } from 'material-ui';
-import { confirmMessages, formMessages, generalMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
 import InfoIcon from 'material-ui/svg-icons/action/info-outline';
+import { AppActions } from '../../local-flux';
+import { confirmMessages, formMessages, generalMessages } from '../../locale-data/messages';
 
 class PublishConfirmDialog extends Component {
     constructor (props) {

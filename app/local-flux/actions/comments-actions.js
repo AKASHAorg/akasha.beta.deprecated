@@ -1,4 +1,4 @@
-import { AppActions, TransactionActions } from 'local-flux';
+import { AppActions, TransactionActions } from './';
 import { CommentService, ProfileService } from '../services';
 import { commentsActionCreators } from './action-creators';
 

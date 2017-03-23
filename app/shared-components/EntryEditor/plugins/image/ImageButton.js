@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { insertDataBlock } from 'megadraft';
 import { IconButton } from 'material-ui';
-import { getResizedImages, findClosestMatch } from 'utils/imageUtils'; // eslint-disable-line import/no-unresolved, import/extensions
 import PhotoCircle from 'material-ui/svg-icons/image/photo-camera';
+import { getResizedImages, findClosestMatch } from '../../../../utils/imageUtils';
 
 export default class BlockButton extends Component {
     constructor (props) {

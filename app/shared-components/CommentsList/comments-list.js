@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { entryMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
-import { CommentThread } from 'shared-components';
+import { entryMessages } from '../../locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
+import { CommentThread } from '../';
 
 class CommentsList extends Component {
     constructor (props) {

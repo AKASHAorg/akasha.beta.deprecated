@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import { injectIntl } from 'react-intl';
-import { LogoButton, ServiceStatusBar } from 'shared-components';
-import { generalMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
+import { LogoButton, ServiceStatusBar } from '../';
+import { generalMessages } from '../../locale-data/messages';
 
 function PanelHeader ({ disableStopService, intl, noStatusBar, noLogoButton, title }) {
     return (

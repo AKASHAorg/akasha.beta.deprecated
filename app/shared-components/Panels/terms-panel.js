@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
-import PanelContainer from '../PanelContainer/panel-container';
-import { akashaTerms } from 'locale-data/messages';
+import { PanelContainer } from '../';
+import { akashaTerms } from '../../locale-data/messages';
 import { injectIntl } from 'react-intl';
 
 const TermsPanel = (props) => {

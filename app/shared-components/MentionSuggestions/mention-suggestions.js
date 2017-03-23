@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { DraftJS } from 'megadraft';
-import { ProfileService } from 'local-flux/services';
+import { ProfileService } from '../../local-flux/services';
 import getSearchText from './utils/get-search-text';
 import styles from './mention-suggestions.scss';
 

@@ -2,13 +2,13 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import ReactTooltip from 'react-tooltip';
-import { ProfileActions } from 'local-flux';
 import { IconButton, RaisedButton, SvgIcon, Paper } from 'material-ui';
-import { Avatar, DataLoader } from 'shared-components';
-import { getInitials } from 'utils/dataModule'; // eslint-disable-line import/no-unresolved, import/extensions
-import imageCreator from 'utils/imageUtils'; // eslint-disable-line import/no-unresolved, import/extensions
-import { UserDonate } from 'shared-components/svg'; // eslint-disable-line import/no-unresolved, import/extensions
-import { profileMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
+import { ProfileActions } from '../../local-flux';
+import { Avatar, DataLoader } from '../';
+import { getInitials } from '../../utils/dataModule';
+import imageCreator from '../../utils/imageUtils';
+import { UserDonate } from '../svg';
+import { profileMessages } from '../../locale-data/messages';
 import styles from './profile-hover-card.scss';
 
 class ProfileHoverCard extends Component {

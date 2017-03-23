@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import { Snackbar } from 'material-ui';
-import { errorMessages, generalMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
+import { errorMessages, generalMessages } from 'locale-data/messages';
 
 const ErrorBar = ({ deleteError, error, intl }, { muiTheme }) => {
     const { palette } = muiTheme;

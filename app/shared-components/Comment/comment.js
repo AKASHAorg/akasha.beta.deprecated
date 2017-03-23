@@ -13,10 +13,10 @@ import Link from 'megadraft/lib/components/Link';
 import HubIcon from 'material-ui/svg-icons/hardware/device-hub';
 import MoreIcon from 'material-ui/svg-icons/navigation/expand-more';
 import LessIcon from 'material-ui/svg-icons/navigation/expand-less';
-import { EntryCommentReply } from 'shared-components/svg'; // eslint-disable-line import/no-unresolved, import/extensions
-import { Avatar, MentionDecorators, ProfileHoverCard } from 'shared-components'; // eslint-disable-line import/no-unresolved, import/extensions
-import { entryMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
-import { getInitials } from 'utils/dataModule'; // eslint-disable-line import/no-unresolved, import/extensions
+import { EntryCommentReply } from '../svg'; // eslint-disable-line import/no-unresolved, import/extensions
+import { Avatar, MentionDecorators, ProfileHoverCard } from '../'; // eslint-disable-line import/no-unresolved, import/extensions
+import { entryMessages } from '../../locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
+import { getInitials } from '../../utils/dataModule'; // eslint-disable-line import/no-unresolved, import/extensions
 import style from './comment.scss';
 
 const { CompositeDecorator, EditorState } = DraftJS;

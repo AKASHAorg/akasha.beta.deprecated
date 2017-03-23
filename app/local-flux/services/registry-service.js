@@ -1,9 +1,12 @@
 // import BaseService from './base-service';
 import profileDB from './db/profile';
 
+// const Channel = global.Channel;
+
 /**
  * Create a temporary profile in indexedDB
  * Notice: use `Table.add()` to prevent accidental update of the publishing temp profile
+ *
  * @param {object} profileData - Data of the profile created
  * @param {object} currentStatus - Current status of the profile creation process
  */
@@ -131,7 +134,7 @@ export const getTempProfile = () =>
 //      * @param {object} changes - Contains data of the updated profile
 //      * @return promise
 //      */
-//     
+//
 // }
 
 // export { RegistryService };

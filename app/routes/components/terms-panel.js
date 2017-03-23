@@ -1,9 +1,8 @@
-import React, { Component, PropTypes } from 'react';
+import React, { PropTypes } from 'react';
 import { FormattedMessage, FormattedHTMLMessage } from 'react-intl';
 import { IconButton } from 'material-ui';
 import CloseIcon from 'material-ui/svg-icons/navigation/close';
 import PanelContainer from 'shared-components/PanelContainer/panel-container';
-import { akashaTerms } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
 
 const TermsPanel = ({ hideTerms }) => (
   <div>
@@ -255,7 +254,7 @@ const TermsPanel = ({ hideTerms }) => (
       }}
     />
   </div>
-    );
+);
 
 TermsPanel.propTypes = {
     hideTerms: PropTypes.func

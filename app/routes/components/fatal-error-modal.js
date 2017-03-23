@@ -1,9 +1,8 @@
 import React, { PropTypes } from 'react';
 import { Dialog, RaisedButton } from 'material-ui';
-import { errorMessages, generalMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
+import { errorMessages, generalMessages } from 'locale-data/messages';
 
-const FatalErrorModal = ({ deleteError, error, intl }, { muiTheme }) => {
-    const { palette } = muiTheme;
+const FatalErrorModal = ({ deleteError, error, intl }) => {
     const message = error.get('messageId') ?
         intl.formatMessage(errorMessages[error.get('messageId')]) :
         error.get('message');
@@ -31,10 +30,6 @@ FatalErrorModal.propTypes = {
     deleteError: PropTypes.func,
     error: PropTypes.shape(),
     intl: PropTypes.shape(),
-};
-
-FatalErrorModal.contextTypes = {
-    muiTheme: PropTypes.shape()
 };
 
 export default FatalErrorModal;

@@ -1,4 +1,4 @@
-import { AppActions, TransactionActions } from 'local-flux';
+import { AppActions, TransactionActions } from './';
 import { ProfileService, AuthService, RegistryService } from '../services';
 import { profileActionCreators } from './action-creators';
 import imageCreator from '../../utils/imageUtils';

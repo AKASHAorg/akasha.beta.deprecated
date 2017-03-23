@@ -1,8 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { FlatButton } from 'material-ui';
-import { LogoIcon } from 'shared-components/svg';
-import { SettingsActions } from 'local-flux';
+import { LogoIcon } from '../svg';
+import { SettingsActions } from '../../local-flux';
 
 const buttonStyle = {
     width: '48px',

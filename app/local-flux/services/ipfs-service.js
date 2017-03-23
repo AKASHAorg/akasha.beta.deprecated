@@ -1,6 +1,6 @@
 import BaseService from './base-service';
 
-const Channel = window.Channel;
+const Channel = global.Channel;
 /**
  * Ipfs process management
  * default open channels => ['startService', 'stopService', 'status', 'resolve']

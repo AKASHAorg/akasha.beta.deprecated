@@ -5,12 +5,12 @@ import { SvgIcon, IconButton, RaisedButton,
 import ContentAddIcon from 'material-ui/svg-icons/content/add';
 import CancelIcon from 'material-ui/svg-icons/navigation/cancel';
 import { injectIntl } from 'react-intl';
-import { Avatar, ImageUploader, PanelContainer, PanelHeader } from 'shared-components';
-import { profileMessages, formMessages, generalMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
-import { inputFieldMethods } from 'utils/dataModule'; // eslint-disable-line import/no-unresolved, import/extensions
-import validationProvider from 'utils/validationProvider'; // eslint-disable-line import/no-unresolved, import/extensions
-import { UserValidation } from 'utils/validationSchema'; // eslint-disable-line import/no-unresolved, import/extensions
-import imageCreator, { findBestMatch } from 'utils/imageUtils';
+import { Avatar, ImageUploader, PanelContainer, PanelHeader } from '../';
+import { profileMessages, formMessages, generalMessages } from '../../locale-data/messages';
+import { inputFieldMethods } from '../../utils/dataModule';
+import validationProvider from '../../utils/validationProvider';
+import { UserValidation } from '../../utils/validationSchema';
+import imageCreator, { findBestMatch } from '../../utils/imageUtils';
 
 class EditProfile extends Component {
     constructor (props) {

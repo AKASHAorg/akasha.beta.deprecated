@@ -2,12 +2,12 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { Dialog, FlatButton, Tab, Tabs, Toggle } from 'material-ui';
-import { GethOptionsForm, LogsList } from 'shared-components';
-import { generalMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
+import { GethOptionsForm, LogsList } from '../';
+import { generalMessages } from '../../locale-data/messages';
 import { gethPauseSync, gethResumeSync, gethStart, gethStartLogger, gethStop,
-    gethStopLogger } from 'local-flux/actions/external-process-actions'; // eslint-disable-line import/no-unresolved, import/extensions
-import { toggleGethDetailsModal } from 'local-flux/actions/app-actions'; // eslint-disable-line import/no-unresolved, import/extensions
-import { gethSaveSettings } from 'local-flux/actions/settings-actions'; // eslint-disable-line import/no-unresolved, import/extensions
+    gethStopLogger } from '../../local-flux/actions/external-process-actions';
+import { toggleGethDetailsModal } from '../../local-flux/actions/app-actions';
+import { gethSaveSettings } from '../../local-flux/actions/settings-actions';
 
 const toggleStyle = {
     display: 'block',

@@ -1,9 +1,9 @@
 import React, { Component, PropTypes } from 'react';
-import { Avatar, MentionDecorators, MentionSuggestions } from 'shared-components';
 import { MegadraftEditor, DraftJS, createTypeStrategy } from 'megadraft';
 import Link from 'megadraft/lib/components/Link';
 import { RaisedButton } from 'material-ui';
-import { entryMessages, generalMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
+import { Avatar, MentionDecorators, MentionSuggestions } from '../';
+import { entryMessages, generalMessages } from '../../locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
 import styles from './comment-editor.scss';
 
 const { CompositeDecorator, EditorState } = DraftJS;

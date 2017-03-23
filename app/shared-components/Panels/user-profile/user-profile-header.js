@@ -1,8 +1,7 @@
 import React, { PropTypes } from 'react';
-import ReactTooltip from 'react-tooltip';
 import { IconButton, SvgIcon } from 'material-ui';
 import { colors } from 'material-ui/styles';
-import { getInitials } from 'utils/dataModule';
+import { getInitials } from '../../../utils/dataModule';
 import Avatar from '../../Avatar/avatar';
 import {
   ToolbarWallet,
@@ -197,10 +196,11 @@ const UserProfileHeader = (props, { router, muiTheme }) => {
 };
 
 UserProfileHeader.propTypes = {
-    rootStyle: PropTypes.shape(),
+    hidePanel: PropTypes.func,
+    profile: PropTypes.shape(),
     profileActions: PropTypes.shape(),
     profileAddress: PropTypes.string,
-    profile: PropTypes.shape(),
+    rootStyle: PropTypes.shape(),
     showPanel: PropTypes.func,
 };
 UserProfileHeader.contextTypes = {

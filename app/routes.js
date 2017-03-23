@@ -2,11 +2,11 @@ import React from 'react';
 import { Route, IndexRoute, IndexRedirect } from 'react-router';
 import requireAuth from './require-auth';
 
-import AppContainer from './routes/AppContainer';
+import { AppContainer } from './containers';
 import AuthContainer from './routes/Login/routes/Authenticate/AuthContainer';
 import ChatChannel from './routes/Home/routes/Chat/components/chat-channel';
 import ChatContainer from './routes/Home/routes/Chat/ChatContainer';
-import ConfigurationContainer from './routes/Setup/routes/Configuration/ConfigurationContainer';
+import ConfigurationContainer from './containers/configuration-container';
 import CreateProfileCompleteContainer from './routes/Login/routes/CreateProfileComplete/CreateProfileCompleteContainer';
 import CreateProfileContainer from './routes/Login/routes/CreateProfile/CreateProfileContainer';
 import CreateProfileStatusContainer from './routes/Login/routes/CreateProfileStatus/CreateProfileStatusContainer';
@@ -20,9 +20,9 @@ import ProfileDetailsContainer from './routes/Home/routes/People/routes/ProfileD
 import PublishEntryCompleteContainer from './routes/Home/routes/NewEntry/routes/PublishEntryComplete/PublishEntryCompleteContainer';
 import PublishEntryPanelContainer from './routes/Home/routes/NewEntry/routes/PublishEntry/PublishEntryPanelContainer';
 import PublishEntryStatusContainer from './routes/Home/routes/NewEntry/routes/PublishEntryStatus/PublishEntryStatusContainer';
-import Setup from './routes/Setup/Setup';
+import Setup from './components/setup';
 import StreamPageContainer from './routes/Home/routes/Stream/StreamContainer';
-import SynchronizationContainer from './routes/Setup/routes/Synchronization/SynchronizationContainer';
+import SynchronizationContainer from './containers/synchronization-container';
 
 export default (
   <Route component={AppContainer} path="/" > {/** displays errors and various info */}

@@ -7,7 +7,7 @@ import { ChatChannelInfo, EntryBookmarkOn, EntryBookmarkOff } from 'shared-compo
 import { List } from 'immutable';
 import ChatMessagesList from './chat-messages-list';
 
-const Channel = window.Channel;
+const Channel = global.Channel;
 const CHARACTER_LIMIT = 128;
 
 class ChatChannel extends Component {

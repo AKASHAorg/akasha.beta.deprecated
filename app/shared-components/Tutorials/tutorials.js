@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { tutorialMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
+import { tutorialMessages } from '../../locale-data/messages';
 import styles from './tutorials.scss';
 
 class Tutorials extends Component {

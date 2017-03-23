@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react';
+/* import React, { Component, PropTypes } from 'react';
 import ReactTooltip from 'react-tooltip';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
@@ -14,7 +14,7 @@ import FatalErrorModal from './components/fatal-error-modal'; // eslint-disable-
 import lightTheme from '../layouts/AkashaTheme/lightTheme';
 import darkTheme from '../layouts/AkashaTheme/darkTheme';
 
-class App extends Component {
+export class App extends Component {
     constructor (props) {
         super(props);
         this.state = {
@@ -36,7 +36,7 @@ class App extends Component {
 
     render () {
         /* eslint-disable */
-        const { appState, appReady, errorDeleteFatal, errorDeleteNonFatal, errorState,
+        const { appState, errorDeleteFatal, errorDeleteNonFatal, errorState,
             hideNotification, hideTerms, intl } = this.props;
         /* eslint-disable */
         const isAuthDialogVisible = !!appState.get('showAuthDialog');
@@ -48,7 +48,7 @@ class App extends Component {
         const showIpfsDetailsModal = appState.get('showIpfsDetailsModal');
 
         return (
-          <DataLoader flag={!appReady} size={80} style={{ paddingTop: '-50px' }}>
+          <DataLoader flag={!appState.get('appReady')} size={80} style={{ paddingTop: '-50px' }}>
             <div className="fill-height" >
               {this.props.children}
               <NotificationBar
@@ -85,14 +85,13 @@ class App extends Component {
 }
 
 App.propTypes = {
-    appReady: PropTypes.bool,
-    appState: PropTypes.shape(),
-    children: PropTypes.element,
-    errorDeleteFatal: PropTypes.func,
-    errorDeleteNonFatal: PropTypes.func,
-    errorState: PropTypes.shape(),
-    hideNotification: PropTypes.func,
-    hideTerms: PropTypes.func,
+    appState: PropTypes.shape().isRequired,
+    children: PropTypes.element.isRequired,
+    errorDeleteFatal: PropTypes.func.isRequired,
+    errorDeleteNonFatal: PropTypes.func.isRequired,
+    errorState: PropTypes.shape().isRequired,
+    hideNotification: PropTypes.func.isRequired,
+    hideTerms: PropTypes.func.isRequired,
     intl: PropTypes.shape(),
     theme: PropTypes.string,
 };
@@ -103,7 +102,6 @@ App.childContextTypes = {
 
 function mapStateToProps (state) {
     return {
-        appReady: state.appState.get('appReady'),
         appState: state.appState,
         errorState: state.errorState,
         theme: state.settingsState.getIn(['general', 'theme'])
@@ -118,4 +116,4 @@ export default connect(
         hideNotification,
         hideTerms
     }
-)(injectIntl(App));
+)(injectIntl(App)); */

@@ -1,13 +1,12 @@
 import React, { Component, PropTypes } from 'react';
-import ReactTooltip from 'react-tooltip';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { SvgIcon, IconButton } from 'material-ui';
-import { StatusBarEthereum, StatusBarIpfs } from 'shared-components/svg'; // eslint-disable-line import/no-unresolved, import/extensions
-import ServiceState from 'constants/ServiceState'; // eslint-disable-line import/no-unresolved, import/extensions
-import { generalMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
+import { StatusBarEthereum, StatusBarIpfs } from '../svg';
+import ServiceState from '../../constants/ServiceState';
+import { generalMessages } from '../../locale-data/messages';
 import { toggleGethDetailsModal,
-    toggleIpfsDetailsModal } from 'local-flux/actions/app-actions'; // eslint-disable-line import/no-unresolved, import/extensions
+    toggleIpfsDetailsModal } from '../../local-flux/actions/app-actions';
 
 const containerStyle = {
     border: '2px solid',
