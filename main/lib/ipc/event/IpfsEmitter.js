@@ -23,7 +23,6 @@ class IpfsEmitter extends AbstractEmitter_1.AbstractEmitter {
     }
     _started() {
         ipfs_connector_1.IpfsConnector.getInstance().on(ipfs_connector_1.ipfsEvents.SERVICE_STARTED, () => {
-            this.fireEvent(channels_1.default.client.ipfs.startService, responses_1.ipfsResponse({ started: true }));
             ipfs_connector_1.IpfsConnector.getInstance()
                 .checkVersion()
                 .then(isValid => {
@@ -45,6 +44,7 @@ class IpfsEmitter extends AbstractEmitter_1.AbstractEmitter {
                     if (err) {
                         console.log('add ipfs peer err ', err);
                     }
+                    this.fireEvent(channels_1.default.client.ipfs.startService, responses_1.ipfsResponse({ started: true }));
                 });
             });
         });
