@@ -9,7 +9,7 @@ const statusTextStyle = {
     fontSize: '18px'
 };
 
-class SyncStatus extends Component {
+class SyncStatusLoader extends Component {
 
     renderMessage (message) {
         const { intl } = this.props;
@@ -123,7 +123,7 @@ class SyncStatus extends Component {
     }
 }
 
-SyncStatus.propTypes = {
+SyncStatusLoader.propTypes = {
     gethStarting: PropTypes.bool,
     gethStatus: PropTypes.shape().isRequired,
     gethSyncStatus: PropTypes.shape().isRequired,
@@ -132,4 +132,4 @@ SyncStatus.propTypes = {
     syncActionId: PropTypes.number
 };
 
-export default SyncStatus;
+export default SyncStatusLoader;

@@ -3,7 +3,7 @@ import { RaisedButton } from 'material-ui';
 import { injectIntl } from 'react-intl';
 import { setupMessages, generalMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
 import { LogsList, PanelContainer, PanelHeader } from 'shared-components';
-import SyncStatusLoader from './sync-status';
+import { SyncStatusLoader } from './';
 
 class Sync extends Component {
     state = {

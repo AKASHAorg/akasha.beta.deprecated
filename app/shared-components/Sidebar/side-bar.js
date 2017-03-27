@@ -1,5 +1,5 @@
 import React, { PropTypes, Component } from 'react';
-import { LogoButton } from '../';
+import { LogoButton } from '../../components';
 import { getInitials } from '../../utils/dataModule';
 import {
     ProfileIcon,

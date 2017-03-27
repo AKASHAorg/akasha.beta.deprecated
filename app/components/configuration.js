@@ -191,4 +191,8 @@ Config.contextTypes = {
     router: PropTypes.shape()
 };
 
-export default muiThemeable()(injectIntl(Config));
+Config.defaultProps = {
+    muiTheme: { palette: {} }
+};
+
+export default injectIntl(Config);

@@ -1,7 +1,6 @@
 import { connect } from 'react-redux';
 import { saveConfiguration } from '../local-flux/actions/settings-actions'; // eslint-disable-line import/no-unresolved, import/extensions
-import Configuration from '../components/configuration';
-import connectWithTheme from '../utils/connect-with-theme';
+import { Configuration } from '../components';
 
 function mapStateToProps (state) {
     return {
@@ -17,5 +16,9 @@ export default connect(
     mapStateToProps,
     {
         saveConfiguration
-    }
+    },
+    null,
+    // this option will disable the "shouldComponentUpdate" method on the connected component
+    // sCU will be removed in react-redux 6.0 anyway
+    { pure: false }
 )(Configuration);

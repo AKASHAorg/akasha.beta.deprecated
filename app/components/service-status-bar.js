@@ -1,13 +1,13 @@
-/*import React, { Component, PropTypes } from 'react';
+import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { SvgIcon, IconButton } from 'material-ui';
 import muiThemeable from 'material-ui/styles/muiThemeable';
-import { StatusBarEthereum, StatusBarIpfs } from '../svg';
-import ServiceState from '../../constants/ServiceState';
-import { generalMessages } from '../../locale-data/messages';
+import { StatusBarEthereum, StatusBarIpfs } from '../shared-components/svg';
+import ServiceState from '../constants/ServiceState';
+import { generalMessages } from '../locale-data/messages';
 import { toggleGethDetailsModal,
-    toggleIpfsDetailsModal } from '../../local-flux/actions/app-actions';
+    toggleIpfsDetailsModal } from '../local-flux/actions/app-actions';
 
 const containerStyle = {
     border: '2px solid',
@@ -194,4 +194,4 @@ export default connect(
     },
     null,
     { pure: false }
-)(muiThemeable()(injectIntl(ServiceStatusBar)));*/
+)(muiThemeable()(injectIntl(ServiceStatusBar)));

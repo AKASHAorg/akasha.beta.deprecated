@@ -1,8 +1,8 @@
-/*import React, { Component, PropTypes } from 'react';
+import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { FlatButton } from 'material-ui';
-import { LogoIcon } from '../svg';
-import { SettingsActions } from '../../local-flux';
+import { LogoIcon } from '../shared-components/svg';
+import { SettingsActions } from '../local-flux';
 
 const buttonStyle = {
     width: '48px',
@@ -25,7 +25,7 @@ const LogoButton = (props) => {
         className={className}
         icon={<LogoIcon logoStyle={logoStyle} viewBox={viewBox} />}
         hoverColor="transparent"
-        onClick={this.onClick}
+        onClick={onClick}
         style={buttonStyle}
       />
     );
@@ -51,4 +51,4 @@ function mapDispatchToProps (dispatch) {
     };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(LogoButton);*/
+export default connect(mapStateToProps, mapDispatchToProps)(LogoButton);

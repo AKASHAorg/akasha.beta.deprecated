@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import { injectIntl } from 'react-intl';
-import { LogoButton, ServiceStatusBar } from '../';
+import { LogoButton, ServiceStatusBar } from '../../components';
 import { generalMessages } from '../../locale-data/messages';
 
 function PanelHeader ({ disableStopService, intl, noStatusBar, noLogoButton, title }) {
