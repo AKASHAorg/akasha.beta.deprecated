@@ -4,6 +4,7 @@ class ChatSettings {
     constructor() {
         this.TOPICS = new Set();
         this.defaultTopic = '0x616b617368612e616c706861';
+        this.chanPrefix = '0x19416b3a';
         this.TOPICS.add(this.defaultTopic);
         this.activeChannel = this.defaultTopic;
     }
@@ -21,6 +22,9 @@ class ChatSettings {
     }
     isDefaultActive() {
         return this.defaultTopic === this.activeChannel;
+    }
+    getChanPrefix() {
+        return this.chanPrefix;
     }
 }
 exports.default = new ChatSettings();

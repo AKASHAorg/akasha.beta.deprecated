@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const Promise = require("bluebird");
 const settings_1 = require("./settings");
+const ethereumjs_util_1 = require("ethereumjs-util");
 const geth_connector_1 = require("@akashaproject/geth-connector");
 const current_profile_1 = require("../registry/current-profile");
 exports.whisperIdentity = {
@@ -15,6 +16,7 @@ const execute = Promise.coroutine(function* (data) {
         exports.whisperIdentity.from = yield geth_connector_1.GethConnector.getInstance().web3.shh.newIdentityAsync();
     }
     const topic = settings_1.default.getActive();
+    const prefixedTopic = settings_1.default.getChanPrefix() + ethereumjs_util_1.stripHexPrefix(topic);
     const ttl = (settings_1.default.isDefaultActive()) ? '0x7080' : '0x15180';
     const from = yield current_profile_1.default.execute();
     const payload = geth_connector_1.GethConnector.getInstance().web3
@@ -26,7 +28,7 @@ const execute = Promise.coroutine(function* (data) {
         .shh
         .postAsync({
         from: exports.whisperIdentity.from,
-        topics: [topic],
+        topics: [prefixedTopic],
         payload: payload,
         ttl: ttl
     });

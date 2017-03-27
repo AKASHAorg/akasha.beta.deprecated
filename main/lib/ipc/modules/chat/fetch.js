@@ -6,6 +6,7 @@ const geth_connector_1 = require("@akashaproject/geth-connector");
 const index_1 = require("../../contracts/index");
 const settings_2 = require("../../config/settings");
 const ipfs_1 = require("../profile/ipfs");
+const ethereumjs_util_1 = require("ethereumjs-util");
 let chat;
 const transform = Promise.coroutine(function* (data) {
     let obj, rootHash, userMedia;
@@ -51,9 +52,10 @@ const execute = Promise.coroutine(function* (data, cb) {
     const topic = (data.channel) ?
         geth_connector_1.GethConnector.getInstance().web3.fromUtf8(data.channel) : settings_1.default.getDefaultTopic();
     const channel = (data.channel) ? data.channel : null;
+    const prefixedTopic = settings_1.default.getChanPrefix() + ethereumjs_util_1.stripHexPrefix(topic);
     settings_1.default.setActive(topic);
     const initial = yield Promise.fromCallback((cb) => {
-        return (geth_connector_1.GethConnector.getInstance().web3.shh.filter({ topics: [topic] })).get(cb);
+        return (geth_connector_1.GethConnector.getInstance().web3.shh.filter({ topics: [prefixedTopic] })).get(cb);
     });
     for (let i = 0; i < initial.length; i++) {
         if (initial[i].hasOwnProperty('payload')) {
@@ -65,7 +67,7 @@ const execute = Promise.coroutine(function* (data, cb) {
         return { collection, channel: channel };
     }
     cb(null, { collection, channel: channel });
-    chat = geth_connector_1.GethConnector.getInstance().web3.shh.filter({ topics: [topic] });
+    chat = geth_connector_1.GethConnector.getInstance().web3.shh.filter({ topics: [prefixedTopic] });
     chat.watch(function (err, data) {
         if (err) {
             return cb(err);

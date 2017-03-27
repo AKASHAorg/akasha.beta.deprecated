@@ -1,6 +1,7 @@
 class ChatSettings {
     public TOPICS = new Set();
     private defaultTopic = '0x616b617368612e616c706861';
+    private chanPrefix = '0x19416b3a';
     private activeChannel: string;
 
     constructor() {
@@ -41,6 +42,10 @@ class ChatSettings {
      */
     public isDefaultActive() {
         return this.defaultTopic === this.activeChannel;
+    }
+
+    public getChanPrefix() {
+        return this.chanPrefix;
     }
 
 }

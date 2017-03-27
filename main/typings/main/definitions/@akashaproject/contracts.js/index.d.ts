@@ -24,6 +24,8 @@ declare module 'ethereumjs-util' {
     export function hashPersonalMessage(data: Buffer): Buffer
 
     export function addHexPrefix(data: string): string
+
+    export function stripHexPrefix(data: string): string
 }
 
 
