@@ -82,7 +82,7 @@ class Auth {
                 const expiration = new Date();
                 const clientToken = ethereumjs_util_1.hashPersonalMessage(buff);
                 expiration.setMinutes(expiration.getMinutes() + timer);
-                geth_connector_1.GethConnector.getInstance().web3.personal.lockAccountAsync(acc);
+                geth_connector_1.GethConnector.getInstance().web3.personal.lockAccountAsync(acc).then(() => null);
                 geth_connector_1.GethConnector.getInstance().web3.eth.defaultAccount = acc;
                 this._session = {
                     expiration,
@@ -94,7 +94,7 @@ class Auth {
             });
         })
             .catch((err) => {
-            geth_connector_1.GethConnector.getInstance().web3.personal.lockAccountAsync(acc);
+            geth_connector_1.GethConnector.getInstance().web3.personal.lockAccountAsync(acc).then(() => null);
             return { error: { message: err.message } };
         });
     }

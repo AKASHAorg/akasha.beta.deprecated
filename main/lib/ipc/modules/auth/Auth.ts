@@ -135,7 +135,7 @@ export default class Auth {
                         const expiration = new Date();
                         const clientToken = hashPersonalMessage(buff);
                         expiration.setMinutes(expiration.getMinutes() + timer);
-                        GethConnector.getInstance().web3.personal.lockAccountAsync(acc);
+                        GethConnector.getInstance().web3.personal.lockAccountAsync(acc).then(()=> null);
                         GethConnector.getInstance().web3.eth.defaultAccount = acc;
                         this._session = {
                             expiration,
@@ -147,7 +147,7 @@ export default class Auth {
                     });
             })
             .catch((err: Error) => {
-                GethConnector.getInstance().web3.personal.lockAccountAsync(acc);
+                GethConnector.getInstance().web3.personal.lockAccountAsync(acc).then(()=> null);
                 return { error: { message: err.message } };
             });
     }

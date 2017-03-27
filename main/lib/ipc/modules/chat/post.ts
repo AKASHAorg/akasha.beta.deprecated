@@ -1,5 +1,6 @@
 import * as Promise from 'bluebird';
 import settings from './settings';
+import { stripHexPrefix } from 'ethereumjs-util';
 import { GethConnector } from '@akashaproject/geth-connector';
 import currentProfile from '../registry/current-profile';
 
@@ -15,6 +16,7 @@ const execute = Promise.coroutine(function*(data: { message: string }) {
         whisperIdentity.from = yield GethConnector.getInstance().web3.shh.newIdentityAsync();
     }
     const topic = settings.getActive();
+    const prefixedTopic = settings.getChanPrefix() + stripHexPrefix(topic);
     const ttl = (settings.isDefaultActive()) ? '0x7080' : '0x15180';
     const from = yield currentProfile.execute();
     const payload = GethConnector.getInstance().web3
@@ -27,7 +29,7 @@ const execute = Promise.coroutine(function*(data: { message: string }) {
         .shh
         .postAsync({
             from: whisperIdentity.from,
-            topics: [topic],
+            topics: [prefixedTopic],
             payload: payload,
             ttl: ttl
         });

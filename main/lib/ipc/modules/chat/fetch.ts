@@ -4,6 +4,7 @@ import { GethConnector } from '@akashaproject/geth-connector';
 import { constructed as contracts } from '../../contracts/index';
 import { generalSettings, BASE_URL } from '../../config/settings';
 import { getShortProfile } from '../profile/ipfs';
+import { stripHexPrefix } from 'ethereumjs-util';
 
 let chat;
 const transform = Promise.coroutine(function*(data: { payload: string, sent: number, hash: string }) {
@@ -51,10 +52,11 @@ const execute = Promise.coroutine(function*(data: { stop?: boolean, channel?: st
         const topic = (data.channel) ?
             GethConnector.getInstance().web3.fromUtf8(data.channel) : settings.getDefaultTopic();
         const channel = (data.channel) ? data.channel : null;
+        const prefixedTopic = settings.getChanPrefix() + stripHexPrefix(topic);
         settings.setActive(topic);
         // fetch initial messages
         const initial = yield Promise.fromCallback((cb) => {
-            return (GethConnector.getInstance().web3.shh.filter({ topics: [topic] })).get(cb);
+            return (GethConnector.getInstance().web3.shh.filter({ topics: [prefixedTopic] })).get(cb);
         });
         for (let i = 0; i < initial.length; i++) {
             if (initial[i].hasOwnProperty('payload')) {
@@ -69,7 +71,7 @@ const execute = Promise.coroutine(function*(data: { stop?: boolean, channel?: st
         cb(null, { collection, channel: channel });
 
         // watch for new messages
-        chat = GethConnector.getInstance().web3.shh.filter({ topics: [topic] });
+        chat = GethConnector.getInstance().web3.shh.filter({ topics: [prefixedTopic] });
         chat.watch(function (err, data) {
             if (err) {
                 return cb(err);
