@@ -32,9 +32,9 @@ const ErrorBar = ({ deleteError, error, intl }, { muiTheme }) => {
 };
 
 ErrorBar.propTypes = {
-    deleteError: PropTypes.func,
-    error: PropTypes.shape(),
-    intl: PropTypes.shape(),
+    deleteError: PropTypes.func.isRequired,
+    error: PropTypes.shape().isRequired,
+    intl: PropTypes.shape().isRequired,
 };
 
 ErrorBar.contextTypes = {

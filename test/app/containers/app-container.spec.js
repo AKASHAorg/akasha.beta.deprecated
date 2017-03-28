@@ -1,15 +1,14 @@
-import 'jsdom-global/register';
 import React from 'react';
 import { spy } from 'sinon';
 import chai from 'chai';
-import { mount, shallow } from 'enzyme';
+import { shallow } from 'enzyme';
 import ReactTooltip from 'react-tooltip';
 import { AppContainer } from '../../../app/containers/app-container';
 import { ErrorBar, FatalErrorModal, NotificationBar, TermsPanel } from '../../../app/components';
 import { AuthDialog, DataLoader, GethDetailsModal, IpfsDetailsModal, PublishConfirmDialog,
     TransferConfirmDialog, WeightConfirmDialog } from '../../../app/shared-components';
 import { AppRecord, ErrorRecord, ErrorState,
-    Notification } from '../../../app/local-flux/reducers/records';
+    NotificationRecord } from '../../../app/local-flux/reducers/records';
 
 const { expect } = chai;
 
@@ -90,7 +89,7 @@ describe('App Container tests', () => {
     });
     describe('with notifications', () => {
         it('should render the NotificationBar', () => {
-            const notif = new Notification({ id: 'test' });
+            const notif = new NotificationRecord({ id: 'test' });
             props.appState = props.appState.set('notifications',
                 props.appState.get('notifications').push(notif));
             expect(mountComp().find(NotificationBar).length).to.equal(1,

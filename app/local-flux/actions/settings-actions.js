@@ -31,50 +31,6 @@ class SettingsActions {
         });
     };
 
-    getSettings = (table) => {
-        this.dispatch(settingsActionCreators.startFetchingSettings(table));
-        this.dispatch((dispatch) => {
-            this.settingsService.getSettings({
-                options: { table },
-                onSuccess: (data) => {
-                    dispatch(settingsActionCreators.getSettingsSuccess(data, table));
-                    dispatch(settingsActionCreators.finishFetchingSettings(table));
-                },
-                onError: (err) => {
-                    dispatch(settingsActionCreators.getSettingsError(err, table));
-                    dispatch(settingsActionCreators.finishFetchingSettings(table));
-                }
-            });
-        });
-    };
-
-    retrySetup = (isAdvanced) => {
-        this.dispatch(settingsActionCreators.retrySetup(isAdvanced));
-    };
-    toggleAdvancedSettings = (isAdvanced) => {
-        this.dispatch(settingsActionCreators.toggleAdvancedSettings(isAdvanced));
-    };
-    setupGethDataDir = (path) => {
-        this.dispatch(settingsActionCreators.setupGethDataDir(path));
-    };
-    setupGethIPCPath = (path) => {
-        this.dispatch(settingsActionCreators.setupGethIPCPath(path));
-    };
-    setupGethCacheSize = (size) => {
-        this.dispatch(settingsActionCreators.setupGethCacheSize(size));
-    };
-    setupIPFSPath = (storagePath) => {
-        this.dispatch(settingsActionCreators.setupIPFSPath(storagePath));
-    };
-    setupIPFSApiPort = (port) => {
-        this.dispatch(settingsActionCreators.setupIPFSApiPort(port));
-    };
-    setupIPFSGatewayPort = (port) => {
-        this.dispatch(settingsActionCreators.setupIPFSGatewayPort(port));
-    };
-    resetSettings = () => {
-        this.dispatch(settingsActionCreators.resetSettings());
-    };
     // save user level settings
     saveUserSettings = () => {};
 
@@ -180,7 +136,7 @@ class SettingsActions {
         });
 }
 
-export const generalSettingsError = error => {
+export const generalSettingsError = (error) => {
     error.code = 'GSE02';
     error.messageId = 'generalSettings';
     return action(types.GENERAL_SETTINGS_ERROR, { error });
@@ -191,7 +147,7 @@ export const generalSettingsSuccess = data => action(types.GENERAL_SETTINGS_SUCC
 export const gethSaveSettings = (payload, showNotification) =>
     action(types.GETH_SAVE_SETTINGS, { payload, showNotification });
 
-export const gethSaveSettingsError = error => {
+export const gethSaveSettingsError = (error) => {
     error.code = 'GSSE01';
     error.messageId = 'gethSaveSettings';
     return action(types.GETH_SAVE_SETTINGS_ERROR, { error });
@@ -199,7 +155,7 @@ export const gethSaveSettingsError = error => {
 
 export const gethSaveSettingsSuccess = data => action(types.GETH_SAVE_SETTINGS_SUCCESS, { data });
 
-export const gethSettingsError = error => {
+export const gethSettingsError = (error) => {
     error.code = 'GSE03';
     error.messageId = 'gethSettings';
     return action(types.GETH_SETTINGS_ERROR, { error });
@@ -210,7 +166,7 @@ export const gethSettingsSuccess = data => action(types.GETH_SETTINGS_SUCCESS, {
 export const ipfsSaveSettings = (payload, showNotification) =>
     action(types.IPFS_SAVE_SETTINGS, { payload, showNotification });
 
-export const ipfsSaveSettingsError = error => {
+export const ipfsSaveSettingsError = (error) => {
     error.code = 'ISSE01';
     error.messageId = 'ipfsSaveSettings';
     return action(types.IPFS_SAVE_SETTINGS_ERROR, { error });
@@ -218,7 +174,7 @@ export const ipfsSaveSettingsError = error => {
 
 export const ipfsSaveSettingsSuccess = data => action(types.IPFS_SAVE_SETTINGS_SUCCESS, { data });
 
-export const ipfsSettingsError = error => {
+export const ipfsSettingsError = (error) => {
     error.code = 'ISE01';
     error.message = 'ipfsSettings';
     return action(types.IPFS_SETTINGS_ERROR, { error });
@@ -229,12 +185,13 @@ export const ipfsSettingsRequest = () => action(types.IPFS_SETTINGS);
 export const saveConfiguration = payload => action(types.SAVE_CONFIGURATION, { payload });
 export const saveGeneralSettings = payload => action(types.GENERAL_SETTINGS_SAVE, { payload });
 
-export const saveGeneralSettingsError = error => {
+export const saveGeneralSettingsError = (error) => {
     error.code = 'SGSE01';
     error.messageId = 'saveGeneralSettings';
     return action(types.GENERAL_SETTINGS_SAVE_ERROR, { error });
 };
 
-export const saveGeneralSettingsSuccess = data => action(types.GENERAL_SETTINGS_SAVE_SUCCESS, { data });
+export const saveGeneralSettingsSuccess = data =>
+    action(types.GENERAL_SETTINGS_SAVE_SUCCESS, { data });
 
 export { SettingsActions };

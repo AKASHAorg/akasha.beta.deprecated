@@ -14,7 +14,7 @@ import rootReducer from '../../../app/local-flux/reducers';
 chai.use(chaiIM);
 const sagas = proxyquire('../../../app/local-flux/sagas/external-process-saga', {
     'redux-saga': {
-        delay: ms => delay(ms / 10)
+        delay: ms => delay(ms / 100)
     },
     './helpers': {
         enableChannel: () => {}
@@ -62,7 +62,7 @@ describe('external process saga', function test () {
             const clientChannel = global.Channel.client.geth.startService;
             const resp = { data: { api: false, spawned: false, starting: true } };
             clientChannel.triggerResponse(resp);
-            await Promise.race([sagaTester.waitFor(types.GETH_RESET_BUSY), timeout(300)]);
+            await Promise.race([sagaTester.waitFor(types.GETH_RESET_BUSY), timeout(30)]);
             expect(sagaTester.numCalled(types.GETH_RESET_BUSY)).to.equal(0,
                 'GETH_RESET_BUSY was called');
         });
@@ -110,7 +110,7 @@ describe('external process saga', function test () {
             const clientChannel = global.Channel.client.geth.stopService;
             const resp = { data: { stopped: true } };
             clientChannel.triggerResponse(resp);
-            await Promise.race([sagaTester.waitFor(types.GETH_RESET_BUSY), timeout(300)]);
+            await Promise.race([sagaTester.waitFor(types.GETH_RESET_BUSY), timeout(30)]);
             expect(sagaTester.numCalled(types.GETH_RESET_BUSY)).to.equal(0,
                 'GETH_RESET_BUSY was called');
         });
@@ -231,7 +231,7 @@ describe('external process saga', function test () {
 
             sagaTester.dispatch(actions.gethStopLogger());
             // wait 300ms and check if GETH_GET_LOGS was dispatched again
-            await Promise.race([sagaTester.waitFor(types.GETH_GET_LOGS, true), timeout(300)]);
+            await Promise.race([sagaTester.waitFor(types.GETH_GET_LOGS, true), timeout(30)]);
             expect(global.Channel.server.geth.logs.send.callCount).to.equal(callCount,
                 'a request was sent after geth logger was stopped');
         });
@@ -313,7 +313,7 @@ describe('external process saga', function test () {
         afterEach(() => {
             sagaTester.reset(true);
         });
-        it('should dispatch IPFS_STOP_SUCCESS', () => {
+        it('should dispatch IPFS_STOP_SUCCESS', async () => {
             sagaTester.dispatch(actions.ipfsStop());
             const clientChannel = global.Channel.client.ipfs.stopService;
             const resp = { data: { spawned: false, stopped: true } };
@@ -323,6 +323,8 @@ describe('external process saga', function test () {
             // Last called action should be ipfsResetPorts
             expect(sagaTester.getLatestCalledActions(2)[0])
                 .to.deep.equal(actions.ipfsStopSuccess(resp.data));
+            // wait for IPFS_RESET_BUSY action, otherwise it will be dispatched during the next test
+            await sagaTester.waitFor(types.IPFS_RESET_BUSY);
         });
         it('should reset ports', async () => {
             sagaTester.dispatch(actions.ipfsStop());
@@ -331,6 +333,8 @@ describe('external process saga', function test () {
             clientChannel.triggerResponse(resp);
             expect(sagaTester.numCalled(types.IPFS_RESET_PORTS)).to.equal(1,
                 'IPFS_RESET_PORTS was not called once');
+            // wait for IPFS_RESET_BUSY action, otherwise it will be dispatched during the next test
+            await sagaTester.waitFor(types.IPFS_RESET_BUSY);
         });
         it('should reset busy state', async () => {
             sagaTester.dispatch(actions.ipfsStop());
@@ -495,7 +499,7 @@ describe('external process saga', function test () {
                 'server channel request was not sent more than once');
             sagaTester.dispatch(actions.ipfsStopLogger());
             // wait 300ms and check if IPFS_GET_LOGS was dispatched again
-            await Promise.race([sagaTester.waitFor(types.IPFS_GET_LOGS, true), timeout(300)]);
+            await Promise.race([sagaTester.waitFor(types.IPFS_GET_LOGS, true), timeout(30)]);
             expect(global.Channel.server.ipfs.logs.send.callCount).to.equal(callCount,
                 'a request was sent after ipfs logger was stopped');
         });

@@ -2,7 +2,6 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { SvgIcon, IconButton } from 'material-ui';
-import muiThemeable from 'material-ui/styles/muiThemeable';
 import { StatusBarEthereum, StatusBarIpfs } from '../shared-components/svg';
 import ServiceState from '../constants/ServiceState';
 import { generalMessages } from '../locale-data/messages';
@@ -30,9 +29,8 @@ const buttonStyle = {
 };
 
 class ServiceStatusBar extends Component {
-
     getContainerStyle (state) {
-        const { palette } = this.props.muiTheme;
+        const { palette } = this.context.muiTheme;
         const style = Object.assign({}, containerStyle);
         switch (state) {
             case ServiceState.stopped:
@@ -51,22 +49,6 @@ class ServiceStatusBar extends Component {
         }
 
         return style;
-    }
-
-    getTitleButtonStyle (tab) {
-        const { palette } = this.props.muiTheme;
-        return {
-            color: this.state.activeTab === tab ?
-                palette.textColor :
-                palette.disabledColor,
-            backgroundColor: palette.canvasColor,
-            width: '50%',
-            height: '48px',
-            padding: '0px',
-            fontSize: '14px',
-            fontWeight: '500',
-            textTransform: 'uppercase'
-        };
     }
 
     getIpfsState () {
@@ -114,8 +96,8 @@ class ServiceStatusBar extends Component {
     }
 
     render () {
-        const { muiTheme, toggleGethDetails, toggleIpfsDetails } = this.props;
-        const { palette } = muiTheme;
+        const { toggleGethDetails, toggleIpfsDetails } = this.props;
+        const { palette } = this.context.muiTheme;
         const iconStyle = {
             width: '24px',
             height: '24px',
@@ -125,8 +107,9 @@ class ServiceStatusBar extends Component {
         };
         const gethState = this.getGethState();
         const ipfsState = this.getIpfsState();
-        return (<div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          {this.props.gethStatus &&
+
+        return (
+          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
             <div style={this.getContainerStyle(gethState)}>
               <div
                 data-tip={this.getTooltip(gethState)}
@@ -143,8 +126,6 @@ class ServiceStatusBar extends Component {
                 </IconButton>
               </div>
             </div>
-          }
-          {this.props.ipfsStatus &&
             <div style={this.getContainerStyle(ipfsState)}>
               <div
                 data-tip={this.getTooltip(ipfsState)}
@@ -161,10 +142,14 @@ class ServiceStatusBar extends Component {
                 </IconButton>
               </div>
             </div>
-          }
-        </div>);
+          </div>
+        );
     }
 }
+
+ServiceStatusBar.contextTypes = {
+    muiTheme: PropTypes.shape()
+};
 
 ServiceStatusBar.propTypes = {
     gethStarting: PropTypes.bool,
@@ -172,9 +157,8 @@ ServiceStatusBar.propTypes = {
     intl: PropTypes.shape().isRequired,
     ipfsStarting: PropTypes.bool,
     ipfsStatus: PropTypes.shape().isRequired,
-    muiTheme: PropTypes.shape().isRequired,
-    toggleGethDetails: PropTypes.func,
-    toggleIpfsDetails: PropTypes.func,
+    toggleGethDetails: PropTypes.func.isRequired,
+    toggleIpfsDetails: PropTypes.func.isRequired,
 };
 
 function mapStateToProps (state) {
@@ -186,6 +170,7 @@ function mapStateToProps (state) {
     };
 }
 
+export { ServiceStatusBar };
 export default connect(
     mapStateToProps,
     {
@@ -194,4 +179,5 @@ export default connect(
     },
     null,
     { pure: false }
-)(muiThemeable()(injectIntl(ServiceStatusBar)));
+)(injectIntl(ServiceStatusBar));
+

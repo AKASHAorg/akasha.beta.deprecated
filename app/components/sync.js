@@ -1,8 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import { RaisedButton } from 'material-ui';
 import { injectIntl } from 'react-intl';
-import { setupMessages, generalMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
-import { LogsList, PanelContainer, PanelHeader } from 'shared-components';
+import { setupMessages, generalMessages } from '../locale-data/messages';
+import { LogsList, PanelContainer, PanelHeader } from '../shared-components';
 import { SyncStatusLoader } from './';
 
 class Sync extends Component {

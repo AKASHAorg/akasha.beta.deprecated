@@ -1,5 +1,5 @@
 import { fromJS } from 'immutable';
-import { AppRecord, Notification, PendingAction } from './records';
+import { AppRecord, NotificationRecord, PendingActionRecord } from './records';
 import * as types from '../constants/AppConstants';
 import * as profileTypes from '../constants/ProfileConstants';
 import { createReducer } from './create-reducer';
@@ -52,7 +52,7 @@ const appState = createReducer(initialState, {
     },
 
     [types.SHOW_NOTIFICATION]: (state, { notification }) => state.merge({
-        notifications: state.get('notifications').push(new Notification(notification))
+        notifications: state.get('notifications').push(new NotificationRecord(notification))
     }),
 
     [types.HIDE_NOTIFICATION]: (state, { notification }) => {
@@ -66,7 +66,7 @@ const appState = createReducer(initialState, {
 
     [types.ADD_PENDING_ACTION]: (state, { data }) =>
         state.merge({
-            pendingActions: state.get('pendingActions').push(new PendingAction(fromJS(data)))
+            pendingActions: state.get('pendingActions').push(new PendingActionRecord(fromJS(data)))
         }),
 
     [types.UPDATE_PENDING_ACTION]: (state, { data }) => {

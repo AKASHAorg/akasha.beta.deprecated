@@ -1,12 +1,12 @@
 import { List, Record } from 'immutable';
 
-export const Notification = Record({
+export const NotificationRecord = Record({
     id: null,
+    duration: null,
     values: new Map(),
-    duration: null
 });
 
-export const PendingAction = Record({
+export const PendingActionRecord = Record({
     id: null,
     type: null,
     payload: new Map(),

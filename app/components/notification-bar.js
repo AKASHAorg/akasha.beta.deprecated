@@ -53,7 +53,7 @@ class NotificationBar extends Component {
 
 NotificationBar.propTypes = {
     hideNotification: PropTypes.func.isRequired,
-    intl: PropTypes.shape(),
+    intl: PropTypes.shape().isRequired,
     notification: PropTypes.shape().isRequired,
 };
 

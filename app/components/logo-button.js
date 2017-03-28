@@ -1,8 +1,8 @@
-import React, { Component, PropTypes } from 'react';
+import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { FlatButton } from 'material-ui';
 import { LogoIcon } from '../shared-components/svg';
-import { SettingsActions } from '../local-flux';
+import { saveGeneralSettings } from '../local-flux/actions/settings-actions';
 
 const buttonStyle = {
     width: '48px',
@@ -13,11 +13,10 @@ const buttonStyle = {
 };
 
 const LogoButton = (props) => {
-    const { className, logoStyle, settingsActions, theme, viewBox } = props;
+    const { className, logoStyle, saveGenSettings, theme, viewBox } = props;
     const onClick = () => {
         const newTheme = theme === 'light' ? 'dark' : 'light';
-        settingsActions.saveSettings('general', { theme: newTheme });
-        settingsActions.changeTheme(newTheme);
+        saveGenSettings({ theme: newTheme });
     };
 
     return (
@@ -29,26 +28,21 @@ const LogoButton = (props) => {
         style={buttonStyle}
       />
     );
-}
+};
 
 LogoButton.propTypes = {
-    settingsActions: PropTypes.shape().isRequired,
     logoStyle: PropTypes.shape(),
     viewBox: PropTypes.string,
     className: PropTypes.string,
-    theme: PropTypes.string
+    saveGenSettings: PropTypes.func.isRequired,
+    theme: PropTypes.string.isRequired
 };
 
-function mapStateToProps (state, ownProps) {
+function mapStateToProps (state) {
     return {
         theme: state.settingsState.get('general').get('theme')
     };
 }
 
-function mapDispatchToProps (dispatch) {
-    return {
-        settingsActions: new SettingsActions(dispatch)
-    };
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(LogoButton);
+export { LogoButton };
+export default connect(mapStateToProps, { saveGenSettings: saveGeneralSettings })(LogoButton);

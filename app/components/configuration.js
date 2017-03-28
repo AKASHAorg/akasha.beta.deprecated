@@ -1,10 +1,9 @@
 import React, { Component, PropTypes } from 'react';
 import { injectIntl } from 'react-intl';
 import { FlatButton, RadioButton, RadioButtonGroup, RaisedButton } from 'material-ui';
-import muiThemeable from 'material-ui/styles/muiThemeable';
-import { setupMessages, generalMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
+import { setupMessages, generalMessages } from '../locale-data/messages';
 import { GethCacheSelectField, PanelContainer, PanelHeader,
-    PathInputField } from 'shared-components';
+    PathInputField } from '../shared-components';
 
 const ADVANCED = 'advanced';
 const EXPRESS = 'express';
@@ -83,12 +82,11 @@ class Config extends Component {
         const { cache, gethDataDir, ipfsPath, isAdvanced } = this.state;
         const geth = isAdvanced ? { cache, datadir: gethDataDir } : defaultGethSettings.toJS();
         const ipfs = isAdvanced ? { storagePath: ipfsPath } : defaultIpfsSettings.toJS();
-
         saveConfiguration({ geth, ipfs });
     };
 
     render () {
-        const { intl, muiTheme } = this.props;
+        const { intl } = this.props;
         const { cache, gethDataDir, ipfsPath, isAdvanced } = this.state;
         const radioStyle = { marginTop: '10px', marginBottom: '10px' };
 
@@ -101,15 +99,14 @@ class Config extends Component {
                 key="next"
                 label={intl.formatMessage(generalMessages.nextButtonLabel)}
                 primary
-                backgroundColor={muiTheme.palette.secondaryColor}
                 style={{ marginLeft: '12px' }}
                 onClick={this.handleSubmit}
               />
               /* eslint-enable */
             ]}
-            header={<PanelHeader title={'AKASHA'} />}
+            header={<PanelHeader title={intl.formatMessage(generalMessages.akasha)} />}
           >
-            <div style={{ padding: '0 24px', marginRight: '7px', backgroundColor: muiTheme.palette.canvasColor }}>
+            <div style={{ padding: '0 24px', marginRight: '7px' }}>
               <h1 style={{ fontWeight: '400' }}>
                 {intl.formatMessage(setupMessages.firstTimeSetupTitle)}
               </h1>
@@ -183,16 +180,11 @@ Config.propTypes = {
     gethSettings: PropTypes.shape().isRequired,
     intl: PropTypes.shape(),
     ipfsSettings: PropTypes.shape().isRequired,
-    muiTheme: PropTypes.shape(),
     saveConfiguration: PropTypes.func.isRequired,
 };
 
 Config.contextTypes = {
     router: PropTypes.shape()
-};
-
-Config.defaultProps = {
-    muiTheme: { palette: {} }
 };
 
 export default injectIntl(Config);
