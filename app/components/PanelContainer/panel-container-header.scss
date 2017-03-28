@@ -1,0 +1,10 @@
+.root {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 12px 24px;
+    margin: 0;
+    z-index: 10;
+    transition: height 0.118s ease-in-out;
+}

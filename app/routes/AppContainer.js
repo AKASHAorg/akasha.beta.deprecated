@@ -1,6 +1,7 @@
 /* import React, { Component, PropTypes } from 'react';
 import ReactTooltip from 'react-tooltip';
 import { connect } from 'react-redux';
+import Route from 'react-router-dom/Route';
 import { injectIntl } from 'react-intl';
 import { getMuiTheme } from 'material-ui/styles';
 import { AuthDialog, DataLoader, GethDetailsModal, IpfsDetailsModal, PublishConfirmDialog,
@@ -13,6 +14,7 @@ import ErrorBar from './components/error-bar'; // eslint-disable-line import/no-
 import FatalErrorModal from './components/fatal-error-modal'; // eslint-disable-line import/no-unresolved, import/extensions
 import lightTheme from '../layouts/AkashaTheme/lightTheme';
 import darkTheme from '../layouts/AkashaTheme/darkTheme';
+import CreateProfileContainer from '../containers/create-profile-container';
 
 export class App extends Component {
     constructor (props) {
@@ -46,7 +48,6 @@ export class App extends Component {
         const isTransferConfirmationDialogVisible = appState.get('transferConfirmDialog') !== null;
         const showGethDetailsModal = appState.get('showGethDetailsModal');
         const showIpfsDetailsModal = appState.get('showIpfsDetailsModal');
-
         return (
           <DataLoader flag={!appState.get('appReady')} size={80} style={{ paddingTop: '-50px' }}>
             <div className="fill-height" >
@@ -78,6 +79,7 @@ export class App extends Component {
               {isTransferConfirmationDialogVisible && <TransferConfirmDialog intl={intl} />}
               {appState.get('showTerms') && <TermsPanel hideTerms={hideTerms} />}
               <ReactTooltip delayShow={300} class="generic_tooltip" place="bottom" effect="solid" />
+              <Route path="/new-profile" component={CreateProfileContainer} />
             </div>
           </DataLoader>
         );

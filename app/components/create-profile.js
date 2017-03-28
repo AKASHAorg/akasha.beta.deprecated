@@ -8,9 +8,9 @@ import ErrorIcon from 'material-ui/svg-icons/alert/error';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Avatar, ImageUploader, PanelContainer, PanelHeader } from 'shared-components';
 import { profileMessages, formMessages, generalMessages } from 'locale-data/messages'; /* eslint import/no-unresolved: 0*/
-import { inputFieldMethods } from '../../../../../utils/dataModule';
-import validationProvider from '../../../../../utils/validationProvider';
-import { UserValidation } from '../../../../../utils/validationSchema';
+import { inputFieldMethods } from '../utils/dataModule';
+import validationProvider from '../utils/validationProvider';
+import { UserValidation } from '../utils/validationSchema';
 
 class CreateProfile extends Component {
     constructor (props) {

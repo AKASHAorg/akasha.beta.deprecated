@@ -1,16 +1,20 @@
 import * as types from '../constants';
 import { action } from './helpers';
 
+export const tempProfileAbortSuccess = data => action(types.TEMP_PROFILE_ABORT_SUCCESS, { data });
+export const tempProfileAbort = data => action(types.TEMP_PROFILE_ABORT, { data });
+
 export const tempProfileCreate = data => action(types.TEMP_PROFILE_CREATE, { data });
 export const tempProfileCreateSuccess = data => action(types.TEMP_PROFILE_CREATE_SUCCESS, { data });
 export const tempProfileCreateError = error => action(types.TEMP_PROFILE_CREATE_ERROR, { error });
 
-export const tempProfileAbort = data => action(types.TEMP_PROFILE_ABORT, { data });
-export const tempProfileAbortSuccess = data => action(types.TEMP_PROFILE_ABORT_SUCCESS, { data });
-
 export const tempProfileDelete = () => action(types.TEMP_PROFILE_DELETE);
 export const tempProfileDeleteSuccess = () => action(types.TEMP_PROFILE_DELETE_SUCCESS);
 export const tempProfileDeleteError = error => action(types.TEMP_PROFILE_DELETE_ERROR, { error });
+
+export const tempProfileGet = () => action(types.TEMP_PROFILE_GET);
+export const tempProfileGetSuccess = () => action(types.TEMP_PROFILE_GET_SUCCESS, { data });
+export const tempProfileGetError = () => action(types.TEMP_PROFILE_GET_ERROR, { error });
 
 export const tempProfileLogin = data => action(types.TEMP_PROFILE_LOGIN, { data });
 export const tempProfileLoginSuccess = data => action(types.TEMP_PROFILE_LOGIN_SUCCESS, { data });

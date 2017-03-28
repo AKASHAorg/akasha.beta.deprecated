@@ -2,7 +2,7 @@ import React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import { IntlProvider, addLocaleData } from 'react-intl';
-import { createHashHistory } from 'history';
+import createHashHistory from 'history/createHashHistory';
 import { ConnectedRouter } from 'react-router-redux';
 import en from 'react-intl/locale-data/en';
 import injectTapEventPlugin from 'react-tap-event-plugin';
@@ -12,6 +12,7 @@ import routes from './routes';
 import configureStore from './local-flux/store/configureStore';
 import sagaMiddleware from './local-flux/store/sagaMiddleware';
 import { getGeneralSettings } from './local-flux/services/settings-service';
+import AppContainer from './routes/AppContainer';
 // import { ruMessages } from './locale-data/ru';
 
 addLocaleData([...en]);
@@ -38,11 +39,11 @@ console.log(store.getState());
 
 injectTapEventPlugin();
 getGeneralSettings().then((settings) => {
-    render(
+    return render(
       <Provider store={store} >
         <IntlProvider locale={settings.userlocale || 'en'} >
           <ConnectedRouter history={history}>
-            {routes}
+            <AppContainer />
           </ConnectedRouter>
         </IntlProvider>
       </Provider>,

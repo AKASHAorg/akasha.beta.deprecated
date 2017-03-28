@@ -1,0 +1,15 @@
+.root {
+    width: 100%;
+    z-index: 10;
+    height: 100%;
+}
+.panelContent {
+    top: 80px;
+    bottom: 60px;
+    left: 0;
+    right: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin: 0;
+    transition: top 0.118s ease-in-out;
+}
