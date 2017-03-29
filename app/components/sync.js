@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { RaisedButton } from 'material-ui';
 import { injectIntl } from 'react-intl';
-import { setupMessages, generalMessages } from '../locale-data/messages';
+import { generalMessages, setupMessages } from '../locale-data/messages';
 import { LogsList, PanelContainer, PanelHeader } from '../shared-components';
 import { SyncStatusLoader } from './';
 
@@ -99,29 +99,30 @@ class Sync extends Component {
 
     getActionLabels = () => {
         const { syncActionId, intl } = this.props;
-        const labels = {};
+        let title;
+        let action;
         switch (syncActionId) {
             case 1:
-                labels.title = intl.formatMessage(setupMessages.synchronizing);
-                labels.action = intl.formatMessage(generalMessages.pause);
+                title = intl.formatMessage(setupMessages.synchronizing);
+                action = intl.formatMessage(generalMessages.pause);
                 break;
             case 2:
-                labels.title = intl.formatMessage(setupMessages.syncPaused);
-                labels.action = intl.formatMessage(generalMessages.resume);
+                title = intl.formatMessage(setupMessages.syncPaused);
+                action = intl.formatMessage(generalMessages.resume);
                 break;
             case 3:
-                labels.title = intl.formatMessage(setupMessages.syncStopped);
-                labels.action = intl.formatMessage(generalMessages.resume);
+                title = intl.formatMessage(setupMessages.syncStopped);
+                action = intl.formatMessage(generalMessages.resume);
                 break;
             case 4:
-                labels.title = intl.formatMessage(setupMessages.syncCompleted);
-                labels.action = intl.formatMessage(generalMessages.nextButtonLabel);
+                title = intl.formatMessage(setupMessages.syncCompleted);
+                action = intl.formatMessage(generalMessages.nextButtonLabel);
                 break;
             default:
-                labels.title = intl.formatMessage(setupMessages.waitingForGeth);
-                labels.action = intl.formatMessage(generalMessages.pause);
+                title = intl.formatMessage(setupMessages.waitingForGeth);
+                action = intl.formatMessage(generalMessages.pause);
         }
-        return labels;
+        return { title, action };
     };
 
     toggleGethLogs = () => {
@@ -219,25 +220,25 @@ class Sync extends Component {
 Sync.propTypes = {
     configurationSaved: PropTypes.bool,
     gethBusyState: PropTypes.bool,
-    gethGetSyncStatus: PropTypes.func,
+    gethGetSyncStatus: PropTypes.func.isRequired,
     gethLogs: PropTypes.shape().isRequired,
-    gethPauseSync: PropTypes.func,
-    gethResumeSync: PropTypes.func,
-    gethStart: PropTypes.func,
+    gethPauseSync: PropTypes.func.isRequired,
+    gethResumeSync: PropTypes.func.isRequired,
+    gethStart: PropTypes.func.isRequired,
     gethStarting: PropTypes.bool,
-    gethStartLogger: PropTypes.func,
+    gethStartLogger: PropTypes.func.isRequired,
     gethStatus: PropTypes.shape().isRequired,
-    gethStop: PropTypes.func,
-    gethStopLogger: PropTypes.func,
-    gethStopSync: PropTypes.func,
+    gethStop: PropTypes.func.isRequired,
+    gethStopLogger: PropTypes.func.isRequired,
+    gethStopSync: PropTypes.func.isRequired,
     gethSyncStatus: PropTypes.shape().isRequired,
     intl: PropTypes.shape().isRequired,
     ipfsBusyState: PropTypes.bool,
     ipfsPortsRequested: PropTypes.bool,
-    ipfsStart: PropTypes.func,
+    ipfsStart: PropTypes.func.isRequired,
     ipfsStatus: PropTypes.shape().isRequired,
-    ipfsStop: PropTypes.func,
-    saveGeneralSettings: PropTypes.func,
+    ipfsStop: PropTypes.func.isRequired,
+    saveGeneralSettings: PropTypes.func.isRequired,
     syncActionId: PropTypes.number,
     timestamp: PropTypes.number,
 };

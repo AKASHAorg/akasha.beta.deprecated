@@ -252,7 +252,7 @@ describe('external process saga', function test () {
         afterEach(() => {
             sagaTester.reset(true);
         });
-        it('should dispatch IPFS_START_SUCCESS', () => {
+        it('should dispatch IPFS_START_SUCCESS', async () => {
             sagaTester.dispatch(actions.ipfsStart());
             const clientChannel = global.Channel.client.ipfs.startService;
             const resp = { data: { api: false, spawned: true, started: true } };
@@ -264,6 +264,8 @@ describe('external process saga', function test () {
             // Last called action should be ipfsGetPorts
             expect(sagaTester.getLatestCalledActions(2)[0])
                 .to.deep.equal(actions.ipfsStartSuccess(resp.data));
+            // wait for IPFS_RESET_BUSY action, otherwise it will be dispatched during the next test
+            await sagaTester.waitFor(types.IPFS_RESET_BUSY);
         });
         it('should reset busy state', async () => {
             sagaTester.dispatch(actions.ipfsStart());
@@ -283,6 +285,8 @@ describe('external process saga', function test () {
                 'IPFS_GET_PORTS was not called once');
             expect(global.Channel.server.ipfs.getPorts.send.calledWith({ }))
                 .to.be.ok;
+            // wait for IPFS_RESET_BUSY action, otherwise it will be dispatched during the next test
+            await sagaTester.waitFor(types.IPFS_RESET_BUSY);
         });
         it('should not request ipfs ports', async () => {
             sagaTester.dispatch(actions.ipfsStart());
@@ -291,6 +295,8 @@ describe('external process saga', function test () {
             clientChannel.triggerResponse(resp);
             expect(sagaTester.numCalled(types.IPFS_GET_PORTS)).to.equal(0,
                 'IPFS_GET_PORTS was called');
+            // wait for IPFS_RESET_BUSY action, otherwise it will be dispatched during the next test
+            await sagaTester.waitFor(types.IPFS_RESET_BUSY);
         });
         it('should dispatch IPFS_START_ERROR and IPFS_RESET_BUSY', async () => {
             sagaTester.dispatch(actions.ipfsStart());

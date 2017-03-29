@@ -24,42 +24,31 @@ class SyncStatusLoader extends Component {
         if (!current || !total) {
             return null;
         }
-        return (<div style={{ fontSize: '16px' }} >
-          {message &&
-            <span style={{ marginRight: '10px' }}>
-              {message}
-            </span>
-          }
-          <strong style={{ fontWeight: 'bold' }} >
-            {current}
-          </strong>/
-          {total}
-        </div>);
+        return (
+          <div style={{ fontSize: '16px' }} >
+            {message &&
+              <span style={{ marginRight: '10px' }}>
+                {message}
+              </span>
+            }
+            <strong>{current}</strong>/{total}
+          </div>
+        );
     }
 
     renderProgressBody () {
         const { gethStarting, gethStatus, gethSyncStatus, intl, ipfsStatus,
             syncActionId } = this.props;
-        let peerInfo;
         const synchronizingMessage = intl.formatMessage(setupMessages.synchronizing);
         const processingMessage = intl.formatMessage(setupMessages.processing);
 
-        if (gethSyncStatus && gethSyncStatus.get('peerCount') > 0 && gethSyncStatus.get('highestBlock') > 0) {
-            peerInfo = (
-              <FormattedMessage
-                id="app.setup.peerCount"
-                description="counting connected peers"
-                defaultMessage={`{peerCount, number} {peerCount, plural,
-                    one {peer}
-                    few {peers}
-                    many {peers}
-                    other {peers}
-                }, {peerCount, plural,
-                    one {connected}
-                    other {connected}
-                }`}
-                values={{ peerCount: gethSyncStatus.get('peerCount') }}
-              />
+        if (gethSyncStatus && gethSyncStatus.get('peerCount') > 0 &&
+                gethSyncStatus.get('highestBlock') > 0) {
+            const peerInfo = intl.formatMessage(
+                setupMessages.peerCount,
+                {
+                    peerCount: gethSyncStatus.get('peerCount')
+                }
             );
             return (
               <div>
@@ -102,21 +91,19 @@ class SyncStatusLoader extends Component {
 
     render () {
         const { gethSyncStatus, syncActionId } = this.props;
-        let blockProgress;
-        let currentProgress;
+        let progress;
 
         if (gethSyncStatus && gethSyncStatus.get('peerCount') > 0 &&
                 gethSyncStatus.get('highestBlock') > 0) {
-            blockProgress = gethSyncStatus;
-            currentProgress = ((blockProgress.get('currentBlock') - blockProgress.get('startingBlock')) /
-                (blockProgress.get('highestBlock') - blockProgress.get('startingBlock'))) * 100;
+            const { currentBlock, startingBlock, highestBlock } = gethSyncStatus.toJS();
+            progress = ((currentBlock - startingBlock) / (highestBlock - startingBlock)) * 100;
         } else if (syncActionId === 4) {
-            currentProgress = 100;
+            progress = 100;
         }
 
         return (
           <div style={{ padding: '32px 0', textAlign: 'center' }} >
-            <SyncProgressLoader value={currentProgress} />
+            <SyncProgressLoader value={progress} />
             {this.renderProgressBody()}
           </div>
         );

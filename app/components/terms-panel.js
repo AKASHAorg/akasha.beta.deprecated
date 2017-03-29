@@ -3,9 +3,8 @@ import { FormattedMessage, FormattedHTMLMessage } from 'react-intl';
 import { IconButton } from 'material-ui';
 import CloseIcon from 'material-ui/svg-icons/navigation/close';
 import { PanelContainer } from '../shared-components';
-import muiThemeable from 'material-ui/styles/muiThemeable';
 
-const TermsPanel = ({ hideTerms, muiTheme }) => (
+const TermsPanel = ({ hideTerms }, { muiTheme }) => (
   <div>
     <PanelContainer
       showBorder
@@ -258,8 +257,12 @@ const TermsPanel = ({ hideTerms, muiTheme }) => (
   </div>
 );
 
-TermsPanel.propTypes = {
-    hideTerms: PropTypes.func
+TermsPanel.contextTypes = {
+    muiTheme: PropTypes.shape()
 };
 
-export default muiThemeable()(TermsPanel);
+TermsPanel.propTypes = {
+    hideTerms: PropTypes.func.isRequired
+};
+
+export default TermsPanel;

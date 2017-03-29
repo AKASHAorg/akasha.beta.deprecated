@@ -1,0 +1,27 @@
+import React from 'react';
+import { FormattedMessage, FormattedHTMLMessage } from 'react-intl';
+import { spy } from 'sinon';
+import chai from 'chai';
+import { shallow } from 'enzyme';
+import muiTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
+import { TermsPanel } from '../../../app/components';
+import { PanelContainer } from '../../../app/shared-components';
+
+const { expect } = chai;
+
+describe('TermsPanel component tests', () => {
+    let mountedComp = shallow(<TermsPanel hideTerms={spy()} />, { context: { muiTheme } });
+
+    it('should render the PanelContainer', () => {
+        expect(mountedComp.find(PanelContainer).length).to.equal(1,
+            'PanelContainer was not rendered');
+    });
+    it('should render all the titles', () => {
+        expect(mountedComp.find(FormattedMessage).length).to.equal(11,
+            'some "titles" were not rendered');
+    });
+    it('should render all the bodies', () => {
+        expect(mountedComp.find(FormattedHTMLMessage).length).to.equal(12,
+            'some "bodies" were not rendered');
+    });
+});

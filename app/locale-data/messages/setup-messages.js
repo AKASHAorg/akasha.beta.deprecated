@@ -240,20 +240,18 @@ const setupMessages = defineMessages({
         description: 'message to display when synchronization is in default state',
         defaultMessage: 'Waiting for geth client'
     },
-    onePeer: {
-        id: 'app.setup.onePeer',
-        description: 'singular form of peers',
-        defaultMessage: 'peer'
-    },
-    fewPeers: {
-        id: 'app.setup.fewPeers',
-        description: 'plural form of peer. depends on language',
-        defaultMessage: 'peers'
-    },
-    manyPeers: {
-        id: 'app.setup.manyPeers',
-        description: 'in some languages there is another plural form of peers for many',
-        defaultMessage: 'peers'
+    peerCount: {
+        id: 'app.setup.peerCount',
+        description: 'counting connected peers',
+        defaultMessage: `{peerCount, number} {peerCount, plural,
+            one {peer}
+            few {peers}
+            many {peers}
+            other {peers}
+        }, {peerCount, plural,
+            one {connected}
+            other {connected}
+        }`
     },
     peers: {
         id: 'app.setup.peers',

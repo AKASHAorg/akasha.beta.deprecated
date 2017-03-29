@@ -38,6 +38,4 @@ export default function* rootSaga () {
     yield fork(watchEProcActions);
     yield fork(watchSettingsActions);
     yield fork(watchTempProfileActions);
-    // This should be moved away
-    // yield fork(toggleGethLogger);
 }

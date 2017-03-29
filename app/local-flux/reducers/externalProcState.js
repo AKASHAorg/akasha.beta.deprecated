@@ -58,7 +58,8 @@ const eProcState = createReducer(initialState, {
 
     [types.GETH_GET_STATUS_SUCCESS]: (state, { data }) =>
         state.mergeIn(['geth'], {
-            status: state.getIn(['geth', 'status']).merge(data)
+            status: state.getIn(['geth', 'status']).merge(data),
+            syncActionId: 1
         }),
 
     [types.IPFS_START]: state =>

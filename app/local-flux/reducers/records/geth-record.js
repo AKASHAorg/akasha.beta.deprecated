@@ -34,6 +34,13 @@ const GethRecord = Record({
     flags: new GethFlags(),
     logs: new OrderedSet(),
     status: new GethStatus(),
+    /*
+     * 0 - initial
+     * 1 - syncing
+     * 2 - paused
+     * 3 - stopped
+     * 4 - synced
+     */
     syncActionId: 0,
     syncStatus: new GethSyncStatus(),
 });
