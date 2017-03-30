@@ -28,13 +28,13 @@ const rootReducer = combineReducers({
     notificationsState,
     panelState,
     profileState,
-    routing,
     searchState,
     settingsState,
     tagState,
     tempProfileState,
     transactionState,
-    utilsState
+    utilsState,
+    router: routing,
 });
 
 export default rootReducer;

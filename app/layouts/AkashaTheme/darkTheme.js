@@ -14,7 +14,7 @@ const darkTheme = {
         accent2Color: '#de6a10',
         accent3Color: '#70bf41',
         paperShadowColor: Colors.grey800,
-        tutorialsBackgroundColor: '#252525',
+        themeColor: '#252525',
     }),
     imageUploader: {
         position: 'relative',

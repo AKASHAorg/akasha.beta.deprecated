@@ -6,7 +6,7 @@ import rootReducer from '../reducers';
 import * as actionCreators from '../actions/action-creators';
 
 const finalCreateStore = compose(
-  applyMiddleware(thunk, sagaMiddleware),
+  applyMiddleware( thunk, sagaMiddleware),
   window.devToolsExtension ?
     window.devToolsExtension({ actionCreators }) :
     noop => noop,

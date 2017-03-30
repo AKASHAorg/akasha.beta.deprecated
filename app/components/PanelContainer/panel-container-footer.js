@@ -1,16 +1,16 @@
 import React, { Component, PropTypes } from 'react';
-import muiThemeable from 'material-ui/styles/muiThemeable';
+import Paper from 'material-ui/Paper';
 import styles from './panel-container-footer.scss';
 
 class PanelContainerFooter extends Component {
     render() {
-        const { muiTheme } = this.props;
+        const { muiTheme, footerHeight } = this.props;
         return (
-            <div
+            <Paper
+                rounded={false}
                 className={`row ${styles.root}`}
                 style={{
-                    background: muiTheme.palette.canvasColor,
-                    boxShadow: `0px -1px 3px -1px ${muiTheme.palette.paperShadowColor}`
+                    bottom: -1 * footerHeight
                 }}
             >
                 <div className={`${styles.leftActions}`}>
@@ -19,9 +19,11 @@ class PanelContainerFooter extends Component {
                 <div className={`${styles.rightActions}`}>
                     {this.props.children}
                 </div>
-            </div>
+            </Paper>
         )
     }
 }
-
+PanelContainerFooter.defaultProps = {
+    footerHeight: 60
+}
 export default PanelContainerFooter;

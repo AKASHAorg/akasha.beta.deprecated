@@ -2,6 +2,7 @@ import React, { PropTypes } from 'react';
 import ReactTooltip from 'react-tooltip';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
+import Route from 'react-router/Route';
 import { getMuiTheme } from 'material-ui/styles';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import { AuthDialog, DataLoader, GethDetailsModal, IpfsDetailsModal, PublishConfirmDialog,
@@ -11,8 +12,9 @@ import { errorDeleteFatal, errorDeleteNonFatal } from '../local-flux/actions/err
 import { ErrorBar, FatalErrorModal, NotificationBar, TermsPanel } from '../components';
 import lightTheme from '../layouts/AkashaTheme/lightTheme';
 import darkTheme from '../layouts/AkashaTheme/darkTheme';
+import { LauncherContainer, HomeContainer } from './';
 
-const AppContainer = (props) => {
+const AppContainer = (props, other) => {
     /* eslint-disable */
     const { appState, children, errorDeleteFatal, errorDeleteNonFatal, errorState,
         hideNotification, hideTerms, intl, theme } = props;
@@ -25,12 +27,13 @@ const AppContainer = (props) => {
     const showGethDetailsModal = appState.get('showGethDetailsModal');
     const showIpfsDetailsModal = appState.get('showIpfsDetailsModal');
     const muiTheme = getMuiTheme(theme === 'light' ? lightTheme : darkTheme);
-
     return (
       <MuiThemeProvider muiTheme={muiTheme}>
         <DataLoader flag={!appState.get('appReady')} size={80} style={{ paddingTop: '-50px' }}>
-          <div className="fill-height" >
-            {children}
+          <div className="fill-height" style={{ backgroundColor: muiTheme.palette.themeColor }} >
+            <Route path="/" component={LauncherContainer} />
+            <Route path="/:akashaId" component={HomeContainer} />
+            
             {!!appState.get('notifications').size &&
               <NotificationBar
                 hideNotification={hideNotification}
@@ -68,7 +71,6 @@ const AppContainer = (props) => {
 
 AppContainer.propTypes = {
     appState: PropTypes.shape().isRequired,
-    children: PropTypes.element.isRequired,
     errorDeleteFatal: PropTypes.func.isRequired,
     errorDeleteNonFatal: PropTypes.func.isRequired,
     errorState: PropTypes.shape().isRequired,

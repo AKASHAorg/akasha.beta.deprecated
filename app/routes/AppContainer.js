@@ -37,10 +37,8 @@ export class App extends Component {
     }
 
     render () {
-        /* eslint-disable */
         const { appState, errorDeleteFatal, errorDeleteNonFatal, errorState,
             hideNotification, hideTerms, intl } = this.props;
-        /* eslint-disable */
         const isAuthDialogVisible = !!appState.get('showAuthDialog');
         const weightConfirmDialog = appState.get('weightConfirmDialog');
         const isWeightConfirmationDialogVisible = weightConfirmDialog !== null;

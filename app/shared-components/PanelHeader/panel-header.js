@@ -1,11 +1,13 @@
-import React, { PropTypes } from 'react';
+import React, { Component, PropTypes } from 'react';
 import { injectIntl } from 'react-intl';
 import { LogoButton, ServiceStatusBar } from '../../components';
 import { generalMessages } from '../../locale-data/messages';
 
-function PanelHeader ({ disableStopService, intl, noStatusBar, noLogoButton, title }) {
+class PanelHeader extends Component {
+  render() {
+    const { disableStopService, intl, noStatusBar, noLogoButton, title, showBorder } = this.props;
     return (
-      <div className="col-xs-12">
+      <div className="col-xs-12" style={{ padding: '0 24px', borderBottom: showBorder ? '1px solid #DDD': 'none' }}>
         <div className="row middle-xs" style={{ display: 'flex' }} >
           {!noLogoButton &&
             <div style={{ flex: '0 0 auto' }}>
@@ -23,6 +25,7 @@ function PanelHeader ({ disableStopService, intl, noStatusBar, noLogoButton, tit
         </div>
       </div>
     );
+  }
 }
 
 PanelHeader.propTypes = {
@@ -33,4 +36,4 @@ PanelHeader.propTypes = {
     title: PropTypes.node.isRequired,
 };
 
-export default injectIntl(PanelHeader);
+export default PanelHeader;

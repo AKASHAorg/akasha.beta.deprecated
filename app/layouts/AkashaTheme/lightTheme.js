@@ -24,7 +24,7 @@ export default {
         avatarBackground: Colors.grey50,
         errorColor: Colors.orange900,
         linkColor: '#008B8B',
-        tutorialsBackgroundColor: '#f0f0f0',
+        themeColor: '#f0f0f0',
     },
     imageUploader: {
         position: 'relative',

@@ -2,7 +2,8 @@ import React, { Component, PropTypes } from 'react';
 import { RaisedButton } from 'material-ui';
 import { injectIntl } from 'react-intl';
 import { generalMessages, setupMessages } from '../locale-data/messages';
-import { LogsList, PanelContainer, PanelHeader } from '../shared-components';
+import { LogsList, PanelHeader } from 'shared-components';
+import PanelContainerFooter from './PanelContainer/panel-container-footer';
 import { SyncStatusLoader } from './';
 
 class Sync extends Component {
@@ -37,10 +38,10 @@ class Sync extends Component {
             }, 2000);
         }
         if (gethSynced && ipfsSpawned && !ipfsPortsRequested) {
-            this.context.router.push('authenticate');
+            this.props.history.push('authenticate');
         }
         if (!configurationSaved) {
-            this.context.router.push('setup');
+            this.props.history.push('/');
         }
     }
 
@@ -130,59 +131,19 @@ class Sync extends Component {
             showGethLogs: !this.state.showGethLogs
         });
     };
-
+// <LogsList
+//                 logs={gethLogs}
+//                 startLogger={gethStartLogger}
+//                 stopLogger={gethStopLogger}
+//                 timestamp={timestamp}
+//               />
     render () {
         const { gethBusyState, gethLogs, gethStarting, gethStartLogger, gethStatus, gethStopLogger,
             gethSyncStatus, intl, ipfsBusyState, ipfsPortsRequested, ipfsStatus,
             syncActionId, timestamp } = this.props;
 
         return (
-          <PanelContainer
-            showBorder
-            style={{
-                width: '100%',
-                height: '100%',
-                display: 'flex',
-                flexDirection: 'column'
-            }}
-            actions={[
-            /* eslint-disable */
-              <RaisedButton
-                key="cancel"
-                label={intl.formatMessage(generalMessages.cancel)}
-                style={{ marginLeft: '12px' }}
-                onClick={this.handleCancel}
-                disabled={gethBusyState || (ipfsBusyState && syncActionId === 4)}
-              />,
-              // this button has a dynamic label and behaviour, depending on the synchronization state (synchronizing, paused, stopped, synced)
-              <RaisedButton
-                key="pauseOrResume"
-                label={this.getActionLabels().action}
-                style={{ marginLeft: '12px' }}
-                onClick={this.handlePause}
-                disabled={gethBusyState
-                    || ((ipfsBusyState || ipfsPortsRequested) && syncActionId === 4)}
-                primary={syncActionId === 4}
-              />
-            /* eslint-enable */
-            ]}
-            leftActions={[
-            /* eslint-disable */
-              <RaisedButton
-                key="viewDetails"
-                label={this.state.showGethLogs ?
-                    intl.formatMessage(setupMessages.hideDetails) :
-                    intl.formatMessage(setupMessages.viewDetails)
-                }
-                primary={this.state.showGethLogs}
-                onClick={this.toggleGethLogs}
-              />
-            /* eslint-enable */
-            ]}
-            header={<PanelHeader title={intl.formatMessage(generalMessages.akasha)} />}
-          >
-            {!this.state.showGethLogs &&
-              <div style={{ flex: 1, padding: '0 24px' }}>
+            <div style={{ flex: 1, padding: '0 24px' }}>
                 <h1 style={{ fontWeight: '400' }} >
                   {this.getActionLabels().title}
                 </h1>
@@ -202,17 +163,37 @@ class Sync extends Component {
                   ipfsStatus={ipfsStatus}
                   syncActionId={syncActionId}
                 />
-              </div>
-            }
-            {this.state.showGethLogs &&
-              <LogsList
-                logs={gethLogs}
-                startLogger={gethStartLogger}
-                stopLogger={gethStopLogger}
-                timestamp={timestamp}
-              />
-            }
-          </PanelContainer>
+                <PanelContainerFooter
+                  leftActions={
+                      <RaisedButton
+                        key="viewDetails"
+                        label={this.state.showGethLogs ?
+                           intl.formatMessage(setupMessages.hideDetails) :
+                             intl.formatMessage(setupMessages.viewDetails)
+                        }
+                        primary={this.state.showGethLogs}
+                        onClick={this.toggleGethLogs}
+                      />
+                  }
+                >
+                  <RaisedButton
+                    key="cancel"
+                    label={intl.formatMessage(generalMessages.cancel)}
+                    style={{ marginLeft: '12px' }}
+                    onClick={this.handleCancel}
+                    disabled={gethBusyState || (ipfsBusyState && syncActionId === 4)}
+                  />
+                  <RaisedButton
+                    key="pauseOrResume"
+                    label={this.getActionLabels().action}
+                    style={{ marginLeft: '12px' }}
+                    onClick={this.handlePause}
+                    disabled={gethBusyState
+                        || ((ipfsBusyState || ipfsPortsRequested) && syncActionId === 4)}
+                    primary={syncActionId === 4}
+                  />
+                </PanelContainerFooter>
+            </div>
         );
     }
 }

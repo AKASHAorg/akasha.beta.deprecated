@@ -8,21 +8,19 @@ import en from 'react-intl/locale-data/en';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import ReactPerf from 'react-addons-perf';
 import rootSaga from './local-flux/sagas';
-import routes from './routes';
 import configureStore from './local-flux/store/configureStore';
 import sagaMiddleware from './local-flux/store/sagaMiddleware';
 import { getGeneralSettings } from './local-flux/services/settings-service';
-import AppContainer from './routes/AppContainer';
+import { AppContainer } from './containers';
+import './styles/core.scss';
 // import { ruMessages } from './locale-data/ru';
 
 addLocaleData([...en]);
+const history = createHashHistory();
 const store = configureStore();
 sagaMiddleware.run(rootSaga);
-const history = createHashHistory();
 
 window.Perf = ReactPerf;
-
-console.log(store.getState());
 
 // function hashLinkScroll () {
 //     const { hash } = window.location;

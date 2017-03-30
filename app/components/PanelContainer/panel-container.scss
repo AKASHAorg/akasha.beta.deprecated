@@ -1,15 +1,14 @@
 .root {
-    width: 100%;
     z-index: 10;
-    height: 100%;
+    position: relative;
+    height: 100%
 }
 .panelContent {
-    top: 80px;
-    bottom: 60px;
-    left: 0;
-    right: 0;
+    transition: top 0.118s ease-in-out;
+}
+.panelContentInner {
+    height: 100%;
+    margin-right: 6px;
     overflow-y: auto;
     overflow-x: hidden;
-    margin: 0;
-    transition: top 0.118s ease-in-out;
 }

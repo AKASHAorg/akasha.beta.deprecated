@@ -1,11 +1,9 @@
 .root {
+    padding: 12px 24px;
     position: absolute;
-    bottom: 0;
     left: 0;
     right: 0;
-    display: flex;
-    padding: 12px 24px;
-    margin: 0;
+    margin-right: 0 !important;
 }
 .leftActions,
 .rightActions {

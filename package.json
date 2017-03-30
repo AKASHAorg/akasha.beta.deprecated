@@ -152,6 +152,7 @@
     "immutable": "3.8.1",
     "jsdom": "9.11.0",
     "jsdom-global": "2.1.1",
+    "joi": "5.1.0",
     "joi-validation-strategy": "^0.3.3",
     "lodash.debounce": "4.0.8",
     "lodash.throttle": "4.1.1",

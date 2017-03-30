@@ -3,6 +3,12 @@ import ReactDOM from 'react-dom';
 import { Paper } from 'material-ui';
 import styles from './panel-container.scss';
 import muiThemeable from 'material-ui/styles/muiThemeable';
+
+const ALLOWED_HEADER_NAMES = [
+    'PanelContainerHeader',
+    'PanelHeader'
+];
+
 class PanelContainer extends React.Component {
     constructor (props) {
         super(props);
@@ -12,22 +18,37 @@ class PanelContainer extends React.Component {
     }
     componentWillMount () {
         const { children } = this.props;
-        const childHeader = this.props.children.find(child => !Array.isArray(child) &&
-            child.type.displayName === 'PanelContainerHeader');
-        const childFooter = this.props.children.find(child => !Array.isArray(child) &&
-            child.type.displayName === 'PanelContainerFooter');
-        if(!childHeader) {
-            console.warn('PanelContainer must have <PanelHeader/> as children!');
-        };
-        if(!childFooter && React.Children.count(children) > 2) {
-            console.warn('Please use <PanelFooter /> component for PanelContainer actions!');
-        };
+        const childHeader = this.props.children.find(this._findChild(ALLOWED_HEADER_NAMES));
         this.childHeader = childHeader;
-        this.childFooter = childFooter;
     }
     componentDidMount () {
-        // measure body and set the height of the content
-        // to the height of the body - header - footer
+        // attach resize listener and recalc panel.
+        document.body.onresize = (ev) => this._calculatePanelSize(this.state);
+    }
+    componentWillUnmount () {
+        document.body.onresize = null;
+    }
+    componentWillUpdate(nextProps, nextState) {
+        if(nextState.headerHeight !== this.state.headerHeight) {
+            this._calculatePanelSize(nextState);
+        }
+        if(nextProps.footerHeight !== this.props.footerHeight) {
+            this._calculatePanelSize(nextState)
+        }
+    }
+    _findChild = (childTypes) => {
+        return (child) => {
+            return !Array.isArray(child) && typeof child.type === 'function' &&
+                childTypes.includes(child.type.name)
+        }
+    }
+    _calculatePanelSize = (state) => {
+        const { footerHeight } = this.props;
+        const { headerHeight } = state;
+        const { clientHeight } = document.body;
+        this.setState({
+            panelHeight: clientHeight - headerHeight - footerHeight - 1
+        });
     }
     _handleScroll = () => {
         const panelNode = this.panelContent;
@@ -42,39 +63,60 @@ class PanelContainer extends React.Component {
             });
         }
     };
-
+    _filterContentChildren = (child) => {
+        if(Array.isArray(child)) return true;
+        if(typeof child.type === 'function') {
+            return this.childHeader && (child.type.displayName !== this.childHeader.type.displayName)
+        } else {
+            return true;
+        }
+    }
+    _setHeight = (node) => {
+        return (element) => {
+            if(element) {
+                this[`${node}Ref`]
+                const { ref } = element;
+                if(typeof ref === 'function') {
+                    ref(element);
+                }
+                const htmlElem = ReactDOM.findDOMNode(element);
+                const clientHeight = htmlElem.clientHeight;
+                if(this.state[`${node}Height`] !== clientHeight) {
+                    this.setState({
+                        [`${node}Height`]: clientHeight
+                    });
+                }
+            }
+        };
+    }
     render () {
-        const { isHeaderShrinked } = this.state;
+        const { isHeaderShrinked, panelHeight } = this.state;
         const { header, title, subTitle, showBorder, headerHeight, headerMinHeight, headerStyle,
-            contentStyle } = this.props;
-        const { muiTheme } = this.props;
+            contentStyle, muiTheme, intl } = this.props;
         return (
           <Paper
-            className={styles.root}
+            className={`row ${styles.root}`}
             style={{maxWidth: this.props.width, ...this.props.style}}
           >
             {this.childHeader &&
                 React.cloneElement(this.childHeader, {
+                    ref: this._setHeight('header'),
                     shrinked: isHeaderShrinked,
-                    muiTheme
+                    muiTheme,
+                    showBorder,
+                    intl
                 })
             }
             <div
               className={`row ${styles.panelContent}`}
-              style={{...contentStyle, top: isHeaderShrinked && 56 }}
+              style={{...contentStyle, height: panelHeight }}
               ref={(panelContent) => { this.panelContent = panelContent; }}
               onScroll={this._handleScroll}
             >
-              {this.props.children.filter(child => !Array.isArray(child) &&
-                child.type.displayName !== 'PanelContainerHeader' &&
-                    child.type.displayName !== 'PanelContainerFooter')
-              }
-            </div>
-            {this.childFooter &&
-                React.cloneElement(this.childFooter, {
-                    muiTheme
-                })
-            }
+              <div className={`${styles.panelContentInner}`}>
+                {this.props.children.filter(this._filterContentChildren)}
+              </div>
+            </div> 
           </Paper>
         );
     }
@@ -84,7 +126,8 @@ PanelContainer.defaultProps = {
     headerHeight: 80,
     headerMinHeight: 56,
     headerStyle: {},
-    contentStyle: {}
+    contentStyle: {},
+    footerHeight: 60
 };
 PanelContainer.propTypes = {
     actions: PropTypes.node,
