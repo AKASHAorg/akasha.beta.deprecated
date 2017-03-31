@@ -1,6 +1,11 @@
 import { defineMessages } from 'react-intl';
 
 const errorMessages = defineMessages({
+    backupKeys: {
+        id: 'app.error.backupKeys',
+        description: 'backup keys error message',
+        defaultMessage: 'Generating backup has failed. Try again'
+    },
     fatalError: {
         id: 'app.error.fatalError',
         description: 'title for fatal error modal',

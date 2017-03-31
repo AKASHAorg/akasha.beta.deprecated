@@ -26,6 +26,16 @@ export const tempProfilePublishSuccess = data => action(types.TEMP_PROFILE_PUBLI
 });
 export const tempProfilePublishError = error => action(types.TEMP_PROFILE_PUBLISH_ERROR, { error });
 
+export const tempProfileRequest = () => action(types.TEMP_PROFILE_REQUEST);
+
+export const tempProfileError = (error) => {
+    error.code = 'TPRE01';
+    error.messageId = 'tempProfileRequest';
+    return action(types.TEMP_PROFILE_ERROR, { error });
+};
+
+export const tempProfileSuccess = data => action(types.TEMP_PROFILE_SUCCESS, { data });
+
 export const ethAddressCreate = data => action(types.ETH_ADDRESS_CREATE, { data });
 export const ethAddressCreateSuccess = data => action(types.ETH_ADDRESS_CREATE_SUCCESS, { data });
 export const ethAddressCreateError = error => action(types.ETH_ADDRESS_CREATE_ERROR, { error });

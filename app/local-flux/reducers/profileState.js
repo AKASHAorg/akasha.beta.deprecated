@@ -1,61 +1,14 @@
 /* eslint new-cap: ["error", { "capIsNewExceptions": ["Record"] }]*/
 import { fromJS, List, Record, Map } from 'immutable';
-import * as types from '../constants/ProfileConstants';
+import * as types from '../constants';
+import * as profileTypes from '../constants/ProfileConstants';
 import * as appTypes from '../constants/AppConstants';
 import * as tagTypes from '../constants/TagConstants';
 import { createReducer } from './create-reducer';
+import { LoggedProfile, ProfileRecord, ProfileState } from './records';
 
-const ErrorRecord = Record({
-    code: null,
-    message: '',
-    fatal: false,
-    type: null
-});
-
-const Profile = Record({
-    firstName: '',
-    lastName: '',
-    akashaId: '',
-    avatar: null,
-    backgroundImage: [],
-    balance: null,
-    about: null,
-    links: [],
-    profile: null,
-    ethAddress: null,
-    baseUrl: '',
-    followersCount: null,
-    followingCount: null,
-    followers: new List(),
-    following: new List(),
-    moreFollowers: false,
-    moreFollowing: false,
-    entriesCount: null,
-    subscriptionsCount: null,
-    entries: new List(),
-    isFollower: new Map()
-});
-
-const LoggedProfile = Record({
-    account: null,
-    token: null,
-    expiration: null,
-    profile: null,
-    akashaId: null
-});
-
-const initialState = fromJS({
-    profiles: new List(),
-    profileList: new List(),
-    loggedProfile: new LoggedProfile(),
-    errors: new List(),
-    fetchingFullLoggedProfile: false,
-    flags: new Map({
-        followPending: new List(),
-        sendingTip: new List(),
-    }),
-    followingsList: new List()
-});
+const ErrorRecord = Record({});
+const initialState = new ProfileState();
 
 const tipHandler = (state, { error, flags }) => {
     const sendingTip = state.getIn(['flags', 'sendingTip']);
@@ -91,75 +44,70 @@ const errorHandler = (state, { error, flags }) =>
         flags: state.get('flags').merge(flags)
     });
 
+const addProfileData = (byId, profileData) => {
+    if (!profileData) {
+        return byId;
+    }
+    const { avatar, baseUrl } = profileData;
+    if (avatar && baseUrl) {
+        profileData.avatar = `${baseUrl}/${avatar}`;
+    }
+    return byId.set(profileData.profile, new ProfileRecord(profileData));
+};
+
 const profileState = createReducer(initialState, {
-    [types.LOGIN]: flagHandler,
+    // [profileTypes.LOGIN]: flagHandler,
 
-    [types.LOGIN_SUCCESS]: (state, { profile, flags }) =>
-        state.merge({
-            loggedProfile: state.get('loggedProfile').merge(profile),
-            flags: state.get('flags').merge(flags),
-        }),
+    // [profileTypes.LOGIN_SUCCESS]: (state, { profile, flags }) =>
+    //     state.merge({
+    //         loggedProfile: state.get('loggedProfile').merge(profile),
+    //         flags: state.get('flags').merge(flags),
+    //     }),
 
-    [types.LOGIN_ERROR]: errorHandler,
+    // [profileTypes.LOGIN_ERROR]: errorHandler,
 
-    [types.GET_CURRENT_PROFILE]: flagHandler,
+    // [profileTypes.GET_CURRENT_PROFILE]: flagHandler,
 
-    [types.GET_CURRENT_PROFILE_SUCCESS]: (state, { data, flags }) =>
-        state.merge({
-            loggedProfile: state.get('loggedProfile').merge({ profile: data.profileAddress }),
-            flags: state.get('flags').merge(flags)
-        }),
+    // [profileTypes.GET_CURRENT_PROFILE_SUCCESS]: (state, { data, flags }) =>
+    //     state.merge({
+    //         loggedProfile: state.get('loggedProfile').merge({ profile: data.profileAddress }),
+    //         flags: state.get('flags').merge(flags)
+    //     }),
 
-    [types.GET_CURRENT_PROFILE_ERROR]: errorHandler,
+    // [profileTypes.GET_CURRENT_PROFILE_ERROR]: errorHandler,
 
-    [types.GET_LOGGED_PROFILE]: flagHandler,
+    // [profileTypes.GET_LOGGED_PROFILE]: flagHandler,
 
-    [types.GET_LOGGED_PROFILE_SUCCESS]: (state, { profile, flags }) =>
-        state.merge({
-            loggedProfile: state.get('loggedProfile').merge(profile),
-            flags: state.get('flags').merge(flags)
-        }),
+    // [profileTypes.GET_LOGGED_PROFILE_SUCCESS]: (state, { profile, flags }) =>
+    //     state.merge({
+    //         loggedProfile: state.get('loggedProfile').merge(profile),
+    //         flags: state.get('flags').merge(flags)
+    //     }),
 
-    [types.CLEAR_LOGGED_PROFILE_SUCCESS]: state =>
-        state.merge({
-            loggedProfile: new LoggedProfile()
-        }),
+    // [profileTypes.CLEAR_LOGGED_PROFILE_SUCCESS]: state =>
+    //     state.merge({
+    //         loggedProfile: new LoggedProfile()
+    //     }),
 
-    [types.LOGOUT_SUCCESS]: state =>
+    [profileTypes.LOGOUT_SUCCESS]: state =>
         state.set('loggedProfile', new LoggedProfile()),
 
-    [types.LOGOUT_ERROR]: (state, { error }) =>
+    [profileTypes.LOGOUT_ERROR]: (state, { error }) =>
         state.merge({
             errors: state.get('errors').push(new ErrorRecord(error))
         }),
 
-    [types.GET_LOCAL_PROFILES]: flagHandler,
-
-    [types.GET_LOCAL_PROFILES_SUCCESS]: (state, { data, flags }) =>
-        state.merge({
-            profiles: new List(data.map(prf => new Profile({
-                ethAddress: prf.key,
-                profile: prf.profile
-            }))),
-            flags: state.get('flags').merge(flags)
-        }),
-
-    [types.CLEAR_LOCAL_PROFILES_SUCCESS]: state =>
+    [profileTypes.CLEAR_LOCAL_PROFILES_SUCCESS]: state =>
         state.set('profiles', new List()),
 
-    [types.CLEAR_OTHER_PROFILES]: state =>
+    [profileTypes.CLEAR_OTHER_PROFILES]: state =>
         state.set('profiles', state.get('profiles').filter(profile =>
             profile.get('profile') === state.getIn(['loggedProfile', 'profile'])
         )),
 
-    [types.GET_LOCAL_PROFILES_ERROR]: (state, { error }) =>
-        state.merge({
-            errors: state.get('errors').push(new ErrorRecord(error))
-        }),
+    [profileTypes.GET_PROFILE_DATA]: flagHandler,
 
-    [types.GET_PROFILE_DATA]: flagHandler,
-
-    [types.GET_PROFILE_DATA_SUCCESS]: (state, { data, flags }) => {
+    [profileTypes.GET_PROFILE_DATA_SUCCESS]: (state, { data, flags }) => {
         const profileIndex = state.get('profiles').findIndex(profile =>
             profile.get('profile') === data.profile
         );
@@ -167,7 +115,7 @@ const profileState = createReducer(initialState, {
         // so this must be true
         if (profileIndex === -1) {
             return state.merge({
-                profiles: state.get('profiles').push(new Profile(data)),
+                profiles: state.get('profiles').push(new ProfileRecord(data)),
                 flags: state.get('flags').merge(flags)
             });
         }
@@ -177,19 +125,9 @@ const profileState = createReducer(initialState, {
         });
     },
 
-    [types.GET_PROFILE_DATA_ERROR]: errorHandler,
+    [profileTypes.GET_PROFILE_DATA_ERROR]: errorHandler,
 
-    [types.GET_PROFILE_LIST]: flagHandler,
-
-    [types.GET_PROFILE_LIST_SUCCESS]: (state, { data, flags }) =>
-        state.merge({
-            profileList: fromJS(data.collection),
-            flags: state.get('flags').merge(flags)
-        }),
-
-    [types.GET_PROFILE_LIST_ERROR]: errorHandler,
-
-    [types.GET_PROFILE_BALANCE_SUCCESS]: (state, { data }) => {
+    [profileTypes.GET_PROFILE_BALANCE_SUCCESS]: (state, { data }) => {
         const loggedProfileAccount = state.getIn(['loggedProfile', 'account']);
         if (loggedProfileAccount !== data.etherBase) {
             return state;
@@ -202,23 +140,23 @@ const profileState = createReducer(initialState, {
         });
     },
 
-    [types.CLEAR_PROFILE_ERRORS]: state =>
+    [profileTypes.CLEAR_PROFILE_ERRORS]: state =>
         state.merge({
             errors: new List()
         }),
 
-    [types.CLEAR_LOGIN_ERRORS]: state =>
+    [profileTypes.CLEAR_LOGIN_ERRORS]: state =>
         state.merge({
             errors: state.get('errors').filter(err => err.get('type') !== 'login')
         }),
 
-    [types.UPDATE_PROFILE_DATA]: flagHandler,
+    [profileTypes.UPDATE_PROFILE_DATA]: flagHandler,
 
-    [types.UPDATE_PROFILE_DATA_ERROR]: errorHandler,
+    [profileTypes.UPDATE_PROFILE_DATA_ERROR]: errorHandler,
 
-    [types.UPDATE_PROFILE_DATA_SUCCESS]: flagHandler,
+    [profileTypes.UPDATE_PROFILE_DATA_SUCCESS]: flagHandler,
 
-    [types.RESET_FLAGS]: state =>
+    [profileTypes.RESET_FLAGS]: state =>
         state.merge({
             flags: new Map({
                 followPending: new List(),
@@ -226,7 +164,7 @@ const profileState = createReducer(initialState, {
             })
         }),
 
-    [types.GET_FOLLOWERS_COUNT_SUCCESS]: (state, { akashaId, count }) => {
+    [profileTypes.GET_FOLLOWERS_COUNT_SUCCESS]: (state, { akashaId, count }) => {
         const profileIndex = state.get('profiles').findIndex(prf =>
             prf.get('akashaId') === akashaId
         );
@@ -236,7 +174,7 @@ const profileState = createReducer(initialState, {
         });
     },
 
-    [types.GET_FOLLOWING_COUNT_SUCCESS]: (state, { akashaId, count }) => {
+    [profileTypes.GET_FOLLOWING_COUNT_SUCCESS]: (state, { akashaId, count }) => {
         const profileIndex = state.get('profiles').findIndex(prf =>
             prf.get('akashaId') === akashaId
         );
@@ -246,9 +184,9 @@ const profileState = createReducer(initialState, {
         });
     },
 
-    [types.FOLLOWERS_ITERATOR]: flagHandler,
+    [profileTypes.FOLLOWERS_ITERATOR]: flagHandler,
 
-    [types.FOLLOWERS_ITERATOR_SUCCESS]: (state, { data, flags }) => {
+    [profileTypes.FOLLOWERS_ITERATOR_SUCCESS]: (state, { data, flags }) => {
         const profileIndex = state.get('profiles').findIndex(profile =>
             profile.get('akashaId') === data.akashaId
         );
@@ -258,7 +196,7 @@ const profileState = createReducer(initialState, {
             fromJS(data.collection);
         if (profileIndex === -1) {
             return state.merge({
-                profiles: state.get('profiles').push(new Profile({
+                profiles: state.get('profiles').push(new ProfileRecord({
                     akashaId: data.akashaId,
                     followers: followersList,
                     moreFollowers
@@ -275,11 +213,11 @@ const profileState = createReducer(initialState, {
         });
     },
 
-    [types.FOLLOWERS_ITERATOR_ERROR]: errorHandler,
+    [profileTypes.FOLLOWERS_ITERATOR_ERROR]: errorHandler,
 
-    [types.MORE_FOLLOWERS_ITERATOR]: flagHandler,
+    [profileTypes.MORE_FOLLOWERS_ITERATOR]: flagHandler,
 
-    [types.MORE_FOLLOWERS_ITERATOR_SUCCESS]: (state, { data, flags }) => {
+    [profileTypes.MORE_FOLLOWERS_ITERATOR_SUCCESS]: (state, { data, flags }) => {
         const profileIndex = state.get('profiles').findIndex(profile =>
             profile.get('akashaId') === data.akashaId
         );
@@ -298,11 +236,11 @@ const profileState = createReducer(initialState, {
         });
     },
 
-    [types.MORE_FOLLOWERS_ITERATOR_ERROR]: errorHandler,
+    [profileTypes.MORE_FOLLOWERS_ITERATOR_ERROR]: errorHandler,
 
-    [types.FOLLOWING_ITERATOR]: flagHandler,
+    [profileTypes.FOLLOWING_ITERATOR]: flagHandler,
 
-    [types.FOLLOWING_ITERATOR_SUCCESS]: (state, { data, flags }) => {
+    [profileTypes.FOLLOWING_ITERATOR_SUCCESS]: (state, { data, flags }) => {
         const profileIndex = state.get('profiles').findIndex(profile =>
             profile.get('akashaId') === data.akashaId
         );
@@ -312,7 +250,7 @@ const profileState = createReducer(initialState, {
             fromJS(data.collection);
         if (profileIndex === -1) {
             return state.merge({
-                profiles: state.get('profiles').push(new Profile({
+                profiles: state.get('profiles').push(new ProfileRecord({
                     akashaId: data.akashaId,
                     following: followingList,
                     moreFollowing
@@ -329,16 +267,16 @@ const profileState = createReducer(initialState, {
         });
     },
 
-    [types.FOLLOWING_ITERATOR_ERROR]: errorHandler,
+    [profileTypes.FOLLOWING_ITERATOR_ERROR]: errorHandler,
 
-    [types.GET_FOLLOWINGS_LIST_SUCCESS]: (state, { data }) =>
+    [profileTypes.GET_FOLLOWINGS_LIST_SUCCESS]: (state, { data }) =>
         state.setIn(['followingsList'], new List(data.collection)),
 
-    [types.GET_FOLLOWINGS_LIST_ERROR]: errorHandler,
+    [profileTypes.GET_FOLLOWINGS_LIST_ERROR]: errorHandler,
 
-    [types.MORE_FOLLOWING_ITERATOR]: flagHandler,
+    [profileTypes.MORE_FOLLOWING_ITERATOR]: flagHandler,
 
-    [types.MORE_FOLLOWING_ITERATOR_SUCCESS]: (state, { data, flags }) => {
+    [profileTypes.MORE_FOLLOWING_ITERATOR_SUCCESS]: (state, { data, flags }) => {
         const profileIndex = state.get('profiles').findIndex(profile =>
             profile.get('akashaId') === data.akashaId
         );
@@ -356,9 +294,9 @@ const profileState = createReducer(initialState, {
         });
     },
 
-    [types.MORE_FOLLOWING_ITERATOR_ERROR]: errorHandler,
+    [profileTypes.MORE_FOLLOWING_ITERATOR_ERROR]: errorHandler,
 
-    [types.FOLLOW_PROFILE]: (state, { flags }) => {
+    [profileTypes.FOLLOW_PROFILE]: (state, { flags }) => {
         const followPending = state.getIn(['flags', 'followPending']);
         const index = followPending.findIndex(flag =>
             flag.akashaId === flags.followPending.akashaId
@@ -375,7 +313,7 @@ const profileState = createReducer(initialState, {
         });
     },
 
-    [types.FOLLOW_PROFILE_ERROR]: (state, { error, flags }) => {
+    [profileTypes.FOLLOW_PROFILE_ERROR]: (state, { error, flags }) => {
         const followPending = state.getIn(['flags', 'followPending']);
         const index = followPending.findIndex(flag =>
             flag.akashaId === flags.followPending.akashaId
@@ -386,7 +324,7 @@ const profileState = createReducer(initialState, {
         });
     },
 
-    [types.FOLLOW_PROFILE_SUCCESS]: (state, { profile, flags }) => {
+    [profileTypes.FOLLOW_PROFILE_SUCCESS]: (state, { profile, flags }) => {
         const followPending = state.getIn(['flags', 'followPending']);
         const index = followPending.findIndex(flag =>
             flag.akashaId === flags.followPending.akashaId
@@ -412,7 +350,7 @@ const profileState = createReducer(initialState, {
         });
     },
 
-    [types.UNFOLLOW_PROFILE]: (state, { flags }) => {
+    [profileTypes.UNFOLLOW_PROFILE]: (state, { flags }) => {
         const followPending = state.getIn(['flags', 'followPending']);
         const index = followPending.findIndex(flag =>
             flag.akashaId === flags.followPending.akashaId
@@ -429,7 +367,7 @@ const profileState = createReducer(initialState, {
         });
     },
 
-    [types.UNFOLLOW_PROFILE_ERROR]: (state, { error, flags }) => {
+    [profileTypes.UNFOLLOW_PROFILE_ERROR]: (state, { error, flags }) => {
         const index = state.getIn(['flags', 'followPending']).findIndex(flag =>
             flag.akashaId === flags.followPending.akashaId
         );
@@ -439,7 +377,7 @@ const profileState = createReducer(initialState, {
         });
     },
 
-    [types.UNFOLLOW_PROFILE_SUCCESS]: (state, { profile, flags }) => {
+    [profileTypes.UNFOLLOW_PROFILE_SUCCESS]: (state, { profile, flags }) => {
         const { akashaId } = flags.followPending;
         const index = state.getIn(['flags', 'followPending']).findIndex(flag =>
             flag.akashaId === akashaId
@@ -470,9 +408,9 @@ const profileState = createReducer(initialState, {
         });
     },
 
-    [types.IS_FOLLOWER]: flagHandler,
+    [profileTypes.IS_FOLLOWER]: flagHandler,
 
-    [types.IS_FOLLOWER_SUCCESS]: (state, { data, flags }) => {
+    [profileTypes.IS_FOLLOWER_SUCCESS]: (state, { data, flags }) => {
         const profileIndex = state.get('profiles').findIndex(profile =>
             profile.get('akashaId') === data.akashaId
         );
@@ -485,15 +423,15 @@ const profileState = createReducer(initialState, {
         });
     },
 
-    [types.IS_FOLLOWER_ERROR]: errorHandler,
+    [profileTypes.IS_FOLLOWER_ERROR]: errorHandler,
 
-    [types.SEND_TIP]: tipHandler,
+    [profileTypes.SEND_TIP]: tipHandler,
 
-    [types.SEND_TIP_SUCCESS]: tipHandler,
+    [profileTypes.SEND_TIP_SUCCESS]: tipHandler,
 
-    [types.SEND_TIP_ERROR]: tipHandler,
+    [profileTypes.SEND_TIP_ERROR]: tipHandler,
 
-    [types.CLEAR_FOLLOWERS]: (state, { akashaId }) => {
+    [profileTypes.CLEAR_FOLLOWERS]: (state, { akashaId }) => {
         const profileIndex = state.get('profiles').findIndex(prf =>
             prf.get('akashaId') === akashaId);
         return state.merge({
@@ -503,7 +441,7 @@ const profileState = createReducer(initialState, {
         });
     },
 
-    [types.CLEAR_FOLLOWING]: (state, { akashaId }) => {
+    [profileTypes.CLEAR_FOLLOWING]: (state, { akashaId }) => {
         const profileIndex = state.get('profiles').findIndex(prf =>
             prf.get('akashaId') === akashaId);
         return state.merge({
@@ -534,6 +472,92 @@ const profileState = createReducer(initialState, {
         });
     },
     [appTypes.CLEAN_STORE]: () => initialState,
+
+    [types.PROFILE_CLEAR_LOCAL]: state =>
+        state.merge({
+            ethAddresses: new Map(),
+            localProfiles: new List()
+        }),
+
+    [types.PROFILE_CLEAR_LOGIN_ERRORS]: state =>
+        state.set('loginErrors', new List()),
+
+    [types.PROFILE_GET_CURRENT]: state =>
+        state.setIn(['flags', 'currentProfilePending'], true),
+
+    [types.PROFILE_GET_CURRENT_ERROR]: state =>
+        state.setIn(['flags', 'currentProfilePending'], false),
+
+    [types.PROFILE_GET_CURRENT_SUCCESS]: (state, { data }) =>
+        state.merge({
+            loggedProfile: state.get('loggedProfile').merge({
+                akashaId: data.akashaId,
+                profile: data.profileAddress
+            }),
+            flags: state.get('flags').set('currentProfilePending', false)
+        }),
+
+    [types.PROFILE_GET_LIST]: state =>
+        state.setIn(['flags', 'fetchingProfileList'], true),
+
+    [types.PROFILE_GET_LIST_ERROR]: state =>
+        state.setIn(['flags', 'fetchingProfileList'], false),
+
+    [types.PROFILE_GET_LIST_SUCCESS]: (state, { data }) => {
+        let byId = state.get('byId');
+        data.collection.forEach((profileData) => {
+            byId = addProfileData(byId, profileData);
+        });
+        return state.merge({
+            byId,
+            flags: state.get('flags').set('fetchingProfileList', false)
+        });
+    },
+
+    [types.PROFILE_GET_LOCAL]: state =>
+        state.mergeIn(['flags'], {
+            fetchingLocalProfiles: true,
+            localProfilesFetched: false
+        }),
+
+    [types.PROFILE_GET_LOCAL_ERROR]: state =>
+        state.mergeIn(['flags'], {
+            fetchingLocalProfiles: false,
+            localProfilesFetched: true
+        }),
+
+    [types.PROFILE_GET_LOCAL_SUCCESS]: (state, { data }) => {
+        let ethAddresses = state.get('ethAddresses');
+        let localProfiles = state.get('localProfiles');
+        data.forEach((prf) => {
+            ethAddresses = ethAddresses.set(prf.profile, prf.key);
+            localProfiles = localProfiles.push(prf.profile);
+        });
+        return state.merge({
+            ethAddresses,
+            flags: state.get('flags').merge({
+                fetchingLocalProfiles: false,
+                localProfilesFetched: true
+            }),
+            localProfiles
+        });
+    },
+
+    [types.PROFILE_LOGIN]: state =>
+        state.setIn(['flags', 'loginPending'], true),
+
+    [types.PROFILE_LOGIN_ERROR]: (state, { error }) =>
+        state.merge({
+            flags: state.get('flags').set('loginPending', false),
+            loginErrors: state.get('loginErrors').push(error)
+        }),
+
+    [types.PROFILE_LOGIN_SUCCESS]: (state, { data }) =>
+        state.merge({
+            flags: state.get('flags').set('loginPending', false),
+            loggedProfile: new LoggedProfile(data)
+        }),
+
 });
 
 export default profileState;

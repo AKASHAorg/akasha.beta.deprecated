@@ -5,8 +5,8 @@ import { injectIntl } from 'react-intl';
 import Route from 'react-router/Route';
 import { getMuiTheme } from 'material-ui/styles';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import { AuthDialog, DataLoader, GethDetailsModal, IpfsDetailsModal, PublishConfirmDialog,
-    TransferConfirmDialog, WeightConfirmDialog } from '../shared-components';
+import { AuthDialog, DataLoader, GethDetailsModal, IpfsDetailsModal, LoginDialog,
+    PublishConfirmDialog, TransferConfirmDialog, WeightConfirmDialog } from '../shared-components';
 import { hideNotification, hideTerms } from '../local-flux/actions/app-actions';
 import { errorDeleteFatal, errorDeleteNonFatal } from '../local-flux/actions/error-actions';
 import { ErrorBar, FatalErrorModal, NotificationBar, TermsPanel } from '../components';
@@ -55,6 +55,7 @@ const AppContainer = (props, other) => {
                 intl={intl}
               />
             }
+            {appState.get('showLoginDialog') && <LoginDialog />}
             {showGethDetailsModal && <GethDetailsModal />}
             {showIpfsDetailsModal && <IpfsDetailsModal />}
             {isAuthDialogVisible && <AuthDialog intl={intl} />}

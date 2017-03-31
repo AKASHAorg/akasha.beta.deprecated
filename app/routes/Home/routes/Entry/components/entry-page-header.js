@@ -6,7 +6,7 @@ import EditIcon from 'material-ui/svg-icons/image/edit';
 import { Avatar, EntryVersionsPanel, ProfileHoverCard } from 'shared-components';
 import { calculateReadingTime, getInitials } from 'utils/dataModule'; // eslint-disable-line import/no-unresolved, import/extensions
 import imageCreator from 'utils/imageUtils'; // eslint-disable-line import/no-unresolved, import/extensions
-import { entryMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
+import { entryMessages, generalMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
 import styles from './entry-page-header.scss';
 
 const buttonStyle = {
@@ -148,10 +148,10 @@ class EntryPageHeader extends Component {
             <span style={{ padding: '0 5px' }}>-</span>
             {readingTime.hours &&
               <span style={{ marginRight: 5 }}>
-                {intl.formatMessage(entryMessages.hoursCount, { hours: readingTime.hours })}
+                {intl.formatMessage(generalMessages.hoursCount, { hours: readingTime.hours })}
               </span>
             }
-            {intl.formatMessage(entryMessages.minutesCount, { minutes: readingTime.minutes })}
+            {intl.formatMessage(generalMessages.minCount, { minutes: readingTime.minutes })}
             <span style={{ paddingLeft: '5px' }}>{intl.formatMessage(entryMessages.readTime)}</span>
             <span style={{ padding: '0 5px' }}>
               ({intl.formatMessage(entryMessages.wordsCount, { words: wordCount })})

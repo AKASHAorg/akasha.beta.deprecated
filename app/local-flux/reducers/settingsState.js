@@ -2,8 +2,8 @@ import * as types from '../constants';
 import * as settingsTypes from '../constants/SettingsConstants';
 import * as appTypes from '../constants/AppConstants';
 import { createReducer } from './create-reducer';
-import { ErrorRecord, GeneralSettings, GethSettings, IpfsSettings, PortsRecord, SettingsRecord,
-    UserSettings } from './records';
+import { ErrorRecord, GeneralSettings, GethSettings, IpfsSettings, PasswordPreference,
+    PortsRecord, SettingsRecord, UserSettings } from './records';
 
 const initialState = new SettingsRecord();
 
@@ -167,6 +167,19 @@ const settingsState = createReducer(initialState, {
                 ports: new PortsRecord()
             })
         }),
+
+    [types.USER_SETTINGS_CLEAR]: state =>
+        state.set('userSettings', new UserSettings()),
+
+    [types.USER_SETTINGS_SUCCESS]: (state, { data }) =>
+        state.set('userSettings', new UserSettings(data)),
+
+    [types.USER_SETTINGS_SAVE_SUCCESS]: (state, { data }) => {
+        if (data.passwordPrefence) {
+            data.passwordPrefence = new PasswordPreference(data.passwordPrefence);
+        }
+        return state.set('userSettings', new UserSettings(data));
+    },
 
     [appTypes.CLEAN_STORE]: state =>
         state.merge({

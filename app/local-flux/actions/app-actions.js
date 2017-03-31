@@ -1,5 +1,7 @@
 import { appActionCreators } from './action-creators';
-import * as types from '../constants/AppConstants';
+import * as types from '../constants';
+import * as appTypes from '../constants/AppConstants';
+import { action } from './helpers';
 
 let appActions = null;
 
@@ -65,56 +67,18 @@ class AppActions {
     cleanStore = () => this.dispatch(appActionCreators.cleanStore());
 }
 
-export function appReady () {
-    return {
-        type: types.APP_READY
-    };
-}
-
-export function setTimestamp (timestamp) {
-    return {
-        type: types.SET_TIMESTAMP,
-        timestamp
-    };
-}
-
-export function toggleGethDetailsModal () {
-    return {
-        type: types.TOGGLE_GETH_DETAILS_MODAL
-    };
-}
-
-export function toggleIpfsDetailsModal () {
-    return {
-        type: types.TOGGLE_IPFS_DETAILS_MODAL
-    };
-}
-
-export function showNotification (notification) {
-    return {
-        type: types.SHOW_NOTIFICATION,
-        notification
-    };
-}
-
-export function hideNotification (notification) {
-    return {
-        type: types.HIDE_NOTIFICATION,
-        notification
-    };
-}
-
-export function hideTerms () {
-    return {
-        type: types.HIDE_TERMS
-    };
-}
-
-export function showTerms () {
-    console.log('show terms');
-    return {
-        type: types.SHOW_TERMS
-    };
-}
+export const appReady = () => action(types.APP_READY);
+export const hideLoginDialog = () => action(types.HIDE_LOGIN_DIALOG);
+export const hideNotification = notification =>
+    action(types.HIDE_NOTIFICATION, { notification });
+export const hideTerms = () => action(types.HIDE_TERMS);
+export const setTimestamp = timestamp => action(types.SET_TIMESTAMP, { timestamp });
+export const showLoginDialog = profileAddress =>
+    action(types.SHOW_LOGIN_DIALOG, { profileAddress });
+export const showNotification = notification =>
+    action(types.SHOW_NOTIFICATION, { notification });
+export const showTerms = () => action(types.SHOW_TERMS);
+export const toggleGethDetailsModal = () => action(types.TOGGLE_GETH_DETAILS_MODAL);
+export const toggleIpfsDetailsModal = () => action(types.TOGGLE_IPFS_DETAILS_MODAL);
 
 export { AppActions };

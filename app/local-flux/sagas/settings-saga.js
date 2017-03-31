@@ -7,7 +7,7 @@ import * as types from '../constants';
 function* getGeneralSettings () {
     yield put(actions.generalSettingsRequest());
     try {
-        const resp = yield apply(settingsService, settingsService.getGeneralSettings);
+        const resp = yield apply(settingsService, settingsService.generalSettingsRequest);
         yield put(actions.generalSettingsSuccess(resp));
     } catch (error) {
         yield put(actions.generalSettingsError({ message: error.toString() }));
@@ -17,7 +17,7 @@ function* getGeneralSettings () {
 function* getGethSettings () {
     yield put(actions.gethSettingsRequest());
     try {
-        const resp = yield apply(settingsService, settingsService.getGethSettings);
+        const resp = yield apply(settingsService, settingsService.gethSettingsRequest);
         yield put(actions.gethSettingsSuccess(resp));
     } catch (error) {
         yield put(actions.gethSettingsError({ message: error.toString() }));
@@ -27,7 +27,7 @@ function* getGethSettings () {
 function* getIpfsSettings () {
     yield put(actions.ipfsSettingsRequest());
     try {
-        const resp = yield apply(settingsService, settingsService.getIpfsSettings);
+        const resp = yield apply(settingsService, settingsService.ipfsSettingsRequest);
         yield put(actions.ipfsSettingsSuccess(resp));
     } catch (error) {
         yield put(actions.ipfsSettingsError({ message: error.toString() }));
@@ -42,7 +42,7 @@ export function* getSettings () {
 
 export function* saveGeneralSettings (payload) {
     try {
-        const resp = yield apply(settingsService, settingsService.saveGeneralSettings, [payload]);
+        const resp = yield apply(settingsService, settingsService.generalSettingsSave, [payload]);
         yield put(actions.saveGeneralSettingsSuccess(resp));
     } catch (error) {
         yield put(actions.saveGeneralSettingsError({ message: error.toString() }));
@@ -51,7 +51,7 @@ export function* saveGeneralSettings (payload) {
 
 export function* gethSaveSettings (payload, showNotification) {
     try {
-        const resp = yield apply(settingsService, settingsService.gethSaveSettings, [payload]);
+        const resp = yield apply(settingsService, settingsService.gethSettingsSave, [payload]);
         yield put(actions.gethSaveSettingsSuccess(resp));
         if (showNotification) {
             yield put(appActions.showNotification({
@@ -68,7 +68,7 @@ export function* ipfsSaveSettings (payload, showNotification) {
         if (payload.ports) {
             delete payload.ports;
         }
-        const resp = yield apply(settingsService, settingsService.saveIpfsSettings, [payload]);
+        const resp = yield apply(settingsService, settingsService.ipfsSettingsSave, [payload]);
         yield put(actions.ipfsSaveSettingsSuccess(resp));
         if (showNotification) {
             yield put(appActions.showNotification({
@@ -81,14 +81,30 @@ export function* ipfsSaveSettings (payload, showNotification) {
 }
 
 function* saveConfiguration (action) {
+    yield [
+        call(gethSaveSettings, action.payload.geth),
+        call(ipfsSaveSettings, action.payload.ipfs)
+    ];
+    yield call(saveGeneralSettings, { configurationSaved: true });
+}
+
+function* userSettingsRequest (akashaId) {
     try {
-        yield [
-            call(gethSaveSettings, action.payload.geth),
-            call(ipfsSaveSettings, action.payload.ipfs)
-        ];
-        yield call(saveGeneralSettings, { configurationSaved: true });
+        const resp = yield apply(settingsService, settingsService.userSettingsRequest, [akashaId]);
+        yield put(actions.userSettingsSuccess(resp));
     } catch (error) {
-        console.error('saga - save configuration error');
+        yield put(actions.userSettingsError({ message: error.toString() }));
+    }
+}
+
+function* userSettingsSave (akashaId, payload) {
+    try {
+        const resp = yield apply(
+            settingsService, settingsService.userSettingsSave, [akashaId, payload]
+        );
+        yield put(actions.userSettingsSaveSuccess(resp));
+    } catch (error) {
+        yield put(actions.userSettingsSaveError(error));
     }
 }
 
@@ -122,9 +138,25 @@ function* watchSaveConfiguration () {
     }
 }
 
+function* watchUserSettingsRequest () {
+    while (true) {
+        const action = yield take(types.USER_SETTINGS_REQUEST);
+        yield fork(userSettingsRequest, action.akashaId);
+    }
+}
+
+function* watchUserSettingsSave () {
+    while (true) {
+        const action = yield take(types.USER_SETTINGS_SAVE);
+        yield fork(userSettingsSave, action.akashaId, action.payload);
+    }
+}
+
 export function* watchSettingsActions () {
     yield fork(watchSaveConfiguration);
     yield fork(watchGeneralSettingsSave);
     yield fork(watchGethSaveSettings);
     yield fork(watchIpfsSettingsSave);
+    yield fork(watchUserSettingsRequest);
+    yield fork(watchUserSettingsSave);
 }

@@ -1,6 +1,8 @@
 import { utilsActionCreators } from './action-creators';
 import { UtilsService } from '../services';
 import { AppActions } from './';
+import * as types from '../constants';
+import { action } from './helpers';
 
 let utilsActions = null;
 
@@ -40,3 +42,11 @@ class UtilsActions {
     };
 }
 export { UtilsActions };
+
+export const backupKeysError = (error) => {
+    error.code = 'BKE01';
+    error.messageId = 'backupKeys';
+    return action(types.BACKUP_KEYS_ERROR, { error });
+};
+export const backupKeysRequest = () => action(types.BACKUP_KEYS_REQUEST);
+export const backupKeysSuccess = () => action(types.BACKUP_KEYS_SUCCESS);

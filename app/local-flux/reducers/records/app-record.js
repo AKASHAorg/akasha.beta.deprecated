@@ -20,6 +20,7 @@ const AppRecord = Record({
     appReady: false,
     showAuthDialog: null,
     showGethDetailsModal: false,
+    showLoginDialog: null,
     showIpfsDetailsModal: false,
     showTerms: false,
     weightConfirmDialog: null,

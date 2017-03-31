@@ -4,9 +4,11 @@ import ErrorRecord, { ErrorState } from './error-record';
 import GethRecord, { GethStatus, GethSyncStatus } from './geth-record';
 import IpfsRecord, { IpfsStatus } from './ipfs-record';
 import LogRecord from './log-record';
-import SettingsRecord, { GeneralSettings, GethSettings, IpfsSettings, PortsRecord,
-    UserSettings } from './settings-record';
+import ProfileState, { LoggedProfile, ProfileRecord } from './profile-record';
+import SettingsRecord, { GeneralSettings, GethSettings, IpfsSettings, PasswordPreference,
+    PortsRecord, UserSettings } from './settings-record';
 import TempProfileRecord, { TempProfileStatus } from './temp-profile-record';
+import UtilsState from './utils-record';
 
 // keep this alphabetically sorted
 export {
@@ -21,12 +23,17 @@ export {
     IpfsRecord,
     IpfsSettings,
     IpfsStatus,
+    LoggedProfile,
     LogRecord,
     NotificationRecord,
     PendingActionRecord,
+    PasswordPreference,
     PortsRecord,
+    ProfileRecord,
+    ProfileState,
     SettingsRecord,
     TempProfileRecord,
     TempProfileStatus,
     UserSettings,
+    UtilsState
 };

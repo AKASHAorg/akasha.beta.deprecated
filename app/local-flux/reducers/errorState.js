@@ -22,6 +22,7 @@ const addNewError = (state, { error }) => {
 };
 
 const errorState = createReducer(initialState, {
+    [types.BACKUP_KEYS_ERROR]: addNewError,
     [types.ERROR_DELETE_FATAL]: (state, { id }) => {
         const index = state.get('fatalErrors').findIndex(err => err.id === id);
         return state.merge({
@@ -34,6 +35,7 @@ const errorState = createReducer(initialState, {
             nonFatalErrors: state.get('nonFatalErrors').delete(index)
         });
     },
+    [types.ETH_ADDRESS_CREATE_ERROR]: addNewError,
     [types.GENERAL_SETTINGS_ERROR]: addNewError,
     [types.GENERAL_SETTINGS_SAVE_ERROR]: addNewError,
     [types.GETH_GET_OPTIONS_ERROR]: addNewError,
@@ -50,17 +52,18 @@ const errorState = createReducer(initialState, {
     [types.IPFS_SETTINGS_ERROR]: addNewError,
     [types.IPFS_START_ERROR]: addNewError,
     [types.IPFS_STOP_ERROR]: addNewError,
+    [types.PROFILE_GET_LIST_ERROR]: addNewError,
+    [types.PROFILE_GET_LOCAL_ERROR]: addNewError,
+    [types.PUBLISH_PROFILE_ERROR]: addNewError,
+    [types.REQUEST_FUND_FROM_FAUCET_ERROR]: addNewError,
     // an error occured when saving temp profile to IndexedDb
     [types.TEMP_PROFILE_CREATE_ERROR]: addNewError,
-    // error updating temp profile to IndexedDB
-    [types.TEMP_PROFILE_UPDATE_ERROR]: addNewError,
-    // error getting temp profile from indexedDB
-    [types.TEMP_PROFILE_GET_ERROR]: addNewError,
     // error deleting temp profile from indexedDB.
     [types.TEMP_PROFILE_DELETE_ERROR]: addNewError,
-    [types.ETH_ADDRESS_CREATE_ERROR]: addNewError,
-    [types.REQUEST_FUND_FROM_FAUCET_ERROR]: addNewError,
-    [types.PUBLISH_PROFILE_ERROR]: addNewError
+    // error getting temp profile from indexedDB
+    [types.TEMP_PROFILE_GET_ERROR]: addNewError,
+    // error updating temp profile to IndexedDB
+    [types.TEMP_PROFILE_UPDATE_ERROR]: addNewError,
 });
 
 export default errorState;

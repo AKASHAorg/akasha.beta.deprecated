@@ -5,6 +5,12 @@ import ClearIcon from 'material-ui/svg-icons/content/clear';
 import { SvgIcon, Slider } from 'material-ui';
 import { AvatarPlaceholder } from '../svg';
 
+const defaultUserInitialsStyle = {
+    textTransform: 'uppercase',
+    fontSize: '36px',
+    fontWeight: '600'
+};
+
 class Avatar extends React.Component {
     constructor (props) {
         super(props);
@@ -198,7 +204,9 @@ class Avatar extends React.Component {
                   >
                     <div style={userInitialsAlignStyle} />
                     <div style={userInitialsWrapperStyle} onClick={this._handleAvatarClick}>
-                      <h3 style={userInitialsStyle}>{userInitials}</h3>
+                      <h3 style={Object.assign({}, defaultUserInitialsStyle, userInitialsStyle)}>
+                        {userInitials}
+                      </h3>
                     </div>
                   </div>
                 }
@@ -277,10 +285,5 @@ Avatar.defaultProps = {
         textAlign: 'center',
         width: '100%'
     },
-    userInitialsStyle: {
-        textTransform: 'uppercase',
-        fontSize: '36px',
-        fontWeight: '600'
-    }
 };
 export default Avatar;

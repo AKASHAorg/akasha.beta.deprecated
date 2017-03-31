@@ -10,6 +10,6 @@ export { SearchActions } from './search-actions';
 export { SettingsActions } from './settings-actions';
 // export { TagActions } from './tag-actions';
 export { TempProfileActions } from './temp-profile-actions';
-// export { TransactionActions } from './transaction-actions';
+export { TransactionActions } from './transaction-actions';
 export { UtilsActions } from './utils-actions';
 // export { ValidationActions } from './validation-actions';

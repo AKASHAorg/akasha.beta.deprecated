@@ -170,12 +170,34 @@ const saveSettings = (table, payload) =>
             });
     });
 
-export const getGeneralSettings = () => getSettings('general');
-export const getGethSettings = () => getSettings('geth');
-export const getIpfsSettings = () => getSettings('ipfs');
+export const generalSettingsRequest = () => getSettings('general');
+export const gethSettingsRequest = () => getSettings('geth');
+export const ipfsSettingsRequest = () => getSettings('ipfs');
+export const userSettingsRequest = akashaId =>
+    new Promise((resolve, reject) =>
+        settingsDB.user.where('akashaId').equals(akashaId).toArray()
+            .then(data => resolve(data[0] || {}))
+            .catch(error => reject(error))
+    );
 
-export const saveGeneralSettings = payload => saveSettings('general', payload);
-export const gethSaveSettings = payload => saveSettings('geth', payload);
-export const saveIpfsSettings = payload => saveSettings('ipfs', payload);
+export const generalSettingsSave = payload => saveSettings('general', payload);
+export const gethSettingsSave = payload => saveSettings('geth', payload);
+export const ipfsSettingsSave = payload => saveSettings('ipfs', payload);
+export const userSettingsSave = (akashaId, payload) =>
+    new Promise((resolve, reject) => {
+        settingsDB.user.where('akashaId').equals(akashaId).toArray()
+            .then((data) => {
+                const resp = { akashaId, ...payload };
+                if (data.length) {
+                    settingsDB.user.where('akashaId').equals(akashaId).modify(payload)
+                        .then(() => resolve(resp))
+                        .catch(error => reject(error));
+                } else {
+                    settingsDB.user.put(resp)
+                        .then(() => resolve(resp))
+                        .catch(error => reject(error));
+                }
+            });
+    });
 
 export { SettingsService };

@@ -3,6 +3,7 @@ export ErrorBar from './error-bar';
 export FatalErrorModal from './fatal-error-modal';
 export LogoButton from './logo-button';
 export NotificationBar from './notification-bar';
+export ProfilesList from './profiles-list';
 export ServiceStatusBar from './service-status-bar';
 export Setup from './setup';
 export SyncStatusLoader from './sync-status-loader';

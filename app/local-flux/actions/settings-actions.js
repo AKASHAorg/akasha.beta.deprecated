@@ -193,5 +193,26 @@ export const saveGeneralSettingsError = (error) => {
 
 export const saveGeneralSettingsSuccess = data =>
     action(types.GENERAL_SETTINGS_SAVE_SUCCESS, { data });
+export const userSettingsClear = () => action(types.USER_SETTINGS_CLEAR);
+export const userSettingsRequest = akashaId => action(types.USER_SETTINGS_REQUEST, { akashaId });
+
+export const userSettingsError = (error) => {
+    error.code = 'USE01';
+    error.messageId = 'userSettingsRequest';
+    return action(types.USER_SETTINGS_ERROR, { error });
+};
+
+export const userSettingsSave = (akashaId, payload) =>
+    action(types.USER_SETTINGS_SAVE, { akashaId, payload });
+
+export const userSettingsSaveError = (error) => {
+    error.code = 'USSE01';
+    error.messageId = 'userSettingsSave';
+    return action(types.USER_SETTINGS_SAVE_ERROR, { error });
+};
+
+export const userSettingsSaveSuccess = data =>
+    action(types.USER_SETTINGS_SAVE_SUCCESS, { data });
+export const userSettingsSuccess = data => action(types.USER_SETTINGS_SUCCESS, { data });
 
 export { SettingsActions };

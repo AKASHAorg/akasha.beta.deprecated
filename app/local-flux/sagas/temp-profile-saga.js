@@ -7,6 +7,18 @@ import * as registryService from '../services/registry-service';
 const Channel = global.Channel;
 
 /**
+ * Get temp profile from database
+ */
+function* tempProfileRequest () {
+    try {
+        const data = yield apply(registryService, registryService.getTempProfile);
+        yield put(tempProfileActions.tempProfileSuccess(data));
+    } catch (error) {
+        yield put(tempProfileActions.tempProfileError(error));
+    }
+}
+
+/**
  * Create temp profile in database
  */
 function* createTempProfile (data) {
@@ -244,11 +256,18 @@ function* watchTempProfileRemove () {
     }
 }
 
+function* watchTempProfileRequest () {
+    while (yield take(types.TEMP_PROFILE_REQUEST)) {
+        yield fork(tempProfileRequest);
+    }
+}
+
 export function* watchTempProfileActions () {
     yield fork(watchProfileCreate);
     yield fork(watchEthAddressCreate);
     yield fork(watchFaucetRequest);
     yield fork(watchFaucetTxMined);
+    yield fork(watchTempProfileRequest);
     yield fork(watchTempProfileLogin);
     yield fork(watchTempProfilePublish);
     yield fork(watchPublishTxMined);

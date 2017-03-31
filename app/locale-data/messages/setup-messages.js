@@ -215,11 +215,6 @@ const setupMessages = defineMessages({
         description: 'when we are trying to discover local profiles with akasha account',
         defaultMessage: 'Finding profiles..'
     },
-    logInTitle: {
-        id: 'app.setup.logInTitle',
-        description: 'login page title',
-        defaultMessage: 'Log in'
-    },
     findingPeers: {
         id: 'app.setup.findingPeers',
         description: 'finding peers status',

@@ -211,11 +211,6 @@ const notificationMessages = defineMessages({
         description: 'message to display when the keystore backup was generated successfully',
         defaultMessage: 'Backup was generated at {path}'
     },
-    backupError: {
-        id: 'app.notification.backupError',
-        description: 'message to display when the keystore backup was unsuccessful',
-        defaultMessage: 'Generating backup has failed. Try again'
-    },
     saveGethSettingsSuccess: {
         id: 'app.notification.saveGethSettingsSuccess',
         description: 'Geth settings successfully saved',

@@ -1,37 +1,19 @@
-import { fromJS, Record, List, Map } from 'immutable';
-import * as types from '../constants/UtilsConstants';
+import * as types from '../constants';
 import { createReducer } from './create-reducer';
+import { UtilsState } from './records';
 
-const ErrorRecord = Record({
-    code: null,
-    fatal: null,
-    message: ''
-});
-
-const initialState = fromJS({
-    errors: new List(),
-    flags: new Map()
-});
-
-const errorHandler = (state, { error, flags }) =>
-    state.merge({
-        errors: state.get('errors').push(new ErrorRecord(error)),
-        flags: state.get('flags').merge(flags)
-    });
-
-const flagHandler = (state, { flags }) =>
-    state.merge({
-        flags: state.get('flags').merge(flags)
-    });
+const initialState = new UtilsState();
 
 const utilsState = createReducer(initialState, {
 
-    [types.BACKUP_KEYS]: flagHandler,
+    [types.BACKUP_KEYS_ERROR]: state =>
+        state.setIn(['flags', 'backupPending'], false),
 
-    [types.BACKUP_KEYS_SUCCESS]: flagHandler,
+    [types.BACKUP_KEYS_REQUEST]: state =>
+        state.setIn(['flags', 'backupPending'], true),
 
-    [types.BACKUP_KEYS_ERROR]: errorHandler,
-
+    [types.BACKUP_KEYS_SUCCESS]: state =>
+        state.setIn(['flags', 'backupPending'], false),
 });
 
 export default utilsState;

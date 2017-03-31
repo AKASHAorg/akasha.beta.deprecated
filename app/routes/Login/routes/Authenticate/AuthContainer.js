@@ -1,33 +1,31 @@
 import { connect } from 'react-redux';
-import { ProfileActions, SettingsActions, TempProfileActions, UtilsActions } from 'local-flux';
+import { showLoginDialog } from 'local-flux/actions/app-actions';
+import { profileClearLocal, profileGetLocal } from 'local-flux/actions/profile-actions';
+import { tempProfileRequest } from 'local-flux/actions/temp-profile-actions';
+import { backupKeysRequest } from 'local-flux/actions/utils-actions';
+import { selectLocalProfiles, selectProfileFlag } from 'local-flux/selectors';
 import Auth from './components/Auth';
 
-function mapStateToProps (state, ownProps) {
+function mapStateToProps (state) {
     return {
         backupPending: state.utilsState.getIn(['flags', 'backupPending']),
-        tempProfile: state.tempProfileState.get('tempProfile'),
-        localProfiles: state.profileState.get('profiles'),
-        loggedProfile: state.profileState.get('loggedProfile'),
-        loginErrors: state.profileState.get('errors').filter(error => error.get('type') === 'login'),
-        loginRequested: state.profileState.getIn(['flags', 'loginRequested']),
-        localProfilesFetched: state.profileState.get('flags').get('localProfilesFetched'),
-        fetchingLocalProfiles: state.profileState.get('flags').get('fetchingLocalProfiles'),
+        fetchingProfileList: selectProfileFlag(state, 'fetchingProfileList'),
         gethStatus: state.externalProcState.getIn(['geth', 'status']),
-        ipfsStatus: state.externalProcState.getIn(['geth', 'status']),
-        passwordPreference: state.settingsState.get('userSettings').passwordPreference
-    };
-}
-
-function mapDispatchToProps (dispatch) {
-    return {
-        // profileActions: new ProfileActions(dispatch),
-        // settingsActions: new SettingsActions(dispatch),
-        // tempProfileActions: new TempProfileActions(dispatch),
-        // utilsActions: new UtilsActions(dispatch)
+        ipfsStatus: state.externalProcState.getIn(['ipfs', 'status']),
+        localProfiles: selectLocalProfiles(state),
+        localProfilesFetched: selectProfileFlag(state, 'localProfilesFetched'),
+        loginErrors: state.profileState.get('errors').filter(error => error.get('type') === 'login'),
+        tempProfile: state.tempProfileState.get('tempProfile'),
     };
 }
 
 export default connect(
     mapStateToProps,
-    mapDispatchToProps
+    {
+        backupKeysRequest,
+        profileClearLocal,
+        profileGetLocal,
+        showLoginDialog,
+        tempProfileRequest,
+    }
 )(Auth);

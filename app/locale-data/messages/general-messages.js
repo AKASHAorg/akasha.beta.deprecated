@@ -220,6 +220,19 @@ const generalMessages = defineMessages({
         id: 'app.general.leave',
         description: 'leave button label',
         defaultMessage: 'Leave'
-    }
+    },
+    minCount: {
+        id: 'app.general.minutesCount',
+        description: 'short form of minutes count',
+        defaultMessage: '{minutes, number} min'
+    },
+    hoursCount: {
+        id: 'app.general.hoursCount',
+        description: 'hours count',
+        defaultMessage: `{hours, number} {hours, plural,
+            one {hour}
+            other {hours}
+        }`
+    },
 });
 export { generalMessages };

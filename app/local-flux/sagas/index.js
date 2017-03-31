@@ -3,11 +3,15 @@ import * as actions from 'local-flux/actions/app-actions'; // eslint-disable-lin
 import { createActionChannels } from './helpers';
 import { gethGetOptions, gethGetStatus, ipfsGetConfig, ipfsGetStatus, registerEProcListeners,
     watchEProcActions } from './external-process-saga';
+import { registerProfileListeners, watchProfileActions } from './profile-saga';
 import { getSettings, watchSettingsActions } from './settings-saga';
 import { watchTempProfileActions } from './temp-profile-saga';
+import { registerUtilsListeners, watchUtilsActions } from './utils-saga';
 
 function* registerListeners () {
     yield fork(registerEProcListeners);
+    yield fork(registerProfileListeners);
+    yield fork(registerUtilsListeners);
 }
 
 function* launchActions () {
@@ -36,6 +40,8 @@ export default function* rootSaga () {
     yield fork(registerListeners);
     yield fork(bootstrapApp);
     yield fork(watchEProcActions);
+    yield fork(watchProfileActions);
     yield fork(watchSettingsActions);
     yield fork(watchTempProfileActions);
+    yield fork(watchUtilsActions);
 }

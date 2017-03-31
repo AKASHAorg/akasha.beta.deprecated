@@ -16,6 +16,11 @@ const formMessages = defineMessages({
         description: 'Placeholder for last name input',
         defaultMessage: 'Akasha ID'
     },
+    ethereumAddress: {
+        id: 'app.form.ethereumAddress',
+        description: 'Placeholder for ethereum address input',
+        defaultMessage: 'Ethereum address'
+    },
     passphrase: {
         id: 'app.passphrase',
         description: 'Placeholder for passphrase input',
@@ -100,6 +105,11 @@ const formMessages = defineMessages({
         id: 'app.form.tipDecimalsError',
         description: 'Error displayed when the tip amount has more decimals than the maximum allowed',
         defaultMessage: 'The amount should not have more than {maxDecimals} decimals'
-    }
+    },
+    logInTitle: {
+        id: 'app.form.logInTitle',
+        description: 'login page title',
+        defaultMessage: 'Log in'
+    },
 });
 export { formMessages };

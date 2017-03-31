@@ -284,4 +284,8 @@ class ProfileService extends BaseService {
     };
 }
 
+export const profileSaveLogged = profile =>
+    profileDB.loggedProfile.clear()
+        .then(() => profileDB.loggedProfile.put(profile));
+
 export { ProfileService };

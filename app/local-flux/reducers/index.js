@@ -9,7 +9,7 @@ import errorState from './errorState';
 import externalProcState from './externalProcState';
 import notificationsState from './notificationsState';
 import panelState from './panelState';
-import profileState from './profileState';
+import profileState, * as profileSelectors from './profileState';
 import searchState from './searchState';
 import settingsState from './settingsState';
 import tagState from './tagState';
@@ -36,5 +36,7 @@ const rootReducer = combineReducers({
     utilsState,
     router: routing,
 });
+
+export const getLocalProfiles = state => profileSelectors.getLocalProfiles(state.profileState);
 
 export default rootReducer;

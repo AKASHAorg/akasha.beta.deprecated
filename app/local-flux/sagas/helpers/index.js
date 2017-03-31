@@ -43,17 +43,25 @@ export function createActionChannels () {
     ipfsChannels.forEach((channel) => {
         actionChannels.ipfs[channel] = createActionChannel(Channel.client.ipfs[channel]);
     });
-    const authChannels = ['generateEthKey', 'login', 'requestEther'];
+    const authChannels = ['getLocalIdentities', 'generateEthKey', 'login', 'requestEther'];
     authChannels.forEach((channel) => {
         actionChannels.auth[channel] = createActionChannel(Channel.client.auth[channel]);
     });
-    const registryChannels = ['registerProfile'];
+    const profileChannels = ['getProfileList'];
+    profileChannels.forEach((channel) => {
+        actionChannels.profile[channel] = createActionChannel(Channel.client.profile[channel]);
+    });
+    const registryChannels = ['registerProfile', 'getCurrentProfile'];
     registryChannels.forEach((channel) => {
         actionChannels.registry[channel] = createActionChannel(Channel.client.registry[channel]);
     });
     const txChannels = ['addToQueue', 'emitMined'];
     txChannels.forEach((channel) => {
         actionChannels.tx[channel] = createActionChannel(Channel.client.tx[channel]);
+    });
+    const utilsChannels = ['backupKeys'];
+    utilsChannels.forEach((channel) => {
+        actionChannels.utils[channel] = createActionChannel(Channel.client.utils[channel]);
     });
 }
 

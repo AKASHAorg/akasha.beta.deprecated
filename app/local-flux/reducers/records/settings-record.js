@@ -62,4 +62,4 @@ const SettingsRecord = Record({
 });
 
 export default SettingsRecord;
-export { GeneralSettings, GethSettings, IpfsSettings, PortsRecord, UserSettings };
+export { GeneralSettings, GethSettings, IpfsSettings, PasswordPreference, PortsRecord, UserSettings };

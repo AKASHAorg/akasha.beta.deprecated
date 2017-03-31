@@ -10,7 +10,7 @@ import { EntryBookmarkOn, EntryBookmarkOff, EntryComment, EntryDownvote,
 import { Avatar, EntryVersionsPanel, EntryVotesPanel, TagChip } from '../';
 import { calculateReadingTime, getInitials } from '../../utils/dataModule';
 import imageCreator from '../../utils/imageUtils';
-import { entryMessages } from '../../locale-data/messages';
+import { entryMessages, generalMessages } from '../../locale-data/messages';
 import styles from './entry-card.scss';
 
 class EntryCard extends Component {
@@ -204,9 +204,9 @@ class EntryCard extends Component {
             </span>
             <span style={{ padding: '0 5px' }}>-</span>
             {readingTime.hours &&
-              intl.formatMessage(entryMessages.hoursCount, { hours: readingTime.hours })
+              intl.formatMessage(generalMessages.hoursCount, { hours: readingTime.hours })
             }
-            {intl.formatMessage(entryMessages.minutesCount, { minutes: readingTime.minutes })}
+            {intl.formatMessage(generalMessages.minCount, { minutes: readingTime.minutes })}
             <span style={{ paddingLeft: '5px' }}>{intl.formatMessage(entryMessages.readTime)}</span>
             <span style={{ padding: '0 5px' }}>
               ({intl.formatMessage(entryMessages.wordsCount, { words: wordCount })})
