@@ -10,6 +10,7 @@ const fetch_1 = require("./lib/ipc/modules/chat/fetch");
 const menu_1 = require("./menu");
 const Logger_1 = require("./lib/ipc/Logger");
 const check_version_1 = require("./check-version");
+const windowStateKeeper = require('electron-window-state');
 let modules;
 const stopServices = () => {
     feed_1.default.execute({ stop: true });
@@ -54,17 +55,24 @@ function bootstrapApp() {
     electron_1.app.on('ready', () => {
         modules = index_1.initModules();
         Logger_1.default.getInstance();
+        let mainWindowState = windowStateKeeper({
+            defaultWidth: 1280,
+            defaultHeight: 720
+        });
         mainWindow = new electron_1.BrowserWindow({
-            width: 1280,
-            height: 720,
             minHeight: 720,
             minWidth: 1280,
             resizable: true,
+            x: mainWindowState.x,
+            y: mainWindowState.y,
+            width: mainWindowState.width,
+            height: mainWindowState.height,
             show: false,
             webPreferences: {
                 preload: path_1.resolve(__dirname, 'preloader.js')
             }
         });
+        mainWindowState.manage(mainWindow);
         if (process.env.HOT) {
             mainWindow.loadURL(`file://${viewHtml}/app/hot-dev-app.html`);
         }
