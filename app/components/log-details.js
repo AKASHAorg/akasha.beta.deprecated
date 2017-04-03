@@ -6,7 +6,6 @@ import PanelContainerFooter from '../components/PanelContainer/panel-container-f
 const LogDetails = (props) => {
     const { gethLogs, gethStartLogger, gethStopLogger,
         timestamp } = props;
-        console.log(props, 'le props');
     return (
       <div>
         <LogsList

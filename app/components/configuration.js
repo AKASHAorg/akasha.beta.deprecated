@@ -88,7 +88,6 @@ class Config extends Component {
         const { intl } = this.props;
         const { cache, gethDataDir, ipfsPath, isAdvanced } = this.state;
         const radioStyle = { marginTop: '10px', marginBottom: '10px' };
-        console.log('configuration');
         return (
           <div>
             <div style={{ padding: '0 24px', backgroundColor: muiTheme.palette.canvasColor }}>

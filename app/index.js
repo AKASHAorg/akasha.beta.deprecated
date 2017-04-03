@@ -11,7 +11,7 @@ import ReactPerf from 'react-addons-perf';
 import rootSaga from './local-flux/sagas';
 import configureStore from './local-flux/store/configureStore';
 import sagaMiddleware from './local-flux/store/sagaMiddleware';
-import { getGeneralSettings } from './local-flux/services/settings-service';
+import { generalSettingsRequest } from './local-flux/services/settings-service';
 import { AppContainer } from './containers';
 import './styles/core.scss';
 // import { ruMessages } from './locale-data/ru';
@@ -38,7 +38,7 @@ window.Perf = ReactPerf;
 
 injectTapEventPlugin();
 
-getGeneralSettings().then(settings =>
+generalSettingsRequest().then(settings =>
     render(
       <IntlProvider locale={settings.userlocale || 'en'} >
         <Provider store={store} >
