@@ -10,6 +10,8 @@ import { initMenu } from './menu';
 import Logger from './lib/ipc/Logger';
 import updater from './check-version';
 
+const windowStateKeeper = require('electron-window-state');
+
 let modules;
 const stopServices = () => {
     feed.execute({ stop: true });
@@ -58,12 +60,18 @@ export function bootstrapApp() {
     app.on('ready', () => {
         modules = initModules();
         Logger.getInstance();
+        let mainWindowState = windowStateKeeper({
+            defaultWidth: 1280,
+            defaultHeight: 720
+        });
         mainWindow = new BrowserWindow({
-            width: 1280,
-            height: 720,
             minHeight: 720,
             minWidth: 1280,
             resizable: true,
+            x: mainWindowState.x,
+            y: mainWindowState.y,
+            width: mainWindowState.width,
+            height: mainWindowState.height,
             show: false,
             webPreferences: {
                 // nodeIntegration: false,
@@ -71,6 +79,8 @@ export function bootstrapApp() {
             }
 
         });
+
+        mainWindowState.manage(mainWindow);
 
         if (process.env.HOT) {
             mainWindow.loadURL(`file://${viewHtml}/app/hot-dev-app.html`);
