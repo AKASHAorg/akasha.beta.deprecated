@@ -25,7 +25,9 @@
     "package-mac": "npm run build && build --mac",
     "package-all": "npm run build && build -mwl",
     "release": "standard-version",
-    "rebuild": "electron-rebuild -v 1.6.2"
+    "rebuild-v8-debug": "node_modules/.bin/node-pre-gyp --target=1.6.2 --runtime=electron --fallback-to-build --directory node_modules/v8-debug/ --dist-url=https://atom.io/download/atom-shell reinstall",
+    "rebuild-v8-profiler": "node_modules/.bin/node-pre-gyp --target=1.6.2 --runtime=electron --fallback-to-build --directory node_modules/v8-profiler/ --dist-url=https://atom.io/download/atom-shell reinstall",
+    "rebuild": "npm run rebuild-v8-debug && npm run rebuild-v8-profiler && electron-rebuild -v 1.6.2"
   },
   "betterScripts": {
     "start": {
@@ -154,6 +156,7 @@
     "mocha": "3.2.0",
     "node-inspector": "1.0.0",
     "node-libs-browser": "2.0.0",
+    "node-pre-gyp": "^0.6.34",
     "node-sass": "4.5.2",
     "pica": "2.0.8",
     "postcss": "5.2.16",
@@ -193,9 +196,9 @@
     "validatorjs": "3.11.0",
     "webpack": "2.3.3",
     "webpack-dev-middleware": "1.10.1",
-    "webpack-dev-server": "^2.4.2",
+    "webpack-dev-server": "2.4.2",
     "webpack-hot-middleware": "2.18.0",
-    "webpack-merge": "^4.1.0",
+    "webpack-merge": "4.1.0",
     "webpack-node-externals": "1.5.4",
     "xregexp": "3.1.1"
   },
@@ -208,7 +211,7 @@
     "compare-versions": "3.0.1",
     "electron-debug": "1.1.0",
     "electron-devtools-installer": "2.1.0",
-    "electron-spellchecker": "^1.0.6",
+    "electron-spellchecker": "1.0.6",
     "ethereumjs-util": "5.1.1",
     "lru-cache": "4.0.2",
     "ramda": "0.23.0",
