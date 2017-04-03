@@ -1,6 +1,7 @@
+import { SpellCheckHandler, ContextMenuListener, ContextMenuBuilder } from 'electron-spellchecker';
 import Channel from './lib/channels';
 import { ApiRequest, ApiListener } from './ipcPreloader';
-
+// Linux: libxtst-dev, libx11-dev, libxkbfile-dev
 function injectApi() {
 
     const AkashaApi = Object.assign({}, Channel);
@@ -24,8 +25,22 @@ function injectApi() {
     });
     return AkashaApi;
 }
+
 window['Channel'] = injectApi();
 
 window['eval'] = function () {
     throw new Error("eval disabled.");
 };
+
+//spellchecking stuff
+window['spellCheckHandler'] = new SpellCheckHandler();
+
+if (process.env.NODE_ENV !== 'development') {
+    setTimeout(() => window['spellCheckHandler'].attachToInput(), 1000);
+    window['spellCheckHandler'].switchLanguage(navigator.language);
+    window['contextMenuBuilder'] = new ContextMenuBuilder(window['spellCheckHandler']);
+
+    window['contextMenuListener'] = new ContextMenuListener((info) => {
+        window['contextMenuBuilder'].showPopupMenu(info);
+    });
+}

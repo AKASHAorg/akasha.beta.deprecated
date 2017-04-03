@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const electron_spellchecker_1 = require("electron-spellchecker");
 const channels_1 = require("./lib/channels");
 const ipcPreloader_1 = require("./ipcPreloader");
 function injectApi() {
@@ -22,4 +23,13 @@ window['Channel'] = injectApi();
 window['eval'] = function () {
     throw new Error("eval disabled.");
 };
+window['spellCheckHandler'] = new electron_spellchecker_1.SpellCheckHandler();
+if (process.env.NODE_ENV !== 'development') {
+    setTimeout(() => window['spellCheckHandler'].attachToInput(), 1000);
+    window['spellCheckHandler'].switchLanguage(navigator.language);
+    window['contextMenuBuilder'] = new electron_spellchecker_1.ContextMenuBuilder(window['spellCheckHandler']);
+    window['contextMenuListener'] = new electron_spellchecker_1.ContextMenuListener((info) => {
+        window['contextMenuBuilder'].showPopupMenu(info);
+    });
+}
 //# sourceMappingURL=preloader.js.map
