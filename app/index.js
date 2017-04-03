@@ -3,6 +3,7 @@ import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import { IntlProvider, addLocaleData } from 'react-intl';
 import createHashHistory from 'history/createHashHistory';
+import Route from 'react-router/Route';
 import { ConnectedRouter } from 'react-router-redux';
 import en from 'react-intl/locale-data/en';
 import injectTapEventPlugin from 'react-tap-event-plugin';
@@ -36,16 +37,17 @@ window.Perf = ReactPerf;
 // }
 
 injectTapEventPlugin();
-getGeneralSettings().then((settings) => {
-    return render(
-      <Provider store={store} >
-        <IntlProvider locale={settings.userlocale || 'en'} >
+
+getGeneralSettings().then(settings =>
+    render(
+      <IntlProvider locale={settings.userlocale || 'en'} >
+        <Provider store={store} >
           <ConnectedRouter history={history}>
-            <AppContainer />
+            <Route component={AppContainer} />
           </ConnectedRouter>
-        </IntlProvider>
-      </Provider>,
+        </Provider>
+      </IntlProvider>,
       document.getElementById('root')
-    );
-});
+    )
+);
 

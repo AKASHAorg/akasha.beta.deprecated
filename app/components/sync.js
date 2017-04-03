@@ -127,21 +127,15 @@ class Sync extends Component {
     };
 
     toggleGethLogs = () => {
-        this.setState({
-            showGethLogs: !this.state.showGethLogs
-        });
+        this.props.history.push('/log-details');
+        // this.setState({
+        //     showGethLogs: !this.state.showGethLogs
+        // });
     };
-// <LogsList
-//                 logs={gethLogs}
-//                 startLogger={gethStartLogger}
-//                 stopLogger={gethStopLogger}
-//                 timestamp={timestamp}
-//               />
     render () {
-        const { gethBusyState, gethLogs, gethStarting, gethStartLogger, gethStatus, gethStopLogger,
+        const { gethBusyState, gethStarting, gethStatus,
             gethSyncStatus, intl, ipfsBusyState, ipfsPortsRequested, ipfsStatus,
-            syncActionId, timestamp } = this.props;
-
+            syncActionId } = this.props;
         return (
             <div style={{ flex: 1, padding: '0 24px' }}>
                 <h1 style={{ fontWeight: '400' }} >
@@ -202,17 +196,16 @@ Sync.propTypes = {
     configurationSaved: PropTypes.bool,
     gethBusyState: PropTypes.bool,
     gethGetSyncStatus: PropTypes.func.isRequired,
-    gethLogs: PropTypes.shape().isRequired,
     gethPauseSync: PropTypes.func.isRequired,
     gethResumeSync: PropTypes.func.isRequired,
     gethStart: PropTypes.func.isRequired,
     gethStarting: PropTypes.bool,
-    gethStartLogger: PropTypes.func.isRequired,
     gethStatus: PropTypes.shape().isRequired,
     gethStop: PropTypes.func.isRequired,
     gethStopLogger: PropTypes.func.isRequired,
     gethStopSync: PropTypes.func.isRequired,
     gethSyncStatus: PropTypes.shape().isRequired,
+    history: PropTypes.shape(),
     intl: PropTypes.shape().isRequired,
     ipfsBusyState: PropTypes.bool,
     ipfsPortsRequested: PropTypes.bool,
@@ -221,7 +214,6 @@ Sync.propTypes = {
     ipfsStop: PropTypes.func.isRequired,
     saveGeneralSettings: PropTypes.func.isRequired,
     syncActionId: PropTypes.number,
-    timestamp: PropTypes.number,
 };
 
 Sync.contextTypes = {

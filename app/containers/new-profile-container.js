@@ -1,26 +1,19 @@
-import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { tempProfileUpdate } from '../local-flux/actions/temp-profile-actions';
-
-class NewProfileContainer extends Component {
-    render() {
-        return (
-            <div>New Profile</div>
-        );
-    }
-}
+import { tempProfileUpdate, tempProfileCreate } from '../local-flux/actions/temp-profile-actions';
+import { NewProfileForm } from '../components';
 
 function mapStateToProps (state) {
     return {
         tempProfile: state.tempProfileState.get('tempProfile')
-    }
+    };
 }
 
 export default connect(
     mapStateToProps,
     {
+        tempProfileCreate,
         tempProfileUpdate
     }
-)(NewProfileContainer);
+)(NewProfileForm);
 
-export { NewProfileContainer };
+export { NewProfileForm };

@@ -3,9 +3,9 @@ import { connect } from 'react-redux';
 import { tempProfileUpdate } from '../local-flux/actions/temp-profile-actions';
 
 class NewProfileCompleteContainer extends Component {
-    render() {
+    render () {
         return (
-            <div>New Profile Complete</div>
+          <div>New Profile Complete</div>
         );
     }
 }

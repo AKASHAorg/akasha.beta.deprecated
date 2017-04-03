@@ -1,12 +1,13 @@
 import { createStore, applyMiddleware, compose } from 'redux';
 import { persistState } from 'redux-devtools';
 import thunk from 'redux-thunk';
+import { routerMiddleware } from 'react-router-redux';
 import sagaMiddleware from './sagaMiddleware';
 import rootReducer from '../reducers';
 import * as actionCreators from '../actions/action-creators';
 
 const finalCreateStore = compose(
-  applyMiddleware( thunk, sagaMiddleware),
+  applyMiddleware(routerMiddleware(history), thunk, sagaMiddleware),
   window.devToolsExtension ?
     window.devToolsExtension({ actionCreators }) :
     noop => noop,

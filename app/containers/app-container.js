@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 import ReactTooltip from 'react-tooltip';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import Route from 'react-router/Route';
+import { Route, Switch, withRouter } from 'react-router';
 import { getMuiTheme } from 'material-ui/styles';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import { AuthDialog, DataLoader, GethDetailsModal, IpfsDetailsModal, LoginDialog,
@@ -14,7 +14,7 @@ import lightTheme from '../layouts/AkashaTheme/lightTheme';
 import darkTheme from '../layouts/AkashaTheme/darkTheme';
 import { LauncherContainer, HomeContainer } from './';
 
-const AppContainer = (props, other) => {
+const AppContainer = (props) => {
     /* eslint-disable */
     const { appState, children, errorDeleteFatal, errorDeleteNonFatal, errorState,
         hideNotification, hideTerms, intl, theme } = props;
@@ -31,9 +31,8 @@ const AppContainer = (props, other) => {
       <MuiThemeProvider muiTheme={muiTheme}>
         <DataLoader flag={!appState.get('appReady')} size={80} style={{ paddingTop: '-50px' }}>
           <div className="fill-height" style={{ backgroundColor: muiTheme.palette.themeColor }} >
-            <Route path="/" component={LauncherContainer} />
-            <Route path="/:akashaId" component={HomeContainer} />
-            
+            <Route path={`${props.match.url}`} component={LauncherContainer} />
+            <Route path={`${props.match.url}/:akashaId`} component={HomeContainer} />
             {!!appState.get('notifications').size &&
               <NotificationBar
                 hideNotification={hideNotification}
@@ -98,4 +97,4 @@ export default connect(
         hideNotification,
         hideTerms
     }
-)(injectIntl(AppContainer));
+)(injectIntl(withRouter(AppContainer)));
