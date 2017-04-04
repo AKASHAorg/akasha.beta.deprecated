@@ -17,7 +17,6 @@ export GethOptionsForm from './Forms/geth-options-form';
 export ImageUploader from './ImageUploader/image-uploader';
 export IpfsDetailsModal from './IpfsDetailsModal/ipfs-details-modal';
 export IpfsOptionsForm from './Forms/ipfs-options-form';
-export LoginDialog from './Dialogs/login-dialog';
 export LogoButton from './LogoButton/logo-button';
 export LogsList from './LogsList/logs-list';
 export MentionDecorators from './Decorators/mention-decorator';

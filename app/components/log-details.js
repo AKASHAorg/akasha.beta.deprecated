@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import { RaisedButton } from 'material-ui';
-import { LogsList } from 'shared-components';
+import { LogsList } from '../shared-components';
 import PanelContainerFooter from '../components/PanelContainer/panel-container-footer';
 
 const LogDetails = (props) => {

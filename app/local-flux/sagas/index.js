@@ -1,5 +1,5 @@
 import { call, fork, put } from 'redux-saga/effects';
-import * as actions from 'local-flux/actions/app-actions'; // eslint-disable-line import/no-unresolved, import/extensions
+import * as actions from '../actions/app-actions';
 import { createActionChannels } from './helpers';
 import { gethGetOptions, gethGetStatus, ipfsGetConfig, ipfsGetStatus, registerEProcListeners,
     watchEProcActions } from './external-process-saga';

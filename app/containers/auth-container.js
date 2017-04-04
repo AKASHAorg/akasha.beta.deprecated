@@ -1,18 +1,32 @@
-import React, { Component } from 'react';
-import { RaisedButton } from 'material-ui';
-import PanelContainerFooter from '../components/PanelContainer/panel-container-footer';
+import { connect } from 'react-redux';
+import { showLoginDialog } from '../local-flux/actions/app-actions';
+import { profileClearLocal, profileGetLocal } from '../local-flux/actions/profile-actions';
+import { tempProfileRequest } from '../local-flux/actions/temp-profile-actions';
+import { backupKeysRequest } from '../local-flux/actions/utils-actions';
+import { selectLocalProfiles, selectProfileFlag } from '../local-flux/selectors';
+import { Auth } from '../components';
 
-class Auth extends Component {
-    render () {
-        return (
-          <div className="col-xs-12">
-            Profiles List
-            <PanelContainerFooter >
-              <RaisedButton primary label={"New Identity"} onClick={() => this.props.history.push('/new-identity')} />
-            </PanelContainerFooter>
-          </div>
-        );
-    }
+function mapStateToProps (state) {
+    return {
+        backupPending: state.utilsState.getIn(['flags', 'backupPending']),
+        fetchingProfileList: selectProfileFlag(state, 'fetchingProfileList'),
+        gethStatus: state.externalProcState.getIn(['geth', 'status']),
+        localProfiles: selectLocalProfiles(state),
+        localProfilesFetched: selectProfileFlag(state, 'localProfilesFetched'),
+        loginErrors: state.profileState.get('errors').filter(error => error.get('type') === 'login'),
+        tempProfile: state.tempProfileState.get('tempProfile'),
+        ipfsStatus: state.externalProcState.getIn(['ipfs', 'status']),
+        passwordPreference: state.settingsState.getIn(['userSettings', 'passwordPreference'])
+    };
 }
 
-export default Auth;
+export default connect(
+    mapStateToProps,
+    {
+        backupKeysRequest,
+        profileClearLocal,
+        profileGetLocal,
+        showLoginDialog,
+        tempProfileRequest,
+    }
+)(Auth);

@@ -1,5 +1,4 @@
 import React, { Component, PropTypes } from 'react';
-import { FormattedMessage } from 'react-intl';
 import { setupMessages } from '../locale-data/messages';
 import { SyncProgressLoader } from '../shared-components';
 

@@ -22,46 +22,14 @@ export function createActionChannel (channel) {
 }
 
 export function createActionChannels () {
-    // const modules = Object.keys(Channel.client);
-    // modules.forEach((module) => {
-    //     const channels = Object.keys(Channel.client[module]);
-    //     actionChannels[module] = {};
-    //     channels.forEach((channel) => {
-    //         const actionChannel = createActionChannel(Channel.client[module][channel]);
-    //         actionChannels[module][channel] = actionChannel;
-    //     });
-    // });
-
-    // TODO: After refactoring, remove the following lines and uncomment the ones above
     const modules = Object.keys(Channel.client);
-    modules.forEach((module) => { actionChannels[module] = {}; });
-    const gethChannels = ['logs', 'options', 'startService', 'status', 'stopService', 'syncStatus'];
-    gethChannels.forEach((channel) => {
-        actionChannels.geth[channel] = createActionChannel(Channel.client.geth[channel]);
-    });
-    const ipfsChannels = ['getConfig', 'getPorts', 'setPorts', 'logs', 'startService', 'status', 'stopService'];
-    ipfsChannels.forEach((channel) => {
-        actionChannels.ipfs[channel] = createActionChannel(Channel.client.ipfs[channel]);
-    });
-    const authChannels = ['getLocalIdentities', 'generateEthKey', 'login', 'requestEther'];
-    authChannels.forEach((channel) => {
-        actionChannels.auth[channel] = createActionChannel(Channel.client.auth[channel]);
-    });
-    const profileChannels = ['getProfileList'];
-    profileChannels.forEach((channel) => {
-        actionChannels.profile[channel] = createActionChannel(Channel.client.profile[channel]);
-    });
-    const registryChannels = ['registerProfile', 'getCurrentProfile'];
-    registryChannels.forEach((channel) => {
-        actionChannels.registry[channel] = createActionChannel(Channel.client.registry[channel]);
-    });
-    const txChannels = ['addToQueue', 'emitMined'];
-    txChannels.forEach((channel) => {
-        actionChannels.tx[channel] = createActionChannel(Channel.client.tx[channel]);
-    });
-    const utilsChannels = ['backupKeys'];
-    utilsChannels.forEach((channel) => {
-        actionChannels.utils[channel] = createActionChannel(Channel.client.utils[channel]);
+    modules.forEach((module) => {
+        const channels = Object.keys(Channel.client[module]);
+        actionChannels[module] = {};
+        channels.forEach((channel) => {
+            const actionChannel = createActionChannel(Channel.client[module][channel]);
+            actionChannels[module][channel] = actionChannel;
+        });
     });
 }
 

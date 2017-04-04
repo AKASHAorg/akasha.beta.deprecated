@@ -4,7 +4,7 @@ import { spy } from 'sinon';
 import chai from 'chai';
 import { shallow } from 'enzyme';
 import { OrderedSet } from 'immutable';
-import { Sync, SyncStatusLoader } from '../../../app/components';
+import { PanelContainerFooter, Sync, SyncStatusLoader } from '../../../app/components';
 import { LogsList, PanelContainer } from '../../../app/shared-components';
 import { GethStatus, GethSyncStatus, IpfsStatus } from '../../../app/local-flux/reducers/records';
 import { setupMessages, generalMessages } from '../../../app/locale-data/messages';
@@ -16,9 +16,11 @@ describe('Sync component tests', () => {
     let mountedComp;
     const intlProvider = new IntlProvider({ locale: 'en' }, {});
     const { intl } = intlProvider.getChildContext();
+    const history = { push: spy() };
     const mountComp = () => {
         if (!mountedComp) {
-            mountedComp = shallow(<Sync.WrappedComponent intl={intl} {...props} />);
+            mountedComp =
+                shallow(<Sync.WrappedComponent intl={intl} history={history} {...props} />);
         }
         return mountedComp;
     };
@@ -51,19 +53,14 @@ describe('Sync component tests', () => {
     });
 
     describe('with default props and state', () => {
-        it('should render the PanelContainer', () => {
-            expect(mountComp().find(PanelContainer).length).to.equal(1,
-                'PanelContainer was not rendered');
+        it('should render the PanelContainerFooter', () => {
+            expect(mountComp().find(PanelContainerFooter).length).to.equal(1,
+                'PanelContainerFooter was not rendered');
         });
-        it('should render the panel actions', () => {
-            expect(mountComp().find(PanelContainer).prop('actions').length).to.equal(2,
-                'PanelContainer doesn\'t have 2 actions');
-            expect(mountComp().find(PanelContainer).prop('leftActions').length).to.equal(1,
-                'PanelContainer doesn\'t have 1 left side action');
-        });
-        it('should not render LogsList', () => {
-            expect(mountComp().find(LogsList).length).to.equal(0,
-                'LogsList was rendered');
+        it('should render the footer actions', () => {
+            expect(mountComp().find(PanelContainerFooter).prop('leftActions')).to.be.ok;
+            expect(mountComp().find(PanelContainerFooter).children().length).to.equal(2,
+                'PanelContainerFooter doesn\'t have 2 actions');
         });
         it('should render the correct title', () => {
             const titleMessage = intl.formatMessage(setupMessages.waitingForGeth);
@@ -99,23 +96,11 @@ describe('Sync component tests', () => {
             expect(props.ipfsStop.callCount).to.equal(1, 'ipfsStop was not called');
             expect(props.saveGeneralSettings.callCount).to.equal(1, 'saveGeneralSettings was not called');
         });
-    });
-    describe('with log list open', () => {
-        it('should render LogsList', () => {
+        it('should navigate to log list', () => {
             const component = mountComp();
             component.instance().toggleGethLogs();
-            expect(mountComp().find(LogsList).length).to.equal(1,
-                'LogsList was not rendered');
-        });
-        it('should not render title, sync message or SyncStatusLoader', () => {
-            const component = mountComp();
-            component.instance().toggleGethLogs();
-            expect(mountComp().find('h1').length).to.equal(0,
-                'title was rendered');
-            expect(mountComp().find('p').length).to.equal(0,
-                'sync message was rendered');
-            expect(mountComp().find(SyncStatusLoader).length).to.equal(0,
-                'SyncStatusLoader was rendered');
+            expect(history.push.calledOnce).to.be.true;
+            expect(history.push.calledWith('/log-details')).to.be.true;
         });
     });
     describe('with syncActionId = 1 (syncing)', () => {

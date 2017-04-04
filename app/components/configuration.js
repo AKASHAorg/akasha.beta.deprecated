@@ -2,8 +2,8 @@ import React, { Component, PropTypes } from 'react';
 import { injectIntl } from 'react-intl';
 import { FlatButton, RadioButton, RadioButtonGroup, RaisedButton } from 'material-ui';
 import { setupMessages, generalMessages } from '../locale-data/messages';
-import { GethCacheSelectField, PathInputField } from 'shared-components';
-import PanelContainerFooter from './PanelContainer/panel-container-footer';
+import { GethCacheSelectField, PathInputField } from '../shared-components';
+import { PanelContainerFooter } from './';
 
 const ADVANCED = 'advanced';
 const EXPRESS = 'express';
@@ -17,19 +17,19 @@ class Config extends Component {
     };
 
     componentWillMount () {
-        const { configurationSaved, gethSettings, ipfsSettings } = this.props;
+        const { configurationSaved, gethSettings, history, ipfsSettings } = this.props;
         this.setState({
             cache: gethSettings.get('cache'),
             gethDataDir: gethSettings.get('datadir'),
             ipfsPath: ipfsSettings.get('storagePath'),
         });
         if (configurationSaved) {
-            this.props.history.push('/sync');
+            history.push('/sync');
         }
     }
 
     componentWillReceiveProps (nextProps) {
-        const { configurationSaved, gethSettings, ipfsSettings } = nextProps;
+        const { configurationSaved, gethSettings, history, ipfsSettings } = nextProps;
         if (gethSettings.equals(this.props.gethSettings)
                 || ipfsSettings.equals(this.props.ipfsSettings)) {
             this.setState({
@@ -38,8 +38,8 @@ class Config extends Component {
                 ipfsPath: ipfsSettings.get('storagePath'),
             });
         }
-        if (configurationSaved && this.props.location.pathname !== '/sync') {
-            this.props.history.push('/sync');
+        if (configurationSaved) {
+            history.push('/sync');
         }
     }
 
@@ -90,7 +90,7 @@ class Config extends Component {
         const radioStyle = { marginTop: '10px', marginBottom: '10px' };
         return (
           <div>
-            <div style={{ padding: '0 24px', backgroundColor: muiTheme.palette.canvasColor }}>
+            <div style={{ padding: '0 24px' }}>
               <h1 style={{ fontWeight: '400' }}>
                 {intl.formatMessage(setupMessages.firstTimeSetupTitle)}
               </h1>
@@ -157,7 +157,6 @@ class Config extends Component {
                 key="next"
                 label={intl.formatMessage(generalMessages.nextButtonLabel)}
                 primary
-                backgroundColor={muiTheme.palette.secondaryColor}
                 style={{ marginLeft: '12px' }}
                 onClick={this.handleSubmit}
               />
@@ -172,15 +171,10 @@ Config.propTypes = {
     defaultGethSettings: PropTypes.shape().isRequired,
     defaultIpfsSettings: PropTypes.shape().isRequired,
     gethSettings: PropTypes.shape().isRequired,
+    history: PropTypes.shape(),
     intl: PropTypes.shape(),
     ipfsSettings: PropTypes.shape().isRequired,
     saveConfiguration: PropTypes.func.isRequired,
-    history: PropTypes.shape(),
-    location: PropTypes.shape()
-};
-
-Config.defaultProps = {
-    muiTheme: { palette: {} }
 };
 
 export default injectIntl(Config);

@@ -17,7 +17,7 @@ describe('App Container tests', () => {
     let mountedComp;
     const mountComp = () => {
         if (!mountedComp) {
-            mountedComp = shallow(<AppContainer {...props} />);
+            mountedComp = shallow(<AppContainer match={{}} {...props} />);
         }
         return mountedComp;
     };

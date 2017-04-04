@@ -36,13 +36,14 @@ const generateTheChannel = () => {
         client: {}
     };
     const modules = [
-        'auth.generateEthKey', 'auth.requestEther', 'auth.manager', 'auth.login',
+        'auth.generateEthKey', 'auth.requestEther', 'auth.manager', 'auth.login', 'auth.getLocalIdentities',
         'entry.votesIterator',
         'geth.logs', 'geth.options', 'geth.startService', 'geth.status', 'geth.syncStatus', 'geth.stopService',
         'ipfs.getConfig', 'ipfs.getPorts', 'ipfs.setPorts', 'ipfs.logs', 'ipfs.startService', 'ipfs.status', 'ipfs.stopService',
-        'profile.getProfileData',
-        'registry.registerProfile', 'registry.manager',
+        'profile.getProfileData, profile.getProfileList',
+        'registry.getCurrentProfile', 'registry.registerProfile', 'registry.manager',
         'tx.addToQueue', 'tx.emitMined',
+        'utils.backupKeys'
     ];
     for (let i = modules.length - 1; i >= 0; i -= 1) {
         const module = modules[i];

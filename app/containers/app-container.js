@@ -5,11 +5,11 @@ import { injectIntl } from 'react-intl';
 import { Route } from 'react-router';
 import { getMuiTheme } from 'material-ui/styles';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import { AuthDialog, DataLoader, GethDetailsModal, IpfsDetailsModal, LoginDialog,
+import { AuthDialog, DataLoader, GethDetailsModal, IpfsDetailsModal,
     PublishConfirmDialog, TransferConfirmDialog, WeightConfirmDialog } from '../shared-components';
 import { hideNotification, hideTerms } from '../local-flux/actions/app-actions';
 import { errorDeleteFatal, errorDeleteNonFatal } from '../local-flux/actions/error-actions';
-import { ErrorBar, FatalErrorModal, NotificationBar, TermsPanel } from '../components';
+import { ErrorBar, FatalErrorModal, LoginDialog, NotificationBar, TermsPanel } from '../components';
 import lightTheme from '../layouts/AkashaTheme/lightTheme';
 import darkTheme from '../layouts/AkashaTheme/darkTheme';
 import { LauncherContainer, HomeContainer } from './';
@@ -27,6 +27,7 @@ const AppContainer = (props) => {
     const showGethDetailsModal = appState.get('showGethDetailsModal');
     const showIpfsDetailsModal = appState.get('showIpfsDetailsModal');
     const muiTheme = getMuiTheme(theme === 'light' ? lightTheme : darkTheme);
+
     return (
       <MuiThemeProvider muiTheme={muiTheme}>
         <DataLoader flag={!appState.get('appReady')} size={80} style={{ paddingTop: '-50px' }}>

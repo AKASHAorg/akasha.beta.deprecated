@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import debounce from 'lodash.debounce';
 import { Checkbox, Dialog, FlatButton, MenuItem, SelectField, TextField } from 'material-ui';
-import { Avatar } from 'shared-components';
+import { Avatar } from '../../shared-components';
 import { getInitials } from '../../utils/dataModule';
 import { formMessages, generalMessages } from '../../locale-data/messages';
 import { selectEthAddress, selectGethStatus, selectIpfsStatus, selectProfile,

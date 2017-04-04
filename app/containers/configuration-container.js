@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { saveConfiguration } from '../local-flux/actions/settings-actions'; // eslint-disable-line import/no-unresolved, import/extensions
+import { saveConfiguration } from '../local-flux/actions/settings-actions';
 import { Configuration } from '../components';
 
 function mapStateToProps (state) {

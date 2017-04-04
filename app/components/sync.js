@@ -2,14 +2,10 @@ import React, { Component, PropTypes } from 'react';
 import { RaisedButton } from 'material-ui';
 import { injectIntl } from 'react-intl';
 import { generalMessages, setupMessages } from '../locale-data/messages';
-import { LogsList, PanelHeader } from 'shared-components';
 import PanelContainerFooter from './PanelContainer/panel-container-footer';
 import { SyncStatusLoader } from './';
 
 class Sync extends Component {
-    state = {
-        showGethLogs: false,
-    };
     interval = null;
 
     componentDidMount () {
@@ -23,7 +19,7 @@ class Sync extends Component {
     }
 
     componentWillReceiveProps (nextProps) {
-        const { configurationSaved, gethStatus, gethGetSyncStatus, gethSyncStatus,
+        const { configurationSaved, gethStatus, gethGetSyncStatus, gethSyncStatus, history,
             ipfsStatus, syncActionId, ipfsPortsRequested } = nextProps;
         const gethSynced = gethSyncStatus.get('synced');
         const gethIsSyncing = gethStatus.get('api') && !gethSynced && (syncActionId === 1 ||
@@ -38,10 +34,10 @@ class Sync extends Component {
             }, 2000);
         }
         if (gethSynced && ipfsSpawned && !ipfsPortsRequested) {
-            this.props.history.push('authenticate');
+            history.push('authenticate');
         }
         if (!configurationSaved) {
-            this.props.history.push('/');
+            history.push('/');
         }
     }
 
@@ -137,57 +133,53 @@ class Sync extends Component {
             gethSyncStatus, intl, ipfsBusyState, ipfsPortsRequested, ipfsStatus,
             syncActionId } = this.props;
         return (
-            <div style={{ flex: 1, padding: '0 24px' }}>
-                <h1 style={{ fontWeight: '400' }} >
-                  {this.getActionLabels().title}
-                </h1>
-                <div>
-                  <p>
-                    {syncActionId === 4 ?
-                      intl.formatMessage(setupMessages.afterSyncFinish) :
-                      intl.formatMessage(setupMessages.onSyncStart)
-                    }
-                  </p>
-                </div>
-                <SyncStatusLoader
-                  gethStarting={gethStarting}
-                  gethStatus={gethStatus}
-                  gethSyncStatus={gethSyncStatus}
-                  intl={intl}
-                  ipfsStatus={ipfsStatus}
-                  syncActionId={syncActionId}
-                />
-                <PanelContainerFooter
-                  leftActions={
-                      <RaisedButton
-                        key="viewDetails"
-                        label={this.state.showGethLogs ?
-                           intl.formatMessage(setupMessages.hideDetails) :
-                             intl.formatMessage(setupMessages.viewDetails)
-                        }
-                        primary={this.state.showGethLogs}
-                        onClick={this.toggleGethLogs}
-                      />
-                  }
-                >
-                  <RaisedButton
-                    key="cancel"
-                    label={intl.formatMessage(generalMessages.cancel)}
-                    style={{ marginLeft: '12px' }}
-                    onClick={this.handleCancel}
-                    disabled={gethBusyState || (ipfsBusyState && syncActionId === 4)}
-                  />
-                  <RaisedButton
-                    key="pauseOrResume"
-                    label={this.getActionLabels().action}
-                    style={{ marginLeft: '12px' }}
-                    onClick={this.handlePause}
-                    disabled={gethBusyState
-                        || ((ipfsBusyState || ipfsPortsRequested) && syncActionId === 4)}
-                    primary={syncActionId === 4}
-                  />
-                </PanelContainerFooter>
+          <div style={{ flex: 1, padding: '0 24px' }}>
+            <h1 style={{ fontWeight: '400' }} >
+              {this.getActionLabels().title}
+            </h1>
+            <div>
+              <p>
+                {syncActionId === 4 ?
+                    intl.formatMessage(setupMessages.afterSyncFinish) :
+                    intl.formatMessage(setupMessages.onSyncStart)
+                }
+              </p>
             </div>
+            <SyncStatusLoader
+              gethStarting={gethStarting}
+              gethStatus={gethStatus}
+              gethSyncStatus={gethSyncStatus}
+              intl={intl}
+              ipfsStatus={ipfsStatus}
+              syncActionId={syncActionId}
+            />
+            <PanelContainerFooter
+              leftActions={
+                <RaisedButton
+                  key="viewDetails"
+                  label={intl.formatMessage(setupMessages.viewDetails)}
+                  onClick={this.toggleGethLogs}
+                />
+              }
+            >
+              <RaisedButton
+                key="cancel"
+                label={intl.formatMessage(generalMessages.cancel)}
+                style={{ marginLeft: '12px' }}
+                onClick={this.handleCancel}
+                disabled={gethBusyState || (ipfsBusyState && syncActionId === 4)}
+              />
+              <RaisedButton
+                key="pauseOrResume"
+                label={this.getActionLabels().action}
+                style={{ marginLeft: '12px' }}
+                onClick={this.handlePause}
+                disabled={gethBusyState
+                    || ((ipfsBusyState || ipfsPortsRequested) && syncActionId === 4)}
+                primary={syncActionId === 4}
+              />
+            </PanelContainerFooter>
+          </div>
         );
     }
 }
