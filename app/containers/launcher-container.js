@@ -46,7 +46,7 @@ class LauncherContainer extends Component {
             key={`${index}-${cFilter}`} // eslint-disable-line react/no-array-index-key
             exact={route.exact}
           />
-      )
+      );
     render () {
         return (
           <PanelContainer

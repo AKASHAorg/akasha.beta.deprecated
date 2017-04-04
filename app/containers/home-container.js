@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import Route from 'react-router/Route';
+import Route from 'react-router-dom/Route';
 
 class HomeContainer extends Component {
     render() {

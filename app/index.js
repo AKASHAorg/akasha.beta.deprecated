@@ -3,7 +3,7 @@ import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import { IntlProvider, addLocaleData } from 'react-intl';
 import createHashHistory from 'history/createHashHistory';
-import Route from 'react-router/Route';
+import Route from 'react-router-dom/Route';
 import { ConnectedRouter } from 'react-router-redux';
 import en from 'react-intl/locale-data/en';
 import injectTapEventPlugin from 'react-tap-event-plugin';

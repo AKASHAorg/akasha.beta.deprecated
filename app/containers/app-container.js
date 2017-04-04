@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 import ReactTooltip from 'react-tooltip';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { Route, Switch, withRouter } from 'react-router';
+import { Route } from 'react-router';
 import { getMuiTheme } from 'material-ui/styles';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import { AuthDialog, DataLoader, GethDetailsModal, IpfsDetailsModal, LoginDialog,
@@ -18,7 +18,7 @@ const AppContainer = (props) => {
     /* eslint-disable */
     const { appState, children, errorDeleteFatal, errorDeleteNonFatal, errorState,
         hideNotification, hideTerms, intl, theme } = props;
-    /* eslint-disable */
+    /* eslint-enable */
     const isAuthDialogVisible = !!appState.get('showAuthDialog');
     const weightConfirmDialog = appState.get('weightConfirmDialog');
     const isWeightConfirmationDialogVisible = weightConfirmDialog !== null;
@@ -67,7 +67,7 @@ const AppContainer = (props) => {
         </DataLoader>
       </MuiThemeProvider>
     );
-}
+};
 
 AppContainer.propTypes = {
     appState: PropTypes.shape().isRequired,
@@ -77,6 +77,7 @@ AppContainer.propTypes = {
     hideNotification: PropTypes.func.isRequired,
     hideTerms: PropTypes.func.isRequired,
     intl: PropTypes.shape(),
+    match: PropTypes.shape(),
     theme: PropTypes.string,
 };
 
@@ -97,4 +98,4 @@ export default connect(
         hideNotification,
         hideTerms
     }
-)(injectIntl(withRouter(AppContainer)));
+)(injectIntl(AppContainer));
