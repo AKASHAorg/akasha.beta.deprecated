@@ -1,4 +1,5 @@
 import { connect } from 'react-redux';
+import { injectIntl } from 'react-intl';
 import { showLoginDialog } from '../local-flux/actions/app-actions';
 import { profileClearLocal, profileGetLocal } from '../local-flux/actions/profile-actions';
 import { tempProfileRequest } from '../local-flux/actions/temp-profile-actions';
@@ -29,4 +30,4 @@ export default connect(
         showLoginDialog,
         tempProfileRequest,
     }
-)(Auth);
+)(injectIntl(Auth));

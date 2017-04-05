@@ -43,9 +43,6 @@ describe('external process saga', function test () {
         expect(sagaTester.getState()).to.eql(initialState);
     });
     describe(types.GETH_START, () => {
-        afterEach(() => {
-            sagaTester.reset(true);
-        });
         it('should dispatch GETH_START_SUCCESS', () => {
             sagaTester.dispatch(actions.gethStart());
             const clientChannel = global.Channel.client.geth.startService;
@@ -92,9 +89,6 @@ describe('external process saga', function test () {
         });
     });
     describe(types.GETH_STOP, () => {
-        afterEach(() => {
-            sagaTester.reset(true);
-        });
         it('should dispatch GETH_STOP_SUCCESS', () => {
             sagaTester.dispatch(actions.gethStop());
             const clientChannel = global.Channel.client.geth.stopService;
@@ -140,9 +134,6 @@ describe('external process saga', function test () {
         });
     });
     describe(types.GETH_GET_STATUS, () => {
-        afterEach(() => {
-            sagaTester.reset(true);
-        });
         it('should dispatch GETH_GET_STATUS_SUCCESS', () => {
             sagaTester.dispatch(actions.gethGetStatus());
             const clientChannel = global.Channel.client.geth.status;
@@ -161,9 +152,6 @@ describe('external process saga', function test () {
         });
     });
     describe(types.GETH_GET_SYNC_STATUS, () => {
-        afterEach(() => {
-            sagaTester.reset(true);
-        });
         it('should dispatch GETH_GET_SYNC_STATUS_SUCCESS', () => {
             sagaTester.dispatch(actions.gethGetSyncStatus());
             const clientChannel = global.Channel.client.geth.syncStatus;
@@ -182,9 +170,6 @@ describe('external process saga', function test () {
         });
     });
     describe('GETH_GET_OPTIONS', () => {
-        afterEach(() => {
-            sagaTester.reset(true);
-        });
         it('should dispatch GETH_GET_OPTIONS_SUCCESS', () => {
             const clientChannel = global.Channel.client.geth.options;
             const resp = { data: { cache: 512, datadir: '/', ipcpath: '/' } };
@@ -201,9 +186,6 @@ describe('external process saga', function test () {
         });
     });
     describe('GETH_LOGGER', () => {
-        afterEach(() => {
-            sagaTester.reset(true);
-        });
         it('should start geth logger', async () => {
             sagaTester.dispatch(actions.gethStartLogger());
             const clientChannel = global.Channel.client.geth.logs;
@@ -249,9 +231,6 @@ describe('external process saga', function test () {
     });
 
     describe(types.IPFS_START, () => {
-        afterEach(() => {
-            sagaTester.reset(true);
-        });
         it('should dispatch IPFS_START_SUCCESS', async () => {
             sagaTester.dispatch(actions.ipfsStart());
             const clientChannel = global.Channel.client.ipfs.startService;
@@ -316,9 +295,6 @@ describe('external process saga', function test () {
     });
 
     describe(types.IPFS_STOP, () => {
-        afterEach(() => {
-            sagaTester.reset(true);
-        });
         it('should dispatch IPFS_STOP_SUCCESS', async () => {
             sagaTester.dispatch(actions.ipfsStop());
             const clientChannel = global.Channel.client.ipfs.stopService;
@@ -373,9 +349,6 @@ describe('external process saga', function test () {
     });
 
     describe(types.IPFS_GET_STATUS, () => {
-        afterEach(() => {
-            sagaTester.reset(true);
-        });
         it('should dispatch IPFS_GET_STATUS_SUCCESS and IPFS_GET_PORTS', () => {
             sagaTester.dispatch(actions.ipfsGetStatus());
             const clientChannel = global.Channel.client.ipfs.status;
@@ -407,9 +380,6 @@ describe('external process saga', function test () {
     });
 
     describe('IPFS_GET_CONFIG', () => {
-        afterEach(() => {
-            sagaTester.reset(true);
-        });
         it('should dispatch IPFS_GET_CONFIG_SUCCESS', () => {
             const clientChannel = global.Channel.client.ipfs.getConfig;
             const resp = { data: { api: true, storagePath: '' } };
@@ -427,9 +397,6 @@ describe('external process saga', function test () {
     });
 
     describe('IPFS_GET_PORTS', () => {
-        afterEach(() => {
-            sagaTester.reset(true);
-        });
         it('should dispatch IPFS_GET_PORTS_SUCCESS', () => {
             const clientChannel = global.Channel.client.ipfs.getPorts;
             const resp = { data: { apiPort: '1111', gatewayPort: '2222', swarmPort: '3333' } };
@@ -447,9 +414,6 @@ describe('external process saga', function test () {
     });
 
     describe(types.IPFS_SET_PORTS, () => {
-        afterEach(() => {
-            sagaTester.reset(true);
-        });
         it('should dispatch IPFS_SET_PORTS_SUCCESS', () => {
             const ports = { apiPort: 1111, gatewayPort: 2222, swarmPort: 3333 };
             sagaTester.dispatch(actions.ipfsSetPorts(ports));
@@ -476,9 +440,6 @@ describe('external process saga', function test () {
     });
 
     describe('IPFS_LOGGER', () => {
-        afterEach(() => {
-            sagaTester.reset(true);
-        });
         it('should start ipfs logger', async () => {
             sagaTester.dispatch(actions.ipfsStartLogger());
             const clientChannel = global.Channel.client.ipfs.logs;

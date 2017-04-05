@@ -1,6 +1,5 @@
 import React, { Component, PropTypes } from 'react';
 import { RaisedButton } from 'material-ui';
-import { injectIntl } from 'react-intl';
 import { PanelContainerFooter, ProfilesList } from './';
 import { generalMessages } from '../locale-data/messages';
 
@@ -14,7 +13,8 @@ class Auth extends Component {
     }
 
     componentWillReceiveProps (nextProps) {
-        const { tempProfile, loginErrors, gethStatus, ipfsStatus, profileGetLocal } = nextProps;
+        const { tempProfile, loginErrors, gethStatus, ipfsStatus,
+            profileGetLocal } = nextProps;
         const oldIpfsStatus = this.props.ipfsStatus;
         const ipfsStatusChanged = (ipfsStatus.get('started') && !oldIpfsStatus.get('started'))
             || (ipfsStatus.get('spawned') && !oldIpfsStatus.get('spawned'));
@@ -32,9 +32,8 @@ class Auth extends Component {
         this.props.profileClearLocal();
     }
 
-    handleIdentityCreate = (ev) => {
-        ev.preventDefault();
-        // hashHistory.push('authenticate/new-profile');
+    handleIdentityCreate = () => {
+        this.props.history.push('/new-identity');
     };
 
     render () {
@@ -63,7 +62,7 @@ class Auth extends Component {
               <RaisedButton
                 key="createNewIdentity"
                 label={intl.formatMessage(generalMessages.createNewIdentityLabel)}
-                onMouseUp={this.handleIdentityCreate}
+                onClick={this.handleIdentityCreate}
                 primary
                 style={{ marginLeft: '10px' }}
               />
@@ -78,6 +77,7 @@ Auth.propTypes = {
     backupPending: PropTypes.bool,
     fetchingProfileList: PropTypes.bool,
     gethStatus: PropTypes.shape().isRequired,
+    history: PropTypes.shape().isRequired,
     intl: PropTypes.shape(),
     ipfsStatus: PropTypes.shape().isRequired,
     localProfiles: PropTypes.shape().isRequired,
@@ -95,4 +95,4 @@ Auth.contextTypes = {
     router: PropTypes.shape()
 };
 
-export default injectIntl(Auth);
+export default Auth;

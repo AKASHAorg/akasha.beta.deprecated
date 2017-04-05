@@ -1,4 +1,5 @@
 import { connect } from 'react-redux';
+import { injectIntl } from 'react-intl';
 import { LogDetails } from '../components';
 import { gethStartLogger, gethStopLogger } from '../local-flux/actions/external-process-actions';
 
@@ -13,4 +14,4 @@ export default connect(
         gethStartLogger,
         gethStopLogger,
     }
-)(LogDetails);
+)(injectIntl(LogDetails));

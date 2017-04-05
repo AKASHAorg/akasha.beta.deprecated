@@ -1,11 +1,11 @@
 import React, { PropTypes } from 'react';
 import { RaisedButton } from 'material-ui';
+import { setupMessages } from '../locale-data/messages';
 import { LogsList } from '../shared-components';
-import PanelContainerFooter from '../components/PanelContainer/panel-container-footer';
+import { PanelContainerFooter } from './';
 
 const LogDetails = (props) => {
-    const { gethLogs, gethStartLogger, gethStopLogger,
-        timestamp } = props;
+    const { gethLogs, gethStartLogger, gethStopLogger, history, intl, timestamp } = props;
     return (
       <div>
         <LogsList
@@ -16,7 +16,10 @@ const LogDetails = (props) => {
         />
         <PanelContainerFooter
           leftActions={
-            <RaisedButton label={'Hide details'} onClick={() => props.history.goBack()} />
+            <RaisedButton
+              label={intl.formatMessage(setupMessages.hideDetails)}
+              onClick={() => history.goBack()}
+            />
           }
         />
       </div>
@@ -26,8 +29,9 @@ LogDetails.propTypes = {
     gethLogs: PropTypes.shape(),
     gethStartLogger: PropTypes.func,
     gethStopLogger: PropTypes.func,
+    history: PropTypes.shape(),
+    intl: PropTypes.shape(),
     timestamp: PropTypes.number,
-    history: PropTypes.shape()
 };
 
 export default LogDetails;

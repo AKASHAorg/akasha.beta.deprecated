@@ -1,13 +1,12 @@
 /* eslint new-cap: ["error", { "capIsNewExceptions": ["Record"] }]*/
-import { fromJS, List, Record, Map } from 'immutable';
+import { fromJS, List, Map } from 'immutable';
 import * as types from '../constants';
 import * as profileTypes from '../constants/ProfileConstants';
 import * as appTypes from '../constants/AppConstants';
 import * as tagTypes from '../constants/TagConstants';
 import { createReducer } from './create-reducer';
-import { LoggedProfile, ProfileRecord, ProfileState } from './records';
+import { ErrorRecord, LoggedProfile, ProfileRecord, ProfileState } from './records';
 
-const ErrorRecord = Record({});
 const initialState = new ProfileState();
 
 const tipHandler = (state, { error, flags }) => {
@@ -56,38 +55,6 @@ const addProfileData = (byId, profileData) => {
 };
 
 const profileState = createReducer(initialState, {
-    // [profileTypes.LOGIN]: flagHandler,
-
-    // [profileTypes.LOGIN_SUCCESS]: (state, { profile, flags }) =>
-    //     state.merge({
-    //         loggedProfile: state.get('loggedProfile').merge(profile),
-    //         flags: state.get('flags').merge(flags),
-    //     }),
-
-    // [profileTypes.LOGIN_ERROR]: errorHandler,
-
-    // [profileTypes.GET_CURRENT_PROFILE]: flagHandler,
-
-    // [profileTypes.GET_CURRENT_PROFILE_SUCCESS]: (state, { data, flags }) =>
-    //     state.merge({
-    //         loggedProfile: state.get('loggedProfile').merge({ profile: data.profileAddress }),
-    //         flags: state.get('flags').merge(flags)
-    //     }),
-
-    // [profileTypes.GET_CURRENT_PROFILE_ERROR]: errorHandler,
-
-    // [profileTypes.GET_LOGGED_PROFILE]: flagHandler,
-
-    // [profileTypes.GET_LOGGED_PROFILE_SUCCESS]: (state, { profile, flags }) =>
-    //     state.merge({
-    //         loggedProfile: state.get('loggedProfile').merge(profile),
-    //         flags: state.get('flags').merge(flags)
-    //     }),
-
-    // [profileTypes.CLEAR_LOGGED_PROFILE_SUCCESS]: state =>
-    //     state.merge({
-    //         loggedProfile: new LoggedProfile()
-    //     }),
 
     [profileTypes.LOGOUT_SUCCESS]: state =>
         state.set('loggedProfile', new LoggedProfile()),
@@ -549,7 +516,7 @@ const profileState = createReducer(initialState, {
     [types.PROFILE_LOGIN_ERROR]: (state, { error }) =>
         state.merge({
             flags: state.get('flags').set('loginPending', false),
-            loginErrors: state.get('loginErrors').push(error)
+            loginErrors: state.get('loginErrors').push(new ErrorRecord(error))
         }),
 
     [types.PROFILE_LOGIN_SUCCESS]: (state, { data }) =>
@@ -557,7 +524,6 @@ const profileState = createReducer(initialState, {
             flags: state.get('flags').set('loginPending', false),
             loggedProfile: new LoggedProfile(data)
         }),
-
 });
 
 export default profileState;

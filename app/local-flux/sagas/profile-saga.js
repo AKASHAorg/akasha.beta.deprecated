@@ -24,9 +24,11 @@ function* profileGetList ({ profileAddresses }) {
 }
 
 function* profileLogin ({ data }) {
+    yield fork(watchProfileLoginChannel); // eslint-disable-line no-use-before-define
+    const { ...payload } = data;
     const channel = Channel.server.auth.login;
-    data.password = new TextEncoder('utf-8').encode(data.password);
-    yield apply(channel, channel.send, [data]);
+    payload.password = new global.TextEncoder('utf-8').encode(payload.password);
+    yield apply(channel, channel.send, [payload]);
 }
 
 function* profileSaveLogged (loggedProfile) {
@@ -96,14 +98,12 @@ function* watchProfileGetListChannel () {
 }
 
 function* watchProfileLoginChannel () {
-    while (true) {
-        const resp = yield take(actionChannels.auth.login);
-        if (resp.error) {
-            yield put(actions.profileLoginError(resp.error));
-        } else {
-            yield put(actions.profileGetCurrent());
-            yield put(actions.profileLoginSuccess(resp.data));
-        }
+    const resp = yield take(actionChannels.auth.login);
+    if (resp.error) {
+        yield put(actions.profileLoginError(resp.error));
+    } else {
+        yield put(actions.profileGetCurrent());
+        yield put(actions.profileLoginSuccess(resp.data));
     }
 }
 
@@ -111,7 +111,6 @@ export function* registerProfileListeners () {
     yield fork(watchProfileGetCurrentChannel);
     yield fork(watchProfileGetLocalChannel);
     yield fork(watchProfileGetListChannel);
-    yield fork(watchProfileLoginChannel);
 }
 
 export function* watchProfileActions () {

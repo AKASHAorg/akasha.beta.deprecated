@@ -139,7 +139,13 @@ class SettingsService extends BaseService {
                     mutedList.splice(index, 1);
                     settingsDB.user
                         .update(loggedAkashaId, { notifications: { muted: mutedList } })
-                        .then(updated => updated ? onSuccess(akashaId) : onError())
+                        .then((updated) => {
+                            if (updated) {
+                                onSuccess(akashaId);
+                            } else {
+                                onError();
+                            }
+                        })
                         .catch(reason => onError(reason, akashaId));
                 }
             })

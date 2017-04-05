@@ -30,7 +30,7 @@ function* watchBackupChannel () {
         } else {
             yield put(appActions.showNotification({
                 id: 'backupSuccess',
-                values: { path: resp.data.target },
+                values: { path: resp.data.target }
             }));
             yield put(actions.backupKeysSuccess(resp.data));
         }

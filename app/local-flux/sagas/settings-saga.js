@@ -4,7 +4,7 @@ import * as actions from '../actions/settings-actions';
 import * as appActions from '../actions/app-actions';
 import * as types from '../constants';
 
-function* getGeneralSettings () {
+export function* generalSettingsRequest () {
     yield put(actions.generalSettingsRequest());
     try {
         const resp = yield apply(settingsService, settingsService.generalSettingsRequest);
@@ -14,7 +14,7 @@ function* getGeneralSettings () {
     }
 }
 
-function* getGethSettings () {
+export function* gethSettingsRequest () {
     yield put(actions.gethSettingsRequest());
     try {
         const resp = yield apply(settingsService, settingsService.gethSettingsRequest);
@@ -24,7 +24,7 @@ function* getGethSettings () {
     }
 }
 
-function* getIpfsSettings () {
+export function* ipfsSettingsRequest () {
     yield put(actions.ipfsSettingsRequest());
     try {
         const resp = yield apply(settingsService, settingsService.ipfsSettingsRequest);
@@ -35,9 +35,9 @@ function* getIpfsSettings () {
 }
 
 export function* getSettings () {
-    yield fork(getGeneralSettings);
-    yield fork(getGethSettings);
-    yield fork(getIpfsSettings);
+    yield fork(generalSettingsRequest);
+    yield fork(gethSettingsRequest);
+    yield fork(ipfsSettingsRequest);
 }
 
 export function* saveGeneralSettings (payload) {
@@ -65,10 +65,8 @@ export function* gethSaveSettings (payload, showNotification) {
 
 export function* ipfsSaveSettings (payload, showNotification) {
     try {
-        if (payload.ports) {
-            delete payload.ports;
-        }
-        const resp = yield apply(settingsService, settingsService.ipfsSettingsSave, [payload]);
+        const { ports, ...rest } = payload;
+        const resp = yield apply(settingsService, settingsService.ipfsSettingsSave, [rest]);
         yield put(actions.ipfsSaveSettingsSuccess(resp));
         if (showNotification) {
             yield put(appActions.showNotification({

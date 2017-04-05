@@ -9,8 +9,6 @@ import { watchTempProfileActions } from '../../../app/local-flux/sagas/temp-prof
 
 chai.use(chaiIM);
 
-const initialState = {};
-
 describe('In `temp-profile-saga`,', () => {
     describe('when no errors are thrown,', () => { // eslint-disable-line max-statements
         let sagaTester;
@@ -22,6 +20,7 @@ describe('In `temp-profile-saga`,', () => {
             createProfileStub = sinon.stub(registryService, 'createTempProfile', prof => prof);
             updateProfileStub = sinon.stub(registryService, 'updateTempProfile', (profile, status) => Object.assign({}, profile, status));
             deleteProfileStub = sinon.stub(registryService, 'deleteTempProfile', profile => profile);
+            const initialState = {};
             sagaTester = new SagaTester({
                 initialState,
                 reducers: state => state
@@ -33,9 +32,6 @@ describe('In `temp-profile-saga`,', () => {
             updateProfileStub.restore();
             deleteProfileStub.restore();
             sagaTester.reset(true);
-        });
-        it('should start with initialState', () => {
-            expect(sagaTester.getState()).to.eql(initialState);
         });
         it(`should listen for ${tempProfileActions.tempProfileCreate().type} only once`, () => {
             sagaTester.dispatch(tempProfileActions.tempProfileCreate(profileData));
@@ -187,6 +183,7 @@ describe('In `temp-profile-saga`,', () => {
                 registryService,
                 'deleteTempProfile',
              ).throws(new RangeError('id must be between -1 and 1'));
+            const initialState = {};
 
             sagaTester = new SagaTester({
                 initialState,

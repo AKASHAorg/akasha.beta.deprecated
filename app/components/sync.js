@@ -128,6 +128,7 @@ class Sync extends Component {
         //     showGethLogs: !this.state.showGethLogs
         // });
     };
+
     render () {
         const { gethBusyState, gethStarting, gethStatus,
             gethSyncStatus, intl, ipfsBusyState, ipfsPortsRequested, ipfsStatus,

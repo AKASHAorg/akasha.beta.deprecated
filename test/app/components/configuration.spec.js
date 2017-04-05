@@ -39,9 +39,9 @@ describe('Configuration component tests', () => {
             expect(mountComp().find(PanelContainerFooter).length).to.equal(1,
                 'PanelContainerFooter was not rendered');
         });
-        it.skip('should render the submit button (Next)', () => {
-            expect(mountComp().find(PanelContainer).prop('actions')).to.have.length(1,
-                'PanelContainer doesn\'t have exactly one action');
+        it('should render the footer actions', () => {
+            expect(mountComp().find(PanelContainerFooter).children().length).to.equal(1,
+                'PanelContainerFooter doesn\'t have 1 action');
         });
         it('should render a RadioButtonGroup', () => {
             expect(mountComp().find(RadioButtonGroup).length).to.equal(1,

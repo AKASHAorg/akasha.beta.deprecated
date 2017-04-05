@@ -40,7 +40,7 @@ const generateTheChannel = () => {
         'entry.votesIterator',
         'geth.logs', 'geth.options', 'geth.startService', 'geth.status', 'geth.syncStatus', 'geth.stopService',
         'ipfs.getConfig', 'ipfs.getPorts', 'ipfs.setPorts', 'ipfs.logs', 'ipfs.startService', 'ipfs.status', 'ipfs.stopService',
-        'profile.getProfileData, profile.getProfileList',
+        'profile.getProfileData', 'profile.getProfileList',
         'registry.getCurrentProfile', 'registry.registerProfile', 'registry.manager',
         'tx.addToQueue', 'tx.emitMined',
         'utils.backupKeys'
