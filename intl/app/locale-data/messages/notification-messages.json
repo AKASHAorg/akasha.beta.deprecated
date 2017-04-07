@@ -1,0 +1,227 @@
+[
+  {
+    "id": "app.notification.updatingProfile",
+    "description": "Notification to be displayed when update profile transaction is sent",
+    "defaultMessage": "Your profile is updating ..."
+  },
+  {
+    "id": "app.notification.profileUpdateSuccess",
+    "description": "Notification to be displayed when update profile transaction was mined",
+    "defaultMessage": "Your profile was successfully updated"
+  },
+  {
+    "id": "app.notification.followingProfile",
+    "description": "Notification to be displayed when follow transaction is sent",
+    "defaultMessage": "Following @{akashaId} ..."
+  },
+  {
+    "id": "app.notification.followProfileSuccess",
+    "description": "Notification to be displayed when follow transaction was mined",
+    "defaultMessage": "You are now following @{akashaId}"
+  },
+  {
+    "id": "app.notification.unfollowingProfile",
+    "description": "Notification to be displayed when unfollow transaction is sent",
+    "defaultMessage": "Unfollowing @{akashaId} ..."
+  },
+  {
+    "id": "app.notification.unfollowProfileSuccess",
+    "description": "Notification to be displayed when unfollow transaction was mined",
+    "defaultMessage": "You are not following @{akashaId} anymore"
+  },
+  {
+    "id": "app.notification.registeringTag",
+    "description": "Notification snackbar to display when a tag is registering",
+    "defaultMessage": "Registering \"{tagName}\" tag."
+  },
+  {
+    "id": "app.notification.tagRegisteredSuccessfully",
+    "description": "Notification to be displayed when a tag was registered",
+    "defaultMessage": "Tag \"{tagName}\" successfully registered."
+  },
+  {
+    "id": "app.notification.subscribingTag",
+    "description": "Notification to be displayed when subscribe tag transaction is sent",
+    "defaultMessage": "Subscribing to \"{tagName}\" ..."
+  },
+  {
+    "id": "app.notification.tagSubscribedSuccessfully",
+    "description": "Notification to be displayed when a user subscribed to a tag",
+    "defaultMessage": "You successfully subscribed to tag \"{tagName}\""
+  },
+  {
+    "id": "app.notification.unsubscribingTag",
+    "description": "Notification to be displayed when unsubscribe tag transaction is sent",
+    "defaultMessage": "Unsubscribing from \"{tagName}\" ..."
+  },
+  {
+    "id": "app.notification.tagUnsubscribedSuccessfully",
+    "description": "Notification to be displayed when a user unsubscribed from a tag",
+    "defaultMessage": "You successfully unsubscribed from tag \"{tagName}\""
+  },
+  {
+    "id": "app.notification.publishingEntry",
+    "description": "Notification for when entry is publishing",
+    "defaultMessage": "Publishing \"{title}\"."
+  },
+  {
+    "id": "app.notification.publishingNewEntryVersion",
+    "description": "Notification for when a new entry version is publishing",
+    "defaultMessage": "Updating \"{title}\"."
+  },
+  {
+    "id": "app.notification.newVersionPublishedSuccessfully",
+    "description": "Notification for when a new version was published",
+    "defaultMessage": "Entry updated successfully"
+  },
+  {
+    "id": "app.notification.draftPublishedSuccessfully",
+    "description": "Notification for when draft successfully registered/published",
+    "defaultMessage": "Entry published successfully"
+  },
+  {
+    "id": "app.notification.upvotingEntry",
+    "description": "Notification to be displayed when entry upvote transaction is sent",
+    "defaultMessage": "Upvoting {entryTitle} ..."
+  },
+  {
+    "id": "app.notification.upvoteEntrySuccess",
+    "description": "Notification to be displayed when upvote entry transaction was mined",
+    "defaultMessage": "You successfully upvoted {entryTitle}"
+  },
+  {
+    "id": "app.notification.upvoteEntryError",
+    "description": "Notification to be displayed when upvote entry transaction was mined but was unsuccessfull",
+    "defaultMessage": "Upvoting {entryTitle} has failed"
+  },
+  {
+    "id": "app.notification.downvotingEntry",
+    "description": "Notification to be displayed when entry downvote transaction is sent",
+    "defaultMessage": "Downvoting {entryTitle} ..."
+  },
+  {
+    "id": "app.notification.downvoteEntrySuccess",
+    "description": "Notification to be displayed when downvote entry transaction was mined",
+    "defaultMessage": "You successfully downvoted {entryTitle}"
+  },
+  {
+    "id": "app.notification.downvoteEntryError",
+    "description": "Notification to be displayed when downvote entry transaction was mined but was unsuccessfull",
+    "defaultMessage": "Downvoting {entryTitle} has failed"
+  },
+  {
+    "id": "app.notification.publishingComment",
+    "description": "Notification to be displayed when comment publishing tx was sent",
+    "defaultMessage": "Publishing comment"
+  },
+  {
+    "id": "app.notification.commentPublishedSuccessfully",
+    "description": "Notification to be displayed when comment successfully published",
+    "defaultMessage": "Comment published successfully"
+  },
+  {
+    "id": "app.notification.claiming",
+    "description": "Notification to be displayed when claim transaction is sent",
+    "defaultMessage": "Claiming {entryTitle} ..."
+  },
+  {
+    "id": "app.notification.claimSuccess",
+    "description": "Notification to be displayed when claim transaction was mined",
+    "defaultMessage": "You successfully claimed {entryTitle}"
+  },
+  {
+    "id": "app.notification.claimError",
+    "description": "Notification to be displayed when claim transaction was mined but was unsuccessfull",
+    "defaultMessage": "Claiming {entryTitle} has failed"
+  },
+  {
+    "id": "app.notification.draftSavedSuccessfully",
+    "description": "notification to show when draft was successfully saved",
+    "defaultMessage": "Draft successfully saved!"
+  },
+  {
+    "id": "app.notification.draftSaveFailed",
+    "description": "Notification to show when saving draft failed",
+    "defaultMessage": "Failed to save draft!"
+  },
+  {
+    "id": "app.notification.draftDeletedSuccessfully",
+    "description": "notification to show when draft was successfully deleted",
+    "defaultMessage": "Draft successfully deleted!"
+  },
+  {
+    "id": "app.notification.draftDeleteFailed",
+    "description": "Notification to show when deleting draft failed",
+    "defaultMessage": "Failed to delete draft!"
+  },
+  {
+    "id": "app.notification.editorMessage",
+    "description": "just a placeholder",
+    "defaultMessage": "{errorMessage}"
+  },
+  {
+    "id": "app.notification.linkCopiedToClipboard",
+    "description": "notification to show when user copies profile link",
+    "defaultMessage": "Link copied to clipboard"
+  },
+  {
+    "id": "app.notification.sendingTip",
+    "description": "Notification to be displayed when tip transaction is sent",
+    "defaultMessage": "Sending tip to @{akashaId} ..."
+  },
+  {
+    "id": "app.notification.sendTipSuccess",
+    "description": "Notification to be displayed when tip transaction was successfully mined",
+    "defaultMessage": "You have successfully tipped @{akashaId}"
+  },
+  {
+    "id": "app.notification.sendTipError",
+    "description": "Notification to be displayed when tip transaction was mined but was unsuccessfull",
+    "defaultMessage": "Tipping @{akashaId} has failed"
+  },
+  {
+    "id": "app.notification.notificationsEnabledSuccess",
+    "description": "message to be displayed when notifications were enabled for a specific user",
+    "defaultMessage": "Notifications enabled for @{akashaId}"
+  },
+  {
+    "id": "app.notification.notificationsEnabledError",
+    "description": "message to be displayed when enabling notifications for a specific user has failed",
+    "defaultMessage": "Enabling notifications for @{akashaId} has failed"
+  },
+  {
+    "id": "app.notification.notificationsDisabledSuccess",
+    "description": "message to be displayed when notifications were disabled for a specific user",
+    "defaultMessage": "Notifications disabled for @{akashaId}"
+  },
+  {
+    "id": "app.notification.notificationsDisabledError",
+    "description": "message to be displayed when disabling notifications for a specific user has failed",
+    "defaultMessage": "Disabling notifications for @{akashaId} has failed"
+  },
+  {
+    "id": "app.notification.channelStarred",
+    "description": "message to be displayed when a chat channel was starred",
+    "defaultMessage": "#{channel} was starred"
+  },
+  {
+    "id": "app.notification.backupSuccess",
+    "description": "message to display when the keystore backup was generated successfully",
+    "defaultMessage": "Backup was generated at {path}"
+  },
+  {
+    "id": "app.notification.saveGethSettingsSuccess",
+    "description": "Geth settings successfully saved",
+    "defaultMessage": "You have successfully saved your settings. You need to restart your geth\n                        service for your changes to be applied."
+  },
+  {
+    "id": "app.notification.saveIpfsSettingsSuccess",
+    "description": "IPFS settings successfully saved",
+    "defaultMessage": "You have successfully saved your settings. You need to restart your IPFS\n                        service for your changes to be applied."
+  },
+  {
+    "id": "app.notification.setIpfsPortsSuccess",
+    "description": "IPFS ports successfully set",
+    "defaultMessage": "You have successfully set the IPFS ports. You need to restart your IPFS\n                        service for your changes to be applied."
+  }
+]

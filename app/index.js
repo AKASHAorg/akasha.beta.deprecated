@@ -6,6 +6,9 @@ import createHashHistory from 'history/createHashHistory';
 import Route from 'react-router-dom/Route';
 import { ConnectedRouter } from 'react-router-redux';
 import en from 'react-intl/locale-data/en';
+import ru from 'react-intl/locale-data/ru';
+import ro from 'react-intl/locale-data/ro';
+import ch from 'react-intl/locale-data/zh';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import ReactPerf from 'react-addons-perf';
 import rootSaga from './local-flux/sagas';
@@ -14,9 +17,18 @@ import sagaMiddleware from './local-flux/store/sagaMiddleware';
 import { generalSettingsRequest } from './local-flux/services/settings-service';
 import { AppContainer } from './containers';
 import './styles/core.scss';
-// import { ruMessages } from './locale-data/ru';
+import ruMessages from './locale-data/ru.json';
+import zhMessages from './locale-data/zh.json';
+import enMessages from './locale-data/en.json';
 
-addLocaleData([...en]);
+const localeMessages = {
+    en: enMessages,
+    ru: ruMessages,
+    zh: zhMessages
+};
+
+const DEFAULT_LOCALE = 'en';
+addLocaleData([...en, ...ru, ...ro, ...ch]);
 const history = createHashHistory();
 const store = configureStore();
 sagaMiddleware.run(rootSaga);
@@ -38,9 +50,13 @@ window.Perf = ReactPerf;
 
 injectTapEventPlugin();
 
+
 generalSettingsRequest().then(settings =>
     render(
-      <IntlProvider locale={settings.userlocale || 'en'} >
+      <IntlProvider
+        locale={settings.userlocale || DEFAULT_LOCALE}
+        messages={localeMessages[settings.userlocale] || localeMessages[DEFAULT_LOCALE]}
+      >
         <Provider store={store} >
           <ConnectedRouter history={history}>
             <Route component={AppContainer} />

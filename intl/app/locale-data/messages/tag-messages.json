@@ -1,0 +1,27 @@
+[
+  {
+    "id": "app.tag.recommendedTags",
+    "description": "tags recommended by Akasha",
+    "defaultMessage": "Recommended tags"
+  },
+  {
+    "id": "app.tag.subscribedTags",
+    "description": "tags that the user has subscribed",
+    "defaultMessage": "Subscribed tags"
+  },
+  {
+    "id": "app.tag.newestTags",
+    "description": "newest tags in the network",
+    "defaultMessage": "Newest tags"
+  },
+  {
+    "id": "app.tag.subscribe",
+    "description": "label for subscribe button",
+    "defaultMessage": "Subscribe"
+  },
+  {
+    "id": "app.tag.unsubscribe",
+    "description": "label for unsubscribe button",
+    "defaultMessage": "Unsubscribe"
+  }
+]
