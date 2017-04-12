@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
+import { withRouter } from 'react-router';
 import debounce from 'lodash.debounce';
 import { Checkbox, Dialog, FlatButton, MenuItem, SelectField, TextField } from 'material-ui';
 import { Avatar } from '../../shared-components';
@@ -26,13 +27,19 @@ class LoginDialog extends Component {
     }
 
     componentWillReceiveProps (nextProps) {
-        const { passwordPreference } = nextProps;
+        const { history, loggedProfile, passwordPreference } = nextProps;
         if (passwordPreference.remember !== this.props.passwordPreference.remember ||
                 passwordPreference.time !== this.props.passwordPreference.time) {
             this.setState({
                 unlockTimer: passwordPreference.time || 5,
                 unlockIsChecked: passwordPreference.remember || false
             });
+        }
+        if (loggedProfile.get('account')) {
+            this.props.hideLoginDialog();
+            this.props.userSettingsClear();
+            this.props.profileClearLoginErrors();
+            history.push('/dashboard');
         }
     }
 
@@ -216,8 +223,10 @@ LoginDialog.propTypes = {
     ethAddress: PropTypes.string.isRequired,
     gethStatus: PropTypes.shape().isRequired,
     hideLoginDialog: PropTypes.func.isRequired,
+    history: PropTypes.shape().isRequired,
     intl: PropTypes.shape().isRequired,
     ipfsStatus: PropTypes.shape().isRequired,
+    loggedProfile: PropTypes.shape().isRequired,
     loginErrors: PropTypes.shape().isRequired,
     loginPending: PropTypes.bool,
     passwordPreference: PropTypes.shape(),
@@ -235,6 +244,7 @@ function mapStateToProps (state) {
         ethAddress: selectEthAddress(state, profile.get('profile')),
         gethStatus: selectGethStatus(state),
         ipfsStatus: selectIpfsStatus(state),
+        loggedProfile: state.profileState.get('loggedProfile'),
         loginErrors: state.profileState.get('loginErrors'),
         loginPending: selectProfileFlag(state, 'loginPending'),
         passwordPreference: state.settingsState.getIn(['userSettings', 'passwordPreference']),
@@ -252,4 +262,4 @@ export default connect(
         userSettingsRequest,
         userSettingsSave
     }
-)(injectIntl(LoginDialog));
+)(withRouter(injectIntl(LoginDialog)));

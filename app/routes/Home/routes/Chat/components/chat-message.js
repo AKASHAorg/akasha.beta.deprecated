@@ -19,7 +19,7 @@ class ChatMessage extends Component {
                 return (
                   <span
                     key={index}
-                    className="textLink"
+                    className="content-link"
                     style={{ color: palette.primary1Color }}
                     onClick={() => navigateToChannel(word.slice(1))}
                   >
@@ -76,7 +76,7 @@ class ChatMessage extends Component {
             >
               <div style={{ lineHeight: '14px', fontSize: '12px' }}>
                 <div
-                  className="contentLink"
+                  className="content-link"
                   onClick={() => { onAuthorClick(profileAddress); }}
                   style={{
                       display: 'inline-block',

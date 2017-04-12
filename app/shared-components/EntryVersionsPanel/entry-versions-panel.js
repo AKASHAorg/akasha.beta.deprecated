@@ -58,7 +58,7 @@ class EntryVersionsPanel extends Component {
             versions.unshift(
               <div
                 key={i}
-                className="contentLink"
+                className="content-link"
                 style={{ display: 'flex', alignItems: 'center', margin: '10px 0' }}
                 onClick={() => this.selectVersion(i)}
               >

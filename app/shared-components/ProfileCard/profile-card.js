@@ -179,7 +179,7 @@ class ProfileCard extends Component {
 
         return (
           <Paper
-            className="has_hidden_action"
+            className="has-hidden-action"
             style={{
                 position: 'relative',
                 width: '214px',

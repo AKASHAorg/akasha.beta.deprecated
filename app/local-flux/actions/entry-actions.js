@@ -1,6 +1,8 @@
 import { AppActions, TransactionActions } from './';
 import { EntryService, ProfileService } from '../services';
 import { entryActionCreators } from './action-creators';
+import { action } from './helpers';
+import * as types from '../constants';
 
 let entryActions = null;
 
@@ -668,3 +670,13 @@ class EntryActions {
 }
 
 export { EntryActions };
+
+export const entryVoteCost = () => action(types.ENTRY_VOTE_COST);
+
+export const entryVoteCostError = (error) => {
+    error.code = 'EVCE01';
+    error.messageId = 'entryVoteCost';
+    return action(types.ENTRY_VOTE_COST_ERROR, { error });
+};
+
+export const entryVoteCostSuccess = data => action(types.ENTRY_VOTE_COST_SUCCESS, { data });

@@ -96,6 +96,31 @@ const setupMessages = defineMessages({
         description: 'title for first time setup page',
         defaultMessage: 'First time setup'
     },
+    configuration: {
+        id: 'app.setup.configuration',
+        description: 'panel header for configuration page',
+        defaultMessage: 'Configuration'
+    },
+    synchronization: {
+        id: 'app.setup.synchronization',
+        description: 'panel header for synchronization page',
+        defaultMessage: 'Synchronization'
+    },
+    logDetails: {
+        id: 'app.setup.logDetails',
+        description: 'panel header for log details page',
+        defaultMessage: 'Log details'
+    },
+    login: {
+        id: 'app.setup.login',
+        description: 'panel header for login page',
+        defaultMessage: 'Login'
+    },
+    newIdentity: {
+        id: 'app.setup.newIdentity',
+        description: 'panel header for new identity page',
+        defaultMessage: 'Create new identity'
+    },
     akashaNextGenNetwork: {
         id: 'app.setup.akashaNextGenNetwork',
         description: 'akasha next gen description',

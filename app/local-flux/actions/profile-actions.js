@@ -638,6 +638,16 @@ export { ProfileActions };
 
 export const profileClearLocal = () => action(types.PROFILE_CLEAR_LOCAL);
 export const profileClearLoginErrors = () => action(types.PROFILE_CLEAR_LOGIN_ERRORS);
+export const profileGetBalance = () => action(types.PROFILE_GET_BALANCE);
+
+export const profileGetBalanceError = (error) => {
+    error.code = 'PGBE01';
+    error.messageId = 'profileGetBalance';
+    return action(types.PROFILE_GET_BALANCE_ERROR, { error });
+};
+
+export const profileGetBalanceSuccess = data => action(types.PROFILE_GET_BALANCE_SUCCESS, { data });
+
 export const profileGetCurrent = () => action(types.PROFILE_GET_CURRENT);
 
 export const profileGetCurrentError = (error) => {

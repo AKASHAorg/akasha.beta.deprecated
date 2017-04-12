@@ -1,6 +1,5 @@
 import { appActionCreators } from './action-creators';
 import * as types from '../constants';
-import * as appTypes from '../constants/AppConstants';
 import { action } from './helpers';
 
 let appActions = null;
@@ -15,8 +14,6 @@ class AppActions {
         appActions = this;
     }
 
-    showPanel = panel => this.dispatch(appActionCreators.showPanel(panel));
-    hidePanel = panel => this.dispatch(appActionCreators.hidePanel(panel));
     showAuthDialog = actionId => this.dispatch(appActionCreators.showAuthDialog(actionId));
     hideAuthDialog = () => this.dispatch(appActionCreators.hideAuthDialog());
     /**
@@ -72,6 +69,8 @@ export const hideLoginDialog = () => action(types.HIDE_LOGIN_DIALOG);
 export const hideNotification = notification =>
     action(types.HIDE_NOTIFICATION, { notification });
 export const hideTerms = () => action(types.HIDE_TERMS);
+export const panelShow = panel => action(types.PANEL_SHOW, { panel });
+export const panelHide = () => action(types.PANEL_HIDE);
 export const setTimestamp = timestamp => action(types.SET_TIMESTAMP, { timestamp });
 export const showLoginDialog = profileAddress =>
     action(types.SHOW_LOGIN_DIALOG, { profileAddress });

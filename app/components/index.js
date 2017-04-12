@@ -1,3 +1,4 @@
+/* eslint-disable import/no-named-as-default */
 export Auth from './auth';
 export Configuration from './configuration';
 export ErrorBar from './error-bar';
@@ -13,6 +14,8 @@ export PanelContainerHeader from './PanelContainer/panel-container-header';
 export ProfilesList from './profiles-list';
 export ServiceStatusBar from './service-status-bar';
 export Setup from './setup';
+export Sidebar from './sidebar';
 export SyncStatusLoader from './sync-status-loader';
 export Sync from './sync';
 export TermsPanel from './terms-panel';
+/* eslint-enable import/no-named-as-default */

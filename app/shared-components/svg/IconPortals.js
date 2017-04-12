@@ -5,7 +5,7 @@ import CircleIcon from './CircleIcon';
 import { MenuPortals } from '../svg';
 
 
-export default class IconEntries extends Component {
+export default class IconPortals extends Component {
     _handleClick = (ev) => {
         if (this.props.onClick) return this.props.onClick(ev);
         return false;
@@ -50,7 +50,7 @@ export default class IconEntries extends Component {
     }
 }
 
-IconEntries.propTypes = {
+IconPortals.propTypes = {
     style: PropTypes.object,
     viewBox: PropTypes.string,
     hoverColor: PropTypes.string,
@@ -59,7 +59,7 @@ IconEntries.propTypes = {
     disabled: PropTypes.bool,
     tooltip: PropTypes.string
 };
-IconEntries.defaultProps = {
+IconPortals.defaultProps = {
     style: {
         borderRadius: '50%'
     },
@@ -67,6 +67,6 @@ IconEntries.defaultProps = {
     color: colors.lightBlack,
     hoverColor: colors.darkBlack
 };
-IconEntries.contextTypes = {
+IconPortals.contextTypes = {
     muiTheme: React.PropTypes.object
 };

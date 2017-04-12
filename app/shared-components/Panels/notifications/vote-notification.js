@@ -10,7 +10,7 @@ const EntryNotification = (props, context) => {
     const voteWeight = weight > 0 ? (`+${weight}`) : weight;
     const message = (
       <div>
-        <div className="overflow_ellipsis" style={{ color: palette.textColor }}>
+        <div className="overflow-ellipsis" style={{ color: palette.textColor }}>
           {type}<span style={{ color: colorVote }} > {voteWeight} </span>on&nbsp;
           <span
             className="link"

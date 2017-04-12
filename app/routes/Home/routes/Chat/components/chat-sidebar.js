@@ -224,7 +224,7 @@ class ChatSidebar extends Component {
             {channels.map(channel =>
               <ListItem
                 key={channel}
-                className={`has_hidden_action ${className}`}
+                className={`has-hidden-action ${className}`}
                 innerDivStyle={innerDivStyle}
                 primaryText={
                   <div

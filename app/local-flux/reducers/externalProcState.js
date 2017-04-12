@@ -3,7 +3,7 @@ import { fromJS } from 'immutable';
 import { createReducer } from './create-reducer';
 import * as types from '../constants';
 import { GethModel, IpfsModel } from './models';
-import { LogRecord } from './records';
+import { GethSyncStatus, LogRecord } from './records';
 
 const initialState = fromJS({
     geth: new GethModel(),
@@ -11,6 +11,9 @@ const initialState = fromJS({
 });
 
 const eProcState = createReducer(initialState, {
+    [types.CLEAR_SYNC_STATUS]: state =>
+        state.setIn(['geth', 'syncStatus'], new GethSyncStatus()),
+
     [types.GETH_START]: state =>
         state.mergeIn(['geth'], {
             flags: state.getIn(['geth', 'flags']).merge({

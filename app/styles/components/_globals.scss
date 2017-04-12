@@ -78,14 +78,7 @@ html, body {
     color: #008B8B;
 }
 
-.textLink {
-    cursor: pointer;
-    &:hover {
-        opacity: 0.8;
-    }
-}
-
-.has_hidden_action {
+.has-hidden-action {
     &:not(:hover) .hidden_action {
         display: none !important;
     }
@@ -118,14 +111,14 @@ html, body {
     background: rgba(0, 0, 0, 0.05);
 }
 
-.contentLink {
+.content-link {
     cursor: pointer;
     &:hover {
         opacity: 0.8;
     }
 }
 
-.generic_tooltip {
+.generic-tooltip {
     background-color: #555 !important;
     font-size: 10px !important;
     height: 24px !important;
@@ -158,8 +151,24 @@ html, body {
     }
 }
 
-.overflow_ellipsis {
+.overflow-ellipsis {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.flex-center-x {
+    display: flex;
+    justify-content: center;
+}
+
+.flex-center-y {
+    display: flex;
+    align-items: center;
+}
+
+.flex-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

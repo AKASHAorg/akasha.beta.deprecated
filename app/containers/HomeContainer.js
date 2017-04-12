@@ -5,43 +5,32 @@ import { AppActions, ChatActions, DraftActions, ProfileActions, SearchActions,
     SettingsActions, EntryActions, TransactionActions, TagActions, EProcActions,
     NotificationsActions } from 'local-flux';
 import { DataLoader, Sidebar } from 'shared-components';
-import '../../styles/core.scss';
-import styles from './home.scss';
-import PanelLoaderContainer from './components/panel-loader-container';
-import ClaimRunner from './components/claim-runner';
-import CommentsPublisher from './components/comments-publisher';
-import CommonRunner from './components/common-runner';
-import ProfileUpdater from './components/profile-updater';
-import PublishEntryRunner from './components/publish-entry-runner';
-import TagPublisher from './components/tag-publisher';
-import TipRunner from './components/tip-runner';
-import FollowRunner from './components/follow-runner';
-import VoteRunner from './components/vote-runner';
+import '../styles/core.scss';
+import styles from './home-container.scss';
+import PanelLoaderContainer from '../routes/Home/components/panel-loader-container';
+import ClaimRunner from '../routes/Home/components/claim-runner';
+import CommentsPublisher from '../routes/Home/components/comments-publisher';
+import CommonRunner from '../routes/Home/components/common-runner';
+import ProfileUpdater from '../routes/Home/components/profile-updater';
+import PublishEntryRunner from '../routes/Home/components/publish-entry-runner';
+import TagPublisher from '../routes/Home/components/tag-publisher';
+import TipRunner from '../routes/Home/components/tip-runner';
+import FollowRunner from '../routes/Home/components/follow-runner';
+import VoteRunner from '../routes/Home/components/vote-runner';
 
 class HomeContainer extends React.Component {
-    constructor (props) {
-        super(props);
-        this.dataLoaded = false;
-        this.interval = null;
-    }
-
-    componentWillMount () {
-        const { profileActions, eProcActions, entryActions } = this.props;
-        profileActions.resetFlags();
-        eProcActions.getGethStatus();
-        entryActions.getLicences();
-        this.interval = setInterval(() => {
-            eProcActions.getGethStatus();
-        }, 30000);
-        for (let i = 1; i <= 10; i += 1) {
-            entryActions.voteCost(i);
-        }
-    }
+    dataLoaded = false;
+    interval = null;
 
     componentDidMount () {
-        const { profileActions, searchActions } = this.props;
+        const { profileActions, eProcActions, searchActions } = this.props;
         profileActions.getLoggedProfile();
         searchActions.handshake();
+        toggleGethStatus();
+        // eProcActions.getGethStatus();
+        // this.interval = setInterval(() => {
+        //     eProcActions.getGethStatus();
+        // }, 30000);
     }
 
     componentWillReceiveProps (nextProps) {
@@ -97,14 +86,12 @@ class HomeContainer extends React.Component {
             settingsActions.saveLastBlockNr(loggedProfile.get('akashaId'), nextProps.blockNr);
         }
     }
-
     componentWillUnmount () {
         const { appActions } = this.props;
         appActions.cleanStore();
         clearInterval(this.interval);
         ReactTooltip.hide();
     }
-
     _getLoadingMessage = () => {
         const { fetchingDraftsCount, fetchingLoggedProfile, fetchingProfileData } = this.props;
         if (fetchingLoggedProfile) {
@@ -125,7 +112,7 @@ class HomeContainer extends React.Component {
     };
 
     render () {
-        const { activeChannel, appActions, draftActions, fetchingLoggedProfile, loggedProfileData,
+        const { activeChannel, appActions, fetchingLoggedProfile, loggedProfileData,
             profileActions, draftsCount, loggedProfile, activePanel, selectedTag,
             params, updatingProfile, notificationsCount, hasFeed } = this.props;
 
@@ -141,7 +128,6 @@ class HomeContainer extends React.Component {
                   activeChannel={activeChannel}
                   activePanel={activePanel}
                   appActions={appActions}
-                  draftActions={draftActions}
                   loggedProfileData={loggedProfileData}
                   notificationsCount={notificationsCount}
                   hasFeed={hasFeed}

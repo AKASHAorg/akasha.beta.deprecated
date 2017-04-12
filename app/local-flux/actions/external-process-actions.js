@@ -1,6 +1,7 @@
 import * as types from '../constants';
 import { action } from './helpers';
 
+export const clearSyncStatus = () => action(types.CLEAR_SYNC_STATUS);
 export const gethGetLogs = () => action(types.GETH_GET_LOGS);
 export const gethGetLogsSuccess = data => action(types.GETH_GET_LOGS_SUCCESS, { data });
 

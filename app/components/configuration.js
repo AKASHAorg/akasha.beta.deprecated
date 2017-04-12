@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import React, { PureComponent, PropTypes } from 'react';
+import { Redirect } from 'react-router-dom';
 import { injectIntl } from 'react-intl';
 import { FlatButton, RadioButton, RadioButtonGroup, RaisedButton } from 'material-ui';
 import { setupMessages, generalMessages } from '../locale-data/messages';
@@ -8,7 +9,7 @@ import { PanelContainerFooter } from './';
 const ADVANCED = 'advanced';
 const EXPRESS = 'express';
 
-class Config extends Component {
+class Config extends PureComponent {
     state = {
         cache: null,
         gethDataDir: null,
@@ -17,19 +18,16 @@ class Config extends Component {
     };
 
     componentWillMount () {
-        const { configurationSaved, gethSettings, history, ipfsSettings } = this.props;
+        const { gethSettings, ipfsSettings } = this.props;
         this.setState({
             cache: gethSettings.get('cache'),
             gethDataDir: gethSettings.get('datadir'),
             ipfsPath: ipfsSettings.get('storagePath'),
         });
-        if (configurationSaved) {
-            history.push('/sync');
-        }
     }
 
     componentWillReceiveProps (nextProps) {
-        const { configurationSaved, gethSettings, history, ipfsSettings } = nextProps;
+        const { gethSettings, ipfsSettings } = nextProps;
         if (gethSettings.equals(this.props.gethSettings)
                 || ipfsSettings.equals(this.props.ipfsSettings)) {
             this.setState({
@@ -37,9 +35,6 @@ class Config extends Component {
                 gethDataDir: gethSettings.get('datadir'),
                 ipfsPath: ipfsSettings.get('storagePath'),
             });
-        }
-        if (configurationSaved) {
-            history.push('/sync');
         }
     }
 
@@ -85,11 +80,12 @@ class Config extends Component {
     };
 
     render () {
-        const { intl } = this.props;
+        const { configurationSaved, intl, muiTheme } = this.props;
         const { cache, gethDataDir, ipfsPath, isAdvanced } = this.state;
         const radioStyle = { marginTop: '10px', marginBottom: '10px' };
         return (
           <div>
+            {configurationSaved && <Redirect to="/setup/synchronization" />}
             <div style={{ padding: '0 24px' }}>
               <h1 style={{ fontWeight: '400' }}>
                 {intl.formatMessage(setupMessages.firstTimeSetupTitle)}
@@ -171,7 +167,6 @@ Config.propTypes = {
     defaultGethSettings: PropTypes.shape().isRequired,
     defaultIpfsSettings: PropTypes.shape().isRequired,
     gethSettings: PropTypes.shape().isRequired,
-    history: PropTypes.shape(),
     intl: PropTypes.shape(),
     ipfsSettings: PropTypes.shape().isRequired,
     saveConfiguration: PropTypes.func.isRequired,

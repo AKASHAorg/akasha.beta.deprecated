@@ -7,7 +7,7 @@ const FollowNotification = (props, context) => {
     const { palette } = context.muiTheme;
     const message = (
       <div>
-        <div className="overflow_ellipsis" style={{ color: palette.textColor }}>
+        <div className="overflow-ellipsis" style={{ color: palette.textColor }}>
           Followed you.
         </div>
         Block {blockNumber}

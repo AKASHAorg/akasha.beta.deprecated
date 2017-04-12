@@ -12,7 +12,7 @@ class DraftCard extends Component {
         } = this.props;
         const noop = () => {};
         return (
-          <Card className="start-xs has_hidden_action" style={{ margin: '5px 5px 16px 5px' }}>
+          <Card className="start-xs has-hidden-action" style={{ margin: '5px 5px 16px 5px' }}>
             <CardHeader
               avatar={isPublishing ? <CircularProgress /> : null}
               title={isPublishing ? 'Publishing Entry' : headerTitle}

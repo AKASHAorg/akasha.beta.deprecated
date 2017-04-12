@@ -28,8 +28,6 @@ export PublishConfirmDialog from './Dialogs/publish-confirm-dialog';
 export ProfileCard from './ProfileCard/profile-card';
 export ProfileHoverCard from './ProfileHoverCard/profile-hover-card';
 export SendTipForm from './Forms/send-tip-form';
-export ServiceStatusBar from './ServiceStatusBar/service-status-bar';
-export Sidebar from './Sidebar/side-bar';
 export SyncProgressLoader from './Loaders/sync-progress';
 export TagChip from './TagChip/tag-chip';
 export TransferConfirmDialog from './Dialogs/transfer-confirm-dialog';

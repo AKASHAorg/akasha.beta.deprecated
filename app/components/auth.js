@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import { Link } from 'react-router-dom';
 import { RaisedButton } from 'material-ui';
 import { PanelContainerFooter, ProfilesList } from './';
 import { generalMessages } from '../locale-data/messages';
@@ -10,6 +11,7 @@ class Auth extends Component {
         if (gethStatus.get('api')) {
             profileGetLocal();
         }
+        console.log('auth did mount');
     }
 
     componentWillReceiveProps (nextProps) {
@@ -32,14 +34,10 @@ class Auth extends Component {
         this.props.profileClearLocal();
     }
 
-    handleIdentityCreate = () => {
-        this.props.history.push('/new-identity');
-    };
-
     render () {
         const { backupKeysRequest, backupPending, fetchingProfileList, gethStatus, intl, ipfsStatus,
             localProfiles, localProfilesFetched, showLoginDialog } = this.props;
-
+        console.log('auth render');
         return (
           <div style={{ width: '100%' }}>
             <div style={{ width: '100%', height: '100%', padding: '12px 24px' }}>
@@ -59,13 +57,21 @@ class Auth extends Component {
                 label={intl.formatMessage(generalMessages.backup)}
                 onClick={backupKeysRequest}
               />
-              <RaisedButton
-                key="createNewIdentity"
-                label={intl.formatMessage(generalMessages.createNewIdentityLabel)}
-                onClick={this.handleIdentityCreate}
-                primary
-                style={{ marginLeft: '10px' }}
-              />
+              <Link to="/setup/new-identity">
+                <RaisedButton
+                  key="createNewIdentity"
+                  label={intl.formatMessage(generalMessages.createNewIdentityLabel)}
+                  primary
+                  style={{ marginLeft: '10px' }}
+                />
+              </Link>
+              <Link to="/dashboard">
+                <RaisedButton
+                  key="guest"
+                  label="Guest"
+                  style={{ marginLeft: '10px' }}
+                />
+              </Link>
             </PanelContainerFooter>
           </div>
         );
@@ -77,7 +83,6 @@ Auth.propTypes = {
     backupPending: PropTypes.bool,
     fetchingProfileList: PropTypes.bool,
     gethStatus: PropTypes.shape().isRequired,
-    history: PropTypes.shape().isRequired,
     intl: PropTypes.shape(),
     ipfsStatus: PropTypes.shape().isRequired,
     localProfiles: PropTypes.shape().isRequired,

@@ -440,6 +440,8 @@ const profileState = createReducer(initialState, {
     },
     [appTypes.CLEAN_STORE]: () => initialState,
 
+// ***************************** NEW REDUCERS **************************************
+
     [types.PROFILE_CLEAR_LOCAL]: state =>
         state.merge({
             ethAddresses: new Map(),
@@ -448,6 +450,13 @@ const profileState = createReducer(initialState, {
 
     [types.PROFILE_CLEAR_LOGIN_ERRORS]: state =>
         state.set('loginErrors', new List()),
+
+    [types.PROFILE_GET_BALANCE_SUCCESS]: (state, { data }) => {
+        if (state.getIn(['loggedProfile', 'account']) !== data.etherBase) {
+            return state;
+        }
+        return state.set('balance', data.balance);
+    },
 
     [types.PROFILE_GET_CURRENT]: state =>
         state.setIn(['flags', 'currentProfilePending'], true),

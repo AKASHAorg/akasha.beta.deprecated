@@ -1,72 +1,54 @@
-import React, { Component, PropTypes } from 'react';
-import Route from 'react-router-dom/Route';
-import Switch from 'react-router-dom/Switch';
+import React, { PropTypes } from 'react';
+import { Redirect, Route } from 'react-router-dom';
 import { injectIntl } from 'react-intl';
 import PanelContainer from '../components/PanelContainer/panel-container';
 import { PanelHeader } from '../shared-components';
 import { ConfigurationContainer, SynchronizationContainer, AuthContainer,
   LogDetailsContainer, NewProfileContainer } from './';
+import { setupMessages } from '../locale-data/messages';
 
-const getRouteConfig = match =>
-    [
+const LauncherContainer = ({ intl, location }) => {
+    const routes = [
         {
-            path: `${match.url}`,
-            exact: true,
-            component: props => <ConfigurationContainer {...props} />,
-            title: () => <h3>Configuration</h3>
+            path: '/setup/configuration',
+            component: ConfigurationContainer,
+            title: intl.formatMessage(setupMessages.configuration)
         }, {
-            path: '/sync',
-            component: props => <SynchronizationContainer {...props} />,
-            title: () => <h3>Synchronization</h3>
+            path: '/setup/synchronization',
+            component: SynchronizationContainer,
+            title: intl.formatMessage(setupMessages.synchronization)
         }, {
-            path: '/log-details',
-            component: props => <LogDetailsContainer {...props} />,
-            title: () => <h3>Log Details</h3>
+            path: '/setup/log-details',
+            component: LogDetailsContainer,
+            title: intl.formatMessage(setupMessages.logDetails)
         }, {
-            path: '/authenticate',
-            component: props => <AuthContainer {...props} />,
-            title: () => <h3>Login</h3>
+            path: '/setup/authenticate',
+            component: AuthContainer,
+            title: intl.formatMessage(setupMessages.login)
         }, {
-            path: '/new-identity',
-            component: props => <NewProfileContainer {...props} />,
-            title: () => <h3>New Identity</h3>
+            path: '/setup/new-identity',
+            component: NewProfileContainer,
+            title: intl.formatMessage(setupMessages.newIdentity)
         }
     ];
-
-class LauncherContainer extends Component {
-    componentWillMount () {
-        this.titles = this.getRouteMap('title');
-        this.components = this.getRouteMap('component');
-    }
-    getRouteMap = cFilter =>
-        getRouteConfig(this.props.match).map((route, index) =>
-          <Route
-            path={route.path}
-            component={route[cFilter]}
-            key={`${index}-${cFilter}`} // eslint-disable-line react/no-array-index-key
-            exact={route.exact}
-          />
-      );
-    render () {
-        return (
-          <PanelContainer
-            showBorder
-          >
-            <PanelHeader
-              title={
-                <Switch>
-                  {this.titles}
-                </Switch>
-              }
-            />
-            <Switch>
-              {this.components}
-            </Switch>
-          </PanelContainer>
-        );
-    }
-}
-LauncherContainer.propTypes = {
-    match: PropTypes.shape()
+    const titleRoutes = routes.map(route => (
+      <Route key={route.path} path={route.path} render={() => <h3>{route.title}</h3>} />
+    ));
+    const componentRoutes = routes.map(route => (
+      <Route key={route.path} path={route.path} component={route.component} />
+    ));
+    return (
+      <PanelContainer showBorder>
+        <PanelHeader title={titleRoutes} />
+        {location.pathname === '/setup' && <Redirect to={'/setup/configuration'} />}
+        {componentRoutes}
+      </PanelContainer>
+    );
 };
+
+LauncherContainer.propTypes = {
+    intl: PropTypes.shape(),
+    location: PropTypes.shape()
+};
+
 export default injectIntl(LauncherContainer);

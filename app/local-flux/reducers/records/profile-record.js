@@ -6,7 +6,6 @@ export const ProfileRecord = Record({
     akashaId: '',
     avatar: null,
     backgroundImage: [],
-    balance: null,
     about: null,
     links: [],
     profile: null,
@@ -41,6 +40,7 @@ const Flags = Record({
 });
 
 const ProfileState = Record({
+    balance: null,
     byId: new Map(),
     errors: new List(),
     ethAddresses: new Map(),

@@ -11,7 +11,6 @@ import { Avatar, EntryVersionsPanel, EntryVotesPanel, TagChip } from '../';
 import { calculateReadingTime, getInitials } from '../../utils/dataModule';
 import imageCreator from '../../utils/imageUtils';
 import { entryMessages, generalMessages } from '../../locale-data/messages';
-import styles from './entry-card.scss';
 
 class EntryCard extends Component {
     constructor (props) {
@@ -250,7 +249,7 @@ class EntryCard extends Component {
             <CardHeader
               title={publisher ?
                 <button
-                  className={styles.contentLink}
+                  className="content-link"
                   style={{ border: '0px', outline: 'none', background: 'transparent', padding: 0 }}
                   onClick={this.selectProfile}
                 >
@@ -377,7 +376,7 @@ class EntryCard extends Component {
               <CardTitle
                 title={content.get('title')}
                 expandable
-                className={styles.contentLink}
+                className="content-link"
                 style={{
                     paddingTop: '4px',
                     paddingBottom: '4px',
@@ -404,7 +403,7 @@ class EntryCard extends Component {
             }
             {content &&
               <CardText
-                className={styles.contentLink}
+                className="content-link"
                 style={{
                     paddingTop: '4px',
                     paddingBottom: '4px',

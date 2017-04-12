@@ -1,7 +1,9 @@
-export default class ServiceState {
-    static error = 'error';
-    static downloading = 'downloading';
-    static stopped = 'stopped';
-    static started = 'started';
-    static starting = 'starting';
-}
+const serviceState = {
+    error: 'error',
+    downloading: 'downloading',
+    stopped: 'stopped',
+    started: 'started',
+    starting: 'starting'
+};
+
+export default serviceState;

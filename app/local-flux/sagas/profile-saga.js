@@ -6,6 +6,18 @@ import * as profileService from '../services/profile-service';
 
 const Channel = global.Channel;
 
+function* profileGetBalance ({ unit = 'ether' }) {
+    const channel = Channel.server.profile.getBalance;
+    const account = yield select(state => state.profileState.getIn(['loggedProfile', 'account']));
+    if (!account) {
+        console.log('no logged account');
+        return;
+    }
+    console.log('get profile balance');
+    yield call(enableChannel, channel, Channel.client.profile.manager);
+    yield apply(channel, channel.send, [{ etherBase: account, unit }]);
+}
+
 function* profileGetCurrent () {
     const channel = Channel.server.registry.getCurrentProfile;
     yield apply(channel, channel.send, [{}]);
@@ -41,6 +53,10 @@ function* profileSaveLogged (loggedProfile) {
 
 // Action watchers
 
+function* watchProfileGetBalance () {
+    yield takeLatest(types.PROFILE_GET_BALANCE, profileGetBalance);
+}
+
 function* watchProfileGetCurrent () {
     yield takeLatest(types.PROFILE_GET_CURRENT, profileGetCurrent);
 }
@@ -58,6 +74,17 @@ function* watchProfileLogin () {
 }
 
 // Channel watchers
+
+function* watchProfileGetBalanceChannel () {
+    while (true) {
+        const resp = yield take(actionChannels.profile.getBalance);
+        if (resp.error) {
+            yield put(actions.profileGetBalanceError(resp.error));
+        } else {
+            yield put(actions.profileGetBalanceSuccess(resp.data));
+        }
+    }
+}
 
 function* watchProfileGetCurrentChannel () {
     while (true) {
@@ -108,12 +135,14 @@ function* watchProfileLoginChannel () {
 }
 
 export function* registerProfileListeners () {
+    yield fork(watchProfileGetBalanceChannel);
     yield fork(watchProfileGetCurrentChannel);
     yield fork(watchProfileGetLocalChannel);
     yield fork(watchProfileGetListChannel);
 }
 
 export function* watchProfileActions () {
+    yield fork(watchProfileGetBalance);
     yield fork(watchProfileGetCurrent);
     yield fork(watchProfileGetLocal);
     yield fork(watchProfileGetList);

@@ -33,7 +33,7 @@ IconStreams.propTypes = {
     disabled: PropTypes.bool,
     iconStyle: PropTypes.object,
     isActive: PropTypes.bool,
-    onClick: PropTypes.func.isRequired,
+    onClick: PropTypes.func,
 };
 
 export default IconStreams;

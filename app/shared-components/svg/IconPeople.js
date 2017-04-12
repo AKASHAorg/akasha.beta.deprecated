@@ -5,12 +5,7 @@ import CircleIcon from './CircleIcon';
 import { MenuPeople } from '../svg';
 
 
-class IconEntries extends Component {
-    // static defaultProps = {
-    //     iconStyle: { width: '32px', height: '32px' },
-    // };
-
-
+class IconPeople extends Component {
     render () {
         let { disabled, iconStyle, isActive, onClick } = this.props;
 
@@ -32,11 +27,11 @@ class IconEntries extends Component {
     }
 }
 
-IconEntries.propTypes = {
+IconPeople.propTypes = {
     disabled: PropTypes.bool,
     iconStyle: PropTypes.shape(),
     isActive: PropTypes.bool,
-    onClick: PropTypes.func.isRequired,
+    onClick: PropTypes.func,
 };
 
-export default IconEntries;
+export default IconPeople;

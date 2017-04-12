@@ -68,7 +68,7 @@ class Notification extends Component {
               </div>
             }
             secondaryTextLines={2}
-            className="has_hidden_action"
+            className="has-hidden-action"
             rightIcon={
               <SvgIcon
                 className={!showActions && 'hidden_action'}
