@@ -30,5 +30,8 @@ export default {
     imageUploader: {
         position: 'relative',
         border: `1px solid ${Colors.lightBlack}`
+    },
+    slider: {
+        trackColorSelected: Colors.grey400
     }
 };

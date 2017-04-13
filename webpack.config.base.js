@@ -27,6 +27,9 @@ export default {
             path.join(__dirname, 'app/shared-components'),
             'node_modules',
         ],
+        alias: {
+            joi: 'joi-browser'
+        }
     },
 
     plugins: [

@@ -1,15 +1,11 @@
 import React from 'react';
 import AvatarEditor from 'react-avatar-editor/dist';
-import AddPhotoIcon from 'material-ui/svg-icons/image/add-a-photo';
+import { AddImage } from '../svg';
 import ClearIcon from 'material-ui/svg-icons/content/clear';
+import RotateIcon from 'material-ui/svg-icons/image/rotate-right';
 import { SvgIcon, Slider } from 'material-ui';
 import { AvatarPlaceholder } from '../svg';
-
-const defaultUserInitialsStyle = {
-    textTransform: 'uppercase',
-    fontSize: '36px',
-    fontWeight: '600'
-};
+import styles from './avatar.scss';
 
 class Avatar extends React.Component {
     constructor (props) {
@@ -17,7 +13,8 @@ class Avatar extends React.Component {
         this.state = {
             avatarImage: null,
             avatarScale: props.avatarScale || 1.2,
-            imageLoaded: false
+            imageLoaded: false,
+            rotation: 0
         };
     }
     componentWillUnmount () {
@@ -57,6 +54,18 @@ class Avatar extends React.Component {
             avatarScale: sliderValue
         });
     }
+    _handleRotate = () => {
+        this.setState((prevState) => {
+            if (prevState.rotation < 270) {
+                return {
+                    rotation: prevState.rotation + 90
+                };
+            }
+            return {
+                rotation: 0
+            };
+        });
+    }
     _handleImageAdd = () => {
         const files = this.fileInput.files[0].path;
         this.setState({
@@ -77,9 +86,6 @@ class Avatar extends React.Component {
             image,
             userInitials,
             userInitialsStyle,
-            avatarEmptyStyle,
-            avatarClearStyle,
-            dialogHandlerStyle,
             userInitialsAlignStyle,
             userInitialsWrapperStyle,
             offsetBorder,
@@ -87,7 +93,7 @@ class Avatar extends React.Component {
             style,
             onMouseEnter,
             onMouseLeave } = this.props;
-        const palette = this.context.muiTheme.palette;
+        const { palette } = this.context.muiTheme;
         let avatarImage;
 
         if (this.state.avatarImage) {
@@ -100,8 +106,9 @@ class Avatar extends React.Component {
         }
         return (
           <div
+            className={`${styles.root}`}
             style={
-              Object.assign({ maxWidth: radius, maxHeight: radius, position: 'relative' }, style)
+              Object.assign({ maxWidth: radius }, style)
             }
             onMouseEnter={onMouseEnter}
             onMouseLeave={onMouseLeave}
@@ -109,7 +116,7 @@ class Avatar extends React.Component {
             {editable && !avatarImage &&
               <input
                 ref={(fileInput) => { this.fileInput = fileInput; }}
-                style={dialogHandlerStyle}
+                className={`${styles.dialogHandler}`}
                 type="file"
                 onChange={this._handleImageAdd}
               />
@@ -131,8 +138,10 @@ class Avatar extends React.Component {
                     ref={(editor) => { this.editor = editor; }}
                     borderRadius={100}
                     scale={editable ? this.state.avatarScale : 1}
+                    rotate={this.state.rotation}
                   /> :
                   <img
+                    alt=""
                     src={avatarImage}
                     style={{
                         display: this.state.imageLoaded ? 'initial' : 'none',
@@ -146,28 +155,40 @@ class Avatar extends React.Component {
                   />
                 }
                 {editable &&
-                  <div>
-                    <Slider
-                      defaultValue={this.state.avatarScale}
-                      max={2}
-                      min={1}
-                      step={0.1}
-                      onChange={this._handleSliderChange}
-                    />
+                  <div className="col-xs-12">
+                    <div className="row middle-xs">
+                      <div className="col-xs-9">
+                        <Slider
+                          max={2}
+                          min={1}
+                          step={0.1}
+                          defaultValue={this.state.avatarScale}
+                          onChange={this._handleSliderChange}
+                        />
+                      </div>
+                      <div
+                        onClick={this._handleRotate}
+                        className={`col-xs-3 ${styles.rotateButton}`}
+                      >
+                        <SvgIcon>
+                          <RotateIcon color={palette.primary1Color} />
+                        </SvgIcon>
+                      </div>
+                    </div>
                     <div
-                      style={avatarClearStyle}
+                      className={`${styles.clearAvatarButton}`}
                       onClick={this._handleAvatarClear}
                     >
                       <SvgIcon>
-                        <ClearIcon color="red" />
+                        <ClearIcon color={palette.primary1Color} />
                       </SvgIcon>
                     </div>
                   </div>
                 }
                 {!this.state.imageLoaded && !editable &&
                   <div
+                    className={`${styles.avatarEmpty}`}
                     style={{
-                        ...avatarEmptyStyle,
                         width: radius,
                         height: radius,
                         border: `1px solid ${palette.borderColor}`,
@@ -183,8 +204,8 @@ class Avatar extends React.Component {
             }
             {!avatarImage &&
               <div
+                className={`${styles.avatarEmpty}`}
                 style={{
-                    ...avatarEmptyStyle,
                     width: radius,
                     height: radius,
                     border: `1px solid ${palette.borderColor}`,
@@ -203,7 +224,10 @@ class Avatar extends React.Component {
                   >
                     <div style={userInitialsAlignStyle} />
                     <div style={userInitialsWrapperStyle} onClick={this._handleAvatarClick}>
-                      <h3 style={Object.assign({}, defaultUserInitialsStyle, userInitialsStyle)}>
+                      <h3
+                        className={`${styles.userInitials}`}
+                        style={userInitialsStyle}
+                      >
                         {userInitials}
                       </h3>
                     </div>
@@ -211,13 +235,11 @@ class Avatar extends React.Component {
                 }
                 {!userInitials && editable &&
                   <SvgIcon
-                    style={{
-                        width: radius,
-                        height: radius
-                    }}
+                    viewBox="0 0 36 36"
                     color={palette.textColor}
+                    className={`${styles.addImageIcon}`}
                   >
-                    <AddPhotoIcon viewBox="-30 -30 86 86" />
+                    <AddImage />
                   </SvgIcon>
                 }
                 {!userInitials && !editable &&
@@ -239,9 +261,6 @@ Avatar.propTypes = {
     radius: React.PropTypes.number,
     userInitialsStyle: React.PropTypes.shape(),
     backgroundColor: React.PropTypes.string,
-    avatarEmptyStyle: React.PropTypes.shape(),
-    avatarClearStyle: React.PropTypes.shape(),
-    dialogHandlerStyle: React.PropTypes.shape(),
     userInitialsAlignStyle: React.PropTypes.shape(),
     userInitialsWrapperStyle: React.PropTypes.shape(),
     offsetBorder: React.PropTypes.string,
@@ -256,24 +275,6 @@ Avatar.contextTypes = {
 };
 Avatar.defaultProps = {
     radius: 150,
-    avatarEmptyStyle: {
-        borderRadius: '50%',
-        overflow: 'hidden',
-    },
-    avatarClearStyle: {
-        cursor: 'pointer',
-        position: 'absolute',
-        top: 0,
-        right: 0
-    },
-    dialogHandlerStyle: {
-        height: '100%',
-        width: '100%',
-        position: 'absolute',
-        cursor: 'pointer',
-        opacity: 0,
-        left: 0
-    },
     userInitialsAlignStyle: {
         height: '100%',
         display: 'inline-block',

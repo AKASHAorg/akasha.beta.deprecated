@@ -10,21 +10,27 @@ import strategy from 'joi-validation-strategy';
 import { Avatar, ImageUploader } from '../';
 import PanelContainerFooter from '../PanelContainer/panel-container-footer';
 import { profileMessages, formMessages, generalMessages } from '../../locale-data/messages';
-import { profileSchema, getErrorMessages } from '../../utils/validationSchema';
+import { getProfileSchema } from '../../utils/validationSchema';
 
 class NewProfileForm extends Component {
     constructor (props) {
         super(props);
         this.state = {
             firstName: '',
+            lastName: '',
             akashaId: '',
             password: '',
             password2: '',
+            about: '',
             links: [],
+            crypto: [],
             optDetails: false,
+            akashaIdIsValid: true,
+            akashaIdExists: false
         };
-        this.validatorTypes = profileSchema;
+        this.validatorTypes = getProfileSchema(props.intl);
         this.showErrorOnFields = [];
+        this.isSubmitting = false;
     }
 
     getValidatorData = () => this.state;
@@ -38,37 +44,53 @@ class NewProfileForm extends Component {
             optDetails: !this.state.optDetails
         });
     }
-    _handleAddLink = () => {
-        this.setState((prevState) => {
-            if (prevState.links[prevState.links.length - 1] &&
-              prevState.links[prevState.links.length - 1].title.length === 0) {
-                return prevState;
-            }
-            return {
-                links: [...prevState.links, {
-                    title: '',
-                    url: '',
-                    type: '',
-                    id: prevState.links.length > 0 ? (prevState.links.slice(-1).pop().id + 1) : 1,
-                    error: {}
-                }]
-            };
-        });
-    }
-    _handleLinkChange = (field, linkId) => {
-        const links = this.state.links.slice();
+    _handleAddLink = linkType =>
+        () =>
+            this.setState((prevState) => {
+                const links = prevState[linkType];
+                const lastLink = links[links.length - 1];
+                let newLink = {};
+                if (lastLink) {
+                    if (linkType === 'links' && (lastLink.title.length === 0 || lastLink.url.length === 0)) {
+                        return null;
+                    }
+                    if (linkType === 'crypto' && (lastLink.name.length === 0 || lastLink.address.length === 0)) {
+                        return null;
+                    }
+                }
+                if (linkType === 'links') {
+                    newLink = {
+                        title: '',
+                        url: '',
+                        type: '',
+                        id: links.length > 0 ? (links.slice(-1).pop().id + 1) : 1
+                    };
+                }
+                if (linkType === 'crypto') {
+                    newLink = {
+                        name: '',
+                        address: '',
+                        id: links.length > 0 ? (links.slice(-1).pop().id + 1) : 1
+                    };
+                }
+                return {
+                    [linkType]: [...links, newLink]
+                };
+            });
+    _handleLinkChange = (linkType, field, linkId) => {
+        const links = this.state[linkType].slice();
         const index = links.findIndex(link => link.id === linkId);
         return (ev) => {
             links[index][field] = ev.target.value;
             this.setState({
-                links
+                [linkType]: links
             });
         };
     }
-    _handleRemoveLink = linkId =>
+    _handleRemoveLink = (linkId, linkType) =>
         () => {
             this.setState(prevState => ({
-                links: prevState.links.filter(link => link.id !== linkId)
+                [linkType]: prevState[linkType].filter(link => link.id !== linkId)
             }));
         }
     _handleFieldChange = field =>
@@ -77,6 +99,28 @@ class NewProfileForm extends Component {
                 [field]: ev.target.value
             });
         }
+    _validateAkashaId = (akashaId) => {
+        const serverChannel = window.Channel.server.registry.checkIdFormat;
+        const clientChannel = window.Channel.client.registry.checkIdFormat;
+        if (!this.idVerifyChannelEnabled) {
+            serverChannel.enable();
+            this.idVerifyChannelEnabled = true;
+        }
+        clientChannel.on((response) => {
+            if (response.error) {
+                return this.setState({
+                    error: `Unknown error ${response.error}`
+                });
+            }
+            return this.setState({
+                akashaIdIsValid: response.idValid
+            });
+        });
+        serverChannel.send({ akashaId });
+    }
+    _checkAkashaId = (akashaId) => {
+        console.log('check if akashaId is available', akashaId);
+    }
     _onValidate = field => (err) => {
         if (err) {
             console.log('form has errors!', err);
@@ -85,39 +129,102 @@ class NewProfileForm extends Component {
         // validation passed
         if (field === 'akashaId') {
             console.log('check the existence on server of akashaId:', this.state.akashaId);
+            this._validateAkashaId(this.state.akashaId);
+            this._checkAkashaId(this.state.akashaId);
         }
     }
 
-    _validateField = field =>
+    _validateField = (field, index, sub) =>
         () => {
             if (!this.showErrorOnFields.includes(field)) {
                 this.showErrorOnFields.push(field);
             }
-            this.props.validate(this._onValidate(field));
+            if (field === 'links' || field === 'crypto') {
+                return this.props.validate(this._onValidate(field[index][sub]));
+            }
+            return this.props.validate(this._onValidate(field));
         };
-    _getErrorMessages = (field) => {
+    _getErrorMessages = (field, index, sub) => {
         const { getValidationMessages } = this.props;
-        if (this.showErrorOnFields.includes(field)) {
+        if (this.showErrorOnFields.includes(field) && !this.isSubmitting) {
+            if (field === 'links' || field === 'crypto') {
+                const errors = getValidationMessages(field)[index];
+                if (errors && errors[sub]) {
+                    return errors[sub][0];
+                }
+                return null;
+            }
             return getValidationMessages(field)[0];
         }
         return null;
     }
+    _getAkashaIdErrors = () => {
+        if (this._getErrorMessages('akashaId')) {
+            return this._getErrorMessages('akashaId');
+        }
+        if (!this.state.akashaIdIsValid) {
+            return 'Username contains invalid characters!';
+        }
+        if (this.state.akashaIdExists) {
+            return 'Username already registered!';
+        }
+        return null;
+    }
+    _handleCancel = () => {
+        this.props.history.push('/authenticate');
+    }
+    _handleSubmit = (ev) => {
+        ev.preventDefault();
+        const { tempProfileCreate } = this.props;
+        const {
+          firstName,
+          lastName,
+          akashaId,
+          password,
+          about,
+          links,
+          crypto } = this.state;
+        this.isSubmitting = true;
+        this.props.validate((err) => {
+            if (err) return;
+            if (this.state.akashaIdIsValid && !this.state.akashaIdExists) {
+                const backgroundImage = this.imageUploader.getImage();
+                this.avatar.getImage().then((uint8arr) => {
+                    let avatar;
+                    if (uint8arr) {
+                        avatar = uint8arr;
+                    }
+                    tempProfileCreate({
+                        firstName,
+                        lastName,
+                        akashaId,
+                        password: new TextEncoder('utf-8').encode(password),
+                        backgroundImage,
+                        avatar,
+                        about,
+                        links,
+                        crypto
+                    });
+                });
+            }
+        });
+    }
     render () {
         const { intl, muiTheme, expandOptionalDetails } = this.props;
-        const floatLabelStyle = { color: muiTheme.palette.disabledColor };
-        console.log(this.showErrorOnFields, 'showError');
+        const { formatMessage } = intl;
+
         return (
           <div className="col-xs-12" style={{ padding: '0 24px' }}>
             <form
               action=""
-              onSubmit={this.handleSubmit}
+              onSubmit={this._handleSubmit}
               className="row"
               ref={(profileForm) => { this.profileForm = profileForm; }}
             >
               <div className="col-xs-6 start-xs">
                 <TextField
                   fullWidth
-                  floatingLabelText="First Name"
+                  floatingLabelText={formatMessage(formMessages.firstName)}
                   value={this.state.firstName}
                   onChange={this._handleFieldChange('firstName')}
                   onBlur={this._validateField('firstName')}
@@ -126,8 +233,9 @@ class NewProfileForm extends Component {
               </div>
               <div className="col-xs-6 end-xs">
                 <TextField
+                  className="start-xs"
                   fullWidth
-                  floatingLabelText="Last Name"
+                  floatingLabelText={formatMessage(formMessages.lastName)}
                   value={this.state.lastName}
                   onChange={this._handleFieldChange('lastName')}
                   onBlur={this._validateField('lastName')}
@@ -137,17 +245,18 @@ class NewProfileForm extends Component {
               <div className="col-xs-12">
                 <TextField
                   fullWidth
-                  floatingLabelText="Akasha Id"
+                  floatingLabelText={formatMessage(formMessages.akashaId)}
                   value={this.state.akashaId}
                   onChange={this._handleFieldChange('akashaId')}
                   onBlur={this._validateField('akashaId')}
-                  errorText={this._getErrorMessages('akashaId')}
+                  errorText={this._getAkashaIdErrors()}
                 />
               </div>
               <div className="col-xs-12">
                 <TextField
                   fullWidth
-                  floatingLabelText="Password"
+                  type="password"
+                  floatingLabelText={formatMessage(formMessages.passphrase)}
                   value={this.state.password}
                   onChange={this._handleFieldChange('password')}
                   onBlur={this._validateField('password')}
@@ -157,7 +266,8 @@ class NewProfileForm extends Component {
               <div className="col-xs-12">
                 <TextField
                   fullWidth
-                  floatingLabelText="Confirm Password"
+                  type="password"
+                  floatingLabelText={formatMessage(formMessages.passphraseVerify)}
                   value={this.state.password2}
                   onChange={this._handleFieldChange('password2')}
                   onBlur={this._validateField('password2')}
@@ -189,7 +299,9 @@ class NewProfileForm extends Component {
                   <div className="col-xs-12">
                     <ImageUploader
                       ref={(imageUploader) => { this.imageUploader = imageUploader; }}
-                      minWidth={320}
+                      minWidth={360}
+                      intl={intl}
+                      muiTheme={muiTheme}
                     />
                   </div>
                   <h3 className="col-xs-12" style={{ margin: '20px 0 0 0' }} >
@@ -203,8 +315,9 @@ class NewProfileForm extends Component {
                       }
                       multiLine
                       value={this.state.about}
-                      floatingLabelStyle={floatLabelStyle}
-                      onChange={this._handleAboutChange}
+                      onChange={this._handleFieldChange('about')}
+                      onBlur={this._validateField('about')}
+                      errorText={this._getErrorMessages('about')}
                     />
                   </div>
                   <h3 className="col-xs-10" style={{ margin: '20px 0 0 0' }}>
@@ -213,7 +326,7 @@ class NewProfileForm extends Component {
                   <div className="col-xs-2 end-xs" style={{ margin: '16px 0 0 0' }}>
                     <IconButton
                       title={intl.formatMessage(profileMessages.addLinkButtonTitle)}
-                      onClick={this._handleAddLink}
+                      onClick={this._handleAddLink('links')}
                     >
                       <SvgIcon>
                         <ContentAddIcon
@@ -222,48 +335,106 @@ class NewProfileForm extends Component {
                       </SvgIcon>
                     </IconButton>
                   </div>
-                  {this.state.links.map((link, key) =>
-                    <div key={link.id} className="row">
-                      <div className="col-xs-10">
-                        <TextField
-                          autoFocus={(this.state.links.length - 1) === key}
-                          fullWidth
-                          floatingLabelText={intl.formatMessage(formMessages.title)}
-                          value={link.title}
-                          floatingLabelStyle={floatLabelStyle}
-                          onChange={this._handleLinkChange('title', link.id)}
-                          errorText={link.error && link.error.title && 'Title cannot be empty'}
-                          errorStyle={{ position: 'absolute', bottom: '-10px' }}
-                        />
-                        <TextField
-                          fullWidth
-                          floatingLabelText={intl.formatMessage(formMessages.url)}
-                          value={link.url}
-                          floatingLabelStyle={floatLabelStyle}
-                          onChange={this._handleLinkChange('url', link.id)}
-                          errorText={link.error && link.error.url && 'URL cannot be empty'}
-                          errorStyle={{ position: 'absolute', bottom: '-10px' }}
-                        />
+                  <div className="col-xs-12">
+                    {this.state.links.map((link, index) =>
+                      <div key={link.id} className="row">
+                        <div className="col-xs-10">
+                          <TextField
+                            autoFocus={(this.state.links.length - 1) === index}
+                            fullWidth
+                            floatingLabelText={intl.formatMessage(formMessages.title)}
+                            value={link.title}
+                            onChange={this._handleLinkChange('links', 'title', link.id)}
+                            onBlur={this._validateField('links', index, 'title')}
+                            errorText={this._getErrorMessages('links', index, 'title')}
+                          />
+                          <TextField
+                            fullWidth
+                            floatingLabelText={intl.formatMessage(formMessages.url)}
+                            hintText="https://twitter.com or email@example.com"
+                            value={link.url}
+                            onChange={this._handleLinkChange('links', 'url', link.id)}
+                            onBlur={this._validateField('links', index, 'url')}
+                            errorText={this._getErrorMessages('links', index, 'url')}
+                          />
+                        </div>
+                        <div className="col-xs-2 center-xs">
+                          <IconButton
+                            title={intl.formatMessage(profileMessages.removeLinkButtonTitle)}
+                            style={{ marginTop: '24px' }}
+                            onClick={this._handleRemoveLink(link.id, 'links')}
+                          >
+                            <SvgIcon>
+                              <CancelIcon color={muiTheme.palette.textColor} />
+                            </SvgIcon>
+                          </IconButton>
+                        </div>
+                        {this.state.links.length > 1 &&
+                          <Divider
+                            style={{ marginTop: '16px' }}
+                            className="col-xs-12"
+                          />
+                        }
                       </div>
-                      <div className="col-xs-2 center-xs">
-                        <IconButton
-                          title={intl.formatMessage(profileMessages.removeLinkButtonTitle)}
-                          style={{ marginTop: '24px' }}
-                          onClick={this._handleRemoveLink(link.id)}
-                        >
-                          <SvgIcon>
-                            <CancelIcon />
-                          </SvgIcon>
-                        </IconButton>
-                      </div>
-                      {this.state.links.length > 1 &&
-                        <Divider
-                          style={{ marginTop: '16px' }}
-                          className="col-xs-12"
+                    )}
+                  </div>
+                  <h3 className="col-xs-10" style={{ margin: '20px 0 0 0' }}>
+                    {intl.formatMessage(profileMessages.cryptoAddresses)}
+                  </h3>
+                  <div className="col-xs-2 end-xs" style={{ margin: '16px 0 0 0' }}>
+                    <IconButton
+                      title={intl.formatMessage(profileMessages.addCryptoAddress)}
+                      onClick={this._handleAddLink('crypto')}
+                    >
+                      <SvgIcon>
+                        <ContentAddIcon
+                          color={muiTheme.palette.primary1Color}
                         />
-                      }
-                    </div>
-                  )}
+                      </SvgIcon>
+                    </IconButton>
+                  </div>
+                  <div className="col-xs-12">
+                    {this.state.crypto.map((cryptoLink, index) =>
+                      <div key={cryptoLink.id} className="row">
+                        <div className="col-xs-10">
+                          <TextField
+                            autoFocus={(this.state.crypto.length - 1) === index}
+                            fullWidth
+                            floatingLabelText={intl.formatMessage(profileMessages.cryptoName)}
+                            value={cryptoLink.name}
+                            onChange={this._handleLinkChange('crypto', 'name', cryptoLink.id)}
+                            onBlur={this._validateField('crypto', index, 'name')}
+                            errorText={this._getErrorMessages('crypto', index, 'name')}
+                          />
+                          <TextField
+                            fullWidth
+                            floatingLabelText={intl.formatMessage(profileMessages.cryptoAddress)}
+                            value={cryptoLink.address}
+                            onChange={this._handleLinkChange('crypto', 'address', cryptoLink.id)}
+                            onBlur={this._validateField('crypto', index, 'address')}
+                            errorText={this._getErrorMessages('crypto', index, 'address')}
+                          />
+                        </div>
+                        <div className="col-xs-2 center-xs">
+                          <IconButton
+                            title={intl.formatMessage(profileMessages.removeCryptoButtonTitle)}
+                            style={{ marginTop: '24px' }}
+                            onClick={this._handleRemoveLink(cryptoLink.id, 'crypto')}
+                          >
+                            <SvgIcon>
+                              <CancelIcon color={muiTheme.palette.textColor} />
+                            </SvgIcon>
+                          </IconButton>
+                        </div>
+                        {this.state.crypto.length > 1 &&
+                          <Divider
+                            style={{ marginTop: '16px' }}
+                            className="col-xs-12"
+                          />
+                        }
+                      </div>
+                    )}
+                  </div>
                 </div>
               }
               <small style={{ paddingBottom: '15px', marginTop: '15px' }}>
@@ -282,6 +453,7 @@ class NewProfileForm extends Component {
                   }}
                 />
               </small>
+              <input type="submit" className="hidden" />
             </form>
             <PanelContainerFooter>
               <RaisedButton
@@ -294,7 +466,7 @@ class NewProfileForm extends Component {
                 key="submit"
                 label={intl.formatMessage(generalMessages.submit)}
                 type="submit"
-                onClick={this._submitForm}
+                onClick={this._handleSubmit}
                 style={{ marginLeft: 8 }}
                 primary
               />
@@ -307,12 +479,9 @@ class NewProfileForm extends Component {
 NewProfileForm.propTypes = {
     intl: PropTypes.shape(),
     muiTheme: PropTypes.shape(),
-    errors: PropTypes.shape(),
     expandOptionalDetails: PropTypes.bool,
     validate: PropTypes.func,
-    isValid: PropTypes.func,
     getValidationMessages: PropTypes.func,
-    clearValidations: PropTypes.func
 };
 
 NewProfileForm.defaultProps = {
@@ -324,7 +493,6 @@ NewProfileForm.defaultProps = {
         position: 'relative'
     }
 };
-
 const validationHOC = validation(strategy());
 
 export default injectIntl(

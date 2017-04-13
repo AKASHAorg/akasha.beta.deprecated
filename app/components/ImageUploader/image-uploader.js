@@ -1,10 +1,10 @@
 import React, { PropTypes, Component } from 'react';
 import { SvgIcon, RaisedButton } from 'material-ui';
-import { injectIntl } from 'react-intl';
 import DeleteIcon from 'material-ui/svg-icons/action/delete';
 import { AddImage } from '../svg';
 import { generalMessages } from '../../locale-data/messages';
 import imageCreator, { getResizedImages, findClosestMatch } from '../../utils/imageUtils';
+import styles from './image-uploader.scss';
 
 class ImageUploader extends Component {
     constructor (props) {
@@ -75,7 +75,8 @@ class ImageUploader extends Component {
             minHeight: this.props.minHeight
         });
         return Promise.all(filePromises)
-            .then(results =>
+            .then(results => {
+                console.log(results, 'results');
                 this.setState({
                     imageFile: results,
                     isNewImage: true,
@@ -83,7 +84,7 @@ class ImageUploader extends Component {
                 }, () => {
                     this.fileInput.value = '';
                 })
-            ).catch((err) => {
+            }).catch((err) => {
                 console.error(err);
                 return this.setState({
                     error: err
@@ -117,19 +118,26 @@ class ImageUploader extends Component {
             errorStyle,
             multiFiles,
             intl,
-            initialImageLink
+            initialImageLink,
+            muiTheme
         } = this.props;
         const { initialImageFile } = this.state;
+        /* eslint-disable react/no-array-index-key */
         return (
           <div
             ref={(container) => { this.container = container; }}
-            style={this.context.muiTheme.imageUploader}
+            style={{ position: 'relative', border: `1px solid ${muiTheme.palette.textColor}` }}
           >
             {this.state.isNewImage &&
               <div>
                 {multiFiles &&
                    this.state.imageFile.map((image, key) =>
-                     <img src={this._getImageSrc(image)} key={key} style={imageStyle} alt="" />
+                     <img
+                       src={this._getImageSrc(image)}
+                       key={`image-${key}`}
+                       style={imageStyle}
+                       alt=""
+                     />
                    )
                 }
                 {!multiFiles &&
@@ -171,7 +179,9 @@ class ImageUploader extends Component {
                   alt=""
                   style={imageStyle}
                 />
-                <div style={clearImageButtonStyle}>
+                <div
+                  className={`${styles.clearImageButton}`}
+                >
                   <RaisedButton
                     fullWidth
                     secondary
@@ -183,7 +193,9 @@ class ImageUploader extends Component {
               </div>
             }
             {!this.state.isNewImage && !initialImageFile && !initialImageLink &&
-              <div style={emptyContainerStyle}>
+              <div
+                style={emptyContainerStyle}
+              >
                 <SvgIcon
                   style={{ height: '42px', width: '100%' }}
                   viewBox="0 0 36 36"
@@ -199,6 +211,7 @@ class ImageUploader extends Component {
             <input
               ref={(fileInput) => { this.fileInput = fileInput; }}
               type="file"
+              className={`${styles.uploadButton}`}
               style={uploadButtonStyle}
               onChange={this._handleDialogOpen}
               multiple={multiFiles}
@@ -212,24 +225,6 @@ class ImageUploader extends Component {
     }
 }
 ImageUploader.defaultProps = {
-    uploadButtonStyle: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        zIndex: 1,
-        cursor: 'pointer',
-        opacity: 0,
-        width: '100%'
-    },
-    clearImageButtonStyle: {
-        position: 'absolute',
-        top: '8px',
-        right: '-8px',
-        zIndex: 3,
-        width: 36
-    },
     imageStyle: {
         width: '100%',
         display: 'inherit'
@@ -255,7 +250,8 @@ ImageUploader.propTypes = {
     minWidth: PropTypes.number,
     minHeight: PropTypes.number,
     multiFiles: PropTypes.bool,
-    intl: PropTypes.shape(),
+    intl: PropTypes.shape().isRequired,
+    muiTheme: PropTypes.shape().isRequired,
     initialImage: PropTypes.shape(),
     initialImageLink: PropTypes.string,
     uploadButtonStyle: PropTypes.shape(),
@@ -268,4 +264,4 @@ ImageUploader.propTypes = {
 ImageUploader.contextTypes = {
     muiTheme: React.PropTypes.shape()
 };
-export default injectIntl(ImageUploader, { withRef: true });
+export default ImageUploader;

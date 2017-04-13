@@ -151,7 +151,7 @@
     "history": "4.6.1",
     "html-webpack-plugin": "2.28.0",
     "immutable": "3.8.1",
-    "joi": "5.1.0",
+    "joi-browser": "^10.0.6",
     "joi-validation-strategy": "^0.3.3",
     "jsdom": "9.11.0",
     "jsdom-global": "2.1.1",

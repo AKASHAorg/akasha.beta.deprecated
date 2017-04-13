@@ -30,10 +30,10 @@ const tempProfileState = createReducer(initialState, {
         }),
 
     [types.ETH_ADDRESS_CREATE_SUCCESS]: (state, { data }) => {
-        const { status, address } = data;
+        const { address } = data;
         const newState = state.merge({
             tempProfile: state.get('tempProfile').setIn(['address'], address),
-            status: state.get('status').setIn(['currentAction'], status.currentAction)
+            status: state.get('status').setIn(['currentAction'], types.ETH_ADDRESS_CREATE_SUCCESS)
         });
         return newState;
     },

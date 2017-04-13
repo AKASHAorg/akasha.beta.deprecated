@@ -45,6 +45,31 @@
     "defaultMessage": "remove link"
   },
   {
+    "id": "app.profile.cryptoAddresses",
+    "description": "crypto addresses section title",
+    "defaultMessage": "Other crypto addresses"
+  },
+  {
+    "id": "app.profile.addCryptoAddress",
+    "description": "add crypto address button label",
+    "defaultMessage": "Add cryptocurrency address"
+  },
+  {
+    "id": "app.profile.cryptoName",
+    "description": "crypto name label",
+    "defaultMessage": "Cryptocurrency Name"
+  },
+  {
+    "id": "app.profile.cryptoAddress",
+    "description": "crypto address label",
+    "defaultMessage": "Cryptocurrency Address"
+  },
+  {
+    "id": "app.profile.removeCryptoButtonTitle",
+    "description": "remove crypto button label",
+    "defaultMessage": "Remove cryptocurrency link"
+  },
+  {
     "id": "app.profile.keepAccUnlocked",
     "description": "Label for \"Keep Account Unlocked For\" checkbox",
     "defaultMessage": "Keep account unlocked for"
@@ -113,16 +138,6 @@
     "id": "app.profile.unfollow",
     "description": "unfollow a profile",
     "defaultMessage": "Unfollow"
-  },
-  {
-    "id": "app.profile.about",
-    "description": "profile details label for a short description",
-    "defaultMessage": "About"
-  },
-  {
-    "id": "app.profile.links",
-    "description": "profile details label for external or internal links",
-    "defaultMessage": "Links"
   },
   {
     "id": "app.profile.followers",

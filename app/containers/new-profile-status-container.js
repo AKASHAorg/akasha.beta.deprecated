@@ -3,9 +3,9 @@ import { connect } from 'react-redux';
 import { tempProfileUpdate } from '../local-flux/actions/temp-profile-actions';
 
 class NewProfileStatusContainer extends Component {
-    render() {
+    render () {
         return (
-            <div>New Profile Status</div>
+          <div>New Profile Status</div>
         );
     }
 }
@@ -13,7 +13,7 @@ class NewProfileStatusContainer extends Component {
 function mapStateToProps (state) {
     return {
         tempProfile: state.tempProfileState.get('tempProfile')
-    }
+    };
 }
 
 export default connect(
