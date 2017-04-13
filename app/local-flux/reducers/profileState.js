@@ -48,10 +48,21 @@ const addProfileData = (byId, profileData) => {
         return byId;
     }
     const { avatar, baseUrl } = profileData;
-    if (avatar && baseUrl) {
+    if (avatar && baseUrl && !avatar.includes(baseUrl)) {
         profileData.avatar = `${baseUrl}/${avatar}`;
     }
     return byId.set(profileData.profile, new ProfileRecord(profileData));
+};
+
+const entryIteratorHandler = (state, { data }) => {
+    let byId = state.get('byId');
+    data.collection.forEach((entry) => {
+        const publisher = entry.entryEth.publisher;
+        if (publisher && !byId.get(publisher.akashaId)) {
+            byId = addProfileData(byId, publisher);
+        }
+    });
+    return state.set('byId', byId);
 };
 
 const profileState = createReducer(initialState, {
@@ -441,6 +452,14 @@ const profileState = createReducer(initialState, {
     [appTypes.CLEAN_STORE]: () => initialState,
 
 // ***************************** NEW REDUCERS **************************************
+
+    [types.ENTRY_MORE_NEWEST_ITERATOR_SUCCESS]: entryIteratorHandler,
+
+    [types.ENTRY_MORE_TAG_ITERATOR_SUCCESS]: entryIteratorHandler,
+
+    [types.ENTRY_NEWEST_ITERATOR_SUCCESS]: entryIteratorHandler,
+
+    [types.ENTRY_TAG_ITERATOR_SUCCESS]: entryIteratorHandler,
 
     [types.PROFILE_CLEAR_LOCAL]: state =>
         state.merge({

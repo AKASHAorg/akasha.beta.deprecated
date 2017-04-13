@@ -671,6 +671,94 @@ class EntryActions {
 
 export { EntryActions };
 
+export const entryCanClaim = entryId => action(types.ENTRY_CAN_CLAIM, { entryId });
+
+export const entryCanClaimError = (error) => {
+    error.code = 'ECCE01';
+    error.messageId = 'entryCanClaim';
+    return action(types.ENTRY_CAN_CLAIM_ERROR, { error });
+};
+
+export const entryCanClaimSuccess = data => action(types.ENTRY_CAN_CLAIM_SUCCESS, { data });
+export const entryGetBalance = entryId => action(types.ENTRY_GET_BALANCE, { entryId });
+
+export const entryGetBalanceError = (error) => {
+    error.code = 'EGBE01';
+    error.messageId = 'entryGetBalance';
+    return action(types.ENTRY_GET_BALANCE_ERROR, { error });
+};
+
+export const entryGetBalanceSuccess = data => action(types.ENTRY_GET_BALANCE_SUCCESS, { data });
+export const entryGetVoteOf = entryId => action(types.ENTRY_GET_VOTE_OF, { entryId });
+
+export const entryGetVoteOfError = (error) => {
+    error.code = 'EGVOE01';
+    error.messageId = 'entryGetVoteOf';
+    return action(types.ENTRY_GET_VOTE_OF_ERROR, { error });
+};
+
+export const entryGetVoteOfSuccess = data => action(types.ENTRY_GET_VOTE_OF_SUCCESS, { data });
+export const entryGetExtraOfList = entries => action(types.ENTRY_GET_EXTRA_OF_LIST, { entries });
+export const entryMoreNewestIterator = id => action(types.ENTRY_MORE_NEWEST_ITERATOR, { id });
+
+export const entryMoreNewestIteratorError = (error) => {
+    error.code = 'EMNIE01';
+    error.messageId = 'entryMoreNewestIterator';
+    return action(types.ENTRY_MORE_NEWEST_ITERATOR_ERROR, { error });
+};
+
+export const entryMoreNewestIteratorSuccess = data =>
+    action(types.ENTRY_MORE_NEWEST_ITERATOR_SUCCESS, { data });
+export const entryMoreStreamIterator = id => action(types.ENTRY_MORE_STREAM_ITERATOR, { id });
+
+export const entryMoreStreamIteratorError = (error) => {
+    error.code = 'EMSIE01';
+    error.messageId = 'entryMoreStreamIterator';
+    return action(types.ENTRY_MORE_STREAM_ITERATOR_ERROR, { error });
+};
+
+export const entryMoreStreamIteratorSuccess = data =>
+    action(types.ENTRY_MORE_STREAM_ITERATOR_SUCCESS, { data });
+export const entryMoreTagIterator = (id, tagName) =>
+    action(types.ENTRY_MORE_TAG_ITERATOR, { id, tagName });
+
+export const entryMoreTagIteratorError = (error) => {
+    error.code = 'EMTIE01';
+    error.messageId = 'entryMoreTagIterator';
+    return action(types.ENTRY_MORE_TAG_ITERATOR_ERROR, { error });
+};
+
+export const entryMoreTagIteratorSuccess = data =>
+    action(types.ENTRY_MORE_TAG_ITERATOR_SUCCESS, { data });
+export const entryNewestIterator = id => action(types.ENTRY_NEWEST_ITERATOR, { id });
+
+export const entryNewestIteratorError = (error) => {
+    error.code = 'ENIE01';
+    error.messageId = 'entryNewestIterator';
+    return action(types.ENTRY_NEWEST_ITERATOR_ERROR, { error });
+};
+
+export const entryNewestIteratorSuccess = data =>
+    action(types.ENTRY_NEWEST_ITERATOR_SUCCESS, { data });
+export const entryStreamIterator = id => action(types.ENTRY_STREAM_ITERATOR, { id });
+
+export const entryStreamIteratorError = (error) => {
+    error.code = 'ESIE01';
+    error.messageId = 'entryStreamIterator';
+    return action(types.ENTRY_STREAM_ITERATOR_ERROR, { error });
+};
+
+export const entryStreamIteratorSuccess = data =>
+    action(types.ENTRY_STREAM_ITERATOR_SUCCESS, { data });
+export const entryTagIterator = (id, tagName) => action(types.ENTRY_TAG_ITERATOR, { id, tagName });
+
+export const entryTagIteratorError = (error) => {
+    error.code = 'ETIE01';
+    error.messageId = 'entryTagIterator';
+    return action(types.ENTRY_TAG_ITERATOR_ERROR, { error });
+};
+
+export const entryTagIteratorSuccess = data => action(types.ENTRY_TAG_ITERATOR_SUCCESS, { data });
 export const entryVoteCost = () => action(types.ENTRY_VOTE_COST);
 
 export const entryVoteCostError = (error) => {

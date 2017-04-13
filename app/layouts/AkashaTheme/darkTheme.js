@@ -11,6 +11,7 @@ const darkTheme = {
         accent2Color: '#de6a10',
         accent3Color: '#70bf41',
         borderColor: Colors.grey700,
+        columnColor: '#3f3f3f',
         paperShadowColor: Colors.grey800,
         primary1Color: '#4285f4',
         sidebarColor: '#3f3f3f',

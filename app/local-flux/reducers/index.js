@@ -3,6 +3,7 @@ import { routerReducer as routing } from 'react-router-redux';
 import appState from './appState';
 import chatState from './chatState';
 import commentsState from './commentsState';
+import dashboardState from './dashboardState';
 import draftState from './draftState';
 import entryState from './entryState';
 import errorState from './errorState';
@@ -22,6 +23,7 @@ const rootReducer = combineReducers({
     appState,
     chatState,
     commentsState,
+    dashboardState,
     draftState,
     entryState,
     errorState,

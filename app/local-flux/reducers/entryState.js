@@ -82,6 +82,38 @@ const querySuccessHandler = (state, { data }) => {
     });
 };
 
+const addEntry = (byId, entry) => {
+    if (!entry) {
+        return byId;
+    }
+    let record = new EntryRecord(entry);
+    if (entry.content) {
+        record = record.set('content', new EntryContent(entry.content));
+    }
+    record = record.set('entryEth', new EntryEth(entry.entryEth));
+    if (entry.entryEth.publisher) {
+        // only keep a reference to the publisher's profile address
+        record = record.setIn(['entryEth', 'publisher'], entry.entryEth.publisher.profile);
+    }
+    return byId.set(entry.entryId, record);
+};
+
+const entryIteratorHandler = (state, { data }) => {
+    let byId = state.get('byId');
+    const moreEntries = data.limit === data.collection.length;
+    data.collection.forEach((entry, index) => {
+        // the request is made for n + 1 entries to determine if there are more entries left
+        // if this is the case, ignore the extra entry
+        if (!moreEntries || index !== data.collection.length - 1) {
+            byId = addEntry(byId, entry);
+        }
+    });
+    return state.merge({
+        byId,
+        lastAllStreamBlock: data.lastBlock || state.get('lastAllStreamBlock')
+    });
+};
+
 /**
  * State of the entries and drafts
  */
@@ -218,27 +250,27 @@ const entryState = createReducer(initialState, {
 
     [entryTypes.GET_ENTRIES_STREAM_ERROR]: errorHandler,
 
-    [entryTypes.ENTRY_TAG_ITERATOR]: flagHandler,
+    // [entryTypes.ENTRY_TAG_ITERATOR]: flagHandler,
 
-    [entryTypes.ENTRY_TAG_ITERATOR_SUCCESS]: (state, { data, flags }) => {
-        const moreTagEntries = data.limit === data.collection.length;
-        const newTagEntries = moreTagEntries ?
-            fromJS(data.collection.slice(0, -1).map(entry => (
-                { content: entry, entryId: entry.entryId }
-            ))) :
-            fromJS(data.collection.map(entry => (
-                { content: entry, entryId: entry.entryId }
-            )));
-        return state.merge({
-            entries: state.get('entries')
-                .filter(entry => entry.get('type') !== 'tagEntry')
-                .concat(newTagEntries.map(entry => entry.set('type', 'tagEntry'))),
-            moreTagEntries,
-            flags: state.get('flags').merge(flags)
-        });
-    },
+    // [entryTypes.ENTRY_TAG_ITERATOR_SUCCESS]: (state, { data, flags }) => {
+    //     const moreTagEntries = data.limit === data.collection.length;
+    //     const newTagEntries = moreTagEntries ?
+    //         fromJS(data.collection.slice(0, -1).map(entry => (
+    //             { content: entry, entryId: entry.entryId }
+    //         ))) :
+    //         fromJS(data.collection.map(entry => (
+    //             { content: entry, entryId: entry.entryId }
+    //         )));
+    //     return state.merge({
+    //         entries: state.get('entries')
+    //             .filter(entry => entry.get('type') !== 'tagEntry')
+    //             .concat(newTagEntries.map(entry => entry.set('type', 'tagEntry'))),
+    //         moreTagEntries,
+    //         flags: state.get('flags').merge(flags)
+    //     });
+    // },
 
-    [entryTypes.ENTRY_TAG_ITERATOR_ERROR]: errorHandler,
+    // [entryTypes.ENTRY_TAG_ITERATOR_ERROR]: errorHandler,
 
     [entryTypes.MORE_ENTRY_TAG_ITERATOR]: flagHandler,
 
@@ -562,6 +594,25 @@ const entryState = createReducer(initialState, {
         }),
 
     [appTypes.CLEAN_STORE]: () => initialState,
+
+    // ************************* NEW REDUCERS ******************************
+
+    [types.ENTRY_CAN_CLAIM_SUCCESS]: (state, { data }) =>
+        state.setIn(['canClaim', data.entryId], data.canClaim),
+
+    [types.ENTRY_GET_BALANCE_SUCCESS]: (state, { data }) =>
+        state.setIn(['balance', data.entryId], data.balance),
+
+    [types.ENTRY_GET_VOTE_OF_SUCCESS]: (state, { data }) =>
+        state.setIn(['votes', data.entryId], data.weight),
+
+    [types.ENTRY_MORE_NEWEST_ITERATOR_SUCCESS]: entryIteratorHandler,
+
+    [types.ENTRY_MORE_TAG_ITERATOR_SUCCESS]: entryIteratorHandler,
+
+    [types.ENTRY_NEWEST_ITERATOR_SUCCESS]: entryIteratorHandler,
+
+    [types.ENTRY_TAG_ITERATOR_SUCCESS]: entryIteratorHandler,
 
     [types.ENTRY_VOTE_COST_SUCCESS]: (state, { data }) =>
         state.setIn(['voteCostByWeight', data.weight], data.cost),

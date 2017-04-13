@@ -23,14 +23,9 @@ class HomeContainer extends React.Component {
     interval = null;
 
     componentDidMount () {
-        const { profileActions, eProcActions, searchActions } = this.props;
-        profileActions.getLoggedProfile();
+        const { profileGetLogged, searchActions } = this.props;
+        // profileGetLogged();
         searchActions.handshake();
-        toggleGethStatus();
-        // eProcActions.getGethStatus();
-        // this.interval = setInterval(() => {
-        //     eProcActions.getGethStatus();
-        // }, 30000);
     }
 
     componentWillReceiveProps (nextProps) {
@@ -41,12 +36,12 @@ class HomeContainer extends React.Component {
 
         const currentLoggedProfileData = this.props.loggedProfileData;
 
-        if (!loggedProfile.get('account') && !fetchingLoggedProfile) {
-            this.context.router.push('/authenticate/');
-        }
+        // if (!loggedProfile.get('account') && !fetchingLoggedProfile) {
+        //     this.context.router.push('/authenticate/');
+        // }
         if (loggedProfile && loggedProfile.get('profile') && !this.dataLoaded) {
             this.dataLoaded = true;
-            profileActions.getProfileData([{ profile: loggedProfile.get('profile') }], true);
+            // profileActions.getProfileData([{ profile: loggedProfile.get('profile') }], true);
             transactionActions.getMinedTransactions();
             transactionActions.getPendingTransactions();
             draftActions.getDraftsCount(loggedProfile.get('akashaId'));
