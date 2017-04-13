@@ -6,12 +6,12 @@ import { generalMessages } from '../locale-data/messages';
 
 class Auth extends Component {
     componentDidMount () {
-        const { gethStatus, profileGetLocal, tempProfileRequest } = this.props;
+        const { gethStatus, profileDeleteLogged, profileGetLocal, tempProfileRequest } = this.props;
         tempProfileRequest();
         if (gethStatus.get('api')) {
             profileGetLocal();
         }
-        console.log('auth did mount');
+        profileDeleteLogged();
     }
 
     componentWillReceiveProps (nextProps) {
@@ -37,7 +37,7 @@ class Auth extends Component {
     render () {
         const { backupKeysRequest, backupPending, fetchingProfileList, gethStatus, intl, ipfsStatus,
             localProfiles, localProfilesFetched, showLoginDialog } = this.props;
-        console.log('auth render');
+
         return (
           <div style={{ width: '100%' }}>
             <div style={{ width: '100%', height: '100%', padding: '12px 24px' }}>
@@ -89,6 +89,7 @@ Auth.propTypes = {
     localProfilesFetched: PropTypes.bool,
     loginErrors: PropTypes.shape().isRequired,
     profileClearLocal: PropTypes.func.isRequired,
+    profileDeleteLogged: PropTypes.func.isRequired,
     profileGetLocal: PropTypes.func.isRequired,
     showLoginDialog: PropTypes.func.isRequired,
     tempProfile: PropTypes.shape().isRequired,

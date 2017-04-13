@@ -7,7 +7,7 @@ import { panelHide, panelShow } from '../local-flux/actions/app-actions';
 import { entryVoteCost } from '../local-flux/actions/entry-actions';
 import { gethGetStatus } from '../local-flux/actions/external-process-actions';
 import { licenseGetAll } from '../local-flux/actions/license-actions';
-import { profileGetBalance } from '../local-flux/actions/profile-actions';
+import { profileGetLogged } from '../local-flux/actions/profile-actions';
 
 function mapStateToProps (state) {
     return {
@@ -15,6 +15,7 @@ function mapStateToProps (state) {
         balance: state.profileState.get('balance'),
         draftsCount: state.draftState.get('draftsCount'),
         hasFeed: state.notificationsState.get('hasFeed'),
+        loggedProfile: state.profileState.get('loggedProfile'),
         loggedProfileData: selectLoggedProfileData(state),
         notificationsCount: state.notificationsState.get('youNrFeed'),
         selectedTag: state.tagState.get('selectedTag'),
@@ -29,7 +30,7 @@ export default connect(
         licenseGetAll,
         panelHide,
         panelShow,
-        profileGetBalance
+        profileGetLogged
     },
     null,
     {

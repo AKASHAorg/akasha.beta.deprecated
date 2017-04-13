@@ -34,6 +34,8 @@ export const LoggedProfile = Record({
 const Flags = Record({
     currentProfilePending: false,
     fetchingLocalProfiles: false,
+    fetchingLoggedProfile: false,
+    fetchingProfileData: false,
     fetchingProfileList: false,
     localProfilesFetched: false,
     loginPending: false

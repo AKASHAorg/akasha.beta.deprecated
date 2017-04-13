@@ -1,8 +1,8 @@
 import { connect } from 'react-redux';
-import { saveGeneralSettings } from '../local-flux/actions/settings-actions'; // eslint-disable-line import/no-unresolved, import/extensions
 import { clearSyncStatus, gethGetSyncStatus, gethPauseSync, gethResumeSync, gethStart,
     gethStartLogger, gethStop, gethStopLogger, gethStopSync, ipfsStart,
-    ipfsStop } from '../local-flux/actions/external-process-actions'; // eslint-disable-line import/no-unresolved, import/extensions
+    ipfsStop } from '../local-flux/actions/external-process-actions';
+import { saveGeneralSettings } from '../local-flux/actions/settings-actions';
 import { Sync } from '../components';
 
 function mapStateToProps (state) {

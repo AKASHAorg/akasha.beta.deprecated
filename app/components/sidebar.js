@@ -1,4 +1,4 @@
-import React, { PropTypes, PureComponent } from 'react';
+import React, { PropTypes, Component } from 'react';
 import { Link } from 'react-router-dom';
 import { LogoButton } from './';
 import { getInitials } from '../utils/dataModule';
@@ -8,17 +8,31 @@ import { generalMessages } from '../locale-data/messages';
 import panels from '../constants/panels';
 import styles from './sidebar.scss';
 
-class SideBar extends PureComponent {
+class Sidebar extends Component {
     componentDidMount () {
-        const { entryVoteCost, gethGetStatus, licenseGetAll, profileGetBalance } = this.props;
-        profileGetBalance();
+        const { entryVoteCost, gethGetStatus, licenseGetAll, loggedProfile,
+            profileGetLogged } = this.props;
         entryVoteCost();
         licenseGetAll();
+        if (!loggedProfile.get('account')) {
+            // fetch logged profile from local db
+            // called when reloading the page (not after login)
+            profileGetLogged();
+        }
         // make requests for geth status every 30s for updating the current block
         gethGetStatus();
         this.interval = setInterval(() => {
             gethGetStatus();
         }, 30000);
+    }
+
+    componentWillReceiveProps (nextProps) {
+        const { history, loggedProfile } = nextProps;
+
+        // the condition below is equivalent to a successful logout action
+        if (!loggedProfile.get('account') && this.props.loggedProfile.get('account')) {
+            history.push('/setup/authenticate');
+        }
     }
 
     handleNewEntry = () => {
@@ -57,6 +71,7 @@ class SideBar extends PureComponent {
     render () {
         const { activePanel, balance, draftsCount, hasFeed, intl, location, loggedProfileData,
             notificationsCount } = this.props;
+        const { palette } = this.context.muiTheme;
         const { pathname } = location;
         const isAddEntryActive = !activePanel && pathname === '/draft/new';
         const isStreamActive = !activePanel && pathname === '/dashboard';
@@ -68,7 +83,7 @@ class SideBar extends PureComponent {
         const isLoggedIn = !!loggedProfileData.get('akashaId');
 
         return (
-          <div className={styles.root}>
+          <div className={styles.root} style={{ backgroundColor: palette.sidebarColor }} >
             <div style={{ flexGrow: 0, padding: '14px 14px 5px' }} >
               <ProfileIcon
                 activePanel={activePanel}
@@ -141,7 +156,11 @@ class SideBar extends PureComponent {
     }
 }
 
-SideBar.propTypes = {
+Sidebar.contextTypes = {
+    muiTheme: PropTypes.shape()
+};
+
+Sidebar.propTypes = {
     activePanel: PropTypes.string,
     balance: PropTypes.string,
     draftsCount: PropTypes.number,
@@ -152,11 +171,12 @@ SideBar.propTypes = {
     intl: PropTypes.shape(),
     licenseGetAll: PropTypes.func.isRequired,
     location: PropTypes.shape(),
+    loggedProfile: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
     notificationsCount: PropTypes.number,
     panelHide: PropTypes.func.isRequired,
     panelShow: PropTypes.func.isRequired,
-    profileGetBalance: PropTypes.func.isRequired,
+    profileGetLogged: PropTypes.func.isRequired
 };
 
-export default SideBar;
+export default Sidebar;

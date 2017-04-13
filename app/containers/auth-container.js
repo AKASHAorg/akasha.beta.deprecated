@@ -1,7 +1,8 @@
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { showLoginDialog } from '../local-flux/actions/app-actions';
-import { profileClearLocal, profileGetLocal } from '../local-flux/actions/profile-actions';
+import { profileClearLocal, profileDeleteLogged,
+    profileGetLocal } from '../local-flux/actions/profile-actions';
 import { tempProfileRequest } from '../local-flux/actions/temp-profile-actions';
 import { backupKeysRequest } from '../local-flux/actions/utils-actions';
 import { selectLocalProfiles, selectProfileFlag } from '../local-flux/selectors';
@@ -26,6 +27,7 @@ export default connect(
     {
         backupKeysRequest,
         profileClearLocal,
+        profileDeleteLogged,
         profileGetLocal,
         showLoginDialog,
         tempProfileRequest,

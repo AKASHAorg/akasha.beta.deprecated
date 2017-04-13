@@ -638,6 +638,15 @@ export { ProfileActions };
 
 export const profileClearLocal = () => action(types.PROFILE_CLEAR_LOCAL);
 export const profileClearLoginErrors = () => action(types.PROFILE_CLEAR_LOGIN_ERRORS);
+export const profileDeleteLogged = () => action(types.PROFILE_DELETE_LOGGED);
+
+export const profileDeleteLoggedError = (error) => {
+    error.code = 'PDLE01';
+    error.messageId = 'profileDeleteError';
+    return action(types.PROFILE_DELETE_LOGGED_ERROR);
+};
+
+export const profileDeleteLoggedSuccess = () => action(types.PROFILE_DELETE_LOGGED_SUCCESS);
 export const profileGetBalance = () => action(types.PROFILE_GET_BALANCE);
 
 export const profileGetBalanceError = (error) => {
@@ -657,6 +666,15 @@ export const profileGetCurrentError = (error) => {
 };
 
 export const profileGetCurrentSuccess = data => action(types.PROFILE_GET_CURRENT_SUCCESS, { data });
+export const profileGetData = (profile, full) => action(types.PROFILE_GET_DATA, { profile, full });
+
+export const profileGetDataError = (error) => {
+    error.code = 'PGDE01';
+    error.messageId = 'profileGetData';
+    return action(types.PROFILE_GET_DATA_ERROR, { error });
+};
+
+export const profileGetDataSuccess = data => action(types.PROFILE_GET_DATA_SUCCESS, { data });
 export const profileGetList = profileAddresses =>
     action(types.PROFILE_GET_LIST, { profileAddresses });
 
@@ -676,15 +694,33 @@ export const profileGetLocalError = (error) => {
 };
 
 export const profileGetLocalSuccess = data => action(types.PROFILE_GET_LOCAL_SUCCESS, { data });
+export const profileGetLogged = () => action(types.PROFILE_GET_LOGGED);
+
+export const profileGetLoggedError = (error) => {
+    error.code = 'PGLE02';
+    error.messageId = 'profileGetLogged';
+    return action(types.PROFILE_GET_LOGGED_ERROR, { error });
+};
+
+export const profileGetLoggedSuccess = data => action(types.PROFILE_GET_LOGGED_SUCCESS, { data });
 export const profileLogin = data => action(types.PROFILE_LOGIN, { data });
 
 export const profileLoginError = (error) => {
-    error.code = 'PLE01';
+    // this error should be treated locally (in the login form) instead of globally
+    error.code = 'PLIE01';
     return action(types.PROFILE_LOGIN_ERROR, { error });
 };
 
 export const profileLoginSuccess = data => action(types.PROFILE_LOGIN_SUCCESS, { data });
+export const profileLogout = () => action(types.PROFILE_LOGOUT);
 
+export const profileLogoutError = (error) => {
+    error.code = 'PLOE01';
+    error.messageId = 'profileLogout';
+    return action(types.PROFILE_LOGOUT_ERROR);
+};
+
+export const profileLogoutSuccess = () => action(types.PROFILE_LOGOUT_SUCCESS);
 export const profileSaveLoggedError = (error) => {
     error.code = 'PSLE01';
     error.fatal = true;

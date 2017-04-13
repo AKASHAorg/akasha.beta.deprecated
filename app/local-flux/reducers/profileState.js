@@ -451,6 +451,9 @@ const profileState = createReducer(initialState, {
     [types.PROFILE_CLEAR_LOGIN_ERRORS]: state =>
         state.set('loginErrors', new List()),
 
+    [types.PROFILE_DELETE_LOGGED_SUCCESS]: state =>
+        state.set('loggedProfile', new LoggedProfile()),
+
     [types.PROFILE_GET_BALANCE_SUCCESS]: (state, { data }) => {
         if (state.getIn(['loggedProfile', 'account']) !== data.etherBase) {
             return state;
@@ -464,13 +467,29 @@ const profileState = createReducer(initialState, {
     [types.PROFILE_GET_CURRENT_ERROR]: state =>
         state.setIn(['flags', 'currentProfilePending'], false),
 
-    [types.PROFILE_GET_CURRENT_SUCCESS]: (state, { data }) =>
-        state.merge({
-            loggedProfile: state.get('loggedProfile').merge({
+    [types.PROFILE_GET_CURRENT_SUCCESS]: (state, { data }) => {
+        const loggedProfile = state.getIn(['loggedProfile', 'account']) ?
+            state.get('loggedProfile').merge({
                 akashaId: data.akashaId,
                 profile: data.profileAddress
-            }),
+            }) :
+            state.get('loggedProfile');
+        return state.merge({
+            loggedProfile,
             flags: state.get('flags').set('currentProfilePending', false)
+        });
+    },
+
+    [types.PROFILE_GET_DATA]: state =>
+        state.setIn(['flags', 'fetchingProfileData'], true),
+
+    [types.PROFILE_GET_DATA_ERROR]: state =>
+        state.setIn(['flags', 'fetchingProfileData'], false),
+
+    [types.PROFILE_GET_DATA_SUCCESS]: (state, { data }) =>
+        state.merge({
+            byId: addProfileData(state.get('byId'), data),
+            flags: state.get('flags').set('fetchingProfileData', false)
         }),
 
     [types.PROFILE_GET_LIST]: state =>
@@ -518,6 +537,18 @@ const profileState = createReducer(initialState, {
             localProfiles
         });
     },
+
+    [types.PROFILE_GET_LOGGED]: state =>
+        state.setIn(['flags', 'fetchingLoggedProfile'], true),
+
+    [types.PROFILE_GET_LOGGED_ERROR]: state =>
+        state.setIn(['flags', 'fetchingLoggedProfile'], true),
+
+    [types.PROFILE_GET_LOGGED_SUCCESS]: (state, { data }) =>
+        state.merge({
+            flags: state.get('flags').set('fetchingLoggedProfile', false),
+            loggedProfile: new LoggedProfile(data)
+        }),
 
     [types.PROFILE_LOGIN]: state =>
         state.setIn(['flags', 'loginPending'], true),

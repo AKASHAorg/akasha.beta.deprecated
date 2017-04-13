@@ -41,7 +41,6 @@ function* bootstrapApp () {
 export default function* rootSaga () {
     createActionChannels();
     yield fork(registerListeners);
-    yield fork(bootstrapApp);
     yield fork(entrySaga.watchEntryActions);
     yield fork(externalProcSaga.watchEProcActions);
     yield fork(licenseSaga.watchLicenseActions);
@@ -49,4 +48,5 @@ export default function* rootSaga () {
     yield fork(settingsSaga.watchSettingsActions);
     yield fork(tempProfileSaga.watchTempProfileActions);
     yield fork(utilsSaga.watchUtilsActions);
+    yield fork(bootstrapApp);
 }
