@@ -4,7 +4,7 @@ import { join } from 'path';
 const writeGenesisFile = () => {
     const genesis = {
         "alloc": {},
-        "config": { "homesteadBlock": 10 },
+        "config": { "homesteadBlock": 10, "chainId": 511337, "eip155Block": 10, "eip158Block": 10 },
         "coinbase": "0x0000000000000000000000000000000000000000",
         "difficulty": "0x20000",
         "extraData": "0x616b617368612e616c706861",
