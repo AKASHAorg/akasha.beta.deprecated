@@ -45,10 +45,10 @@ const tempProfileState = createReducer(initialState, {
         }),
 
     [types.FUND_FROM_FAUCET_SUCCESS]: (state, { data }) => {
-        const { status } = data;
+        const { response } = data;
         return state.merge({
             status: state.get('status').merge({
-                faucetTx: status.faucetTx,
+                faucetTx: response.data.tx,
                 currentAction: types.FUND_FROM_FAUCET_SUCCESS
             })
         });
@@ -75,9 +75,9 @@ const tempProfileState = createReducer(initialState, {
             currentAction: types.TEMP_PROFILE_PUBLISH
         }),
     [types.TEMP_PROFILE_PUBLISH_SUCCESS]: (state, { data }) => {
-        const { status } = data;
+        const { response } = data;
         return state.mergeIn(['status'], {
-            publishTx: status.publishTx,
+            publishTx: response.data.tx,
             currentAction: types.TEMP_PROFILE_PUBLISH_SUCCESS
         });
     },

@@ -7,7 +7,7 @@ import { PanelContainerFooter } from './';
 const LogDetails = (props) => {
     const { gethLogs, gethStartLogger, gethStopLogger, history, intl, timestamp } = props;
     return (
-      <div>
+      <div style={{ width: '100%' }}>
         <LogsList
           logs={gethLogs}
           startLogger={gethStartLogger}

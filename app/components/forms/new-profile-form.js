@@ -11,6 +11,7 @@ import { Avatar, ImageUploader } from '../';
 import PanelContainerFooter from '../PanelContainer/panel-container-footer';
 import { profileMessages, formMessages, generalMessages } from '../../locale-data/messages';
 import { getProfileSchema } from '../../utils/validationSchema';
+import styles from './new-profile-form.scss';
 
 class NewProfileForm extends Component {
     constructor (props) {
@@ -173,9 +174,18 @@ class NewProfileForm extends Component {
     _handleCancel = () => {
         this.props.history.push('/authenticate');
     }
+    _submitData = (profileData) => {
+        const { tempProfileCreate } = this.props;
+        const { password, ...other } = profileData;
+        tempProfileCreate({
+            password: new TextEncoder('utf-8').encode(password),
+            ...other
+        });
+    }
     _handleSubmit = (ev) => {
         ev.preventDefault();
-        const { tempProfileCreate } = this.props;
+        const { expandOptionalDetails } = this.props;
+        const { optDetails } = this.state;
         const {
           firstName,
           lastName,
@@ -188,37 +198,52 @@ class NewProfileForm extends Component {
         this.props.validate((err) => {
             if (err) return;
             if (this.state.akashaIdIsValid && !this.state.akashaIdExists) {
-                const backgroundImage = this.imageUploader.getImage();
-                this.avatar.getImage().then((uint8arr) => {
-                    let avatar;
-                    if (uint8arr) {
-                        avatar = uint8arr;
-                    }
-                    tempProfileCreate({
+                if (optDetails || expandOptionalDetails) {
+                    const backgroundImage = this.imageUploader.getImage();
+                    this.avatar.getImage().then((uint8arr) => {
+                        let avatar;
+                        if (uint8arr) {
+                            avatar = uint8arr;
+                        }
+                        this._submitData({
+                            firstName,
+                            lastName,
+                            akashaId,
+                            password,
+                            about,
+                            links,
+                            crypto,
+                            avatar,
+                            backgroundImage,
+                        });
+                    });
+                } else {
+                    this._submitData({
                         firstName,
                         lastName,
                         akashaId,
-                        password: new TextEncoder('utf-8').encode(password),
-                        backgroundImage,
-                        avatar,
+                        password,
                         about,
                         links,
-                        crypto
+                        crypto,
                     });
-                });
+                }
             }
         });
     }
     render () {
-        const { intl, muiTheme, expandOptionalDetails } = this.props;
+        const { intl, muiTheme, expandOptionalDetails, style } = this.props;
         const { formatMessage } = intl;
 
         return (
-          <div className="col-xs-12" style={{ padding: '0 24px' }}>
+          <div
+            className={`${styles.root} col-xs-12`}
+            style={style}
+          >
             <form
               action=""
               onSubmit={this._handleSubmit}
-              className="row"
+              className={`row ${styles.form}`}
               ref={(profileForm) => { this.profileForm = profileForm; }}
             >
               <div className="col-xs-6 start-xs">
@@ -482,17 +507,11 @@ NewProfileForm.propTypes = {
     expandOptionalDetails: PropTypes.bool,
     validate: PropTypes.func,
     getValidationMessages: PropTypes.func,
+    tempProfileCreate: PropTypes.func,
+    history: PropTypes.shape().isRequired,
+    style: PropTypes.shape()
 };
 
-NewProfileForm.defaultProps = {
-    style: {
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        position: 'relative'
-    }
-};
 const validationHOC = validation(strategy());
 
 export default injectIntl(

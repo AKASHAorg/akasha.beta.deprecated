@@ -1,4 +1,4 @@
-import { take, fork, call, apply, put } from 'redux-saga/effects';
+import { take, fork, call, apply, put, select } from 'redux-saga/effects';
 import { actionChannels, enableChannel } from './helpers';
 import * as types from '../constants';
 import * as tempProfileActions from '../actions/temp-profile-actions';
@@ -73,15 +73,13 @@ function* faucetRequest (tempProfile) {
 function* faucetRequestListener (tempProfile) {
     const response = yield take(actionChannels.auth.requestEther);
     if (!response.error) {
-        tempProfile.status.faucetRequested = true;
-        tempProfile.status.faucetTx = response.data.tx;
         try {
             tempProfile = yield apply(
                 registryService,
                 registryService.updateTempProfile,
                 [tempProfile]
             );
-            yield put(tempProfileActions.faucetRequestSuccess(tempProfile));
+            yield put(tempProfileActions.faucetRequestSuccess({ tempProfile, response }));
         } catch (error) {
             yield put(tempProfileActions.faucetRequestError(error));
         }
@@ -92,7 +90,7 @@ function* faucetRequestListener (tempProfile) {
 /**
  * Add transactions to queue
  */
-function* addTxToQueue ([tx, action]) {
+function* addTxToQueue (tx, action) {
     const channel = Channel.server.tx.addToQueue;
     yield put(tempProfileActions[action]());
     yield call([channel, channel.send], { tx });
@@ -102,8 +100,10 @@ function* addTxToQueue ([tx, action]) {
  */
 function* listenFaucetTx (tempProfile) {
     const response = yield take(actionChannels.tx.emitMined);
-    if (!response.error && response.data.tx === tempProfile.status.faucetTx) {
-        yield put(tempProfileActions.tempProfileFaucetTxMinedSuccess(tempProfile));
+    const profileStatus = yield select(state => state.tempProfileState.get('status'));
+    console.log(tempProfile, 'tempProfile', response, 'the response');
+    if (!response.error && response.data.tx === profileStatus.faucetTx) {
+        yield put(tempProfileActions.tempProfileFaucetTxMinedSuccess({ tempProfile, response }));
     } else {
         yield put(tempProfileActions.faucetRequestError(response.error));
     }
@@ -115,7 +115,7 @@ function* tempProfileLoginRequest (tempProfile) {
     const channel = Channel.server.auth.login;
     yield put(tempProfileActions.tempProfileLogin(tempProfile));
     yield call([channel, channel.send], {
-        account: tempProfile.account,
+        account: tempProfile.address,
         password: tempProfile.password,
         registering: true
     });
@@ -126,7 +126,7 @@ function* tempProfileLoginRequest (tempProfile) {
 function* tempProfileLoginListener (tempProfile) {
     const response = yield take(actionChannels.auth.login);
     if (!response.error) {
-        yield put(tempProfileActions.tempProfileLoginSuccess(tempProfile));
+        yield put(tempProfileActions.tempProfileLoginSuccess({ tempProfile, response }));
     } else {
         yield put(tempProfileActions.tempProfileLoginError(response.error));
     }
@@ -146,15 +146,13 @@ function* tempProfilePublishRequest (tempProfile) {
 function* tempProfilePublishListener (tempProfile) {
     const response = yield take(actionChannels.registry.registerProfile);
     if (!response.error) {
-        tempProfile.status.publishTx = response.data.tx;
-        tempProfile.status.publishRequested = true;
         try {
             tempProfile = yield apply(
                 registryService,
                 registryService.updateTempProfile,
                 [tempProfile]
             );
-            yield put(tempProfileActions.tempProfilePublishSuccess(tempProfile));
+            yield put(tempProfileActions.tempProfilePublishSuccess({ tempProfile, response }));
         } catch (error) {
             yield put(tempProfileActions.tempProfilePublishError(error));
         }
@@ -167,9 +165,10 @@ function* tempProfilePublishListener (tempProfile) {
  */
 function* publishTxListener (tempProfile) {
     const response = yield take(actionChannels.tx.emitMined);
-    if (!response.error && response.data.tx === tempProfile.status.publishTx) {
-        yield put(tempProfileActions.tempProfilePublishTxMinedSuccess(tempProfile));
-    } else if (response.error && response.error.from.tx === tempProfile.status.publishTx) {
+    const tempProfileStatus = yield select(state => state.profileState.get('status'));
+    if (!response.error && response.data.tx === tempProfileStatus.publishTx) {
+        yield put(tempProfileActions.tempProfilePublishTxMinedSuccess({ tempProfile, response }));
+    } else if (response.error && response.error.from.tx === tempProfileStatus.publishTx) {
         yield put(tempProfileActions.tempProfilePublishError(response.error));
     }
 }
@@ -198,7 +197,8 @@ function* watchEthAddressCreate () {
 function* watchFaucetRequest () {
     while (true) {
         const action = yield take(types.ETH_ADDRESS_CREATE_SUCCESS);
-        if (!action.data.status.faucetRequested || !action.data.status.faucetTx) {
+        const tempProfileStatus = yield select(state => state.tempProfileState.get('status'));
+        if (!tempProfileStatus.faucetRequested || !tempProfileStatus.faucetTx) {
             yield fork(faucetRequestListener, action.data);
             yield fork(faucetRequest, action.data);
         } else {
@@ -210,8 +210,10 @@ function* watchFaucetRequest () {
 function* watchFaucetTxMined () {
     while (true) {
         const action = yield take(types.FUND_FROM_FAUCET_SUCCESS);
-        yield fork(listenFaucetTx, action.data);
-        yield fork(addTxToQueue, [action.data.status.faucetTx, 'tempProfileFaucetTxMined']);
+        const tempProfileStatus = yield select(state => state.tempProfileState.get('status'));
+        console.log(tempProfileStatus, 'tempProfileStatus');
+        yield fork(listenFaucetTx, action.data.tempProfile);
+        yield fork(addTxToQueue, tempProfileStatus.faucetTx, 'tempProfileFaucetTxMined');
     }
 }
 
@@ -226,7 +228,8 @@ function* watchTempProfileLogin () {
 function* watchTempProfilePublish () {
     while (true) {
         const action = yield take(types.TEMP_PROFILE_LOGIN_SUCCESS);
-        if (!action.data.status.publishRequested || !action.data.status.publishTx) {
+        const tempProfileStatus = yield select(state => state.profileState.get('status'));
+        if (!tempProfileStatus.publishRequested || !tempProfileStatus.publishTx) {
             yield fork(tempProfilePublishListener, action.data);
             yield fork(tempProfilePublishRequest, action.data);
         } else {
@@ -238,8 +241,9 @@ function* watchTempProfilePublish () {
 function* watchPublishTxMined () {
     while (true) {
         const action = yield take(types.TEMP_PROFILE_PUBLISH_SUCCESS);
+        const tempProfileStatus = yield select(state => state.profileState.get('status'));
         yield fork(publishTxListener, action.data);
-        yield fork(addTxToQueue, [action.data.status.publishTx, 'tempProfilePublishTxMined']);
+        yield fork(addTxToQueue, tempProfileStatus.publishTx, 'tempProfilePublishTxMined');
     }
 }
 
