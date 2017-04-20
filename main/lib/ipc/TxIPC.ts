@@ -32,7 +32,7 @@ class TxIPC extends ModuleEmitter {
                     gethHelper.addTxToWatch(hash.tx, false);
                 });
                 gethHelper.startTxWatch();
-                const response: AddToQueueResponse = mainResponse({ watching: gethHelper.watching });
+                const response: AddToQueueResponse = mainResponse({ watching: gethHelper.watching }, data);
                 this.fireEvent(
                     channels.client[this.MODULE_NAME].addToQueue,
                     response,
@@ -47,7 +47,7 @@ class TxIPC extends ModuleEmitter {
             channels.server[this.MODULE_NAME].emitMined,
             (event: any, data: EmitMinedRequest) => {
                 (data.watch) ? gethHelper.startTxWatch() : gethHelper.stopTxWatch();
-                const response: EmitMinedResponse = mainResponse({ watching: gethHelper.watching });
+                const response: EmitMinedResponse = mainResponse({ watching: gethHelper.watching }, data);
                 this.fireEvent(
                     channels.client[this.MODULE_NAME].emitMined,
                     response,
@@ -67,7 +67,7 @@ class TxIPC extends ModuleEmitter {
                     cumulativeGasUsed: tx.cumulativeGasUsed,
                     hasEvents: !!(tx.logs.length),
                     watching: gethHelper.watching
-                });
+                }, {});
                 this.fireEvent(
                     channels.client[this.MODULE_NAME].emitMined,
                     response

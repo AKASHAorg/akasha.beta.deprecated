@@ -66,14 +66,14 @@ class GethIPC extends GethEmitter {
                         // emit error
                         return this.fireEvent(
                             channels.client.geth.manager,
-                            gethResponse({}, { message: `already listening on ${data.channel}` }),
+                            gethResponse({}, data, { message: `already listening on ${data.channel}` }),
                             event
                         );
                     }
                     // start listening for events on channel
                     this.listenEvents(data.channel);
                     // emit ok response
-                    return this.fireEvent(channels.client.geth.manager, gethResponse(data), event);
+                    return this.fireEvent(channels.client.geth.manager, gethResponse({}, data), event);
                 }
                 // remove listener on `channel`
                 return this.purgeListener(data.channel);
@@ -148,7 +148,7 @@ class GethIPC extends GethEmitter {
     private _syncStatus() {
         this.registerListener(
             channels.server.geth.syncStatus,
-            (event: any) => {
+            (event: any, data: any) => {
                 return gethHelper
                     .inSync()
                     .then((state: any[]) => {
@@ -163,7 +163,7 @@ class GethIPC extends GethEmitter {
                             }
                             this.fireEvent(
                                 channels.client.geth.syncStatus,
-                                gethResponse(response),
+                                gethResponse(response, data),
                                 event
                             );
                         }
@@ -171,7 +171,7 @@ class GethIPC extends GethEmitter {
                     .catch(err => {
                         this.fireEvent(
                             channels.client.geth.syncStatus,
-                            gethResponse({}, { message: err.message }),
+                            gethResponse({}, data, { message: err.message }),
                             event
                         );
                     });
@@ -188,15 +188,15 @@ class GethIPC extends GethEmitter {
     private _logs() {
         this.registerListener(
             channels.server.geth.logs,
-            (event: any) => {
+            (event: any, data: any) => {
                 GethConnector.getInstance().logger.query(
                     { start: 0, limit: 20, order: 'desc' },
                     (err: Error, info: any) => {
                         let response: MainResponse;
                         if (err) {
-                            response = gethResponse({}, { message: err.message });
+                            response = gethResponse({}, data, { message: err.message });
                         } else {
-                            response = gethResponse(info);
+                            response = gethResponse(info, data);
                         }
                         this.fireEvent(
                             channels.client.geth.logs,
@@ -216,11 +216,11 @@ class GethIPC extends GethEmitter {
     private _status() {
         this.registerListener(
             channels.server.geth.status,
-            (event: any) => {
+            (event: any, data: any) => {
                 if (!GethConnector.getInstance().serviceStatus.api) {
                     this.fireEvent(
                         channels.client.geth.status,
-                        gethResponse({}),
+                        gethResponse({}, data),
                         event
                     );
                     return null;
@@ -231,10 +231,10 @@ class GethIPC extends GethEmitter {
                     .eth
                     .getBlockNumberAsync()
                     .then((blockNr) => {
-                        response = gethResponse({ blockNr });
+                        response = gethResponse({ blockNr }, data);
                     })
                     .catch((err) => {
-                        response = gethResponse({}, { message: err.message })
+                        response = gethResponse({}, data, { message: err.message })
                     })
                     .finally(() => {
                         this.fireEvent(
@@ -264,7 +264,7 @@ class GethIPC extends GethEmitter {
                 }
                 this.fireEvent(
                     channels.client.geth.options,
-                    gethResponse(mapObj),
+                    gethResponse(mapObj, data),
                     event
                 );
             }

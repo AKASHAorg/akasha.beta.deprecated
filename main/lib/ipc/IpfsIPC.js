@@ -47,10 +47,10 @@ class IpfsIPC extends IpfsEmitter_1.default {
         this.registerListener(channels_1.default.server.ipfs.manager, (event, data) => {
             if (data.listen) {
                 if (this.getListenersCount(data.channel) >= 1) {
-                    return this.fireEvent(channels_1.default.client.ipfs.manager, responses_1.ipfsResponse({}, { message: `already listening on ${data.channel}` }), event);
+                    return this.fireEvent(channels_1.default.client.ipfs.manager, responses_1.ipfsResponse({}, data, { message: `already listening on ${data.channel}` }), event);
                 }
                 this.listenEvents(data.channel);
-                return this.fireEvent(channels_1.default.client.ipfs.manager, responses_1.ipfsResponse(data), event);
+                return this.fireEvent(channels_1.default.client.ipfs.manager, responses_1.ipfsResponse({}, data), event);
             }
             return this.purgeListener(data.channel);
         });
@@ -58,8 +58,8 @@ class IpfsIPC extends IpfsEmitter_1.default {
         this.DEFAULT_MANAGED.forEach((action) => this.listenEvents(channels_1.default.server.ipfs[action]));
     }
     _status() {
-        this.registerListener(channels_1.default.server.ipfs.status, (event) => {
-            this.fireEvent(channels_1.default.client.ipfs.status, responses_1.ipfsResponse({}), event);
+        this.registerListener(channels_1.default.server.ipfs.status, (event, data) => {
+            this.fireEvent(channels_1.default.client.ipfs.status, responses_1.ipfsResponse({}, data), event);
         });
         return this;
     }
@@ -70,11 +70,10 @@ class IpfsIPC extends IpfsEmitter_1.default {
                 .api
                 .get(data.hash)
                 .then((source) => {
-                response = responses_1.ipfsResponse({ content: source, hash: data.hash });
+                response = responses_1.ipfsResponse({ content: source, hash: data.hash }, data);
             })
                 .catch((error) => {
-                console.log(error);
-                response = responses_1.ipfsResponse({ hash: data.hash }, { message: error.message });
+                response = responses_1.ipfsResponse({ hash: data.hash }, data, { message: error.message });
             })
                 .finally(() => {
                 this.fireEvent(channels_1.default.client.ipfs.resolve, response, event);
@@ -83,12 +82,12 @@ class IpfsIPC extends IpfsEmitter_1.default {
         return this;
     }
     _getConfig() {
-        this.registerListener(channels_1.default.server.ipfs.getConfig, (event) => {
+        this.registerListener(channels_1.default.server.ipfs.getConfig, (event, data) => {
             let response;
             response = responses_1.ipfsResponse({
                 apiPort: ipfs_connector_1.IpfsConnector.getInstance().options.apiAddress.split('/').pop(),
                 storagePath: ipfs_connector_1.IpfsConnector.getInstance().options.extra.env.IPFS_PATH
-            });
+            }, data);
             this.fireEvent(channels_1.default.client.ipfs.getConfig, response, event);
         });
         return this;
@@ -99,10 +98,10 @@ class IpfsIPC extends IpfsEmitter_1.default {
             ipfs_connector_1.IpfsConnector.getInstance()
                 .setPorts(data.ports, data.restart)
                 .then(() => {
-                response = responses_1.ipfsResponse({ set: true, ports: data.ports });
+                response = responses_1.ipfsResponse({ set: true, ports: data.ports }, data);
             })
                 .catch((err) => {
-                response = responses_1.ipfsResponse({}, {
+                response = responses_1.ipfsResponse({}, data, {
                     message: err.message,
                     from: { ports: data.ports }
                 });
@@ -114,7 +113,7 @@ class IpfsIPC extends IpfsEmitter_1.default {
         return this;
     }
     _getPorts() {
-        this.registerListener(channels_1.default.server.ipfs.getPorts, (event) => {
+        this.registerListener(channels_1.default.server.ipfs.getPorts, (event, data) => {
             let response;
             ipfs_connector_1.IpfsConnector.getInstance()
                 .getPorts()
@@ -124,10 +123,10 @@ class IpfsIPC extends IpfsEmitter_1.default {
                     apiPort: ports.api,
                     gatewayPort: ports.gateway,
                     swarmPort: ports.swarm
-                });
+                }, data);
             })
                 .catch((err) => {
-                response = responses_1.ipfsResponse({}, { message: err.message });
+                response = responses_1.ipfsResponse({}, data, { message: err.message });
             })
                 .finally(() => {
                 this.fireEvent(channels_1.default.client.ipfs.getPorts, response, event);
@@ -136,14 +135,14 @@ class IpfsIPC extends IpfsEmitter_1.default {
         return this;
     }
     _logs() {
-        this.registerListener(channels_1.default.server.ipfs.logs, (event) => {
+        this.registerListener(channels_1.default.server.ipfs.logs, (event, data) => {
             ipfs_connector_1.IpfsConnector.getInstance().logger.query({ start: 0, limit: 10, order: 'desc' }, (err, info) => {
                 let response;
                 if (err) {
-                    response = responses_1.ipfsResponse({}, { message: err.message });
+                    response = responses_1.ipfsResponse({}, data, { message: err.message });
                 }
                 else {
-                    response = responses_1.ipfsResponse(info);
+                    response = responses_1.ipfsResponse(info, data);
                 }
                 this.fireEvent(channels_1.default.client.ipfs.logs, response, event);
             });

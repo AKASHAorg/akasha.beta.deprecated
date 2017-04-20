@@ -38,7 +38,8 @@ class AuthIPC extends ModuleEmitter {
                     .auth
                     .login(data.account, data.password, data.rememberTime, data.registering)
                     .then((response: any) => {
-                        const response1: AuthLoginResponse = mainResponse(response);
+                        delete data.password;
+                        const response1: AuthLoginResponse = mainResponse(response, data);
                         return this.fireEvent(
                             channels.client[this.MODULE_NAME].login,
                             response1,
@@ -57,7 +58,7 @@ class AuthIPC extends ModuleEmitter {
                 userModule
                     .auth
                     .logout();
-                const response: AuthLogoutResponse = mainResponse({ done: true });
+                const response: AuthLogoutResponse = mainResponse({ done: true }, data);
                 return this.fireEvent(
                     channels.client[this.MODULE_NAME].logout,
                     response,
@@ -76,7 +77,8 @@ class AuthIPC extends ModuleEmitter {
                     .auth
                     .generateKey(data.password)
                     .then((address: string) => {
-                        const response: AuthKeygenResponse = mainResponse({ address });
+                        delete data.password;
+                        const response: AuthKeygenResponse = mainResponse({ address }, data);
                         this.fireEvent(
                             channels.client[this.MODULE_NAME].generateEthKey,
                             response,
@@ -84,7 +86,8 @@ class AuthIPC extends ModuleEmitter {
                         );
                     })
                     .catch((error: Error) => {
-                        const response: AuthKeygenResponse = mainResponse({ error });
+                        delete data.password;
+                        const response: AuthKeygenResponse = mainResponse({ error }, data);
                         this.fireEvent(
                             channels.client[this.MODULE_NAME].generateEthKey,
                             response,
@@ -106,10 +109,10 @@ class AuthIPC extends ModuleEmitter {
                     .registry
                     .getLocalProfiles()
                     .then((list: { key: string, profile: string }[]) => {
-                        response = mainResponse(list);
+                        response = mainResponse(list, data);
                     })
                     .catch((err: Error) => {
-                        response = mainResponse({ error: { message: err.message } });
+                        response = mainResponse({ error: { message: err.message } }, data);
                     })
                     .finally(() => {
                         this.fireEvent(
@@ -142,7 +145,7 @@ class AuthIPC extends ModuleEmitter {
                     },
                     (error: Error, response: any, body: { tx: string }) => {
                         const data = (error) ? { error } : body;
-                        const response1: RequestEtherResponse = mainResponse(data);
+                        const response1: RequestEtherResponse = mainResponse({}, data);
                         this.fireEvent(
                             channels.client[this.MODULE_NAME].requestEther,
                             response1,

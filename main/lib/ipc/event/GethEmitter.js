@@ -19,22 +19,22 @@ class GethEmitter extends AbstractEmitter_1.AbstractEmitter {
     }
     _download() {
         geth_connector_1.GethConnector.getInstance().on(geth_connector_1.CONSTANTS.DOWNLOADING_BINARY, () => {
-            this.fireEvent(channels_1.default.client.geth.startService, responses_1.gethResponse({ downloading: true }));
+            this.fireEvent(channels_1.default.client.geth.startService, responses_1.gethResponse({ downloading: true }, {}));
         });
         return this;
     }
     _starting() {
         geth_connector_1.GethConnector.getInstance().on(geth_connector_1.CONSTANTS.STARTING, () => {
-            this.fireEvent(channels_1.default.client.geth.startService, responses_1.gethResponse({ starting: true }));
+            this.fireEvent(channels_1.default.client.geth.startService, responses_1.gethResponse({ starting: true }, {}));
         });
         return this;
     }
     _started() {
         geth_connector_1.GethConnector.getInstance().on(geth_connector_1.CONSTANTS.STARTED, () => {
-            this.fireEvent(channels_1.default.client.geth.startService, responses_1.gethResponse({ started: true }));
+            this.fireEvent(channels_1.default.client.geth.startService, responses_1.gethResponse({ started: true }, {}));
         });
         geth_connector_1.GethConnector.getInstance().on(geth_connector_1.CONSTANTS.IPC_CONNECTED, () => {
-            this.fireEvent(channels_1.default.client.geth.startService, responses_1.gethResponse({}));
+            this.fireEvent(channels_1.default.client.geth.startService, responses_1.gethResponse({}, {}));
             index_1.constructed.init(geth_connector_1.GethConnector.getInstance().web3);
             index_2.initModules();
             peers.list.forEach((peer) => {
@@ -45,7 +45,7 @@ class GethEmitter extends AbstractEmitter_1.AbstractEmitter {
     }
     _stopped() {
         geth_connector_1.GethConnector.getInstance().on(geth_connector_1.CONSTANTS.STOPPED, () => {
-            this.fireEvent(channels_1.default.client.geth.stopService, responses_1.gethResponse({ stopped: true }));
+            this.fireEvent(channels_1.default.client.geth.stopService, responses_1.gethResponse({ stopped: true }, {}));
         });
         return this;
     }
@@ -63,7 +63,7 @@ class GethEmitter extends AbstractEmitter_1.AbstractEmitter {
     }
     _upgrading() {
         geth_connector_1.GethConnector.getInstance().once(geth_connector_1.CONSTANTS.UPDATING_BINARY, (message) => {
-            this.fireEvent(channels_1.default.client.geth.startService, responses_1.gethResponse({ upgrading: true, message }));
+            this.fireEvent(channels_1.default.client.geth.startService, responses_1.gethResponse({ upgrading: true, message }, {}));
         });
         geth_connector_1.GethConnector.getInstance().once(geth_connector_1.CONSTANTS.BINARY_CORRUPTED, (message) => {
             this.fireEvent(channels_1.default.client.geth.startService, responses_1.gethResponse({}, { message }));

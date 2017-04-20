@@ -20,7 +20,7 @@ abstract class IpfsEmitter extends AbstractEmitter {
         IpfsConnector.getInstance().once(
             ipfsEvents.DOWNLOAD_STARTED,
             () => {
-                this.fireEvent(channels.client.ipfs.startService, ipfsResponse({ downloading: true }));
+                this.fireEvent(channels.client.ipfs.startService, ipfsResponse({ downloading: true }, {}));
             }
         );
         return this;
@@ -51,7 +51,7 @@ abstract class IpfsEmitter extends AbstractEmitter {
                                 if (err) {
                                     console.log('add ipfs peer err ', err);
                                 }
-                                this.fireEvent(channels.client.ipfs.startService, ipfsResponse({ started: true }));
+                                this.fireEvent(channels.client.ipfs.startService, ipfsResponse({ started: true }, {}));
                             });
                     })
             }
@@ -63,7 +63,7 @@ abstract class IpfsEmitter extends AbstractEmitter {
         IpfsConnector.getInstance().on(
             ipfsEvents.SERVICE_STOPPED,
             () => {
-                this.fireEvent(channels.client.ipfs.stopService, ipfsResponse({ stopped: true }));
+                this.fireEvent(channels.client.ipfs.stopService, ipfsResponse({ stopped: true }, {}));
             }
         );
         return this;

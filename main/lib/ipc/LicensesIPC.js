@@ -18,15 +18,15 @@ class LicensesIPC extends ModuleEmitter_1.default {
             ._manager();
     }
     _getLicenses() {
-        this.registerListener(channels_1.default.server[this.MODULE_NAME].getLicenses, (event) => {
-            const response = responses_1.mainResponse({ licenses: Licenses_1.LicencesList });
+        this.registerListener(channels_1.default.server[this.MODULE_NAME].getLicenses, (event, data) => {
+            const response = responses_1.mainResponse({ licenses: Licenses_1.LicencesList }, data);
             this.fireEvent(channels_1.default.client[this.MODULE_NAME].getLicenses, response, event);
         });
         return this;
     }
     _getLicenceById() {
         this.registerListener(channels_1.default.server[this.MODULE_NAME].getLicenceById, (event, data) => {
-            const response = responses_1.mainResponse({ license: Licenses_1.getLicence(data.id) });
+            const response = responses_1.mainResponse({ license: Licenses_1.getLicence(data.id) }, data);
             this.fireEvent(channels_1.default.client[this.MODULE_NAME].getLicenceById, response, event);
         });
         return this;
