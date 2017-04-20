@@ -93,7 +93,7 @@ function* faucetRequestListener (tempProfile) {
 function* addTxToQueue (tx, action) {
     const channel = Channel.server.tx.addToQueue;
     yield put(tempProfileActions[action]());
-    yield call([channel, channel.send], { tx });
+    yield call([channel, channel.send], [{ tx }]);
 }
 /**
  * Listen faucet transaction for mined event
@@ -101,8 +101,7 @@ function* addTxToQueue (tx, action) {
 function* listenFaucetTx (tempProfile) {
     const response = yield take(actionChannels.tx.emitMined);
     const profileStatus = yield select(state => state.tempProfileState.get('status'));
-    console.log(tempProfile, 'tempProfile', response, 'the response');
-    if (!response.error && response.data.tx === profileStatus.faucetTx) {
+    if (!response.error && response.data.mined === profileStatus.faucetTx) {
         yield put(tempProfileActions.tempProfileFaucetTxMinedSuccess({ tempProfile, response }));
     } else {
         yield put(tempProfileActions.faucetRequestError(response.error));
@@ -136,6 +135,7 @@ function* tempProfileLoginListener (tempProfile) {
  */
 function* tempProfilePublishRequest (tempProfile) {
     const channel = Channel.server.registry.registerProfile;
+    console.log(tempProfile, 'publish temp profile!');
     yield put(tempProfileActions.tempProfilePublish(tempProfile));
     yield call(enableChannel, channel, Channel.client.registry.manager);
     yield call([channel, channel.send], tempProfile);
@@ -166,7 +166,7 @@ function* tempProfilePublishListener (tempProfile) {
 function* publishTxListener (tempProfile) {
     const response = yield take(actionChannels.tx.emitMined);
     const tempProfileStatus = yield select(state => state.profileState.get('status'));
-    if (!response.error && response.data.tx === tempProfileStatus.publishTx) {
+    if (!response.error && response.data.mined === tempProfileStatus.publishTx) {
         yield put(tempProfileActions.tempProfilePublishTxMinedSuccess({ tempProfile, response }));
     } else if (response.error && response.error.from.tx === tempProfileStatus.publishTx) {
         yield put(tempProfileActions.tempProfilePublishError(response.error));
@@ -211,7 +211,6 @@ function* watchFaucetTxMined () {
     while (true) {
         const action = yield take(types.FUND_FROM_FAUCET_SUCCESS);
         const tempProfileStatus = yield select(state => state.tempProfileState.get('status'));
-        console.log(tempProfileStatus, 'tempProfileStatus');
         yield fork(listenFaucetTx, action.data.tempProfile);
         yield fork(addTxToQueue, tempProfileStatus.faucetTx, 'tempProfileFaucetTxMined');
     }
@@ -220,18 +219,19 @@ function* watchFaucetTxMined () {
 function* watchTempProfileLogin () {
     while (true) {
         const action = yield take(types.TEMP_PROFILE_FAUCET_TX_MINED_SUCCESS);
-        yield fork(tempProfileLoginListener, action.data);
-        yield fork(tempProfileLoginRequest, action.data);
+        yield fork(tempProfileLoginListener, action.data.tempProfile);
+        yield fork(tempProfileLoginRequest, action.data.tempProfile);
     }
 }
 
 function* watchTempProfilePublish () {
     while (true) {
         const action = yield take(types.TEMP_PROFILE_LOGIN_SUCCESS);
+        console.log('login succeded!');
         const tempProfileStatus = yield select(state => state.profileState.get('status'));
         if (!tempProfileStatus.publishRequested || !tempProfileStatus.publishTx) {
-            yield fork(tempProfilePublishListener, action.data);
-            yield fork(tempProfilePublishRequest, action.data);
+            yield fork(tempProfilePublishListener, action.data.tempProfile);
+            yield fork(tempProfilePublishRequest, action.data.tempProfile);
         } else {
             yield put(tempProfileActions.tempProfilePublishSuccess(action.data));
         }
@@ -242,7 +242,7 @@ function* watchPublishTxMined () {
     while (true) {
         const action = yield take(types.TEMP_PROFILE_PUBLISH_SUCCESS);
         const tempProfileStatus = yield select(state => state.profileState.get('status'));
-        yield fork(publishTxListener, action.data);
+        yield fork(publishTxListener, action.data.tempProfile);
         yield fork(addTxToQueue, tempProfileStatus.publishTx, 'tempProfilePublishTxMined');
     }
 }
@@ -252,7 +252,10 @@ function* watchTempProfileRemove () {
         const action = yield take(types.TEMP_PROFILE_PUBLISH_TX_MINED_SUCCESS);
         yield put(tempProfileActions.tempProfileDelete());
         try {
-            yield call([registryService, registryService.deleteTempProfile], action.data);
+            yield call(
+                [registryService, registryService.deleteTempProfile],
+                action.data.tempProfile
+            );
             yield put(tempProfileActions.tempProfileDeleteSuccess());
         } catch (err) {
             yield put(tempProfileActions.tempProfileDeleteError(err));
