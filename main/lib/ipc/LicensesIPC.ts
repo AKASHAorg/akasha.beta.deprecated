@@ -23,8 +23,8 @@ class LicensesIPC extends ModuleEmitter {
     private _getLicenses() {
         this.registerListener(
             channels.server[this.MODULE_NAME].getLicenses,
-            (event: any) => {
-                const response = mainResponse({ licenses: LicencesList });
+            (event: any, data: any) => {
+                const response = mainResponse({ licenses: LicencesList }, data);
                 this.fireEvent(
                     channels.client[this.MODULE_NAME].getLicenses,
                     response,
@@ -39,7 +39,7 @@ class LicensesIPC extends ModuleEmitter {
         this.registerListener(
             channels.server[this.MODULE_NAME].getLicenceById,
             (event: any, data: {id: string | number}) => {
-                const response = mainResponse({ license: getLicence(data.id) });
+                const response = mainResponse({ license: getLicence(data.id) }, data);
                 this.fireEvent(
                     channels.client[this.MODULE_NAME].getLicenceById,
                     response,

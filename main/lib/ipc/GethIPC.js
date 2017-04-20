@@ -42,10 +42,10 @@ class GethIPC extends GethEmitter_1.default {
         this.registerListener(channels_1.default.server.geth.manager, (event, data) => {
             if (data.listen) {
                 if (this.getListenersCount(data.channel) >= 1) {
-                    return this.fireEvent(channels_1.default.client.geth.manager, responses_1.gethResponse({}, { message: `already listening on ${data.channel}` }), event);
+                    return this.fireEvent(channels_1.default.client.geth.manager, responses_1.gethResponse({}, data, { message: `already listening on ${data.channel}` }), event);
                 }
                 this.listenEvents(data.channel);
-                return this.fireEvent(channels_1.default.client.geth.manager, responses_1.gethResponse(data), event);
+                return this.fireEvent(channels_1.default.client.geth.manager, responses_1.gethResponse({}, data), event);
             }
             return this.purgeListener(data.channel);
         });
@@ -77,7 +77,7 @@ class GethIPC extends GethEmitter_1.default {
         return this;
     }
     _syncStatus() {
-        this.registerListener(channels_1.default.server.geth.syncStatus, (event) => {
+        this.registerListener(channels_1.default.server.geth.syncStatus, (event, data) => {
             return geth_connector_1.gethHelper
                 .inSync()
                 .then((state) => {
@@ -91,23 +91,23 @@ class GethIPC extends GethEmitter_1.default {
                         Object.assign(response, state[1]);
                     }
                 }
-                this.fireEvent(channels_1.default.client.geth.syncStatus, responses_1.gethResponse(response), event);
+                this.fireEvent(channels_1.default.client.geth.syncStatus, responses_1.gethResponse(response, data), event);
             })
                 .catch(err => {
-                this.fireEvent(channels_1.default.client.geth.syncStatus, responses_1.gethResponse({}, { message: err.message }), event);
+                this.fireEvent(channels_1.default.client.geth.syncStatus, responses_1.gethResponse({}, data, { message: err.message }), event);
             });
         });
         return this;
     }
     _logs() {
-        this.registerListener(channels_1.default.server.geth.logs, (event) => {
+        this.registerListener(channels_1.default.server.geth.logs, (event, data) => {
             geth_connector_1.GethConnector.getInstance().logger.query({ start: 0, limit: 20, order: 'desc' }, (err, info) => {
                 let response;
                 if (err) {
-                    response = responses_1.gethResponse({}, { message: err.message });
+                    response = responses_1.gethResponse({}, data, { message: err.message });
                 }
                 else {
-                    response = responses_1.gethResponse(info);
+                    response = responses_1.gethResponse(info, data);
                 }
                 this.fireEvent(channels_1.default.client.geth.logs, response, event);
             });
@@ -115,9 +115,9 @@ class GethIPC extends GethEmitter_1.default {
         return this;
     }
     _status() {
-        this.registerListener(channels_1.default.server.geth.status, (event) => {
+        this.registerListener(channels_1.default.server.geth.status, (event, data) => {
             if (!geth_connector_1.GethConnector.getInstance().serviceStatus.api) {
-                this.fireEvent(channels_1.default.client.geth.status, responses_1.gethResponse({}), event);
+                this.fireEvent(channels_1.default.client.geth.status, responses_1.gethResponse({}, data), event);
                 return null;
             }
             let response;
@@ -126,10 +126,10 @@ class GethIPC extends GethEmitter_1.default {
                 .eth
                 .getBlockNumberAsync()
                 .then((blockNr) => {
-                response = responses_1.gethResponse({ blockNr });
+                response = responses_1.gethResponse({ blockNr }, data);
             })
                 .catch((err) => {
-                response = responses_1.gethResponse({}, { message: err.message });
+                response = responses_1.gethResponse({}, data, { message: err.message });
             })
                 .finally(() => {
                 this.fireEvent(channels_1.default.client.geth.status, response, event);
@@ -144,7 +144,7 @@ class GethIPC extends GethEmitter_1.default {
             for (let [k, v] of options) {
                 mapObj[k] = v;
             }
-            this.fireEvent(channels_1.default.client.geth.options, responses_1.gethResponse(mapObj), event);
+            this.fireEvent(channels_1.default.client.geth.options, responses_1.gethResponse(mapObj, data), event);
         });
         return this;
     }

@@ -8,14 +8,14 @@ class ModuleEmitter extends AbstractEmitter_1.AbstractEmitter {
         this.registerListener(channels_1.default.server[this.MODULE_NAME].manager, (event, data) => {
             if (data.listen) {
                 if (this.getListenersCount(data.channel) >= 1) {
-                    return this.fireEvent(channels_1.default.client[this.MODULE_NAME].manager, responses_1.mainResponse({ error: { message: `already listening on ${data.channel}` } }), event);
+                    return this.fireEvent(channels_1.default.client[this.MODULE_NAME].manager, responses_1.mainResponse({ error: { message: `already listening on ${data.channel}` } }, data), event);
                 }
                 this.listenEvents(data.channel);
             }
             else {
                 this.purgeListener(data.channel);
             }
-            return this.fireEvent(channels_1.default.client[this.MODULE_NAME].manager, responses_1.mainResponse(data), event);
+            return this.fireEvent(channels_1.default.client[this.MODULE_NAME].manager, responses_1.mainResponse({}, data), event);
         });
         this.listenEvents(channels_1.default.server[this.MODULE_NAME].manager);
         this.DEFAULT_MANAGED.forEach((action) => this.listenEvents(channels_1.default.server[this.MODULE_NAME][action]));
@@ -31,18 +31,18 @@ class ModuleEmitter extends AbstractEmitter_1.AbstractEmitter {
                     method
                         .execute(data, (er, ev) => {
                         if (er) {
-                            response = responses_1.mainResponse({ error: { message: er }, from: data });
+                            response = responses_1.mainResponse({ error: { message: er } }, data);
                         }
                         else {
-                            response = responses_1.mainResponse(ev);
+                            response = responses_1.mainResponse(ev, data);
                         }
                         this.fireEvent(channels_1.default.client[this.MODULE_NAME][method.name], response, event);
                     })
                         .then((result) => {
-                        response = responses_1.mainResponse(result);
+                        response = responses_1.mainResponse(result, data);
                     })
                         .catch((err) => {
-                        response = responses_1.mainResponse({ error: { message: err.message }, from: data });
+                        response = responses_1.mainResponse({ error: { message: err.message } }, data);
                     })
                         .finally(() => {
                         this.fireEvent(channels_1.default.client[this.MODULE_NAME][method.name], response, event);
@@ -56,10 +56,10 @@ class ModuleEmitter extends AbstractEmitter_1.AbstractEmitter {
                 method
                     .execute(data)
                     .then((result) => {
-                    response = responses_1.mainResponse(result);
+                    response = responses_1.mainResponse(result, data);
                 })
                     .catch((err) => {
-                    response = responses_1.mainResponse({ error: { message: err.message }, from: data });
+                    response = responses_1.mainResponse({ error: { message: err.message } }, data);
                 })
                     .finally(() => {
                     this.fireEvent(channels_1.default.client[this.MODULE_NAME][method.name], response, event);

@@ -2,10 +2,10 @@
 
 interface MainResponse {
     data: any;
+    request: any;
     error?: {
         message: string,
         fatal?: boolean
-        from?: any;
     };
 }
 
@@ -128,7 +128,8 @@ interface IpfsGetPortsResponse {
         gatewayPort: string,
         apiPort: string,
         swarmPort: string
-    }
+    },
+    request: any
 }
 // channels.server.geth.restart
 interface GethRestartRequest {

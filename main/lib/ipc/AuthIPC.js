@@ -32,7 +32,8 @@ class AuthIPC extends ModuleEmitter_1.default {
                 .auth
                 .login(data.account, data.password, data.rememberTime, data.registering)
                 .then((response) => {
-                const response1 = responses_1.mainResponse(response);
+                delete data.password;
+                const response1 = responses_1.mainResponse(response, data);
                 return this.fireEvent(channels_1.default.client[this.MODULE_NAME].login, response1, event);
             });
         });
@@ -44,7 +45,7 @@ class AuthIPC extends ModuleEmitter_1.default {
             index_1.module
                 .auth
                 .logout();
-            const response = responses_1.mainResponse({ done: true });
+            const response = responses_1.mainResponse({ done: true }, data);
             return this.fireEvent(channels_1.default.client[this.MODULE_NAME].logout, response, event);
         });
         return this;
@@ -55,11 +56,13 @@ class AuthIPC extends ModuleEmitter_1.default {
                 .auth
                 .generateKey(data.password)
                 .then((address) => {
-                const response = responses_1.mainResponse({ address });
+                delete data.password;
+                const response = responses_1.mainResponse({ address }, data);
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].generateEthKey, response, event);
             })
                 .catch((error) => {
-                const response = responses_1.mainResponse({ error });
+                delete data.password;
+                const response = responses_1.mainResponse({ error }, data);
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].generateEthKey, response, event);
             });
         });
@@ -73,10 +76,10 @@ class AuthIPC extends ModuleEmitter_1.default {
                 .registry
                 .getLocalProfiles()
                 .then((list) => {
-                response = responses_1.mainResponse(list);
+                response = responses_1.mainResponse(list, data);
             })
                 .catch((err) => {
-                response = responses_1.mainResponse({ error: { message: err.message } });
+                response = responses_1.mainResponse({ error: { message: err.message } }, data);
             })
                 .finally(() => {
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].getLocalIdentities, response, event);
@@ -100,7 +103,7 @@ class AuthIPC extends ModuleEmitter_1.default {
                 agentOptions: { rejectUnauthorized: false }
             }, (error, response, body) => {
                 const data = (error) ? { error } : body;
-                const response1 = responses_1.mainResponse(data);
+                const response1 = responses_1.mainResponse({}, data);
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].requestEther, response1, event);
             });
         });
