@@ -50,7 +50,7 @@ const execute = Promise.coroutine(function* (data) {
         records_1.mixed.setFull(`${settings_1.A_STREAM_I}${indexBlock}`, { entries, lastBlock });
     }
     const collection = yield Promise.all(Array.from(entries).map((entryId) => get_entry_1.default.execute({ entryId })));
-    return { collection, toBlock: data.toBlock, lastBlock: lastBlock, limit, id: data.id };
+    return { collection, toBlock: data.toBlock, lastBlock: lastBlock, limit };
 });
 exports.default = { execute, name: 'allStreamIterator' };
 //# sourceMappingURL=all-stream-iterator.js.map

@@ -25,7 +25,7 @@ const execute = Promise.coroutine(function* (data) {
         counter++;
     }
     const results = yield Promise.all(fetchCalls);
-    return { collection: results, tagName: data.tagName, limit: maxResults, id: data.id, start: data.start };
+    return { collection: results, tagName: data.tagName, limit: maxResults };
 });
 exports.default = { execute, name: 'entryTagIterator' };
 //# sourceMappingURL=entry-tag-iterator.js.map
