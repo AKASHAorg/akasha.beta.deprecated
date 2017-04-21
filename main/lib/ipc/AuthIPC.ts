@@ -144,8 +144,8 @@ class AuthIPC extends ModuleEmitter {
                         agentOptions: { rejectUnauthorized: false }
                     },
                     (error: Error, response: any, body: { tx: string }) => {
-                        const data = (error) ? { error } : body;
-                        const response1: RequestEtherResponse = mainResponse({}, data);
+                        const data1 = (error) ? { error } : body;
+                        const response1: RequestEtherResponse = mainResponse(data1, data);
                         this.fireEvent(
                             channels.client[this.MODULE_NAME].requestEther,
                             response1,
