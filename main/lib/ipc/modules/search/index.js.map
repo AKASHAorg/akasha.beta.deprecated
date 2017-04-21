@@ -1,1 +1,0 @@
-{"version":3,"file":"index.js","sourceRoot":"","sources":["index.ts"],"names":[],"mappings":";;AAAA,2CAAoC;AACpC,mCAA4B;AAE5B,kBAAe,CAAC,mBAAS,EAAE,eAAK,CAAC,CAAC","sourcesContent":["import handshake from './handshake';\nimport query from './query';\n\nexport default [handshake, query];\n"]}
