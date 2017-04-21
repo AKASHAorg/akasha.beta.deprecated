@@ -9,6 +9,7 @@ export LogDetails from './log-details';
 export LoginDialog from './dialogs/login-dialog';
 export LogoButton from './logo-button';
 export NewProfileForm from './forms/new-profile-form';
+export NewProfileStatus from './NewProfileStatus/new-profile-status';
 export NotificationBar from './notification-bar';
 export PanelContainer from './PanelContainer/panel-container';
 export PanelContainerFooter from './PanelContainer/panel-container-footer';

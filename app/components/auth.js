@@ -5,9 +5,13 @@ import { PanelContainerFooter, ProfilesList } from './';
 import { generalMessages } from '../locale-data/messages';
 
 class Auth extends Component {
+    state = {
+        hasTempProfile: false
+    }
     componentDidMount () {
-        const { gethStatus, profileDeleteLogged, profileGetLocal, tempProfileRequest } = this.props;
-        tempProfileRequest();
+        const { gethStatus, profileDeleteLogged,
+            profileGetLocal, tempProfileGetRequest } = this.props;
+        tempProfileGetRequest();
         if (gethStatus.get('api')) {
             profileGetLocal();
         }
@@ -26,14 +30,31 @@ class Auth extends Component {
             profileGetLocal();
         }
         if (loginErrors.size === 0 && tempProfile.get('akashaId')) {
-            this.context.router.push('/authenticate/new-profile-status');
+            this.setState({
+                hasTempProfile: true
+            });
         }
     }
 
     componentWillUnmount () {
         this.props.profileClearLocal();
     }
-
+    _getNewIdentityLabel = () => {
+        const { hasTempProfile } = this.state;
+        const { intl } = this.props;
+        if (hasTempProfile) {
+            return intl.formatMessage(generalMessages.resumeIdentityLabel);
+        }
+        return intl.formatMessage(generalMessages.createNewIdentityLabel);
+    }
+    _handleNewIdentity = () => {
+        const { hasTempProfile } = this.state;
+        const { history } = this.props;
+        if (hasTempProfile) {
+            return history.push('/setup/new-identity-status');
+        }
+        return this.props.history.push('/setup/new-identity');
+    }
     render () {
         const { backupKeysRequest, backupPending, fetchingProfileList, gethStatus, intl, ipfsStatus,
             localProfiles, localProfilesFetched, showLoginDialog } = this.props;
@@ -57,14 +78,13 @@ class Auth extends Component {
                 label={intl.formatMessage(generalMessages.backup)}
                 onClick={backupKeysRequest}
               />
-              <Link to="/setup/new-identity">
-                <RaisedButton
-                  key="createNewIdentity"
-                  label={intl.formatMessage(generalMessages.createNewIdentityLabel)}
-                  primary
-                  style={{ marginLeft: '10px' }}
-                />
-              </Link>
+              <RaisedButton
+                key="createNewIdentity"
+                label={this._getNewIdentityLabel()}
+                primary
+                onTouchTap={this._handleNewIdentity}
+                style={{ marginLeft: '10px' }}
+              />
               <Link to="/dashboard">
                 <RaisedButton
                   key="guest"
@@ -93,12 +113,12 @@ Auth.propTypes = {
     profileGetLocal: PropTypes.func.isRequired,
     showLoginDialog: PropTypes.func.isRequired,
     tempProfile: PropTypes.shape().isRequired,
-    tempProfileRequest: PropTypes.func.isRequired,
+    tempProfileGetRequest: PropTypes.func.isRequired,
+    history: PropTypes.shape().isRequired,
 };
 
 Auth.contextTypes = {
     muiTheme: PropTypes.shape(),
-    router: PropTypes.shape()
 };
 
 export default Auth;

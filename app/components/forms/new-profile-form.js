@@ -9,7 +9,8 @@ import validation from 'react-validation-mixin';
 import strategy from 'joi-validation-strategy';
 import { Avatar, ImageUploader } from '../';
 import PanelContainerFooter from '../PanelContainer/panel-container-footer';
-import { profileMessages, formMessages, generalMessages } from '../../locale-data/messages';
+import { profileMessages, formMessages,
+  generalMessages, validationMessages } from '../../locale-data/messages';
 import { getProfileSchema } from '../../utils/validationSchema';
 import styles from './new-profile-form.scss';
 
@@ -100,38 +101,46 @@ class NewProfileForm extends Component {
                 [field]: ev.target.value
             });
         }
+    _handleResponse = (resp) => {
+        const { idValid, exists, } = resp.data;
+        if (resp.error) {
+            this.setState({
+                error: `Unknown error ${resp.error}`
+            });
+            return;
+        }
+        this.setState({
+            akashaIdIsValid: idValid,
+            akashaIdExists: exists
+        });
+    }
     _validateAkashaId = (akashaId) => {
-        const serverChannel = window.Channel.server.registry.checkIdFormat;
-        const clientChannel = window.Channel.client.registry.checkIdFormat;
+        const serverChannel = window.Channel.server.registry.profileExists;
+        const clientChannel = window.Channel.client.registry.profileExists;
         if (!this.idVerifyChannelEnabled) {
             serverChannel.enable();
             this.idVerifyChannelEnabled = true;
         }
-        clientChannel.on((response) => {
-            if (response.error) {
-                return this.setState({
-                    error: `Unknown error ${response.error}`
-                });
-            }
-            return this.setState({
-                akashaIdIsValid: response.idValid
-            });
-        });
+        // one listener is auto attached on application start
+        // we need to attach another one with the provided handler
+        if (clientChannel.listenerCount <= 1) {
+            clientChannel.on((ev, data) => this._handleResponse(data));
+        }
         serverChannel.send({ akashaId });
-    }
-    _checkAkashaId = (akashaId) => {
-        console.log('check if akashaId is available', akashaId);
     }
     _onValidate = field => (err) => {
         if (err) {
-            console.log('form has errors!', err);
-            return;
+            this.setState({
+                formHasErrors: true
+            });
+        } else {
+            this.setState({
+                formHasErrors: false
+            });
         }
         // validation passed
         if (field === 'akashaId') {
-            console.log('check the existence on server of akashaId:', this.state.akashaId);
             this._validateAkashaId(this.state.akashaId);
-            this._checkAkashaId(this.state.akashaId);
         }
     }
 
@@ -159,33 +168,26 @@ class NewProfileForm extends Component {
         }
         return null;
     }
+    // server validated akashaId errors must have higher priority
     _getAkashaIdErrors = () => {
+        const { intl } = this.props;
+        const { akashaIdIsValid, akashaIdExists } = this.state;
+        if (!akashaIdIsValid) {
+            return intl.formatMessage(validationMessages.akashaIdNotValid);
+        }
+        if (akashaIdExists) {
+            return intl.formatMessage(validationMessages.akashaIdExists);
+        }
         if (this._getErrorMessages('akashaId')) {
             return this._getErrorMessages('akashaId');
-        }
-        if (!this.state.akashaIdIsValid) {
-            return 'Username contains invalid characters!';
-        }
-        if (this.state.akashaIdExists) {
-            return 'Username already registered!';
         }
         return null;
     }
     _handleCancel = () => {
         this.props.history.push('/authenticate');
     }
-    _submitData = (profileData) => {
+    _submitData = (additionalData) => {
         const { tempProfileCreate } = this.props;
-        const { password, ...other } = profileData;
-        tempProfileCreate({
-            password: new TextEncoder('utf-8').encode(password),
-            ...other
-        });
-    }
-    _handleSubmit = (ev) => {
-        ev.preventDefault();
-        const { expandOptionalDetails } = this.props;
-        const { optDetails } = this.state;
         const {
           firstName,
           lastName,
@@ -194,7 +196,23 @@ class NewProfileForm extends Component {
           about,
           links,
           crypto } = this.state;
+        tempProfileCreate({
+            firstName,
+            lastName,
+            akashaId,
+            password: new TextEncoder('utf-8').encode(password),
+            about,
+            links,
+            crypto,
+            ...additionalData
+        });
+    }
+    _handleSubmit = (ev) => {
+        ev.preventDefault();
+        const { expandOptionalDetails } = this.props;
+        const { optDetails } = this.state;
         this.isSubmitting = true;
+
         this.props.validate((err) => {
             if (err) return;
             if (this.state.akashaIdIsValid && !this.state.akashaIdExists) {
@@ -206,33 +224,20 @@ class NewProfileForm extends Component {
                             avatar = uint8arr;
                         }
                         this._submitData({
-                            firstName,
-                            lastName,
-                            akashaId,
-                            password,
-                            about,
-                            links,
-                            crypto,
                             avatar,
                             backgroundImage,
                         });
                     });
                 } else {
-                    this._submitData({
-                        firstName,
-                        lastName,
-                        akashaId,
-                        password,
-                        about,
-                        links,
-                        crypto,
-                    });
+                    this._submitData();
                 }
             }
         });
     }
     render () {
-        const { intl, muiTheme, expandOptionalDetails, style } = this.props;
+        const { intl, muiTheme, expandOptionalDetails, style, isUpdate } = this.props;
+        const { firstName, lastName, akashaId, password, password2,
+          optDetails, about, links, crypto, formHasErrors } = this.state;
         const { formatMessage } = intl;
 
         return (
@@ -250,7 +255,7 @@ class NewProfileForm extends Component {
                 <TextField
                   fullWidth
                   floatingLabelText={formatMessage(formMessages.firstName)}
-                  value={this.state.firstName}
+                  value={firstName}
                   onChange={this._handleFieldChange('firstName')}
                   onBlur={this._validateField('firstName')}
                   errorText={this._getErrorMessages('firstName')}
@@ -261,28 +266,30 @@ class NewProfileForm extends Component {
                   className="start-xs"
                   fullWidth
                   floatingLabelText={formatMessage(formMessages.lastName)}
-                  value={this.state.lastName}
+                  value={lastName}
                   onChange={this._handleFieldChange('lastName')}
                   onBlur={this._validateField('lastName')}
                   errorText={this._getErrorMessages('lastName')}
                 />
               </div>
-              <div className="col-xs-12">
-                <TextField
-                  fullWidth
-                  floatingLabelText={formatMessage(formMessages.akashaId)}
-                  value={this.state.akashaId}
-                  onChange={this._handleFieldChange('akashaId')}
-                  onBlur={this._validateField('akashaId')}
-                  errorText={this._getAkashaIdErrors()}
-                />
-              </div>
+              {!isUpdate &&
+                <div className="col-xs-12">
+                  <TextField
+                    fullWidth
+                    floatingLabelText={formatMessage(formMessages.akashaId)}
+                    value={akashaId}
+                    onChange={this._handleFieldChange('akashaId')}
+                    onBlur={this._validateField('akashaId')}
+                    errorText={this._getAkashaIdErrors()}
+                  />
+                </div>
+              }
               <div className="col-xs-12">
                 <TextField
                   fullWidth
                   type="password"
                   floatingLabelText={formatMessage(formMessages.passphrase)}
-                  value={this.state.password}
+                  value={password}
                   onChange={this._handleFieldChange('password')}
                   onBlur={this._validateField('password')}
                   errorText={this._getErrorMessages('password')}
@@ -293,7 +300,7 @@ class NewProfileForm extends Component {
                   fullWidth
                   type="password"
                   floatingLabelText={formatMessage(formMessages.passphraseVerify)}
-                  value={this.state.password2}
+                  value={password2}
                   onChange={this._handleFieldChange('password2')}
                   onBlur={this._validateField('password2')}
                   errorText={this._getErrorMessages('password2')}
@@ -303,11 +310,11 @@ class NewProfileForm extends Component {
                 <Checkbox
                   label={intl.formatMessage(profileMessages.optionalDetailsLabel)}
                   style={{ marginTop: 18 }}
-                  checked={this.state.optDetails}
+                  checked={optDetails}
                   onCheck={this._handleShowDetails}
                 />
               }
-              {(this.state.optDetails || expandOptionalDetails) &&
+              {(optDetails || expandOptionalDetails) &&
                 <div className="row middle-xs" style={{ padding: '0 4px' }}>
                   <h3 className="col-xs-12" style={{ margin: '30px 0 10px 0' }} >
                     {intl.formatMessage(profileMessages.avatarTitle)}
@@ -339,7 +346,7 @@ class NewProfileForm extends Component {
                         intl.formatMessage(profileMessages.shortDescriptionLabel)
                       }
                       multiLine
-                      value={this.state.about}
+                      value={about}
                       onChange={this._handleFieldChange('about')}
                       onBlur={this._validateField('about')}
                       errorText={this._getErrorMessages('about')}
@@ -361,11 +368,11 @@ class NewProfileForm extends Component {
                     </IconButton>
                   </div>
                   <div className="col-xs-12">
-                    {this.state.links.map((link, index) =>
+                    {links.map((link, index) =>
                       <div key={link.id} className="row">
                         <div className="col-xs-10">
                           <TextField
-                            autoFocus={(this.state.links.length - 1) === index}
+                            autoFocus={(links.length - 1) === index}
                             fullWidth
                             floatingLabelText={intl.formatMessage(formMessages.title)}
                             value={link.title}
@@ -394,7 +401,7 @@ class NewProfileForm extends Component {
                             </SvgIcon>
                           </IconButton>
                         </div>
-                        {this.state.links.length > 1 &&
+                        {links.length > 1 &&
                           <Divider
                             style={{ marginTop: '16px' }}
                             className="col-xs-12"
@@ -419,11 +426,11 @@ class NewProfileForm extends Component {
                     </IconButton>
                   </div>
                   <div className="col-xs-12">
-                    {this.state.crypto.map((cryptoLink, index) =>
+                    {crypto.map((cryptoLink, index) =>
                       <div key={cryptoLink.id} className="row">
                         <div className="col-xs-10">
                           <TextField
-                            autoFocus={(this.state.crypto.length - 1) === index}
+                            autoFocus={(crypto.length - 1) === index}
                             fullWidth
                             floatingLabelText={intl.formatMessage(profileMessages.cryptoName)}
                             value={cryptoLink.name}
@@ -451,7 +458,7 @@ class NewProfileForm extends Component {
                             </SvgIcon>
                           </IconButton>
                         </div>
-                        {this.state.crypto.length > 1 &&
+                        {crypto.length > 1 &&
                           <Divider
                             style={{ marginTop: '16px' }}
                             className="col-xs-12"
@@ -491,7 +498,8 @@ class NewProfileForm extends Component {
                 key="submit"
                 label={intl.formatMessage(generalMessages.submit)}
                 type="submit"
-                onClick={this._handleSubmit}
+                disabled={formHasErrors}
+                onClick={formHasErrors ? () => {} : this._handleSubmit}
                 style={{ marginLeft: 8 }}
                 primary
               />
@@ -505,6 +513,7 @@ NewProfileForm.propTypes = {
     intl: PropTypes.shape(),
     muiTheme: PropTypes.shape(),
     expandOptionalDetails: PropTypes.bool,
+    isUpdate: PropTypes.bool,
     validate: PropTypes.func,
     getValidationMessages: PropTypes.func,
     tempProfileCreate: PropTypes.func,

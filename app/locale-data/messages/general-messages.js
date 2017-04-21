@@ -72,6 +72,11 @@ const generalMessages = defineMessages({
         description: 'Create identity button label',
         defaultMessage: 'Create new identity'
     },
+    resumeIdentityLabel: {
+        id: 'app.general.resumeIdentityLabel',
+        description: 'resume identity button label',
+        defaultMessage: 'Resume Identity'
+    },
     delete: {
         id: 'app.general.delete',
         description: 'Delete something button label',

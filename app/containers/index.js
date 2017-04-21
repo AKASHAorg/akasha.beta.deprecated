@@ -6,6 +6,7 @@ export HomeContainer from './home-container';
 export LauncherContainer from './launcher-container';
 export LogDetailsContainer from './log-details-container';
 export NewProfileContainer from './new-profile-container';
+export NewProfileStatusContainer from './new-profile-status-container';
 export SidebarContainer from './sidebar-container';
 export SynchronizationContainer from './synchronization-container';
 /* eslint-enable import/no-named-as-default */

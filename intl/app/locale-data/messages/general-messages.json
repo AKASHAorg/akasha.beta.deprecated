@@ -1,23 +1,8 @@
 [
   {
-    "id": "app.general.akasha",
-    "description": "AKASHA",
-    "defaultMessage": "AKASHA"
-  },
-  {
-    "id": "app.general.ok",
-    "description": "Ok",
-    "defaultMessage": "Ok"
-  },
-  {
-    "id": "app.general.by",
-    "description": "entry is written `by`",
-    "defaultMessage": "by"
-  },
-  {
-    "id": "app.general.termsOfService",
-    "description": "Terms of Service and Privacy Policy",
-    "defaultMessage": "Terms of Service and Privacy Policy"
+    "id": "app.general.abort",
+    "description": "abort button label",
+    "defaultMessage": "Abort"
   },
   {
     "id": "app.general.addImage",
@@ -25,149 +10,19 @@
     "defaultMessage": "Add image"
   },
   {
-    "id": "app.general.nextButtonLabel",
-    "description": "Label for Next button",
-    "defaultMessage": "Next"
+    "id": "app.general.addNewEntry",
+    "description": "tooltip for sidebar add entry button",
+    "defaultMessage": "Add new entry"
   },
   {
-    "id": "app.general.importIdentityLabel",
-    "description": "Import identity button label",
-    "defaultMessage": "Import identity"
+    "id": "app.general.aeth",
+    "description": "aeth token",
+    "defaultMessage": "AETH"
   },
   {
-    "id": "app.general.createIdentityLabel",
-    "description": "Create identity button label",
-    "defaultMessage": "Create new identity"
-  },
-  {
-    "id": "app.general.refresh",
-    "description": "refresh button label",
-    "defaultMessage": "Refresh"
-  },
-  {
-    "id": "app.general.sendFeedback",
-    "description": "send feedback button label",
-    "defaultMessage": "Send feedback"
-  },
-  {
-    "id": "app.general.settings",
-    "description": "settings button label",
-    "defaultMessage": "Settings"
-  },
-  {
-    "id": "app.general.help",
-    "description": "Help button label",
-    "defaultMessage": "Help"
-  },
-  {
-    "id": "app.general.signOut",
-    "description": "sign out button label",
-    "defaultMessage": "Sign out"
-  },
-  {
-    "id": "app.general.cancel",
-    "description": "cancel button label",
-    "defaultMessage": "Cancel"
-  },
-  {
-    "id": "app.general.submit",
-    "description": "submit button label",
-    "defaultMessage": "Submit"
-  },
-  {
-    "id": "app.general.confirm",
-    "description": "confirm button label",
-    "defaultMessage": "Confirm"
-  },
-  {
-    "id": "app.general.join",
-    "description": "join button label",
-    "defaultMessage": "Join"
-  },
-  {
-    "id": "app.general.pause",
-    "description": "pause button label",
-    "defaultMessage": "Pause"
-  },
-  {
-    "id": "app.general.resume",
-    "description": "resume button label",
-    "defaultMessage": "Resume"
-  },
-  {
-    "id": "app.general.start",
-    "description": "start button label",
-    "defaultMessage": "Start"
-  },
-  {
-    "id": "app.general.completed",
-    "description": "completed button label",
-    "defaultMessage": "Completed"
-  },
-  {
-    "id": "app.general.connected",
-    "description": "connected status",
-    "defaultMessage": "connected"
-  },
-  {
-    "id": "app.general.noErrors",
-    "description": "placeholder for empty error list",
-    "defaultMessage": "No errors"
-  },
-  {
-    "id": "app.general.gethServiceOn",
-    "description": "geth client service is started",
-    "defaultMessage": "Geth service ON"
-  },
-  {
-    "id": "app.general.gethServiceOff",
-    "description": "geth client service is stopped",
-    "defaultMessage": "Geth service OFF"
-  },
-  {
-    "id": "app.general.ipfsServiceOn",
-    "description": "ipfs client service is started",
-    "defaultMessage": "IPFS service ON"
-  },
-  {
-    "id": "app.general.ipfsServiceOff",
-    "description": "ipfs client service is stopped",
-    "defaultMessage": "IPFS service OFF"
-  },
-  {
-    "id": "app.general.logs",
-    "description": "Services logs",
-    "defaultMessage": "Logs"
-  },
-  {
-    "id": "app.general.reset",
-    "description": "Reset form",
-    "defaultMessage": "Reset"
-  },
-  {
-    "id": "app.general.delete",
-    "description": "Delete something button label",
-    "defaultMessage": "Delete"
-  },
-  {
-    "id": "app.general.edit",
-    "description": "Edit something button label",
-    "defaultMessage": "Edit"
-  },
-  {
-    "id": "app.general.save",
-    "description": "Save changes in a form",
-    "defaultMessage": "Save"
-  },
-  {
-    "id": "app.general.update",
-    "description": "Update data",
-    "defaultMessage": "Update"
-  },
-  {
-    "id": "app.general.abort",
-    "description": "abort button label",
-    "defaultMessage": "Abort"
+    "id": "app.general.akasha",
+    "description": "AKASHA",
+    "defaultMessage": "AKASHA"
   },
   {
     "id": "app.general.backup",
@@ -175,9 +30,174 @@
     "defaultMessage": "Backup"
   },
   {
+    "id": "app.general.by",
+    "description": "entry is written `by`",
+    "defaultMessage": "by"
+  },
+  {
+    "id": "app.general.cancel",
+    "description": "cancel button label",
+    "defaultMessage": "Cancel"
+  },
+  {
+    "id": "app.general.chat",
+    "description": "tooltip for sidebar chat button",
+    "defaultMessage": "Chat"
+  },
+  {
+    "id": "app.general.comingSoon",
+    "description": "tooltip for sidebar disabled button",
+    "defaultMessage": "Coming soon"
+  },
+  {
+    "id": "app.general.completed",
+    "description": "completed button label",
+    "defaultMessage": "Completed"
+  },
+  {
+    "id": "app.general.confirm",
+    "description": "confirm button label",
+    "defaultMessage": "Confirm"
+  },
+  {
+    "id": "app.general.connected",
+    "description": "connected status",
+    "defaultMessage": "connected"
+  },
+  {
+    "id": "app.general.createIdentityLabel",
+    "description": "Create identity button label",
+    "defaultMessage": "Create new identity"
+  },
+  {
+    "id": "app.general.resumeIdentityLabel",
+    "description": "resume identity button label",
+    "defaultMessage": "Resume Identity"
+  },
+  {
+    "id": "app.general.delete",
+    "description": "Delete something button label",
+    "defaultMessage": "Delete"
+  },
+  {
+    "id": "app.general.downloading",
+    "description": "service status",
+    "defaultMessage": "Downloading"
+  },
+  {
+    "id": "app.general.edit",
+    "description": "Edit something button label",
+    "defaultMessage": "Edit"
+  },
+  {
     "id": "app.general.ethereumAddress",
     "description": "Placeholder for ethereum address field. Not sure if Ethereum should be translated",
     "defaultMessage": "Ethereum Address"
+  },
+  {
+    "id": "app.general.gethServiceOff",
+    "description": "geth client service is stopped",
+    "defaultMessage": "Geth service OFF"
+  },
+  {
+    "id": "app.general.gethServiceOn",
+    "description": "geth client service is started",
+    "defaultMessage": "Geth service ON"
+  },
+  {
+    "id": "app.general.help",
+    "description": "Help button label",
+    "defaultMessage": "Help"
+  },
+  {
+    "id": "app.general.hoursCount",
+    "description": "hours count",
+    "defaultMessage": "{hours, number} {hours, plural, one {hour} other {hours}}"
+  },
+  {
+    "id": "app.general.importIdentityLabel",
+    "description": "Import identity button label",
+    "defaultMessage": "Import identity"
+  },
+  {
+    "id": "app.general.ipfsServiceOff",
+    "description": "ipfs client service is stopped",
+    "defaultMessage": "IPFS service OFF"
+  },
+  {
+    "id": "app.general.ipfsServiceOn",
+    "description": "ipfs client service is started",
+    "defaultMessage": "IPFS service ON"
+  },
+  {
+    "id": "app.general.join",
+    "description": "join button label",
+    "defaultMessage": "Join"
+  },
+  {
+    "id": "app.general.leave",
+    "description": "leave button label",
+    "defaultMessage": "Leave"
+  },
+  {
+    "id": "app.general.logs",
+    "description": "Services logs",
+    "defaultMessage": "Logs"
+  },
+  {
+    "id": "app.general.minutesCount",
+    "description": "short form of minutes count",
+    "defaultMessage": "{minutes, number} min"
+  },
+  {
+    "id": "app.general.myEntries",
+    "description": "tooltip for sidebar my entries button",
+    "defaultMessage": "My entries"
+  },
+  {
+    "id": "app.general.nextButtonLabel",
+    "description": "Label for Next button",
+    "defaultMessage": "Next"
+  },
+  {
+    "id": "app.general.noErrors",
+    "description": "placeholder for empty error list",
+    "defaultMessage": "No errors"
+  },
+  {
+    "id": "app.general.ok",
+    "description": "Ok",
+    "defaultMessage": "Ok"
+  },
+  {
+    "id": "app.general.pause",
+    "description": "pause button label",
+    "defaultMessage": "Pause"
+  },
+  {
+    "id": "app.general.people",
+    "description": "tooltip for sidebar people button",
+    "defaultMessage": "People"
+  },
+  {
+    "id": "app.general.publish",
+    "description": "button label for publish action",
+    "defaultMessage": "Publish"
+  },
+  {
+    "id": "app.general.refresh",
+    "description": "refresh button label",
+    "defaultMessage": "Refresh"
+  },
+  {
+    "id": "app.general.reset",
+    "description": "Reset form",
+    "defaultMessage": "Reset"
+  },
+  {
+    "id": "app.general.resume",
+    "description": "resume button label",
+    "defaultMessage": "Resume"
   },
   {
     "id": "app.general.running",
@@ -185,9 +205,44 @@
     "defaultMessage": "Running"
   },
   {
-    "id": "app.general.downloading",
-    "description": "service status",
-    "defaultMessage": "Downloading"
+    "id": "app.general.save",
+    "description": "Save changes in a form",
+    "defaultMessage": "Save"
+  },
+  {
+    "id": "app.general.search",
+    "description": "tooltip for sidebar search button",
+    "defaultMessage": "Search"
+  },
+  {
+    "id": "app.general.sendFeedback",
+    "description": "send feedback button label",
+    "defaultMessage": "Send feedback"
+  },
+  {
+    "id": "app.createProfile.serviceStoppedWarning",
+    "description": "message to be displayed when geth and/or IPFS are/is stopped",
+    "defaultMessage": "Geth and IPFS must be started"
+  },
+  {
+    "id": "app.general.settings",
+    "description": "settings button label",
+    "defaultMessage": "Settings"
+  },
+  {
+    "id": "app.general.showMore",
+    "description": "label for button that loads more data",
+    "defaultMessage": "Show more"
+  },
+  {
+    "id": "app.general.signOut",
+    "description": "sign out button label",
+    "defaultMessage": "Sign out"
+  },
+  {
+    "id": "app.general.start",
+    "description": "start button label",
+    "defaultMessage": "Start"
   },
   {
     "id": "app.general.starting",
@@ -200,33 +255,23 @@
     "defaultMessage": "Stopped"
   },
   {
-    "id": "app.createProfile.serviceStoppedWarning",
-    "description": "message to be displayed when geth and/or IPFS are/is stopped",
-    "defaultMessage": "Geth and IPFS must be started"
+    "id": "app.general.stream",
+    "description": "tooltip for sidebar stream button",
+    "defaultMessage": "Stream"
   },
   {
-    "id": "app.general.showMore",
-    "description": "label for button that loads more data",
-    "defaultMessage": "Show more"
+    "id": "app.general.submit",
+    "description": "submit button label",
+    "defaultMessage": "Submit"
   },
   {
-    "id": "app.general.publish",
-    "description": "button label for publish action",
-    "defaultMessage": "Publish"
+    "id": "app.general.termsOfService",
+    "description": "Terms of Service and Privacy Policy",
+    "defaultMessage": "Terms of Service and Privacy Policy"
   },
   {
-    "id": "app.general.leave",
-    "description": "leave button label",
-    "defaultMessage": "Leave"
-  },
-  {
-    "id": "app.general.minutesCount",
-    "description": "short form of minutes count",
-    "defaultMessage": "{minutes, number} min"
-  },
-  {
-    "id": "app.general.hoursCount",
-    "description": "hours count",
-    "defaultMessage": "{hours, number} {hours, plural, one {hour} other {hours}}"
+    "id": "app.general.update",
+    "description": "Update data",
+    "defaultMessage": "Update"
   }
 ]

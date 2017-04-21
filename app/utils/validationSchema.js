@@ -61,7 +61,7 @@ export const getProfileSchema = intl =>
            .trim()
            .required()
            .lowercase()
-           .min(4)
+           .min(2)
            .max(32)
            .label(intl.formatMessage(formMessages.akashaId))
            .options({
@@ -98,6 +98,7 @@ export const getProfileSchema = intl =>
            }),
         password2: Joi
            .string()
+           .min(8)
            .required()
            .valid(Joi.ref('password'))
            .label(intl.formatMessage(formMessages.passphraseVerify))

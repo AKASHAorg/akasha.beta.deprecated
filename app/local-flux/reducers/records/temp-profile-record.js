@@ -5,7 +5,8 @@ const TempProfileStatus = Record({
     publishRequested: false,
     faucetTx: null,
     publishTx: null,
-    currentAction: null
+    currentAction: null,
+    token: null
 });
 
 const TempProfile = Record({

@@ -4,7 +4,7 @@ import { injectIntl } from 'react-intl';
 import PanelContainer from '../components/PanelContainer/panel-container';
 import { PanelHeader } from '../shared-components';
 import { ConfigurationContainer, SynchronizationContainer, AuthContainer,
-  LogDetailsContainer, NewProfileContainer } from './';
+  LogDetailsContainer, NewProfileContainer, NewProfileStatusContainer } from './';
 import { setupMessages } from '../locale-data/messages';
 
 const LauncherContainer = ({ intl, location }) => {
@@ -28,6 +28,10 @@ const LauncherContainer = ({ intl, location }) => {
         }, {
             path: '/setup/new-identity',
             component: NewProfileContainer,
+            title: intl.formatMessage(setupMessages.newIdentity)
+        }, {
+            path: '/setup/new-identity-status',
+            component: NewProfileStatusContainer,
             title: intl.formatMessage(setupMessages.newIdentity)
         }
     ];

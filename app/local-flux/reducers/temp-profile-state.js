@@ -5,6 +5,13 @@ import { TempProfileModel } from './models';
 const initialState = new TempProfileModel();
 
 const tempProfileState = createReducer(initialState, {
+    [types.TEMP_PROFILE_GET_SUCCESS]: (state, { data }) => {
+        const { status, ...tempProfile } = data;
+        return state.merge({
+            tempProfile: state.get('tempProfile').merge(TempProfileModel.createTempProfile(tempProfile)),
+            status: state.get('status').merge(status)
+        });
+    },
     // save a new temp profile to database
     [types.TEMP_PROFILE_CREATE]: (state, { data }) => {
         const { status, ...profile } = data;
@@ -65,9 +72,10 @@ const tempProfileState = createReducer(initialState, {
         state.mergeIn(['status'], {
             currentAction: types.TEMP_PROFILE_LOGIN
         }),
-    [types.TEMP_PROFILE_LOGIN_SUCCESS]: state =>
+    [types.TEMP_PROFILE_LOGIN_SUCCESS]: (state, action) =>
         state.mergeIn(['status'], {
-            currentAction: types.TEMP_PROFILE_LOGIN_SUCCESS
+            currentAction: types.TEMP_PROFILE_LOGIN_SUCCESS,
+            token: action.data.response.data.token
         }),
     [types.TEMP_PROFILE_PUBLISH]: state =>
         state.mergeIn(['status'], {

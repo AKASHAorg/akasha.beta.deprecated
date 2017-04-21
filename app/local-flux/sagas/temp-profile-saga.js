@@ -1,4 +1,4 @@
-import { take, fork, call, apply, put, select } from 'redux-saga/effects';
+import { take, fork, call, put, select } from 'redux-saga/effects';
 import { actionChannels, enableChannel } from './helpers';
 import * as types from '../constants';
 import * as tempProfileActions from '../actions/temp-profile-actions';
@@ -9,12 +9,12 @@ const Channel = global.Channel;
 /**
  * Get temp profile from database
  */
-function* tempProfileRequest () {
+function* tempProfileGetRequest () {
     try {
-        const data = yield apply(registryService, registryService.getTempProfile);
-        yield put(tempProfileActions.tempProfileSuccess(data));
+        const data = yield call([registryService, registryService.getTempProfile]);
+        yield put(tempProfileActions.tempProfileGetSuccess(data));
     } catch (error) {
-        yield put(tempProfileActions.tempProfileError(error));
+        yield put(tempProfileActions.tempProfileGetError(error));
     }
 }
 
@@ -23,10 +23,9 @@ function* tempProfileRequest () {
  */
 function* createTempProfile (data) {
     try {
-        const tempProfile = yield apply(
-            registryService,
-            registryService.createTempProfile,
-            [data]
+        const tempProfile = yield call(
+            [registryService, registryService.createTempProfile],
+            data
         );
         yield put(tempProfileActions.tempProfileCreateSuccess(tempProfile));
     } catch (ex) {
@@ -47,12 +46,13 @@ function* createEthAddressRequest (tempProfile) {
  */
 function* createEthAddressListener (tempProfile) {
     const response = yield take(actionChannels.auth.generateEthKey);
+    const tempProfileStatus = yield select(state => state.tempProfileState.get('status'));
     if (!response.error) {
         tempProfile.address = response.data.address;
-        tempProfile = yield apply(
-            registryService,
-            registryService.updateTempProfile,
-            [tempProfile]
+        tempProfile = yield call(
+            [registryService, registryService.updateTempProfile],
+            tempProfile,
+            tempProfileStatus.toJS()
         );
         yield put(tempProfileActions.ethAddressCreateSuccess(tempProfile));
     } else {
@@ -72,12 +72,13 @@ function* faucetRequest (tempProfile) {
  */
 function* faucetRequestListener (tempProfile) {
     const response = yield take(actionChannels.auth.requestEther);
+    const tempProfileStatus = yield select(state => state.tempProfileState.get('status'));
     if (!response.error) {
         try {
-            tempProfile = yield apply(
-                registryService,
-                registryService.updateTempProfile,
-                [tempProfile]
+            tempProfile = yield call(
+                [registryService, registryService.updateTempProfile],
+                tempProfile,
+                tempProfileStatus.toJS()
             );
             yield put(tempProfileActions.faucetRequestSuccess({ tempProfile, response }));
         } catch (error) {
@@ -135,22 +136,28 @@ function* tempProfileLoginListener (tempProfile) {
  */
 function* tempProfilePublishRequest (tempProfile) {
     const channel = Channel.server.registry.registerProfile;
-    console.log(tempProfile, 'publish temp profile!');
+    const { akashaId, address, password, status, ...others } = tempProfile;
+    const tempProfileStatus = yield select(state => state.tempProfileState.get('status'));
+    const profileToPublish = {
+        akashaId,
+        token: tempProfileStatus.token,
+        ipfs: others
+    };
     yield put(tempProfileActions.tempProfilePublish(tempProfile));
     yield call(enableChannel, channel, Channel.client.registry.manager);
-    yield call([channel, channel.send], tempProfile);
+    yield call([channel, channel.send], profileToPublish);
 }
 /**
  * Listen for profile published event and receive transaction id
  */
 function* tempProfilePublishListener (tempProfile) {
     const response = yield take(actionChannels.registry.registerProfile);
+    const tempProfileStatus = yield select(state => state.tempProfileState.get('status'));
     if (!response.error) {
         try {
-            tempProfile = yield apply(
-                registryService,
-                registryService.updateTempProfile,
-                [tempProfile]
+            tempProfile = yield call(
+                [registryService, registryService.updateTempProfile],
+                tempProfile, tempProfileStatus.toJS()
             );
             yield put(tempProfileActions.tempProfilePublishSuccess({ tempProfile, response }));
         } catch (error) {
@@ -165,7 +172,7 @@ function* tempProfilePublishListener (tempProfile) {
  */
 function* publishTxListener (tempProfile) {
     const response = yield take(actionChannels.tx.emitMined);
-    const tempProfileStatus = yield select(state => state.profileState.get('status'));
+    const tempProfileStatus = yield select(state => state.tempProfileState.get('status'));
     if (!response.error && response.data.mined === tempProfileStatus.publishTx) {
         yield put(tempProfileActions.tempProfilePublishTxMinedSuccess({ tempProfile, response }));
     } else if (response.error && response.error.from.tx === tempProfileStatus.publishTx) {
@@ -227,8 +234,7 @@ function* watchTempProfileLogin () {
 function* watchTempProfilePublish () {
     while (true) {
         const action = yield take(types.TEMP_PROFILE_LOGIN_SUCCESS);
-        console.log('login succeded!');
-        const tempProfileStatus = yield select(state => state.profileState.get('status'));
+        const tempProfileStatus = yield select(state => state.tempProfileState.get('status'));
         if (!tempProfileStatus.publishRequested || !tempProfileStatus.publishTx) {
             yield fork(tempProfilePublishListener, action.data.tempProfile);
             yield fork(tempProfilePublishRequest, action.data.tempProfile);
@@ -241,7 +247,7 @@ function* watchTempProfilePublish () {
 function* watchPublishTxMined () {
     while (true) {
         const action = yield take(types.TEMP_PROFILE_PUBLISH_SUCCESS);
-        const tempProfileStatus = yield select(state => state.profileState.get('status'));
+        const tempProfileStatus = yield select(state => state.tempProfileState.get('status'));
         yield fork(publishTxListener, action.data.tempProfile);
         yield fork(addTxToQueue, tempProfileStatus.publishTx, 'tempProfilePublishTxMined');
     }
@@ -264,8 +270,8 @@ function* watchTempProfileRemove () {
 }
 
 function* watchTempProfileRequest () {
-    while (yield take(types.TEMP_PROFILE_REQUEST)) {
-        yield fork(tempProfileRequest);
+    while (yield take(types.TEMP_PROFILE_GET_REQUEST)) {
+        yield fork(tempProfileGetRequest);
     }
 }
 

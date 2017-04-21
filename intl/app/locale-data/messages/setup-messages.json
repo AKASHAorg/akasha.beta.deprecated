@@ -95,6 +95,31 @@
     "defaultMessage": "First time setup"
   },
   {
+    "id": "app.setup.configuration",
+    "description": "panel header for configuration page",
+    "defaultMessage": "Configuration"
+  },
+  {
+    "id": "app.setup.synchronization",
+    "description": "panel header for synchronization page",
+    "defaultMessage": "Synchronization"
+  },
+  {
+    "id": "app.setup.logDetails",
+    "description": "panel header for log details page",
+    "defaultMessage": "Log details"
+  },
+  {
+    "id": "app.setup.login",
+    "description": "panel header for login page",
+    "defaultMessage": "Login"
+  },
+  {
+    "id": "app.setup.newIdentity",
+    "description": "panel header for new identity page",
+    "defaultMessage": "Create new identity"
+  },
+  {
     "id": "app.setup.akashaNextGenNetwork",
     "description": "akasha next gen description",
     "defaultMessage": "AKASHA is a next-generation social blogging network powered by a new\n                        kind of world computer known as Ethereum and the\n                        Inter Planetary File System."

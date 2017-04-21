@@ -37,6 +37,7 @@ export const updateTempProfile = (tempProfile, status) =>
                 tmpProf[key] = tempProfile[key];
             });
             if (status && typeof status === 'object') {
+                if (!tmpProf.status) tmpProf.status = {};
                 Object.keys(status).forEach((key) => {
                     tmpProf.status[key] = status[key];
                 });
@@ -62,7 +63,12 @@ export const deleteTempProfile = akashaId =>
  * @return promise
  */
 export const getTempProfile = () =>
-    profileDB.tempProfile.toCollection().first();
+    profileDB.tempProfile.toCollection().first().then((profile) => {
+        if (!profile) {
+            return {};
+        }
+        return profile;
+    });
 /**
  * Registry Service.
  * default open channels => ['getCurrentProfile', 'getByAddress']

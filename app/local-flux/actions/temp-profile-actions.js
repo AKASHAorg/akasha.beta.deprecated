@@ -13,8 +13,8 @@ export const tempProfileDeleteSuccess = () => action(types.TEMP_PROFILE_DELETE_S
 export const tempProfileDeleteError = error => action(types.TEMP_PROFILE_DELETE_ERROR, { error });
 
 export const tempProfileGet = () => action(types.TEMP_PROFILE_GET);
-export const tempProfileGetSuccess = () => action(types.TEMP_PROFILE_GET_SUCCESS, { data });
-export const tempProfileGetError = () => action(types.TEMP_PROFILE_GET_ERROR, { error });
+export const tempProfileGetSuccess = data => action(types.TEMP_PROFILE_GET_SUCCESS, { data });
+export const tempProfileGetError = error => action(types.TEMP_PROFILE_GET_ERROR, { error });
 
 export const tempProfileLogin = data => action(types.TEMP_PROFILE_LOGIN, { data });
 export const tempProfileLoginSuccess = data => action(types.TEMP_PROFILE_LOGIN_SUCCESS, { data });
@@ -26,15 +26,13 @@ export const tempProfilePublishSuccess = data => action(types.TEMP_PROFILE_PUBLI
 });
 export const tempProfilePublishError = error => action(types.TEMP_PROFILE_PUBLISH_ERROR, { error });
 
-export const tempProfileRequest = () => action(types.TEMP_PROFILE_REQUEST);
+export const tempProfileGetRequest = () => action(types.TEMP_PROFILE_GET_REQUEST);
 
 export const tempProfileError = (error) => {
     error.code = 'TPRE01';
     error.messageId = 'tempProfileRequest';
     return action(types.TEMP_PROFILE_ERROR, { error });
 };
-
-export const tempProfileSuccess = data => action(types.TEMP_PROFILE_SUCCESS, { data });
 
 export const ethAddressCreate = data => action(types.ETH_ADDRESS_CREATE, { data });
 export const ethAddressCreateSuccess = data => action(types.ETH_ADDRESS_CREATE_SUCCESS, { data });
