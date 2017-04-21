@@ -42,3 +42,5 @@ jsconfig.json
 *.p12
 *.cer
 *.pfx
+main/**/*.js
+main/**/*.map.js
