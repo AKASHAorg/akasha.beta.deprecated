@@ -98,7 +98,7 @@
     "@types/ramda": "0.0.7",
     "@types/request": "0.0.42",
     "@types/rimraf": "0.0.28",
-    "@types/winston": "2.3.0",
+    "@types/winston": "2.3.1",
     "asar": "0.13.0",
     "babel-cli": "6.24.1",
     "babel-core": "6.24.1",

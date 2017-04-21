@@ -102,8 +102,8 @@ class AuthIPC extends ModuleEmitter_1.default {
                 json: { address: data.address, token: faucetToken },
                 agentOptions: { rejectUnauthorized: false }
             }, (error, response, body) => {
-                const data = (error) ? { error } : body;
-                const response1 = responses_1.mainResponse({}, data);
+                const data1 = (error) ? { error } : body;
+                const response1 = responses_1.mainResponse(data1, data);
                 this.fireEvent(channels_1.default.client[this.MODULE_NAME].requestEther, response1, event);
             });
         });
