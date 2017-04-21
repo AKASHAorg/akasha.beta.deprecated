@@ -7,7 +7,12 @@ import { slice } from 'ramda';
 import { mixed } from '../models/records';
 
 const execute = Promise.coroutine(function*(data: { text: string, pageSize: number, offset: number }) {
-    let cached;
+    let cached: {
+        text: string,
+        total: number,
+        results: any[]
+    };
+
     if (mixed.hasShort(data.text)) {
         cached = mixed.getShort(data.text);
     } else {
