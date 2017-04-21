@@ -36,7 +36,7 @@ release
 binary
 bin
 electron-api/gabi-play
-intl
+intl/*
 tmp
 jsconfig.json
 *.p12

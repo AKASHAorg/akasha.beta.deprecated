@@ -2,7 +2,7 @@ import { apply, call, fork, put, select, take, takeEvery } from 'redux-saga/effe
 import { actionChannels, enableChannel } from './helpers';
 import * as actions from '../actions/entry-actions';
 import * as types from '../constants';
-import { selectColumnLastEntry, selectLastAllStreamBlock } from '../selectors';
+import { selectColumnLastEntry, selectColumnLastBlock } from '../selectors';
 
 const Channel = global.Channel;
 const ALL_STREAM_LIMIT = 11;
@@ -32,13 +32,13 @@ function* entryGetExtraOfList ({ entries }) {
 
 function* entryMoreNewestIterator ({ id }) {
     const channel = Channel.server.entry.allStreamIterator;
-    const toBlock = yield select(selectLastAllStreamBlock);
+    const toBlock = yield select(state => selectColumnLastBlock(state, id));
     yield apply(channel, channel.send, [{ id, limit: ALL_STREAM_LIMIT, toBlock: toBlock - 1 }]);
 }
 
 function* entryMoreStreamIterator ({ id }) {
     const channel = Channel.server.entry.followingStreamIterator;
-    const toBlock = yield select(selectLastAllStreamBlock);
+    const toBlock = yield select(state => selectColumnLastBlock(state, id));
     yield apply(channel, channel.send, [{ id, limit: ENTRY_ITERATOR_LIMIT, toBlock: toBlock - 1 }]);
 }
 
@@ -147,16 +147,16 @@ function* watchEntryNewestIteratorChannel () {
     while (true) {
         const resp = yield take(actionChannels.entry.allStreamIterator);
         if (resp.error) {
-            if (resp.from && resp.from.toBlock) {
-                yield put(actions.entryMoreNewestIteratorError(resp.error));
+            if (resp.request && resp.request.toBlock) {
+                yield put(actions.entryMoreNewestIteratorError(resp.error, resp.request));
             } else {
-                yield put(actions.entryNewestIteratorError(resp.error));
+                yield put(actions.entryNewestIteratorError(resp.error, resp.request));
             }
         } else {
             if (resp.data.toBlock) {
-                yield put(actions.entryMoreNewestIteratorSuccess(resp.data));
+                yield put(actions.entryMoreNewestIteratorSuccess(resp.data, resp.request));
             } else {
-                yield put(actions.entryNewestIteratorSuccess(resp.data));
+                yield put(actions.entryNewestIteratorSuccess(resp.data, resp.request));
             }
             yield put(actions.entryGetExtraOfList(resp.data.collection));
         }
@@ -167,16 +167,16 @@ function* watchEntryStreamIteratorChannel () {
     while (true) {
         const resp = yield take(actionChannels.entry.followingStreamIterator);
         if (resp.error) {
-            if (resp.from && resp.from.toBlock) {
-                yield put(actions.entryMoreStreamIteratorError(resp.error));
+            if (resp.request && resp.request.toBlock) {
+                yield put(actions.entryMoreStreamIteratorError(resp.error, resp.request));
             } else {
-                yield put(actions.entryStreamIteratorError(resp.error));
+                yield put(actions.entryStreamIteratorError(resp.error, resp.request));
             }
         } else {
             if (resp.data.toBlock) {
-                yield put(actions.entryMoreStreamIteratorSuccess(resp.data));
+                yield put(actions.entryMoreStreamIteratorSuccess(resp.data, resp.request));
             } else {
-                yield put(actions.entryStreamIteratorSuccess(resp.data));
+                yield put(actions.entryStreamIteratorSuccess(resp.data, resp.request));
             }
             yield put(actions.entryGetExtraOfList(resp.data.collection));
         }
@@ -187,16 +187,16 @@ function* watchEntryTagIteratorChannel () {
     while (true) {
         const resp = yield take(actionChannels.entry.entryTagIterator);
         if (resp.error) {
-            if (resp.from && resp.from.start) {
-                yield put(actions.entryMoreTagIteratorError(resp.error));
+            if (resp.request && resp.request.start) {
+                yield put(actions.entryMoreTagIteratorError(resp.error, resp.request));
             } else {
-                yield put(actions.entryTagIteratorError(resp.error));
+                yield put(actions.entryTagIteratorError(resp.error, resp.request));
             }
         } else {
-            if (resp.data.start) {
-                yield put(actions.entryMoreTagIteratorSuccess(resp.data));
+            if (resp.request.start) {
+                yield put(actions.entryMoreTagIteratorSuccess(resp.data, resp.request));
             } else {
-                yield put(actions.entryTagIteratorSuccess(resp.data));
+                yield put(actions.entryTagIteratorSuccess(resp.data, resp.request));
             }
             yield put(actions.entryGetExtraOfList(resp.data.collection));
         }

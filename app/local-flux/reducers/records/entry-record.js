@@ -75,7 +75,6 @@ export const EntryState = Record({
     entriesStream: new EntriesStream(),
     fullEntry: null,
     fullEntryLatestVersion: null,
-    lastAllStreamBlock: null,
     savedEntries: new List(),
     moreAllStreamEntries: false,
     moreProfileEntries: false,
