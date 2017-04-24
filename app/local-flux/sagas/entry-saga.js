@@ -8,7 +8,7 @@ const Channel = global.Channel;
 const ALL_STREAM_LIMIT = 11;
 const ENTRY_ITERATOR_LIMIT = 6;
 
-function* entryGetExtraOfList ({ entries }) {
+function* entryGetExtraOfList (entries) {
     const getVoteOf = Channel.server.entry.getVoteOf;
     const getEntryBalance = Channel.server.entry.getEntryBalance;
     const canClaim = Channel.server.entry.canClaim;
@@ -18,15 +18,19 @@ function* entryGetExtraOfList ({ entries }) {
         call(enableChannel, canClaim, Channel.client.entry.manager)
     ];
     const akashaId = yield select(state => state.profileState.getIn(['loggedProfile', 'akashaId']));
-    for (let i = 0; i < entries.length; i++) {
-        const entry = entries[i];
-        yield apply(getVoteOf, getVoteOf.send, [{ akashaId, entryId: entry.entryId }]);
-        const isOwnEntry = entry.entryEth && entry.entryEth.publisher &&
-            akashaId === entry.entryEth.publisher.akashaId;
-        if (isOwnEntry) {
-            yield apply(getEntryBalance, getEntryBalance.send, [{ entryId: entry.entryId }]);
-            yield apply(canClaim, canClaim.send, [{ entryId: entry.entryId }]);
+    const allEntries = [];
+    const ownEntries = [];
+    entries.forEach((entry) => {
+        allEntries.push({ akashaId, entryId: entry.entryId });
+        if (entry.entryEth && entry.entryEth.publisher &&
+                akashaId === entry.entryEth.publisher.akashaId) {
+            ownEntries.push(entry.entryId);
         }
+    });
+    yield apply(getVoteOf, getVoteOf.send, [allEntries]);
+    if (ownEntries.length) {
+        yield apply(getEntryBalance, getEntryBalance.send, [{ entryId: ownEntries }]);
+        yield apply(canClaim, canClaim.send, [{ entryId: ownEntries }]);
     }
 }
 
@@ -81,16 +85,11 @@ function* entryTagIterator ({ id, tagName }) {
 function* entryVoteCost () {
     const channel = Channel.server.entry.voteCost;
     yield call(enableChannel, channel, Channel.client.entry.manager);
-    for (let i = 1; i <= 10; i++) {
-        yield apply(channel, channel.send, [{ weight: i }]);
-    }
+    const weight = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    yield apply(channel, channel.send, [{ weight }]);
 }
 
 // Action watchers
-
-function* watchEntryGetVoteOfList () {
-    yield takeEvery(types.ENTRY_GET_EXTRA_OF_LIST, entryGetExtraOfList);
-}
 
 function* watchEntryMoreNewestIterator () {
     yield takeEvery(types.ENTRY_MORE_NEWEST_ITERATOR, entryMoreNewestIterator);
@@ -178,7 +177,7 @@ function* watchEntryNewestIteratorChannel () {
             } else {
                 yield put(actions.entryNewestIteratorSuccess(resp.data, resp.request));
             }
-            yield put(actions.entryGetExtraOfList(resp.data.collection));
+            yield fork(entryGetExtraOfList, resp.data.collection);
         }
     }
 }
@@ -199,7 +198,7 @@ function* watchEntryProfileIteratorChannel () {
             } else {
                 yield put(actions.entryProfileIteratorSuccess(resp.data, resp.request));
             }
-            yield put(actions.entryGetExtraOfList(resp.data.collection));
+            yield fork(entryGetExtraOfList, resp.data.collection);
         }
     }
 }
@@ -219,7 +218,7 @@ function* watchEntryStreamIteratorChannel () {
             } else {
                 yield put(actions.entryStreamIteratorSuccess(resp.data, resp.request));
             }
-            yield put(actions.entryGetExtraOfList(resp.data.collection));
+            yield fork(entryGetExtraOfList, resp.data.collection);
         }
     }
 }
@@ -239,7 +238,7 @@ function* watchEntryTagIteratorChannel () {
             } else {
                 yield put(actions.entryTagIteratorSuccess(resp.data, resp.request));
             }
-            yield put(actions.entryGetExtraOfList(resp.data.collection));
+            yield fork(entryGetExtraOfList, resp.data.collection);
         }
     }
 }
@@ -267,7 +266,6 @@ export function* registerEntryListeners () {
 }
 
 export function* watchEntryActions () {
-    yield fork(watchEntryGetVoteOfList);
     yield fork(watchEntryMoreNewestIterator);
     yield fork(watchEntryMoreProfileIterator);
     yield fork(watchEntryMoreStreamIterator);

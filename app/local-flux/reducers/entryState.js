@@ -1,5 +1,5 @@
 /* eslint new-cap: ["error", { "capIsNewExceptions": ["Record", "EntryContent", "EntryEth"] }]*/
-import { fromJS, List, Record } from 'immutable';
+import { fromJS, List, Record, Map } from 'immutable';
 import { createReducer } from './create-reducer';
 import * as entryTypes from '../constants/EntryConstants';
 import * as commentsTypes from '../constants/CommentsConstants';
@@ -552,14 +552,29 @@ const entryState = createReducer(initialState, {
 
     // ************************* NEW REDUCERS ******************************
 
-    [types.ENTRY_CAN_CLAIM_SUCCESS]: (state, { data }) =>
-        state.setIn(['canClaim', data.entryId], data.canClaim),
+    [types.ENTRY_CAN_CLAIM_SUCCESS]: (state, { data }) => {
+        const canClaim = {};
+        data.collection.forEach((res) => {
+            canClaim[res.entryId] = res.canClaim;
+        });
+        return state.mergeIn(['canClaim'], new Map(canClaim));
+    },
 
-    [types.ENTRY_GET_BALANCE_SUCCESS]: (state, { data }) =>
-        state.setIn(['balance', data.entryId], data.balance),
+    [types.ENTRY_GET_BALANCE_SUCCESS]: (state, { data }) => {
+        const balance = {};
+        data.collection.forEach((res) => {
+            balance[res.entryId] = res.balance;
+        });
+        return state.mergeIn(['balance'], new Map(balance));
+    },
 
-    [types.ENTRY_GET_VOTE_OF_SUCCESS]: (state, { data }) =>
-        state.setIn(['votes', data.entryId], data.weight),
+    [types.ENTRY_GET_VOTE_OF_SUCCESS]: (state, { data }) => {
+        const votes = {};
+        data.collection.forEach((res) => {
+            votes[res.entryId] = res.weight;
+        });
+        return state.mergeIn(['votes'], new Map(votes));
+    },
 
     [types.ENTRY_MORE_NEWEST_ITERATOR_SUCCESS]: entryIteratorHandler,
 
@@ -577,8 +592,13 @@ const entryState = createReducer(initialState, {
 
     [types.ENTRY_TAG_ITERATOR_SUCCESS]: entryIteratorHandler,
 
-    [types.ENTRY_VOTE_COST_SUCCESS]: (state, { data }) =>
-        state.setIn(['voteCostByWeight', data.weight], data.cost),
+    [types.ENTRY_VOTE_COST_SUCCESS]: (state, { data }) => {
+        const voteCost = {};
+        data.collection.forEach((res) => {
+            voteCost[res.weight] = res.cost;
+        });
+        return state.set('voteCostByWeight', new Map(voteCost));
+    }
 });
 
 export default entryState;

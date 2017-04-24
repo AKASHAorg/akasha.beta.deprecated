@@ -698,7 +698,6 @@ export const entryGetVoteOfError = (error) => {
 };
 
 export const entryGetVoteOfSuccess = data => action(types.ENTRY_GET_VOTE_OF_SUCCESS, { data });
-export const entryGetExtraOfList = entries => action(types.ENTRY_GET_EXTRA_OF_LIST, { entries });
 export const entryMoreNewestIterator = id => action(types.ENTRY_MORE_NEWEST_ITERATOR, { id });
 
 export const entryMoreNewestIteratorError = (error, req) => {
