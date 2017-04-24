@@ -96,7 +96,7 @@ export default class Auth {
      * @param registering
      * @returns {any}
      */
-    public login(acc: string, pass: any | Uint8Array, timer: number = 0, registering = false) {
+    public login(acc: string, pass: any | Uint8Array, timer: number = 1, registering = false) {
 
         return contracts.instance
             .registry
