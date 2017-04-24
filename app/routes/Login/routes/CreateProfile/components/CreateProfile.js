@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import r from 'ramda';
 import { SvgIcon, IconButton, RaisedButton,
     TextField, Checkbox, Divider } from 'material-ui';
@@ -7,7 +8,7 @@ import CancelIcon from 'material-ui/svg-icons/navigation/cancel';
 import ErrorIcon from 'material-ui/svg-icons/alert/error';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { Avatar, ImageUploader, PanelContainer, PanelHeader } from 'shared-components';
-import { profileMessages, formMessages, generalMessages } from 'locale-data/messages'; /* eslint import/no-unresolved: 0*/
+import { profileMessages, formMessages, generalMessages } from 'locale-data/messages';/* eslint import/no-unresolved: 0*/
 import { inputFieldMethods } from '../../../../../utils/dataModule';
 import validationProvider from '../../../../../utils/validationProvider';
 import { UserValidation } from '../../../../../utils/validationSchema';
@@ -433,18 +434,18 @@ class CreateProfile extends Component {
 
 CreateProfile.propTypes = {
     appActions: PropTypes.shape(),
-    errors: React.PropTypes.shape(),
-    tempProfileActions: React.PropTypes.shape(),
-    clearValidations: React.PropTypes.func,
-    handleValidation: React.PropTypes.func,
-    intl: React.PropTypes.shape(),
+    errors: PropTypes.shape(),
+    tempProfileActions: PropTypes.shape(),
+    clearValidations: PropTypes.func,
+    handleValidation: PropTypes.func,
+    intl: PropTypes.shape(),
     gethStatus: PropTypes.shape().isRequired,
     ipfsStatus: PropTypes.shape().isRequired
 };
 
 CreateProfile.contextTypes = {
-    muiTheme: React.PropTypes.shape(),
-    router: React.PropTypes.shape()
+    muiTheme: PropTypes.shape(),
+    router: PropTypes.shape()
 };
 
 CreateProfile.defaultProps = {

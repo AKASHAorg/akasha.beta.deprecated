@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import { Chip } from 'material-ui';
 
@@ -27,14 +28,14 @@ const TagChip = ({ style, onTagClick, tag, isSelected }, { muiTheme }) => {
 };
 
 TagChip.propTypes = {
-    tag: React.PropTypes.string.isRequired,
-    isSelected: React.PropTypes.bool,
-    style: React.PropTypes.shape(),
-    onTagClick: React.PropTypes.func.isRequired
+    tag: PropTypes.string.isRequired,
+    isSelected: PropTypes.bool,
+    style: PropTypes.shape(),
+    onTagClick: PropTypes.func.isRequired
 };
 
 TagChip.contextTypes = {
-    muiTheme: React.PropTypes.shape(),
+    muiTheme: PropTypes.shape(),
 };
 
 export default TagChip;

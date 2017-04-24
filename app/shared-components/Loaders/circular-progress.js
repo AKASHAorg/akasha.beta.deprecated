@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import { autoPrefix, transitions } from 'material-ui/styles';
 
@@ -179,58 +180,58 @@ CircularProgress.propTypes = {
     /**
      * Override the progress's color.
      */
-    color: React.PropTypes.string,
+    color: PropTypes.string,
 
     /**
      * Style for inner wrapper div.
      */
-    innerStyle: React.PropTypes.object,
+    innerStyle: PropTypes.object,
 
-    maskStyle: React.PropTypes.object,
+    maskStyle: PropTypes.object,
 
     /**
      * The max value of progress, only works in determinate mode.
      */
-    max: React.PropTypes.number,
+    max: PropTypes.number,
 
     /**
      * The min value of progress, only works in determinate mode.
      */
-    min: React.PropTypes.number,
+    min: PropTypes.number,
 
     /**
      * The mode of show your progress, indeterminate
      * for when there is no value for progress.
      */
-    mode: React.PropTypes.oneOf(['determinate', 'indeterminate']),
+    mode: PropTypes.oneOf(['determinate', 'indeterminate']),
 
-    radius: React.PropTypes.string,
+    radius: PropTypes.string,
 
     /**
      * The size of the progress.
      */
-    size: React.PropTypes.number,
+    size: PropTypes.number,
 
     /**
      * Width of the progress line
      */
-    strokeWidth: React.PropTypes.number,
+    strokeWidth: PropTypes.number,
 
     /**
      * Override the inline-styles of the root element.
      */
-    style: React.PropTypes.object,
+    style: PropTypes.object,
 
     /**
      * The value of progress, only works in determinate mode.
      */
-    value: React.PropTypes.number,
-    children: React.PropTypes.node
+    value: PropTypes.number,
+    children: PropTypes.node
 };
 CircularProgress.contextTypes = {
-    muiTheme: React.PropTypes.object
+    muiTheme: PropTypes.object
 };
 CircularProgress.childContextTypes = {
-    muiTheme: React.PropTypes.object
+    muiTheme: PropTypes.object
 };
 export default CircularProgress;

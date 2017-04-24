@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 
 function MenuEthereum ({ style }) {
@@ -9,7 +10,7 @@ function MenuEthereum ({ style }) {
     );
 }
 MenuEthereum.propTypes = {
-    style: React.PropTypes.object
+    style: PropTypes.object
 };
 
 export default MenuEthereum;

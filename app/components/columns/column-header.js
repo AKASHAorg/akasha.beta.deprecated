@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { SvgIcon, TextField } from 'material-ui';
 import { UserMore } from '../../shared-components/svg';
 

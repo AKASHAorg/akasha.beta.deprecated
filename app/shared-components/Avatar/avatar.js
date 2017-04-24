@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import AvatarEditor from 'react-avatar-editor/dist';
 import AddPhotoIcon from 'material-ui/svg-icons/image/add-a-photo';
@@ -233,27 +234,27 @@ class Avatar extends React.Component {
     }
 }
 Avatar.propTypes = {
-    avatarScale: React.PropTypes.number,
-    image: React.PropTypes.string,
-    editable: React.PropTypes.bool,
-    userInitials: React.PropTypes.string,
-    radius: React.PropTypes.number,
-    userInitialsStyle: React.PropTypes.shape(),
-    backgroundColor: React.PropTypes.string,
-    avatarEmptyStyle: React.PropTypes.shape(),
-    avatarClearStyle: React.PropTypes.shape(),
-    dialogHandlerStyle: React.PropTypes.shape(),
-    userInitialsAlignStyle: React.PropTypes.shape(),
-    userInitialsWrapperStyle: React.PropTypes.shape(),
-    offsetBorder: React.PropTypes.string,
-    clearAvatarImage: React.PropTypes.func,
-    style: React.PropTypes.shape(),
-    onClick: React.PropTypes.func,
-    onMouseEnter: React.PropTypes.func,
-    onMouseLeave: React.PropTypes.func,
+    avatarScale: PropTypes.number,
+    image: PropTypes.string,
+    editable: PropTypes.bool,
+    userInitials: PropTypes.string,
+    radius: PropTypes.number,
+    userInitialsStyle: PropTypes.shape(),
+    backgroundColor: PropTypes.string,
+    avatarEmptyStyle: PropTypes.shape(),
+    avatarClearStyle: PropTypes.shape(),
+    dialogHandlerStyle: PropTypes.shape(),
+    userInitialsAlignStyle: PropTypes.shape(),
+    userInitialsWrapperStyle: PropTypes.shape(),
+    offsetBorder: PropTypes.string,
+    clearAvatarImage: PropTypes.func,
+    style: PropTypes.shape(),
+    onClick: PropTypes.func,
+    onMouseEnter: PropTypes.func,
+    onMouseLeave: PropTypes.func,
 };
 Avatar.contextTypes = {
-    muiTheme: React.PropTypes.object
+    muiTheme: PropTypes.object
 };
 Avatar.defaultProps = {
     radius: 150,

@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import ReactTooltip from 'react-tooltip';
 import { FlatButton, IconButton, Paper, SvgIcon } from 'material-ui';

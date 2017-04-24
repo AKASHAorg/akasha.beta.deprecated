@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { insertDataBlock } from 'megadraft';
 import { IconButton } from 'material-ui';
@@ -95,8 +96,8 @@ export default class BlockButton extends Component {
     }
 }
 BlockButton.propTypes = {
-    onChange: React.PropTypes.func,
-    editorState: React.PropTypes.shape(),
-    onClick: React.PropTypes.func,
-    onError: React.PropTypes.func
+    onChange: PropTypes.func,
+    editorState: PropTypes.shape(),
+    onClick: PropTypes.func,
+    onError: PropTypes.func
 };

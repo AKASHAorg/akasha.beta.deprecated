@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { RaisedButton } from 'material-ui';
 import ErrorIcon from 'material-ui/svg-icons/alert/error';
 import { injectIntl, FormattedMessage } from 'react-intl';
@@ -341,8 +342,8 @@ CreateProfileStatus.propTypes = {
 };
 
 CreateProfileStatus.contextTypes = {
-    muiTheme: React.PropTypes.shape(),
-    router: React.PropTypes.shape()
+    muiTheme: PropTypes.shape(),
+    router: PropTypes.shape()
 };
 
 CreateProfileStatus.defaultProps = {

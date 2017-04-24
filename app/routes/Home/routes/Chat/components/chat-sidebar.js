@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
 import { chatMessages, generalMessages } from 'locale-data/messages';
 import { Dialog, IconButton, List, ListItem, RaisedButton, Subheader,

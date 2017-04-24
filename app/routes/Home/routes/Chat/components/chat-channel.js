@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
 import { IconButton, SvgIcon, TextField } from 'material-ui';
 import { chatMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions

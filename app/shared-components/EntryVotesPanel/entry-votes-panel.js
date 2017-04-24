@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import ReactTooltip from 'react-tooltip';
 import { Dialog, List, ListItem, SvgIcon } from 'material-ui';
 import { EntryDownvote, EntryUpvote, ToolbarVotes } from '../svg';

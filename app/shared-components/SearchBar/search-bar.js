@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import { TextField, SvgIcon, IconButton } from 'material-ui';
 import SearchIcon from 'material-ui/svg-icons/action/search';
@@ -34,11 +35,11 @@ export default function SearchBar (props) {
     );
 }
 SearchBar.propTypes = {
-    style: React.PropTypes.object,
-    hintText: React.PropTypes.string.isRequired,
-    onChange: React.PropTypes.func.isRequired,
-    showCancelButton: React.PropTypes.bool,
-    value: React.PropTypes.string.isRequired,
-    searchIconStyle: React.PropTypes.object,
-    fullWidth: React.PropTypes.bool
+    style: PropTypes.object,
+    hintText: PropTypes.string.isRequired,
+    onChange: PropTypes.func.isRequired,
+    showCancelButton: PropTypes.bool,
+    value: PropTypes.string.isRequired,
+    searchIconStyle: PropTypes.object,
+    fullWidth: PropTypes.bool
 };

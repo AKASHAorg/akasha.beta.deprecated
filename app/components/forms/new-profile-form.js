@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { SvgIcon, IconButton, RaisedButton,
     TextField, Checkbox, Divider } from 'material-ui';
 import muiThemeable from 'material-ui/styles/muiThemeable';

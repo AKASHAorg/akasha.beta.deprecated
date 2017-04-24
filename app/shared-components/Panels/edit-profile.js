@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import r from 'ramda';
 import { SvgIcon, IconButton, RaisedButton,
     TextField, Divider, Paper } from 'material-ui';
@@ -410,8 +411,8 @@ EditProfile.propTypes = {
 };
 
 EditProfile.contextTypes = {
-    muiTheme: React.PropTypes.shape(),
-    router: React.PropTypes.shape()
+    muiTheme: PropTypes.shape(),
+    router: PropTypes.shape()
 };
 
 EditProfile.defaultProps = {

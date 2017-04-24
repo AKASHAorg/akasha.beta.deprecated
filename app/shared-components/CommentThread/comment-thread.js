@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Comment, CommentEditor } from '../';
 import { Divider } from 'material-ui';
@@ -79,20 +80,20 @@ class CommentThread extends Component {
     }
 }
 CommentThread.propTypes = {
-    comments: React.PropTypes.shape(),
-    parentId: React.PropTypes.string,
-    replyTo: React.PropTypes.number,
-    loggedProfile: React.PropTypes.shape(),
-    entryAuthorProfile: React.PropTypes.string,
-    profileAvatar: React.PropTypes.string,
-    profileUserInitials: React.PropTypes.string,
-    onReplyCreate: React.PropTypes.func,
-    onReply: React.PropTypes.func,
-    intl: React.PropTypes.shape(),
-    depth: React.PropTypes.number,
-    onReplyCancel: React.PropTypes.func,
-    onAuthorNameClick: React.PropTypes.func,
-    profileActions: React.PropTypes.shape(),
-    profiles: React.PropTypes.shape()
+    comments: PropTypes.shape(),
+    parentId: PropTypes.string,
+    replyTo: PropTypes.number,
+    loggedProfile: PropTypes.shape(),
+    entryAuthorProfile: PropTypes.string,
+    profileAvatar: PropTypes.string,
+    profileUserInitials: PropTypes.string,
+    onReplyCreate: PropTypes.func,
+    onReply: PropTypes.func,
+    intl: PropTypes.shape(),
+    depth: PropTypes.number,
+    onReplyCancel: PropTypes.func,
+    onAuthorNameClick: PropTypes.func,
+    profileActions: PropTypes.shape(),
+    profiles: PropTypes.shape()
 };
 export default CommentThread;

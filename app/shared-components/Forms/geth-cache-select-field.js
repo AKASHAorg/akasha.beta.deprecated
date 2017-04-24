@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import { MenuItem, SelectField } from 'material-ui';
 import { setupMessages } from '../../locale-data/messages';
 

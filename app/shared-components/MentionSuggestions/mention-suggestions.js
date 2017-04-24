@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { DraftJS } from 'megadraft';
 import { ProfileService } from '../../local-flux/services';
 import getSearchText from './utils/get-search-text';

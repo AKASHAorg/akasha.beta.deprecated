@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import ReactTooltip from 'react-tooltip';
 import { EntryActions, TagActions } from 'local-flux';
 import { connect } from 'react-redux';
@@ -155,7 +156,7 @@ StreamPage.propTypes = {
 };
 
 StreamPage.contextTypes = {
-    router: React.PropTypes.object
+    router: PropTypes.object
 };
 /* eslint-disable no-unused-vars */
 function mapStateToProps (state, ownProps) {

@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import ReactTooltip from 'react-tooltip';
 import { connect } from 'react-redux';
 import { AppActions, ChatActions, DraftActions, ProfileActions, SearchActions,

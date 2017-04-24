@@ -1,4 +1,5 @@
-import React, { PropTypes, Component } from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { SvgIcon } from 'material-ui';
 import { colors } from 'material-ui/styles';
 import CircleIcon from './CircleIcon';

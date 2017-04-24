@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import { columnType } from '../../constants/columns';
 import { LatestColumn, StreamColumn, TagColumn } from '../';
 

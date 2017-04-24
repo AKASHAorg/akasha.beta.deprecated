@@ -1,4 +1,5 @@
-import React, { PropTypes, Component } from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { SvgIcon, RaisedButton } from 'material-ui';
 import DeleteIcon from 'material-ui/svg-icons/action/delete';
 import { AddImage } from '../svg';
@@ -262,6 +263,6 @@ ImageUploader.propTypes = {
     clearImage: PropTypes.func
 };
 ImageUploader.contextTypes = {
-    muiTheme: React.PropTypes.shape()
+    muiTheme: PropTypes.shape()
 };
 export default ImageUploader;

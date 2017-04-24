@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import styles from './panel-container-header.scss';
 
 class PanelContainerHeader extends Component {

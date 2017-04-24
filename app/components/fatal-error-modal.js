@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import { Dialog, RaisedButton } from 'material-ui';
 import { errorMessages, generalMessages } from '../locale-data/messages';
 

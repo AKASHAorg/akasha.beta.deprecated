@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { Card, CardHeader, CardTitle, CardText, IconButton, CircularProgress } from 'material-ui';
 import DeleteIcon from 'material-ui/svg-icons/action/delete';
 import { TagChip } from '../';

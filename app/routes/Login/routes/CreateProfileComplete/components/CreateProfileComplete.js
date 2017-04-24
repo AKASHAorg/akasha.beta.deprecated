@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { PanelContainer, PanelHeader } from 'shared-components';
 import { RaisedButton, TextField } from 'material-ui';
 import { injectIntl } from 'react-intl';
@@ -87,8 +88,8 @@ CreateProfileComplete.propTypes = {
 };
 
 CreateProfileComplete.contextTypes = {
-    muiTheme: React.PropTypes.shape(),
-    router: React.PropTypes.shape()
+    muiTheme: PropTypes.shape(),
+    router: PropTypes.shape()
 };
 
 CreateProfileComplete.defaultProps = {

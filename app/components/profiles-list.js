@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import { List, ListItem } from 'material-ui';
 import { Avatar, DataLoader } from '../shared-components';
 import { getInitials } from '../utils/dataModule';

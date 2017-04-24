@@ -1,4 +1,5 @@
-import React, { PureComponent, PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React, { PureComponent } from 'react';
 import { Redirect } from 'react-router-dom';
 import { injectIntl } from 'react-intl';
 import { FlatButton, RadioButton, RadioButtonGroup, RaisedButton } from 'material-ui';

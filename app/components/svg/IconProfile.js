@@ -1,4 +1,5 @@
-import React, { PropTypes, Component } from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { Badge } from 'material-ui';
 import { colors } from 'material-ui/styles';
 import Avatar from '../Avatar/avatar';
@@ -112,11 +113,11 @@ IconProfile.defaultProps = {
 };
 
 IconProfile.contextTypes = {
-    muiTheme: React.PropTypes.object
+    muiTheme: PropTypes.object
 };
 
 IconProfile.childContextTypes = {
-    muiTheme: React.PropTypes.object
+    muiTheme: PropTypes.object
 };
 
 export default IconProfile;

@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import { IconButton, SvgIcon } from 'material-ui';
 import { colors } from 'material-ui/styles';
 import { getInitials } from '../../../utils/dataModule';

@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import { PanelContainer } from '../';
 import { akashaTerms } from '../../locale-data/messages';
 import { injectIntl } from 'react-intl';

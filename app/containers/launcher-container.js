@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import { Redirect, Route } from 'react-router-dom';
 import { injectIntl } from 'react-intl';
 import PanelContainer from '../components/PanelContainer/panel-container';

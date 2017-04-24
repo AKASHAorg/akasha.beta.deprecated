@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import { Paper, FlatButton, Avatar } from 'material-ui';
 import imageCreator from 'utils/imageUtils';
@@ -113,9 +114,9 @@ class QuickEntryEditor extends React.Component {
 }
 
 QuickEntryEditor.propTypes = {
-    loggedProfile: React.PropTypes.object,
-    onFullScreenClick: React.PropTypes.func,
-    onPublish: React.PropTypes.func
+    loggedProfile: PropTypes.object,
+    onFullScreenClick: PropTypes.func,
+    onPublish: PropTypes.func
 };
 
 export default clickAway(QuickEntryEditor);

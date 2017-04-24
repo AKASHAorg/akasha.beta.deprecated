@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
 import { CardHeader, IconButton, SvgIcon, FlatButton } from 'material-ui';
 import CloseIcon from 'material-ui/svg-icons/navigation/close';

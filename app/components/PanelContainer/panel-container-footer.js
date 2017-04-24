@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import Paper from 'material-ui/Paper';
 import styles from './panel-container-footer.scss';
 

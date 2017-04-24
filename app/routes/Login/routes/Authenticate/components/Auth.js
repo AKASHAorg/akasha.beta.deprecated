@@ -1,10 +1,11 @@
-import React, { Component, PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { RaisedButton } from 'material-ui';
 import { hashHistory } from 'react-router';
 import { injectIntl } from 'react-intl';
 import { ProfilesList } from 'components';
 import { PanelContainer, PanelHeader } from 'shared-components';
-import { formMessages, generalMessages } from 'locale-data/messages'; /* eslint import/no-unresolved: 0*/
+import { formMessages, generalMessages } from 'locale-data/messages';/* eslint import/no-unresolved: 0*/
 
 class Auth extends Component {
     componentDidMount () {

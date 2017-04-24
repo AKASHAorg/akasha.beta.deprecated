@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import { FormattedMessage, FormattedHTMLMessage } from 'react-intl';
 import { IconButton } from 'material-ui';
 import CloseIcon from 'material-ui/svg-icons/navigation/close';

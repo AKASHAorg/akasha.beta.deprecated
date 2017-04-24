@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
 import { TextField, IconButton } from 'material-ui';
 import InfoIcon from 'material-ui/svg-icons/action/info-outline';

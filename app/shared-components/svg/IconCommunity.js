@@ -1,4 +1,5 @@
-import React, { PropTypes, Component } from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { SvgIcon } from 'material-ui';
 import { colors } from 'material-ui/styles';
 import CircleIcon from './CircleIcon';
@@ -32,11 +33,11 @@ export default class IconCommunity extends Component {
     };
 
     static contextTypes = {
-        muiTheme: React.PropTypes.object
+        muiTheme: PropTypes.object
     };
 
     static childContextTypes = {
-        muiTheme: React.PropTypes.object
+        muiTheme: PropTypes.object
     };
 
     getChildContext () {

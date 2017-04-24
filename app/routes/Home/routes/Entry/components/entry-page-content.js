@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { MegadraftEditor, editorStateFromRaw, DraftJS, createTypeStrategy } from 'megadraft';
 import Link from 'megadraft/lib/components/Link';
@@ -47,6 +48,6 @@ class EntryPageContent extends Component {
     }
 }
 EntryPageContent.propTypes = {
-    entry: React.PropTypes.shape()
+    entry: PropTypes.shape()
 };
 export default EntryPageContent;

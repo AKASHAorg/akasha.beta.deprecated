@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import BlockStyles from './block-styles';
 import ToggleButton from './toggle-button';
@@ -59,13 +60,13 @@ class SideMenu extends Component {
     }
 }
 SideMenu.propTypes = {
-    sidebarVisible: React.PropTypes.bool,
-    plugins: React.PropTypes.arrayOf(React.PropTypes.shape()),
-    editorState: React.PropTypes.shape(),
-    onChange: React.PropTypes.func,
-    showTerms: React.PropTypes.func,
-    onSidebarToggle: React.PropTypes.func,
-    onError: React.PropTypes.func
+    sidebarVisible: PropTypes.bool,
+    plugins: PropTypes.arrayOf(PropTypes.shape()),
+    editorState: PropTypes.shape(),
+    onChange: PropTypes.func,
+    showTerms: PropTypes.func,
+    onSidebarToggle: PropTypes.func,
+    onError: PropTypes.func
 };
 
 export default SideMenu;

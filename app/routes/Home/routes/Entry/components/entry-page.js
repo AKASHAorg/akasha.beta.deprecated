@@ -1,5 +1,6 @@
+import PropTypes from 'prop-types';
 /* eslint import/no-unresolved: 0, import/extensions: 0 */
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
 import ReactTooltip from 'react-tooltip';
 import { Divider, IconButton, SvgIcon, FlatButton } from 'material-ui';
 import { injectIntl } from 'react-intl';

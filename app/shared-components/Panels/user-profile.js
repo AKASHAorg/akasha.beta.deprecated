@@ -1,4 +1,5 @@
-import React, { PropTypes, Component } from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
 import { colors } from 'material-ui/styles';
 import { Paper, Tabs, Tab, List } from 'material-ui';

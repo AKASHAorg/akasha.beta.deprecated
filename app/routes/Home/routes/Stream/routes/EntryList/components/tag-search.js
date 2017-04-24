@@ -1,4 +1,5 @@
-import React, { PropTypes, Component } from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import { AutoComplete, IconButton, RaisedButton } from 'material-ui';
 import AddIcon from 'material-ui/svg-icons/content/add-circle';

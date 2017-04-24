@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
 import { Card, CardHeader, CardTitle, CardText, CardActions, IconButton, FlatButton,
     SvgIcon } from 'material-ui';
