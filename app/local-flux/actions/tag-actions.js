@@ -1,4 +1,4 @@
-import { AppActions, TransactionActions } from 'local-flux';
+import { AppActions, TransactionActions } from './';
 import { tagActionCreators } from './action-creators';
 import { TagService } from '../services';
 

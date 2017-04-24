@@ -1,9 +1,11 @@
-import React, { Component, PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
-import { injectIntl } from 'react-intl';
 import { Dialog, FlatButton, RaisedButton, TextField, IconButton } from 'material-ui';
-import { confirmMessages, formMessages, generalMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
 import InfoIcon from 'material-ui/svg-icons/action/info-outline';
+import { AppActions } from '../../local-flux';
+import { confirmMessages, formMessages, generalMessages } from '../../locale-data/messages';
 
 class PublishConfirmDialog extends Component {
     constructor (props) {
@@ -14,26 +16,22 @@ class PublishConfirmDialog extends Component {
         };
     }
 
-    componentWillReceiveProps (nextProps) {
-        const { isOpen, resource } = nextProps;
-        if (isOpen && !this.props.isOpen) {
-            this.setState({
-                gasAmount: resource.get('gas')
-            });
-        }
-        if (!isOpen && this.props.isOpen) {
-            this.setState({
-                gasAmountError: null
-            });
-        }
+    componentWillMount () {
+        const { resource } = this.props;
+        this.setState({
+            gasAmount: resource.get('gas')
+        });
     }
+
     componentDidUpdate () {
         ReactTooltip.rebuild();
     }
+
     onSubmit = (ev) => {
         ev.preventDefault();
         this._handleConfirm();
-    }
+    };
+
     _handleGasChange = (ev) => {
         const gasAmount = ev.target.value;
         if (gasAmount < 2000000 || gasAmount > 4700000) {
@@ -47,7 +45,8 @@ class PublishConfirmDialog extends Component {
                 gasAmount
             });
         }
-    }
+    };
+
     _handleConfirm = () => {
         const { resource, appActions } = this.props;
         const updatedResource = resource.toJS();
@@ -55,14 +54,16 @@ class PublishConfirmDialog extends Component {
         updatedResource.status = 'checkAuth';
         appActions.hidePublishConfirmDialog();
         appActions.updatePendingAction(updatedResource);
-    }
+    };
+
     _handleAbort = () => {
         const { resource, appActions } = this.props;
         appActions.deletePendingAction(resource.get('id'));
         appActions.hidePublishConfirmDialog();
-    }
+    };
+
     render () {
-        const { resource, intl, isOpen } = this.props;
+        const { resource, intl } = this.props;
         const { gasAmount, gasAmountError } = this.state;
         if (!resource) {
             return null;
@@ -89,7 +90,7 @@ class PublishConfirmDialog extends Component {
                 {intl.formatMessage(confirmMessages[resource.get('titleId')])}
               </div>
             }
-            open={isOpen}
+            open
             actions={dialogActions}
           >
             <p style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
@@ -130,10 +131,21 @@ class PublishConfirmDialog extends Component {
 }
 
 PublishConfirmDialog.propTypes = {
-    isOpen: PropTypes.bool,
     resource: PropTypes.shape(),
     appActions: PropTypes.shape(),
     intl: PropTypes.shape()
 };
 
-export default injectIntl(PublishConfirmDialog);
+function mapStateToProps (state) {
+    return {
+        resource: state.appState.get('publishConfirmDialog')
+    };
+}
+
+function mapDispatchToProps (dispatch) {
+    return {
+        appActions: new AppActions(dispatch)
+    };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(PublishConfirmDialog);

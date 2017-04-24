@@ -1,10 +1,10 @@
-import React, { Component, PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { RaisedButton } from 'material-ui';
 import ErrorIcon from 'material-ui/svg-icons/alert/error';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import { PanelContainer } from 'shared-components';
+import { PanelContainer, PanelHeader } from 'shared-components';
 import { generalMessages, setupMessages, profileMessages } from 'locale-data/messages';
-import PanelHeader from '../../../../components/panel-header';
 
 class CreateProfileStatus extends Component {
     constructor (props) {
@@ -342,8 +342,8 @@ CreateProfileStatus.propTypes = {
 };
 
 CreateProfileStatus.contextTypes = {
-    muiTheme: React.PropTypes.shape(),
-    router: React.PropTypes.shape()
+    muiTheme: PropTypes.shape(),
+    router: PropTypes.shape()
 };
 
 CreateProfileStatus.defaultProps = {

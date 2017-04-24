@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import PanelContainer from 'shared-components/PanelContainer/panel-container'; // eslint-disable-line import/no-unresolved, import/extensions
 import { CircularProgress, RaisedButton } from 'material-ui';
@@ -114,13 +115,13 @@ class PublishEntryStatus extends React.Component {
     }
 }
 PublishEntryStatus.propTypes = {
-    drafts: React.PropTypes.shape(),
-    draftErrors: React.PropTypes.shape(),
-    params: React.PropTypes.shape(),
-    pendingActions: React.PropTypes.shape(),
-    selectedTag: React.PropTypes.string
+    drafts: PropTypes.shape(),
+    draftErrors: PropTypes.shape(),
+    params: PropTypes.shape(),
+    pendingActions: PropTypes.shape(),
+    selectedTag: PropTypes.string
 };
 PublishEntryStatus.contextTypes = {
-    router: React.PropTypes.shape()
+    router: PropTypes.shape()
 };
 export default PublishEntryStatus;

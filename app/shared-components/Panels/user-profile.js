@@ -1,9 +1,10 @@
-import React, { PropTypes, Component } from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
 import { colors } from 'material-ui/styles';
 import { Paper, Tabs, Tab, List } from 'material-ui';
-import { Avatar } from 'shared-components';
-import { getInitials } from 'utils/dataModule';
+import { Avatar } from '../';
+import { getInitials } from '../../utils/dataModule';
 import UserProfileHeader from './user-profile/user-profile-header';
 import { CommentNotification, EntryNotification, FollowNotification, MentionNotification,
     TipNotification, VoteNotification } from './notifications';

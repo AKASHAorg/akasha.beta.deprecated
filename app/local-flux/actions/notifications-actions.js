@@ -1,4 +1,4 @@
-import { ProfileActions, SettingsActions } from 'local-flux';
+import { ProfileActions, SettingsActions } from './';
 import { NotificationsService } from '../services';
 import * as action from './action-creators/notifications-action-creators';
 

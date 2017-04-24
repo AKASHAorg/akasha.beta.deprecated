@@ -1,0 +1,11 @@
+.root {
+    width: 64px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid #cccccc;
+}

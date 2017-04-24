@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Dialog, RaisedButton } from 'material-ui';
 
@@ -45,8 +46,8 @@ class AlertDialog extends Component {
     }
 }
 AlertDialog.propTypes = {
-    message: React.PropTypes.string.isRequired,
-    confirmLabel: React.PropTypes.string.isRequired,
-    cancelLabel: React.PropTypes.string.isRequired
+    message: PropTypes.string.isRequired,
+    confirmLabel: PropTypes.string.isRequired,
+    cancelLabel: PropTypes.string.isRequired
 };
 export default AlertDialog;

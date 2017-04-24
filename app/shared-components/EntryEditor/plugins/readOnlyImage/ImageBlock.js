@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import withWidth from 'material-ui/utils/withWidth';
 import { findClosestMatch } from 'utils/imageUtils'; // eslint-disable-line import/no-unresolved, import/extensions
@@ -163,15 +164,15 @@ class ImageBlock extends Component {
     }
 }
 ImageBlock.propTypes = {
-    data: React.PropTypes.shape({
-        files: React.PropTypes.shape(),
-        caption: React.PropTypes.string,
-        rightsHolder: React.PropTypes.string,
-        media: React.PropTypes.string,
-        licence: React.PropTypes.string,
-        termsAccepted: React.PropTypes.bool
+    data: PropTypes.shape({
+        files: PropTypes.shape(),
+        caption: PropTypes.string,
+        rightsHolder: PropTypes.string,
+        media: PropTypes.string,
+        licence: PropTypes.string,
+        termsAccepted: PropTypes.bool
     }),
-    width: React.PropTypes.number
+    width: PropTypes.number
 };
 
 export default withWidth({

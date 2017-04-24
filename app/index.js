@@ -2,50 +2,68 @@ import React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import { IntlProvider, addLocaleData } from 'react-intl';
-import { Router, hashHistory } from 'react-router';
-import { syncHistoryWithStore } from 'react-router-redux';
+import createHashHistory from 'history/createHashHistory';
+import Route from 'react-router-dom/Route';
+import { ConnectedRouter } from 'react-router-redux';
 import en from 'react-intl/locale-data/en';
+import ru from 'react-intl/locale-data/ru';
+import ro from 'react-intl/locale-data/ro';
+import ch from 'react-intl/locale-data/zh';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import ReactPerf from 'react-addons-perf';
-import routes from './routes';
+import rootSaga from './local-flux/sagas';
 import configureStore from './local-flux/store/configureStore';
-// import { ruMessages } from './locale-data/ru';
+import sagaMiddleware from './local-flux/store/sagaMiddleware';
+import { generalSettingsRequest } from './local-flux/services/settings-service';
+import { AppContainer } from './containers';
+import './styles/core.scss';
+import ruMessages from './locale-data/ru.json';
+import zhMessages from './locale-data/zh.json';
+import enMessages from './locale-data/en.json';
 
-addLocaleData([...en]);
+const localeMessages = {
+    en: enMessages,
+    ru: ruMessages,
+    zh: zhMessages
+};
+
+const DEFAULT_LOCALE = 'en';
+addLocaleData([...en, ...ru, ...ro, ...ch]);
+const history = createHashHistory();
 const store = configureStore();
-const history = syncHistoryWithStore(hashHistory, store);
+sagaMiddleware.run(rootSaga);
 
 window.Perf = ReactPerf;
 
-function hashLinkScroll () {
-    const { hash } = window.location;
-    if (hash.split('#')[2]) {
-        setTimeout(() => {
-            const id = hash.split('#')[2];
-            const element = document.getElementById(id);
-            if (element) {
-                element.scrollIntoView();
-            }
-        }, 300);
-    }
-}
+// function hashLinkScroll () {
+//     const { hash } = window.location;
+//     if (hash.split('#')[2]) {
+//         setTimeout(() => {
+//             const id = hash.split('#')[2];
+//             const element = document.getElementById(id);
+//             if (element) {
+//                 element.scrollIntoView();
+//             }
+//         }, 300);
+//     }
+// }
 
 injectTapEventPlugin();
-render(
-  <Provider store={store} >
-    <IntlProvider locale="en" >
-      <Router history={history} onUpdate={hashLinkScroll} >
-        {routes}
-      </Router>
-    </IntlProvider>
-  </Provider>,
-  document.getElementById('root')
+
+
+generalSettingsRequest().then(settings =>
+    render(
+      <IntlProvider
+        locale={settings.userlocale || DEFAULT_LOCALE}
+        messages={localeMessages[settings.userlocale] || localeMessages[DEFAULT_LOCALE]}
+      >
+        <Provider store={store} >
+          <ConnectedRouter history={history}>
+            <Route component={AppContainer} />
+          </ConnectedRouter>
+        </Provider>
+      </IntlProvider>,
+      document.getElementById('root')
+    )
 );
 
-if (process.env.NODE_ENV !== 'production') {
-  // Use require because imports can't be conditional.
-  // In production, you should ensure process.env.NODE_ENV
-  // is envified so that Uglify can eliminate this
-  // module and its dependencies as dead code.
-  // require('./createDevToolsWindow')(store);
-}

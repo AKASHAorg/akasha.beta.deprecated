@@ -1,0 +1,14 @@
+.root {
+    z-index: 10;
+    position: relative;
+    height: 100%
+}
+.panelContent {
+    transition: top 0.118s ease-in-out;
+}
+.panelContentInner {
+    height: 100%;
+    margin-right: 6px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}

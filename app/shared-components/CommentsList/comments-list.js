@@ -1,6 +1,7 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { entryMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
-import { CommentThread } from 'shared-components';
+import { entryMessages } from '../../locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
+import { CommentThread } from '../';
 
 class CommentsList extends Component {
     constructor (props) {
@@ -110,23 +111,23 @@ class CommentsList extends Component {
     }
 }
 CommentsList.propTypes = {
-    comments: React.PropTypes.shape(),
-    loggedProfile: React.PropTypes.shape(),
-    profiles: React.PropTypes.shape(),
-    profileActions: React.PropTypes.shape(),
-    entryAuthorProfile: React.PropTypes.string,
-    onLoadMoreRequest: React.PropTypes.func,
-    commentsCount: React.PropTypes.number,
-    fetchLimit: React.PropTypes.number,
-    fetchingComments: React.PropTypes.bool,
-    entryId: React.PropTypes.number,
-    intl: React.PropTypes.shape(),
-    profileAvatar: React.PropTypes.string,
-    profileUserInitials: React.PropTypes.string,
-    onReplyCreate: React.PropTypes.func,
-    onCommenterClick: React.PropTypes.func,
+    comments: PropTypes.shape(),
+    loggedProfile: PropTypes.shape(),
+    profiles: PropTypes.shape(),
+    profileActions: PropTypes.shape(),
+    entryAuthorProfile: PropTypes.string,
+    onLoadMoreRequest: PropTypes.func,
+    commentsCount: PropTypes.number,
+    fetchLimit: PropTypes.number,
+    fetchingComments: PropTypes.bool,
+    entryId: PropTypes.number,
+    intl: PropTypes.shape(),
+    profileAvatar: PropTypes.string,
+    profileUserInitials: PropTypes.string,
+    onReplyCreate: PropTypes.func,
+    onCommenterClick: PropTypes.func,
 };
 CommentsList.contextTypes = {
-    router: React.PropTypes.shape()
+    router: PropTypes.shape()
 };
 export default CommentsList;

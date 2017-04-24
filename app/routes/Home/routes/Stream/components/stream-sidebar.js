@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { Subheader, FlatButton } from 'material-ui';
 import { TagChip } from 'shared-components';
 import { injectIntl } from 'react-intl';

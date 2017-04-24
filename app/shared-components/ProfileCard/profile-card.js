@@ -1,13 +1,14 @@
-import React, { Component, PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import ReactTooltip from 'react-tooltip';
 import { FlatButton, IconButton, Paper, SvgIcon } from 'material-ui';
 import NotificationsActiveIcon from 'material-ui/svg-icons/social/notifications-active';
 import NotificationsDisabledIcon from 'material-ui/svg-icons/social/notifications-off';
-import { Avatar } from 'shared-components';
-import { UserDonate, UserMore } from 'shared-components/svg';
-import { generalMessages, profileMessages } from 'locale-data/messages';
-import { getInitials } from 'utils/dataModule';
+import { Avatar } from '../';
+import { UserDonate, UserMore } from '../svg';
+import { generalMessages, profileMessages } from '../../locale-data/messages';
+import { getInitials } from '../../utils/dataModule';
 
 class ProfileCard extends Component {
     state = {
@@ -179,7 +180,7 @@ class ProfileCard extends Component {
 
         return (
           <Paper
-            className="has_hidden_action"
+            className="has-hidden-action"
             style={{
                 position: 'relative',
                 width: '214px',

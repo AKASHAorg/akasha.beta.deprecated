@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import Notification from './notification';
 
 const TipNotification = (props, context) => {
@@ -7,7 +8,7 @@ const TipNotification = (props, context) => {
     const { palette } = context.muiTheme;
     const message = (
       <div>
-        <div className="overflow_ellipsis" style={{ color: palette.textColor }}>
+        <div className="overflow-ellipsis" style={{ color: palette.textColor }}>
           Tipped you
           <strong style={{ color: palette.linkColor, padding: '0 5px' }}>
             {value}

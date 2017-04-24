@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { RefreshIndicator } from 'material-ui';
 
 class DataLoader extends Component {
@@ -53,6 +54,7 @@ class DataLoader extends Component {
 
     render () {
         const { size, style } = this.props;
+
         if (this.state.loading) {
             return (<div
               style={Object.assign({
@@ -63,7 +65,7 @@ class DataLoader extends Component {
                   justifyContent: 'center'
               }, style)}
             >
-              <div style={{ position: 'relative', width: size, height: size }}>
+              <div style={{ position: 'relative', width: size + 5, height: size + 5 }}>
                 <RefreshIndicator
                   top={0}
                   left={0}
@@ -78,6 +80,7 @@ class DataLoader extends Component {
 }
 
 DataLoader.propTypes = {
+    children: PropTypes.element,
     flag: PropTypes.bool,
     timeout: PropTypes.number,
     size: PropTypes.number,

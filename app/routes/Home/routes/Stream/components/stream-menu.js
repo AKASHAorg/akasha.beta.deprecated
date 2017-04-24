@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import { Paper, Tabs, Tab, SvgIcon } from 'material-ui';
 import LabelIcon from 'material-ui/svg-icons/action/label';
 

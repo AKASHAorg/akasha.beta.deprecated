@@ -1,7 +1,7 @@
 import BaseService from './base-service';
 import tagsDB from './db/tags';
 
-const { Channel } = window;
+const { Channel } = global;
 /** Tag Service */
 class TagService extends BaseService {
     constructor () {

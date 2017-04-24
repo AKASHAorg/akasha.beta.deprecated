@@ -1,15 +1,15 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import { Chip } from 'material-ui';
 
-const TagChip = ({ style, onTagClick, tag, isSelected }, { muiTheme, router }) => {
+const TagChip = ({ style, onTagClick, tag, isSelected }, { muiTheme }) => {
     const { palette } = muiTheme;
-    const { filter } = router.params;
     const tagStyle = {
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
         border: '1px solid',
-        borderColor: isSelected && filter === 'tag' ? palette.primary1Color : palette.borderColor,
+        borderColor: palette.borderColor,
         backgroundColor: palette.canvasColor,
         borderRadius: 3,
         height: 34,
@@ -28,15 +28,14 @@ const TagChip = ({ style, onTagClick, tag, isSelected }, { muiTheme, router }) =
 };
 
 TagChip.propTypes = {
-    tag: React.PropTypes.string.isRequired,
-    isSelected: React.PropTypes.bool,
-    style: React.PropTypes.shape(),
-    onTagClick: React.PropTypes.func.isRequired
+    tag: PropTypes.string.isRequired,
+    isSelected: PropTypes.bool,
+    style: PropTypes.shape(),
+    onTagClick: PropTypes.func.isRequired
 };
 
 TagChip.contextTypes = {
-    muiTheme: React.PropTypes.shape(),
-    router: React.PropTypes.shape()
+    muiTheme: PropTypes.shape(),
 };
 
 export default TagChip;

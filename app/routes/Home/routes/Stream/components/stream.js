@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import { isInViewport } from 'utils/domUtils';
 import throttle from 'lodash.throttle';
 import styles from './stream.scss';

@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import Notification from './notification';
 
 const EntryNotification = (props, context) => {
@@ -16,10 +17,10 @@ const EntryNotification = (props, context) => {
     );
     const message = (
       <div>
-        <div className="overflow_ellipsis" style={{ color: palette.textColor, whiteSpace: 'normal' }}>
+        <div className="overflow-ellipsis" style={{ color: palette.textColor, whiteSpace: 'normal' }}>
           Published
           <span
-            className="link overflow_ellipsis"
+            className="link overflow-ellipsis"
             style={{ paddingLeft: '5px' }}
             onClick={() => navigateToEntry(entry.entryId)}
           >

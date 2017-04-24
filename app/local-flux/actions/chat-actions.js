@@ -1,4 +1,4 @@
-import { AppActions } from 'local-flux';
+import { AppActions } from './';
 import { chatActionCreators } from './action-creators';
 import { ChatService } from '../services';
 

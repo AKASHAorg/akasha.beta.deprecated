@@ -1,7 +1,7 @@
 import BaseService from './base-service';
 import transactionsDB from './db/transactions';
 
-const Channel = window.Channel;
+const Channel = global.Channel;
 
 /**
  * Transaction Service

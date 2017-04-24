@@ -1,7 +1,8 @@
-import React, { Component, PropTypes } from 'react';
-import { ProfileHoverCard } from 'shared-components';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import { ProfileHoverCard } from '../';
 
-const Channel = window.Channel;
+const Channel = global.Channel;
 const existsClient = Channel.client.registry.profileExists;
 const existsServer = Channel.server.registry.profileExists;
 const addressOfClient = Channel.client.registry.addressOf;

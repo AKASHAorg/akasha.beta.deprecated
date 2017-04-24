@@ -1,7 +1,8 @@
-import React, { Component, PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { Card, CardHeader, CardTitle, CardText, IconButton, CircularProgress } from 'material-ui';
 import DeleteIcon from 'material-ui/svg-icons/action/delete';
-import { TagChip } from 'shared-components';
+import { TagChip } from '../';
 import styles from './draft-card.scss';
 
 class DraftCard extends Component {
@@ -12,7 +13,7 @@ class DraftCard extends Component {
         } = this.props;
         const noop = () => {};
         return (
-          <Card className="start-xs has_hidden_action" style={{ margin: '5px 5px 16px 5px' }}>
+          <Card className="start-xs has-hidden-action" style={{ margin: '5px 5px 16px 5px' }}>
             <CardHeader
               avatar={isPublishing ? <CircularProgress /> : null}
               title={isPublishing ? 'Publishing Entry' : headerTitle}

@@ -3,7 +3,6 @@ import * as chatActionCreators from './chat-action-creators';
 import * as commentsActionCreators from './comments-action-creators';
 import * as draftActionCreators from './draft-action-creators';
 import * as entryActionCreators from './entry-action-creators';
-import * as externalProcessActionCreators from './external-process-action-creators';
 import * as notificationsActionCreators from './notifications-action-creators';
 import * as profileActionCreators from './profile-action-creators';
 import * as searchActionCreators from './search-action-creators';
@@ -20,7 +19,6 @@ export {
     commentsActionCreators,
     draftActionCreators,
     entryActionCreators,
-    externalProcessActionCreators,
     notificationsActionCreators,
     profileActionCreators,
     searchActionCreators,

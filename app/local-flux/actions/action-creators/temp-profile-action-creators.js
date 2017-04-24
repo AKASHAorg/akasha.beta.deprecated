@@ -1,4 +1,4 @@
-import * as types from '../../constants/TempProfileConstants';
+import * as types from '../../constants/temp-profile-constants';
 
 export function login () {
     return {
@@ -6,26 +6,7 @@ export function login () {
     };
 }
 
-export function createTempProfile () {
-    return {
-        type: types.CREATE_TEMP_PROFILE
-    };
-}
-export function createTempProfileSuccess (profileData, nextAction) {
-    return {
-        type: types.CREATE_TEMP_PROFILE_SUCCESS,
-        profileData,
-        nextAction
-    };
-}
 
-export function createTempProfileError (error) {
-    error.code = 'CTPE01';
-    return {
-        type: types.CREATE_TEMP_PROFILE_ERROR,
-        error
-    };
-}
 
 export function updateTempProfileSuccess (profileData, tempProfile) {
     return {

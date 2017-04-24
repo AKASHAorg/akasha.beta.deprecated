@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import { Paper } from 'material-ui';
 import PanelContainerHeader from './panel-container-header';
 
@@ -58,14 +59,14 @@ class PanelContainer extends React.Component {
               className="row"
               style={Object.assign({
                   position: 'absolute',
-                  top: 56,
-                  bottom: 56,
+                  top: isHeaderShrinked ? 56 : 80,
+                  bottom: 60,
                   left: 0,
                   right: 0,
                   overflowY: 'auto',
                   overflowX: 'hidden',
-                  padding: '32px 24px',
-                  margin: 0
+                  margin: 0,
+                  transition: 'top 0.118s ease-in-out',
               }, contentStyle)}
               ref={(panelContent) => { this.panelContent = panelContent; }}
               onScroll={this._handleScroll}

@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
 class BlockStyles extends Component {
@@ -32,14 +33,14 @@ class BlockStyles extends Component {
     }
 }
 BlockStyles.propTypes = {
-    onChange: React.PropTypes.func,
-    open: React.PropTypes.bool,
-    plugins: React.PropTypes.arrayOf(React.PropTypes.shape()),
-    editorState: React.PropTypes.shape(),
-    showTerms: React.PropTypes.func
+    onChange: PropTypes.func,
+    open: PropTypes.bool,
+    plugins: PropTypes.arrayOf(PropTypes.shape()),
+    editorState: PropTypes.shape(),
+    showTerms: PropTypes.func
 };
 BlockStyles.propTypes = {
-    toggle: React.PropTypes.func
+    toggle: PropTypes.func
 };
 
 export default BlockStyles;

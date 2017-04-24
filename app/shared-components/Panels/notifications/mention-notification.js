@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import Notification from './notification';
 
 const MentionNotification = (props, context) => {
@@ -8,7 +9,7 @@ const MentionNotification = (props, context) => {
     const { palette } = context.muiTheme;
     const message = (
       <div>
-        <div className="overflow_ellipsis" style={{ color: palette.textColor }}>
+        <div className="overflow-ellipsis" style={{ color: palette.textColor }}>
           {type === 'commentMention' ?
             'Mentioned you in a ' :
             'Mentioned you in an '

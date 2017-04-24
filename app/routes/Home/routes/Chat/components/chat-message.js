@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { FormattedTime } from 'react-intl';
 import { Avatar } from 'shared-components'; // eslint-disable-line import/no-unresolved, import/extensions
 import { getInitials } from 'utils/dataModule';  // eslint-disable-line import/no-unresolved, import/extensions
@@ -19,7 +20,7 @@ class ChatMessage extends Component {
                 return (
                   <span
                     key={index}
-                    className="textLink"
+                    className="content-link"
                     style={{ color: palette.primary1Color }}
                     onClick={() => navigateToChannel(word.slice(1))}
                   >
@@ -76,7 +77,7 @@ class ChatMessage extends Component {
             >
               <div style={{ lineHeight: '14px', fontSize: '12px' }}>
                 <div
-                  className="contentLink"
+                  className="content-link"
                   onClick={() => { onAuthorClick(profileAddress); }}
                   style={{
                       display: 'inline-block',

@@ -139,7 +139,7 @@ const convertToArray = (dataUrl) => {
 const canvasToArray = canvas =>
     new Promise((resolve, reject) => {
         try {
-            const canvasData = canvas.toDataURL('image/png', 0.8);
+            const canvasData = canvas.toDataURL('image/png', 0.7);
             const canvasArray = convertToArray(canvasData);
             return resolve({
                 src: canvasArray.value,

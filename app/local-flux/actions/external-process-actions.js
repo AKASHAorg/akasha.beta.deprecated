@@ -1,263 +1,116 @@
-import throttle from 'lodash.throttle';
-import { GethService, IpfsService } from '../services';
-import {
-    externalProcessActionCreators,
-    appActionCreators } from './action-creators';
+import * as types from '../constants';
+import { action } from './helpers';
 
-let eProcActions = null;
-/**
- * External processes actions (Geth, IPFS)
- *
- */
-class EProcActions {
-    constructor (dispatch) { // eslint-disable-line consistent-return
-        if (eProcActions) {
-            return eProcActions;
-        }
-        this.gethService = new GethService();
-        this.ipfsService = new IpfsService();
-        this.dispatch = dispatch;
-        this.throttledSyncUpdate = throttle(this.getSyncStatus, 2000, {
-            trailing: true,
-            leading: true
-        });
-        this.ipfsPortsRequest = null;
-        eProcActions = this;
-    }
+export const clearSyncStatus = () => action(types.CLEAR_SYNC_STATUS);
+export const gethGetLogs = () => action(types.GETH_GET_LOGS);
+export const gethGetLogsSuccess = data => action(types.GETH_GET_LOGS_SUCCESS, { data });
 
-    _showErrorAction = error =>
-        appActionCreators.showError({
-            code: error.code ? error.code : '000',
-            fatal: error.fatal,
-            message: error.message
-        });
+export const gethGetOptionsError = (error) => {
+    error.code = 'GGOE01';
+    error.messageId = 'gethGetOptions';
+    return action(types.GETH_GET_OPTIONS_ERROR, { error });
+};
 
-    startGeth = (options) => {
-        this.dispatch(externalProcessActionCreators.startGeth());
-        this.gethService.start({
-            options,
-            onError: (err) => {
-                this.dispatch(externalProcessActionCreators.startGethError(err));
-                this.resetGethBusyState();
-            },
-            onSuccess: (data) => {
-                this.dispatch(externalProcessActionCreators.startGethSuccess(data));
-                if (data.api) {
-                    this.startSync();
-                }
-                this.resetGethBusyState();
-            }
-        });
-    };
+export const gethGetOptionsSuccess = data => action(types.GETH_GET_OPTIONS_SUCCESS, { data });
+export const gethGetStatus = () => action(types.GETH_GET_STATUS);
 
-    registerStopGethListener = () => {
-        this.gethService.registerStopListener({
-            onError: (err) => {
-                this.dispatch(externalProcessActionCreators.stopGethError(err));
-                this.resetGethBusyState();
-            },
-            onSuccess: (data) => {
-                this.dispatch(externalProcessActionCreators.stopGethSuccess(data));
-                this.resetGethBusyState();
-            }
-        });
-    };
+export const gethGetStatusError = (error) => {
+    error.code = 'GGSE01';
+    error.messageId = 'gethGetStatus';
+    return action(types.GETH_GET_STATUS_ERROR, { error });
+};
 
-    stopGeth = () => {
-        this.dispatch(externalProcessActionCreators.stopGeth());
-        this.gethService.stop({ options: {} });
-    };
+export const gethGetStatusSuccess = data => action(types.GETH_GET_STATUS_SUCCESS, { data });
+export const gethGetSyncStatus = () => action(types.GETH_GET_SYNC_STATUS);
 
-    getGethStatus = () =>
-        this.gethService.getStatus({
-            options: {},
-            onError: err => this.dispatch(externalProcessActionCreators.getGethStatusError(err)),
-            onSuccess: data => this.dispatch(
-                externalProcessActionCreators.getGethStatusSuccess(data)
-            )
-        });
+export const gethGetSyncStatusError = (error) => {
+    error.code = 'GGSSE01';
+    error.messageId = 'gethGetSyncStatus';
+    return action(types.GETH_GET_SYNC_STATUS_ERROR, { error });
+};
 
-    getGethOptions = () => {
-        this.gethService.getOptions({
-            options: {},
-            onError: err => this.dispatch(appActionCreators.showError(err)),
-            onSuccess: data => this.dispatch(
-                externalProcessActionCreators.getGethOptionsSuccess(data)
-            )
-        });
-    };
+export const gethGetSyncStatusSuccess = data =>
+    action(types.GETH_GET_SYNC_STATUS_SUCCESS, { data });
+export const gethPauseSync = () => action(types.GETH_PAUSE_SYNC);
+export const gethResetBusy = () => action(types.GETH_RESET_BUSY);
+export const gethResumeSync = () => action(types.GETH_RESUME_SYNC);
+export const gethStart = () => action(types.GETH_START);
 
-    stopThrottledUpdate = () => {
-        this.throttledSyncUpdate.cancel();
-    };
-    /**
-     * get sync status of geth service
-     * this method will not dispatch anything to avoid redux-dev-tools overload.
-     * Should be called directly from inside component;
-     */
-    getSyncStatus = () =>
-        this.gethService.getSyncStatus({
-            options: {},
-            onError: err => this.dispatch(appActionCreators.showError(err)),
-            onSuccess: (data) => {
-                this.dispatch(externalProcessActionCreators.getSyncStatusSuccess(data));
-                if (data.synced) {
-                    this.finishSync();
-                }
-            }
-        });
+export const gethStartError = (data, error) => {
+    error.code = 'GSE01';
+    error.messageId = 'gethStart';
+    return action(types.GETH_START_ERROR, { data, error });
+};
 
-    cancelSync = () => {
-        this.throttledSyncUpdate.cancel();
-        this.gethService.closeSyncChannel();
-    };
-    // make sure to load settings before calling this one
-    startIPFS = () => {
-        this.dispatch(externalProcessActionCreators.startIPFS());
-        this.dispatch((dispatch, getState) => {
-            const storagePath = getState().settingsState.getIn(['ipfs', 'storagePath']);
-            this.ipfsService.start({
-                options: { storagePath } ,
-                onError: (err, data) => {
-                    dispatch(externalProcessActionCreators.startIPFSError(err, data));
-                    this.resetIpfsBusyState();
-                },
-                onSuccess: (data) => {
-                    setTimeout(() => this.getIpfsStatus(), 500);
-                    dispatch(externalProcessActionCreators.startIPFSSuccess(data));
-                    if (data.started) {
-                        this.getIpfsPorts();
-                        this.resetIpfsBusyState();
-                    }
-                }
-            });
-        });
-    };
-    getIpfsStatus = () =>
-        this.ipfsService.getStatus({
-            options: {},
-            onError: err => this.dispatch(externalProcessActionCreators.getIpfsStatusError(err)),
-            onSuccess: data => this.dispatch(
-                externalProcessActionCreators.getIpfsStatusSuccess(data)
-            )
-        });
-    getIpfsConfig = () => {
-        this.ipfsService.getConfig({
-            options: {},
-            onError: err => this.dispatch(externalProcessActionCreators.getIpfsConfigError(err)),
-            onSuccess: data => this.dispatch(
-                externalProcessActionCreators.getIpfsConfigSuccess(data)
-            )
-        });
-    };
-    getIpfsPorts = () => {
-        this.dispatch(externalProcessActionCreators.getIpfsPorts());
-        this.ipfsPortsRequest = setTimeout(() => {
-            this.ipfsService.getPorts({
-                options: {},
-                onError: err => this.dispatch(externalProcessActionCreators.getIpfsPortsError(err)),
-                onSuccess: data => this.dispatch(
-                    externalProcessActionCreators.getIpfsPortsSuccess(data)
-                )
-            });
-        }, 2000);
-    };
-    setIpfsPorts = (ports, restart) =>
-        this.ipfsService.setPorts({
-            ports,
-            restart,
-            onError: err => this.dispatch(externalProcessActionCreators.setIpfsPortsError(err)),
-            onSuccess: data => this.dispatch(
-                externalProcessActionCreators.setIpfsPortsSuccess(data)
-            )
-        });
+export const gethStartLogger = () => action(types.GETH_START_LOGGER);
+export const gethStartSuccess = data => action(types.GETH_START_SUCCESS, { data });
+export const gethStop = () => action(types.GETH_STOP);
 
-    registerStopIpfsListener = () => {
-        this.ipfsService.registerStopListener({
-            onError: (err) => {
-                this.dispatch(externalProcessActionCreators.stopIPFSError(err));
-                this.resetIpfsBusyState();
-            },
-            onSuccess: (data) => {
-                this.dispatch(externalProcessActionCreators.stopIPFSSuccess(data));
-                this.resetIpfsBusyState();
-            }
-        });
-    };
-    stopIPFS = () => {
-        this.dispatch(externalProcessActionCreators.stopIPFS());
-        if (this.ipfsPortsRequest) {
-            clearTimeout(this.ipfsPortsRequest);
-        }
-        this.ipfsService.stop({ options: {} });
-    };
+export const gethStopError = (error) => {
+    error.code = 'GSTE01';
+    error.messageId = 'gethStop';
+    return action(types.GETH_STOP_ERROR, { error });
+};
 
-    startSync = () => this.dispatch(externalProcessActionCreators.startSync());
-    /**
-     * Dispatcher for resuming sync
-     * @returns {function()}
-     */
-    resumeSync = () => {
-        this.dispatch(externalProcessActionCreators.resumeSync());
-        this.startGeth();
-    }
+export const gethStopLogger = () => action(types.GETH_STOP_LOGGER);
+export const gethStopSuccess = data => action(types.GETH_STOP_SUCCESS, { data });
+export const gethStopSync = () => action(types.GETH_STOP_SYNC);
 
-    pauseSync = () => {
-        this.dispatch(externalProcessActionCreators.pauseSync());
-        this.stopGeth();
-    };
-    /**
-     * Action for stopping sync
-     * @returns {{type}}
-     */
-    stopSync = () => {
-        this.dispatch(externalProcessActionCreators.stopSync());
-        this.stopGeth();
-    }
-    finishSync = () => {
-        this.dispatch(externalProcessActionCreators.finishSync());
-    }
+export const ipfsGetConfigError = (error) => {
+    error.code = 'IGCE01';
+    error.messageId = 'ipfsGetConfig';
+    return action(types.IPFS_GET_CONFIG_ERROR, { error });
+};
 
-    resetGethBusyState = () =>
-        setTimeout(() => this.dispatch(externalProcessActionCreators.resetGethBusy()), 2000);
+export const ipfsGetConfigSuccess = data => action(types.IPFS_GET_CONFIG_SUCCESS, { data });
+export const ipfsGetLogs = () => action(types.IPFS_GET_LOGS);
+export const ipfsGetLogsSuccess = data => action(types.IPFS_GET_LOGS_SUCCESS, { data });
+export const ipfsGetPorts = () => action(types.IPFS_GET_PORTS);
 
-    resetIpfsBusyState = () =>
-        setTimeout(() => this.dispatch(externalProcessActionCreators.resetIpfsBusy()), 2000);
+export const ipfsGetPortsError = (error) => {
+    error.code = 'IGPE01';
+    error.messageId = 'ipfsGetPorts';
+    return action(types.IPFS_GET_PORTS_ERROR, { error });
+};
 
-    filterGethLogs = (data, timestamp) => {
-        const logs = [...data.gethError, ...data.gethInfo]
-            .filter(log => new Date(log.timestamp).getTime() > timestamp);
-        return logs;
-    }
+export const ipfsGetPortsSuccess = data => action(types.IPFS_GET_PORTS_SUCCESS, { data });
+export const ipfsGetStatus = () => action(types.IPFS_GET_STATUS);
 
-    filterIpfsLogs = (data, timestamp) => {
-        const logs = [...data.ipfsError, ...data.ipfsInfo]
-            .filter(log => new Date(log.timestamp).getTime() > timestamp);
-        return logs;
-    }
+export const ipfsGetStatusError = (error) => {
+    error.code = 'IGSE01';
+    error.messageId = 'ipfsGetStatus';
+    return action(types.IPFS_GET_STATUS_ERROR, { error });
+};
 
-    startGethLogger = timestamp =>
-        this.gethService.getLogs({
-            options: {},
-            onError: err => this.dispatch(appActionCreators.showError(err)),
-            onSuccess: data =>
-                this.dispatch(externalProcessActionCreators.getGethLogs(
-                    this.filterGethLogs(data, timestamp)
-                ))
-        });
+export const ipfsGetStatusSuccess = data => action(types.IPFS_GET_STATUS_SUCCESS, { data });
+export const ipfsResetBusy = () => action(types.IPFS_RESET_BUSY);
+export const ipfsResetPorts = () => action(types.IPFS_RESET_PORTS);
+export const ipfsSetPorts = ports => action(types.IPFS_SET_PORTS, { ports });
 
-    stopGethLogger = () => this.gethService.stopLogger();
+export const ipfsSetPortsError = (error) => {
+    error.code = 'ISPE01';
+    error.messageId = 'ipfsSetPorts';
+    return action(types.IPFS_SET_PORTS_ERROR, { error });
+};
 
-    startIpfsLogger = timestamp =>
-        this.ipfsService.getLogs({
-            options: {},
-            onError: err => this.dispatch(appActionCreators.showError(err)),
-            onSuccess: data =>
-                this.dispatch(externalProcessActionCreators.getIpfsLogs(
-                    this.filterIpfsLogs(data, timestamp)
-                ))
-        });
+export const ipfsSetPortsSuccess = data => action(types.IPFS_SET_PORTS_SUCCESS, { data });
+export const ipfsStart = () => action(types.IPFS_START);
 
-    stopIpfsLogger = () => this.ipfsService.stopLogger();
-}
-export { EProcActions };
+export const ipfsStartError = (data, error) => {
+    error.code = 'ISE01';
+    error.messageId = 'ipfsStart';
+    return action(types.IPFS_START_ERROR, { data, error });
+};
+
+export const ipfsStartLogger = () => action(types.IPFS_START_LOGGER);
+export const ipfsStartSuccess = data => action(types.IPFS_START_SUCCESS, { data });
+export const ipfsStop = () => action(types.IPFS_STOP);
+
+export const ipfsStopError = (error) => {
+    error.code = 'ISTE01';
+    error.messageId = 'ipfsStopError';
+    return action(types.IPFS_STOP_ERROR, { error });
+};
+
+export const ipfsStopLogger = () => action(types.IPFS_STOP_LOGGER);
+export const ipfsStopSuccess = data => action(types.IPFS_STOP_SUCCESS, { data });

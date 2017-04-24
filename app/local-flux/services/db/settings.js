@@ -10,4 +10,9 @@ settingsDB.version(1).stores({
     general: '&name'
 });
 
+// Remove the flags table and move its content to general settings
+settingsDB.version(2).stores({
+    flags: null
+});
+
 export default settingsDB;

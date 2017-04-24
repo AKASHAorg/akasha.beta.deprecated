@@ -1,10 +1,12 @@
 /* eslint new-cap: ["error", { "capIsNewExceptions": ["Record", "EntryContent", "EntryEth"] }]*/
 import { fromJS, List, Record, Map } from 'immutable';
 import { createReducer } from './create-reducer';
-import * as types from '../constants/EntryConstants';
+import * as entryTypes from '../constants/EntryConstants';
 import * as commentsTypes from '../constants/CommentsConstants';
 import * as appTypes from '../constants/AppConstants';
 import * as searchTypes from '../constants/SearchConstants';
+import * as types from '../constants';
+import { EntriesStream, EntryContent, EntryEth, EntryRecord, EntryState } from './records';
 
 const ErrorRecord = Record({
     code: '',
@@ -12,72 +14,7 @@ const ErrorRecord = Record({
     fatal: false
 });
 
-const EntryContent = Record({
-    draft: {},
-    excerpt: null,
-    featuredImage: null,
-    licence: {},
-    tags: [],
-    title: '',
-    version: null,
-    wordCount: null
-});
-
-const EntryEth = Record({
-    blockNr: null,
-    ipfsHash: null,
-    publisher: null,
-    unixStamp: null
-});
-
-const Entry = Record({
-    akashaId: null,
-    active: null,
-    balance: null,
-    baseUrl: '',
-    canClaim: null,
-    content: EntryContent(),
-    entryEth: EntryEth(),
-    entryId: null,
-    score: null,
-    commentsCount: 0,
-    voteWeight: null
-});
-const Licence = Record({
-    id: null,
-    parent: null,
-    label: '',
-    description: []
-});
-const EntriesStream = Record({
-    akashaId: null,
-    profiles: new List(),
-    tags: new List()
-});
-const initialState = fromJS({
-    published: new List(),
-    licences: new List(),
-    errors: new List(),
-    flags: new Map({
-        votePending: new List(),
-        claimPending: new List()
-    }),
-    fetchingEntriesCount: false,
-    entriesStream: new EntriesStream(),
-    entries: new List(),
-    fullEntry: null,
-    fullEntryLatestVersion: null,
-    lastAllStreamBlock: null,
-    savedEntries: new List(),
-    moreAllStreamEntries: false,
-    moreProfileEntries: false,
-    moreSavedEntries: false,
-    moreSearchEntries: false,
-    moreTagEntries: false,
-    tagEntriesCount: new Map(),
-    entriesCount: 0, // entries published by a logged profile
-    voteCost: new Map()
-});
+const initialState = new EntryState();
 
 const voteFlagHandler = (state, { error, flags }) => {
     const votePending = state.getIn(['flags', 'votePending']);
@@ -145,45 +82,74 @@ const querySuccessHandler = (state, { data }) => {
     });
 };
 
+const addEntry = (byId, entry) => {
+    if (!entry) {
+        return byId;
+    }
+    let record = new EntryRecord(entry);
+    if (entry.content) {
+        record = record.set('content', new EntryContent(entry.content));
+    }
+    record = record.set('entryEth', new EntryEth(entry.entryEth));
+    if (entry.entryEth.publisher) {
+        // only keep a reference to the publisher's profile address
+        record = record.setIn(['entryEth', 'publisher'], entry.entryEth.publisher.profile);
+    }
+    return byId.set(entry.entryId, record);
+};
+
+const entryIteratorHandler = (state, { data }) => {
+    let byId = state.get('byId');
+    const moreEntries = data.limit === data.collection.length;
+    data.collection.forEach((entry, index) => {
+        // the request is made for n + 1 entries to determine if there are more entries left
+        // if this is the case, ignore the extra entry
+        if (!moreEntries || index !== data.collection.length - 1) {
+            byId = addEntry(byId, entry);
+        }
+    });
+    return state.set('byId', byId);
+};
+
 /**
  * State of the entries and drafts
  */
 const entryState = createReducer(initialState, {
-    [types.GET_ENTRIES_COUNT]: flagHandler,
+    [entryTypes.GET_ENTRIES_COUNT]: flagHandler,
 
-    [types.GET_ENTRIES_COUNT_SUCCESS]: (state, { data, flags }) =>
+    [entryTypes.GET_ENTRIES_COUNT_SUCCESS]: (state, { data, flags }) =>
         state.merge({
             entriesCount: parseInt(data.count, 10),
             flags: state.get('flags').merge(flags)
         }),
 
-    [types.PUBLISH_ENTRY_SUCCESS]: (state, action) =>
+    [entryTypes.PUBLISH_ENTRY_SUCCESS]: (state, action) =>
         state.merge({
-            entries: state.get('entries').push(new Entry(action.entry))
+            entries: state.get('entries').push(new EntryRecord(action.entry))
         }),
 
-    [types.GET_SORTED_ENTRIES]: (state, action) => {
-        const entriesList = new List(action.entries.map(entry => new Entry(entry)));
+    [entryTypes.GET_SORTED_ENTRIES]: (state, action) => {
+        const entriesList = new List(action.entries.map(entry => new EntryRecord(entry)));
         return state.merge({
             published: entriesList
         });
     },
 
-    [types.GET_SAVED_ENTRIES]: flagHandler,
+    [entryTypes.GET_SAVED_ENTRIES]: flagHandler,
 
-    [types.GET_SAVED_ENTRIES_ERROR]: errorHandler,
+    [entryTypes.GET_SAVED_ENTRIES_ERROR]: errorHandler,
 
-    [types.GET_SAVED_ENTRIES_SUCCESS]: (state, { data, flags }) =>
+    [entryTypes.GET_SAVED_ENTRIES_SUCCESS]: (state, { data, flags }) =>
         state.merge({
             savedEntries: fromJS(data),
             flags: state.get('flags').merge(flags)
         }),
 
-    [types.GET_SAVED_ENTRIES_LIST]: flagHandler,
+    [entryTypes.GET_SAVED_ENTRIES_LIST]: flagHandler,
 
-    [types.GET_SAVED_ENTRIES_LIST_ERROR]: errorHandler,
+    [entryTypes.GET_SAVED_ENTRIES_LIST_ERROR]: errorHandler,
 
-    [types.GET_SAVED_ENTRIES_LIST_SUCCESS]: (state, { data, flags }) =>
+    [entryTypes.GET_SAVED_ENTRIES_LIST_SUCCESS]: (state, { data, flags }) =>
         state.merge({
             entries: state.get('entries')
                 .filter(entry => entry.get('type') !== 'savedEntry')
@@ -193,120 +159,77 @@ const entryState = createReducer(initialState, {
             flags: state.get('flags').merge(flags)
         }),
 
-    [types.MORE_SAVED_ENTRIES_LIST]: flagHandler,
+    [entryTypes.MORE_SAVED_ENTRIES_LIST]: flagHandler,
 
-    [types.MORE_SAVED_ENTRIES_LIST_ERROR]: errorHandler,
+    [entryTypes.MORE_SAVED_ENTRIES_LIST_ERROR]: errorHandler,
 
-    [types.MORE_SAVED_ENTRIES_LIST_SUCCESS]: (state, { data, flags }) =>
-        state.merge({
-            entries: state.get('entries')
-                .concat(fromJS(data.collection.map(entry => (
-                    { content: entry, entryId: entry.entryId, type: 'savedEntry' }
-                )))),
-            flags: state.get('flags').merge(flags)
-        }),
-
-    [types.ENTRY_PROFILE_ITERATOR]: flagHandler,
-
-    [types.ENTRY_PROFILE_ITERATOR_SUCCESS]: (state, { data, flags }) => {
-        const moreProfileEntries = data.limit === data.collection.length;
-        const newProfileEntries = moreProfileEntries ?
-            fromJS(data.collection.slice(0, -1).map(entry => (
-                { content: entry, entryId: entry.entryId }
-            ))) :
-            fromJS(data.collection.map(entry => (
-                { content: entry, entryId: entry.entryId }
-            )));
+    [entryTypes.MORE_SAVED_ENTRIES_LIST_SUCCESS]: (state, { data, flags }) => {
+        const entries = fromJS(data.collection).map(entry => entry.set('type', 'savedEntry'));
         return state.merge({
-            entries: state.get('entries')
-                .filter(entry =>
-                    entry.get('type') !== 'profileEntry' || entry.get('akashaId') !== data.akashaId)
-                .concat(newProfileEntries.map(entry =>
-                    entry.merge({ type: 'profileEntry', akashaId: data.akashaId })
-                )),
-            moreProfileEntries,
+            entries: state.get('entries').concat(entries),
             flags: state.get('flags').merge(flags)
         });
     },
 
-    [types.ENTRY_PROFILE_ITERATOR_ERROR]: errorHandler,
+    // [entryTypes.ENTRY_PROFILE_ITERATOR]: flagHandler,
 
-    [types.MORE_ENTRY_PROFILE_ITERATOR]: flagHandler,
+    // [entryTypes.ENTRY_PROFILE_ITERATOR_SUCCESS]: (state, { data, flags }) => {
+    //     const moreProfileEntries = data.limit === data.collection.length;
+    //     const newProfileEntries = moreProfileEntries ?
+    //         fromJS(data.collection.slice(0, -1).map(entry => (
+    //             { content: entry, entryId: entry.entryId }
+    //         ))) :
+    //         fromJS(data.collection.map(entry => (
+    //             { content: entry, entryId: entry.entryId }
+    //         )));
+    //     return state.merge({
+    //         entries: state.get('entries')
+    //             .filter(entry =>
+    //                 entry.get('type') !== 'profileEntry' || entry.get('akashaId') !== data.akashaId)
+    //             .concat(newProfileEntries.map(entry =>
+    //                 entry.merge({ type: 'profileEntry', akashaId: data.akashaId })
+    //             )),
+    //         moreProfileEntries,
+    //         flags: state.get('flags').merge(flags)
+    //     });
+    // },
 
-    [types.MORE_ENTRY_PROFILE_ITERATOR_SUCCESS]: (state, { data, flags }) => {
-        const moreProfileEntries = data.limit === data.collection.length;
-        const newProfileEntries = moreProfileEntries ?
-            fromJS(data.collection.slice(0, -1).map(entry => (
-                { content: entry, entryId: entry.entryId }
-            ))) :
-            fromJS(data.collection.map(entry => (
-                { content: entry, entryId: entry.entryId }
-            )));
-        return state.merge({
-            entries: state.get('entries').concat(newProfileEntries.map(entry =>
-                entry.merge({ type: 'profileEntry', akashaId: data.akashaId }))),
-            moreProfileEntries,
-            flags: state.get('flags').merge(flags)
-        });
-    },
+    // [entryTypes.ENTRY_PROFILE_ITERATOR_ERROR]: errorHandler,
 
-    [types.MORE_ENTRY_PROFILE_ITERATOR_ERROR]: errorHandler,
+    // [entryTypes.MORE_ENTRY_PROFILE_ITERATOR]: flagHandler,
 
-    [types.GET_LICENCES_SUCCESS]: (state, { licences }) => {
-        const licencesList = new List(licences.map(licence => new Licence(licence)));
-        return state.set('licences', licencesList);
-    },
+    // [entryTypes.MORE_ENTRY_PROFILE_ITERATOR_SUCCESS]: (state, { data, flags }) => {
+    //     const moreProfileEntries = data.limit === data.collection.length;
+    //     const newProfileEntries = moreProfileEntries ?
+    //         fromJS(data.collection.slice(0, -1).map(entry => (
+    //             { content: entry, entryId: entry.entryId }
+    //         ))) :
+    //         fromJS(data.collection.map(entry => (
+    //             { content: entry, entryId: entry.entryId }
+    //         )));
+    //     return state.merge({
+    //         entries: state.get('entries').concat(newProfileEntries.map(entry =>
+    //             entry.merge({ type: 'profileEntry', akashaId: data.akashaId }))),
+    //         moreProfileEntries,
+    //         flags: state.get('flags').merge(flags)
+    //     });
+    // },
 
-    [types.GET_LICENCES_ERROR]: (state, { error }) =>
-        state.merge({
-            errors: state.get('errors').push(new ErrorRecord(error))
-        }),
+    // [entryTypes.MORE_ENTRY_PROFILE_ITERATOR_ERROR]: errorHandler,
 
-    [types.GET_LICENCE_BY_ID_SUCCESS]: (state, { licence }) =>
-        state.merge({
-            licences: state.get('licences').push(new Licence(licence))
-        }),
+    [entryTypes.GET_ENTRIES_STREAM]: flagHandler,
 
-    [types.GET_LICENCE_BY_ID_ERROR]: (state, { error }) =>
-        state.merge({
-            errors: state.get('errors').push(new ErrorRecord(error))
-        }),
-
-    [types.GET_ENTRIES_STREAM]: flagHandler,
-
-    [types.GET_ENTRIES_STREAM_SUCCESS]: (state, { data, flags }) =>
+    [entryTypes.GET_ENTRIES_STREAM_SUCCESS]: (state, { data, flags }) =>
         state.merge({
             entriesStream: new EntriesStream(fromJS(data)),
             flags: state.get('flags').merge(flags)
         }),
 
-    [types.GET_ENTRIES_STREAM_ERROR]: errorHandler,
+    [entryTypes.GET_ENTRIES_STREAM_ERROR]: errorHandler,
 
-    [types.ENTRY_TAG_ITERATOR]: flagHandler,
+    [entryTypes.MORE_ENTRY_TAG_ITERATOR]: flagHandler,
 
-    [types.ENTRY_TAG_ITERATOR_SUCCESS]: (state, { data, flags }) => {
-        const moreTagEntries = data.limit === data.collection.length;
-        const newTagEntries = moreTagEntries ?
-            fromJS(data.collection.slice(0, -1).map(entry => (
-                { content: entry, entryId: entry.entryId }
-            ))) :
-            fromJS(data.collection.map(entry => (
-                { content: entry, entryId: entry.entryId }
-            )));
-        return state.merge({
-            entries: state.get('entries')
-                .filter(entry => entry.get('type') !== 'tagEntry')
-                .concat(newTagEntries.map(entry => entry.set('type', 'tagEntry'))),
-            moreTagEntries,
-            flags: state.get('flags').merge(flags)
-        });
-    },
-
-    [types.ENTRY_TAG_ITERATOR_ERROR]: errorHandler,
-
-    [types.MORE_ENTRY_TAG_ITERATOR]: flagHandler,
-
-    [types.MORE_ENTRY_TAG_ITERATOR_SUCCESS]: (state, { data, flags }) => {
+    [entryTypes.MORE_ENTRY_TAG_ITERATOR_SUCCESS]: (state, { data, flags }) => {
         const moreTagEntries = data.limit === data.collection.length;
         const newTagEntries = moreTagEntries ?
             fromJS(data.collection.slice(0, -1).map(entry => (
@@ -323,11 +246,11 @@ const entryState = createReducer(initialState, {
         });
     },
 
-    [types.MORE_ENTRY_TAG_ITERATOR_ERROR]: errorHandler,
+    [entryTypes.MORE_ENTRY_TAG_ITERATOR_ERROR]: errorHandler,
 
-    [types.ALL_STREAM_ITERATOR]: flagHandler,
+    [entryTypes.ALL_STREAM_ITERATOR]: flagHandler,
 
-    [types.ALL_STREAM_ITERATOR_SUCCESS]: (state, { data, flags }) => {
+    [entryTypes.ALL_STREAM_ITERATOR_SUCCESS]: (state, { data, flags }) => {
         const moreAllStreamEntries = data.limit === data.collection.length;
         const newEntries = moreAllStreamEntries ?
             fromJS(data.collection.slice(0, -1).map(entry => (
@@ -346,11 +269,11 @@ const entryState = createReducer(initialState, {
         });
     },
 
-    [types.ALL_STREAM_ITERATOR_ERROR]: errorHandler,
+    [entryTypes.ALL_STREAM_ITERATOR_ERROR]: errorHandler,
 
-    [types.MORE_ALL_STREAM_ITERATOR]: flagHandler,
+    [entryTypes.MORE_ALL_STREAM_ITERATOR]: flagHandler,
 
-    [types.MORE_ALL_STREAM_ITERATOR_SUCCESS]: (state, { data, flags }) => {
+    [entryTypes.MORE_ALL_STREAM_ITERATOR_SUCCESS]: (state, { data, flags }) => {
         const moreAllStreamEntries = data.limit === data.collection.length;
         const newEntries = moreAllStreamEntries ?
             fromJS(data.collection.slice(0, -1).map(entry => (
@@ -368,45 +291,45 @@ const entryState = createReducer(initialState, {
         });
     },
 
-    [types.MORE_ALL_STREAM_ITERATOR_ERROR]: errorHandler,
+    [entryTypes.MORE_ALL_STREAM_ITERATOR_ERROR]: errorHandler,
 
-    [types.GET_TAG_ENTRIES_COUNT]: flagHandler,
+    [entryTypes.GET_TAG_ENTRIES_COUNT]: flagHandler,
 
-    [types.GET_TAG_ENTRIES_COUNT_SUCCESS]: (state, { data, flags }) =>
+    [entryTypes.GET_TAG_ENTRIES_COUNT_SUCCESS]: (state, { data, flags }) =>
         state.merge({
             tagEntriesCount: state.get('tagEntriesCount').merge(fromJS(data)),
             flags: state.get('flags').merge(flags)
         }),
 
-    [types.GET_TAG_ENTRIES_COUNT_ERROR]: errorHandler,
+    [entryTypes.GET_TAG_ENTRIES_COUNT_ERROR]: errorHandler,
 
-    [types.VOTE_COST]: flagHandler,
+    [entryTypes.VOTE_COST]: flagHandler,
 
-    [types.VOTE_COST_SUCCESS]: (state, { data, flags }) =>
+    [entryTypes.VOTE_COST_SUCCESS]: (state, { data, flags }) =>
         state.merge({
             voteCost: state.get('voteCost').merge({ [data.weight]: data.cost }),
             flags: state.get('flags').merge(flags)
         }),
 
-    [types.VOTE_COST_ERROR]: errorHandler,
+    [entryTypes.VOTE_COST_ERROR]: errorHandler,
 
-    [types.UPVOTE]: voteFlagHandler,
+    [entryTypes.UPVOTE]: voteFlagHandler,
 
-    [types.UPVOTE_SUCCESS]: voteFlagHandler,
+    [entryTypes.UPVOTE_SUCCESS]: voteFlagHandler,
 
-    [types.UPVOTE_ERROR]: voteFlagHandler,
+    [entryTypes.UPVOTE_ERROR]: voteFlagHandler,
 
-    [types.DOWNVOTE]: voteFlagHandler,
+    [entryTypes.DOWNVOTE]: voteFlagHandler,
 
-    [types.DOWNVOTE_SUCCESS]: voteFlagHandler,
+    [entryTypes.DOWNVOTE_SUCCESS]: voteFlagHandler,
 
-    [types.DOWNVOTE_ERROR]: voteFlagHandler,
+    [entryTypes.DOWNVOTE_ERROR]: voteFlagHandler,
 
-    [types.GET_ENTRY]: flagHandler,
+    [entryTypes.GET_ENTRY]: flagHandler,
 
-    [types.GET_ENTRY_ERROR]: errorHandler,
+    [entryTypes.GET_ENTRY_ERROR]: errorHandler,
 
-    [types.GET_ENTRY_SUCCESS]: (state, { data, flags }) => {
+    [entryTypes.GET_ENTRY_SUCCESS]: (state, { data, flags }) => {
         const entryIndex = state.get('entries').findIndex(entry =>
             entry.get('entryId') === data.entryId);
         if (entryIndex === -1) {
@@ -419,11 +342,11 @@ const entryState = createReducer(initialState, {
             flags: state.get('flags').merge(flags)
         });
     },
-    [types.GET_FULL_ENTRY]: flagHandler,
-    [types.GET_FULL_ENTRY_ERROR]: errorHandler,
-    [types.GET_FULL_ENTRY_SUCCESS]: (state, { data, flags }) => {
+    [entryTypes.GET_FULL_ENTRY]: flagHandler,
+    [entryTypes.GET_FULL_ENTRY_ERROR]: errorHandler,
+    [entryTypes.GET_FULL_ENTRY_SUCCESS]: (state, { data, flags }) => {
         const { active, baseUrl, commentsCount, entryId, score, content, entryEth } = data;
-        const newEntry = new Entry({
+        const newEntry = new EntryRecord({
             active,
             baseUrl,
             commentsCount: parseInt(commentsCount, 10),
@@ -442,7 +365,7 @@ const entryState = createReducer(initialState, {
             fullEntryLatestVersion: latestVersion
         });
     },
-    [types.SET_LATEST_VERSION]: (state, { data }) =>
+    [entryTypes.SET_LATEST_VERSION]: (state, { data }) =>
         state.merge({
             fullEntryLatestVersion: data
         }),
@@ -454,16 +377,16 @@ const entryState = createReducer(initialState, {
         }
         return state;
     },
-    [types.UNLOAD_FULL_ENTRY]: (state) => {
+    [entryTypes.UNLOAD_FULL_ENTRY]: (state) => {
         const newState = state.set('fullEntry', null);
         return newState.set('fullEntryLatestVersion', null);
     },
 
-    [types.GET_SCORE]: flagHandler,
+    [entryTypes.GET_SCORE]: flagHandler,
 
-    [types.GET_SCORE_ERROR]: errorHandler,
+    [entryTypes.GET_SCORE_ERROR]: errorHandler,
 
-    [types.GET_SCORE_SUCCESS]: (state, { data, flags }) => {
+    [entryTypes.GET_SCORE_SUCCESS]: (state, { data, flags }) => {
         const entryIndex = state.get('entries').findIndex(entry =>
             entry.get('entryId') === data.entryId);
         const oldFullEntry = state.get('fullEntry');
@@ -479,11 +402,11 @@ const entryState = createReducer(initialState, {
         });
     },
 
-    [types.IS_ACTIVE]: flagHandler,
+    [entryTypes.IS_ACTIVE]: flagHandler,
 
-    [types.IS_ACTIVE_ERROR]: errorHandler,
+    [entryTypes.IS_ACTIVE_ERROR]: errorHandler,
 
-    [types.IS_ACTIVE_SUCCESS]: (state, { data, flags }) => {
+    [entryTypes.IS_ACTIVE_SUCCESS]: (state, { data, flags }) => {
         const entryIndex = state.get('entries').findIndex(entry =>
             entry.get('entryId') === data.entryId);
         const oldFullEntry = state.get('fullEntry');
@@ -499,11 +422,11 @@ const entryState = createReducer(initialState, {
         });
     },
 
-    [types.GET_VOTE_OF]: flagHandler,
+    [entryTypes.GET_VOTE_OF]: flagHandler,
 
-    [types.GET_VOTE_OF_ERROR]: errorHandler,
+    [entryTypes.GET_VOTE_OF_ERROR]: errorHandler,
 
-    [types.GET_VOTE_OF_SUCCESS]: (state, { data, flags }) => {
+    [entryTypes.GET_VOTE_OF_SUCCESS]: (state, { data, flags }) => {
         const entryIndex = state.get('entries').findLastIndex(entry =>
             entry.get('entryId') === data.entryId);
         const oldFullEntry = state.get('fullEntry');
@@ -526,21 +449,21 @@ const entryState = createReducer(initialState, {
         });
     },
 
-    [types.SAVE_ENTRY]: flagHandler,
+    [entryTypes.SAVE_ENTRY]: flagHandler,
 
-    [types.SAVE_ENTRY_ERROR]: errorHandler,
+    [entryTypes.SAVE_ENTRY_ERROR]: errorHandler,
 
-    [types.SAVE_ENTRY_SUCCESS]: (state, { data, flags }) =>
+    [entryTypes.SAVE_ENTRY_SUCCESS]: (state, { data, flags }) =>
         state.merge({
             savedEntries: state.get('savedEntries').push(fromJS(data)),
             flags: state.get('flags').merge(flags)
         }),
 
-    [types.DELETE_ENTRY]: flagHandler,
+    [entryTypes.DELETE_ENTRY]: flagHandler,
 
-    [types.DELETE_ENTRY_ERROR]: errorHandler,
+    [entryTypes.DELETE_ENTRY_ERROR]: errorHandler,
 
-    [types.DELETE_ENTRY_SUCCESS]: (state, { data, flags }) =>
+    [entryTypes.DELETE_ENTRY_SUCCESS]: (state, { data, flags }) =>
         state.merge({
             savedEntries: state.get('savedEntries').filter(entry => entry.get('entryId') !== data),
             entries: state.get('entries').filter(entry =>
@@ -548,11 +471,11 @@ const entryState = createReducer(initialState, {
             flags: state.get('flags').merge(flags)
         }),
 
-    [types.CAN_CLAIM]: flagHandler,
+    [entryTypes.CAN_CLAIM]: flagHandler,
 
-    [types.CAN_CLAIM_ERROR]: errorHandler,
+    [entryTypes.CAN_CLAIM_ERROR]: errorHandler,
 
-    [types.CAN_CLAIM_SUCCESS]: (state, { data, flags }) => {
+    [entryTypes.CAN_CLAIM_SUCCESS]: (state, { data, flags }) => {
         const entryIndex = state.get('entries').findLastIndex(entry =>
             entry.get('entryId') === data.entryId);
         const oldFullEntry = state.get('fullEntry');
@@ -569,11 +492,11 @@ const entryState = createReducer(initialState, {
         });
     },
 
-    [types.GET_ENTRY_BALANCE]: flagHandler,
+    [entryTypes.GET_ENTRY_BALANCE]: flagHandler,
 
-    [types.GET_ENTRY_BALANCE_ERROR]: errorHandler,
+    [entryTypes.GET_ENTRY_BALANCE_ERROR]: errorHandler,
 
-    [types.GET_ENTRY_BALANCE_SUCCESS]: (state, { data, flags }) => {
+    [entryTypes.GET_ENTRY_BALANCE_SUCCESS]: (state, { data, flags }) => {
         const entryIndex = state.get('entries').findLastIndex(entry =>
             entry.get('entryId') === data.entryId);
         const oldFullEntry = state.get('fullEntry');
@@ -590,31 +513,31 @@ const entryState = createReducer(initialState, {
         });
     },
 
-    [types.CLEAR_ALL_STREAM]: state =>
+    [entryTypes.CLEAR_ALL_STREAM]: state =>
         state.merge({
             entries: state.get('entries').filter(entry => entry.get('type') !== 'allStreamEntry')
         }),
 
-    [types.CLEAR_TAG_ENTRIES]: state =>
+    [entryTypes.CLEAR_TAG_ENTRIES]: state =>
         state.merge({
             entries: state.get('entries').filter(entry => entry.get('type') !== 'tagEntry')
         }),
 
-    [types.CLEAR_SAVED_ENTRIES]: state =>
+    [entryTypes.CLEAR_SAVED_ENTRIES]: state =>
         state.merge({
             entries: state.get('entries').filter(entry => entry.get('type') !== 'savedEntry')
         }),
 
-    [types.CLEAR_PROFILE_ENTRIES]: state =>
+    [entryTypes.CLEAR_PROFILE_ENTRIES]: state =>
         state.merge({
             entries: state.get('entries').filter(entry => entry.get('type') !== 'profileEntry')
         }),
 
-    [types.CLAIM]: claimFlagHandler,
+    [entryTypes.CLAIM]: claimFlagHandler,
 
-    [types.CLAIM_SUCCESS]: claimFlagHandler,
+    [entryTypes.CLAIM_SUCCESS]: claimFlagHandler,
 
-    [types.CLAIM_ERROR]: claimFlagHandler,
+    [entryTypes.CLAIM_ERROR]: claimFlagHandler,
 
     [searchTypes.QUERY_SUCCESS]: querySuccessHandler,
 
@@ -626,6 +549,56 @@ const entryState = createReducer(initialState, {
         }),
 
     [appTypes.CLEAN_STORE]: () => initialState,
+
+    // ************************* NEW REDUCERS ******************************
+
+    [types.ENTRY_CAN_CLAIM_SUCCESS]: (state, { data }) => {
+        const canClaim = {};
+        data.collection.forEach((res) => {
+            canClaim[res.entryId] = res.canClaim;
+        });
+        return state.mergeIn(['canClaim'], new Map(canClaim));
+    },
+
+    [types.ENTRY_GET_BALANCE_SUCCESS]: (state, { data }) => {
+        const balance = {};
+        data.collection.forEach((res) => {
+            balance[res.entryId] = res.balance;
+        });
+        return state.mergeIn(['balance'], new Map(balance));
+    },
+
+    [types.ENTRY_GET_VOTE_OF_SUCCESS]: (state, { data }) => {
+        const votes = {};
+        data.collection.forEach((res) => {
+            votes[res.entryId] = res.weight;
+        });
+        return state.mergeIn(['votes'], new Map(votes));
+    },
+
+    [types.ENTRY_MORE_NEWEST_ITERATOR_SUCCESS]: entryIteratorHandler,
+
+    [types.ENTRY_MORE_PROFILE_ITERATOR_SUCCESS]: entryIteratorHandler,
+
+    [types.ENTRY_MORE_STREAM_ITERATOR_SUCCESS]: entryIteratorHandler,
+
+    [types.ENTRY_MORE_TAG_ITERATOR_SUCCESS]: entryIteratorHandler,
+
+    [types.ENTRY_NEWEST_ITERATOR_SUCCESS]: entryIteratorHandler,
+
+    [types.ENTRY_PROFILE_ITERATOR_SUCCESS]: entryIteratorHandler,
+
+    [types.ENTRY_STREAM_ITERATOR_SUCCESS]: entryIteratorHandler,
+
+    [types.ENTRY_TAG_ITERATOR_SUCCESS]: entryIteratorHandler,
+
+    [types.ENTRY_VOTE_COST_SUCCESS]: (state, { data }) => {
+        const voteCost = {};
+        data.collection.forEach((res) => {
+            voteCost[res.weight] = res.cost;
+        });
+        return state.set('voteCostByWeight', new Map(voteCost));
+    }
 });
 
 export default entryState;

@@ -1,17 +1,17 @@
-import React, { Component, PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import { injectIntl } from 'react-intl';
 import { Card, CardHeader, CardTitle, CardText, CardActions, IconButton, FlatButton,
     SvgIcon } from 'material-ui';
 import WarningIcon from 'material-ui/svg-icons/alert/warning';
 import HubIcon from 'material-ui/svg-icons/hardware/device-hub';
 import EditIcon from 'material-ui/svg-icons/image/edit';
 import { EntryBookmarkOn, EntryBookmarkOff, EntryComment, EntryDownvote,
-    EntryUpvote, ToolbarEthereum } from 'shared-components/svg';
-import { injectIntl } from 'react-intl';
-import { Avatar, EntryVersionsPanel, EntryVotesPanel, TagChip } from 'shared-components';
-import { calculateReadingTime, getInitials } from 'utils/dataModule';
-import imageCreator from 'utils/imageUtils';
-import { entryMessages } from 'locale-data/messages';
-import styles from './entry-card.scss';
+    EntryUpvote, ToolbarEthereum } from '../svg';
+import { Avatar, EntryVersionsPanel, EntryVotesPanel, TagChip } from '../';
+import { calculateReadingTime, getInitials } from '../../utils/dataModule';
+import imageCreator from '../../utils/imageUtils';
+import { entryMessages, generalMessages } from '../../locale-data/messages';
 
 class EntryCard extends Component {
     constructor (props) {
@@ -24,14 +24,14 @@ class EntryCard extends Component {
         };
     }
 
-    componentDidMount () {
-        const { entryActions, loggedAkashaId, entry } = this.props;
-        entryActions.getVoteOf(loggedAkashaId, entry.get('entryId'));
-        if (this.isOwnEntry()) {
-            entryActions.canClaim(entry.get('entryId'));
-            entryActions.getEntryBalance(entry.get('entryId'));
-        }
-    }
+    // componentDidMount () {
+    //     const { entryActions, loggedAkashaId, entry } = this.props;
+    //     // entryActions.getVoteOf(loggedAkashaId, entry.get('entryId'));
+    //     if (this.isOwnEntry()) {
+    //         entryActions.canClaim(entry.get('entryId'));
+    //         entryActions.getEntryBalance(entry.get('entryId'));
+    //     }
+    // }
 
     shouldComponentUpdate (nextProps, nextState) {
         const { blockNr, canClaimPending, claimPending, entry, fetchingEntryBalance, isSaved,
@@ -175,6 +175,33 @@ class EntryCard extends Component {
         });
     };
 
+    renderPlaceholder = () => {
+        const { intl } = this.props;
+        const { palette } = this.context.muiTheme;
+        return (
+          <Card style={{ margin: '5px 10px 10px 5px', width: '340px' }}>
+            <CardText style={{ position: 'relative' }}>
+              <div style={{ maxWidth: '175px' }}>
+                {intl.formatMessage(entryMessages.unresolvedEntry)}
+              </div>
+              <div
+                data-tip={intl.formatMessage(entryMessages.unresolvedEntry)}
+                style={{
+                    position: 'absolute',
+                    right: '10px',
+                    top: '2px',
+                    display: 'inline-block'
+                }}
+              >
+                <IconButton>
+                  <HubIcon color={palette.accent1Color} />
+                </IconButton>
+              </div>
+            </CardText>
+          </Card>
+        );
+    };
+
     renderSubtitle = () => {
         const { entry, intl } = this.props;
         const content = entry.get('content');
@@ -192,7 +219,10 @@ class EntryCard extends Component {
           intl.formatMessage(entryMessages.published);
 
         return (
-          <div>
+          <div
+            className="overflow-ellipsis"
+            style={{ maxWidth: '270px', textAlign: 'left' }}
+          >
             <span style={{ paddingRight: '5px' }}>
               {publishedMessage}
             </span>
@@ -204,9 +234,9 @@ class EntryCard extends Component {
             </span>
             <span style={{ padding: '0 5px' }}>-</span>
             {readingTime.hours &&
-              intl.formatMessage(entryMessages.hoursCount, { hours: readingTime.hours })
+              intl.formatMessage(generalMessages.hoursCount, { hours: readingTime.hours })
             }
-            {intl.formatMessage(entryMessages.minutesCount, { minutes: readingTime.minutes })}
+            {intl.formatMessage(generalMessages.minCount, { minutes: readingTime.minutes })}
             <span style={{ paddingLeft: '5px' }}>{intl.formatMessage(entryMessages.readTime)}</span>
             <span style={{ padding: '0 5px' }}>
               ({intl.formatMessage(entryMessages.wordsCount, { words: wordCount })})
@@ -217,16 +247,16 @@ class EntryCard extends Component {
 
     render () {
         const { canClaimPending, claimPending, entry, existingDraft, fetchingEntryBalance, intl,
-            isSaved, selectedTag, style, voteEntryPending } = this.props;
+            isSaved, selectedTag, style, voteEntryPending, publisher } = this.props;
         const { palette } = this.context.muiTheme;
         const content = entry.get('content');
         const latestVersion = content && content.get('version');
         const existingVoteWeight = entry.get('voteWeight') || 0;
-        const publisher = entry.getIn(['entryEth', 'publisher']);
-        const userInitials = publisher ?
-            getInitials(publisher.get('firstName'), publisher.get('lastName')) :
-            '';
-        const avatar = publisher && publisher.get('avatar') ?
+        if (!publisher) {
+            return this.renderPlaceholder();
+        }
+        const userInitials = getInitials(publisher.get('firstName'), publisher.get('lastName'));
+        const avatar = publisher.get('avatar') ?
             imageCreator(publisher.get('avatar'), publisher.get('baseUrl')) :
             null;
         const upvoteIconColor = existingVoteWeight > 0 ? palette.accent3Color : '';
@@ -240,8 +270,8 @@ class EntryCard extends Component {
             style={Object.assign(
                 {},
                 {
-                    margin: '5px 5px 16px 5px',
-                    width: '640px',
+                    margin: '5px 10px 10px 5px',
+                    width: '340px',
                     opacity: (this.isPossiblyUnsafe() && !this.state.expanded) || !content ? 0.5 : 1
                 },
                 style
@@ -250,18 +280,13 @@ class EntryCard extends Component {
             <CardHeader
               title={publisher ?
                 <button
-                  className={styles.contentLink}
+                  className="content-link"
                   style={{ border: '0px', outline: 'none', background: 'transparent', padding: 0 }}
                   onClick={this.selectProfile}
                 >
                   <div
-                    style={{
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        maxWidth: '470px',
-                        textAlign: 'left'
-                    }}
+                    className="overflow-ellipsis"
+                    style={{ maxWidth: '270px', textAlign: 'left' }}
                   >
                     {`${publisher.get('firstName')} ${publisher.get('lastName')}`}
                   </div>
@@ -272,7 +297,12 @@ class EntryCard extends Component {
               avatar={
                 <button
                   style={{
-                      border: '0px', outline: 'none', background: 'transparent', borderRadius: '50%'
+                      border: '0px',
+                      outline: 'none',
+                      background: 'transparent',
+                      borderRadius: '50%',
+                      margin: '0 10px 0 0',
+                      padding: 0
                   }}
                   onClick={this.selectProfile}
                 >
@@ -290,6 +320,7 @@ class EntryCard extends Component {
                   />
                 </button>
               }
+              textStyle={{ paddingRight: '0px' }}
               titleStyle={{ fontSize: '16px', fontWeight: '600' }}
               subtitleStyle={{ fontSize: '12px' }}
               style={{ paddingBottom: '4px' }}
@@ -377,7 +408,7 @@ class EntryCard extends Component {
               <CardTitle
                 title={content.get('title')}
                 expandable
-                className={styles.contentLink}
+                className="content-link"
                 style={{
                     paddingTop: '4px',
                     paddingBottom: '4px',
@@ -404,7 +435,7 @@ class EntryCard extends Component {
             }
             {content &&
               <CardText
-                className={styles.contentLink}
+                className="content-link"
                 style={{
                     paddingTop: '4px',
                     paddingBottom: '4px',
@@ -592,6 +623,8 @@ EntryCard.propTypes = {
     selectTag: PropTypes.func,
     style: PropTypes.shape(),
     voteEntryPending: PropTypes.bool,
+
+    publisher: PropTypes.shape()
 };
 
 EntryCard.contextTypes = {

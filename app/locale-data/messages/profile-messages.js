@@ -46,6 +46,31 @@ export const profileMessages = defineMessages({
         description: 'text shown when hovering Remove Link button',
         defaultMessage: 'remove link'
     },
+    cryptoAddresses: {
+        id: 'app.profile.cryptoAddresses',
+        description: 'crypto addresses section title',
+        defaultMessage: 'Other crypto addresses'
+    },
+    addCryptoAddress: {
+        id: 'app.profile.addCryptoAddress',
+        description: 'add crypto address button label',
+        defaultMessage: 'Add cryptocurrency address'
+    },
+    cryptoName: {
+        id: 'app.profile.cryptoName',
+        description: 'crypto name label',
+        defaultMessage: 'Cryptocurrency Name'
+    },
+    cryptoAddress: {
+        id: 'app.profile.cryptoAddress',
+        description: 'crypto address label',
+        defaultMessage: 'Cryptocurrency Address'
+    },
+    removeCryptoButtonTitle: {
+        id: 'app.profile.removeCryptoButtonTitle',
+        description: 'remove crypto button label',
+        defaultMessage: 'Remove cryptocurrency link'
+    },
     keepAccUnlockedLabel: {
         id: 'app.profile.keepAccUnlocked',
         description: 'Label for "Keep Account Unlocked For" checkbox',
@@ -118,16 +143,6 @@ export const profileMessages = defineMessages({
         id: 'app.profile.unfollow',
         description: 'unfollow a profile',
         defaultMessage: 'Unfollow'
-    },
-    about: {
-        id: 'app.profile.about',
-        description: 'profile details label for a short description',
-        defaultMessage: 'About'
-    },
-    links: {
-        id: 'app.profile.links',
-        description: 'profile details label for external or internal links',
-        defaultMessage: 'Links'
     },
     followers: {
         id: 'app.profile.followers',
