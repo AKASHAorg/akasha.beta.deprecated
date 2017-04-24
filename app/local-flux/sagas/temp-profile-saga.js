@@ -152,14 +152,14 @@ function* tempProfilePublishRequest (tempProfile) {
  */
 function* tempProfilePublishListener (tempProfile) {
     const response = yield take(actionChannels.registry.registerProfile);
-    const tempProfileStatus = yield select(state => state.tempProfileState.get('status'));
     if (!response.error) {
         try {
+            yield put(tempProfileActions.tempProfilePublishSuccess({ tempProfile, response }));
+            const tempProfileStatus = yield select(state => state.tempProfileState.get('status'));
             tempProfile = yield call(
                 [registryService, registryService.updateTempProfile],
                 tempProfile, tempProfileStatus.toJS()
             );
-            yield put(tempProfileActions.tempProfilePublishSuccess({ tempProfile, response }));
         } catch (error) {
             yield put(tempProfileActions.tempProfilePublishError(error));
         }
@@ -260,7 +260,7 @@ function* watchTempProfileRemove () {
         try {
             yield call(
                 [registryService, registryService.deleteTempProfile],
-                action.data.tempProfile
+                action.data.tempProfile.akashaId
             );
             yield put(tempProfileActions.tempProfileDeleteSuccess());
         } catch (err) {
