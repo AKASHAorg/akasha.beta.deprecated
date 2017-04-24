@@ -709,6 +709,17 @@ export const entryMoreNewestIteratorError = (error, req) => {
 
 export const entryMoreNewestIteratorSuccess = (data, req) =>
     action(types.ENTRY_MORE_NEWEST_ITERATOR_SUCCESS, { data, req });
+export const entryMoreProfileIterator = (id, akashaId) =>
+    action(types.ENTRY_MORE_PROFILE_ITERATOR, { id, akashaId });
+
+export const entryMoreProfileIteratorError = (error, req) => {
+    error.code = 'EMPIE01';
+    error.messageId = 'entryMoreProfileIterator';
+    return action(types.ENTRY_MORE_PROFILE_ITERATOR_ERROR, { error, req });
+};
+
+export const entryMoreProfileIteratorSuccess = (data, req) =>
+    action(types.ENTRY_MORE_PROFILE_ITERATOR_SUCCESS, { data, req });
 export const entryMoreStreamIterator = id => action(types.ENTRY_MORE_STREAM_ITERATOR, { id });
 
 export const entryMoreStreamIteratorError = (error, req) => {
@@ -740,6 +751,17 @@ export const entryNewestIteratorError = (error, req) => {
 
 export const entryNewestIteratorSuccess = (data, req) =>
     action(types.ENTRY_NEWEST_ITERATOR_SUCCESS, { data, req });
+export const entryProfileIterator = (id, akashaId) =>
+    action(types.ENTRY_PROFILE_ITERATOR, { id, akashaId });
+
+export const entryProfileIteratorError = (error, req) => {
+    error.code = 'EPIE01';
+    error.messageId = 'entryProfileIterator';
+    return action(types.ENTRY_PROFILE_ITERATOR_ERROR, { error, req });
+};
+
+export const entryProfileIteratorSuccess = (data, req) =>
+    action(types.ENTRY_PROFILE_ITERATOR_SUCCESS, { data, req });
 export const entryStreamIterator = id => action(types.ENTRY_STREAM_ITERATOR, { id });
 
 export const entryStreamIteratorError = (error, req) => {

@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { ColumnHeader } from '../';
+import { ColumnTag } from '../svg';
 import { EntryListContainer } from '../../shared-components';
 import { entryMessages } from '../../locale-data/messages';
 import { entryMoreTagIterator, entryTagIterator } from '../../local-flux/actions/entry-actions';
@@ -27,7 +28,7 @@ class TagColumn extends Component {
 
         return (
           <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-            <ColumnHeader icon={null} title={hardCodedTag} />
+            <ColumnHeader icon={<ColumnTag />} title={hardCodedTag} />
             <EntryListContainer
               entries={entries}
               fetchingEntries={column.getIn(['flags', 'fetchingEntries'])}

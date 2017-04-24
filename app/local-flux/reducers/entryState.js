@@ -171,51 +171,51 @@ const entryState = createReducer(initialState, {
         });
     },
 
-    [entryTypes.ENTRY_PROFILE_ITERATOR]: flagHandler,
+    // [entryTypes.ENTRY_PROFILE_ITERATOR]: flagHandler,
 
-    [entryTypes.ENTRY_PROFILE_ITERATOR_SUCCESS]: (state, { data, flags }) => {
-        const moreProfileEntries = data.limit === data.collection.length;
-        const newProfileEntries = moreProfileEntries ?
-            fromJS(data.collection.slice(0, -1).map(entry => (
-                { content: entry, entryId: entry.entryId }
-            ))) :
-            fromJS(data.collection.map(entry => (
-                { content: entry, entryId: entry.entryId }
-            )));
-        return state.merge({
-            entries: state.get('entries')
-                .filter(entry =>
-                    entry.get('type') !== 'profileEntry' || entry.get('akashaId') !== data.akashaId)
-                .concat(newProfileEntries.map(entry =>
-                    entry.merge({ type: 'profileEntry', akashaId: data.akashaId })
-                )),
-            moreProfileEntries,
-            flags: state.get('flags').merge(flags)
-        });
-    },
+    // [entryTypes.ENTRY_PROFILE_ITERATOR_SUCCESS]: (state, { data, flags }) => {
+    //     const moreProfileEntries = data.limit === data.collection.length;
+    //     const newProfileEntries = moreProfileEntries ?
+    //         fromJS(data.collection.slice(0, -1).map(entry => (
+    //             { content: entry, entryId: entry.entryId }
+    //         ))) :
+    //         fromJS(data.collection.map(entry => (
+    //             { content: entry, entryId: entry.entryId }
+    //         )));
+    //     return state.merge({
+    //         entries: state.get('entries')
+    //             .filter(entry =>
+    //                 entry.get('type') !== 'profileEntry' || entry.get('akashaId') !== data.akashaId)
+    //             .concat(newProfileEntries.map(entry =>
+    //                 entry.merge({ type: 'profileEntry', akashaId: data.akashaId })
+    //             )),
+    //         moreProfileEntries,
+    //         flags: state.get('flags').merge(flags)
+    //     });
+    // },
 
-    [entryTypes.ENTRY_PROFILE_ITERATOR_ERROR]: errorHandler,
+    // [entryTypes.ENTRY_PROFILE_ITERATOR_ERROR]: errorHandler,
 
-    [entryTypes.MORE_ENTRY_PROFILE_ITERATOR]: flagHandler,
+    // [entryTypes.MORE_ENTRY_PROFILE_ITERATOR]: flagHandler,
 
-    [entryTypes.MORE_ENTRY_PROFILE_ITERATOR_SUCCESS]: (state, { data, flags }) => {
-        const moreProfileEntries = data.limit === data.collection.length;
-        const newProfileEntries = moreProfileEntries ?
-            fromJS(data.collection.slice(0, -1).map(entry => (
-                { content: entry, entryId: entry.entryId }
-            ))) :
-            fromJS(data.collection.map(entry => (
-                { content: entry, entryId: entry.entryId }
-            )));
-        return state.merge({
-            entries: state.get('entries').concat(newProfileEntries.map(entry =>
-                entry.merge({ type: 'profileEntry', akashaId: data.akashaId }))),
-            moreProfileEntries,
-            flags: state.get('flags').merge(flags)
-        });
-    },
+    // [entryTypes.MORE_ENTRY_PROFILE_ITERATOR_SUCCESS]: (state, { data, flags }) => {
+    //     const moreProfileEntries = data.limit === data.collection.length;
+    //     const newProfileEntries = moreProfileEntries ?
+    //         fromJS(data.collection.slice(0, -1).map(entry => (
+    //             { content: entry, entryId: entry.entryId }
+    //         ))) :
+    //         fromJS(data.collection.map(entry => (
+    //             { content: entry, entryId: entry.entryId }
+    //         )));
+    //     return state.merge({
+    //         entries: state.get('entries').concat(newProfileEntries.map(entry =>
+    //             entry.merge({ type: 'profileEntry', akashaId: data.akashaId }))),
+    //         moreProfileEntries,
+    //         flags: state.get('flags').merge(flags)
+    //     });
+    // },
 
-    [entryTypes.MORE_ENTRY_PROFILE_ITERATOR_ERROR]: errorHandler,
+    // [entryTypes.MORE_ENTRY_PROFILE_ITERATOR_ERROR]: errorHandler,
 
     [entryTypes.GET_ENTRIES_STREAM]: flagHandler,
 
@@ -563,11 +563,15 @@ const entryState = createReducer(initialState, {
 
     [types.ENTRY_MORE_NEWEST_ITERATOR_SUCCESS]: entryIteratorHandler,
 
+    [types.ENTRY_MORE_PROFILE_ITERATOR_SUCCESS]: entryIteratorHandler,
+
     [types.ENTRY_MORE_STREAM_ITERATOR_SUCCESS]: entryIteratorHandler,
 
     [types.ENTRY_MORE_TAG_ITERATOR_SUCCESS]: entryIteratorHandler,
 
     [types.ENTRY_NEWEST_ITERATOR_SUCCESS]: entryIteratorHandler,
+
+    [types.ENTRY_PROFILE_ITERATOR_SUCCESS]: entryIteratorHandler,
 
     [types.ENTRY_STREAM_ITERATOR_SUCCESS]: entryIteratorHandler,
 

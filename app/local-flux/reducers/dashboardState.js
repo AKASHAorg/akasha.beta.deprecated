@@ -83,6 +83,12 @@ const dashboardState = createReducer(initialState, {
 
     [types.ENTRY_MORE_NEWEST_ITERATOR_SUCCESS]: entryMoreIteratorSuccess,
 
+    [types.ENTRY_MORE_PROFILE_ITERATOR]: entryMoreIterator,
+
+    [types.ENTRY_MORE_PROFILE_ITERATOR_ERROR]: entryMoreIteratorError,
+
+    [types.ENTRY_MORE_PROFILE_ITERATOR_SUCCESS]: entryMoreIteratorSuccess,
+
     [types.ENTRY_MORE_STREAM_ITERATOR]: entryMoreIterator,
 
     [types.ENTRY_MORE_STREAM_ITERATOR_ERROR]: entryMoreIteratorError,
@@ -100,6 +106,12 @@ const dashboardState = createReducer(initialState, {
     [types.ENTRY_NEWEST_ITERATOR_ERROR]: entryIteratorError,
 
     [types.ENTRY_NEWEST_ITERATOR_SUCCESS]: entryIteratorSuccess,
+
+    [types.ENTRY_PROFILE_ITERATOR]: entryIterator,
+
+    [types.ENTRY_PROFILE_ITERATOR_ERROR]: entryIteratorError,
+
+    [types.ENTRY_PROFILE_ITERATOR_SUCCESS]: entryIteratorSuccess,
 
     [types.ENTRY_STREAM_ITERATOR]: entryIterator,
 

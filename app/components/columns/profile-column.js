@@ -1,26 +1,26 @@
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { ColumnHeader } from '../';
-import { ColumnLatest } from '../svg';
+import { ColumnProfile } from '../svg';
 import { EntryListContainer } from '../../shared-components';
-import { dashboardMessages, entryMessages } from '../../locale-data/messages';
-import { entryMoreNewestIterator,
-    entryNewestIterator } from '../../local-flux/actions/entry-actions';
+import { entryMessages } from '../../locale-data/messages';
+import { entryMoreProfileIterator, entryProfileIterator } from '../../local-flux/actions/entry-actions';
 import { selectColumnEntries } from '../../local-flux/selectors';
 
-class LatestColumn extends Component {
+const hardCodedProfile = 'john.doe';
+
+class ProfileColumn extends Component {
 
     componentDidMount () {
         const { column } = this.props;
-        this.props.entryNewestIterator(column.get('id'));
+        this.props.entryProfileIterator(column.get('id'), hardCodedProfile);
     }
 
-    entryMoreNewestIterator = () => {
+    entryMoreTagIterator = () => {
         const { column } = this.props;
-        this.props.entryMoreNewestIterator(column.get('id'));
-    }
+        this.props.entryMoreProfileIterator(column.get('id'), hardCodedProfile);
+    };
 
     render () {
         const { column, entries, intl, profiles } = this.props;
@@ -28,15 +28,14 @@ class LatestColumn extends Component {
         return (
           <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
             <ColumnHeader
-              icon={<ColumnLatest />}
-              readOnly
-              title={intl.formatMessage(dashboardMessages.columnLatest)}
+              icon={<ColumnProfile />}
+              title={hardCodedProfile}
             />
             <EntryListContainer
               entries={entries}
               fetchingEntries={column.getIn(['flags', 'fetchingEntries'])}
               fetchingMoreEntries={column.getIn(['flags', 'fetchingMoreEntries'])}
-              fetchMoreEntries={this.entryMoreNewestIterator}
+              fetchMoreEntries={this.entryMoreTagIterator}
               moreEntries={column.getIn(['flags', 'moreEntries'])}
               placeholderMessage={intl.formatMessage(entryMessages.noNewEntries)}
               profiles={profiles}
@@ -46,11 +45,11 @@ class LatestColumn extends Component {
     }
 }
 
-LatestColumn.propTypes = {
+ProfileColumn.propTypes = {
     column: PropTypes.shape().isRequired,
     entries: PropTypes.shape().isRequired,
-    entryMoreNewestIterator: PropTypes.func.isRequired,
-    entryNewestIterator: PropTypes.func.isRequired,
+    entryMoreProfileIterator: PropTypes.func.isRequired,
+    entryProfileIterator: PropTypes.func.isRequired,
     intl: PropTypes.shape().isRequired,
     profiles: PropTypes.shape().isRequired,
 };
@@ -65,7 +64,7 @@ function mapStateToProps (state, ownProps) {
 export default connect(
     mapStateToProps,
     {
-        entryMoreNewestIterator,
-        entryNewestIterator,
+        entryMoreProfileIterator,
+        entryProfileIterator,
     }
-)(injectIntl(LatestColumn));
+)(injectIntl(ProfileColumn));
