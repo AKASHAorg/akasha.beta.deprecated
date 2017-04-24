@@ -455,11 +455,15 @@ const profileState = createReducer(initialState, {
 
     [types.ENTRY_MORE_NEWEST_ITERATOR_SUCCESS]: entryIteratorHandler,
 
+    [types.ENTRY_MORE_PROFILE_ITERATOR_SUCCESS]: entryIteratorHandler,
+
     [types.ENTRY_MORE_STREAM_ITERATOR_SUCCESS]: entryIteratorHandler,
 
     [types.ENTRY_MORE_TAG_ITERATOR_SUCCESS]: entryIteratorHandler,
 
     [types.ENTRY_NEWEST_ITERATOR_SUCCESS]: entryIteratorHandler,
+
+    [types.ENTRY_PROFILE_ITERATOR_SUCCESS]: entryIteratorHandler,
 
     [types.ENTRY_STREAM_ITERATOR_SUCCESS]: entryIteratorHandler,
 

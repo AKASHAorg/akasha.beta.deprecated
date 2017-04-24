@@ -3,8 +3,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import { ColumnHeader } from '../';
+import { ColumnStream } from '../svg';
 import { EntryListContainer } from '../../shared-components';
-import { entryMessages } from '../../locale-data/messages';
+import { dashboardMessages, entryMessages } from '../../locale-data/messages';
 import { entryMoreStreamIterator,
     entryStreamIterator } from '../../local-flux/actions/entry-actions';
 import { selectColumnEntries } from '../../local-flux/selectors';
@@ -26,7 +27,11 @@ class StreamColumn extends Component {
 
         return (
           <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-            <ColumnHeader icon={null} readOnly title="Followed users" />
+            <ColumnHeader
+              icon={<ColumnStream />}
+              readOnly
+              title={intl.formatMessage(dashboardMessages.columnStream)}
+            />
             <EntryListContainer
               entries={entries}
               fetchingEntries={column.getIn(['flags', 'fetchingEntries'])}

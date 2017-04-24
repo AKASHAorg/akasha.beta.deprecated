@@ -36,6 +36,12 @@ function* entryMoreNewestIterator ({ id }) {
     yield apply(channel, channel.send, [{ id, limit: ALL_STREAM_LIMIT, toBlock: toBlock - 1 }]);
 }
 
+function* entryMoreProfileIterator ({ id, akashaId }) {
+    const channel = Channel.server.entry.entryProfileIterator;
+    const start = yield select(state => selectColumnLastEntry(state, id));
+    yield apply(channel, channel.send, [{ id, limit: ENTRY_ITERATOR_LIMIT, start, akashaId }]);
+}
+
 function* entryMoreStreamIterator ({ id }) {
     const channel = Channel.server.entry.followingStreamIterator;
     const toBlock = yield select(state => selectColumnLastBlock(state, id));
@@ -52,6 +58,12 @@ function* entryNewestIterator ({ id }) {
     const channel = Channel.server.entry.allStreamIterator;
     yield call(enableChannel, channel, Channel.client.entry.manager);
     yield apply(channel, channel.send, [{ id, limit: ALL_STREAM_LIMIT }]);
+}
+
+function* entryProfileIterator ({ id, akashaId }) {
+    const channel = Channel.server.entry.entryProfileIterator;
+    yield call(enableChannel, channel, Channel.client.entry.manager);
+    yield apply(channel, channel.send, [{ id, limit: ENTRY_ITERATOR_LIMIT, akashaId }]);
 }
 
 function* entryStreamIterator ({ id }) {
@@ -84,6 +96,10 @@ function* watchEntryMoreNewestIterator () {
     yield takeEvery(types.ENTRY_MORE_NEWEST_ITERATOR, entryMoreNewestIterator);
 }
 
+function* watchEntryMoreProfileIterator () {
+    yield takeEvery(types.ENTRY_MORE_PROFILE_ITERATOR, entryMoreProfileIterator);
+}
+
 function* watchEntryMoreStreamIterator () {
     yield takeEvery(types.ENTRY_MORE_STREAM_ITERATOR, entryMoreStreamIterator);
 }
@@ -94,6 +110,10 @@ function* watchEntryMoreTagIterator () {
 
 function* watchEntryNewestIterator () {
     yield takeEvery(types.ENTRY_NEWEST_ITERATOR, entryNewestIterator);
+}
+
+function* watchEntryProfileIterator () {
+    yield takeEvery(types.ENTRY_PROFILE_ITERATOR, entryProfileIterator);
 }
 
 function* watchEntryStreamIterator () {
@@ -163,6 +183,27 @@ function* watchEntryNewestIteratorChannel () {
     }
 }
 
+
+function* watchEntryProfileIteratorChannel () {
+    while (true) {
+        const resp = yield take(actionChannels.entry.entryProfileIterator);
+        if (resp.error) {
+            if (resp.request && resp.request.start) {
+                yield put(actions.entryMoreProfileIteratorError(resp.error, resp.request));
+            } else {
+                yield put(actions.entryProfileIteratorError(resp.error, resp.request));
+            }
+        } else {
+            if (resp.request.start) {
+                yield put(actions.entryMoreProfileIteratorSuccess(resp.data, resp.request));
+            } else {
+                yield put(actions.entryProfileIteratorSuccess(resp.data, resp.request));
+            }
+            yield put(actions.entryGetExtraOfList(resp.data.collection));
+        }
+    }
+}
+
 function* watchEntryStreamIteratorChannel () {
     while (true) {
         const resp = yield take(actionChannels.entry.followingStreamIterator);
@@ -219,6 +260,7 @@ export function* registerEntryListeners () {
     yield fork(watchEntryGetBalanceChannel);
     yield fork(watchEntryGetVoteOfChannel);
     yield fork(watchEntryNewestIteratorChannel);
+    yield fork(watchEntryProfileIteratorChannel);
     yield fork(watchEntryStreamIteratorChannel);
     yield fork(watchEntryTagIteratorChannel);
     yield fork(watchEntryVoteCostChannel);
@@ -227,9 +269,11 @@ export function* registerEntryListeners () {
 export function* watchEntryActions () {
     yield fork(watchEntryGetVoteOfList);
     yield fork(watchEntryMoreNewestIterator);
+    yield fork(watchEntryMoreProfileIterator);
     yield fork(watchEntryMoreStreamIterator);
     yield fork(watchEntryMoreTagIterator);
     yield fork(watchEntryNewestIterator);
+    yield fork(watchEntryProfileIterator);
     yield fork(watchEntryStreamIterator);
     yield fork(watchEntryTagIterator);
     yield fork(watchEntryVoteCost);

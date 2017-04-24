@@ -1,4 +1,8 @@
 import AvatarPlaceholder from './avatar-placeholder';
+import ColumnLatest from './column-latest';
+import ColumnProfile from './column-profile';
+import ColumnStream from './column-stream';
+import ColumnTag from './column-tag';
 import MenuAddEntry from './MenuAddEntry';
 import MenuAkashaLogo from './MenuAkashaLogo';
 import MenuChat from './MenuChat';
@@ -59,7 +63,8 @@ import UserDonate from './user-donate';
 import UserMore from './user-more';
 
 export {
-    AvatarPlaceholder, ProfileIcon, AddEntryIcon, EntriesIcon, SearchIcon, StreamsIcon, PortalsIcon,
+    AvatarPlaceholder, ColumnLatest, ColumnProfile, ColumnStream, ColumnTag, ProfileIcon,
+    AddEntryIcon, EntriesIcon, SearchIcon, StreamsIcon, PortalsIcon,
     CommunityIcon, PeopleIcon, ChatIcon, LogoIcon, MenuAddEntry, MenuAkashaLogo, MenuChat,
     MenuCommunities, MenuEntries, MenuEthereum, MenuPeople, MenuPortals,
     MenuSearch, MenuStreams, MenuUser, ToolbarComments, ToolbarEthereum,

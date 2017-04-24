@@ -44,7 +44,7 @@ class ColumnHeader extends Component {
     };
 
     render () {
-        const { readOnly } = this.props;
+        const { icon, readOnly } = this.props;
         const { isFocused, isHovered, value } = this.state;
 
         return (
@@ -54,6 +54,14 @@ class ColumnHeader extends Component {
             onMouseLeave={this.onMouseLeave}
             style={{ height: '50px', flex: '0 0 auto' }}
           >
+            {icon &&
+              <SvgIcon
+                viewBox="0 0 18 18"
+                style={{ flex: '0 0 auto', width: '18px', height: '18px', marginRight: '5px' }}
+              >
+                {icon}
+              </SvgIcon>
+            }
             <div style={{ flex: '1 1 auto' }}>
               {readOnly &&
                 <div>{value}</div>

@@ -19,6 +19,7 @@ export PageContent from './page-content';
 export PanelContainer from './PanelContainer/panel-container';
 export PanelContainerFooter from './PanelContainer/panel-container-footer';
 export PanelContainerHeader from './PanelContainer/panel-container-header';
+export ProfileColumn from './columns/profile-column';
 export ProfilesList from './profiles-list';
 export SecondarySidebar from './secondary-sidebar';
 export ServiceStatusBar from './service-status-bar';

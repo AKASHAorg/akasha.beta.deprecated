@@ -65,7 +65,7 @@ class DataLoader extends Component {
                   justifyContent: 'center'
               }, style)}
             >
-              <div style={{ position: 'relative', width: size, height: size }}>
+              <div style={{ position: 'relative', width: size + 5, height: size + 5 }}>
                 <RefreshIndicator
                   top={0}
                   left={0}

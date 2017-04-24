@@ -5,4 +5,5 @@ export const columnType = {
     stream: 'stream',
     latest: 'latest',
     tag: 'tag',
+    profile: 'profile'
 };

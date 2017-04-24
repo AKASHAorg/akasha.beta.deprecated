@@ -13,14 +13,16 @@ class EntryList extends Component {
 
     componentDidMount () {
         if (this.container) {
-            this.container.addEventListener('scroll', this.throttledScrollHandler);
+            this.container.addEventListener('scroll', this.throttledHandler);
         }
+        window.addEventListener('resize', this.throttledHandler);
     }
 
     componentWillUnmount () {
         if (this.container) {
-            this.container.removeEventListener('scroll', this.throttledScrollHandler);
+            this.container.removeEventListener('scroll', this.throttledHandler);
         }
+        window.removeEventListener('resize', this.throttledHandler);
         ReactTooltip.hide();
     }
 
@@ -28,13 +30,13 @@ class EntryList extends Component {
 
     getTriggerRef = el => (this.trigger = el);
 
-    handleScroll = () => {
+    checkTrigger = () => {
         if (this.trigger && isInViewport(this.trigger)) {
             this.props.fetchMoreEntries();
         }
     };
 
-    throttledScrollHandler = throttle(this.handleScroll, 500);
+    throttledHandler = throttle(this.checkTrigger, 500);
 
     getExistingDraft = (entryId) => {
         const { drafts } = this.props;
@@ -67,10 +69,9 @@ class EntryList extends Component {
         return (
           <div
             style={Object.assign({}, {
-                paddingBottom: moreEntries && !fetchingMoreEntries ? '30px' : '0px',
                 display: 'flex',
                 flexDirection: 'column',
-                alignItems: 'center',
+                alignItems: 'flex-start',
                 overflowY: 'auto',
                 overflowX: 'hidden',
                 minHeight: '500px'
@@ -80,7 +81,7 @@ class EntryList extends Component {
             <DataLoader
               flag={fetchingEntries}
               timeout={timeout}
-              size={80}
+              size={60}
               style={{ paddingTop: '80px' }}
             >
               <div>
@@ -125,11 +126,15 @@ class EntryList extends Component {
                     />);
                 })}
                 {moreEntries &&
-                  <DataLoader flag={fetchingMoreEntries} size={30}>
-                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                      <div ref={this.getTriggerRef} style={{ height: 0 }} />
-                    </div>
-                  </DataLoader>
+                  <div style={{ height: '35px' }}>
+                    <DataLoader flag={fetchingMoreEntries} size={30}>
+                      <div
+                        style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+                      >
+                        <div ref={this.getTriggerRef} style={{ height: 0 }} />
+                      </div>
+                    </DataLoader>
+                  </div>
                 }
               </div>
             </DataLoader>
