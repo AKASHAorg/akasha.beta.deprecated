@@ -701,64 +701,65 @@ export const entryGetVoteOfSuccess = data => action(types.ENTRY_GET_VOTE_OF_SUCC
 export const entryGetExtraOfList = entries => action(types.ENTRY_GET_EXTRA_OF_LIST, { entries });
 export const entryMoreNewestIterator = id => action(types.ENTRY_MORE_NEWEST_ITERATOR, { id });
 
-export const entryMoreNewestIteratorError = (error) => {
+export const entryMoreNewestIteratorError = (error, req) => {
     error.code = 'EMNIE01';
     error.messageId = 'entryMoreNewestIterator';
-    return action(types.ENTRY_MORE_NEWEST_ITERATOR_ERROR, { error });
+    return action(types.ENTRY_MORE_NEWEST_ITERATOR_ERROR, { error, req });
 };
 
-export const entryMoreNewestIteratorSuccess = data =>
-    action(types.ENTRY_MORE_NEWEST_ITERATOR_SUCCESS, { data });
+export const entryMoreNewestIteratorSuccess = (data, req) =>
+    action(types.ENTRY_MORE_NEWEST_ITERATOR_SUCCESS, { data, req });
 export const entryMoreStreamIterator = id => action(types.ENTRY_MORE_STREAM_ITERATOR, { id });
 
-export const entryMoreStreamIteratorError = (error) => {
+export const entryMoreStreamIteratorError = (error, req) => {
     error.code = 'EMSIE01';
     error.messageId = 'entryMoreStreamIterator';
-    return action(types.ENTRY_MORE_STREAM_ITERATOR_ERROR, { error });
+    return action(types.ENTRY_MORE_STREAM_ITERATOR_ERROR, { error, req });
 };
 
-export const entryMoreStreamIteratorSuccess = data =>
-    action(types.ENTRY_MORE_STREAM_ITERATOR_SUCCESS, { data });
+export const entryMoreStreamIteratorSuccess = (data, req) =>
+    action(types.ENTRY_MORE_STREAM_ITERATOR_SUCCESS, { data, req });
 export const entryMoreTagIterator = (id, tagName) =>
     action(types.ENTRY_MORE_TAG_ITERATOR, { id, tagName });
 
-export const entryMoreTagIteratorError = (error) => {
+export const entryMoreTagIteratorError = (error, req) => {
     error.code = 'EMTIE01';
     error.messageId = 'entryMoreTagIterator';
-    return action(types.ENTRY_MORE_TAG_ITERATOR_ERROR, { error });
+    return action(types.ENTRY_MORE_TAG_ITERATOR_ERROR, { error, req });
 };
 
-export const entryMoreTagIteratorSuccess = data =>
-    action(types.ENTRY_MORE_TAG_ITERATOR_SUCCESS, { data });
+export const entryMoreTagIteratorSuccess = (data, req) =>
+    action(types.ENTRY_MORE_TAG_ITERATOR_SUCCESS, { data, req });
 export const entryNewestIterator = id => action(types.ENTRY_NEWEST_ITERATOR, { id });
 
-export const entryNewestIteratorError = (error) => {
+export const entryNewestIteratorError = (error, req) => {
     error.code = 'ENIE01';
     error.messageId = 'entryNewestIterator';
-    return action(types.ENTRY_NEWEST_ITERATOR_ERROR, { error });
+    return action(types.ENTRY_NEWEST_ITERATOR_ERROR, { error, req });
 };
 
-export const entryNewestIteratorSuccess = data =>
-    action(types.ENTRY_NEWEST_ITERATOR_SUCCESS, { data });
+export const entryNewestIteratorSuccess = (data, req) =>
+    action(types.ENTRY_NEWEST_ITERATOR_SUCCESS, { data, req });
 export const entryStreamIterator = id => action(types.ENTRY_STREAM_ITERATOR, { id });
 
-export const entryStreamIteratorError = (error) => {
+export const entryStreamIteratorError = (error, req) => {
     error.code = 'ESIE01';
     error.messageId = 'entryStreamIterator';
-    return action(types.ENTRY_STREAM_ITERATOR_ERROR, { error });
+    return action(types.ENTRY_STREAM_ITERATOR_ERROR, { error, req });
 };
 
-export const entryStreamIteratorSuccess = data =>
-    action(types.ENTRY_STREAM_ITERATOR_SUCCESS, { data });
+export const entryStreamIteratorSuccess = (data, req) =>
+    action(types.ENTRY_STREAM_ITERATOR_SUCCESS, { data, req });
 export const entryTagIterator = (id, tagName) => action(types.ENTRY_TAG_ITERATOR, { id, tagName });
 
-export const entryTagIteratorError = (error) => {
+export const entryTagIteratorError = (error, req) => {
     error.code = 'ETIE01';
     error.messageId = 'entryTagIterator';
-    return action(types.ENTRY_TAG_ITERATOR_ERROR, { error });
+    return action(types.ENTRY_TAG_ITERATOR_ERROR, { error, req });
 };
 
-export const entryTagIteratorSuccess = data => action(types.ENTRY_TAG_ITERATOR_SUCCESS, { data });
+export const entryTagIteratorSuccess = (data, req) =>
+    action(types.ENTRY_TAG_ITERATOR_SUCCESS, { data, req });
 export const entryVoteCost = () => action(types.ENTRY_VOTE_COST);
 
 export const entryVoteCostError = (error) => {

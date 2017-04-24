@@ -4,6 +4,9 @@ import { ProfileRecord } from '../reducers/records';
 
 export const selectActivePanel = state => state.panelState.get('activePanel');
 
+export const selectColumnLastBlock = (state, columnId) =>
+    state.dashboardState.getIn(['columnById', columnId, 'lastBlock']);
+
 export const selectColumnLastEntry = (state, columnId) =>
     state.dashboardState.getIn(['columnById', columnId, 'entries']).last();
 
@@ -18,7 +21,7 @@ export const selectGethStatus = state => state.externalProcState.getIn(['geth', 
 
 export const selectIpfsStatus = state => state.externalProcState.getIn(['ipfs', 'status']);
 
-export const selectLastAllStreamBlock = state => state.entryState.get('lastAllStreamBlock');
+export const selectLastStreamBlock = state => state.entryState.get('lastStreamBlock');
 
 export const selectLocalProfiles = state =>
     state.profileState

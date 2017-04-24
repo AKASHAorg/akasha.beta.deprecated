@@ -12,6 +12,7 @@ export const ColumnRecord = Record({
     entries: new List(),
     flags: new Flags(),
     large: false,
+    lastBlock: null,
     type: null,
     value: null,
 });
