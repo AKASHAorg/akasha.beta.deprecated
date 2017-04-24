@@ -1,15 +1,42 @@
-import React, { Component, PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import ReactTooltip from 'react-tooltip';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { entryMessages } from 'locale-data/messages';
-import { AppActions, EntryActions, TagActions } from 'local-flux';
-import { DataLoader, EntryCard } from 'shared-components';
+import throttle from 'lodash.throttle';
+import { entryMessages } from '../../locale-data/messages';
+import { AppActions } from '../../local-flux';
+import { DataLoader, EntryCard } from '../';
+import { isInViewport } from '../../utils/domUtils';
 
 class EntryList extends Component {
+
+    componentDidMount () {
+        if (this.container) {
+            this.container.addEventListener('scroll', this.throttledHandler);
+        }
+        window.addEventListener('resize', this.throttledHandler);
+    }
+
     componentWillUnmount () {
+        if (this.container) {
+            this.container.removeEventListener('scroll', this.throttledHandler);
+        }
+        window.removeEventListener('resize', this.throttledHandler);
         ReactTooltip.hide();
     }
+
+    getContainerRef = el => (this.container = el);
+
+    getTriggerRef = el => (this.trigger = el);
+
+    checkTrigger = () => {
+        if (this.trigger && isInViewport(this.trigger)) {
+            this.props.fetchMoreEntries();
+        }
+    };
+
+    throttledHandler = throttle(this.checkTrigger, 500);
 
     getExistingDraft = (entryId) => {
         const { drafts } = this.props;
@@ -17,14 +44,13 @@ class EntryList extends Component {
     }
 
     handleEdit = (entryId) => {
-        const { loggedProfileData } = this.props;
+        const { loggedAkashaId } = this.props;
         const { router } = this.context;
-        const akashaId = loggedProfileData.get('akashaId');
         const existingDraft = this.getExistingDraft(entryId);
         if (existingDraft) {
-            router.push(`/${akashaId}/draft/${existingDraft.get('id')}`);
+            router.push(`/${loggedAkashaId}/draft/${existingDraft.get('id')}`);
         } else {
-            router.push(`/${akashaId}/draft/new?editEntry=${entryId}`);
+            router.push(`/${loggedAkashaId}/draft/new?editEntry=${entryId}`);
         }
     };
 
@@ -36,24 +62,27 @@ class EntryList extends Component {
     render () {
         const { appActions, blockNr, cardStyle, claimPending, canClaimPending, defaultTimeout,
             entries, entryActions, fetchingEntries, fetchingEntryBalance, fetchingMoreEntries,
-            getTriggerRef, intl, loggedProfileData, moreEntries, placeholderMessage,
-            savedEntriesIds, selectedTag, style, votePending } = this.props;
+            intl, loggedAkashaId, moreEntries, placeholderMessage,
+            savedEntriesIds, selectedTag, style, votePending, profiles } = this.props;
         const { palette } = this.context.muiTheme;
         const timeout = defaultTimeout === undefined ? 700 : defaultTimeout;
         return (
           <div
             style={Object.assign({}, {
-                paddingBottom: moreEntries && !fetchingMoreEntries ? '30px' : '0px',
                 display: 'flex',
                 flexDirection: 'column',
-                alignItems: 'center'
+                alignItems: 'flex-start',
+                overflowY: 'auto',
+                overflowX: 'hidden',
+                minHeight: '500px'
             }, style)}
+            ref={this.getContainerRef}
           >
             <DataLoader
               flag={fetchingEntries}
               timeout={timeout}
-              size={80}
-              style={{ paddingTop: '120px' }}
+              size={60}
+              style={{ paddingTop: '80px' }}
             >
               <div>
                 {entries.size === 0 &&
@@ -74,6 +103,7 @@ class EntryList extends Component {
                     const claimEntryPending = claimPending && claimPending.find(claim =>
                         claim.entryId === entry.get('entryId'));
                     const isSaved = !!savedEntriesIds.find(id => id === entry.get('entryId'));
+                    const publisher = profiles.get(entry.getIn(['entryEth', 'publisher']));
                     return (<EntryCard
                       blockNr={blockNr}
                       canClaimPending={canClaimPending}
@@ -86,19 +116,25 @@ class EntryList extends Component {
                       hidePanel={appActions.hidePanel}
                       isSaved={isSaved}
                       key={entry.get('entryId')}
-                      loggedAkashaId={loggedProfileData.get('akashaId')}
+                      loggedAkashaId={loggedAkashaId}
                       selectedTag={selectedTag}
                       selectTag={this.selectTag}
                       style={cardStyle}
                       voteEntryPending={voteEntryPending && voteEntryPending.value}
+
+                      publisher={publisher}
                     />);
                 })}
                 {moreEntries &&
-                  <DataLoader flag={fetchingMoreEntries} size={30}>
-                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                      <div ref={getTriggerRef} style={{ height: 0 }} />
-                    </div>
-                  </DataLoader>
+                  <div style={{ height: '35px' }}>
+                    <DataLoader flag={fetchingMoreEntries} size={30}>
+                      <div
+                        style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+                      >
+                        <div ref={this.getTriggerRef} style={{ height: 0 }} />
+                      </div>
+                    </DataLoader>
+                  </div>
                 }
               </div>
             </DataLoader>
@@ -120,15 +156,17 @@ EntryList.propTypes = {
     fetchingEntries: PropTypes.bool,
     fetchingEntryBalance: PropTypes.bool,
     fetchingMoreEntries: PropTypes.bool,
-    getTriggerRef: PropTypes.func,
     intl: PropTypes.shape(),
-    loggedProfileData: PropTypes.shape(),
     moreEntries: PropTypes.bool,
     placeholderMessage: PropTypes.string,
     savedEntriesIds: PropTypes.shape(),
     selectedTag: PropTypes.string,
     style: PropTypes.shape(),
-    votePending: PropTypes.shape()
+    votePending: PropTypes.shape(),
+
+    fetchMoreEntries: PropTypes.func.isRequired,
+    loggedAkashaId: PropTypes.string,
+    profiles: PropTypes.shape().isRequired,
 };
 
 EntryList.contextTypes = {
@@ -143,8 +181,7 @@ function mapStateToProps (state) {
         claimPending: state.entryState.getIn(['flags', 'claimPending']),
         drafts: state.draftState.get('drafts'),
         fetchingEntryBalance: state.entryState.getIn(['flags', 'fetchingEntryBalance']),
-        loggedProfileData: state.profileState.get('profiles').find(prf =>
-            prf.get('profile') === state.profileState.getIn(['loggedProfile', 'profile'])),
+        loggedAkashaId: state.profileState.getIn(['loggedProfile', 'akashaId']),
         savedEntriesIds: state.entryState.get('savedEntries').map(entry => entry.get('entryId')),
         selectedTag: state.tagState.get('selectedTag'),
         votePending: state.entryState.getIn(['flags', 'votePending'])
@@ -154,8 +191,8 @@ function mapStateToProps (state) {
 function mapDispatchToProps (dispatch) {
     return {
         appActions: new AppActions(dispatch),
-        entryActions: new EntryActions(dispatch),
-        tagActions: new TagActions(dispatch)
+        // entryActions: new EntryActions(dispatch),
+        // tagActions: new TagActions(dispatch)
     };
 }
 

@@ -1,7 +1,7 @@
 import BaseService from './base-service';
 import profileDB from './db/profile';
 
-const Channel = window.Channel;
+const Channel = global.Channel;
 /**
  * Profile Service.
  * default open channels => ['getProfileData', 'getMyBalance', 'getIpfs']
@@ -283,5 +283,27 @@ class ProfileService extends BaseService {
         }
     };
 }
+
+export const profileDeleteLogged = () =>
+    new Promise((resolve, reject) =>
+        profileDB.loggedProfile
+            .clear()
+            .then(() => resolve())
+            .catch(error => reject(error))
+    );
+
+export const profileGetLogged = () =>
+    new Promise((resolve, reject) =>
+        profileDB.loggedProfile
+            .toArray()
+            .then(data => resolve(data[0] || {}))
+            .catch(error => reject(error))
+    );
+
+export const profileSaveLogged = profile =>
+    profileDB.loggedProfile.clear()
+        .then(() => profileDB.loggedProfile.put(profile));
+
+
 
 export { ProfileService };

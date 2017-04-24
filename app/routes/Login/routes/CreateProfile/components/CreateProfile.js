@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import r from 'ramda';
 import { SvgIcon, IconButton, RaisedButton,
     TextField, Checkbox, Divider } from 'material-ui';
@@ -6,12 +7,11 @@ import ContentAddIcon from 'material-ui/svg-icons/content/add';
 import CancelIcon from 'material-ui/svg-icons/navigation/cancel';
 import ErrorIcon from 'material-ui/svg-icons/alert/error';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import { Avatar, ImageUploader, PanelContainer } from 'shared-components';
-import { profileMessages, formMessages, generalMessages } from 'locale-data/messages'; /* eslint import/no-unresolved: 0*/
+import { Avatar, ImageUploader, PanelContainer, PanelHeader } from 'shared-components';
+import { profileMessages, formMessages, generalMessages } from 'locale-data/messages';/* eslint import/no-unresolved: 0*/
 import { inputFieldMethods } from '../../../../../utils/dataModule';
 import validationProvider from '../../../../../utils/validationProvider';
 import { UserValidation } from '../../../../../utils/validationSchema';
-import PanelHeader from '../../../../components/panel-header';
 
 class CreateProfile extends Component {
     constructor (props) {
@@ -29,189 +29,188 @@ class CreateProfile extends Component {
         this.validatorTypes = new UserValidation(props.intl).getSchema();
         this.serverValidatedFields = ['akashaId'];
     }
-    componentWillMount () {
-        this.setState({ opt_details: false });
-    }
-    componentDidMount () {
-        if (this.refs.firstName) {
-            this.refs.firstName.focus();
-        }
-    }
-    componentWillUpdate (nextProps) {
-        const { tempProfile } = nextProps;
-        if (tempProfile && tempProfile.get('akashaId') !== '') {
-            this.context.router.push('/authenticate/new-profile-status');
-        }
-    }
-    getValidatorData () {
-        return this.state.formValues;
-    }
-    handleShowDetails = () => {
-        this.setState({ opt_details: !this.state.opt_details });
-    };
-    handleSubmit = () => {
-        if (this.hasErrors() || this._checkLinks()) {
-            return;
-        }
-        const { tempProfileActions } = this.props;
-        const profileData = this.state.formValues;
-        const optionalData = {};
-        const profileImage = this.imageUploader.getWrappedInstance().getImage();
-        profileData.password = this.state.formValues.password;
-        profileData.password2 = this.state.formValues.password2;
-        // optional settings
-        if (this.state.links.length > 0) {
-            optionalData.links = this.state.links.map((link) => {
-                delete link.error;
-                return link;
-            });
-        }
-        if (profileImage) {
-            optionalData.backgroundImage = profileImage;
-        }
-        if (this.state.about) {
-            optionalData.about = this.state.about;
-        }
+    // componentWillMount () {
+    //     this.setState({ opt_details: false });
+    // }
+    // componentDidMount () {
+    //     if (this.refs.firstName) {
+    //         this.refs.firstName.focus();
+    //     }
+    // }
+    // componentWillUpdate (nextProps) {
+    //     const { tempProfile } = nextProps;
+    //     if (tempProfile && tempProfile.get('akashaId') !== '') {
+    //         this.context.router.push('/authenticate/new-profile-status');
+    //     }
+    // }
+    // getValidatorData () {
+    //     return this.state.formValues;
+    // }
+    // handleShowDetails = () => {
+    //     this.setState({ opt_details: !this.state.opt_details });
+    // };
+    // handleSubmit = () => {
+    //     if (this.hasErrors() || this._checkLinks()) {
+    //         return;
+    //     }
+    //     const { tempProfileActions } = this.props;
+    //     const profileData = this.state.formValues;
+    //     const optionalData = {};
+    //     const profileImage = this.imageUploader.getWrappedInstance().getImage();
+    //     profileData.password = this.state.formValues.password;
+    //     profileData.password2 = this.state.formValues.password2;
+    //     // optional settings
+    //     if (this.state.links.length > 0) {
+    //         optionalData.links = this.state.links.map((link) => {
+    //             delete link.error;
+    //             return link;
+    //         });
+    //     }
+    //     if (profileImage) {
+    //         optionalData.backgroundImage = profileImage;
+    //     }
+    //     if (this.state.about) {
+    //         optionalData.about = this.state.about;
+    //     }
 
-        this.avatar.getImage().then((uintArr) => {
-            if (uintArr) {
-                optionalData.avatar = uintArr;
-            }
-            return { ...profileData, ...optionalData };
-        }).then((data) => {
-            let mustCorrectErrors = false;
-            Object.keys(this.state.formValues).forEach((key) => {
-                if (this.state.formValues[key] === '') {
-                    this.refs[key].focus();
-                    mustCorrectErrors = true;
-                }
-            });
-            if (mustCorrectErrors) {
-                console.log('must correct some errors!', this.state);
-            } else {
-                delete data.password2;
-                data.password = new TextEncoder('utf-8').encode(data.password);
-                tempProfileActions.createTempProfile(data);
-            }
-        });
-    };
-    _submitForm = (ev) => {
-        ev.preventDefault();
-        this.handleSubmit();
-    };
-    _handleCancel = (ev) => {
-        ev.preventDefault();
-        this.profileForm.reset();
-        this.context.router.goBack();
-    };
-    _handleAddLink = () => {
-        const currentLinks = this.state.links.slice();
-        const isEmpty = this._checkLinks();
+    //     this.avatar.getImage().then((uintArr) => {
+    //         if (uintArr) {
+    //             optionalData.avatar = uintArr;
+    //         }
+    //         return { ...profileData, ...optionalData };
+    //     }).then((data) => {
+    //         let mustCorrectErrors = false;
+    //         Object.keys(this.state.formValues).forEach((key) => {
+    //             if (this.state.formValues[key] === '') {
+    //                 this.refs[key].focus();
+    //                 mustCorrectErrors = true;
+    //             }
+    //         });
+    //         if (mustCorrectErrors) {
+    //             console.log('must correct some errors!', this.state);
+    //         } else {
+    //             delete data.password2;
+    //             tempProfileActions.createTempProfile(data);
+    //         }
+    //     });
+    // };
+    // _submitForm = (ev) => {
+    //     ev.preventDefault();
+    //     this.handleSubmit();
+    // };
+    // _handleCancel = (ev) => {
+    //     ev.preventDefault();
+    //     this.profileForm.reset();
+    //     this.context.router.goBack();
+    // };
+    // _handleAddLink = () => {
+    //     const currentLinks = this.state.links.slice();
+    //     const isEmpty = this._checkLinks();
 
-        if (!isEmpty) {
-            currentLinks.push({
-                title: '',
-                url: '',
-                type: '',
-                id: currentLinks.length,
-                error: {}
-            });
-            this.setState({
-                links: currentLinks
-            });
-        }
-    };
-    _handleRemoveLink = (linkId) => {
-        let links = this.state.links;
-        if (this.state.links.length > 0) {
-            links = r.reject(link => link.id === linkId, links);
-        }
-        for (let i = 0; i < links.length; i += 1) {
-            links[i].id = i;
-        }
-        this.setState({
-            links
-        });
-    };
-    _checkLinks = () => {
-        let isEmpty = false;
-        this.state.links.forEach((link) => {
-            Object.keys(link).forEach((key) => {
-                if (key !== 'id' && key !== 'type' && link[key].length === 0) {
-                    isEmpty = true;
-                    const links = r.clone(this.state.links);
-                    const index = r.findIndex(r.propEq('id', link.id))(links);
-                    link.error[key] = true;
-                    links[index] = link;
-                    this.setState({
-                        links
-                    });
-                }
-            });
-        });
-        return isEmpty;
-    }
+    //     if (!isEmpty) {
+    //         currentLinks.push({
+    //             title: '',
+    //             url: '',
+    //             type: '',
+    //             id: currentLinks.length,
+    //             error: {}
+    //         });
+    //         this.setState({
+    //             links: currentLinks
+    //         });
+    //     }
+    // };
+    // _handleRemoveLink = (linkId) => {
+    //     let links = this.state.links;
+    //     if (this.state.links.length > 0) {
+    //         links = r.reject(link => link.id === linkId, links);
+    //     }
+    //     for (let i = 0; i < links.length; i += 1) {
+    //         links[i].id = i;
+    //     }
+    //     this.setState({
+    //         links
+    //     });
+    // };
+    // _checkLinks = () => {
+    //     let isEmpty = false;
+    //     this.state.links.forEach((link) => {
+    //         Object.keys(link).forEach((key) => {
+    //             if (key !== 'id' && key !== 'type' && link[key].length === 0) {
+    //                 isEmpty = true;
+    //                 const links = r.clone(this.state.links);
+    //                 const index = r.findIndex(r.propEq('id', link.id))(links);
+    //                 link.error[key] = true;
+    //                 links[index] = link;
+    //                 this.setState({
+    //                     links
+    //                 });
+    //             }
+    //         });
+    //     });
+    //     return isEmpty;
+    // }
 
-    _handleLinkChange = (field, linkId, ev) => {
-        const links = r.clone(this.state.links);
-        const fieldValue = ev.target.value;
-        const index = r.findIndex(r.propEq('id', linkId))(links);
-        const link = links[index];
-        link[field] = fieldValue;
-        link.error[field] = fieldValue.length === 0;
-        if (field === 'url') {
-            if (fieldValue.indexOf('akasha://') === 0) {
-                link.type = 'internal';
-            } else {
-                link.type = 'other';
-            }
-        }
-        links[index] = link;
-        this.setState({ links });
-    };
-    _handleAboutChange = (ev) => {
-        this.setState({
-            about: ev.target.value
-        });
-    };
-    showTerms = (ev) => {
-        const { appActions } = this.props;
-        ev.preventDefault();
-        appActions.showTerms();
-    };
-    hasErrors = () => {
-        const { errors } = this.props;
-        let hasErrors = false;
-        if (this.state.links.find(link => link.error && (link.error.title || link.error.url))) {
-            return true;
-        }
-        Object.keys(errors).forEach((key) => {
-            if (errors[key] && errors[key].length) {
-                hasErrors = true;
-            }
-        });
-        return hasErrors;
-    }
-    renderWarningMessage () {
-        const { intl, gethStatus, ipfsStatus } = this.props;
-        const { palette } = this.context.muiTheme;
-        if (!gethStatus.get('api') || (!ipfsStatus.get('started') && !ipfsStatus.get('spawned'))) {
-            return (<div
-              style={{ height: '36px', lineHeight: '36px', display: 'flex', alignItems: 'center' }}
-            >
-              <ErrorIcon style={{ color: palette.accent1Color }} />
-              <span style={{ marginLeft: '5px', color: palette.accent1Color }}>
-                {intl.formatMessage(generalMessages.serviceStoppedWarning)}
-              </span>
-            </div>);
-        }
-        return null;
-    }
+    // _handleLinkChange = (field, linkId, ev) => {
+    //     const links = r.clone(this.state.links);
+    //     const fieldValue = ev.target.value;
+    //     const index = r.findIndex(r.propEq('id', linkId))(links);
+    //     const link = links[index];
+    //     link[field] = fieldValue;
+    //     link.error[field] = fieldValue.length === 0;
+    //     if (field === 'url') {
+    //         if (fieldValue.indexOf('akasha://') === 0) {
+    //             link.type = 'internal';
+    //         } else {
+    //             link.type = 'other';
+    //         }
+    //     }
+    //     links[index] = link;
+    //     this.setState({ links });
+    // };
+    // _handleAboutChange = (ev) => {
+    //     this.setState({
+    //         about: ev.target.value
+    //     });
+    // };
+    // showTerms = (ev) => {
+    //     const { appActions } = this.props;
+    //     ev.preventDefault();
+    //     appActions.showTerms();
+    // };
+    // hasErrors = () => {
+    //     const { errors } = this.props;
+    //     let hasErrors = false;
+    //     if (this.state.links.find(link => link.error && (link.error.title || link.error.url))) {
+    //         return true;
+    //     }
+    //     Object.keys(errors).forEach((key) => {
+    //         if (errors[key] && errors[key].length) {
+    //             hasErrors = true;
+    //         }
+    //     });
+    //     return hasErrors;
+    // }
+    // renderWarningMessage () {
+    //     const { intl, gethStatus, ipfsStatus } = this.props;
+    //     const { palette } = this.context.muiTheme;
+    //     if (!gethStatus.get('api') || (!ipfsStatus.get('started') && !ipfsStatus.get('spawned'))) {
+    //         return (<div
+    //           style={{ height: '36px', lineHeight: '36px', display: 'flex', alignItems: 'center' }}
+    //         >
+    //           <ErrorIcon style={{ color: palette.accent1Color }} />
+    //           <span style={{ marginLeft: '5px', color: palette.accent1Color }}>
+    //             {intl.formatMessage(generalMessages.serviceStoppedWarning)}
+    //           </span>
+    //         </div>);
+    //     }
+    //     return null;
+    // }
     render () {
         const { intl, gethStatus, ipfsStatus } = this.props;
         const { palette } = this.context.muiTheme;
-        const isServiceStopped = !gethStatus.get('api')
-            || (!ipfsStatus.get('started') && !ipfsStatus.get('spawned'));
+        // const isServiceStopped = !gethStatus.get('api')
+        //     || (!ipfsStatus.get('started') && !ipfsStatus.get('spawned'));
         const floatLabelStyle = { color: palette.disabledColor };
         const firstNameProps = this.getProps({
             floatingLabelText: intl.formatMessage(formMessages.firstName),
@@ -292,12 +291,12 @@ class CreateProfile extends Component {
                 type="submit"
                 onClick={this._submitForm}
                 style={{ marginLeft: 8 }}
-                disabled={this.state.submitting || isServiceStopped || this.hasErrors()}
+                // disabled={this.state.submitting || isServiceStopped || this.hasErrors()}
                 primary
               />
               /* eslint-enable */
             ]}
-            leftActions={this.renderWarningMessage()}
+            // leftActions={this.renderWarningMessage()}
             header={
               <PanelHeader title={intl.formatMessage(profileMessages.createProfileTitle)} />
             }
@@ -435,18 +434,18 @@ class CreateProfile extends Component {
 
 CreateProfile.propTypes = {
     appActions: PropTypes.shape(),
-    errors: React.PropTypes.shape(),
-    tempProfileActions: React.PropTypes.shape(),
-    clearValidations: React.PropTypes.func,
-    handleValidation: React.PropTypes.func,
-    intl: React.PropTypes.shape(),
+    errors: PropTypes.shape(),
+    tempProfileActions: PropTypes.shape(),
+    clearValidations: PropTypes.func,
+    handleValidation: PropTypes.func,
+    intl: PropTypes.shape(),
     gethStatus: PropTypes.shape().isRequired,
     ipfsStatus: PropTypes.shape().isRequired
 };
 
 CreateProfile.contextTypes = {
-    muiTheme: React.PropTypes.shape(),
-    router: React.PropTypes.shape()
+    muiTheme: PropTypes.shape(),
+    router: PropTypes.shape()
 };
 
 CreateProfile.defaultProps = {

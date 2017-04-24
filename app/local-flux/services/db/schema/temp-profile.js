@@ -7,18 +7,15 @@ const TempProfileSchema = {
     password: Uint8Array,
     address: String,
     avatar: Uint8Array,
-    coverImage: [[MultiResImage]],
+    backgroundImage: [[MultiResImage]],
     about: String,
     links: Array,
-    currentStatus: [{
-        nextAction: String,
-        ethAddressRequested: Boolean,
+    status: [{
+        currentAction: String,
         faucetRequested: Boolean,
         publishRequested: Boolean,
         faucetTx: null,
-        publishTx: null,
-        listeningPublishTx: Boolean,
-        listeningFaucetTx: Boolean
+        publishTx: null
     }]
 };
 export default TempProfileSchema;

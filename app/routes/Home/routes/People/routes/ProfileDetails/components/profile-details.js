@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { IconButton, RaisedButton, SvgIcon } from 'material-ui';
 import CopyIcon from 'material-ui/svg-icons/content/content-copy';
 import NotificationsActiveIcon from 'material-ui/svg-icons/social/notifications-active';

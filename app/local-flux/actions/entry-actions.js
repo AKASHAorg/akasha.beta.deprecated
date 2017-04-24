@@ -1,6 +1,8 @@
-import { AppActions, TransactionActions } from 'local-flux';
+import { AppActions, TransactionActions } from './';
 import { EntryService, ProfileService } from '../services';
 import { entryActionCreators } from './action-creators';
+import { action } from './helpers';
+import * as types from '../constants';
 
 let entryActions = null;
 
@@ -216,32 +218,32 @@ class EntryActions {
         });
 
     entryTagIterator = (tagName, start, limit) => {
-        this.dispatch((dispatch, getState) => {
-            const selectedTag = getState().tagState.get('selectedTag');
-            this.dispatch(entryActionCreators.entryTagIterator({ fetchingTagEntries: true }));
-            this.entryService.entryTagIterator({
-                tagName,
-                start,
-                limit,
-                onSuccess: (data) => {
-                    const akashaIds = [];
-                    data.collection && data.collection.forEach(entry => {
-                        if (entry.entryEth.publisher && entry.entryEth.publisher.akashaId) {
-                            akashaIds.push({ akashaId: entry.entryEth.publisher.akashaId });
-                        }
-                    });
-                    this.profileService.saveAkashaIds(akashaIds);
-                    if (selectedTag === data.tagName || !selectedTag) {
-                        dispatch(entryActionCreators.entryTagIteratorSuccess(data, {
-                            fetchingTagEntries: false
-                        }));
-                    }
-                },
-                onError: error => dispatch(entryActionCreators.entryTagIteratorError(error, {
-                    fetchingTagEntries: false
-                }))
-            });
-        });
+        // this.dispatch((dispatch, getState) => {
+        //     const selectedTag = getState().tagState.get('selectedTag');
+        //     this.dispatch(entryActionCreators.entryTagIterator({ fetchingTagEntries: true }));
+        //     this.entryService.entryTagIterator({
+        //         tagName,
+        //         start,
+        //         limit,
+        //         onSuccess: (data) => {
+        //             const akashaIds = [];
+        //             data.collection && data.collection.forEach(entry => {
+        //                 if (entry.entryEth.publisher.akashaId) {
+        //                     akashaIds.push({ akashaId: entry.entryEth.publisher.akashaId });
+        //                 }
+        //             });
+        //             this.profileService.saveAkashaIds(akashaIds);
+        //             if (selectedTag === data.tagName || !selectedTag) {
+        //                 dispatch(entryActionCreators.entryTagIteratorSuccess(data, {
+        //                     fetchingTagEntries: false
+        //                 }));
+        //             }
+        //         },
+        //         onError: error => dispatch(entryActionCreators.entryTagIteratorError(error, {
+        //             fetchingTagEntries: false
+        //         }))
+        //     });
+        // });
     };
 
     moreEntryTagIterator = (tagName, start, limit) => {
@@ -668,3 +670,123 @@ class EntryActions {
 }
 
 export { EntryActions };
+
+export const entryCanClaim = entryId => action(types.ENTRY_CAN_CLAIM, { entryId });
+
+export const entryCanClaimError = (error) => {
+    error.code = 'ECCE01';
+    error.messageId = 'entryCanClaim';
+    return action(types.ENTRY_CAN_CLAIM_ERROR, { error });
+};
+
+export const entryCanClaimSuccess = data => action(types.ENTRY_CAN_CLAIM_SUCCESS, { data });
+export const entryGetBalance = entryId => action(types.ENTRY_GET_BALANCE, { entryId });
+
+export const entryGetBalanceError = (error) => {
+    error.code = 'EGBE01';
+    error.messageId = 'entryGetBalance';
+    return action(types.ENTRY_GET_BALANCE_ERROR, { error });
+};
+
+export const entryGetBalanceSuccess = data => action(types.ENTRY_GET_BALANCE_SUCCESS, { data });
+export const entryGetVoteOf = entryId => action(types.ENTRY_GET_VOTE_OF, { entryId });
+
+export const entryGetVoteOfError = (error) => {
+    error.code = 'EGVOE01';
+    error.messageId = 'entryGetVoteOf';
+    return action(types.ENTRY_GET_VOTE_OF_ERROR, { error });
+};
+
+export const entryGetVoteOfSuccess = data => action(types.ENTRY_GET_VOTE_OF_SUCCESS, { data });
+export const entryMoreNewestIterator = id => action(types.ENTRY_MORE_NEWEST_ITERATOR, { id });
+
+export const entryMoreNewestIteratorError = (error, req) => {
+    error.code = 'EMNIE01';
+    error.messageId = 'entryMoreNewestIterator';
+    return action(types.ENTRY_MORE_NEWEST_ITERATOR_ERROR, { error, req });
+};
+
+export const entryMoreNewestIteratorSuccess = (data, req) =>
+    action(types.ENTRY_MORE_NEWEST_ITERATOR_SUCCESS, { data, req });
+export const entryMoreProfileIterator = (id, akashaId) =>
+    action(types.ENTRY_MORE_PROFILE_ITERATOR, { id, akashaId });
+
+export const entryMoreProfileIteratorError = (error, req) => {
+    error.code = 'EMPIE01';
+    error.messageId = 'entryMoreProfileIterator';
+    return action(types.ENTRY_MORE_PROFILE_ITERATOR_ERROR, { error, req });
+};
+
+export const entryMoreProfileIteratorSuccess = (data, req) =>
+    action(types.ENTRY_MORE_PROFILE_ITERATOR_SUCCESS, { data, req });
+export const entryMoreStreamIterator = id => action(types.ENTRY_MORE_STREAM_ITERATOR, { id });
+
+export const entryMoreStreamIteratorError = (error, req) => {
+    error.code = 'EMSIE01';
+    error.messageId = 'entryMoreStreamIterator';
+    return action(types.ENTRY_MORE_STREAM_ITERATOR_ERROR, { error, req });
+};
+
+export const entryMoreStreamIteratorSuccess = (data, req) =>
+    action(types.ENTRY_MORE_STREAM_ITERATOR_SUCCESS, { data, req });
+export const entryMoreTagIterator = (id, tagName) =>
+    action(types.ENTRY_MORE_TAG_ITERATOR, { id, tagName });
+
+export const entryMoreTagIteratorError = (error, req) => {
+    error.code = 'EMTIE01';
+    error.messageId = 'entryMoreTagIterator';
+    return action(types.ENTRY_MORE_TAG_ITERATOR_ERROR, { error, req });
+};
+
+export const entryMoreTagIteratorSuccess = (data, req) =>
+    action(types.ENTRY_MORE_TAG_ITERATOR_SUCCESS, { data, req });
+export const entryNewestIterator = id => action(types.ENTRY_NEWEST_ITERATOR, { id });
+
+export const entryNewestIteratorError = (error, req) => {
+    error.code = 'ENIE01';
+    error.messageId = 'entryNewestIterator';
+    return action(types.ENTRY_NEWEST_ITERATOR_ERROR, { error, req });
+};
+
+export const entryNewestIteratorSuccess = (data, req) =>
+    action(types.ENTRY_NEWEST_ITERATOR_SUCCESS, { data, req });
+export const entryProfileIterator = (id, akashaId) =>
+    action(types.ENTRY_PROFILE_ITERATOR, { id, akashaId });
+
+export const entryProfileIteratorError = (error, req) => {
+    error.code = 'EPIE01';
+    error.messageId = 'entryProfileIterator';
+    return action(types.ENTRY_PROFILE_ITERATOR_ERROR, { error, req });
+};
+
+export const entryProfileIteratorSuccess = (data, req) =>
+    action(types.ENTRY_PROFILE_ITERATOR_SUCCESS, { data, req });
+export const entryStreamIterator = id => action(types.ENTRY_STREAM_ITERATOR, { id });
+
+export const entryStreamIteratorError = (error, req) => {
+    error.code = 'ESIE01';
+    error.messageId = 'entryStreamIterator';
+    return action(types.ENTRY_STREAM_ITERATOR_ERROR, { error, req });
+};
+
+export const entryStreamIteratorSuccess = (data, req) =>
+    action(types.ENTRY_STREAM_ITERATOR_SUCCESS, { data, req });
+export const entryTagIterator = (id, tagName) => action(types.ENTRY_TAG_ITERATOR, { id, tagName });
+
+export const entryTagIteratorError = (error, req) => {
+    error.code = 'ETIE01';
+    error.messageId = 'entryTagIterator';
+    return action(types.ENTRY_TAG_ITERATOR_ERROR, { error, req });
+};
+
+export const entryTagIteratorSuccess = (data, req) =>
+    action(types.ENTRY_TAG_ITERATOR_SUCCESS, { data, req });
+export const entryVoteCost = () => action(types.ENTRY_VOTE_COST);
+
+export const entryVoteCostError = (error) => {
+    error.code = 'EVCE01';
+    error.messageId = 'entryVoteCost';
+    return action(types.ENTRY_VOTE_COST_ERROR, { error });
+};
+
+export const entryVoteCostSuccess = data => action(types.ENTRY_VOTE_COST_SUCCESS, { data });

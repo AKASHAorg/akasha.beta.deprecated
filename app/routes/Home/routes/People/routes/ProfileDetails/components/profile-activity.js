@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { Tab, Tabs, Paper } from 'material-ui';
 import { DataLoader, EntryListContainer, ProfileCard } from 'shared-components';
 import throttle from 'lodash.throttle';

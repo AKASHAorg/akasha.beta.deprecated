@@ -1,4 +1,5 @@
-import React, { PropTypes, Component } from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { SvgIcon } from 'material-ui';
 import { colors } from 'material-ui/styles';
 import CircleIcon from './CircleIcon';
@@ -33,7 +34,7 @@ IconStreams.propTypes = {
     disabled: PropTypes.bool,
     iconStyle: PropTypes.object,
     isActive: PropTypes.bool,
-    onClick: PropTypes.func.isRequired,
+    onClick: PropTypes.func,
 };
 
 export default IconStreams;

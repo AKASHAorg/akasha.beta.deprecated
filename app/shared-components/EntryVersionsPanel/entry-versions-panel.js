@@ -1,9 +1,10 @@
-import React, { Component, PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import ReactTooltip from 'react-tooltip';
 import { injectIntl } from 'react-intl';
 import { Dialog, RaisedButton, SvgIcon } from 'material-ui';
-import { ToolbarVotes } from 'shared-components/svg';
-import { entryMessages } from 'locale-data/messages';
+import { ToolbarVotes } from '../svg';
+import { entryMessages } from '../../locale-data/messages';
 
 class EntryVersionsPanel extends Component {
 
@@ -58,7 +59,7 @@ class EntryVersionsPanel extends Component {
             versions.unshift(
               <div
                 key={i}
-                className="contentLink"
+                className="content-link"
                 style={{ display: 'flex', alignItems: 'center', margin: '10px 0' }}
                 onClick={() => this.selectVersion(i)}
               >

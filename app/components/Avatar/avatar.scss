@@ -1,0 +1,34 @@
+.root {
+    position: relative;
+}
+.userInitials {
+    text-transform: uppercase;
+    font-size: 36px;
+    font-weight: 600;
+}
+.rotateButton {
+    margin-top: -18px;
+    cursor: pointer
+}
+.clearAvatarButton {
+    cursor: pointer;
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+.addImageIcon {
+     height: 100% !important;
+     width: 25% !important;
+}
+.avatarEmpty {
+    border-radius: 50%;
+    overflow: hidden;
+}
+.dialogHandler {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    cursor: pointer;
+    opacity: 0;
+    left: 0;
+}

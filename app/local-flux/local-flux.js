@@ -13,4 +13,5 @@ export {
     TempProfileActions,
     TransactionActions,
     UtilsActions,
-    ValidationActions } from './actions';
+    ValidationActions,
+    bootstrapApp } from './actions';

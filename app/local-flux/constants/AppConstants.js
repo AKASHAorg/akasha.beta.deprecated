@@ -1,3 +1,5 @@
+export const APP_READY = 'APP_READY';
+
 export const SHOW_ERROR = 'SHOW_ERROR';
 export const CLEAR_ERRORS = 'CLEAR_ERRORS';
 export const SHOW_PANEL = 'SHOW_PANEL';
@@ -31,3 +33,7 @@ export const SHOW_TERMS = 'SHOW_TERMS';
 export const HIDE_TERMS = 'HIDE_TERMS';
 
 export const CLEAN_STORE = 'CLEAN_STORE';
+
+export const BOOTSTRAP_APP = 'BOOTSTRAP_APP';
+export const TOGGLE_GETH_DETAILS_MODAL = 'TOGGLE_GETH_DETAILS_MODAL';
+export const TOGGLE_IPFS_DETAILS_MODAL = 'TOGGLE_IPFS_DETAILS_MODAL';

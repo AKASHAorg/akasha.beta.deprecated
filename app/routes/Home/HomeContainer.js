@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import ReactTooltip from 'react-tooltip';
 import { connect } from 'react-redux';
 import { AppActions, ChatActions, DraftActions, ProfileActions, SearchActions,
@@ -37,11 +38,13 @@ class HomeContainer extends React.Component {
             entryActions.voteCost(i);
         }
     }
+
     componentDidMount () {
         const { profileActions, searchActions } = this.props;
         profileActions.getLoggedProfile();
         searchActions.handshake();
     }
+
     componentWillReceiveProps (nextProps) {
         const { chatActions, profileActions, settingsActions, entryActions, draftActions,
             tagActions, transactionActions, notificationsActions, followingsList } = this.props;
@@ -95,12 +98,14 @@ class HomeContainer extends React.Component {
             settingsActions.saveLastBlockNr(loggedProfile.get('akashaId'), nextProps.blockNr);
         }
     }
+
     componentWillUnmount () {
         const { appActions } = this.props;
         appActions.cleanStore();
         clearInterval(this.interval);
         ReactTooltip.hide();
     }
+
     _getLoadingMessage = () => {
         const { fetchingDraftsCount, fetchingLoggedProfile, fetchingProfileData } = this.props;
         if (fetchingLoggedProfile) {

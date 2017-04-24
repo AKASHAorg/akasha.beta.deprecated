@@ -1,7 +1,7 @@
 import BaseService from './base-service';
 import profileDB from './db/profile';
 
-const Channel = window.Channel;
+const Channel = global.Channel;
 /**
  * Auth Service.
  * default open channels => ['login', 'logout', 'requestEther']
@@ -112,15 +112,15 @@ class AuthService extends BaseService {
      * @param onError
      * @returns {Promise<U|R>}
      */
-    createLoggedProfile = ({ profileData, onSuccess, onError }) => {
-        if (profileData.password) {
-            delete profileData.password;
-        }
-        return profileDB.loggedProfile
-            .put(profileData)
-            .then(() => onSuccess(profileData))
-            .catch(reason => onError(reason));
-    };
+    // createLoggedProfile = ({ profileData, onSuccess, onError }) => {
+    //     if (profileData.password) {
+    //         delete profileData.password;
+    //     }
+    //     return profileDB.loggedProfile
+    //         .put(profileData)
+    //         .then(() => onSuccess(profileData))
+    //         .catch(reason => onError(reason));
+    // };
 
     /**
      *
@@ -139,11 +139,11 @@ class AuthService extends BaseService {
      * @param onError
      * @param onSuccess
      */
-    getLoggedProfile = ({ onError, onSuccess }) =>
-        profileDB.loggedProfile
-            .toArray()
-            .then(profile => onSuccess(profile[0]))
-            .catch(reason => onError(reason));
+    // getLoggedProfile = ({ onError, onSuccess }) =>
+    //     profileDB.loggedProfile
+    //         .toArray()
+    //         .then(profile => onSuccess(profile[0]))
+    //         .catch(reason => onError(reason));
 }
 
 export { AuthService };

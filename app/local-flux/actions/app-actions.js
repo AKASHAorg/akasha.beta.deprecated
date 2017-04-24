@@ -1,5 +1,6 @@
 import { appActionCreators } from './action-creators';
-import { AppService } from '../services';
+import * as types from '../constants';
+import { action } from './helpers';
 
 let appActions = null;
 
@@ -9,32 +10,10 @@ class AppActions {
             return appActions;
         }
         this.dispatch = dispatch;
-        this.appService = new AppService();
         this.pendingActionId = 1;
         appActions = this;
     }
-    checkForUpdates = () =>
-        this.appService.checkForUpdates().then(hasUpdates =>
-            this.dispatch(appActionCreators.checkForUpdates(hasUpdates))
-        );
 
-    updateApp = () => {};
-    showError = (error) => {
-        this.dispatch(appActionCreators.showError(error));
-    };
-
-    clearErrors = () => {
-        this.dispatch(appActionCreators.clearError());
-    };
-    /**
-     * Changes currently visible panel
-     * @param {Object} panel
-     * @param {String} panel.name
-     * @param {Boolean} panel.overlay Shows clickable overlay below panel. Useful to close the panel
-     */
-    changePanel = panel => this.showPanel(panel);
-    showPanel = panel => this.dispatch(appActionCreators.showPanel(panel));
-    hidePanel = panel => this.dispatch(appActionCreators.hidePanel(panel));
     showAuthDialog = actionId => this.dispatch(appActionCreators.showAuthDialog(actionId));
     hideAuthDialog = () => this.dispatch(appActionCreators.hideAuthDialog());
     /**
@@ -45,8 +24,6 @@ class AppActions {
         this.dispatch(appActionCreators.showPublishConfirmDialog(resource));
     hidePublishConfirmDialog = () =>
         this.dispatch(appActionCreators.hidePublishConfirmDialog());
-    showEntryModal = (entryData, options = {}) =>
-        Promise.resolve(this.dispatch(appActionCreators.showEntryModal(entryData, options)));
     hideEntryModal = () =>
         Promise.resolve(this.dispatch(appActionCreators.hideEntryModal()));
     showWeightConfirmDialog = resource =>
@@ -86,5 +63,21 @@ class AppActions {
 
     cleanStore = () => this.dispatch(appActionCreators.cleanStore());
 }
+
+export const appReady = () => action(types.APP_READY);
+export const hideLoginDialog = () => action(types.HIDE_LOGIN_DIALOG);
+export const hideNotification = notification =>
+    action(types.HIDE_NOTIFICATION, { notification });
+export const hideTerms = () => action(types.HIDE_TERMS);
+export const panelShow = panel => action(types.PANEL_SHOW, { panel });
+export const panelHide = () => action(types.PANEL_HIDE);
+export const setTimestamp = timestamp => action(types.SET_TIMESTAMP, { timestamp });
+export const showLoginDialog = profileAddress =>
+    action(types.SHOW_LOGIN_DIALOG, { profileAddress });
+export const showNotification = notification =>
+    action(types.SHOW_NOTIFICATION, { notification });
+export const showTerms = () => action(types.SHOW_TERMS);
+export const toggleGethDetailsModal = () => action(types.TOGGLE_GETH_DETAILS_MODAL);
+export const toggleIpfsDetailsModal = () => action(types.TOGGLE_IPFS_DETAILS_MODAL);
 
 export { AppActions };

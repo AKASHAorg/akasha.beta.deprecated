@@ -203,28 +203,6 @@ const tagState = createReducer(initialState, {
         return state;
     },
 
-    [types.FOLLOW_PROFILE]: (state, { flags }) => {
-        const followPending = state.getIn(['flags', 'followPending']);
-        if (followPending === undefined) {
-            return state.merge({
-                flags: state.get('flags').set('followPending', new List([flags.followPending]))
-            });
-        }
-        const index = followPending.findIndex(flag =>
-            flag.akashaId === flags.followPending.akashaId
-        );
-        if (index === -1) {
-            return state.merge({
-                flags: state.get('flags').merge({
-                    followPending: state.getIn(['flags', 'followPending']).push(flags.followPending)
-                })
-            });
-        }
-        return state.merge({
-            flags: state.get('flags').mergeIn(['followPending', index], flags.followPending)
-        });
-    },
-
     [types.SUBSCRIBE_TAG]: subscribeFlagHandler,
 
     [types.SUBSCRIBE_TAG_SUCCESS]: subscribeFlagHandler,

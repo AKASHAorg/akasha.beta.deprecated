@@ -1,13 +1,14 @@
-import React, { Component, PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import {
     Paper,
     RaisedButton,
     Tabs,
     Tab } from 'material-ui';
 import throttle from 'lodash.throttle';
-import { DataLoader } from 'shared-components';
 import { injectIntl } from 'react-intl';
-import { isInViewport } from 'utils/domUtils'; // eslint-disable-line import/no-unresolved, import/extensions
+import { DataLoader } from '../';
+import { isInViewport } from '../../utils/domUtils';
 import DraftCard from '../DraftCard/draft-card';
 import EntryListContainer from '../EntryList/new-entry-list-container';
 

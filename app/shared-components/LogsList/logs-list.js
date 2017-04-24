@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { hoursMinutesSeconds } from '../../utils/dateFormatter';
 
 const listStyle = {
@@ -6,40 +7,21 @@ const listStyle = {
     fontFamily: 'Consolas',
     listStyle: 'none',
     overflowY: 'auto',
-    wordWrap: 'break-word'
+    wordWrap: 'break-word',
+    margin: 0,
+    padding: '16px'
 };
-
-const GETH = 'geth';
-const IPFS = 'ipfs';
 
 class LogsList extends Component {
 
     componentWillMount () {
-        const { eProcActions, timestamp, type } = this.props;
-        switch (type) {
-            case GETH:
-                eProcActions.startGethLogger(timestamp);
-                break;
-            case IPFS:
-                eProcActions.startIpfsLogger(timestamp);
-                break;
-            default:
-                break;
-        }
+        const { startLogger } = this.props;
+        startLogger();
     }
 
     componentWillUnmount () {
-        const { eProcActions, type } = this.props;
-        switch (type) {
-            case GETH:
-                eProcActions.stopGethLogger();
-                break;
-            case IPFS:
-                eProcActions.stopIpfsLogger();
-                break;
-            default:
-                break;
-        }
+        const { stopLogger } = this.props;
+        stopLogger();
     }
 
     getLabelStyle (log) {
@@ -67,37 +49,45 @@ class LogsList extends Component {
         };
     }
 
+    renderListItem (log, key) {
+        return (
+          <li key={`${key}-${log.get('timestamp')}`} style={{ marginBottom: '8px' }} >
+            <div style={{ display: 'flex' }}>
+              <abbr
+                title="Log Level"
+                style={this.getLabelStyle(log)}
+              >
+                {log.get('level')}
+              </abbr>
+              <span style={{ flex: '1 1 auto', textAlign: 'right' }}>
+                {hoursMinutesSeconds(new Date(log.get('timestamp')))}
+              </span>
+            </div>
+            <p style={{ marginTop: '7px' }}>
+              {log.get('message')}
+            </p>
+          </li>
+        );
+    }
+
     render () {
         const { logs } = this.props;
         const style = Object.assign({}, listStyle, this.props.style);
-        return (<ul style={style} className="col-xs-12">
-          {logs.map((log, key) => (
-            <li key={key} style={{ marginBottom: '8px' }} >
-              <div style={{ display: 'flex' }}>
-                <abbr
-                  title="Log Level"
-                  style={this.getLabelStyle(log)}
-                >
-                  {log.get('level')}
-                </abbr>
-                <span style={{ flex: '1 1 auto', textAlign: 'right' }}>
-                  {hoursMinutesSeconds(new Date(log.get('timestamp')))}
-                </span>
-              </div>
-              <p style={{ marginTop: '7px' }}>{log.get('message')}</p>
-            </li>)
-          )
-          }
-        </ul>);
+        const listItems = [];
+        logs.forEach((value, key) => listItems.unshift(this.renderListItem(value, key)));
+        return (
+          <ul style={style}>
+            {listItems}
+          </ul>
+        );
     }
 }
 
 LogsList.propTypes = {
-    eProcActions: PropTypes.shape().isRequired,
     logs: PropTypes.shape().isRequired,
+    startLogger: PropTypes.func.isRequired,
+    stopLogger: PropTypes.func.isRequired,
     style: PropTypes.shape(),
-    timestamp: PropTypes.number,
-    type: PropTypes.string.isRequired,
 };
 
 LogsList.contextTypes = {

@@ -1,4 +1,3 @@
-export { AppService } from './app-service';
 export { AuthService } from './auth-service';
 export { ChatService } from './chat-service';
 export { CommentService } from './comment-service';

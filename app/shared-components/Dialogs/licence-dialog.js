@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import {
     Dialog,
@@ -164,11 +165,11 @@ class LicenceDialog extends React.Component {
 }
 
 LicenceDialog.propTypes = {
-    isOpen: React.PropTypes.bool,
-    onRequestClose: React.PropTypes.func,
-    defaultSelected: React.PropTypes.shape(),
-    licences: React.PropTypes.shape(),
-    onDone: React.PropTypes.func
+    isOpen: PropTypes.bool,
+    onRequestClose: PropTypes.func,
+    defaultSelected: PropTypes.shape(),
+    licences: PropTypes.shape(),
+    onDone: PropTypes.func
 };
 
 export default LicenceDialog;

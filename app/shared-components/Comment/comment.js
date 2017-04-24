@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import ReactTooltip from 'react-tooltip';
 import {
@@ -13,10 +14,10 @@ import Link from 'megadraft/lib/components/Link';
 import HubIcon from 'material-ui/svg-icons/hardware/device-hub';
 import MoreIcon from 'material-ui/svg-icons/navigation/expand-more';
 import LessIcon from 'material-ui/svg-icons/navigation/expand-less';
-import { EntryCommentReply } from 'shared-components/svg'; // eslint-disable-line import/no-unresolved, import/extensions
-import { Avatar, MentionDecorators, ProfileHoverCard } from 'shared-components'; // eslint-disable-line import/no-unresolved, import/extensions
-import { entryMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
-import { getInitials } from 'utils/dataModule'; // eslint-disable-line import/no-unresolved, import/extensions
+import { EntryCommentReply } from '../svg'; // eslint-disable-line import/no-unresolved, import/extensions
+import { Avatar, MentionDecorators, ProfileHoverCard } from '../'; // eslint-disable-line import/no-unresolved, import/extensions
+import { entryMessages } from '../../locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
+import { getInitials } from '../../utils/dataModule'; // eslint-disable-line import/no-unresolved, import/extensions
 import style from './comment.scss';
 
 const { CompositeDecorator, EditorState } = DraftJS;
@@ -280,19 +281,19 @@ class Comment extends React.Component {
     }
 }
 Comment.propTypes = {
-    children: React.PropTypes.node,
-    comment: React.PropTypes.shape(),
-    entryAuthorProfile: React.PropTypes.string,
-    intl: React.PropTypes.shape(),
-    isPublishing: React.PropTypes.bool,
-    loggedProfile: React.PropTypes.shape(),
-    onAuthorNameClick: React.PropTypes.func,
-    onReply: React.PropTypes.func,
-    showReplyButton: React.PropTypes.bool,
+    children: PropTypes.node,
+    comment: PropTypes.shape(),
+    entryAuthorProfile: PropTypes.string,
+    intl: PropTypes.shape(),
+    isPublishing: PropTypes.bool,
+    loggedProfile: PropTypes.shape(),
+    onAuthorNameClick: PropTypes.func,
+    onReply: PropTypes.func,
+    showReplyButton: PropTypes.bool,
 };
 Comment.contextTypes = {
-    router: React.PropTypes.shape(),
-    muiTheme: React.PropTypes.shape()
+    router: PropTypes.shape(),
+    muiTheme: PropTypes.shape()
 };
 
 export default Comment;

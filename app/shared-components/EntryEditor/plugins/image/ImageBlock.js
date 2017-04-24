@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import {
     CardMedia,
@@ -16,9 +17,9 @@ import {
   ImageSizeMedium,
   ImageSizeSmall,
   ImageSizeXL,
-  ImageSizeXXL } from 'shared-components/svg'; // eslint-disable-line import/no-unresolved, import/extensions
-import imageCreator, { findClosestMatch } from 'utils/imageUtils'; // eslint-disable-line import/no-unresolved, import/extensions
-import clickAway from 'utils/clickAway'; // eslint-disable-line import/no-unresolved, import/extensions
+  ImageSizeXXL } from '../../../svg';
+import imageCreator, { findClosestMatch } from '../../../../utils/imageUtils';
+import clickAway from '../../../../utils/clickAway';
 import styles from './image-block.scss';
 
 class ImageBlock extends Component {
@@ -216,7 +217,7 @@ class ImageBlock extends Component {
                 </ToolbarGroup>
               </Toolbar>
               <CardMedia
-                
+
                 onClick={this._handleImageClick}
               >
                 <div
@@ -286,19 +287,19 @@ class ImageBlock extends Component {
     }
 }
 ImageBlock.propTypes = {
-    container: React.PropTypes.shape({
-        updateData: React.PropTypes.func,
-        remove: React.PropTypes.func
+    container: PropTypes.shape({
+        updateData: PropTypes.func,
+        remove: PropTypes.func
     }),
-    data: React.PropTypes.shape({
-        files: React.PropTypes.shape(),
-        caption: React.PropTypes.string,
-        rightsHolder: React.PropTypes.string,
-        media: React.PropTypes.string,
-        licence: React.PropTypes.string,
-        termsAccepted: React.PropTypes.bool
+    data: PropTypes.shape({
+        files: PropTypes.shape(),
+        caption: PropTypes.string,
+        rightsHolder: PropTypes.string,
+        media: PropTypes.string,
+        licence: PropTypes.string,
+        termsAccepted: PropTypes.bool
     }),
-    blockProps: React.PropTypes.shape()
+    blockProps: PropTypes.shape()
 };
 
 export default withWidth({

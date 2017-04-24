@@ -59,7 +59,7 @@ const setupMessages = defineMessages({
     changeGethCacheSize: {
         id: 'app.setup.changeGethCacheSize',
         description: 'geth cache size input label',
-        defaultMessage: 'Change Geth cache size (min. 512MB)'
+        defaultMessage: 'Change geth cache size (min. 512MB)'
     },
     gethCacheSizeError: {
         id: 'app.setup.gethCacheSizeError',
@@ -96,11 +96,36 @@ const setupMessages = defineMessages({
         description: 'title for first time setup page',
         defaultMessage: 'First time setup'
     },
+    configuration: {
+        id: 'app.setup.configuration',
+        description: 'panel header for configuration page',
+        defaultMessage: 'Configuration'
+    },
+    synchronization: {
+        id: 'app.setup.synchronization',
+        description: 'panel header for synchronization page',
+        defaultMessage: 'Synchronization'
+    },
+    logDetails: {
+        id: 'app.setup.logDetails',
+        description: 'panel header for log details page',
+        defaultMessage: 'Log details'
+    },
+    login: {
+        id: 'app.setup.login',
+        description: 'panel header for login page',
+        defaultMessage: 'Login'
+    },
+    newIdentity: {
+        id: 'app.setup.newIdentity',
+        description: 'panel header for new identity page',
+        defaultMessage: 'Create new identity'
+    },
     akashaNextGenNetwork: {
         id: 'app.setup.akashaNextGenNetwork',
         description: 'akasha next gen description',
         defaultMessage: `AKASHA is a next-generation social blogging network powered by a new
-                        kind of world computers known as Ethereum and the
+                        kind of world computer known as Ethereum and the
                         Inter Planetary File System.`
     },
     youHaveNotHeared: {
@@ -168,7 +193,7 @@ const setupMessages = defineMessages({
     syncPaused: {
         id: 'app.setup.syncPaused',
         description: 'state of block sync',
-        defaultMessage: 'Syncronization is paused'
+        defaultMessage: 'Synchronization is paused'
     },
     syncResuming: {
         id: 'app.setup.syncResuming',
@@ -215,11 +240,6 @@ const setupMessages = defineMessages({
         description: 'when we are trying to discover local profiles with akasha account',
         defaultMessage: 'Finding profiles..'
     },
-    logInTitle: {
-        id: 'app.setup.logInTitle',
-        description: 'login page title',
-        defaultMessage: 'Log in'
-    },
     findingPeers: {
         id: 'app.setup.findingPeers',
         description: 'finding peers status',
@@ -240,20 +260,18 @@ const setupMessages = defineMessages({
         description: 'message to display when synchronization is in default state',
         defaultMessage: 'Waiting for geth client'
     },
-    onePeer: {
-        id: 'app.setup.onePeer',
-        description: 'singular form of peers',
-        defaultMessage: 'peer'
-    },
-    fewPeers: {
-        id: 'app.setup.fewPeers',
-        description: 'plural form of peer. depends on language',
-        defaultMessage: 'peers'
-    },
-    manyPeers: {
-        id: 'app.setup.manyPeers',
-        description: 'in some languages there is another plural form of peers for many',
-        defaultMessage: 'peers'
+    peerCount: {
+        id: 'app.setup.peerCount',
+        description: 'counting connected peers',
+        defaultMessage: `{peerCount, number} {peerCount, plural,
+            one {peer}
+            few {peers}
+            many {peers}
+            other {peers}
+        }, {peerCount, plural,
+            one {connected}
+            other {connected}
+        }`
     },
     peers: {
         id: 'app.setup.peers',
@@ -284,18 +302,6 @@ const setupMessages = defineMessages({
         id: 'app.setup.identityRegistered',
         description: 'panel title when identity registered',
         defaultMessage: 'Identity Registered!'
-    },
-    saveGethSettingsSuccess: {
-        id: 'app.setup.saveGethSettingsSuccess',
-        description: 'Geth settings successfully saved',
-        defaultMessage: `You have successfully saved your settings. You need to restart your geth
-                        client for your changes to be applied.`
-    },
-    saveIpfsSettingsSuccess: {
-        id: 'app.setup.saveIpfsSettingsSuccess',
-        description: 'IPFS settings successfully saved',
-        defaultMessage: `You have successfully saved your settings. You need to restart your IPFS
-                        client for your changes to be applied.`
     },
     gethStopped: {
         id: 'app.setup.gethStopped',

@@ -1,12 +1,13 @@
-import React, { Component, PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import ReactTooltip from 'react-tooltip';
 import { ListItem, SvgIcon } from 'material-ui';
 import NotificationsActiveIcon from 'material-ui/svg-icons/social/notifications-active';
 import NotificationsDisabledIcon from 'material-ui/svg-icons/social/notifications-off';
 import ActionDelete from 'material-ui/svg-icons/action/delete';
-import { Avatar } from 'shared-components';
-import { UserMore } from 'shared-components/svg';
-import { getInitials } from 'utils/dataModule';
+import { Avatar } from '../../';
+import { UserMore } from '../../svg';
+import { getInitials } from '../../../utils/dataModule';
 
 class Notification extends Component {
     state = {
@@ -68,7 +69,7 @@ class Notification extends Component {
               </div>
             }
             secondaryTextLines={2}
-            className="has_hidden_action"
+            className="has-hidden-action"
             rightIcon={
               <SvgIcon
                 className={!showActions && 'hidden_action'}

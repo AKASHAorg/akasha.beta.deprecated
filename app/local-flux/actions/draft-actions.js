@@ -1,4 +1,4 @@
-import { AppActions, TransactionActions } from 'local-flux';
+import { AppActions, TransactionActions } from './';
 import { hashHistory } from 'react-router';
 import { draftActionCreators } from './action-creators';
 import { DraftService, EntryService } from '../services';

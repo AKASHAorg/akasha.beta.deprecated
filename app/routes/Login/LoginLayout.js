@@ -1,17 +1,9 @@
-import React, { PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import { Tutorials } from 'shared-components';
 import { connect } from 'react-redux';
 import '../../styles/core.scss';
 
-// Note: Stateless/function shared-components *will not* hot reload!
-// react-transform *only* works on component classes.
-//
-// Since layouts rarely change, they are a good place to
-// leverage React's new Stateless Functions:
-// https://facebook.github.io/react/docs/reusable-components.html#stateless-functions
-//
-// LoginLayout is a pure function of its props, so we can
-// define it with a plain javascript function...
 const LoginLayout = (props) => {
     const { children, theme } = props;
     return (
@@ -40,20 +32,13 @@ const LoginLayout = (props) => {
 
 LoginLayout.propTypes = {
     children: PropTypes.element,
-    theme: PropTypes.string
+    theme: PropTypes.string.isRequired
 };
 
-function mapStateToProps (state, ownProps) {
+function mapStateToProps (state) {
     return {
         theme: state.settingsState.getIn(['general', 'theme'])
     };
 }
 
-function mapDispatchToProps () {
-    return {};
-}
-
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(LoginLayout);
+export default connect(mapStateToProps)(LoginLayout);

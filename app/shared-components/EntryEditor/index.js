@@ -1,7 +1,8 @@
-import React, { Component, PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { MegadraftEditor, editorStateFromRaw, editorStateToJSON, DraftJS, createTypeStrategy } from 'megadraft';
 import Link from 'megadraft/lib/components/Link';
-import { MentionDecorators, MentionSuggestions } from 'shared-components';
+import { MentionDecorators, MentionSuggestions } from '../';
 import EditorSidebar from './sidebar/editor-sidebar';
 import styles from './style.scss';
 import imagePlugin from './plugins/image/image-plugin';

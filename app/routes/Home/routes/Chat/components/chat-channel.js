@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
 import { IconButton, SvgIcon, TextField } from 'material-ui';
 import { chatMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
@@ -7,7 +8,7 @@ import { ChatChannelInfo, EntryBookmarkOn, EntryBookmarkOff } from 'shared-compo
 import { List } from 'immutable';
 import ChatMessagesList from './chat-messages-list';
 
-const Channel = window.Channel;
+const Channel = global.Channel;
 const CHARACTER_LIMIT = 128;
 
 class ChatChannel extends Component {

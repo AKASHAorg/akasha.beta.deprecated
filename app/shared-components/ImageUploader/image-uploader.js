@@ -1,9 +1,10 @@
-import React, { PropTypes, Component } from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { SvgIcon, RaisedButton } from 'material-ui';
 import { injectIntl } from 'react-intl';
 import DeleteIcon from 'material-ui/svg-icons/action/delete';
-import { AddImage } from 'shared-components/svg'; // eslint-disable-line import/no-unresolved, import/extensions
-import { generalMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
+import { AddImage } from '../svg';
+import { generalMessages } from '../../locale-data/messages';
 import imageCreator, { getResizedImages, findClosestMatch } from '../../utils/imageUtils';
 
 class ImageUploader extends Component {
@@ -266,6 +267,6 @@ ImageUploader.propTypes = {
     clearImage: PropTypes.func
 };
 ImageUploader.contextTypes = {
-    muiTheme: React.PropTypes.shape()
+    muiTheme: PropTypes.shape()
 };
 export default injectIntl(ImageUploader, { withRef: true });

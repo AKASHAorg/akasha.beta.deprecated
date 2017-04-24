@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import { IconButton } from 'material-ui';
 import AddCircle from 'material-ui/svg-icons/content/add';
@@ -28,9 +29,9 @@ const ToggleButton = (props) => {
     );
 };
 ToggleButton.propTypes = {
-    open: React.PropTypes.bool,
-    isVisible: React.PropTypes.bool,
-    toggle: React.PropTypes.func
+    open: PropTypes.bool,
+    isVisible: PropTypes.bool,
+    toggle: PropTypes.func
 };
 
 export default ToggleButton;

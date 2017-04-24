@@ -1,13 +1,14 @@
-import React, { Component, PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
 import ReactTooltip from 'react-tooltip';
 import { IconButton, Paper, Tab, Tabs, TextField } from 'material-ui';
 import CloseIcon from 'material-ui/svg-icons/navigation/close';
 import RefreshIcon from 'material-ui/svg-icons/navigation/refresh';
-import { DataLoader, EntryListContainer } from 'shared-components';
-import { searchMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
 import throttle from 'lodash.throttle';
-import { isInViewport } from 'utils/domUtils'; // eslint-disable-line import/no-unresolved, import/extensions
+import { DataLoader, EntryListContainer } from '../';
+import { searchMessages } from '../../locale-data/messages';
+import { isInViewport } from '../../utils/domUtils';
 
 const PAGE_SIZE = 5;
 const QUERY_LENGTH_LIMIT = 32;

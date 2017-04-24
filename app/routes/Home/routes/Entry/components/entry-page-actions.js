@@ -1,4 +1,5 @@
-import React, { Component, PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { CardActions, FlatButton, IconButton, SvgIcon } from 'material-ui';
 import { EntryVotesPanel } from 'shared-components';
 import { EntryBookmarkOn, EntryBookmarkOff, EntryDownvote, EntryUpvote,
@@ -174,6 +175,6 @@ EntryPageAction.propTypes = {
     votePending: PropTypes.bool,
 };
 EntryPageAction.contextTypes = {
-    muiTheme: React.PropTypes.shape()
+    muiTheme: PropTypes.shape()
 };
 export default EntryPageAction;

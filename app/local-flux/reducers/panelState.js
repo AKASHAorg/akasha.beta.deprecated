@@ -1,26 +1,15 @@
-import { fromJS } from 'immutable';
-import * as types from '../constants/AppConstants';
+import * as types from '../constants';
 import { createReducer } from './create-reducer';
+import { PanelState } from './records';
 
-const initialState = fromJS({
-    activePanel: {
-        name: null,
-        ovelay: false
-    }
-});
+const initialState = new PanelState();
 
 const panelState = createReducer(initialState, {
-    [types.SHOW_PANEL]: (state, action) =>
-        state.merge({ activePanel: action.panel }),
+    [types.PANEL_HIDE]: state =>
+        state.set('activePanel', null),
 
-    [types.HIDE_PANEL]: (state, action) => {
-        if (!action.panel) {
-            return state.merge(initialState);
-        }
-        return state;
-    },
-
-    [types.CLEAN_STORE]: state => initialState,
+    [types.PANEL_SHOW]: (state, { panel }) =>
+        state.set('activePanel', panel)
 });
 
 export default panelState;

@@ -26,21 +26,6 @@ const entryMessages = defineMessages({
         description: 'published',
         defaultMessage: 'Published'
     },
-    minutesCount: {
-        id: 'app.entry.minutesCount',
-        description: 'minutes of read time',
-        defaultMessage: '{minutes, number} min'
-    },
-    hoursCount: {
-        id: 'app.entry.hoursCount',
-        description: 'hours of read time',
-        defaultMessage: `{hours, number} {hours, plural,
-                one {hour}
-                few {hours}
-                many {hours}
-                other {hours}
-            }`
-    },
     wordsCount: {
         id: 'app.entry.wordsCount',
         description: 'number of words in an entry',

@@ -25,7 +25,8 @@ class SettingsService extends BaseService {
         settingsDB[options.table].where('name').equals(options.table).toArray()
             .then((data) => {
                 onSuccess(data[0] || {}, options.table);
-            }).catch((reason) => {
+            })
+            .catch((reason) => {
                 onError(reason, options.table);
             });
     }
@@ -138,12 +139,71 @@ class SettingsService extends BaseService {
                     mutedList.splice(index, 1);
                     settingsDB.user
                         .update(loggedAkashaId, { notifications: { muted: mutedList } })
-                        .then(updated => updated ? onSuccess(akashaId) : onError())
+                        .then((updated) => {
+                            if (updated) {
+                                onSuccess(akashaId);
+                            } else {
+                                onError();
+                            }
+                        })
                         .catch(reason => onError(reason, akashaId));
                 }
             })
             .catch(reason => onError(reason, akashaId));
     };
 }
+
+const getSettings = table =>
+    new Promise((resolve, reject) =>
+        settingsDB[table].where('name').equals(table).toArray()
+            .then(data => resolve(data[0] || {}))
+            .catch(error => reject(error))
+    );
+
+const saveSettings = (table, payload) =>
+    new Promise((resolve, reject) => {
+        settingsDB[table].where('name').equals(table).toArray()
+            .then((data) => {
+                if (data.length) {
+                    settingsDB[table].where('name').equals(table).modify(payload)
+                        .then(() => resolve(payload))
+                        .catch(error => reject(error));
+                } else {
+                    settingsDB[table].put({ name: table, ...payload })
+                        .then(() => resolve(payload))
+                        .catch(error => reject(error));
+                }
+            });
+    });
+
+export const generalSettingsRequest = () => getSettings('general');
+export const gethSettingsRequest = () => getSettings('geth');
+export const ipfsSettingsRequest = () => getSettings('ipfs');
+export const userSettingsRequest = akashaId =>
+    new Promise((resolve, reject) =>
+        settingsDB.user.where('akashaId').equals(akashaId).toArray()
+            .then(data => resolve(data[0] || {}))
+            .catch(error => reject(error))
+    );
+
+export const generalSettingsSave = payload => saveSettings('general', payload);
+export const gethSettingsSave = payload => saveSettings('geth', payload);
+export const ipfsSettingsSave = payload => saveSettings('ipfs', payload);
+export const userSettingsSave = (akashaId, payload) =>
+    new Promise((resolve, reject) => {
+        settingsDB.user.where('akashaId').equals(akashaId).toArray()
+            .then((data) => {
+                const resp = { akashaId, ...payload };
+                if (data.length) {
+                    settingsDB.user.where('akashaId').equals(akashaId).modify(payload)
+                        .then(() => resolve(resp))
+                        .catch(error => reject(error));
+                } else {
+                    settingsDB.user.put(resp)
+                        .then(() => resolve(resp))
+                        .catch(error => reject(error));
+                }
+            });
+    });
 
 export { SettingsService };

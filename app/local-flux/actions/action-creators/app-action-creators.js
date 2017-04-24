@@ -58,13 +58,6 @@ export function hidePublishConfirmDialog () {
     };
 }
 
-export function showEntryModal (entryData) {
-    return {
-        type: types.SHOW_ENTRY_MODAL,
-        entryData
-    };
-}
-
 export function hideEntryModal () {
     return {
         type: types.HIDE_ENTRY_MODAL

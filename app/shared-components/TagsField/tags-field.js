@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import { injectIntl } from 'react-intl';
 import { AutoComplete, Chip, IconButton } from 'material-ui';
 import debounce from 'lodash.debounce';
@@ -6,8 +7,8 @@ import throttle from 'lodash.throttle';
 import AddIcon from 'material-ui/svg-icons/content/add';
 import RemoveIcon from 'material-ui/svg-icons/navigation/close';
 import PendingIcon from 'material-ui/svg-icons/action/schedule';
-import { validateTag } from 'utils/dataModule';
-import { formMessages } from 'locale-data/messages';
+import { validateTag } from '../../utils/dataModule';
+import { formMessages } from '../../locale-data/messages';
 
 const BACKSPACE = 'Backspace';
 const COMMA = ',';

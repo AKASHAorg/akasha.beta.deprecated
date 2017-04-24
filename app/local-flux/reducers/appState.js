@@ -1,92 +1,41 @@
-/* eslint new-cap: ["error", { "capIsNewExceptions": ["Record", "Map"] }]*/
-import { fromJS, Record, List } from 'immutable';
-import * as types from '../constants/AppConstants';
+import { fromJS } from 'immutable';
+import { AppRecord, NotificationRecord, PendingActionRecord } from './records';
+import * as types from '../constants';
+import * as appTypes from '../constants/AppConstants';
 import * as profileTypes from '../constants/ProfileConstants';
 import { createReducer } from './create-reducer';
 
-const ErrorRecord = Record({
-    code: 0,
-    fatal: null,
-    message: ''
-});
-
-const Notification = Record({
-    id: null,
-    values: new Map(),
-    duration: null
-});
-
-const PendingAction = Record({
-    id: null,
-    type: null,
-    payload: new Map(),
-    titleId: null,
-    messageId: null,
-    gas: null,
-    status: null
-});
-
-const initialState = fromJS({
-    error: new ErrorRecord(),
-    updates: null,
-    appLoading: false,
-    appUpdating: false,
-    showAuthDialog: null,
-    showEntry: {
-        modal: false
-    },
-    showTerms: false,
-    weightConfirmDialog: null,
-    timestamp: null,
-    notifications: new List(),
-    pendingActions: new List(),
-    publishConfirmDialog: null,
-    transferConfirmDialog: null
-});
+const initialState = new AppRecord();
 
 const appState = createReducer(initialState, {
-    [types.CHECK_FOR_UPDATES]: (state, action) =>
-        state.merge({ updates: action.hasUpdates }),
+    [appTypes.APP_READY]: state =>
+        state.set('appReady', true),
 
-    [types.UPDATE_APP]: (state, action) =>
-        state.set('appUpdating', action.updating),
-
-    [types.SHOW_ERROR]: (state, action) =>
-        state.merge({ error: new ErrorRecord(action.error) }),
-
-    [types.CLEAR_ERRORS]: () => initialState,
-
-    [types.SHOW_AUTH_DIALOG]: (state, { actionId }) =>
+    [appTypes.SHOW_AUTH_DIALOG]: (state, { actionId }) =>
         state.set('showAuthDialog', actionId),
 
-    [types.HIDE_AUTH_DIALOG]: state =>
+    [appTypes.HIDE_AUTH_DIALOG]: state =>
         state.set('showAuthDialog', null),
 
-    [types.SHOW_ENTRY_MODAL]: (state, action) =>
-        state.set('showEntry', { modal: true, ...action.entryData, ...action.options }),
-
-    [types.HIDE_ENTRY_MODAL]: state =>
-        state.set('showEntry', { modal: false }),
-
-    [types.SHOW_WEIGHT_CONFIRM_DIALOG]: (state, { resource }) =>
+    [appTypes.SHOW_WEIGHT_CONFIRM_DIALOG]: (state, { resource }) =>
         state.set('weightConfirmDialog', resource),
 
-    [types.HIDE_WEIGHT_CONFIRM_DIALOG]: state =>
+    [appTypes.HIDE_WEIGHT_CONFIRM_DIALOG]: state =>
         state.set('weightConfirmDialog', null),
 
-    [types.SHOW_PUBLISH_CONFIRM_DIALOG]: (state, { resource }) =>
+    [appTypes.SHOW_PUBLISH_CONFIRM_DIALOG]: (state, { resource }) =>
         state.set('publishConfirmDialog', resource),
 
-    [types.HIDE_PUBLISH_CONFIRM_DIALOG]: state =>
+    [appTypes.HIDE_PUBLISH_CONFIRM_DIALOG]: state =>
         state.set('publishConfirmDialog', null),
 
-    [types.SHOW_TRANSFER_CONFIRM_DIALOG]: (state, { resource }) =>
+    [appTypes.SHOW_TRANSFER_CONFIRM_DIALOG]: (state, { resource }) =>
         state.set('transferConfirmDialog', resource),
 
-    [types.HIDE_TRANSFER_CONFIRM_DIALOG]: state =>
+    [appTypes.HIDE_TRANSFER_CONFIRM_DIALOG]: state =>
         state.set('transferConfirmDialog', null),
 
-    [types.SET_TIMESTAMP]: (state, action) =>
+    [appTypes.SET_TIMESTAMP]: (state, action) =>
         state.set('timestamp', action.timestamp),
 
     [profileTypes.LOGIN_SUCCESS]: (state) => {
@@ -103,11 +52,11 @@ const appState = createReducer(initialState, {
         return state.set('showAuthDialog', null);
     },
 
-    [types.SHOW_NOTIFICATION]: (state, { notification }) => state.merge({
-        notifications: state.get('notifications').push(new Notification(notification))
+    [appTypes.SHOW_NOTIFICATION]: (state, { notification }) => state.merge({
+        notifications: state.get('notifications').push(new NotificationRecord(notification))
     }),
 
-    [types.HIDE_NOTIFICATION]: (state, { notification }) => {
+    [appTypes.HIDE_NOTIFICATION]: (state, { notification }) => {
         const indexToRemove = state.get('notifications').findIndex(notific =>
             notific.id === notification.id);
 
@@ -116,12 +65,12 @@ const appState = createReducer(initialState, {
         });
     },
 
-    [types.ADD_PENDING_ACTION]: (state, { data }) =>
+    [appTypes.ADD_PENDING_ACTION]: (state, { data }) =>
         state.merge({
-            pendingActions: state.get('pendingActions').push(new PendingAction(fromJS(data)))
+            pendingActions: state.get('pendingActions').push(new PendingActionRecord(fromJS(data)))
         }),
 
-    [types.UPDATE_PENDING_ACTION]: (state, { data }) => {
+    [appTypes.UPDATE_PENDING_ACTION]: (state, { data }) => {
         const index = state.get('pendingActions').findIndex(action =>
             action.get('id') === data.id);
         return state.merge({
@@ -129,22 +78,33 @@ const appState = createReducer(initialState, {
         });
     },
 
-    [types.DELETE_PENDING_ACTION]: (state, { actionId }) =>
+    [appTypes.DELETE_PENDING_ACTION]: (state, { actionId }) =>
         state.merge({
             pendingActions: state.get('pendingActions').filter(action =>
                 action.get('id') !== actionId)
         }),
 
-    [types.SHOW_TERMS]: state =>
+    [appTypes.SHOW_TERMS]: state =>
         state.merge({
             showTerms: true
         }),
 
-    [types.HIDE_TERMS]: state =>
+    [appTypes.HIDE_TERMS]: state =>
         state.merge({
             showTerms: false
         }),
 
+    [appTypes.TOGGLE_GETH_DETAILS_MODAL]: state =>
+        state.set('showGethDetailsModal', !state.get('showGethDetailsModal')),
+
+    [appTypes.TOGGLE_IPFS_DETAILS_MODAL]: state =>
+        state.set('showIpfsDetailsModal', !state.get('showIpfsDetailsModal')),
+
+    [types.SHOW_LOGIN_DIALOG]: (state, { profileAddress }) =>
+        state.set('showLoginDialog', profileAddress),
+
+    [types.HIDE_LOGIN_DIALOG]: state =>
+        state.set('showLoginDialog', null),
 });
 
 export default appState;

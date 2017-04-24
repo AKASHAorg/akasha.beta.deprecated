@@ -1,6 +1,6 @@
 import BaseService from './base-service';
 
-const Channel = window.Channel;
+const Channel = global.Channel;
 
 /**
  * Default managed channels: [startService, stopService, status]
@@ -147,7 +147,7 @@ class GethService extends BaseService {
             clientChannel,
             listenerCb: this.createListener(onError, onSuccess, clientChannel.channelName)
         }, () =>
-                serverChannel.send(options)
+            serverChannel.send(options)
         );
     };
     closeSyncChannel = () => {

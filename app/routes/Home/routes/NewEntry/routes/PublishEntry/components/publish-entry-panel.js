@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import { TextField, RaisedButton } from 'material-ui';
 import { injectIntl } from 'react-intl';
@@ -427,18 +428,18 @@ class PublishPanel extends React.Component {
     }
 }
 PublishPanel.propTypes = {
-    params: React.PropTypes.shape(),
-    draftActions: React.PropTypes.shape(),
-    tagActions: React.PropTypes.shape(),
-    profiles: React.PropTypes.shape(),
-    loggedProfile: React.PropTypes.shape(),
-    registerPending: React.PropTypes.shape(),
-    licences: React.PropTypes.shape(),
-    appActions: React.PropTypes.shape(),
-    settingsActions: React.PropTypes.shape(),
-    draft: React.PropTypes.shape()
+    params: PropTypes.shape(),
+    draftActions: PropTypes.shape(),
+    tagActions: PropTypes.shape(),
+    profiles: PropTypes.shape(),
+    loggedProfile: PropTypes.shape(),
+    registerPending: PropTypes.shape(),
+    licences: PropTypes.shape(),
+    appActions: PropTypes.shape(),
+    settingsActions: PropTypes.shape(),
+    draft: PropTypes.shape()
 };
 PublishPanel.contextTypes = {
-    router: React.PropTypes.shape()
+    router: PropTypes.shape()
 };
 export default injectIntl(PublishPanel);

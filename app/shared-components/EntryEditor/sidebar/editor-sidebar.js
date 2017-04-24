@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import 'setimmediate';
 import SideMenu from './side-menu';
@@ -118,14 +119,14 @@ class SideBar extends Component {
     }
 }
 SideBar.propTypes = {
-    onChange: React.PropTypes.func,
-    editorState: React.PropTypes.shape(),
-    readOnly: React.PropTypes.bool,
-    plugins: React.PropTypes.arrayOf(React.PropTypes.shape()),
-    showTerms: React.PropTypes.func,
-    onError: React.PropTypes.func,
-    onSidebarToggle: React.PropTypes.func,
-    editorHasFocus: React.PropTypes.bool
+    onChange: PropTypes.func,
+    editorState: PropTypes.shape(),
+    readOnly: PropTypes.bool,
+    plugins: PropTypes.arrayOf(PropTypes.shape()),
+    showTerms: PropTypes.func,
+    onError: PropTypes.func,
+    onSidebarToggle: PropTypes.func,
+    editorHasFocus: PropTypes.bool
 };
 
 export default SideBar;
