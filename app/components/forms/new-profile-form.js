@@ -185,10 +185,13 @@ class NewProfileForm extends Component {
         return null;
     }
     _handleCancel = () => {
-        this.props.history.push('/authenticate');
+        const { onCancel } = this.props;
+        if (typeof onCancel === 'function') {
+            onCancel();
+        }
     }
     _submitData = (additionalData) => {
-        const { tempProfileCreate } = this.props;
+        const { onSubmit } = this.props;
         const {
           firstName,
           lastName,
@@ -197,7 +200,7 @@ class NewProfileForm extends Component {
           about,
           links,
           crypto } = this.state;
-        tempProfileCreate({
+        onSubmit({
             firstName,
             lastName,
             akashaId,
@@ -517,8 +520,8 @@ NewProfileForm.propTypes = {
     isUpdate: PropTypes.bool,
     validate: PropTypes.func,
     getValidationMessages: PropTypes.func,
-    tempProfileCreate: PropTypes.func,
-    history: PropTypes.shape().isRequired,
+    onSubmit: PropTypes.func,
+    onCancel: PropTypes.func,
     style: PropTypes.shape()
 };
 

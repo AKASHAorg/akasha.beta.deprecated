@@ -171,6 +171,7 @@ Config.propTypes = {
     intl: PropTypes.shape(),
     ipfsSettings: PropTypes.shape().isRequired,
     saveConfiguration: PropTypes.func.isRequired,
+    muiTheme: PropTypes.shape(),
 };
 
 export default injectIntl(Config);
