@@ -65,12 +65,18 @@ class AppActions {
 }
 
 export const appReady = () => action(types.APP_READY);
+export const bootstrapHome = () => action(types.BOOTSTRAP_HOME);
+export const bootstrapHomeSuccess = () => action(types.BOOTSTRAP_HOME_SUCCESS);
 export const hideLoginDialog = () => action(types.HIDE_LOGIN_DIALOG);
 export const hideNotification = notification =>
     action(types.HIDE_NOTIFICATION, { notification });
 export const hideTerms = () => action(types.HIDE_TERMS);
 export const panelShow = panel => action(types.PANEL_SHOW, { panel });
 export const panelHide = () => action(types.PANEL_HIDE);
+
+// this should be removed once profile logout is implemented
+export const resetHomeReady = () => action(types.RESET_HOME_READY);
+
 export const setTimestamp = timestamp => action(types.SET_TIMESTAMP, { timestamp });
 export const showLoginDialog = profileAddress =>
     action(types.SHOW_LOGIN_DIALOG, { profileAddress });

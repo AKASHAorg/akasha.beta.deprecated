@@ -1,13 +1,15 @@
-import { call, fork, put } from 'redux-saga/effects';
+import { call, fork, put, takeEvery } from 'redux-saga/effects';
 import * as actions from '../actions/app-actions';
 import { createActionChannels } from './helpers';
-import * as licenseSaga from './license-saga';
+import * as dashboardSaga from './dashboard-saga';
 import * as entrySaga from './entry-saga';
 import * as externalProcSaga from './external-process-saga';
+import * as licenseSaga from './license-saga';
 import * as profileSaga from './profile-saga';
 import * as settingsSaga from './settings-saga';
 import * as tempProfileSaga from './temp-profile-saga';
 import * as utilsSaga from './utils-saga';
+import * as types from '../constants';
 
 function* registerListeners () {
     yield fork(licenseSaga.registerLicenseListeners);
@@ -32,15 +34,33 @@ function* launchActions () {
     yield fork(externalProcSaga.ipfsGetStatus);
 }
 
+function* launchHomeActions () {
+    yield call(profileSaga.profileGetLogged);
+    yield fork(dashboardSaga.dashboardGetActive);
+    yield fork(dashboardSaga.dashboardGetAll);
+    yield fork(dashboardSaga.dashboardGetColumns);
+}
+
 function* bootstrapApp () {
     // the appReady action will be dispatched after these actions will be called
     yield call(launchActions);
     yield put(actions.appReady());
 }
 
+function* bootstrapHome () {
+    // launch the necessary actions for the home/dashboard component
+    yield call(launchHomeActions);
+    yield put(actions.bootstrapHomeSuccess());
+}
+
+function* watchBootstrapHome () {
+    yield takeEvery(types.BOOTSTRAP_HOME, bootstrapHome);
+}
+
 export default function* rootSaga () {
     createActionChannels();
     yield fork(registerListeners);
+    yield fork(dashboardSaga.watchDashboardActions);
     yield fork(entrySaga.watchEntryActions);
     yield fork(externalProcSaga.watchEProcActions);
     yield fork(licenseSaga.watchLicenseActions);
@@ -49,4 +69,5 @@ export default function* rootSaga () {
     yield fork(tempProfileSaga.watchTempProfileActions);
     yield fork(utilsSaga.watchUtilsActions);
     yield fork(bootstrapApp);
+    yield fork(watchBootstrapHome);
 }

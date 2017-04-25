@@ -1,6 +1,6 @@
 // keep this alphabetically sorted
 import AppRecord, { NotificationRecord, PendingActionRecord } from './app-record';
-import { DashboardState } from './dashboard-record';
+import { ColumnRecord, DashboardRecord, DashboardState } from './dashboard-record';
 import { EntriesStream, EntryContent, EntryEth, EntryRecord, EntryState } from './entry-record';
 import ErrorRecord, { ErrorState } from './error-record';
 import GethRecord, { GethStatus, GethSyncStatus } from './geth-record';
@@ -17,6 +17,8 @@ import UtilsState from './utils-record';
 // keep this alphabetically sorted
 export {
     AppRecord,
+    ColumnRecord,
+    DashboardRecord,
     DashboardState,
     EntriesStream,
     EntryContent,

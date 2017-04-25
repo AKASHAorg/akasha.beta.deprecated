@@ -6,6 +6,51 @@ const errorMessages = defineMessages({
         description: 'backup keys error message',
         defaultMessage: 'Generating backup has failed. Try again'
     },
+    dashboardAdd: {
+        id: 'app.error.dashboardAdd',
+        description: 'add dashboard error message',
+        defaultMessage: 'An error occurred while saving the new dashboard'
+    },
+    dashboardAddColumn: {
+        id: 'app.error.dashboardAddColumn',
+        description: 'add column error message',
+        defaultMessage: 'An error occurred while saving the new column'
+    },
+    dashboardDelete: {
+        id: 'app.error.dashboardDelete',
+        description: 'delete dashboard error message',
+        defaultMessage: 'An error occurred while deleting your dashboard'
+    },
+    dashboardDeleteColumn: {
+        id: 'app.error.dashboardDeleteColumn',
+        description: 'delete column error message',
+        defaultMessage: 'An error occurred while deleting your column'
+    },
+    dashboardGetActive: {
+        id: 'app.error.dashboardGetActive',
+        description: 'get active dashboard error message',
+        defaultMessage: 'An error occurred while getting the active dashboard'
+    },
+    dashboardGetAll: {
+        id: 'app.error.dashboardGetAll',
+        description: 'get all dashboards error message',
+        defaultMessage: 'An error occurred while getting your dashboards'
+    },
+    dashboardGetColumns: {
+        id: 'app.error.dashboardGetColumns',
+        description: 'get columns error message',
+        defaultMessage: 'An error occurred while getting your columns'
+    },
+    dashboardSetActive: {
+        id: 'app.error.dashboardSetActive',
+        description: 'set active dashboard error message',
+        defaultMessage: 'An error occurred while saving your active dashboard'
+    },
+    dashboardUpdateColumn: {
+        id: 'app.error.dashboardUpdateColumn',
+        description: 'update column error message',
+        defaultMessage: 'An error occurred while updating your column'
+    },
     fatalError: {
         id: 'app.error.fatalError',
         description: 'title for fatal error modal',

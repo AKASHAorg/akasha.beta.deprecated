@@ -2,6 +2,17 @@ import { ProfileRecord } from '../reducers/records';
 
 /* eslint-disable no-use-before-define */
 
+export const selectActiveDashboard = (state) => {
+    const activeDashboard = state.dashboardState.get('activeDashboard');
+    if (!activeDashboard) {
+        return null;
+    }
+    return state.dashboardState.getIn([
+        'dashboardById',
+        activeDashboard
+    ]);
+};
+
 export const selectActivePanel = state => state.panelState.get('activePanel');
 
 export const selectColumnLastBlock = (state, columnId) =>
@@ -9,6 +20,13 @@ export const selectColumnLastBlock = (state, columnId) =>
 
 export const selectColumnLastEntry = (state, columnId) =>
     state.dashboardState.getIn(['columnById', columnId, 'entries']).last();
+
+export const selectDashboards = (state) => {
+    const akashaId = selectLoggedAkashaId(state);
+    return state.dashboardState
+        .get('dashboardById')
+        .filter(dashboard => dashboard.get('akashaId') === akashaId);
+};
 
 export const selectEntry = (state, id) => state.entryState.getIn(['byId', id]);
 
@@ -28,6 +46,9 @@ export const selectLocalProfiles = state =>
         .get('localProfiles')
         .filter(address => !!state.profileState.getIn(['byId', address]))
         .map(address => selectProfile(state, address));
+
+export const selectLoggedAkashaId = state =>
+    state.profileState.getIn(['loggedProfile', 'akashaId']);
 
 export const selectLoggedProfileData = state =>
     selectProfile(state, state.profileState.getIn(['loggedProfile', 'profile']));

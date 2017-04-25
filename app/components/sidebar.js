@@ -11,15 +11,11 @@ import styles from './sidebar.scss';
 
 class Sidebar extends Component {
     componentDidMount () {
-        const { entryVoteCost, gethGetStatus, licenseGetAll, loggedProfile,
-            profileGetLogged } = this.props;
+        const { bootstrapHome, entryVoteCost, gethGetStatus, licenseGetAll } = this.props;
+        bootstrapHome();
         entryVoteCost();
         licenseGetAll();
-        if (!loggedProfile.get('account')) {
-            // fetch logged profile from local db
-            // called when reloading the page (not after login)
-            profileGetLogged();
-        }
+
         // make requests for geth status every 30s for updating the current block
         gethGetStatus();
         this.interval = setInterval(() => {
@@ -164,6 +160,7 @@ Sidebar.contextTypes = {
 Sidebar.propTypes = {
     activePanel: PropTypes.string,
     balance: PropTypes.string,
+    bootstrapHome: PropTypes.func.isRequired,
     draftsCount: PropTypes.number,
     entryVoteCost: PropTypes.func.isRequired,
     gethGetStatus: PropTypes.func.isRequired,
@@ -177,7 +174,6 @@ Sidebar.propTypes = {
     notificationsCount: PropTypes.number,
     panelHide: PropTypes.func.isRequired,
     panelShow: PropTypes.func.isRequired,
-    profileGetLogged: PropTypes.func.isRequired
 };
 
 export default Sidebar;

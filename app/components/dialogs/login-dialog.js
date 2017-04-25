@@ -36,7 +36,7 @@ class LoginDialog extends Component {
                 unlockIsChecked: passwordPreference.remember || false
             });
         }
-        if (loggedProfile.get('account')) {
+        if (loggedProfile.get('akashaId')) {
             this.props.hideLoginDialog();
             this.props.userSettingsClear();
             this.props.profileClearLoginErrors();

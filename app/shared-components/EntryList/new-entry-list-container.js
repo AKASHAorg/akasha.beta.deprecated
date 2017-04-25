@@ -65,7 +65,6 @@ class EntryList extends Component {
             intl, loggedAkashaId, moreEntries, placeholderMessage,
             savedEntriesIds, selectedTag, style, votePending, profiles } = this.props;
         const { palette } = this.context.muiTheme;
-        const timeout = defaultTimeout === undefined ? 700 : defaultTimeout;
         return (
           <div
             style={Object.assign({}, {
@@ -80,11 +79,11 @@ class EntryList extends Component {
           >
             <DataLoader
               flag={fetchingEntries}
-              timeout={timeout}
+              timeout={defaultTimeout}
               size={60}
               style={{ paddingTop: '80px' }}
             >
-              <div>
+              <div style={{ width: '100%' }}>
                 {entries.size === 0 &&
                   <div
                     style={{
