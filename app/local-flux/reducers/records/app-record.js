@@ -18,17 +18,18 @@ export const PendingActionRecord = Record({
 
 const AppRecord = Record({
     appReady: false,
-    showAuthDialog: null,
-    showGethDetailsModal: false,
-    showLoginDialog: null,
-    showIpfsDetailsModal: false,
-    showTerms: false,
-    weightConfirmDialog: null,
-    timestamp: 0,
+    homeReady: false,
     notifications: new List(),
     pendingActions: new List(),
     publishConfirmDialog: null,
-    transferConfirmDialog: null
+    showAuthDialog: null,
+    showGethDetailsModal: false,
+    showIpfsDetailsModal: false,
+    showLoginDialog: null,
+    showTerms: false,
+    timestamp: 0,
+    transferConfirmDialog: null,
+    weightConfirmDialog: null,
 });
 
 export default AppRecord;

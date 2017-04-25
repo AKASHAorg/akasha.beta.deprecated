@@ -1,7 +1,10 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { SvgIcon, TextField } from 'material-ui';
-import { UserMore } from '../../shared-components/svg';
+import { dashboardDeleteColumn,
+    dashboardUpdateColumn } from '../../local-flux/actions/dashboard-actions';
+// import { UserMore } from '../../shared-components/svg';
 
 class ColumnHeader extends Component {
     constructor (props) {
@@ -9,11 +12,12 @@ class ColumnHeader extends Component {
         this.state = {
             isFocused: false,
             isHovered: false,
-            value: props.title
+            value: props.value
         };
     }
 
     onBlur = () => {
+        this.updateColumn();
         this.setState({
             isFocused: false
         });
@@ -31,6 +35,12 @@ class ColumnHeader extends Component {
         });
     };
 
+    onKeyPress = (ev) => {
+        if (ev.key === 'Enter') {
+            this.updateColumn();
+        }
+    }
+
     onMouseEnter = () => {
         this.setState({
             isHovered: true
@@ -43,8 +53,20 @@ class ColumnHeader extends Component {
         });
     };
 
+    deleteColumn = () => {
+        const { columnId } = this.props;
+        this.props.dashboardDeleteColumn(columnId);
+    }
+
+    updateColumn = () => {
+        const { columnId, value } = this.props;
+        if (this.state.value !== value) {
+            this.props.dashboardUpdateColumn(columnId, this.state.value);
+        }
+    }
+
     render () {
-        const { icon, readOnly } = this.props;
+        const { icon, readOnly, title } = this.props;
         const { isFocused, isHovered, value } = this.state;
 
         return (
@@ -64,7 +86,7 @@ class ColumnHeader extends Component {
             }
             <div style={{ flex: '1 1 auto' }}>
               {readOnly &&
-                <div>{value}</div>
+                <div>{title}</div>
               }
               {!readOnly &&
                 <TextField
@@ -73,10 +95,12 @@ class ColumnHeader extends Component {
                   onBlur={this.onBlur}
                   onChange={this.onChange}
                   onFocus={this.onFocus}
+                  onKeyPress={this.onKeyPress}
                   underlineShow={isHovered || isFocused}
                 />
               }
             </div>
+            <button onClick={this.deleteColumn} style={{ marginRight: '20px' }}>x</button>
             {/*<div style={{ flex: '0 0 auto' }}>
               <SvgIcon
                 viewBox="0 0 18 18"
@@ -98,9 +122,19 @@ class ColumnHeader extends Component {
 }
 
 ColumnHeader.propTypes = {
+    // columnId: PropTypes.string,
+    dashboardDeleteColumn: PropTypes.func.isRequired,
+    dashboardUpdateColumn: PropTypes.func.isRequired,
     icon: PropTypes.element,
     readOnly: PropTypes.bool,
-    title: PropTypes.string
+    title: PropTypes.string,
+    value: PropTypes.string
 };
 
-export default ColumnHeader;
+export default connect(
+    null,
+    {
+        dashboardDeleteColumn,
+        dashboardUpdateColumn
+    }
+)(ColumnHeader);

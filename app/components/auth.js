@@ -11,11 +11,13 @@ class Auth extends Component {
     }
     componentDidMount () {
         const { gethStatus, profileDeleteLogged,
-            profileGetLocal, tempProfileGetRequest } = this.props;
+            profileGetLocal, resetHomeReady, tempProfileGetRequest } = this.props;
         tempProfileGetRequest();
         if (gethStatus.get('api')) {
             profileGetLocal();
         }
+        // This should be removed once profile logout is implemented
+        resetHomeReady();
         profileDeleteLogged();
     }
 
@@ -112,6 +114,7 @@ Auth.propTypes = {
     profileClearLocal: PropTypes.func.isRequired,
     profileDeleteLogged: PropTypes.func.isRequired,
     profileGetLocal: PropTypes.func.isRequired,
+    resetHomeReady: PropTypes.func.isRequired,
     showLoginDialog: PropTypes.func.isRequired,
     tempProfile: PropTypes.shape().isRequired,
     tempProfileGetRequest: PropTypes.func.isRequired,

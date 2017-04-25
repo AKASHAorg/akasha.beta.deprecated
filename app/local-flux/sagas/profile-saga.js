@@ -47,8 +47,13 @@ function* profileGetLocal () {
     yield apply(channel, channel.send, [{}]);
 }
 
-function* profileGetLogged () {
+export function* profileGetLogged () {
     try {
+        const loggedProfile = yield select(state => state.profileState.get('loggedProfile'));
+        if (loggedProfile.get('account')) {
+            console.log('No need to get logged profile from db');
+            return;
+        }
         const profile = yield apply(profileService, profileService.profileGetLogged);
         yield put(actions.profileGetLoggedSuccess(profile));
         yield put(actions.profileGetBalance());

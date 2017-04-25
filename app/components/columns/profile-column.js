@@ -8,36 +8,48 @@ import { entryMessages } from '../../locale-data/messages';
 import { entryMoreProfileIterator, entryProfileIterator } from '../../local-flux/actions/entry-actions';
 import { selectColumnEntries } from '../../local-flux/selectors';
 
-const hardCodedProfile = 'john.doe';
-
 class ProfileColumn extends Component {
 
     componentDidMount () {
         const { column } = this.props;
-        this.props.entryProfileIterator(column.get('id'), hardCodedProfile);
+        const value = column.get('value');
+        if (value) {
+            this.props.entryProfileIterator(column.get('id'), value);
+        }
     }
 
-    entryMoreTagIterator = () => {
+    componentWillReceiveProps ({ column }) {
+        const newValue = column.get('value');
+        if (newValue !== this.props.column.get('value')) {
+            this.props.entryProfileIterator(column.get('id'), newValue);
+        }
+    }
+
+    entryMoreProfileIterator = () => {
         const { column } = this.props;
-        this.props.entryMoreProfileIterator(column.get('id'), hardCodedProfile);
+        this.props.entryMoreProfileIterator(column.get('id'), column.get('value'));
     };
 
     render () {
         const { column, entries, intl, profiles } = this.props;
+        const placeholderMessage = column.get('value') ?
+            intl.formatMessage(entryMessages.noEntries) :
+            intl.formatMessage(entryMessages.searchProfile);
 
         return (
           <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
             <ColumnHeader
+              columnId={column.get('id')}
               icon={<ColumnProfile />}
-              title={hardCodedProfile}
+              value={column.get('value')}
             />
             <EntryListContainer
               entries={entries}
               fetchingEntries={column.getIn(['flags', 'fetchingEntries'])}
               fetchingMoreEntries={column.getIn(['flags', 'fetchingMoreEntries'])}
-              fetchMoreEntries={this.entryMoreTagIterator}
+              fetchMoreEntries={this.entryMoreProfileIterator}
               moreEntries={column.getIn(['flags', 'moreEntries'])}
-              placeholderMessage={intl.formatMessage(entryMessages.noNewEntries)}
+              placeholderMessage={placeholderMessage}
               profiles={profiles}
             />
           </div>

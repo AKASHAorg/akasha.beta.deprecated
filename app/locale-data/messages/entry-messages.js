@@ -131,5 +131,15 @@ const entryMessages = defineMessages({
         description: 'placeholder for empty latest entries list',
         defaultMessage: 'No new entries'
     },
+    searchProfile: {
+        id: 'app.entry.searchProfile',
+        description: 'placeholder for profile column',
+        defaultMessage: 'Search for a profile'
+    },
+    searchTag: {
+        id: 'app.entry.searchTag',
+        description: 'placeholder for tag column',
+        defaultMessage: 'Search for a tag'
+    },
 });
 export { entryMessages };

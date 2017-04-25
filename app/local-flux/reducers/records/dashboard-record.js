@@ -14,12 +14,14 @@ export const ColumnRecord = Record({
     large: false,
     lastBlock: null,
     type: null,
-    value: null,
+    value: '',
 });
 
 export const DashboardRecord = Record({
-    name: null,
+    akashaId: null,
     columns: new List(),
+    id: null,
+    name: null,
 });
 
 const ids = ['latest', 'tagakasha', 'followingstream', 'profile'];
@@ -30,15 +32,15 @@ const defaultDashboard = new DashboardRecord({
 });
 
 export const DashboardState = Record({
+    activeDashboard: null,
     allDashboards: new List(),
-    byName: new Map({
-        default: defaultDashboard
+    dashboardById: new Map({
+        // default: defaultDashboard
     }),
     columnById: new Map({
-        [ids[0]]: new ColumnRecord({ id: ids[0], type: columnType.latest }),
-        [ids[1]]: new ColumnRecord({ id: ids[1], type: columnType.tag, value: 'akasha' }),
-        [ids[2]]: new ColumnRecord({ id: ids[2], type: columnType.stream }),
-        [ids[3]]: new ColumnRecord({ id: ids[3], type: columnType.profile, value: 'john.doe' })
+        // [ids[0]]: new ColumnRecord({ id: ids[0], type: columnType.latest }),
+        // [ids[1]]: new ColumnRecord({ id: ids[1], type: columnType.tag, value: 'akasha' }),
+        // [ids[2]]: new ColumnRecord({ id: ids[2], type: columnType.stream }),
+        // [ids[3]]: new ColumnRecord({ id: ids[3], type: columnType.profile, value: 'john.doe' })
     }),
-    selectedDashboard: 'default'
 });

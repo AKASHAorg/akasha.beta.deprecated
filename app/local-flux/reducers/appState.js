@@ -8,8 +8,14 @@ import { createReducer } from './create-reducer';
 const initialState = new AppRecord();
 
 const appState = createReducer(initialState, {
-    [appTypes.APP_READY]: state =>
+    [types.APP_READY]: state =>
         state.set('appReady', true),
+
+    [types.BOOTSTRAP_HOME_SUCCESS]: state =>
+        state.set('homeReady', true),
+
+    [types.RESET_HOME_READY]: state =>
+        state.set('homeReady', false),
 
     [appTypes.SHOW_AUTH_DIALOG]: (state, { actionId }) =>
         state.set('showAuthDialog', actionId),

@@ -28,6 +28,7 @@ class LatestColumn extends Component {
         return (
           <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
             <ColumnHeader
+              columnId={column.get('id')}
               icon={<ColumnLatest />}
               readOnly
               title={intl.formatMessage(dashboardMessages.columnLatest)}

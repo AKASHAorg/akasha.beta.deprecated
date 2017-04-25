@@ -28,6 +28,7 @@ class StreamColumn extends Component {
         return (
           <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
             <ColumnHeader
+              columnId={column.get('id')}
               icon={<ColumnStream />}
               readOnly
               title={intl.formatMessage(dashboardMessages.columnStream)}

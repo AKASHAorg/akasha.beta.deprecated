@@ -565,17 +565,8 @@ const profileState = createReducer(initialState, {
         });
     },
 
-    [types.PROFILE_GET_LOGGED]: state =>
-        state.setIn(['flags', 'fetchingLoggedProfile'], true),
-
-    [types.PROFILE_GET_LOGGED_ERROR]: state =>
-        state.setIn(['flags', 'fetchingLoggedProfile'], true),
-
     [types.PROFILE_GET_LOGGED_SUCCESS]: (state, { data }) =>
-        state.merge({
-            flags: state.get('flags').set('fetchingLoggedProfile', false),
-            loggedProfile: new LoggedProfile(data)
-        }),
+        state.set('loggedProfile', new LoggedProfile(data)),
 
     [types.PROFILE_LOGIN]: state =>
         state.setIn(['flags', 'loginPending'], true),
