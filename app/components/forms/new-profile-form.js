@@ -215,10 +215,14 @@ class NewProfileForm extends Component {
         ev.preventDefault();
         const { expandOptionalDetails } = this.props;
         const { optDetails } = this.state;
-        this.isSubmitting = true;
 
         this.props.validate((err) => {
-            if (err) return;
+            if (err) {
+                this.showErrorOnFields = this.showErrorOnFields.concat(Object.keys(err));
+                this.forceUpdate();
+                return;
+            }
+            this.isSubmitting = true;
             if (this.state.akashaIdIsValid && !this.state.akashaIdExists) {
                 if (optDetails || expandOptionalDetails) {
                     const backgroundImage = this.imageUploader.getImage();
@@ -243,7 +247,6 @@ class NewProfileForm extends Component {
         const { firstName, lastName, akashaId, password, password2,
           optDetails, about, links, crypto, formHasErrors } = this.state;
         const { formatMessage } = intl;
-
         return (
           <div
             className={`${styles.root} col-xs-12`}

@@ -30,11 +30,9 @@ class Auth extends Component {
         if (gethStatusChanged || ipfsStatusChanged) {
             profileGetLocal();
         }
-        if (loginErrors.size === 0 && tempProfile.get('akashaId')) {
-            this.setState({
-                hasTempProfile: true
-            });
-        }
+        this.setState({
+            hasTempProfile: (loginErrors.size === 0 && tempProfile.get('akashaId'))
+        });
     }
 
     componentWillUnmount () {
@@ -50,8 +48,9 @@ class Auth extends Component {
     }
     _handleNewIdentity = () => {
         const { hasTempProfile } = this.state;
-        const { history } = this.props;
+        const { history, tempProfileCreate, tempProfile } = this.props;
         if (hasTempProfile) {
+            tempProfileCreate(tempProfile);
             return history.push('/setup/new-identity-status');
         }
         return this.props.history.push('/setup/new-identity');
@@ -114,6 +113,7 @@ Auth.propTypes = {
     profileGetLocal: PropTypes.func.isRequired,
     showLoginDialog: PropTypes.func.isRequired,
     tempProfile: PropTypes.shape().isRequired,
+    tempProfileCreate: PropTypes.func,
     tempProfileGetRequest: PropTypes.func.isRequired,
     history: PropTypes.shape().isRequired,
 };

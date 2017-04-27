@@ -14,6 +14,7 @@ export LoginDialog from './dialogs/login-dialog';
 export LogoButton from './logo-button';
 export NewProfileForm from './forms/new-profile-form';
 export NewProfileStatus from './NewProfileStatus/new-profile-status';
+export NewProfileComplete from './NewProfileComplete/new-profile-complete';
 export NotificationBar from './notification-bar';
 export PageContent from './page-content';
 export PanelContainer from './PanelContainer/panel-container';
