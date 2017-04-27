@@ -15,7 +15,6 @@ class Sidebar extends Component {
         bootstrapHome();
         entryVoteCost();
         licenseGetAll();
-
         // make requests for geth status every 30s for updating the current block
         gethGetStatus();
         this.interval = setInterval(() => {

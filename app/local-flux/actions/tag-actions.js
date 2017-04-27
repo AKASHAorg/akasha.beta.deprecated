@@ -1,6 +1,8 @@
 import { AppActions, TransactionActions } from './';
 import { tagActionCreators } from './action-creators';
 import { TagService } from '../services';
+import * as types from '../constants';
+import { action } from './helpers';
 
 let tagActions = null;
 
@@ -266,3 +268,34 @@ class TagActions {
         this.dispatch(tagActionCreators.clearNewestTags());
 }
 export { TagActions };
+
+export const tagGetMarginsError = (error) => {
+    error.code = 'TGLE01';
+    return action(types.TAG_GET_MARGINS_ERROR, { error });
+};
+
+export const tagGetMarginsSuccess = data => action(types.TAG_GET_MARGINS_SUCCESS, { data });
+export const tagGetSuggestions = tag => action(types.TAG_GET_SUGGESTIONS, { tag });
+
+export const tagGetSuggestionsError = (error) => {
+    error.code = 'TGSE01';
+    return action(types.TAG_GET_SUGGESTIONS_ERROR, { error });
+};
+
+export const tagGetSuggestionsSuccess = data =>
+    action(types.TAG_GET_SUGGESTIONS_SUCCESS, { data });
+export const tagIterator = () => action(types.TAG_ITERATOR);
+
+export const tagIteratorError = (error) => {
+    error.code = 'TIE01';
+    return action(types.TAG_ITERATOR_ERROR, { error });
+};
+
+export const tagSave = data => action(types.TAG_SAVE, { data });
+
+export const tagSaveError = (error) => {
+    error.code = 'TSE01';
+    return action(types.TAG_SAVE_ERROR, { error });
+};
+
+export const tagSaveSuccess = data => action(types.TAG_SAVE_SUCCESS, { data });

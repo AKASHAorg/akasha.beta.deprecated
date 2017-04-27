@@ -7,4 +7,10 @@ tagsDB.version(1).stores({
     selectedTag: '&akashaId'
 });
 
+tagsDB.version(2).stores({
+    allTags: '&tagId, tagName',
+    margins: '&staticId',
+    selectedTag: null
+});
+
 export default tagsDB;

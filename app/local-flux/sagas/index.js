@@ -7,6 +7,7 @@ import * as externalProcSaga from './external-process-saga';
 import * as licenseSaga from './license-saga';
 import * as profileSaga from './profile-saga';
 import * as settingsSaga from './settings-saga';
+import * as tagSaga from './tag-saga';
 import * as tempProfileSaga from './temp-profile-saga';
 import * as utilsSaga from './utils-saga';
 import * as types from '../constants';
@@ -16,6 +17,7 @@ function* registerListeners () {
     yield fork(entrySaga.registerEntryListeners);
     yield fork(externalProcSaga.registerEProcListeners);
     yield fork(profileSaga.registerProfileListeners);
+    yield fork(tagSaga.registerTagListeners);
     yield fork(utilsSaga.registerUtilsListeners);
 }
 
@@ -39,6 +41,7 @@ function* launchHomeActions () {
     yield fork(dashboardSaga.dashboardGetActive);
     yield fork(dashboardSaga.dashboardGetAll);
     yield fork(dashboardSaga.dashboardGetColumns);
+    yield fork(tagSaga.tagGetMargins);
 }
 
 function* bootstrapApp () {
@@ -66,6 +69,7 @@ export default function* rootSaga () {
     yield fork(licenseSaga.watchLicenseActions);
     yield fork(profileSaga.watchProfileActions);
     yield fork(settingsSaga.watchSettingsActions);
+    yield fork(tagSaga.watchTagActions);
     yield fork(tempProfileSaga.watchTempProfileActions);
     yield fork(utilsSaga.watchUtilsActions);
     yield fork(bootstrapApp);
