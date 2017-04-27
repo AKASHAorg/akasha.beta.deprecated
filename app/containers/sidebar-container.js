@@ -17,7 +17,6 @@ function mapStateToProps (state) {
         loggedProfile: state.profileState.get('loggedProfile'),
         loggedProfileData: selectLoggedProfileData(state),
         notificationsCount: state.notificationsState.get('youNrFeed'),
-        selectedTag: state.tagState.get('selectedTag'),
     };
 }
 

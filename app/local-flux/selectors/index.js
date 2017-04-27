@@ -41,6 +41,8 @@ export const selectIpfsStatus = state => state.externalProcState.getIn(['ipfs', 
 
 export const selectLastStreamBlock = state => state.entryState.get('lastStreamBlock');
 
+export const selectTagMargins = state => state.tagState.get('margins');
+
 export const selectLocalProfiles = state =>
     state.profileState
         .get('localProfiles')

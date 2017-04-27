@@ -7,6 +7,7 @@ import { ColumnTag } from '../svg';
 import { EntryListContainer } from '../../shared-components';
 import { entryMessages } from '../../locale-data/messages';
 import { entryMoreTagIterator, entryTagIterator } from '../../local-flux/actions/entry-actions';
+import { tagGetSuggestions } from '../../local-flux/actions/tag-actions';
 import { selectColumnEntries } from '../../local-flux/selectors';
 
 class TagColumn extends Component {
@@ -32,7 +33,7 @@ class TagColumn extends Component {
     };
 
     render () {
-        const { column, entries, intl, profiles } = this.props;
+        const { column, entries, intl, profiles, suggestions } = this.props;
         const placeholderMessage = column.get('value') ?
             intl.formatMessage(entryMessages.noEntries) :
             intl.formatMessage(entryMessages.searchTag);
@@ -41,7 +42,9 @@ class TagColumn extends Component {
           <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
             <ColumnHeader
               columnId={column.get('id')}
+              onInputChange={this.props.tagGetSuggestions}
               icon={<ColumnTag />}
+              suggestions={suggestions}
               value={column.get('value')}
             />
             <EntryListContainer
@@ -65,12 +68,15 @@ TagColumn.propTypes = {
     entryTagIterator: PropTypes.func.isRequired,
     intl: PropTypes.shape().isRequired,
     profiles: PropTypes.shape().isRequired,
+    suggestions: PropTypes.shape().isRequired,
+    tagGetSuggestions: PropTypes.func.isRequired,
 };
 
 function mapStateToProps (state, ownProps) {
     return {
         entries: selectColumnEntries(state, ownProps.column.get('id')),
         profiles: state.profileState.get('byId'),
+        suggestions: state.tagState.get('suggestions')
     };
 }
 
@@ -79,5 +85,6 @@ export default connect(
     {
         entryMoreTagIterator,
         entryTagIterator,
+        tagGetSuggestions
     }
 )(injectIntl(TagColumn));

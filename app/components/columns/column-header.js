@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { SvgIcon, TextField } from 'material-ui';
+import { AutoComplete, SvgIcon } from 'material-ui';
 import { dashboardDeleteColumn,
     dashboardUpdateColumn } from '../../local-flux/actions/dashboard-actions';
 // import { UserMore } from '../../shared-components/svg';
@@ -17,13 +17,15 @@ class ColumnHeader extends Component {
     }
 
     onBlur = () => {
-        this.updateColumn();
         this.setState({
             isFocused: false
         });
     };
 
     onChange = (ev, value) => {
+        if (this.props.onInputChange) {
+            this.props.onInputChange(value);
+        }
         this.setState({
             value
         });
@@ -53,6 +55,12 @@ class ColumnHeader extends Component {
         });
     };
 
+    onNewRequest = (value) => {
+        this.setState({
+            value
+        }, () => this.updateColumn());
+    };
+
     deleteColumn = () => {
         const { columnId } = this.props;
         this.props.dashboardDeleteColumn(columnId);
@@ -66,7 +74,7 @@ class ColumnHeader extends Component {
     }
 
     render () {
-        const { icon, readOnly, title } = this.props;
+        const { icon, readOnly, suggestions, title } = this.props;
         const { isFocused, isHovered, value } = this.state;
 
         return (
@@ -89,13 +97,16 @@ class ColumnHeader extends Component {
                 <div>{title}</div>
               }
               {!readOnly &&
-                <TextField
+                <AutoComplete
                   id="value"
-                  value={value}
+                  dataSource={suggestions.toJS()}
+                  searchText={value}
                   onBlur={this.onBlur}
                   onChange={this.onChange}
                   onFocus={this.onFocus}
                   onKeyPress={this.onKeyPress}
+                  onNewRequest={this.onNewRequest}
+                  openOnFocus
                   underlineShow={isHovered || isFocused}
                 />
               }
@@ -122,11 +133,13 @@ class ColumnHeader extends Component {
 }
 
 ColumnHeader.propTypes = {
-    // columnId: PropTypes.string,
+    columnId: PropTypes.number.isRequired,
     dashboardDeleteColumn: PropTypes.func.isRequired,
     dashboardUpdateColumn: PropTypes.func.isRequired,
     icon: PropTypes.element,
+    onInputChange: PropTypes.func,
     readOnly: PropTypes.bool,
+    suggestions: PropTypes.shape(),
     title: PropTypes.string,
     value: PropTypes.string
 };

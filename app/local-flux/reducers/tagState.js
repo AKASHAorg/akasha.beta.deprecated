@@ -1,14 +1,20 @@
 /* eslint new-cap: [2, {capIsNewExceptions: ["Record"]}] */
 import { fromJS, List, Map, Record } from 'immutable';
-import * as types from '../constants/TagConstants';
+import * as tagTypes from '../constants/TagConstants';
 import * as appTypes from '../constants/AppConstants';
 import * as entryTypes from '../constants/EntryConstants';
+import * as types from '../constants';
 import { createReducer } from './create-reducer';
 
 const ErrorRecord = Record({
     code: 0,
     fatal: false,
     message: ''
+});
+
+const TagMarginsRecord = Record({
+    firstTag: null,
+    lastTag: null
 });
 
 const initialState = fromJS({
@@ -20,9 +26,11 @@ const initialState = fromJS({
         registerPending: new List(),
         subscribePending: new List()
     }),
-    newestTags: new List(),
+    isLoading: false,
+    margins: new TagMarginsRecord(),
     moreNewTags: false,
-    isLoading: false
+    newestTags: new List(),
+    suggestions: new List()
 });
 
 const subscribeFlagHandler = (state, { error, flags }) => {
@@ -75,121 +83,121 @@ const registerFlagHandler = (state, { error, flags }) => {
 };
 
 const tagState = createReducer(initialState, {
-    [types.GET_PENDING_TAGS]: (state, { flags }) =>
+    [tagTypes.GET_PENDING_TAGS]: (state, { flags }) =>
         state.merge({
             flags: state.get('flags').merge(flags)
         }),
 
-    [types.CREATE_PENDING_TAG_SUCCESS]: (state, { tag }) =>
+    [tagTypes.CREATE_PENDING_TAG_SUCCESS]: (state, { tag }) =>
         state.merge({
             pendingTags: state.get('pendingTags').push(tag)
         }),
 
-    [types.CREATE_PENDING_TAG_ERROR]: (state, { error }) =>
+    [tagTypes.CREATE_PENDING_TAG_ERROR]: (state, { error }) =>
         state.merge({
             errors: state.get('errors').push(new ErrorRecord(error))
         }),
 
-    [types.UPDATE_PENDING_TAG_SUCCESS]: (state, { tag }) => {
+    [tagTypes.UPDATE_PENDING_TAG_SUCCESS]: (state, { tag }) => {
         const index = state.get('pendingTags').findIndex(tagObj => tagObj.tag === tag.tag);
         return state.merge({
             pendingTags: state.get('pendingTags').mergeIn([index], tag)
         });
     },
 
-    [types.UPDATE_PENDING_TAG_ERROR]: (state, { error }) =>
+    [tagTypes.UPDATE_PENDING_TAG_ERROR]: (state, { error }) =>
         state.merge({
             errors: state.get('errors').push(new ErrorRecord(error))
         }),
 
-    [types.DELETE_PENDING_TAG_SUCCESS]: (state, { tag }) => {
+    [tagTypes.DELETE_PENDING_TAG_SUCCESS]: (state, { tag }) => {
         const index = state.get('pendingTags').findIndex(tagObj => tagObj.tag === tag);
         return state.merge({
             pendingTags: state.get('pendingTags').delete(index)
         });
     },
 
-    [types.DELETE_PENDING_TAG_ERROR]: (state, { error }) =>
+    [tagTypes.DELETE_PENDING_TAG_ERROR]: (state, { error }) =>
         state.merge({
             errors: state.get('errors').push(new ErrorRecord(error))
         }),
 
-    [types.GET_PENDING_TAGS_SUCCESS]: (state, { data, flags }) =>
+    [tagTypes.GET_PENDING_TAGS_SUCCESS]: (state, { data, flags }) =>
         state.merge({
             pendingTags: new List(data),
             flags: state.get('flags').merge(flags)
         }),
 
-    [types.GET_PENDING_TAGS_ERROR]: (state, { error, flags }) =>
+    [tagTypes.GET_PENDING_TAGS_ERROR]: (state, { error, flags }) =>
         state.merge({
             errors: state.get('errors').push(error),
             flags: state.get('flags').merge(flags)
         }),
 
-    [types.REGISTER_TAG]: registerFlagHandler,
+    [tagTypes.REGISTER_TAG]: registerFlagHandler,
 
-    [types.REGISTER_TAG_SUCCESS]: registerFlagHandler,
+    [tagTypes.REGISTER_TAG_SUCCESS]: registerFlagHandler,
 
-    [types.REGISTER_TAG_ERROR]: registerFlagHandler,
+    [tagTypes.REGISTER_TAG_ERROR]: registerFlagHandler,
 
-    [types.GET_SELECTED_TAG]: (state, { flags }) =>
+    [tagTypes.GET_SELECTED_TAG]: (state, { flags }) =>
         state.merge({
             flags: state.get('flags').merge(flags)
         }),
 
-    [types.GET_SELECTED_TAG_SUCCESS]: (state, { data, flags }) =>
+    [tagTypes.GET_SELECTED_TAG_SUCCESS]: (state, { data, flags }) =>
         state.merge({
             selectedTag: (data && data.tagName) || state.get('selectedTag'),
             flags: state.get('flags').merge(flags)
         }),
 
-    [types.GET_SELECTED_TAG_ERROR]: (state, { error, flags }) =>
+    [tagTypes.GET_SELECTED_TAG_ERROR]: (state, { error, flags }) =>
         state.merge({
             errors: state.get('errors').push(new ErrorRecord(error)),
             flags: state.get('flags').merge(flags)
         }),
 
-    [types.SAVE_TAG]: (state, { tag, flags }) =>
+    [tagTypes.SAVE_TAG]: (state, { tag, flags }) =>
         state.merge({
             selectedTag: tag,
             flags: state.get('flags').merge(flags)
         }),
 
-    [types.SAVE_TAG_SUCCESS]: (state, { flags }) =>
+    [tagTypes.SAVE_TAG_SUCCESS]: (state, { flags }) =>
         state.merge({
             flags: state.get('flags').merge(flags)
         }),
 
-    [types.SAVE_TAG_ERROR]: (state, { error, flags }) =>
-        state.merge({
-            errors: state.get('errors').push(new ErrorRecord(error)),
-            flags: state.get('flags').merge(flags)
-        }),
-
-    [types.TAG_ITERATOR]: (state, { flags }) =>
-        state.merge({
-            flags: state.get('flags').merge(flags)
-        }),
-
-    [types.TAG_ITERATOR_SUCCESS]: (state, { data, flags }) => {
-        const moreTags = data.limit === data.collection.length;
-        const newTags = moreTags ?
-            fromJS(data.collection.slice(0, -1)) :
-            fromJS(data.collection);
-        return state.merge({
-            newestTags: state.get('newestTags').concat(newTags),
-            moreNewTags: data.limit === data.collection.length,
-            flags: state.get('flags').merge(flags)
-        });
-    },
-
-    [types.TAG_ITERATOR_ERROR]: (state, { error, flags }) =>
+    [tagTypes.SAVE_TAG_ERROR]: (state, { error, flags }) =>
         state.merge({
             errors: state.get('errors').push(new ErrorRecord(error)),
             flags: state.get('flags').merge(flags)
         }),
 
-    [types.CLEAR_NEWEST_TAGS]: state =>
+    // [tagTypes.TAG_ITERATOR]: (state, { flags }) =>
+    //     state.merge({
+    //         flags: state.get('flags').merge(flags)
+    //     }),
+
+    // [tagTypes.TAG_ITERATOR_SUCCESS]: (state, { data, flags }) => {
+    //     const moreTags = data.limit === data.collection.length;
+    //     const newTags = moreTags ?
+    //         fromJS(data.collection.slice(0, -1)) :
+    //         fromJS(data.collection);
+    //     return state.merge({
+    //         newestTags: state.get('newestTags').concat(newTags),
+    //         moreNewTags: data.limit === data.collection.length,
+    //         flags: state.get('flags').merge(flags)
+    //     });
+    // },
+
+    // [tagTypes.TAG_ITERATOR_ERROR]: (state, { error, flags }) =>
+    //     state.merge({
+    //         errors: state.get('errors').push(new ErrorRecord(error)),
+    //         flags: state.get('flags').merge(flags)
+    //     }),
+
+    [tagTypes.CLEAR_NEWEST_TAGS]: state =>
         state.merge({
             newestTags: new List()
         }),
@@ -203,19 +211,29 @@ const tagState = createReducer(initialState, {
         return state;
     },
 
-    [types.SUBSCRIBE_TAG]: subscribeFlagHandler,
+    [tagTypes.SUBSCRIBE_TAG]: subscribeFlagHandler,
 
-    [types.SUBSCRIBE_TAG_SUCCESS]: subscribeFlagHandler,
+    [tagTypes.SUBSCRIBE_TAG_SUCCESS]: subscribeFlagHandler,
 
-    [types.SUBSCRIBE_TAG_ERROR]: subscribeFlagHandler,
+    [tagTypes.SUBSCRIBE_TAG_ERROR]: subscribeFlagHandler,
 
-    [types.UNSUBSCRIBE_TAG]: subscribeFlagHandler,
+    [tagTypes.UNSUBSCRIBE_TAG]: subscribeFlagHandler,
 
-    [types.UNSUBSCRIBE_TAG_SUCCESS]: subscribeFlagHandler,
+    [tagTypes.UNSUBSCRIBE_TAG_SUCCESS]: subscribeFlagHandler,
 
-    [types.UNSUBSCRIBE_TAG_ERROR]: subscribeFlagHandler,
+    [tagTypes.UNSUBSCRIBE_TAG_ERROR]: subscribeFlagHandler,
 
-    [appTypes.CLEAN_STORE]: state => initialState,
+    [appTypes.CLEAN_STORE]: () => initialState,
+
+    // ************ NEW REDUCERS **********************
+    [types.TAG_GET_MARGINS_SUCCESS]: (state, { data }) =>
+        state.set('margins', new TagMarginsRecord(data)),
+
+    [types.TAG_GET_SUGGESTIONS_SUCCESS]: (state, { data }) =>
+        state.set('suggestions', new List(data)),
+
+    [types.TAG_SAVE_SUCCESS]: (state, { data }) =>
+        state.set('margins', new TagMarginsRecord(data)),
 
 });
 
