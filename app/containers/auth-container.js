@@ -3,7 +3,7 @@ import { injectIntl } from 'react-intl';
 import { showLoginDialog } from '../local-flux/actions/app-actions';
 import { profileClearLocal, profileDeleteLogged,
     profileGetLocal } from '../local-flux/actions/profile-actions';
-import { tempProfileGetRequest } from '../local-flux/actions/temp-profile-actions';
+import { tempProfileGetRequest, tempProfileCreate } from '../local-flux/actions/temp-profile-actions';
 import { backupKeysRequest } from '../local-flux/actions/utils-actions';
 import { selectLocalProfiles, selectProfileFlag } from '../local-flux/selectors';
 import { Auth } from '../components';
@@ -31,5 +31,6 @@ export default connect(
         profileGetLocal,
         showLoginDialog,
         tempProfileGetRequest,
+        tempProfileCreate,
     }
 )(injectIntl(Auth));

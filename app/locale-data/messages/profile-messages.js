@@ -99,6 +99,86 @@ export const profileMessages = defineMessages({
         description: 'action `will take a few moments` to complete',
         defaultMessage: 'This will take a few moments'
     },
+    TEMP_PROFILE_CREATE: {
+        id: 'app.profile.tempProfileCreate',
+        description: 'creating a temp profile status message',
+        defaultMessage: 'Creating a temporary profile'
+    },
+    TEMP_PROFILE_CREATE_SUCCESS: {
+        id: 'app.profile.tempProfileCreateSuccess',
+        description: 'a temporary profile was successfully saved to database',
+        defaultMessage: 'Profile data saved to a local database'
+    },
+    ETH_ADDRESS_CREATE: {
+        id: 'app.profile.ethAddressCreate',
+        description: 'Message status when generating eth key',
+        defaultMessage: 'Creating local Ethereum key'
+    },
+    ETH_ADDRESS_CREATE_SUCCESS: {
+        id: 'app.profile.ethAddressCreateSuccess',
+        description: 'Message status when eth key generated',
+        defaultMessage: 'Ethereum key created'
+    },
+    FUND_FROM_FAUCET: {
+        id: 'app.profile.fundFromFaucet',
+        description: 'Message status when request to faucet started',
+        defaultMessage: 'Requesting aethers from AKASHA'
+    },
+    FUND_FROM_FAUCET_SUCCESS: {
+        id: 'app.profile.fundFromFaucetSuccess',
+        description: 'Message status when faucet request accepted',
+        defaultMessage: 'Request accepted.\nTransaction id is: {faucetTx}'
+    },
+    TEMP_PROFILE_FAUCET_TX_MINED: {
+        id: 'app.profile.tempProfileFaucetTxMined',
+        description: 'Message status when waiting for mined event',
+        defaultMessage: 'Waiting for faucet transaction to be mined.'
+    },
+    TEMP_PROFILE_FAUCET_TX_MINED_SUCCESS: {
+        id: 'app.profile.tempProfileFaucetTxMinedSuccess',
+        description: 'Message status when tx mined',
+        defaultMessage: 'Faucet Transaction successfully mined.'
+    },
+    TEMP_PROFILE_LOGIN: {
+        id: 'app.profile.tempProfileLogin',
+        description: 'Message status when login requested',
+        defaultMessage: 'Logging in with @{akashaId}'
+    },
+    TEMP_PROFILE_LOGIN_SUCCESS: {
+        id: 'app.profile.tempProfileLoginSuccess',
+        description: 'Message status when login succeded',
+        defaultMessage: 'Login was successful'
+    },
+    TEMP_PROFILE_PUBLISH: {
+        id: 'app.profile.tempProfilePublish',
+        description: 'Message status when publish profile requested',
+        defaultMessage: 'Publishing your profile'
+    },
+    TEMP_PROFILE_PUBLISH_SUCCESS: {
+        id: 'app.profile.tempProfilePublishSuccess',
+        description: 'Message status when profile was published',
+        defaultMessage: 'Profile published.\nTransaction id is: {publishTx}'
+    },
+    TEMP_PROFILE_PUBLISH_TX_MINED: {
+        id: 'app.profile.tempProfilePublishTxMined',
+        description: 'Message status when waiting for mined event for publish tx',
+        defaultMessage: 'Waiting for publish transaction to be mined'
+    },
+    TEMP_PROFILE_PUBLISH_TX_MINED_SUCCESS: {
+        id: 'app.profile.tempProfilePublishTxMinedSuccess',
+        description: 'Message status when publish tx mined',
+        defaultMessage: 'Publish transaction mined'
+    },
+    findingProfiles: {
+        id: 'app.profile.findingProfiles',
+        description: 'Message status when there are no temporary profiles in stores yet. But might be in database',
+        defaultMessage: 'Finding profiles to publish...'
+    },
+    finishingProfileCreation: {
+        id: 'app.profile.finishingProfileCreation',
+        description: 'Message status when all steps completed and data cleanup takes longer than expected.',
+        defaultMessage: 'Finishing profile publishing.'
+    },
     enjoyAkasha: {
         id: 'app.profile.enjoyAkasha',
         description: 'button label when register complete',

@@ -70,7 +70,7 @@ const generalMessages = defineMessages({
     createNewIdentityLabel: {
         id: 'app.general.createIdentityLabel',
         description: 'Create identity button label',
-        defaultMessage: 'Create new identity'
+        defaultMessage: 'Create identity'
     },
     resumeIdentityLabel: {
         id: 'app.general.resumeIdentityLabel',

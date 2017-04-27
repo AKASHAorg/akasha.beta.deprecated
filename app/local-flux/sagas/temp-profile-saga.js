@@ -29,6 +29,7 @@ function* createTempProfile (data) {
         );
         yield put(tempProfileActions.tempProfileCreateSuccess(tempProfile));
     } catch (ex) {
+        console.log(ex, 'look! an error!');
         yield put(tempProfileActions.tempProfileCreateError(ex));
     }
 }
@@ -255,12 +256,11 @@ function* watchPublishTxMined () {
 
 function* watchTempProfileRemove () {
     while (true) {
-        const action = yield take(types.TEMP_PROFILE_PUBLISH_TX_MINED_SUCCESS);
-        yield put(tempProfileActions.tempProfileDelete());
+        const action = yield take(types.TEMP_PROFILE_DELETE);
         try {
             yield call(
                 [registryService, registryService.deleteTempProfile],
-                action.data.tempProfile.akashaId
+                action.data.akashaId
             );
             yield put(tempProfileActions.tempProfileDeleteSuccess());
         } catch (err) {
