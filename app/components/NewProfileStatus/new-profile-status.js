@@ -65,7 +65,7 @@ class NewProfileStatus extends Component {
             this.setState({
                 finished: true
             }, () => {
-                history.push('/setup/new-profile-complete');
+                history.push('/setup/new-identity-complete');
             });
         }
     }

@@ -5,7 +5,8 @@ import { injectIntl } from 'react-intl';
 import PanelContainer from '../components/PanelContainer/panel-container';
 import { PanelHeader } from '../shared-components';
 import { ConfigurationContainer, SynchronizationContainer, AuthContainer,
-  LogDetailsContainer, NewProfileContainer, NewProfileStatusContainer } from './';
+  LogDetailsContainer, NewProfileContainer, NewProfileStatusContainer, NewProfileCompleteContainer } from './';
+import Tutorials from '../components/tutorials';
 import { setupMessages, generalMessages } from '../locale-data/messages';
 
 const LauncherContainer = ({ intl, location }) => {
@@ -34,6 +35,10 @@ const LauncherContainer = ({ intl, location }) => {
             path: '/setup/new-identity-status',
             component: NewProfileStatusContainer,
             title: intl.formatMessage(generalMessages.akasha)
+        }, {
+            path: '/setup/new-identity-complete',
+            component: NewProfileCompleteContainer,
+            title: intl.formatMessage(generalMessages.akasha)
         }
     ];
     const titleRoutes = routes.map(route => (
@@ -43,11 +48,16 @@ const LauncherContainer = ({ intl, location }) => {
       <Route key={route.path} path={route.path} component={route.component} />
     ));
     return (
-      <PanelContainer showBorder>
-        <PanelHeader title={titleRoutes} />
-        {location.pathname === '/setup' && <Redirect to={'/setup/configuration'} />}
-        {componentRoutes}
-      </PanelContainer>
+      <div className="row top-xs full-page">
+        <PanelContainer showBorder>
+          <PanelHeader title={titleRoutes} />
+          {location.pathname === '/setup' && <Redirect to={'/setup/configuration'} />}
+          {componentRoutes}
+        </PanelContainer>
+        <div className="col-xs-8" style={{ height: '100%' }}>
+          <Tutorials />
+        </div>
+      </div>
     );
 };
 

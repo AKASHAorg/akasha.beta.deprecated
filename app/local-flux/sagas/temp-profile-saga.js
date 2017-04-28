@@ -264,6 +264,7 @@ function* watchTempProfileRemove () {
             );
             yield put(tempProfileActions.tempProfileDeleteSuccess());
         } catch (err) {
+            console.error('error!', err);
             yield put(tempProfileActions.tempProfileDeleteError(err));
         }
     }

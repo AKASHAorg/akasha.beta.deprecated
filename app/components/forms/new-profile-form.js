@@ -40,7 +40,8 @@ class NewProfileForm extends Component {
 
     _showTerms = (ev) => {
         ev.preventDefault();
-        // show terms panel
+        const { onTermsShow } = this.props;
+        if (onTermsShow) return onTermsShow();
     }
     _handleShowDetails = () => {
         this.setState({
@@ -482,8 +483,8 @@ class NewProfileForm extends Component {
                   values={{
                       termsLink: (
                         <a
-                          href="#terms"
-                          onClick={this._showTerms}
+                          href="#"
+                          onClick={ev => this._showTerms(ev)}
                           style={{ color: muiTheme.palette.primary1Color }}
                         >
                           {intl.formatMessage(generalMessages.termsOfService)}
@@ -525,7 +526,8 @@ NewProfileForm.propTypes = {
     getValidationMessages: PropTypes.func,
     onSubmit: PropTypes.func,
     onCancel: PropTypes.func,
-    style: PropTypes.shape()
+    style: PropTypes.shape(),
+    onTermsShow: PropTypes.func,
 };
 
 const validationHOC = validation(strategy());
