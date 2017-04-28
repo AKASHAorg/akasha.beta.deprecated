@@ -1,6 +1,7 @@
 import { connect } from 'react-redux';
-import NewProfileComplete from '../components';
-import { tempProfileUpdate, tempProfileDelete } from '../local-flux/actions/temp-profile-actions';
+import { injectIntl } from 'react-intl';
+import { NewProfileComplete } from '../components';
+import { tempProfileGetRequest, tempProfileDelete } from '../local-flux/actions/temp-profile-actions';
 
 function mapStateToProps (state) {
     return {
@@ -11,7 +12,7 @@ function mapStateToProps (state) {
 export default connect(
     mapStateToProps,
     {
-        tempProfileUpdate,
+        tempProfileGetRequest,
         tempProfileDelete,
     }
-)(NewProfileComplete);
+)(injectIntl(NewProfileComplete));

@@ -9,39 +9,41 @@ import { generalMessages } from '../../locale-data/messages';
 import imageCreator, { getResizedImages, findClosestMatch } from '../../utils/imageUtils';
 import styles from './image-uploader.scss';
 
+const INITIAL_PROGRESS_VALUE = 20;
+
 class ImageUploader extends Component {
     constructor (props) {
         super(props);
         this.state = {
             imageFile: {},
-            maxSteps: 0,
-            currentStep: 0,
-            isNewImage: false
+            progress: INITIAL_PROGRESS_VALUE,
+            isNewImage: false,
+            error: null
         };
     }
     componentDidMount () {
         const { initialImageLink, minHeight, minWidth } = this.props;
         if (initialImageLink && initialImageLink.includes('/ipfs/')) {
-            // const filePromises = getResizedImages([initialImageLink], {
-            //     minWidth,
-            //     minHeight,
-            //     ipfsFile: true
-            // });
-            // return Promise.all(filePromises)
-            //     .then((results) => {
-            //         this.setState({
-            //             imageFile: results,
-            //             isNewImage: true,
-            //             error: null
-            //         }, () => {
-            //             this.fileInput.value = '';
-            //         });
-            //     }).catch((err) => {
-            //         console.error(err);
-            //         return this.setState({
-            //             error: err
-            //         });
-            //     });
+            const filePromises = getResizedImages([initialImageLink], {
+                minWidth,
+                minHeight,
+                ipfsFile: true
+            });
+            return Promise.all(filePromises)
+                .then((results) => {
+                    this.setState({
+                        imageFile: results,
+                        isNewImage: true,
+                        error: null
+                    }, () => {
+                        this.fileInput.value = '';
+                    });
+                }).catch((err) => {
+                    console.error(err);
+                    return this.setState({
+                        error: err
+                    });
+                });
         }
         return null;
     }
@@ -71,30 +73,31 @@ class ImageUploader extends Component {
         }
         return this.props.initialImage;
     }
+    _handleResizeProgress = (totalProgress) => {
+        this.setState({
+            progress: totalProgress + INITIAL_PROGRESS_VALUE
+        });
+        this.forceUpdate();
+    }
     _resizeImages = (files) => {
         const filePromises = getResizedImages(files, {
             minWidth: this.props.minWidth,
-            minHeight: this.props.minHeight
+            minHeight: this.props.minHeight,
+            progressHandler: this._handleResizeProgress,
+            maxProgress: (100 - INITIAL_PROGRESS_VALUE)
         });
-        // @todo: support for multiple files
-        filePromises[0].then((promiseArray) => {
+        filePromises[0].then((results) => {
             this.setState({
-                maxSteps: promiseArray.length - 1
-            }, () => {
-                promiseArray.forEach((promise, index) => {
-                    promise.then((result) => {
-                        const imageFiles = Object.assign({}, this.state.imageFile, result);
-                        this.setState({
-                            imageFile: imageFiles,
-                            currentStep: index,
-                            processingFinished: index === (promiseArray.length - 1)
-                        });
-                    });
-                    // promise.then((result) => {
-                        
-                    // });
-                });
-                this.fileInput.value = '';
+                imageFile: results,
+                processingFinished: true,
+                error: null,
+            });
+        }).catch((err) => {
+            this.setState({
+                error: err,
+                isNewImage: false,
+                progress: INITIAL_PROGRESS_VALUE,
+                processingFinished: false,
             });
         });
     }
@@ -109,7 +112,9 @@ class ImageUploader extends Component {
             isNewImage: true,
             processingFinished: false
         }, () => {
+            this.forceUpdate();
             this._resizeImages(this.fileInput.files);
+            this.fileInput.value = '';
         });
     }
     _getImageSrc = (imageObj) => {
@@ -126,6 +131,8 @@ class ImageUploader extends Component {
         this.setState({
             imageFile: {},
             isNewImage: false,
+            processingFinished: false,
+            progress: INITIAL_PROGRESS_VALUE,
             initialImageFile: null,
             error: null
         });
@@ -144,7 +151,6 @@ class ImageUploader extends Component {
         if (multiFiles) {
             console.error('sorry multiple files is not implemented yet!');
         }
-        // console.log(this.state.imageFile);
         return (
           <div
             ref={(container) => { this.container = container; }}
@@ -168,7 +174,7 @@ class ImageUploader extends Component {
                       <LinearProgress
                         mode="determinate"
                         style={{ display: 'inline-block' }}
-                        value={(100 / this.state.maxSteps) * this.state.currentStep}
+                        value={this.state.progress}
                       />
                     </div>
                   </div>

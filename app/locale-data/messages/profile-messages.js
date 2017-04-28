@@ -202,7 +202,7 @@ export const profileMessages = defineMessages({
     backupYourId: {
         id: 'app.profile.backupYourId',
         description: 'tip to backup your id',
-        defaultMessage: 'Backup your ID now and don’t be sorry later'
+        defaultMessage: 'Backup your ID (in the next screen) and don’t be sorry later'
     },
     dontShareKey: {
         id: 'app.profile.dontShareKey',

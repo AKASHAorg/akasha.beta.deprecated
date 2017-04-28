@@ -33,7 +33,7 @@ const TermsPanel = ({ hideTerms }, { muiTheme }) => (
           zIndex: 16
       }}
     >
-      <div>
+      <div style={{ padding: '0 32px' }}>
         <div>
           <FormattedHTMLMessage
             id="app.terms.preface"
@@ -41,7 +41,7 @@ const TermsPanel = ({ hideTerms }, { muiTheme }) => (
             defaultMessage={`<p>1 AKASHA is a next-generation social blogging network powered by a new kind of computer known as Ethereum and the Inter Planetary File System. Being a fully decentralized platform, AKASHA is not under control of any legal entity or private individual. While AKASHA                  International GmbH has developed and will continue to develop AKASHA, it does not operate or control AKASHA and/or the content made available by the users through an on AKASHA. AKASHA International GmbH merely operates the web-interface akasha.world which may be used to                  access AKASHA.</p>
                         <p>2 By using AKASHA and creating an AKASHA Identity or a Profile Smart Contract, you confirm to have carefully reviewed and to fully understand and agree to the terms and conditions set forth in this document (the “Terms”).</p>
                         <p>3 Because the current version of AKASHA is a Pre-Alpha release only, we may ask you to review and accept new or supplemental terms that apply to your interaction with AKASHA and newly introduced functionalities in the future.</p>
-                        <p>4 Prior to installing AKAHSA, please ensure that you have downloaded the .zip file by using the pre-alpha invites directly sent out by AKASHA. Unpacking / installing any other files may involve substantial security risks.</p>`
+                        <p>4 Prior to installing AKASHA, please ensure that you have downloaded the .zip file by using the pre-alpha invites directly sent out by AKASHA. Unpacking / installing any other files may involve substantial security risks.</p>`
                     }
           />
         </div>

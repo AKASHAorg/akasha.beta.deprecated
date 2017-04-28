@@ -21,7 +21,12 @@ html, body {
     // flex-basis: auto;
     // display: inline-flex;
 }
-
+.full-page {
+    margin: 0;
+    height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
 .user-icon {
     visibility: hidden;
     &:hover, .active {

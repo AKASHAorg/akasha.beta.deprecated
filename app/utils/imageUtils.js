@@ -92,13 +92,15 @@ function extractImageFromContent (content) {
 
 const settings = {
     extentions: ['jpg', 'jpeg', 'png', 'svg'],
+    resizerSettings: {
+        alphaChannel: true,
+        unsharpAmount: 50,
+        unsharpRadius: 0.6,
+        unsharpThreshold: 2,
+    },
     defaultQuality: 3,
     minWidth: 360,
     minHeight: null,
-    alphaChannel: false,
-    unsharpAmount: 50,
-    unsharpRadius: 0.6,
-    unsharpThreshold: 2,
     animatedGifSupport: true,
     /**
      * Handling multiple files uploaded at once
@@ -156,43 +158,46 @@ const canvasToArray = canvas =>
 const resizeImage = (image, options) => {
     const { actualWidth, actualHeight } = options;
     const imageWidths = settings.imageWidths.filter(widthObj => widthObj.res <= actualWidth);
+    const imageObject = {};
+    let p = Promise.resolve();
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const pica = new Pica();
     /**
      * Sequential processing is recommended by pica.
      * see https://github.com/nodeca/pica#api
      */
-    const images = imageWidths.map((widthObj) => {
-        const sourceCanvas = document.createElement('canvas');
-        const sourceCtx = sourceCanvas.getContext('2d');
-        const destCanvas = document.createElement('canvas');
-        const destCtx = destCanvas.getContext('2d');
-        const targetWidth = widthObj.res;
-        const targetHeight = (actualHeight * widthObj.res) / actualWidth;
-
-        sourceCanvas.width = image.width;
-        sourceCanvas.height = image.height;
-
-        destCanvas.width = targetWidth;
-        destCanvas.height = targetHeight;
-
-        destCtx.fillStyle = 'white';
-        sourceCtx.drawImage(image, 0, 0, image.width, image.height);
-
-        return new Promise((resolve, reject) => {
-            const pica = new Pica();
-            pica.resize(sourceCanvas, destCanvas, {
+    imageWidths.forEach((widthObj, index) => {
+        p = p.then(() => {
+            const targetWidth = widthObj.res;
+            const targetHeight = (actualHeight * widthObj.res) / actualWidth;
+            ctx.canvas.width = targetWidth;
+            ctx.canvas.height = targetHeight;
+            ctx.fillStyle = 'white'; 
+            /**
+             * pica.resizeCanvas(from, to, options, cb)
+             */
+            return pica.resize(image, canvas, {
                 quality: 3,
                 alpha: true
-            }).then(resultedCanvas =>
+            }).then(destCanvas =>
                 // console.timeEnd(`resize to ${widthObj.res} took`);
-                canvasToArray(resultedCanvas, widthObj.key).then((result) => {
-                    return resolve({
-                        [widthObj.key]: result
-                    });
+                canvasToArray(destCanvas).then((result) => {
+                    if (options.progressHandler && typeof options.progressHandler === 'function') {
+                        const { maxProgress } = options;
+                        if (!maxProgress) {
+                            return console.error('Please provide maxProgress attribute when using progressHandler!');
+                        }
+                        const currentProgress = index * (maxProgress / (imageWidths.length - 1));
+                        options.progressHandler(currentProgress);
+                    }
+                    imageObject[widthObj.key] = result;
+                    return imageObject;
                 })
-            ).catch(ex => reject(ex));
+            ).catch(err => Promise.reject(err));
         });
     });
-    return images;
+    return p;
 };
 
 const resizeAnimatedGif = (dataUrl, image, options) => {

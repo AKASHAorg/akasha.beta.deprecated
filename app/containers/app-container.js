@@ -32,7 +32,7 @@ const AppContainer = (props) => {
     return (
       <MuiThemeProvider muiTheme={muiTheme}>
         <DataLoader flag={!appState.get('appReady')} size={80} style={{ paddingTop: '-50px' }}>
-          <div className="fill-height" style={{ backgroundColor: muiTheme.palette.themeColor }} >
+          <div className="container fill-height" style={{ backgroundColor: muiTheme.palette.themeColor }} >
             {location.pathname === '/' && <Redirect to="/setup" />}
             <Route path="/setup" component={LauncherContainer} />
             <Route path="/dashboard" component={HomeContainer} />

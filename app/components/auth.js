@@ -61,7 +61,7 @@ class Auth extends Component {
 
         return (
           <div style={{ width: '100%' }}>
-            <div style={{ width: '100%', height: '100%', padding: '12px 24px' }}>
+            <div style={{ width: '100%', height: '100%' }}>
               <ProfilesList
                 fetchingProfiles={!localProfilesFetched || fetchingProfileList}
                 gethStatus={gethStatus}
@@ -71,13 +71,16 @@ class Auth extends Component {
                 profiles={localProfiles}
               />
             </div>
-            <PanelContainerFooter >
-              <RaisedButton
-                disabled={backupPending}
-                key="backup"
-                label={intl.formatMessage(generalMessages.backup)}
-                onClick={backupKeysRequest}
-              />
+            <PanelContainerFooter
+              leftActions={[
+                  <RaisedButton
+                    disabled={backupPending}
+                    key="backup"
+                    label={intl.formatMessage(generalMessages.backup)}
+                    onClick={backupKeysRequest}
+                  />
+              ]}
+            >
               <RaisedButton
                 key="createNewIdentity"
                 label={this._getNewIdentityLabel()}
