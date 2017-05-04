@@ -671,6 +671,9 @@ class EntryActions {
 
 export { EntryActions };
 
+export const entryAddClaimAction = payload => action(types.ADD_CLAIM_ACTION, { payload });
+export const entryAddDownvoteAction = payload => action(types.ADD_DOWNVOTE_ACTION, { payload });
+export const entryAddUpvoteAction = payload => action(types.ADD_UPVOTE_ACTION, { payload });
 export const entryCanClaim = entryId => action(types.ENTRY_CAN_CLAIM, { entryId });
 
 export const entryCanClaimError = (error) => {
@@ -680,6 +683,30 @@ export const entryCanClaimError = (error) => {
 };
 
 export const entryCanClaimSuccess = data => action(types.ENTRY_CAN_CLAIM_SUCCESS, { data });
+export const entryClaim = (entryId, entryTitle, gas) =>
+    action(types.ENTRY_CLAIM, { entryId, entryTitle, gas });
+
+export const entryClaimError = (error, entryId, entryTitle) => {
+    error.code = 'ECE01';
+    error.messageId = 'entryClaim';
+    error.values = { entryTitle };
+    return action(types.ENTRY_CLAIM_ERROR, { error, entryId });
+};
+
+export const entryClaimSuccess = data => action(types.ENTRY_CLAIM_SUCCESS, { data });
+export const entryCleanFull = () => action(types.ENTRY_CLEAN_FULL);
+export const entryDownvote = (entryId, entryTitle, weight, value, gas) =>
+    action(types.ENTRY_DOWNVOTE, { entryId, entryTitle, weight, value, gas });
+
+export const entryDownvoteError = (error, entryId, entryTitle) => {
+    error.code = 'EDE01';
+    error.messageId = 'entryDownvote';
+    error.values = { entryTitle };
+    return action(types.ENTRY_DOWNVOTE_ERROR, { error, entryId });
+};
+
+export const entryDownvoteSuccess = data =>
+    action(types.ENTRY_DOWNVOTE_SUCCESS, { data });
 export const entryGetBalance = entryId => action(types.ENTRY_GET_BALANCE, { entryId });
 
 export const entryGetBalanceError = (error) => {
@@ -689,6 +716,35 @@ export const entryGetBalanceError = (error) => {
 };
 
 export const entryGetBalanceSuccess = data => action(types.ENTRY_GET_BALANCE_SUCCESS, { data });
+export const entryGetFull = (entryId, version) =>
+    action(types.ENTRY_GET_FULL, { entryId, version });
+
+export const entryGetFullError = (error) => {
+    error.code = 'EGFE01';
+    error.messageId = 'entryGetFull';
+    return action(types.ENTRY_GET_FULL_ERROR, { error });
+};
+
+export const entryGetFullSuccess = data => action(types.ENTRY_GET_FULL_SUCCESS, { data });
+export const entryGetLatestVersion = entryId => action(types.ENTRY_GET_LATEST_VERSION, { entryId });
+
+export const entryGetLatestVersionError = (error) => {
+    error.code = 'EGLVE01';
+    error.messageId = 'entryGetLatestVersion';
+    action(types.ENTRY_GET_LATEST_VERSION_ERROR, { error });
+};
+
+export const entryGetLatestVersionSuccess = data =>
+    action(types.ENTRY_GET_LATEST_VERSION_SUCCESS, { data });
+export const entryGetScore = entryId => action(types.ENTRY_GET_SCORE, { entryId });
+
+export const entryGetScoreError = (error) => {
+    error.code = 'EGSE01';
+    error.messageId = 'entryGetError';
+    return action(types.ENTRY_GET_SCORE_ERROR, { error });
+};
+
+export const entryGetScoreSuccess = data => action(types.ENTRY_GET_SCORE_SUCCESS, { data });
 export const entryGetVoteOf = entryId => action(types.ENTRY_GET_VOTE_OF, { entryId });
 
 export const entryGetVoteOfError = (error) => {
@@ -698,6 +754,15 @@ export const entryGetVoteOfError = (error) => {
 };
 
 export const entryGetVoteOfSuccess = data => action(types.ENTRY_GET_VOTE_OF_SUCCESS, { data });
+export const entryIsActive = entryId => action(types.ENTRY_IS_ACTIVE, { entryId });
+
+export const entryIsActiveError = (error) => {
+    error.code = 'EIAE01';
+    error.messageId = 'entryIsActive';
+    return action(types.ENTRY_IS_ACTIVE_ERROR, { error });
+};
+
+export const entryIsActiveSuccess = data => action(types.ENTRY_IS_ACTIVE_SUCCESS, { data });
 export const entryMoreNewestIterator = id => action(types.ENTRY_MORE_NEWEST_ITERATOR, { id });
 
 export const entryMoreNewestIteratorError = (error, req) => {
@@ -750,6 +815,9 @@ export const entryNewestIteratorError = (error, req) => {
 
 export const entryNewestIteratorSuccess = (data, req) =>
     action(types.ENTRY_NEWEST_ITERATOR_SUCCESS, { data, req });
+export const entryPageHide = () => action(types.ENTRY_PAGE_HIDE);
+export const entryPageShow = (entryId, version) =>
+    action(types.ENTRY_PAGE_SHOW, { entryId, version });
 export const entryProfileIterator = (id, akashaId) =>
     action(types.ENTRY_PROFILE_ITERATOR, { id, akashaId });
 
@@ -781,6 +849,18 @@ export const entryTagIteratorError = (error, req) => {
 
 export const entryTagIteratorSuccess = (data, req) =>
     action(types.ENTRY_TAG_ITERATOR_SUCCESS, { data, req });
+export const entryUpvote = (entryId, entryTitle, weight, value, gas) =>
+    action(types.ENTRY_UPVOTE, { entryId, entryTitle, weight, value, gas });
+
+export const entryUpvoteError = (error, entryId, entryTitle) => {
+    error.code = 'EUE01';
+    error.messageId = 'entryUpvote';
+    error.values = { entryTitle };
+    return action(types.ENTRY_UPVOTE_ERROR, { error, entryId });
+};
+
+export const entryUpvoteSuccess = data =>
+    action(types.ENTRY_UPVOTE_SUCCESS, { data });
 export const entryVoteCost = () => action(types.ENTRY_VOTE_COST);
 
 export const entryVoteCostError = (error) => {

@@ -1,5 +1,7 @@
 import { profileActionCreators, transactionActionCreators } from './action-creators';
 import { ProfileService, TransactionService } from '../services';
+import * as types from '../constants';
+import { action } from './helpers';
 
 let transactionActions = null;
 
@@ -112,4 +114,60 @@ class TransactionActions {
         });
     }
 }
+
 export { TransactionActions };
+
+export const transactionAddToQueue = txs => action(types.TRANSACTION_ADD_TO_QUEUE, { txs });
+
+export const transactionAddToQueueError = (error) => {
+    error.code = 'TATQE01';
+    error.messageId = 'transactionAddToQueue';
+    return action(types.TRANSACTION_ADD_TO_QUEUE_ERROR, { error });
+};
+
+export const transactionAddToQueueSuccess = request =>
+    action(types.TRANSACTION_ADD_TO_QUEUE_SUCCESS, { request });
+export const transactionDeletePending = tx => action(types.TRANSACTION_DELETE_PENDING, { tx });
+
+export const transactionDeletePendingError = (error, tx) => {
+    error.code = 'TDPE01';
+    error.messageId = 'transactionDeletePending';
+    return action(types.TRANSACTION_DELETE_PENDING_ERROR, { error, tx });
+};
+
+export const transactionDeletePendingSuccess = data =>
+    action(types.TRANSACTION_DELETE_PENDING_SUCCESS, { data });
+export const transactionEmitMinedError = (error) => {
+    error.code = 'TEME01';
+    error.messageId = 'transactionEmitMined';
+    return action(types.TRANSACTION_EMIT_MINED_ERROR, { error });
+};
+
+export const transactionEmitMinedSuccess = data =>
+    action(types.TRANSACTION_EMIT_MINED_SUCCESS, { data });
+export const transactionGetMined = () => { console.log('get mined'); return action(types.TRANSACTION_GET_MINED); };
+
+export const transactionGetMinedError = (error) => {
+    error.code = 'TGME01';
+    error.messageId = 'transactionGetMined';
+    return action(types.TRANSACTION_GET_MINED_ERROR, { error });
+};
+
+export const transactionGetMinedSuccess = data =>
+    action(types.TRANSACTION_GET_MINED_SUCCESS, { data });
+export const transactionGetPending = () => action(types.TRANSACTION_GET_PENDING);
+
+export const transactionGetPendingError = (error) => {
+    error.code = 'TGPE01';
+    error.messageId = 'transactionGetPending';
+    return action(types.TRANSACTION_GET_PENDING_ERROR, { error });
+};
+
+export const transactionGetPendingSuccess = data =>
+    action(types.TRANSACTION_GET_PENDING_SUCCESS, { data });
+
+export const transactionSavePendingError = (error) => {
+    error.code = 'TSPE01';
+    error.messageId = 'transactionSavePending';
+    return action(types.TRANSACTION_SAVE_PENDING_ERROR, { error });
+};

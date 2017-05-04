@@ -6,7 +6,7 @@ import { errorMessages, generalMessages } from '../locale-data/messages';
 const ErrorBar = ({ deleteError, error, intl }, { muiTheme }) => {
     const { palette } = muiTheme;
     const message = error.get('messageId') ?
-        intl.formatMessage(errorMessages[error.get('messageId')]) :
+        intl.formatMessage(errorMessages[error.get('messageId')], error.get('values')) :
         error.get('message');
     return (
       <Snackbar

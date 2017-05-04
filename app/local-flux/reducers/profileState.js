@@ -453,6 +453,14 @@ const profileState = createReducer(initialState, {
 
 // ***************************** NEW REDUCERS **************************************
 
+    [types.ENTRY_GET_FULL_SUCCESS]: (state, { data }) => {
+        const { publisher } = data.entryEth;
+        if (!publisher) {
+            return state;
+        }
+        return state.set('byId', addProfileData(state.get('byId'), publisher));
+    },
+
     [types.ENTRY_MORE_NEWEST_ITERATOR_SUCCESS]: entryIteratorHandler,
 
     [types.ENTRY_MORE_PROFILE_ITERATOR_SUCCESS]: entryIteratorHandler,
@@ -580,7 +588,7 @@ const profileState = createReducer(initialState, {
     [types.PROFILE_LOGIN_SUCCESS]: (state, { data }) =>
         state.merge({
             flags: state.get('flags').set('loginPending', false),
-            loggedProfile: new LoggedProfile(data)
+            loggedProfile: state.get('loggedProfile').merge(data)
         }),
 });
 

@@ -2,67 +2,16 @@ import { fromJS } from 'immutable';
 import { AppRecord, NotificationRecord, PendingActionRecord } from './records';
 import * as types from '../constants';
 import * as appTypes from '../constants/AppConstants';
-import * as profileTypes from '../constants/ProfileConstants';
+import actionTypes from '../../constants/action-types';
 import { createReducer } from './create-reducer';
 
 const initialState = new AppRecord();
+let id = 0;
 
 const appState = createReducer(initialState, {
-    [types.APP_READY]: state =>
-        state.set('appReady', true),
-
-    [types.BOOTSTRAP_HOME_SUCCESS]: state =>
-        state.set('homeReady', true),
-
-    [types.RESET_HOME_READY]: state =>
-        state.set('homeReady', false),
-
-    [appTypes.SHOW_AUTH_DIALOG]: (state, { actionId }) =>
-        state.set('showAuthDialog', actionId),
-
-    [appTypes.HIDE_AUTH_DIALOG]: state =>
-        state.set('showAuthDialog', null),
-
-    [types.SHOW_REPORT_MODAL]: state =>
-        state.set('showReportModal', true),
-
-    [types.HIDE_REPORT_MODAL]: state =>
-        state.set('showReportModal', false),
-
-    [appTypes.SHOW_WEIGHT_CONFIRM_DIALOG]: (state, { resource }) =>
-        state.set('weightConfirmDialog', resource),
-
-    [appTypes.HIDE_WEIGHT_CONFIRM_DIALOG]: state =>
-        state.set('weightConfirmDialog', null),
-
-    [appTypes.SHOW_PUBLISH_CONFIRM_DIALOG]: (state, { resource }) =>
-        state.set('publishConfirmDialog', resource),
-
-    [appTypes.HIDE_PUBLISH_CONFIRM_DIALOG]: state =>
-        state.set('publishConfirmDialog', null),
-
-    [appTypes.SHOW_TRANSFER_CONFIRM_DIALOG]: (state, { resource }) =>
-        state.set('transferConfirmDialog', resource),
-
-    [appTypes.HIDE_TRANSFER_CONFIRM_DIALOG]: state =>
-        state.set('transferConfirmDialog', null),
 
     [appTypes.SET_TIMESTAMP]: (state, action) =>
         state.set('timestamp', action.timestamp),
-
-    [profileTypes.LOGIN_SUCCESS]: (state) => {
-        const actionIndex = state.get('pendingActions').findIndex(action =>
-            action.get('status') === 'checkAuth');
-        if (actionIndex !== -1) {
-            return state.merge({
-                pendingActions: state.get('pendingActions').mergeIn([actionIndex], {
-                    status: 'readyToPublish'
-                }),
-                showAuthDialog: null
-            });
-        }
-        return state.set('showAuthDialog', null);
-    },
 
     [appTypes.SHOW_NOTIFICATION]: (state, { notification }) => state.merge({
         notifications: state.get('notifications').push(new NotificationRecord(notification))
@@ -82,20 +31,6 @@ const appState = createReducer(initialState, {
             pendingActions: state.get('pendingActions').push(new PendingActionRecord(fromJS(data)))
         }),
 
-    [appTypes.UPDATE_PENDING_ACTION]: (state, { data }) => {
-        const index = state.get('pendingActions').findIndex(action =>
-            action.get('id') === data.id);
-        return state.merge({
-            pendingActions: state.get('pendingActions').mergeIn([index], data)
-        });
-    },
-
-    [appTypes.DELETE_PENDING_ACTION]: (state, { actionId }) =>
-        state.merge({
-            pendingActions: state.get('pendingActions').filter(action =>
-                action.get('id') !== actionId)
-        }),
-
     [appTypes.SHOW_TERMS]: state =>
         state.merge({
             showTerms: true
@@ -112,11 +47,109 @@ const appState = createReducer(initialState, {
     [appTypes.TOGGLE_IPFS_DETAILS_MODAL]: state =>
         state.set('showIpfsDetailsModal', !state.get('showIpfsDetailsModal')),
 
-    [types.SHOW_LOGIN_DIALOG]: (state, { profileAddress }) =>
-        state.set('showLoginDialog', profileAddress),
+// ********************* NEW REDUCERS ******************************
+
+    [types.ADD_CLAIM_ACTION]: (state, { payload }) => {
+        id += 1;
+        return state.setIn(['pendingActions', id], new PendingActionRecord({
+            id,
+            type: actionTypes.claim,
+            payload: fromJS(payload),
+            gas: 2000000,
+            titleId: 'claimTitle',
+            messageId: 'claim',
+            status: 'checkAuth'
+        }));
+    },
+
+    [types.ADD_DOWNVOTE_ACTION]: (state, { payload }) => {
+        id += 1;
+        return state.setIn(['pendingActions', id], new PendingActionRecord({
+            id,
+            type: actionTypes.downvote,
+            payload: fromJS(payload),
+            gas: 2000000,
+            status: 'needWeightConfirmation'
+        }));
+    },
+
+    [types.ADD_UPVOTE_ACTION]: (state, { payload }) => {
+        id += 1;
+        return state.setIn(['pendingActions', id], new PendingActionRecord({
+            id,
+            type: actionTypes.upvote,
+            payload: fromJS(payload),
+            gas: 2000000,
+            status: 'needWeightConfirmation'
+        }));
+    },
+
+    [types.APP_READY]: state =>
+        state.set('appReady', true),
+
+    [types.BOOTSTRAP_HOME_SUCCESS]: state =>
+        state.set('homeReady', true),
+
+    [types.DELETE_PENDING_ACTION]: (state, { actionId }) =>
+        state.set('pendingActions', state.get('pendingActions').delete(actionId)),
+
+    [types.HIDE_AUTH_DIALOG]: state =>
+        state.set('showAuthDialog', null),
 
     [types.HIDE_LOGIN_DIALOG]: state =>
         state.set('showLoginDialog', null),
+
+    [types.HIDE_PUBLISH_CONFIRM_DIALOG]: state =>
+        state.set('publishConfirmDialog', null),
+
+    [types.HIDE_REPORT_MODAL]: state =>
+        state.set('showReportModal', false),
+
+    [types.HIDE_TRANSFER_CONFIRM_DIALOG]: state =>
+        state.set('transferConfirmDialog', null),
+
+    [types.HIDE_WEIGHT_CONFIRM_DIALOG]: state =>
+        state.set('weightConfirmDialog', null),
+
+    [types.PROFILE_LOGIN_SUCCESS]: (state) => {
+        const action = state.get('pendingActions').find(act =>
+            act.get('status') === 'checkAuth');
+        if (action) {
+            return state.merge({
+                pendingActions: state
+                    .get('pendingActions')
+                    .setIn([action.get('id'), 'status'], 'readyToPublish'),
+                showAuthDialog: null
+            });
+        }
+        return state.set('showAuthDialog', null);
+    },
+
+    [types.RESET_HOME_READY]: state =>
+        state.set('homeReady', false),
+
+    [types.SHOW_AUTH_DIALOG]: (state, { actionId }) =>
+        state.set('showAuthDialog', actionId),
+
+    [types.SHOW_LOGIN_DIALOG]: (state, { profileAddress }) =>
+        state.set('showLoginDialog', profileAddress),
+
+    [types.SHOW_PUBLISH_CONFIRM_DIALOG]: (state, { actionId }) =>
+        state.set('publishConfirmDialog', actionId),
+
+    [types.SHOW_REPORT_MODAL]: state =>
+        state.set('showReportModal', true),
+
+    [types.SHOW_TRANSFER_CONFIRM_DIALOG]: (state, { actionId }) =>
+        state.set('transferConfirmDialog', actionId),
+
+    [types.SHOW_WEIGHT_CONFIRM_DIALOG]: (state, { actionId }) =>
+        state.set('weightConfirmDialog', actionId),
+
+    [types.UPDATE_ACTION]: (state, { actionId, updates }) => {
+        const newAction = state.getIn(['pendingActions', actionId]).mergeDeep(updates);
+        return state.setIn(['pendingActions', actionId], newAction);
+    },
 });
 
 export default appState;

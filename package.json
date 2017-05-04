@@ -167,6 +167,7 @@
     "postcss-modules-scope": "1.0.2",
     "postcss-modules-values": "1.2.2",
     "proxyquire": "1.7.11",
+    "querystring": "^0.2.0",
     "react": "15.5.4",
     "react-addons-perf": "15.4.2",
     "react-addons-test-utils": "15.5.1",
