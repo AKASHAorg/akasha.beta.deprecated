@@ -95,7 +95,7 @@ class PanelContainer extends React.Component {
         return (
           <Paper
             rounded={false}
-            className={`row ${styles.root}`}
+            className={`col-xs-4 ${styles.root}`}
             style={{
                 maxWidth: this.props.width,
                 ...this.props.style
@@ -125,7 +125,6 @@ class PanelContainer extends React.Component {
     }
 }
 PanelContainer.defaultProps = {
-    width: '33.34%',
     headerHeight: 80,
     headerMinHeight: 56,
     headerStyle: {},
