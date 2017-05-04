@@ -99,7 +99,7 @@ class ColumnHeader extends Component {
               {!readOnly &&
                 <AutoComplete
                   id="value"
-                  dataSource={suggestions.toJS()}
+                  dataSource={suggestions ? suggestions.toJS() : []}
                   searchText={value}
                   onBlur={this.onBlur}
                   onChange={this.onChange}

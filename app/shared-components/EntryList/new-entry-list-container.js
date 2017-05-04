@@ -8,6 +8,7 @@ import { entryMessages } from '../../locale-data/messages';
 import { AppActions } from '../../local-flux';
 import { DataLoader, EntryCard } from '../';
 import { isInViewport } from '../../utils/domUtils';
+import { entryPageShow } from '../../local-flux/actions/entry-actions';
 
 class EntryList extends Component {
 
@@ -97,6 +98,9 @@ class EntryList extends Component {
                   </div>
                 }
                 {entries && entries.map((entry) => {
+                    if (!entry) {
+                        return null;
+                    }
                     const voteEntryPending = votePending && votePending.find(vote =>
                         vote.entryId === entry.get('entryId'));
                     const claimEntryPending = claimPending && claimPending.find(claim =>
@@ -122,6 +126,7 @@ class EntryList extends Component {
                       voteEntryPending={voteEntryPending && voteEntryPending.value}
 
                       publisher={publisher}
+                      entryPageShow={this.props.entryPageShow}
                     />);
                 })}
                 {moreEntries &&
@@ -163,6 +168,7 @@ EntryList.propTypes = {
     style: PropTypes.shape(),
     votePending: PropTypes.shape(),
 
+    entryPageShow: PropTypes.func.isRequired,
     fetchMoreEntries: PropTypes.func.isRequired,
     loggedAkashaId: PropTypes.string,
     profiles: PropTypes.shape().isRequired,
@@ -190,6 +196,7 @@ function mapStateToProps (state) {
 function mapDispatchToProps (dispatch) {
     return {
         appActions: new AppActions(dispatch),
+        entryPageShow: id => dispatch(entryPageShow(id)),
         // entryActions: new EntryActions(dispatch),
         // tagActions: new TagActions(dispatch)
     };

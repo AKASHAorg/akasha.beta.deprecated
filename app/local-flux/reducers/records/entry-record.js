@@ -35,9 +35,16 @@ const EntriesStream = Record({
 });
 
 const Flags = Record({
-    fetchingNewest: false,
-    fetchingMoreNewest: false,
-    moreNewest: false
+    claimPending: new Map(),
+    fetchingEntryBalance: false,
+    fetchingFullEntry: false,
+    isActivePending: false,
+    votePending: new Map(),
+});
+
+export const EntryPageOverlay = Record({
+    entryId: null,
+    version: null
 });
 
 // export const EntryState = Record({
@@ -73,6 +80,7 @@ export const EntryState = Record({
     flags: new Flags(),
     fetchingEntriesCount: false,
     entriesStream: new EntriesStream(),
+    entryPageOverlay: new EntryPageOverlay(),
     fullEntry: null,
     fullEntryLatestVersion: null,
     savedEntries: new List(),

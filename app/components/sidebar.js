@@ -11,10 +11,13 @@ import styles from './sidebar.scss';
 
 class Sidebar extends Component {
     componentDidMount () {
-        const { bootstrapHome, entryVoteCost, gethGetStatus, licenseGetAll } = this.props;
+        const { bootstrapHome, entryVoteCost, gethGetStatus, licenseGetAll, transactionGetMined,
+            transactionGetPending } = this.props;
         bootstrapHome();
         entryVoteCost();
         licenseGetAll();
+        // transactionGetMined();
+        // transactionGetPending();
         // make requests for geth status every 30s for updating the current block
         gethGetStatus();
         this.interval = setInterval(() => {
@@ -173,6 +176,8 @@ Sidebar.propTypes = {
     notificationsCount: PropTypes.number,
     panelHide: PropTypes.func.isRequired,
     panelShow: PropTypes.func.isRequired,
+    transactionGetMined: PropTypes.func.isRequired,
+    transactionGetPending: PropTypes.func.isRequired
 };
 
 export default Sidebar;

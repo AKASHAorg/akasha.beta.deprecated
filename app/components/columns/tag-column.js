@@ -15,7 +15,7 @@ class TagColumn extends Component {
     componentDidMount () {
         const { column } = this.props;
         const value = column.get('value');
-        if (value) {
+        if (!column.get('entries').size && value) {
             this.props.entryTagIterator(column.get('id'), value);
         }
     }

@@ -6,12 +6,13 @@ import { injectIntl } from 'react-intl';
 import { Redirect, Route } from 'react-router-dom';
 import { getMuiTheme } from 'material-ui/styles';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import { AuthDialog, DataLoader, GethDetailsModal, IpfsDetailsModal, PublishConfirmDialog,
+import { DataLoader, GethDetailsModal, IpfsDetailsModal, PublishConfirmDialog,
     TransferConfirmDialog, WeightConfirmDialog } from '../shared-components';
 import { hideNotification, hideTerms, hideReportModal } from '../local-flux/actions/app-actions';
 import { errorDeleteFatal, errorDeleteNonFatal } from '../local-flux/actions/error-actions';
 import { HomeContainer, LauncherContainer, SidebarContainer } from './';
-import { ErrorBar, FatalErrorModal, LoginDialog, NotificationBar, TermsPanel, ReportModal } from '../components';
+import { ErrorBar, FatalErrorModal, NotificationBar, ReportModal, TermsPanel } from '../components';
+import { AuthDialog, LoginDialog } from '../components/dialogs';
 import lightTheme from '../layouts/AkashaTheme/lightTheme';
 import darkTheme from '../layouts/AkashaTheme/darkTheme';
 
@@ -21,10 +22,9 @@ const AppContainer = (props) => {
         hideNotification, hideTerms, hideReportModal, intl, location, theme } = props;
     /* eslint-enable no-shadow */
     const isAuthDialogVisible = !!appState.get('showAuthDialog');
-    const weightConfirmDialog = appState.get('weightConfirmDialog');
-    const isWeightConfirmationDialogVisible = weightConfirmDialog !== null;
-    const isPublishConfirmationDialogVisible = appState.get('publishConfirmDialog') !== null;
-    const isTransferConfirmationDialogVisible = appState.get('transferConfirmDialog') !== null;
+    const isWeightConfirmationDialogVisible = !!appState.get('weightConfirmDialog');
+    const isPublishConfirmationDialogVisible = !!appState.get('publishConfirmDialog');
+    const isTransferConfirmationDialogVisible = !!appState.get('transferConfirmDialog');
     const showGethDetailsModal = appState.get('showGethDetailsModal');
     const showIpfsDetailsModal = appState.get('showIpfsDetailsModal');
     const muiTheme = getMuiTheme(theme === 'light' ? lightTheme : darkTheme);

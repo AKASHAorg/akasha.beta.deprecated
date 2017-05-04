@@ -7,6 +7,8 @@ import { bootstrapHome, panelHide, panelShow } from '../local-flux/actions/app-a
 import { entryVoteCost } from '../local-flux/actions/entry-actions';
 import { gethGetStatus } from '../local-flux/actions/external-process-actions';
 import { licenseGetAll } from '../local-flux/actions/license-actions';
+import { transactionGetMined,
+    transactionGetPending } from '../local-flux/actions/transaction-actions';
 
 function mapStateToProps (state) {
     return {
@@ -28,7 +30,9 @@ export default connect(
         entryVoteCost,
         licenseGetAll,
         panelHide,
-        panelShow
+        panelShow,
+        transactionGetMined,
+        transactionGetPending
     },
     null,
     {

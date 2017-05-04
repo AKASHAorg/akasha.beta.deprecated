@@ -16,7 +16,7 @@ class ProfileActions {
         this.transactionActions = new TransactionActions(dispatch);
         this.profileService = new ProfileService();
         this.authService = new AuthService();
-        this.registryService = new RegistryService();
+        // this.registryService = new RegistryService();
         this.dispatch = dispatch;
         profileActions = this;
     }

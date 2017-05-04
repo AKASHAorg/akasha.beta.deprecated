@@ -41,6 +41,7 @@ class TransactionService extends BaseService {
         );
         return serverChannel.send(txs);
     };
+
     /**
      * emit and mined event for a transaction from queue
      * Request:
@@ -109,3 +110,44 @@ class TransactionService extends BaseService {
 }
 
 export { TransactionService };
+
+export const transactionDeletePending = tx =>
+    new Promise((resolve, reject) => {
+        transactionsDB.pending.delete(tx)
+            .then(() => resolve())
+            .catch(err => reject(err));
+    });
+
+export const transactionGetMined = akashaId =>
+    new Promise((resolve, reject) => {
+        transactionsDB.mined
+            .where('akashaId')
+            .equals(akashaId)
+            .toArray()
+            .then(data => resolve(data))
+            .catch(err => reject(err));
+    });
+
+export const transactionGetPending = akashaId =>
+    new Promise((resolve, reject) => {
+        transactionsDB.pending
+            .where('akashaId')
+            .equals(akashaId)
+            .toArray()
+            .then(data => resolve(data))
+            .catch(err => reject(err));
+    });
+
+export const transactionSaveMined = tx =>
+    new Promise((resolve, reject) => {
+        transactionsDB.mined.put(tx)
+            .then(() => resolve())
+            .catch(err => reject(err));
+    });
+
+export const transactionSavePending = txs =>
+    new Promise((resolve, reject) => {
+        transactionsDB.pending.bulkPut(txs)
+            .then(() => resolve())
+            .catch(err => reject(err));
+    });
