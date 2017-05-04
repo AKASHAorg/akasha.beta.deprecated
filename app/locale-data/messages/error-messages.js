@@ -1,6 +1,26 @@
 import { defineMessages } from 'react-intl';
 
 const errorMessages = defineMessages({
+    reportErrorTitle: {
+        id: 'app.error.reportErrorTitle',
+        description: 'title for report modal',
+        defaultMessage: 'Report error'
+    },
+    thankYouForYourFeedback: {
+        id: 'app.error.thankYouForYourFeedback',
+        description: 'thank you for feedback',
+        defaultMessage: 'Thank you for your feedback!'
+    },
+    copyTheFollowingLines: {
+        id: 'app.error.copyTheFollowingLines',
+        description: 'text explaining what to do to report an issue on GH',
+        defaultMessage: 'Please copy the following lines and create a new issue on { githubLink }.'
+    },
+    alsoCheckForOpenedIssues: {
+        id: 'app.error.alsoCheckForOpenedIssues',
+        description: 'text suggesting to check for existing issues',
+        defaultMessage: 'Also check if there are no already opened issues regarding this error!'
+    },
     backupKeys: {
         id: 'app.error.backupKeys',
         description: 'backup keys error message',

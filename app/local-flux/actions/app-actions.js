@@ -79,5 +79,7 @@ export const showNotification = notification =>
 export const showTerms = () => action(types.SHOW_TERMS);
 export const toggleGethDetailsModal = () => action(types.TOGGLE_GETH_DETAILS_MODAL);
 export const toggleIpfsDetailsModal = () => action(types.TOGGLE_IPFS_DETAILS_MODAL);
+export const showReportModal = data => action(types.SHOW_REPORT_MODAL, { data });
+export const hideReportModal = () => action(types.HIDE_REPORT_MODAL);
 
 export { AppActions };

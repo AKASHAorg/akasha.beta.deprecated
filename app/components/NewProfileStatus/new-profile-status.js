@@ -1,9 +1,10 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
-import CircularProgress from '../../shared-components/Loaders/circular-progress';
 import { injectIntl } from 'react-intl';
+import CircularProgress from '../../shared-components/Loaders/circular-progress';
 import PanelContainerFooter from '../PanelContainer/panel-container-footer';
+import ErrorCard from '../errors/error-card';
 import { generalMessages, setupMessages, profileMessages } from '../../locale-data/messages';
 import * as types from '../../local-flux/constants';
 import styles from './new-profile-status.scss';
@@ -87,16 +88,11 @@ class NewProfileStatus extends Component {
     }
     _isAbortButtonDisabled = () => {
         const { tempProfileStatus } = this.props;
-        const { currentStatus } = tempProfileStatus;
-        if (ABORT_DISABLED_TYPES.includes(currentStatus)) {
+        const { currentAction } = tempProfileStatus;
+        if (ABORT_DISABLED_TYPES.includes(currentAction) && !this._hasErrors()) {
             return true;
         }
         return false;
-    }
-    _isRetryButtonDisabled = () => {
-        const { errors } = this.props;
-        // @TODO: also check if geth and ipfs are running
-        return errors && (errors.size === 0 || errors.length === 0);
     }
     _handleProfileAbortion = () => {
         const { history, tempProfileDelete, akashaId } = this.props;
@@ -108,12 +104,33 @@ class NewProfileStatus extends Component {
         tempProfileStatusReset();
         tempProfileCreate(tempProfile.toJS());
     }
+    _hasErrors = () => {
+        const { errorsById } = this.props;
+        return errorsById.size > 0;
+    }
     _calculateProgressValue = () => {
         const { tempProfileStatus } = this.props;
         const currentAction = tempProfileStatus.get('currentAction');
         const index = STATUS_TYPES.findIndex(status => status === currentAction);
-        return index * 7.142; // 14 steps, 100 / 14 = 7.142
+        return index * (100 / STATUS_TYPES.length); // 14 steps, 100 / 14 = 7.142
     }
+    _handleErrorReport = (errorId) => {
+        const { showReportModal } = this.props;
+        const error = this.props.errorsById.get(errorId);
+        const repError = error.merge({
+            platform: navigator.platform
+        });
+        showReportModal({ error: repError.toJS() });
+    }
+    _renderErrors = () =>
+        this.props.errorsById.valueSeq().map(err =>
+          <ErrorCard
+            error={err}
+            key={err.id}
+            onReport={this._handleErrorReport}
+          />
+        );
+
     render () {
         const { intl } = this.props;
         return (
@@ -137,6 +154,7 @@ class NewProfileStatus extends Component {
                       mode="determinate"
                       value={this._calculateProgressValue()}
                       size={3}
+                      color={this._hasErrors() ? '#ff7600' : '#4285f4'}
                       strokeWidth={1.3}
                       style={{ transform: 'rotate(-90deg)' }}
                     />
@@ -145,6 +163,9 @@ class NewProfileStatus extends Component {
               </div>
               <div className="col-xs-12 center-xs">
                 {this._getStatusText()}
+              </div>
+              <div className={`col-xs-12 center-xs ${styles.errorList}`}>
+                {this._renderErrors()}
               </div>
             </div>
             <PanelContainerFooter>
@@ -158,7 +179,7 @@ class NewProfileStatus extends Component {
                 label={intl.formatMessage(setupMessages.retryStep)}
                 onClick={this._handleStepRetry}
                 primary
-                disabled={this._isRetryButtonDisabled()}
+                disabled={!this._hasErrors()}
               />
             </PanelContainerFooter>
           </div>
@@ -167,9 +188,10 @@ class NewProfileStatus extends Component {
 }
 NewProfileStatus.propTypes = {
     akashaId: PropTypes.string.isRequired,
-    errors: PropTypes.shape(),
+    errorsById: PropTypes.shape(),
     history: PropTypes.shape(),
     intl: PropTypes.shape(),
+    showReportModal: PropTypes.func,
     tempProfile: PropTypes.shape(),
     tempProfileCreate: PropTypes.func.isRequired,
     tempProfileDelete: PropTypes.func.isRequired,

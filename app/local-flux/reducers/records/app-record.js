@@ -22,6 +22,7 @@ const AppRecord = Record({
     showGethDetailsModal: false,
     showLoginDialog: null,
     showIpfsDetailsModal: false,
+    showReportModal: null,
     showTerms: false,
     weightConfirmDialog: null,
     timestamp: 0,
