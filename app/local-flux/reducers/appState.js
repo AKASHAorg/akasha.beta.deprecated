@@ -17,6 +17,12 @@ const appState = createReducer(initialState, {
     [appTypes.HIDE_AUTH_DIALOG]: state =>
         state.set('showAuthDialog', null),
 
+    [types.SHOW_REPORT_MODAL]: state =>
+        state.set('showReportModal', true),
+
+    [types.HIDE_REPORT_MODAL]: state =>
+        state.set('showReportModal', false),
+
     [appTypes.SHOW_WEIGHT_CONFIRM_DIALOG]: (state, { resource }) =>
         state.set('weightConfirmDialog', resource),
 

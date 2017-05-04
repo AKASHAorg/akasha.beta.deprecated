@@ -22,6 +22,7 @@ export PanelContainerFooter from './PanelContainer/panel-container-footer';
 export PanelContainerHeader from './PanelContainer/panel-container-header';
 export ProfileColumn from './columns/profile-column';
 export ProfilesList from './profiles-list';
+export ReportModal from './errors/error-reporting-modal';
 export SecondarySidebar from './secondary-sidebar';
 export ServiceStatusBar from './service-status-bar';
 export Setup from './setup';
