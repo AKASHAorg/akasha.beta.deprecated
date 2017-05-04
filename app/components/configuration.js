@@ -87,7 +87,7 @@ class Config extends PureComponent {
         return (
           <div>
             {configurationSaved && <Redirect to="/setup/synchronization" />}
-            <div style={{ padding: '0 24px' }}>
+            <div>
               <h1 style={{ fontWeight: '400' }}>
                 {intl.formatMessage(setupMessages.firstTimeSetupTitle)}
               </h1>

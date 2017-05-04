@@ -1,16 +1,25 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { SvgIcon, RaisedButton } from 'material-ui';
+import SvgIcon from 'material-ui/SvgIcon';
+import RaisedButton from 'material-ui/RaisedButton';
+import LinearProgress from 'material-ui/LinearProgress';
 import DeleteIcon from 'material-ui/svg-icons/action/delete';
 import { AddImage } from '../svg';
 import { generalMessages } from '../../locale-data/messages';
 import imageCreator, { getResizedImages, findClosestMatch } from '../../utils/imageUtils';
 import styles from './image-uploader.scss';
 
+const INITIAL_PROGRESS_VALUE = 20;
+
 class ImageUploader extends Component {
     constructor (props) {
         super(props);
-        this.state = {};
+        this.state = {
+            imageFile: {},
+            progress: INITIAL_PROGRESS_VALUE,
+            isNewImage: false,
+            error: null
+        };
     }
     componentDidMount () {
         const { initialImageLink, minHeight, minWidth } = this.props;
@@ -64,33 +73,49 @@ class ImageUploader extends Component {
         }
         return this.props.initialImage;
     }
+    _handleResizeProgress = (totalProgress) => {
+        this.setState({
+            progress: totalProgress + INITIAL_PROGRESS_VALUE
+        });
+        this.forceUpdate();
+    }
+    _resizeImages = (files) => {
+        const filePromises = getResizedImages(files, {
+            minWidth: this.props.minWidth,
+            minHeight: this.props.minHeight,
+            progressHandler: this._handleResizeProgress,
+            maxProgress: (100 - INITIAL_PROGRESS_VALUE)
+        });
+        filePromises[0].then((results) => {
+            this.setState({
+                imageFile: results,
+                processingFinished: true,
+                error: null,
+            });
+        }).catch((err) => {
+            this.setState({
+                error: err,
+                isNewImage: false,
+                progress: INITIAL_PROGRESS_VALUE,
+                processingFinished: false,
+            });
+        });
+    }
     _handleDialogOpen = () => {
         if (this.fileInput.files.length === 0) {
             return this.setState({
-                imageFile: null,
+                imageFile: {},
                 isNewImage: true
             });
         }
-        const filePromises = getResizedImages(this.fileInput.files, {
-            minWidth: this.props.minWidth,
-            minHeight: this.props.minHeight
+        return this.setState({
+            isNewImage: true,
+            processingFinished: false
+        }, () => {
+            this.forceUpdate();
+            this._resizeImages(this.fileInput.files);
+            this.fileInput.value = '';
         });
-        return Promise.all(filePromises)
-            .then(results => {
-                console.log(results, 'results');
-                this.setState({
-                    imageFile: results,
-                    isNewImage: true,
-                    error: null
-                }, () => {
-                    this.fileInput.value = '';
-                })
-            }).catch((err) => {
-                console.error(err);
-                return this.setState({
-                    error: err
-                });
-            });
     }
     _getImageSrc = (imageObj) => {
         const containerWidth = this.container.getBoundingClientRect().width;
@@ -104,18 +129,17 @@ class ImageUploader extends Component {
             clearImage();
         }
         this.setState({
-            imageFile: null,
+            imageFile: {},
             isNewImage: false,
+            processingFinished: false,
+            progress: INITIAL_PROGRESS_VALUE,
             initialImageFile: null,
             error: null
         });
     }
     render () {
         const {
-            imageStyle,
             clearImageButtonStyle,
-            emptyContainerStyle,
-            uploadButtonStyle,
             errorStyle,
             multiFiles,
             intl,
@@ -124,6 +148,9 @@ class ImageUploader extends Component {
         } = this.props;
         const { initialImageFile } = this.state;
         /* eslint-disable react/no-array-index-key */
+        if (multiFiles) {
+            console.error('sorry multiple files is not implemented yet!');
+        }
         return (
           <div
             ref={(container) => { this.container = container; }}
@@ -131,20 +158,28 @@ class ImageUploader extends Component {
           >
             {this.state.isNewImage &&
               <div>
-                {multiFiles &&
-                   this.state.imageFile.map((image, key) =>
-                     <img
-                       src={this._getImageSrc(image)}
-                       key={`image-${key}`}
-                       style={imageStyle}
-                       alt=""
-                     />
-                   )
+                {this.state.processingFinished &&
+                  <img
+                    src={this._getImageSrc(this.state.imageFile)}
+                    className={`${styles.image}`}
+                    alt=""
+                  />
                 }
-                {!multiFiles &&
-                  <img src={this._getImageSrc(this.state.imageFile[0])} style={imageStyle} alt="" />
+                {!this.state.processingFinished &&
+                  <div
+                    className={`${styles.emptyContainer} ${styles.processingLoader}`}
+                  >
+                    <div className={`${styles.processingLoaderText}`}>Processing image...</div>
+                    <div className={`${styles.loadingBar}`}>
+                      <LinearProgress
+                        mode="determinate"
+                        style={{ display: 'inline-block' }}
+                        value={this.state.progress}
+                      />
+                    </div>
+                  </div>
                 }
-                <div style={clearImageButtonStyle}>
+                <div className={`${styles.clearImageButton}`} style={clearImageButtonStyle}>
                   <RaisedButton
                     fullWidth
                     secondary
@@ -160,9 +195,9 @@ class ImageUploader extends Component {
                 <img
                   src={this.state.initialImageFile}
                   alt=""
-                  style={imageStyle}
+                  className={`${styles.image}`}
                 />
-                <div style={clearImageButtonStyle}>
+                <div className={`${styles.clearImageButton}`} style={clearImageButtonStyle}>
                   <RaisedButton
                     fullWidth
                     secondary
@@ -178,7 +213,7 @@ class ImageUploader extends Component {
                 <img
                   src={initialImageLink}
                   alt=""
-                  style={imageStyle}
+                  className={`${styles.image}`}
                 />
                 <div
                   className={`${styles.clearImageButton}`}
@@ -195,7 +230,7 @@ class ImageUploader extends Component {
             }
             {!this.state.isNewImage && !initialImageFile && !initialImageLink &&
               <div
-                style={emptyContainerStyle}
+                className={`${styles.emptyContainer}`}
               >
                 <SvgIcon
                   style={{ height: '42px', width: '100%' }}
@@ -213,7 +248,6 @@ class ImageUploader extends Component {
               ref={(fileInput) => { this.fileInput = fileInput; }}
               type="file"
               className={`${styles.uploadButton}`}
-              style={uploadButtonStyle}
               onChange={this._handleDialogOpen}
               multiple={multiFiles}
               accept="image/*"
@@ -226,10 +260,6 @@ class ImageUploader extends Component {
     }
 }
 ImageUploader.defaultProps = {
-    imageStyle: {
-        width: '100%',
-        display: 'inherit'
-    },
     errorStyle: {
         position: 'absolute',
         width: '80%',
@@ -240,12 +270,6 @@ ImageUploader.defaultProps = {
         color: '#D40202',
         boxShadow: '0px 0px 3px 0 rgba(0,0,0,0.6)'
     },
-    emptyContainerStyle: {
-        textAlign: 'center',
-        width: '100%',
-        height: '220px',
-        padding: '80px 5px'
-    }
 };
 ImageUploader.propTypes = {
     minWidth: PropTypes.number,
@@ -257,9 +281,7 @@ ImageUploader.propTypes = {
     initialImageLink: PropTypes.string,
     uploadButtonStyle: PropTypes.shape(),
     clearImageButtonStyle: PropTypes.shape(),
-    imageStyle: PropTypes.shape(),
     errorStyle: PropTypes.shape(),
-    emptyContainerStyle: PropTypes.shape(),
     clearImage: PropTypes.func
 };
 ImageUploader.contextTypes = {

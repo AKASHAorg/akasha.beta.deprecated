@@ -122,7 +122,7 @@ class Sync extends Component {
             gethSyncStatus, intl, ipfsBusyState, ipfsPortsRequested, ipfsStatus,
             syncActionId } = this.props;
         return (
-          <div style={{ width: '100%', padding: '0 24px' }}>
+          <div style={{ width: '100%' }}>
             {!configurationSaved && <Redirect to="/setup/configuration" />}
             {gethSyncStatus.get('synced') && ipfsStatus.get('spawned') && !ipfsPortsRequested &&
               <Redirect to="/setup/authenticate" />

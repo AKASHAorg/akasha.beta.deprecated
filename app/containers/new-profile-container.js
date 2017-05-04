@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { tempProfileUpdate, tempProfileCreate } from '../local-flux/actions/temp-profile-actions';
+import { showTerms } from '../local-flux/actions/app-actions';
 import { NewProfileForm } from '../components';
 
 const submitForm = props => (profileData) => {
@@ -16,11 +17,11 @@ const NewProfileContainer = props =>
   <NewProfileForm
     onSubmit={submitForm(props)}
     onCancel={cancelForm(props)}
+    onTermsShow={props.showTerms}
   />;
 
 NewProfileContainer.propTypes = {
-    tempProfileCreate: PropTypes.func,
-    history: PropTypes.shape()
+    showTerms: PropTypes.func
 };
 
 function mapStateToProps (state) {
@@ -33,7 +34,8 @@ export default connect(
     mapStateToProps,
     {
         tempProfileCreate,
-        tempProfileUpdate
+        tempProfileUpdate,
+        showTerms
     }
 )(NewProfileContainer);
 
