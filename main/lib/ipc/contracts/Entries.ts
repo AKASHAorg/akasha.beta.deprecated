@@ -197,7 +197,7 @@ export default class Entries extends BaseContract {
                     publisher: result[1],
                     ipfsHash: this.flattenIpfs(result[2]),
                     unixStamp: (result[3]).toNumber()
-                }
+                };
             });
     }
 
