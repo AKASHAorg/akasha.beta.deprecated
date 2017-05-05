@@ -23,6 +23,7 @@ import runner from '../pinner/index';
 import editEntry from './edit-entry';
 import followingStreamIterator from './following-stream-iterator';
 import allStreamIterator from './all-stream-iterator';
+import getLatestEntryVersion from './get-latest-entry-version';
 
 export default [
     entryCountProfile,
@@ -49,5 +50,6 @@ export default [
     editEntry,
     followingStreamIterator,
     allStreamIterator,
-    runner[0]
+    runner[0],
+    getLatestEntryVersion
 ]
