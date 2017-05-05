@@ -26,6 +26,7 @@ const AppRecord = Record({
     showGethDetailsModal: false,
     showIpfsDetailsModal: false,
     showLoginDialog: null,
+    showReportModal: null,
     showTerms: false,
     timestamp: 0,
     transferConfirmDialog: null,

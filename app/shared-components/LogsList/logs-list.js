@@ -9,7 +9,7 @@ const listStyle = {
     overflowY: 'auto',
     wordWrap: 'break-word',
     margin: 0,
-    padding: '16px'
+    padding: '16px 0'
 };
 
 class LogsList extends Component {

@@ -97,7 +97,8 @@ const tempProfileState = createReducer(initialState, {
         state.mergeIn(['status'], {
             currentAction: types.TEMP_PROFILE_PUBLISH_TX_MINED_SUCCESS
         }),
-    [types.TEMP_PROFILE_DELETE_SUCCESS]: state => state.clear()
+    [types.TEMP_PROFILE_DELETE_SUCCESS]: state => state.clear(),
+    [types.TEMP_PROFILE_STATUS_RESET]: state => state.setIn(['status'], state.get('status').clear())
 });
 
 export default tempProfileState;

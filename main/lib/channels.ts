@@ -42,7 +42,7 @@ const channels = {
 
     search: ['handshake', 'query'],
 
-    utils: ['backupKeys']
+    utils: ['backupKeys', 'osInfo']
 };
 
 const processes = ['server', 'client'];

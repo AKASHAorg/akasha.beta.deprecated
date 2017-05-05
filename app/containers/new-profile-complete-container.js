@@ -1,27 +1,18 @@
-import PropTypes from 'prop-types';
-import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { tempProfileUpdate } from '../local-flux/actions/temp-profile-actions';
-
-class NewProfileCompleteContainer extends Component {
-    render () {
-        return (
-          <div>New Profile Complete</div>
-        );
-    }
-}
+import { injectIntl } from 'react-intl';
+import { NewProfileComplete } from '../components';
+import { tempProfileGetRequest, tempProfileDelete } from '../local-flux/actions/temp-profile-actions';
 
 function mapStateToProps (state) {
     return {
         tempProfile: state.tempProfileState.get('tempProfile')
-    }
+    };
 }
 
 export default connect(
     mapStateToProps,
     {
-        tempProfileUpdate
+        tempProfileGetRequest,
+        tempProfileDelete,
     }
-)(NewProfileCompleteContainer);
-
-export { NewProfileCompleteContainer };
+)(injectIntl(NewProfileComplete));

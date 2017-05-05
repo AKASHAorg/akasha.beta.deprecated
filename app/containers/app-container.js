@@ -8,17 +8,17 @@ import { getMuiTheme } from 'material-ui/styles';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import { AuthDialog, DataLoader, GethDetailsModal, IpfsDetailsModal, PublishConfirmDialog,
     TransferConfirmDialog, WeightConfirmDialog } from '../shared-components';
-import { hideNotification, hideTerms } from '../local-flux/actions/app-actions';
+import { hideNotification, hideTerms, hideReportModal } from '../local-flux/actions/app-actions';
 import { errorDeleteFatal, errorDeleteNonFatal } from '../local-flux/actions/error-actions';
 import { HomeContainer, LauncherContainer, SidebarContainer } from './';
-import { ErrorBar, FatalErrorModal, LoginDialog, NotificationBar, TermsPanel } from '../components';
+import { ErrorBar, FatalErrorModal, LoginDialog, NotificationBar, TermsPanel, ReportModal } from '../components';
 import lightTheme from '../layouts/AkashaTheme/lightTheme';
 import darkTheme from '../layouts/AkashaTheme/darkTheme';
 
 const AppContainer = (props) => {
     /* eslint-disable no-shadow */
     const { appState, errorDeleteFatal, errorDeleteNonFatal, errorState,
-        hideNotification, hideTerms, intl, location, theme } = props;
+        hideNotification, hideTerms, hideReportModal, intl, location, theme } = props;
     /* eslint-enable no-shadow */
     const isAuthDialogVisible = !!appState.get('showAuthDialog');
     const weightConfirmDialog = appState.get('weightConfirmDialog');
@@ -32,7 +32,7 @@ const AppContainer = (props) => {
     return (
       <MuiThemeProvider muiTheme={muiTheme}>
         <DataLoader flag={!appState.get('appReady')} size={80} style={{ paddingTop: '-50px' }}>
-          <div className="fill-height" style={{ backgroundColor: muiTheme.palette.themeColor }} >
+          <div className="container fill-height" style={{ backgroundColor: muiTheme.palette.themeColor }} >
             {location.pathname === '/' && <Redirect to="/setup" />}
             <Route path="/setup" component={LauncherContainer} />
             <Route path="/dashboard" component={HomeContainer} />
@@ -60,6 +60,12 @@ const AppContainer = (props) => {
                 intl={intl}
               />
             }
+            <ReportModal
+              open={!!appState.get('showReportModal')}
+              error={errorState.get('reportError')}
+              intl={intl}
+              onClose={hideReportModal}
+            />
             {appState.get('showLoginDialog') && <LoginDialog />}
             {showGethDetailsModal && <GethDetailsModal />}
             {showIpfsDetailsModal && <IpfsDetailsModal />}
@@ -81,6 +87,7 @@ AppContainer.propTypes = {
     errorDeleteNonFatal: PropTypes.func.isRequired,
     errorState: PropTypes.shape().isRequired,
     hideNotification: PropTypes.func.isRequired,
+    hideReportModal: PropTypes.func.isRequired,
     hideTerms: PropTypes.func.isRequired,
     intl: PropTypes.shape(),
     location: PropTypes.shape(),
@@ -102,6 +109,7 @@ export default connect(
         errorDeleteFatal,
         errorDeleteNonFatal,
         hideNotification,
-        hideTerms
+        hideTerms,
+        hideReportModal,
     }
 )(injectIntl(AppContainer));
