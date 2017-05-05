@@ -60,7 +60,7 @@ class PanelContainer extends React.Component {
               style={Object.assign({
                   position: 'absolute',
                   top: isHeaderShrinked ? 56 : 80,
-                  bottom: 60,
+                  bottom: 0,
                   left: 0,
                   right: 0,
                   overflowY: 'auto',

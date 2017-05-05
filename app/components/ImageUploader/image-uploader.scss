@@ -14,5 +14,30 @@
     top: 8px;
     right: -8px;
     z-index: 3;
-    width: 36;
+    width: 36px;
+}
+.emptyContainer {
+    text-align: center;
+    width: 100%;
+    height: 220px;
+    padding: 80px 5px;
+}
+.loadingBar {
+     width: 35%;
+     display: block;
+     margin: 0 auto;
+}
+.processingLoader {
+    text-align: center;
+}
+.processingLoaderText {
+    font-size: 12px;
+    text-align: center;
+}
+.progressBar {
+    display: inline-block;
+}
+.image {
+    width: 100%;
+    display: inherit
 }

@@ -11,15 +11,29 @@ import profileDB from './db/profile';
  * @param {object} currentStatus - Current status of the profile creation process
  */
 export const createTempProfile = profileData =>
-    profileDB.tempProfile.add({
-        ...profileData
-    }).then(akashaId =>
-        // return newly created temp profile
-        profileDB.tempProfile.where('akashaId').equals(akashaId).first()
-    ).catch('ConstraintError', () =>
-        // key already exists in the object store
-        profileDB.tempProfile.where('akashaId').equals(profileData.akashaId).first()
-    );
+    profileDB.tempProfile
+        .where('akashaId')
+        .equals(profileData.akashaId)
+        .first()
+        .then((profile) => {
+            if (profile) {
+                return Promise.resolve(profile);
+            }
+            return profileDB.tempProfile.add({
+                ...profileData
+            })
+            .then(akashaId =>
+                // return newly created temp profile
+                profileDB.tempProfile.where('akashaId').equals(akashaId).first()
+            ).catch('ConstraintError', () =>
+                // key already exists in the object store
+                profileDB.tempProfile.where('akashaId').equals(profileData.akashaId).first()
+            );
+        })
+        .catch((err) => {
+            console.error(err, 'db error!');
+            return err;
+        });
 /**
  * update temp profile
  * handles temp profile nested updates

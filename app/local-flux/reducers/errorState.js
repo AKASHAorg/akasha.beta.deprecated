@@ -1,3 +1,4 @@
+import { Map } from 'immutable';
 import { createReducer } from './create-reducer';
 import { ErrorRecord } from './records';
 import { ErrorModel } from './models';
@@ -43,7 +44,18 @@ const errorState = createReducer(initialState, {
             nonFatalErrors: state.get('nonFatalErrors').delete(index)
         });
     },
+    [types.SHOW_REPORT_MODAL]: (state, { data }) => {
+        console.log(data);
+        return state.merge({
+            reportError: new Map(data.error)
+        })
+    },
+    [types.HIDE_REPORT_MODAL]: state =>
+        state.merge({
+            reportError: new Map()
+        }),
     [types.ETH_ADDRESS_CREATE_ERROR]: addNewError,
+    [types.FUND_FROM_FAUCET_ERROR]: addNewError,
     [types.GENERAL_SETTINGS_ERROR]: addNewError,
     [types.GENERAL_SETTINGS_SAVE_ERROR]: addNewError,
     [types.GETH_GET_OPTIONS_ERROR]: addNewError,

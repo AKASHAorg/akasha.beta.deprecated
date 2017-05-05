@@ -32,11 +32,9 @@ class Auth extends Component {
         if (gethStatusChanged || ipfsStatusChanged) {
             profileGetLocal();
         }
-        if (loginErrors.size === 0 && tempProfile.get('akashaId')) {
-            this.setState({
-                hasTempProfile: true
-            });
-        }
+        this.setState({
+            hasTempProfile: (loginErrors.size === 0 && tempProfile.get('akashaId'))
+        });
     }
 
     componentWillUnmount () {
@@ -52,8 +50,9 @@ class Auth extends Component {
     }
     _handleNewIdentity = () => {
         const { hasTempProfile } = this.state;
-        const { history } = this.props;
+        const { history, tempProfileCreate, tempProfile } = this.props;
         if (hasTempProfile) {
+            tempProfileCreate(tempProfile);
             return history.push('/setup/new-identity-status');
         }
         return this.props.history.push('/setup/new-identity');
@@ -64,7 +63,7 @@ class Auth extends Component {
 
         return (
           <div style={{ width: '100%' }}>
-            <div style={{ width: '100%', height: '100%', padding: '12px 24px' }}>
+            <div style={{ width: '100%', height: '100%' }}>
               <ProfilesList
                 fetchingProfiles={!localProfilesFetched || fetchingProfileList}
                 gethStatus={gethStatus}
@@ -74,13 +73,16 @@ class Auth extends Component {
                 profiles={localProfiles}
               />
             </div>
-            <PanelContainerFooter >
-              <RaisedButton
-                disabled={backupPending}
-                key="backup"
-                label={intl.formatMessage(generalMessages.backup)}
-                onClick={backupKeysRequest}
-              />
+            <PanelContainerFooter
+              leftActions={[
+                  <RaisedButton
+                    disabled={backupPending}
+                    key="backup"
+                    label={intl.formatMessage(generalMessages.backup)}
+                    onClick={backupKeysRequest}
+                  />
+              ]}
+            >
               <RaisedButton
                 key="createNewIdentity"
                 label={this._getNewIdentityLabel()}
@@ -117,6 +119,7 @@ Auth.propTypes = {
     resetHomeReady: PropTypes.func.isRequired,
     showLoginDialog: PropTypes.func.isRequired,
     tempProfile: PropTypes.shape().isRequired,
+    tempProfileCreate: PropTypes.func,
     tempProfileGetRequest: PropTypes.func.isRequired,
     history: PropTypes.shape().isRequired,
 };

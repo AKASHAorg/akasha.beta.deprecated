@@ -40,7 +40,8 @@ class NewProfileForm extends Component {
 
     _showTerms = (ev) => {
         ev.preventDefault();
-        // show terms panel
+        const { onTermsShow } = this.props;
+        if (onTermsShow) return onTermsShow();
     }
     _handleShowDetails = () => {
         this.setState({
@@ -215,10 +216,14 @@ class NewProfileForm extends Component {
         ev.preventDefault();
         const { expandOptionalDetails } = this.props;
         const { optDetails } = this.state;
-        this.isSubmitting = true;
 
         this.props.validate((err) => {
-            if (err) return;
+            if (err) {
+                this.showErrorOnFields = this.showErrorOnFields.concat(Object.keys(err));
+                this.forceUpdate();
+                return;
+            }
+            this.isSubmitting = true;
             if (this.state.akashaIdIsValid && !this.state.akashaIdExists) {
                 if (optDetails || expandOptionalDetails) {
                     const backgroundImage = this.imageUploader.getImage();
@@ -243,7 +248,6 @@ class NewProfileForm extends Component {
         const { firstName, lastName, akashaId, password, password2,
           optDetails, about, links, crypto, formHasErrors } = this.state;
         const { formatMessage } = intl;
-
         return (
           <div
             className={`${styles.root} col-xs-12`}
@@ -479,8 +483,8 @@ class NewProfileForm extends Component {
                   values={{
                       termsLink: (
                         <a
-                          href="#terms"
-                          onClick={this._showTerms}
+                          href="#"
+                          onClick={ev => this._showTerms(ev)}
                           style={{ color: muiTheme.palette.primary1Color }}
                         >
                           {intl.formatMessage(generalMessages.termsOfService)}
@@ -522,7 +526,8 @@ NewProfileForm.propTypes = {
     getValidationMessages: PropTypes.func,
     onSubmit: PropTypes.func,
     onCancel: PropTypes.func,
-    style: PropTypes.shape()
+    style: PropTypes.shape(),
+    onTermsShow: PropTypes.func,
 };
 
 const validationHOC = validation(strategy());

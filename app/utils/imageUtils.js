@@ -1,4 +1,4 @@
-import pica from 'pica/dist/pica';
+import Pica from 'pica/dist/pica';
 import StreamReader from './stream-reader';
 /**
  * Utility to extract best matching image key given a width
@@ -92,13 +92,15 @@ function extractImageFromContent (content) {
 
 const settings = {
     extentions: ['jpg', 'jpeg', 'png', 'svg'],
+    resizerSettings: {
+        alphaChannel: true,
+        unsharpAmount: 50,
+        unsharpRadius: 0.6,
+        unsharpThreshold: 2,
+    },
     defaultQuality: 3,
     minWidth: 360,
     minHeight: null,
-    alphaChannel: false,
-    unsharpAmount: 50,
-    unsharpRadius: 0.6,
-    unsharpThreshold: 2,
     animatedGifSupport: true,
     /**
      * Handling multiple files uploaded at once
@@ -121,7 +123,8 @@ const settings = {
     }, {
         key: 'xs',
         res: 320
-    }]
+    },
+    ]
 };
 const convertToArray = (dataUrl) => {
     const byteString = atob(dataUrl.split(',')[1]);
@@ -148,7 +151,7 @@ const canvasToArray = canvas =>
             });
         } catch (exception) {
             console.log(exception);
-            reject(exception);
+            return reject(exception);
         }
     });
 // method to resize static (non animated gifs) images;
@@ -159,53 +162,42 @@ const resizeImage = (image, options) => {
     let p = Promise.resolve();
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
-
+    const pica = new Pica();
     /**
      * Sequential processing is recommended by pica.
      * see https://github.com/nodeca/pica#api
      */
-    imageWidths.forEach((widthObj) => {
+    imageWidths.forEach((widthObj, index) => {
         p = p.then(() => {
             const targetWidth = widthObj.res;
             const targetHeight = (actualHeight * widthObj.res) / actualWidth;
             ctx.canvas.width = targetWidth;
             ctx.canvas.height = targetHeight;
-            ctx.fillStyle = 'white';
-            return new Promise((resolve, reject) => {
-                try {
-                    // console.time(`resize to ${widthObj.res} took`);
-                    /**
-                     * pica.resizeCanvas(from, to, options, cb)
-                     */
-                    pica.resizeCanvas(image, canvas, {
-                        quality: 3,
-                        alpha: true
-                    }, (err) => {
-                        // console.timeEnd(`resize to ${widthObj.res} took`);
-                        if (err) {
-                            // console.error(err);
-                            return Promise.reject(err);
+            ctx.fillStyle = 'white'; 
+            /**
+             * pica.resizeCanvas(from, to, options, cb)
+             */
+            return pica.resize(image, canvas, {
+                quality: 3,
+                alpha: true
+            }).then(destCanvas =>
+                // console.timeEnd(`resize to ${widthObj.res} took`);
+                canvasToArray(destCanvas).then((result) => {
+                    if (options.progressHandler && typeof options.progressHandler === 'function') {
+                        const { maxProgress } = options;
+                        if (!maxProgress) {
+                            return console.error('Please provide maxProgress attribute when using progressHandler!');
                         }
-                        return canvasToArray(canvas).then((result) => {
-                            imageObject[widthObj.key] = {
-                                width: result.width,
-                                height: result.height,
-                                src: result.src
-                            };
-                            return resolve(imageObject);
-                        });
-                    });
-                } catch (exception) {
-                    return reject(exception);
-                }
-            });
+                        const currentProgress = index * (maxProgress / (imageWidths.length - 1));
+                        options.progressHandler(currentProgress);
+                    }
+                    imageObject[widthObj.key] = result;
+                    return imageObject;
+                })
+            ).catch(err => Promise.reject(err));
         });
     });
-    return p.then((img) => {
-        // console.log('resulted image object =>', imageObject);
-        // console.groupEnd();
-        return img;
-    });
+    return p;
 };
 
 const resizeAnimatedGif = (dataUrl, image, options) => {
@@ -291,8 +283,6 @@ const getImageSize = (imagePath, options) => {
  *   ).catch(reason => reason {string} 'Image height is smaller than minimum allowed of 200 pixels')
  */
 const getResizedImages = (inputFiles, options) => {
-    // const promises = [];
-    // console.group('resize results and timings:');
     // handle ipfs files here
     if (options && options.ipfsFile) {
         // fileList is only a string => eg. http://localhost:8080/ipfs/ipfs_hash
@@ -305,35 +295,40 @@ const getResizedImages = (inputFiles, options) => {
             }));
         return imagePromises;
     }
-    const gifPromises = Array.from(inputFiles).filter((file) => {
+
+    const gifPromises = [];
+    const imagePromises = [];
+
+    Array.from(inputFiles).forEach((file, index) => {
         const fileName = file.name;
         const ext = fileName.split('.')[fileName.split('.').length - 1].toLowerCase();
-        // console.log('original image', file.name, 'has a size of:', Math.floor(file.size / 1024), 'KiB');
         // treat gif extention as it is animated gif to prevent double processing
-        return (ext === 'gif' && settings.animatedGifSupport);
-    }).map(imageFile =>
-        getRawDataUrl(imageFile, options).then(imageDataUrl =>
-            // imageData should be the original animated gif Uint8Array
-            getImageSize(imageFile.path, options).then((size) => {
-                const { height, width } = size;
-                options.actualHeight = height;
+        if (ext === 'gif' && settings.animatedGifSupport) {
+            gifPromises[index] = getRawDataUrl(file, options).then(imageDataUrl =>
+                // imageData should be the original animated gif Uint8Array
+                getImageSize(file.path, options).then((size) => {
+                    const { height, width } = size;
+
+                    console.info(`original image size ${width}px width x ${height}px height.`);
+
+                    options.actualHeight = height;
+                    options.actualWidth = width;
+                    return resizeAnimatedGif(imageDataUrl, size.imageObj, options);
+                }));
+        } else if (settings.extentions.includes(ext)) {
+            imagePromises[index] = getImageSize(file.path, options).then((results) => {
+                const { height, width } = results;
+
+                console.info(`original image size ${width}px width x ${height}px height.`);
+
                 options.actualWidth = width;
-                // console.info(`original image size ${width}px width x ${height}px height.`);
-                return resizeAnimatedGif(imageDataUrl, size.imageObj, options);
-            })));
-    const imagePromises = Array.from(inputFiles).filter((file) => {
-        const fileName = file.name;
-        const ext = fileName.split('.')[fileName.split('.').length - 1].toLowerCase();
-        return settings.extentions.includes(ext);
-    }).map(imageFile =>
-        getImageSize(imageFile.path, options).then((results) => {
-            const { height, width } = results;
-            options.actualWidth = width;
-            options.actualHeight = height;
-            return resizeImage(results.imageObj, options);
-        }));
-    return [...gifPromises, ...imagePromises];
+                options.actualHeight = height;
+                return resizeImage(results.imageObj, options);
+            });
+        }
+    });
+    return imagePromises.concat(gifPromises);
 };
 
 export default imageCreator;
-export { getResizedImages, extractImageFromContent, findBestMatch, findClosestMatch };
+export { getResizedImages, getImageSize, extractImageFromContent, findBestMatch, findClosestMatch };

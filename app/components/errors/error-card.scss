@@ -1,0 +1,13 @@
+.root {
+    padding: 12px 0;
+    margin-bottom: 8px;
+}
+.icon {
+    max-height: 24px;
+}
+.errorMessage {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

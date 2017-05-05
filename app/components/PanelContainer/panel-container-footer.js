@@ -9,9 +9,6 @@ const PanelContainerFooter = (props) => {
       <Paper
         rounded={false}
         className={`row ${styles.root}`}
-        style={{
-            bottom: -1 * footerHeight
-        }}
       >
         <div className={`${styles.leftActions}`}>
           {leftActions}

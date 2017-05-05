@@ -1,0 +1,35 @@
+.codeBlock {
+    background: #FCFBFA;
+    border-left: solid 3px #ECEAE9;
+}
+
+.code {
+    font-family: 'Fira Mono', Menlo, monospace;
+    white-space: pre;
+    padding: .5rem 8px .5rem 12px;
+}
+
+.actions {
+    padding-top: 24px;
+}
+
+.bugIcon {
+    position: absolute;
+    top: -12px;
+    left: -10px;
+    height: 100px !important;
+    width: 110px !important;
+    z-index: 0;
+    transform: rotate(28deg);
+    color: rgba(228, 116, 0, 0.45) !important;
+}
+.titleText {
+    position: relative;
+    font-weight: 600;
+}
+.rootTitle {
+    background: #ff8100;
+    color: #FFF !important;
+    position: relative;
+    overflow: hidden;
+}
