@@ -1,9 +1,14 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { CardActions, FlatButton, IconButton, SvgIcon } from 'material-ui';
 import { EntryVotesPanel } from 'shared-components';
 import { EntryBookmarkOn, EntryBookmarkOff, EntryDownvote, EntryUpvote,
-    ToolbarEthereum } from 'shared-components/svg';
+    ToolbarEthereum } from '../../../../../components/svg';
+import { entryAddClaimAction, entryAddDownvoteAction,
+    entryAddUpvoteAction } from '../../../../../local-flux/actions/entry-actions';
+import { selectEntryBalance, selectEntryCanClaim, selectEntryVote,
+    selectProfile } from '../../../../../local-flux/selectors';
 
 class EntryPageAction extends Component {
 
@@ -23,27 +28,66 @@ class EntryPageAction extends Component {
         });
     };
 
-    render () {
-        const { canClaimPending, claimPending, entry, fetchingEntryBalance, votePending,
-            handleBookmark, handleClaim, handleDownvote, handleUpvote, isOwnEntry,
-            isSaved } = this.props;
+    handleUpvote = () => {
+        const { entry, publisher } = this.props;
+        const payload = {
+            publisherAkashaId: publisher && publisher.get('akashaId'),
+            entryTitle: entry.content.title,
+            entryId: entry.entryId,
+            active: entry.active
+        };
+        this.props.entryAddUpvoteAction(payload);
+    };
+
+    handleDownvote = () => {
+        const { entry, publisher } = this.props;
+        const payload = {
+            publisherAkashaId: publisher && publisher.get('akashaId'),
+            entryTitle: entry.content.title,
+            entryId: entry.entryId
+        };
+        this.props.entryAddDownvoteAction(payload);
+    };
+
+    // handleBookmark = () => {
+    //     const { entry, entryActions, loggedProfile, savedEntries } = this.props;
+    //     const loggedAkashaId = loggedProfile.get('akashaId');
+    //     const isSaved = !!savedEntries.find(id => id === entry.entryId);
+
+    //     if (isSaved) {
+    //         entryActions.deleteEntry(loggedAkashaId, entry.entryId);
+    //         entryActions.moreSavedEntriesList(1);
+    //     } else {
+    //         entryActions.saveEntry(loggedAkashaId, entry.entryId);
+    //     }
+    // };
+
+    handleClaim = () => {
+        const { canClaim, entry } = this.props;
+        if (!canClaim) {
+            return;
+        }
+        const payload = {
+            entryTitle: entry.content.title,
+            entryId: entry.entryId
+        };
+        this.props.entryAddClaimAction(payload);
+    };
+
+    render () { // eslint-disable-line complexity
+        const { balance, canClaim, canClaimPending, claimPending, entry, fetchingEntryBalance,
+            votePending, isOwnEntry, isSaved, voteWeight } = this.props;
         const { palette } = this.context.muiTheme;
-        const voteWeight = entry.voteWeight || 0;
         const upvoteIconColor = voteWeight > 0 ? palette.accent3Color : '';
         const downvoteIconColor = voteWeight < 0 ? palette.accent1Color : '';
         const voteButtonsDisabled = !entry.active || voteWeight !== 0 || votePending;
         return (
-          <CardActions
-            className="col-xs-12"
-            style={{
-                padding: '18px 8px 0px'
-            }}
-          >
+          <CardActions className="col-xs-12" style={{ padding: '18px 8px 0px' }}>
             <div style={{ display: 'flex', alignItems: 'center' }} >
               <div style={{ position: 'relative' }}>
                 <div data-tip={entry.get('active') ? 'Upvote' : 'Voting period has ended'}>
                   <IconButton
-                    onTouchTap={handleUpvote}
+                    onTouchTap={this.handleUpvote}
                     iconStyle={{ width: '24px', height: '24px' }}
                     disabled={voteButtonsDisabled}
                   >
@@ -78,7 +122,7 @@ class EntryPageAction extends Component {
               <div style={{ position: 'relative' }}>
                 <div data-tip={entry.get('active') ? 'Downvote' : 'Voting period has ended'}>
                   <IconButton
-                    onTouchTap={handleDownvote}
+                    onTouchTap={this.handleDownvote}
                     iconStyle={{ width: '24px', height: '24px' }}
                     disabled={voteButtonsDisabled}
                   >
@@ -107,7 +151,6 @@ class EntryPageAction extends Component {
                 {!isOwnEntry &&
                   <div data-tip="Bookmark" style={{ display: 'inline-block' }}>
                     <IconButton
-                      onTouchTap={handleBookmark}
                       iconStyle={{ width: '24px', height: '24px' }}
                     >
                       <SvgIcon viewBox="0 0 20 20">
@@ -119,19 +162,19 @@ class EntryPageAction extends Component {
                     </IconButton>
                   </div>
                 }
-                {isOwnEntry && (!canClaimPending || entry.canClaim !== undefined)
-                    && (!fetchingEntryBalance || entry.balance !== undefined) &&
+                {isOwnEntry && (!canClaimPending || canClaim !== undefined)
+                    && (!fetchingEntryBalance || balance !== undefined) &&
                   <div
                     style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}
                   >
                     {!entry.active &&
-                      <div data-tip={!entry.canClaim ? 'Already Claimed' : 'Claim'}>
+                      <div data-tip={!canClaim ? 'Already Claimed' : 'Claim'}>
                         <IconButton
-                          onTouchTap={handleClaim}
+                          onTouchTap={this.handleClaim}
                           iconStyle={{
                               width: '24px',
                               height: '24px',
-                              fill: !entry.canClaim ? palette.accent3Color : 'currentColor'
+                              fill: !canClaim ? palette.accent3Color : 'currentColor'
                           }}
                           disabled={claimPending}
                         >
@@ -141,9 +184,9 @@ class EntryPageAction extends Component {
                         </IconButton>
                       </div>
                     }
-                    {entry.balance !== 'claimed' &&
+                    {balance !== 'claimed' &&
                       <div style={{ fontSize: '16px', paddingRight: '5px' }}>
-                        {entry.balance} AETH
+                        {balance} AETH
                       </div>
                     }
                   </div>
@@ -161,20 +204,58 @@ class EntryPageAction extends Component {
         );
     }
 }
-EntryPageAction.propTypes = {
-    canClaimPending: PropTypes.bool,
-    claimPending: PropTypes.bool,
-    entry: PropTypes.shape(),
-    fetchingEntryBalance: PropTypes.bool,
-    handleBookmark: PropTypes.func,
-    handleClaim: PropTypes.func,
-    handleDownvote: PropTypes.func,
-    handleUpvote: PropTypes.func,
-    isOwnEntry: PropTypes.bool,
-    isSaved: PropTypes.bool,
-    votePending: PropTypes.bool,
-};
+
 EntryPageAction.contextTypes = {
     muiTheme: PropTypes.shape()
 };
-export default EntryPageAction;
+
+EntryPageAction.defaultProps = {
+    voteWeight: 0
+};
+
+EntryPageAction.propTypes = {
+    balance: PropTypes.string,
+    canClaim: PropTypes.bool,
+    canClaimPending: PropTypes.bool,
+    claimPending: PropTypes.bool,
+    entry: PropTypes.shape().isRequired,
+    entryAddClaimAction: PropTypes.func.isRequired,
+    entryAddDownvoteAction: PropTypes.func.isRequired,
+    entryAddUpvoteAction: PropTypes.func.isRequired,
+    fetchingEntryBalance: PropTypes.bool,
+    isOwnEntry: PropTypes.bool,
+    isSaved: PropTypes.bool,
+    publisher: PropTypes.shape(),
+    votePending: PropTypes.bool,
+    voteWeight: PropTypes.number,
+};
+
+function mapStateToProps (state, ownProps) {
+    const entry = ownProps.entry;
+    const claimPending = state.entryState.getIn(['flags', 'claimPending', entry.get('entryId')]);
+    const votePending = state.entryState.getIn(['flags', 'votePending', entry.get('entryId')]);
+    const loggedProfile = state.profileState.getIn(['loggedProfile', 'profile']);
+    return {
+        balance: selectEntryBalance(state, entry.get('entryId')),
+        canClaim: selectEntryCanClaim(state, entry.get('entryId')),
+        canClaimPending: state.entryState.getIn(['flags', 'canClaimPending']),
+        claimPending,
+        fetchingEntryBalance: state.entryState.getIn(['flags', 'fetchingEntryBalance']),
+        isOwnEntry: loggedProfile === entry.getIn(['entryEth', 'publisher']),
+        isSaved: !!state.entryState
+            .get('savedEntries')
+            .find(entr => entr.get('entryId') === entry.get('entryId')),
+        publisher: selectProfile(state, entry.getIn(['entryEth', 'publisher'])),
+        votePending,
+        voteWeight: selectEntryVote(state, entry.get('entryId'))
+    };
+}
+
+export default connect(
+    mapStateToProps,
+    {
+        entryAddClaimAction,
+        entryAddDownvoteAction,
+        entryAddUpvoteAction
+    }
+)(EntryPageAction);

@@ -7,7 +7,8 @@ const ErrorRecord = Record({
     id: null,
     message: '',
     messageId: '',
-    platform: ''
+    platform: '',
+    values: {}
 });
 
 const ErrorState = Record({

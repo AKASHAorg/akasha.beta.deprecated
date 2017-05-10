@@ -13,7 +13,7 @@ class ProfileColumn extends Component {
     componentDidMount () {
         const { column } = this.props;
         const value = column.get('value');
-        if (value) {
+        if (!column.get('entries').size && value) {
             this.props.entryProfileIterator(column.get('id'), value);
         }
     }

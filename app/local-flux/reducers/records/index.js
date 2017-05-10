@@ -1,7 +1,8 @@
 // keep this alphabetically sorted
 import AppRecord, { NotificationRecord, PendingActionRecord } from './app-record';
 import { ColumnRecord, DashboardRecord, DashboardState } from './dashboard-record';
-import { EntriesStream, EntryContent, EntryEth, EntryRecord, EntryState } from './entry-record';
+import { EntriesStream, EntryContent, EntryEth, EntryPageOverlay, EntryRecord,
+    EntryState } from './entry-record';
 import ErrorRecord, { ErrorState } from './error-record';
 import GethRecord, { GethStatus, GethSyncStatus } from './geth-record';
 import IpfsRecord, { IpfsStatus } from './ipfs-record';
@@ -12,6 +13,7 @@ import ProfileState, { LoggedProfile, ProfileRecord } from './profile-record';
 import SettingsRecord, { GeneralSettings, GethSettings, IpfsSettings, PasswordPreference,
     PortsRecord, UserSettings } from './settings-record';
 import TempProfileRecord, { TempProfileStatus } from './temp-profile-record';
+import { MinedTransaction, PendingTransaction, TransactionState } from './transaction-record';
 import UtilsState from './utils-record';
 
 // keep this alphabetically sorted
@@ -23,6 +25,7 @@ export {
     EntriesStream,
     EntryContent,
     EntryEth,
+    EntryPageOverlay,
     EntryRecord,
     EntryState,
     ErrorRecord,
@@ -39,16 +42,19 @@ export {
     LicenseState,
     LoggedProfile,
     LogRecord,
+    MinedTransaction,
     NotificationRecord,
     PanelState,
     PasswordPreference,
     PendingActionRecord,
+    PendingTransaction,
     PortsRecord,
     ProfileRecord,
     ProfileState,
     SettingsRecord,
     TempProfileRecord,
     TempProfileStatus,
+    TransactionState,
     UserSettings,
     UtilsState
 };

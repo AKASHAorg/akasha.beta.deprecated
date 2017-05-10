@@ -14,7 +14,9 @@ class LatestColumn extends Component {
 
     componentDidMount () {
         const { column } = this.props;
-        this.props.entryNewestIterator(column.get('id'));
+        if (!column.get('entries').size) {
+            this.props.entryNewestIterator(column.get('id'));
+        }
     }
 
     entryMoreNewestIterator = () => {

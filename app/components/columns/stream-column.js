@@ -14,7 +14,9 @@ class StreamColumn extends Component {
 
     componentDidMount () {
         const { column } = this.props;
-        this.props.entryStreamIterator(column.get('id'));
+        if (!column.get('entries').size) {
+            this.props.entryStreamIterator(column.get('id'));
+        }
     }
 
     entryMoreStreamIterator = () => {
