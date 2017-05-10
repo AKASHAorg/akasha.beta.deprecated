@@ -210,7 +210,6 @@ function* watchProfileLogoutChannel () {
             yield put(actions.profileLogoutError(resp.error));
         } else {
             yield call(profileDeleteLogged);
-            yield put(actions.profileLogoutSuccess());
         }
     }
 }

@@ -3,7 +3,7 @@ import { fromJS, Map, Record } from 'immutable';
 import * as transactionTypes from '../constants/TransactionConstants';
 import * as types from '../constants';
 import { createReducer } from './create-reducer';
-import { MinedTransaction, PendingTransaction, TransactionState } from './records';
+import { MinedTransaction, PendingTransaction, TransactionFlags, TransactionState } from './records';
 
 const ErrorRecord = Record({
     code: 0,
@@ -119,6 +119,13 @@ const transactionState = createReducer(initialState, {
 
     // *************** NEW REDUCERS **************************
 
+    [types.PROFILE_LOGOUT]: state =>
+        state.merge({
+            flags: new TransactionFlags(),
+            mined: new Map(),
+            pending: new Map()
+        }),
+
     [types.TRANSACTION_ADD_TO_QUEUE_SUCCESS]: (state, { request }) => {
         let pending = state.get('pending');
         request.forEach((req) => { pending = pending.set(req.tx, new PendingTransaction(req)); });
@@ -138,13 +145,9 @@ const transactionState = createReducer(initialState, {
         }),
 
     [types.TRANSACTION_EMIT_MINED_SUCCESS]: (state, { data }) => {
-        const pending = state.getIn(['pending', data.tx]);
-        if (pending) {
-            data.akashaId = pending.get('akashaId');
-            data.extra = pending.get('extra');
-            data.type = pending.get('type');
-        }
-        return state.setIn(['mined', data.tx], new MinedTransaction(data));
+        let mined = state.get('mined');
+        data.forEach((tx) => { mined = mined.set(tx.tx, new MinedTransaction(tx)); });
+        return state.set('mined', mined);
     },
 
     [types.TRANSACTION_GET_MINED]: state =>

@@ -138,9 +138,9 @@ export const transactionGetPending = akashaId =>
             .catch(err => reject(err));
     });
 
-export const transactionSaveMined = tx =>
+export const transactionSaveMined = txs =>
     new Promise((resolve, reject) => {
-        transactionsDB.mined.put(tx)
+        transactionsDB.mined.bulkPut(txs)
             .then(() => resolve())
             .catch(err => reject(err));
     });
