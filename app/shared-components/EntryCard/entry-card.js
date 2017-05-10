@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
+import { Link } from 'react-router-dom';
 import { Card, CardHeader, CardTitle, CardText, CardActions, IconButton, FlatButton,
     SvgIcon } from 'material-ui';
 import WarningIcon from 'material-ui/svg-icons/alert/warning';
@@ -23,15 +24,6 @@ class EntryCard extends Component {
             showVersions: false
         };
     }
-
-    // componentDidMount () {
-    //     const { entryActions, loggedAkashaId, entry } = this.props;
-    //     // entryActions.getVoteOf(loggedAkashaId, entry.get('entryId'));
-    //     if (this.isOwnEntry()) {
-    //         entryActions.canClaim(entry.get('entryId'));
-    //         entryActions.getEntryBalance(entry.get('entryId'));
-    //     }
-    // }
 
     shouldComponentUpdate (nextProps, nextState) {
         const { blockNr, canClaimPending, claimPending, entry, fetchingEntryBalance, isSaved,
@@ -143,10 +135,11 @@ class EntryCard extends Component {
     };
 
     handleEntryNavigation = (tar, ev, version) => {
-        const { entry, hidePanel, loggedAkashaId } = this.props;
-        hidePanel();
-        const query = version !== undefined ? `?version=${version}` : '';
-        this.context.router.push(`/${loggedAkashaId}/entry/${entry.get('entryId')}${query}`);
+        const { entry, hidePanel, loggedAkashaId, entryPageShow } = this.props;
+        // hidePanel();
+        // const query = version !== undefined ? `?version=${version}` : '';
+        // this.context.router.push(`/${loggedAkashaId}/entry/${entry.get('entryId')}${query}`);
+        // entryPageShow(entry.get('entryId'));
     };
 
     getVersion = version => this.handleEntryNavigation(null, null, version);
@@ -405,20 +398,21 @@ class EntryCard extends Component {
               }
             </CardHeader>
             {content &&
-              <CardTitle
-                title={content.get('title')}
-                expandable
-                className="content-link"
-                style={{
-                    paddingTop: '4px',
-                    paddingBottom: '4px',
-                    fontWeight: '600',
-                    wordWrap: 'break-word',
-                    maxHeight: '80px',
-                    overflow: 'hidden'
-                }}
-                onClick={this.handleEntryNavigation}
-              />
+              <Link to={`/dashboard/${entry.get('entryId')}`}>
+                <CardTitle
+                  title={content.get('title')}
+                  expandable
+                  className="content-link"
+                  style={{
+                      paddingTop: '4px',
+                      paddingBottom: '4px',
+                      fontWeight: '600',
+                      wordWrap: 'break-word',
+                      maxHeight: '80px',
+                      overflow: 'hidden'
+                  }}
+                />
+              </Link>
             }
             {content &&
               <CardText style={{ paddingTop: '4px', paddingBottom: '4px' }} expandable>
@@ -434,19 +428,20 @@ class EntryCard extends Component {
               </CardText>
             }
             {content &&
-              <CardText
-                className="content-link"
-                style={{
-                    paddingTop: '4px',
-                    paddingBottom: '4px',
-                    wordWrap: 'break-word',
-                    fontSize: '16px'
-                }}
-                expandable
-                onClick={this.handleEntryNavigation}
-              >
-                {content.get('excerpt')}
-              </CardText>
+              <Link to={`/dashboard/${entry.get('entryId')}`}>
+                <CardText
+                  className="content-link"
+                  style={{
+                      paddingTop: '4px',
+                      paddingBottom: '4px',
+                      wordWrap: 'break-word',
+                      fontSize: '16px'
+                  }}
+                  expandable
+                >
+                  {content.get('excerpt')}
+                </CardText>
+              </Link>
             }
             {content &&
               <CardActions className="col-xs-12">
@@ -624,6 +619,7 @@ EntryCard.propTypes = {
     style: PropTypes.shape(),
     voteEntryPending: PropTypes.bool,
 
+    entryPageShow: PropTypes.func.isRequired,
     publisher: PropTypes.shape()
 };
 
