@@ -1,4 +1,5 @@
-import { apply, call, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
+import { all, apply, call, fork, put, select, take, takeEvery,
+    takeLatest } from 'redux-saga/effects';
 import { actionChannels, enableChannel } from './helpers';
 import * as appActions from '../actions/app-actions';
 import * as actions from '../actions/entry-actions';
@@ -16,11 +17,11 @@ function* enableExtraChannels () {
     const getVoteOf = Channel.server.entry.getVoteOf;
     const getEntryBalance = Channel.server.entry.getEntryBalance;
     const canClaim = Channel.server.entry.canClaim;
-    yield [
+    yield all([
         call(enableChannel, getVoteOf, Channel.client.entry.manager),
         call(enableChannel, getEntryBalance, Channel.client.entry.manager),
         call(enableChannel, canClaim, Channel.client.entry.manager)
-    ];
+    ]);
 }
 
 function* entryCanClaim ({ entryId }) {

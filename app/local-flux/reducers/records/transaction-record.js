@@ -1,6 +1,6 @@
 import { Map, Record } from 'immutable';
 
-const Flags = Record({
+export const TransactionFlags = Record({
     deletingPendingTx: new Map(),
     fetchingMined: false,
     fetchingPending: false,
@@ -20,11 +20,12 @@ export const MinedTransaction = Record({
     cumulativeGasUsed: null,
     extra: {},
     hasEvents: false,
-    tx: ''
+    tx: '',
+    type: null
 });
 
 export const TransactionState = Record({
     pending: new Map(),
     mined: new Map(),
-    flags: new Flags()
+    flags: new TransactionFlags()
 });

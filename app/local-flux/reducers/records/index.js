@@ -13,7 +13,8 @@ import ProfileState, { LoggedProfile, ProfileRecord } from './profile-record';
 import SettingsRecord, { GeneralSettings, GethSettings, IpfsSettings, PasswordPreference,
     PortsRecord, UserSettings } from './settings-record';
 import TempProfileRecord, { TempProfileStatus } from './temp-profile-record';
-import { MinedTransaction, PendingTransaction, TransactionState } from './transaction-record';
+import { MinedTransaction, PendingTransaction, TransactionFlags,
+    TransactionState } from './transaction-record';
 import UtilsState from './utils-record';
 
 // keep this alphabetically sorted
@@ -54,6 +55,7 @@ export {
     SettingsRecord,
     TempProfileRecord,
     TempProfileStatus,
+    TransactionFlags,
     TransactionState,
     UserSettings,
     UtilsState

@@ -145,7 +145,7 @@ export const transactionEmitMinedError = (error) => {
 
 export const transactionEmitMinedSuccess = data =>
     action(types.TRANSACTION_EMIT_MINED_SUCCESS, { data });
-export const transactionGetMined = () => { console.log('get mined'); return action(types.TRANSACTION_GET_MINED); };
+export const transactionGetMined = () => action(types.TRANSACTION_GET_MINED);
 
 export const transactionGetMinedError = (error) => {
     error.code = 'TGME01';
@@ -165,7 +165,16 @@ export const transactionGetPendingError = (error) => {
 
 export const transactionGetPendingSuccess = data =>
     action(types.TRANSACTION_GET_PENDING_SUCCESS, { data });
+export const transactionGetStatus = txs => action(types.TRANSACTION_GET_STATUS, { txs });
 
+export const transactionGetStatusError = (error) => {
+    error.code = 'TGSE01';
+    error.messageId = 'transactionGetStatus';
+    return action(types.TRANSACTION_GET_STATUS_ERROR, { error });
+};
+
+export const transactionGetStatusSuccess = data =>
+    action(types.TRANSACTION_GET_STATUS_SUCCESS, { data });
 export const transactionSavePendingError = (error) => {
     error.code = 'TSPE01';
     error.messageId = 'transactionSavePending';
