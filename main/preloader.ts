@@ -1,4 +1,4 @@
-import { SpellCheckHandler, ContextMenuListener, ContextMenuBuilder } from 'electron-spellchecker';
+//import { SpellCheckHandler, ContextMenuListener, ContextMenuBuilder } from 'electron-spellchecker';
 import Channel from './lib/channels';
 import { ApiRequest, ApiListener } from './ipcPreloader';
 // Linux: libxtst-dev, libx11-dev, libxkbfile-dev
@@ -32,6 +32,7 @@ window['eval'] = function () {
     throw new Error("eval disabled.");
 };
 
+/*
 //spellchecking stuff
 window['spellCheckHandler'] = new SpellCheckHandler();
 
@@ -44,3 +45,4 @@ if (process.env.NODE_ENV !== 'development') {
         window['contextMenuBuilder'].showPopupMenu(info);
     });
 }
+*/

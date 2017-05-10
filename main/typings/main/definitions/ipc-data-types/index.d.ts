@@ -228,6 +228,10 @@ interface EmitMinedRequest {
     watch: boolean;
 }
 
+interface TxRequestData {
+    transactionHash: string[];
+}
+
 interface EmitMinedResponse extends MainResponse {
     data: {
         mined?: string,

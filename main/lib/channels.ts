@@ -34,7 +34,7 @@ const channels = {
 
     notifications: ['me', 'feed', 'setFilter', 'excludeFilter', 'includeFilter', 'mention'],
 
-    tx: ['addToQueue', 'emitMined'],
+    tx: ['addToQueue', 'emitMined', 'getTransaction'],
 
     licenses: ['getLicenceById', 'getLicenses'],
 
