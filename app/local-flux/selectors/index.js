@@ -1,4 +1,5 @@
 import { ProfileRecord } from '../reducers/records';
+import actionTypes from '../../constants/action-types';
 
 /* eslint-disable no-use-before-define */
 
@@ -15,6 +16,8 @@ export const selectActiveDashboard = (state) => {
 
 export const selectActivePanel = state => state.panelState.get('activePanel');
 
+export const selectAllComments = state => state.commentsState.get('byId').toList();
+
 export const selectColumnEntries = (state, columnId) =>
     state.dashboardState
         .getIn(['columnById', columnId, 'entries'])
@@ -25,6 +28,13 @@ export const selectColumnLastBlock = (state, columnId) =>
 
 export const selectColumnLastEntry = (state, columnId) =>
     state.dashboardState.getIn(['columnById', columnId, 'entries']).last();
+
+export const selectCommentsFlag = (state, flag, id) => {
+    if (id) {
+        return state.commentsState.getIn(['flags', flag, id]);
+    }
+    return state.commentsState.getIn(['flags', flag]);
+};
 
 export const selectDashboards = (state) => {
     const akashaId = selectLoggedAkashaId(state);
@@ -46,6 +56,8 @@ export const selectEntryVote = (state, id) => state.entryState.getIn(['votes', i
 export const selectEthAddress = (state, profileAddress) =>
     state.profileState.getIn(['ethAddresses', profileAddress]);
 
+export const selectFirstComment = state => state.commentsState.get('firstComm');
+
 export const selectFullEntry = state =>
     state.entryState.get('fullEntry');
 
@@ -53,9 +65,9 @@ export const selectGethStatus = state => state.externalProcState.getIn(['geth', 
 
 export const selectIpfsStatus = state => state.externalProcState.getIn(['ipfs', 'status']);
 
-export const selectLastStreamBlock = state => state.entryState.get('lastStreamBlock');
+export const selectLastComment = state => state.commentsState.get('lastComm');
 
-export const selectTagMargins = state => state.tagState.get('margins');
+export const selectLastStreamBlock = state => state.entryState.get('lastStreamBlock');
 
 export const selectLocalProfiles = state =>
     state.profileState
@@ -72,12 +84,24 @@ export const selectLoggedProfileData = state =>
 export const selectPendingAction = (state, actionId) =>
     state.appState.getIn(['pendingActions', actionId]);
 
+export const selectPendingComments = (state, entryId) => {
+    const pendingComments = state.appState
+        .get('pendingActions')
+        .filter(act =>
+            act.get('type') === actionTypes.comment &&
+            act.get('status') === 'publishing' &&
+            act.getIn(['payload', 'entryId']) === entryId);
+    return pendingComments;
+};
+
 export const selectPendingTx = (state, tx) => state.transactionState.getIn(['pending', tx]);
 
 export const selectProfile = (state, profileAddress) =>
     state.profileState.getIn(['byId', profileAddress]) || new ProfileRecord();
 
 export const selectProfileFlag = (state, flag) => state.profileState.getIn(['flags', flag]);
+
+export const selectTagMargins = state => state.tagState.get('margins');
 
 export const selectToken = state => state.profileState.getIn(['loggedProfile', 'token']);
 

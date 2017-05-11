@@ -6,16 +6,16 @@ import { Link } from 'react-router-dom';
 import { injectIntl } from 'react-intl';
 import ReactTooltip from 'react-tooltip';
 import { parse } from 'querystring';
-import { CardHeader, IconButton, SvgIcon, FlatButton } from 'material-ui';
+import { CardHeader, IconButton, SvgIcon } from 'material-ui';
 import CloseIcon from 'material-ui/svg-icons/navigation/close';
 import EditIcon from 'material-ui/svg-icons/image/edit';
-import { ProfileHoverCard } from 'shared-components';
-import { calculateReadingTime, getInitials } from 'utils/dataModule'; // eslint-disable-line import/no-unresolved, import/extensions
-import { entryMessages, generalMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
+import { Avatar, EntryVersionsPanel } from '../';
+import { entryMessages, generalMessages } from '../../locale-data/messages';
+import { entryPageHide } from '../../local-flux/actions/entry-actions';
+import { selectFullEntry, selectLoggedAkashaId } from '../../local-flux/selectors';
+import { ProfileHoverCard } from '../../shared-components';
+import { calculateReadingTime, getInitials } from '../../utils/dataModule';
 import styles from './entry-page-header.scss';
-import { entryPageHide } from '../../../../../local-flux/actions/entry-actions';
-import { selectFullEntry, selectLoggedAkashaId } from '../../../../../local-flux/selectors';
-import { Avatar, EntryVersionsPanel } from '../../../../../components';
 
 const buttonStyle = {
     width: '40px',
@@ -23,8 +23,6 @@ const buttonStyle = {
     padding: '8px',
     margin: '4px'
 };
-
-const FLOATING_COMMENTS_BUTTON_ACTIVE = false;
 
 class EntryPageHeader extends Component {
     state = {
@@ -107,12 +105,7 @@ class EntryPageHeader extends Component {
     renderAvatar = () => {
         const { publisher } = this.props;
         if (!publisher) {
-            return (
-              <Avatar
-                style={{ cursor: 'pointer' }}
-                radius={40}
-              />
-            );
+            return <Avatar radius={40} style={{ cursor: 'pointer' }} />;
         }
         const userInitials = getInitials(publisher.firstName, publisher.lastName);
 
@@ -120,11 +113,11 @@ class EntryPageHeader extends Component {
           <Link to={`/${publisher.get('akashaId')}`}>
             <Avatar
               image={publisher.avatar}
-              style={{ cursor: 'pointer' }}
+              onMouseEnter={this.showProfileHoverCard}
               radius={40}
+              style={{ cursor: 'pointer' }}
               userInitials={userInitials}
               userInitialsStyle={{ fontSize: '12px', margin: '0px' }}
-              onMouseEnter={this.showProfileHoverCard}
             />
           </Link>
         );
@@ -168,7 +161,7 @@ class EntryPageHeader extends Component {
             </span>
             {!isOlderVersion &&
               <span
-                data-tip={`Block ${blockNr}`}
+                data-tip={intl.formatMessage(entryMessages.blockNr, { blockNr })}
                 style={{ fontWeight: 600, display: 'inline-block' }}
               >
                 {intl.formatRelative(publishDate)}
@@ -190,19 +183,10 @@ class EntryPageHeader extends Component {
     }
 
     render () {
-        const { entry, existingDraft, isScrollingDown,
-            latestVersion, loggedAkashaId, publisherTitleShadow, publisher, intl,
-            commentsSectionTop, newCommentsCount, history } = this.props;
+        const { entry, existingDraft, latestVersion, loggedAkashaId,
+            publisherTitleShadow, publisher, intl, history } = this.props;
         const { palette } = this.context.muiTheme;
         const isOwnEntry = entry && loggedAkashaId === entry.getIn(['entryEth', 'publisher']);
-        let newCommentsButtonTop = 0;
-        if (isScrollingDown) {
-            newCommentsButtonTop = 32;
-        } else if (commentsSectionTop > 0) {
-            newCommentsButtonTop = 32;
-        } else {
-            newCommentsButtonTop = 110;
-        }
 
         return (
           <div
@@ -222,30 +206,21 @@ class EntryPageHeader extends Component {
             >
               <CardHeader
                 avatar={this.renderAvatar()}
+                onMouseLeave={this.hideProfileHoverCard}
+                subtitle={this.renderSubtitle()}
+                style={{ zIndex: 5, padding: 0 }}
                 title={publisher ?
                   <Link to={`/${publisher.get('akashaId')}`}>
                     <div
-                      className="content-link"
+                      className={`content-link ${styles.entry_publisher_name}`}
                       onMouseEnter={this.showProfileHoverCard}
-                      style={{
-                          color: palette.textColor,
-                          fontSize: '16px',
-                          fontWeight: '600',
-                          whiteSpace: 'nowrap',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          maxWidth: '570px',
-                          textAlign: 'left'
-                      }}
+                      style={{ color: palette.textColor }}
                     >
                       {`${publisher.firstName} ${publisher.lastName}`}
                     </div>
                   </Link> :
                   <div style={{ height: '22px' }} />
                 }
-                onMouseLeave={this.hideProfileHoverCard}
-                subtitle={this.renderSubtitle()}
-                style={{ zIndex: 5, padding: 0 }}
               >
                 {publisher &&
                   <ProfileHoverCard
@@ -255,39 +230,7 @@ class EntryPageHeader extends Component {
                   />
                 }
               </CardHeader>
-              {newCommentsCount > 0 && FLOATING_COMMENTS_BUTTON_ACTIVE &&
-                <div
-                  style={{
-                      position: 'absolute',
-                      top: newCommentsButtonTop,
-                      transform: 'translate3d(0,0,0)',
-                      textAlign: 'center',
-                      margin: '0 auto',
-                      zIndex: 1,
-                      padding: 0,
-                      width: 700,
-                      transition: isScrollingDown ? 'top 0.214s ease-in-out' : 'none',
-                      height: 1,
-                      willChange: 'top'
-                  }}
-                  className="row middle-xs"
-                >
-                  <div className="col-xs-12 center-xs" style={{ position: 'relative' }}>
-                    <FlatButton
-                      primary
-                      label={intl.formatMessage(entryMessages.newComments, {
-                          count: newCommentsCount
-                      })}
-                      hoverColor="#ececec"
-                      backgroundColor={palette.canvasColor}
-                      style={{ position: 'absolute', top: -18, zIndex: 2, left: '50%', marginLeft: '-70px' }}
-                      labelStyle={{ fontSize: 12 }}
-                      onClick={this.props.onRequestNewestComments}
-                    />
-                  </div>
-                </div>
-              }
-              <div style={{ position: 'absolute', top: 0, right: 0, height: 80, display: 'flex', alignItems: 'center', zIndex: 5 }} >
+              <div className={styles.entry_header_actions}>
                 {isOwnEntry &&
                   <div
                     data-tip={entry.get('active') ?
@@ -336,18 +279,14 @@ EntryPageHeader.contextTypes = {
 };
 
 EntryPageHeader.propTypes = {
-    commentsSectionTop: PropTypes.number,
     entry: PropTypes.shape(),
     existingDraft: PropTypes.shape(),
     history: PropTypes.shape(),
     intl: PropTypes.shape(),
-    isScrollingDown: PropTypes.bool,
     latestVersion: PropTypes.number,
     location: PropTypes.shape(),
     loggedAkashaId: PropTypes.string.isRequired,
     match: PropTypes.shape(),
-    newCommentsCount: PropTypes.number,
-    onRequestNewestComments: PropTypes.func,
     publisher: PropTypes.shape(),
     publisherTitleShadow: PropTypes.bool,
 };

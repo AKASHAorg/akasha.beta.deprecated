@@ -671,9 +671,10 @@ class EntryActions {
 
 export { EntryActions };
 
-export const entryAddClaimAction = payload => action(types.ADD_CLAIM_ACTION, { payload });
-export const entryAddDownvoteAction = payload => action(types.ADD_DOWNVOTE_ACTION, { payload });
-export const entryAddUpvoteAction = payload => action(types.ADD_UPVOTE_ACTION, { payload });
+export const entryAddClaimAction = payload => action(types.ENTRY_ADD_CLAIM_ACTION, { payload });
+export const entryAddDownvoteAction = payload =>
+    action(types.ENTRY_ADD_DOWNVOTE_ACTION, { payload });
+export const entryAddUpvoteAction = payload => action(types.ENTRY_ADD_UPVOTE_ACTION, { payload });
 export const entryCanClaim = entryId => action(types.ENTRY_CAN_CLAIM, { entryId });
 
 export const entryCanClaimError = (error) => {

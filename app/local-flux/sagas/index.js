@@ -1,8 +1,10 @@
-import { call, fork, put, select, takeEvery } from 'redux-saga/effects';
+import { apply, call, fork, put, select, takeEvery } from 'redux-saga/effects';
+import * as reduxSaga from 'redux-saga';
 import * as actions from '../actions/app-actions';
 import * as transactionActions from '../actions/transaction-actions';
 import { selectLoggedAkashaId } from '../selectors';
 import { createActionChannels } from './helpers';
+import * as commentsSaga from './comments-saga';
 import * as dashboardSaga from './dashboard-saga';
 import * as entrySaga from './entry-saga';
 import * as externalProcSaga from './external-process-saga';
@@ -16,6 +18,7 @@ import * as utilsSaga from './utils-saga';
 import * as types from '../constants';
 
 function* registerListeners () {
+    yield fork(commentsSaga.registerCommentsListeners);
     yield fork(licenseSaga.registerLicenseListeners);
     yield fork(entrySaga.registerEntryListeners);
     yield fork(externalProcSaga.registerEProcListeners);
@@ -31,6 +34,8 @@ function* launchActions () {
     // from local db
     yield fork(settingsSaga.getSettings);
 
+    // wait a few miliseconds in order for ipc channels to work properly
+    yield apply(reduxSaga, reduxSaga.delay, [400]);
     // from geth.options channel
     yield fork(externalProcSaga.gethGetOptions);
     // from ipfs.getConfig channel
@@ -71,6 +76,7 @@ function* watchBootstrapHome () {
 export default function* rootSaga () {
     createActionChannels();
     yield fork(registerListeners);
+    yield fork(commentsSaga.watchCommentsActions);
     yield fork(dashboardSaga.watchDashboardActions);
     yield fork(entrySaga.watchEntryActions);
     yield fork(externalProcSaga.watchEProcActions);

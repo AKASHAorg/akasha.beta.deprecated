@@ -1,5 +1,6 @@
 // keep this alphabetically sorted
 import AppRecord, { NotificationRecord, PendingActionRecord } from './app-record';
+import { CommentData, CommentRecord, CommentsState } from './comments-record';
 import { ColumnRecord, DashboardRecord, DashboardState } from './dashboard-record';
 import { EntriesStream, EntryContent, EntryEth, EntryPageOverlay, EntryRecord,
     EntryState } from './entry-record';
@@ -21,6 +22,9 @@ import UtilsState from './utils-record';
 export {
     AppRecord,
     ColumnRecord,
+    CommentData,
+    CommentRecord,
+    CommentsState,
     DashboardRecord,
     DashboardState,
     EntriesStream,

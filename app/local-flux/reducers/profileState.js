@@ -54,6 +54,17 @@ const addProfileData = (byId, profileData) => {
     return byId.set(profileData.profile, new ProfileRecord(profileData));
 };
 
+const commentsIteratorHandler = (state, { data }) => {
+    let byId = state.get('byId');
+    data.collection.forEach((comm) => {
+        const publisher = comm.data.profile;
+        if (publisher && !byId.get(publisher.akashaId)) {
+            byId = addProfileData(byId, publisher);
+        }
+    });
+    return state.set('byId', byId);
+};
+
 const entryIteratorHandler = (state, { data }) => {
     let byId = state.get('byId');
     data.collection.forEach((entry) => {
@@ -452,6 +463,10 @@ const profileState = createReducer(initialState, {
     [appTypes.CLEAN_STORE]: () => initialState,
 
 // ***************************** NEW REDUCERS **************************************
+
+    [types.COMMENTS_ITERATOR_SUCCESS]: commentsIteratorHandler,
+
+    [types.COMMENTS_MORE_ITERATOR_SUCCESS]: commentsIteratorHandler,
 
     [types.ENTRY_GET_FULL_SUCCESS]: (state, { data }) => {
         const { publisher } = data.entryEth;

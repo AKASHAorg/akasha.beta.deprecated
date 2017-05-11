@@ -7,7 +7,7 @@ import { Runners } from '../components/runners';
 import { DataLoader } from '../shared-components';
 import { selectActiveDashboard } from '../local-flux/selectors';
 import { profileLogout } from '../local-flux/actions/profile-actions';
-import EntryPage from '../routes/Home/routes/Entry/EntryContainer';
+import { EntryPageContainer } from './';
 
 class HomeContainer extends Component {
     render () {
@@ -25,7 +25,7 @@ class HomeContainer extends Component {
                   <Dashboard columns={columns} activeDashboard={activeDashboard} />
                 </PageContent>
               </div>
-              <Route path="/dashboard/:entryId" component={EntryPage} />
+              <Route path="/dashboard/:entryId" component={EntryPageContainer} />
               <Runners />
             </div>
           </DataLoader>

@@ -39,14 +39,12 @@ function* ipfsStartLogger () {
 
 export function* gethGetOptions () {
     const channel = Channel.server.geth.options;
-    yield apply(reduxSaga, reduxSaga.delay, [200]);
     yield call(enableChannel, channel, Channel.client.geth.manager);
     yield apply(channel, channel.send, [{}]);
 }
 
 export function* ipfsGetConfig () {
     const channel = Channel.server.ipfs.getConfig;
-    yield apply(reduxSaga, reduxSaga.delay, [200]);
     yield call(enableChannel, channel, Channel.client.ipfs.manager);
     yield apply(channel, channel.send, [{}]);
 }

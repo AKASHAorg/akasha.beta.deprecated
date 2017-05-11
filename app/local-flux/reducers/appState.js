@@ -1,4 +1,4 @@
-import { fromJS } from 'immutable';
+import { fromJS, List, Map } from 'immutable';
 import { AppRecord, NotificationRecord, PendingActionRecord } from './records';
 import * as types from '../constants';
 import * as appTypes from '../constants/AppConstants';
@@ -49,7 +49,29 @@ const appState = createReducer(initialState, {
 
 // ********************* NEW REDUCERS ******************************
 
-    [types.ADD_CLAIM_ACTION]: (state, { payload }) => {
+    [types.APP_READY]: state =>
+        state.set('appReady', true),
+
+    [types.BOOTSTRAP_HOME_SUCCESS]: state =>
+        state.set('homeReady', true),
+
+    [types.COMMENTS_ADD_PUBLISH_ACTION]: (state, { payload }) => {
+        id += 1;
+        return state.setIn(['pendingActions', id], new PendingActionRecord({
+            id,
+            gas: 2000000,
+            messageId: 'publishComment',
+            payload: fromJS(payload),
+            status: 'checkAuth',
+            titleId: 'publishCommentTitle',
+            type: actionTypes.comment
+        }));
+    },
+
+    [types.DELETE_PENDING_ACTION]: (state, { actionId }) =>
+        state.set('pendingActions', state.get('pendingActions').delete(actionId)),
+
+    [types.ENTRY_ADD_CLAIM_ACTION]: (state, { payload }) => {
         id += 1;
         return state.setIn(['pendingActions', id], new PendingActionRecord({
             id,
@@ -62,7 +84,7 @@ const appState = createReducer(initialState, {
         }));
     },
 
-    [types.ADD_DOWNVOTE_ACTION]: (state, { payload }) => {
+    [types.ENTRY_ADD_DOWNVOTE_ACTION]: (state, { payload }) => {
         id += 1;
         return state.setIn(['pendingActions', id], new PendingActionRecord({
             id,
@@ -73,7 +95,7 @@ const appState = createReducer(initialState, {
         }));
     },
 
-    [types.ADD_UPVOTE_ACTION]: (state, { payload }) => {
+    [types.ENTRY_ADD_UPVOTE_ACTION]: (state, { payload }) => {
         id += 1;
         return state.setIn(['pendingActions', id], new PendingActionRecord({
             id,
@@ -83,15 +105,6 @@ const appState = createReducer(initialState, {
             status: 'needWeightConfirmation'
         }));
     },
-
-    [types.APP_READY]: state =>
-        state.set('appReady', true),
-
-    [types.BOOTSTRAP_HOME_SUCCESS]: state =>
-        state.set('homeReady', true),
-
-    [types.DELETE_PENDING_ACTION]: (state, { actionId }) =>
-        state.set('pendingActions', state.get('pendingActions').delete(actionId)),
 
     [types.HIDE_AUTH_DIALOG]: state =>
         state.set('showAuthDialog', null),
@@ -124,6 +137,12 @@ const appState = createReducer(initialState, {
         }
         return state.set('showAuthDialog', null);
     },
+
+    [types.PROFILE_LOGOUT]: state =>
+        state.merge({
+            notifications: new List(),
+            pendingActions: new Map()
+        }),
 
     [types.RESET_HOME_READY]: state =>
         state.set('homeReady', false),

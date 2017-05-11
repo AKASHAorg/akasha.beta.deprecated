@@ -275,9 +275,11 @@ Avatar.propTypes = {
     onMouseEnter: PropTypes.func,
     onMouseLeave: PropTypes.func,
 };
+
 Avatar.contextTypes = {
     muiTheme: PropTypes.object
 };
+
 Avatar.defaultProps = {
     radius: 150,
     userInitialsAlignStyle: {
@@ -292,4 +294,5 @@ Avatar.defaultProps = {
         width: '100%'
     },
 };
+
 export default Avatar;

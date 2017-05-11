@@ -1,6 +1,26 @@
 import { defineMessages } from 'react-intl';
 
 const entryMessages = defineMessages({
+    alreadyClaimed: {
+        id: 'app.entry.alreadyClaimed',
+        description: 'claim button tooltip when it was already claimed',
+        defaultMessage: 'Already claimed'
+    },
+    blockNr: {
+        id: 'app.entry.blockNr',
+        description: 'block number',
+        defaultMessage: 'Block {blockNr}'
+    },
+    claim: {
+        id: 'app.entry.claim',
+        description: 'claim button tooltip',
+        defaultMessage: 'Claim'
+    },
+    downvote: {
+        id: 'app.entry.downvote',
+        description: 'downvote button tooltip',
+        defaultMessage: 'Downvote'
+    },
     draft: {
         id: 'app.entry.draft',
         description: 'draft label indicator',
@@ -151,5 +171,15 @@ const entryMessages = defineMessages({
         description: 'placeholder for tag column',
         defaultMessage: 'Search for a tag'
     },
+    upvote: {
+        id: 'app.entry.upvote',
+        description: 'upvote button tooltip',
+        defaultMessage: 'Upvote'
+    },
+    votingExpired: {
+        id: 'app.entry.votingExpired',
+        description: 'upvote/downvote tooltip when voting period expired',
+        defaultMessage: 'Voting period has ended'
+    }
 });
 export { entryMessages };
