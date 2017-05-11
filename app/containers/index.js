@@ -2,6 +2,7 @@
 export AppContainer from './app-container';
 export AuthContainer from './auth-container';
 export ConfigurationContainer from './configuration-container';
+export EntryPageContainer from './entry-page-container';
 export HomeContainer from './home-container';
 export LauncherContainer from './launcher-container';
 export LogDetailsContainer from './log-details-container';

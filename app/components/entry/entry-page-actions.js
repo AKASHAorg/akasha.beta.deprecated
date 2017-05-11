@@ -1,17 +1,18 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { injectIntl } from 'react-intl';
 import { CardActions, FlatButton, IconButton, SvgIcon } from 'material-ui';
 import { EntryVotesPanel } from 'shared-components';
 import { EntryBookmarkOn, EntryBookmarkOff, EntryDownvote, EntryUpvote,
-    ToolbarEthereum } from '../../../../../components/svg';
+    ToolbarEthereum } from '../svg';
 import { entryAddClaimAction, entryAddDownvoteAction,
-    entryAddUpvoteAction } from '../../../../../local-flux/actions/entry-actions';
+    entryAddUpvoteAction } from '../../local-flux/actions/entry-actions';
 import { selectEntryBalance, selectEntryCanClaim, selectEntryVote,
-    selectProfile } from '../../../../../local-flux/selectors';
+    selectProfile } from '../../local-flux/selectors';
+import { entryMessages } from '../../locale-data/messages';
 
 class EntryPageAction extends Component {
-
     state = {
         showVotes: false
     };
@@ -33,8 +34,7 @@ class EntryPageAction extends Component {
         const payload = {
             publisherAkashaId: publisher && publisher.get('akashaId'),
             entryTitle: entry.content.title,
-            entryId: entry.entryId,
-            active: entry.active
+            entryId: entry.entryId
         };
         this.props.entryAddUpvoteAction(payload);
     };
@@ -76,16 +76,31 @@ class EntryPageAction extends Component {
 
     render () { // eslint-disable-line complexity
         const { balance, canClaim, canClaimPending, claimPending, entry, fetchingEntryBalance,
-            votePending, isOwnEntry, isSaved, voteWeight } = this.props;
+            intl, isOwnEntry, isSaved, votePending, voteWeight } = this.props;
         const { palette } = this.context.muiTheme;
         const upvoteIconColor = voteWeight > 0 ? palette.accent3Color : '';
         const downvoteIconColor = voteWeight < 0 ? palette.accent1Color : '';
         const voteButtonsDisabled = !entry.active || voteWeight !== 0 || votePending;
+        const showBalance = isOwnEntry && (!canClaimPending || canClaim !== undefined)
+            && (!fetchingEntryBalance || balance !== undefined);
+        const existingVoteStyle = {
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            textAlign: 'center',
+            fontSize: '12px',
+        };
         return (
           <CardActions className="col-xs-12" style={{ padding: '18px 8px 0px' }}>
             <div style={{ display: 'flex', alignItems: 'center' }} >
               <div style={{ position: 'relative' }}>
-                <div data-tip={entry.get('active') ? 'Upvote' : 'Voting period has ended'}>
+                <div
+                  data-tip={entry.get('active') ?
+                      intl.formatMessage(entryMessages.upvote) :
+                      intl.formatMessage(entryMessages.votingExpired)
+                  }
+                >
                   <IconButton
                     onTouchTap={this.handleUpvote}
                     iconStyle={{ width: '24px', height: '24px' }}
@@ -98,15 +113,7 @@ class EntryPageAction extends Component {
                 </div>
                 {voteWeight > 0 &&
                   <div
-                    style={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        textAlign: 'center',
-                        fontSize: '12px',
-                        color: palette.accent3Color
-                    }}
+                    style={Object.assign({}, existingVoteStyle, { color: palette.accent3Color })}
                   >
                     +{voteWeight}
                   </div>
@@ -133,15 +140,7 @@ class EntryPageAction extends Component {
                 </div>
                 {voteWeight < 0 &&
                   <div
-                    style={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        textAlign: 'center',
-                        fontSize: '12px',
-                        color: palette.accent1Color
-                    }}
+                    style={Object.assign({}, existingVoteStyle, { color: palette.accent1Color })}
                   >
                     {voteWeight}
                   </div>
@@ -150,9 +149,7 @@ class EntryPageAction extends Component {
               <div style={{ flex: '1 1 auto', textAlign: 'right' }}>
                 {!isOwnEntry &&
                   <div data-tip="Bookmark" style={{ display: 'inline-block' }}>
-                    <IconButton
-                      iconStyle={{ width: '24px', height: '24px' }}
-                    >
+                    <IconButton iconStyle={{ width: '24px', height: '24px' }}>
                       <SvgIcon viewBox="0 0 20 20">
                         {isSaved ?
                           <EntryBookmarkOn /> :
@@ -162,13 +159,17 @@ class EntryPageAction extends Component {
                     </IconButton>
                   </div>
                 }
-                {isOwnEntry && (!canClaimPending || canClaim !== undefined)
-                    && (!fetchingEntryBalance || balance !== undefined) &&
+                {showBalance &&
                   <div
                     style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}
                   >
                     {!entry.active &&
-                      <div data-tip={!canClaim ? 'Already Claimed' : 'Claim'}>
+                      <div
+                        data-tip={!canClaim ?
+                            intl.formatMessage(entryMessages.alreadyClaimed) :
+                            intl.formatMessage(entryMessages.claim)
+                        }
+                      >
                         <IconButton
                           onTouchTap={this.handleClaim}
                           iconStyle={{
@@ -223,6 +224,7 @@ EntryPageAction.propTypes = {
     entryAddDownvoteAction: PropTypes.func.isRequired,
     entryAddUpvoteAction: PropTypes.func.isRequired,
     fetchingEntryBalance: PropTypes.bool,
+    intl: PropTypes.shape(),
     isOwnEntry: PropTypes.bool,
     isSaved: PropTypes.bool,
     publisher: PropTypes.shape(),
@@ -258,4 +260,4 @@ export default connect(
         entryAddDownvoteAction,
         entryAddUpvoteAction
     }
-)(EntryPageAction);
+)(injectIntl(EntryPageAction));

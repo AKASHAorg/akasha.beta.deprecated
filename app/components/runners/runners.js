@@ -5,7 +5,7 @@ import { ClaimRunner, CommentsPublisher, CommonRunner, FollowRunner, ProfileUpda
 const Runners = () => (
   <div>
     <ClaimRunner />
-    {/*<CommentsPublisher />*/}
+    <CommentsPublisher />
     <CommonRunner />
     {/*<FollowRunner />
     <ProfileUpdater />

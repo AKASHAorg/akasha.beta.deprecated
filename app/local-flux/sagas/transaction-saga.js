@@ -12,7 +12,7 @@ function* getMinedTransactionInfo (txs) {
     const pendingTxs = yield select(state => state.transactionState.get('pending'));
     const result = [];
     txs.forEach((tx) => { // eslint-disable-line consistent-return
-        const hash = tx.mined || tx.transactionHash;
+        const hash = tx && (tx.mined || tx.transactionHash);
         if (!tx || !pendingTxs.get(hash)) {
             return null;
         }
@@ -81,7 +81,6 @@ export function* transactionGetStatus ({ txs }) {
 function* transactionSaveMined (txs) {
     try {
         yield apply(transactionService, transactionService.transactionSaveMined, [txs]);
-        console.log('transaction save mined', txs);
         yield put(actions.transactionEmitMinedSuccess(txs));
     } catch (err) {
         yield put(actions.transactionSaveMinedError(err));
@@ -139,9 +138,6 @@ function* watchTransactionEmitMinedChannel () {
             yield put(actions.transactionEmitMinedError(resp.error));
         } else {
             const txs = yield call(getMinedTransactionInfo, [resp.data]);
-            console.log('emit mined');
-            console.log('data', resp.data);
-            console.log('txs', txs);
             yield fork(transactionSaveMined, txs);
             yield put(profileActions.profileGetBalance());
         }

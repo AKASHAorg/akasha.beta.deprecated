@@ -1,9 +1,12 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { MegadraftEditor, DraftJS, createTypeStrategy } from 'megadraft';
+import { createTypeStrategy, DraftJS, editorStateToJSON, MegadraftEditor } from 'megadraft';
 import Link from 'megadraft/lib/components/Link';
 import { RaisedButton } from 'material-ui';
-import { Avatar, MentionDecorators, MentionSuggestions } from '../';
+import { MentionDecorators, MentionSuggestions } from 'shared-components';
+import { Avatar } from '../';
+import { getInitials } from '../../utils/dataModule';
+import { getMentionsFromEditorState } from '../../utils/editorUtils';
 import { entryMessages, generalMessages } from '../../locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
 import styles from './comment-editor.scss';
 
@@ -30,25 +33,15 @@ class CommentEditor extends Component {
         return nextState.editorState !== this.state.editorState;
     }
 
-    setSuggestionsRef = (el) => {
-        this.suggestionsComponent = el;
-    };
-
     getBaseNode = () => this.baseNodeRef;
 
-    getEditorRef = (el) => {
-        this.editor = el;
-    }
+    getContainerRef = el => (this.container = el);
 
-    getContainerRef = (el) => {
-        this.container = el;
-    }
+    getEditorRef = el => (this.editor = el);
 
-    resetContent = () => {
-        this._resetEditorState();
-    };
+    setSuggestionsRef = el => (this.suggestionsComponent = el);
 
-    _handleCommentChange = (editorState) => {
+    handleCommentChange = (editorState) => {
         // Ignore "Enter" key press if suggestions list is opened
         const isOpen = this.suggestionsComponent.getIsOpen();
         if (editorState.getLastChangeType() === 'split-block' && isOpen) {
@@ -59,39 +52,58 @@ class CommentEditor extends Component {
         });
     };
 
-    _handleCommentCreate = () => {
-        this.props.onCommentCreate(this.state.editorState);
+    handleCommentCreate = () => {
+        const { commentsAddPublishAction, entryId, parent = '0' } = this.props;
+        const { editorState } = this.state;
+        const mentions = getMentionsFromEditorState(editorState);
+        const payload = {
+            content: editorStateToJSON(editorState),
+            date: new Date().toISOString(),
+            entryId,
+            mentions,
+            parent
+        };
+        commentsAddPublishAction(payload);
     };
 
-    _handleCommentCancel = () => {
-        this._resetEditorState();
-        if (this.props.onCancel) this.props.onCancel();
+    handleCommentCancel = () => {
+        this.resetEditorState();
+        if (this.props.onCancel) {
+            this.props.onCancel();
+        }
     };
 
-    _resetEditorState = () => {
+    resetEditorState = () => {
         this.setState({
             editorState: EditorState.createEmpty(this.decorators)
         });
     };
 
     render () {
-        const { profileAvatar, profileUserInitials, intl, showPublishActions } = this.props;
+        const { intl, loggedProfileData, showPublishActions } = this.props;
+        const userInitials = getInitials(loggedProfileData.firstName, loggedProfileData.lastName);
         let { placeholder } = this.props;
-        if (!placeholder) placeholder = `${intl.formatMessage(entryMessages.writeComment)}...`;
+
+        if (!placeholder) {
+            placeholder = `${intl.formatMessage(entryMessages.writeComment)}...`;
+        }
 
         return (
-          <div className={`${styles.comment_writer} row`} ref={(baseNode) => { this.baseNodeRef = baseNode; }}>
+          <div
+            className={`${styles.comment_writer} row`}
+            ref={baseNode => (this.baseNodeRef = baseNode)}
+          >
             <div className={`${styles.avatar_image} col-xs-1 start-xs`}>
               <Avatar
-                image={profileAvatar}
-                userInitials={profileUserInitials}
+                image={loggedProfileData.get('avatar')}
                 radius={48}
-                userInitialsStyle={{ fontSize: 22, textTransform: 'uppercase', fontWeight: 500 }}
+                userInitials={userInitials}
+                userInitialsStyle={{ fontSize: 22 }}
               />
             </div>
             <div className={`${styles.comment_editor} col-xs-11`}>
               <div
-                className={`${styles.comment_editor_inner}`}
+                className={styles.comment_editor_inner}
                 ref={this.getContainerRef}
                 onFocus={this.onContainerFocus}
               >
@@ -99,43 +111,45 @@ class CommentEditor extends Component {
                   ref={this.getEditorRef}
                   placeholder={placeholder}
                   editorState={this.state.editorState}
-                  onChange={this._handleCommentChange}
+                  onChange={this.handleCommentChange}
                   sidebarRendererFn={() => null}
                 />
                 <MentionSuggestions
                   ref={this.setSuggestionsRef}
                   editorState={this.state.editorState}
-                  onChange={this._handleCommentChange}
+                  onChange={this.handleCommentChange}
                   parentRef={this.container}
                 />
               </div>
             </div>
             {(this.state.editorState.getCurrentContent().hasText() || showPublishActions) &&
-            <div className={`${styles.comment_publish_actions} col-xs-12 end-xs`}>
-              <RaisedButton
-                label={intl.formatMessage(generalMessages.cancel)}
-                onClick={this._handleCommentCancel}
-              />
-              <RaisedButton
-                label={intl.formatMessage(generalMessages.publish)}
-                onClick={this._handleCommentCreate}
-                primary
-                style={{ marginLeft: 8 }}
-              />
-            </div>
+              <div className={`${styles.comment_publish_actions} col-xs-12 end-xs`}>
+                <RaisedButton
+                  label={intl.formatMessage(generalMessages.cancel)}
+                  onClick={this.handleCommentCancel}
+                />
+                <RaisedButton
+                  label={intl.formatMessage(generalMessages.publish)}
+                  onClick={this.handleCommentCreate}
+                  primary
+                  style={{ marginLeft: 8 }}
+                />
+              </div>
             }
           </div>
         );
     }
 }
+
 CommentEditor.propTypes = {
-    profileAvatar: PropTypes.string,
-    profileUserInitials: PropTypes.string,
-    onCommentCreate: PropTypes.func,
+    commentsAddPublishAction: PropTypes.func.isRequired,
+    entryId: PropTypes.string,
     intl: PropTypes.shape(),
+    loggedProfileData: PropTypes.shape(),
+    onCancel: PropTypes.func,
+    parent: PropTypes.string,
     placeholder: PropTypes.string,
     showPublishActions: PropTypes.bool,
-    onCancel: PropTypes.func,
 };
 
 export default CommentEditor;

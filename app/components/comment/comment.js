@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { Component } from 'react';
+import { injectIntl } from 'react-intl';
 import ReactTooltip from 'react-tooltip';
 import {
     CardHeader,
@@ -7,23 +8,22 @@ import {
     IconButton,
     FlatButton,
     SvgIcon,
-    CircularProgress
   } from 'material-ui';
 import { DraftJS, MegadraftEditor, editorStateFromRaw, createTypeStrategy } from 'megadraft';
 import Link from 'megadraft/lib/components/Link';
 import HubIcon from 'material-ui/svg-icons/hardware/device-hub';
 import MoreIcon from 'material-ui/svg-icons/navigation/expand-more';
 import LessIcon from 'material-ui/svg-icons/navigation/expand-less';
-import { EntryCommentReply } from '../svg'; // eslint-disable-line import/no-unresolved, import/extensions
-import { Avatar, MentionDecorators, ProfileHoverCard } from '../'; // eslint-disable-line import/no-unresolved, import/extensions
-import { entryMessages } from '../../locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
-import { getInitials } from '../../utils/dataModule'; // eslint-disable-line import/no-unresolved, import/extensions
+import { Avatar } from '../';
+import { EntryCommentReply } from '../svg';
+import { MentionDecorators, ProfileHoverCard } from '../../shared-components';
+import { entryMessages } from '../../locale-data/messages';
+import { getInitials } from '../../utils/dataModule';
 import style from './comment.scss';
 
 const { CompositeDecorator, EditorState } = DraftJS;
-const REPLIES_ENABLED = true;
 
-class Comment extends React.Component {
+class Comment extends Component {
     constructor (props) {
         super(props);
 
@@ -38,6 +38,7 @@ class Comment extends React.Component {
         };
         this.timeout = null;
     }
+
     componentDidMount () {
         const { comment } = this.props;
         let { isExpanded } = this.state;
@@ -45,7 +46,7 @@ class Comment extends React.Component {
         if (this.editorWrapperRef) {
             contentHeight = this.editorWrapperRef.getBoundingClientRect().height;
         }
-        if (comment.data && !comment.data.content) {
+        if (!comment.data.content) {
             isExpanded = null;
         }
         if (contentHeight > 155) {
@@ -71,7 +72,33 @@ class Comment extends React.Component {
         }
     }
 
-    _handleMouseEnter = (ev) => {
+    getAuthorNameColor = () => {
+        const { comment, entryAuthorProfile, loggedProfile, profiles } = this.props;
+        const { palette } = this.context.muiTheme;
+        const author = profiles.get(comment.data.profile);
+        const isEntryAuthor = entryAuthorProfile === author.get('profile');
+        const viewerIsAuthor = loggedProfile.get('profile') === author.get('profile');
+
+        if (viewerIsAuthor) {
+            return palette.commentViewerIsAuthorColor;
+        } else if (isEntryAuthor) {
+            return palette.commentIsEntryAuthorColor;
+        }
+        return palette.commentAuthorColor;
+    };
+
+    getExpandedStyle = () => {
+        const { isExpanded } = this.state;
+        if (isExpanded === false) {
+            return { maxHeight: 155, overflow: 'hidden' };
+        }
+        if (isExpanded === true) {
+            return { maxHeight: 'none', overflow: 'visible' };
+        }
+        return {};
+    };
+
+    handleMouseEnter = (ev) => {
         this.setState({
             hoverNode: ev.currentTarget
         });
@@ -82,7 +109,7 @@ class Comment extends React.Component {
         }, 500);
     };
 
-    _handleMouseLeave = () => {
+    handleMouseLeave = () => {
         if (this.timeout) {
             clearTimeout(this.timeout);
             this.timeout = null;
@@ -93,7 +120,7 @@ class Comment extends React.Component {
         });
     };
 
-    _toggleExpanded = (ev, isExpanded) => {
+    toggleExpanded = (ev, isExpanded) => {
         ev.preventDefault();
         this.setState({
             isExpanded
@@ -101,115 +128,86 @@ class Comment extends React.Component {
     };
 
     render () {
-        const { isPublishing, comment, children, intl, onAuthorNameClick, entryAuthorProfile,
-          loggedProfile, showReplyButton } = this.props;
+        const { comment, children, intl, onReply, profiles, showReplyButton } = this.props;
         const { isExpanded } = this.state;
         const { data } = comment;
-        const { profile, date, content } = data;
+        const { date, content } = data;
+        const currentContent = editorStateFromRaw(content).getCurrentContent();
+        const author = profiles.get(data.profile);
         const { palette } = this.context.muiTheme;
-        const authorAkashaId = `${profile.get('akashaId')}`;
-        const authorInitials = getInitials(profile.get('firstName'), profile.get('lastName'));
-        const authorAvatar = (profile.get('avatar') === `${profile.get('baseUrl')}/`) ?
-            null : profile.get('avatar');
-        const isEntryAuthor = entryAuthorProfile === profile.get('profile');
-        const viewerIsAuthor = loggedProfile.get('profile') === profile.get('profile');
-        let commentAuthorNameColor = palette.commentAuthorColor;
-        let expandedStyle = {};
-        if (isExpanded === false) {
-            expandedStyle = {
-                maxHeight: 155,
-                overflow: 'hidden'
-            };
-        }
-        if (isExpanded === true) {
-            expandedStyle = {
-                maxHeight: 'none',
-                overflow: 'visible'
-            };
-        }
-        if (viewerIsAuthor) {
-            commentAuthorNameColor = palette.commentViewerIsAuthorColor;
-        }
-        if (isEntryAuthor) {
-            commentAuthorNameColor = palette.commentIsEntryAuthorColor;
-        }
+        const authorAkashaId = author.get('akashaId');
+        const authorInitials = getInitials(author.get('firstName'), author.get('lastName'));
+        const authorAvatar = author.get('avatar');
+
         return (
           <div
             id={`comment-${comment.get('commentId')}`}
-            className={`${style.root}`}
+            className={style.root}
             style={{ position: 'relative' }}
           >
-            <div className={`${style.rootInner}`}>
+            <div className={style.rootInner}>
               <div
                 className={`row ${style.commentHeader}`}
                 style={{ marginBottom: !content ? '8px' : '0px' }}
               >
                 <div className={`col-xs-5 ${style.commentAuthor}`}>
                   <CardHeader
-                    style={{ padding: 0 }}
-                    titleStyle={{ fontSize: '100%', height: 24 }}
-                    subtitleStyle={{ paddingLeft: '2px', fontSize: '80%' }}
-                    onMouseLeave={this._handleMouseLeave}
-                    title={
-                      <div
-                        style={{
-                            position: 'relative',
-                            opacity: !content ? 0.5 : 1
-                        }}
-                        onMouseEnter={this._handleMouseEnter}
-                      >
-                        <FlatButton
-                          label={authorAkashaId}
-                          hoverColor="transparent"
-                          style={{ height: 28, lineHeight: '28px', textAlign: 'left' }}
-                          labelStyle={{
-                              textTransform: 'initial',
-                              paddingLeft: 4,
-                              paddingRight: 4,
-                              color: commentAuthorNameColor
-                          }}
-                          onClick={ev => onAuthorNameClick(ev, profile.get('profile'))}
-                          className={`${viewerIsAuthor && style.viewer_is_author}
-                            ${isEntryAuthor && style.is_entry_author} ${style.author_name}`}
-                        />
-                      </div>
-                    }
-                    subtitle={
-                      <div
-                        style={{
-                            opacity: !content ? 0.5 : 1
-                        }}
-                      >
-                        {date && intl.formatRelative(new Date(date))}
-                      </div>
-                    }
                     avatar={
                       <Avatar
                         image={authorAvatar}
+                        onMouseEnter={this.handleMouseEnter}
+                        radius={40}
                         style={{
                             display: 'inline-block',
                             cursor: 'pointer',
                             opacity: !content ? 0.5 : 1
                         }}
                         userInitials={authorInitials}
-                        radius={40}
-                        onClick={ev => onAuthorNameClick(ev, profile.get('profile'))}
-                        userInitialsStyle={{ fontSize: 20, textTransform: 'uppercase', fontWeight: 500 }}
-                        onMouseEnter={this._handleMouseEnter}
+                        // onClick={ev => onAuthorNameClick(ev, profile.get('profile'))}
+                        userInitialsStyle={{ fontSize: '20px' }}
                       />
                     }
+                    onMouseLeave={this.handleMouseLeave}
+                    style={{ padding: 0 }}
+                    subtitle={
+                      <div style={{ opacity: !content ? 0.5 : 1 }}>
+                        {date && intl.formatRelative(new Date(date))}
+                      </div>
+                    }
+                    subtitleStyle={{ paddingLeft: '2px', fontSize: '80%' }}
+                    title={
+                      <div
+                        onMouseEnter={this.handleMouseEnter}
+                        style={{ position: 'relative', opacity: !content ? 0.5 : 1 }}
+                      >
+                        <FlatButton
+                          className={style.author_name}
+                          hoverColor="transparent"
+                          label={authorAkashaId}
+                          labelStyle={{
+                              textTransform: 'initial',
+                              paddingLeft: 4,
+                              paddingRight: 4,
+                              color: this.getAuthorNameColor()
+                          }}
+                          // onClick={ev => onAuthorNameClick(ev, profile.get('profile'))}
+                          style={{ height: 28, lineHeight: '28px', textAlign: 'left' }}
+                        />
+                      </div>
+                    }
+                    titleStyle={{ fontSize: '100%', height: 24 }}
                   >
                     <ProfileHoverCard
                       anchorHovered={this.state.anchorHovered}
-                      profile={profile.toJS()}
                       anchorNode={this.state.hoverNode}
+                      profile={author.toJS()}
                     />
                   </CardHeader>
                 </div>
-                {!isPublishing && REPLIES_ENABLED && showReplyButton && content &&
-                  <div className={'col-xs-7 end-xs'}>
-                    <div className={`${style.commentActions}`}>
-                      <IconButton onClick={this.props.onReply}>
+                {showReplyButton && content &&
+                  <div className="col-xs-7 end-xs">
+                    <div className={style.commentActions}>
+                      <IconButton onClick={() => onReply(comment.commentId)}>
                         <SvgIcon>
                           <EntryCommentReply />
                         </SvgIcon>
@@ -217,21 +215,16 @@ class Comment extends React.Component {
                     </div>
                   </div>
                 }
-                {isPublishing &&
-                  <div className={'col-xs-7 end-xs'}>
-                    <CircularProgress size={32} />
-                  </div>
-                }
               </div>
               {content &&
                 <div
                   ref={(editorWrap) => { this.editorWrapperRef = editorWrap; }}
                   className={`row ${style.commentBody}`}
-                  style={expandedStyle}
+                  style={this.getExpandedStyle()}
                 >
                   <MegadraftEditor
                     readOnly
-                    editorState={EditorState.push(this.editorState, editorStateFromRaw(content).getCurrentContent())}
+                    editorState={EditorState.push(this.editorState, currentContent)}
                     sidebarRendererFn={() => null}
                   />
                 </div>
@@ -239,12 +232,7 @@ class Comment extends React.Component {
               {!content &&
                 <div
                   data-tip={intl.formatMessage(entryMessages.unresolvedEntry)}
-                  style={{
-                      position: 'absolute',
-                      right: '10px',
-                      top: '7px',
-                      opacity: 0.5
-                  }}
+                  style={{ position: 'absolute', right: '10px', top: '7px', opacity: 0.5 }}
                 >
                   <IconButton>
                     <HubIcon color={palette.accent1Color} />
@@ -254,14 +242,14 @@ class Comment extends React.Component {
               {isExpanded !== null &&
                 <div style={{ fontSize: 12, textAlign: 'center' }}>
                   {(isExpanded === false) &&
-                    <IconButton onClick={ev => this._toggleExpanded(ev, true)}>
+                    <IconButton onClick={ev => this.toggleExpanded(ev, true)}>
                       <SvgIcon>
                         <MoreIcon />
                       </SvgIcon>
                     </IconButton>
                   }
                   {isExpanded &&
-                    <IconButton onClick={ev => this._toggleExpanded(ev, false)}>
+                    <IconButton onClick={ev => this.toggleExpanded(ev, false)}>
                       <SvgIcon>
                         <LessIcon />
                       </SvgIcon>
@@ -272,7 +260,7 @@ class Comment extends React.Component {
               <Divider />
             </div>
             {children &&
-              <div className={`${style.commentReply}`}>
+              <div className={style.commentReply}>
                 {children}
               </div>
             }
@@ -280,20 +268,20 @@ class Comment extends React.Component {
         );
     }
 }
+
+Comment.contextTypes = {
+    muiTheme: PropTypes.shape()
+};
+
 Comment.propTypes = {
     children: PropTypes.node,
     comment: PropTypes.shape(),
     entryAuthorProfile: PropTypes.string,
     intl: PropTypes.shape(),
-    isPublishing: PropTypes.bool,
     loggedProfile: PropTypes.shape(),
-    onAuthorNameClick: PropTypes.func,
-    onReply: PropTypes.func,
+    onReply: PropTypes.func.isRequired,
+    profiles: PropTypes.shape(),
     showReplyButton: PropTypes.bool,
 };
-Comment.contextTypes = {
-    router: PropTypes.shape(),
-    muiTheme: PropTypes.shape()
-};
 
-export default Comment;
+export default injectIntl(Comment);

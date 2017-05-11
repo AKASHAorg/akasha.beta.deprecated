@@ -176,10 +176,16 @@ const errorMessages = defineMessages({
         description: 'stop ipfs error message',
         defaultMessage: 'IPFS service could not be stopped'
     },
+    profileGetLocal: {
+        id: 'app.error.profileGetLocal',
+        description: 'get local profiles error',
+        defaultMessage: 'An error occured while fetching local profiles'
+    },
     saveGeneralSettings: {
         id: 'app.error.saveGeneralSettings',
         description: 'save general settings error message',
         defaultMessage: 'An error occurred while saving your settings'
     },
 });
+
 export { errorMessages };
