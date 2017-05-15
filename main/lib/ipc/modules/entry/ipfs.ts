@@ -1,6 +1,6 @@
 import { IpfsConnector } from '@akashaproject/ipfs-connector';
 import * as Promise from 'bluebird';
-import { isEmpty, is, values } from 'ramda';
+import { is, isEmpty, values } from 'ramda';
 import { entries } from '../models/records';
 
 export const DRAFT_BLOCKS = 'blocks';
@@ -71,7 +71,7 @@ class IpfsEntry {
                         title: this.title,
                         wordCount: this.wordCount,
                         version: (previous && previous.hasOwnProperty('version')) ? ++previous.version : 0
-                    }, this.entryLinks).then((node) => node.hash)
+                    }, this.entryLinks).then((node) => node.hash);
             });
     }
 

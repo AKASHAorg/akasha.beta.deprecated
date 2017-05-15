@@ -27,8 +27,8 @@ const execute = Promise.coroutine(
                     return GethConnector.getInstance().web3.eth.getBalanceAsync(balanceAddress)
                         .then((weiAmount) => {
                             const balance = GethConnector.getInstance().web3.fromWei(weiAmount, data.unit);
-                            return { balance: balance.toString(10), unit: data.unit, entryId: id }
-                        })
+                            return { balance: balance.toString(10), unit: data.unit, entryId: id };
+                        });
                 });
         });
 

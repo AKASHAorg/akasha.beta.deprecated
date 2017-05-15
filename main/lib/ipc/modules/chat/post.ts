@@ -9,7 +9,7 @@ export const whisperIdentity = {
 };
 const execute = Promise.coroutine(function*(data: { message: string }) {
     if (data.message.length > 128) {
-        throw new Error("Max message length allowed is 128");
+        throw new Error('Max message length allowed is 128');
     }
 
     if (!whisperIdentity.from) {

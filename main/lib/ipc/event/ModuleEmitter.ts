@@ -108,7 +108,7 @@ abstract class ModuleEmitter extends AbstractEmitter {
                             response = null;
                         });
                 }
-            )
+            );
         });
     }
 }

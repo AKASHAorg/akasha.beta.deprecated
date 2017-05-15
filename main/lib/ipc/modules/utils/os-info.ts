@@ -1,18 +1,18 @@
 import * as Promise from 'bluebird';
-import { platform, arch, type } from 'os';
+import { arch, platform, type } from 'os';
 
 
-const execute = Promise.coroutine(function*(){
-    let info = yield Promise.resolve({platform: {
-                platform: platform(),
-                arch: arch(),
-                type: type()
-            },
-            resources: {
-                memoryUsage: process.getProcessMemoryInfo()
-            }
-        });
-    return info;
+const execute = Promise.coroutine(function*() {
+    return Promise.resolve({
+        platform: {
+            platform: platform(),
+            arch: arch(),
+            type: type()
+        },
+        resources: {
+            memoryUsage: process.getProcessMemoryInfo()
+        }
+    });
 });
 
-export default { execute, name: 'osInfo'};
+export default { execute, name: 'osInfo' };

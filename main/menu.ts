@@ -1,6 +1,6 @@
-import { Menu, app, shell, session } from 'electron';
+import { app, Menu, session, shell } from 'electron';
 
-const installExtensions = async() => {
+const installExtensions = async () => {
     if (process.env.NODE_ENV === 'development') {
         const installer = require('electron-devtools-installer'); // eslint-disable-line global-require
 
@@ -37,7 +37,7 @@ export async function initMenu(mainWindow: any) {
     const version = app.getVersion();
     const template: any = [
         {
-            label  : 'Edit',
+            label: 'Edit',
             submenu: [
                 {
                     role: 'undo'
@@ -72,7 +72,7 @@ export async function initMenu(mainWindow: any) {
             ]
         },
         {
-            label  : 'View',
+            label: 'View',
             submenu: [
                 {
                     role: 'reload'
@@ -95,7 +95,7 @@ export async function initMenu(mainWindow: any) {
             ]
         },
         {
-            role   : 'window',
+            role: 'window',
             submenu: [
                 {
                     role: 'minimize'
@@ -106,18 +106,18 @@ export async function initMenu(mainWindow: any) {
             ]
         },
         {
-            role   : 'help',
+            role: 'help',
             submenu: [
                 {
                     label: 'Learn More',
                     click () {
-                        shell.openExternal('https://github.com/AkashaProject/Alpha/wiki/FAQ')
+                        shell.openExternal('https://github.com/AkashaProject/Alpha/wiki/FAQ');
                     }
                 },
                 {
                     label: 'Report Issue',
                     click () {
-                        shell.openExternal('https://github.com/AkashaProject/Alpha/issues/new')
+                        shell.openExternal('https://github.com/AkashaProject/Alpha/issues/new');
                     }
                 },
                 {
@@ -128,7 +128,7 @@ export async function initMenu(mainWindow: any) {
                     click () {
                         session.defaultSession.clearCache(function () {
                             console.log('cleared cache');
-                        })
+                        });
                     }
                 }
                 ,
@@ -137,7 +137,7 @@ export async function initMenu(mainWindow: any) {
                     click () {
                         session.defaultSession.clearStorageData(function () {
                             console.log('cleared storage app data');
-                        })
+                        });
                     }
                 },
                 {
@@ -146,7 +146,7 @@ export async function initMenu(mainWindow: any) {
                 {
                     label: 'About AKASHA',
                     click () {
-                        shell.openExternal('http://akasha.world')
+                        shell.openExternal('http://akasha.world');
                     }
                 },
                 {
@@ -158,7 +158,7 @@ export async function initMenu(mainWindow: any) {
 
     if (process.platform === 'darwin') {
         template.unshift({
-            label  : app.getName(),
+            label: app.getName(),
             submenu: [
                 {
                     role: 'about'
@@ -167,7 +167,7 @@ export async function initMenu(mainWindow: any) {
                     type: 'separator'
                 },
                 {
-                    role   : 'services',
+                    role: 'services',
                     submenu: []
                 },
                 {
@@ -193,27 +193,27 @@ export async function initMenu(mainWindow: any) {
         // Window menu.
         template[3].submenu = [
             {
-                label      : 'Close',
+                label: 'Close',
                 accelerator: 'CmdOrCtrl+W',
-                role       : 'close'
+                role: 'close'
             },
             {
-                label      : 'Minimize',
+                label: 'Minimize',
                 accelerator: 'CmdOrCtrl+M',
-                role       : 'minimize'
+                role: 'minimize'
             },
             {
                 label: 'Zoom',
-                role : 'zoom'
+                role: 'zoom'
             },
             {
                 type: 'separator'
             },
             {
                 label: 'Bring All to Front',
-                role : 'front'
+                role: 'front'
             }
-        ]
+        ];
     }
 
     const menu = Menu.buildFromTemplate(template);

@@ -24,11 +24,11 @@ export class ApiRequest extends GenericApi {
     }
 
     public enable() {
-        ipcRenderer.send(this.manager, { channel: this.channel, listen: true })
+        ipcRenderer.send(this.manager, { channel: this.channel, listen: true });
     }
 
     public disable() {
-        ipcRenderer.send(this.manager, { channel: this.channel, listen: false })
+        ipcRenderer.send(this.manager, { channel: this.channel, listen: false });
     }
 }
 

@@ -38,7 +38,7 @@ export default class Entries extends BaseContract {
      * @param gas
      * @returns {Bluebird<U>}
      */
-    public updateEntryContent(hash: string, entryId: string|number, gas: number = 2000000) {
+    public updateEntryContent(hash: string, entryId: string | number, gas: number = 2000000) {
         const hashTr = this.splitIpfs(hash);
         return this.evaluateData('updateEntryContent', gas, hashTr, entryId);
     }
@@ -49,7 +49,7 @@ export default class Entries extends BaseContract {
      * @param gas
      * @returns {Bluebird<U>}
      */
-    public claimDeposit(entryId: string|number, gas: number = 2000000) {
+    public claimDeposit(entryId: string | number, gas: number = 2000000) {
         return this.evaluateData('claimDeposit', gas, entryId);
     }
 
@@ -228,8 +228,8 @@ export default class Entries extends BaseContract {
             .callAsync(entryId).then((result) => result);
     }
 
-    public getPublished(filter: {fromBlock: string, toBlock?: string}) {
-        const Published = this.contract.Publish({}, { fromBlock: filter.fromBlock, toBlock: filter.toBlock});
+    public getPublished(filter: { fromBlock: string, toBlock?: string }) {
+        const Published = this.contract.Publish({}, { fromBlock: filter.fromBlock, toBlock: filter.toBlock });
         Published.getAsync = Promise.promisify(Published.get);
         return Published.getAsync();
     }

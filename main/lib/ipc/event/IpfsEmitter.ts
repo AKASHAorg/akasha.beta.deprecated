@@ -40,8 +40,8 @@ abstract class IpfsEmitter extends AbstractEmitter {
                                     .downloadManager
                                     .deleteBin()
                                     .delay(1000)
-                                    .then(() => IpfsConnector.getInstance().start())
-                            })
+                                    .then(() => IpfsConnector.getInstance().start());
+                            });
                         }
                         return IpfsConnector.getInstance()
                             .api
@@ -53,7 +53,7 @@ abstract class IpfsEmitter extends AbstractEmitter {
                                 }
                                 this.fireEvent(channels.client.ipfs.startService, ipfsResponse({ started: true }, {}));
                             });
-                    })
+                    });
             }
         );
         return this;
@@ -102,7 +102,7 @@ abstract class IpfsEmitter extends AbstractEmitter {
                 this.fireEvent(
                     channels.client.ipfs.startService,
                     ipfsResponse({}, { message })
-                )
+                );
             });
         return this;
     }

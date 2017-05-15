@@ -5,7 +5,7 @@ import { constructed as contracts } from '../../contracts/index';
  * Get individual votes of entry
  * @type {Function}
  */
-const execute = Promise.coroutine(function*(data: {start?: number, limit?: number, entryId: string }) {
+const execute = Promise.coroutine(function*(data: { start?: number, limit?: number, entryId: string }) {
     let currentId = (data.start) ? data.start : yield contracts.instance.votes.getFirstVoteId(data.entryId);
     if (currentId === '0') {
         return { collection: [] };

@@ -142,5 +142,5 @@ export const LicencesList = [
 export function getLicence(id) {
     return LicencesList.find((element) => {
         return element.id === id + '';
-    })
+    });
 }

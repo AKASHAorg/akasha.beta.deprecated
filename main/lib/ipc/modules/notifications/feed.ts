@@ -37,7 +37,7 @@ const hydrateWithProfile = (cb, profile, entry, extra) => {
             queue.push(cb, Object.assign(extra, { author: result[0], entry: result[1] }));
         })
         .catch((error) => {
-            cb({ message: error.message }, extra)
+            cb({ message: error.message }, extra);
         });
 };
 
@@ -197,7 +197,7 @@ const execute = Promise.coroutine(function*(data: { stop?: boolean, newerThan?: 
                         follower: data,
                         profileAddress: event.args.following
                     }
-                )
+                );
             });
     });
 
@@ -227,17 +227,19 @@ const execute = Promise.coroutine(function*(data: { stop?: boolean, newerThan?: 
                 cb({ message: e.message, type: eventTypes.TIPPED });
             });
     });
-    const newerThan = (data.newerThan) ? data.newerThan: 0;
+    const newerThan = (data.newerThan) ? data.newerThan : 0;
     mention.watch(function (err, event) {
         if (err) {
             return cb(err);
         }
         if (event.hasOwnProperty('payload')) {
-            if(event.sent < newerThan){ return; }
+            if (event.sent < newerThan) {
+                return;
+            }
             emitMention(event, myProfile.akashaId, cb);
         }
     });
-    return { running: true }
+    return { running: true };
 });
 
 export default { execute, name: 'feed' };
