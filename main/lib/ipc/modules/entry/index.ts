@@ -24,6 +24,8 @@ import editEntry from './edit-entry';
 import followingStreamIterator from './following-stream-iterator';
 import allStreamIterator from './all-stream-iterator';
 import getLatestEntryVersion from './get-latest-entry-version';
+import getEntryIpfsHash from './get-entry-ipfs-hash';
+import resolveEntriesIpfsHash from './resolve-entries-ipfs-hash';
 
 export default [
     entryCountProfile,
@@ -51,5 +53,7 @@ export default [
     followingStreamIterator,
     allStreamIterator,
     runner[0],
-    getLatestEntryVersion
-]
+    getLatestEntryVersion,
+    getEntryIpfsHash,
+    resolveEntriesIpfsHash
+];
