@@ -3,8 +3,8 @@ import React, { Component } from 'react';
 import ReactTooltip from 'react-tooltip';
 import { injectIntl } from 'react-intl';
 import { Dialog, RaisedButton, SvgIcon } from 'material-ui';
-import { ToolbarVotes } from '../svg';
-import { entryMessages } from '../../locale-data/messages';
+import { ToolbarVotes } from '../shared-components/svg';
+import { entryMessages } from '../locale-data/messages';
 
 class EntryVersionsPanel extends Component {
 
@@ -148,6 +148,7 @@ class EntryVersionsPanel extends Component {
           </Dialog>
         );
     }
+
 }
 
 EntryVersionsPanel.contextTypes = {

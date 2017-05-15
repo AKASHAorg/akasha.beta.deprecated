@@ -117,20 +117,11 @@ export default class Auth {
                 return this._encrypt(pass);
             })
             .then(() => {
-                return GethConnector.getInstance()
-                    .web3
-                    .personal
-                    .unlockAccountAsync(acc, Buffer.from(pass).toString('utf8'), 1000);
-            })
-            .then((unlocked: boolean) => {
-                if (!unlocked) {
-                    throw new Error(`invalid password`);
-                }
                 return randomBytesAsync(64);
             })
             .then((buff: Buffer) => {
                 const token = addHexPrefix(buff.toString('hex'));
-                return this._signSession(acc, token)
+                return this._signSession(token, acc, Buffer.from(pass).toString('utf8'))
                     .then((signedString: string) => {
                         const expiration = new Date();
                         const clientToken = hashPersonalMessage(buff);
@@ -147,7 +138,6 @@ export default class Auth {
                     });
             })
             .catch((err: Error) => {
-                GethConnector.getInstance().web3.personal.lockAccountAsync(acc).then(()=> null);
                 return { error: { message: err.message } };
             });
     }
@@ -204,16 +194,17 @@ export default class Auth {
 
     /**
      *
-     * @param account
      * @param hash
+     * @param account
+     * @param password
      * @returns {any}
      * @private
      */
-    private _signSession(account: string, hash: string) {
+    private _signSession(hash: string, account: string, password: string) {
         return GethConnector.getInstance()
             .web3
-            .eth
-            .signAsync(account, hash);
+            .personal
+            .signAsync(hash, account, password);
     }
 
     /**

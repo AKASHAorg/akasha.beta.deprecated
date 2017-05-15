@@ -5,30 +5,29 @@ import ReactTooltip from 'react-tooltip';
 import { Dialog, FlatButton, TextField, SvgIcon, IconButton } from 'material-ui';
 import InfoIcon from 'material-ui/svg-icons/action/info-outline';
 import { EntryUpvote, EntryDownvote } from '../svg';
-import { AppActions, EntryActions } from '../../local-flux';
+import { deletePendingAction, hideWeightConfirmDialog,
+    updateAction } from '../../local-flux/actions/app-actions';
+import { entryIsActive } from '../../local-flux/actions/entry-actions';
+import { selectPendingAction } from '../../local-flux/selectors';
 import { confirmMessages, formMessages, generalMessages } from '../../locale-data/messages';
 import style from './weight-confirm-dialog.scss';
+import actionTypes from '../../constants/action-types';
 
 const WEIGHT_LIMIT_ERROR = 'WEIGHT_LIMIT_ERROR';
 const NOT_ENOUGH_FUNDS_ERROR = 'NOT_ENOUGH_FUNDS_ERROR';
 
 class WeightConfirmDialog extends Component {
-    constructor (props) {
-        super(props);
-
-        this.state = {
-            voteWeight: null,
-            gasAmount: null,
-            voteWeightError: null,
-            gasAmountError: null
-        };
-    }
+    state = {
+        voteWeight: null,
+        gasAmount: null,
+        voteWeightError: null,
+        gasAmountError: null
+    };
 
     componentWillMount () {
-        const { entryActions, resource } = this.props;
+        const { resource } = this.props;
         const { minWeight, maxWeight } = this.getLimitValues();
-        entryActions.isActive(resource.getIn(['payload', 'entryId']));
-        const initialWeight = resource.get('type') === 'upvote' ? minWeight : maxWeight;
+        const initialWeight = resource.get('type') === actionTypes.upvote ? minWeight : maxWeight;
         this.setState({
             voteWeight: initialWeight,
             gasAmount: resource.get('gas'),
@@ -36,6 +35,11 @@ class WeightConfirmDialog extends Component {
                 NOT_ENOUGH_FUNDS_ERROR :
                 null
         });
+    }
+
+    componentDidMount () {
+        const { resource } = this.props;
+        this.props.entryIsActive(resource.getIn(['payload', 'entryId']));
     }
 
     componentDidUpdate () {
@@ -48,11 +52,11 @@ class WeightConfirmDialog extends Component {
     };
 
     getIcon = () => {
-        const actionType = this.props.resource.type;
-        switch (actionType) {
-            case 'upvote':
+        const type = this.props.resource.type;
+        switch (type) {
+            case actionTypes.upvote:
                 return <EntryUpvote className={`col-xs-1 ${style.upvoteIcon}`} />;
-            case 'downvote':
+            case actionTypes.downvote:
                 return <EntryDownvote className={`col-xs-1 ${style.downvoteIcon}`} />;
             default:
                 return null;
@@ -61,8 +65,8 @@ class WeightConfirmDialog extends Component {
 
     getLimitValues = () => {
         const { resource } = this.props;
-        const minWeight = resource.get('type') === 'upvote' ? 1 : -10;
-        const maxWeight = resource.get('type') === 'upvote' ? 10 : -1;
+        const minWeight = resource.get('type') === actionTypes.upvote ? 1 : -10;
+        const maxWeight = resource.get('type') === actionTypes.upvote ? 10 : -1;
         return { minWeight, maxWeight };
     };
 
@@ -102,22 +106,25 @@ class WeightConfirmDialog extends Component {
     };
 
     handleConfirm = () => {
-        const { resource, voteCost, appActions } = this.props;
+        const { resource, voteCost } = this.props;
         const voteWeight = Math.abs(this.state.voteWeight);
         const value = voteCost.get(voteWeight.toString());
-        const updatedResource = resource.toJS();
-        updatedResource.gas = this.state.gasAmount || resource.get('gas');
-        updatedResource.status = 'checkAuth';
-        updatedResource.payload.weight = voteWeight;
-        updatedResource.payload.value = value;
-        appActions.hideWeightConfirmDialog();
-        appActions.updatePendingAction(updatedResource);
+        const updates = {
+            gas: this.state.gasAmount || resource.get('gas'),
+            status: 'checkAuth',
+            payload: {
+                weight: voteWeight,
+                value
+            }
+        };
+        this.props.hideWeightConfirmDialog();
+        this.props.updateAction(resource.get('id'), updates);
     };
 
     handleCancel = () => {
-        const { resource, appActions } = this.props;
-        appActions.deletePendingAction(resource.get('id'));
-        appActions.hideWeightConfirmDialog();
+        const { resource } = this.props;
+        this.props.deletePendingAction(resource.get('id'));
+        this.props.hideWeightConfirmDialog();
     };
 
     render () {
@@ -130,15 +137,14 @@ class WeightConfirmDialog extends Component {
         const { entryTitle, publisherAkashaId } = payload;
         const voteWeightCost = voteCost.get(Math.abs(voteWeight).toString());
         const { minWeight, maxWeight } = this.getLimitValues();
-        const entry = entries.find(entr =>
-            entr.get('entryId') === resource.getIn(['payload', 'entryId']));
+        const entry = entries.get(resource.getIn(['payload', 'entryId']));
         const isEntryActive = entry ?
-            entry.getIn(['content', 'active']) :
+            entry.get('active') :
             fullEntry && fullEntry.active;
         const weightErrorText = voteWeightError === WEIGHT_LIMIT_ERROR ?
             intl.formatMessage(formMessages.voteWeightError, { minWeight, maxWeight }) :
             intl.formatMessage(formMessages.notEnoughFunds);
-        const title = resource && resource.type === 'upvote' ?
+        const title = resource && resource.type === actionTypes.upvote ?
             intl.formatMessage(confirmMessages.upvoteTitle) :
             intl.formatMessage(confirmMessages.downvoteTitle);
         const dialogActions = [
@@ -159,7 +165,8 @@ class WeightConfirmDialog extends Component {
             contentStyle={{ width: 420, maxWidth: 'none', height: '415px' }}
             bodyStyle={{ paddingBottom: '24px' }}
             modal
-            title={<div style={{ fontSize: 24 }}>{title}</div>}
+            title={title}
+            titleStyle={{ fontSize: 24 }}
             open
             actions={dialogActions}
           >
@@ -210,7 +217,7 @@ class WeightConfirmDialog extends Component {
               {resource && !voteWeightError &&
                 <div>
                   <small>
-                    {resource.type === 'upvote' ?
+                    {resource.type === actionTypes.upvote ?
                         intl.formatMessage(confirmMessages.upvoteWeightDisclaimer, {
                             publisherAkashaId, eth: voteWeightCost.slice(0, -1), voteWeight
                         }) :
@@ -263,15 +270,17 @@ class WeightConfirmDialog extends Component {
 }
 
 WeightConfirmDialog.propTypes = {
-    appActions: PropTypes.shape(),
-    entryActions: PropTypes.shape(),
-    resource: PropTypes.shape(),
-    balance: PropTypes.string,
-    isActivePending: PropTypes.bool,
-    intl: PropTypes.shape(),
-    entries: PropTypes.shape(),
+    balance: PropTypes.string.isRequired,
+    deletePendingAction: PropTypes.func.isRequired,
+    entries: PropTypes.shape().isRequired,
+    entryIsActive: PropTypes.func.isRequired,
     fullEntry: PropTypes.shape(),
-    voteCost: PropTypes.shape(),
+    hideWeightConfirmDialog: PropTypes.func.isRequired,
+    intl: PropTypes.shape().isRequired,
+    isActivePending: PropTypes.bool,
+    resource: PropTypes.shape().isRequired,
+    updateAction: PropTypes.func.isRequired,
+    voteCost: PropTypes.shape().isRequired,
 };
 
 WeightConfirmDialog.contextTypes = {
@@ -280,24 +289,21 @@ WeightConfirmDialog.contextTypes = {
 
 function mapStateToProps (state) {
     return {
-        balance: state.profileState
-            .get('profiles')
-            .find(prf =>
-                prf.get('profile') === state.profileState.getIn(['loggedProfile', 'profile']))
-            .get('balance'),
-        entries: state.entryState.get('entries'),
+        balance: state.profileState.get('balance'),
+        entries: state.entryState.get('byId'),
         fullEntry: state.entryState.get('fullEntry'),
         isActivePending: state.entryState.getIn(['flags', 'isActivePending']),
-        resource: state.appState.get('weightConfirmDialog'),
-        voteCost: state.entryState.get('voteCost'),
+        resource: selectPendingAction(state, state.appState.get('weightConfirmDialog')),
+        voteCost: state.entryState.get('voteCostByWeight'),
     };
 }
 
-function mapDispatchToProps (dispatch) {
-    return {
-        appActions: new AppActions(dispatch),
-        entryActions: new EntryActions(dispatch),
-    };
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(WeightConfirmDialog);
+export default connect(
+    mapStateToProps,
+    {
+        deletePendingAction,
+        entryIsActive,
+        hideWeightConfirmDialog,
+        updateAction
+    }
+)(WeightConfirmDialog);
