@@ -1,5 +1,7 @@
-import { call, fork, put, takeEvery } from 'redux-saga/effects';
+import { call, fork, put, select, takeEvery } from 'redux-saga/effects';
 import * as actions from '../actions/app-actions';
+import * as transactionActions from '../actions/transaction-actions';
+import { selectLoggedAkashaId } from '../selectors';
 import { createActionChannels } from './helpers';
 import * as dashboardSaga from './dashboard-saga';
 import * as entrySaga from './entry-saga';
@@ -9,6 +11,7 @@ import * as profileSaga from './profile-saga';
 import * as settingsSaga from './settings-saga';
 import * as tagSaga from './tag-saga';
 import * as tempProfileSaga from './temp-profile-saga';
+import * as transactionSaga from './transaction-saga';
 import * as utilsSaga from './utils-saga';
 import * as types from '../constants';
 
@@ -18,6 +21,7 @@ function* registerListeners () {
     yield fork(externalProcSaga.registerEProcListeners);
     yield fork(profileSaga.registerProfileListeners);
     yield fork(tagSaga.registerTagListeners);
+    yield fork(transactionSaga.registerTransactionListeners);
     yield fork(utilsSaga.registerUtilsListeners);
 }
 
@@ -42,6 +46,10 @@ function* launchHomeActions () {
     yield fork(dashboardSaga.dashboardGetAll);
     yield fork(dashboardSaga.dashboardGetColumns);
     yield fork(tagSaga.tagGetMargins);
+    if (yield select(selectLoggedAkashaId)) {
+        yield put(transactionActions.transactionGetMined());
+        yield put(transactionActions.transactionGetPending());
+    }
 }
 
 function* bootstrapApp () {
@@ -71,6 +79,7 @@ export default function* rootSaga () {
     yield fork(settingsSaga.watchSettingsActions);
     yield fork(tagSaga.watchTagActions);
     yield fork(tempProfileSaga.watchTempProfileActions);
+    yield fork(transactionSaga.watchTransactionActions);
     yield fork(utilsSaga.watchUtilsActions);
     yield fork(bootstrapApp);
     yield fork(watchBootstrapHome);

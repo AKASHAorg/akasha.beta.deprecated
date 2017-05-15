@@ -34,12 +34,12 @@ export function createActionChannels () {
 }
 
 export function enableChannel (channel, mananger) {
-    const promise = new Promise((resolve, reject) => {
+    const promise = new Promise((resolve) => {
         if (enabledChannels.indexOf(channel.channel) !== -1) {
             resolve();
             return;
         }
-        mananger.once((ev, resp) => {
+        mananger.once(() => {
             enabledChannels.push(channel.channel);
             resolve();
         });

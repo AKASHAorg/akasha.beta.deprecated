@@ -1,4 +1,4 @@
-import { apply, call, fork, put, take } from 'redux-saga/effects';
+import { all, apply, call, fork, put, take } from 'redux-saga/effects';
 import * as settingsService from '../services/settings-service';
 import * as actions from '../actions/settings-actions';
 import * as appActions from '../actions/app-actions';
@@ -79,10 +79,10 @@ export function* ipfsSaveSettings (payload, showNotification) {
 }
 
 function* saveConfiguration (action) {
-    yield [
+    yield all([
         call(gethSaveSettings, action.payload.geth),
         call(ipfsSaveSettings, action.payload.ipfs)
-    ];
+    ]);
     yield call(saveGeneralSettings, { configurationSaved: true });
 }
 

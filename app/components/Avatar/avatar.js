@@ -1,11 +1,10 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import AvatarEditor from 'react-avatar-editor/dist';
-import { AddImage } from '../svg';
 import ClearIcon from 'material-ui/svg-icons/content/clear';
 import RotateIcon from 'material-ui/svg-icons/image/rotate-right';
 import { SvgIcon, Slider } from 'material-ui';
-import { AvatarPlaceholder } from '../svg';
+import { AddImage, AvatarPlaceholder } from '../svg';
 import styles from './avatar.scss';
 
 class Avatar extends React.Component {
@@ -105,6 +104,7 @@ class Avatar extends React.Component {
         if (!avatarImage) {
             this.editor = null;
         }
+
         return (
           <div
             className={`${styles.root}`}
@@ -226,8 +226,12 @@ class Avatar extends React.Component {
                     <div style={userInitialsAlignStyle} />
                     <div style={userInitialsWrapperStyle} onClick={this._handleAvatarClick}>
                       <h3
-                        className={`${styles.userInitials}`}
-                        style={userInitialsStyle}
+                        className={styles.userInitials}
+                        style={Object.assign({}, {
+                            color: palette.textColor,
+                            fontSize: '36px',
+                            fontWeight: 600
+                        }, userInitialsStyle)}
                       >
                         {userInitials}
                       </h3>
