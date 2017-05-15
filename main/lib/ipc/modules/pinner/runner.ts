@@ -25,7 +25,7 @@ const execute = Promise.coroutine(function*(data: { type: ObjectType, id: string
             hashRoot = commentEth.ipfsHash;
             break;
         default:
-            throw new Error('No known type specified')
+            throw new Error('No known type specified');
     }
     const pin = yield Promise.fromCallback((cb) => {
         if (data.operation === OperationType.REMOVE) {

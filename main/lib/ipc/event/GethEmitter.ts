@@ -1,4 +1,4 @@
-import { GethConnector, CONSTANTS } from '@akashaproject/geth-connector';
+import { CONSTANTS, GethConnector } from '@akashaproject/geth-connector';
 import { AbstractEmitter } from './AbstractEmitter';
 import channels from '../../channels';
 import { gethResponse } from './responses';
@@ -123,7 +123,7 @@ abstract class GethEmitter extends AbstractEmitter {
         GethConnector.getInstance().once(
             CONSTANTS.UPDATING_BINARY, (message: string) => {
                 this.fireEvent(channels.client.geth.startService,
-                    gethResponse({upgrading: true, message}, {})
+                    gethResponse({ upgrading: true, message }, {})
                 );
             }
         );

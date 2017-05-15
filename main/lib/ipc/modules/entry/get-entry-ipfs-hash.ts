@@ -7,7 +7,7 @@ import { constructed as contracts } from '../../contracts/index';
  */
 const execute = Promise.coroutine(function*(data: EntryGetRequest) {
     const entryEth = yield contracts.instance.entries.getEntry(data.entryId);
-    return {ipfsHash: entryEth.ipfsHash};
+    return { ipfsHash: entryEth.ipfsHash };
 });
 
-export default {execute, name: 'getEntryIpfsHash'};
+export default { execute, name: 'getEntryIpfsHash' };

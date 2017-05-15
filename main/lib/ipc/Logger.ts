@@ -1,6 +1,6 @@
 import { join as pathJoin } from 'path';
 import { Logger, transports } from 'winston';
-import { open, mkdirSync } from 'fs';
+import { mkdirSync, open } from 'fs';
 import { app } from 'electron';
 
 const symbolEnforcer = Symbol();
@@ -23,7 +23,7 @@ class AppLogger {
         const defaultPath = pathJoin(app.getPath('userData'), 'logs');
         open(defaultPath, 'r', (err, fd) => {
             if (err) {
-                if (err.code === "ENOENT") {
+                if (err.code === 'ENOENT') {
                     return this._buildPath(defaultPath);
                 }
                 throw err;

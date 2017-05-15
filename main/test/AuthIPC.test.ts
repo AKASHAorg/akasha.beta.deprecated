@@ -1,5 +1,5 @@
 import { ipcMain } from 'electron';
-import { initLogger, startServices, stopServices, checkSynced, pwd, mockedAddress, authChannel } from './helpers';
+import { authChannel, checkSynced, initLogger, mockedAddress, pwd, startServices, stopServices } from './helpers';
 import { expect } from 'chai';
 import channel from '../lib/channels';
 import { setTimeout } from 'timers';
@@ -35,7 +35,7 @@ describe('AuthIPC', function () {
             (injected) => {
                 listenersNr++;
                 if (listenersNr === listenOn.length) {
-                    done()
+                    done();
                 }
             }
         );
@@ -65,7 +65,7 @@ describe('AuthIPC', function () {
                 done();
             }
         );
-        ipcMain.emit(channel.server.auth.requestEther, '', { address: mockedAddress })
+        ipcMain.emit(channel.server.auth.requestEther, '', { address: mockedAddress });
     });
 
     it('--should check for profiles #getLocalIdentities', function (done) {
@@ -76,7 +76,7 @@ describe('AuthIPC', function () {
                 expect(injected.data.data).to.be.instanceof(Array);
                 done();
             });
-        ipcMain.emit(channel.server.auth.getLocalIdentities, '', {})
+        ipcMain.emit(channel.server.auth.getLocalIdentities, '', {});
     });
 
     it('--should #login', function (done) {
@@ -87,7 +87,7 @@ describe('AuthIPC', function () {
                 expect(injected.data.data.token).to.exist;
                 done();
             });
-        ipcMain.emit(channel.server.auth.login, '', { account: mockedAddress, password: pwd, rememberTime: 1 })
+        ipcMain.emit(channel.server.auth.login, '', { account: mockedAddress, password: pwd, rememberTime: 1 });
     });
 
     it('--should #logout', function (done) {
@@ -98,7 +98,7 @@ describe('AuthIPC', function () {
                 expect(injected.data.data.done).to.exist;
                 done();
             });
-        ipcMain.emit(channel.server.auth.logout, '', {})
+        ipcMain.emit(channel.server.auth.logout, '', {});
     });
 
     after(function (done) {

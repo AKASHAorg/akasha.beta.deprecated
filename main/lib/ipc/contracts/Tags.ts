@@ -72,7 +72,7 @@ export default class Tags extends BaseContract {
         const tagTr = this.gethInstance.web3.fromUtf8(tagName);
         return this.contract
             .check_format
-            .callAsync(tagTr)
+            .callAsync(tagTr);
     }
 
     public getFirstTag() {
@@ -123,7 +123,7 @@ export default class Tags extends BaseContract {
      * @param filter
      * @returns {Bluebird<T>|any}
      */
-    public getTagsCreated(filter: {index: {}, fromBlock: string, toBlock?: string, address?: string}) {
+    public getTagsCreated(filter: { index: {}, fromBlock: string, toBlock?: string, address?: string }) {
         const { fromBlock, toBlock, address } = filter;
         const TagsCreated = this.contract.Create(filter.index, { fromBlock, toBlock, address });
         TagsCreated.getAsync = Promise.promisify(TagsCreated.get);

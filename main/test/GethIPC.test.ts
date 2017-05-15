@@ -1,5 +1,5 @@
 import { ipcMain } from 'electron';
-import { initLogger, gethChannel } from './helpers';
+import { gethChannel, initLogger } from './helpers';
 import { expect } from 'chai';
 import channel from '../lib/channels';
 
@@ -32,7 +32,7 @@ describe('GethIPC', function () {
             (injected) => {
                 listenersNr++;
                 if (listenersNr === listenOn.length) {
-                    done()
+                    done();
                 }
             }
         );

@@ -11,7 +11,7 @@ const execute = Promise.coroutine(function*(data: EntryEditRequest) {
     const active = yield contracts.instance.entries.isMutable(data.entryId);
 
     if (!active) {
-        throw new Error('This entry can no longer be edited.')
+        throw new Error('This entry can no longer be edited.');
     }
     let ipfsEntry = new IpfsEntry();
     const entryEth = yield contracts.instance.entries.getEntry(data.entryId);

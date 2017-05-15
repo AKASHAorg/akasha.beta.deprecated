@@ -1,12 +1,12 @@
 import * as Promise from 'bluebird';
 import { getShortContent } from './ipfs';
-import { INSTANT_WAIT_TIME , SHORT_WAIT_TIME, MEDIUM_WAIT_TIME, FULL_WAIT_TIME } from '../../config/settings';
+import { FULL_WAIT_TIME, INSTANT_WAIT_TIME, MEDIUM_WAIT_TIME, SHORT_WAIT_TIME } from '../../config/settings';
 
 /**
  * Fetch short content from an array of ipfs hashes
  * @type {Function}
  */
-const execute = Promise.coroutine(function*(data: string[], cb: any ){
+const execute = Promise.coroutine(function*(data: string[], cb: any) {
 
     const waitTimes = [INSTANT_WAIT_TIME, SHORT_WAIT_TIME, MEDIUM_WAIT_TIME, FULL_WAIT_TIME];
     let count = 0;
@@ -20,7 +20,7 @@ const execute = Promise.coroutine(function*(data: string[], cb: any ){
             .finally(() => {
                 count++;
                 if (count === data.length && unresolved.length) {
-                    cb(null, {unresolved: unresolved});
+                    cb(null, { unresolved: unresolved });
                 }
             });
     });
@@ -28,7 +28,7 @@ const execute = Promise.coroutine(function*(data: string[], cb: any ){
     for (let time of waitTimes) {
         setTimeout(() => {
             if (resolved.length > 0) {
-                cb(null, {resolved: resolved});
+                cb(null, { resolved: resolved });
             }
             resolved = [];
         }, time);

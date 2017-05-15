@@ -83,7 +83,7 @@ const execute = Promise.coroutine(function*(data: { stop?: boolean, channel?: st
             }
         });
 
-        return { watching: true }
+        return { watching: true };
     }
 );
 

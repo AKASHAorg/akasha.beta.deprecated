@@ -1,7 +1,7 @@
 import ModuleEmitter from './event/ModuleEmitter';
 import channels from '../channels';
 import { mainResponse } from './event/responses';
-import { LicencesList, getLicence } from './modules/models/Licenses';
+import { getLicence, LicencesList } from './modules/models/Licenses';
 import WebContents = Electron.WebContents;
 
 class LicensesIPC extends ModuleEmitter {
@@ -38,7 +38,7 @@ class LicensesIPC extends ModuleEmitter {
     private _getLicenceById() {
         this.registerListener(
             channels.server[this.MODULE_NAME].getLicenceById,
-            (event: any, data: {id: string | number}) => {
+            (event: any, data: { id: string | number }) => {
                 const response = mainResponse({ license: getLicence(data.id) }, data);
                 this.fireEvent(
                     channels.client[this.MODULE_NAME].getLicenceById,

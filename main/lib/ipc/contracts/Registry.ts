@@ -1,6 +1,6 @@
-import BaseContract from "./BaseContract";
-import * as Promise from "bluebird";
-import { unpad } from "ethereumjs-util";
+import BaseContract from './BaseContract';
+import * as Promise from 'bluebird';
+import { unpad } from 'ethereumjs-util';
 
 export default class Registry extends BaseContract {
     /**
@@ -38,7 +38,7 @@ export default class Registry extends BaseContract {
     public addressOf(id: string) {
         return this.contract
             .addressOf
-            .callAsync(id)
+            .callAsync(id);
     }
 
     /**
@@ -61,7 +61,7 @@ export default class Registry extends BaseContract {
     public checkFormat(id: string) {
         return this.contract
             .check_format
-            .callAsync(id)
+            .callAsync(id);
     }
 
     /**
@@ -126,7 +126,7 @@ export default class Registry extends BaseContract {
                 }
 
                 return this.evaluateData('register', gas, idTr, ipfsHashTr);
-            })
+            });
     }
 
     /**

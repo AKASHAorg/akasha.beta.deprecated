@@ -17,11 +17,11 @@ const execute = Promise.coroutine(
         const requests = data.map((req) => {
             return contracts.instance.feed.isFollowing(req.follower, req.akashaId)
                 .then((result) => {
-                    return { result, follower: req.follower, akashaId: req.akashaId }
-                })
+                    return { result, follower: req.follower, akashaId: req.akashaId };
+                });
         });
         const collection = yield Promise.all(requests);
-        return { collection }
+        return { collection };
     });
 
 export default { execute, name: 'isFollowing' };

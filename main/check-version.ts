@@ -1,4 +1,4 @@
-import { dialog, shell, app } from 'electron';
+import { app, dialog, shell } from 'electron';
 import * as compareVersions from 'compare-versions';
 import { IpfsConnector } from '@akashaproject/ipfs-connector';
 
@@ -37,7 +37,7 @@ ${repo}
                 if (cb === 1) {
                     shell.openExternal(repo);
                 }
-            })
+            });
         });
     }
 }

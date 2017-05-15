@@ -526,7 +526,7 @@ interface EntryCreateRequest extends AuthRequest {
     tags: string[];
 }
 
-interface EntryEditRequest extends EntryCreateRequest{
+interface EntryEditRequest extends EntryCreateRequest {
     entryId: string;
 }
 

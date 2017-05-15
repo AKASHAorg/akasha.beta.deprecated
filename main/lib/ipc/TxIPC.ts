@@ -1,4 +1,4 @@
-import { gethHelper, CONSTANTS, GethConnector } from '@akashaproject/geth-connector';
+import { CONSTANTS, GethConnector, gethHelper } from '@akashaproject/geth-connector';
 import ModuleEmitter from './event/ModuleEmitter';
 import channels from '../channels';
 import { mainResponse } from './event/responses';

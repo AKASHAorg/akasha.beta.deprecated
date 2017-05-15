@@ -1,5 +1,5 @@
-import { createCipher, createDecipher, randomBytes, Decipher, Cipher } from "crypto";
-import { GethConnector, gethHelper } from "@akashaproject/geth-connector";
+import { createCipher, createDecipher, randomBytes, Decipher, Cipher } from 'crypto';
+import { GethConnector, gethHelper } from '@akashaproject/geth-connector';
 import {
     addHexPrefix,
     fromRpcSig,
@@ -9,9 +9,9 @@ import {
     pubToAddress,
     unpad,
     hashPersonalMessage
-} from "ethereumjs-util";
-import { constructed as contracts } from "../../contracts/index";
-import * as Promise from "bluebird";
+} from 'ethereumjs-util';
+import { constructed as contracts } from '../../contracts/index';
+import * as Promise from 'bluebird';
 
 export const randomBytesAsync = Promise.promisify(randomBytes);
 export default class Auth {
@@ -29,7 +29,7 @@ export default class Auth {
     public generateKey(pass: any) {
         try {
             if (!Buffer.isBuffer(pass)) {
-                throw new Error("Incorrect password format");
+                throw new Error('Incorrect password format');
             }
             const transformed = Buffer.from(pass).toString('utf8');
             return GethConnector.getInstance()
@@ -126,12 +126,12 @@ export default class Auth {
                         const expiration = new Date();
                         const clientToken = hashPersonalMessage(buff);
                         expiration.setMinutes(expiration.getMinutes() + timer);
-                        GethConnector.getInstance().web3.personal.lockAccountAsync(acc).then(()=> null);
+                        GethConnector.getInstance().web3.personal.lockAccountAsync(acc).then(() => null);
                         GethConnector.getInstance().web3.eth.defaultAccount = acc;
                         this._session = {
                             expiration,
                             address: acc,
-                            vrs    : fromRpcSig(signedString)
+                            vrs: fromRpcSig(signedString)
                         };
                         this._task = setTimeout(() => this._flushSession(), 1000 * 60 * timer);
                         return { token: addHexPrefix(clientToken.toString('hex')), expiration, account: acc };
@@ -159,7 +159,7 @@ export default class Auth {
         let pubKey: string;
         let ethAddr: Buffer;
         const now = new Date();
-        //console.log(token);
+        // console.log(token);
         if (!this._session || !token) {
             return false;
         }
@@ -171,7 +171,7 @@ export default class Auth {
         try {
             pubKey = bufferToHex(ecrecover(toBuffer(token), v, r, s));
             ethAddr = pubToAddress(pubKey);
-            //console.log(bufferToHex(ethAddr), this._session.address);
+            // console.log(bufferToHex(ethAddr), this._session.address);
             return bufferToHex(ethAddr) === this._session.address;
         } catch (err) {
             return false;

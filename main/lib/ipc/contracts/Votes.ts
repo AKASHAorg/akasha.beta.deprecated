@@ -55,7 +55,7 @@ export default class Votes extends BaseContract {
         return this.contract
             .getVoteCost
             .callAsync(weight)
-            .then((cost) => (this.gethInstance.web3.fromWei(cost, 'ether')).toString(10))
+            .then((cost) => (this.gethInstance.web3.fromWei(cost, 'ether')).toString(10));
     }
 
     /**
@@ -81,7 +81,7 @@ export default class Votes extends BaseContract {
             .callAsync(entryId)
             .then((result) => {
 
-                return result.toString()
+                return result.toString();
             });
     }
 

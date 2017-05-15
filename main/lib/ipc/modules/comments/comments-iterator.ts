@@ -5,7 +5,7 @@ import getComment from './get-comment';
  * Get entries indexed by tag
  * @type {Function}
  */
-const execute = Promise.coroutine(function*(data: {start?: number, limit?: number, entryId: string, reverse: boolean }) {
+const execute = Promise.coroutine(function*(data: { start?: number, limit?: number, entryId: string, reverse: boolean }) {
     let currentId = (data.start) ? data.start : yield contracts.instance.comments.getFirstComment(data.entryId);
     if (currentId === '0') {
         return { collection: [], entryId: data.entryId };
@@ -15,7 +15,7 @@ const execute = Promise.coroutine(function*(data: {start?: number, limit?: numbe
     const results = [];
     let counter = 0;
     if (!data.start) {
-        comment = yield getComment.execute({entryId: data.entryId, commentId: currentId});
+        comment = yield getComment.execute({ entryId: data.entryId, commentId: currentId });
         results.push(comment);
         counter = 1;
     }
@@ -26,7 +26,7 @@ const execute = Promise.coroutine(function*(data: {start?: number, limit?: numbe
         if (currentId === '0') {
             break;
         }
-        comment = yield getComment.execute({entryId: data.entryId, commentId: currentId});
+        comment = yield getComment.execute({ entryId: data.entryId, commentId: currentId });
         results.push(comment);
         counter++;
     }

@@ -8,7 +8,7 @@ import pinner, { ObjectType, OperationType } from '../pinner/runner';
  */
 const execute = Promise.coroutine(function*(data: EntryUpvoteRequest) {
     if (data.weight < 1 || data.weight > 10) {
-        throw new Error("Vote weight value must be between 1-10");
+        throw new Error('Vote weight value must be between 1-10');
     }
     const txData = yield contracts.instance.votes.upvote(data.entryId, data.weight, data.value, data.gas);
     const tx = yield userModule.auth.signData(txData, data.token);

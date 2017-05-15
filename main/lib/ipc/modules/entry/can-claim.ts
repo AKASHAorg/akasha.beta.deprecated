@@ -19,8 +19,8 @@ const execute = Promise.coroutine(
                 contracts.instance.entries.getEntryFund(id),
                 contracts.instance.entries.isMutable(id)
             ]).then((resolve) => {
-                return { canClaim: !!(resolve[0] && !resolve[1]), entryId: id }
-            })
+                return { canClaim: !!(resolve[0] && !resolve[1]), entryId: id };
+            });
         });
         const collection = yield Promise.all(requests);
         return { collection };

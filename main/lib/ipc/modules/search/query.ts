@@ -22,11 +22,11 @@ const execute = Promise.coroutine(function*(data: { text: string, pageSize: numb
         if (!whisperIdentity.from) {
             whisperIdentity.from = yield GethConnector.getInstance().web3.shh.newIdentityAsync();
         }
-        const ttl = "0x5";
+        const ttl = '0x5';
         const to = generalSettings.get(SEARCH_PROVIDER);
 
         if (!to) {
-            throw new Error("Must run handshake first.");
+            throw new Error('Must run handshake first.');
         }
 
         const request = yield GethConnector.getInstance().web3
@@ -40,7 +40,7 @@ const execute = Promise.coroutine(function*(data: { text: string, pageSize: numb
             });
 
         if (!request) {
-            throw new Error("Could not send search request.");
+            throw new Error('Could not send search request.');
         }
         const response = yield Promise.delay(5000).then(() => {
             return Promise.fromCallback(
@@ -49,8 +49,8 @@ const execute = Promise.coroutine(function*(data: { text: string, pageSize: numb
                         .web3
                         .shh
                         .filter({ topics: [requestPayLoad], to: whisperIdentity.from })
-                        .get(cb)
-                })
+                        .get(cb);
+                });
         });
 
         if (!response.length) {
@@ -64,7 +64,7 @@ const execute = Promise.coroutine(function*(data: { text: string, pageSize: numb
         }
 
         if (!jsonResponse || !jsonResponse.entries) {
-            throw new Error('Invalid response from search service.')
+            throw new Error('Invalid response from search service.');
         }
 
         cached = {
