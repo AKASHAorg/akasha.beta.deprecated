@@ -14,13 +14,13 @@ const windowStateKeeper = require('electron-window-state');
 
 let modules;
 const stopServices = () => {
-    feed.execute({ stop: true });
-    fetch.execute({ stop: true });
+    feed.execute({ stop: true }).then(() => null);
+    fetch.execute({ stop: true }).then(() => null);
     if (modules) {
         modules.flushAll();
     }
-    GethConnector.getInstance().stop();
-    IpfsConnector.getInstance().stop();
+    GethConnector.getInstance().stop().then(() => null);
+    IpfsConnector.getInstance().stop().then(() => null);
     setTimeout(() => {
         process.exit(0);
     }, 1200);
@@ -90,11 +90,11 @@ export function bootstrapApp() {
 
         mainWindow.once('close', (ev: Event) => {
             ev.preventDefault();
-            feed.execute({ stop: true });
-            fetch.execute({ stop: true });
+            feed.execute({ stop: true }).then(() => null);
+            fetch.execute({ stop: true }).then(() => null);
             modules.flushAll();
-            GethConnector.getInstance().stop();
-            IpfsConnector.getInstance().stop();
+            GethConnector.getInstance().stop().then(() => null);
+            IpfsConnector.getInstance().stop().then(() => null);
             setTimeout(() => app.quit(), 1200);
         });
         initMenu(mainWindow);
@@ -128,6 +128,9 @@ export function bootstrapApp() {
         });
         process.on('uncaughtException', (err: Error) => {
             modules.logger.getLogger('APP').error(`${err.message} ${err.stack}`);
+        });
+        process.on('warning', (warning) => {
+            console.log(warning);
         });
         process.on('SIGINT', stopServices);
         process.on('SIGTERM', stopServices);

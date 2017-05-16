@@ -61,7 +61,7 @@ abstract class GethEmitter extends AbstractEmitter {
                 initModules();
                 // add static peers
                 peers.list.forEach((peer: string) => {
-                    GethConnector.getInstance().web3.admin.addPeerAsync(peer);
+                    GethConnector.getInstance().web3.admin.addPeerAsync(peer).then(() => null);
                 });
             }
         );

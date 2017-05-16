@@ -2,7 +2,6 @@ import { AbstractEmitter } from './AbstractEmitter';
 import { IpfsConnector, ipfsEvents } from '@akashaproject/ipfs-connector';
 import { ipfsResponse } from './responses';
 import channels from '../../channels';
-import * as Promise from 'bluebird';
 
 const peerId = '/ip4/46.101.103.114/tcp/4001/ipfs/QmYfXRuVWMWFRJxUSFPHtScTNR9CU2samRsTK15VFJPpvh';
 abstract class IpfsEmitter extends AbstractEmitter {
@@ -34,13 +33,12 @@ abstract class IpfsEmitter extends AbstractEmitter {
                     .checkVersion()
                     .then(isValid => {
                         if (!isValid) {
-                            IpfsConnector.getInstance().stop();
-                            return Promise.delay(5000).then(() => {
+                            return IpfsConnector.getInstance().stop().delay(5000).then(() => {
                                 return IpfsConnector.getInstance()
                                     .downloadManager
                                     .deleteBin()
                                     .delay(1000)
-                                    .then(() => IpfsConnector.getInstance().start());
+                                    .then(() => IpfsConnector.getInstance().start().then(() => {}));
                             });
                         }
                         return IpfsConnector.getInstance()
