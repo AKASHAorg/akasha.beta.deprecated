@@ -275,7 +275,7 @@ export const tagGetMarginsError = (error) => {
 };
 
 export const tagGetMarginsSuccess = data => action(types.TAG_GET_MARGINS_SUCCESS, { data });
-export const tagGetSuggestions = tag => action(types.TAG_GET_SUGGESTIONS, { tag });
+export const tagGetSuggestions = tag => { console.log('tag get suggestions'); return action(types.TAG_GET_SUGGESTIONS, { tag }); };
 
 export const tagGetSuggestionsError = (error) => {
     error.code = 'TGSE01';

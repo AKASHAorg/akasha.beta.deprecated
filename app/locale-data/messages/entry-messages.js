@@ -111,6 +111,16 @@ const entryMessages = defineMessages({
         description: 'label for continue editing button',
         defaultMessage: 'Continue editing'
     },
+    editEntry: {
+        id: 'app.entry.editEntry',
+        description: 'tooltip for Edit entry button',
+        defaultMessage: 'Edit entry'
+    },
+    cannotEdit: {
+        id: 'app.entry.cannotEdit',
+        description: 'tooltip for disabled Edit entry button',
+        defaultMessage: 'This entry can no longer be edited'
+    },
     version: {
         id: 'app.entry.version',
         description: 'entry version',

@@ -13,6 +13,11 @@ export const selectActiveDashboard = (state) => {
     ]);
 };
 
+export const selectColumnEntries = (state, columnId) =>
+    state.dashboardState
+        .getIn(['columnById', columnId, 'entries'])
+        .map(id => selectEntry(state, id));
+
 export const selectColumnLastBlock = (state, columnId) =>
     state.dashboardState.getIn(['columnById', columnId, 'lastBlock']);
 
@@ -28,10 +33,19 @@ export const selectDashboards = (state) => {
 
 export const selectEntry = (state, id) => state.entryState.getIn(['byId', id]);
 
+export const selectEntryBalance = (state, id) => state.entryState.getIn(['balance', id]);
+
+export const selectEntryCanClaim = (state, id) => state.entryState.getIn(['canClaim', id]);
+
 export const selectEntryFlag = (state, flag) => state.entryState.getIn(['flags', flag]);
+
+export const selectEntryVote = (state, id) => state.entryState.getIn(['votes', id]);
 
 export const selectEthAddress = (state, profileAddress) =>
     state.profileState.getIn(['ethAddresses', profileAddress]);
+
+export const selectFullEntry = state =>
+    state.entryState.get('fullEntry');
 
 export const selectGethStatus = state => state.externalProcState.getIn(['geth', 'status']);
 
@@ -53,14 +67,16 @@ export const selectLoggedAkashaId = state =>
 export const selectLoggedProfileData = state =>
     selectProfile(state, state.profileState.getIn(['loggedProfile', 'profile']));
 
-export const selectColumnEntries = (state, columnId) =>
-    state.dashboardState
-        .getIn(['columnById', columnId, 'entries'])
-        .map(id => selectEntry(state, id));
+export const selectPendingAction = (state, actionId) =>
+    state.appState.getIn(['pendingActions', actionId]);
+
+export const selectPendingTx = (state, tx) => state.transactionState.getIn(['pending', tx]);
 
 export const selectProfile = (state, profileAddress) =>
     state.profileState.getIn(['byId', profileAddress]) || new ProfileRecord();
 
 export const selectProfileFlag = (state, flag) => state.profileState.getIn(['flags', flag]);
+
+export const selectToken = state => state.profileState.getIn(['loggedProfile', 'token']);
 
 /* eslint-enable no-use-before-define */

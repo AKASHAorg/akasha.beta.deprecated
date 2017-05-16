@@ -1,4 +1,4 @@
-import { gethHelper, CONSTANTS, GethConnector } from '@akashaproject/geth-connector';
+import { CONSTANTS, GethConnector, gethHelper } from '@akashaproject/geth-connector';
 import ModuleEmitter from './event/ModuleEmitter';
 import channels from '../channels';
 import { mainResponse } from './event/responses';
@@ -8,7 +8,7 @@ class TxIPC extends ModuleEmitter {
     constructor() {
         super();
         this.MODULE_NAME = 'tx';
-        this.DEFAULT_MANAGED = ['addToQueue', 'emitMined'];
+        this.DEFAULT_MANAGED = ['addToQueue', 'emitMined', 'getTransaction'];
         this.attachEmitters();
     }
 
@@ -16,6 +16,7 @@ class TxIPC extends ModuleEmitter {
         this.webContents = webContents;
         this._addToQueue()
             ._listenMined()
+            ._getTransaction()
             ._manager();
     }
 
@@ -74,6 +75,33 @@ class TxIPC extends ModuleEmitter {
                 );
             }
         );
+    }
+
+    private _getTransaction() {
+        this.registerListener(
+            channels.server[this.MODULE_NAME].getTransaction,
+            (event: any, data: TxRequestData) => {
+                const requests = data.transactionHash.map((txHash) => {
+                    return GethConnector.getInstance().web3.eth.getTransactionReceiptAsync(txHash);
+                });
+                return Promise.all(requests)
+                    .then((txData) => {
+                        const response: EmitMinedResponse = mainResponse(txData, data);
+                        this.fireEvent(
+                            channels.client[this.MODULE_NAME].getTransaction,
+                            response,
+                            event
+                        );
+                    })
+                    .catch((err) => {
+                        this.fireEvent(
+                            channels.client.geth.getTransaction,
+                            mainResponse({ error: err.measure() }, data),
+                            event
+                        );
+                    });
+            });
+        return this;
     }
 }
 

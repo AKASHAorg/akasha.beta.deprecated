@@ -19,7 +19,7 @@ class Notifications {
     private emit(cb) {
         let count = (this.queue.length > this.BATCH_SIZE) ? this.BATCH_SIZE : this.queue.length;
         for (let i = 0; i < count; i++) {
-            cb('', this.queue.shift())
+            cb('', this.queue.shift());
         }
         if (this.queue.length) {
             this.push(cb);

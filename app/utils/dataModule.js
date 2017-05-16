@@ -1,6 +1,6 @@
 import XRegExp from 'xregexp';
 
-export const calculateReadingTime = (wordCount, options = {}) => {
+export const calculateReadingTime = (wordCount = 0, options = {}) => {
     let minutes;
     let hours = null; // hopefully not the case :)
     options.wordsPerMinute = options.wordsPerMinute || 185;

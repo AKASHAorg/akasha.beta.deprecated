@@ -1,5 +1,5 @@
-import * as Promise from "bluebird";
-import getProfileData from "./profile-data";
+import * as Promise from 'bluebird';
+import getProfileData from './profile-data';
 
 /**
  *

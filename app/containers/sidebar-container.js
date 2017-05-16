@@ -4,6 +4,7 @@ import { withRouter } from 'react-router';
 import { Sidebar } from '../components';
 import { selectLoggedProfileData } from '../local-flux/selectors';
 
+
 function mapStateToProps (state) {
     return {
         balance: state.profileState.get('balance'),

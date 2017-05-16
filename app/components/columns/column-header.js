@@ -22,7 +22,7 @@ class ColumnHeader extends Component {
         });
     };
 
-    onChange = (ev, value) => {
+    onChange = (value) => {
         if (this.props.onInputChange) {
             this.props.onInputChange(value);
         }
@@ -36,12 +36,6 @@ class ColumnHeader extends Component {
             isFocused: true
         });
     };
-
-    onKeyPress = (ev) => {
-        if (ev.key === 'Enter') {
-            this.updateColumn();
-        }
-    }
 
     onMouseEnter = () => {
         this.setState({
@@ -99,12 +93,11 @@ class ColumnHeader extends Component {
               {!readOnly &&
                 <AutoComplete
                   id="value"
-                  dataSource={suggestions.toJS()}
+                  dataSource={suggestions ? suggestions.toJS() : []}
                   searchText={value}
                   onBlur={this.onBlur}
-                  onChange={this.onChange}
+                  onUpdateInput={this.onChange}
                   onFocus={this.onFocus}
-                  onKeyPress={this.onKeyPress}
                   onNewRequest={this.onNewRequest}
                   openOnFocus
                   underlineShow={isHovered || isFocused}

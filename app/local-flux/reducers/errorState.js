@@ -32,6 +32,10 @@ const errorState = createReducer(initialState, {
     [types.DASHBOARD_GET_COLUMNS_ERROR]: addNewError,
     [types.DASHBOARD_SET_ACTIVE_ERROR]: addNewError,
     [types.DASHBOARD_UPDATE_COLUMN_ERROR]: addNewError,
+    [types.ENTRY_CLAIM_ERROR]: addNewError,
+    [types.ENTRY_DOWNVOTE_ERROR]: addNewError,
+    [types.ENTRY_GET_FULL_ERROR]: addNewError,
+    [types.ENTRY_UPVOTE_ERROR]: addNewError,
     [types.ERROR_DELETE_FATAL]: (state, { id }) => {
         const index = state.get('fatalErrors').findIndex(err => err.id === id);
         return state.merge({

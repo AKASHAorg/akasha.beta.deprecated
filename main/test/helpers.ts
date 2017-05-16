@@ -49,7 +49,7 @@ export const authChannel = new AuthIPCtest();
 export const txChannel = new TxIPCtest();
 export const tagId = 2;
 export const tagName = 'tag-no1478868171004';
-export const pwd = Buffer.from("abc12345");
+export const pwd = Buffer.from('abc12345');
 export const mockedAddress = '0xc7fea2aa9b1475e09f6325e3f6586170f3a1c470';
 export const akashaId = 'costelinho';
 export const profileAddress = '0x78363144f9d4373c05a29a83260c0ce1b300092a';
@@ -139,7 +139,7 @@ export const getToken = (done, authData, collect) => {
             collect(injected.data.data.token);
             done();
         });
-    ipcMain.emit(channel.server.auth.login, '', authData)
+    ipcMain.emit(channel.server.auth.login, '', authData);
 };
 
 export const getNewAddress = (done, collect) => {
@@ -177,7 +177,7 @@ export const getAethers = (done, address, collect) => {
             done();
         }
     );
-    ipcMain.emit(channel.server.auth.requestEther, '', { address })
+    ipcMain.emit(channel.server.auth.requestEther, '', { address });
 };
 
 export const confirmTx = (done, tx) => {

@@ -55,7 +55,7 @@ describe('TagsIPC', function () {
             (injected) => {
                 listenersNr++;
                 if (listenersNr === listenOn.length) {
-                    done()
+                    done();
                 }
             }
         );

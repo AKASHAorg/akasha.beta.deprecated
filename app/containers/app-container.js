@@ -6,7 +6,7 @@ import { injectIntl } from 'react-intl';
 import { Redirect, Route } from 'react-router-dom';
 import { getMuiTheme } from 'material-ui/styles';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import { AuthDialog, DataLoader, GethDetailsModal, IpfsDetailsModal, PublishConfirmDialog,
+import { DataLoader, GethDetailsModal, IpfsDetailsModal, PublishConfirmDialog,
     TransferConfirmDialog, WeightConfirmDialog } from '../shared-components';
 import { hideNotification, hideTerms, hideReportModal, bootstrapHome, showLoginDialog } from '../local-flux/actions/app-actions';
 import { entryVoteCost } from '../local-flux/actions/entry-actions';
@@ -16,7 +16,8 @@ import { tempProfileUpdate, setTempProfile, tempProfileCreate,
   tempProfileDelete, tempProfilePublishUpdate } from '../local-flux/actions/temp-profile-actions';
 import { errorDeleteFatal, errorDeleteNonFatal } from '../local-flux/actions/error-actions';
 import { HomeContainer, LauncherContainer, SidebarContainer } from './';
-import { ErrorBar, FatalErrorModal, LoginDialog, NotificationBar, TermsPanel, ReportModal, PanelLoader } from '../components';
+import { AuthDialog, LoginDialog } from '../components/dialogs';
+import { ErrorBar, FatalErrorModal, NotificationBar, ReportModal, TermsPanel, PanelLoader } from '../components';
 import { selectLoggedProfileData } from '../local-flux/selectors';
 import lightTheme from '../layouts/AkashaTheme/lightTheme';
 import darkTheme from '../layouts/AkashaTheme/darkTheme';

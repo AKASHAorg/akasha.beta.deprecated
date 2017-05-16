@@ -6,7 +6,8 @@ import * as commentsTypes from '../constants/CommentsConstants';
 import * as appTypes from '../constants/AppConstants';
 import * as searchTypes from '../constants/SearchConstants';
 import * as types from '../constants';
-import { EntriesStream, EntryContent, EntryEth, EntryRecord, EntryState } from './records';
+import { EntriesStream, EntryContent, EntryEth, EntryPageOverlay, EntryRecord,
+    EntryState } from './records';
 
 const ErrorRecord = Record({
     code: '',
@@ -82,10 +83,7 @@ const querySuccessHandler = (state, { data }) => {
     });
 };
 
-const addEntry = (byId, entry) => {
-    if (!entry) {
-        return byId;
-    }
+const getEntryRecord = (entry) => {
     let record = new EntryRecord(entry);
     if (entry.content) {
         record = record.set('content', new EntryContent(entry.content));
@@ -95,7 +93,7 @@ const addEntry = (byId, entry) => {
         // only keep a reference to the publisher's profile address
         record = record.setIn(['entryEth', 'publisher'], entry.entryEth.publisher.profile);
     }
-    return byId.set(entry.entryId, record);
+    return record;
 };
 
 const entryIteratorHandler = (state, { data }) => {
@@ -105,7 +103,7 @@ const entryIteratorHandler = (state, { data }) => {
         // the request is made for n + 1 entries to determine if there are more entries left
         // if this is the case, ignore the extra entry
         if (!moreEntries || index !== data.collection.length - 1) {
-            byId = addEntry(byId, entry);
+            byId = byId.set(entry.entryId, getEntryRecord(entry));
         }
     });
     return state.set('byId', byId);
@@ -560,6 +558,27 @@ const entryState = createReducer(initialState, {
         return state.mergeIn(['canClaim'], new Map(canClaim));
     },
 
+    [types.ENTRY_CLAIM]: (state, { entryId }) =>
+        state.setIn(['flags', 'claimPending', entryId], true),
+
+    [types.ENTRY_CLAIM_ERROR]: (state, { entryId }) =>
+        state.setIn(['flags', 'claimPending', entryId], false),
+
+    [types.ENTRY_CLAIM_SUCCESS]: (state, { data }) =>
+        state.setIn(['flags', 'claimPending', data.entryId], false),
+
+    [types.ENTRY_CLEAN_FULL]: state =>
+        state.set('fullEntry', null),
+
+    [types.ENTRY_DOWNVOTE]: (state, { entryId }) =>
+        state.setIn(['flags', 'votePending', entryId], true),
+
+    [types.ENTRY_DOWNVOTE_ERROR]: (state, { entryId }) =>
+        state.setIn(['flags', 'votePending', entryId], false),
+
+    [types.ENTRY_DOWNVOTE_SUCCESS]: (state, { data }) =>
+        state.setIn(['flags', 'votePending', data.entryId], false),
+
     [types.ENTRY_GET_BALANCE_SUCCESS]: (state, { data }) => {
         const balance = {};
         data.collection.forEach((res) => {
@@ -568,12 +587,68 @@ const entryState = createReducer(initialState, {
         return state.mergeIn(['balance'], new Map(balance));
     },
 
+    [types.ENTRY_GET_FULL]: state => state.setIn(['flags', 'fetchingFullEntry'], true),
+
+    [types.ENTRY_GET_FULL_ERROR]: state => state.setIn(['flags', 'fetchingFullEntry'], false),
+
+    [types.ENTRY_GET_FULL_SUCCESS]: (state, { data }) => {
+        const fullEntry = state.get('fullEntry');
+        const version = data.content && data.content.version;
+        const latestVersion = fullEntry && data.entryId !== fullEntry.get('entryId') ?
+            version || null :
+            Math.max(state.get('fullEntryLatestVersion'), version) || null;
+
+        return state.merge({
+            flags: state.get('flags').set('fetchingFullEntry', false),
+            fullEntry: getEntryRecord(data),
+            fullEntryLatestVersion: latestVersion
+        });
+    },
+
+    [types.ENTRY_GET_LATEST_VERSION_SUCCESS]: (state, { data = null }) =>
+        state.set('fullEntryLatestVersion', data),
+
+    [types.ENTRY_GET_SCORE_SUCCESS]: (state, { data }) => {
+        const entry = state.getIn(['byId', data.entryId]);
+        const oldFullEntry = state.get('fullEntry');
+        const fullEntry = oldFullEntry && data.entryId === oldFullEntry.entryId ?
+            oldFullEntry.set('score', data.score) :
+            oldFullEntry;
+        return state.merge({
+            byId: !entry ?
+                state.get('byId') :
+                state.get('byId').setIn([data.entryId, 'score'], data.score),
+            fullEntry
+        });
+    },
+
     [types.ENTRY_GET_VOTE_OF_SUCCESS]: (state, { data }) => {
         const votes = {};
         data.collection.forEach((res) => {
             votes[res.entryId] = res.weight;
         });
         return state.mergeIn(['votes'], new Map(votes));
+    },
+
+    [types.ENTRY_IS_ACTIVE]: state =>
+        state.setIn(['flags', 'isActivePending'], true),
+
+    [types.ENTRY_IS_ACTIVE_ERROR]: state =>
+        state.setIn(['flags', 'isActivePending'], false),
+
+    [types.ENTRY_IS_ACTIVE_SUCCESS]: (state, { data }) => {
+        const entry = state.getIn(['byId', data.entryId]);
+        const oldFullEntry = state.get('fullEntry');
+        const fullEntry = oldFullEntry && data.entryId === oldFullEntry.entryId ?
+            oldFullEntry.set('active', data.active) :
+            oldFullEntry;
+        return state.merge({
+            byId: !entry ?
+                state.get('byId') :
+                state.get('byId').setIn([data.entryId, 'active'], data.active),
+            flags: state.get('flags').set('isActivePending', false),
+            fullEntry
+        });
     },
 
     [types.ENTRY_MORE_NEWEST_ITERATOR_SUCCESS]: entryIteratorHandler,
@@ -586,11 +661,25 @@ const entryState = createReducer(initialState, {
 
     [types.ENTRY_NEWEST_ITERATOR_SUCCESS]: entryIteratorHandler,
 
+    [types.ENTRY_PAGE_HIDE]: state => state.set('entryPageOverlay', new EntryPageOverlay()),
+
+    [types.ENTRY_PAGE_SHOW]: (state, { entryId, version = null }) =>
+        state.set('entryPageOverlay', new EntryPageOverlay({ entryId, version })),
+
     [types.ENTRY_PROFILE_ITERATOR_SUCCESS]: entryIteratorHandler,
 
     [types.ENTRY_STREAM_ITERATOR_SUCCESS]: entryIteratorHandler,
 
     [types.ENTRY_TAG_ITERATOR_SUCCESS]: entryIteratorHandler,
+
+    [types.ENTRY_UPVOTE]: (state, { entryId }) =>
+        state.setIn(['flags', 'votePending', entryId], true),
+
+    [types.ENTRY_UPVOTE_ERROR]: (state, { entryId }) =>
+        state.setIn(['flags', 'votePending', entryId], false),
+
+    [types.ENTRY_UPVOTE_SUCCESS]: (state, { data }) =>
+        state.setIn(['flags', 'votePending', data.entryId], false),
 
     [types.ENTRY_VOTE_COST_SUCCESS]: (state, { data }) => {
         const voteCost = {};

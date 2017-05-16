@@ -42,9 +42,9 @@ export function initModules() {
                 obj.initListeners(webContents);
             });
             checkForGenesis((errGenesis) => {
-                    if (errGenesis) {
-                        (Logger.getInstance().getLogger('akasha')).error(errGenesis);
-                    }
+                if (errGenesis) {
+                    (Logger.getInstance().getLogger('akasha')).error(errGenesis);
+                }
             });
         },
         logger,

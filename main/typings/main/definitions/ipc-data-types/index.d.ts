@@ -228,6 +228,10 @@ interface EmitMinedRequest {
     watch: boolean;
 }
 
+interface TxRequestData {
+    transactionHash: string[];
+}
+
 interface EmitMinedResponse extends MainResponse {
     data: {
         mined?: string,
@@ -522,7 +526,7 @@ interface EntryCreateRequest extends AuthRequest {
     tags: string[];
 }
 
-interface EntryEditRequest extends EntryCreateRequest{
+interface EntryEditRequest extends EntryCreateRequest {
     entryId: string;
 }
 

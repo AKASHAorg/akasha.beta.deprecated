@@ -47,8 +47,8 @@ const execute = Promise.coroutine(function*(data: { provider?: string, timeout?:
                     .web3
                     .shh
                     .filter({ topics: [HANDSHAKE_RESPONSE], to: whisperIdentity.from })
-                    .get(cb)
-            })
+                    .get(cb);
+            });
     });
 
     if (!response.length) {
@@ -68,7 +68,7 @@ const execute = Promise.coroutine(function*(data: { provider?: string, timeout?:
         throw new Error('Could not handshake.');
     }
 
-    return { searchService: init }
+    return { searchService: init };
 });
 
 export default { execute, name: 'handshake' };

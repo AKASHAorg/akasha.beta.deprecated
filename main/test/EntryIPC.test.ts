@@ -61,7 +61,7 @@ describe('EntryIPC', function () {
             (injected) => {
                 listenersNr++;
                 if (listenersNr === listenOn.length) {
-                    done()
+                    done();
                 }
             }
         );

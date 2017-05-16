@@ -3,7 +3,7 @@ import { constructed as contracts } from '../../contracts/index';
 import getFollowingList from '../profile/following-list';
 import currentProfile from '../registry/current-profile';
 import { mixed } from '../models/records';
-import { FOLLOWING_LIST, BLOCK_INTERVAL, F_STREAM_I } from '../../config/settings';
+import { BLOCK_INTERVAL, F_STREAM_I, FOLLOWING_LIST } from '../../config/settings';
 import { GethConnector } from '@akashaproject/geth-connector';
 import getEntry from './get-entry';
 

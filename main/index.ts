@@ -1,5 +1,5 @@
 /// <reference path="typings/main.d.ts" />
-import { app, crashReporter, BrowserWindow, shell } from 'electron';
+import { app, BrowserWindow, crashReporter, shell } from 'electron';
 import { GethConnector } from '@akashaproject/geth-connector';
 import { IpfsConnector } from '@akashaproject/ipfs-connector';
 import { resolve } from 'path';
@@ -49,12 +49,12 @@ export function bootstrapApp() {
     const shouldQuit = app.makeSingleInstance((commandLine, workingDirectory) => {
         if (mainWindow) {
             if (mainWindow.isMinimized()) mainWindow.restore();
-            mainWindow.focus()
+            mainWindow.focus();
         }
     });
 
     if (shouldQuit) {
-        app.quit()
+        app.quit();
     }
 
     app.on('ready', () => {

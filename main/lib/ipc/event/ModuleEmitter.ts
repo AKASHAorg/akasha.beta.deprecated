@@ -46,7 +46,7 @@ abstract class ModuleEmitter extends AbstractEmitter {
     protected _initMethods(methods) {
         methods.forEach((method) => {
             //console.log([this.MODULE_NAME], [method.name]);
-            if (method.name === 'feed' || method.name === 'fetch') {
+            if (method.name === 'feed' || method.name === 'fetch' || method.name === 'resolveEntriesIpfsHash') {
                 this.registerListener(
                     channels.server[this.MODULE_NAME][method.name],
                     (event: any, data: any) => {
@@ -108,7 +108,7 @@ abstract class ModuleEmitter extends AbstractEmitter {
                             response = null;
                         });
                 }
-            )
+            );
         });
     }
 }

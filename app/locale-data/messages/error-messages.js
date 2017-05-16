@@ -71,6 +71,26 @@ const errorMessages = defineMessages({
         description: 'update column error message',
         defaultMessage: 'An error occurred while updating your column'
     },
+    entryClaim: {
+        id: 'app.error.entryClaim',
+        description: 'claim entry balance error message',
+        defaultMessage: 'An error occurred while claiming {entryTitle}'
+    },
+    entryDownvote: {
+        id: 'app.error.entryDownvote',
+        description: 'downvote entry error message',
+        defaultMessage: 'An error occurred while downvoting {entryTitle}'
+    },
+    entryGetFull: {
+        id: 'app.error.entryGetFull',
+        description: 'get full entry error message',
+        defaultMessage: 'An error occurred while getting entry data'
+    },
+    entryUpvote: {
+        id: 'app.error.entryUpvote',
+        description: 'upvote entry error message',
+        defaultMessage: 'An error occurred while upvoting {entryTitle}'
+    },
     fatalError: {
         id: 'app.error.fatalError',
         description: 'title for fatal error modal',

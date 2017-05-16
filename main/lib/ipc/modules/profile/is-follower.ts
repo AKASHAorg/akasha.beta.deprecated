@@ -20,11 +20,11 @@ const execute = Promise.coroutine(
                 .isFollower(req.akashaId, req.following)
                 .then((result) => {
                     return { result, following: req.following, akashaId: req.akashaId };
-                })
+                });
         });
 
         const collection = yield Promise.all(requests);
-        return { collection }
+        return { collection };
     });
 
 export default { execute, name: 'isFollower' };

@@ -22,6 +22,6 @@ export default class Faucet extends BaseContract {
     }
 
     public canClaim(idAddress: string) {
-        this.contract.canClaim.callAsync(idAddress)
+        this.contract.canClaim.callAsync(idAddress);
     }
 }

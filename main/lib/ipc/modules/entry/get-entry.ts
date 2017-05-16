@@ -1,7 +1,7 @@
 import * as Promise from 'bluebird';
 import { constructed as contracts } from '../../contracts/index';
-import { getShortContent, getFullContent } from './ipfs';
-import { generalSettings, BASE_URL, SHORT_WAIT_TIME, FULL_WAIT_TIME } from '../../config/settings';
+import { getFullContent, getShortContent } from './ipfs';
+import { BASE_URL, FULL_WAIT_TIME, generalSettings, SHORT_WAIT_TIME } from '../../config/settings';
 import commentsCount from '../comments/comments-count';
 import getProfileData from '../profile/profile-data';
 
