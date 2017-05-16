@@ -15,7 +15,7 @@ class ChatSettings {
      */
     public setActive(channel: string) {
         if (!this.TOPICS.has(channel)) {
-            throw new Error(`Can't navigate to ${channel} before joining it.`)
+            throw new Error(`Can't navigate to ${channel} before joining it.`);
         }
         this.activeChannel = channel;
     }

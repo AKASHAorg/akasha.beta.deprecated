@@ -12,7 +12,7 @@ import WebContents = Electron.WebContents;
 
 class GethIPC extends GethEmitter {
     public logger = 'geth';
-    private BOOTNODE = 'enode://7f809ac6c56bf8a387ad3c759ece63bc4cde466c5f06b2d68e0f21928470dd35949e978091537e1fb633a'+
+    private BOOTNODE = 'enode://7f809ac6c56bf8a387ad3c759ece63bc4cde466c5f06b2d68e0f21928470dd35949e978091537e1fb633a' +
         '1a7eaf06630234d22d1b0c1d98b4643be5f28e5fe79@138.68.78.152:30301';
     private DEFAULT_MANAGED: string[] = ['startService', 'stopService', 'status'];
 
@@ -96,7 +96,7 @@ class GethIPC extends GethEmitter {
         this.registerListener(
             channels.server.geth.startService,
             (event: any, data: GethStartRequest) => {
-                if(GethConnector.getInstance().serviceStatus.process){
+                if (GethConnector.getInstance().serviceStatus.process) {
                     this.fireEvent(
                         channels.client.geth.startService,
                         gethResponse({}, { message: 'Service is already started.' }),
@@ -242,7 +242,7 @@ class GethIPC extends GethEmitter {
                         response = gethResponse({ blockNr }, data);
                     })
                     .catch((err) => {
-                        response = gethResponse({}, data, { message: err.message })
+                        response = gethResponse({}, data, { message: err.message });
                     })
                     .finally(() => {
                         this.fireEvent(
@@ -250,7 +250,7 @@ class GethIPC extends GethEmitter {
                             response,
                             event
                         );
-                    })
+                    });
             }
         );
         return this;

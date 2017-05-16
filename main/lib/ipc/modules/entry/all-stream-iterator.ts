@@ -1,7 +1,7 @@
 import * as Promise from 'bluebird';
 import { constructed as contracts } from '../../contracts/index';
 import { mixed } from '../models/records';
-import { BLOCK_INTERVAL, A_STREAM_I } from '../../config/settings';
+import { A_STREAM_I, BLOCK_INTERVAL } from '../../config/settings';
 import { GethConnector } from '@akashaproject/geth-connector';
 import getEntry from './get-entry';
 

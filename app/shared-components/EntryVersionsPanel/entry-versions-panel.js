@@ -148,7 +148,6 @@ class EntryVersionsPanel extends Component {
           </Dialog>
         );
     }
-
 }
 
 EntryVersionsPanel.contextTypes = {

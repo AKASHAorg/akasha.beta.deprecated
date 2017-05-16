@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { LogoButton, PanelContainer, PanelContainerHeader } from './';
+import { LogoButton, PanelContainer } from './';
 import { getInitials } from '../utils/dataModule';
 import { AddEntryIcon, ChatIcon, EntriesIcon, PeopleIcon, ProfileIcon,
     SearchIcon, StreamsIcon } from '../shared-components/svg';
@@ -73,13 +73,13 @@ class Sidebar extends Component {
         const { location } = this.props;
         return location.pathname.includes('/panel/');
     }
-    _handlePanelVisible = (ev) => {
+    _handlePanelVisible = () => {
         this.setState({
             panelContentVisible: !this.state.panelContentVisible
         });
     }
     render () {
-        const { activePanel, balance, draftsCount, hasFeed, intl, loggedProfileData,
+        const { balance, draftsCount, hasFeed, intl, loggedProfileData,
           notificationsCount, location, children } = this.props;
         const { palette } = this.context.muiTheme;
         const userInitials =
@@ -117,7 +117,7 @@ class Sidebar extends Component {
                   <div {...this.getWrapperProps(generalMessages.myEntries)}>
                     <EntriesIcon
                       disabled={!isLoggedIn}
-                      isActive={activePanel === 'newEntry'}
+                      isActive={false}
                       onClick={this._handleNewEntry}
                     />
                   </div> :
@@ -132,7 +132,7 @@ class Sidebar extends Component {
                 <div {...this.getWrapperProps(generalMessages.search)}>
                   <SearchIcon
                     onClick={this.handleSearch}
-                    isActive={activePanel === 'search'}
+                    isActive={false}
                   />
                 </div>
               </div>
@@ -184,7 +184,6 @@ Sidebar.contextTypes = {
 };
 
 Sidebar.propTypes = {
-    activePanel: PropTypes.string,
     balance: PropTypes.string,
     children: PropTypes.element,
     draftsCount: PropTypes.number,
@@ -194,7 +193,7 @@ Sidebar.propTypes = {
     location: PropTypes.shape(),
     loggedProfile: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
-    notificationsCount: PropTypes.number
+    notificationsCount: PropTypes.number,
 };
 
 export default Sidebar;

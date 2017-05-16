@@ -19,6 +19,7 @@
         "no-internal-module": true,
         "no-trailing-whitespace": true,
         "no-var-keyword": true,
+        "object-curly-spacing": true,
         "one-line": [
             true,
             "check-open-brace",

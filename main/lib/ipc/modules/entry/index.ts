@@ -23,6 +23,9 @@ import runner from '../pinner/index';
 import editEntry from './edit-entry';
 import followingStreamIterator from './following-stream-iterator';
 import allStreamIterator from './all-stream-iterator';
+import getLatestEntryVersion from './get-latest-entry-version';
+import getEntryIpfsHash from './get-entry-ipfs-hash';
+import resolveEntriesIpfsHash from './resolve-entries-ipfs-hash';
 
 export default [
     entryCountProfile,
@@ -49,5 +52,8 @@ export default [
     editEntry,
     followingStreamIterator,
     allStreamIterator,
-    runner[0]
-]
+    runner[0],
+    getLatestEntryVersion,
+    getEntryIpfsHash,
+    resolveEntriesIpfsHash
+];

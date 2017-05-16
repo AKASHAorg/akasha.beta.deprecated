@@ -8,4 +8,9 @@ transactionsDB.version(1).stores({
     errors: '&tx, code, message, fatal'
 });
 
+transactionsDB.version(2).stores({
+    pending: '&tx, type, akashaId, [type+akashaId]',
+    mined: '&tx, type, akashaId, [type+akashaId]',
+});
+
 export default transactionsDB;

@@ -1,8 +1,10 @@
 export const generalSettings = new Map();
 export const BASE_URL = 'baseUrl';
 
-export const SHORT_WAIT_TIME = 10000;
-export const FULL_WAIT_TIME = 15000;
+export const INSTANT_WAIT_TIME = 300;
+export const SHORT_WAIT_TIME = 3000;
+export const MEDIUM_WAIT_TIME = 15000;
+export const FULL_WAIT_TIME = 40000;
 
 export const FOLLOWING_LIST = 'followingList';
 export const BLOCK_INTERVAL = 5300;
@@ -16,10 +18,10 @@ export const MENTION_TYPE = {
     ENTRY: 'entryMention'
 };
 export const SEARCH_PROVIDER = 'search-provider';
-export const handshakeTimeout = 10; //nr of seconds
+export const handshakeTimeout = 10; // nr of seconds
 export const HANDSHAKE_REQUEST = '0x68616e647368616b6552657175657374';
 export const HANDSHAKE_RESPONSE = '0x68616e647368616b65526573706f6e7365';
-export const HANDSHAKE_DONE= 'handshakeDone';
+export const HANDSHAKE_DONE = 'handshakeDone';
 
 export const SEARCH_REQUEST = '0x5345415243485f52455155455354';
 

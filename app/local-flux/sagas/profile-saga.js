@@ -201,8 +201,10 @@ function* watchProfileLoginChannel () {
     const resp = yield take(actionChannels.auth.login);
     if (resp.error) {
         yield put(actions.profileLoginError(resp.error));
-    } else {
-        yield put(actions.profileGetCurrent());
+    } else if (resp.request.account === resp.data.account) {
+        if (!resp.request.reauthenticate) {
+            yield put(actions.profileGetCurrent());
+        }
         yield put(actions.profileLoginSuccess(resp.data));
     }
 }
@@ -214,7 +216,6 @@ function* watchProfileLogoutChannel () {
             yield put(actions.profileLogoutError(resp.error));
         } else {
             yield call(profileDeleteLogged);
-            yield put(actions.profileLogoutSuccess());
         }
     }
 }

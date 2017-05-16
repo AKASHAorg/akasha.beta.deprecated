@@ -1,6 +1,6 @@
-import { IpfsConnector } from "@akashaproject/ipfs-connector";
-import { comments } from "../models/records";
-import { FULL_WAIT_TIME } from "../../config/settings";
+import { IpfsConnector } from '@akashaproject/ipfs-connector';
+import { comments } from '../models/records';
+import { FULL_WAIT_TIME } from '../../config/settings';
 
 /**
  *
@@ -15,7 +15,7 @@ export function create(data) {
     };
     return IpfsConnector.getInstance().api
         .add(constructed)
-        .then((result: any) => result.hash)
+        .then((result: any) => result.hash);
 }
 
 
@@ -36,6 +36,6 @@ export function getCommentContent(hash) {
             return data;
         }).catch((e) => {
             return { content: null };
-        })
+        });
 }
 

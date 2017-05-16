@@ -57,9 +57,9 @@ class LoginDialog extends Component {
         this.props.userSettingsSave(profile.get('akashaId'), { passwordPreference });
         this.props.profileLogin({
             account: ethAddress,
+            akashaId: profile.get('akashaId'),
             password: this.state.password,
-            rememberTime: unlockInterval,
-            akashaId: profile.get('akashaId')
+            rememberTime: unlockInterval
         });
     }, 1000, { leading: true, trailing: false });
 
@@ -109,7 +109,7 @@ class LoginDialog extends Component {
         const isServiceStopped = !gethStatus.get('api') || gethStatus.get('stopped')
             || (!ipfsStatus.get('started') && !ipfsStatus.get('spawned'));
         const modalActions = [
-            /* eslint-disable */
+            /* eslint-disable react/jsx-indent */
             <FlatButton
               disabled={loginPending}
               label={intl.formatMessage(generalMessages.cancel)}
@@ -121,7 +121,7 @@ class LoginDialog extends Component {
               onTouchTap={this.handleLogin}
               primary
             />
-            /* eslint-enable */
+            /* eslint-enable react/jsx-indent */
         ];
 
         return (

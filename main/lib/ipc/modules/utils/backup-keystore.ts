@@ -6,17 +6,17 @@ import { createWriteStream } from 'fs';
 import { app } from 'electron';
 import * as archiver from 'archiver';
 
-const execute = Promise.coroutine(function*(data:{ target?: string }) {
+const execute = Promise.coroutine(function*(data: { target?: string }) {
     const dataDir = yield GethConnector.getInstance().web3.admin.getDatadirAsync();
     const keyDir = join(dataDir, 'keystore/');
 
-    const downloads = (data.target)? data.target: app.getPath('downloads');
+    const downloads = (data.target) ? data.target : app.getPath('downloads');
     const target = join(downloads, BACKUP_KEYS_NAME);
 
     const output = createWriteStream(target);
     const archive = archiver('zip', { store: true });
 
-    archive.on('error', function(err) {
+    archive.on('error', function (err) {
         throw err;
     });
 
@@ -26,7 +26,7 @@ const execute = Promise.coroutine(function*(data:{ target?: string }) {
     archive.finalize();
 
     yield Promise.delay(2000);
-    return { target: target }
+    return { target: target };
 });
 
 export default { execute, name: 'backupKeys' };

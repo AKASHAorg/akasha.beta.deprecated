@@ -17,7 +17,8 @@ const channels = {
     entry: ['getProfileEntriesCount', 'getTagEntriesCount', 'isActive', 'getEntry', 'publish', 'update', 'canClaim', 'claim',
         'downvote', 'getScore', 'getDepositBalance', 'upvote', 'voteCost', 'voteCount', 'entryTagIterator',
         'entryProfileIterator', 'votesIterator', 'getEntriesStream', 'getVoteOf', 'getEntryBalance', 'getEntryList',
-        'editEntry', 'pin', 'followingStreamIterator', 'allStreamIterator'],
+        'editEntry', 'pin', 'followingStreamIterator', 'allStreamIterator', 'getLatestEntryVersion', 'getEntryIpfsHash',
+        'resolveEntriesIpfsHash'],
 
     comments: ['getComment', 'comment', 'commentsCount', 'removeComment', 'commentsIterator'],
 
@@ -34,7 +35,7 @@ const channels = {
 
     notifications: ['me', 'feed', 'setFilter', 'excludeFilter', 'includeFilter', 'mention'],
 
-    tx: ['addToQueue', 'emitMined'],
+    tx: ['addToQueue', 'emitMined', 'getTransaction'],
 
     licenses: ['getLicenceById', 'getLicenses'],
 
@@ -42,7 +43,7 @@ const channels = {
 
     search: ['handshake', 'query'],
 
-    utils: ['backupKeys']
+    utils: ['backupKeys', 'osInfo']
 };
 
 const processes = ['server', 'client'];

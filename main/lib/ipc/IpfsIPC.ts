@@ -4,7 +4,7 @@ import { IpfsConnector } from '@akashaproject/ipfs-connector';
 import AppLogger from './Logger';
 import channels from '../channels';
 import { ipfsResponse } from './event/responses';
-import { generalSettings, BASE_URL } from './config/settings';
+import { BASE_URL, generalSettings } from './config/settings';
 import { app } from 'electron';
 import WebContents = Electron.WebContents;
 import IpcMainEvent = Electron.IpcMainEvent;

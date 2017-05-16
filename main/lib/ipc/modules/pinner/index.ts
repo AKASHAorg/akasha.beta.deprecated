@@ -1,3 +1,3 @@
 import runner from './runner';
 
-export default [ runner ];
+export default [runner];

@@ -41,7 +41,7 @@ export default class Profile extends BaseContract {
             (cb) => {
                 profile._id.call(cb);
             }
-        ).then((id) => this.gethInstance.web3.toUtf8(id))
+        ).then((id) => this.gethInstance.web3.toUtf8(id));
     }
 
     /**
@@ -66,7 +66,7 @@ export default class Profile extends BaseContract {
      * @param gas
      * @returns {Bluebird<R>}
      */
-    public sendTip(receiver: string, value: string, unit: string = 'ether', gas: number = 500000){
+    public sendTip(receiver: string, value: string, unit: string = 'ether', gas: number = 500000) {
         const profile = this.contract.at(receiver);
         const weiValue = this.gethInstance.web3.toWei(value, unit);
         const extract = profile['sendTip'].request({ gas, value: weiValue });

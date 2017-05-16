@@ -1,6 +1,6 @@
-import { SpellCheckHandler, ContextMenuListener, ContextMenuBuilder } from 'electron-spellchecker';
+// import { SpellCheckHandler, ContextMenuListener, ContextMenuBuilder } from 'electron-spellchecker';
 import Channel from './lib/channels';
-import { ApiRequest, ApiListener } from './ipcPreloader';
+import { ApiListener, ApiRequest } from './ipcPreloader';
 // Linux: libxtst-dev, libx11-dev, libxkbfile-dev
 function injectApi() {
 
@@ -19,7 +19,7 @@ function injectApi() {
                     Channel.server[module][method],
                     Channel.server[module]['manager'],
                     method
-                )
+                );
             }
         });
     });
@@ -29,18 +29,20 @@ function injectApi() {
 window['Channel'] = injectApi();
 
 window['eval'] = function () {
-    throw new Error("eval disabled.");
+    throw new Error('eval disabled.');
 };
 
-//spellchecking stuff
-window['spellCheckHandler'] = new SpellCheckHandler();
+/*
+ //spellchecking stuff
+ window['spellCheckHandler'] = new SpellCheckHandler();
 
-if (process.env.NODE_ENV !== 'development') {
-    setTimeout(() => window['spellCheckHandler'].attachToInput(), 1000);
-    window['spellCheckHandler'].switchLanguage(navigator.language);
-    window['contextMenuBuilder'] = new ContextMenuBuilder(window['spellCheckHandler']);
+ if (process.env.NODE_ENV !== 'development') {
+ setTimeout(() => window['spellCheckHandler'].attachToInput(), 1000);
+ window['spellCheckHandler'].switchLanguage(navigator.language);
+ window['contextMenuBuilder'] = new ContextMenuBuilder(window['spellCheckHandler']);
 
-    window['contextMenuListener'] = new ContextMenuListener((info) => {
-        window['contextMenuBuilder'].showPopupMenu(info);
-    });
-}
+ window['contextMenuListener'] = new ContextMenuListener((info) => {
+ window['contextMenuBuilder'].showPopupMenu(info);
+ });
+ }
+ */

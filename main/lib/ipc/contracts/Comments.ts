@@ -59,8 +59,8 @@ export default class Comments extends BaseContract {
                     ipfsHash: this.flattenIpfs(result[3]),
                     active: !(result[4]),
                     unixStamp: (result[5]).toNumber()
-                }
-            })
+                };
+            });
     }
 
     /**
