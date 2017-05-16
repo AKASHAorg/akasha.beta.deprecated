@@ -86,6 +86,12 @@ function* profileSaveLogged (loggedProfile) {
     }
 }
 
+function* profileUpdate (profileData) {
+    const channel = Channel.server.profile.updateProfileData;
+    const token = select(state => state.profileState.getIn(['loggedProfile', 'token']));
+    yield call([channel, channel.send], { token, ipfs: profileData });
+}
+
 // Action watchers
 
 function* watchProfileDeleteLogged () {
@@ -213,6 +219,13 @@ function* watchProfileLogoutChannel () {
     }
 }
 
+function* watchProfileUpdate () {
+    while (true) {
+        const action = yield take(types.PROFILE_UPDATE);
+        yield call(profileUpdate, action.data);
+    }
+}
+
 export function* registerProfileListeners () {
     yield fork(watchProfileGetBalanceChannel);
     yield fork(watchProfileGetCurrentChannel);
@@ -232,6 +245,7 @@ export function* watchProfileActions () {
     yield fork(watchProfileGetLogged);
     yield fork(watchProfileLogin);
     yield fork(watchProfileLogout);
+    yield fork(watchProfileUpdate);
 }
 
 export function* registerWatchers () {

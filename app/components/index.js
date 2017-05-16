@@ -20,6 +20,7 @@ export PageContent from './page-content';
 export PanelContainer from './PanelContainer/panel-container';
 export PanelContainerFooter from './PanelContainer/panel-container-footer';
 export PanelContainerHeader from './PanelContainer/panel-container-header';
+export PanelLoader from './PanelLoader/panel-loader';
 export ProfileColumn from './columns/profile-column';
 export ProfilesList from './profiles-list';
 export ReportModal from './errors/error-reporting-modal';

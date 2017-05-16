@@ -180,6 +180,9 @@ function* publishTxListener (tempProfile) {
         yield put(tempProfileActions.tempProfilePublishError(response.error));
     }
 }
+function* tempProfilePublishUpdate (tempProfile) {
+    yield put(tempProfileActions.tempProfileLoginSuccess(tempProfile));
+}
 /**
  * ... watchers ...
  */
@@ -276,6 +279,13 @@ function* watchTempProfileRequest () {
     }
 }
 
+function* watchTempProfilePublishUpdate () {
+    while (true) {
+        const action = yield take(types.TEMP_PROFILE_PUBLISH_UPDATE);
+        yield fork(tempProfilePublishUpdate, action.data);
+    }
+}
+
 export function* watchTempProfileActions () {
     yield fork(watchProfileCreate);
     yield fork(watchEthAddressCreate);
@@ -286,4 +296,6 @@ export function* watchTempProfileActions () {
     yield fork(watchTempProfilePublish);
     yield fork(watchPublishTxMined);
     yield fork(watchTempProfileRemove);
+    // start update
+    yield fork(watchTempProfilePublishUpdate);
 }

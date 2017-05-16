@@ -13,8 +13,6 @@ export const selectActiveDashboard = (state) => {
     ]);
 };
 
-export const selectActivePanel = state => state.panelState.get('activePanel');
-
 export const selectColumnLastBlock = (state, columnId) =>
     state.dashboardState.getIn(['columnById', columnId, 'lastBlock']);
 

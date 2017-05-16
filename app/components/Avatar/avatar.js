@@ -47,7 +47,9 @@ class Avatar extends React.Component {
         }
         this.setState({
             avatarImage: null,
-            isNewAvatarLoaded: false
+            isNewAvatarLoaded: false,
+            rotation: 0,
+            avatarScale: 1.2
         });
     }
     _handleSliderChange = (ev, sliderValue) => {

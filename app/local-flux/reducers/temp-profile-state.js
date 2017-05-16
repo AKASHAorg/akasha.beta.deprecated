@@ -15,13 +15,25 @@ const tempProfileState = createReducer(initialState, {
     // save a new temp profile to database
     [types.TEMP_PROFILE_CREATE]: (state, { data }) => {
         const { status, ...profile } = data;
-        const newState = state.merge({
+        return state.merge({
             tempProfile: TempProfileModel.createTempProfile(profile),
             status: TempProfileModel.createStatus({
                 currentAction: types.TEMP_PROFILE_CREATE
             })
         });
-        return newState;
+    },
+    // create a new temp profile for updates
+    [types.SET_TEMP_PROFILE]: (state, { data }) =>
+        state.merge({
+            tempProfile: TempProfileModel.profileToTempProfile(data),
+            status: TempProfileModel.createStatus({
+                currentAction: types.UPDATE_TEMP_PROFILE
+            })
+        }),
+
+    [types.TEMP_PROFILE_UPDATE]: (state, { data }) => {
+        console.log(data, 'the data');
+        return state.mergeIn(['tempProfile'], data);
     },
 
     [types.TEMP_PROFILE_CREATE_SUCCESS]: (state) => {
