@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { Map } from 'immutable';
 import { SvgIcon, IconButton, RaisedButton,
     TextField, Checkbox, Divider } from 'material-ui';
 import muiThemeable from 'material-ui/styles/muiThemeable';
@@ -19,90 +20,94 @@ class NewProfileForm extends Component {
     constructor (props) {
         super(props);
         this.state = {
-            firstName: '',
-            lastName: '',
-            akashaId: '',
-            password: '',
-            password2: '',
-            about: '',
-            links: [],
-            crypto: [],
             optDetails: false,
             akashaIdIsValid: true,
             akashaIdExists: false
         };
-        this.validatorTypes = getProfileSchema(props.intl);
+        this.validatorTypes = getProfileSchema(props.intl, { isUpdate: props.isUpdate });
         this.showErrorOnFields = [];
         this.isSubmitting = false;
     }
 
-    getValidatorData = () => this.state;
+    getValidatorData = () => this.props.tempProfile.toJS();
 
     _showTerms = (ev) => {
         ev.preventDefault();
         const { onTermsShow } = this.props;
         if (onTermsShow) return onTermsShow();
+        return null;
     }
+
     _handleShowDetails = () => {
         this.setState({
             optDetails: !this.state.optDetails
         });
     }
-    _handleAddLink = linkType =>
-        () =>
-            this.setState((prevState) => {
-                const links = prevState[linkType];
-                const lastLink = links[links.length - 1];
-                let newLink = {};
-                if (lastLink) {
-                    if (linkType === 'links' && (lastLink.title.length === 0 || lastLink.url.length === 0)) {
-                        return null;
-                    }
-                    if (linkType === 'crypto' && (lastLink.name.length === 0 || lastLink.address.length === 0)) {
-                        return null;
-                    }
-                }
-                if (linkType === 'links') {
-                    newLink = {
-                        title: '',
-                        url: '',
-                        type: '',
-                        id: links.length > 0 ? (links.slice(-1).pop().id + 1) : 1
-                    };
-                }
-                if (linkType === 'crypto') {
-                    newLink = {
-                        name: '',
-                        address: '',
-                        id: links.length > 0 ? (links.slice(-1).pop().id + 1) : 1
-                    };
-                }
-                return {
-                    [linkType]: [...links, newLink]
-                };
-            });
+
+    _handleAddLink = (linkType) => () => {
+        const { tempProfile } = this.props;
+        const links = tempProfile.get(linkType);
+        let updatedTempProfile;
+        const lastLink = links.last();
+        if (lastLink) {
+            if (linkType === 'links' && (lastLink.get('title').length === 0 || lastLink.get('url').length === 0)) {
+                return null;
+            }
+            if (linkType === 'crypto' && (lastLink.get('name').length === 0 || lastLink.get('address').length === 0)) {
+                return null;
+            }
+        }
+        if (linkType === 'links') {
+            updatedTempProfile = tempProfile.setIn([linkType],
+              links.push(new Map({
+                  title: '',
+                  url: '',
+                  type: '',
+                  id: links.size > 0 ? (links.last().get('id') + 1) : 1
+              })));
+        }
+        if (linkType === 'crypto') {
+            updatedTempProfile = tempProfile.setIn([linkType],
+                links.push(new Map({
+                    name: '',
+                    address: '',
+                    id: links.size > 0 ? (links.last().get('id') + 1) : 1
+                })));
+        }
+        console.log(updatedTempProfile, 'updatedTemp profile');
+        return this.props.onProfileUpdate(updatedTempProfile);
+    };
+
     _handleLinkChange = (linkType, field, linkId) => {
-        const links = this.state[linkType].slice();
-        const index = links.findIndex(link => link.id === linkId);
+        const { tempProfile } = this.props;
+        const links = tempProfile.get(linkType);
+        const index = links.findIndex(link => link.get('id') === linkId);
         return (ev) => {
-            links[index][field] = ev.target.value;
-            this.setState({
-                [linkType]: links
-            });
+            const updatedLinks = links.setIn([index, field], ev.target.value);
+            const updatedTempProfile = tempProfile.setIn([linkType], updatedLinks);
+            this.props.onProfileUpdate(updatedTempProfile);
         };
     }
-    _handleRemoveLink = (linkId, linkType) =>
-        () => {
-            this.setState(prevState => ({
-                [linkType]: prevState[linkType].filter(link => link.id !== linkId)
-            }));
-        }
-    _handleFieldChange = field =>
-        (ev) => {
-            this.setState({
-                [field]: ev.target.value
-            });
-        }
+
+    _handleRemoveLink = (linkId, linkType) => {
+        const { tempProfile, onProfileUpdate } = this.props;
+        const links = tempProfile.get(linkType);
+        return () => {
+            onProfileUpdate(
+              tempProfile.setIn([linkType],
+                links.filter(link => link.get('id') !== linkId)
+              )
+            );
+        };
+    }
+
+    _handleFieldChange = (field) => {
+        const { tempProfile, onProfileUpdate } = this.props;
+        return (ev) => {
+            onProfileUpdate(tempProfile.setIn([field], ev.target.value));
+        };
+    }
+
     _handleResponse = (resp) => {
         const { idValid, exists, } = resp.data;
         if (resp.error) {
@@ -116,6 +121,7 @@ class NewProfileForm extends Component {
             akashaIdExists: exists
         });
     }
+
     _validateAkashaId = (akashaId) => {
         const serverChannel = window.Channel.server.registry.profileExists;
         const clientChannel = window.Channel.client.registry.profileExists;
@@ -130,6 +136,7 @@ class NewProfileForm extends Component {
         }
         serverChannel.send({ akashaId });
     }
+
     _onValidate = field => (err) => {
         if (err) {
             this.setState({
@@ -142,7 +149,7 @@ class NewProfileForm extends Component {
         }
         // validation passed
         if (field === 'akashaId') {
-            this._validateAkashaId(this.state.akashaId);
+            this._validateAkashaId(this.props.tempProfile.get('akashaId'));
         }
     }
 
@@ -156,6 +163,7 @@ class NewProfileForm extends Component {
             }
             return this.props.validate(this._onValidate(field));
         };
+
     _getErrorMessages = (field, index, sub) => {
         const { getValidationMessages } = this.props;
         if (this.showErrorOnFields.includes(field) && !this.isSubmitting) {
@@ -185,42 +193,24 @@ class NewProfileForm extends Component {
         }
         return null;
     }
+
     _handleCancel = () => {
         const { onCancel } = this.props;
         if (typeof onCancel === 'function') {
             onCancel();
         }
     }
-    _submitData = (additionalData) => {
-        const { onSubmit } = this.props;
-        const {
-          firstName,
-          lastName,
-          akashaId,
-          password,
-          about,
-          links,
-          crypto } = this.state;
-        onSubmit({
-            firstName,
-            lastName,
-            akashaId,
-            password: new TextEncoder('utf-8').encode(password),
-            about,
-            links,
-            crypto,
-            ...additionalData
-        });
-    }
+
     _handleSubmit = (ev) => {
         ev.preventDefault();
-        const { expandOptionalDetails } = this.props;
+        const { expandOptionalDetails, tempProfile, onSubmit } = this.props;
         const { optDetails } = this.state;
 
         this.props.validate((err) => {
             if (err) {
                 this.showErrorOnFields = this.showErrorOnFields.concat(Object.keys(err));
                 this.forceUpdate();
+                console.error(err);
                 return;
             }
             this.isSubmitting = true;
@@ -232,21 +222,24 @@ class NewProfileForm extends Component {
                         if (uint8arr) {
                             avatar = uint8arr;
                         }
-                        this._submitData({
-                            avatar,
-                            backgroundImage,
-                        });
+                        onSubmit(
+                          tempProfile.withMutations(profile =>
+                              profile
+                                .set('backgroundImage', backgroundImage)
+                                .set('avatar', avatar))
+                        );
                     });
-                } else {
-                    this._submitData();
                 }
+            } else {
+                onSubmit(tempProfile);
             }
         });
     }
+
     render () {
         const { intl, muiTheme, expandOptionalDetails, style, isUpdate } = this.props;
         const { firstName, lastName, akashaId, password, password2,
-          optDetails, about, links, crypto, formHasErrors } = this.state;
+          optDetails, about, links, crypto, formHasErrors } = this.props.tempProfile;
         const { formatMessage } = intl;
         return (
           <div
@@ -282,38 +275,42 @@ class NewProfileForm extends Component {
               </div>
               {!isUpdate &&
                 <div className="col-xs-12">
-                  <TextField
-                    fullWidth
-                    floatingLabelText={formatMessage(formMessages.akashaId)}
-                    value={akashaId}
-                    onChange={this._handleFieldChange('akashaId')}
-                    onBlur={this._validateField('akashaId')}
-                    errorText={this._getAkashaIdErrors()}
-                  />
+                  <div className="row">
+                    <div className="col-xs-12">
+                      <TextField
+                        fullWidth
+                        floatingLabelText={formatMessage(formMessages.akashaId)}
+                        value={akashaId}
+                        onChange={this._handleFieldChange('akashaId')}
+                        onBlur={this._validateField('akashaId')}
+                        errorText={this._getAkashaIdErrors()}
+                      />
+                    </div>
+                    <div className="col-xs-12">
+                      <TextField
+                        fullWidth
+                        type="password"
+                        floatingLabelText={formatMessage(formMessages.passphrase)}
+                        value={password}
+                        onChange={this._handleFieldChange('password')}
+                        onBlur={this._validateField('password')}
+                        errorText={this._getErrorMessages('password')}
+                      />
+                    </div>
+                    <div className="col-xs-12">
+                      <TextField
+                        fullWidth
+                        type="password"
+                        floatingLabelText={formatMessage(formMessages.passphraseVerify)}
+                        value={password2}
+                        onChange={this._handleFieldChange('password2')}
+                        onBlur={this._validateField('password2')}
+                        errorText={this._getErrorMessages('password2')}
+                      />
+                    </div>
+                  </div>
                 </div>
               }
-              <div className="col-xs-12">
-                <TextField
-                  fullWidth
-                  type="password"
-                  floatingLabelText={formatMessage(formMessages.passphrase)}
-                  value={password}
-                  onChange={this._handleFieldChange('password')}
-                  onBlur={this._validateField('password')}
-                  errorText={this._getErrorMessages('password')}
-                />
-              </div>
-              <div className="col-xs-12">
-                <TextField
-                  fullWidth
-                  type="password"
-                  floatingLabelText={formatMessage(formMessages.passphraseVerify)}
-                  value={password2}
-                  onChange={this._handleFieldChange('password2')}
-                  onBlur={this._validateField('password2')}
-                  errorText={this._getErrorMessages('password2')}
-                />
-              </div>
               {!expandOptionalDetails &&
                 <Checkbox
                   label={intl.formatMessage(profileMessages.optionalDetailsLabel)}
@@ -377,13 +374,13 @@ class NewProfileForm extends Component {
                   </div>
                   <div className="col-xs-12">
                     {links.map((link, index) =>
-                      <div key={link.id} className="row">
+                      <div key={`${index + 1}`} className="row">
                         <div className="col-xs-10">
                           <TextField
-                            autoFocus={(links.length - 1) === index}
+                            autoFocus={(links.size - 1) === index}
                             fullWidth
                             floatingLabelText={intl.formatMessage(formMessages.title)}
-                            value={link.title}
+                            value={link.get('title')}
                             onChange={this._handleLinkChange('links', 'title', link.id)}
                             onBlur={this._validateField('links', index, 'title')}
                             errorText={this._getErrorMessages('links', index, 'title')}
@@ -391,8 +388,8 @@ class NewProfileForm extends Component {
                           <TextField
                             fullWidth
                             floatingLabelText={intl.formatMessage(formMessages.url)}
-                            hintText="https://twitter.com or email@example.com"
-                            value={link.url}
+                            hintText="https://twitter.com"
+                            value={link.get('url')}
                             onChange={this._handleLinkChange('links', 'url', link.id)}
                             onBlur={this._validateField('links', index, 'url')}
                             errorText={this._getErrorMessages('links', index, 'url')}
@@ -409,7 +406,7 @@ class NewProfileForm extends Component {
                             </SvgIcon>
                           </IconButton>
                         </div>
-                        {links.length > 1 &&
+                        {links.size > 1 &&
                           <Divider
                             style={{ marginTop: '16px' }}
                             className="col-xs-12"
@@ -435,13 +432,13 @@ class NewProfileForm extends Component {
                   </div>
                   <div className="col-xs-12">
                     {crypto.map((cryptoLink, index) =>
-                      <div key={cryptoLink.id} className="row">
+                      <div key={`${index + 1}`} className="row">
                         <div className="col-xs-10">
                           <TextField
-                            autoFocus={(crypto.length - 1) === index}
+                            autoFocus={(crypto.size - 1) === index}
                             fullWidth
                             floatingLabelText={intl.formatMessage(profileMessages.cryptoName)}
-                            value={cryptoLink.name}
+                            value={cryptoLink.get('name')}
                             onChange={this._handleLinkChange('crypto', 'name', cryptoLink.id)}
                             onBlur={this._validateField('crypto', index, 'name')}
                             errorText={this._getErrorMessages('crypto', index, 'name')}
@@ -449,7 +446,7 @@ class NewProfileForm extends Component {
                           <TextField
                             fullWidth
                             floatingLabelText={intl.formatMessage(profileMessages.cryptoAddress)}
-                            value={cryptoLink.address}
+                            value={cryptoLink.get('address')}
                             onChange={this._handleLinkChange('crypto', 'address', cryptoLink.id)}
                             onBlur={this._validateField('crypto', index, 'address')}
                             errorText={this._getErrorMessages('crypto', index, 'address')}
@@ -466,7 +463,7 @@ class NewProfileForm extends Component {
                             </SvgIcon>
                           </IconButton>
                         </div>
-                        {crypto.length > 1 &&
+                        {crypto.size > 1 &&
                           <Divider
                             style={{ marginTop: '16px' }}
                             className="col-xs-12"
@@ -506,7 +503,6 @@ class NewProfileForm extends Component {
                 key="submit"
                 label={intl.formatMessage(generalMessages.submit)}
                 type="submit"
-                disabled={formHasErrors}
                 onClick={formHasErrors ? () => {} : this._handleSubmit}
                 style={{ marginLeft: 8 }}
                 primary
@@ -518,16 +514,18 @@ class NewProfileForm extends Component {
 }
 
 NewProfileForm.propTypes = {
-    intl: PropTypes.shape(),
-    muiTheme: PropTypes.shape(),
     expandOptionalDetails: PropTypes.bool,
-    isUpdate: PropTypes.bool,
-    validate: PropTypes.func,
     getValidationMessages: PropTypes.func,
-    onSubmit: PropTypes.func,
+    intl: PropTypes.shape(),
+    isUpdate: PropTypes.bool,
+    muiTheme: PropTypes.shape(),
     onCancel: PropTypes.func,
-    style: PropTypes.shape(),
+    onSubmit: PropTypes.func,
+    onProfileUpdate: PropTypes.func.isRequired,
     onTermsShow: PropTypes.func,
+    validate: PropTypes.func,
+    style: PropTypes.shape(),
+    tempProfile: PropTypes.shape()
 };
 
 const validationHOC = validation(strategy());

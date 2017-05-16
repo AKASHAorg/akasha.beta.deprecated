@@ -1,6 +1,8 @@
 import * as types from '../constants';
 import { action } from './helpers';
 
+export const tempProfilePublishUpdate = data => action(types.TEMP_PROFILE_PUBLISH_UPDATE, { data });
+
 export const tempProfileAbortSuccess = data => action(types.TEMP_PROFILE_ABORT_SUCCESS, { data });
 export const tempProfileAbort = data => action(types.TEMP_PROFILE_ABORT, { data });
 
@@ -10,9 +12,13 @@ export const tempProfileCreate = data => action(types.TEMP_PROFILE_CREATE, { dat
 export const tempProfileCreateSuccess = data => action(types.TEMP_PROFILE_CREATE_SUCCESS, { data });
 export const tempProfileCreateError = error => action(types.TEMP_PROFILE_CREATE_ERROR, { error });
 
+export const setTempProfile = data => action(types.SET_TEMP_PROFILE, { data });
+
 export const tempProfileDelete = data => action(types.TEMP_PROFILE_DELETE, { data });
 export const tempProfileDeleteSuccess = () => action(types.TEMP_PROFILE_DELETE_SUCCESS);
 export const tempProfileDeleteError = error => action(types.TEMP_PROFILE_DELETE_ERROR, { error });
+
+export const tempProfileUpdate = data => action(types.TEMP_PROFILE_UPDATE, { data });
 
 export const tempProfileGet = () => action(types.TEMP_PROFILE_GET);
 export const tempProfileGetSuccess = data => action(types.TEMP_PROFILE_GET_SUCCESS, { data });

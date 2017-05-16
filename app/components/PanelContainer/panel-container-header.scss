@@ -1,10 +1,17 @@
 .root {
     position: absolute;
     top: 0;
-    left: 0;
-    right: 0;
+    left: 8px;
+    right: 8px;
     padding: 12px 24px;
     margin: 0;
     z-index: 10;
     transition: height 0.118s ease-in-out;
+}
+.title {
+    margin-bottom: 0;
+    margin-top: 0;
+}
+.subtitle {
+
 }

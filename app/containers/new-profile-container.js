@@ -18,10 +18,14 @@ const NewProfileContainer = props =>
     onSubmit={submitForm(props)}
     onCancel={cancelForm(props)}
     onTermsShow={props.showTerms}
+    onProfileUpdate={props.tempProfileUpdate}
+    tempProfile={props.tempProfile}
   />;
 
 NewProfileContainer.propTypes = {
-    showTerms: PropTypes.func
+    showTerms: PropTypes.func,
+    tempProfileUpdate: PropTypes.func,
+    tempProfile: PropTypes.shape()
 };
 
 function mapStateToProps (state) {

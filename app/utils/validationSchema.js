@@ -16,8 +16,8 @@ const nameRegExp = XRegExp('^(?:[\\pL]+(?:[\\pL\\p{Common}])*?)+$');
  *  - trimmed
  * @param {Object} intl
  */
-export const getProfileSchema = intl =>
-    Joi.object().keys({
+export const getProfileSchema = (intl, options) => {
+    const baseSchema = Joi.object().keys({
         firstName: Joi
            .string()
            .required()
@@ -56,60 +56,6 @@ export const getProfileSchema = intl =>
                    }
                }
            }),
-        akashaId: Joi
-           .string()
-           .trim()
-           .required()
-           .lowercase()
-           .min(2)
-           .max(32)
-           .label(intl.formatMessage(formMessages.akashaId))
-           .options({
-               language: {
-                   any: {
-                       required: `{{key}} ${intl.formatMessage(validationMessages.required)}`,
-                       empty: `{{key}} ${intl.formatMessage(validationMessages.required)}`
-                   },
-                   string: {
-                       required: `{{key}} ${intl.formatMessage(validationMessages.required)}`,
-                       min: `{{key}} ${intl.formatMessage(validationMessages.min, { min: 2 })}`,
-                       max: `{{key}} ${intl.formatMessage(validationMessages.max, { max: 32 })}`,
-                       lowercase: `{{key}} ${intl.formatMessage(validationMessages.lowercase)}`,
-                       regex: {
-                           base: `{{key}} ${intl.formatMessage(validationMessages.invalidCharacters)}`,
-                       }
-                   }
-               }
-           }),
-        password: Joi
-           .string()
-           .required()
-           .min(8)
-           .label(intl.formatMessage(formMessages.passphrase))
-           .options({
-               language: {
-                   any: {
-                       required: `{{key}} ${intl.formatMessage(validationMessages.required)}`,
-                   },
-                   string: {
-                       min: `{{key}} ${intl.formatMessage(validationMessages.min, { min: 2 })}`,
-                   }
-               }
-           }),
-        password2: Joi
-           .string()
-           .min(8)
-           .required()
-           .valid(Joi.ref('password'))
-           .label(intl.formatMessage(formMessages.passphraseVerify))
-           .options({
-               language: {
-                   any: {
-                       required: `{{key}} ${intl.formatMessage(validationMessages.required)}`,
-                       allowOnly: `{{key}} ${intl.formatMessage(validationMessages.passphraseNotMatching)}`
-                   }
-               }
-           }),
         about: Joi
             .string()
             .allow(''),
@@ -136,7 +82,6 @@ export const getProfileSchema = intl =>
                     url: Joi.alternatives().try(
                     Joi
                         .string()
-                        .uri()
                         .label('URL')
                         .options({
                             language: {
@@ -145,20 +90,6 @@ export const getProfileSchema = intl =>
                                 },
                                 string: {
                                     uri: `{{key}} ${intl.formatMessage(validationMessages.validAddress)}`
-                                }
-                            }
-                        }),
-                    Joi
-                        .string()
-                        .email()
-                        .label('URL')
-                        .options({
-                            language: {
-                                any: {
-                                    empty: `{{key}} ${intl.formatMessage(validationMessages.required)}`,
-                                },
-                                string: {
-                                    email: `{{key}} ${intl.formatMessage(validationMessages.validAddress)}`
                                 }
                             }
                         })
@@ -172,80 +103,99 @@ export const getProfileSchema = intl =>
                 }
             }),
         crypto: Joi
-                    .array()
-                    .items(
-                        Joi
-                            .object()
-                            .keys({
-                                id: Joi.number(),
-                                name: Joi
-                                    .string()
-                                    .label('Name')
-                                    .options({
-                                        language: {
-                                            any: {
-                                                empty: `{{key}} ${intl.formatMessage(validationMessages.required)}`,
-                                            }
-                                        }
-                                    }),
-                                address: Joi
-                                    .string()
-                                    .label('Address')
-                                    .options({
-                                        language: {
-                                            any: {
-                                                empty: `{{key}} ${intl.formatMessage(validationMessages.required)}`,
-                                            }
-                                        }
-                                    })
+            .array()
+            .items(
+                Joi
+                    .object()
+                    .keys({
+                        id: Joi.number(),
+                        name: Joi
+                            .string()
+                            .label('Name')
+                            .options({
+                                language: {
+                                    any: {
+                                        empty: `{{key}} ${intl.formatMessage(validationMessages.required)}`,
+                                    }
+                                }
+                            }),
+                        address: Joi
+                            .string()
+                            .label('Address')
+                            .options({
+                                language: {
+                                    any: {
+                                        empty: `{{key}} ${intl.formatMessage(validationMessages.required)}`,
+                                    }
+                                }
                             })
-                    )
-                    .options({
-                        language: {
-                            array: {
-                                includesOne: '{{reason}}'
+                    })
+            )
+            .options({
+                language: {
+                    array: {
+                        includesOne: '{{reason}}'
+                    }
+                }
+            })
+    });
+    if (options && !options.isUpdate) {
+        return baseSchema.keys({
+            akashaId: Joi
+                .string()
+                .trim()
+                .required()
+                .lowercase()
+                .min(2)
+                .max(32)
+                .label(intl.formatMessage(formMessages.akashaId))
+                .options({
+                    language: {
+                        any: {
+                            required: `{{key}} ${intl.formatMessage(validationMessages.required)}`,
+                            empty: `{{key}} ${intl.formatMessage(validationMessages.required)}`
+                        },
+                        string: {
+                            required: `{{key}} ${intl.formatMessage(validationMessages.required)}`,
+                            min: `{{key}} ${intl.formatMessage(validationMessages.min, { min: 2 })}`,
+                            max: `{{key}} ${intl.formatMessage(validationMessages.max, { max: 32 })}`,
+                            lowercase: `{{key}} ${intl.formatMessage(validationMessages.lowercase)}`,
+                            regex: {
+                                base: `{{key}} ${intl.formatMessage(validationMessages.invalidCharacters)}`,
                             }
                         }
-                    })
-    });
-
-// class UserValidation {
-//     constructor (intl) {
-//         this.intl = intl;
-//     }
-
-//     getSchema () {
-//         const { formatMessage } = this.intl;
-//         const regExp = XRegExp('^(?:[\\pL]+(?:[\\pL\\p{Common}])*?)+$');
-//         return strategy.createSchema({
-//             firstName: ['required', 'min:3', 'max:32', `regex:${regExp}`],
-//             lastName: ['max:32', `regex:${regExp}`],
-//             /**
-//              * regex: /^(?:[a-zA-Z0-9]+(?:.(?!$))?)+$/
-//              *  - allow alphanumeric
-//              *  - allow dots inside word
-//              * akashaId matches [ab.c, a.bc, abcd, abcdef...(32 chars)]
-//              * akashaId do not match [abc, .abc, abc., ..ab, ab.., etc]
-//              */
-//             akashaId: ['required', 'min:4', 'max:32'],
-//             password: 'required|min:8',
-//             password2: 'required|same:password'
-//         }, {
-//             required: formatMessage(validationMessages.required),
-//             min: formatMessage(validationMessages.min),
-//             max: formatMessage(validationMessages.max),
-//             regex: formatMessage(validationMessages.invalidCharacters),
-//             'same.password2': formatMessage(validationMessages.passphraseNotMatching),
-//         }, (validator) => {
-//             validator.setAttributeNames({
-//                 firstName: formatMessage(formMessages.firstName),
-//                 lastName: formatMessage(formMessages.lastName),
-//                 akashaId: formatMessage(formMessages.akashaId),
-//                 password: formatMessage(formMessages.passphrase),
-//                 password2: formatMessage(formMessages.passphraseVerify)
-//             });
-//         });
-//     }
-// }
-
-// export { UserValidation };
+                    }
+                }),
+            password: Joi
+                .string()
+                .required()
+                .min(8)
+                .label(intl.formatMessage(formMessages.passphrase))
+                .options({
+                    language: {
+                        any: {
+                            required: `{{key}} ${intl.formatMessage(validationMessages.required)}`,
+                        },
+                        string: {
+                            min: `{{key}} ${intl.formatMessage(validationMessages.min, { min: 2 })}`,
+                        }
+                    }
+                }),
+            password2: Joi
+                .string()
+                .min(8)
+                .required()
+                .valid(Joi.ref('password'))
+                .label(intl.formatMessage(formMessages.passphraseVerify))
+                .options({
+                    language: {
+                        any: {
+                            required: `{{key}} ${intl.formatMessage(validationMessages.required)}`,
+                            allowOnly: `{{key}} ${intl.formatMessage(validationMessages.passphraseNotMatching)}`
+                        }
+                    }
+                })
+        });
+    }
+    return baseSchema;
+};
