@@ -62,7 +62,7 @@ class IpfsIPC extends IpfsEmitter {
         this.registerListener(
             channels.server.ipfs.stopService,
             (event: IpcMainEvent, data: {}) => {
-                IpfsConnector.getInstance().stop();
+                IpfsConnector.getInstance().stop().then(() => null);
             }
         );
         return this;
