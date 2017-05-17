@@ -1,15 +1,6 @@
-import { createCipher, createDecipher, randomBytes, Decipher, Cipher } from 'crypto';
+import { Cipher, createCipher, createDecipher, Decipher, randomBytes } from 'crypto';
 import { GethConnector, gethHelper } from '@akashaproject/geth-connector';
-import {
-    addHexPrefix,
-    fromRpcSig,
-    ecrecover,
-    toBuffer,
-    bufferToHex,
-    pubToAddress,
-    unpad,
-    hashPersonalMessage
-} from 'ethereumjs-util';
+import { addHexPrefix, bufferToHex, ecrecover, fromRpcSig, hashPersonalMessage, pubToAddress, toBuffer, unpad } from 'ethereumjs-util';
 import { constructed as contracts } from '../../contracts/index';
 import * as Promise from 'bluebird';
 
@@ -137,7 +128,7 @@ export class Auth {
                         this._task = setTimeout(() => this._flushSession(), 1000 * 60 * timer);
                         return { token: addHexPrefix(clientToken.toString('hex')), expiration, account: acc };
                     });
-            })
+            });
     }
 
     public logout() {

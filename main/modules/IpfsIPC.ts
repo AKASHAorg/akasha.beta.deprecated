@@ -59,7 +59,8 @@ class IpfsIPC extends ModuleEmitter {
                                     .downloadManager
                                     .deleteBin()
                                     .delay(1000)
-                                    .then(() => IpfsConnector.getInstance().start().then(() => {}));
+                                    .then(() => IpfsConnector.getInstance().start().then(() => {
+                                    }));
                             });
                         }
                         return IpfsConnector.getInstance()

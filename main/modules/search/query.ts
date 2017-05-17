@@ -1,7 +1,7 @@
 import * as Promise from 'bluebird';
 import { GethConnector } from '@akashaproject/geth-connector';
 import { whisperIdentity } from '../chat/post';
-import { SEARCH_REQUEST, SEARCH_PROVIDER, generalSettings } from '../../config/settings';
+import { generalSettings, SEARCH_PROVIDER, SEARCH_REQUEST } from '../../config/settings';
 import getEntry from '../entry/get-entry';
 import { slice } from 'ramda';
 import { mixed } from '../models/records';

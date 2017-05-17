@@ -2,7 +2,7 @@ import * as Promise from 'bluebird';
 import settings from './settings';
 import { GethConnector } from '@akashaproject/geth-connector';
 import { constructed as contracts } from '../../contracts/index';
-import { generalSettings, BASE_URL } from '../../config/settings';
+import { BASE_URL, generalSettings } from '../../config/settings';
 import { getShortProfile } from '../profile/ipfs';
 import { stripHexPrefix } from 'ethereumjs-util';
 

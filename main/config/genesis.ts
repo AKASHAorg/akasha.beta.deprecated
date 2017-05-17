@@ -1,5 +1,5 @@
 import { app } from 'electron';
-import { writeFileSync, open } from 'fs';
+import { open, writeFileSync } from 'fs';
 import { join } from 'path';
 const writeGenesisFile = () => {
     const genesis = {
