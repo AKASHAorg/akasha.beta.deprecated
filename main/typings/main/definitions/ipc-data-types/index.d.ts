@@ -2,6 +2,7 @@
 
 interface MainResponse {
     data: any;
+    services?: any;
     request: any;
     error?: {
         message: string,
@@ -114,13 +115,13 @@ interface IpfsSetConfigRequest {
         gateway?: number,
         api?: number,
         swarm?: number
-    }
+    };
     restart?: boolean;
 }
 interface IpfsSetConfigResponse extends MainResponse {
     data: {
         set: boolean
-    }
+    };
 }
 
 interface IpfsGetPortsResponse {

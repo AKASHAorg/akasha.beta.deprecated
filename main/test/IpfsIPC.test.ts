@@ -1,7 +1,7 @@
 import { ipcMain } from 'electron';
 import { initLogger, ipfsChannel } from './helpers';
 import { expect } from 'chai';
-import channel from '../lib/channels';
+import channel from '../channels';
 
 describe('IpfsIPC', function () {
     this.timeout(120000);

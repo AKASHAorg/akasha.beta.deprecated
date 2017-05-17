@@ -1,7 +1,7 @@
 import { ipcMain } from 'electron';
-import RegistryIPC from '../lib/ipc/RegistryIPC';
+import RegistryIPC from '../modules/RegistryIPC';
 import { expect } from 'chai';
-import channel from '../lib/channels';
+import channel from '../channels';
 import * as helpers from './helpers';
 
 class RegistryIPCtest extends RegistryIPC {

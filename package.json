@@ -27,9 +27,9 @@
     "package-mac": "npm run build && build --mac",
     "package-all": "npm run build && build -mwl",
     "release": "standard-version",
-    "rebuild-v8-debug": "node-pre-gyp --target=1.6.7 --runtime=electron --fallback-to-build --directory node_modules/v8-debug/ --dist-url=https://atom.io/download/atom-shell reinstall",
-    "rebuild-v8-profiler": "node-pre-gyp --target=1.6.7 --runtime=electron --fallback-to-build --directory node_modules/v8-profiler/ --dist-url=https://atom.io/download/atom-shell reinstall",
-    "rebuild": "npm run rebuild-v8-debug && npm run rebuild-v8-profiler && electron-rebuild -v 1.6.7 -f"
+    "rebuild-v8-debug": "node-pre-gyp --target=1.6.8 --runtime=electron --fallback-to-build --directory node_modules/v8-debug/ --dist-url=https://atom.io/download/atom-shell reinstall",
+    "rebuild-v8-profiler": "node-pre-gyp --target=1.6.8 --runtime=electron --fallback-to-build --directory node_modules/v8-profiler/ --dist-url=https://atom.io/download/atom-shell reinstall",
+    "rebuild": "npm run rebuild-v8-debug && npm run rebuild-v8-profiler && electron-rebuild -v 1.6.8 -f"
   },
   "betterScripts": {
     "start": {
@@ -83,7 +83,7 @@
   "homepage": "https://github.com/AkashaProject/node-app#readme",
   "devDependencies": {
     "@types/archiver": "1.3.2",
-    "@types/bluebird": "3.5.3",
+    "@types/bluebird": "3.5.4",
     "@types/chai": "3.5.2",
     "@types/electron": "1.4.37",
     "@types/electron-window-state": "2.0.28",
@@ -125,7 +125,7 @@
     "dexie": "1.5.1",
     "draft-js": "0.10.1",
     "draft-js-export-html": "0.5.4",
-    "electron": "1.6.7",
+    "electron": "1.6.8",
     "electron-builder": "17.8.0",
     "electron-mocha": "3.4.0",
     "electron-rebuild": "1.5.11",
@@ -134,7 +134,7 @@
     "eslint-config-airbnb": "15.0.1",
     "eslint-plugin-babel": "4.1.1",
     "eslint-plugin-import": "2.2.0",
-    "eslint-plugin-jsx-a11y": "5.0.1",
+    "eslint-plugin-jsx-a11y": "5.0.3",
     "eslint-plugin-react": "7.0.1",
     "ethereumjs-testrpc": "3.0.5",
     "express": "4.15.2",
@@ -185,9 +185,9 @@
     "redux-devtools": "3.4.0",
     "redux-devtools-dock-monitor": "1.1.2",
     "redux-devtools-log-monitor": "1.3.0",
-    "redux-logger": "3.0.1",
+    "redux-logger": "3.0.3",
     "redux-saga": "0.15.3",
-    "redux-saga-tester": "1.0.242",
+    "redux-saga-tester": "1.0.243",
     "redux-thunk": "2.2.0",
     "rimraf": "2.6.1",
     "sass-loader": "6.0.5",
@@ -230,7 +230,7 @@
     "npm": ">=3.x"
   },
   "engines": {
-    "electron": "1.6.7"
+    "electron": "1.6.8"
   },
   "build": {
     "appId": "com.electron.akasha",

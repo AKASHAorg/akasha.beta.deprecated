@@ -1,7 +1,7 @@
 import { ipcMain } from 'electron';
 import { gethChannel, initLogger } from './helpers';
 import { expect } from 'chai';
-import channel from '../lib/channels';
+import channel from '../channels';
 
 
 describe('GethIPC', function () {

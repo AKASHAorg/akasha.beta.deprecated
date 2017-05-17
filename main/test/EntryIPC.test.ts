@@ -1,7 +1,7 @@
 import { ipcMain } from 'electron';
-import EntryIPC from '../lib/ipc/EntryIPC';
+import EntryIPC from '../modules/EntryIPC';
 import { expect } from 'chai';
-import channel from '../lib/channels';
+import channel from '../channels';
 import * as helpers from './helpers';
 import entryContent from './fixtures/entryContent';
 
