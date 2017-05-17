@@ -1,7 +1,7 @@
 import { ipcMain } from 'electron';
 import { authChannel, checkSynced, initLogger, mockedAddress, pwd, startServices, stopServices } from './helpers';
 import { expect } from 'chai';
-import channel from '../lib/channels';
+import channel from '../channels';
 import { setTimeout } from 'timers';
 
 describe('AuthIPC', function () {

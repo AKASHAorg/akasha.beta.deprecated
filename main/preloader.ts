@@ -1,5 +1,5 @@
 // import { SpellCheckHandler, ContextMenuListener, ContextMenuBuilder } from 'electron-spellchecker';
-import Channel from './lib/channels';
+import Channel from './channels';
 import { ApiListener, ApiRequest } from './ipcPreloader';
 // Linux: libxtst-dev, libx11-dev, libxkbfile-dev
 function injectApi() {

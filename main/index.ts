@@ -3,11 +3,11 @@ import { app, BrowserWindow, crashReporter, shell } from 'electron';
 import { GethConnector } from '@akashaproject/geth-connector';
 import { IpfsConnector } from '@akashaproject/ipfs-connector';
 import { resolve } from 'path';
-import { initModules } from './lib/ipc/index';
-import feed from './lib/ipc/modules/notifications/feed';
-import fetch from './lib/ipc/modules/chat/fetch';
+import { initModules } from './init-modules';
+import feed from './modules/notifications/feed';
+import fetch from './modules/chat/fetch';
 import { initMenu } from './menu';
-import Logger from './lib/ipc/Logger';
+import Logger from './modules/Logger';
 import updater from './check-version';
 
 const windowStateKeeper = require('electron-window-state');

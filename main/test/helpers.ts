@@ -1,11 +1,11 @@
-import Applogger from '../lib/ipc/Logger';
-import GethIPC from '../lib/ipc/GethIPC';
-import IpfsIPC from '../lib/ipc/IpfsIPC';
-import TxIPC from '../lib/ipc/TxIPC';
+import Applogger from '../modules/Logger';
+import GethIPC from '../modules/GethIPC';
+import IpfsIPC from '../modules/IpfsIPC';
+import TxIPC from '../modules/TxIPC';
 import { ipcMain } from 'electron';
 import { expect } from 'chai';
-import channel from '../lib/channels';
-import AuthIPC from '../lib/ipc/AuthIPC';
+import channel from '../channels';
+import AuthIPC from '../modules/AuthIPC';
 
 class AuthIPCtest extends AuthIPC {
     public callTest: Map<string, any> = new Map();
@@ -75,7 +75,7 @@ export const startServices = (done) => {
         if (injected.data.data.started) {
             running.push(1);
             if (running.indexOf(1) !== -1 && running.indexOf(2) !== -1) {
-                //console.dir(injected, {depth: null, colors: true});
+                // console.dir(injected, {depth: null, colors: true});
                 done();
             }
         }

@@ -1,7 +1,7 @@
 import { ipcMain } from 'electron';
-import TagsIPC from '../lib/ipc/TagsIPC';
+import TagsIPC from '../modules/TagsIPC';
 import { expect } from 'chai';
-import channel from '../lib/channels';
+import channel from '../channels';
 import * as helpers from './helpers';
 
 class TagsIPCtest extends TagsIPC {
