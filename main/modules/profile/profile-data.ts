@@ -1,7 +1,7 @@
 import * as Promise from 'bluebird';
 import { constructed as contracts } from '../../contracts/index';
-import { resolveProfile, getShortProfile } from './ipfs';
-import { generalSettings, BASE_URL, SHORT_WAIT_TIME, FULL_WAIT_TIME } from '../../config/settings';
+import { getShortProfile, resolveProfile } from './ipfs';
+import { BASE_URL, FULL_WAIT_TIME, generalSettings, SHORT_WAIT_TIME } from '../../config/settings';
 import followingCount from './following-count';
 import followersCount from './followers-count';
 import entryCountProfile from '../entry/entry-count-profile';

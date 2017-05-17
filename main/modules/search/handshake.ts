@@ -3,11 +3,11 @@ import { equals } from 'ramda';
 import { GethConnector } from '@akashaproject/geth-connector';
 import {
     generalSettings,
-    SEARCH_PROVIDER,
+    HANDSHAKE_DONE,
     HANDSHAKE_REQUEST,
     HANDSHAKE_RESPONSE,
-    HANDSHAKE_DONE,
-    handshakeTimeout
+    handshakeTimeout,
+    SEARCH_PROVIDER
 } from '../../config/settings';
 import { randomBytesAsync } from '../auth/Auth';
 import { whisperIdentity } from '../chat/post';

@@ -1,6 +1,6 @@
 /// <reference path="../typings/main.d.ts" />
 import ModuleEmitter from '../event/ModuleEmitter';
-import { GethConnector, CONSTANTS } from '@akashaproject/geth-connector';
+import { CONSTANTS, GethConnector } from '@akashaproject/geth-connector';
 import { join } from 'path';
 import { app } from 'electron';
 import { BOOTNODE, GETH_LOGGER } from '../config/settings';
