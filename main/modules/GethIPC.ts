@@ -7,7 +7,7 @@ import { BOOTNODE, GETH_LOGGER } from '../config/settings';
 import Logger from './Logger';
 import gethModule from './geth';
 import channels from '../channels';
-import { gethResponse } from '../event/responses';
+import { mainResponse } from '../event/responses';
 import { constructed } from '../contracts/index';
 const peers = require('../config/peers.json');
 
@@ -52,7 +52,7 @@ class GethIPC extends ModuleEmitter {
     private _download() {
         GethConnector.getInstance().on(
             CONSTANTS.DOWNLOADING_BINARY, () => {
-                this.fireEvent(channels.client.geth.startService, gethResponse({ downloading: true }, {}));
+                this.fireEvent(channels.client.geth.startService, mainResponse({ downloading: true }, {}));
             }
         );
         return this;
@@ -60,13 +60,13 @@ class GethIPC extends ModuleEmitter {
 
     /**
      * Forward @event GethConnector#STARTING
-     * @returns {GethEmitter}
+     * @returns {GethIPC}
      * @private
      */
     private _starting() {
         GethConnector.getInstance().on(
             CONSTANTS.STARTING, () => {
-                this.fireEvent(channels.client.geth.startService, gethResponse({ starting: true }, {}));
+                this.fireEvent(channels.client.geth.startService, mainResponse({ starting: true }, {}));
             }
         );
         return this;
@@ -74,19 +74,19 @@ class GethIPC extends ModuleEmitter {
 
     /**
      * Forward @event GethConnector#STARTED
-     * @returns {GethEmitter}
+     * @returns {GethIPC}
      * @private
      */
     private _started() {
         GethConnector.getInstance().on(
             CONSTANTS.STARTED, () => {
-                this.fireEvent(channels.client.geth.startService, gethResponse({ started: true }, {}));
+                this.fireEvent(channels.client.geth.startService, mainResponse({ started: true }, {}));
             }
         );
 
         GethConnector.getInstance().on(
             CONSTANTS.IPC_CONNECTED, () => {
-                this.fireEvent(channels.client.geth.startService, gethResponse({}, {}));
+                this.fireEvent(channels.client.geth.startService, mainResponse({ ipc: true }, {}));
                 // inject web3 instance
                 constructed.init(GethConnector.getInstance().web3);
                 // add static peers
@@ -100,13 +100,13 @@ class GethIPC extends ModuleEmitter {
 
     /**
      * Forward @event GethConnector#STOPPED
-     * @returns {GethEmitter}
+     * @returns {GethIPC}
      * @private
      */
     private _stopped() {
         GethConnector.getInstance().on(
             CONSTANTS.STOPPED, () => {
-                this.fireEvent(channels.client.geth.stopService, gethResponse({ stopped: true }, {}));
+                this.fireEvent(channels.client.geth.stopService, mainResponse({ stopped: true }, {}));
             }
         );
         return this;
@@ -114,14 +114,14 @@ class GethIPC extends ModuleEmitter {
 
     /**
      * Forward @event GethConnector#FATAL
-     * @returns {GethEmitter}
+     * @returns {GethIPC}
      * @private
      */
     private _fatal() {
         GethConnector.getInstance().on(
             CONSTANTS.FATAL, (message: string) => {
                 this.fireEvent(channels.client.geth.startService,
-                    gethResponse({}, { message, fatal: true })
+                    mainResponse({ error: message }, {})
                 );
             }
         );
@@ -130,14 +130,14 @@ class GethIPC extends ModuleEmitter {
 
     /**
      * Forward @event GethConnector#ERROR
-     * @returns {GethEmitter}
+     * @returns {GethIPC}
      * @private
      */
     private _error() {
         GethConnector.getInstance().on(
             CONSTANTS.ERROR, (message: string) => {
                 this.fireEvent(channels.client.geth.startService,
-                    gethResponse({}, { message })
+                    mainResponse({ error: message }, {})
                 );
             }
         );
@@ -146,21 +146,21 @@ class GethIPC extends ModuleEmitter {
 
     /**
      * Notify when upgrading geth version
-     * @returns {GethEmitter}
+     * @returns {GethIPC}
      * @private
      */
     private _upgrading() {
         GethConnector.getInstance().once(
             CONSTANTS.UPDATING_BINARY, (message: string) => {
                 this.fireEvent(channels.client.geth.startService,
-                    gethResponse({ upgrading: true, message }, {})
+                    mainResponse({ upgrading: true, message }, {})
                 );
             }
         );
         GethConnector.getInstance().once(
             CONSTANTS.BINARY_CORRUPTED, (message: string) => {
                 this.fireEvent(channels.client.geth.startService,
-                    gethResponse({}, { message })
+                    mainResponse({ error: message }, {})
                 );
             }
         );

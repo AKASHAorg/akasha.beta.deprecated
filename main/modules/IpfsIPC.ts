@@ -6,7 +6,7 @@ import { IPFS_LOGGER, IPFS_PEER_ID } from '../config/settings';
 import { app } from 'electron';
 import ipfsModule from './ipfs';
 import channels from '../channels';
-import { ipfsResponse } from '../event/responses';
+import { mainResponse } from '../event/responses';
 import WebContents = Electron.WebContents;
 
 class IpfsIPC extends ModuleEmitter {
@@ -40,7 +40,7 @@ class IpfsIPC extends ModuleEmitter {
         IpfsConnector.getInstance().once(
             ipfsEvents.DOWNLOAD_STARTED,
             () => {
-                this.fireEvent(channels.client.ipfs.startService, ipfsResponse({ downloading: true }, {}));
+                this.fireEvent(channels.client.ipfs.startService, mainResponse({ downloading: true }, {}));
             }
         );
         return this;
@@ -71,7 +71,7 @@ class IpfsIPC extends ModuleEmitter {
                                 if (err) {
                                     console.log('add ipfs peer err ', err);
                                 }
-                                this.fireEvent(channels.client.ipfs.startService, ipfsResponse({ started: true }, {}));
+                                this.fireEvent(channels.client.ipfs.startService, mainResponse({ started: true }, {}));
                             });
                     });
             }
@@ -83,7 +83,7 @@ class IpfsIPC extends ModuleEmitter {
         IpfsConnector.getInstance().on(
             ipfsEvents.SERVICE_STOPPED,
             () => {
-                this.fireEvent(channels.client.ipfs.stopService, ipfsResponse({ stopped: true }, {}));
+                this.fireEvent(channels.client.ipfs.stopService, mainResponse({ stopped: true }, {}));
             }
         );
         return this;
@@ -95,7 +95,7 @@ class IpfsIPC extends ModuleEmitter {
             (err: Error) => {
                 this.fireEvent(
                     channels.client.ipfs.startService,
-                    ipfsResponse({}, { message: err.message, fatal: true })
+                    mainResponse({ error: err }, {})
                 );
             }
         );
@@ -108,7 +108,7 @@ class IpfsIPC extends ModuleEmitter {
             (err: Error) => {
                 this.fireEvent(
                     channels.client.ipfs.startService,
-                    ipfsResponse({}, { message: err.message, fatal: true })
+                    mainResponse({ error: err }, {})
                 );
             }
         );
@@ -121,7 +121,7 @@ class IpfsIPC extends ModuleEmitter {
             (message: string) => {
                 this.fireEvent(
                     channels.client.ipfs.startService,
-                    ipfsResponse({}, { message })
+                    mainResponse({ error: message }, {})
                 );
             });
         return this;
