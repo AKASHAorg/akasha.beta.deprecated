@@ -7,24 +7,27 @@ import { initModules } from './init-modules';
 import feed from './modules/notifications/feed';
 import fetch from './modules/chat/fetch';
 import { initMenu } from './menu';
-import Logger from './modules/Logger';
 import updater from './check-version';
+import * as Promise from 'bluebird';
 
 const windowStateKeeper = require('electron-window-state');
 
 let modules;
+const shutDown = Promise.coroutine(function*() {
+    yield feed.execute({ stop: true });
+    yield fetch.execute({ stop: true });
+    yield GethConnector.getInstance().stop();
+    yield IpfsConnector.getInstance().stop();
+    return true;
+});
+
 const stopServices = () => {
-    feed.execute({ stop: true }).then(() => null);
-    fetch.execute({ stop: true }).then(() => null);
     if (modules) {
         modules.flushAll();
     }
-    GethConnector.getInstance().stop().then(() => null);
-    IpfsConnector.getInstance().stop().then(() => null);
-    setTimeout(() => {
-        process.exit(0);
-    }, 1200);
+    shutDown().delay(800).then(() => process.exit(0));
 };
+
 export function bootstrapApp() {
     let mainWindow = null;
     const viewHtml = resolve(__dirname, '..');
@@ -59,7 +62,6 @@ export function bootstrapApp() {
 
     app.on('ready', () => {
         modules = initModules();
-        Logger.getInstance();
         let mainWindowState = windowStateKeeper({
             defaultWidth: 1280,
             defaultHeight: 720
@@ -75,9 +77,9 @@ export function bootstrapApp() {
             show: false,
             webPreferences: {
                 // nodeIntegration: false,
-                preload: resolve(__dirname, 'preloader.js')
+                preload: resolve(__dirname, 'preloader.js'),
+                scrollBounce: true
             }
-
         });
 
         mainWindowState.manage(mainWindow);
@@ -90,28 +92,24 @@ export function bootstrapApp() {
 
         mainWindow.once('close', (ev: Event) => {
             ev.preventDefault();
-            feed.execute({ stop: true }).then(() => null);
-            fetch.execute({ stop: true }).then(() => null);
             modules.flushAll();
-            GethConnector.getInstance().stop().then(() => null);
-            IpfsConnector.getInstance().stop().then(() => null);
-            setTimeout(() => app.quit(), 1200);
+            shutDown().delay(800).then(() => app.quit());
         });
         initMenu(mainWindow);
         mainWindow.webContents.once('did-finish-load', () => {
             modules.logger.registerLogger('APP');
-            modules.initListeners(mainWindow.webContents);
             updater.setWindow(mainWindow);
         });
-
         mainWindow.once('ready-to-show', () => {
-            mainWindow.show();
-            mainWindow.focus();
+            modules.initListeners(mainWindow.webContents).then(() => {
+                mainWindow.show();
+                mainWindow.focus();
+            });
         });
 
         mainWindow.webContents.on('crashed', (e) => {
-            stopServices();
             modules.logger.getLogger('APP').warn(`APP CRASHED ${e.message} ${e.stack} ${e}`);
+            stopServices();
         });
 
         // prevent href link being opened inside app
