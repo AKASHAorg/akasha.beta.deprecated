@@ -99,5 +99,4 @@ export const toggleGethDetailsModal = () => action(types.TOGGLE_GETH_DETAILS_MOD
 export const toggleIpfsDetailsModal = () => action(types.TOGGLE_IPFS_DETAILS_MODAL);
 export const updateAction = (actionId, updates) =>
     action(types.UPDATE_ACTION, { actionId, updates });
-
 export { AppActions };

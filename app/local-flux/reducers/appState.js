@@ -84,6 +84,17 @@ const appState = createReducer(initialState, {
         }));
     },
 
+    [types.ADD_PROFILE_UPDATE_ACTION]: (state, { payload }) => {
+        id += 1;
+        return state.setIn(['pendingActions', id], new PendingActionRecord({
+            id,
+            type: actionTypes.updateProfile,
+            payload: fromJS(payload),
+            gas: 2000000,
+            status: 'checkAuth'
+        }));
+    },
+
     [types.APP_READY]: state =>
         state.set('appReady', true),
 
@@ -145,6 +156,10 @@ const appState = createReducer(initialState, {
 
     [types.SHOW_WEIGHT_CONFIRM_DIALOG]: (state, { actionId }) =>
         state.set('weightConfirmDialog', actionId),
+    [types.SHOW_DIALOG]: (state, { dialogType, data }) => {
+        console.log(dialogType, data);
+        return state.set(dialogType, data);
+    },
 
     [types.UPDATE_ACTION]: (state, { actionId, updates }) => {
         const newAction = state.getIn(['pendingActions', actionId]).mergeDeep(updates);

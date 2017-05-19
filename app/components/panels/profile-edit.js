@@ -27,14 +27,9 @@ class EditProfile extends PureComponent {
         }
     }
     _handleSubmit = (profile) => {
-        const { tempProfilePublishUpdate, loggedProfile, showLoginDialog } = this.props;
-        console.log('start updating', profile, loggedProfile);
-        const isLoginTokenValid = Date.parse(loggedProfile.get('expiration')) > Date.now() + 2000;
-        if (isLoginTokenValid) {
-            tempProfilePublishUpdate(profile);
-        } else {
-            showLoginDialog(loggedProfile.get('profile'));
-        }
+        const { tempProfilePublishUpdate } = this.props;
+        console.log('start updating', profile);
+        tempProfilePublishUpdate(profile);
     }
     _handleAbort = () => {
         const { history } = this.props;
