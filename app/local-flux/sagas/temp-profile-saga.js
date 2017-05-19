@@ -136,8 +136,13 @@ function* tempProfileLoginListener (tempProfile) {
  * Request main to publish temp profile
  */
 function* tempProfilePublishRequest (tempProfile) {
-    const channel = Channel.server.registry.registerProfile;
+    let channel = Channel.server.registry.registerProfile;
+    let manager = Channel.client.registry.manager;
     const { akashaId, address, password, status, ...others } = tempProfile;
+    if (status.get('isUpdate')) {
+        channel = Channel.server.profile.updateProfileData;
+        manager = Channel.client.profile.manager;
+    }
     const tempProfileStatus = yield select(state => state.tempProfileState.get('status'));
     const profileToPublish = {
         akashaId,
@@ -145,7 +150,7 @@ function* tempProfilePublishRequest (tempProfile) {
         ipfs: others
     };
     yield put(tempProfileActions.tempProfilePublish(tempProfile));
-    yield call(enableChannel, channel, Channel.client.registry.manager);
+    yield call(enableChannel, channel, manager);
     yield call([channel, channel.send], profileToPublish);
 }
 /**
@@ -279,13 +284,6 @@ function* watchTempProfileRequest () {
     }
 }
 
-function* watchTempProfilePublishUpdate () {
-    while (true) {
-        const action = yield take(types.TEMP_PROFILE_PUBLISH_UPDATE);
-        yield fork(tempProfilePublishUpdate, action.data);
-    }
-}
-
 export function* watchTempProfileActions () {
     yield fork(watchProfileCreate);
     yield fork(watchEthAddressCreate);
@@ -296,6 +294,4 @@ export function* watchTempProfileActions () {
     yield fork(watchTempProfilePublish);
     yield fork(watchPublishTxMined);
     yield fork(watchTempProfileRemove);
-    // start update
-    yield fork(watchTempProfilePublishUpdate);
 }

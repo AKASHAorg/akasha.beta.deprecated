@@ -25,7 +25,11 @@ class HomeContainer extends Component {
                   <Dashboard columns={columns} activeDashboard={activeDashboard} />
                 </PageContent>
               </div>
-              <Route path="/dashboard/:entryId" component={EntryPage} />
+              {/**
+               * a more complete path would be:
+               * <Route path="/dashboard/(@:akashaId)/(:slug)?-:entryId(\\d+)" component={EntryPage} />
+               */}
+              <Route path="/dashboard/:entryId(\d+)" component={EntryPage} />
               <Runners />
             </div>
           </DataLoader>
