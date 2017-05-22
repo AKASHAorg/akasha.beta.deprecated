@@ -26,7 +26,8 @@ const execute = Promise.coroutine(function*(data: GethStartRequest) {
         });
     }
     // start daemon
-    return GethConnector.getInstance().start(data);
+    yield GethConnector.getInstance().start(data);
+    return {};
 });
 
 export default { execute, name: 'startService' };
