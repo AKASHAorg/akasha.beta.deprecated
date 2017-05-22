@@ -8,7 +8,7 @@ const execute = Promise.coroutine(function*(data: IpfsStartRequest) {
     if (data.storagePath) {
         IpfsConnector.getInstance().setIpfsFolder(data.storagePath);
     }
-    return IpfsConnector.getInstance().start();
+    return IpfsConnector.getInstance().start().then(() => {});
 });
 
 export default { execute, name: 'startService' };

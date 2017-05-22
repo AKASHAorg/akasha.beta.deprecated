@@ -26,7 +26,7 @@ class GethIPC extends ModuleEmitter {
         GethConnector.getInstance().setOptions({
             bootnodes: BOOTNODE,
             datadir: join(GethConnector.getDefaultDatadir(), 'akasha-alpha'),
-            ipcpath: join(GethConnector.getDefaultDatadir(), 'akasha-alpha', 'geth.ipc'),
+            ipcpath: join(GethConnector.getDefaultDatadir().replace(':', '\\'), 'akasha-alpha', 'geth.ipc'),
             networkid: 511337,
             shh: ''
         });
