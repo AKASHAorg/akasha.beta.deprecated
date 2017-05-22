@@ -14,7 +14,7 @@ export const mainResponse = (rawData: any, request: any): MainResponse => {
                 ipfs: IpfsConnector.getInstance().serviceStatus,
                 geth: GethConnector.getInstance().serviceStatus
             },
-            error: { message: rawData.error.message }, request
+            error: rawData.error, request
         };
     }
     return {
