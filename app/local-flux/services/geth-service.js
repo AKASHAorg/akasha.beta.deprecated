@@ -103,7 +103,7 @@ class GethService extends BaseService {
      *      downloading?: boolean;
      *      starting?: boolean;
      *      api: boolean;
-     *      spawned: boolean;
+     *      process: boolean;
      *      started?: boolean;
      *      stopped?: boolean;
      *  }

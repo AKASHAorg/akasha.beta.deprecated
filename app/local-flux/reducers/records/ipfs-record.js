@@ -3,9 +3,12 @@ import { Record, OrderedSet } from 'immutable';
 const IpfsStatus = Record({
     downloading: null,
     api: false,
-    spawned: false,
+    process: false,
+    starting: null,
     started: null,
     stopped: null,
+    upgrading: null,
+    version: null,
 });
 
 const IpfsFlags = Record({
@@ -22,5 +25,4 @@ const IpfsRecord = Record({
     status: new IpfsStatus(),
 });
 
-export default IpfsRecord;
-export { IpfsStatus };
+export { IpfsRecord, IpfsStatus };

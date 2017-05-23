@@ -50,7 +50,7 @@ class IpfsService extends BaseService {
      * @response data = {
      *      downloading?: boolean;
      *      api: boolean;
-     *      spawned: boolean;
+     *      process: boolean;
      *      started?: boolean;
      *      stopped?: boolean;
      * }

@@ -95,20 +95,21 @@ class GethDetailsModal extends Component {
     }
 
     getActions () {
-        const { gethBusyState, intl, toggleGethDetailsModal } = this.props;
+        const { gethBusyState, gethStatus, intl, toggleGethDetailsModal } = this.props;
+        const toggleDisabled = gethBusyState || gethStatus.get('downloading') || gethStatus.get('upgrading'); 
         return (<div style={{ display: 'flex' }}>
           <div style={{ flex: '0 0 auto', height: '36px', display: 'flex', alignItems: 'center' }}>
             <Toggle
+              disabled={toggleDisabled}            
               label={this.isGethOn() ?
                   intl.formatMessage(generalMessages.gethServiceOn) :
                   intl.formatMessage(generalMessages.gethServiceOff)
               }
               labelPosition="right"
               labelStyle={{ textAlign: 'left', width: 'calc(100% - 44px)' }}
-              toggled={this.isGethOn()}
               onToggle={this.onToggle}
-              disabled={gethBusyState}
-              style={toggleStyle}
+              style={toggleStyle}              
+              toggled={this.isGethOn()}
             />
           </div>
           <div style={{ flex: '1 1 auto' }} >
@@ -117,8 +118,8 @@ class GethDetailsModal extends Component {
               onClick={toggleGethDetailsModal}
             />
             <FlatButton
+              disabled={!this.state.isGethFormDirty}            
               label={intl.formatMessage(generalMessages.save)}
-              disabled={!this.state.isGethFormDirty}
               onClick={this.saveOptions}
             />
           </div>
@@ -127,7 +128,7 @@ class GethDetailsModal extends Component {
 
     isGethOn = () => {
         const { gethStarting, gethStatus } = this.props;
-        return gethStatus.get('spawned') || gethStatus.get('starting') || gethStarting;
+        return gethStatus.get('process') || gethStatus.get('starting') || gethStarting;
     }
 
     selectTab = (tab) => {

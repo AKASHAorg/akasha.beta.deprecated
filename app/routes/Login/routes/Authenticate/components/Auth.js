@@ -20,7 +20,7 @@ class Auth extends Component {
         const { tempProfile, loginErrors, gethStatus, ipfsStatus, profileGetLocal } = nextProps;
         const oldIpfsStatus = this.props.ipfsStatus;
         const ipfsStatusChanged = (ipfsStatus.get('started') && !oldIpfsStatus.get('started'))
-            || (ipfsStatus.get('spawned') && !oldIpfsStatus.get('spawned'));
+            || (ipfsStatus.get('process') && !oldIpfsStatus.get('process'));
         const gethStatusChanged = gethStatus.get('api') && !this.props.gethStatus.get('api');
 
         if (gethStatusChanged || ipfsStatusChanged) {

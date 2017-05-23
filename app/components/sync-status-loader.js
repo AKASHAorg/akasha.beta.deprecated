@@ -20,7 +20,7 @@ class SyncStatusLoader extends Component {
         );
     }
 
-    renderCounter (current, total, message) {
+    renderCounter = (current, total, message) => {
         if (!current || !total) {
             return null;
         }
@@ -34,9 +34,9 @@ class SyncStatusLoader extends Component {
             <strong>{current}</strong>/{total}
           </div>
         );
-    }
+    };
 
-    renderProgressBody () {
+    renderProgressBody = () => { // eslint-disable-line complexity
         const { gethStarting, gethStatus, gethSyncStatus, intl, ipfsStatus,
             syncActionId } = this.props;
         const synchronizingMessage = intl.formatMessage(setupMessages.synchronizing);
@@ -65,12 +65,14 @@ class SyncStatusLoader extends Component {
             return this.renderMessage(setupMessages.syncCompleted);
         } else if (gethStatus.get('upgrading')) {
             return this.renderMessage(setupMessages.upgradingGeth);
-        } else if (gethStatus.get('starting') || gethStarting) {
-            return this.renderMessage(setupMessages.startingGeth);
         } else if (gethStatus.get('downloading')) {
             return this.renderMessage(setupMessages.downloadingGeth);
+        } else if (gethStatus.get('starting') || gethStarting) {
+            return this.renderMessage(setupMessages.startingGeth);
         } else if (ipfsStatus.get('downloading')) {
             return this.renderMessage(setupMessages.downloadingIpfs);
+        } else if (ipfsStatus.get('upgrading')) {
+            return this.renderMessage(setupMessages.upgradingIpfs);
         } else if (syncActionId === 2 || syncActionId === 3) {
             return (
               <div>
@@ -83,11 +85,11 @@ class SyncStatusLoader extends Component {
             );
         } else if (gethStatus.get('api')) {
             return this.renderMessage(setupMessages.findingPeers);
-        } else if (!gethStatus.get('api') && !ipfsStatus.get('spawned')) {
+        } else if (!gethStatus.get('process') && !ipfsStatus.get('process')) {
             return this.renderMessage(setupMessages.launchingServices);
         }
         return this.renderMessage(setupMessages.waitingForServices);
-    }
+    };
 
     render () {
         const { gethSyncStatus, syncActionId } = this.props;

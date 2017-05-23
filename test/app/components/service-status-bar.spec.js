@@ -81,7 +81,7 @@ describe('ServiceStatusBar tests', () => {
             props.gethStarting = true;
             expect(mountComp().instance().getGethState()).to.equal(ServiceState.starting,
                 'geth state is not "starting"');
-            props.gethStatus = props.gethStatus.merge({ spawned: true });
+            props.gethStatus = props.gethStatus.merge({ process: true });
             props.gethStarting = false;
             expect(mountComp().instance().getGethState()).to.equal(ServiceState.starting,
                 'geth state is not "starting"');
@@ -122,11 +122,11 @@ describe('ServiceStatusBar tests', () => {
                 'ipfs state is not "starting"');
         });
         it('ipfs status should not be "starting"', () => {
-            props.ipfsStatus = props.gethStatus.merge({ spawned: true });
+            props.ipfsStatus = props.gethStatus.merge({ process: true });
             props.ipfsStarting = true;
             expect(mountComp().instance().getIpfsState()).to.not.equal(ServiceState.starting,
                 'ipfs state is "starting"');
-            props.gethStatus = props.gethStatus.merge({ downloading: true, spawned: false });
+            props.gethStatus = props.gethStatus.merge({ downloading: true, process: false });
             expect(mountComp().instance().getIpfsState()).to.not.equal(ServiceState.starting,
                 'ipfs state is "starting"');
         });
@@ -141,10 +141,10 @@ describe('ServiceStatusBar tests', () => {
                 'ipfs state is "downloading"');
         });
         it('ipfs status should be "started"', () => {
-            props.ipfsStatus = props.ipfsStatus.merge({ spawned: true });
+            props.ipfsStatus = props.ipfsStatus.merge({ process: true });
             expect(mountComp().instance().getIpfsState()).to.equal(ServiceState.started,
                 'ipfs state is not "started"');
-            props.ipfsStatus = props.ipfsStatus.merge({ spawned: false, started: true });
+            props.ipfsStatus = props.ipfsStatus.merge({ process: false, started: true });
             expect(mountComp().instance().getIpfsState()).to.equal(ServiceState.started,
                 'ipfs state is not "started"');
         });

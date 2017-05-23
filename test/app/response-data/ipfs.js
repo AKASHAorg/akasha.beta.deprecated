@@ -1,7 +1,7 @@
 export const ipfsStatus = {
     downloading: null,
     api: false,
-    spawned: false,
+    process: false,
     started: null,
     stopped: null
 };
