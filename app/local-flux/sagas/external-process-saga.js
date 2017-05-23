@@ -119,9 +119,9 @@ function* watchGethStopChannel () {
         if (resp.error) {
             yield put(actions.gethStopError(resp.error));
         } else {
-            yield put(actions.gethStopSuccess(resp.data));
+            yield put(actions.gethStopSuccess(resp.data, resp.services));
         }
-        if (resp.error || resp.data.spawned === false) {
+        if (resp.error || resp.services.geth.process === false) {
             yield fork(gethResetBusyState);
         }
     }
@@ -133,7 +133,7 @@ function* watchIpfsStopChannel () {
         if (resp.error) {
             yield put(actions.ipfsStopError(resp.error));
         } else {
-            yield put(actions.ipfsStopSuccess(resp.data));
+            yield put(actions.ipfsStopSuccess(resp.data, resp.services));
             yield put(actions.ipfsResetPorts());
         }
         yield fork(ipfsResetBusyState);
@@ -192,7 +192,7 @@ function* watchIpfsGetPortsChannel () {
         if (resp.error) {
             yield put(actions.ipfsGetPortsError(resp.error));
         } else {
-            yield put(actions.ipfsGetPortsSuccess(resp.data));
+            yield put(actions.ipfsGetPortsSuccess(resp.data, resp.services));
         }
     }
 }
@@ -228,9 +228,9 @@ function* watchGethStartChannel () {
         if (resp.error) {
             yield put(actions.gethStartError(resp.data, resp.error));
         } else {
-            yield put(actions.gethStartSuccess(resp.data));
+            yield put(actions.gethStartSuccess(resp.data, resp.services));
         }
-        if (resp.error || resp.data.spawned || resp.data.started) {
+        if (resp.error || resp.services.geth.process || resp.data.started) {
             yield fork(gethResetBusyState);
         }
     }
@@ -242,8 +242,8 @@ function* watchIpfsStartChannel () {
         if (resp.error) {
             yield put(actions.ipfsStartError(resp.data, resp.error));
         } else {
-            yield put(actions.ipfsStartSuccess(resp.data));
-            if (resp.data.started || resp.data.spawned) {
+            yield put(actions.ipfsStartSuccess(resp.data, resp.services));
+            if ((resp.data.started || resp.services.ipfs.process) && !resp.data.upgrading) {
                 yield call(ipfsGetPorts);
             }
         }
@@ -257,7 +257,7 @@ function* watchGethGetStatusChannel () {
         if (resp.error) {
             yield put(actions.gethGetStatusError(resp.error));
         } else {
-            yield put(actions.gethGetStatusSuccess(resp.data));
+            yield put(actions.gethGetStatusSuccess(resp.data, resp.services));
         }
     }
 }
@@ -269,8 +269,8 @@ function* watchIpfsStatusChannel () {
         if (resp.error) {
             yield put(actions.ipfsGetStatusError(resp.error));
         } else {
-            yield put(actions.ipfsGetStatusSuccess(resp.data));
-            if (isFirstResponse && (resp.data.started || resp.data.spawned)) {
+            yield put(actions.ipfsGetStatusSuccess(resp.data, resp.services));
+            if (isFirstResponse && (resp.data.started || resp.services.ipfs.process)) {
                 yield call(ipfsGetPorts);
             }
         }
@@ -284,7 +284,7 @@ function* watchGethSyncStatusChannel () {
         if (resp.error) {
             yield put(actions.gethGetSyncStatusError(resp.error));
         } else {
-            yield put(actions.gethGetSyncStatusSuccess(resp.data));
+            yield put(actions.gethGetSyncStatusSuccess(resp.data, resp.services));
         }
     }
 }

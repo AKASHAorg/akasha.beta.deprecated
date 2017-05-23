@@ -184,7 +184,7 @@ describe('SyncStatusLoader tests', () => {
     });
     describe('with ipfs started and geth stopped', () => {
         it('should render default message (waiting for services)', () => {
-            props.ipfsStatus = props.ipfsStatus.merge({ spawned: true });
+            props.ipfsStatus = props.ipfsStatus.merge({ process: true });
             expect(mountComp().contains(intl.formatMessage(setupMessages.waitingForServices)))
                 .to.be.true;
         });

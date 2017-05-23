@@ -4,22 +4,22 @@ const GethStatus = Record({
     api: false,
     blockNr: null,
     downloading: null,
+    ipc: null,
     message: null,
-    spawned: false,
+    process: false,
     started: null,
     starting: null,
     stopped: null,
     upgrading: null,
+    version: null,
 });
 
 const GethSyncStatus = Record({
-    api: null,
     currentBlock: null,
     highestBlock: null,
     knownStates: null,
     peerCount: null,
     pulledStates: null,
-    spawned: null,
     startingBlock: null,
     synced: false
 });
@@ -46,5 +46,4 @@ const GethRecord = Record({
     syncStatus: new GethSyncStatus(),
 });
 
-export default GethRecord;
-export { GethStatus, GethSyncStatus, GethFlags };
+export { GethRecord, GethStatus, GethSyncStatus, GethFlags };

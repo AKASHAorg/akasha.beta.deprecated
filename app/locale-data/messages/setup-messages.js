@@ -170,6 +170,11 @@ const setupMessages = defineMessages({
         description: 'message shown when Geth is upgrading',
         defaultMessage: 'Upgrading Geth client...'
     },
+    upgradingIpfs: {
+        id: 'app.setup.upgradingIpfs',
+        description: 'message shown when IPFS is upgrading',
+        defaultMessage: 'Upgrading IPFS client...'
+    },
     processing: {
         id: 'app.setup.processing',
         description: 'message shown when processing blocks',

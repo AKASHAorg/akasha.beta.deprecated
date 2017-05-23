@@ -46,7 +46,7 @@ describe('external process saga', function test () {
         it('should dispatch GETH_START_SUCCESS', () => {
             sagaTester.dispatch(actions.gethStart());
             const clientChannel = global.Channel.client.geth.startService;
-            const resp = { data: { api: false, spawned: false, starting: true } };
+            const resp = { data: { api: false, process: false, starting: true } };
             clientChannel.triggerResponse(resp);
             expect(sagaTester.numCalled(types.GETH_START_SUCCESS)).to.equal(1,
                 'GETH_START_SUCCESS was not called once');
@@ -57,7 +57,7 @@ describe('external process saga', function test () {
         it('should not reset busy state', async () => {
             sagaTester.dispatch(actions.gethStart());
             const clientChannel = global.Channel.client.geth.startService;
-            const resp = { data: { api: false, spawned: false, starting: true } };
+            const resp = { data: { api: false, process: false, starting: true } };
             clientChannel.triggerResponse(resp);
             await Promise.race([sagaTester.waitFor(types.GETH_RESET_BUSY), timeout(30)]);
             expect(sagaTester.numCalled(types.GETH_RESET_BUSY)).to.equal(0,
@@ -66,7 +66,7 @@ describe('external process saga', function test () {
         it('should reset busy state', async () => {
             sagaTester.dispatch(actions.gethStart());
             const clientChannel = global.Channel.client.geth.startService;
-            const resp = { data: { api: true, spawned: true } };
+            const resp = { data: { api: true, process: true } };
             clientChannel.triggerResponse(resp);
             await sagaTester.waitFor(types.GETH_RESET_BUSY);
             expect(sagaTester.numCalled(types.GETH_RESET_BUSY)).to.equal(1,
@@ -75,7 +75,7 @@ describe('external process saga', function test () {
         it('should dispatch GETH_START_ERROR and GETH_RESET_BUSY', async () => {
             sagaTester.dispatch(actions.gethStart());
             const clientChannel = global.Channel.client.geth.startService;
-            const resp = { data: { spawned: false, stopped: true }, error: { message: '' } };
+            const resp = { data: { process: false, stopped: true }, error: { message: '' } };
             clientChannel.triggerResponse(resp);
             await sagaTester.waitFor(types.GETH_RESET_BUSY);
             expect(sagaTester.numCalled(types.GETH_START_SUCCESS)).to.equal(0,
@@ -111,7 +111,7 @@ describe('external process saga', function test () {
         it('should reset busy state', async () => {
             sagaTester.dispatch(actions.gethStop());
             const clientChannel = global.Channel.client.geth.stopService;
-            const resp = { data: { api: false, spawned: false, stopped: true } };
+            const resp = { data: { api: false, process: false, stopped: true } };
             clientChannel.triggerResponse(resp);
             await sagaTester.waitFor(types.GETH_RESET_BUSY);
             expect(sagaTester.numCalled(types.GETH_RESET_BUSY)).to.equal(1,
@@ -137,7 +137,7 @@ describe('external process saga', function test () {
         it('should dispatch GETH_GET_STATUS_SUCCESS', () => {
             sagaTester.dispatch(actions.gethGetStatus());
             const clientChannel = global.Channel.client.geth.status;
-            const resp = { data: { api: true, spawned: true } };
+            const resp = { data: { api: true, process: true } };
             clientChannel.triggerResponse(resp);
             expect(sagaTester.numCalled(types.GETH_GET_STATUS_SUCCESS)).to.equal(1,
                 'GETH_GET_STATUS_SUCCESS was not called once');
@@ -234,7 +234,7 @@ describe('external process saga', function test () {
         it('should dispatch IPFS_START_SUCCESS', async () => {
             sagaTester.dispatch(actions.ipfsStart());
             const clientChannel = global.Channel.client.ipfs.startService;
-            const resp = { data: { api: false, spawned: true, started: true } };
+            const resp = { data: { api: false, process: true, started: true } };
             clientChannel.triggerResponse(resp);
             expect(sagaTester.numCalled(types.IPFS_START_SUCCESS)).to.equal(1,
                 'IPFS_START_SUCCESS was not called once');
@@ -249,7 +249,7 @@ describe('external process saga', function test () {
         it('should reset busy state', async () => {
             sagaTester.dispatch(actions.ipfsStart());
             const clientChannel = global.Channel.client.ipfs.startService;
-            const resp = { data: { api: true, spawned: true } };
+            const resp = { data: { api: true, process: true } };
             clientChannel.triggerResponse(resp);
             await sagaTester.waitFor(types.IPFS_RESET_BUSY);
             expect(sagaTester.numCalled(types.IPFS_RESET_BUSY)).to.equal(1,
@@ -258,7 +258,7 @@ describe('external process saga', function test () {
         it('should request ipfs ports', async () => {
             sagaTester.dispatch(actions.ipfsStart());
             const clientChannel = global.Channel.client.ipfs.startService;
-            const resp = { data: { api: true, spawned: true } };
+            const resp = { data: { api: true, process: true } };
             clientChannel.triggerResponse(resp);
             expect(sagaTester.numCalled(types.IPFS_GET_PORTS)).to.equal(1,
                 'IPFS_GET_PORTS was not called once');
@@ -270,7 +270,7 @@ describe('external process saga', function test () {
         it('should not request ipfs ports', async () => {
             sagaTester.dispatch(actions.ipfsStart());
             const clientChannel = global.Channel.client.ipfs.startService;
-            const resp = { data: { api: false, spawned: false } };
+            const resp = { data: { api: false, process: false } };
             clientChannel.triggerResponse(resp);
             expect(sagaTester.numCalled(types.IPFS_GET_PORTS)).to.equal(0,
                 'IPFS_GET_PORTS was called');
@@ -280,7 +280,7 @@ describe('external process saga', function test () {
         it('should dispatch IPFS_START_ERROR and IPFS_RESET_BUSY', async () => {
             sagaTester.dispatch(actions.ipfsStart());
             const clientChannel = global.Channel.client.ipfs.startService;
-            const resp = { data: { spawned: false, stopped: true }, error: { message: '' } };
+            const resp = { data: { process: false, stopped: true }, error: { message: '' } };
             clientChannel.triggerResponse(resp);
             await sagaTester.waitFor(types.IPFS_RESET_BUSY);
             expect(sagaTester.numCalled(types.IPFS_START_SUCCESS)).to.equal(0,
@@ -298,7 +298,7 @@ describe('external process saga', function test () {
         it('should dispatch IPFS_STOP_SUCCESS', async () => {
             sagaTester.dispatch(actions.ipfsStop());
             const clientChannel = global.Channel.client.ipfs.stopService;
-            const resp = { data: { spawned: false, stopped: true } };
+            const resp = { data: { process: false, stopped: true } };
             clientChannel.triggerResponse(resp);
             expect(sagaTester.numCalled(types.IPFS_STOP_SUCCESS)).to.equal(1,
                 'IPFS_STOP_SUCCESS was not called once');
@@ -311,7 +311,7 @@ describe('external process saga', function test () {
         it('should reset ports', async () => {
             sagaTester.dispatch(actions.ipfsStop());
             const clientChannel = global.Channel.client.ipfs.stopService;
-            const resp = { data: { api: false, spawned: false, stopped: true } };
+            const resp = { data: { api: false, process: false, stopped: true } };
             clientChannel.triggerResponse(resp);
             expect(sagaTester.numCalled(types.IPFS_RESET_PORTS)).to.equal(1,
                 'IPFS_RESET_PORTS was not called once');
@@ -321,7 +321,7 @@ describe('external process saga', function test () {
         it('should reset busy state', async () => {
             sagaTester.dispatch(actions.ipfsStop());
             const clientChannel = global.Channel.client.ipfs.stopService;
-            const resp = { data: { api: false, spawned: false, stopped: true } };
+            const resp = { data: { api: false, process: false, stopped: true } };
             clientChannel.triggerResponse(resp);
             await sagaTester.waitFor(types.IPFS_RESET_BUSY);
             expect(sagaTester.numCalled(types.IPFS_RESET_BUSY)).to.equal(1,
@@ -352,7 +352,7 @@ describe('external process saga', function test () {
         it('should dispatch IPFS_GET_STATUS_SUCCESS and IPFS_GET_PORTS', () => {
             sagaTester.dispatch(actions.ipfsGetStatus());
             const clientChannel = global.Channel.client.ipfs.status;
-            const resp = { data: { api: true, spawned: true } };
+            const resp = { data: { api: true, process: true } };
             clientChannel.triggerResponse(resp);
             expect(sagaTester.numCalled(types.IPFS_GET_STATUS_SUCCESS)).to.equal(1,
                 'IPFS_GET_STATUS_SUCCESS was not called once');
@@ -362,7 +362,7 @@ describe('external process saga', function test () {
         it('should not dispatch IPFS_GET_PORTS second time', () => {
             sagaTester.dispatch(actions.ipfsGetStatus());
             const clientChannel = global.Channel.client.ipfs.status;
-            const resp = { data: { api: true, spawned: true } };
+            const resp = { data: { api: true, process: true } };
             clientChannel.triggerResponse(resp);
             expect(sagaTester.numCalled(types.IPFS_GET_PORTS)).to.equal(0,
                 'IPFS_GET_PORTS was called second time');
@@ -370,7 +370,7 @@ describe('external process saga', function test () {
         it('should dispatch IPFS_GET_STATUS_ERROR', () => {
             sagaTester.dispatch(actions.ipfsGetStatus());
             const clientChannel = global.Channel.client.ipfs.status;
-            const resp = { data: { spawned: false }, error: { message: '' } };
+            const resp = { data: { process: false }, error: { message: '' } };
             clientChannel.triggerResponse(resp);
             expect(sagaTester.numCalled(types.IPFS_GET_STATUS_SUCCESS)).to.equal(0,
                 'IPFS_GET_STATUS_SUCCESS was called');

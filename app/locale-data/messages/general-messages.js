@@ -285,5 +285,10 @@ const generalMessages = defineMessages({
         description: 'Update data',
         defaultMessage: 'Update'
     },
+    upgrading: {
+        id: 'app.general.upgrading',
+        description: 'Upgrading services',
+        defaultMessage: 'Upgrading'
+    }
 });
 export { generalMessages };

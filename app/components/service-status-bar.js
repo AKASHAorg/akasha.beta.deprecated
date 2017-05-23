@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
+import ReactTooltip from 'react-tooltip';
 import { SvgIcon, IconButton } from 'material-ui';
 import { StatusBarEthereum, StatusBarIpfs } from '../shared-components/svg';
 import serviceState from '../constants/serviceState';
@@ -30,6 +31,10 @@ const buttonStyle = {
 };
 
 class ServiceStatusBar extends Component {
+    componentDidMount () {
+        ReactTooltip.rebuild();
+    }
+
     getContainerStyle (state) {
         const { palette } = this.context.muiTheme;
         const style = Object.assign({}, containerStyle);
@@ -37,8 +42,9 @@ class ServiceStatusBar extends Component {
             case serviceState.stopped:
                 style.borderColor = palette.accent1Color;
                 break;
-            case serviceState.starting:
             case serviceState.downloading:
+            case serviceState.starting:
+            case serviceState.upgrading:
                 style.borderColor = palette.accent2Color;
                 break;
             case serviceState.started:
@@ -56,11 +62,13 @@ class ServiceStatusBar extends Component {
         const { ipfsStarting, ipfsStatus } = this.props;
         let ipfsState = serviceState.stopped;
 
-        if (ipfsStatus.get('spawned') || ipfsStatus.get('started')) {
-            ipfsState = serviceState.started;
-        } else if (ipfsStatus.get('downloading')) {
+        if (ipfsStatus.get('downloading')) {
             ipfsState = serviceState.downloading;
-        } else if (ipfsStarting) {
+        } else if (ipfsStatus.get('upgrading')) {
+            ipfsState = serviceState.upgrading;
+        } else if (ipfsStatus.get('started') || ipfsStatus.get('process')) {
+            ipfsState = serviceState.started;
+        } else if (ipfsStarting || ipfsStatus.get('starting')) {
             ipfsState = serviceState.starting;
         }
         return ipfsState;
@@ -70,11 +78,13 @@ class ServiceStatusBar extends Component {
         const { gethStarting, gethStatus } = this.props;
         let gethState = serviceState.stopped;
 
-        if (gethStatus.get('api') && !gethStatus.get('stopped')) {
-            gethState = serviceState.started;
-        } else if (gethStatus.get('downloading')) {
+        if (gethStatus.get('downloading')) {
             gethState = serviceState.downloading;
-        } else if (gethStarting || gethStatus.get('spawned') || gethStatus.get('starting')) {
+        } else if (gethStatus.get('upgrading')) {
+            gethState = serviceState.upgrading;
+        } else if (gethStatus.get('started') || gethStatus.get('process')) {
+            gethState = serviceState.started;
+        } else if (gethStarting || gethStatus.get('starting')) {
             gethState = serviceState.starting;
         }
         return gethState;
@@ -91,6 +101,8 @@ class ServiceStatusBar extends Component {
                 return intl.formatMessage(generalMessages.running);
             case serviceState.stopped:
                 return intl.formatMessage(generalMessages.stopped);
+            case serviceState.upgrading:
+                return intl.formatMessage(generalMessages.upgrading);
             default:
                 return intl.formatMessage(generalMessages.stopped);
         }
@@ -108,7 +120,7 @@ class ServiceStatusBar extends Component {
         };
         const gethState = this.getGethState();
         const ipfsState = this.getIpfsState();
-
+        console.log('ipfs state', ipfsState);
         return (
           <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
             <div style={this.getContainerStyle(gethState)}>
