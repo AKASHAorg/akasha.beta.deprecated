@@ -81,7 +81,6 @@ export const panelHide = () => action(types.PANEL_HIDE);
 // this should be removed once profile logout is implemented
 export const resetHomeReady = () => action(types.RESET_HOME_READY);
 
-export const setTimestamp = timestamp => action(types.SET_TIMESTAMP, { timestamp });
 export const showAuthDialog = actionId => action(types.SHOW_AUTH_DIALOG, { actionId });
 export const showLoginDialog = profileAddress =>
     action(types.SHOW_LOGIN_DIALOG, { profileAddress });

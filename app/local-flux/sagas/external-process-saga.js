@@ -4,6 +4,7 @@ import { actionChannels, enableChannel } from './helpers';
 import * as actions from '../actions/external-process-actions';
 import * as appActions from '../actions/app-actions';
 import * as types from '../constants';
+import { selectLastGethLog, selectLastIpfsLog } from '../selectors';
 
 const Channel = global.Channel;
 
@@ -140,8 +141,9 @@ function* watchIpfsStopChannel () {
 }
 
 function filterLogs (logs, timestamp) {
-    // merge errors and infos and sort them by timestamp in ascending order
-    const sortedLogs = logs
+    // filter out older logs and sort the remaining ones
+    const filtered = logs.filter(log => new Date(log.timestamp).getTime() >= timestamp);
+    const sortedLogs = filtered
         .sort((first, second) => {
             const firstTimestamp = new Date(first.timestamp).getTime();
             const secondTimestamp = new Date(second.timestamp).getTime();
@@ -152,18 +154,13 @@ function filterLogs (logs, timestamp) {
             }
             return 0;
         });
-    // find the index where the newer logs begin
-    const index = sortedLogs.findIndex(log => new Date(log.timestamp).getTime() >= timestamp);
-    if (index === -1) {
-        return [];
-    }
-    return sortedLogs.slice(index);
+    return sortedLogs;
 }
 
 function* watchGethLogsChannel () {
     while (true) {
         const resp = yield take(actionChannels.geth.logs);
-        const timestamp = yield select(state => state.appState.get('timestamp'));
+        const timestamp = yield select(selectLastGethLog);
         const logs = filterLogs([...resp.data.gethError, ...resp.data.gethInfo], timestamp);
         yield put(actions.gethGetLogsSuccess(logs));
     }
@@ -172,7 +169,7 @@ function* watchGethLogsChannel () {
 function* watchIpfsLogsChannel () {
     while (true) {
         const resp = yield take(actionChannels.ipfs.logs);
-        const timestamp = yield select(state => state.appState.get('timestamp'));
+        const timestamp = yield select(selectLastIpfsLog);
         const logs = filterLogs([...resp.data.ipfsError, ...resp.data.ipfsInfo], timestamp);
         yield put(actions.ipfsGetLogsSuccess(logs));
     }

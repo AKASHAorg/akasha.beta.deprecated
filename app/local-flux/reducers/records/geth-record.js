@@ -32,6 +32,7 @@ const GethFlags = Record({
 
 const GethRecord = Record({
     flags: new GethFlags(),
+    lastLogTimestamp: null,
     logs: new OrderedSet(),
     status: new GethStatus(),
     /*

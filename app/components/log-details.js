@@ -6,14 +6,13 @@ import { LogsList } from '../shared-components';
 import { PanelContainerFooter } from './';
 
 const LogDetails = (props) => {
-    const { gethLogs, gethStartLogger, gethStopLogger, history, intl, timestamp } = props;
+    const { gethLogs, gethStartLogger, gethStopLogger, history, intl } = props;
     return (
       <div style={{ width: '100%' }}>
         <LogsList
           logs={gethLogs}
           startLogger={gethStartLogger}
           stopLogger={gethStopLogger}
-          timestamp={timestamp}
         />
         <PanelContainerFooter
           leftActions={
@@ -32,7 +31,6 @@ LogDetails.propTypes = {
     gethStopLogger: PropTypes.func,
     history: PropTypes.shape(),
     intl: PropTypes.shape(),
-    timestamp: PropTypes.number,
 };
 
 export default LogDetails;

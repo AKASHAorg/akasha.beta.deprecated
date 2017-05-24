@@ -28,7 +28,6 @@ const AppRecord = Record({
     showLoginDialog: null,
     showReportModal: null,
     showTerms: false,
-    timestamp: 0,
     transferConfirmDialog: null,
     weightConfirmDialog: null,
 });
