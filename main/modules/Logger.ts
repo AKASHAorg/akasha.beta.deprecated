@@ -20,19 +20,22 @@ class AppLogger {
             throw new Error('Cannot construct singleton');
         }
         this.loggers = {};
-        const defaultPath = pathJoin(app.getPath('userData'), 'logs');
-        open(defaultPath, 'r', (err, fd) => {
-            if (err) {
-                if (err.code === 'ENOENT') {
-                    return this._buildPath(defaultPath);
+    }
+    public init() {
+        return new Promise((resolve, reject) => {
+            const defaultPath = pathJoin(app.getPath('userData'), 'logs');
+            open(defaultPath, 'r', (err, fd) => {
+                if (err) {
+                    if (err.code === 'ENOENT') {
+                        return resolve(this._buildPath(defaultPath));
+                    }
+                    return reject(err);
                 }
-                throw err;
-            }
-            this._setLogsFolder(defaultPath);
-            this.PATH_OK = true;
-            return this.PATH_OK;
+                this._setLogsFolder(defaultPath);
+                this.PATH_OK = true;
+                return resolve(this.PATH_OK);
+            });
         });
-
     }
 
     private _buildPath(path) {

@@ -35,8 +35,6 @@ function* launchActions () {
     // from local db
     yield fork(settingsSaga.getSettings);
 
-    // wait a few miliseconds in order for ipc channels to work properly
-    yield apply(reduxSaga, reduxSaga.delay, [400]);
     // from geth.options channel
     yield fork(externalProcSaga.gethGetOptions);
     // from ipfs.getConfig channel
