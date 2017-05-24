@@ -40,7 +40,6 @@ class GethIPC extends ModuleEmitter {
 
     public attachEmitters() {
         this._download()
-            ._error()
             ._fatal()
             ._starting()
             ._started()
@@ -120,22 +119,6 @@ class GethIPC extends ModuleEmitter {
     private _fatal() {
         GethConnector.getInstance().on(
             CONSTANTS.FATAL, (message: string) => {
-                this.fireEvent(channels.client.geth.startService,
-                    mainResponse({ error: message }, {})
-                );
-            }
-        );
-        return this;
-    }
-
-    /**
-     * Forward @event GethConnector#ERROR
-     * @returns {GethIPC}
-     * @private
-     */
-    private _error() {
-        GethConnector.getInstance().on(
-            CONSTANTS.ERROR, (message: string) => {
                 this.fireEvent(channels.client.geth.startService,
                     mainResponse({ error: message }, {})
                 );
