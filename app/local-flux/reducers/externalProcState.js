@@ -160,19 +160,31 @@ const eProcState = createReducer(initialState, {
             busyState: false
         }),
 
-    [types.GETH_GET_LOGS_SUCCESS]: (state, action) =>
-        state.mergeIn(['geth'], {
+    [types.GETH_GET_LOGS_SUCCESS]: (state, { data }) => {
+        if (!data.length) {
+            return state;
+        }
+        const timestamp = new Date(data[data.length - 1].timestamp).getTime();
+        return state.mergeIn(['geth'], {
+            lastLogTimestamp: timestamp,
             logs: state.getIn(['geth', 'logs'])
-                .union(action.data.map(log => new LogRecord(log)))
+                .union(data.map(log => new LogRecord(log)))
                 .takeLast(20)
-        }),
+        });
+    },
 
-    [types.IPFS_GET_LOGS_SUCCESS]: (state, action) =>
-        state.mergeIn(['ipfs'], {
+    [types.IPFS_GET_LOGS_SUCCESS]: (state, { data }) => {
+        if (!data.length) {
+            return state;
+        }
+        const timestamp = new Date(data[data.length - 1].timestamp).getTime();
+        return state.mergeIn(['ipfs'], {
+            lastLogTimestamp: timestamp,
             logs: state.getIn(['ipfs', 'logs'])
-                .union(action.data.map(log => new LogRecord(log)))
+                .union(data.map(log => new LogRecord(log)))
                 .takeLast(20)
-        }),
+        });
+    },
 
     [types.IPFS_SET_PORTS]: state =>
         state.mergeIn(['ipfs', 'flags'], {
@@ -187,6 +199,12 @@ const eProcState = createReducer(initialState, {
     [types.IPFS_SET_PORTS_ERROR]: state =>
         state.mergeIn(['ipfs', 'flags'], {
             settingPorts: false
+        }),
+
+    [types.SERVICES_SET_TIMESTAMP]: (state, { timestamp }) =>
+        state.merge({
+            geth: state.get('geth').set('lastLogTimestamp', timestamp),
+            ipfs: state.get('ipfs').set('lastLogTimestamp', timestamp)
         }),
 
 });

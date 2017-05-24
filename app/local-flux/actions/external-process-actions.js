@@ -37,6 +37,9 @@ export const gethResumeSync = () => action(types.GETH_RESUME_SYNC);
 export const gethStart = () => action(types.GETH_START);
 
 export const gethStartError = (data, error) => {
+    if (typeof error !== 'object') {
+        error = { message: error };
+    }
     error.code = 'GSE01';
     error.messageId = 'gethStart';
     return action(types.GETH_START_ERROR, { data, error });
@@ -114,3 +117,5 @@ export const ipfsStopError = (error) => {
 
 export const ipfsStopLogger = () => action(types.IPFS_STOP_LOGGER);
 export const ipfsStopSuccess = data => action(types.IPFS_STOP_SUCCESS, { data });
+export const servicesSetTimestamp = timestamp =>
+    action(types.SERVICES_SET_TIMESTAMP, { timestamp });

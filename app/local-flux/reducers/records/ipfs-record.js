@@ -16,9 +16,10 @@ const IpfsFlags = Record({
 });
 
 const IpfsRecord = Record({
-    status: new IpfsStatus(),
     flags: new IpfsFlags(),
+    lastLogTimestamp: null,
     logs: new OrderedSet(),
+    status: new IpfsStatus(),
 });
 
 export default IpfsRecord;

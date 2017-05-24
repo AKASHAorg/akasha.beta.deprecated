@@ -1,6 +1,7 @@
 import { apply, call, fork, put, select, takeEvery } from 'redux-saga/effects';
 import * as reduxSaga from 'redux-saga';
-import * as actions from '../actions/app-actions';
+import * as appActions from '../actions/app-actions';
+import * as eProcActions from '../actions/external-process-actions';
 import * as transactionActions from '../actions/transaction-actions';
 import { selectLoggedAkashaId } from '../selectors';
 import { createActionChannels } from './helpers';
@@ -30,7 +31,7 @@ function* registerListeners () {
 
 function* launchActions () {
     const timestamp = new Date().getTime();
-    yield put(actions.setTimestamp(timestamp));
+    yield put(eProcActions.servicesSetTimestamp(timestamp));
     // from local db
     yield fork(settingsSaga.getSettings);
 
@@ -60,13 +61,13 @@ function* launchHomeActions () {
 function* bootstrapApp () {
     // the appReady action will be dispatched after these actions will be called
     yield call(launchActions);
-    yield put(actions.appReady());
+    yield put(appActions.appReady());
 }
 
 function* bootstrapHome () {
     // launch the necessary actions for the home/dashboard component
     yield call(launchHomeActions);
-    yield put(actions.bootstrapHomeSuccess());
+    yield put(appActions.bootstrapHomeSuccess());
 }
 
 function* watchBootstrapHome () {

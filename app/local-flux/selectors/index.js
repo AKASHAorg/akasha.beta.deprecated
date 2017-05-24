@@ -67,6 +67,12 @@ export const selectIpfsStatus = state => state.externalProcState.getIn(['ipfs', 
 
 export const selectLastComment = state => state.commentsState.get('lastComm');
 
+export const selectLastGethLog = state =>
+    state.externalProcState.getIn(['geth', 'lastLogTimestamp']);
+
+export const selectLastIpfsLog = state =>
+    state.externalProcState.getIn(['ipfs', 'lastLogTimestamp']);
+
 export const selectLastStreamBlock = state => state.entryState.get('lastStreamBlock');
 
 export const selectLocalProfiles = state =>

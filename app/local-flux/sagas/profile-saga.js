@@ -55,6 +55,7 @@ export function* profileGetLogged () {
             return;
         }
         const profile = yield apply(profileService, profileService.profileGetLogged);
+        console.log('get logged profile', profile);
         yield put(actions.profileGetLoggedSuccess(profile));
         yield put(actions.profileGetBalance());
         if (profile && profile.profile) {
@@ -80,6 +81,7 @@ function* profileLogout () {
 
 function* profileSaveLogged (loggedProfile) {
     try {
+        console.log('save logged profile', loggedProfile);
         yield apply(profileService, profileService.profileSaveLogged, [loggedProfile]);
     } catch (error) {
         yield put(actions.profileSaveLoggedError(error));

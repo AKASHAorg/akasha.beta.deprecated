@@ -10,9 +10,6 @@ let id = 0;
 
 const appState = createReducer(initialState, {
 
-    [appTypes.SET_TIMESTAMP]: (state, action) =>
-        state.set('timestamp', action.timestamp),
-
     [appTypes.SHOW_NOTIFICATION]: (state, { notification }) => state.merge({
         notifications: state.get('notifications').push(new NotificationRecord(notification))
     }),
