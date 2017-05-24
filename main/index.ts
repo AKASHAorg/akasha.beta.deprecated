@@ -61,6 +61,7 @@ export function bootstrapApp() {
     }
 
     app.on('ready', () => {
+        console.time('mainProcess');
         modules = initModules();
         let mainWindowState = windowStateKeeper({
             defaultWidth: 1280,
@@ -83,49 +84,43 @@ export function bootstrapApp() {
         });
 
         mainWindowState.manage(mainWindow);
-
-        if (process.env.HOT) {
-            mainWindow.loadURL(`file://${viewHtml}/app/hot-dev-app.html`);
-        } else {
-            mainWindow.loadURL(`file://${viewHtml}/dist/app.html`);
-        }
-
-        mainWindow.once('close', (ev: Event) => {
-            ev.preventDefault();
-            modules.flushAll();
-            shutDown().delay(800).then(() => app.quit());
-        });
-        initMenu(mainWindow);
-        mainWindow.webContents.once('did-finish-load', () => {
-            modules.logger.registerLogger('APP');
-            updater.setWindow(mainWindow);
-        });
-        mainWindow.once('ready-to-show', () => {
-            modules.initListeners(mainWindow.webContents).then(() => {
+        modules.initListeners(mainWindow.webContents).then(() => {
+            console.timeEnd('mainProcess');
+            mainWindow.loadURL(process.env.HOT ? `file://${viewHtml}/app/hot-dev-app.html` : `file://${viewHtml}/dist/app.html`);
+            mainWindow.once('close', (ev: Event) => {
+                ev.preventDefault();
+                modules.flushAll();
+                shutDown().delay(800).then(() => app.quit());
+            });
+            initMenu(mainWindow);
+            mainWindow.webContents.once('did-finish-load', () => {
+                modules.logger.registerLogger('APP');
+                updater.setWindow(mainWindow);
+            });
+            mainWindow.once('ready-to-show', () => {
                 mainWindow.show();
                 mainWindow.focus();
             });
-        });
+            mainWindow.webContents.on('crashed', (e) => {
+                modules.logger.getLogger('APP').warn(`APP CRASHED ${e.message} ${e.stack} ${e}`);
+                stopServices();
+            });
 
-        mainWindow.webContents.on('crashed', (e) => {
-            modules.logger.getLogger('APP').warn(`APP CRASHED ${e.message} ${e.stack} ${e}`);
-            stopServices();
-        });
+            // prevent href link being opened inside app
+            const openDefault = (e, url) => {
+                e.preventDefault();
+                shell.openExternal(url);
+            };
 
-        // prevent href link being opened inside app
-        const openDefault = (e, url) => {
-            e.preventDefault();
-            shell.openExternal(url);
-        };
+            mainWindow.webContents.on('will-navigate', openDefault);
+            mainWindow.webContents.on('new-window', openDefault);
 
-        mainWindow.webContents.on('will-navigate', openDefault);
-        mainWindow.webContents.on('new-window', openDefault);
-
-        mainWindow.on('unresponsive', () => {
-            modules.logger.getLogger('APP').warn('APP is unresponsive');
+            mainWindow.on('unresponsive', () => {
+                modules.logger.getLogger('APP').warn('APP is unresponsive');
+            });
         });
         process.on('uncaughtException', (err: Error) => {
-            modules.logger.getLogger('APP').error(`${err.message} ${err.stack}`);
+            console.error(`uncaughtException ${err.message} ${err.stack}`);
         });
         process.on('warning', (warning) => {
             console.log(warning);
