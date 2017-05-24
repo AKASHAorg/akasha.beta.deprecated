@@ -14,6 +14,7 @@ class IpfsIPC extends ModuleEmitter {
         super();
         this.MODULE_NAME = 'ipfs';
         this.DEFAULT_MANAGED = ['startService', 'stopService', 'status', 'resolve'];
+        this.attachEmitters();
     }
 
     public initListeners(webContents: WebContents) {
@@ -28,6 +29,7 @@ class IpfsIPC extends ModuleEmitter {
 
     public attachEmitters() {
         this._download()
+            ._starting()
             ._catchCorrupted()
             ._catchFailed()
             ._catchError()
@@ -37,10 +39,20 @@ class IpfsIPC extends ModuleEmitter {
     }
 
     private _download() {
-        IpfsConnector.getInstance().once(
+        IpfsConnector.getInstance().on(
             ipfsEvents.DOWNLOAD_STARTED,
             () => {
                 this.fireEvent(channels.client.ipfs.startService, mainResponse({ downloading: true }, {}));
+            }
+        );
+        return this;
+    }
+
+    private _starting() {
+        IpfsConnector.getInstance().on(
+            ipfsEvents.SERVICE_STARTING,
+            () => {
+                this.fireEvent(channels.client.ipfs.startService, mainResponse({ starting: true }, {}));
             }
         );
         return this;
@@ -51,28 +63,14 @@ class IpfsIPC extends ModuleEmitter {
             ipfsEvents.SERVICE_STARTED,
             () => {
                 IpfsConnector.getInstance()
-                    .checkVersion()
-                    .then(isValid => {
-                        if (!isValid) {
-                            return IpfsConnector.getInstance().stop().delay(5000).then(() => {
-                                return IpfsConnector.getInstance()
-                                    .downloadManager
-                                    .deleteBin()
-                                    .delay(1000)
-                                    .then(() => IpfsConnector.getInstance().start().then(() => {
-                                    }));
-                            });
+                    .api
+                    .apiClient
+                    .bootstrap
+                    .add(IPFS_PEER_ID, (err) => {
+                        if (err) {
+                            console.log('add ipfs peer err ', err);
                         }
-                        return IpfsConnector.getInstance()
-                            .api
-                            .apiClient
-                            .bootstrap
-                            .add(IPFS_PEER_ID, (err, data) => {
-                                if (err) {
-                                    console.log('add ipfs peer err ', err);
-                                }
-                                this.fireEvent(channels.client.ipfs.startService, mainResponse({ started: true }, {}));
-                            });
+                        this.fireEvent(channels.client.ipfs.startService, mainResponse({ started: true }, {}));
                     });
             }
         );
@@ -90,6 +88,12 @@ class IpfsIPC extends ModuleEmitter {
     }
 
     private _catchCorrupted() {
+        IpfsConnector.getInstance().once(
+            ipfsEvents.UPGRADING_BINARY, (message: string) => {
+                this.fireEvent(channels.client.ipfs.startService,
+                    mainResponse({ upgrading: true, message }, {})
+                );
+            });
         IpfsConnector.getInstance().on(
             ipfsEvents.BINARY_CORRUPTED,
             (err: Error) => {
