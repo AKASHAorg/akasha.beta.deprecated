@@ -62,6 +62,7 @@ class IpfsIPC extends ModuleEmitter {
         IpfsConnector.getInstance().on(
             ipfsEvents.SERVICE_STARTED,
             () => {
+                this.fireEvent(channels.client.ipfs.startService, mainResponse({ started: true }, {}));
                 IpfsConnector.getInstance()
                     .api
                     .apiClient
@@ -70,7 +71,6 @@ class IpfsIPC extends ModuleEmitter {
                         if (err) {
                             console.log('add ipfs peer err ', err);
                         }
-                        this.fireEvent(channels.client.ipfs.startService, mainResponse({ started: true }, {}));
                     });
             }
         );
