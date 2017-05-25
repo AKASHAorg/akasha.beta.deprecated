@@ -86,7 +86,9 @@ export function bootstrapApp() {
         mainWindowState.manage(mainWindow);
         modules.initListeners(mainWindow.webContents).then(() => {
             console.timeEnd('mainProcess');
-            mainWindow.loadURL(process.env.HOT ? `file://${viewHtml}/app/hot-dev-app.html` : `file://${viewHtml}/dist/app.html`);
+            mainWindow.loadURL(
+                process.env.HOT ? `file://${viewHtml}/app/hot-dev-app.html` : `file://${viewHtml}/dist/app.html`
+            );
             mainWindow.once('close', (ev: Event) => {
                 ev.preventDefault();
                 modules.flushAll();
