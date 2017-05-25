@@ -117,7 +117,7 @@ export const ipfsStop = () => action(types.IPFS_STOP);
 
 export const ipfsStopError = (error) => {
     error.code = 'ISTE01';
-    error.messageId = 'ipfsStopError';
+    error.messageId = 'ipfsStop';
     return action(types.IPFS_STOP_ERROR, { error });
 };
 

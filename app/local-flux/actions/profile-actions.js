@@ -726,3 +726,9 @@ export const profileSaveLoggedError = (error) => {
     error.fatal = true;
     return action(types.PROFILE_SAVE_LOGGED_ERROR, { error });
 };
+
+export const profileUpdateLoggedError = (error) => {
+    error.code = 'PULE01';
+    error.messageId = 'profileUpdateLogged';
+    return action(types.PROFILE_UPDATE_LOGGED_ERROR, { error });
+};
