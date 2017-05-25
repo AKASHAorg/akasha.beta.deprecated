@@ -262,6 +262,7 @@ export const PROFILE_LOGOUT_ERROR = 'PROFILE_LOGOUT_ERROR';
 export const PROFILE_LOGOUT_SUCCESS = 'PROFILE_LOGOUT_SUCCESS';
 
 export const PROFILE_SAVE_LOGGED_ERROR = 'PROFILE_SAVE_LOGGED_ERROR';
+export const PROFILE_UPDATE_LOGGED_ERROR = 'PROFILE_UPDATE_LOGGED_ERROR';
 
 // this should be removed once profile logout is implemented
 export const RESET_HOME_READY = 'RESET_HOME_READY';
