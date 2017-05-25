@@ -35,11 +35,20 @@ class AppContainer extends Component {
             this.props.licenseGetAll();
             // make requests for geth status every 30s for updating the current block
             this.props.gethGetStatus();
-            this.interval = setInterval(() => {
-                this.props.gethGetStatus();
-            }, 30000);
+            if (!this.interval) {
+                this.interval = setInterval(() => {
+                    this.props.gethGetStatus();
+                }, 30000);
+            }
         }
     }
+
+    componentWillUnmount () {
+        if (this.interval) {
+            clearInterval(this.interval);
+        }
+    }
+
     render () {
         /* eslint-disable no-shadow */
         const { appState, errorDeleteFatal, errorDeleteNonFatal, errorState,
