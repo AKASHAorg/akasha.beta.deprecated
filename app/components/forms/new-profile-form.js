@@ -203,7 +203,7 @@ class NewProfileForm extends Component {
 
     _handleSubmit = (ev) => {
         ev.preventDefault();
-        const { expandOptionalDetails, tempProfile, onSubmit } = this.props;
+        const { expandOptionalDetails, tempProfile, onSubmit, onProfileUpdate } = this.props;
         const { optDetails } = this.state;
 
         this.props.validate((err) => {
@@ -222,16 +222,18 @@ class NewProfileForm extends Component {
                         if (uint8arr) {
                             avatar = uint8arr;
                         }
-                        onSubmit(
+                        onProfileUpdate(
                           tempProfile.withMutations(profile =>
                               profile
                                 .set('backgroundImage', backgroundImage)
                                 .set('avatar', avatar))
                         );
+                        onSubmit();
                     });
+                } else {
+                    onProfileUpdate(tempProfile);
+                    onSubmit();
                 }
-            } else {
-                onSubmit(tempProfile);
             }
         });
     }

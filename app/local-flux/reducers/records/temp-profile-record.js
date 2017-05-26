@@ -14,6 +14,7 @@ const TempProfile = Record({
     lastName: '',
     akashaId: '',
     password: '',
+    password2: '',
     address: '',
     ethAddress: '',
     avatar: null,

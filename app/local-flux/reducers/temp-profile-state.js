@@ -31,10 +31,8 @@ const tempProfileState = createReducer(initialState, {
             })
         }),
 
-    [types.TEMP_PROFILE_UPDATE]: (state, { data }) => {
-        console.log(data, 'the data');
-        return state.mergeIn(['tempProfile'], data);
-    },
+    [types.TEMP_PROFILE_UPDATE]: (state, { data }) =>
+        state.mergeIn(['tempProfile'], data),
 
     [types.TEMP_PROFILE_CREATE_SUCCESS]: (state) => {
         const newState = state.mergeIn(['status'], {

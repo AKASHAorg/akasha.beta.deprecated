@@ -1,4 +1,4 @@
-import { take, fork, call, put, select } from 'redux-saga/effects';
+import { take, fork, call, put, select, takeEvery } from 'redux-saga/effects';
 import { actionChannels, enableChannel } from './helpers';
 import * as types from '../constants';
 import * as tempProfileActions from '../actions/temp-profile-actions';
@@ -284,6 +284,18 @@ function* watchTempProfileRequest () {
     }
 }
 
+function* updateTempProfile (action) {
+    console.log('update temp profile', action.data);
+}
+
+const filterUpdateActions = (action) => {
+    return action.type.includes('@@tempProfile/') && action.type.includes(types.TEMP_PROFILE_UPDATE);
+};
+
+function* watchTempProfileUpdate () {
+    yield takeEvery(filterUpdateActions, updateTempProfile);
+}
+
 export function* watchTempProfileActions () {
     yield fork(watchProfileCreate);
     yield fork(watchEthAddressCreate);
@@ -294,4 +306,6 @@ export function* watchTempProfileActions () {
     yield fork(watchTempProfilePublish);
     yield fork(watchPublishTxMined);
     yield fork(watchTempProfileRemove);
+    // update
+    yield fork(watchTempProfileUpdate);
 }
