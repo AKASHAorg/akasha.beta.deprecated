@@ -78,7 +78,7 @@ class GethIPC extends ModuleEmitter {
      */
     private _started() {
         GethConnector.getInstance().on(
-            CONSTANTS.STARTED, () => {
+            CONSTANTS.ETH_NODE_OK, () => {
                 this.fireEvent(channels.client.geth.startService, mainResponse({ started: true }, {}));
             }
         );
