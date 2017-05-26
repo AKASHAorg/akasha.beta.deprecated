@@ -20,7 +20,8 @@ const channels = {
         'editEntry', 'pin', 'followingStreamIterator', 'allStreamIterator', 'getLatestEntryVersion', 'getEntryIpfsHash',
         'resolveEntriesIpfsHash'],
 
-    comments: ['getComment', 'comment', 'commentsCount', 'removeComment', 'commentsIterator'],
+    comments: ['getComment', 'comment', 'commentsCount', 'removeComment', 'commentsIterator', 'commentsParentIterator',
+        'commentsLazy', 'repliesLazy'],
 
     geth: ['options', 'startService', 'stopService', 'restartService', 'syncStatus', 'logs', 'status'],
 
