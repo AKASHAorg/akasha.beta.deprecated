@@ -6,6 +6,9 @@ import { showTerms } from '../local-flux/actions/app-actions';
 import { NewProfileForm } from '../components';
 
 const submitForm = props => (profileData) => {
+    const profile = profileData.toJS();
+    delete profile.password2;
+    profile.password = new TextEncoder('utf-8').encode(profile.password);
     props.tempProfileCreate(profileData);
     props.history.push('/setup/new-identity-status');
 };
@@ -13,14 +16,15 @@ const submitForm = props => (profileData) => {
 const cancelForm = props => () =>
     props.history.push('/setup/authenticate');
 
-const NewProfileContainer = props =>
+const NewProfileContainer = props => (
   <NewProfileForm
     onSubmit={submitForm(props)}
     onCancel={cancelForm(props)}
     onTermsShow={props.showTerms}
     onProfileUpdate={props.tempProfileUpdate}
     tempProfile={props.tempProfile}
-  />;
+  />
+);
 
 NewProfileContainer.propTypes = {
     showTerms: PropTypes.func,

@@ -25,7 +25,6 @@ const appState = createReducer(initialState, {
             notifications: state.get('notifications').delete(indexToRemove)
         });
     },
-
     [appTypes.ADD_PENDING_ACTION]: (state, { data }) =>
         state.merge({
             pendingActions: state.get('pendingActions').push(new PendingActionRecord(fromJS(data)))

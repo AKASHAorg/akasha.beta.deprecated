@@ -27,9 +27,16 @@ class EditProfile extends PureComponent {
         }
     }
     _handleSubmit = (profile) => {
-        const { tempProfilePublishUpdate } = this.props;
-        console.log('start updating', profile);
-        tempProfilePublishUpdate(profile);
+        const { publishEntity } = this.props;
+        publishEntity({
+            entityType: 'tempProfile',
+            actionType: 'update',
+            entityId: null,
+            currentAction: '',
+            publishTx: '',
+            confirmed: false,
+            published: false
+        });
     }
     _handleAbort = () => {
         const { history } = this.props;

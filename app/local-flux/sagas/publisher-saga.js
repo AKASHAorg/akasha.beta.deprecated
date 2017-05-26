@@ -129,9 +129,13 @@ function* confirmAuth (action) {
             akashaId: 'sever'
         }
     });
+
     console.log('simulate auth dialog open and submit for 2 seconds');
+
     yield call(delay, 2000);
+
     console.log('launch login success action');
+
     yield put({
         type: `${PUBLISHER_PREFIX}${types.PROFILE_LOGIN_SUCCESS}`,
         data: action.data
