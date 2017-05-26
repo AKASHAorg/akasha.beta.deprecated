@@ -194,7 +194,7 @@ class CreateProfile extends Component {
     // renderWarningMessage () {
     //     const { intl, gethStatus, ipfsStatus } = this.props;
     //     const { palette } = this.context.muiTheme;
-    //     if (!gethStatus.get('api') || (!ipfsStatus.get('started') && !ipfsStatus.get('spawned'))) {
+    //     if (!gethStatus.get('api') || (!ipfsStatus.get('started') && !ipfsStatus.get('process'))) {
     //         return (<div
     //           style={{ height: '36px', lineHeight: '36px', display: 'flex', alignItems: 'center' }}
     //         >
@@ -210,7 +210,7 @@ class CreateProfile extends Component {
         const { intl, gethStatus, ipfsStatus } = this.props;
         const { palette } = this.context.muiTheme;
         // const isServiceStopped = !gethStatus.get('api')
-        //     || (!ipfsStatus.get('started') && !ipfsStatus.get('spawned'));
+        //     || (!ipfsStatus.get('started') && !ipfsStatus.get('process'));
         const floatLabelStyle = { color: palette.disabledColor };
         const firstNameProps = this.getProps({
             floatingLabelText: intl.formatMessage(formMessages.firstName),

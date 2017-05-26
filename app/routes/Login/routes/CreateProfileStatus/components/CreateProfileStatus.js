@@ -44,7 +44,7 @@ class CreateProfileStatus extends Component {
         }
         if ((nextProps.gethStatus.get('api') && !this.props.gethStatus.get('api'))
                 || (nextProps.ipfsStatus.get('started') && !this.props.ipfsStatus.get('started'))
-                || (nextProps.ipfsStatus.get('spawned') && !this.props.ipfsStatus.get('spawned'))) {
+                || (nextProps.ipfsStatus.get('process') && !this.props.ipfsStatus.get('process'))) {
             this.isServiceRestarted = true;
         }
         // make sure tempProfile loaded from DB;
@@ -241,7 +241,7 @@ class CreateProfileStatus extends Component {
         const paraStyle = { marginTop: '20px' };
         const errors = this.state.errors;
         const isServiceStopped = !gethStatus.get('api')
-            || (!ipfsStatus.get('started') && !ipfsStatus.get('spawned'));
+            || (!ipfsStatus.get('started') && !ipfsStatus.get('process'));
         return (
           <div style={style} >
             <PanelContainer

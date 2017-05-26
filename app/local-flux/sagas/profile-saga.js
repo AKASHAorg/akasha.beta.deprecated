@@ -51,11 +51,9 @@ export function* profileGetLogged () {
     try {
         const loggedProfile = yield select(state => state.profileState.get('loggedProfile'));
         if (loggedProfile.get('account')) {
-            console.log('No need to get logged profile from db');
             return;
         }
         const profile = yield apply(profileService, profileService.profileGetLogged);
-        console.log('get logged profile', profile);
         yield put(actions.profileGetLoggedSuccess(profile));
         yield put(actions.profileGetBalance());
         if (profile && profile.profile) {
@@ -81,10 +79,17 @@ function* profileLogout () {
 
 function* profileSaveLogged (loggedProfile) {
     try {
-        console.log('save logged profile', loggedProfile);
         yield apply(profileService, profileService.profileSaveLogged, [loggedProfile]);
     } catch (error) {
         yield put(actions.profileSaveLoggedError(error));
+    }
+}
+
+function* profileUpdateLogged (loggedProfile) {
+    try {
+        yield apply(profileService, profileService.profileUpdateLogged, [loggedProfile]);
+    } catch (error) {
+        yield put(actions.profileUpdateLoggedError(error));
     }
 }
 
@@ -200,6 +205,8 @@ function* watchProfileLoginChannel () {
     } else if (resp.request.account === resp.data.account) {
         if (!resp.request.reauthenticate) {
             yield put(actions.profileGetCurrent());
+        } else {
+            yield call(profileUpdateLogged, resp.data);
         }
         yield put(actions.profileLoginSuccess(resp.data));
     }

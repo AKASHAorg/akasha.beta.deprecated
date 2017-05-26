@@ -3,7 +3,7 @@ export const gethStatus = {
     blockNr: 0,
     downloading: false,
     message: '',
-    spawned: false,
+    process: false,
     started: false,
     starting: false,
     stopped: false,

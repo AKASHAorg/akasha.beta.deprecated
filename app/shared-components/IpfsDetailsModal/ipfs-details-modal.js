@@ -110,34 +110,37 @@ class IpfsDetailsModal extends Component {
     }
 
     getActions () {
-        const { intl, ipfsBusyState, toggleIpfsDetailsModal } = this.props;
-        return (<div style={{ display: 'flex' }}>
-          <div style={{ flex: '0 0 auto', height: '36px', display: 'flex', alignItems: 'center' }}>
-            <Toggle
-              label={this.isIpfsOn() ?
-                  intl.formatMessage(generalMessages.ipfsServiceOn) :
-                  intl.formatMessage(generalMessages.ipfsServiceOff)
-              }
-              labelPosition="right"
-              labelStyle={{ textAlign: 'left', width: 'calc(100% - 44px)' }}
-              toggled={this.isIpfsOn()}
-              onToggle={this.onToggle}
-              disabled={ipfsBusyState}
-              style={toggleStyle}
-            />
+        const { intl, ipfsBusyState, ipfsStatus, toggleIpfsDetailsModal } = this.props;
+        const toggleDisabled = ipfsBusyState || ipfsStatus.get('downloading') || ipfsStatus.get('upgrading');
+        return (
+          <div style={{ display: 'flex' }}>
+            <div style={{ flex: '0 0 auto', height: '36px', display: 'flex', alignItems: 'center' }}>
+              <Toggle
+                label={this.isIpfsOn() ?
+                    intl.formatMessage(generalMessages.ipfsServiceOn) :
+                    intl.formatMessage(generalMessages.ipfsServiceOff)
+                }
+                labelPosition="right"
+                labelStyle={{ textAlign: 'left', width: 'calc(100% - 44px)' }}
+                toggled={this.isIpfsOn()}
+                onToggle={this.onToggle}
+                disabled={toggleDisabled}
+                style={toggleStyle}
+              />
+            </div>
+            <div style={{ flex: '1 1 auto' }} >
+              <FlatButton
+                label={intl.formatMessage(generalMessages.cancel)}
+                onClick={toggleIpfsDetailsModal}
+              />
+              <FlatButton
+                label={intl.formatMessage(generalMessages.save)}
+                disabled={!this.state.isIpfsFormDirty}
+                onClick={this.saveOptions}
+              />
+            </div>
           </div>
-          <div style={{ flex: '1 1 auto' }} >
-            <FlatButton
-              label={intl.formatMessage(generalMessages.cancel)}
-              onClick={toggleIpfsDetailsModal}
-            />
-            <FlatButton
-              label={intl.formatMessage(generalMessages.save)}
-              disabled={!this.state.isIpfsFormDirty}
-              onClick={this.saveOptions}
-            />
-          </div>
-        </div>);
+        );
     }
 
     selectTab = (tab) => {
@@ -166,7 +169,7 @@ class IpfsDetailsModal extends Component {
 
     isIpfsOn = () => {
         const { ipfsStarting, ipfsStatus } = this.props;
-        return ipfsStatus.get('spawned') || ipfsStatus.get('starting') || ipfsStarting;
+        return ipfsStatus.get('process') || ipfsStatus.get('starting') || ipfsStarting;
     }
 
     renderTitle () {
