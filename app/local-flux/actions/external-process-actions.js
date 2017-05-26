@@ -20,7 +20,8 @@ export const gethGetStatusError = (error) => {
     return action(types.GETH_GET_STATUS_ERROR, { error });
 };
 
-export const gethGetStatusSuccess = data => action(types.GETH_GET_STATUS_SUCCESS, { data });
+export const gethGetStatusSuccess = (data, services) =>
+    action(types.GETH_GET_STATUS_SUCCESS, { data, services });
 export const gethGetSyncStatus = () => action(types.GETH_GET_SYNC_STATUS);
 
 export const gethGetSyncStatusError = (error) => {
@@ -29,8 +30,8 @@ export const gethGetSyncStatusError = (error) => {
     return action(types.GETH_GET_SYNC_STATUS_ERROR, { error });
 };
 
-export const gethGetSyncStatusSuccess = data =>
-    action(types.GETH_GET_SYNC_STATUS_SUCCESS, { data });
+export const gethGetSyncStatusSuccess = (data, services) =>
+    action(types.GETH_GET_SYNC_STATUS_SUCCESS, { data, services });
 export const gethPauseSync = () => action(types.GETH_PAUSE_SYNC);
 export const gethResetBusy = () => action(types.GETH_RESET_BUSY);
 export const gethResumeSync = () => action(types.GETH_RESUME_SYNC);
@@ -46,7 +47,8 @@ export const gethStartError = (data, error) => {
 };
 
 export const gethStartLogger = () => action(types.GETH_START_LOGGER);
-export const gethStartSuccess = data => action(types.GETH_START_SUCCESS, { data });
+export const gethStartSuccess = (data, services) =>
+    action(types.GETH_START_SUCCESS, { data, services });
 export const gethStop = () => action(types.GETH_STOP);
 
 export const gethStopError = (error) => {
@@ -56,7 +58,8 @@ export const gethStopError = (error) => {
 };
 
 export const gethStopLogger = () => action(types.GETH_STOP_LOGGER);
-export const gethStopSuccess = data => action(types.GETH_STOP_SUCCESS, { data });
+export const gethStopSuccess = (data, services) =>
+    action(types.GETH_STOP_SUCCESS, { data, services });
 export const gethStopSync = () => action(types.GETH_STOP_SYNC);
 
 export const ipfsGetConfigError = (error) => {
@@ -76,7 +79,8 @@ export const ipfsGetPortsError = (error) => {
     return action(types.IPFS_GET_PORTS_ERROR, { error });
 };
 
-export const ipfsGetPortsSuccess = data => action(types.IPFS_GET_PORTS_SUCCESS, { data });
+export const ipfsGetPortsSuccess = (data, services) =>
+    action(types.IPFS_GET_PORTS_SUCCESS, { data, services });
 export const ipfsGetStatus = () => action(types.IPFS_GET_STATUS);
 
 export const ipfsGetStatusError = (error) => {
@@ -85,7 +89,8 @@ export const ipfsGetStatusError = (error) => {
     return action(types.IPFS_GET_STATUS_ERROR, { error });
 };
 
-export const ipfsGetStatusSuccess = data => action(types.IPFS_GET_STATUS_SUCCESS, { data });
+export const ipfsGetStatusSuccess = (data, services) =>
+    action(types.IPFS_GET_STATUS_SUCCESS, { data, services });
 export const ipfsResetBusy = () => action(types.IPFS_RESET_BUSY);
 export const ipfsResetPorts = () => action(types.IPFS_RESET_PORTS);
 export const ipfsSetPorts = ports => action(types.IPFS_SET_PORTS, { ports });
@@ -106,16 +111,18 @@ export const ipfsStartError = (data, error) => {
 };
 
 export const ipfsStartLogger = () => action(types.IPFS_START_LOGGER);
-export const ipfsStartSuccess = data => action(types.IPFS_START_SUCCESS, { data });
+export const ipfsStartSuccess = (data, services) =>
+    action(types.IPFS_START_SUCCESS, { data, services });
 export const ipfsStop = () => action(types.IPFS_STOP);
 
 export const ipfsStopError = (error) => {
     error.code = 'ISTE01';
-    error.messageId = 'ipfsStopError';
+    error.messageId = 'ipfsStop';
     return action(types.IPFS_STOP_ERROR, { error });
 };
 
 export const ipfsStopLogger = () => action(types.IPFS_STOP_LOGGER);
-export const ipfsStopSuccess = data => action(types.IPFS_STOP_SUCCESS, { data });
+export const ipfsStopSuccess = (data, services) =>
+    action(types.IPFS_STOP_SUCCESS, { data, services });
 export const servicesSetTimestamp = timestamp =>
     action(types.SERVICES_SET_TIMESTAMP, { timestamp });

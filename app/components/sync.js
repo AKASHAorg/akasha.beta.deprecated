@@ -12,10 +12,10 @@ class Sync extends Component {
 
     componentDidMount () {
         const { gethStart, gethStatus, ipfsStart, ipfsStatus } = this.props;
-        if (!gethStatus.get('spawned')) {
+        if (!gethStatus.get('process')) {
             gethStart();
         }
-        if (!ipfsStatus.get('spawned')) {
+        if (!ipfsStatus.get('process')) {
             ipfsStart();
         }
     }
@@ -23,8 +23,8 @@ class Sync extends Component {
     componentWillReceiveProps (nextProps) {
         const { gethStatus, gethGetSyncStatus, gethSyncStatus, syncActionId } = nextProps;
         const gethSynced = gethSyncStatus.get('synced');
-        const gethIsSyncing = gethStatus.get('api') && !gethSynced && (syncActionId === 1 ||
-            syncActionId === 0);
+        const gethIsSyncing = gethStatus.get('process') && !gethStatus.get('upgrading') &&
+            !gethSynced && (syncActionId === 1 || syncActionId === 0);
 
         if (gethIsSyncing && !this.interval) {
             this.interval = setInterval(() => {
@@ -51,10 +51,10 @@ class Sync extends Component {
             this.interval = null;
         }
         gethStopSync();
-        if (gethStatus.get('spawned')) {
+        if (gethStatus.get('process')) {
             gethStop();
         }
-        if (ipfsStatus.get('spawned')) {
+        if (ipfsStatus.get('process')) {
             ipfsStop();
         }
         clearSyncStatus();
@@ -80,7 +80,7 @@ class Sync extends Component {
                 gethResumeSync();
                 break;
             case 4:
-                if (!ipfsStatus.get('spawned')) {
+                if (!ipfsStatus.get('process')) {
                     ipfsStart();
                 }
                 break;
@@ -124,7 +124,7 @@ class Sync extends Component {
         return (
           <div style={{ width: '100%' }}>
             {!configurationSaved && <Redirect to="/setup/configuration" />}
-            {gethSyncStatus.get('synced') && ipfsStatus.get('spawned') && !ipfsPortsRequested &&
+            {gethSyncStatus.get('synced') && ipfsStatus.get('process') && !ipfsPortsRequested &&
               <Redirect to="/setup/authenticate" />
             }
             <h1 style={{ fontWeight: '400' }} >

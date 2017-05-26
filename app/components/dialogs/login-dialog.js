@@ -107,7 +107,7 @@ class LoginDialog extends Component {
         const userInitials = getInitials(profile.get('firstName'), profile.get('lastName'));
         const avatar = profile.get('avatar');
         const isServiceStopped = !gethStatus.get('api') || gethStatus.get('stopped')
-            || (!ipfsStatus.get('started') && !ipfsStatus.get('spawned'));
+            || (!ipfsStatus.get('started') && !ipfsStatus.get('process'));
         const modalActions = [
             /* eslint-disable react/jsx-indent */
             <FlatButton

@@ -12,7 +12,7 @@ const ProfilesList = (props, { muiTheme }) => {
 
     if (!gethStatus.get('api')) {
         placeholderMessage = intl.formatMessage(setupMessages.gethStopped);
-    } else if (!ipfsStatus.get('spawned') && !ipfsStatus.get('started')) {
+    } else if (!ipfsStatus.get('process') && !ipfsStatus.get('started')) {
         placeholderMessage = intl.formatMessage(setupMessages.ipfsStopped);
     } else if (profiles.size === 0 && !fetchingProfiles) {
         placeholderMessage = intl.formatMessage(setupMessages.noProfilesFound);

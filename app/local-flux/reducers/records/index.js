@@ -5,8 +5,8 @@ import { ColumnRecord, DashboardRecord, DashboardState } from './dashboard-recor
 import { EntriesStream, EntryContent, EntryEth, EntryPageOverlay, EntryRecord,
     EntryState } from './entry-record';
 import ErrorRecord, { ErrorState } from './error-record';
-import GethRecord, { GethStatus, GethSyncStatus } from './geth-record';
-import IpfsRecord, { IpfsStatus } from './ipfs-record';
+import { GethRecord, GethStatus, GethSyncStatus } from './geth-record';
+import { IpfsRecord, IpfsStatus } from './ipfs-record';
 import { LicenseRecord, LicenseState } from './license-record';
 import LogRecord from './log-record';
 import { PanelState } from './panel-record';

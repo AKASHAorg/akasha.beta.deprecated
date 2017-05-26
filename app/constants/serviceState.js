@@ -3,7 +3,8 @@ const serviceState = {
     downloading: 'downloading',
     stopped: 'stopped',
     started: 'started',
-    starting: 'starting'
+    starting: 'starting',
+    upgrading: 'upgrading'
 };
 
 export default serviceState;

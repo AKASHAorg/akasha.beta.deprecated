@@ -87,8 +87,8 @@ describe('Sync component tests', () => {
             expect(props.saveGeneralSettings.callCount).to.equal(1, 'saveGeneralSettings was not called');
         });
         it('should handle the "cancel" action when services are started', () => {
-            props.gethStatus = props.gethStatus.merge({ spawned: true });
-            props.ipfsStatus = props.ipfsStatus.merge({ spawned: true });
+            props.gethStatus = props.gethStatus.merge({ process: true });
+            props.ipfsStatus = props.ipfsStatus.merge({ process: true });
             // TODO: if possible, find a way to simulate click on the PanelContainer action button
             mountComp().instance().handleCancel();
             expect(props.gethStopSync.callCount).to.equal(1, 'gethStopSync was not called');

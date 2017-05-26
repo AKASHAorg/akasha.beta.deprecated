@@ -39,7 +39,7 @@ describe('ExternalProcState Reducer', () => {  // eslint-disable-line max-statem
     });
     describe(types.GETH_START_SUCCESS, () => {
         it('should set status to starting', () => {
-            const response = { api: false, spawned: false, starting: true };
+            const response = { api: false, process: false, starting: true };
             expect(modifiedState.getIn(['geth', 'syncActionId'])).to.equal(0,
                 'initial syncActionId is not 0');
             modifiedState = EProcReducer(initialState, actions.gethStartSuccess(response));
@@ -48,7 +48,7 @@ describe('ExternalProcState Reducer', () => {  // eslint-disable-line max-statem
                 'syncActionId did not update to 1 (synchronizing)');
         });
         it('should not update syncActionId if geth is synced', () => {
-            const response = { api: false, spawned: false, starting: true };
+            const response = { api: false, process: false, starting: true };
             const state = initialState.setIn(['geth', 'syncActionId'], 4);
             // State before
             expect(state.getIn(['geth', 'syncActionId'])).to.equal(4,
@@ -59,7 +59,7 @@ describe('ExternalProcState Reducer', () => {  // eslint-disable-line max-statem
                 'syncActionId was changed even if geth is synced');
         });
         it('should reset downloading status', () => {
-            const response = { api: false, spawned: false, starting: true };
+            const response = { api: false, process: false, starting: true };
             const state = initialState.mergeIn(['geth', 'status'], {
                 downloading: true, upgrading: true
             });
@@ -71,41 +71,41 @@ describe('ExternalProcState Reducer', () => {  // eslint-disable-line max-statem
             expect(modifiedState.getIn(['geth', 'status', 'downloading'])).to.be.null;
             expect(modifiedState.getIn(['geth', 'status', 'upgrading'])).to.be.null;
         });
-        it('should set status to spawned', () => {
-            const response = { api: false, spawned: true };
+        it('should set status to process true', () => {
+            const response = { api: false, process: true };
             const state = initialState.mergeIn(['geth', 'status'], { starting: true });
             // State before
             expect(state.getIn(['geth', 'status', 'starting'])).to.be.true;
             modifiedState = EProcReducer(initialState, actions.gethStartSuccess(response));
             // State after
             expect(modifiedState.getIn(['geth', 'status', 'starting'])).to.be.null;
-            expect(modifiedState.getIn(['geth', 'status', 'spawned'])).to.be.true;
+            expect(modifiedState.getIn(['geth', 'status', 'process'])).to.be.true;
         });
         it('should set api and started', () => {
-            const response = { api: true, spawned: true, started: true };
+            const response = { api: true, process: true, started: true };
             modifiedState = EProcReducer(initialState, actions.gethStartSuccess(response));
             expect(modifiedState.getIn(['geth', 'status', 'api'])).to.be.true;
-            expect(modifiedState.getIn(['geth', 'status', 'spawned'])).to.be.true;
+            expect(modifiedState.getIn(['geth', 'status', 'process'])).to.be.true;
             expect(modifiedState.getIn(['geth', 'status', 'starting'])).to.be.null;
             expect(modifiedState.getIn(['geth', 'status', 'started'])).to.be.true;
         });
         it('should ignore the action if geth is stopped', () => {
-            const response = { api: true, spawned: true, started: true };
+            const response = { api: true, process: true, started: true };
             const state = initialState.mergeIn(['geth', 'status'], { stopped: true });
             // State before
             expect(state.getIn(['geth', 'status', 'stopped'])).to.be.true;
-            expect(state.getIn(['geth', 'status', 'spawned'])).to.not.be.ok;
+            expect(state.getIn(['geth', 'status', 'process'])).to.not.be.ok;
             modifiedState = EProcReducer(state, actions.gethStartSuccess(response));
             // State after
             expect(modifiedState.getIn(['geth', 'status', 'api'])).to.not.be.ok;
-            expect(modifiedState.getIn(['geth', 'status', 'spawned'])).to.not.be.ok;
+            expect(modifiedState.getIn(['geth', 'status', 'process'])).to.not.be.ok;
             expect(modifiedState.getIn(['geth', 'status', 'started'])).to.not.be.ok;
             expect(modifiedState.getIn(['geth', 'status', 'stopped'])).to.be.true;
         });
     });
     describe(types.GETH_START_ERROR, () => {
         it('should set corresponding flags', () => {
-            const data = { api: false, spawned: false };
+            const data = { api: false, process: false };
             const state = initialState.setIn(['geth', 'flags', 'gethStarting'], true);
             modifiedState = EProcReducer(state, actions.gethStartError(data, {}));
             expect(modifiedState.getIn(['geth', 'flags', 'gethStarting'])).to.be.false;
@@ -119,20 +119,20 @@ describe('ExternalProcState Reducer', () => {  // eslint-disable-line max-statem
     });
     describe(types.GETH_STOP_SUCCESS, () => {
         it('should set the correct status', () => {
-            const resp = { api: false, spawned: false, stopped: true };
+            const resp = { api: false, process: false, stopped: true };
             const state = initialState.mergeIn(['geth', 'status'], {
-                api: true, spawned: true, starting: true, started: true
+                api: true, process: true, starting: true, started: true
             });
             modifiedState = EProcReducer(state, actions.gethStopSuccess(resp));
             expect(modifiedState.getIn(['geth', 'status', 'api'])).to.be.false;
-            expect(modifiedState.getIn(['geth', 'status', 'spawned'])).to.be.false;
+            expect(modifiedState.getIn(['geth', 'status', 'process'])).to.be.false;
             expect(modifiedState.getIn(['geth', 'status', 'starting'])).to.be.false;
             expect(modifiedState.getIn(['geth', 'status', 'started'])).to.be.false;
             expect(modifiedState.getIn(['geth', 'status', 'stopped'])).to.be.true;
         });
         it('should set the correct syncActionId', () => {
-            const resp = { api: false, spawned: false, stopped: true };
-            let state = initialState.mergeIn(['geth', 'status'], { api: true, spawned: true });
+            const resp = { api: false, process: false, stopped: true };
+            let state = initialState.mergeIn(['geth', 'status'], { api: true, process: true });
             modifiedState = EProcReducer(state, actions.gethStopSuccess(resp));
             expect(modifiedState.getIn(['geth', 'syncActionId'])).to.equal(3,
                 'did not set the syncActionId to 3 (stopped)');
@@ -144,12 +144,12 @@ describe('ExternalProcState Reducer', () => {  // eslint-disable-line max-statem
     });
     describe(types.GETH_GET_STATUS_SUCCESS, () => {
         it('should update the state correctly', () => {
-            const resp = { api: true, blockNr: 1234, spawned: true };
+            const resp = { api: true, blockNr: 1234, process: true };
             modifiedState = EProcReducer(initialState, actions.gethGetStatusSuccess(resp));
             expect(modifiedState.getIn(['geth', 'status', 'api'])).to.be.true;
             expect(modifiedState.getIn(['geth', 'status', 'blockNr'])).to.equal(1234,
                 'block number was not updated');
-            expect(modifiedState.getIn(['geth', 'status', 'spawned'])).to.be.true;
+            expect(modifiedState.getIn(['geth', 'status', 'process'])).to.be.true;
         });
     });
     describe(types.IPFS_START, () => {
@@ -161,14 +161,14 @@ describe('ExternalProcState Reducer', () => {  // eslint-disable-line max-statem
     });
     describe(types.IPFS_START_SUCCESS, () => {
         it('should set the correct status', () => {
-            const response = { api: false, spawned: true, started: true };
+            const response = { api: false, process: true, started: true };
             modifiedState = EProcReducer(initialState, actions.ipfsStartSuccess(response));
             expect(modifiedState.getIn(['ipfs', 'status', 'api'])).to.be.false;
-            expect(modifiedState.getIn(['ipfs', 'status', 'spawned'])).to.be.true;
+            expect(modifiedState.getIn(['ipfs', 'status', 'process'])).to.be.true;
             expect(modifiedState.getIn(['ipfs', 'status', 'started'])).to.be.true;
         });
         it('should reset downloading status', () => {
-            const response = { api: false, spawned: true, started: true };
+            const response = { api: false, process: true, started: true };
             const state = initialState.mergeIn(['ipfs', 'status'], { downloading: true });
             // State before
             expect(state.getIn(['ipfs', 'status', 'downloading'])).to.be.true;
@@ -179,7 +179,7 @@ describe('ExternalProcState Reducer', () => {  // eslint-disable-line max-statem
     });
     describe(types.IPFS_START_ERROR, () => {
         it('should reset the flags', () => {
-            const data = { api: true, spawned: false };
+            const data = { api: true, process: false };
             modifiedState = EProcReducer(initialState, actions.ipfsStartError(data, {}));
             expect(modifiedState.getIn(['ipfs', 'flags', 'ipfsStarting'])).to.be.false;
         });
@@ -191,11 +191,11 @@ describe('ExternalProcState Reducer', () => {  // eslint-disable-line max-statem
         });
     });
     describe(types.IPFS_STOP_SUCCESS, () => {
-        const response = { api: false, spawned: false, stopped: true };
+        const response = { api: false, process: false, stopped: true };
         it('should reset the ipfs status', () => {
             modifiedState = EProcReducer(initialState, actions.ipfsStopSuccess(response));
             expect(modifiedState.getIn(['ipfs', 'status', 'api'])).to.not.be.ok;
-            expect(modifiedState.getIn(['ipfs', 'status', 'spawned'])).to.not.be.ok;
+            expect(modifiedState.getIn(['ipfs', 'status', 'process'])).to.not.be.ok;
             expect(modifiedState.getIn(['ipfs', 'status', 'started'])).to.not.be.ok;
             expect(modifiedState.getIn(['ipfs', 'status', 'stopped'])).to.be.true;
             expect(modifiedState.getIn(['ipfs', 'flags', 'portsRequested'])).to.be.false;
@@ -208,10 +208,10 @@ describe('ExternalProcState Reducer', () => {  // eslint-disable-line max-statem
     });
     describe(types.IPFS_GET_STATUS_SUCCESS, () => {
         it('should update the state correctly', () => {
-            const resp = { api: true, spawned: true };
+            const resp = { api: true, process: true };
             modifiedState = EProcReducer(initialState, actions.ipfsGetStatusSuccess(resp));
             expect(modifiedState.getIn(['ipfs', 'status', 'api'])).to.be.true;
-            expect(modifiedState.getIn(['ipfs', 'status', 'spawned'])).to.be.true;
+            expect(modifiedState.getIn(['ipfs', 'status', 'process'])).to.be.true;
         });
     });
     describe(types.IPFS_GET_PORTS, () => {
@@ -229,7 +229,7 @@ describe('ExternalProcState Reducer', () => {  // eslint-disable-line max-statem
     });
     describe(types.IPFS_GET_PORTS_SUCCESS, () => {
         const resp = {
-            api: true, apiPort: '5000', gatewayPort: '8000', spawned: true, swarmPort: '4000'
+            api: true, apiPort: '5000', gatewayPort: '8000', process: true, swarmPort: '4000'
         };
         it('should reset corresponding flags', () => {
             const state = initialState.setIn(['ipfs', 'flags', 'portsRequested'], true);
@@ -239,12 +239,12 @@ describe('ExternalProcState Reducer', () => {  // eslint-disable-line max-statem
         it('should update the ipfs status', () => {
             modifiedState = EProcReducer(initialState, actions.ipfsGetPortsSuccess(resp));
             expect(modifiedState.getIn(['ipfs', 'status', 'api'])).to.be.true;
-            expect(modifiedState.getIn(['ipfs', 'status', 'spawned'])).to.be.true;
+            expect(modifiedState.getIn(['ipfs', 'status', 'process'])).to.be.true;
         });
     });
     describe(types.GETH_GET_SYNC_STATUS_SUCCESS, () => {
         it('should update syncActionId and syncStatus when geth is synced', () => {
-            const resp = { api: true, spawned: true, synced: true };
+            const resp = { api: true, process: true, synced: true };
             modifiedState = EProcReducer(initialState, actions.gethGetSyncStatusSuccess(resp));
             expect(modifiedState.getIn(['geth', 'syncActionId'])).to.be.equal(4,
                 'did not update syncActionId to 4 (synced)');
@@ -258,7 +258,7 @@ describe('ExternalProcState Reducer', () => {  // eslint-disable-line max-statem
                 knownStates: 321,
                 peerCount: 12,
                 pulledStates: 222,
-                spawned: true,
+                process: true,
                 startingBlock: 10,
                 synced: false
             };
