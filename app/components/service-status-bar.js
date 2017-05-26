@@ -120,7 +120,7 @@ class ServiceStatusBar extends Component {
         };
         const gethState = this.getGethState();
         const ipfsState = this.getIpfsState();
-        console.log('ipfs state', ipfsState);
+
         return (
           <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
             <div style={this.getContainerStyle(gethState)}>
