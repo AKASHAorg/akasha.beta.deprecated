@@ -124,4 +124,10 @@ export default class Comments extends BaseContract {
             .callAsync(entryId, commentId)
             .then((result) => result.toString());
     }
+
+    getByProfile(filter: { profile: string, fromBlock: string, toBlock?: string }) {
+        const Commented = this.contract.Commented({ profile: filter.profile }, { fromBlock: filter.fromBlock, toBlock: filter.toBlock });
+        Commented.getAsync = Promise.promisify(Commented.get);
+        return Commented.getAsync();
+    }
 }

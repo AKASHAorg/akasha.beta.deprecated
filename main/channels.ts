@@ -21,7 +21,7 @@ const channels = {
         'resolveEntriesIpfsHash'],
 
     comments: ['getComment', 'comment', 'commentsCount', 'removeComment', 'commentsIterator', 'commentsParentIterator',
-        'commentsLazy', 'repliesLazy'],
+        'commentsLazy', 'repliesLazy', 'getProfileComments', 'resolveCommentsIpfsHash'],
 
     geth: ['options', 'startService', 'stopService', 'restartService', 'syncStatus', 'logs', 'status'],
 
