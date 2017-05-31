@@ -11,14 +11,14 @@ const execute = Promise.coroutine(function*(data: { id: string, start?: number, 
     let commentEthData, entryId, commentId;
     const comments = [];
     let status = (data.start) ? data.start : yield GethConnector.getInstance().web3.eth.getBlockNumberAsync();
-    const maxResults = (data.limit) ? data.limit : 20;
-    const registerEvent = yield contracts.instance.registry.getRegistered({ index: { id: data.id }, fromBlock: 0 });
+    const maxResults = (data.limit) ? data.limit : 30;
     const profile = yield contracts.instance.registry.addressOf(data.id);
+    const blockStep = 50000;
 
-    while (comments.length < maxResults && registerEvent[0] && status >= registerEvent[0].blockNumber) {
+    while (comments.length < maxResults && status > 0) {
         let filter = {
             profile: profile,
-            fromBlock: status - 5000,
+            fromBlock: (status - blockStep < 0) ? 0 : status - blockStep,
             toBlock: status
         };
         let filterData = yield contracts.instance.comments.getByProfile(filter);
@@ -28,7 +28,7 @@ const execute = Promise.coroutine(function*(data: { id: string, start?: number, 
             commentEthData = yield contracts.instance.comments.getComment(entryId, commentId);
             comments.push(commentEthData.ipfsHash);
         }
-        status -= 5000;
+        status -= blockStep;
     }
 
     return { comments: comments };

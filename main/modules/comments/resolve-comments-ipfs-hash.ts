@@ -14,6 +14,7 @@ const execute = Promise.coroutine(function*(data: string[], cb: any) {
     const unresolved = [];
 
     data.forEach((ipfsHash) => {
+        console.log(ipfsHash);
         getCommentContent(ipfsHash)
             .then((d) => resolved.push(d))
             .catch((e) => unresolved.push(ipfsHash))
