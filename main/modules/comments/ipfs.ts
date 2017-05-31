@@ -1,3 +1,4 @@
+import * as Promise from 'bluebird';
 import { IpfsConnector } from '@akashaproject/ipfs-connector';
 import { comments } from '../models/records';
 import { FULL_WAIT_TIME } from '../../config/settings';
@@ -25,7 +26,7 @@ export function create(data) {
  * @returns {any}
  */
 export function getCommentContent(hash) {
-    if (comments.getFull(hash)) {
+    if (comments.hasFull(hash)) {
         return Promise.resolve(comments.getFull(hash));
     }
     return IpfsConnector.getInstance().api
