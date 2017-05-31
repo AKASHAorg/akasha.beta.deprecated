@@ -380,8 +380,5 @@
   "app.validator.lowercase": "should contain only lowercase letters",
   "app.validator.akashaIdExists": "akashaId already registered!",
   "app.validator.akashaIdNotValid": "Only lowercase alphanumeric characters, dots and underscores allowed",
-  "app.validator.validAddress": "must be a valid address",
-  "app.profile.entriesCount": "{entriesCount, number} {entriesCount, plural, one {entry} few {entries} many {entries} other {entries}}",
-  "app.profile.followersCount": "{followersCount, number} {followersCount, plural, one {follower} few {followers} many {followers} other {followers}}",
-  "app.profile.followingCount": "{followingCount, number} {followingCount, plural, one {following} few {following} many {following} other {following}}"
+  "app.validator.validAddress": "must be a valid address"
 }

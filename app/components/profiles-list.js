@@ -67,7 +67,7 @@ const ProfilesList = (props, { muiTheme }) => {
                     </div>
                   }
                   secondaryTextLines={1}
-                  onTouchTap={() => handleSelect(profile.get('profile'))}
+                  onTouchTap={() => handleSelect(profile.get('akashaId'))}
                   style={{ border: `1px solid ${palette.borderColor}`, marginBottom: 8 }}
                 />
               );

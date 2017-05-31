@@ -3,8 +3,7 @@ import React, { Component } from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
 import { injectIntl } from 'react-intl';
 import CircularProgress from '../../shared-components/Loaders/circular-progress';
-import PanelContainerFooter from '../PanelContainer/panel-container-footer';
-import ErrorCard from '../errors/error-card';
+import { ErrorCard, PanelContainerFooter } from '../';
 import { generalMessages, setupMessages, profileMessages } from '../../locale-data/messages';
 import * as types from '../../local-flux/constants';
 import styles from './new-profile-status.scss';
@@ -123,13 +122,13 @@ class NewProfileStatus extends Component {
         showReportModal({ error: repError.toJS() });
     }
     _renderErrors = () =>
-        this.props.errorsById.valueSeq().map(err =>
+        this.props.errorsById.valueSeq().map(err => (
           <ErrorCard
             error={err}
             key={err.id}
             onReport={this._handleErrorReport}
           />
-        );
+        ));
 
     render () {
         const { intl } = this.props;

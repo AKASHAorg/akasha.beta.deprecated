@@ -9,11 +9,10 @@ import { parse } from 'querystring';
 import { CardHeader, IconButton, SvgIcon } from 'material-ui';
 import CloseIcon from 'material-ui/svg-icons/navigation/close';
 import EditIcon from 'material-ui/svg-icons/image/edit';
-import { Avatar, EntryVersionsPanel } from '../';
+import { Avatar, EntryVersionsPanel, ProfileHoverCard } from '../';
 import { entryMessages, generalMessages } from '../../locale-data/messages';
 import { entryPageHide } from '../../local-flux/actions/entry-actions';
 import { selectFullEntry, selectLoggedAkashaId } from '../../local-flux/selectors';
-import { ProfileHoverCard } from '../../shared-components';
 import { calculateReadingTime, getInitials } from '../../utils/dataModule';
 import styles from './entry-page-header.scss';
 

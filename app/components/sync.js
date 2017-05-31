@@ -4,8 +4,7 @@ import { Link, Redirect } from 'react-router-dom';
 import { RaisedButton } from 'material-ui';
 import { injectIntl } from 'react-intl';
 import { generalMessages, setupMessages } from '../locale-data/messages';
-import PanelContainerFooter from './PanelContainer/panel-container-footer';
-import { SyncStatusLoader } from './';
+import { PanelContainerFooter, SyncStatusLoader } from './';
 
 class Sync extends Component {
     interval = null;

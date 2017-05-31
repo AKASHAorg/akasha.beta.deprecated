@@ -91,7 +91,7 @@ const getEntryRecord = (entry) => {
     record = record.set('entryEth', new EntryEth(entry.entryEth));
     if (entry.entryEth.publisher) {
         // only keep a reference to the publisher's profile address
-        record = record.setIn(['entryEth', 'publisher'], entry.entryEth.publisher.profile);
+        record = record.setIn(['entryEth', 'publisher'], entry.entryEth.publisher.akashaId);
     }
     return record;
 };

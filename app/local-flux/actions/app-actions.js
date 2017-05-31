@@ -82,8 +82,8 @@ export const panelHide = () => action(types.PANEL_HIDE);
 export const resetHomeReady = () => action(types.RESET_HOME_READY);
 
 export const showAuthDialog = actionId => action(types.SHOW_AUTH_DIALOG, { actionId });
-export const showLoginDialog = profileAddress =>
-    action(types.SHOW_LOGIN_DIALOG, { profileAddress });
+export const showLoginDialog = akashaId =>
+    action(types.SHOW_LOGIN_DIALOG, { akashaId });
 export const showNotification = notification =>
     action(types.SHOW_NOTIFICATION, { notification });
 export const showPublishConfirmDialog = actionId =>
