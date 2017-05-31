@@ -22,7 +22,7 @@ const getCommentRecord = (comment) => {
     let record = new CommentRecord(comment);
     record = record.set('data', new CommentData(comment.data));
     if (comment.data.profile) {
-        record = record.setIn(['data', 'profile'], comment.data.profile.profile);
+        record = record.setIn(['data', 'profile'], comment.data.profile.akashaId);
     }
     if (comment.data.content) {
         record = record.setIn(['data', 'content'], JSON.parse(comment.data.content));

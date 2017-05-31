@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Badge } from 'material-ui';
 import { colors } from 'material-ui/styles';
-import Avatar from '../Avatar/avatar';
+import { Avatar } from '../';
 
 const badgeStyle = {
     top: '-6px',

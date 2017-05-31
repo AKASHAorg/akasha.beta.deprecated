@@ -121,6 +121,32 @@ const appState = createReducer(initialState, {
     [types.HIDE_WEIGHT_CONFIRM_DIALOG]: state =>
         state.set('weightConfirmDialog', null),
 
+    [types.PROFILE_ADD_FOLLOW_ACTION]: (state, { payload }) => {
+        id += 1;
+        return state.setIn(['pendingActions', id], new PendingActionRecord({
+            id,
+            gas: 2000000,
+            messageId: 'followProfile',
+            payload: fromJS(payload),
+            status: 'checkAuth',
+            titleId: 'followProfileTitle',
+            type: actionTypes.follow,
+        }));
+    },
+
+    [types.PROFILE_ADD_UNFOLLOW_ACTION]: (state, { payload }) => {
+        id += 1;
+        return state.setIn(['pendingActions', id], new PendingActionRecord({
+            id,
+            gas: 2000000,
+            messageId: 'unfollowProfile',
+            payload: fromJS(payload),
+            status: 'checkAuth',
+            titleId: 'unfollowProfileTitle',
+            type: actionTypes.unfollow,
+        }));
+    },
+
     [types.PROFILE_LOGIN_SUCCESS]: (state) => {
         const action = state.get('pendingActions').find(act =>
             act.get('status') === 'checkAuth');
@@ -147,8 +173,8 @@ const appState = createReducer(initialState, {
     [types.SHOW_AUTH_DIALOG]: (state, { actionId }) =>
         state.set('showAuthDialog', actionId),
 
-    [types.SHOW_LOGIN_DIALOG]: (state, { profileAddress }) =>
-        state.set('showLoginDialog', profileAddress),
+    [types.SHOW_LOGIN_DIALOG]: (state, { akashaId }) =>
+        state.set('showLoginDialog', akashaId),
 
     [types.SHOW_PUBLISH_CONFIRM_DIALOG]: (state, { actionId }) =>
         state.set('publishConfirmDialog', actionId),

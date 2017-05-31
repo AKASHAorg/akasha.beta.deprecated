@@ -428,7 +428,7 @@ function* watchEntryNewestIteratorChannel () {
     while (true) {
         const resp = yield take(actionChannels.entry.allStreamIterator);
         if (resp.error) {
-            if (resp.request && resp.request.toBlock) {
+            if (resp.request.toBlock) {
                 yield put(actions.entryMoreNewestIteratorError(resp.error, resp.request));
             } else {
                 yield put(actions.entryNewestIteratorError(resp.error, resp.request));
@@ -444,12 +444,11 @@ function* watchEntryNewestIteratorChannel () {
     }
 }
 
-
 function* watchEntryProfileIteratorChannel () {
     while (true) {
         const resp = yield take(actionChannels.entry.entryProfileIterator);
         if (resp.error) {
-            if (resp.request && resp.request.start) {
+            if (resp.request.start) {
                 yield put(actions.entryMoreProfileIteratorError(resp.error, resp.request));
             } else {
                 yield put(actions.entryProfileIteratorError(resp.error, resp.request));
@@ -469,7 +468,7 @@ function* watchEntryStreamIteratorChannel () {
     while (true) {
         const resp = yield take(actionChannels.entry.followingStreamIterator);
         if (resp.error) {
-            if (resp.request && resp.request.toBlock) {
+            if (resp.request.toBlock) {
                 yield put(actions.entryMoreStreamIteratorError(resp.error, resp.request));
             } else {
                 yield put(actions.entryStreamIteratorError(resp.error, resp.request));
@@ -489,7 +488,7 @@ function* watchEntryTagIteratorChannel () {
     while (true) {
         const resp = yield take(actionChannels.entry.entryTagIterator);
         if (resp.error) {
-            if (resp.request && resp.request.start) {
+            if (resp.request.start) {
                 yield put(actions.entryMoreTagIteratorError(resp.error, resp.request));
             } else {
                 yield put(actions.entryTagIteratorError(resp.error, resp.request));

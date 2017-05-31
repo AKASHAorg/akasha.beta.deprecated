@@ -242,7 +242,7 @@ LoginDialog.propTypes = {
 function mapStateToProps (state) {
     const profile = selectProfile(state, state.appState.get('showLoginDialog'));
     return {
-        ethAddress: selectEthAddress(state, profile.get('profile')),
+        ethAddress: selectEthAddress(state, profile.get('akashaId')),
         gethStatus: selectGethStatus(state),
         ipfsStatus: selectIpfsStatus(state),
         loggedProfile: state.profileState.get('loggedProfile'),

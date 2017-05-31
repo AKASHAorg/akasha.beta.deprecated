@@ -9,7 +9,7 @@ import { getInitials, getUrl } from 'utils/dataModule';
 import imageCreator, { findBestMatch } from 'utils/imageUtils';
 import { Avatar, PanelContainer } from 'shared-components';
 import { UserDonate } from 'shared-components/svg';
-import { FormattedMessage, injectIntl } from 'react-intl';
+import { injectIntl } from 'react-intl';
 
 // Remember to update height and width values inside getBackgroundImageStyle method
 const imageWrapperStyle = {
@@ -93,24 +93,15 @@ class ProfileDetails extends Component {
         const userInitials = profileData.firstName || profileData.lastName ?
             getInitials(profileData.firstName, profileData.lastName) :
             '';
-        const followers = (<FormattedMessage
-          id="app.profile.followersCount"
-          description="counting a profile's followers"
-          defaultMessage={`{followersCount, number} {followersCount, plural,
-            one {follower}
-            few {followers}
-            many {followers}
-            other {followers}
-          }`}
-          values={{ followersCount: profileData.followersCount || 0 }}
-        />);
+        const followers = intl.formatMessage(profileMessages.followersCount, {
+            followers: profileData.followers || 0
+        });
 
         return (<div style={{ height: '100%' }}>
           <div style={imageWrapperStyle}>
             <img
               src={imageUrl}
               style={this.getBackgroundImageStyle(backgroundImage[bestMatch])}
-              role="presentation"
               alt=""
             />
           </div>

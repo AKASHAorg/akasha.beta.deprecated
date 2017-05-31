@@ -1,86 +1,76 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { connect } from 'react-redux';
-import { AppActions, TransactionActions, ProfileActions } from 'local-flux';
+import actionTypes from '../../constants/action-types';
+import { deletePendingAction, updateAction } from '../../local-flux/actions/app-actions';
+import { profileFollow, profileFollowError, profileFollowSuccess, profileUnfollow,
+    profileUnfollowError, profileUnfollowSuccess } from '../../local-flux/actions/profile-actions';
+import { transactionDeletePending } from '../../local-flux/actions/transaction-actions';
 
 class FollowRunner extends Component {
 
     componentWillReceiveProps (nextProps) {
         this.launchActions(nextProps);
-        if (!nextProps.minedTx.equals(this.props.minedTx)) {
-            this.listenForMinedTx(nextProps);
-        }
+        this.listenForMinedTx(nextProps);
     }
 
     launchActions = (nextProps) => {
-        const { pendingActions, appActions, profileActions } = nextProps;
+        const { pendingActions } = nextProps;
         const actions = pendingActions.filter(action =>
             action.get('status') === 'readyToPublish');
-        if (actions.size > 0) {
-            actions.forEach((action) => {
-                const actionType = action.get('type');
-                const payload = action.get('payload') ? action.get('payload').toJS() : {};
-                switch (actionType) {
-                    case 'followProfile':
-                        appActions.updatePendingAction(action.merge({
-                            status: 'publishing'
-                        }));
-                        profileActions.followProfile(
-                            payload.akashaId, action.get('gas'), payload.profile
-                        );
-                        break;
-                    case 'unfollowProfile':
-                        appActions.updatePendingAction(action.merge({
-                            status: 'publishing'
-                        }));
-                        profileActions.unfollowProfile(
-                            payload.akashaId, action.get('gas'), payload.profile
-                        );
-                        break;
-                    default:
-                        break;
-                }
-            });
-        }
+        actions.forEach((action) => {
+            const actionType = action.get('type');
+            const payload = action.get('payload') ? action.get('payload').toJS() : {};
+            switch (actionType) {
+                case actionTypes.follow:
+                    this.props.updateAction(action.get('id'), { status: 'publishing' });
+                    this.props.profileFollow(payload.akashaId, action.gas, payload.profile);
+                    break;
+                case actionTypes.unfollow:
+                    this.props.updateAction(action.get('id'), { status: 'publishing' });
+                    this.props.profileUnfollow(payload.akashaId, action.gas, payload.profile);
+                    break;
+                default:
+                    break;
+            }
+        });
     };
 
     listenForMinedTx = (nextProps) => {
-        const { minedTx, pendingTx, fetchingMined, fetchingPending, deletingPendingTx, appActions,
-            profileActions, transactionActions, loggedProfileData, pendingActions,
-            profiles } = nextProps;
+        const { deletingPendingTx, fetchingMined, fetchingPending, loggedProfile, minedTx,
+            pendingActions, pendingTx } = nextProps;
         const isNotFetching = !fetchingMined && !fetchingPending;
+        const loggedAkashaId = loggedProfile.get('akashaId');
         const pendingFollowTxs = isNotFetching ?
-            pendingTx.toJS().filter(tx =>
-                tx.profile === loggedProfileData.get('profile') &&
-                (tx.type === 'followProfile' || tx.type === 'unfollowProfile') &&
-                !!minedTx.find(mined => mined.tx === tx.tx) &&
-                !deletingPendingTx.find(deleting => deleting.tx === tx.tx && deleting.value)
+            pendingTx.filter(tx =>
+                tx.akashaId === loggedAkashaId &&
+                (tx.type === actionTypes.follow || tx.type === actionTypes.unfollow) &&
+                !!minedTx.get(tx.tx) &&
+                !deletingPendingTx.get(tx.tx)
             ) :
             [];
 
         pendingFollowTxs.forEach((tx) => {
-            const loggedProfile = loggedProfileData.get('profile');
-            const loggedAkashaId = loggedProfileData.get('akashaId');
-            const profile = profiles.find(prf => prf.get('akashaId') === tx.akashaId);
-            const profileAddress = profile ? profile.get('profile') : null;
             const correspondingAction = pendingActions.find(action =>
                 action.get('type') === tx.type &&
                 action.get('status') === 'publishing' &&
-                action.getIn(['payload', 'akashaId']) === tx.akashaId
+                action.getIn(['payload', 'akashaId']) === tx.extra.akashaId
             );
-            transactionActions.deletePendingTx(tx.tx);
-            if (tx.type === 'followProfile') {
-                profileActions.followProfileSuccess(tx.akashaId, tx.followedProfile);
+            const minedSuccessfully = minedTx.get(tx.tx).cumulativeGasUsed < tx.gas;
+            this.props.transactionDeletePending(tx.tx);
+            if (tx.type === actionTypes.follow) {
+                if (minedSuccessfully) {
+                    this.props.profileFollowSuccess({ akashaId: tx.extra.akashaId });
+                } else {
+                    this.props.profileFollowError({}, tx.extra.akashaId);
+                }
+            } else if (minedSuccessfully) {
+                this.props.profileUnfollowSuccess(tx.extra.akashaId);
             } else {
-                profileActions.unfollowProfileSuccess(tx.akashaId, tx.unfollowedProfile);
+                this.props.profileUnfollowError({}, tx.extra.akashaId);
             }
-            profileActions.getProfileData([{ profile: loggedProfile }], true);
-            if (profileAddress) {
-                profileActions.getProfileData([{ profile: profileAddress }], true);
-            }
-            profileActions.isFollower(loggedAkashaId, tx.akashaId);
             if (correspondingAction) {
-                appActions.deletePendingAction(correspondingAction.get('id'));
+                this.props.deletePendingAction(correspondingAction.get('id'));
             }
         });
     };
@@ -91,39 +81,47 @@ class FollowRunner extends Component {
 }
 
 FollowRunner.propTypes = {
-    appActions: PropTypes.shape(),
-    profileActions: PropTypes.shape(),
-    transactionActions: PropTypes.shape(),
+    deletePendingAction: PropTypes.func.isRequired,
+    deletingPendingTx: PropTypes.shape(),
     fetchingMined: PropTypes.bool,
     fetchingPending: PropTypes.bool,
-    deletingPendingTx: PropTypes.shape(),
+    loggedProfile: PropTypes.shape(),
     minedTx: PropTypes.shape(),
-    pendingTx: PropTypes.shape(),
     pendingActions: PropTypes.shape(),
-    loggedProfile: PropTypes.string
+    pendingTx: PropTypes.shape(),
+    profileFollow: PropTypes.func.isRequired,
+    profileFollowError: PropTypes.func.isRequired,
+    profileFollowSuccess: PropTypes.func.isRequired,
+    profileUnfollow: PropTypes.func.isRequired,
+    profileUnfollowError: PropTypes.func.isRequired,
+    profileUnfollowSuccess: PropTypes.func.isRequired,
+    transactionDeletePending: PropTypes.func.isRequired,
+    updateAction: PropTypes.func.isRequired,
 };
 
-function mapStateToProps (state, ownProps) {
+function mapStateToProps (state) {
     return {
-        fetchingMined: state.transactionState.get('fetchingMined'),
-        fetchingPending: state.transactionState.get('fetchingPending'),
-        updatingProfile: state.profileState.getIn(['flags', 'updatingProfile']),
         deletingPendingTx: state.transactionState.getIn(['flags', 'deletingPendingTx']),
+        fetchingMined: state.transactionState.getIn(['flags', 'fetchingMined']),
+        fetchingPending: state.transactionState.getIn(['flags', 'fetchingPending']),
+        loggedProfile: state.profileState.get('loggedProfile'),
         minedTx: state.transactionState.get('mined'),
-        pendingTx: state.transactionState.get('pending'),
-        loggedProfileData: state.profileState.get('profiles').find(profile =>
-            profile.get('profile') === state.profileState.getIn(['loggedProfile', 'profile'])),
         pendingActions: state.appState.get('pendingActions'),
-        profiles: state.profileState.get('profiles')
+        pendingTx: state.transactionState.get('pending'),
     };
 }
 
-function mapDispatchToProps (dispatch) {
-    return {
-        appActions: new AppActions(dispatch),
-        profileActions: new ProfileActions(dispatch),
-        transactionActions: new TransactionActions(dispatch)
-    };
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(FollowRunner);
+export default connect(
+    mapStateToProps,
+    {
+        deletePendingAction,
+        profileFollow,
+        profileFollowError,
+        profileFollowSuccess,
+        profileUnfollow,
+        profileUnfollowError,
+        profileUnfollowSuccess,
+        transactionDeletePending,
+        updateAction
+    }
+)(FollowRunner);

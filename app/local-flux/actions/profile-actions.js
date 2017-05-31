@@ -636,6 +636,11 @@ class ProfileActions {
 
 export { ProfileActions };
 
+export const profileAddFollowAction = payload =>
+    action(types.PROFILE_ADD_FOLLOW_ACTION, { payload });
+export const profileAddUnfollowAction = payload =>
+    action(types.PROFILE_ADD_UNFOLLOW_ACTION, { payload });
+
 export const profileClearLocal = () => action(types.PROFILE_CLEAR_LOCAL);
 export const profileClearLoginErrors = () => action(types.PROFILE_CLEAR_LOGIN_ERRORS);
 export const profileDeleteLogged = () => action(types.PROFILE_DELETE_LOGGED);
@@ -647,6 +652,38 @@ export const profileDeleteLoggedError = (error) => {
 };
 
 export const profileDeleteLoggedSuccess = () => action(types.PROFILE_DELETE_LOGGED_SUCCESS);
+export const profileFollow = (akashaId, gas, profile) =>
+    action(types.PROFILE_FOLLOW, { akashaId, gas, profile });
+
+export const profileFollowError = (error, request) => {
+    error.code = 'PFE01';
+    error.messageId = 'profileFollow';
+    return action(types.PROFILE_FOLLOW_ERROR, { error, request });
+};
+
+export const profileFollowersIterator = akashaId =>
+    action(types.PROFILE_FOLLOWERS_ITERATOR, { akashaId });
+
+export const profileFollowersIteratorError = (error, request) => {
+    error.code = 'PFIE01';
+    error.messageId = 'profileFollowersIterator';
+    return action(types.PROFILE_FOLLOWERS_ITERATOR_ERROR, { error, request });
+};
+
+export const profileFollowersIteratorSuccess = data =>
+    action(types.PROFILE_FOLLOWERS_ITERATOR_SUCCESS, { data });
+export const profileFollowingsIterator = akashaId =>
+    action(types.PROFILE_FOLLOWINGS_ITERATOR, { akashaId });
+
+export const profileFollowingsIteratorError = (error, request) => {
+    error.code = 'PFIE02';
+    error.messageId = 'profileFollowingsIterator';
+    return action(types.PROFILE_FOLLOWINGS_ITERATOR_ERROR, { error, request });
+};
+
+export const profileFollowingsIteratorSuccess = data =>
+    action(types.PROFILE_FOLLOWINGS_ITERATOR_SUCCESS, { data });
+export const profileFollowSuccess = data => action(types.PROFILE_FOLLOW_SUCCESS, { data });
 export const profileGetBalance = () => action(types.PROFILE_GET_BALANCE);
 
 export const profileGetBalanceError = (error) => {
@@ -703,6 +740,16 @@ export const profileGetLoggedError = (error) => {
 };
 
 export const profileGetLoggedSuccess = data => action(types.PROFILE_GET_LOGGED_SUCCESS, { data });
+export const profileIsFollower = following => action(types.PROFILE_IS_FOLLOWER, { following });
+
+export const profileIsFollowerError = (error, request) => {
+    error.code = 'PIFE01';
+    error.messageId = 'profileIsFollower';
+    return action(types.PROFILE_IS_FOLLOWER_ERROR, { error, request });
+};
+
+export const profileIsFollowerSuccess = data =>
+    action(types.PROFILE_IS_FOLLOWER_SUCCESS, { data });
 export const profileLogin = data => action(types.PROFILE_LOGIN, { data });
 
 export const profileLoginError = (error) => {
@@ -721,11 +768,45 @@ export const profileLogoutError = (error) => {
 };
 
 export const profileLogoutSuccess = () => action(types.PROFILE_LOGOUT_SUCCESS);
+export const profileMoreFollowersIterator = akashaId =>
+    action(types.PROFILE_MORE_FOLLOWERS_ITERATOR, { akashaId });
+
+export const profileMoreFollowersIteratorError = (error, request) => {
+    error.code = 'PMFIE01';
+    error.messageId = 'profileMoreFollowersIterator';
+    return action(types.PROFILE_MORE_FOLLOWERS_ITERATOR_ERROR, { error, request });
+};
+
+export const profileMoreFollowersIteratorSuccess = data =>
+    action(types.PROFILE_MORE_FOLLOWERS_ITERATOR_SUCCESS, { data });
+export const profileMoreFollowingsIterator = akashaId =>
+    action(types.PROFILE_MORE_FOLLOWINGS_ITERATOR, { akashaId });
+
+export const profileMoreFollowingsIteratorError = (error, request) => {
+    error.code = 'PMFIE02';
+    error.messageId = 'profileMoreFollowingsIterator';
+    return action(types.PROFILE_MORE_FOLLOWINGS_ITERATOR_ERROR, { error, request });
+};
+
+export const profileMoreFollowingsIteratorSuccess = data =>
+    action(types.PROFILE_MORE_FOLLOWINGS_ITERATOR_SUCCESS, { data });
+
 export const profileSaveLoggedError = (error) => {
     error.code = 'PSLE01';
     error.fatal = true;
     return action(types.PROFILE_SAVE_LOGGED_ERROR, { error });
 };
+
+export const profileUnfollow = (akashaId, gas, profile) =>
+    action(types.PROFILE_UNFOLLOW, { akashaId, gas, profile });
+
+export const profileUnfollowError = (error, request) => {
+    error.code = 'PUE01';
+    error.messageId = 'profileUnfollow';
+    return action(types.PROFILE_UNFOLLOW_ERROR, { error, request });
+};
+
+export const profileUnfollowSuccess = data => action(types.PROFILE_UNFOLLOW_SUCCESS, { data });
 
 export const profileUpdateLoggedError = (error) => {
     error.code = 'PULE01';
