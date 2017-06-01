@@ -3,7 +3,7 @@ import { getCommentContent } from './ipfs';
 import { FULL_WAIT_TIME, INSTANT_WAIT_TIME, MEDIUM_WAIT_TIME, SHORT_WAIT_TIME } from '../../config/settings';
 
 /**
- * Resolve parent comments and send tree structure of comments
+ * Resolve comments ipfs hashes
  * @type {Function}
  */
 
@@ -33,12 +33,6 @@ const execute = Promise.coroutine(function*(data: string[], cb: any) {
             resolved = [];
         }, time);
     }
-    // const results = [];
-    // let comment;
-    // for (let ipfsHash of data) {
-    //     comment = yield getCommentContent(ipfsHash);
-    //     results.push(comment);
-    // }
 
     return { };
 });
