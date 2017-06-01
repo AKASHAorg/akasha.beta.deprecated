@@ -1,5 +1,4 @@
 import * as Promise from 'bluebird';
-// import * as R from 'ramda';
 import { constructed as contracts } from '../../contracts/index';
 import getComment from './get-comment';
 
@@ -14,7 +13,7 @@ const execute = Promise.coroutine(function*(data: { start?: number, limit?: numb
     if (currentId === '0') {
         return { collection: [], entryId: data.entryId };
     }
-    let comment, commentContract, commentInfo, content;
+    let comment, commentContract;
     const maxResults = (data.limit) ? data.limit : 50;
     let start = (data.start) ? data.start : 0;
     let results = [];
@@ -35,9 +34,7 @@ const execute = Promise.coroutine(function*(data: { start?: number, limit?: numb
 
     while (counter < maxResults && start < commentTreeLn) {
         comment = yield getComment.execute({ entryId: data.entryId, commentId: commentTree[start].idComment });
-        content = JSON.parse(comment.data.content).blocks[0]['text'];
-        commentInfo = { commentId: comment.commentId, parentId: comment.data.parent, text: content };
-        results.push(commentInfo);
+        results.push(comment);
         counter++;
         start++;
     }
