@@ -4,8 +4,6 @@ import getComment from './get-comment';
 import removeComment from './remove-comment';
 import commentsIterator from './comments-iterator';
 import commentsParentIterator from './comments-parent-iterator';
-import commentsLazy from './comments-lazy';
-import repliesLazy from './replies-lazy';
 import getProfileComments from './get-profile-comments';
 import resolveCommentsIpfsHash from './resolve-comments-ipfs-hash';
 
@@ -16,8 +14,6 @@ export default [
     removeComment,
     commentsIterator,
     commentsParentIterator,
-    commentsLazy,
-    repliesLazy,
     getProfileComments,
     resolveCommentsIpfsHash
 ];
