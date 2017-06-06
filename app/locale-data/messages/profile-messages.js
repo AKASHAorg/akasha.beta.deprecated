@@ -224,15 +224,39 @@ export const profileMessages = defineMessages({
         description: 'unfollow a profile',
         defaultMessage: 'Unfollow'
     },
+    entriesCount: {
+        id: 'app.profile.entriesCount',
+        description: 'counting a profile\'s entries',
+        defaultMessage: `{entriesCount, number} {entriesCount, plural,
+            one {entry}
+            other {entries}
+        }`
+    },
     followers: {
         id: 'app.profile.followers',
         description: 'Label for followers tab',
         defaultMessage: 'Followers'
     },
+    followersCount: {
+        id: 'app.profile.followersCount',
+        description: 'number of followers',
+        defaultMessage: `{followers, number} {followers, plural,
+            one {follower}
+            other {followers} 
+        }`
+    },
     following: {
         id: 'app.profile.following',
         description: 'Label for following tab',
         defaultMessage: 'Following'
+    },
+    followingsCount: {
+        id: 'app.profile.followingsCount',
+        description: 'number of followings',
+        defaultMessage: `{followings, number} {followings, plural,
+            one {following}
+            other {followings} 
+        }`
     },
     allEntries: {
         id: 'app.profile.allEntries',

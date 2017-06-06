@@ -2,10 +2,10 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
 import { IconButton, SvgIcon, TextField } from 'material-ui';
-import { chatMessages } from 'locale-data/messages'; // eslint-disable-line import/no-unresolved, import/extensions
-import { Avatar, ProfileHoverCard } from 'shared-components';
-import { ChatChannelInfo, EntryBookmarkOn, EntryBookmarkOff } from 'shared-components/svg'; // eslint-disable-line import/no-unresolved, import/extensions
 import { List } from 'immutable';
+import { chatMessages } from '../../../../../locale-data/messages';
+import { Avatar, ProfileHoverCard } from '../../../../../components';
+import { ChatChannelInfo, EntryBookmarkOn, EntryBookmarkOff } from '../../../../../components/svg';
 import ChatMessagesList from './chat-messages-list';
 
 const Channel = global.Channel;

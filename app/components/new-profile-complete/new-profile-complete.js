@@ -1,9 +1,8 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
-import RaisedButton from 'material-ui/RaisedButton';
-import TextField from 'material-ui/TextField';
+import { RaisedButton, TextField } from 'material-ui';
 import { formMessages, generalMessages, profileMessages } from '../../locale-data/messages';
-import PanelContainerFooter from '../PanelContainer/panel-container-footer';
+import { PanelContainerFooter } from '../';
 
 class NewProfileComplete extends PureComponent {
     componentWillMount () {
@@ -12,11 +11,13 @@ class NewProfileComplete extends PureComponent {
             tempProfileGetRequest();
         }
     }
+
     _handleComplete = () => {
         const { history, tempProfileDelete, tempProfile } = this.props;
         tempProfileDelete({ akashaId: tempProfile.get('akashaId') });
         history.push('/setup/authenticate');
-    }
+    };
+
     render () {
         const { tempProfile, intl } = this.props;
         const fullName = `${tempProfile.get('firstName')} ${tempProfile.get('lastName')}`;

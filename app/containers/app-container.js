@@ -11,7 +11,7 @@ import { DataLoader, GethDetailsModal, IpfsDetailsModal, PublishConfirmDialog,
 import { hideNotification, hideTerms, hideReportModal } from '../local-flux/actions/app-actions';
 import { errorDeleteFatal, errorDeleteNonFatal } from '../local-flux/actions/error-actions';
 import { HomeContainer, LauncherContainer, SidebarContainer } from './';
-import { ErrorBar, FatalErrorModal, NotificationBar, ReportModal, TermsPanel } from '../components';
+import { ErrorBar, ErrorReportingModal, FatalErrorModal, NotificationBar, TermsPanel } from '../components';
 import { AuthDialog, LoginDialog } from '../components/dialogs';
 import lightTheme from '../layouts/AkashaTheme/lightTheme';
 import darkTheme from '../layouts/AkashaTheme/darkTheme';
@@ -60,7 +60,7 @@ const AppContainer = (props) => {
                 intl={intl}
               />
             }
-            <ReportModal
+            <ErrorReportingModal
               open={!!appState.get('showReportModal')}
               error={errorState.get('reportError')}
               intl={intl}

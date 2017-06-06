@@ -1,15 +1,18 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { injectIntl } from 'react-intl';
 import ReactTooltip from 'react-tooltip';
-import { IconButton, RaisedButton, SvgIcon, Paper } from 'material-ui';
-import { ProfileActions } from '../../local-flux';
-import { Avatar, DataLoader } from '../';
-import { getInitials } from '../../utils/dataModule';
-import imageCreator from '../../utils/imageUtils';
-import { UserDonate } from '../svg';
+import { IconButton, Paper, RaisedButton, SvgIcon } from 'material-ui';
 import { profileMessages } from '../../locale-data/messages';
+import { profileAddFollowAction, profileAddTipAction,
+    profileAddUnfollowAction } from '../../local-flux/actions/profile-actions';
+import { selectLoggedAkashaId } from '../../local-flux/selectors';
+import { Avatar } from '../';
+import { DataLoader } from '../../shared-components';
+import { getInitials } from '../../utils/dataModule';
+import { UserDonate } from '../svg';
 import styles from './profile-hover-card.scss';
 
 class ProfileHoverCard extends Component {
@@ -31,9 +34,9 @@ class ProfileHoverCard extends Component {
     };
 
     onTip = () => {
-        const { profile, profileActions } = this.props;
+        const { profile } = this.props;
         ReactTooltip.hide();
-        profileActions.addSendTipAction({
+        this.props.profileAddTipAction({
             akashaId: profile.akashaId,
             firstName: profile.firstName,
             lastName: profile.lastName,
@@ -42,13 +45,21 @@ class ProfileHoverCard extends Component {
     };
 
     onFollow = () => {
-        const { profile, profileActions } = this.props;
-        profileActions.addFollowProfileAction(profile.akashaId, profile.profile);
+        const { profile } = this.props;
+        const payload = {
+            akashaId: profile.akashaId,
+            profile: profile.profile
+        };
+        this.props.profileAddFollowAction(payload);
     };
 
     onUnfollow = () => {
-        const { profile, profileActions } = this.props;
-        profileActions.addUnfollowProfileAction(profile.akashaId, profile.profile);
+        const { profile } = this.props;
+        const payload = {
+            akashaId: profile.akashaId,
+            profile: profile.profile
+        };
+        this.props.profileAddUnfollowAction(payload);
     };
 
     getPosition = () => {
@@ -71,78 +82,66 @@ class ProfileHoverCard extends Component {
         };
     };
 
-    navigateToProfile = () => {
-        const { loggedProfile, profile } = this.props;
-        const { router } = this.context;
-        router.push(`${loggedProfile.get('akashaId')}/profile/${profile.profile}`);
-    };
-
     render () {
-        const { anchorNode, anchorHovered, followPending, followingsList, intl,
-            loading, loggedProfile, profile, sendingTip } = this.props;
+        const { anchorNode, anchorHovered, followPending, intl, isFollowing,
+            loading, loggedAkashaId, profile, sendingTip } = this.props;
         if (!anchorNode || (!anchorHovered && !this.state.isHovered)) {
             return null;
         }
         const profileInitials = getInitials(profile.firstName, profile.lastName);
-        let profileAvatar;
-        if (profile.avatar) {
-            profileAvatar = imageCreator(profile.avatar, profile.baseUrl);
-        }
-        const isLoggedProfile = profile.profile === loggedProfile.get('profile');
-        const isFollowing = followingsList.includes(profile.profile);
-        const followProfilePending = followPending && followPending.find(follow =>
-            follow.akashaId === profile.akashaId);
-        const tipProfilePending = sendingTip && sendingTip.find(prf =>
-            prf.akashaId === profile.akashaId);
+        const isLoggedProfile = profile.akashaId === loggedAkashaId;
+        const followersCountMessage = intl.formatMessage(profileMessages.followersCount, {
+            followers: profile.followersCount
+        });
         const { left, top } = this.getPosition();
 
         return (
           <div
             className={`${styles.rootWrapper} ${styles.popover}`}
-            style={{ left, top }}
             onMouseEnter={this.onMouseEnter}
             onMouseLeave={this.onMouseLeave}
+            style={{ left, top }}
           >
-            <Paper
-              zDepth={1}
-              className={`${styles.root}`}
-            >
+            <Paper className={styles.root} zDepth={1}>
               <DataLoader flag={loading || !profile}>
                 <div>
                   <div className="caret-up" />
                   <div className={`${styles.hoverCardHeader} row`}>
                     <div className={`${styles.avatar} col-xs-3 start-xs`}>
-                      <Avatar
-                        userInitials={profileInitials}
-                        image={profileAvatar}
-                        radius={60}
-                        onClick={this.navigateToProfile}
-                        style={{ cursor: 'pointer' }}
-                      />
+                      <Link to={`/${profile.akashaId}`}>
+                        <Avatar
+                          userInitials={profileInitials}
+                          image={profile.avatar}
+                          radius={60}
+                          style={{ cursor: 'pointer' }}
+                        />
+                      </Link>
                     </div>
                     {!isLoggedProfile &&
                       <div className={`${styles.cardActions} col-xs-9`}>
                         <div className="row end-xs">
                           <div className={`${styles.tipButton} col-xs-3`}>
                             <IconButton
-                              data-tip="Send tip"
+                              disabled={sendingTip}
+                              data-tip={intl.formatMessage(profileMessages.sendTip)}
                               onClick={this.onTip}
-                              disabled={tipProfilePending && tipProfilePending.value}
                             >
                               <SvgIcon>
                                 <UserDonate />
                               </SvgIcon>
                             </IconButton>
                           </div>
-                          <div className={`${styles.followButton} ${isFollowing ? 'col-xs-6' : 'col-xs-5'}`}>
+                          <div
+                            className={`${styles.followButton} ${isFollowing ? 'col-xs-6' : 'col-xs-5'}`}
+                          >
                             <RaisedButton
+                              disabled={followPending}
                               label={isFollowing ?
                                   intl.formatMessage(profileMessages.unfollow) :
                                   intl.formatMessage(profileMessages.follow)
                               }
-                              primary={!isFollowing}
                               onClick={isFollowing ? this.onUnfollow : this.onFollow}
-                              disabled={followProfilePending && followProfilePending.value}
+                              primary={!isFollowing}
                             />
                           </div>
                         </div>
@@ -150,18 +149,15 @@ class ProfileHoverCard extends Component {
                     }
                   </div>
                   <div className={`${styles.cardBody} row`}>
-                    <div
-                      className="col-xs-12"
-                    >
-                      <div
-                        onClick={this.navigateToProfile}
-                        className={`${styles.profileName}`}
-                      >
-                        {profile.firstName} {profile.lastName}
-                      </div>
+                    <div className="col-xs-12">
+                      <Link to={`/${profile.akashaId}`}>
+                        <div className={styles.profileName}>
+                          {profile.firstName} {profile.lastName}
+                        </div>
+                      </Link>
                     </div>
                     <div className={`${styles.profileDetails} col-xs-12`}>
-                      @{profile.akashaId} - {profile.followersCount} followers
+                      @{profile.akashaId} - {followersCountMessage}
                     </div>
                   </div>
                 </div>
@@ -177,37 +173,38 @@ ProfileHoverCard.defaultProps = {
     loading: false
 };
 
-ProfileHoverCard.contextTypes = {
-    router: PropTypes.shape()
-};
-
 ProfileHoverCard.propTypes = {
     anchorHovered: PropTypes.bool,
     anchorNode: PropTypes.shape(),
     containerNode: PropTypes.shape(),
-    followingsList: PropTypes.shape(),
-    followPending: PropTypes.shape(),
+    followPending: PropTypes.bool,
     intl: PropTypes.shape().isRequired,
+    isFollowing: PropTypes.bool,
     loading: PropTypes.bool,
-    loggedProfile: PropTypes.shape(),
+    loggedAkashaId: PropTypes.string,
     profile: PropTypes.shape(),
-    profileActions: PropTypes.shape(),
-    sendingTip: PropTypes.shape(),
+    profileAddFollowAction: PropTypes.func.isRequired,
+    profileAddTipAction: PropTypes.func,
+    profileAddUnfollowAction: PropTypes.func.isRequired,
+    sendingTip: PropTypes.bool,
 };
 
-function mapStateToProps (state) {
+function mapStateToProps (state, ownProps) {
+    const { profile } = ownProps;
+    const loggedAkashaId = selectLoggedAkashaId(state);
     return {
-        followingsList: state.profileState.get('followingsList'),
-        followPending: state.profileState.getIn(['flags', 'followPending']),
-        loggedProfile: state.profileState.get('loggedProfile'),
-        sendingTip: state.profileState.getIn(['flags', 'sendingTip']),
+        followPending: state.profileState.getIn(['flags', 'followPending', profile.akashaId]),
+        isFollowing: state.profileState.getIn(['followings', loggedAkashaId, profile.akashaId]),
+        loggedAkashaId,
+        sendingTip: state.profileState.getIn(['flags', 'sendingTip', profile.akashaId]),
     };
 }
 
-function mapDispatchToProps (dispatch) {
-    return {
-        profileActions: new ProfileActions(dispatch),
-    };
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(injectIntl(ProfileHoverCard));
+export default connect(
+    mapStateToProps,
+    {
+        profileAddFollowAction,
+        profileAddTipAction,
+        profileAddUnfollowAction,
+    }
+)(injectIntl(ProfileHoverCard));

@@ -130,39 +130,15 @@ class ProfileCard extends Component {
         const { avatar, akashaId, firstName, lastName, entriesCount, followersCount,
             followingCount, profile } = profileData;
         const isOwnProfile = akashaId === loggedProfileData.get('akashaId');
-        const entriesCountMessage = (<FormattedMessage
-          id="app.profile.entriesCount"
-          description="counting a profile's entries"
-          defaultMessage={`{entriesCount, number} {entriesCount, plural,
-                one {entry}
-                few {entries}
-                many {entries}
-                other {entries}
-              }`}
-          values={{ entriesCount }}
-        />);
-        const followersCountMessage = (<FormattedMessage
-          id="app.profile.followersCount"
-          description="counting a profile's followers"
-          defaultMessage={`{followersCount, number} {followersCount, plural,
-                one {follower}
-                few {followers}
-                many {followers}
-                other {followers}
-              }`}
-          values={{ followersCount }}
-        />);
-        const followingCountMessage = (<FormattedMessage
-          id="app.profile.followingCount"
-          description="counting a profile's following"
-          defaultMessage={`{followingCount, number} {followingCount, plural,
-                one {following}
-                few {following}
-                many {following}
-                other {following}
-              }`}
-          values={{ followingCount }}
-        />);
+        const entriesCountMessage = intl.formatMessage(profileMessages.followersCount, {
+            entriesCount
+        });
+        const followersCountMessage = intl.formatMessage(profileMessages.followersCount, {
+            followers: followersCount
+        });
+        const followingCountMessage = intl.formatMessage(profileMessages.followingsCount, {
+            followings: followingCount
+        });
         const titleStyle = {
             fontSize: '18px',
             fontWeight: '500',
