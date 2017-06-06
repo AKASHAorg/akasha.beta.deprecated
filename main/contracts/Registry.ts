@@ -76,7 +76,7 @@ export default class Registry extends BaseContract {
             .eth
             .getAccountsAsync()
             .then((list: string[]) => {
-                if (!list) {
+                if (!list || !list.length) {
                     return Promise.resolve([]);
                 }
                 list.sort();
