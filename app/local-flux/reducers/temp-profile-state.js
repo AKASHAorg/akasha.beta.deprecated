@@ -13,15 +13,12 @@ const tempProfileState = createReducer(initialState, {
         });
     },
     // save a new temp profile to database
-    [types.TEMP_PROFILE_CREATE]: (state, { data }) => {
-        const { status, ...profile } = data;
-        return state.merge({
-            tempProfile: TempProfileModel.createTempProfile(profile),
+    [types.TEMP_PROFILE_CREATE]: state =>
+        state.merge({
             status: TempProfileModel.createStatus({
                 currentAction: types.TEMP_PROFILE_CREATE
             })
-        });
-    },
+        }),
     // create a new temp profile for updates
     [types.SET_TEMP_PROFILE]: (state, { data }) =>
         state.merge({

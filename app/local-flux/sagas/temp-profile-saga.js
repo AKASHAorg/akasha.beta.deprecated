@@ -25,7 +25,7 @@ function* createTempProfile (data) {
     try {
         const tempProfile = yield call(
             [registryService, registryService.createTempProfile],
-            data
+            data.toJS()
         );
         yield put(tempProfileActions.tempProfileCreateSuccess(tempProfile));
     } catch (ex) {
@@ -40,7 +40,7 @@ function* createEthAddressRequest (tempProfile) {
     const channel = Channel.server.auth.generateEthKey;
     yield put(tempProfileActions.ethAddressCreate(tempProfile));
     yield call(enableChannel, channel, Channel.client.auth.manager);
-    yield call([channel, channel.send], { password: tempProfile.password });
+    yield call([channel, channel.send], { password: new TextEncoder('utf-8').encode(tempProfile.password) });
 }
 /**
  * Listen on generateEthKey channel
@@ -103,7 +103,7 @@ function* addTxToQueue (tx, action) {
 function* listenFaucetTx (tempProfile) {
     const response = yield take(actionChannels.tx.emitMined);
     const profileStatus = yield select(state => state.tempProfileState.get('status'));
-    if (!response.error && response.data.mined === profileStatus.faucetTx) {
+    if (!response.error && (response.data.mined === profileStatus.faucetTx)) {
         yield put(tempProfileActions.tempProfileFaucetTxMinedSuccess({ tempProfile, response }));
     } else {
         yield put(tempProfileActions.faucetRequestError(response.error));
@@ -194,7 +194,8 @@ function* tempProfilePublishUpdate (tempProfile) {
 function* watchProfileCreate () {
     while (true) {
         const action = yield take(types.TEMP_PROFILE_CREATE);
-        yield fork(createTempProfile, action.data);
+        const tempProfile = yield select(state => state.tempProfileState.get('tempProfile'));
+        yield fork(createTempProfile, tempProfile);
     }
 }
 

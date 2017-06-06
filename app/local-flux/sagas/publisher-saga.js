@@ -158,6 +158,7 @@ function* publishComments({ type, data }) {
 }
 function* watchCommentPublishActions () {
     const action = takeEvery(filterCommentPublishing, publishComments);
+    
 }
 export function* watchPublishActions () {
     yield fork(watchPublishingTriggers);
