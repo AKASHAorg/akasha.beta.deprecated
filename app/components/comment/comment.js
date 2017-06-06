@@ -2,21 +2,15 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
 import ReactTooltip from 'react-tooltip';
-import {
-    CardHeader,
-    Divider,
-    IconButton,
-    FlatButton,
-    SvgIcon,
-  } from 'material-ui';
+import { CardHeader, Divider, FlatButton, IconButton, SvgIcon } from 'material-ui';
 import { DraftJS, MegadraftEditor, editorStateFromRaw, createTypeStrategy } from 'megadraft';
 import Link from 'megadraft/lib/components/Link';
 import HubIcon from 'material-ui/svg-icons/hardware/device-hub';
 import MoreIcon from 'material-ui/svg-icons/navigation/expand-more';
 import LessIcon from 'material-ui/svg-icons/navigation/expand-less';
-import { Avatar } from '../';
+import { Avatar, ProfileHoverCard } from '../';
 import { EntryCommentReply } from '../svg';
-import { MentionDecorators, ProfileHoverCard } from '../../shared-components';
+import { MentionDecorators } from '../../shared-components';
 import { entryMessages } from '../../locale-data/messages';
 import { getInitials } from '../../utils/dataModule';
 import style from './comment.scss';

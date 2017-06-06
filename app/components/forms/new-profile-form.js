@@ -8,8 +8,7 @@ import CancelIcon from 'material-ui/svg-icons/navigation/cancel';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import validation from 'react-validation-mixin';
 import strategy from 'joi-validation-strategy';
-import { Avatar, ImageUploader } from '../';
-import PanelContainerFooter from '../PanelContainer/panel-container-footer';
+import { Avatar, ImageUploader, PanelContainerFooter } from '../';
 import { profileMessages, formMessages,
   generalMessages, validationMessages } from '../../locale-data/messages';
 import { getProfileSchema } from '../../utils/validationSchema';

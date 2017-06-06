@@ -1,10 +1,17 @@
 import { apply, call, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 import { actionChannels, enableChannel } from './helpers';
+import * as appActions from '../actions/app-actions';
 import * as actions from '../actions/profile-actions';
+import * as transactionActions from '../actions/transaction-actions';
 import * as types from '../constants';
 import * as profileService from '../services/profile-service';
+import { selectLastFollower, selectLastFollowing, selectLoggedAkashaId,
+    selectToken } from '../selectors';
+import actionTypes from '../../constants/action-types';
 
 const Channel = global.Channel;
+const FOLLOWERS_ITERATOR_LIMIT = 13;
+const FOLLOWINGS_ITERATOR_LIMIT = 13;
 
 function* profileDeleteLogged () {
     try {
@@ -13,6 +20,25 @@ function* profileDeleteLogged () {
     } catch (error) {
         yield put(actions.profileDeleteLoggedError());
     }
+}
+
+function* profileFollow ({ akashaId, gas, profile }) {
+    const channel = Channel.server.profile.followProfile;
+    yield call(enableChannel, channel, Channel.client.profile.manager);
+    const token = yield select(selectToken);
+    yield apply(channel, channel.send, [{ token, akashaId, gas, profile }]);
+}
+
+function* profileFollowersIterator ({ akashaId }) {
+    const channel = Channel.server.profile.followersIterator;
+    yield call(enableChannel, channel, Channel.client.profile.manager);
+    yield apply(channel, channel.send, [{ akashaId, limit: FOLLOWERS_ITERATOR_LIMIT }]);
+}
+
+function* profileFollowingsIterator ({ akashaId }) {
+    const channel = Channel.server.profile.followingIterator;
+    yield call(enableChannel, channel, Channel.client.profile.manager);
+    yield apply(channel, channel.send, [{ akashaId, limit: FOLLOWINGS_ITERATOR_LIMIT }]);
 }
 
 function* profileGetBalance ({ unit = 'ether' }) {
@@ -64,6 +90,15 @@ export function* profileGetLogged () {
     }
 }
 
+function* profileIsFollower ({ following, akashaId }) {
+    const channel = Channel.server.profile.isFollower;
+    yield call(enableChannel, channel, Channel.client.profile.manager);
+    if (!akashaId) {
+        akashaId = yield select(selectLoggedAkashaId);
+    }
+    yield apply(channel, channel.send, [[{ akashaId, following }]]);
+}
+
 function* profileLogin ({ data }) {
     yield fork(watchProfileLoginChannel); // eslint-disable-line no-use-before-define
     const { ...payload } = data;
@@ -77,12 +112,31 @@ function* profileLogout () {
     yield apply(channel, channel.send, [{}]);
 }
 
+function* profileMoreFollowersIterator ({ akashaId }) {
+    const channel = Channel.server.profile.followersIterator;
+    const start = yield select(state => selectLastFollower(state, akashaId));
+    yield apply(channel, channel.send, [{ akashaId, limit: FOLLOWERS_ITERATOR_LIMIT, start }]);
+}
+
+function* profileMoreFollowingsIterator ({ akashaId }) {
+    const channel = Channel.server.profile.followingIterator;
+    const start = yield select(state => selectLastFollowing(state, akashaId));
+    yield apply(channel, channel.send, [{ akashaId, limit: FOLLOWINGS_ITERATOR_LIMIT, start }]);
+}
+
 function* profileSaveLogged (loggedProfile) {
     try {
         yield apply(profileService, profileService.profileSaveLogged, [loggedProfile]);
     } catch (error) {
         yield put(actions.profileSaveLoggedError(error));
     }
+}
+
+function* profileUnfollow ({ akashaId, gas, profile }) {
+    const channel = Channel.server.profile.unfollowProfile;
+    yield call(enableChannel, channel, Channel.client.profile.manager);
+    const token = yield select(selectToken);
+    yield apply(channel, channel.send, [{ token, akashaId, gas, profile }]);
 }
 
 function* profileUpdateLogged (loggedProfile) {
@@ -97,6 +151,18 @@ function* profileUpdateLogged (loggedProfile) {
 
 function* watchProfileDeleteLogged () {
     yield takeLatest(types.PROFILE_DELETE_LOGGED, profileDeleteLogged);
+}
+
+function* watchProfileFollow () {
+    yield takeEvery(types.PROFILE_FOLLOW, profileFollow);
+}
+
+function* watchProfileFollowersIterator () {
+    yield takeEvery(types.PROFILE_FOLLOWERS_ITERATOR, profileFollowersIterator);
+}
+
+function* watchProfileFollowingsIterator () {
+    yield takeEvery(types.PROFILE_FOLLOWINGS_ITERATOR, profileFollowingsIterator);
 }
 
 function* watchProfileGetBalance () {
@@ -123,6 +189,10 @@ function* watchProfileGetLogged () {
     yield takeLatest(types.PROFILE_GET_LOGGED, profileGetLogged);
 }
 
+function* watchProfileIsFollower () {
+    yield takeEvery(types.PROFILE_IS_FOLLOWER, profileIsFollower);
+}
+
 function* watchProfileLogin () {
     yield takeLatest(types.PROFILE_LOGIN, profileLogin);
 }
@@ -131,7 +201,76 @@ function* watchProfileLogout () {
     yield takeLatest(types.PROFILE_LOGOUT, profileLogout);
 }
 
+function* watchProfileMoreFollowersIterator () {
+    yield takeEvery(types.PROFILE_MORE_FOLLOWERS_ITERATOR, profileMoreFollowersIterator);
+}
+
+function* watchProfileMoreFollowingsIterator () {
+    yield takeEvery(types.PROFILE_FOLLOWINGS_ITERATOR, profileMoreFollowingsIterator);
+}
+
+function* watchProfileUnfollow () {
+    yield takeEvery(types.PROFILE_UNFOLLOW, profileUnfollow);
+}
+
 // Channel watchers
+
+function* watchProfileFollowChannel () {
+    while (true) {
+        const resp = yield take(actionChannels.profile.followProfile);
+        const { akashaId, gas, profile } = resp.request;
+        if (resp.error) {
+            yield put(actions.profileFollowError(resp.error, resp.request));
+        } else {
+            const payload = [{
+                extra: { akashaId, profile },
+                gas,
+                tx: resp.data.tx,
+                type: actionTypes.follow,
+            }];
+            yield put(transactionActions.transactionAddToQueue(payload));
+            yield put(appActions.showNotification({
+                id: 'followingProfile',
+                values: { akashaId },
+                duration: 3000
+            }));
+        }
+    }
+}
+
+function* watchProfileFollowersIteratorChannel () {
+    while (true) {
+        const resp = yield take(actionChannels.profile.followersIterator);
+        if (resp.error) {
+            if (resp.request.start) {
+                yield put(actions.profileMoreFollowersIteratorError(resp.error, resp.request));
+            } else {
+                yield put(actions.profileFollowersIteratorError(resp.error, resp.request));
+            }
+        } else if (resp.request.start) {
+            yield put(actions.profileMoreFollowersIteratorSuccess(resp.data));
+        } else {
+            yield put(actions.profileFollowersIteratorSuccess(resp.data));
+        }
+    }
+}
+
+function* watchProfileFollowingsIteratorChannel () {
+    while (true) {
+        const resp = yield take(actionChannels.profile.followingIterator);
+        if (resp.error) {
+            if (resp.request.start) {
+                yield put(actions.profileMoreFollowingsIteratorError(resp.error, resp.request));
+            } else {
+                yield put(actions.profileFollowingsIteratorError(resp.error, resp.request));
+            }
+        } else if (resp.request.start) {
+            yield put(actions.profileMoreFollowingsIteratorSuccess(resp.data));
+        } else {
+            yield put(actions.profileFollowingsIteratorSuccess(resp.data));
+        }
+    }
+}
 
 function* watchProfileGetBalanceChannel () {
     while (true) {
@@ -198,6 +337,17 @@ function* watchProfileGetListChannel () {
     }
 }
 
+function* watchProfileIsFollowerChannel () {
+    while (true) {
+        const resp = yield take(actionChannels.profile.isFollower);
+        if (resp.error) {
+            yield put(actions.profileIsFollowerError(resp.error, resp.request));
+        } else {
+            yield put(actions.profileIsFollowerSuccess(resp.data));
+        }
+    }
+}
+
 function* watchProfileLoginChannel () {
     const resp = yield take(actionChannels.auth.login);
     if (resp.error) {
@@ -223,25 +373,60 @@ function* watchProfileLogoutChannel () {
     }
 }
 
+function* watchProfileUnfollowChannel () {
+    while (true) {
+        const resp = yield take(actionChannels.profile.unFollowProfile);
+        const { akashaId, gas, profile } = resp.request;
+        if (resp.error) {
+            yield put(actions.profileUnfollowError(resp.error, resp.request));
+        } else {
+            const payload = [{
+                extra: { akashaId, profile },
+                gas,
+                tx: resp.data.tx,
+                type: actionTypes.unfollow,
+            }];
+            yield put(transactionActions.transactionAddToQueue(payload));
+            yield put(appActions.showNotification({
+                id: 'unfollowingProfile',
+                values: { akashaId },
+                duration: 3000
+            }));
+        }
+    }
+}
+
 export function* registerProfileListeners () {
+    yield fork(watchProfileFollowChannel);
+    yield fork(watchProfileFollowersIteratorChannel);
+    yield fork(watchProfileFollowingsIteratorChannel);
     yield fork(watchProfileGetBalanceChannel);
     yield fork(watchProfileGetCurrentChannel);
     yield fork(watchProfileGetDataChannel);
     yield fork(watchProfileGetLocalChannel);
     yield fork(watchProfileGetListChannel);
+    yield fork(watchProfileIsFollowerChannel);
     yield fork(watchProfileLogoutChannel);
+    yield fork(watchProfileUnfollowChannel);
 }
 
 export function* watchProfileActions () {
     yield fork(watchProfileDeleteLogged);
+    yield fork(watchProfileFollow);
+    yield fork(watchProfileFollowersIterator);
+    yield fork(watchProfileFollowingsIterator);
     yield fork(watchProfileGetBalance);
     yield fork(watchProfileGetCurrent);
     yield fork(watchProfileGetData);
     yield fork(watchProfileGetList);
     yield fork(watchProfileGetLocal);
     yield fork(watchProfileGetLogged);
+    yield fork(watchProfileIsFollower);
     yield fork(watchProfileLogin);
     yield fork(watchProfileLogout);
+    yield fork(watchProfileMoreFollowersIterator);
+    yield fork(watchProfileMoreFollowingsIterator);
+    yield fork(watchProfileUnfollow);
 }
 
 export function* registerWatchers () {

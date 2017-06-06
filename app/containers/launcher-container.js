@@ -2,11 +2,10 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Redirect, Route } from 'react-router-dom';
 import { injectIntl } from 'react-intl';
-import PanelContainer from '../components/PanelContainer/panel-container';
+import { PanelContainer, Tutorials } from '../components';
 import { PanelHeader } from '../shared-components';
 import { ConfigurationContainer, SynchronizationContainer, AuthContainer,
   LogDetailsContainer, NewProfileContainer, NewProfileStatusContainer, NewProfileCompleteContainer } from './';
-import Tutorials from '../components/tutorials';
 import { setupMessages, generalMessages } from '../locale-data/messages';
 
 const LauncherContainer = ({ intl, location }) => {

@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { ProfileHoverCard } from '../';
+import { ProfileHoverCard } from '../../components';
 
 const Channel = global.Channel;
 const existsClient = Channel.client.registry.profileExists;

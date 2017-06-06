@@ -21,7 +21,6 @@ export PanelHeader from './PanelHeader/panel-header';
 export PathInputField from './Forms/path-input-field';
 export PublishConfirmDialog from './Dialogs/publish-confirm-dialog';
 export ProfileCard from './ProfileCard/profile-card';
-export ProfileHoverCard from './ProfileHoverCard/profile-hover-card';
 export SendTipForm from './Forms/send-tip-form';
 export SyncProgressLoader from './Loaders/sync-progress';
 export TagChip from './TagChip/tag-chip';

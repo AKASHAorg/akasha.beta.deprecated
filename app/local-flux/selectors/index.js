@@ -67,6 +67,12 @@ export const selectIpfsStatus = state => state.externalProcState.getIn(['ipfs', 
 
 export const selectLastComment = state => state.commentsState.get('lastComm');
 
+export const selectLastFollower = (state, akashaId) =>
+    state.profileState.getIn(['followers', akashaId]).last();
+
+export const selectLastFollowing = (state, akashaId) =>
+    state.profileState.getIn(['followings', akashaId]).last();
+
 export const selectLastGethLog = state =>
     state.externalProcState.getIn(['geth', 'lastLogTimestamp']);
 
@@ -78,14 +84,14 @@ export const selectLastStreamBlock = state => state.entryState.get('lastStreamBl
 export const selectLocalProfiles = state =>
     state.profileState
         .get('localProfiles')
-        .filter(address => !!state.profileState.getIn(['byId', address]))
-        .map(address => selectProfile(state, address));
+        .filter(akashaId => !!state.profileState.getIn(['byId', akashaId]))
+        .map(akashaId => selectProfile(state, akashaId));
 
 export const selectLoggedAkashaId = state =>
     state.profileState.getIn(['loggedProfile', 'akashaId']);
 
 export const selectLoggedProfileData = state =>
-    selectProfile(state, state.profileState.getIn(['loggedProfile', 'profile']));
+    selectProfile(state, state.profileState.getIn(['loggedProfile', 'akashaId']));
 
 export const selectPendingAction = (state, actionId) =>
     state.appState.getIn(['pendingActions', actionId]);
@@ -102,8 +108,8 @@ export const selectPendingComments = (state, entryId) => {
 
 export const selectPendingTx = (state, tx) => state.transactionState.getIn(['pending', tx]);
 
-export const selectProfile = (state, profileAddress) =>
-    state.profileState.getIn(['byId', profileAddress]) || new ProfileRecord();
+export const selectProfile = (state, akashaId) =>
+    state.profileState.getIn(['byId', akashaId]) || new ProfileRecord();
 
 export const selectProfileFlag = (state, flag) => state.profileState.getIn(['flags', flag]);
 

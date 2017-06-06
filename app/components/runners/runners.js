@@ -7,8 +7,8 @@ const Runners = () => (
     <ClaimRunner />
     <CommentsPublisher />
     <CommonRunner />
-    {/*<FollowRunner />
-    <ProfileUpdater />
+    <FollowRunner />
+    {/* <ProfileUpdater />
     <PublishEntryRunner />
     <TagRunner />
     <TipRunner />*/}
