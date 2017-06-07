@@ -56,7 +56,8 @@ export const updateTempProfile = (tempProfile, status) =>
                     tmpProf.status[key] = status[key];
                 });
             }
-        }).then((updated) => {
+        })
+        .then((updated) => {
             if (updated) {
                 return profileDB.tempProfile
                     .where('akashaId')
@@ -64,7 +65,8 @@ export const updateTempProfile = (tempProfile, status) =>
                     .first();
             }
             return tempProfile;
-        });
+        })
+        .catch(err => err);
 /**
  * Delete temporary profile. Called after profile was successfully created
  */

@@ -161,11 +161,11 @@ function* watchCommentPublishActions () {
     
 }
 export function* watchPublishActions () {
-    yield fork(watchPublishingTriggers);
-    yield fork(watchPublishingStartActions);
-    yield fork(watchCommentPublishActions);
+    // yield fork(watchPublishingTriggers);
+    // yield fork(watchPublishingStartActions);
+    // yield fork(watchCommentPublishActions);
     /** ***************** SIMULATIONS **************** */
-    yield fork(watchConfirmActions);
-    yield fork(watchAuthActions);
+    // yield fork(watchConfirmActions);
+    // yield fork(watchAuthActions);
     /** ***************** /SIMULATIONS **************** */
 }

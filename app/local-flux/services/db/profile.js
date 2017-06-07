@@ -7,7 +7,7 @@ const profileDB = new Dexie(dbName);
 profileDB.version(1).stores({
     localProfiles: '&address, akashaId',
     loggedProfile: '&account, profile, akashaId',
-    tempProfile: '&akashaId, currentStatus'
+    tempProfile: '&akashaId'
 });
 
 // Add a new table: knownAkashaIds
