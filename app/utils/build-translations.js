@@ -4,7 +4,7 @@ import { sync as globSync } from 'glob';
 import { sync as mkdirpSync } from 'mkdirp';
 
 const MESSAGES_PATTERN = './intl/app/**/*.json';
-const LANG_DIR = '../app/locale-data/';
+const LANG_DIR = './app/locale-data/';
 
 const ESCAPED_CHARS = {
     '\\': '\\\\',
