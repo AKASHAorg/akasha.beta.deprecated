@@ -24,14 +24,20 @@ function* tempProfileGetRequest () {
  */
 function* createTempProfile () {
     const tempProfile = yield select(state => state.tempProfileState.get('tempProfile'));
-    try {
-        const savedProfile = yield call(
-            [registryService, registryService.createTempProfile],
-            tempProfile.toJS()
-        );
-        yield put(tempProfileActions.tempProfileCreateSuccess(savedProfile));
-    } catch (ex) {
-        yield put(tempProfileActions.tempProfileCreateError(ex));
+    const tempProfileStatus = yield select(state => state.tempProfileState.get('status'));
+    // check if the tempProfile is newly created
+    if (!tempProfileStatus.faucetRequested || !tempProfileStatus.publishRequested || tempProfile.get('address') === '') {
+        try {
+            const savedProfile = yield call(
+                [registryService, registryService.createTempProfile],
+                tempProfile.toJS()
+            );
+            yield put(tempProfileActions.tempProfileCreateSuccess(savedProfile));
+        } catch (ex) {
+            yield put(tempProfileActions.tempProfileCreateError(ex));
+        }
+    } else {
+        yield put(tempProfileActions.tempProfileCreateSuccess(tempProfile));
     }
 }
 /**
@@ -51,12 +57,12 @@ function* createEthAddressListener (tempProfile) {
     const tempProfileStatus = yield select(state => state.tempProfileState.get('status'));
     if (!response.error) {
         tempProfile.address = response.data.address;
-        tempProfile = yield call(
+        yield put(tempProfileActions.ethAddressCreateSuccess(tempProfile));
+        yield call(
             [registryService, registryService.updateTempProfile],
             tempProfile,
             tempProfileStatus.toJS()
         );
-        yield put(tempProfileActions.ethAddressCreateSuccess(tempProfile));
     } else {
         yield put(tempProfileActions.ethAddressCreateError(response.error));
     }
@@ -74,15 +80,15 @@ function* requestEther (tempProfile) {
  */
 function* requestEtherListener (tempProfile) {
     const response = yield take(actionChannels.auth.requestEther);
-    const tempProfileStatus = yield select(state => state.tempProfileState.get('status'));
     if (!response.error) {
         try {
-            tempProfile = yield call(
+            yield put(tempProfileActions.faucetRequestSuccess({ tempProfile, response }));
+            const tempProfileStatus = yield select(state => state.tempProfileState.get('status'));
+            yield call(
                 [registryService, registryService.updateTempProfile],
                 tempProfile,
                 tempProfileStatus.toJS()
             );
-            yield put(tempProfileActions.faucetRequestSuccess({ tempProfile, response }));
         } catch (error) {
             yield put(tempProfileActions.faucetRequestError(error));
         }
@@ -128,13 +134,14 @@ function* tempProfileLoginListener (tempProfile) {
 function* tempProfilePublishRequest (tempProfile) {
     const channel = Channel.server.registry.registerProfile;
     const manager = Channel.client.registry.manager;
-    const { akashaId, address, password, ...others } = tempProfile;
+    const { akashaId, address, password, ...others } = tempProfile.toJS();
     const tempProfileStatus = yield select(state => state.tempProfileState.get('status'));
     const profileToPublish = {
         akashaId,
         token: tempProfileStatus.token,
         ipfs: others
     };
+    console.log(profileToPublish, 'profileToPublish');
     yield put(tempProfileActions.tempProfilePublish(tempProfile));
     yield call([registryService, registryService.updateTempProfile],
         tempProfile,
@@ -219,8 +226,12 @@ function* addPublishTxToQueue () {
     yield fork(addTxToQueue, tempProfileStatus.publishTx);
 }
 
-function* tempProfilePublishDone () {
-    yield put(tempProfileActions.tempProfilePublishTxMinedSuccess());
+function* tempProfilePublishDone ({ data }) {
+    const tempProfileStatus = yield select(state => state.tempProfileState.get('status'));
+    const isPublishTx = data.some(txData => txData.tx === tempProfileStatus.get('publishTx'));
+    if (tempProfileStatus && isPublishTx && tempProfileStatus.get('publishRequested')) {
+        yield put(tempProfileActions.tempProfilePublishTxMinedSuccess());
+    }
 }
 
 function* tempProfileRemove () {
@@ -232,7 +243,6 @@ function* tempProfileRemove () {
         );
         yield put(tempProfileActions.tempProfileDeleteSuccess());
     } catch (err) {
-        console.error('error!', err);
         yield put(tempProfileActions.tempProfileDeleteError(err));
     }
 }

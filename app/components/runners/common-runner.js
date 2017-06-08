@@ -6,38 +6,48 @@ import { showAuthDialog, showPublishConfirmDialog, showTransferConfirmDialog,
     showWeightConfirmDialog, updateAction } from '../../local-flux/actions/app-actions';
 
 class CommonRunner extends Component {
+    componentWillUpdate (nextProps) {
+        const prevPendingActions = this.props.pendingActions;
+        const { pendingActions } = nextProps;
 
-    componentWillReceiveProps (nextProps) {
-        const { pendingActions, publishConfirmDialog, authDialog, loggedProfile } = nextProps;
-        const unconfirmedTransferActions = pendingActions.filter(action =>
-            action.get('status') === actionStatus.needTransferConfirmation);
-        const unconfirmedWeightActions = pendingActions.filter(action =>
-            action.get('status') === actionStatus.needWeightConfirmation);
-        const unconfirmedActions = pendingActions.filter(action =>
-            action.get('status') === actionStatus.needConfirmation);
-        const confirmedActions = pendingActions.filter(action =>
-            action.get('status') === actionStatus.checkAuth);
-        if (!!publishConfirmDialog || !!authDialog) {
-            return;
-        }
-        if (unconfirmedTransferActions.size > 0) {
-            this.props.showTransferConfirmDialog(unconfirmedTransferActions.first().get('id'));
-        } else if (unconfirmedWeightActions.size > 0) {
-            this.props.showWeightConfirmDialog(unconfirmedWeightActions.first().get('id'));
-        } else if (unconfirmedActions.size > 0) {
-            this.props.showPublishConfirmDialog(unconfirmedActions.first().get('id'));
-        } else if (confirmedActions.size > 0) {
-            const isLoggedIn = Date.parse(loggedProfile.get('expiration')) - 3000 > Date.now();
-            if (isLoggedIn) {
-                confirmedActions.forEach(action =>
-                    this.props.updateAction(action.get('id'), {
-                        status: actionStatus.readyToPublish
-                    }));
-            } else {
-                this.props.showAuthDialog(confirmedActions.first().get('id'));
+        pendingActions.forEach((action, index) => {
+            const { currentAction, type } = action;
+            if (currentAction !== prevPendingActions[index].currentAction) {
+                
             }
-        }
+        });
     }
+    // componentWillReceiveProps (nextProps) {
+    //     const { pendingActions, publishConfirmDialog, authDialog, loggedProfile } = nextProps;
+    //     const unconfirmedTransferActions = pendingActions.filter(action =>
+    //         action.get('status') === actionStatus.needTransferConfirmation);
+    //     const unconfirmedWeightActions = pendingActions.filter(action =>
+    //         action.get('status') === actionStatus.needWeightConfirmation);
+    //     const unconfirmedActions = pendingActions.filter(action =>
+    //         action.get('status') === actionStatus.needConfirmation);
+    //     const confirmedActions = pendingActions.filter(action =>
+    //         action.get('status') === actionStatus.checkAuth);
+    //     if (!!publishConfirmDialog || !!authDialog) {
+    //         return;
+    //     }
+    //     if (unconfirmedTransferActions.size > 0) {
+    //         this.props.showTransferConfirmDialog(unconfirmedTransferActions.first().get('id'));
+    //     } else if (unconfirmedWeightActions.size > 0) {
+    //         this.props.showWeightConfirmDialog(unconfirmedWeightActions.first().get('id'));
+    //     } else if (unconfirmedActions.size > 0) {
+    //         this.props.showPublishConfirmDialog(unconfirmedActions.first().get('id'));
+    //     } else if (confirmedActions.size > 0) {
+    //         const isLoggedIn = Date.parse(loggedProfile.get('expiration')) - 3000 > Date.now();
+    //         if (isLoggedIn) {
+    //             confirmedActions.forEach(action =>
+    //                 this.props.updateAction(action.get('id'), {
+    //                     status: actionStatus.readyToPublish
+    //                 }));
+    //         } else {
+    //             this.props.showAuthDialog(confirmedActions.first().get('id'));
+    //         }
+    //     }
+    // }
 
     render () {
         return null;

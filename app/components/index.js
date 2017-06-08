@@ -1,6 +1,6 @@
 /* eslint-disable import/no-named-as-default */
 export Auth from './auth';
-export Avatar from './Avatar/avatar';
+export Avatar from './avatar/avatar';
 export Column from './columns/column';
 export ColumnHeader from './columns/column-header';
 export Configuration from './configuration';

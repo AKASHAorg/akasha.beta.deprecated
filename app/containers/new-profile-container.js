@@ -5,11 +5,7 @@ import { tempProfileUpdate, tempProfileCreate } from '../local-flux/actions/temp
 import { showTerms } from '../local-flux/actions/app-actions';
 import { NewProfileForm } from '../components';
 
-const submitForm = props => (profileData) => {
-    // console.log(profile, 'profile to publish');
-    // const profile = profileData.toJS();
-    // delete profile.password2;
-    // profile.password = new TextEncoder('utf-8').encode(profile.password);
+const submitForm = props => () => {
     props.tempProfileCreate();
     props.history.push('/setup/new-identity-status');
 };

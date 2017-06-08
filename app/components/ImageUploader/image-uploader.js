@@ -65,7 +65,8 @@ class ImageUploader extends Component {
     shouldComponentUpdate (nextProps, nextState) {
         return nextState.imageFile !== this.state.imageFile ||
                 nextState.initialImageFile !== this.state.initialImageFile ||
-                nextState.error !== this.state.error;
+                nextState.error !== this.state.error ||
+                nextProps.initialImageLink !== this.props.initialImageLink;
     }
     getImage = () => {
         if (this.state.isNewImage) {
@@ -124,9 +125,9 @@ class ImageUploader extends Component {
         return imageSrc;
     }
     _handleClearImage = () => {
-        const { clearImage } = this.props;
-        if (clearImage) {
-            clearImage();
+        const { onImageClear } = this.props;
+        if (typeof onImageClear === 'function') {
+            onImageClear();
         }
         this.setState({
             imageFile: {},
@@ -282,7 +283,7 @@ ImageUploader.propTypes = {
     uploadButtonStyle: PropTypes.shape(),
     clearImageButtonStyle: PropTypes.shape(),
     errorStyle: PropTypes.shape(),
-    clearImage: PropTypes.func
+    onImageClear: PropTypes.func
 };
 ImageUploader.contextTypes = {
     muiTheme: PropTypes.shape()
