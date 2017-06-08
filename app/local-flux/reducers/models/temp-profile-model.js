@@ -18,7 +18,8 @@ export default class TempProfileModel extends TempProfileModelRecord {
             about = '',
             akashaId,
             avatar,
-            backgroundImage,
+            backgroundImage = {},
+            baseUrl,
             crypto,
             ethAddress,
             firstName,
@@ -26,7 +27,16 @@ export default class TempProfileModel extends TempProfileModelRecord {
             links
         } = profileData;
         return TempProfileModel.createTempProfile({
-            about, akashaId, avatar, backgroundImage, ethAddress, firstName, lastName, links, crypto
+            about,
+            akashaId,
+            avatar,
+            backgroundImage,
+            baseUrl,
+            ethAddress,
+            firstName,
+            lastName,
+            links,
+            crypto
         });
     }
     static createStatus (status) {

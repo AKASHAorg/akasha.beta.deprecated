@@ -14,6 +14,7 @@ import PanelContainerFooter from '../PanelContainer/panel-container-footer';
 import { profileMessages, formMessages,
   generalMessages, validationMessages } from '../../locale-data/messages';
 import { getProfileSchema } from '../../utils/validationSchema';
+import { findClosestMatch } from '../../utils/imageUtils';
 import styles from './new-profile-form.scss';
 
 class NewProfileForm extends Component {
@@ -74,7 +75,6 @@ class NewProfileForm extends Component {
                     id: links.size > 0 ? (links.last().get('id') + 1) : 1
                 })));
         }
-        console.log(updatedTempProfile, 'updatedTemp profile');
         return this.props.onProfileUpdate(updatedTempProfile);
     };
 
@@ -201,6 +201,35 @@ class NewProfileForm extends Component {
         }
     }
 
+    _handleAvatarClear = () => {
+        const { isUpdate, tempProfile, onProfileUpdate } = this.props;
+        if (isUpdate) {
+            onProfileUpdate(
+              tempProfile.set('avatar', null)
+            );
+        }
+    }
+    _handleBackgroundClear = () => {
+        const { isUpdate, tempProfile, onProfileUpdate } = this.props;
+        if (isUpdate) {
+            onProfileUpdate(
+              tempProfile.set('backgroundImage', {})
+            );
+        }
+    }
+    _getBackgroundImage = () => {
+        const { isUpdate } = this.props;
+        const { backgroundImage, baseUrl } = this.props.tempProfile;
+        let image = null;
+        if (typeof backgroundImage === 'object' && Object.keys(backgroundImage).length > 0) {
+            if (isUpdate && this.imageUploader) {
+                const imgKey = findClosestMatch(this.imageUploader.clientWidth, backgroundImage, 'sm');
+                image = `${baseUrl}/${backgroundImage[imgKey].src}`;
+            }
+        }
+        return image;
+    }
+
     _handleSubmit = (ev) => {
         ev.preventDefault();
         const { expandOptionalDetails, tempProfile, onSubmit, onProfileUpdate } = this.props;
@@ -241,7 +270,8 @@ class NewProfileForm extends Component {
     render () {
         const { intl, muiTheme, expandOptionalDetails, style, isUpdate } = this.props;
         const { firstName, lastName, akashaId, password, password2,
-          optDetails, about, links, crypto, formHasErrors } = this.props.tempProfile;
+          about, links, crypto, formHasErrors, avatar } = this.props.tempProfile;
+        const { optDetails } = this.state;
         const { formatMessage } = intl;
         return (
           <div
@@ -329,7 +359,9 @@ class NewProfileForm extends Component {
                   <div className="col-xs-12 center-xs">
                     <Avatar
                       editable
-                      ref={(avatar) => { this.avatar = avatar; }}
+                      ref={(avtr) => { this.avatar = avtr; }}
+                      image={avatar}
+                      onImageClear={this._handleAvatarClear}
                     />
                   </div>
                   <h3 className="col-xs-12" style={{ margin: '20px 0 10px 0' }} >
@@ -340,7 +372,9 @@ class NewProfileForm extends Component {
                       ref={(imageUploader) => { this.imageUploader = imageUploader; }}
                       minWidth={360}
                       intl={intl}
+                      initialImageLink={this._getBackgroundImage()}
                       muiTheme={muiTheme}
+                      onImageClear={this._handleBackgroundClear}
                     />
                   </div>
                   <h3 className="col-xs-12" style={{ margin: '20px 0 0 0' }} >
@@ -383,7 +417,7 @@ class NewProfileForm extends Component {
                             fullWidth
                             floatingLabelText={intl.formatMessage(formMessages.title)}
                             value={link.get('title')}
-                            onChange={this._handleLinkChange('links', 'title', link.id)}
+                            onChange={this._handleLinkChange('links', 'title', link.get('id'))}
                             onBlur={this._validateField('links', index, 'title')}
                             errorText={this._getErrorMessages('links', index, 'title')}
                           />
@@ -392,7 +426,7 @@ class NewProfileForm extends Component {
                             floatingLabelText={intl.formatMessage(formMessages.url)}
                             hintText="https://twitter.com"
                             value={link.get('url')}
-                            onChange={this._handleLinkChange('links', 'url', link.id)}
+                            onChange={this._handleLinkChange('links', 'url', link.get('id'))}
                             onBlur={this._validateField('links', index, 'url')}
                             errorText={this._getErrorMessages('links', index, 'url')}
                           />
@@ -401,7 +435,7 @@ class NewProfileForm extends Component {
                           <IconButton
                             title={intl.formatMessage(profileMessages.removeLinkButtonTitle)}
                             style={{ marginTop: '24px' }}
-                            onClick={this._handleRemoveLink(link.id, 'links')}
+                            onClick={this._handleRemoveLink(link.get('id'), 'links')}
                           >
                             <SvgIcon>
                               <CancelIcon color={muiTheme.palette.textColor} />
@@ -449,7 +483,7 @@ class NewProfileForm extends Component {
                             fullWidth
                             floatingLabelText={intl.formatMessage(profileMessages.cryptoAddress)}
                             value={cryptoLink.get('address')}
-                            onChange={this._handleLinkChange('crypto', 'address', cryptoLink.id)}
+                            onChange={this._handleLinkChange('crypto', 'address', cryptoLink.get('id'))}
                             onBlur={this._validateField('crypto', index, 'address')}
                             errorText={this._getErrorMessages('crypto', index, 'address')}
                           />
@@ -458,7 +492,7 @@ class NewProfileForm extends Component {
                           <IconButton
                             title={intl.formatMessage(profileMessages.removeCryptoButtonTitle)}
                             style={{ marginTop: '24px' }}
-                            onClick={this._handleRemoveLink(cryptoLink.id, 'crypto')}
+                            onClick={this._handleRemoveLink(cryptoLink.get('id'), 'crypto')}
                           >
                             <SvgIcon>
                               <CancelIcon color={muiTheme.palette.textColor} />
