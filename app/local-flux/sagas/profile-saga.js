@@ -132,6 +132,13 @@ function* profileSaveLogged (loggedProfile) {
     }
 }
 
+function* profileSendTip ({ akashaId, value, gas }) {
+    const channel = Channel.server.profile.tip;
+    yield call(enableChannel, channel, Channel.client.profile.manager);
+    const token = yield select(selectToken);
+    yield apply(channel, channel.send, [{ token, akashaId, value, gas }]);
+}
+
 function* profileUnfollow ({ akashaId, gas, profile }) {
     const channel = Channel.server.profile.unfollowProfile;
     yield call(enableChannel, channel, Channel.client.profile.manager);
@@ -207,6 +214,10 @@ function* watchProfileMoreFollowersIterator () {
 
 function* watchProfileMoreFollowingsIterator () {
     yield takeEvery(types.PROFILE_FOLLOWINGS_ITERATOR, profileMoreFollowingsIterator);
+}
+
+function* watchProfileSendTip () {
+    yield takeEvery(types.PROFILE_SEND_TIP, profileSendTip);
 }
 
 function* watchProfileUnfollow () {
@@ -373,6 +384,29 @@ function* watchProfileLogoutChannel () {
     }
 }
 
+function* watchProfileSendTipChannel () {
+    while (true) {
+        const resp = yield take(actionChannels.profile.tip);
+        const { akashaId, gas, value } = resp.request;
+        if (resp.error) {
+            yield put(actions.profileSendTipError(resp.error, resp.request));
+        } else {
+            const payload = [{
+                extra: { akashaId, value },
+                gas,
+                tx: resp.data.tx,
+                type: actionTypes.sendTip
+            }];
+            yield put(transactionActions.transactionAddToQueue(payload));
+            yield put(appActions.showNotification({
+                id: 'sendingTip',
+                values: { akashaId },
+                duration: 3000
+            }));
+        }
+    }
+}
+
 function* watchProfileUnfollowChannel () {
     while (true) {
         const resp = yield take(actionChannels.profile.unFollowProfile);
@@ -407,6 +441,7 @@ export function* registerProfileListeners () {
     yield fork(watchProfileGetListChannel);
     yield fork(watchProfileIsFollowerChannel);
     yield fork(watchProfileLogoutChannel);
+    yield fork(watchProfileSendTipChannel);
     yield fork(watchProfileUnfollowChannel);
 }
 
@@ -426,6 +461,7 @@ export function* watchProfileActions () {
     yield fork(watchProfileLogout);
     yield fork(watchProfileMoreFollowersIterator);
     yield fork(watchProfileMoreFollowingsIterator);
+    yield fork(watchProfileSendTip);
     yield fork(watchProfileUnfollow);
 }
 

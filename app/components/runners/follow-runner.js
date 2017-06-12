@@ -6,6 +6,7 @@ import { deletePendingAction, updateAction } from '../../local-flux/actions/app-
 import { profileFollow, profileFollowError, profileFollowSuccess, profileUnfollow,
     profileUnfollowError, profileUnfollowSuccess } from '../../local-flux/actions/profile-actions';
 import { transactionDeletePending } from '../../local-flux/actions/transaction-actions';
+import { selectLoggedAkashaId } from '../../local-flux/selectors';
 
 class FollowRunner extends Component {
 
@@ -37,10 +38,9 @@ class FollowRunner extends Component {
     };
 
     listenForMinedTx = (nextProps) => {
-        const { deletingPendingTx, fetchingMined, fetchingPending, loggedProfile, minedTx,
+        const { deletingPendingTx, fetchingMined, fetchingPending, loggedAkashaId, minedTx,
             pendingActions, pendingTx } = nextProps;
         const isNotFetching = !fetchingMined && !fetchingPending;
-        const loggedAkashaId = loggedProfile.get('akashaId');
         const pendingFollowTxs = isNotFetching ?
             pendingTx.filter(tx =>
                 tx.akashaId === loggedAkashaId &&
@@ -85,7 +85,7 @@ FollowRunner.propTypes = {
     deletingPendingTx: PropTypes.shape(),
     fetchingMined: PropTypes.bool,
     fetchingPending: PropTypes.bool,
-    loggedProfile: PropTypes.shape(),
+    loggedAkashaId: PropTypes.string,
     minedTx: PropTypes.shape(),
     pendingActions: PropTypes.shape(),
     pendingTx: PropTypes.shape(),
@@ -104,7 +104,7 @@ function mapStateToProps (state) {
         deletingPendingTx: state.transactionState.getIn(['flags', 'deletingPendingTx']),
         fetchingMined: state.transactionState.getIn(['flags', 'fetchingMined']),
         fetchingPending: state.transactionState.getIn(['flags', 'fetchingPending']),
-        loggedProfile: state.profileState.get('loggedProfile'),
+        loggedAkashaId: selectLoggedAkashaId(state),
         minedTx: state.transactionState.get('mined'),
         pendingActions: state.appState.get('pendingActions'),
         pendingTx: state.transactionState.get('pending'),

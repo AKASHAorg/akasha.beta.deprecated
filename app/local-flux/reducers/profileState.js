@@ -9,29 +9,6 @@ import { ErrorRecord, LoggedProfile, ProfileRecord, ProfileState } from './recor
 
 const initialState = new ProfileState();
 
-const tipHandler = (state, { error, flags }) => {
-    const sendingTip = state.getIn(['flags', 'sendingTip']);
-    const index = sendingTip.findIndex(flag =>
-        flag.akashaId === flags.sendingTip.akashaId);
-    if (index === -1) {
-        return state.merge({
-            flags: state.get('flags').merge({
-                sendingTip: state.getIn(['flags', 'sendingTip'])
-                    .push(flags.sendingTip)
-            }),
-            errors: error ?
-                state.get('errors').push(new ErrorRecord(error)) :
-                state.get('errors')
-        });
-    }
-    return state.merge({
-        flags: state.get('flags').mergeIn(['sendingTip', index], flags.sendingTip),
-        errors: error ?
-            state.get('errors').push(new ErrorRecord(error)) :
-            state.get('errors')
-    });
-};
-
 const flagHandler = (state, { flags }) =>
     state.merge({
         flags: state.get('flags').merge(flags)
@@ -421,12 +398,6 @@ const profileState = createReducer(initialState, {
 
     [profileTypes.IS_FOLLOWER_ERROR]: errorHandler,
 
-    [profileTypes.SEND_TIP]: tipHandler,
-
-    [profileTypes.SEND_TIP_SUCCESS]: tipHandler,
-
-    [profileTypes.SEND_TIP_ERROR]: tipHandler,
-
     [profileTypes.CLEAR_FOLLOWERS]: (state, { akashaId }) => {
         const profileIndex = state.get('profiles').findIndex(prf =>
             prf.get('akashaId') === akashaId);
@@ -725,6 +696,15 @@ const profileState = createReducer(initialState, {
             moreFollowings: state.get('moreFollowings').set(data.akashaId, moreFollowings)
         });
     },
+
+    [types.PROFILE_SEND_TIP]: (state, { akashaId }) =>
+        state.setIn(['flags', 'sendingTip', akashaId], true),
+
+    [types.PROFILE_SEND_TIP_ERROR]: (state, { request }) =>
+        state.setIn(['flags', 'sendingTip', request.akashaId], false),
+
+    [types.PROFILE_SEND_TIP_SUCCESS]: (state, { data }) =>
+        state.setIn(['flags', 'sendingTip', data.akashaId], false),
 
     [types.PROFILE_UNFOLLOW]: (state, { akashaId }) =>
         state.setIn(['flags', 'followPending', akashaId], true),

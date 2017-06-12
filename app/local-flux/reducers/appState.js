@@ -134,6 +134,19 @@ const appState = createReducer(initialState, {
         }));
     },
 
+    [types.PROFILE_ADD_TIP_ACTION]: (state, { payload }) => {
+        id += 1;
+        return state.setIn(['pendingActions', id], new PendingActionRecord({
+            id,
+            gas: 2000000,
+            messageId: 'sendTip',
+            payload: fromJS(payload),
+            status: 'needTransferConfirmation',
+            titleId: 'sendTipTitle',
+            type: actionTypes.sendTip,
+        }));
+    },
+   
     [types.PROFILE_ADD_UNFOLLOW_ACTION]: (state, { payload }) => {
         id += 1;
         return state.setIn(['pendingActions', id], new PendingActionRecord({
