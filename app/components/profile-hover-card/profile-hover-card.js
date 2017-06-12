@@ -40,7 +40,6 @@ class ProfileHoverCard extends Component {
             akashaId: profile.akashaId,
             firstName: profile.firstName,
             lastName: profile.lastName,
-            profile: profile.profile
         });
     };
 

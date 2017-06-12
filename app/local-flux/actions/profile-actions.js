@@ -638,6 +638,8 @@ export { ProfileActions };
 
 export const profileAddFollowAction = payload =>
     action(types.PROFILE_ADD_FOLLOW_ACTION, { payload });
+export const profileAddTipAction = payload =>
+    action(types.PROFILE_ADD_TIP_ACTION, { payload });
 export const profileAddUnfollowAction = payload =>
     action(types.PROFILE_ADD_UNFOLLOW_ACTION, { payload });
 
@@ -797,6 +799,16 @@ export const profileSaveLoggedError = (error) => {
     return action(types.PROFILE_SAVE_LOGGED_ERROR, { error });
 };
 
+export const profileSendTip = (akashaId, value, gas) =>
+    action(types.PROFILE_SEND_TIP, { akashaId, value, gas });
+
+export const profileSendTipError = (error, request) => {
+    error.code = 'PSTE01';
+    error.messageId = 'profileSendTip';
+    return action(types.PROFILE_SEND_TIP_ERROR, { error, request });
+};
+
+export const profileSendTipSuccess = data => action(types.PROFILE_SEND_TIP_SUCCESS, { data });
 export const profileUnfollow = (akashaId, gas, profile) =>
     action(types.PROFILE_UNFOLLOW, { akashaId, gas, profile });
 

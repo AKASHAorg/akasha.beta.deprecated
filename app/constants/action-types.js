@@ -3,6 +3,7 @@ const actionTypes = {
     comment: 'comment',
     downvote: 'downvote',
     follow: 'follow',
+    sendTip: 'sendTip',
     unfollow: 'unfollow',
     upvote: 'upvote'
 };
