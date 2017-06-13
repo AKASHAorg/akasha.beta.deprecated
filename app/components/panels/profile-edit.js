@@ -26,18 +26,17 @@ class EditProfile extends PureComponent {
             setTempProfile(loggedProfileData);
         }
     }
-    _handleSubmit = (profile) => {
+    _handleSubmit = () => {
         const { publishEntity } = this.props;
-        console.log(profile, 'this profile should be updated');
-        // publishEntity({
-        //     entityType: 'tempProfile',
-        //     actionType: 'update',
-        //     entityId: null,
-        //     currentAction: '',
-        //     publishTx: '',
-        //     confirmed: false,
-        //     published: false
-        // });
+        publishEntity({
+            entityType: 'tempProfile',
+            actionType: 'update',
+            entityId: null,
+            currentAction: '',
+            publishTx: '',
+            confirmed: false,
+            published: false
+        });
     }
     _handleAbort = () => {
         const { history } = this.props;
@@ -78,6 +77,7 @@ EditProfile.propTypes = {
     muiTheme: PropTypes.shape(),
     loggedProfile: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
+    publishEntity: PropTypes.func,
     showLoginDialog: PropTypes.func,
     tempProfilePublishUpdate: PropTypes.func,
     tempProfileDelete: PropTypes.func,

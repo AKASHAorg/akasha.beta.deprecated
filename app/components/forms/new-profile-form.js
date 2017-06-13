@@ -14,7 +14,6 @@ import PanelContainerFooter from '../PanelContainer/panel-container-footer';
 import { profileMessages, formMessages,
   generalMessages, validationMessages } from '../../locale-data/messages';
 import { getProfileSchema } from '../../utils/validationSchema';
-import { findClosestMatch } from '../../utils/imageUtils';
 import styles from './new-profile-form.scss';
 
 class NewProfileForm extends Component {
@@ -217,17 +216,14 @@ class NewProfileForm extends Component {
             );
         }
     }
-    _getBackgroundImage = () => {
-        const { isUpdate } = this.props;
-        const { backgroundImage, baseUrl } = this.props.tempProfile;
-        let image = null;
-        if (typeof backgroundImage === 'object' && Object.keys(backgroundImage).length > 0) {
-            if (isUpdate && this.imageUploader) {
-                const imgKey = findClosestMatch(this.imageUploader.clientWidth, backgroundImage, 'sm');
-                image = `${baseUrl}/${backgroundImage[imgKey].src}`;
-            }
+
+    _handleBackgroundChange = (bgImageObj) => {
+        const { isUpdate, tempProfile, onProfileUpdate } = this.props;
+        if (isUpdate) {
+            onProfileUpdate(
+                tempProfile.set('backgroundImage', bgImageObj)
+            );
         }
-        return image;
     }
 
     _handleSubmit = (ev) => {
@@ -270,7 +266,8 @@ class NewProfileForm extends Component {
     render () {
         const { intl, muiTheme, expandOptionalDetails, style, isUpdate } = this.props;
         const { firstName, lastName, akashaId, password, password2,
-          about, links, crypto, formHasErrors, avatar } = this.props.tempProfile;
+          about, links, crypto, formHasErrors, avatar, backgroundImage,
+          baseUrl } = this.props.tempProfile;
         const { optDetails } = this.state;
         const { formatMessage } = intl;
         return (
@@ -372,9 +369,11 @@ class NewProfileForm extends Component {
                       ref={(imageUploader) => { this.imageUploader = imageUploader; }}
                       minWidth={360}
                       intl={intl}
-                      initialImageLink={this._getBackgroundImage()}
+                      initialImage={backgroundImage}
+                      baseUrl={baseUrl}
                       muiTheme={muiTheme}
                       onImageClear={this._handleBackgroundClear}
+                      onChange={this._handleBackgroundChange}
                     />
                   </div>
                   <h3 className="col-xs-12" style={{ margin: '20px 0 0 0' }} >

@@ -248,6 +248,8 @@ export const PROFILE_UPDATE_ERROR = 'PROFILE_UPDATE_ERROR';
 
 export const PROFILE_SAVE_LOGGED_ERROR = 'PROFILE_SAVE_LOGGED_ERROR';
 
+export const PUBLISH_ENTITY = 'PUBLISH_ENTITY';
+
 export const SET_TEMP_PROFILE = 'SET_TEMP_PROFILE';
 
 // this should be removed once profile logout is implemented

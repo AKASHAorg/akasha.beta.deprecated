@@ -37,7 +37,7 @@ const AppRecord = Record({
     appReady: false,
     homeReady: false,
     notifications: new List(),
-    pendingActions: new Map(),
+    pendingActions: new List(),
     publishConfirmDialog: null,
     showAuthDialog: null,
     showGethDetailsModal: false,
