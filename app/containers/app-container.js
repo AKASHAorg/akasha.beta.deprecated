@@ -13,7 +13,8 @@ import { entryVoteCost } from '../local-flux/actions/entry-actions';
 import { gethGetStatus } from '../local-flux/actions/external-process-actions';
 import { licenseGetAll } from '../local-flux/actions/license-actions';
 import { tempProfileUpdate, setTempProfile, tempProfileCreate,
-  tempProfileDelete, tempProfilePublishUpdate } from '../local-flux/actions/temp-profile-actions';
+  tempProfileDelete } from '../local-flux/actions/temp-profile-actions';
+import { publishEntity } from '../local-flux/actions/app-actions';
 import { errorDeleteFatal, errorDeleteNonFatal } from '../local-flux/actions/error-actions';
 import { HomeContainer, LauncherContainer, SidebarContainer } from './';
 import { AuthDialog, LoginDialog } from '../components/dialogs';
@@ -162,7 +163,7 @@ export default connect(
         hideTerms,
         hideReportModal,
         licenseGetAll,
-        tempProfilePublishUpdate,
+        publishEntity,
         setTempProfile,
         showLoginDialog,
         tempProfileCreate,

@@ -100,7 +100,6 @@ class Avatar extends React.Component {
             onMouseLeave } = this.props;
         const { palette } = this.context.muiTheme;
         let avatarImage;
-        console.log(image, 'the image');
         if (this.state.avatarImage) {
             avatarImage = this.state.avatarImage;
         } else if (image) {
