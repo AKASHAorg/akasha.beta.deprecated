@@ -27,20 +27,17 @@ class Avatar extends React.Component {
     }
     getImage = () =>
         new Promise((resolve) => {
+            // if image is a string it means it comes from ipfs
             if (this.props.image && typeof this.props.image === 'string') {
                 return resolve(this.props.image);
             }
-            if (this.editor) {
-                const imageCanvas = this.editor.getImageScaledToCanvas();
-                imageCanvas.toBlob((blob) => {
-                    const reader = new FileReader();
-                    reader.onloadend = ev =>
-                        resolve(new Uint8Array(ev.target.result));
-                    reader.readAsArrayBuffer(blob);
-                }, 'image/jpg');
-            } else {
-                resolve(null);
-            }
+            const imageCanvas = this.editor.getImageScaledToCanvas();
+            return imageCanvas.toBlob((blob) => {
+                const reader = new FileReader();
+                reader.onloadend = ev =>
+                    resolve(new Uint8Array(ev.target.result));
+                reader.readAsArrayBuffer(blob);
+            }, 'image/jpg');
         });
     _handleAvatarClear = () => {
         const { onImageClear } = this.props;

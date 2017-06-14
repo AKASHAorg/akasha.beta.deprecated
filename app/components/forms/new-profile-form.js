@@ -241,7 +241,6 @@ class NewProfileForm extends Component {
             this.isSubmitting = true;
             if (this.state.akashaIdIsValid && !this.state.akashaIdExists) {
                 if (optDetails || expandOptionalDetails) {
-                    const backgroundImage = this.imageUploader.getImage();
                     this.avatar.getImage().then((uint8arr) => {
                         let avatar;
                         if (uint8arr) {
@@ -250,7 +249,6 @@ class NewProfileForm extends Component {
                         onProfileUpdate(
                           tempProfile.withMutations(profile =>
                               profile
-                                .set('backgroundImage', backgroundImage)
                                 .set('avatar', avatar))
                         );
                         onSubmit();
