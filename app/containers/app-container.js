@@ -18,7 +18,7 @@ import { tempProfileUpdate, setTempProfile, tempProfileCreate,
 import { errorDeleteFatal, errorDeleteNonFatal } from '../local-flux/actions/error-actions';
 import { HomeContainer, LauncherContainer, SidebarContainer } from './';
 import { AuthDialog, LoginDialog } from '../components/dialogs';
-import { ErrorBar, FatalErrorModal, NotificationBar, ReportModal, TermsPanel, PanelLoader } from '../components';
+import { ErrorBar, FatalErrorModal, NotificationBar, ErrorReportingModal, TermsPanel, PanelLoader } from '../components';
 import { selectLoggedProfileData } from '../local-flux/selectors';
 import lightTheme from '../layouts/AkashaTheme/lightTheme';
 import darkTheme from '../layouts/AkashaTheme/darkTheme';
@@ -99,7 +99,7 @@ class AppContainer extends Component {
                     intl={intl}
                   />
                 }
-                <ReportModal
+                <ErrorReportingModal
                   open={!!appState.get('showReportModal')}
                   error={errorState.get('reportError')}
                   intl={intl}
