@@ -147,7 +147,7 @@ const appState = createReducer(initialState, {
             type: actionTypes.sendTip,
         }));
     },
-   
+
     [types.PROFILE_ADD_UNFOLLOW_ACTION]: (state, { payload }) => {
         id += 1;
         return state.setIn(['pendingActions', id], new PendingActionRecord({

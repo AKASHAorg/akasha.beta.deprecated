@@ -51,6 +51,7 @@ const ProfileState = Record({
     followersList: new List(), // to be removed
     followings: new Map(),
     followingsList: new List(), // to be removed
+    isFollower: new Map(),
     lastFollower: new Map(),
     lastFollowing: new Map(),
     localProfiles: new List(),

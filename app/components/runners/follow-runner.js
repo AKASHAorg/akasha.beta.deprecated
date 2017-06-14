@@ -2,7 +2,8 @@ import PropTypes from 'prop-types';
 import { Component } from 'react';
 import { connect } from 'react-redux';
 import actionTypes from '../../constants/action-types';
-import { deletePendingAction, updateAction } from '../../local-flux/actions/app-actions';
+import { deletePendingAction, showNotification,
+    updateAction } from '../../local-flux/actions/app-actions';
 import { profileFollow, profileFollowError, profileFollowSuccess, profileUnfollow,
     profileUnfollowError, profileUnfollowSuccess } from '../../local-flux/actions/profile-actions';
 import { transactionDeletePending } from '../../local-flux/actions/transaction-actions';
@@ -60,12 +61,20 @@ class FollowRunner extends Component {
             this.props.transactionDeletePending(tx.tx);
             if (tx.type === actionTypes.follow) {
                 if (minedSuccessfully) {
-                    this.props.profileFollowSuccess({ akashaId: tx.extra.akashaId });
+                    this.props.profileFollowSuccess(tx.extra.akashaId);
+                    this.props.showNotification({
+                        id: 'followProfileSuccess',
+                        values: { akashaId: tx.extra.akashaId }
+                    });
                 } else {
                     this.props.profileFollowError({}, tx.extra.akashaId);
                 }
             } else if (minedSuccessfully) {
                 this.props.profileUnfollowSuccess(tx.extra.akashaId);
+                this.props.showNotification({
+                    id: 'unfollowProfileSuccess',
+                    values: { akashaId: tx.extra.akashaId }
+                });
             } else {
                 this.props.profileUnfollowError({}, tx.extra.akashaId);
             }
@@ -95,6 +104,7 @@ FollowRunner.propTypes = {
     profileUnfollow: PropTypes.func.isRequired,
     profileUnfollowError: PropTypes.func.isRequired,
     profileUnfollowSuccess: PropTypes.func.isRequired,
+    showNotification: PropTypes.func.isRequired,
     transactionDeletePending: PropTypes.func.isRequired,
     updateAction: PropTypes.func.isRequired,
 };
@@ -121,6 +131,7 @@ export default connect(
         profileUnfollow,
         profileUnfollowError,
         profileUnfollowSuccess,
+        showNotification,
         transactionDeletePending,
         updateAction
     }

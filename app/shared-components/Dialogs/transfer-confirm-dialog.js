@@ -3,7 +3,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
 import { Dialog, FlatButton, RaisedButton } from 'material-ui';
-import { AppActions, ProfileActions } from '../../local-flux';
+import { deletePendingAction, hideTransferConfirmDialog,
+    updateAction } from '../../local-flux/actions/app-actions';
+import { selectPendingAction } from '../../local-flux/selectors';
 import { confirmMessages, generalMessages } from '../../locale-data/messages';
 import { SendTipForm } from '../';
 
@@ -19,17 +21,9 @@ class TransferConfirmDialog extends Component {
         this.state = {
             ethAmount: '0.0001',
             ethAmountError: null,
-            gasAmount: null,
+            gasAmount: props.resource.get('gas'),
             gasAmountError: null
         };
-    }
-
-    componentWillMount () {
-        const { profileActions, resource } = this.props;
-        profileActions.getProfileBalance();
-        this.setState({
-            gasAmount: resource.get('gas')
-        });
     }
 
     componentDidUpdate () {
@@ -84,19 +78,22 @@ class TransferConfirmDialog extends Component {
     };
 
     handleConfirm = () => {
-        const { resource, appActions } = this.props;
-        const updatedResource = resource.toJS();
-        updatedResource.gas = this.state.gasAmount || resource.get('gas');
-        updatedResource.payload.eth = this.state.ethAmount;
-        updatedResource.status = 'checkAuth';
-        appActions.hideTransferConfirmDialog();
-        appActions.updatePendingAction(updatedResource);
+        const { resource } = this.props;
+        const updates = {
+            gas: this.state.gasAmount || resource.get('gas'),
+            payload: {
+                eth: this.state.ethAmount
+            },
+            status: 'checkAuth'
+        };
+        this.props.hideTransferConfirmDialog();
+        this.props.updateAction(resource.get('id'), updates);
     };
 
     handleAbort = () => {
-        const { resource, appActions } = this.props;
-        appActions.deletePendingAction(resource.get('id'));
-        appActions.hideTransferConfirmDialog();
+        const { resource } = this.props;
+        this.props.deletePendingAction(resource.get('id'));
+        this.props.hideTransferConfirmDialog();
     };
 
     render () {
@@ -148,29 +145,26 @@ class TransferConfirmDialog extends Component {
 }
 
 TransferConfirmDialog.propTypes = {
-    appActions: PropTypes.shape(),
     balance: PropTypes.string,
+    deletePendingAction: PropTypes.func.isRequired,
+    hideTransferConfirmDialog: PropTypes.func.isRequired,
     intl: PropTypes.shape(),
-    profileActions: PropTypes.shape(),
     resource: PropTypes.shape(),
+    updateAction: PropTypes.func.isRequired
 };
 
 function mapStateToProps (state) {
     return {
-        balance: state.profileState
-            .get('profiles')
-            .find(prf =>
-                prf.get('profile') === state.profileState.getIn(['loggedProfile', 'profile']))
-            .get('balance'),
-        resource: state.appState.get('transferConfirmDialog'),
+        balance: state.profileState.get('balance'),
+        resource: selectPendingAction(state, state.appState.get('transferConfirmDialog')),
     };
 }
 
-function mapDispatchToProps (dispatch) {
-    return {
-        appActions: new AppActions(dispatch),
-        profileActions: new ProfileActions(dispatch)
-    };
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(TransferConfirmDialog);
+export default connect(
+    mapStateToProps,
+    {
+        deletePendingAction,
+        hideTransferConfirmDialog,
+        updateAction
+    }
+)(TransferConfirmDialog);

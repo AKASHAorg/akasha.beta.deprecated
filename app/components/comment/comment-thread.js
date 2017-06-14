@@ -17,7 +17,7 @@ class CommentThread extends Component {
         const { comments, commentsAddPublishAction, depth, entryAuthorProfile, entryId, intl,
             loggedProfile, onReply, onReplyCancel, parentId, pendingComments, profileAvatar,
             profiles, profileUserInitials, replyTo } = this.props;
-        const loggedProfileData = profiles.get(loggedProfile.get('profile'));
+        const loggedProfileData = profiles.get(loggedProfile.get('akashaId'));
         let filteredComments = comments.filter(comm => comm.data.parent === parentId);
         let optimisticComments = pendingComments.filter(action =>
             action.getIn(['payload', 'parent']) === parentId);

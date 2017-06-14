@@ -17,24 +17,20 @@ const WEIGHT_LIMIT_ERROR = 'WEIGHT_LIMIT_ERROR';
 const NOT_ENOUGH_FUNDS_ERROR = 'NOT_ENOUGH_FUNDS_ERROR';
 
 class WeightConfirmDialog extends Component {
-    state = {
-        voteWeight: null,
-        gasAmount: null,
-        voteWeightError: null,
-        gasAmountError: null
-    };
 
-    componentWillMount () {
-        const { resource } = this.props;
+    constructor (props) {
+        super(props);
+        const { resource } = props;
         const { minWeight, maxWeight } = this.getLimitValues();
         const initialWeight = resource.get('type') === actionTypes.upvote ? minWeight : maxWeight;
-        this.setState({
+        this.state = {
             voteWeight: initialWeight,
             gasAmount: resource.get('gas'),
             voteWeightError: !this.hasEnoughFunds(initialWeight) ?
                 NOT_ENOUGH_FUNDS_ERROR :
-                null
-        });
+                null,
+            gasAmountError: null
+        };
     }
 
     componentDidMount () {
@@ -111,11 +107,11 @@ class WeightConfirmDialog extends Component {
         const value = voteCost.get(voteWeight.toString());
         const updates = {
             gas: this.state.gasAmount || resource.get('gas'),
-            status: 'checkAuth',
             payload: {
                 weight: voteWeight,
                 value
-            }
+            },
+            status: 'checkAuth'
         };
         this.props.hideWeightConfirmDialog();
         this.props.updateAction(resource.get('id'), updates);

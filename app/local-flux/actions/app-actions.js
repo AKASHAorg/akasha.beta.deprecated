@@ -74,6 +74,7 @@ export const hideNotification = notification =>
     action(types.HIDE_NOTIFICATION, { notification });
 export const hideReportModal = () => action(types.HIDE_REPORT_MODAL);
 export const hideTerms = () => action(types.HIDE_TERMS);
+export const hideTransferConfirmDialog = () => action(types.HIDE_TRANSFER_CONFIRM_DIALOG);
 export const hideWeightConfirmDialog = () => action(types.HIDE_WEIGHT_CONFIRM_DIALOG);
 export const panelShow = panel => action(types.PANEL_SHOW, { panel });
 export const panelHide = () => action(types.PANEL_HIDE);

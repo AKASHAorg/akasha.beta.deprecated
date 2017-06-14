@@ -2,7 +2,8 @@ import PropTypes from 'prop-types';
 import { Component } from 'react';
 import { connect } from 'react-redux';
 import actionTypes from '../../constants/action-types';
-import { deletePendingAction, updateAction } from '../../local-flux/actions/app-actions';
+import { deletePendingAction, showNotification,
+    updateAction } from '../../local-flux/actions/app-actions';
 import { profileSendTip, profileSendTipError,
     profileSendTipSuccess } from '../../local-flux/actions/profile-actions';
 import { transactionDeletePending } from '../../local-flux/actions/transaction-actions';
@@ -26,6 +27,7 @@ class TipRunner extends Component {
             this.props.updateAction(action.id, { status: 'publishing' });
             this.props.profileSendTip(
                 payload.akashaId,
+                payload.profile,
                 payload.value,
                 action.gas
             );
@@ -52,6 +54,10 @@ class TipRunner extends Component {
             this.props.transactionDeletePending(tx.tx);
             if (minedSuccessfully) {
                 this.props.profileSendTipSuccess({ akashaId: tx.extra.akashaId });
+                this.props.showNotification({
+                    id: 'sendTipSuccess',
+                    values: { akashaId: tx.extra.akashaId }
+                });
             } else {
                 this.props.profileSendTipError({}, tx.extra.akashaId);
             }
@@ -78,6 +84,7 @@ TipRunner.propTypes = {
     profileSendTip: PropTypes.func.isRequired,
     profileSendTipError: PropTypes.func.isRequired,
     profileSendTipSuccess: PropTypes.func.isRequired,
+    showNotification: PropTypes.func.isRequired,
     transactionDeletePending: PropTypes.func.isRequired,
     updateAction: PropTypes.func.isRequired
 };
@@ -101,6 +108,7 @@ export default connect(
         profileSendTip,
         profileSendTipError,
         profileSendTipSuccess,
+        showNotification,
         transactionDeletePending,
         updateAction
     }

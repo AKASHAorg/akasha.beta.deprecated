@@ -52,7 +52,7 @@ const errorState = createReducer(initialState, {
         console.log(data);
         return state.merge({
             reportError: new Map(data.error)
-        })
+        });
     },
     [types.HIDE_REPORT_MODAL]: state =>
         state.merge({

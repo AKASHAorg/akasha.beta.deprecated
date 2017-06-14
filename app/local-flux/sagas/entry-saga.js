@@ -3,9 +3,10 @@ import { all, apply, call, fork, put, select, take, takeEvery,
 import { actionChannels, enableChannel } from './helpers';
 import * as appActions from '../actions/app-actions';
 import * as actions from '../actions/entry-actions';
+import * as profileActions from '../actions/profile-actions';
 import * as transactionActions from '../actions/transaction-actions';
 import * as types from '../constants';
-import { selectColumnLastEntry, selectColumnLastBlock, selectLoggedAkashaId,
+import { selectColumnLastEntry, selectColumnLastBlock, selectIsFollower, selectLoggedAkashaId,
     selectToken } from '../selectors';
 import actionTypes from '../../constants/action-types';
 
@@ -75,6 +76,11 @@ function* entryGetExtraOfEntry (entryId, publisher) {
     if (isOwnEntry) {
         yield apply(getEntryBalance, getEntryBalance.send, [{ entryId: [entryId] }]);
         yield apply(canClaim, canClaim.send, [{ entryId: [entryId] }]);
+    } else {
+        const isFollower = yield select(state => selectIsFollower(state, publisher.akashaId));
+        if (isFollower === undefined) {
+            yield put(profileActions.profileIsFollower([publisher.akashaId]));
+        }
     }
 }
 

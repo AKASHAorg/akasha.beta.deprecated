@@ -90,13 +90,14 @@ export function* profileGetLogged () {
     }
 }
 
-function* profileIsFollower ({ following, akashaId }) {
+function* profileIsFollower ({ followings, akashaId }) {
     const channel = Channel.server.profile.isFollower;
     yield call(enableChannel, channel, Channel.client.profile.manager);
     if (!akashaId) {
         akashaId = yield select(selectLoggedAkashaId);
     }
-    yield apply(channel, channel.send, [[{ akashaId, following }]]);
+    const payload = followings.map(following => ({ akashaId, following }));
+    yield apply(channel, channel.send, [payload]);
 }
 
 function* profileLogin ({ data }) {
@@ -132,15 +133,15 @@ function* profileSaveLogged (loggedProfile) {
     }
 }
 
-function* profileSendTip ({ akashaId, value, gas }) {
+function* profileSendTip ({ akashaId, receiver, value, gas }) {
     const channel = Channel.server.profile.tip;
     yield call(enableChannel, channel, Channel.client.profile.manager);
     const token = yield select(selectToken);
-    yield apply(channel, channel.send, [{ token, akashaId, value, gas }]);
+    yield apply(channel, channel.send, [{ token, akashaId, receiver, value, gas }]);
 }
 
 function* profileUnfollow ({ akashaId, gas, profile }) {
-    const channel = Channel.server.profile.unfollowProfile;
+    const channel = Channel.server.profile.unFollowProfile;
     yield call(enableChannel, channel, Channel.client.profile.manager);
     const token = yield select(selectToken);
     yield apply(channel, channel.send, [{ token, akashaId, gas, profile }]);
