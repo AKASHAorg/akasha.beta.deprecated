@@ -23,10 +23,12 @@ const appState = createReducer(initialState, {
         });
     },
 
-    [appTypes.ADD_PENDING_ACTION]: (state, { data }) =>
-        state.merge({
-            pendingActions: state.get('pendingActions').push(new PendingActionRecord(fromJS(data)))
-        }),
+    [appTypes.PUBLISH_ENTITY]: (state, { data }) => {
+        console.log(data, 'the data');
+        return state.merge({
+            pendingActions: state.get('pendingActions').push(new PendingActionRecord(data))
+        });
+    },
 
     [appTypes.SHOW_TERMS]: state =>
         state.merge({
@@ -102,7 +104,6 @@ const appState = createReducer(initialState, {
             status: 'needWeightConfirmation'
         }));
     },
-
     [types.HIDE_AUTH_DIALOG]: state =>
         state.set('showAuthDialog', null),
 
@@ -200,6 +201,13 @@ const appState = createReducer(initialState, {
 
     [types.SHOW_WEIGHT_CONFIRM_DIALOG]: (state, { actionId }) =>
         state.set('weightConfirmDialog', actionId),
+    [types.SHOW_DIALOG]: (state, { dialogType, data }) => {
+        console.log(dialogType, data);
+        return state.set(dialogType, data);
+    },
+
+    [types.SHOW_DIALOG]: (state, { dialogType, data }) =>
+        state.set(dialogType, data),
 
     [types.UPDATE_ACTION]: (state, { actionId, updates }) => {
         const newAction = state.getIn(['pendingActions', actionId]).mergeDeep(updates);

@@ -37,15 +37,12 @@ class IconProfile extends Component {
     };
 
     render () {
-        const { avatar, style, iconStyle, userInitials, activePanel, notificationsCount, viewBox, hoverColor, color,
-            ...other } = this.props;
+        const { avatar, style, iconStyle, userInitials, isActive, notificationsCount } = this.props;
         const { palette } = this.state.muiTheme;
         const avatarWrapperStyle = {
             borderColor: palette.primary1Color,
             cursor: 'pointer',
-            visibility: activePanel === 'userProfile' ?
-                'visible' :
-                null
+            visibility: isActive ? 'visible' : null
         };
 
         return (
@@ -86,6 +83,7 @@ IconProfile.propTypes = {
     avatar: PropTypes.string,
     style: PropTypes.object,
     iconStyle: PropTypes.object,
+    isActive: PropTypes.bool,
     viewBox: PropTypes.string,
     hoverColor: PropTypes.string,
     color: PropTypes.string,

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { LogoButton } from './';
+import { LogoButton, PanelContainer } from './';
 import { getInitials } from '../utils/dataModule';
 import { AddEntryIcon, ChatIcon, EntriesIcon, PeopleIcon, ProfileIcon,
     SearchIcon, StreamsIcon } from '../shared-components/svg';
@@ -10,146 +10,170 @@ import panels from '../constants/panels';
 import styles from './sidebar.scss';
 
 class Sidebar extends Component {
-    componentDidMount () {
-        const { bootstrapHome, entryVoteCost, gethGetStatus, licenseGetAll, transactionGetMined,
-            transactionGetPending } = this.props;
-        bootstrapHome();
-        entryVoteCost();
-        licenseGetAll();
-        // transactionGetMined();
-        // transactionGetPending();
-        // make requests for geth status every 30s for updating the current block
-        gethGetStatus();
-        this.interval = setInterval(() => {
-            gethGetStatus();
-        }, 30000);
+    constructor (props) {
+        super(props);
+        this.state = {
+            panelContentVisible: this._checkIsPanel()
+        };
     }
 
     componentWillReceiveProps (nextProps) {
-        const { history, loggedProfile } = nextProps;
+        const { history, loggedProfile, location } = nextProps;
 
         // the condition below is equivalent to a successful logout action
-        if (!loggedProfile.get('account') && this.props.loggedProfile.get('account')) {
+        if (!loggedProfile.get('account') && this.props.loggedProfile.get('account') && this._isSidebarVisible(location)) {
             history.push('/setup/authenticate');
         }
     }
 
-    handleNewEntry = () => {
-        const { activePanel, draftsCount, history, loggedProfileData, panelHide,
-            panelShow } = this.props;
-        const entriesCount = parseInt(loggedProfileData.get('entriesCount'), 10);
-
-        if (activePanel === panels.newEntry) {
-            panelHide();
-        } else if (entriesCount > 0 || draftsCount > 0) {
-            panelShow(panels.newEntry);
-        } else {
-            panelHide();
-            history.push('/draft/new');
-        }
-    };
-
-    handleProfile = () => this.handlePanelShow(panels.userProfile);
+    _getRootPath = (rootPath) => {
+        const path = rootPath.split('/');
+        return path.slice(0, path.length - 2).join('/');
+    }
+    _navigateToPanel = (panelName) => {
+        const { history, location } = this.props;
+        return (ev) => {
+            if (!location.pathname.includes('/panel/')) {
+                history.push(`${location.pathname}/panel/${panelName}${location.search}`);
+            } else if (location.pathname.includes('/panel/') && !location.pathname.includes(panelName)) {
+                history.push(`${this._getRootPath(location.pathname)}/panel/${panelName}${location.search}`);
+            } else if (location.pathname.includes(panelName)) {
+                history.push(`${this._getRootPath(location.pathname)}${location.search}`);
+            }
+            if (ev) ev.preventDefault();
+        };
+    }
+    _closePanel = () => {
+        const { history, location } = this.props;
+        const rootPath = this._getRootPath(location.pathname);
+        return history.push(`${rootPath}${location.search}`);
+    }
 
     handleSearch = () => this.handlePanelShow(panels.search);
-
-    handlePanelShow = (panel) => {
-        const { activePanel, panelHide, panelShow } = this.props;
-        if (activePanel === panel) {
-            panelHide();
-        } else {
-            panelShow(panel);
-        }
-    };
-
+    _handleNewEntry = () => {
+        console.log('new entry');
+    }
     getWrapperProps = message => ({
         'data-tip': this.props.intl.formatMessage(message),
         'data-place': 'right'
     });
-
+    _isSidebarVisible = (location) => {
+        /**
+         * specify blacklisted routes
+         *  on which we should not show sidebar
+         */
+        const blackList = ['setup'];
+        return !blackList.every(route => location.pathname.includes(route));
+    }
+    _checkActiveIcon = (name) => {
+        const { location } = this.props;
+        return location.pathname.includes(name);
+    }
+    _checkIsPanel = () => {
+        const { location } = this.props;
+        return location.pathname.includes('/panel/');
+    }
+    _handlePanelVisible = () => {
+        this.setState({
+            panelContentVisible: !this.state.panelContentVisible
+        });
+    }
     render () {
-        const { activePanel, balance, draftsCount, hasFeed, intl, location, loggedProfileData,
-            notificationsCount } = this.props;
+        const { balance, draftsCount, hasFeed, intl, loggedProfileData,
+          notificationsCount, location, children } = this.props;
         const { palette } = this.context.muiTheme;
-        const { pathname } = location;
-        const isAddEntryActive = !activePanel && pathname === '/draft/new';
-        const isStreamActive = !activePanel && pathname === '/dashboard';
-        const isPeopleActive = !activePanel && pathname === '/people';
-        const isChatActive = !activePanel && pathname === '/chat';
         const userInitials =
             getInitials(loggedProfileData.get('firstName'), loggedProfileData.get('lastName'));
         const entriesCount = parseInt(loggedProfileData.get('entriesCount'), 10);
         const isLoggedIn = !!loggedProfileData.get('akashaId');
-
         return (
-          <div className={styles.root} style={{ backgroundColor: palette.sidebarColor }} >
-            <div style={{ flexGrow: 0, padding: '14px 14px 5px' }} >
-              <ProfileIcon
-                activePanel={activePanel}
-                avatar={loggedProfileData.get('avatar')}
-                userInitials={userInitials}
-                hasFeed={hasFeed}
-                notificationsCount={notificationsCount}
-                onClick={this.handleProfile}
-              />
-            </div>
-            {isLoggedIn &&
-              <div style={{ flexGrow: 0, fontSize: '14px', fontWeight: '100' }}>
-                <div style={{ textAlign: 'center' }}>
-                  {balance && balance.slice(0, 6)}
-                </div>
-                <div style={{ textAlign: 'center' }}>
-                  {intl.formatMessage(generalMessages.aeth)}
-                </div>
-              </div>
-            }
-            <div style={{ flexGrow: 1, padding: '14px' }} >
-              {(entriesCount > 0 || draftsCount > 0) ?
-                <div {...this.getWrapperProps(generalMessages.myEntries)}>
-                  <EntriesIcon
-                    disabled={!isLoggedIn}
-                    isActive={activePanel === 'newEntry'}
-                    onClick={this.handleNewEntry}
-                  />
-                </div> :
-                <div {...this.getWrapperProps(generalMessages.addNewEntry)}>
-                  <AddEntryIcon
-                    disabled={!isLoggedIn}
-                    isActive={isAddEntryActive}
-                    onClick={this.handleNewEntry}
-                  />
-                </div>
-              }
-              <div {...this.getWrapperProps(generalMessages.search)}>
-                <SearchIcon
-                  onClick={this.handleSearch}
-                  isActive={activePanel === 'search'}
+          <div
+            className={`${styles.root} ${this._isSidebarVisible(location) && styles.shown}`}
+            style={{ backgroundColor: palette.sidebarColor }}
+          >
+            <div className={`${styles.sidebarInner}`}>
+              <div className={`${styles.profileIcon}`} >
+                <ProfileIcon
+                  isActive={this._checkActiveIcon('uprofile')}
+                  avatar={loggedProfileData.get('avatar')}
+                  userInitials={userInitials}
+                  hasFeed={hasFeed}
+                  notificationsCount={notificationsCount}
+                  onClick={this._navigateToPanel('uprofile')}
                 />
               </div>
-            </div>
-            <div style={{ flexGrow: 4, padding: '14px' }} >
-              <div {...this.getWrapperProps(generalMessages.stream)}>
-                <Link to="/dashboard">
-                  <StreamsIcon isActive={isStreamActive} />
-                </Link>
+              {isLoggedIn &&
+                <div className={`${styles.balanceInfo}`}>
+                  <div className={`${styles.balanceAmount} center-xs`}>
+                    {balance && balance.slice(0, 6)}
+                  </div>
+                  <div className={`${styles.balanceCurrency} center-xs`}>
+                    {intl.formatMessage(generalMessages.aeth)}
+                  </div>
+                </div>
+              }
+              <div className={`${styles.entryIcon}`} >
+                {(entriesCount > 0 || draftsCount > 0) ?
+                  <div {...this.getWrapperProps(generalMessages.myEntries)}>
+                    <EntriesIcon
+                      disabled={!isLoggedIn}
+                      isActive={false}
+                      onClick={this._handleNewEntry}
+                    />
+                  </div> :
+                  <div {...this.getWrapperProps(generalMessages.addNewEntry)}>
+                    <AddEntryIcon
+                      disabled={!isLoggedIn}
+                      isActive={this._checkActiveIcon('draft/new')}
+                      onClick={this._handleNewEntry}
+                    />
+                  </div>
+                }
+                <div {...this.getWrapperProps(generalMessages.search)}>
+                  <SearchIcon
+                    onClick={this.handleSearch}
+                    isActive={false}
+                  />
+                </div>
               </div>
-              <div {...this.getWrapperProps(generalMessages.people)}>
-                <Link to="/people">
-                  <PeopleIcon isActive={isPeopleActive} />
-                </Link>
+              <div className={`${styles.streamIcon}`} >
+                <div {...this.getWrapperProps(generalMessages.stream)}>
+                  <Link to="/dashboard">
+                    <StreamsIcon isActive={this._checkActiveIcon('dashboard')} />
+                  </Link>
+                </div>
+                <div {...this.getWrapperProps(generalMessages.people)}>
+                  <Link to="/people">
+                    <PeopleIcon isActive={this._checkActiveIcon('people')} />
+                  </Link>
+                </div>
+                <div {...this.getWrapperProps(generalMessages.chat)}>
+                  <Link to="/chat">
+                    <ChatIcon isActive={this._checkActiveIcon('chat')} />
+                  </Link>
+                </div>
               </div>
-              <div {...this.getWrapperProps(generalMessages.chat)}>
-                <Link to="/chat">
-                  <ChatIcon isActive={isChatActive} />
-                </Link>
+              <div
+                className={`${styles.logo}`}
+              >
+                <LogoButton />
+              </div>
+              <div
+                className={`${styles.panelWrapper} ${this._checkIsPanel() && styles.open} col-xs-12`}
+                onTransitionEnd={this._handlePanelVisible}
+              >
+                <PanelContainer
+                  maxWidth="100%"
+                  width="100%"
+                >
+                  {React.cloneElement(children, { onPanelNavigate: this._navigateToPanel })}
+                </PanelContainer>
               </div>
             </div>
             <div
-              className="flex-center-x"
-              style={{ flexGrow: 1, padding: '14px 8px', alignItems: 'flex-end' }}
-            >
-              <LogoButton />
-            </div>
+              className={`${styles.panelWrapperOverlay} ${this._checkIsPanel() && styles.overlayVisible}`}
+              onClick={this._closePanel}
+            />
           </div>
         );
     }
@@ -160,24 +184,16 @@ Sidebar.contextTypes = {
 };
 
 Sidebar.propTypes = {
-    activePanel: PropTypes.string,
     balance: PropTypes.string,
-    bootstrapHome: PropTypes.func.isRequired,
+    children: PropTypes.element,
     draftsCount: PropTypes.number,
-    entryVoteCost: PropTypes.func.isRequired,
-    gethGetStatus: PropTypes.func.isRequired,
     hasFeed: PropTypes.bool,
     history: PropTypes.shape(),
     intl: PropTypes.shape(),
-    licenseGetAll: PropTypes.func.isRequired,
     location: PropTypes.shape(),
     loggedProfile: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
     notificationsCount: PropTypes.number,
-    panelHide: PropTypes.func.isRequired,
-    panelShow: PropTypes.func.isRequired,
-    transactionGetMined: PropTypes.func.isRequired,
-    transactionGetPending: PropTypes.func.isRequired
 };
 
 export default Sidebar;

@@ -1,6 +1,5 @@
-import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { injectIntl } from 'react-intl';
+import PropTypes from 'prop-types';
 import { LogoButton, ServiceStatusBar } from '../../components';
 import { generalMessages } from '../../locale-data/messages';
 
@@ -8,7 +7,7 @@ class PanelHeader extends Component {
   render() {
     const { disableStopService, intl, noStatusBar, noLogoButton, title, showBorder } = this.props;
     return (
-      <div className="col-xs-12" style={{ padding: '0 24px', borderBottom: showBorder ? '1px solid #DDD': 'none' }}>
+      <div className="col-xs-12" style={{ padding: '0 24px', borderBottom: showBorder ? '1px solid #DDD' : 'none' }}>
         <div className="row middle-xs" style={{ display: 'flex' }} >
           {!noLogoButton &&
             <div style={{ flex: '0 0 auto' }}>

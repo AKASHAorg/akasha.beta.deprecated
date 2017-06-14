@@ -1,4 +1,4 @@
-import { Record } from 'immutable';
+import { Record, List } from 'immutable';
 
 const TempProfileStatus = Record({
     faucetRequested: false,
@@ -10,15 +10,20 @@ const TempProfileStatus = Record({
 });
 
 const TempProfile = Record({
+    localId: '',
     firstName: '',
     lastName: '',
     akashaId: '',
     password: '',
-    address: null,
+    password2: '',
+    address: '',
+    ethAddress: '',
     avatar: null,
-    backgroundImage: [],
-    about: null,
-    links: []
+    backgroundImage: {},
+    baseUrl: '',
+    about: '',
+    links: new List(),
+    crypto: new List()
 });
 
 export { TempProfileStatus };
