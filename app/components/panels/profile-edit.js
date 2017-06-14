@@ -9,8 +9,8 @@ class EditProfile extends PureComponent {
     componentWillMount () {
         this._createTempProfile(this.props);
     }
-    componentWillUpdate (nextProps) {
-        this._createTempProfile(nextProps);
+    componentDidUpdate () {
+        this._createTempProfile(this.props);
     }
     componentWillUnmount = () => {
         const { tempProfileDelete, tempProfile } = this.props;
@@ -27,11 +27,11 @@ class EditProfile extends PureComponent {
         }
     }
     _handleSubmit = () => {
-        const { publishEntity } = this.props;
+        const { publishEntity, tempProfile } = this.props;
         publishEntity({
             entityType: 'tempProfile',
             actionType: 'update',
-            entityId: null,
+            entityId: tempProfile.get('localId'),
             currentAction: '',
             publishTx: '',
             confirmed: false,
@@ -75,11 +75,8 @@ EditProfile.propTypes = {
     history: PropTypes.shape(),
     intl: PropTypes.shape(),
     muiTheme: PropTypes.shape(),
-    loggedProfile: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
     publishEntity: PropTypes.func,
-    showLoginDialog: PropTypes.func,
-    tempProfilePublishUpdate: PropTypes.func,
     tempProfileDelete: PropTypes.func,
     tempProfile: PropTypes.shape(),
     tempProfileUpdate: PropTypes.func,

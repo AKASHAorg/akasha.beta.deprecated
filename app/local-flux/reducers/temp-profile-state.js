@@ -1,6 +1,7 @@
 import * as types from '../constants';
 import { createReducer } from './create-reducer';
 import { TempProfileModel } from './models';
+import { genId } from '../../utils/dataModule';
 
 const initialState = new TempProfileModel();
 
@@ -22,7 +23,10 @@ const tempProfileState = createReducer(initialState, {
     // create a new temp profile for updates
     [types.SET_TEMP_PROFILE]: (state, { data }) =>
         state.merge({
-            tempProfile: TempProfileModel.profileToTempProfile(data),
+            tempProfile: TempProfileModel.profileToTempProfile({
+                localId: genId(),
+                ...data.toJS()
+            }),
             status: TempProfileModel.createStatus({
                 currentAction: types.UPDATE_TEMP_PROFILE
             })

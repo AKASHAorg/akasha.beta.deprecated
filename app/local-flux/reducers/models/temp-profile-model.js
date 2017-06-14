@@ -15,6 +15,7 @@ export default class TempProfileModel extends TempProfileModelRecord {
     }
     static profileToTempProfile (profileData) {
         const {
+            localId,
             about = '',
             akashaId,
             avatar,
@@ -27,6 +28,7 @@ export default class TempProfileModel extends TempProfileModelRecord {
             links
         } = profileData;
         return TempProfileModel.createTempProfile({
+            localId,
             about,
             akashaId,
             avatar,

@@ -10,6 +10,7 @@ const TempProfileStatus = Record({
 });
 
 const TempProfile = Record({
+    localId: '',
     firstName: '',
     lastName: '',
     akashaId: '',
