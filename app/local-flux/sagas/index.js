@@ -3,6 +3,7 @@ import * as actions from '../actions/app-actions';
 import * as transactionActions from '../actions/transaction-actions';
 import { selectLoggedAkashaId } from '../selectors';
 import { createActionChannels } from './helpers';
+import * as appSaga from './app-saga';
 import * as dashboardSaga from './dashboard-saga';
 import * as entrySaga from './entry-saga';
 import * as externalProcSaga from './external-process-saga';

@@ -158,6 +158,10 @@ const appState = createReducer(initialState, {
 
     [types.SHOW_WEIGHT_CONFIRM_DIALOG]: (state, { actionId }) =>
         state.set('weightConfirmDialog', actionId),
+    [types.SHOW_DIALOG]: (state, { dialogType, data }) => {
+        console.log(dialogType, data);
+        return state.set(dialogType, data);
+    },
 
     [types.SHOW_DIALOG]: (state, { dialogType, data }) =>
         state.set(dialogType, data),
