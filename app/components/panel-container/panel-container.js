@@ -14,13 +14,13 @@ class PanelContainer extends React.Component {
     constructor (props) {
         super(props);
         this.state = {
-            isHeaderShrinked: false
+            isHeaderShrinked: false,
+            panelHeight: '100%'
         };
     }
     componentWillMount () {
         const { children } = this.props;
-        const childHeader = children.find(this._findChild(ALLOWED_HEADER_NAMES));
-        this.childHeader = childHeader;
+        this.childHeader = children.length && children.find(this._findChild(ALLOWED_HEADER_NAMES));
     }
     componentDidMount () {
         // attach resize listener and recalc panel.
@@ -117,7 +117,10 @@ class PanelContainer extends React.Component {
               onScroll={this._handleScroll}
             >
               <div className={`row ${styles.panelContentInner}`}>
-                {this.props.children.filter(this._filterContentChildren)}
+                {this.props.children.length ?
+                    this.props.children.filter(this._filterContentChildren) :
+                    this.props.children
+                }
               </div>
             </div>
           </Paper>

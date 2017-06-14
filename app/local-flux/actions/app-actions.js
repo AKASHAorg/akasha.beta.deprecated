@@ -78,6 +78,9 @@ export const hideWeightConfirmDialog = () => action(types.HIDE_WEIGHT_CONFIRM_DI
 export const panelShow = panel => action(types.PANEL_SHOW, { panel });
 export const panelHide = () => action(types.PANEL_HIDE);
 
+// for publishing to blockchain
+export const publishEntity = data => action(types.PUBLISH_ENTITY, { data });
+
 // this should be removed once profile logout is implemented
 export const resetHomeReady = () => action(types.RESET_HOME_READY);
 
@@ -98,5 +101,4 @@ export const toggleGethDetailsModal = () => action(types.TOGGLE_GETH_DETAILS_MOD
 export const toggleIpfsDetailsModal = () => action(types.TOGGLE_IPFS_DETAILS_MODAL);
 export const updateAction = (actionId, updates) =>
     action(types.UPDATE_ACTION, { actionId, updates });
-
 export { AppActions };

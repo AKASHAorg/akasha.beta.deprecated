@@ -27,26 +27,28 @@ class Avatar extends React.Component {
     }
     getImage = () =>
         new Promise((resolve) => {
-            if (this.editor) {
-                const imageCanvas = this.editor.getImageScaledToCanvas();
-                imageCanvas.toBlob((blob) => {
-                    const reader = new FileReader();
-                    reader.onloadend = ev =>
-                        resolve(new Uint8Array(ev.target.result));
-                    reader.readAsArrayBuffer(blob);
-                }, 'image/jpg');
-            } else {
-                resolve(null);
+            // if image is a string it means it comes from ipfs
+            if (this.props.image && typeof this.props.image === 'string') {
+                return resolve(this.props.image);
             }
+            const imageCanvas = this.editor.getImageScaledToCanvas();
+            return imageCanvas.toBlob((blob) => {
+                const reader = new FileReader();
+                reader.onloadend = ev =>
+                    resolve(new Uint8Array(ev.target.result));
+                reader.readAsArrayBuffer(blob);
+            }, 'image/jpg');
         });
     _handleAvatarClear = () => {
-        const { clearAvatarImage } = this.props;
-        if (clearAvatarImage) {
-            clearAvatarImage();
+        const { onImageClear } = this.props;
+        if (onImageClear) {
+            onImageClear();
         }
         this.setState({
             avatarImage: null,
-            isNewAvatarLoaded: false
+            isNewAvatarLoaded: false,
+            rotation: 0,
+            avatarScale: 1.2
         });
     }
     _handleSliderChange = (ev, sliderValue) => {
@@ -95,7 +97,6 @@ class Avatar extends React.Component {
             onMouseLeave } = this.props;
         const { palette } = this.context.muiTheme;
         let avatarImage;
-
         if (this.state.avatarImage) {
             avatarImage = this.state.avatarImage;
         } else if (image) {
@@ -260,7 +261,10 @@ class Avatar extends React.Component {
 }
 Avatar.propTypes = {
     avatarScale: PropTypes.number,
-    image: PropTypes.string,
+    image: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.shape()
+    ]),
     editable: PropTypes.bool,
     userInitials: PropTypes.string,
     radius: PropTypes.number,
@@ -269,7 +273,7 @@ Avatar.propTypes = {
     userInitialsAlignStyle: PropTypes.shape(),
     userInitialsWrapperStyle: PropTypes.shape(),
     offsetBorder: PropTypes.string,
-    clearAvatarImage: PropTypes.func,
+    onImageClear: PropTypes.func,
     style: PropTypes.shape(),
     onClick: PropTypes.func,
     onMouseEnter: PropTypes.func,

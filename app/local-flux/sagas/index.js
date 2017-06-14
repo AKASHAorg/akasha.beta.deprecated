@@ -11,6 +11,7 @@ import * as entrySaga from './entry-saga';
 import * as externalProcSaga from './external-process-saga';
 import * as licenseSaga from './license-saga';
 import * as profileSaga from './profile-saga';
+import * as publisherSaga from './publisher-saga';
 import * as settingsSaga from './settings-saga';
 import * as tagSaga from './tag-saga';
 import * as tempProfileSaga from './temp-profile-saga';
@@ -81,6 +82,7 @@ export default function* rootSaga () {
     yield fork(externalProcSaga.watchEProcActions);
     yield fork(licenseSaga.watchLicenseActions);
     yield fork(profileSaga.watchProfileActions);
+    yield fork(publisherSaga.watchPublishActions);
     yield fork(settingsSaga.watchSettingsActions);
     yield fork(tagSaga.watchTagActions);
     yield fork(tempProfileSaga.watchTempProfileActions);

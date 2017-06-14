@@ -1,77 +1,26 @@
-import r from 'ramda';
 import XRegExp from 'xregexp';
 
-// this module provides various data manipulation methods
-export const inputFieldMethods = {
-    /**
-     * Get props for textfields. Auto assign error props and handle textfields` change event.
-     * Quick usage:
-     * let firstnameProps = getProps (ComponentInstance, {
-     *  prop1: true,
-     *  prop2: 'someValue',
-     *  ...
-     * });
-     */
-    getProps (params) {
-        const statePath = params.statePath;
-        const parts = statePath.split('.');
-        const nameSpace = parts.shift();
-        const errorKey = parts[parts.length - 1];
-        const props = r.omit(['statePath', 'addValueLink', 'onTextChange', 'onFocus'], params);
-        const validationErrors = []; //this.props.getValidationMessages(errorKey);
-        const state = this.state;
-        let value = state[nameSpace];
-        parts.forEach((piece) => {
-            value = value[piece];
-        });
+/* eslint-disable no-bitwise */
+export const genId = () => {
+    const chars = '0123456789abcdef'.split('');
+    const uuid = [];
+    const rnd = Math.random;
+    let r;
+    uuid[8] = '-';
+    uuid[13] = '-';
+    uuid[18] = '-';
+    uuid[23] = '-';
+    uuid[14] = '4'; // v4
 
-        const getNewValuePath = (newVal) => {
-            const constructedObj = {};
-            let internalPtr;
-            constructedObj[nameSpace] = r.clone(state[nameSpace]) || {};
-
-            // if the value should be placed right in component's
-            // state, then just set the value and return
-            if (parts.length === 0) {
-                constructedObj[nameSpace] = newVal;
-                return constructedObj;
-            }
-
-            internalPtr = constructedObj[nameSpace];
-
-            parts.forEach((piece, pieceIndex) => {
-                // if it's the last piece
-                if (pieceIndex === parts.length - 1) {
-                    internalPtr[piece] = newVal;
-                    return;
-                }
-
-                // mutate the constructedObj via
-                // internalPtr object
-                internalPtr[piece] = internalPtr[piece] || {};
-                internalPtr = internalPtr[piece];
-            });
-
-            return constructedObj;
-        };
-
-        if (statePath && params.addValueLink) {
-            props.onChange = (ev) => {
-                this.setState(getNewValuePath(ev.target.value));
-                if (params.onTextChange) {
-                    params.onTextChange(ev);
-                }
-            };
+    for (let i = 0; i < 36; i++) {
+        if (!uuid[i]) {
+            r = 0 | rnd() * 16;
+            uuid[i] = chars[(i === 19) ? (r & 0x3) | 0x8 : r & 0xf];
         }
-        if (props.onFocus) {
-            props.onFocus();
-        }
-        if (validationErrors.length > 0) {
-            props.errorText = validationErrors.reduce((prev, current) => `${prev}, ${current}`);
-        }
-        return props;
     }
+    return uuid.join('');
 };
+/* eslint-enable no-bitwise */
 
 export const calculateReadingTime = (wordCount = 0, options = {}) => {
     let minutes;
