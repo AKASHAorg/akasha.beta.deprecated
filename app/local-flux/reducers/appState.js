@@ -23,7 +23,7 @@ const appState = createReducer(initialState, {
         });
     },
 
-    [appTypes.PUBLISH_ENTITY]: (state, { data }) => {
+    [types.PUBLISH_ENTITY]: (state, { data }) => {
         console.log(data, 'the data');
         return state.merge({
             pendingActions: state.get('pendingActions').push(new PendingActionRecord(data))
