@@ -121,13 +121,7 @@ function* confirmAuth (action) {
     console.log('show auth dialog for', action);
     yield put({
         type: types.PROFILE_LOGIN_SUCCESS,
-        data: {
-            account: '0xff394602183bd25727d8be0420203fa9958c920a',
-            token: '0x2c38b11d6e30a0212acbec9f1d67ea00156748c246df5b85541e29854a95c1cf',
-            expiration: '2017-05-24T18:43:00.269Z',
-            profile: '0x4830b414662a864e64db4e4ec5cf079229c41f10',
-            akashaId: 'sever'
-        }
+        data: action.data
     });
 
     console.log('simulate auth dialog open and submit for 2 seconds');
