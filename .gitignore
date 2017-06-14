@@ -44,3 +44,4 @@ jsconfig.json
 *.pfx
 main/**/*.js
 main/**/*.js.map
+app/locale-data/en-source.json
