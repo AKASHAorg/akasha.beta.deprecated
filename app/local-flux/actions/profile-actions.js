@@ -742,7 +742,7 @@ export const profileGetLoggedError = (error) => {
 };
 
 export const profileGetLoggedSuccess = data => action(types.PROFILE_GET_LOGGED_SUCCESS, { data });
-export const profileIsFollower = following => action(types.PROFILE_IS_FOLLOWER, { following });
+export const profileIsFollower = followings => action(types.PROFILE_IS_FOLLOWER, { followings });
 
 export const profileIsFollowerError = (error, request) => {
     error.code = 'PIFE01';
@@ -799,8 +799,8 @@ export const profileSaveLoggedError = (error) => {
     return action(types.PROFILE_SAVE_LOGGED_ERROR, { error });
 };
 
-export const profileSendTip = (akashaId, value, gas) =>
-    action(types.PROFILE_SEND_TIP, { akashaId, value, gas });
+export const profileSendTip = (akashaId, receiver, value, gas) =>
+    action(types.PROFILE_SEND_TIP, { akashaId, receiver, value, gas });
 
 export const profileSendTipError = (error, request) => {
     error.code = 'PSTE01';

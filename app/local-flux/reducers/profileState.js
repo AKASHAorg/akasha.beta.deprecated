@@ -491,23 +491,29 @@ const profileState = createReducer(initialState, {
     [types.PROFILE_FOLLOW_SUCCESS]: (state, { data }) => {
         const loggedAkashaId = state.getIn(['loggedProfile', 'akashaId']);
         const loggedProfile = state.getIn(['byId', loggedAkashaId]);
-        const followingsCount = loggedProfile.get('followingsCount');
+        const followingCount = loggedProfile.get('followingCount');
         const profile = state.getIn(['byId', data]);
-        const oldFollowers = state.getIn(['followers', data]);
-        const oldFollowings = state.getIn(['followings', loggedAkashaId]);
-        const followers = oldFollowers ?
-            state.get('followers').set(data, oldFollowers.unshift(loggedAkashaId)) :
+        const oldFollowers = state.get('followers');
+        const oldFollowings = state.get('followings');
+        const followersList = oldFollowers.get(data);
+        const followingsList = oldFollowings.get(loggedAkashaId);
+        const followers = followersList ?
+            oldFollowers.set(data, followersList.unshift(loggedAkashaId)) :
             oldFollowers;
+        const followings = followingsList ?
+            oldFollowings.set(loggedAkashaId, followingsList.unshift(data)) :
+            oldFollowings;
         return state.merge({
             byId: state.get('byId').merge({
                 [data]: profile ?
                     profile.set('followersCount', profile.get('followersCount') + 1) :
                     undefined,
-                [loggedAkashaId]: loggedProfile.set('followingsCount', followingsCount + 1)
+                [loggedAkashaId]: loggedProfile.set('followingCount', followingCount + 1)
             }),
             flags: state.get('flags').setIn(['followPending', data], false),
             followers,
-            followings: state.get('followings').set(loggedAkashaId, oldFollowings.unshift(data)),
+            followings,
+            isFollower: state.get('isFollower').set(data, true)
         });
     },
 
@@ -640,6 +646,14 @@ const profileState = createReducer(initialState, {
     [types.PROFILE_GET_LOGGED_SUCCESS]: (state, { data }) =>
         state.set('loggedProfile', new LoggedProfile(data)),
 
+    [types.PROFILE_IS_FOLLOWER_SUCCESS]: (state, { data }) => {
+        let isFollower = state.get('isFollower');
+        data.collection.forEach((resp) => {
+            isFollower = isFollower.set(resp.following, resp.result);
+        });
+        return state.set('isFollower', isFollower);
+    },
+
     [types.PROFILE_LOGIN]: state =>
         state.setIn(['flags', 'loginPending'], true),
 
@@ -715,7 +729,7 @@ const profileState = createReducer(initialState, {
     [types.PROFILE_UNFOLLOW_SUCCESS]: (state, { data }) => {
         const loggedAkashaId = state.getIn(['loggedProfile', 'akashaId']);
         const loggedProfile = state.getIn(['byId', loggedAkashaId]);
-        const followingsCount = loggedProfile.get('followingsCount');
+        const followingCount = loggedProfile.get('followingCount');
         const profile = state.getIn(['byId', data]);
         const oldFollowers = state.get('followers');
         const oldFollowings = state.get('followings');
@@ -724,17 +738,20 @@ const profileState = createReducer(initialState, {
         const followers = followersList ?
             oldFollowers.set(data, followersList.filter(id => id !== loggedAkashaId)) :
             oldFollowers;
+        const followings = followingsList ?
+            oldFollowings.set(loggedAkashaId, followingsList.filter(id => id !== data)) :
+            oldFollowings;
         return state.merge({
             byId: state.get('byId').merge({
                 [data]: profile ?
                     profile.set('followersCount', profile.get('followersCount') - 1) :
                     undefined,
-                [loggedAkashaId]: loggedProfile.set('followingsCount', followingsCount - 1)
+                [loggedAkashaId]: loggedProfile.set('followingCount', followingCount - 1)
             }),
             flags: state.get('flags').setIn(['followPending', data], false),
             followers,
-            followings: oldFollowings
-                .set(loggedAkashaId, followingsList.filter(id => id !== data)),
+            followings,
+            isFollower: state.get('isFollower').set(data, false)
         });
     },
 });

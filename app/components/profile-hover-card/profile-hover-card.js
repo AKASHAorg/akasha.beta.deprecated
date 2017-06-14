@@ -40,6 +40,7 @@ class ProfileHoverCard extends Component {
             akashaId: profile.akashaId,
             firstName: profile.firstName,
             lastName: profile.lastName,
+            profile: profile.profile
         });
     };
 
@@ -102,7 +103,7 @@ class ProfileHoverCard extends Component {
             style={{ left, top }}
           >
             <Paper className={styles.root} zDepth={1}>
-              <DataLoader flag={loading || !profile}>
+              <DataLoader flag={loading}>
                 <div>
                   <div className="caret-up" />
                   <div className={`${styles.hoverCardHeader} row`}>
@@ -134,7 +135,7 @@ class ProfileHoverCard extends Component {
                             className={`${styles.followButton} ${isFollowing ? 'col-xs-6' : 'col-xs-5'}`}
                           >
                             <RaisedButton
-                              disabled={followPending}
+                              disabled={followPending || isFollowing === undefined}
                               label={isFollowing ?
                                   intl.formatMessage(profileMessages.unfollow) :
                                   intl.formatMessage(profileMessages.follow)
@@ -193,7 +194,7 @@ function mapStateToProps (state, ownProps) {
     const loggedAkashaId = selectLoggedAkashaId(state);
     return {
         followPending: state.profileState.getIn(['flags', 'followPending', profile.akashaId]),
-        isFollowing: state.profileState.getIn(['followings', loggedAkashaId, profile.akashaId]),
+        isFollowing: state.profileState.getIn(['isFollower', profile.akashaId]),
         loggedAkashaId,
         sendingTip: state.profileState.getIn(['flags', 'sendingTip', profile.akashaId]),
     };

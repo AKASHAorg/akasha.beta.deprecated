@@ -65,6 +65,8 @@ export const selectGethStatus = state => state.externalProcState.getIn(['geth', 
 
 export const selectIpfsStatus = state => state.externalProcState.getIn(['ipfs', 'status']);
 
+export const selectIsFollower = (state, akashaId) => state.profileState.getIn(['isFollower', akashaId]);
+
 export const selectLastComment = state => state.commentsState.get('lastComm');
 
 export const selectLastFollower = (state, akashaId) =>
