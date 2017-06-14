@@ -31,7 +31,7 @@ export PageContent from './page-content';
 export PanelContainer from './panel-container/panel-container';
 export PanelContainerFooter from './panel-container/panel-container-footer';
 export PanelContainerHeader from './panel-container/panel-container-header';
-export PanelLoader from './PanelLoader/panel-loader';
+export PanelLoader from './panel-loader/panel-loader';
 export ProfileColumn from './columns/profile-column';
 export ProfileHoverCard from './profile-hover-card/profile-hover-card';
 export ProfilesList from './profiles-list';
