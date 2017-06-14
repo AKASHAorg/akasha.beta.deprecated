@@ -31,7 +31,7 @@ class AppContainer extends Component {
     // pass previousLocation to Switch when we need to render Entry Page as an overlay
     previousLocation = this.props.location;
 
-    componentWillMount () {
+    componentDidMount () {
         this._bootstrapApp(this.props);
     }
 
