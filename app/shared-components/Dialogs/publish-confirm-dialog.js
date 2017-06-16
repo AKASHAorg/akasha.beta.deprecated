@@ -7,6 +7,11 @@ import InfoIcon from 'material-ui/svg-icons/action/info-outline';
 import { AppActions } from '../../local-flux';
 import { confirmMessages, formMessages, generalMessages } from '../../locale-data/messages';
 
+const DEFAULT_GAS = 2000000;
+const gasCosts = {
+    tempProfile: DEFAULT_GAS
+};
+
 class PublishConfirmDialog extends Component {
     constructor (props) {
         super(props);
@@ -17,9 +22,9 @@ class PublishConfirmDialog extends Component {
     }
 
     componentWillMount () {
-        const { resource } = this.props;
+        const gasAmount = this._getMinGas();
         this.setState({
-            gasAmount: resource.get('gas')
+            gasAmount
         });
     }
 
@@ -31,10 +36,15 @@ class PublishConfirmDialog extends Component {
         ev.preventDefault();
         this._handleConfirm();
     };
-
+    _getMinGas = () => {
+        const { pendingAction } = this.props;
+        const { entityType } = pendingAction;
+        return gasCosts[entityType] || DEFAULT_GAS;
+    }
     _handleGasChange = (ev) => {
         const gasAmount = ev.target.value;
-        if (gasAmount < 2000000 || gasAmount > 4700000) {
+        const minGas = this._getMinGas();
+        if (gasAmount < minGas || gasAmount > 4700000) {
             this.setState({
                 gasAmountError: true,
                 gasAmount
@@ -48,26 +58,38 @@ class PublishConfirmDialog extends Component {
     };
 
     _handleConfirm = () => {
-        const { resource, appActions } = this.props;
-        const updatedResource = resource.toJS();
-        updatedResource.gas = this.state.gasAmount || resource.get('gas');
-        updatedResource.status = 'checkAuth';
+        const { pendingAction, appActions } = this.props;
         appActions.hidePublishConfirmDialog();
-        appActions.updatePendingAction(updatedResource);
+        appActions.updatePendingAction(pendingAction.withMutations(action => {
+            action.set('gas', this.state.gasAmount);
+        }));
     };
-
+    _findResource = (entityType, id) => {
+        const { state } = this.props;
+        switch (entityType) {
+            case 'tempProfile':
+                return state.tempProfileState.get('tempProfile');
+            case 'comment':
+                return state.commentsState.getIn(['byId', id]);
+            default:
+                return null;
+        }
+    }
     _handleAbort = () => {
-        const { resource, appActions } = this.props;
-        appActions.deletePendingAction(resource.get('id'));
+        const { pendingAction, appActions } = this.props;
+        appActions.deletePendingAction(pendingAction.get('entityId'));
         appActions.hidePublishConfirmDialog();
     };
 
     render () {
-        const { resource, intl } = this.props;
+        const { pendingAction, intl } = this.props;
         const { gasAmount, gasAmountError } = this.state;
+        const resource = this._findResource(pendingAction.get('entityType'), pendingAction.get('entityId'));
+
         if (!resource) {
             return null;
         }
+        console.log(resource, 'the resource');
         const dialogActions = [
           <FlatButton // eslint-disable-line indent
             label={intl.formatMessage(generalMessages.abort)}
@@ -131,14 +153,16 @@ class PublishConfirmDialog extends Component {
 }
 
 PublishConfirmDialog.propTypes = {
-    resource: PropTypes.shape(),
+    pendingAction: PropTypes.shape().isRequired,
     appActions: PropTypes.shape(),
+    state: PropTypes.shape(),
     intl: PropTypes.shape()
 };
 
 function mapStateToProps (state) {
     return {
-        resource: state.appState.get('publishConfirmDialog')
+        pendingAction: state.appState.getIn(['pendingActions', state.appState.get('publishConfirmDialog')]),
+        state
     };
 }
 

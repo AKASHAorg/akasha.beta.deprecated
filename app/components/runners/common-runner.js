@@ -1,20 +1,26 @@
 import PropTypes from 'prop-types';
 import { Component } from 'react';
 import { connect } from 'react-redux';
-import actionStatus from '../../constants/action-status';
 import { showAuthDialog, showPublishConfirmDialog, showTransferConfirmDialog,
     showWeightConfirmDialog, updateAction } from '../../local-flux/actions/app-actions';
 
+const CONFIRMATION_ENTITIES = ['tempProfile'];
+
 class CommonRunner extends Component {
     componentWillUpdate (nextProps) {
-        const prevPendingActions = this.props.pendingActions;
-        const { pendingActions } = nextProps;
-
-        pendingActions.forEach((action, index) => {
-            const { currentAction, type } = action;
-            if (currentAction !== prevPendingActions[index].currentAction) {
-                
+        const { pendingActions, loggedProfile } = nextProps;
+        pendingActions.forEach((action) => {
+            const { currentAction, actionType, confirmed, entityType, entityId } = action;
+            const needsConfirmation = !confirmed && CONFIRMATION_ENTITIES.includes(entityType);
+            const isLoggedIn = Date.parse(loggedProfile.get('expiration')) - 3000 > Date.now();
+            if (needsConfirmation) {
+                return this.props.showPublishConfirmDialog(entityId);
             }
+            if (isLoggedIn) {
+                console.log('for actiontype:', actionType, 'run action:', currentAction);
+                return '';
+            }
+            return this.props.showAuthDialog(action.get('entityId'));
         });
     }
     // componentWillReceiveProps (nextProps) {
@@ -55,15 +61,10 @@ class CommonRunner extends Component {
 }
 
 CommonRunner.propTypes = {
-    authDialog: PropTypes.number,
     loggedProfile: PropTypes.shape(),
     pendingActions: PropTypes.shape(),
-    publishConfirmDialog: PropTypes.shape(),
     showAuthDialog: PropTypes.func.isRequired,
-    showPublishConfirmDialog: PropTypes.func.isRequired,
-    showTransferConfirmDialog: PropTypes.func.isRequired,
-    showWeightConfirmDialog: PropTypes.func.isRequired,
-    updateAction: PropTypes.func.isRequired
+    showPublishConfirmDialog: PropTypes.func.isRequired
 };
 
 function mapStateToProps (state) {
