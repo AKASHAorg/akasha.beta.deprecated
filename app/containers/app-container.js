@@ -70,7 +70,7 @@ class AppContainer extends Component {
               <div className="container fill-height" style={{ backgroundColor: muiTheme.palette.themeColor }} >
                 {location.pathname === '/' && <Redirect to="/setup" />}
                 <Route path="/setup" component={LauncherContainer} />
-                <Route path="/dashboard" component={HomeContainer} />
+                <Route path="/dashboard/:dashboardName" component={HomeContainer} />
                 <SidebarContainer {...this.props}>
                   <PanelLoader
                     intl={intl}

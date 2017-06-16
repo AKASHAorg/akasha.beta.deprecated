@@ -79,33 +79,33 @@ const dashboardState = createReducer(initialState, {
 
     [types.DASHBOARD_ADD_SUCCESS]: (state, { data }) =>
         state.merge({
-            activeDashboard: data.id,
-            dashboardById: state.get('dashboardById').set(data.id, new DashboardRecord(data)),
+            activeDashboard: data.name,
+            dashboardById: state.get('dashboardById').set(data.name, new DashboardRecord(data)),
         }),
 
     [types.DASHBOARD_ADD_COLUMN_SUCCESS]: (state, { data }) =>
         state.merge({
             columnById: state.get('columnById').set(data.id, new ColumnRecord(data)),
             dashboardById: state.get('dashboardById').setIn(
-                [data.dashboardId, 'columns'],
-                state.getIn(['dashboardById', data.dashboardId, 'columns']).push(data.id)
+                [data.dashboardName, 'columns'],
+                state.getIn(['dashboardById', data.dashboardName, 'columns']).push(data.id)
             )
         }),
 
     [types.DASHBOARD_DELETE_COLUMN_SUCCESS]: (state, { data }) => {
-        const oldDashboard = state.getIn(['dashboardById', data.dashboardId]);
+        const oldDashboard = state.getIn(['dashboardById', data.dashboardName]);
         const index = oldDashboard.get('columns').indexOf(data.columnId);
         return state.merge({
             columnById: state.get('columnById').delete(data.columnId),
             dashboardById: state.get('dashboardById').setIn(
-                [data.dashboardId, 'columns'],
+                [data.dashboardName, 'columns'],
                 oldDashboard.get('columns').delete(index)
             )
         });
     },
 
     [types.DASHBOARD_DELETE_SUCCESS]: (state, { data }) =>
-        state.set('dashboardById', state.get('dashboardById').delete(data.id)),
+        state.set('dashboardById', state.get('dashboardById').delete(data.name)),
 
     [types.DASHBOARD_GET_ACTIVE_SUCCESS]: (state, { data }) =>
         state.set('activeDashboard', data),
@@ -115,7 +115,7 @@ const dashboardState = createReducer(initialState, {
         data.forEach((dashboard) => {
             // convert the columns array to List
             dashboard.columns = new List(dashboard.columns);
-            dashboardById = dashboardById.set(dashboard.id, new DashboardRecord(dashboard));
+            dashboardById = dashboardById.set(dashboard.name, new DashboardRecord(dashboard));
         });
         return state.set('dashboardById', dashboardById);
     },
@@ -132,7 +132,7 @@ const dashboardState = createReducer(initialState, {
         state.set('activeDashboard', data),
 
     [types.DASHBOARD_UPDATE_COLUMN_SUCCESS]: (state, { data }) =>
-        state.setIn(['columnById', data.id, 'value'], data.value),
+        state.mergeIn(['columnById', data.id], data.changes),
 
     [types.ENTRY_MORE_NEWEST_ITERATOR]: entryMoreIterator,
 

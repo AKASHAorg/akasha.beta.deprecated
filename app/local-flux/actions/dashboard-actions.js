@@ -20,8 +20,8 @@ export const dashboardAddColumnError = (error) => {
 
 export const dashboardAddColumnSuccess = data =>
     action(types.DASHBOARD_ADD_COLUMN_SUCCESS, { data });
-export const dashboardDelete = id =>
-    action(types.DASHBOARD_DELETE, { id });
+export const dashboardDelete = name =>
+    action(types.DASHBOARD_DELETE, { name });
 
 export const dashboardDeleteError = (error) => {
     error.code = 'DDE01';
@@ -78,8 +78,8 @@ export const dashboardSetActiveError = (error) => {
 
 export const dashboardSetActiveSuccess = data =>
     action(types.DASHBOARD_SET_ACTIVE_SUCCESS, { data });
-export const dashboardUpdateColumn = (id, value) =>
-    action(types.DASHBOARD_UPDATE_COLUMN, { id, value });
+export const dashboardUpdateColumn = (id, changes) =>
+    action(types.DASHBOARD_UPDATE_COLUMN, { id, changes });
 
 export const dashboardUpdateColumnError = (error) => {
     error.code = 'DUCE01';

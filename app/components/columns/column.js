@@ -4,18 +4,28 @@ import { columnType } from '../../constants/columns';
 import { LatestColumn, ProfileColumn, StreamColumn, TagColumn } from '../';
 
 const Column = ({ column }) => {
+    let component;
     switch (column.get('type')) {
         case columnType.latest:
-            return <LatestColumn column={column} />;
+            component = <LatestColumn column={column} />;
+            break;
         case columnType.tag:
-            return <TagColumn column={column} />;
+            component = <TagColumn column={column} />;
+            break;
         case columnType.stream:
-            return <StreamColumn column={column} />;
+            component = <StreamColumn column={column} />;
+            break;
         case columnType.profile:
-            return <ProfileColumn column={column} />;
+            component = <ProfileColumn column={column} />;
+            break;
         default:
-            return null;
+            break;
     }
+    return (
+      <div style={{ height: '100%', width: '100%' }}>
+        {component}
+      </div>
+    );
 };
 
 Column.propTypes = {

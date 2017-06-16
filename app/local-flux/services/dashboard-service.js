@@ -109,9 +109,9 @@ export const updateColumn = payload =>
                     reject({ message: 'Cannot find specified column' });
                     return;
                 }
-                column.value = payload.value;
+                const newColumn = Object.assign({}, column, payload.changes);
                 dashboardDB.columnById
-                    .put(column)
+                    .put(newColumn)
                     .then(resolve);
             })
             .catch(err => reject(err));
