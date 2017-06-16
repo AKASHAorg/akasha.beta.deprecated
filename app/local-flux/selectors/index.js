@@ -14,6 +14,18 @@ export const selectActiveDashboard = (state) => {
     ]);
 };
 
+export const selectActiveDashboardId = (state) => {
+    const activeDashboardName = state.dashboardState.get('activeDashboard');
+    if (!activeDashboardName) {
+        return null;
+    }
+    return state.dashboardState.getIn([
+        'dashboardById',
+        activeDashboardName,
+        'id'
+    ]);
+};
+
 export const selectActivePanel = state => state.panelState.get('activePanel');
 
 export const selectAllComments = state => state.commentsState.get('byId').toList();
@@ -35,6 +47,9 @@ export const selectCommentsFlag = (state, flag, id) => {
     }
     return state.commentsState.getIn(['flags', flag]);
 };
+
+export const selectDashboardId = (state, name) =>
+    state.dashboardState.getIn(['dashboardById', name, 'id']);
 
 export const selectDashboards = (state) => {
     const akashaId = selectLoggedAkashaId(state);

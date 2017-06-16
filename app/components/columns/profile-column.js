@@ -40,11 +40,11 @@ class ProfileColumn extends Component {
         return (
           <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
             <ColumnHeader
-              columnId={column.get('id')}
+              column={column}
               icon={<ColumnProfile />}
-              value={column.get('value')}
             />
             <EntryListContainer
+              cardStyle={{ width: column.get('large') ? '700px' : '340px' }}
               entries={entries}
               fetchingEntries={column.getIn(['flags', 'fetchingEntries'])}
               fetchingMoreEntries={column.getIn(['flags', 'fetchingMoreEntries'])}

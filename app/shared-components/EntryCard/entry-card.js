@@ -27,13 +27,14 @@ class EntryCard extends Component {
 
     shouldComponentUpdate (nextProps, nextState) {
         const { blockNr, canClaimPending, claimPending, entry, fetchingEntryBalance, isSaved,
-            voteEntryPending } = nextProps;
+            style, voteEntryPending } = nextProps;
         if (blockNr !== this.props.blockNr ||
             canClaimPending !== this.props.canClaimPending ||
             claimPending !== this.props.claimPending ||
             !entry.equals(this.props.entry) ||
             fetchingEntryBalance !== this.props.fetchingEntryBalance ||
             isSaved !== this.props.isSaved ||
+            style.width !== this.props.style.width ||
             voteEntryPending !== this.props.voteEntryPending ||
             nextState.expanded !== this.state.expanded ||
             nextState.showVotes !== this.state.showVotes ||
@@ -264,6 +265,7 @@ class EntryCard extends Component {
                 {},
                 {
                     margin: '5px 10px 10px 5px',
+                    transition: 'none',
                     width: '340px',
                     opacity: (this.isPossiblyUnsafe() && !this.state.expanded) || !content ? 0.5 : 1
                 },

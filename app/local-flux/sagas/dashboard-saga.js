@@ -2,7 +2,8 @@ import { apply, fork, put, select, takeEvery } from 'redux-saga/effects';
 import * as actions from '../actions/dashboard-actions';
 import * as dashboardService from '../services/dashboard-service';
 import * as types from '../constants';
-import { selectLoggedAkashaId } from '../selectors';
+import { selectActiveDashboardId, selectDashboardId,
+    selectLoggedAkashaId } from '../selectors';
 
 function* dashboardAdd ({ name }) {
     try {
@@ -21,23 +22,25 @@ function* dashboardAdd ({ name }) {
 
 function* dashboardAddColumn ({ columnType }) {
     try {
-        const dashboardId = yield select(state => state.dashboardState.get('activeDashboard'));
+        const dashboardId = yield select(selectActiveDashboardId);
+        const dashboardName = yield select(state => state.dashboardState.get('activeDashboard'));
         const id = yield apply(
             dashboardService,
             dashboardService.addColumn,
             [{ dashboardId, type: columnType }]
         );
-        const data = { id, dashboardId, type: columnType };
+        const data = { id, dashboardName, type: columnType };
         yield put(actions.dashboardAddColumnSuccess(data));
     } catch (error) {
         yield put(actions.dashboardAddColumnError(error));
     }
 }
 
-function* dashboardDelete ({ id }) {
+function* dashboardDelete ({ name }) {
     try {
+        const id = yield select(state => selectDashboardId(state, name));
         yield apply(dashboardService, dashboardService.deleteDashboard, [id]);
-        yield put(actions.dashboardDeleteSuccess({ id }));
+        yield put(actions.dashboardDeleteSuccess({ name }));
     } catch (error) {
         yield put(actions.dashboardDeleteError(error));
     }
@@ -45,13 +48,14 @@ function* dashboardDelete ({ id }) {
 
 function* dashboardDeleteColumn ({ columnId }) {
     try {
-        const dashboardId = yield select(state => state.dashboardState.get('activeDashboard'));
+        const dashboardId = yield select(selectActiveDashboardId);
+        const dashboardName = yield select(state => state.dashboardState.get('activeDashboard'));
         yield apply(
             dashboardService,
             dashboardService.deleteColumn,
             [{ dashboardId, columnId }]
         );
-        yield put(actions.dashboardDeleteColumnSuccess({ dashboardId, columnId }));
+        yield put(actions.dashboardDeleteColumnSuccess({ dashboardName, columnId }));
     } catch (error) {
         yield put(actions.dashboardDeleteColumnError(error));
     }
@@ -96,14 +100,14 @@ function* dashboardSetActive ({ id }) {
     }
 }
 
-function* dashboardUpdateColumn ({ id, value }) {
+function* dashboardUpdateColumn ({ id, changes }) {
     try {
         yield apply(
             dashboardService,
             dashboardService.updateColumn,
-            [{ id, value }]
+            [{ id, changes }]
         );
-        const data = { id, value };
+        const data = { id, changes };
         yield put(actions.dashboardUpdateColumnSuccess(data));
     } catch (error) {
         yield put(actions.dashboardUpdateColumnError(error));

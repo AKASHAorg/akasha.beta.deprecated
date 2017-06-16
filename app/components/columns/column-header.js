@@ -12,7 +12,7 @@ class ColumnHeader extends Component {
         this.state = {
             isFocused: false,
             isHovered: false,
-            value: props.value
+            value: props.column.get('value')
         };
     }
 
@@ -52,23 +52,30 @@ class ColumnHeader extends Component {
     onNewRequest = (value) => {
         this.setState({
             value
-        }, () => this.updateColumn());
+        }, () => this.updateColumnValue());
     };
 
     deleteColumn = () => {
-        const { columnId } = this.props;
-        this.props.dashboardDeleteColumn(columnId);
+        const { column } = this.props;
+        this.props.dashboardDeleteColumn(column.get('id'));
     }
 
-    updateColumn = () => {
-        const { columnId, value } = this.props;
-        if (this.state.value !== value) {
-            this.props.dashboardUpdateColumn(columnId, this.state.value);
+    switchColumnWidth = () => {
+        const { column } = this.props;
+        const large = !column.get('large');
+        this.props.dashboardUpdateColumn(column.get('id'), { large });
+    };
+
+    updateColumnValue = () => {
+        const { column } = this.props;
+        const { value } = this.state;
+        if (value !== column.get('value')) {
+            this.props.dashboardUpdateColumn(column.get('id'), { value });
         }
     }
 
     render () {
-        const { icon, readOnly, suggestions, title } = this.props;
+        const { column, icon, readOnly, suggestions, title } = this.props;
         const { isFocused, isHovered, value } = this.state;
 
         return (
@@ -104,7 +111,10 @@ class ColumnHeader extends Component {
                 />
               }
             </div>
-            <button onClick={this.deleteColumn} style={{ marginRight: '20px' }}>x</button>
+            <button onClick={this.switchColumnWidth} style={{ marginRight: '10px', flex: '0 0 auto' }}>
+              {column.get('large') ? 'small' : 'large'}
+            </button>
+            <button onClick={this.deleteColumn} style={{ marginRight: '20px', flex: '0 0 auto' }}>x</button>
             {/*<div style={{ flex: '0 0 auto' }}>
               <SvgIcon
                 viewBox="0 0 18 18"
@@ -126,7 +136,7 @@ class ColumnHeader extends Component {
 }
 
 ColumnHeader.propTypes = {
-    columnId: PropTypes.number.isRequired,
+    column: PropTypes.shape().isRequired,
     dashboardDeleteColumn: PropTypes.func.isRequired,
     dashboardUpdateColumn: PropTypes.func.isRequired,
     icon: PropTypes.element,
@@ -134,7 +144,6 @@ ColumnHeader.propTypes = {
     readOnly: PropTypes.bool,
     suggestions: PropTypes.shape(),
     title: PropTypes.string,
-    value: PropTypes.string
 };
 
 export default connect(

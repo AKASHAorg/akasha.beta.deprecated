@@ -13,18 +13,16 @@ const SecondarySidebar = (props, { muiTheme }) => (
   <div className={styles.root} style={{ backgroundColor: muiTheme.palette.sidebarColor }}>
     Dashboards:
     <ul style={{ listStyleType: 'none', marginBottom: '15px' }}>
-      {props.dashboards.toList().map(dashboard =>
-        <li
-          key={dashboard.get('id')}
-          onClick={() => props.dashboardSetActive(dashboard.get('id'))}
-          style={{ display: 'flex' }}
-        >
-          <div style={{ flex: '1 1 auto' }}>{dashboard.get('name')}</div>
-          {props.activeDashboard !== dashboard.get('id') &&
+      {props.dashboards.toList().map(dashboard => (
+        <li key={dashboard.get('id')} style={{ display: 'flex' }}>
+          <div onClick={() => props.dashboardSetActive(dashboard.get('name'))}>
+            {dashboard.get('name')}
+          </div>
+          {props.activeDashboard !== dashboard.get('name') &&
             <button
               onClick={(ev) => {
                   ev.stopPropagation();
-                  props.dashboardDelete(dashboard.get('id'));
+                  props.dashboardDelete(dashboard.get('name'));
               }}
               style={{ flex: '0 0 auto', marginRight: '20px' }}
             >
@@ -32,7 +30,7 @@ const SecondarySidebar = (props, { muiTheme }) => (
             </button>
           }
         </li>
-      )}
+      ))}
     </ul>
     <input ref={el => (input = el)} />
     <button onClick={() => props.dashboardAdd(input.value)} style={{ marginBottom: '15px' }}>Add dashboard</button>
@@ -48,7 +46,7 @@ SecondarySidebar.contextTypes = {
 };
 
 SecondarySidebar.propTypes = {
-    activeDashboard: PropTypes.number,
+    activeDashboard: PropTypes.string,
     dashboardAdd: PropTypes.func.isRequired,
     dashboardAddColumn: PropTypes.func.isRequired,
     dashboardDelete: PropTypes.func.isRequired,
