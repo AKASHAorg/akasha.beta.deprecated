@@ -48,6 +48,7 @@ class TagColumn extends Component {
             />
             <EntryListContainer
               cardStyle={{ width: column.get('large') ? '700px' : '340px' }}
+              contextId={column.get('id')}
               entries={entries}
               fetchingEntries={column.getIn(['flags', 'fetchingEntries'])}
               fetchingMoreEntries={column.getIn(['flags', 'fetchingMoreEntries'])}

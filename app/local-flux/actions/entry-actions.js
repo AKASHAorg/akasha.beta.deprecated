@@ -764,7 +764,7 @@ export const entryIsActiveError = (error) => {
 };
 
 export const entryIsActiveSuccess = data => action(types.ENTRY_IS_ACTIVE_SUCCESS, { data });
-export const entryMoreNewestIterator = id => action(types.ENTRY_MORE_NEWEST_ITERATOR, { id });
+export const entryMoreNewestIterator = columnId => action(types.ENTRY_MORE_NEWEST_ITERATOR, { columnId });
 
 export const entryMoreNewestIteratorError = (error, req) => {
     error.code = 'EMNIE01';
@@ -774,8 +774,8 @@ export const entryMoreNewestIteratorError = (error, req) => {
 
 export const entryMoreNewestIteratorSuccess = (data, req) =>
     action(types.ENTRY_MORE_NEWEST_ITERATOR_SUCCESS, { data, req });
-export const entryMoreProfileIterator = (id, akashaId) =>
-    action(types.ENTRY_MORE_PROFILE_ITERATOR, { id, akashaId });
+export const entryMoreProfileIterator = (columnId, akashaId) =>
+    action(types.ENTRY_MORE_PROFILE_ITERATOR, { columnId, akashaId });
 
 export const entryMoreProfileIteratorError = (error, req) => {
     error.code = 'EMPIE01';
@@ -785,7 +785,7 @@ export const entryMoreProfileIteratorError = (error, req) => {
 
 export const entryMoreProfileIteratorSuccess = (data, req) =>
     action(types.ENTRY_MORE_PROFILE_ITERATOR_SUCCESS, { data, req });
-export const entryMoreStreamIterator = id => action(types.ENTRY_MORE_STREAM_ITERATOR, { id });
+export const entryMoreStreamIterator = columnId => action(types.ENTRY_MORE_STREAM_ITERATOR, { columnId });
 
 export const entryMoreStreamIteratorError = (error, req) => {
     error.code = 'EMSIE01';
@@ -795,8 +795,8 @@ export const entryMoreStreamIteratorError = (error, req) => {
 
 export const entryMoreStreamIteratorSuccess = (data, req) =>
     action(types.ENTRY_MORE_STREAM_ITERATOR_SUCCESS, { data, req });
-export const entryMoreTagIterator = (id, tagName) =>
-    action(types.ENTRY_MORE_TAG_ITERATOR, { id, tagName });
+export const entryMoreTagIterator = (columnId, tagName) =>
+    action(types.ENTRY_MORE_TAG_ITERATOR, { columnId, tagName });
 
 export const entryMoreTagIteratorError = (error, req) => {
     error.code = 'EMTIE01';
@@ -806,7 +806,7 @@ export const entryMoreTagIteratorError = (error, req) => {
 
 export const entryMoreTagIteratorSuccess = (data, req) =>
     action(types.ENTRY_MORE_TAG_ITERATOR_SUCCESS, { data, req });
-export const entryNewestIterator = id => action(types.ENTRY_NEWEST_ITERATOR, { id });
+export const entryNewestIterator = columnId => action(types.ENTRY_NEWEST_ITERATOR, { columnId });
 
 export const entryNewestIteratorError = (error, req) => {
     error.code = 'ENIE01';
@@ -819,8 +819,8 @@ export const entryNewestIteratorSuccess = (data, req) =>
 export const entryPageHide = () => action(types.ENTRY_PAGE_HIDE);
 export const entryPageShow = (entryId, version) =>
     action(types.ENTRY_PAGE_SHOW, { entryId, version });
-export const entryProfileIterator = (id, akashaId) =>
-    action(types.ENTRY_PROFILE_ITERATOR, { id, akashaId });
+export const entryProfileIterator = (columnId, akashaId) =>
+    action(types.ENTRY_PROFILE_ITERATOR, { columnId, akashaId });
 
 export const entryProfileIteratorError = (error, req) => {
     error.code = 'EPIE01';
@@ -830,7 +830,18 @@ export const entryProfileIteratorError = (error, req) => {
 
 export const entryProfileIteratorSuccess = (data, req) =>
     action(types.ENTRY_PROFILE_ITERATOR_SUCCESS, { data, req });
-export const entryStreamIterator = id => action(types.ENTRY_STREAM_ITERATOR, { id });
+export const entryResolveIpfsHash = (ipfsHash, columnId, entryIds) =>
+    action(types.ENTRY_RESOLVE_IPFS_HASH, { ipfsHash, columnId, entryIds });
+
+export const entryResolveIpfsHashError = (error, req) => {
+    error.code = 'ERIHE01';
+    error.messageId = 'entryResolveIpfsHash';
+    return action(types.ENTRY_RESOLVE_IPFS_HASH_ERROR, { error, req });
+};
+
+export const entryResolveIpfsHashSuccess = (data, req) =>
+    action(types.ENTRY_RESOLVE_IPFS_HASH_SUCCESS, { data, req });
+export const entryStreamIterator = columnId => action(types.ENTRY_STREAM_ITERATOR, { columnId });
 
 export const entryStreamIteratorError = (error, req) => {
     error.code = 'ESIE01';
@@ -840,7 +851,8 @@ export const entryStreamIteratorError = (error, req) => {
 
 export const entryStreamIteratorSuccess = (data, req) =>
     action(types.ENTRY_STREAM_ITERATOR_SUCCESS, { data, req });
-export const entryTagIterator = (id, tagName) => action(types.ENTRY_TAG_ITERATOR, { id, tagName });
+export const entryTagIterator = (columnId, tagName) =>
+    action(types.ENTRY_TAG_ITERATOR, { columnId, tagName });
 
 export const entryTagIteratorError = (error, req) => {
     error.code = 'ETIE01';

@@ -27,7 +27,7 @@ export const addDashboard = payload =>
     new Promise((resolve, reject) => {
         dashboardDB.dashboardById.put({ ...payload })
             .then(id =>
-                dashboardDB.activeDashboard.put({ akashaId: payload.akashaId, id })
+                dashboardDB.activeDashboard.put({ akashaId: payload.akashaId, name: payload.name })
                     .then(() => resolve(id))
             )
             .catch(err => reject(err));

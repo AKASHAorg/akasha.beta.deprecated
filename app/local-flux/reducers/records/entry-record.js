@@ -39,6 +39,7 @@ const Flags = Record({
     fetchingEntryBalance: false,
     fetchingFullEntry: false,
     isActivePending: false,
+    resolvingIpfsHash: new Map(),
     votePending: new Map(),
 });
 

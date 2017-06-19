@@ -1,6 +1,6 @@
 import * as Promise from 'bluebird';
 import { constructed as contracts } from '../../contracts/index';
-import { getFullContent, getShortContent } from './ipfs';
+import { getFullContent } from './ipfs';
 import { BASE_URL, FULL_WAIT_TIME, generalSettings, SHORT_WAIT_TIME } from '../../config/settings';
 import commentsCount from '../comments/comments-count';
 import getProfileData from '../profile/profile-data';
@@ -14,7 +14,7 @@ const execute = Promise.coroutine(function*(data: EntryGetRequest) {
     const active = yield contracts.instance.entries.isMutable(data.entryId);
     const score = yield contracts.instance.votes.getScore(data.entryId);
     const cCount = yield commentsCount.execute({ entryId: data.entryId });
-    entryEth.publisher = yield getProfileData.execute({ profile: entryEth.publisher })
+    entryEth.publisher = yield getProfileData.execute({ profile: entryEth.publisher, short: true })
         .timeout(SHORT_WAIT_TIME)
         .then((d) => d).catch((e) => null);
     const content = (data.full) ?
@@ -22,9 +22,8 @@ const execute = Promise.coroutine(function*(data: EntryGetRequest) {
             .timeout(FULL_WAIT_TIME)
             .then((d) => d).catch((e) => null)
         :
-        yield getShortContent(entryEth.ipfsHash)
-            .timeout(SHORT_WAIT_TIME)
-            .then((d) => d).catch((e) => null);
+        null;
+
     return {
         [BASE_URL]: generalSettings.get(BASE_URL),
         content,

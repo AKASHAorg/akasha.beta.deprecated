@@ -10,6 +10,7 @@ export const ProfileRecord = Record({
     firstName: '',
     followersCount: null,
     followingCount: null,
+    ipfsHash: '',
     lastName: '',
     links: [],
     profile: null,
@@ -37,6 +38,7 @@ const Flags = Record({
     followPending: new Map(),
     localProfilesFetched: false,
     loginPending: false,
+    resolvingIpfsHash: new Map(),
     sendingTip: new Map()
 });
 

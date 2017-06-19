@@ -5,7 +5,7 @@ import * as actions from '../actions/profile-actions';
 import * as transactionActions from '../actions/transaction-actions';
 import * as types from '../constants';
 import * as profileService from '../services/profile-service';
-import { selectLastFollower, selectLastFollowing, selectLoggedAkashaId,
+import { selectBaseUrl, selectLastFollower, selectLastFollowing, selectLoggedAkashaId,
     selectToken } from '../selectors';
 import actionTypes from '../../constants/action-types';
 
@@ -125,6 +125,12 @@ function* profileMoreFollowingsIterator ({ akashaId }) {
     yield apply(channel, channel.send, [{ akashaId, limit: FOLLOWINGS_ITERATOR_LIMIT, start }]);
 }
 
+function* profileResolveIpfsHash ({ ipfsHash, columnId, akashaIds }) {
+    const channel = Channel.server.profile.resolveProfileIpfsHash;
+    yield call(enableChannel, channel, Channel.client.profile.manager);
+    yield apply(channel, channel.send, [{ ipfsHash, columnId, akashaIds }]);
+}
+
 function* profileSaveLogged (loggedProfile) {
     try {
         yield apply(profileService, profileService.profileSaveLogged, [loggedProfile]);
@@ -215,6 +221,10 @@ function* watchProfileMoreFollowersIterator () {
 
 function* watchProfileMoreFollowingsIterator () {
     yield takeEvery(types.PROFILE_FOLLOWINGS_ITERATOR, profileMoreFollowingsIterator);
+}
+
+function* watchProfileResolveIpfsHash () {
+    yield takeEvery(types.PROFILE_RESOLVE_IPFS_HASH, profileResolveIpfsHash);
 }
 
 function* watchProfileSendTip () {
@@ -385,6 +395,21 @@ function* watchProfileLogoutChannel () {
     }
 }
 
+function* watchProfileResolveIpfsHashChannel () {
+    while (true) {
+        const resp = yield take(actionChannels.profile.resolveProfileIpfsHash);
+        if (resp.error) {
+            yield put(actions.profileResolveIpfsHashError(resp.error, resp.request));
+        } else if (resp.data.profile) {
+            const baseUrl = yield select(selectBaseUrl);
+            if (resp.data.profile.avatar) {
+                resp.data.profile.avatar = `${baseUrl}/${resp.data.profile.avatar}`;
+            }
+            yield put(actions.profileResolveIpfsHashSuccess(resp.data, resp.request));
+        }
+    }
+}
+
 function* watchProfileSendTipChannel () {
     while (true) {
         const resp = yield take(actionChannels.profile.tip);
@@ -442,6 +467,7 @@ export function* registerProfileListeners () {
     yield fork(watchProfileGetListChannel);
     yield fork(watchProfileIsFollowerChannel);
     yield fork(watchProfileLogoutChannel);
+    yield fork(watchProfileResolveIpfsHashChannel);
     yield fork(watchProfileSendTipChannel);
     yield fork(watchProfileUnfollowChannel);
 }
@@ -462,6 +488,7 @@ export function* watchProfileActions () {
     yield fork(watchProfileLogout);
     yield fork(watchProfileMoreFollowersIterator);
     yield fork(watchProfileMoreFollowingsIterator);
+    yield fork(watchProfileResolveIpfsHash);
     yield fork(watchProfileSendTip);
     yield fork(watchProfileUnfollow);
 }

@@ -65,7 +65,7 @@ export function* dashboardGetActive () {
     try {
         const akashaId = yield select(selectLoggedAkashaId);
         const data = yield apply(dashboardService, dashboardService.getActive, [akashaId]);
-        yield put(actions.dashboardGetActiveSuccess(data && data.id));
+        yield put(actions.dashboardGetActiveSuccess(data && data.name));
     } catch (error) {
         yield put(actions.dashboardGetActiveError(error));
     }
@@ -90,11 +90,11 @@ export function* dashboardGetColumns () {
     }
 }
 
-function* dashboardSetActive ({ id }) {
+function* dashboardSetActive ({ name }) {
     try {
         const akashaId = yield select(selectLoggedAkashaId);
-        yield apply(dashboardService, dashboardService.setActive, [{ akashaId, id }]);
-        yield put(actions.dashboardSetActiveSuccess(id));
+        yield apply(dashboardService, dashboardService.setActive, [{ akashaId, name }]);
+        yield put(actions.dashboardSetActiveSuccess(name));
     } catch (error) {
         yield put(actions.dashboardSetActiveError(error));
     }

@@ -21,7 +21,7 @@ function* enableExtraChannels () {
     yield all([
         call(enableChannel, getVoteOf, Channel.client.entry.manager),
         call(enableChannel, getEntryBalance, Channel.client.entry.manager),
-        call(enableChannel, canClaim, Channel.client.entry.manager)
+        call(enableChannel, canClaim, Channel.client.entry.manager),
     ]);
 }
 
@@ -84,21 +84,36 @@ function* entryGetExtraOfEntry (entryId, publisher) {
     }
 }
 
-function* entryGetExtraOfList (entries) {
-    const getVoteOf = Channel.server.entry.getVoteOf;
-    const getEntryBalance = Channel.server.entry.getEntryBalance;
+function* entryGetExtraOfList (collection, limit, columnId) {
+    // requests are made for n+1 entries, but the last one
+    // should be ignored if the limit is fulfilled
+    const entries = collection.length === limit ?
+        collection.slice(0, -1) :
+        collection;
     const canClaim = Channel.server.entry.canClaim;
+    const getEntryBalance = Channel.server.entry.getEntryBalance;
+    const getVoteOf = Channel.server.entry.getVoteOf;
     yield call(enableExtraChannels);
     const akashaId = yield select(selectLoggedAkashaId);
     const allEntries = [];
     const ownEntries = [];
+    const entryIpfsHashes = [];
+    const entryIds = [];
+    const profileIpfsHashes = [];
+    const akashaIds = [];
     entries.forEach((entry) => {
         allEntries.push({ akashaId, entryId: entry.entryId });
+        entryIpfsHashes.push(entry.entryEth.ipfsHash);
+        entryIds.push(entry.entryId);
+        profileIpfsHashes.push(entry.entryEth.publisher.ipfsHash);
+        akashaIds.push(entry.entryEth.publisher.akashaId);
         if (entry.entryEth && entry.entryEth.publisher &&
                 akashaId === entry.entryEth.publisher.akashaId) {
             ownEntries.push(entry.entryId);
         }
     });
+    yield put(actions.entryResolveIpfsHash(entryIpfsHashes, columnId, entryIds));
+    yield put(profileActions.profileResolveIpfsHash(profileIpfsHashes, columnId, akashaIds));
     yield apply(getVoteOf, getVoteOf.send, [allEntries]);
     if (ownEntries.length) {
         yield apply(getEntryBalance, getEntryBalance.send, [{ entryId: ownEntries }]);
@@ -139,52 +154,58 @@ function* entryIsActive ({ entryId }) {
     yield apply(channel, channel.send, [{ entryId }]);
 }
 
-function* entryMoreNewestIterator ({ id }) {
+function* entryMoreNewestIterator ({ columnId }) {
     const channel = Channel.server.entry.allStreamIterator;
-    const toBlock = yield select(state => selectColumnLastBlock(state, id));
-    yield apply(channel, channel.send, [{ id, limit: ALL_STREAM_LIMIT, toBlock: toBlock - 1 }]);
+    const toBlock = yield select(state => selectColumnLastBlock(state, columnId));
+    yield apply(channel, channel.send, [{ columnId, limit: ALL_STREAM_LIMIT, toBlock: toBlock - 1 }]);
 }
 
-function* entryMoreProfileIterator ({ id, akashaId }) {
+function* entryMoreProfileIterator ({ columnId, akashaId }) {
     const channel = Channel.server.entry.entryProfileIterator;
-    const start = yield select(state => selectColumnLastEntry(state, id));
-    yield apply(channel, channel.send, [{ id, limit: ENTRY_ITERATOR_LIMIT, start, akashaId }]);
+    const start = yield select(state => selectColumnLastEntry(state, columnId));
+    yield apply(channel, channel.send, [{ columnId, limit: ENTRY_ITERATOR_LIMIT, start, akashaId }]);
 }
 
-function* entryMoreStreamIterator ({ id }) {
+function* entryMoreStreamIterator ({ columnId }) {
     const channel = Channel.server.entry.followingStreamIterator;
-    const toBlock = yield select(state => selectColumnLastBlock(state, id));
-    yield apply(channel, channel.send, [{ id, limit: ENTRY_ITERATOR_LIMIT, toBlock: toBlock - 1 }]);
+    const toBlock = yield select(state => selectColumnLastBlock(state, columnId));
+    yield apply(channel, channel.send, [{ columnId, limit: ENTRY_ITERATOR_LIMIT, toBlock: toBlock - 1 }]);
 }
 
-function* entryMoreTagIterator ({ id, tagName }) {
+function* entryMoreTagIterator ({ columnId, tagName }) {
     const channel = Channel.server.entry.entryTagIterator;
-    const start = yield select(state => selectColumnLastEntry(state, id));
-    yield apply(channel, channel.send, [{ id, limit: ENTRY_ITERATOR_LIMIT, start, tagName }]);
+    const start = yield select(state => selectColumnLastEntry(state, columnId));
+    yield apply(channel, channel.send, [{ columnId, limit: ENTRY_ITERATOR_LIMIT, start, tagName }]);
 }
 
-function* entryNewestIterator ({ id }) {
+function* entryNewestIterator ({ columnId }) {
     const channel = Channel.server.entry.allStreamIterator;
     yield call(enableChannel, channel, Channel.client.entry.manager);
-    yield apply(channel, channel.send, [{ id, limit: ALL_STREAM_LIMIT }]);
+    yield apply(channel, channel.send, [{ columnId, limit: ALL_STREAM_LIMIT }]);
 }
 
-function* entryProfileIterator ({ id, akashaId }) {
+function* entryProfileIterator ({ columnId, akashaId }) {
     const channel = Channel.server.entry.entryProfileIterator;
     yield call(enableChannel, channel, Channel.client.entry.manager);
-    yield apply(channel, channel.send, [{ id, limit: ENTRY_ITERATOR_LIMIT, akashaId }]);
+    yield apply(channel, channel.send, [{ columnId, limit: ENTRY_ITERATOR_LIMIT, akashaId }]);
 }
 
-function* entryStreamIterator ({ id }) {
+function* entryResolveIpfsHash ({ ipfsHash, columnId, entryIds }) {
+    const channel = Channel.server.entry.resolveEntriesIpfsHash;
+    yield call(enableChannel, channel, Channel.client.entry.manager);
+    yield apply(channel, channel.send, [{ ipfsHash, columnId, entryIds }]);
+}
+
+function* entryStreamIterator ({ columnId }) {
     const channel = Channel.server.entry.followingStreamIterator;
     yield call(enableChannel, channel, Channel.client.entry.manager);
-    yield apply(channel, channel.send, [{ id, limit: ENTRY_ITERATOR_LIMIT }]);
+    yield apply(channel, channel.send, [{ columnId, limit: ENTRY_ITERATOR_LIMIT }]);
 }
 
-function* entryTagIterator ({ id, tagName }) {
+function* entryTagIterator ({ columnId, tagName }) {
     const channel = Channel.server.entry.entryTagIterator;
     yield call(enableChannel, channel, Channel.client.entry.manager);
-    yield apply(channel, channel.send, [{ id, limit: ENTRY_ITERATOR_LIMIT, tagName }]);
+    yield apply(channel, channel.send, [{ columnId, limit: ENTRY_ITERATOR_LIMIT, tagName }]);
 }
 
 function* entryUpvote ({ entryId, entryTitle, weight, value, gas }) {
@@ -276,6 +297,10 @@ function* watchEntryNewestIterator () {
 
 function* watchEntryProfileIterator () {
     yield takeEvery(types.ENTRY_PROFILE_ITERATOR, entryProfileIterator);
+}
+
+function* watchEntryResolveIpfsHash () {
+    yield takeEvery(types.ENTRY_RESOLVE_IPFS_HASH, entryResolveIpfsHash);
 }
 
 function* watchEntryStreamIterator () {
@@ -445,7 +470,8 @@ function* watchEntryNewestIteratorChannel () {
             } else {
                 yield put(actions.entryNewestIteratorSuccess(resp.data, resp.request));
             }
-            yield fork(entryGetExtraOfList, resp.data.collection);
+            const { columnId, limit } = resp.request;
+            yield fork(entryGetExtraOfList, resp.data.collection, limit, columnId);
         }
     }
 }
@@ -465,7 +491,19 @@ function* watchEntryProfileIteratorChannel () {
             } else {
                 yield put(actions.entryProfileIteratorSuccess(resp.data, resp.request));
             }
-            yield fork(entryGetExtraOfList, resp.data.collection);
+            const { columnId, limit } = resp.request;
+            yield fork(entryGetExtraOfList, resp.data.collection, limit, columnId);
+        }
+    }
+}
+
+function* watchEntryResolveIpfsHashChannel () {
+    while (true) {
+        const resp = yield take(actionChannels.entry.resolveEntriesIpfsHash);
+        if (resp.error) {
+            yield put(actions.entryResolveIpfsHashError(resp.error, resp.request));
+        } else {
+            yield put(actions.entryResolveIpfsHashSuccess(resp.data, resp.request));
         }
     }
 }
@@ -485,7 +523,8 @@ function* watchEntryStreamIteratorChannel () {
             } else {
                 yield put(actions.entryStreamIteratorSuccess(resp.data, resp.request));
             }
-            yield fork(entryGetExtraOfList, resp.data.collection);
+            const { columnId, limit } = resp.request;
+            yield fork(entryGetExtraOfList, resp.data.collection, limit, columnId);
         }
     }
 }
@@ -505,7 +544,8 @@ function* watchEntryTagIteratorChannel () {
             } else {
                 yield put(actions.entryTagIteratorSuccess(resp.data, resp.request));
             }
-            yield fork(entryGetExtraOfList, resp.data.collection);
+            const { columnId, limit } = resp.request;
+            yield fork(entryGetExtraOfList, resp.data.collection, limit, columnId);
         }
     }
 }
@@ -558,6 +598,7 @@ export function* registerEntryListeners () {
     yield fork(watchEntryIsActiveChannel);
     yield fork(watchEntryNewestIteratorChannel);
     yield fork(watchEntryProfileIteratorChannel);
+    yield fork(watchEntryResolveIpfsHashChannel);
     yield fork(watchEntryStreamIteratorChannel);
     yield fork(watchEntryTagIteratorChannel);
     yield fork(watchEntryUpvoteChannel);
@@ -582,6 +623,7 @@ export function* watchEntryActions () { // eslint-disable-line max-statements
     yield fork(watchEntryMoreTagIterator);
     yield fork(watchEntryNewestIterator);
     yield fork(watchEntryProfileIterator);
+    yield fork(watchEntryResolveIpfsHash);
     yield fork(watchEntryStreamIterator);
     yield fork(watchEntryTagIterator);
     yield fork(watchEntryUpvote);

@@ -90,7 +90,7 @@ class Auth extends Component {
                 onTouchTap={this._handleNewIdentity}
                 style={{ marginLeft: '10px' }}
               />
-              <Link to="/dashboard">
+              <Link to="/dashboard/">
                 <RaisedButton
                   key="guest"
                   label="Guest"

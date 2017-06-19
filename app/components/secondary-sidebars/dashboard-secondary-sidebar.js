@@ -2,17 +2,16 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 import { dashboardAdd, dashboardAddColumn, dashboardDelete,
-    dashboardSetActive } from '../local-flux/actions/dashboard-actions';
-import { searchQuery, searchHandshake } from '../local-flux/actions/search-actions';
-import { selectDashboards } from '../local-flux/selectors';
-import { columnType } from '../constants/columns';
-import styles from './secondary-sidebar.scss';
+    dashboardSetActive } from '../../local-flux/actions/dashboard-actions';
+import { searchQuery, searchHandshake } from '../local-flux/actions/search-actions';  
+import { selectDashboards } from '../../local-flux/selectors';
+import { columnType } from '../../constants/columns';
 
 let input;
 let queryInput;
 
-const SecondarySidebar = (props, { muiTheme }) => (
-  <div className={styles.root} style={{ backgroundColor: muiTheme.palette.sidebarColor }}>
+const DashboardSecondarySidebar = props => (
+  <div>
     Dashboards:
     <ul style={{ listStyleType: 'none', marginBottom: '15px' }}>
       {props.dashboards.toList().map(dashboard => (
@@ -47,11 +46,11 @@ const SecondarySidebar = (props, { muiTheme }) => (
   </div>
 );
 
-SecondarySidebar.contextTypes = {
+DashboardSecondarySidebar.contextTypes = {
     muiTheme: PropTypes.shape()
 };
 
-SecondarySidebar.propTypes = {
+DashboardSecondarySidebar.propTypes = {
     activeDashboard: PropTypes.string,
     dashboardAdd: PropTypes.func.isRequired,
     dashboardAddColumn: PropTypes.func.isRequired,
@@ -81,4 +80,4 @@ export default connect(
         searchQuery,
         searchHandshake
     }
-)(SecondarySidebar);
+)(DashboardSecondarySidebar);

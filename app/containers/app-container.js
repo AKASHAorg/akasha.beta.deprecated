@@ -16,24 +16,45 @@ import { licenseGetAll } from '../local-flux/actions/license-actions';
 import { tempProfileUpdate, setTempProfile, tempProfileCreate,
   tempProfileDelete } from '../local-flux/actions/temp-profile-actions';
 import { errorDeleteFatal, errorDeleteNonFatal } from '../local-flux/actions/error-actions';
-import { HomeContainer, LauncherContainer, SidebarContainer } from './';
+import { DashboardPage, LauncherContainer, SidebarContainer } from './';
 import { AuthDialog, LoginDialog } from '../components/dialogs';
-import { ErrorBar, FatalErrorModal, NotificationBar, ErrorReportingModal, TermsPanel, PanelLoader } from '../components';
+import { DashboardSecondarySidebar, ErrorBar, ErrorReportingModal, FatalErrorModal, NotificationBar,
+    PageContent, PanelLoader, SecondarySidebar, TermsPanel } from '../components';
 import { selectLoggedProfileData } from '../local-flux/selectors';
 import lightTheme from '../layouts/AkashaTheme/lightTheme';
 import darkTheme from '../layouts/AkashaTheme/darkTheme';
 
 class AppContainer extends Component {
-    componentWillUpdate (nextProps) {
-        const { loggedProfile, location } = nextProps;
+    bootstrappingHome = false;
+
+    componentWillMount () {
+        this._bootstrapApp(this.props);
+    }
+
+    componentWillReceiveProps (nextProps) {
+        this._bootstrapApp(nextProps);
+    }
+
+    // all bootstrapping logic should be here
+    // avoid spreading it over multiple components/containers
+    _bootstrapApp = (props) => {
+        const { location, appState } = props;
         const nonLoginRoutes = ['/setup'];
-        const shouldLoadLoggedProfile = !nonLoginRoutes.every(route =>
+        const shouldBootstrapHome = !nonLoginRoutes.every(route =>
             location.pathname.includes(route)
         );
-        if (shouldLoadLoggedProfile && !loggedProfile.get('akashaId')) {
+
+        // when home bootstrapping finishes reset the flag
+        if (appState.get('homeReady') && this.bootstrappingHome) {
+            this.bootstrappingHome = false;
+        }
+
+        // check if wee need to bootstrap home
+        if (shouldBootstrapHome && !this.bootstrappingHome && !appState.get('homeReady')) {
             this.props.bootstrapHome();
             this.props.entryVoteCost();
             this.props.licenseGetAll();
+
             // make requests for geth status every 30s for updating the current block
             this.props.gethGetStatus();
             if (!this.interval) {
@@ -41,6 +62,7 @@ class AppContainer extends Component {
                     this.props.gethGetStatus();
                 }, 30000);
             }
+            this.bootstrappingHome = true;
         }
     }
 
@@ -63,14 +85,24 @@ class AppContainer extends Component {
         const showGethDetailsModal = appState.get('showGethDetailsModal');
         const showIpfsDetailsModal = appState.get('showIpfsDetailsModal');
         const muiTheme = getMuiTheme(theme === 'light' ? lightTheme : darkTheme);
-
+        
         return (
           <MuiThemeProvider muiTheme={muiTheme}>
             <DataLoader flag={!appState.get('appReady')} size={80} style={{ paddingTop: '-50px' }}>
-              <div className="container fill-height" style={{ backgroundColor: muiTheme.palette.themeColor }} >
+              <div className="container fill-height" style={{ backgroundColor: muiTheme.palette.themeColor }}>
                 {location.pathname === '/' && <Redirect to="/setup" />}
+                {!location.pathname.includes('/setup') &&
+                  <div>
+                    {/* top bar should come here */}
+                    <SecondarySidebar>
+                      <Route path="/dashboard/:dashboardName?" component={DashboardSecondarySidebar} />
+                    </SecondarySidebar>
+                    <PageContent>
+                      <Route path="/dashboard/:dashboardName?" component={DashboardPage} />
+                    </PageContent>
+                  </div>
+                }
                 <Route path="/setup" component={LauncherContainer} />
-                <Route path="/dashboard/:dashboardName" component={HomeContainer} />
                 <SidebarContainer {...this.props}>
                   <PanelLoader
                     intl={intl}
