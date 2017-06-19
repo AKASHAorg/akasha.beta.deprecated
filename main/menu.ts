@@ -135,7 +135,7 @@ export async function initMenu(mainWindow: any) {
                 {
                     label: 'Reset App Data',
                     click () {
-                        session.defaultSession.clearStorageData(function () {
+                        session.defaultSession.clearStorageData(null, function () {
                             console.log('cleared storage app data');
                         });
                     }

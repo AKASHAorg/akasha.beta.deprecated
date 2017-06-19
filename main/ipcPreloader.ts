@@ -1,5 +1,4 @@
 import { ipcRenderer } from 'electron';
-import IpcRendererEventListener = Electron.IpcRendererEventListener;
 
 class GenericApi {
     public channel: string;
@@ -34,15 +33,15 @@ export class ApiRequest extends GenericApi {
 
 export class ApiListener extends GenericApi {
 
-    public on(listener: IpcRendererEventListener) {
+    public on(listener: any) {
         ipcRenderer.on(this.channel, listener);
     }
 
-    public once(listener: IpcRendererEventListener) {
+    public once(listener: any) {
         ipcRenderer.once(this.channel, listener);
     }
 
-    public removeListener(listener: IpcRendererEventListener) {
+    public removeListener(listener: any) {
         ipcRenderer.removeListener(this.channel, listener);
     }
 
