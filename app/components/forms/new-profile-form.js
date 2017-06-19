@@ -43,7 +43,7 @@ class NewProfileForm extends Component {
         });
     }
 
-    _handleAddLink = (linkType) => () => {
+    _handleAddLink = linkType => () => {
         const { tempProfile } = this.props;
         const links = tempProfile.get(linkType);
         let updatedTempProfile;
@@ -241,7 +241,7 @@ class NewProfileForm extends Component {
             if (this.state.akashaIdIsValid && !this.state.akashaIdExists) {
                 if (optDetails || expandOptionalDetails) {
                     this.avatar.getImage().then((uint8arr) => {
-                        let avatar;
+                        let avatar = null;
                         if (uint8arr) {
                             avatar = uint8arr;
                         }
