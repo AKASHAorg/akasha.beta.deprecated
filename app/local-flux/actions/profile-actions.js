@@ -792,6 +792,17 @@ export const profileMoreFollowingsIteratorError = (error, request) => {
 
 export const profileMoreFollowingsIteratorSuccess = data =>
     action(types.PROFILE_MORE_FOLLOWINGS_ITERATOR_SUCCESS, { data });
+export const profileResolveIpfsHash = (ipfsHash, columnId, akashaIds) =>
+    action(types.PROFILE_RESOLVE_IPFS_HASH, { ipfsHash, columnId, akashaIds });
+
+export const profileResolveIpfsHashError = (error, req) => {
+    error.code = 'PRIHE01';
+    error.messageId = 'profileResolveIpfsHash';
+    return action(types.PROFILE_RESOLVE_IPFS_HASH_ERROR, { error, req });
+};
+
+export const profileResolveIpfsHashSuccess = (data, req) =>
+    action(types.PROFILE_RESOLVE_IPFS_HASH_SUCCESS, { data, req });
 
 export const profileSaveLoggedError = (error) => {
     error.code = 'PSLE01';

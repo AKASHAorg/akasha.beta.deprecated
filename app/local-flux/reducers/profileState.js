@@ -711,6 +711,24 @@ const profileState = createReducer(initialState, {
         });
     },
 
+    [types.PROFILE_RESOLVE_IPFS_HASH]: (state, { ipfsHash, columnId }) => {
+        let newHashes = new Map();
+        ipfsHash.forEach(hash => (newHashes = newHashes.set(hash, true)));
+        return state.mergeIn(['flags', 'resolvingIpfsHash', columnId], newHashes);
+    },
+
+    [types.PROFILE_RESOLVE_IPFS_HASH_ERROR]: (state, { error, req }) =>
+        state.setIn(['flags', 'resolvingIpfsHash', req.columnId, error.ipfsHash], false),
+
+    [types.PROFILE_RESOLVE_IPFS_HASH_SUCCESS]: (state, { data, req }) => {
+        const index = req.ipfsHash.indexOf(data.ipfsHash);
+        const akashaId = req.akashaIds[index];
+        return state.merge({
+            flags: state.get('flags').setIn(['resolvingIpfsHash', req.columnId, data.ipfsHash], false),
+            byId: state.get('byId').mergeIn([akashaId], data.profile)
+        });
+    },
+
     [types.PROFILE_SEND_TIP]: (state, { akashaId }) =>
         state.setIn(['flags', 'sendingTip', akashaId], true),
 

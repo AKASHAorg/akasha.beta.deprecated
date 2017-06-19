@@ -26,14 +26,16 @@ class EntryCard extends Component {
     }
 
     shouldComponentUpdate (nextProps, nextState) {
-        const { blockNr, canClaimPending, claimPending, entry, fetchingEntryBalance, isSaved,
-            style, voteEntryPending } = nextProps;
+        const { blockNr, canClaimPending, claimPending, entry, entryResolvingIpfsHash,
+            fetchingEntryBalance, isSaved, publisher, style, voteEntryPending } = nextProps;
         if (blockNr !== this.props.blockNr ||
             canClaimPending !== this.props.canClaimPending ||
             claimPending !== this.props.claimPending ||
             !entry.equals(this.props.entry) ||
+            entryResolvingIpfsHash !== this.props.entryResolvingIpfsHash ||
             fetchingEntryBalance !== this.props.fetchingEntryBalance ||
             isSaved !== this.props.isSaved ||
+            !publisher.equals(this.props.publisher) ||            
             style.width !== this.props.style.width ||
             voteEntryPending !== this.props.voteEntryPending ||
             nextState.expanded !== this.state.expanded ||
@@ -169,7 +171,17 @@ class EntryCard extends Component {
         });
     };
 
-    renderPlaceholder = () => {
+    renderResolvingPlaceholder = () => (
+      <Card style={{ margin: '5px 10px 10px 5px', width: '340px', height: '300px', opacity: '0.5' }}>
+        <CardText style={{ position: 'relative' }}>
+          <div style={{ maxWidth: '175px' }}>
+            Resolving ipfs hash
+          </div>
+        </CardText>
+      </Card>
+    );
+
+    renderUnresolvedPlaceholder = () => {
         const { intl } = this.props;
         const { palette } = this.context.muiTheme;
         return (
@@ -240,14 +252,18 @@ class EntryCard extends Component {
     };
 
     render () {
-        const { canClaimPending, claimPending, entry, existingDraft, fetchingEntryBalance, intl,
-            isSaved, selectedTag, style, voteEntryPending, publisher } = this.props;
+        const { canClaimPending, claimPending, entry, entryResolvingIpfsHash, existingDraft,
+            fetchingEntryBalance, intl, isSaved, selectedTag, style, voteEntryPending,
+            publisher } = this.props;
         const { palette } = this.context.muiTheme;
         const content = entry.get('content');
         const latestVersion = content && content.get('version');
         const existingVoteWeight = entry.get('voteWeight') || 0;
+        if (entryResolvingIpfsHash) {
+            return this.renderResolvingPlaceholder();
+        }
         if (!publisher) {
-            return this.renderPlaceholder();
+            return this.renderUnresolvedPlaceholder();
         }
         const userInitials = getInitials(publisher.get('firstName'), publisher.get('lastName'));
         const avatar = publisher.get('avatar') ?
@@ -283,7 +299,7 @@ class EntryCard extends Component {
                     className="overflow-ellipsis"
                     style={{ maxWidth: '270px', textAlign: 'left' }}
                   >
-                    {`${publisher.get('firstName')} ${publisher.get('lastName')}`}
+                    {publisher.get('akashaId')}
                   </div>
                 </button> :
                 <div style={{ height: '22px' }} />
@@ -360,7 +376,7 @@ class EntryCard extends Component {
                   </IconButton>
                 </div>
               }
-              {!content &&
+              {!content && !entryResolvingIpfsHash &&
                 <div>
                   <div
                     data-tip="Bookmark"
@@ -400,7 +416,7 @@ class EntryCard extends Component {
               }
             </CardHeader>
             {content &&
-              <Link to={`/dashboard/${entry.get('entryId')}`}>
+              <Link to={`/@${entry.getIn(['entryEth', 'publisher'])}/${entry.get('entryId')}`}>
                 <CardTitle
                   title={content.get('title')}
                   expandable
@@ -430,7 +446,7 @@ class EntryCard extends Component {
               </CardText>
             }
             {content &&
-              <Link to={`/dashboard/${entry.get('entryId')}`}>
+              <Link to={`/@${entry.getIn(['entryEth', 'publisher'])}/${entry.get('entryId')}`}>
                 <CardText
                   className="content-link"
                   style={{
@@ -622,6 +638,7 @@ EntryCard.propTypes = {
     voteEntryPending: PropTypes.bool,
 
     entryPageShow: PropTypes.func.isRequired,
+    entryResolvingIpfsHash: PropTypes.bool,
     publisher: PropTypes.shape()
 };
 

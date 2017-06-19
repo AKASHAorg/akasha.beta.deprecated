@@ -90,7 +90,7 @@ const getEntryRecord = (entry) => {
     }
     record = record.set('entryEth', new EntryEth(entry.entryEth));
     if (entry.entryEth.publisher) {
-        // only keep a reference to the publisher's profile address
+        // only keep a reference to the publisher's akashaId
         record = record.setIn(['entryEth', 'publisher'], entry.entryEth.publisher.akashaId);
     }
     return record;
@@ -674,6 +674,24 @@ const entryState = createReducer(initialState, {
         state.set('entryPageOverlay', new EntryPageOverlay({ entryId, version })),
 
     [types.ENTRY_PROFILE_ITERATOR_SUCCESS]: entryIteratorHandler,
+
+    [types.ENTRY_RESOLVE_IPFS_HASH]: (state, { ipfsHash, columnId }) => {
+        let newHashes = new Map();
+        ipfsHash.forEach(hash => (newHashes = newHashes.set(hash, true)));
+        return state.mergeIn(['flags', 'resolvingIpfsHash', columnId], newHashes);
+    },
+
+    [types.ENTRY_RESOLVE_IPFS_HASH_ERROR]: (state, { error, req }) =>
+        state.setIn(['flags', 'resolvingIpfsHash', req.columnId, error.ipfsHash], false),
+
+    [types.ENTRY_RESOLVE_IPFS_HASH_SUCCESS]: (state, { data, req }) => {
+        const index = req.ipfsHash.indexOf(data.ipfsHash);
+        const entryId = req.entryIds[index];
+        return state.merge({
+            flags: state.get('flags').setIn(['resolvingIpfsHash', req.columnId, data.ipfsHash], false),
+            byId: state.get('byId').setIn([entryId, 'content'], new EntryContent(data.entry))
+        });
+    },
 
     [types.ENTRY_STREAM_ITERATOR_SUCCESS]: entryIteratorHandler,
 

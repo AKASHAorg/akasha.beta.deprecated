@@ -9,7 +9,7 @@ import { selectActiveDashboard } from '../local-flux/selectors';
 import { profileLogout } from '../local-flux/actions/profile-actions';
 import { EntryPageContainer } from './';
 
-class HomeContainer extends Component {
+class DashboardPage extends Component {
     componentWillReceiveProps (nextProps) {
         const { activeDashboard, history } = this.props;
         if (!nextProps.activeDashboard) {
@@ -31,19 +31,16 @@ class HomeContainer extends Component {
           <DataLoader flag={!homeReady} style={{ paddingTop: '200px' }}>
             <div>
               <div>
-                <SecondarySidebar />
-                <PageContent>
-                  <button style={{ position: 'absolute', right: 0 }} onClick={this.props.profileLogout}>
-                    Logout
-                  </button>
-                  <Dashboard columns={columns} dashboards={dashboards} />
-                </PageContent>
+                <button style={{ position: 'absolute', right: 0 }} onClick={this.props.profileLogout}>
+                  Logout
+                </button>
+                <Dashboard columns={columns} dashboards={dashboards} />
               </div>
               {/**
                * a more complete path would be:
                * <Route path="/dashboard/(@:akashaId)/(:slug)?-:entryId(\\d+)" component={EntryPage} />
                */}
-              <Route path="/dashboard/:entryId(\d+)" component={EntryPageContainer} />
+              <Route path="/@:akashaId/:entryId(\d+)" component={EntryPageContainer} />
               <Runners />
             </div>
           </DataLoader>
@@ -51,7 +48,7 @@ class HomeContainer extends Component {
     }
 }
 
-HomeContainer.propTypes = {
+DashboardPage.propTypes = {
     activeDashboard: PropTypes.shape(),
     columns: PropTypes.shape(),
     dashboards: PropTypes.shape(),
@@ -76,4 +73,4 @@ export default connect(
     {
         profileLogout
     }
-)(HomeContainer);
+)(DashboardPage);

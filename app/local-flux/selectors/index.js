@@ -30,6 +30,9 @@ export const selectActivePanel = state => state.panelState.get('activePanel');
 
 export const selectAllComments = state => state.commentsState.get('byId').toList();
 
+export const selectBaseUrl = state =>
+    state.externalProcState.getIn(['ipfs', 'status', 'baseUrl']);
+
 export const selectColumnEntries = (state, columnId) =>
     state.dashboardState
         .getIn(['columnById', columnId, 'entries'])

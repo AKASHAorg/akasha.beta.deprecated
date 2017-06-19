@@ -4,7 +4,7 @@ import { columnType } from '../../../constants/columns';
 export const Flags = Record({
     fetchingEntries: false,
     fetchingMoreEntries: false,
-    moreEntries: false
+    moreEntries: false,
 });
 
 export const ColumnRecord = Record({

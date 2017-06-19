@@ -1,11 +1,12 @@
 import { Record, OrderedSet } from 'immutable';
 
 const IpfsStatus = Record({
-    downloading: null,
     api: false,
+    baseUrl: '',
+    downloading: null,
     process: false,
-    starting: null,
     started: null,
+    starting: null,
     stopped: null,
     upgrading: null,
     version: null,

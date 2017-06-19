@@ -68,7 +68,7 @@ export const dashboardGetColumnsError = (error) => {
 
 export const dashboardGetColumnsSuccess = data =>
     action(types.DASHBOARD_GET_COLUMNS_SUCCESS, { data });
-export const dashboardSetActive = id => action(types.DASHBOARD_SET_ACTIVE, { id });
+export const dashboardSetActive = name => action(types.DASHBOARD_SET_ACTIVE, { name });
 
 export const dashboardSetActiveError = (error) => {
     error.code = 'DSAE01';

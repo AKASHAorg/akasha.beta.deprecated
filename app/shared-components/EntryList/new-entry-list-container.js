@@ -62,8 +62,8 @@ class EntryList extends Component {
 
     render () {
         const { appActions, blockNr, cardStyle, claimPending, canClaimPending, defaultTimeout,
-            entries, entryActions, fetchingEntries, fetchingEntryBalance, fetchingMoreEntries,
-            intl, loggedAkashaId, moreEntries, placeholderMessage,
+            entries, entryActions, entryResolvingIpfsHash, fetchingEntries, fetchingEntryBalance,
+            fetchingMoreEntries, intl, loggedAkashaId, moreEntries, placeholderMessage,
             savedEntriesIds, selectedTag, style, votePending, profiles } = this.props;
         const { palette } = this.context.muiTheme;
         return (
@@ -107,12 +107,16 @@ class EntryList extends Component {
                         claim.entryId === entry.get('entryId'));
                     const isSaved = !!savedEntriesIds.find(id => id === entry.get('entryId'));
                     const publisher = profiles.get(entry.getIn(['entryEth', 'publisher']));
+                    const entryIpfsHash = entry.getIn(['entryEth', 'ipfsHash']);
+                    const resolvingEntry = entryResolvingIpfsHash &&
+                        entryResolvingIpfsHash.get(entryIpfsHash);
                     return (<EntryCard
                       blockNr={blockNr}
                       canClaimPending={canClaimPending}
                       claimPending={claimEntryPending && claimEntryPending.value}
                       entry={entry}
                       entryActions={entryActions}
+                      entryResolvingIpfsHash={resolvingEntry}
                       existingDraft={this.getExistingDraft(entry.get('entryId'))}
                       fetchingEntryBalance={fetchingEntryBalance}
                       handleEdit={this.handleEdit}
@@ -168,7 +172,10 @@ EntryList.propTypes = {
     style: PropTypes.shape(),
     votePending: PropTypes.shape(),
 
+    // used in mapStateToProps
+    contextId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired, // eslint-disable-line react/no-unused-prop-types
     entryPageShow: PropTypes.func.isRequired,
+    entryResolvingIpfsHash: PropTypes.shape(),
     fetchMoreEntries: PropTypes.func.isRequired,
     loggedAkashaId: PropTypes.string,
     profiles: PropTypes.shape().isRequired,
@@ -179,12 +186,13 @@ EntryList.contextTypes = {
     router: PropTypes.shape()
 };
 
-function mapStateToProps (state) {
+function mapStateToProps (state, ownProps) {
     return {
         blockNr: state.externalProcState.getIn(['gethStatus', 'blockNr']),
         canClaimPending: state.entryState.getIn(['flags', 'canClaimPending']),
         claimPending: state.entryState.getIn(['flags', 'claimPending']),
         drafts: state.draftState.get('drafts'),
+        entryResolvingIpfsHash: state.entryState.getIn(['flags', 'resolvingIpfsHash', ownProps.contextId]),
         fetchingEntryBalance: state.entryState.getIn(['flags', 'fetchingEntryBalance']),
         loggedAkashaId: state.profileState.getIn(['loggedProfile', 'akashaId']),
         savedEntriesIds: state.entryState.get('savedEntries').map(entry => entry.get('entryId')),
@@ -197,8 +205,6 @@ function mapDispatchToProps (dispatch) {
     return {
         appActions: new AppActions(dispatch),
         entryPageShow: id => dispatch(entryPageShow(id)),
-        // entryActions: new EntryActions(dispatch),
-        // tagActions: new TagActions(dispatch)
     };
 }
 
