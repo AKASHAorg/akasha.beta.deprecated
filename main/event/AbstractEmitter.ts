@@ -1,4 +1,3 @@
-import IpcRendererEvent = Electron.IpcRendererEvent;
 import WebContents = Electron.WebContents;
 import { AbstractListener } from './AbstractListener';
 
@@ -11,7 +10,7 @@ export abstract class AbstractEmitter extends AbstractListener {
      * @param data
      * @param event
      */
-    public fireEvent(channel: string, data: MainResponse, event?: IpcRendererEvent) {
+    public fireEvent(channel: string, data: MainResponse, event?: any) {
         if (event) {
             return event.sender.send(channel, data);
         }

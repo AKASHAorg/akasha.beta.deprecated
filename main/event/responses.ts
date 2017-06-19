@@ -1,5 +1,6 @@
 import { GethConnector } from '@akashaproject/geth-connector';
 import { IpfsConnector } from '@akashaproject/ipfs-connector';
+import { BASE_URL, generalSettings } from '../config/settings';
 /**
  *
  * @param rawData
@@ -11,7 +12,8 @@ export const mainResponse = (rawData: any, request: any): MainResponse => {
         return {
             data: {},
             services: {
-                ipfs: IpfsConnector.getInstance().serviceStatus,
+                ipfs: Object.assign(IpfsConnector.getInstance().serviceStatus,
+                    { [BASE_URL]: generalSettings.get(BASE_URL) }),
                 geth: GethConnector.getInstance().serviceStatus
             },
             error: rawData.error, request
@@ -20,7 +22,8 @@ export const mainResponse = (rawData: any, request: any): MainResponse => {
     return {
         data: rawData,
         services: {
-            ipfs: IpfsConnector.getInstance().serviceStatus,
+            ipfs: Object.assign(IpfsConnector.getInstance().serviceStatus,
+                { [BASE_URL]: generalSettings.get(BASE_URL) }),
             geth: GethConnector.getInstance().serviceStatus
         }, request
     };
