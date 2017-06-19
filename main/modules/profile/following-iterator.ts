@@ -5,7 +5,7 @@ import profileData from './profile-data';
  * Get followed profiles of id
  * @type {Function}
  */
-const execute = Promise.coroutine(function*(data: { start?: number, limit?: number, akashaId: string }) {
+const execute = Promise.coroutine(function*(data: { start?: number, limit?: number, akashaId: string, short: true }) {
     let currentId = (data.start) ? data.start : yield contracts.instance.feed.getFollowingFirst(data.akashaId);
     if (currentId === '0') {
         return { collection: [], akashaId: data.akashaId };
@@ -28,7 +28,7 @@ const execute = Promise.coroutine(function*(data: { start?: number, limit?: numb
             break;
         }
         profileId = yield contracts.instance.feed.getFollowingById(data.akashaId, currentId);
-        profile = yield profileData.execute({ profile: profileId });
+        profile = yield profileData.execute({ profile: profileId, short: data.short });
         results.push({ profile, address: profileId, index: currentId });
         counter++;
     }
