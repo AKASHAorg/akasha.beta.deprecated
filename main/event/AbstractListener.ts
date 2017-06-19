@@ -1,9 +1,8 @@
 import { ipcMain } from 'electron';
-import IpcMainEventListener = Electron.IpcMainEventListener;
 import WebContents = Electron.WebContents;
 
 export abstract class AbstractListener {
-    public listeners: Map<string, IpcMainEventListener> = new Map();
+    public listeners: Map<string, any> = new Map();
 
     /**
      * Start listening for a registered channel
@@ -25,7 +24,7 @@ export abstract class AbstractListener {
      * @param channel
      * @param cb
      */
-    public registerListener(channel: string, cb: IpcMainEventListener): void {
+    public registerListener(channel: string, cb: any): void {
         this.listeners.set(channel, cb);
     }
 

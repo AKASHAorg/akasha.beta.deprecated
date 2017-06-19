@@ -35,8 +35,7 @@ export function bootstrapApp() {
         crashReporter.start({
             productName: 'AKASHA',
             companyName: 'Akasha Project',
-            submitURL: 'http://46.101.103.114:1127/post',
-            autoSubmit: true
+            submitURL: 'http://46.101.103.114:1127/post'
         });
     }
 

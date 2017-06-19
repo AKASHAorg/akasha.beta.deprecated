@@ -50,7 +50,7 @@ abstract class ModuleEmitter extends AbstractEmitter {
             method
                 .execute(data, (er, ev) => {
                     if (er) {
-                        response = mainResponse({ error: { message: er } }, data);
+                        response = mainResponse({ error: (er.hasOwnProperty('message')) ? er : { message: er } }, data);
                     } else {
                         response = mainResponse(ev, data);
                     }
