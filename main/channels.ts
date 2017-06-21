@@ -29,7 +29,7 @@ const channels = {
 
     profile: ['getBalance', 'followProfile', 'getFollowersCount', 'getFollowingCount', 'getProfileData',
         'unFollowProfile', 'updateProfileData', 'followersIterator', 'followingIterator', 'isFollower', 'isFollowing',
-        'getFollowingList', 'getProfileList', 'tip'],
+        'getFollowingList', 'getProfileList', 'tip', 'resolveProfileIpfsHash'],
 
     registry: ['fetchRegistered', 'addressOf', 'checkIdFormat', 'getCurrentProfile', 'profileExists', 'registerProfile',
         'getByAddress', 'unregister'],

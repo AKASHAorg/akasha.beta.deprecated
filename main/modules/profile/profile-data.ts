@@ -13,21 +13,27 @@ import subsCount from '../tags/subs-count';
  * @type {Function}
  */
 const execute = Promise.coroutine(function*(data: ProfileDataRequest) {
+    let profile;
     const ipfsHash = yield contracts.instance.profile.getIpfs(data.profile);
-    const profile = (data.full) ?
-        yield resolveProfile(ipfsHash, data.resolveImages)
-            .timeout(FULL_WAIT_TIME)
-            .then((d) => d).catch((e) => null)
-        :
-        yield getShortProfile(ipfsHash, data.resolveImages)
-            .timeout(SHORT_WAIT_TIME)
-            .then((d) => d).catch((e) => null);
-
     const akashaId = yield contracts.instance.profile.getId(data.profile);
     const foCount = yield followingCount.execute({ akashaId });
     const fwCount = yield followersCount.execute({ akashaId });
     const entriesCount = yield entryCountProfile.execute({ akashaId });
     const subscriptionsCount = yield subsCount.execute({ akashaId });
+
+    if (data.short) {
+        profile = { ipfsHash: ipfsHash };
+    } else {
+        profile = (data.full) ?
+            yield resolveProfile(ipfsHash, data.resolveImages)
+                .timeout(FULL_WAIT_TIME)
+                .then((d) => d).catch((e) => null)
+            :
+            yield getShortProfile(ipfsHash, data.resolveImages)
+                .timeout(SHORT_WAIT_TIME)
+                .then((d) => d).catch((e) => null);
+    }
+
     return Object.assign(
         {
             akashaId: akashaId,

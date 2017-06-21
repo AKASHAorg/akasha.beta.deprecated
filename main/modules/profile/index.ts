@@ -12,6 +12,7 @@ import isFollowing from './is-following';
 import followingList from './following-list';
 import getProfileList from './get-profile-list';
 import sendTip from './send-tip';
+import resolveProfileIpfsHash from './resolve-profile-ipfs-hash';
 
 export default [
     currentBalance,
@@ -27,5 +28,6 @@ export default [
     followersIterator,
     followingIterator,
     getProfileList,
-    sendTip
+    sendTip,
+    resolveProfileIpfsHash
 ];

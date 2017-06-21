@@ -5,8 +5,7 @@ const dashboardDB = new Dexie(dbName);
 dashboardDB.version(1).stores({
     activeDashboard: '&akashaId',
     columnById: '++id',
-    dashboards: '&akashaId',
-    dashboardById: '++id, akashaId',
+    dashboardById: '++id, akashaId, name',
 });
 
 export default dashboardDB;

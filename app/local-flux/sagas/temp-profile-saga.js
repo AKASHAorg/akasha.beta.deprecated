@@ -135,13 +135,13 @@ function* tempProfilePublishRequest (tempProfile) {
     const channel = Channel.server.registry.registerProfile;
     const manager = Channel.client.registry.manager;
     const { akashaId, address, password, ...others } = tempProfile.toJS();
+    const { localId, baseUrl, ethAddress, password2, ...ipfs } = others;
     const tempProfileStatus = yield select(state => state.tempProfileState.get('status'));
     const profileToPublish = {
         akashaId,
         token: tempProfileStatus.token,
-        ipfs: others
+        ipfs
     };
-    console.log(profileToPublish, 'profileToPublish');
     yield put(tempProfileActions.tempProfilePublish(tempProfile));
     yield call([registryService, registryService.updateTempProfile],
         tempProfile,
