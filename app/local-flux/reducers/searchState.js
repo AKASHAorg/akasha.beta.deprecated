@@ -34,25 +34,6 @@ const searchState = createReducer(initialState, {
             flags: state.get('flags').set('handshakePending', false)
         }),
 
-    [types.SEARCH_QUERY]: (state, { query }) =>
-        state.merge({
-            query,
-            flags: state.get('flags').merge({ queryPending: true })
-        }),
-
-    [types.SEARCH_QUERY_SUCCESS]: (state, { data }) =>
-        state.merge({
-            consecutiveQueryErrors: 0,
-            currentPage: 1,
-            totalPages: Math.ceil(data.total / searchLimit),
-            resultsCount: data.total,
-            showResults: true,
-            flags: state.get('flags').merge({ queryPending: false })
-        }),
-
-    [types.SEARCH_QUERY_ERROR]: state =>
-        state.setIn(['flags', 'queryPending'], false),
-
     [types.SEARCH_MORE_QUERY]: (state, { query }) =>
         state.merge({
             query,
@@ -71,6 +52,26 @@ const searchState = createReducer(initialState, {
 
     [types.SEARCH_MORE_QUERY_ERROR]: state =>
         state.setIn(['flags', 'moreQueryPending'], false),
+
+
+    [types.SEARCH_QUERY]: (state, { query }) =>
+        state.merge({
+            query,
+            flags: state.get('flags').merge({ queryPending: true })
+        }),
+
+    [types.SEARCH_QUERY_SUCCESS]: (state, { data }) =>
+        state.merge({
+            consecutiveQueryErrors: 0,
+            currentPage: 1,
+            totalPages: Math.ceil(data.total / searchLimit),
+            resultsCount: data.total,
+            showResults: true,
+            flags: state.get('flags').merge({ queryPending: false })
+        }),
+
+    [types.SEARCH_QUERY_ERROR]: state =>
+        state.setIn(['flags', 'queryPending'], false),
 
     [types.SEARCH_RESET_RESULTS]: state =>
         state.merge({

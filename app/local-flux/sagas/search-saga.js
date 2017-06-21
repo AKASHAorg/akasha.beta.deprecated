@@ -6,12 +6,7 @@ import { searchLimit } from '../../constants/iterator-limits';
 
 const Channel = global.Channel;
 let searchHandshakeErrCount = 0;
-
-function* searchQuery ({ text, pageSize = searchLimit, offset = 0 }) {
-    const channel = Channel.server.search.query;
-    yield call(enableChannel, channel, Channel.client.search.manager);
-    yield apply(channel, channel.send, [{ text, pageSize, offset }]);
-}
+const MAX_RETRIES = 3;
 
 function* searchHandshake () {
     const channel = Channel.server.search.handshake;
@@ -19,22 +14,45 @@ function* searchHandshake () {
     yield apply(channel, channel.send, [{}]);
 }
 
+function* searchQuery ({ text, pageSize = searchLimit, offset = 0 }) {
+    const channel = Channel.server.search.query;
+    yield call(enableChannel, channel, Channel.client.search.manager);
+    yield apply(channel, channel.send, [{ text, pageSize, offset }]);
+}
 
 // Action watchers
 
-function* watchSearchQuery () {
-    yield takeEvery(types.SEARCH_QUERY, searchQuery);
+function* watchSearchHandshake () {
+    yield takeEvery(types.SEARCH_HANDSHAKE, searchHandshake);
 }
 
 function* watchSearchMoreQuery () {
     yield takeEvery(types.SEARCH_MORE_QUERY, searchQuery);
 }
 
-function* watchSearchHandshake () {
-    yield takeEvery(types.SEARCH_HANDSHAKE, searchHandshake);
+function* watchSearchQuery () {
+    yield takeEvery(types.SEARCH_QUERY, searchQuery);
 }
 
 // Channel watchers
+
+function* watchSearchHandshakeChannel () {
+    while (true) {
+        const resp = yield take(actionChannels.search.handshake);
+        if (resp.error) {
+            if (searchHandshakeErrCount < MAX_RETRIES) {
+                searchHandshakeErrCount++;
+                yield fork(searchHandshake);
+            } else {
+                searchHandshakeErrCount = 0;
+                yield put(actions.searchHandshakeError());
+            }
+        } else {
+            searchHandshakeErrCount = 0;
+            yield put(actions.searchHandshakeSuccess(resp.data, resp.request));
+        }
+    }
+}
 
 function* watchSearchQueryChannel () {
     while (true) {
@@ -53,23 +71,6 @@ function* watchSearchQueryChannel () {
     }
 }
 
-function* watchSearchHandshakeChannel () {
-    while (true) {
-        const resp = yield take(actionChannels.search.handshake);
-        if (resp.error) {
-            if (searchHandshakeErrCount < 3) {
-                searchHandshakeErrCount++;
-                yield fork(searchHandshake);
-            } else {
-                searchHandshakeErrCount = 0;
-                yield put(actions.searchHandshakeError());
-            }
-        } else {
-            yield put(actions.searchHandshakeSuccess(resp.data, resp.request));
-        }
-    }
-}
-
 // exports
 
 export function* registerSearchListeners () {
@@ -77,10 +78,10 @@ export function* registerSearchListeners () {
     yield fork(watchSearchQueryChannel);
 }
 
-export function* watchSearchActions () { // eslint-disable-line max-statements
-    yield fork(watchSearchQuery);
-    yield fork(watchSearchMoreQuery);
+export function* watchSearchActions () {
     yield fork(watchSearchHandshake);
+    yield fork(watchSearchMoreQuery);
+    yield fork(watchSearchQuery);
 }
 
 export function* registerWatchers () {
