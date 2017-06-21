@@ -1,15 +1,8 @@
-import { fromJS, List, Map, Record } from 'immutable';
-import * as types from '../constants/SearchConstants';
+import { fromJS, List, Map } from 'immutable';
+import * as types from '../constants';
 import { createReducer } from './create-reducer';
+import { searchLimit } from '../../constants/iterator-limits';
 
-const PAGE_SIZE = 5;
-
-const Error = Record({
-    code: null,
-    message: '',
-    fatal: false,
-    type: null
-});
 
 const initialState = fromJS({
     consecutiveQueryErrors: 0,
@@ -23,71 +16,63 @@ const initialState = fromJS({
     totalPages: null,
 });
 
-const flagHandler = (state, { flags }) =>
-    state.merge({
-        errors: new List(),
-        flags: state.get('flags').merge(flags)
-    });
-
-const queryErrorHandler = (state, { error, flags }) =>
-    state.merge({
-        consecutiveQueryErrors: state.get('consecutiveQueryErrors') >= 3 ?
-            0 :
-            state.get('consecutiveQueryErrors') + 1,
-        errors: state.get('errors').push(new Error(error)),
-        flags: state.get('flags').merge(flags)
-    });
 
 const searchState = createReducer(initialState, {
-    [types.HANDSHAKE]: flagHandler,
+    [types.SEARCH_HANDSHAKE]: state =>
+        state.setIn(['flags', 'handshakePending'], true),
 
-    [types.HANDSHAKE_SUCCESS]: (state, { data, flags }) =>
+    [types.SEARCH_HANDSHAKE_SUCCESS]: (state, { data }) =>
         state.merge({
             consecutiveQueryErrors: 0,
             searchService: data.searchService,
-            flags: state.get('flags').merge(flags)
+            flags: state.get('flags').merge({ handshakePending: false })
         }),
 
-    [types.HANDSHAKE_ERROR]: (state, { error, flags }) =>
+    [types.SEARCH_HANDSHAKE_ERROR]: state =>
         state.merge({
-            errors: state.get('errors').push(new Error(error)),
             searchService: null,
-            flags: state.get('flags').merge(flags)
+            flags: state.get('flags').set('handshakePending', false)
         }),
 
-    [types.QUERY]: (state, { query, flags }) =>
+    [types.SEARCH_QUERY]: (state, { query }) =>
         state.merge({
             query,
-            errors: new List(),
-            flags: state.get('flags').merge(flags)
+            flags: state.get('flags').merge({ queryPending: true })
         }),
 
-    [types.QUERY_SUCCESS]: (state, { data, flags }) =>
+    [types.SEARCH_QUERY_SUCCESS]: (state, { data }) =>
         state.merge({
             consecutiveQueryErrors: 0,
             currentPage: 1,
-            totalPages: Math.ceil(data.total / PAGE_SIZE),
+            totalPages: Math.ceil(data.total / searchLimit),
             resultsCount: data.total,
             showResults: true,
-            flags: state.get('flags').merge(flags)
+            flags: state.get('flags').merge({ queryPending: false })
         }),
 
-    [types.QUERY_ERROR]: queryErrorHandler,
+    [types.SEARCH_QUERY_ERROR]: state =>
+        state.setIn(['flags', 'queryPending'], false),
 
-    [types.MORE_QUERY]: flagHandler,
+    [types.SEARCH_MORE_QUERY]: (state, { query }) =>
+        state.merge({
+            query,
+            errors: new List(),
+            flags: state.get('flags').merge({ moreQueryPending: true })
+        }),
 
-    [types.MORE_QUERY_SUCCESS]: (state, { data, flags }) =>
+    [types.SEARCH_MORE_QUERY_SUCCESS]: (state, { data }) =>
         state.merge({
             consecutiveQueryErrors: 0,
             currentPage: state.get('currentPage') + 1,
-            totalPages: Math.ceil(data.total / PAGE_SIZE),
+            totalPages: Math.ceil(data.total / searchLimit),
             resultsCount: data.total,
-            flags: state.get('flags').merge(flags)
+            flags: state.get('flags').merge({ moreQueryMorePending: false })
         }),
 
-    [types.MORE_QUERY_ERROR]: queryErrorHandler,
+    [types.SEARCH_MORE_QUERY_ERROR]: state =>
+        state.setIn(['flags', 'moreQueryPending'], false),
 
-    [types.RESET_RESULTS]: state =>
+    [types.SEARCH_RESET_RESULTS]: state =>
         state.merge({
             consecutiveQueryErrors: 0,
             currentPage: null,

@@ -12,6 +12,7 @@ import * as externalProcSaga from './external-process-saga';
 import * as licenseSaga from './license-saga';
 import * as profileSaga from './profile-saga';
 import * as publisherSaga from './publisher-saga';
+import * as searchSaga from './search-saga';
 import * as settingsSaga from './settings-saga';
 import * as tagSaga from './tag-saga';
 import * as tempProfileSaga from './temp-profile-saga';
@@ -25,6 +26,7 @@ function* registerListeners () {
     yield fork(entrySaga.registerEntryListeners);
     yield fork(externalProcSaga.registerEProcListeners);
     yield fork(profileSaga.registerProfileListeners);
+    yield fork(searchSaga.registerSearchListeners);
     yield fork(tagSaga.registerTagListeners);
     yield fork(transactionSaga.registerTransactionListeners);
     yield fork(utilsSaga.registerUtilsListeners);
@@ -83,6 +85,7 @@ export default function* rootSaga () {
     yield fork(licenseSaga.watchLicenseActions);
     yield fork(profileSaga.watchProfileActions);
     yield fork(publisherSaga.watchPublishActions);
+    yield fork(searchSaga.watchSearchActions);
     yield fork(settingsSaga.watchSettingsActions);
     yield fork(tagSaga.watchTagActions);
     yield fork(tempProfileSaga.watchTempProfileActions);

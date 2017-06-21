@@ -3,11 +3,13 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { dashboardAdd, dashboardAddColumn, dashboardDelete,
     dashboardSetActive } from '../local-flux/actions/dashboard-actions';
+import { searchQuery, searchHandshake } from '../local-flux/actions/search-actions';
 import { selectDashboards } from '../local-flux/selectors';
 import { columnType } from '../constants/columns';
 import styles from './secondary-sidebar.scss';
 
 let input;
+let queryInput;
 
 const SecondarySidebar = (props, { muiTheme }) => (
   <div className={styles.root} style={{ backgroundColor: muiTheme.palette.sidebarColor }}>
@@ -40,6 +42,10 @@ const SecondarySidebar = (props, { muiTheme }) => (
     <button onClick={() => props.dashboardAddColumn(columnType.tag)}>Add tag column</button>
     <button onClick={() => props.dashboardAddColumn(columnType.profile)}>Add profile column</button>
     <button onClick={() => props.dashboardAddColumn(columnType.stream)}>Add stream column</button>
+    <input ref={el => (queryInput = el)} />
+    <button onClick={() => props.searchQuery(queryInput.value)}> Search </button>
+    <button onClick={() => props.searchHandshake()}> Handshake </button>
+    <div>{ props.handshakePending && 'Handshaking'} </div>
   </div>
 );
 
@@ -53,13 +59,17 @@ SecondarySidebar.propTypes = {
     dashboardAddColumn: PropTypes.func.isRequired,
     dashboardDelete: PropTypes.func.isRequired,
     dashboards: PropTypes.shape(),
-    dashboardSetActive: PropTypes.func.isRequired
+    dashboardSetActive: PropTypes.func.isRequired,
+    searchQuery: PropTypes.func.isRequired,
+    searchHandshake: PropTypes.func.isRequired,
+    handshakePending: PropTypes.bool
 };
 
 function mapStateToProps (state) {
     return {
         activeDashboard: state.dashboardState.get('activeDashboard'),
-        dashboards: selectDashboards(state)
+        dashboards: selectDashboards(state),
+        handshakePending: state.searchState.getIn(['flags','handshakePending'])
     };
 }
 
@@ -69,6 +79,8 @@ export default connect(
         dashboardAdd,
         dashboardAddColumn,
         dashboardDelete,
-        dashboardSetActive
+        dashboardSetActive,
+        searchQuery,
+        searchHandshake
     }
 )(SecondarySidebar);
