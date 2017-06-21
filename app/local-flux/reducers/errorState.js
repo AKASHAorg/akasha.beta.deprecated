@@ -80,6 +80,8 @@ const errorState = createReducer(initialState, {
     [types.PROFILE_GET_LOCAL_ERROR]: addNewError,
     [types.PUBLISH_PROFILE_ERROR]: addNewError,
     [types.REQUEST_FUND_FROM_FAUCET_ERROR]: addNewError,
+    [types.SEARCH_QUERY_ERROR]: addNewError,
+    [types.SEARCH_MORE_QUERY_ERROR]: addNewError,
     // an error occured when saving temp profile to IndexedDb
     [types.TEMP_PROFILE_CREATE_ERROR]: addNewError,
     // error deleting temp profile from indexedDB.
