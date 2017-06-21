@@ -3,7 +3,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { dashboardAdd, dashboardAddColumn, dashboardDelete,
     dashboardSetActive } from '../../local-flux/actions/dashboard-actions';
-import { searchQuery, searchHandshake } from '../local-flux/actions/search-actions';  
+import { searchQuery, searchHandshake } from '../../local-flux/actions/search-actions';
 import { selectDashboards } from '../../local-flux/selectors';
 import { columnType } from '../../constants/columns';
 
