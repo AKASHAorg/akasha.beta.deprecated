@@ -31,13 +31,18 @@ class Avatar extends React.Component {
             if (this.props.image && typeof this.props.image === 'string') {
                 return resolve(this.props.image);
             }
-            const imageCanvas = this.editor.getImageScaledToCanvas();
-            return imageCanvas.toBlob((blob) => {
-                const reader = new FileReader();
-                reader.onloadend = ev =>
-                    resolve(new Uint8Array(ev.target.result));
-                reader.readAsArrayBuffer(blob);
-            }, 'image/jpg');
+            // check if editor exists
+            // ie. image exists in state
+            if (this.editor) {
+                const imageCanvas = this.editor.getImageScaledToCanvas();
+                return imageCanvas.toBlob((blob) => {
+                    const reader = new FileReader();
+                    reader.onloadend = ev =>
+                        resolve(new Uint8Array(ev.target.result));
+                    reader.readAsArrayBuffer(blob);
+                }, 'image/jpg');
+            }
+            return resolve(null);
         });
     _handleAvatarClear = () => {
         const { onImageClear } = this.props;

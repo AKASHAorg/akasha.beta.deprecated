@@ -10,8 +10,22 @@ import { profileLogout } from '../local-flux/actions/profile-actions';
 import { EntryPageContainer } from './';
 
 class HomeContainer extends Component {
+    componentWillReceiveProps (nextProps) {
+        const { activeDashboard, history } = this.props;
+        if (!nextProps.activeDashboard) {
+            return;
+        }
+        const { params } = nextProps.match;
+        const newDashboardName = nextProps.activeDashboard.name;
+        const isCorrectRoute = newDashboardName === params.dashboardName;
+        // navigate to the active dashboard when it changes
+        if (!isCorrectRoute && (!activeDashboard || newDashboardName !== activeDashboard.name)) {
+            history.push(`/dashboard/${newDashboardName}`);
+        }
+    }
+
     render () {
-        const { activeDashboard, columns, homeReady } = this.props;
+        const { columns, dashboards, homeReady } = this.props;
 
         return (
           <DataLoader flag={!homeReady} style={{ paddingTop: '200px' }}>
@@ -22,7 +36,7 @@ class HomeContainer extends Component {
                   <button style={{ position: 'absolute', right: 0 }} onClick={this.props.profileLogout}>
                     Logout
                   </button>
-                  <Dashboard columns={columns} activeDashboard={activeDashboard} />
+                  <Dashboard columns={columns} dashboards={dashboards} />
                 </PageContent>
               </div>
               {/**
@@ -40,7 +54,10 @@ class HomeContainer extends Component {
 HomeContainer.propTypes = {
     activeDashboard: PropTypes.shape(),
     columns: PropTypes.shape(),
+    dashboards: PropTypes.shape(),
+    history: PropTypes.shape().isRequired,
     homeReady: PropTypes.bool,
+    match: PropTypes.shape(),
     profileLogout: PropTypes.func.isRequired
 };
 
@@ -48,6 +65,7 @@ function mapStateToProps (state) {
     return {
         activeDashboard: selectActiveDashboard(state),
         columns: state.dashboardState.get('columnById'),
+        dashboards: state.dashboardState.get('dashboardById'),        
         entryPageOverlay: state.entryState.get('entryPageOverlay'),
         homeReady: state.appState.get('homeReady'),
     };
