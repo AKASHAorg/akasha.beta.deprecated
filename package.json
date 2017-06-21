@@ -85,10 +85,7 @@
     "@types/archiver": "1.3.2",
     "@types/bluebird": "3.5.5",
     "@types/chai": "4.0.0",
-<<<<<<< HEAD
     "@types/electron": "1.4.38",
-=======
->>>>>>> ea97912996b858dde80ac2f20504927421ed0293
     "@types/electron-window-state": "2.0.28",
     "@types/lru-cache": "4.0.0",
     "@types/mocha": "2.2.41",
