@@ -1,26 +1,56 @@
 import PropTypes from 'prop-types';
 import { Component } from 'react';
 import { connect } from 'react-redux';
-import { showAuthDialog, showPublishConfirmDialog, showTransferConfirmDialog,
-    showWeightConfirmDialog, updateAction } from '../../local-flux/actions/app-actions';
+import {
+    authDialogToggle,
+    pendingActionSave,
+    publishConfirmDialogToggle,
+    transferConfirmDialogToggle,
+    weightConfirmDialogToggle,
+    updateAction } from '../../local-flux/actions/app-actions';
 
-const CONFIRMATION_ENTITIES = ['tempProfile'];
+const GAS_CONFIRMATION_ENTITIES = ['tempProfile'];
+const WEIGHT_CONFIRMATION_ENTITIES = ['upvote', 'downvote'];
+const TRANSFER_CONFIRMATION_ENTITIES = ['tip'];
 
 class CommonRunner extends Component {
+    state = {}
     componentWillUpdate (nextProps) {
         const { pendingActions, loggedProfile } = nextProps;
+
         pendingActions.forEach((action) => {
             const { currentAction, actionType, confirmed, entityType, entityId } = action;
-            const needsConfirmation = !confirmed && CONFIRMATION_ENTITIES.includes(entityType);
+
+            const needsGasConfirmation = !confirmed &&
+                GAS_CONFIRMATION_ENTITIES.includes(entityType);
+            const needsWeightConfirmation = !confirmed &&
+                WEIGHT_CONFIRMATION_ENTITIES.includes(entityType);
+            const needsTransferConfirmation = !confirmed &&
+                TRANSFER_CONFIRMATION_ENTITIES.includes(entityType);
+
             const isLoggedIn = Date.parse(loggedProfile.get('expiration')) - 3000 > Date.now();
-            if (needsConfirmation) {
-                return this.props.showPublishConfirmDialog(entityId);
+            console.log(isLoggedIn, 'isLoggedIn');
+            if (needsGasConfirmation) {
+                return this.props.publishConfirmDialogToggle(entityId);
             }
-            if (isLoggedIn) {
-                console.log('for actiontype:', actionType, 'run action:', currentAction);
-                return '';
+
+            if (needsWeightConfirmation) {
+                return this.props.weightConfirmDialogToggle(entityId);
             }
-            return this.props.showAuthDialog(action.get('entityId'));
+
+            if (needsTransferConfirmation) {
+                return this.props.transferConfirmDialogToggle(entityId);
+            }
+
+            if (!isLoggedIn && confirmed) {
+                return this.props.authDialogToggle(action.get('entityId'));
+            }
+
+            // TODO: save pending action to db;
+
+
+            console.log('for actiontype:', actionType, 'run action:', currentAction);
+            return '';
         });
     }
     // componentWillReceiveProps (nextProps) {
@@ -50,7 +80,7 @@ class CommonRunner extends Component {
     //                     status: actionStatus.readyToPublish
     //                 }));
     //         } else {
-    //             this.props.showAuthDialog(confirmedActions.first().get('id'));
+    //             this.props.authDialogToggle(confirmedActions.first().get('id'));
     //         }
     //     }
     // }
@@ -63,8 +93,11 @@ class CommonRunner extends Component {
 CommonRunner.propTypes = {
     loggedProfile: PropTypes.shape(),
     pendingActions: PropTypes.shape(),
-    showAuthDialog: PropTypes.func.isRequired,
-    showPublishConfirmDialog: PropTypes.func.isRequired
+    authDialogToggle: PropTypes.func.isRequired,
+    publishConfirmDialogToggle: PropTypes.func.isRequired,
+    transferConfirmDialogToggle: PropTypes.func.isRequired,
+    weightConfirmDialogToggle: PropTypes.func.isRequired,
+    pendingActionSave: PropTypes.func.isRequired,
 };
 
 function mapStateToProps (state) {
@@ -72,17 +105,18 @@ function mapStateToProps (state) {
         loggedProfile: state.profileState.get('loggedProfile'),
         pendingActions: state.appState.get('pendingActions'),
         publishConfirmDialog: state.appState.get('publishConfirmDialog'),
-        authDialog: state.appState.get('showAuthDialog')
+        authDialog: state.appState.get('showAuthDialog'),
     };
 }
 
 export default connect(
     mapStateToProps,
     {
-        showAuthDialog,
-        showPublishConfirmDialog,
-        showTransferConfirmDialog,
-        showWeightConfirmDialog,
+        authDialogToggle,
+        pendingActionSave,
+        publishConfirmDialogToggle,
+        transferConfirmDialogToggle,
+        weightConfirmDialogToggle,
         updateAction
     }
 )(CommonRunner);
