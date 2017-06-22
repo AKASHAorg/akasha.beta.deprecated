@@ -23,31 +23,6 @@ class ImageUploader extends Component {
             imageLoaded: false
         };
     }
-    componentDidMount () {
-        // const { initialImageLink, minHeight, minWidth } = this.props;
-        // if (initialImageLink && initialImageLink.includes('/ipfs/')) {
-        //     const filePromises = getResizedImages([initialImageLink], {
-        //         minWidth,
-        //         minHeight,
-        //         ipfsFile: true
-        //     });
-        //     return Promise.all(filePromises)
-        //         .then((results) => {
-        //             this.setState({
-        //                 imageFile: results,
-        //                 error: null
-        //             }, () => {
-        //                 this.fileInput.value = '';
-        //             });
-        //         }).catch((err) => {
-        //             console.error(err);
-        //             return this.setState({
-        //                 error: err
-        //             });
-        //         });
-        // }
-        // return null;
-    }
 
     shouldComponentUpdate (nextProps, nextState) {
         return !R.equals(nextProps.initialImage, this.props.initialImage) ||

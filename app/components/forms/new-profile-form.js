@@ -29,6 +29,14 @@ class NewProfileForm extends Component {
     }
 
     getValidatorData = () => this.props.tempProfile.toJS();
+    componentWillReceiveProps (nextProps) {
+        const { isUpdate, tempProfile } = nextProps;
+        // we need to update temp profile only if something has changed
+        // so we need to keep a ref to old temp profile.
+        if (isUpdate && tempProfile.akashaId !== this.props.tempProfile.akashaId) {
+            this.refTempProfile = tempProfile;
+        }
+    }
 
     _showTerms = (ev) => {
         ev.preventDefault();
@@ -227,7 +235,8 @@ class NewProfileForm extends Component {
 
     _handleSubmit = (ev) => {
         ev.preventDefault();
-        const { expandOptionalDetails, tempProfile, onSubmit, onProfileUpdate } = this.props;
+        const { expandOptionalDetails, isUpdate, tempProfile, onSubmit,
+          onProfileUpdate } = this.props;
         const { optDetails } = this.state;
 
         this.props.validate((err) => {
@@ -246,9 +255,12 @@ class NewProfileForm extends Component {
                             avatar = uint8arr;
                         }
                         onProfileUpdate(
-                          tempProfile.withMutations(profile =>
-                              profile
-                                .set('avatar', avatar))
+                          tempProfile.withMutations((profile) => {
+                              profile.set('avatar', avatar);
+                              if (!isUpdate) {
+                                  profile.set('backgroundImage', this.imageUploader.getImage());
+                              }
+                          })
                         );
                         onSubmit();
                     });
@@ -261,10 +273,10 @@ class NewProfileForm extends Component {
     }
 
     render () {
-        const { intl, muiTheme, expandOptionalDetails, style, isUpdate } = this.props;
+        const { intl, muiTheme, expandOptionalDetails, style, isUpdate, tempProfile } = this.props;
         const { firstName, lastName, akashaId, password, password2,
           about, links, crypto, formHasErrors, avatar, backgroundImage,
-          baseUrl } = this.props.tempProfile;
+          baseUrl } = tempProfile;
         const { optDetails } = this.state;
         const { formatMessage } = intl;
         return (
@@ -406,7 +418,7 @@ class NewProfileForm extends Component {
                   </div>
                   <div className="col-xs-12">
                     {links.map((link, index) =>
-                      <div key={`${index + 1}`} className="row">
+                      (<div key={`${index + 1}`} className="row">
                         <div className="col-xs-10">
                           <TextField
                             autoFocus={(links.size - 1) === index}
@@ -444,7 +456,7 @@ class NewProfileForm extends Component {
                             className="col-xs-12"
                           />
                         }
-                      </div>
+                      </div>)
                     )}
                   </div>
                   <h3 className="col-xs-10" style={{ margin: '20px 0 0 0' }}>
@@ -464,7 +476,7 @@ class NewProfileForm extends Component {
                   </div>
                   <div className="col-xs-12">
                     {crypto.map((cryptoLink, index) =>
-                      <div key={`${index + 1}`} className="row">
+                      (<div key={`${index + 1}`} className="row">
                         <div className="col-xs-10">
                           <TextField
                             autoFocus={(crypto.size - 1) === index}
@@ -501,7 +513,7 @@ class NewProfileForm extends Component {
                             className="col-xs-12"
                           />
                         }
-                      </div>
+                      </div>)
                     )}
                   </div>
                 </div>
@@ -512,8 +524,8 @@ class NewProfileForm extends Component {
                   values={{
                       termsLink: (
                         <a
-                          href="#"
-                          onClick={ev => this._showTerms(ev)}
+                          href="/terms"
+                          onClick={this._showTerms}
                           style={{ color: muiTheme.palette.primary1Color }}
                         >
                           {intl.formatMessage(generalMessages.termsOfService)}
@@ -537,6 +549,9 @@ class NewProfileForm extends Component {
                 type="submit"
                 onClick={formHasErrors ? () => {} : this._handleSubmit}
                 style={{ marginLeft: 8 }}
+                disabled={
+                  isUpdate && this.refTempProfile && tempProfile.equals(this.refTempProfile)
+                }
                 primary
               />
             </PanelContainerFooter>
