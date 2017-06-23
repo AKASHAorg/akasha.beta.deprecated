@@ -32,8 +32,8 @@ class EditProfile extends PureComponent {
             entityType: 'tempProfile',
             actionType: 'update',
             entityId: tempProfile.get('localId'),
-            currentAction: '',
-            publishTx: '',
+            currentAction: 'TEMP_PROFILE_PUBLISH_UPDATE',
+            publishTx: null,
             confirmed: false,
             published: false
         });

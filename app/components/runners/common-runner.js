@@ -14,12 +14,16 @@ const WEIGHT_CONFIRMATION_ENTITIES = ['upvote', 'downvote'];
 const TRANSFER_CONFIRMATION_ENTITIES = ['tip'];
 
 class CommonRunner extends Component {
-    state = {}
+    shouldComponentUpdate (nextProps) {
+        return !nextProps.loggedProfile.equals(this.props.loggedProfile) ||
+            !nextProps.pendingActions.equals(this.props.pendingActions);
+    }
     componentWillUpdate (nextProps) {
-        const { pendingActions, loggedProfile } = nextProps;
-
+        const { pendingActions, loggedProfile, state } = nextProps;
+        const { dispatch } = this.props;
         pendingActions.forEach((action) => {
-            const { currentAction, actionType, confirmed, entityType, entityId } = action;
+            const { currentAction, confirmed, entityType, entityId,
+                publishTx } = action;
 
             const needsGasConfirmation = !confirmed &&
                 GAS_CONFIRMATION_ENTITIES.includes(entityType);
@@ -29,29 +33,47 @@ class CommonRunner extends Component {
                 TRANSFER_CONFIRMATION_ENTITIES.includes(entityType);
 
             const isLoggedIn = Date.parse(loggedProfile.get('expiration')) - 3000 > Date.now();
-            console.log(isLoggedIn, 'isLoggedIn');
+
             if (needsGasConfirmation) {
-                return this.props.publishConfirmDialogToggle(entityId);
+                return dispatch(publishConfirmDialogToggle(entityId));
             }
 
             if (needsWeightConfirmation) {
-                return this.props.weightConfirmDialogToggle(entityId);
+                return dispatch(weightConfirmDialogToggle(entityId));
             }
 
             if (needsTransferConfirmation) {
-                return this.props.transferConfirmDialogToggle(entityId);
+                return dispatch(transferConfirmDialogToggle(entityId));
             }
 
-            if (!isLoggedIn && confirmed) {
-                return this.props.authDialogToggle(action.get('entityId'));
+            if (!isLoggedIn && confirmed && !publishTx) {
+                return dispatch(authDialogToggle(action.get('entityId')));
             }
 
-            // TODO: save pending action to db;
+            const actionPayload = this._getActionPayload(action, state);
+            this._savePendingAction(action, actionPayload);
 
-
-            console.log('for actiontype:', actionType, 'run action:', currentAction);
-            return '';
+            return dispatch({ type: currentAction, data: actionPayload });
         });
+    }
+    _getActionPayload = (action, state) => {
+        const { entityType } = action;
+        let entityPayload;
+        switch (entityType) {
+            case 'tempProfile':
+                entityPayload = state.tempProfileState.get('tempProfile');
+                break;
+            default:
+                entityPayload = null;
+        }
+        return entityPayload;
+    }
+    _savePendingAction = (action, entityPayload) => {
+        const { dispatch } = this.props;
+        dispatch(pendingActionSave(action, entityPayload));
+    }
+    _publishPendingAction = (action) => {
+
     }
     // componentWillReceiveProps (nextProps) {
     //     const { pendingActions, publishConfirmDialog, authDialog, loggedProfile } = nextProps;
@@ -93,30 +115,17 @@ class CommonRunner extends Component {
 CommonRunner.propTypes = {
     loggedProfile: PropTypes.shape(),
     pendingActions: PropTypes.shape(),
-    authDialogToggle: PropTypes.func.isRequired,
-    publishConfirmDialogToggle: PropTypes.func.isRequired,
-    transferConfirmDialogToggle: PropTypes.func.isRequired,
-    weightConfirmDialogToggle: PropTypes.func.isRequired,
-    pendingActionSave: PropTypes.func.isRequired,
+    publishConfirmDialog: PropTypes.string,
+    authDialog: PropTypes.string,
+    dispatch: PropTypes.func.isRequired
 };
 
-function mapStateToProps (state) {
-    return {
+export default connect(
+    state => ({
         loggedProfile: state.profileState.get('loggedProfile'),
         pendingActions: state.appState.get('pendingActions'),
         publishConfirmDialog: state.appState.get('publishConfirmDialog'),
         authDialog: state.appState.get('showAuthDialog'),
-    };
-}
-
-export default connect(
-    mapStateToProps,
-    {
-        authDialogToggle,
-        pendingActionSave,
-        publishConfirmDialogToggle,
-        transferConfirmDialogToggle,
-        weightConfirmDialogToggle,
-        updateAction
-    }
+        state
+    })
 )(CommonRunner);
