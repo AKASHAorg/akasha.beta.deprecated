@@ -124,8 +124,4 @@ Auth.propTypes = {
     history: PropTypes.shape().isRequired,
 };
 
-Auth.contextTypes = {
-    muiTheme: PropTypes.shape(),
-};
-
 export default Auth;

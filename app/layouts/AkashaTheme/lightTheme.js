@@ -20,6 +20,7 @@ export default {
         disabledColor: '#999999',
         errorColor: Colors.orange900,
         linkColor: '#008B8B',
+        pageBackgroundColor: '#f7f7f7',
         paperShadowColor: Colors.grey400,
         pickerHeaderColor: Colors.cyan500,
         primary1Color: '#4285f4',
@@ -27,6 +28,7 @@ export default {
         sidebarColor: '#f3f3f3',
         textColor: '#4c4c4c',
         themeColor: '#f0f0f0',
+        topBarBackgroundColor: Colors.white
     },
     imageUploader: {
         position: 'relative',

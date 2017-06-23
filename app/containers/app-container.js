@@ -18,8 +18,8 @@ import { tempProfileUpdate, setTempProfile, tempProfileCreate,
 import { errorDeleteFatal, errorDeleteNonFatal } from '../local-flux/actions/error-actions';
 import { DashboardPage, LauncherContainer, SidebarContainer } from './';
 import { AuthDialog, LoginDialog } from '../components/dialogs';
-import { DashboardSecondarySidebar, ErrorBar, ErrorReportingModal, FatalErrorModal, NotificationBar,
-    PageContent, PanelLoader, SecondarySidebar, TermsPanel } from '../components';
+import { CommonTopBar, DashboardSecondarySidebar, ErrorBar, ErrorReportingModal, FatalErrorModal,
+    NotificationBar, PageContent, PanelLoader, SecondarySidebar, TermsPanel, TopBar } from '../components';
 import { selectLoggedProfileData } from '../local-flux/selectors';
 import lightTheme from '../layouts/AkashaTheme/lightTheme';
 import darkTheme from '../layouts/AkashaTheme/darkTheme';
@@ -100,6 +100,9 @@ class AppContainer extends Component {
                     <PageContent>
                       <Route path="/dashboard/:dashboardName?" component={DashboardPage} />
                     </PageContent>
+                    <TopBar>
+                      <Route path="/dashboard/:dashboardName?" component={CommonTopBar} />
+                    </TopBar>
                   </div>
                 }
                 <Route path="/setup" component={LauncherContainer} />

@@ -8,7 +8,11 @@ const Dashboard = ({ columns, dashboards, match }) => {
     const activeDashboard = dashboards.get(name);
 
     return (
-      <div style={{ display: 'flex', padding: '0 20px', height: '100%', backgroundColor: '#f7f7f7', overflowX: 'auto' }}>
+      <div
+        style={{
+            position: 'absolute', display: 'flex', padding: '0 20px', height: '100%', overflowX: 'auto', left: 0, right: 0
+        }}
+      >
         {activeDashboard && activeDashboard.get('columns').map((id) => {
             const column = columns.get(id);
             if (!column) {
