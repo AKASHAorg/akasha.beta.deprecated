@@ -550,7 +550,7 @@ const entryState = createReducer(initialState, {
 
     // ************************* NEW REDUCERS ******************************
 
-    [types.GET_COMMENTS_COUNT_SUCCESS]: (state, { data }) => {
+    [types.COMMENTS_GET_COUNT_SUCCESS]: (state, { data }) => {
         if (state.get('fullEntry') && (data.entryId === state.getIn(['fullEntry', 'entryId']))) {
             return state.setIn(['fullEntry', 'commentsCount'], data.count);
         }

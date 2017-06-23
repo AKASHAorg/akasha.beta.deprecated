@@ -2,10 +2,10 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Route } from 'react-router-dom';
-import { Dashboard, SecondarySidebar, PageContent } from '../components';
+import { Dashboard } from '../components';
 import { Runners } from '../components/runners';
 import { DataLoader } from '../shared-components';
-import { selectActiveDashboard } from '../local-flux/selectors';
+import { dashboardSetActive } from '../local-flux/actions/dashboard-actions';
 import { profileLogout } from '../local-flux/actions/profile-actions';
 import { EntryPageContainer } from './';
 
@@ -16,10 +16,13 @@ class DashboardPage extends Component {
             return;
         }
         const { params } = nextProps.match;
-        const newDashboardName = nextProps.activeDashboard.name;
+        const newDashboardName = nextProps.activeDashboard;
         const isCorrectRoute = newDashboardName === params.dashboardName;
+        if (!params.dashboardName && this.props.match.params.dashboardName) {
+            this.props.dashboardSetActive('');
+        }
         // navigate to the active dashboard when it changes
-        if (!isCorrectRoute && (!activeDashboard || newDashboardName !== activeDashboard.name)) {
+        if (!isCorrectRoute && (!activeDashboard || newDashboardName !== activeDashboard)) {
             history.push(`/dashboard/${newDashboardName}`);
         }
     }
@@ -49,9 +52,10 @@ class DashboardPage extends Component {
 }
 
 DashboardPage.propTypes = {
-    activeDashboard: PropTypes.shape(),
+    activeDashboard: PropTypes.string,
     columns: PropTypes.shape(),
     dashboards: PropTypes.shape(),
+    dashboardSetActive: PropTypes.func.isRequired,
     history: PropTypes.shape().isRequired,
     homeReady: PropTypes.bool,
     match: PropTypes.shape(),
@@ -60,7 +64,7 @@ DashboardPage.propTypes = {
 
 function mapStateToProps (state) {
     return {
-        activeDashboard: selectActiveDashboard(state),
+        activeDashboard: state.dashboardState.get('activeDashboard'),
         columns: state.dashboardState.get('columnById'),
         dashboards: state.dashboardState.get('dashboardById'),        
         entryPageOverlay: state.entryState.get('entryPageOverlay'),
@@ -71,6 +75,7 @@ function mapStateToProps (state) {
 export default connect(
     mapStateToProps,
     {
+        dashboardSetActive,
         profileLogout
     }
 )(DashboardPage);
