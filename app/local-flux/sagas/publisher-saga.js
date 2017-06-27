@@ -1,6 +1,7 @@
 import { delay } from 'redux-saga';
-import { takeEvery, put, select, call, fork, all } from 'redux-saga/effects';
+import { takeEvery, take, put, select, call, fork, all } from 'redux-saga/effects';
 import * as types from '../constants';
+import * as actions from '../actions/app-actions';
 
 const EXPIRATION_AMOUNT_OFFSET = 3000; // in ms
 const NO_CONFIRM_ENTITIES = [
@@ -154,7 +155,7 @@ const publishTriggerActions = [
 //     const action = takeEvery(filterCommentPublishing, publishComments);
 // }
 const saveToDb = (table, entity) => {
-
+    
 }
 
 /**
@@ -176,7 +177,7 @@ function* pendingActionSave ({ akashaId, pendingAction, payload }) {
     promises.push(saveToDb('pendingActions', pendingAction.toJS()));
     try {
         yield take(promises);
-        yield put(pendingActionSaveSuccess(entityId))    
+        yield put(actions.pendingActionSaveSuccess(entityId));
     } catch (ex) {
         console.error(ex, 'error occured');
     }
