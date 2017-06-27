@@ -166,7 +166,7 @@ function* pendingActionSave ({ akashaId, pendingAction, payload }) {
     const { entityType, entityId } = pendingAction;
     console.log(entityType, 'the entity that must be saved', payload);
     const promises = [];
-    switch(entityType) {
+    switch (entityType) {
         case 'tempProfile':
             promises.push(saveToDb('tempProfile', payload));
             break;
