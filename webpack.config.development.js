@@ -8,7 +8,7 @@ const port = process.env.PORT || 3000;
 const publicPath = `http://localhost:${port}/dist`;
 
 export default merge(baseConfig, {
-    devtool: 'inline-source-map',
+    devtool: 'eval-source-map',
 
     entry: [
         'react-hot-loader/patch',
@@ -18,7 +18,11 @@ export default merge(baseConfig, {
     ],
 
     output: {
-        publicPath: `http://localhost:${port}/dist/`
+        publicPath: `http://localhost:${port}/dist/`,
+        sourceMapFilename: "./bundle.js.map",
+        pathinfo: true,
+        path: __dirname,
+        filename: "bundle.js"
     },
 
     module: {

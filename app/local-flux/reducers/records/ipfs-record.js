@@ -10,6 +10,7 @@ const IpfsStatus = Record({
     stopped: null,
     upgrading: null,
     version: null,
+    state: null,
 });
 
 const IpfsFlags = Record({
