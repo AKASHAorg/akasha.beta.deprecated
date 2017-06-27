@@ -1,20 +1,10 @@
-import { fromJS, List, Map } from 'immutable';
 import * as types from '../constants';
 import { createReducer } from './create-reducer';
 import { searchLimit } from '../../constants/iterator-limits';
+import { SearchRecord } from './records/search-record';
 
 
-const initialState = fromJS({
-    consecutiveQueryErrors: 0,
-    currentPage: null,
-    errors: new List(),
-    flags: new Map(),
-    query: '',
-    resultsCount: null,
-    searchService: null,
-    showResults: false,
-    totalPages: null,
-});
+const initialState = new SearchRecord();
 
 
 const searchState = createReducer(initialState, {
@@ -37,7 +27,6 @@ const searchState = createReducer(initialState, {
     [types.SEARCH_MORE_QUERY]: (state, { query }) =>
         state.merge({
             query,
-            errors: new List(),
             flags: state.get('flags').merge({ moreQueryPending: true })
         }),
 
@@ -77,7 +66,6 @@ const searchState = createReducer(initialState, {
         state.merge({
             consecutiveQueryErrors: 0,
             currentPage: null,
-            errors: new List(),
             query: '',
             totalPages: null,
             resultsCount: null,

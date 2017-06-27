@@ -1,4 +1,4 @@
-import { take, put, call, apply, fork, takeEvery } from 'redux-saga/effects';
+import { take, put, call, apply, fork, takeLatest } from 'redux-saga/effects';
 import * as actions from '../actions/search-actions';
 import { actionChannels, enableChannel } from './helpers';
 import * as types from '../constants';
@@ -23,15 +23,15 @@ function* searchQuery ({ text, pageSize = searchLimit, offset = 0 }) {
 // Action watchers
 
 function* watchSearchHandshake () {
-    yield takeEvery(types.SEARCH_HANDSHAKE, searchHandshake);
+    yield takeLatest(types.SEARCH_HANDSHAKE, searchHandshake);
 }
 
 function* watchSearchMoreQuery () {
-    yield takeEvery(types.SEARCH_MORE_QUERY, searchQuery);
+    yield takeLatest(types.SEARCH_MORE_QUERY, searchQuery);
 }
 
 function* watchSearchQuery () {
-    yield takeEvery(types.SEARCH_QUERY, searchQuery);
+    yield takeLatest(types.SEARCH_QUERY, searchQuery);
 }
 
 // Channel watchers

@@ -782,6 +782,10 @@ const profileState = createReducer(initialState, {
             isFollower: state.get('isFollower').set(data, false)
         });
     },
+
+    [types.SEARCH_MORE_QUERY_SUCCESS]: entryIteratorHandler,
+
+    [types.SEARCH_QUERY_SUCCESS]: entryIteratorHandler
 });
 
 export default profileState;
