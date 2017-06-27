@@ -63,7 +63,7 @@ export const pendingActionDelete = actionId => action(types.PENDING_ACTION_DELET
 export const pendingActionUpdate = data => action(types.PENDING_ACTION_UPDATE, { data });
 export const pendingActionSave = (akashaId, pendingAction, payload) =>
     action(types.PENDING_ACTION_SAVE, { akashaId, pendingAction, payload });
-
+export const pendingActionSaveSuccess = data => action(types.PENDING_ACTION_SAVE_SUCCESS, { data });
 // this should be removed once profile logout is implemented
 export const resetHomeReady = () => action(types.RESET_HOME_READY);
 
