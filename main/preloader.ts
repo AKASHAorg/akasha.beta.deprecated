@@ -28,9 +28,13 @@ function injectApi() {
 
 window['Channel'] = injectApi();
 
+// @TODO: uncomment this before production build
+/*
 window['eval'] = function () {
     throw new Error('eval disabled.');
 };
+*/
+
 
 /*
  //spellchecking stuff

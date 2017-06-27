@@ -7,13 +7,12 @@ import BabiliPlugin from 'babili-webpack-plugin';
 import baseConfig from './webpack.config.base';
 
 export default merge(baseConfig, {
-    devtool: 'cheap-module-source-map',
+    devtool: 'source-map',
 
-    entry: ['babel-polyfill', './app/index'],
+    entry: ['./main/index'],
 
     output: {
-        path: path.join(__dirname, 'dist'),
-        publicPath: '../dist/'
+        path: path.join(__dirname, 'dist')
     },
 
     module: {
@@ -44,6 +43,7 @@ export default merge(baseConfig, {
                             modules: true,
                             importLoaders: 1,
                             localIdentName: '[name]__[local]__[hash:base64:5]',
+                            minimize: true
                         }
                     }
                 }),
@@ -52,7 +52,7 @@ export default merge(baseConfig, {
                 test: /^((?!\.global).)*\.scss$/,
                 use: ExtractTextPlugin.extract({
                     fallbackLoader: 'style-loader',
-                    loader: ['css-loader?modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]', 'sass-loader']
+                    loader: ['css-loader?modules&importLoaders=1&minimize&localIdentName=[name]__[local]___[hash:base64:5]', 'sass-loader']
                 })
             },
             {
@@ -132,7 +132,7 @@ export default merge(baseConfig, {
          * Dynamically generate index.html page
          */
         new HtmlWebpackPlugin({
-            filename: 'app.html',
+            filename: 'index.html',
             template: 'app/app.template.html',
             inject: true
         })
