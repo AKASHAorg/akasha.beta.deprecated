@@ -61,7 +61,8 @@ export const panelHide = () => action(types.PANEL_HIDE);
 export const publishEntity = data => action(types.PUBLISH_ENTITY, { data });
 export const pendingActionDelete = actionId => action(types.PENDING_ACTION_DELETE, { actionId });
 export const pendingActionUpdate = data => action(types.PENDING_ACTION_UPDATE, { data });
-export const pendingActionSave = data => action(types.PENDING_ACTION_SAVE, { data });
+export const pendingActionSave = (akashaId, pendingAction, payload) =>
+    action(types.PENDING_ACTION_SAVE, { akashaId, pendingAction, payload });
 
 // this should be removed once profile logout is implemented
 export const resetHomeReady = () => action(types.RESET_HOME_READY);
