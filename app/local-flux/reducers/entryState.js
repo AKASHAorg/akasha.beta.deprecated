@@ -225,7 +225,10 @@ const entryState = createReducer(initialState, {
             voteCost[res.weight] = res.cost;
         });
         return state.set('voteCostByWeight', new Map(voteCost));
-    }
+    },
+    [types.SEARCH_MORE_QUERY_SUCCESS]: entryIteratorHandler,
+
+    [types.SEARCH_QUERY_SUCCESS]: entryIteratorHandler
 });
 
 export default entryState;
