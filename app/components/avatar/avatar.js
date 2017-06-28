@@ -17,10 +17,8 @@ class Avatar extends React.Component {
             rotation: 0
         };
     }
-    componentWillUnmount () {
-        this._handleAvatarClear();
-    }
     onImageLoad = () => {
+        console.log('image is now loaded');
         this.setState({
             imageLoaded: true
         });

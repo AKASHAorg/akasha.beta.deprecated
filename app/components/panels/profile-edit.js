@@ -4,7 +4,6 @@ import ProfileForm from '../forms/new-profile-form';
 import { PanelContainerHeader } from '../';
 import styles from './profile-edit.scss';
 
-
 class EditProfile extends PureComponent {
     componentWillMount () {
         this._createTempProfile(this.props);
@@ -13,10 +12,15 @@ class EditProfile extends PureComponent {
         this._createTempProfile(this.props);
     }
     componentWillUnmount = () => {
-        const { tempProfileDelete, tempProfile } = this.props;
-        tempProfileDelete({
-            akashaId: tempProfile.get('akashaId')
-        });
+        const { tempProfileDelete, tempProfile, appState } = this.props;
+        const pendingActions = appState.get('pendingActions');
+        // Delete temp profile if it`s not pending to publish
+        const isTempProfilePending = pendingActions.find(action => action.get('entityType') === 'tempProfile');
+        if (!isTempProfilePending) {
+            tempProfileDelete({
+                akashaId: tempProfile.get('akashaId')
+            });
+        }
     }
     _createTempProfile = (props) => {
         const { tempProfile, loggedProfileData, setTempProfile } = props;
@@ -27,8 +31,15 @@ class EditProfile extends PureComponent {
         }
     }
     _handleSubmit = () => {
-        const { publishEntity, tempProfile } = this.props;
-        publishEntity({
+        const { publishEntity, tempProfile, appState } = this.props;
+        const pendingActions = appState.get('pendingActions');
+        if (tempProfile.get('localId') && pendingActions.has(tempProfile.get('localId'))) {
+            return console.warn('profile upgrade is in progress. Wait untill it`s finished!');
+        }
+        if (pendingActions.find(action => action.entityType === 'tempProfile')) {
+            return console.warn('There is already a profile update in progress. Please wait until it`s finished.');
+        }
+        return publishEntity({
             entityType: 'tempProfile',
             actionType: 'update',
             entityId: tempProfile.get('localId'),
@@ -42,9 +53,12 @@ class EditProfile extends PureComponent {
         const { history } = this.props;
         history.goBack();
     }
+    _updateTempProfile = (updatedProfile) => {
+        const { tempProfileUpdate } = this.props;
+        tempProfileUpdate(updatedProfile);
+    }
     render () {
-        const { intl, muiTheme, tempProfile, tempProfileUpdate,
-            loggedProfileData } = this.props;
+        const { intl, muiTheme, tempProfile, loggedProfileData } = this.props;
         return (
           <div className={`${styles.root} row`}>
             <PanelContainerHeader
@@ -63,7 +77,7 @@ class EditProfile extends PureComponent {
               expandOptionalDetails
               onSubmit={this._handleSubmit}
               onCancel={this._handleAbort}
-              onProfileUpdate={tempProfileUpdate}
+              onProfileUpdate={this._updateTempProfile}
             />
           </div>
         );
@@ -71,16 +85,16 @@ class EditProfile extends PureComponent {
 }
 
 EditProfile.propTypes = {
-    setTempProfile: PropTypes.func,
+    appState: PropTypes.shape(),
     history: PropTypes.shape(),
     intl: PropTypes.shape(),
-    muiTheme: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
+    muiTheme: PropTypes.shape(),
     publishEntity: PropTypes.func,
+    setTempProfile: PropTypes.func,
     tempProfileDelete: PropTypes.func,
     tempProfile: PropTypes.shape(),
     tempProfileUpdate: PropTypes.func,
-
 };
 
 export default EditProfile;
