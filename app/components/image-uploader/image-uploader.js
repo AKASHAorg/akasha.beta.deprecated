@@ -34,9 +34,15 @@ class ImageUploader extends Component {
             !R.equals(nextState.progress, this.state.progress) ||
             !R.equals(nextState.error, this.state.error);
     }
-
+    componentDidMount () {
+        const { initialImage } = this.props;
+        this._setIpfsImage(initialImage);
+    }
     componentWillReceiveProps (nextProps) {
         const { initialImage } = nextProps;
+        this._setIpfsImage(initialImage);
+    }
+    _setIpfsImage = (initialImage) => {
         const hasIpfsBgImage = initialImage &&
             R.is(Object, initialImage) &&
             !R.isEmpty(initialImage);
@@ -46,7 +52,6 @@ class ImageUploader extends Component {
             });
         }
     }
-
     getImage = () => this.state.imageFile;
 
     _handleResizeProgress = (totalProgress) => {

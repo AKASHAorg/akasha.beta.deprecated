@@ -209,6 +209,7 @@ class NewProfileForm extends Component {
 
     _handleAvatarClear = () => {
         const { isUpdate, tempProfile, onProfileUpdate } = this.props;
+        console.log('clearing avatar');
         if (isUpdate) {
             onProfileUpdate(
               tempProfile.set('avatar', null)
@@ -540,7 +541,6 @@ class NewProfileForm extends Component {
               <RaisedButton
                 key="cancel"
                 label={intl.formatMessage(generalMessages.cancel)}
-                type="reset"
                 onClick={this._handleCancel}
               />
               <RaisedButton
