@@ -41,7 +41,7 @@ class AppContainer extends Component {
         const { location, appState } = props;
         const nonLoginRoutes = ['/setup'];
         const shouldBootstrapHome = !nonLoginRoutes.every(route =>
-            location.pathname.includes(route)
+            location.pathname === '/' || location.pathname.includes(route)
         );
 
         // when home bootstrapping finishes reset the flag

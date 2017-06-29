@@ -6,9 +6,9 @@ import { ColumnHeader } from '../';
 import { ColumnTag } from '../svg';
 import { EntryListContainer } from '../../shared-components';
 import { entryMessages } from '../../locale-data/messages';
+import { dashboardGetTagSuggestions } from '../../local-flux/actions/dashboard-actions';
 import { entryMoreTagIterator, entryTagIterator } from '../../local-flux/actions/entry-actions';
-import { tagGetSuggestions } from '../../local-flux/actions/tag-actions';
-import { selectColumnEntries } from '../../local-flux/selectors';
+import { selectColumnEntries, selectColumnSuggestions } from '../../local-flux/selectors';
 
 class TagColumn extends Component {
 
@@ -42,7 +42,7 @@ class TagColumn extends Component {
           <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
             <ColumnHeader
               column={column}
-              onInputChange={this.props.tagGetSuggestions}
+              onInputChange={val => this.props.dashboardGetTagSuggestions(val, column.get('id'))}
               icon={<ColumnTag />}
               suggestions={suggestions}
             />
@@ -64,28 +64,29 @@ class TagColumn extends Component {
 
 TagColumn.propTypes = {
     column: PropTypes.shape().isRequired,
+    dashboardGetTagSuggestions: PropTypes.func.isRequired,
     entries: PropTypes.shape().isRequired,
     entryMoreTagIterator: PropTypes.func.isRequired,
     entryTagIterator: PropTypes.func.isRequired,
     intl: PropTypes.shape().isRequired,
     profiles: PropTypes.shape().isRequired,
     suggestions: PropTypes.shape().isRequired,
-    tagGetSuggestions: PropTypes.func.isRequired,
 };
 
 function mapStateToProps (state, ownProps) {
+    const columnId = ownProps.column.get('id');
     return {
-        entries: selectColumnEntries(state, ownProps.column.get('id')),
+        entries: selectColumnEntries(state, columnId),
         profiles: state.profileState.get('byId'),
-        suggestions: state.tagState.get('suggestions')
+        suggestions: selectColumnSuggestions(state, columnId)
     };
 }
 
 export default connect(
     mapStateToProps,
     {
+        dashboardGetTagSuggestions,
         entryMoreTagIterator,
         entryTagIterator,
-        tagGetSuggestions
     }
 )(injectIntl(TagColumn));

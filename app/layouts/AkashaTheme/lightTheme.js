@@ -13,7 +13,7 @@ export default {
         avatarBackground: Colors.grey50,
         borderColor: Colors.grey300,
         canvasColor: Colors.white,
-        columnColor: '#f3f3f3',
+        columnColor: Colors.white,
         commentAuthorColor: Colors.grey800,
         commentIsEntryAuthorColor: Colors.greenA700,
         commentViewerIsAuthorColor: Colors.blueA400,

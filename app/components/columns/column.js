@@ -1,21 +1,21 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { columnType } from '../../constants/columns';
+import * as columnTypes from '../../constants/columns';
 import { LatestColumn, ProfileColumn, StreamColumn, TagColumn } from '../';
 
 const Column = ({ column }) => {
     let component;
     switch (column.get('type')) {
-        case columnType.latest:
+        case columnTypes.latest:
             component = <LatestColumn column={column} />;
             break;
-        case columnType.tag:
+        case columnTypes.tag:
             component = <TagColumn column={column} />;
             break;
-        case columnType.stream:
+        case columnTypes.stream:
             component = <StreamColumn column={column} />;
             break;
-        case columnType.profile:
+        case columnTypes.profile:
             component = <ProfileColumn column={column} />;
             break;
         default:

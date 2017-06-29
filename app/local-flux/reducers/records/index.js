@@ -1,7 +1,7 @@
 // keep this alphabetically sorted
 import AppRecord, { NotificationRecord, PendingActionRecord } from './app-record';
 import { CommentData, CommentRecord, CommentsState } from './comments-record';
-import { ColumnRecord, DashboardRecord, DashboardState } from './dashboard-record';
+import { ColumnRecord, DashboardRecord, DashboardState, NewColumnRecord } from './dashboard-record';
 import { EntriesStream, EntryContent, EntryEth, EntryPageOverlay, EntryRecord,
     EntryState } from './entry-record';
 import ErrorRecord, { ErrorState } from './error-record';
@@ -48,6 +48,7 @@ export {
     LoggedProfile,
     LogRecord,
     MinedTransaction,
+    NewColumnRecord,
     NotificationRecord,
     PanelState,
     PasswordPreference,

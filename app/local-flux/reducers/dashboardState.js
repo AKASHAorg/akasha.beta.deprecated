@@ -1,7 +1,7 @@
 import { List } from 'immutable';
 import * as types from '../constants';
 import { createReducer } from './create-reducer';
-import { ColumnRecord, DashboardRecord, DashboardState } from './records';
+import { ColumnRecord, DashboardRecord, DashboardState, NewColumnRecord } from './records';
 
 const initialState = new DashboardState();
 
@@ -77,11 +77,8 @@ const entryMoreIteratorSuccess = (state, { data, req }) => {
 
 const dashboardState = createReducer(initialState, {
 
-    [types.DASHBOARD_ADD_SUCCESS]: (state, { data }) =>
-        state.merge({
-            activeDashboard: data.name,
-            dashboardById: state.get('dashboardById').set(data.name, new DashboardRecord(data)),
-        }),
+    [types.DASHBOARD_ADD_COLUMN]: state =>
+        state.set('newColumn', null),
 
     [types.DASHBOARD_ADD_COLUMN_SUCCESS]: (state, { data }) =>
         state.merge({
@@ -90,6 +87,15 @@ const dashboardState = createReducer(initialState, {
                 [data.dashboardName, 'columns'],
                 state.getIn(['dashboardById', data.dashboardName, 'columns']).push(data.id)
             )
+        }),
+
+    [types.DASHBOARD_ADD_NEW_COLUMN]: state =>
+        state.set('newColumn', new NewColumnRecord()),
+
+    [types.DASHBOARD_ADD_SUCCESS]: (state, { data }) =>
+        state.merge({
+            activeDashboard: data.name,
+            dashboardById: state.get('dashboardById').set(data.name, new DashboardRecord(data)),
         }),
 
     [types.DASHBOARD_DELETE_COLUMN_SUCCESS]: (state, { data }) => {
@@ -128,11 +134,26 @@ const dashboardState = createReducer(initialState, {
         return state.set('columnById', columnById);
     },
 
+    [types.DASHBOARD_GET_TAG_SUGGESTIONS_SUCCESS]: (state, { data, request }) => {
+        const { columnId } = request;
+        const suggestions = new List(data);
+        if (columnId) {
+            return state.setIn(['columnById', columnId, 'suggestions'], suggestions);
+        }
+        return state.setIn(['newColumn', 'suggestions'], suggestions);
+    },
+
     [types.DASHBOARD_SET_ACTIVE_SUCCESS]: (state, { data }) =>
-        state.set('activeDashboard', data),
+        state.merge({
+            activeDashboard: data,
+            newColumn: null
+        }),
 
     [types.DASHBOARD_UPDATE_COLUMN_SUCCESS]: (state, { data }) =>
         state.mergeIn(['columnById', data.id], data.changes),
+
+    [types.DASHBOARD_UPDATE_NEW_COLUMN]: (state, { changes }) =>
+        state.mergeIn(['newColumn'], changes || NewColumnRecord()),
 
     [types.ENTRY_MORE_NEWEST_ITERATOR]: entryMoreIterator,
 

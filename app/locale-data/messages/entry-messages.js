@@ -31,6 +31,14 @@ const entryMessages = defineMessages({
         description: 'subtitle showing last updated time and words number on draft card in new entry panel',
         defaultMessage: '{lastUpdate} - {wordCount} words so far'
     },
+    entriesCount: {
+        id: 'app.entry.entriesCount',
+        description: 'counting entries',
+        defaultMessage: `{count, number} {count, plural,
+            one {entry}
+            other {entries}
+        }`
+    },
     publishedBlockDiff: {
         id: 'app.entry.publishedBlockDiff',
         description: 'how many blocks ago was an entry published',

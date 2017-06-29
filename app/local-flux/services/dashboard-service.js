@@ -1,8 +1,8 @@
 import dashboardDB from './db/dashboard';
 
-export const addColumn = ({ dashboardId, type }) =>
+export const addColumn = ({ dashboardId, type, value }) =>
     new Promise((resolve, reject) => {
-        dashboardDB.columnById.put({ type })
+        dashboardDB.columnById.put({ type, value })
             .then(id =>
                 dashboardDB.dashboardById
                     .where('id')

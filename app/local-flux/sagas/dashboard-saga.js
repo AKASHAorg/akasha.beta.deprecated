@@ -1,6 +1,9 @@
-import { apply, fork, put, select, takeEvery } from 'redux-saga/effects';
+import { delay } from 'redux-saga';
+import { apply, call, fork, put, select, takeEvery, takeLatest } from 'redux-saga/effects';
 import * as actions from '../actions/dashboard-actions';
+import * as tagActions from '../actions/tag-actions';
 import * as dashboardService from '../services/dashboard-service';
+import * as tagService from '../services/tag-service';
 import * as types from '../constants';
 import { selectActiveDashboardId, selectDashboardId,
     selectLoggedAkashaId } from '../selectors';
@@ -20,16 +23,16 @@ function* dashboardAdd ({ name }) {
     }
 }
 
-function* dashboardAddColumn ({ columnType }) {
+function* dashboardAddColumn ({ columnType, value }) {
     try {
         const dashboardId = yield select(selectActiveDashboardId);
         const dashboardName = yield select(state => state.dashboardState.get('activeDashboard'));
         const id = yield apply(
             dashboardService,
             dashboardService.addColumn,
-            [{ dashboardId, type: columnType }]
+            [{ dashboardId, type: columnType, value }]
         );
-        const data = { id, dashboardName, type: columnType };
+        const data = { id, dashboardName, type: columnType, value };
         yield put(actions.dashboardAddColumnSuccess(data));
     } catch (error) {
         yield put(actions.dashboardAddColumnError(error));
@@ -90,6 +93,17 @@ export function* dashboardGetColumns () {
     }
 }
 
+export function* dashboardGetTagSuggestions (request) {
+    try {
+        const suggestions = yield apply(tagService, tagService.getTagSuggestions, [request.tag]);
+        yield put(actions.dashboardGetTagSuggestionsSuccess(suggestions, request));
+        return { suggestions };
+    } catch (error) {
+        yield put(actions.dashboardGetTagSuggestionsError(error, request));
+        return { error };
+    }
+}
+
 function* dashboardSetActive ({ name }) {
     try {
         const akashaId = yield select(selectLoggedAkashaId);
@@ -114,6 +128,17 @@ function* dashboardUpdateColumn ({ id, changes }) {
     }
 }
 
+function* dashboardUpdateNewColumn ({ changes }) {
+    if (changes && changes.value) {
+        const { suggestions } = yield call(dashboardGetTagSuggestions, { tag: changes.value });
+        if (suggestions) {
+            const request = suggestions.map(tagName => ({ tagName }));
+            yield call(delay, 200);
+            yield put(tagActions.tagGetEntriesCount(request));
+        }
+    }
+}
+
 // Action watchers
 
 function* watchDashboardAdd () {
@@ -132,6 +157,10 @@ function* watchDashboardDeleteColumn () {
     yield takeEvery(types.DASHBOARD_DELETE_COLUMN, dashboardDeleteColumn);
 }
 
+function* watchDashboardGetTagSuggestions () {
+    yield takeLatest(types.DASHBOARD_GET_TAG_SUGGESTIONS, dashboardGetTagSuggestions);
+}
+
 function* watchDashboardSetActive () {
     yield takeEvery(types.DASHBOARD_SET_ACTIVE, dashboardSetActive);
 }
@@ -140,11 +169,17 @@ function* watchDashboardUpdateColumn () {
     yield takeEvery(types.DASHBOARD_UPDATE_COLUMN, dashboardUpdateColumn);
 }
 
+function* watchDashboardUpdateNewColumn () {
+    yield takeLatest(types.DASHBOARD_UPDATE_NEW_COLUMN, dashboardUpdateNewColumn);
+}
+
 export function* watchDashboardActions () {
     yield fork(watchDashboardAdd);
     yield fork(watchDashboardAddColumn);
     yield fork(watchDashboardDelete);
     yield fork(watchDashboardDeleteColumn);
+    yield fork(watchDashboardGetTagSuggestions);
     yield fork(watchDashboardSetActive);
     yield fork(watchDashboardUpdateColumn);
+    yield fork(watchDashboardUpdateNewColumn);
 }

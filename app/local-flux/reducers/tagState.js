@@ -30,7 +30,7 @@ const initialState = fromJS({
     margins: new TagMarginsRecord(),
     moreNewTags: false,
     newestTags: new List(),
-    suggestions: new List()
+    entriesCount: new Map()
 });
 
 const subscribeFlagHandler = (state, { error, flags }) => {
@@ -226,11 +226,20 @@ const tagState = createReducer(initialState, {
     [appTypes.CLEAN_STORE]: () => initialState,
 
     // ************ NEW REDUCERS **********************
+
+    [types.TAG_GET_ENTRIES_COUNT_SUCCESS]: (state, { data }) => {
+        if (!data.collection) {
+            return state;
+        }
+        let entriesCount = state.get('entriesCount');
+        data.collection.forEach((tag) => {
+            entriesCount = entriesCount.set(tag.tagName, tag.count);
+        });
+        return state.set('entriesCount', entriesCount);
+    },
+
     [types.TAG_GET_MARGINS_SUCCESS]: (state, { data }) =>
         state.set('margins', new TagMarginsRecord(data)),
-
-    [types.TAG_GET_SUGGESTIONS_SUCCESS]: (state, { data }) =>
-        state.set('suggestions', new List(data)),
 
     [types.TAG_SAVE_SUCCESS]: (state, { data }) =>
         state.set('margins', new TagMarginsRecord(data)),
