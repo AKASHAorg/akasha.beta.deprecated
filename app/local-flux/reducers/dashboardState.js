@@ -75,6 +75,15 @@ const entryMoreIteratorSuccess = (state, { data, req }) => {
     });
 };
 
+const handleSuggestions = (state, { data, request }) => {
+    const { columnId } = request;
+    const suggestions = new List(data);
+    if (columnId) {
+        return state.setIn(['columnById', columnId, 'suggestions'], suggestions);
+    }
+    return state.setIn(['newColumn', 'suggestions'], suggestions);
+};
+
 const dashboardState = createReducer(initialState, {
 
     [types.DASHBOARD_ADD_COLUMN]: state =>
@@ -134,14 +143,9 @@ const dashboardState = createReducer(initialState, {
         return state.set('columnById', columnById);
     },
 
-    [types.DASHBOARD_GET_TAG_SUGGESTIONS_SUCCESS]: (state, { data, request }) => {
-        const { columnId } = request;
-        const suggestions = new List(data);
-        if (columnId) {
-            return state.setIn(['columnById', columnId, 'suggestions'], suggestions);
-        }
-        return state.setIn(['newColumn', 'suggestions'], suggestions);
-    },
+    [types.DASHBOARD_GET_PROFILE_SUGGESTIONS_SUCCESS]: handleSuggestions,
+
+    [types.DASHBOARD_GET_TAG_SUGGESTIONS_SUCCESS]: handleSuggestions,
 
     [types.DASHBOARD_SET_ACTIVE_SUCCESS]: (state, { data }) =>
         state.merge({

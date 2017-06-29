@@ -57,11 +57,6 @@ class DashboardPage extends Component {
                   updateNewColumn={this.props.dashboardUpdateNewColumn}
                 />
               </div>
-              {/**
-               * a more complete path would be:
-               * <Route path="/dashboard/(@:akashaId)/(:slug)?-:entryId(\\d+)" component={EntryPage} />
-               */}
-              <Route path="/@:akashaId/:entryId(\d+)" component={EntryPageContainer} />
               <Runners />
             </div>
           </DataLoader>

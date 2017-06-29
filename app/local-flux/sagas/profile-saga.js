@@ -127,8 +127,18 @@ function* profileMoreFollowingsIterator ({ akashaId }) {
 
 function* profileResolveIpfsHash ({ ipfsHash, columnId, akashaIds }) {
     const channel = Channel.server.profile.resolveProfileIpfsHash;
+    // save the akashaIds in the local db for quick suggestions
+    yield fork(profileSaveAkashaIds, akashaIds); // eslint-disable-line no-use-before-define
     yield call(enableChannel, channel, Channel.client.profile.manager);
     yield apply(channel, channel.send, [{ ipfsHash, columnId, akashaIds }]);
+}
+
+export function* profileSaveAkashaIds (akashaIds) {
+    try {
+        yield apply(profileService, profileService.profileSaveAkashaIds, [akashaIds]);
+    } catch (error) {
+        yield put(actions.profileSaveAkashaIdsError(error));
+    }
 }
 
 function* profileSaveLogged (loggedProfile) {
@@ -330,6 +340,7 @@ function* watchProfileGetDataChannel () {
         if (resp.error) {
             yield put(actions.profileGetDataError(resp.error));
         } else {
+            yield fork(profileSaveAkashaIds, [resp.data.akashaId]); // eslint-disable-line
             yield put(actions.profileGetDataSuccess(resp.data));
         }
     }
