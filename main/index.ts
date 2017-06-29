@@ -13,6 +13,7 @@ import * as Promise from 'bluebird';
 const windowStateKeeper = require('electron-window-state');
 
 let modules;
+let mainWindow = null;
 const shutDown = Promise.coroutine(function*() {
     yield feed.execute({ stop: true });
     yield fetch.execute({ stop: true });
@@ -22,14 +23,14 @@ const shutDown = Promise.coroutine(function*() {
 });
 
 const stopServices = () => {
+    mainWindow.hide();
     if (modules) {
         modules.flushAll();
     }
-    shutDown().delay(800).then(() => process.exit(0));
+    shutDown().delay(800).finally(() => process.exit(0));
 };
 
 export function bootstrapApp() {
-    let mainWindow = null;
     const viewHtml = resolve(__dirname, '..');
     if (process.env.NODE_ENV !== 'development') {
         crashReporter.start({
@@ -90,8 +91,7 @@ export function bootstrapApp() {
             );
             mainWindow.once('close', (ev: Event) => {
                 ev.preventDefault();
-                modules.flushAll();
-                shutDown().delay(800).then(() => app.quit());
+                stopServices();
             });
             initMenu(mainWindow);
             mainWindow.webContents.once('did-finish-load', () => {
