@@ -1,0 +1,27 @@
+.root {
+    flex: 0 0 auto;
+    width: 380px;
+    padding-right: 20px;
+    height: calc(100% - 20px);
+}
+
+.inner {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    border: 2px dashed;    
+    padding: 20px;
+}
+
+.header {
+    flex: 0 0 auto;
+    font-size: 16px;
+    font-weight: 500;
+    height: 70px;
+    padding-bottom: 20px;
+}
+
+.content {
+    position: relative;
+    flex: 1 1 auto;
+}

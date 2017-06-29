@@ -17,6 +17,12 @@ function* cancelTagIterator () {
     }
 }
 
+function* tagGetEntriesCount ({ tags }) {
+    const channel = Channel.server.entry.getTagEntriesCount;
+    yield call(enableChannel, channel, Channel.client.entry.manager);
+    yield apply(channel, channel.send, [tags]);
+}
+
 function* tagIterator () {
     const channel = Channel.server.tags.tagIterator;
     yield call(enableChannel, channel, Channel.client.tags.manager);
@@ -39,15 +45,6 @@ export function* tagGetMargins () {
     }
 }
 
-export function* tagGetSuggestions ({ tag }) {
-    try {
-        const suggestions = yield apply(tagService, tagService.getTagSuggestions, [tag]);
-        yield put(actions.tagGetSuggestionsSuccess(suggestions));
-    } catch (error) {
-        yield put(actions.tagGetSuggestionsError(error));
-    }
-}
-
 function* tagSave ({ data }) {
     try {
         const margins = yield apply(tagService, tagService.saveTags, [data]);
@@ -60,8 +57,8 @@ function* tagSave ({ data }) {
 
 // Action watchers
 
-function* watchTagGetSuggestions () {
-    yield takeEvery(types.TAG_GET_SUGGESTIONS, tagGetSuggestions);
+function* watchTagGetEntriesCount () {
+    yield takeEvery(types.TAG_GET_ENTRIES_COUNT, tagGetEntriesCount);
 }
 
 function* watchTagIterator () {
@@ -74,6 +71,17 @@ function* watchTagSave () {
 }
 
 // Channel watchers
+
+function* watchTagGetEntriesCountChannel () {
+    while (true) {
+        const resp = yield take(actionChannels.entry.getTagEntriesCount);
+        if (resp.error) {
+            yield put(actions.tagGetEntriesCountError(resp.error));
+        } else {
+            yield put(actions.tagGetEntriesCountSuccess(resp.data));
+        }
+    }
+}
 
 function* watchTagIteratorChannel () {
     while (true) {
@@ -97,11 +105,12 @@ function* watchTagIteratorChannel () {
 }
 
 export function* registerTagListeners () {
+    yield fork(watchTagGetEntriesCountChannel);
     yield fork(watchTagIteratorChannel);
 }
 
 export function* watchTagActions () {
-    yield fork(watchTagGetSuggestions);
+    yield fork(watchTagGetEntriesCount);
     yield fork(watchTagIterator);
     yield fork(watchTagSave);
 }

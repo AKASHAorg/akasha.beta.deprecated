@@ -27,6 +27,11 @@ const generalMessages = defineMessages({
         description: 'AKASHA',
         defaultMessage: 'AKASHA'
     },
+    back: {
+        id: 'app.general.back',
+        description: 'navigate back',
+        defaultMessage: 'Back'
+    },
     backup: {
         id: 'app.general.backup',
         description: 'backup button label',

@@ -10,7 +10,8 @@ export const dashboardAddError = (error) => {
 };
 
 export const dashboardAddSuccess = data => action(types.DASHBOARD_ADD_SUCCESS, { data });
-export const dashboardAddColumn = columnType => action(types.DASHBOARD_ADD_COLUMN, { columnType });
+export const dashboardAddColumn = (columnType, value) =>
+    action(types.DASHBOARD_ADD_COLUMN, { columnType, value });
 
 export const dashboardAddColumnError = (error) => {
     error.code = 'DACE01';
@@ -20,6 +21,7 @@ export const dashboardAddColumnError = (error) => {
 
 export const dashboardAddColumnSuccess = data =>
     action(types.DASHBOARD_ADD_COLUMN_SUCCESS, { data });
+export const dashboardAddNewColumn = () => action(types.DASHBOARD_ADD_NEW_COLUMN);
 export const dashboardDelete = name =>
     action(types.DASHBOARD_DELETE, { name });
 
@@ -68,6 +70,14 @@ export const dashboardGetColumnsError = (error) => {
 
 export const dashboardGetColumnsSuccess = data =>
     action(types.DASHBOARD_GET_COLUMNS_SUCCESS, { data });
+export const dashboardGetTagSuggestions = (tag, columnId) =>
+    action(types.DASHBOARD_GET_TAG_SUGGESTIONS, { tag, columnId });
+
+export const dashboardGetTagSuggestionsError = (error, request) =>
+    action(types.DASHBOARD_GET_TAG_SUGGESTIONS_ERROR, { error, request });
+
+export const dashboardGetTagSuggestionsSuccess = (data, request) =>
+    action(types.DASHBOARD_GET_TAG_SUGGESTIONS_SUCCESS, { data, request });
 export const dashboardSetActive = name => action(types.DASHBOARD_SET_ACTIVE, { name });
 
 export const dashboardSetActiveError = (error) => {
@@ -89,3 +99,5 @@ export const dashboardUpdateColumnError = (error) => {
 
 export const dashboardUpdateColumnSuccess = data =>
     action(types.DASHBOARD_UPDATE_COLUMN_SUCCESS, { data });
+export const dashboardUpdateNewColumn = changes =>
+    action(types.DASHBOARD_UPDATE_NEW_COLUMN, { changes });

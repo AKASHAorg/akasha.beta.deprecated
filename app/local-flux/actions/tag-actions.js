@@ -269,21 +269,22 @@ class TagActions {
 }
 export { TagActions };
 
+export const tagGetEntriesCount = tags => action(types.TAG_GET_ENTRIES_COUNT, { tags });
+
+export const tagGetEntriesCountError = (error) => {
+    error.code = 'TGECE01';
+    error.messageId = 'tagGetEntriesCount';
+    return action(types.TAG_GET_ENTRIES_COUNT_ERROR, { error });
+};
+
+export const tagGetEntriesCountSuccess = data => action(types.TAG_GET_ENTRIES_COUNT_SUCCESS, { data });
+
 export const tagGetMarginsError = (error) => {
     error.code = 'TGLE01';
     return action(types.TAG_GET_MARGINS_ERROR, { error });
 };
 
 export const tagGetMarginsSuccess = data => action(types.TAG_GET_MARGINS_SUCCESS, { data });
-export const tagGetSuggestions = tag => action(types.TAG_GET_SUGGESTIONS, { tag });
-
-export const tagGetSuggestionsError = (error) => {
-    error.code = 'TGSE01';
-    return action(types.TAG_GET_SUGGESTIONS_ERROR, { error });
-};
-
-export const tagGetSuggestionsSuccess = data =>
-    action(types.TAG_GET_SUGGESTIONS_SUCCESS, { data });
 export const tagIterator = () => action(types.TAG_ITERATOR);
 
 export const tagIteratorError = (error) => {
