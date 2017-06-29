@@ -79,7 +79,7 @@ class Sidebar extends Component {
         });
     }
     render () {
-        const { balance, draftsCount, hasFeed, intl, loggedProfileData,
+        const { activeDashboard, balance, draftsCount, hasFeed, intl, loggedProfileData,
           notificationsCount, location, children } = this.props;
         const { palette } = this.context.muiTheme;
         const userInitials =
@@ -138,7 +138,7 @@ class Sidebar extends Component {
               </div>
               <div className={`${styles.streamIcon}`} >
                 <div {...this.getWrapperProps(generalMessages.stream)}>
-                  <Link to="/dashboard/">
+                  <Link to={`/dashboard/${activeDashboard}`}>
                     <StreamsIcon isActive={this._checkActiveIcon('dashboard')} />
                   </Link>
                 </div>
@@ -184,6 +184,7 @@ Sidebar.contextTypes = {
 };
 
 Sidebar.propTypes = {
+    activeDashboard: PropTypes.string,
     balance: PropTypes.string,
     children: PropTypes.element,
     draftsCount: PropTypes.number,

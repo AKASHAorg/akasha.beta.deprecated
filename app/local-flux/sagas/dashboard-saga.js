@@ -3,6 +3,7 @@ import { apply, call, fork, put, select, takeEvery, takeLatest } from 'redux-sag
 import * as actions from '../actions/dashboard-actions';
 import * as tagActions from '../actions/tag-actions';
 import * as dashboardService from '../services/dashboard-service';
+import * as profileService from '../services/profile-service';
 import * as tagService from '../services/tag-service';
 import * as types from '../constants';
 import { selectActiveDashboardId, selectDashboardId,
@@ -93,7 +94,19 @@ export function* dashboardGetColumns () {
     }
 }
 
-export function* dashboardGetTagSuggestions (request) {
+export function* dashboardGetProfileSuggestions (request) {
+    try {
+        const { akashaId } = request;
+        const suggestions = yield apply(profileService, profileService.profileGetSuggestions, [akashaId]);
+        yield put(actions.dashboardGetProfileSuggestionsSuccess(suggestions, request));
+        return { suggestions };
+    } catch (error) {
+        yield put(actions.dashboardGetProfileSuggestionsError(error, request));
+        return { error };
+    }
+}
+
+function* dashboardGetTagSuggestions (request) {
     try {
         const suggestions = yield apply(tagService, tagService.getTagSuggestions, [request.tag]);
         yield put(actions.dashboardGetTagSuggestionsSuccess(suggestions, request));
@@ -157,6 +170,10 @@ function* watchDashboardDeleteColumn () {
     yield takeEvery(types.DASHBOARD_DELETE_COLUMN, dashboardDeleteColumn);
 }
 
+function* watchDashboardGetProfileSuggestions () {
+    yield takeLatest(types.DASHBOARD_GET_PROFILE_SUGGESTIONS, dashboardGetProfileSuggestions);
+}
+
 function* watchDashboardGetTagSuggestions () {
     yield takeLatest(types.DASHBOARD_GET_TAG_SUGGESTIONS, dashboardGetTagSuggestions);
 }
@@ -178,6 +195,7 @@ export function* watchDashboardActions () {
     yield fork(watchDashboardAddColumn);
     yield fork(watchDashboardDelete);
     yield fork(watchDashboardDeleteColumn);
+    yield fork(watchDashboardGetProfileSuggestions);
     yield fork(watchDashboardGetTagSuggestions);
     yield fork(watchDashboardSetActive);
     yield fork(watchDashboardUpdateColumn);

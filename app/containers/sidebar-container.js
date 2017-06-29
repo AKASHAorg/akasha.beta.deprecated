@@ -7,6 +7,7 @@ import { selectLoggedProfileData } from '../local-flux/selectors';
 
 function mapStateToProps (state) {
     return {
+        activeDashboard: state.dashboardState.get('activeDashboard'),
         balance: state.profileState.get('balance'),
         draftsCount: state.draftState.get('draftsCount'),
         hasFeed: state.notificationsState.get('hasFeed'),

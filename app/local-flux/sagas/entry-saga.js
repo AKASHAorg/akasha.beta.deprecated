@@ -6,6 +6,7 @@ import * as actions from '../actions/entry-actions';
 import * as profileActions from '../actions/profile-actions';
 import * as transactionActions from '../actions/transaction-actions';
 import * as types from '../constants';
+import { profileSaveAkashaIds } from './profile-saga';
 import { selectColumnLastEntry, selectColumnLastBlock, selectIsFollower, selectLoggedAkashaId,
     selectToken } from '../selectors';
 import actionTypes from '../../constants/action-types';
@@ -416,9 +417,8 @@ function* watchEntryGetChannel () {
         yield put(actions.entryGetLatestVersionSuccess(content && content.version));
     } else if (resp.request.full) {
         yield put(actions.entryGetFullSuccess(resp.data));
-    } else {
-        yield put(actions.entryGetFullSuccess(resp.data));
     }
+    yield fork(profileSaveAkashaIds, [resp.data.entryEth.publisher]);
     yield fork(entryGetExtraOfEntry, resp.data.entryId, resp.data.entryEth.publisher);
 }
 

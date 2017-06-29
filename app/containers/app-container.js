@@ -14,9 +14,9 @@ import { entryVoteCost } from '../local-flux/actions/entry-actions';
 import { gethGetStatus } from '../local-flux/actions/external-process-actions';
 import { licenseGetAll } from '../local-flux/actions/license-actions';
 import { tempProfileUpdate, setTempProfile, tempProfileCreate,
-  tempProfileDelete } from '../local-flux/actions/temp-profile-actions';
+    tempProfileDelete } from '../local-flux/actions/temp-profile-actions';
 import { errorDeleteFatal, errorDeleteNonFatal } from '../local-flux/actions/error-actions';
-import { DashboardPage, LauncherContainer, SidebarContainer } from './';
+import { DashboardPage, EntryPageContainer, LauncherContainer, SidebarContainer } from './';
 import { AuthDialog, LoginDialog } from '../components/dialogs';
 import { CommonTopBar, DashboardSecondarySidebar, ErrorBar, ErrorReportingModal, FatalErrorModal,
     NotificationBar, PageContent, PanelLoader, SecondarySidebar, TermsPanel, TopBar } from '../components';
@@ -99,6 +99,11 @@ class AppContainer extends Component {
                     </SecondarySidebar>
                     <PageContent>
                       <Route path="/dashboard/:dashboardName?" component={DashboardPage} />
+                      {/**
+                        * a more complete path would be:
+                        * <Route path="/dashboard/(@:akashaId)/(:slug)?-:entryId(\\d+)" component={EntryPage} />
+                        */}
+                      <Route path="/@:akashaId/:entryId(\d+)" component={EntryPageContainer} />
                     </PageContent>
                     <TopBar>
                       <Route path="/dashboard/:dashboardName?" component={CommonTopBar} />

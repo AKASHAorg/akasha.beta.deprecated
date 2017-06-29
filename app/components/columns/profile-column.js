@@ -6,11 +6,11 @@ import { ColumnHeader } from '../';
 import { ColumnProfile } from '../svg';
 import { EntryListContainer } from '../../shared-components';
 import { entryMessages } from '../../locale-data/messages';
+import { dashboardGetProfileSuggestions } from '../../local-flux/actions/dashboard-actions';
 import { entryMoreProfileIterator, entryProfileIterator } from '../../local-flux/actions/entry-actions';
-import { selectColumnEntries } from '../../local-flux/selectors';
+import { selectColumnEntries, selectColumnSuggestions } from '../../local-flux/selectors';
 
 class ProfileColumn extends Component {
-
     componentDidMount () {
         const { column } = this.props;
         const value = column.get('value');
@@ -32,7 +32,7 @@ class ProfileColumn extends Component {
     };
 
     render () {
-        const { column, entries, intl, profiles } = this.props;
+        const { column, entries, intl, profiles, suggestions } = this.props;
         const placeholderMessage = column.get('value') ?
             intl.formatMessage(entryMessages.noEntries) :
             intl.formatMessage(entryMessages.searchProfile);
@@ -41,7 +41,9 @@ class ProfileColumn extends Component {
           <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
             <ColumnHeader
               column={column}
+              onInputChange={val => this.props.dashboardGetProfileSuggestions(val, column.get('id'))}
               icon={<ColumnProfile />}
+              suggestions={suggestions}
             />
             <EntryListContainer
               cardStyle={{ width: column.get('large') ? '700px' : '340px' }}
@@ -61,23 +63,28 @@ class ProfileColumn extends Component {
 
 ProfileColumn.propTypes = {
     column: PropTypes.shape().isRequired,
+    dashboardGetProfileSuggestions: PropTypes.func.isRequired,
     entries: PropTypes.shape().isRequired,
     entryMoreProfileIterator: PropTypes.func.isRequired,
     entryProfileIterator: PropTypes.func.isRequired,
     intl: PropTypes.shape().isRequired,
     profiles: PropTypes.shape().isRequired,
+    suggestions: PropTypes.shape().isRequired
 };
 
 function mapStateToProps (state, ownProps) {
+    const columnId = ownProps.column.get('id');
     return {
         entries: selectColumnEntries(state, ownProps.column.get('id')),
         profiles: state.profileState.get('byId'),
+        suggestions: selectColumnSuggestions(state, columnId)
     };
 }
 
 export default connect(
     mapStateToProps,
     {
+        dashboardGetProfileSuggestions,
         entryMoreProfileIterator,
         entryProfileIterator,
     }

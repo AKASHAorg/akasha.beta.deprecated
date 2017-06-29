@@ -804,6 +804,12 @@ export const profileResolveIpfsHashError = (error, req) => {
 export const profileResolveIpfsHashSuccess = (data, req) =>
     action(types.PROFILE_RESOLVE_IPFS_HASH_SUCCESS, { data, req });
 
+export const profileSaveAkashaIdsError = (error) => {
+    error.code = 'PSAIE01';
+    error.messageId = 'profileSaveAkashaIds';
+    return action(types.PROFILE_SAVE_AKASHA_IDS_ERROR, { error });
+};
+
 export const profileSaveLoggedError = (error) => {
     error.code = 'PSLE01';
     error.fatal = true;
