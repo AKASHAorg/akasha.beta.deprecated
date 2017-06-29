@@ -1,5 +1,6 @@
 import { delay } from 'redux-saga';
 import { takeEvery, take, put, select, call, fork, all } from 'redux-saga/effects';
+import * as pendingActionService from '../services/pending-actions-service';
 import * as types from '../constants';
 import * as actions from '../actions/app-actions';
 
@@ -154,9 +155,6 @@ const publishTriggerActions = [
 // function* watchCommentPublishActions () {
 //     const action = takeEvery(filterCommentPublishing, publishComments);
 // }
-const saveToDb = (table, entity) => {
-    
-}
 
 /**
  * Save pending action in db
@@ -166,20 +164,15 @@ const saveToDb = (table, entity) => {
 function* pendingActionSave ({ akashaId, pendingAction, payload }) {
     const { entityType, entityId } = pendingAction;
     console.log(entityType, 'the entity that must be saved', payload);
-    const promises = [];
-    switch (entityType) {
-        case 'tempProfile':
-            promises.push(saveToDb('tempProfile', payload));
-            break;
-        default:
-            break;
-    }
-    promises.push(saveToDb('pendingActions', pendingAction.toJS()));
     try {
-        yield take(promises);
+        yield pendingActionService.savePendingAction(
+            akashaId,
+            pendingAction.toJS(),
+            payload.toJS()
+        );
         yield put(actions.pendingActionSaveSuccess(entityId));
     } catch (ex) {
-        console.error(ex, 'error occured');
+        console.log(ex, 'an exception occured');
     }
 }
 
