@@ -131,38 +131,56 @@ function* tempProfileLoginListener (tempProfile) {
 /**
  * Request main to publish temp profile
  */
-function* tempProfilePublishRequest (tempProfile) {
-    const channel = Channel.server.registry.registerProfile;
-    const manager = Channel.client.registry.manager;
-    const { akashaId, address, password, ...others } = tempProfile.toJS();
-    const { localId, baseUrl, ethAddress, password2, ...ipfs } = others;
+function* tempProfilePublishRequest (tempProfile, isUpdate) {
+    let channel;
+    let manager;
+    if (isUpdate) {
+        channel = Channel.server.profile.updateProfileData;
+        manager = Channel.client.profile.manager;
+    } else {
+        channel = Channel.server.registry.registerProfile;
+        manager = Channel.client.registry.manager;
+    }
+    console.log(tempProfile, 'profile to js');
+    const {
+        akashaId,
+        address,
+        password,
+        password2,
+        ethAddress,
+        localId,
+        baseUrl,
+        ...others } = tempProfile.toJS();
     const tempProfileStatus = yield select(state => state.tempProfileState.get('status'));
+    const loggedProfile = yield select(state => state.profileState.get('loggedProfile'));
     const profileToPublish = {
         akashaId,
-        token: tempProfileStatus.token,
-        ipfs
+        token: tempProfileStatus.token || loggedProfile.get('token'),
+        ipfs: others
     };
-    yield put(tempProfileActions.tempProfilePublish(tempProfile));
-    yield call([registryService, registryService.updateTempProfile],
-        tempProfile,
-        tempProfileStatus.toJS()
-    );
+    console.log(profileToPublish, 'profileToPublish');
+    // yield put(tempProfileActions.tempProfilePublish(tempProfile));
     yield call(enableChannel, channel, manager);
     yield call([channel, channel.send], profileToPublish);
 }
 /**
  * Listen for profile published event and receive transaction id
  */
-function* tempProfilePublishListener (tempProfile) {
-    const response = yield take(actionChannels.registry.registerProfile);
+function* tempProfilePublishListener (tempProfile, isUpdate) {
+    let response;
+    if (isUpdate) {
+        response = yield take(actionChannels.profile.updateProfileData);
+    } else {
+        response = yield take(actionChannels.registry.registerProfile);
+    }
     if (!response.error) {
         try {
             yield put(tempProfileActions.tempProfilePublishSuccess({ tempProfile, response }));
-            const tempProfileStatus = yield select(state => state.tempProfileState.get('status'));
-            tempProfile = yield call(
-                [registryService, registryService.updateTempProfile],
-                tempProfile, tempProfileStatus.toJS()
-            );
+            // const tempProfileStatus = yield select(state => state.tempProfileState.get('status'));
+            // tempProfile = yield call(
+            //     [registryService, registryService.updateTempProfile],
+            //     tempProfile, tempProfileStatus.toJS()
+            // );
         } catch (error) {
             yield put(tempProfileActions.tempProfilePublishError(error));
         }
@@ -213,9 +231,10 @@ function* tempProfileLogin ({ data }) {
 
 function* tempProfilePublish ({ data }) {
     const tempProfileStatus = yield select(state => state.tempProfileState.get('status'));
+    console.log(data, 'the data passed to publish');
     if (!tempProfileStatus.publishRequested || !tempProfileStatus.publishTx) {
-        yield fork(tempProfilePublishListener, data.tempProfile);
-        yield fork(tempProfilePublishRequest, data.tempProfile);
+        yield fork(tempProfilePublishListener, data.tempProfile, data.isUpdate);
+        yield fork(tempProfilePublishRequest, data.tempProfile, data.isUpdate);
     } else {
         yield put(tempProfileActions.tempProfilePublishSuccess(data.tempProfile));
     }
@@ -263,6 +282,7 @@ export function* watchTempProfileActions () {
     // faucet tx successfully mined
     yield takeEvery(types.TRANSACTION_EMIT_MINED_SUCCESS, tempProfileLogin);
     yield takeLatest(types.TEMP_PROFILE_LOGIN_SUCCESS, tempProfilePublish);
+    yield takeLatest(types.TEMP_PROFILE_PUBLISH, tempProfilePublish);
     yield takeLatest(types.TEMP_PROFILE_PUBLISH_SUCCESS, addPublishTxToQueue);
     yield takeEvery(types.TRANSACTION_EMIT_MINED_SUCCESS, tempProfilePublishDone);
     yield takeLatest(types.TEMP_PROFILE_DELETE, tempProfileRemove);
