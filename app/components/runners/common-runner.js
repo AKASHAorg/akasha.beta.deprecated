@@ -42,7 +42,7 @@ class CommonRunner extends Component {
             const actionPayload = this._getActionPayload(action, state);
             this._savePendingAction(loggedProfile.get('akashaId'), action, actionPayload);
 
-            return dispatch({ type: currentAction, data: actionPayload });
+            return dispatch({ type: `${entityType}/${currentAction}`, data: actionPayload });
         });
     }
 
