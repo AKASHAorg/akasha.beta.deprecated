@@ -4,10 +4,10 @@
 }
 .root {
     position: fixed;
+    top: 50px;
+    bottom: 0;
     left: 64px;
     right: 0;
-    top: 0;
-    bottom: 0;
     overflow-x: hidden;
 }
 .entry_page_inner {

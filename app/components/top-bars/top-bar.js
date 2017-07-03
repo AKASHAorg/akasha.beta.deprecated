@@ -4,7 +4,7 @@ import styles from './top-bar.scss';
 
 const TopBar = (props, { muiTheme }) => (
   <div
-    className={`${styles.root} flex-center-y`}
+    className={`${styles.root} ${props.fullEntryPage ? styles.full : styles.normal} flex-center-y`}
     style={{ backgroundColor: muiTheme.palette.topBarBackgroundColor }}
   >
     <div className={styles.inner}>
@@ -18,7 +18,8 @@ TopBar.contextTypes = {
 };
 
 TopBar.propTypes = {
-    children: PropTypes.element
+    children: PropTypes.node,
+    fullEntryPage: PropTypes.bool
 };
 
 export default TopBar;

@@ -80,7 +80,10 @@ const entryState = createReducer(initialState, {
         state.setIn(['flags', 'claimPending', data.entryId], false),
 
     [types.ENTRY_CLEAN_FULL]: state =>
-        state.set('fullEntry', null),
+        state.merge({
+            flags: state.get('flags').set('fetchingFullEntry', false),
+            fullEntry: null
+        }),
 
     [types.ENTRY_DOWNVOTE]: (state, { entryId }) =>
         state.setIn(['flags', 'votePending', entryId], true),
@@ -104,6 +107,9 @@ const entryState = createReducer(initialState, {
     [types.ENTRY_GET_FULL_ERROR]: state => state.setIn(['flags', 'fetchingFullEntry'], false),
 
     [types.ENTRY_GET_FULL_SUCCESS]: (state, { data }) => {
+        if (!state.getIn(['flags', 'fetchingFullEntry'])) {
+            return state;
+        }
         const fullEntry = state.get('fullEntry');
         const version = data.content && data.content.version;
         const latestVersion = fullEntry && data.entryId !== fullEntry.get('entryId') ?

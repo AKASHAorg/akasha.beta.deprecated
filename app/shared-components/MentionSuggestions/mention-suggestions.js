@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { DraftJS } from 'megadraft';
-import { ProfileService } from '../../local-flux/services';
+// import { ProfileService } from '../../local-flux/services';
 import getSearchText from './utils/get-search-text';
 import styles from './mention-suggestions.scss';
 
@@ -10,7 +10,7 @@ const { EditorState, Modifier } = DraftJS;
 class MentionSuggestions extends Component {
     constructor (props) {
         super(props);
-        this.profileService = new ProfileService();
+        // this.profileService = new ProfileService();
         this.timeoutRequest = null;
         this.state = {
             focusedIndex: 0,
@@ -38,10 +38,10 @@ class MentionSuggestions extends Component {
 
         if (word.startsWith(mentionTrigger) && word.length > 1 && !shouldNotUpdateSuggestions) {
             this.positionSuggestions();
-            this.profileService.searchInKnownAkashaIds({
-                search: word.slice(1),
-                onSuccess: this.updateSearchResults
-            });
+            // this.profileService.searchInKnownAkashaIds({
+            //     search: word.slice(1),
+            //     onSuccess: this.updateSearchResults
+            // });
         } else if (!word.startsWith(mentionTrigger)) {
             this.setState({
                 suggestions: []

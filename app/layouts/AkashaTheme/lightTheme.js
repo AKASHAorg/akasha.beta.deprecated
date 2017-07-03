@@ -18,6 +18,7 @@ export default {
         commentIsEntryAuthorColor: Colors.greenA700,
         commentViewerIsAuthorColor: Colors.blueA400,
         disabledColor: '#999999',
+        entryPageBackground: Colors.grey50,
         errorColor: Colors.orange900,
         linkColor: '#008B8B',
         pageBackgroundColor: '#f7f7f7',

@@ -5,7 +5,7 @@ import { MegadraftEditor, editorStateFromRaw, DraftJS, createTypeStrategy } from
 import Link from 'megadraft/lib/components/Link';
 import { IconButton, SvgIcon } from 'material-ui';
 import { MentionDecorators, TagChip } from '../../shared-components';
-import readOnlyImagePlugin from '../../shared-components/EntryEditor/plugins/readOnlyImage/read-only-image-plugin';
+import readOnlyImagePlugin from '../../shared-components/EntryEditor/plugins/readOnlyImage/read-only-image-plugin'; // eslint-disable-line
 import { AllRightsReserved, CreativeCommonsBY, CreativeCommonsCC, CreativeCommonsNCEU,
     CreativeCommonsNCJP, CreativeCommonsNC, CreativeCommonsND, CreativeCommonsREMIX,
     CreativeCommonsSHARE, CreativeCommonsZERO, CreativeCommonsPD,
@@ -93,13 +93,11 @@ class EntryPageContent extends Component {
             license.label;
         return (
           <div>
-            <div className={`${styles.content_inner} row`} >
-              <div className="col-xs-12">
-                <h1 className={styles.entry_title}>
-                  {entry.getIn(['content', 'title'])}
-                </h1>
-              </div>
-              <div className={`${styles.entry_content} col-xs-12`} >
+            <div className={styles.content_inner}>
+              <h1 className={styles.entry_title}>
+                {entry.getIn(['content', 'title'])}
+              </h1>
+              <div className={styles.entry_content}>
                 <MegadraftEditor
                   readOnly
                   editorState={editorState}

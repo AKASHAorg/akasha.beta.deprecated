@@ -12,6 +12,7 @@ export CommonTopBar from './top-bars/common-top-bar';
 export Configuration from './configuration';
 export Dashboard from './dashboard';
 export DashboardSecondarySidebar from './secondary-sidebars/dashboard-secondary-sidebar';
+export DashboardTopBar from './top-bars/dashboard-top-bar';
 export EntryPage from './entry/entry-page';
 export EntryPageActions from './entry/entry-page-actions';
 export EntryPageContent from './entry/entry-page-content';
@@ -53,5 +54,6 @@ export Sync from './sync';
 export TagColumn from './columns/tag-column';
 export TermsPanel from './terms-panel';
 export TopBar from './top-bars/top-bar';
+export TopBarRightSide from './top-bars/top-bar-right-side';
 export Tutorials from './tutorials';
 /* eslint-enable import/no-named-as-default */
