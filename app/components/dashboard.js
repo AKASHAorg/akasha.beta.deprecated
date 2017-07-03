@@ -15,13 +15,11 @@ const Dashboard = (props) => {
       <div
         ref={getDashboardRef}
         style={{
-            position: 'absolute',
             display: 'flex',
             padding: '20px 20px 0',
             height: '100%',
-            overflowX: 'auto',
-            left: 0,
-            right: 0
+            width: '100%',
+            overflowX: 'auto'
         }}
       >
         {activeDashboard && activeDashboard.get('columns').map((id, index) => {

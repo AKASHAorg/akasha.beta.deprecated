@@ -416,7 +416,12 @@ class EntryCard extends Component {
               }
             </CardHeader>
             {content &&
-              <Link to={`/@${entry.getIn(['entryEth', 'publisher'])}/${entry.get('entryId')}`}>
+              <Link
+                to={{
+                    pathname: `/@${entry.getIn(['entryEth', 'publisher'])}/${entry.get('entryId')}`,
+                    state: { overlay: true }
+                }}
+              >
                 <CardTitle
                   title={content.get('title')}
                   expandable
@@ -446,7 +451,12 @@ class EntryCard extends Component {
               </CardText>
             }
             {content &&
-              <Link to={`/@${entry.getIn(['entryEth', 'publisher'])}/${entry.get('entryId')}`}>
+              <Link
+                to={{
+                    pathname: `/@${entry.getIn(['entryEth', 'publisher'])}/${entry.get('entryId')}`,
+                    state: { overlay: true }
+                }}
+              >
                 <CardText
                   className="content-link"
                   style={{

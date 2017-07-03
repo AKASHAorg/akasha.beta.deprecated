@@ -46,7 +46,7 @@ const appState = createReducer(initialState, {
     [appTypes.TOGGLE_IPFS_DETAILS_MODAL]: state =>
         state.set('showIpfsDetailsModal', !state.get('showIpfsDetailsModal')),
 
-// ********************* NEW REDUCERS ******************************
+    // ********************* NEW REDUCERS ******************************
 
     [types.APP_READY]: state =>
         state.set('appReady', true),

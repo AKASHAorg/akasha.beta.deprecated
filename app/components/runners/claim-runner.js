@@ -8,7 +8,6 @@ import { transactionDeletePending } from '../../local-flux/actions/transaction-a
 import actionTypes from '../../constants/action-types';
 
 class ClaimRunner extends Component {
-
     componentWillReceiveProps (nextProps) {
         this.launchActions(nextProps);
         this.listenForMinedTx(nextProps);

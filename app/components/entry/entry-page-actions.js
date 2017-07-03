@@ -92,7 +92,7 @@ class EntryPageAction extends Component {
             fontSize: '12px',
         };
         return (
-          <CardActions className="col-xs-12" style={{ padding: '18px 8px 0px' }}>
+          <CardActions style={{ padding: '18px 8px 0px' }}>
             <div style={{ display: 'flex', alignItems: 'center' }} >
               <div style={{ position: 'relative' }}>
                 <div

@@ -190,14 +190,14 @@ class EntryPageHeader extends Component {
         return (
           <div
             className={styles.entry_publisher_info}
-            style={{ backgroundColor: palette.canvasColor }}
+            style={{ backgroundColor: palette.entryPageBackground }}
           >
             <div
               className={styles.entry_publisher_info_inner}
               style={{
                   position: 'relative',
                   boxShadow: publisherTitleShadow ?
-                      '0px 15px 28px -15px #DDD, 0 12px 15px -15px #000000' : 'none',
+                      '0px 15px 28px -15px #555, 0 12px 15px -15px #000000' : 'none',
                   transform: 'translate3d(0,0,0)',
                   willChange: 'box-shadow',
                   padding: 16
@@ -215,7 +215,7 @@ class EntryPageHeader extends Component {
                       onMouseEnter={this.showProfileHoverCard}
                       style={{ color: palette.textColor }}
                     >
-                      {`${publisher.firstName} ${publisher.lastName}`}
+                      {publisher.akashaId}
                     </div>
                   </Link> :
                   <div style={{ height: '22px' }} />

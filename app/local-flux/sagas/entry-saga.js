@@ -71,9 +71,10 @@ function* entryGetExtraOfEntry (entryId, publisher) {
     const getEntryBalance = Channel.server.entry.getEntryBalance;
     const canClaim = Channel.server.entry.canClaim;
     yield call(enableExtraChannels);
-    const akashaId = yield select(state => state.profileState.getIn(['loggedProfile', 'akashaId']));
-    const isOwnEntry = publisher && akashaId === publisher.akashaId;
-    yield apply(getVoteOf, getVoteOf.send, [[{ akashaId, entryId }]]);
+    const loggedAkashaId = yield select(selectLoggedAkashaId);
+    const isOwnEntry = publisher && loggedAkashaId === publisher.akashaId;
+    yield apply(getVoteOf, getVoteOf.send, [[{ akashaId: loggedAkashaId, entryId }]]);
+    yield put(profileActions.profileResolveIpfsHash([publisher.ipfsHash], 'fullEntry', [publisher.akashaId]));
     if (isOwnEntry) {
         yield apply(getEntryBalance, getEntryBalance.send, [{ entryId: [entryId] }]);
         yield apply(canClaim, canClaim.send, [{ entryId: [entryId] }]);
@@ -411,15 +412,13 @@ function* watchEntryGetChannel () {
         } else {
             yield put(actions.entryGetError(resp.error));
         }
-        return;
     } else if (resp.request.latestVersion) {
         const { content } = resp.data;
         yield put(actions.entryGetLatestVersionSuccess(content && content.version));
     } else if (resp.request.full) {
         yield put(actions.entryGetFullSuccess(resp.data));
+        yield fork(entryGetExtraOfEntry, resp.data.entryId, resp.data.entryEth.publisher);
     }
-    yield fork(profileSaveAkashaIds, [resp.data.entryEth.publisher]);
-    yield fork(entryGetExtraOfEntry, resp.data.entryId, resp.data.entryEth.publisher);
 }
 
 function* watchEntryGetScoreChannel () {

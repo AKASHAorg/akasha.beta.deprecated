@@ -1,10 +1,17 @@
 .root {
     position: fixed;
-    left: 264px;
     right: 0;
     top: 0;
     height: 50px;
     padding: 10px 20px;
+}
+
+.full {
+    left: 64px;
+}
+
+.normal {
+    left: 264px;
 }
 
 .inner {

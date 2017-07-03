@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import ReactTooltip from 'react-tooltip';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { Redirect, Route } from 'react-router-dom';
+import { Redirect, Route, Switch } from 'react-router-dom';
 import { getMuiTheme } from 'material-ui/styles';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import { DataLoader, GethDetailsModal, IpfsDetailsModal, PublishConfirmDialog,
@@ -18,14 +18,18 @@ import { tempProfileUpdate, setTempProfile, tempProfileCreate,
 import { errorDeleteFatal, errorDeleteNonFatal } from '../local-flux/actions/error-actions';
 import { DashboardPage, EntryPageContainer, LauncherContainer, SidebarContainer } from './';
 import { AuthDialog, LoginDialog } from '../components/dialogs';
-import { CommonTopBar, DashboardSecondarySidebar, ErrorBar, ErrorReportingModal, FatalErrorModal,
-    NotificationBar, PageContent, PanelLoader, SecondarySidebar, TermsPanel, TopBar } from '../components';
-import { selectLoggedProfileData } from '../local-flux/selectors';
+import { CommonTopBar, DashboardSecondarySidebar, DashboardTopBar, ErrorBar, ErrorReportingModal,
+    FatalErrorModal, NotificationBar, PageContent, PanelLoader, SecondarySidebar, TermsPanel,
+    TopBar } from '../components';
+import { selectActiveDashboard, selectEntryFlag, selectFullEntry,
+    selectLoggedProfileData } from '../local-flux/selectors';
 import lightTheme from '../layouts/AkashaTheme/lightTheme';
 import darkTheme from '../layouts/AkashaTheme/darkTheme';
 
 class AppContainer extends Component {
     bootstrappingHome = false;
+    // pass previousLocation to Switch when we need to render Entry Page as an overlay
+    previousLocation = this.props.location;
 
     componentWillMount () {
         this._bootstrapApp(this.props);
@@ -33,6 +37,16 @@ class AppContainer extends Component {
 
     componentWillReceiveProps (nextProps) {
         this._bootstrapApp(nextProps);
+    }
+
+    componentWillUpdate (nextProps) {
+        const { location } = this.props;
+        // set previousLocation if props.location is not overlay
+        if (nextProps.history.action !== 'POP' &&
+            (!location.state || !location.state.overlay)
+        ) {
+            this.previousLocation = this.props.location;
+        }
     }
 
     // all bootstrapping logic should be here
@@ -74,7 +88,7 @@ class AppContainer extends Component {
 
     render () {
         /* eslint-disable no-shadow */
-        const { appState, errorDeleteFatal, errorDeleteNonFatal, errorState,
+        const { activeDashboard, appState, errorDeleteFatal, errorDeleteNonFatal, errorState, fullEntry,
             hideNotification, hideTerms, hideReportModal, intl, location, theme } = this.props;
         /* eslint-enable no-shadow */
         const isAuthDialogVisible = !!appState.get('showAuthDialog');
@@ -85,30 +99,37 @@ class AppContainer extends Component {
         const showGethDetailsModal = appState.get('showGethDetailsModal');
         const showIpfsDetailsModal = appState.get('showIpfsDetailsModal');
         const muiTheme = getMuiTheme(theme === 'light' ? lightTheme : darkTheme);
-        
+        const isOverlay = location.state && location.state.overlay && this.previousLocation !== location;
+        console.log('is overlay', isOverlay);
+        console.log('location state', location.state);
+        console.log('location pathname', location.pathname);
         return (
           <MuiThemeProvider muiTheme={muiTheme}>
-            <DataLoader flag={!appState.get('appReady')} size={80} style={{ paddingTop: '-50px' }}>
+            <DataLoader flag={!appState.get('appReady')} size={80} style={{ paddingTop: '100px' }}>
               <div className="container fill-height" style={{ backgroundColor: muiTheme.palette.themeColor }}>
                 {location.pathname === '/' && <Redirect to="/setup" />}
-                {!location.pathname.includes('/setup') &&
-                  <div>
-                    {/* top bar should come here */}
-                    <SecondarySidebar>
-                      <Route path="/dashboard/:dashboardName?" component={DashboardSecondarySidebar} />
-                    </SecondarySidebar>
-                    <PageContent>
-                      <Route path="/dashboard/:dashboardName?" component={DashboardPage} />
-                      {/**
-                        * a more complete path would be:
-                        * <Route path="/dashboard/(@:akashaId)/(:slug)?-:entryId(\\d+)" component={EntryPage} />
-                        */}
-                      <Route path="/@:akashaId/:entryId(\d+)" component={EntryPageContainer} />
-                    </PageContent>
-                    <TopBar>
-                      <Route path="/dashboard/:dashboardName?" component={CommonTopBar} />
-                    </TopBar>
-                  </div>
+                {!location.pathname.startsWith('/setup') &&
+                  <DataLoader flag={!appState.get('homeReady')} size={80} style={{ paddingTop: '100px' }}>
+                    <div>
+                      {activeDashboard && location.pathname === '/dashboard/' &&
+                        <Redirect to={`/dashboard/${activeDashboard}`} />
+                      }
+                      <SecondarySidebar>
+                        <Route path="/dashboard/:dashboardName?" component={DashboardSecondarySidebar} />
+                      </SecondarySidebar>
+                      <PageContent>
+                        <Switch location={isOverlay ? this.previousLocation : location}>
+                          <Route path="/dashboard/:dashboardName?" component={DashboardPage} />
+                          <Route path="/@:akashaId/:entryId(\d+)" component={EntryPageContainer} />
+                        </Switch>
+                        {isOverlay && <Route path="/@:akashaId/:entryId(\d+)" component={EntryPageContainer} />}
+                      </PageContent>
+                      <TopBar fullEntryPage={!!fullEntry}>
+                        <Route path="/dashboard/:dashboardName?" component={DashboardTopBar} />
+                        <Route path="/@:akashaId/:entryId(\d+)" component={CommonTopBar} />
+                      </TopBar>
+                    </div>
+                  </DataLoader>
                 }
                 <Route path="/setup" component={LauncherContainer} />
                 <SidebarContainer {...this.props}>
@@ -162,27 +183,30 @@ class AppContainer extends Component {
 }
 
 AppContainer.propTypes = {
+    activeDashboard: PropTypes.string,
     appState: PropTypes.shape().isRequired,
     bootstrapHome: PropTypes.func,
     entryVoteCost: PropTypes.func,
     errorDeleteFatal: PropTypes.func.isRequired,
     errorDeleteNonFatal: PropTypes.func.isRequired,
     errorState: PropTypes.shape().isRequired,
+    fullEntry: PropTypes.bool,
     gethGetStatus: PropTypes.func,
     hideNotification: PropTypes.func.isRequired,
     hideReportModal: PropTypes.func.isRequired,
     hideTerms: PropTypes.func.isRequired,
     intl: PropTypes.shape(),
     licenseGetAll: PropTypes.func,
-    location: PropTypes.shape(),
-    loggedProfile: PropTypes.shape(),
+    location: PropTypes.shape().isRequired,
     theme: PropTypes.string,
 };
 
 function mapStateToProps (state) {
     return {
+        activeDashboard: state.dashboardState.get('activeDashboard'),
         appState: state.appState,
         errorState: state.errorState,
+        fullEntry: !!selectFullEntry(state) || !!selectEntryFlag(state, 'fetchingFullEntry'),
         loggedProfile: state.profileState.get('loggedProfile'),
         tempProfile: state.tempProfileState.get('tempProfile'),
         loggedProfileData: selectLoggedProfileData(state),

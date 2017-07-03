@@ -18,8 +18,11 @@ class CommentsPublisher extends Component {
         const actions = pendingActions.filter(action =>
             action.get('status') === 'readyToPublish' && action.get('type') === actionTypes.comment);
         actions.forEach((action) => {
+            debugger;
+            console.log('comm publisher - update action');
             const id = action.get('id');
             this.props.updateAction(id, { status: 'publishing' });
+            console.log('comm publisher - publish');
             this.props.commentsPublish(action.get('payload').set('actionId', id), action.get('gas'));
         });
     };

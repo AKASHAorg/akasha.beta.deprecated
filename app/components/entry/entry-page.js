@@ -26,7 +26,6 @@ class EntryPage extends Component {
         const { entry, entryGetFull, location, match } = this.props;
         const { params } = match;
         const { version } = parse(location.search);
-
         ReactTooltip.rebuild();
         this.checkNewCommentsInterval = setInterval(
             this.checkNewComments,
@@ -62,10 +61,6 @@ class EntryPage extends Component {
         if (this.commentEditor && nextProps.pendingComments.size > pendingComments.size) {
             this.commentEditor.resetEditorState();
         }
-    }
-
-    shouldComponentUpdate (nextProps, nextState) {
-        return (nextProps !== this.props) || (nextState !== this.state);
     }
 
     componentDidUpdate (prevProps) {
@@ -150,21 +145,10 @@ class EntryPage extends Component {
         const { palette } = this.context.muiTheme;
         const { publisherTitleShadow, showInHeader } = this.state;
         const buttonClassName = showInHeader ? styles.button_fixed : styles.button_absolute;
-        if (!entry || fetchingFullEntry) {
-            return (
-              <div className={styles.root} style={{ backgroundColor: palette.canvasColor }}>
-                <DataLoader flag size={80} style={{ paddingTop: '120px' }} />
-              </div>
-            );
-        }
 
-        return (
-          <div
-            className={styles.root}
-            ref={this.getContainerRef}
-            style={{ backgroundColor: palette.canvasColor }}
-          >
-            <div className={styles.entry_page_inner}>
+        const component = !entry || fetchingFullEntry ?
+            null :
+            (<div className={styles.entry_page_inner}>
               <div id="content-section" className={styles.content_section}>
                 <EntryPageHeader publisherTitleShadow={publisherTitleShadow} />
                 {entry.content && <EntryPageContent entry={entry} licenses={licenses} />}
@@ -214,7 +198,17 @@ class EntryPage extends Component {
                   <CommentsList getTriggerRef={this.getTriggerRef} />
                 </div>
               </div>
-            </div>
+            </div>);
+
+        return (
+          <div
+            className={styles.root}
+            ref={this.getContainerRef}
+            style={{ backgroundColor: palette.entryPageBackground }}
+          >
+            <DataLoader flag={!entry || fetchingFullEntry} size={80} style={{ paddingTop: '120px' }}>
+              {component}
+            </DataLoader>
           </div>
         );
     }
