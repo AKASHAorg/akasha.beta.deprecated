@@ -291,6 +291,44 @@ class NewProfileForm extends Component {
               className={`row ${styles.form}`}
               ref={(profileForm) => { this.profileForm = profileForm; }}
             >
+              <div className="col-xs-12">
+                <div className="row">
+                  <div className="col-xs-3">
+                    <div className="row">
+                      <h3 className="col-xs-12" style={{ margin: '30px 0 10px 0' }} >
+                        {intl.formatMessage(profileMessages.avatarTitle)}
+                      </h3>
+                      <div className="col-xs-12 center-xs">
+                        <Avatar
+                          editable
+                          ref={(avtr) => { this.avatar = avtr; }}
+                          image={avatar}
+                          onImageClear={this._handleAvatarClear}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-xs-9">
+                    <div className="row">
+                      <h3 className="col-xs-12" style={{ margin: '20px 0 10px 0' }} >
+                        {intl.formatMessage(profileMessages.backgroundImageTitle)}
+                      </h3>
+                      <div className="col-xs-12">
+                        <ImageUploader
+                          ref={(imageUploader) => { this.imageUploader = imageUploader; }}
+                          minWidth={360}
+                          intl={intl}
+                          initialImage={backgroundImage}
+                          baseUrl={baseUrl}
+                          muiTheme={muiTheme}
+                          onImageClear={this._handleBackgroundClear}
+                          onChange={this._handleBackgroundChange}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
               <div className="col-xs-6 start-xs">
                 <TextField
                   fullWidth
@@ -360,32 +398,6 @@ class NewProfileForm extends Component {
               }
               {(optDetails || expandOptionalDetails) &&
                 <div className="row middle-xs" style={{ padding: '0 4px' }}>
-                  <h3 className="col-xs-12" style={{ margin: '30px 0 10px 0' }} >
-                    {intl.formatMessage(profileMessages.avatarTitle)}
-                  </h3>
-                  <div className="col-xs-12 center-xs">
-                    <Avatar
-                      editable
-                      ref={(avtr) => { this.avatar = avtr; }}
-                      image={avatar}
-                      onImageClear={this._handleAvatarClear}
-                    />
-                  </div>
-                  <h3 className="col-xs-12" style={{ margin: '20px 0 10px 0' }} >
-                    {intl.formatMessage(profileMessages.backgroundImageTitle)}
-                  </h3>
-                  <div className="col-xs-12">
-                    <ImageUploader
-                      ref={(imageUploader) => { this.imageUploader = imageUploader; }}
-                      minWidth={360}
-                      intl={intl}
-                      initialImage={backgroundImage}
-                      baseUrl={baseUrl}
-                      muiTheme={muiTheme}
-                      onImageClear={this._handleBackgroundClear}
-                      onChange={this._handleBackgroundChange}
-                    />
-                  </div>
                   <h3 className="col-xs-12" style={{ margin: '20px 0 0 0' }} >
                     {intl.formatMessage(profileMessages.aboutYouTitle)}
                   </h3>

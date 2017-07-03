@@ -159,7 +159,8 @@ class Sidebar extends Component {
                 <LogoButton />
               </div>
               <div
-                className={`${styles.panelWrapper} ${this._checkIsPanel() && styles.open} col-xs-12`}
+                className={`col-xs-12 ${styles.panelWrapper} ${this._checkIsPanel() && styles.open}`}
+                style={{ paddingRight: 0 }}
                 onTransitionEnd={this._handlePanelVisible}
               >
                 <PanelContainer
