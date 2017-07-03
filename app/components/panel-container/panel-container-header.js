@@ -25,7 +25,7 @@ class PanelContainerHeader extends Component {
                 {icon}
               </div>
             }
-            <div className={`${styles.headerTitle} col-xs-10`}>
+            <div className={`${styles.headerTitle} col-xs-12`}>
               {children && children}
               {!children &&
                 <div className="row middle-xs">

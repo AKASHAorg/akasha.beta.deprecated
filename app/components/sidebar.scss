@@ -26,19 +26,23 @@
 .panelWrapper {
     position: fixed;
     top: 0;
-    left: 55px;
-    right: 100%;
+    right: -64px;
     bottom: 0;
-    transition: right 150ms ease-in-out;
+    transition: right, width 150ms ease-in-out;
     overflow: hidden;
-    max-width: 500px !important;
-    will-change: right;
+    max-width: 64% !important;
+    will-change: right, width;
+    z-index: 20;
+    width: 0;
+    &.open {
+        right: 0;
+        width: 100%;
+    }
 }
 
 .open {
-    right: 66%;
-    transition: right 150ms ease-in-out;
-    will-change: right;
+    transition: right, width 150ms ease-in-out;
+    will-change: right, width;
 }
 
 .profileIcon {
@@ -72,11 +76,11 @@
 .panelWrapperOverlay {
     position: fixed;
     top: 0;
-    left: 64px;
+    left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0,0,0,0.4);
-    z-index: -1;
+    background: rgba(75, 91, 103, 0.89);
+    z-index: 1;
     cursor: pointer;
     visibility: hidden;
     opacity: 0;

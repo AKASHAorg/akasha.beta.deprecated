@@ -62,12 +62,26 @@ class EditProfile extends PureComponent {
         return (
           <div className={`${styles.root} row`}>
             <PanelContainerHeader
-              title={'Edit profile'}
-              subTitle={`@${loggedProfileData.akashaId}`}
+              subTitle={`${loggedProfileData.firstName} ${loggedProfileData.lastName} > Edit Profile`}
               intl={intl}
               muiTheme={muiTheme}
               showBorder
-              headerHeight={80}
+              headerHeight={40}
+              headerActions={
+                <div className="col-xs-12">
+                  <div className="row end-xs">
+                    <div className="col-xs-4">
+                      <button type="button">Settings</button>
+                    </div>
+                    <div className="col-xs-5">
+                      <button type="button">Edit Profile</button>
+                    </div>
+                    <div className="col-xs-3">
+                      <button type="button">Logout</button>
+                    </div>
+                  </div>
+                </div>
+              }
             />
             <ProfileForm
               intl={intl}
