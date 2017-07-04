@@ -6,6 +6,10 @@ import { SearchRecord } from './records/search-record';
 
 const initialState = new SearchRecord();
 
+function getEntryIds (entries) {
+    return entries.map(entry => entry.entryId);
+}
+
 
 const searchState = createReducer(initialState, {
     [types.SEARCH_HANDSHAKE]: state =>
@@ -24,9 +28,9 @@ const searchState = createReducer(initialState, {
             flags: state.get('flags').set('handshakePending', false)
         }),
 
-    [types.SEARCH_MORE_QUERY]: (state, { query }) =>
+    [types.SEARCH_MORE_QUERY]: (state, { text }) =>
         state.merge({
-            query,
+            query: text,
             flags: state.get('flags').merge({ moreQueryPending: true })
         }),
 
@@ -36,16 +40,17 @@ const searchState = createReducer(initialState, {
             currentPage: state.get('currentPage') + 1,
             totalPages: Math.ceil(data.total / searchLimit),
             resultsCount: data.total,
-            flags: state.get('flags').merge({ moreQueryMorePending: false })
+            flags: state.get('flags').merge({ moreQueryPending: false }),
+            entryIds: state.get('entryIds').concat(getEntryIds(data.collection))
         }),
 
     [types.SEARCH_MORE_QUERY_ERROR]: state =>
         state.setIn(['flags', 'moreQueryPending'], false),
 
 
-    [types.SEARCH_QUERY]: (state, { query }) =>
+    [types.SEARCH_QUERY]: (state, { text }) =>
         state.merge({
-            query,
+            query: text,
             flags: state.get('flags').merge({ queryPending: true })
         }),
 
@@ -56,7 +61,8 @@ const searchState = createReducer(initialState, {
             totalPages: Math.ceil(data.total / searchLimit),
             resultsCount: data.total,
             showResults: true,
-            flags: state.get('flags').merge({ queryPending: false })
+            flags: state.get('flags').merge({ queryPending: false }),
+            entryIds: getEntryIds(data.collection)
         }),
 
     [types.SEARCH_QUERY_ERROR]: state =>

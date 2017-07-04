@@ -12,4 +12,5 @@ export NewProfileStatusContainer from './new-profile-status-container';
 export NewProfileCompleteContainer from './new-profile-complete-container';
 export SidebarContainer from './sidebar-container';
 export SynchronizationContainer from './synchronization-container';
+export SearchPage from './search-page';
 /* eslint-enable import/no-named-as-default */
