@@ -164,6 +164,11 @@ export const selectProfileByAccount = (state, account) => {
 
 export const selectProfileFlag = (state, flag) => state.profileState.getIn(['flags', flag]);
 
+export const selectSearchEntries = state =>
+    state.searchState.entryIds.map(entryId => state.entryState.byId.get(entryId));
+
+export const selectSearchQuery = state => state.searchState.get('query');
+
 export const selectTagMargins = state => state.tagState.get('margins');
 
 export const selectToken = state => state.profileState.getIn(['loggedProfile', 'token']);

@@ -1,8 +1,10 @@
-import { take, put, call, apply, fork, takeLatest } from 'redux-saga/effects';
+import { take, put, call, apply, fork, takeLatest, select } from 'redux-saga/effects';
 import * as actions from '../actions/search-actions';
 import { actionChannels, enableChannel } from './helpers';
 import * as types from '../constants';
 import { searchLimit } from '../../constants/iterator-limits';
+import { entryGetExtraOfList } from './entry-saga';
+import { selectSearchQuery } from '../selectors';
 
 const Channel = global.Channel;
 let searchHandshakeErrCount = 0;
@@ -55,18 +57,24 @@ function* watchSearchHandshakeChannel () {
 }
 
 function* watchSearchQueryChannel () {
+    const listLimit = searchLimit + 1;
     while (true) {
         const resp = yield take(actionChannels.search.query);
+        const query = yield select(selectSearchQuery);
         if (resp.error) {
             if (resp.request.offset) {
                 yield put(actions.searchMoreQueryError(resp.error, resp.request));
             } else {
                 yield put(actions.searchQueryError(resp.error, resp.request));
             }
-        } else if (resp.request.offset) {
-            yield put(actions.searchMoreQuerySuccess(resp.data, resp.request));
-        } else {
-            yield put(actions.searchQuerySuccess(resp.data, resp.request));
+        } else if (resp.request.text === query) {
+            if (resp.request.offset) {
+                yield put(actions.searchMoreQuerySuccess(resp.data, resp.request));
+                yield fork(entryGetExtraOfList, resp.data.collection, listLimit, 'search');
+            } else {
+                yield put(actions.searchQuerySuccess(resp.data, resp.request));
+                yield fork(entryGetExtraOfList, resp.data.collection, listLimit, 'search');
+            }
         }
     }
 }
