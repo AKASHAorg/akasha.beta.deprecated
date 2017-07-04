@@ -10,32 +10,27 @@ import { MenuSearch } from '../../shared-components/svg';
 class SearchSecondarySidebar extends Component {
     constructor (props) {
         super(props);
-        this.state = { queryInput: this.props.query };
+        if (props.match.params.query) {
+            this.state = { queryInput: props.match.params.query };
+        } else {
+            this.state = { queryInput: props.query };
+        }
         this.handleChange = this.handleChange.bind(this);
     }
 
-    componentWillMount () {
-        const { query, match, history } = this.props;
-        if (query) {
-            history.push(`/search/${query}`);
-        }
-        if (match.params.query) {
-            this.setState({ queryInput: match.params.query });
-        }
-    }
-
     componentDidMount () {
-        const { match, searchService } = this.props;
+        const { match, searchService, query } = this.props;
         if (!searchService) { this.props.searchHandshake(); }
-        if (match.params.query) {
+        if (!query && match.params.query) {
             this.props.searchQuery(match.params.query);
         }
     }
 
-    componentDidUpdate (prevProps) {
-        const { query, history, match } = this.props;
-        if (prevProps.query !== query && match.params.query !== query) {
-            history.push(`/search/${query}`);
+    componentWillReceiveProps (nextProps) {
+        const { match } = this.props;
+        if (nextProps.match.params.query !== match.params.query) {
+            this.props.searchQuery(nextProps.match.params.query);
+            this.setState({ queryInput: nextProps.match.params.query });
         }
     }
 
@@ -60,7 +55,7 @@ class SearchSecondarySidebar extends Component {
               <input type="text" className={styles.input} value={this.state.queryInput} onChange={this.handleChange} placeholder="Search something..." />
             </div>
             { this.props.handshakePending || this.props.searchService ? null : <button onClick={() => this.props.searchHandshake()}>Handshake</button> }
-            <button onClick={() => this.props.searchQuery(this.state.queryInput)}>Search</button>
+            <button onClick={() => this.props.history.push(`/search/${this.state.queryInput}`)}>Search</button>
             <div>{ this.props.handshakePending && 'Handshaking'} </div>
           </div>
         );
