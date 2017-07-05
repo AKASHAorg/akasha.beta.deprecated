@@ -6,7 +6,7 @@ settingsDB.version(1).stores({
     geth: '&name, autodag, cache, datadir, fast, ipcpath, mine, minerthreads, networkid',
     ipfs: '&name, ipfsPath',
     flags: '&name, requestStartupChange',
-    user: '&akashaId, autoCrashReports',
+    user: '&account, akashaId, autoCrashReports',
     general: '&name'
 });
 

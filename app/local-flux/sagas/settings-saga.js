@@ -86,19 +86,19 @@ function* saveConfiguration (action) {
     yield call(saveGeneralSettings, { configurationSaved: true });
 }
 
-function* userSettingsRequest (akashaId) {
+function* userSettingsRequest (account) {
     try {
-        const resp = yield apply(settingsService, settingsService.userSettingsRequest, [akashaId]);
+        const resp = yield apply(settingsService, settingsService.userSettingsRequest, [account]);
         yield put(actions.userSettingsSuccess(resp));
     } catch (error) {
         yield put(actions.userSettingsError({ message: error.toString() }));
     }
 }
 
-function* userSettingsSave (akashaId, payload) {
+function* userSettingsSave (account, payload) {
     try {
         const resp = yield apply(
-            settingsService, settingsService.userSettingsSave, [akashaId, payload]
+            settingsService, settingsService.userSettingsSave, [account, payload]
         );
         yield put(actions.userSettingsSaveSuccess(resp));
     } catch (error) {
@@ -139,14 +139,14 @@ function* watchSaveConfiguration () {
 function* watchUserSettingsRequest () {
     while (true) {
         const action = yield take(types.USER_SETTINGS_REQUEST);
-        yield fork(userSettingsRequest, action.akashaId);
+        yield fork(userSettingsRequest, action.account);
     }
 }
 
 function* watchUserSettingsSave () {
     while (true) {
         const action = yield take(types.USER_SETTINGS_SAVE);
-        yield fork(userSettingsSave, action.akashaId, action.payload);
+        yield fork(userSettingsSave, action.account, action.payload);
     }
 }
 

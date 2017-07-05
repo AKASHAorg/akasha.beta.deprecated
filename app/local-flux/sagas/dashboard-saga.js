@@ -7,17 +7,17 @@ import * as profileService from '../services/profile-service';
 import * as tagService from '../services/tag-service';
 import * as types from '../constants';
 import { selectActiveDashboardId, selectDashboardId,
-    selectLoggedAkashaId } from '../selectors';
+    selectLoggedAccount } from '../selectors';
 
 function* dashboardAdd ({ name }) {
     try {
-        const akashaId = yield select(selectLoggedAkashaId);
+        const account = yield select(selectLoggedAccount);
         const id = yield apply(
             dashboardService,
             dashboardService.addDashboard,
-            [{ akashaId, name }]
+            [{ account, name }]
         );
-        const data = { id, akashaId, name };
+        const data = { id, account, name };
         yield put(actions.dashboardAddSuccess(data));
     } catch (error) {
         yield put(actions.dashboardAddError(error));
@@ -67,8 +67,8 @@ function* dashboardDeleteColumn ({ columnId }) {
 
 export function* dashboardGetActive () {
     try {
-        const akashaId = yield select(selectLoggedAkashaId);
-        const data = yield apply(dashboardService, dashboardService.getActive, [akashaId]);
+        const account = yield select(selectLoggedAccount);
+        const data = yield apply(dashboardService, dashboardService.getActive, [account]);
         yield put(actions.dashboardGetActiveSuccess(data && data.name));
     } catch (error) {
         yield put(actions.dashboardGetActiveError(error));
@@ -77,8 +77,8 @@ export function* dashboardGetActive () {
 
 export function* dashboardGetAll () {
     try {
-        const akashaId = yield select(selectLoggedAkashaId);
-        const data = yield apply(dashboardService, dashboardService.getAll, [akashaId]);
+        const account = yield select(selectLoggedAccount);
+        const data = yield apply(dashboardService, dashboardService.getAll, [account]);
         yield put(actions.dashboardGetAllSuccess(data));
     } catch (error) {
         yield put(actions.dashboardGetAllError(error));
@@ -119,8 +119,8 @@ function* dashboardGetTagSuggestions (request) {
 
 function* dashboardSetActive ({ name }) {
     try {
-        const akashaId = yield select(selectLoggedAkashaId);
-        yield apply(dashboardService, dashboardService.setActive, [{ akashaId, name }]);
+        const account = yield select(selectLoggedAccount);
+        yield apply(dashboardService, dashboardService.setActive, [{ account, name }]);
         yield put(actions.dashboardSetActiveSuccess(name));
     } catch (error) {
         yield put(actions.dashboardSetActiveError(error));

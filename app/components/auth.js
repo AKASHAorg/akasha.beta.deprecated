@@ -9,21 +9,18 @@ class Auth extends Component {
     state = {
         hasTempProfile: false
     }
+
     componentDidMount () {
-        const { gethStatus, profileDeleteLogged,
-            profileGetLocal, resetHomeReady, tempProfileGetRequest } = this.props;
+        const { gethStatus, profileDeleteLogged, profileGetLocal, tempProfileGetRequest } = this.props;
         tempProfileGetRequest();
         if (gethStatus.get('api')) {
             profileGetLocal();
         }
-        // This should be removed once profile logout is implemented
-        resetHomeReady();
         profileDeleteLogged();
     }
 
     componentWillReceiveProps (nextProps) {
-        const { tempProfile, loginErrors, gethStatus, ipfsStatus,
-            profileGetLocal } = nextProps;
+        const { tempProfile, loginErrors, gethStatus, ipfsStatus, profileGetLocal } = nextProps;
         const oldIpfsStatus = this.props.ipfsStatus;
         const ipfsStatusChanged = (ipfsStatus.get('started') && !oldIpfsStatus.get('started'))
             || (ipfsStatus.get('process') && !oldIpfsStatus.get('process'));
@@ -90,13 +87,6 @@ class Auth extends Component {
                 onTouchTap={this._handleNewIdentity}
                 style={{ marginLeft: '10px' }}
               />
-              <Link to="/dashboard/">
-                <RaisedButton
-                  key="guest"
-                  label="Guest"
-                  style={{ marginLeft: '10px' }}
-                />
-              </Link>
             </PanelContainerFooter>
           </div>
         );
@@ -116,7 +106,6 @@ Auth.propTypes = {
     profileClearLocal: PropTypes.func.isRequired,
     profileDeleteLogged: PropTypes.func.isRequired,
     profileGetLocal: PropTypes.func.isRequired,
-    resetHomeReady: PropTypes.func.isRequired,
     showLoginDialog: PropTypes.func.isRequired,
     tempProfile: PropTypes.shape().isRequired,
     tempProfileCreate: PropTypes.func,
