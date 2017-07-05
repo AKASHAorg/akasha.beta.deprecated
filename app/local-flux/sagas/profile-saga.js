@@ -324,7 +324,9 @@ function* watchProfileGetCurrentChannel () {
         } else {
             yield put(actions.profileGetCurrentSuccess(resp.data));
             yield put(actions.profileGetBalance());
-            yield call(profileGetData, resp.data.profileAddress, true);
+            if (resp.data.profileAddress) {
+                yield call(profileGetData, resp.data.profileAddress, true);
+            }
             const loggedProfile = yield select(state =>
                 state.profileState.get('loggedProfile').toJS());
             if (loggedProfile.account) {
@@ -352,7 +354,12 @@ function* watchProfileGetLocalChannel () {
         if (resp.error) {
             yield put(actions.profileGetLocalError(resp.error));
         } else {
-            const profileAddresses = resp.data.map(data => ({ profile: data.profile }));
+            const profileAddresses = [];
+            resp.data.forEach((data) => {
+                if (data.profile) {
+                    profileAddresses.push({ profile: data.profile });
+                }
+            });
             yield put(actions.profileGetList(profileAddresses));
             yield put(actions.profileGetLocalSuccess(resp.data));
         }
@@ -402,6 +409,7 @@ function* watchProfileLogoutChannel () {
             yield put(actions.profileLogoutError(resp.error));
         } else {
             yield call(profileDeleteLogged);
+            yield put(actions.profileLogoutSuccess());
         }
     }
 }

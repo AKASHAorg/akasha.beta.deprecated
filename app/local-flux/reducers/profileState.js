@@ -630,8 +630,8 @@ const profileState = createReducer(initialState, {
         let ethAddresses = state.get('ethAddresses');
         let localProfiles = state.get('localProfiles');
         data.forEach((prf) => {
-            ethAddresses = ethAddresses.set(prf.akashaId, prf.key);
-            localProfiles = localProfiles.push(prf.akashaId);
+            ethAddresses = ethAddresses.set(prf.key, prf.akashaId);
+            localProfiles = localProfiles.push(prf.key);
         });
         return state.merge({
             ethAddresses,

@@ -181,7 +181,7 @@ const appState = createReducer(initialState, {
             pendingActions: new Map()
         }),
 
-    [types.RESET_HOME_READY]: state =>
+    [types.PROFILE_LOGOUT_SUCCESS]: state =>
         state.set('homeReady', false),
 
     [types.SHOW_AUTH_DIALOG]: (state, { actionId }) =>

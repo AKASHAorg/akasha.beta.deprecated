@@ -21,7 +21,7 @@ const TopBarRightSide = ({ balance, loggedProfileData }, { muiTheme }) => (
       </IconButton>
     </div>
     <div style={{ flex: '0 0 auto', marginRight: '10px', minWidth: '60px' }}>
-      <Balance balance={balance} loggedAkashaId={loggedProfileData.get('akashaId')} />
+      <Balance balance={balance} />
     </div>
     <div style={{ flex: '0 0 auto' }}>
       <Avatar

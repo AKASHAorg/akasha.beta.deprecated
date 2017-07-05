@@ -31,7 +31,17 @@ const ProfilesList = (props, { muiTheme }) => {
     return (
       <DataLoader flag={fetchingProfiles} style={{ paddingTop: '100px' }}>
         <List>
-          {profiles.map((profile) => {
+          {profiles.map(({ key, profile }) => {
+              if (!profile.get('akashaId')) {
+                  return (
+                    <ListItem
+                      key={key}
+                      onClick={() => handleSelect(key)}
+                      primaryText={<div className="overflow-ellipsis">{key}</div>}
+                      style={{ border: `1px solid ${palette.borderColor}`, marginBottom: 8 }}
+                    />
+                  );
+              }
               const profileName = `${profile.get('firstName')} ${profile.get('lastName')}`;
               const userInitials = getInitials(profile.get('firstName'), profile.get('lastName'));
               const avatar = profile.get('avatar');
@@ -39,7 +49,7 @@ const ProfilesList = (props, { muiTheme }) => {
 
               return (
                 <ListItem
-                  key={akashaId}
+                  key={key}
                   leftAvatar={
                     <Avatar
                       image={avatar}
@@ -49,6 +59,7 @@ const ProfilesList = (props, { muiTheme }) => {
                       userInitialsStyle={{ fontSize: '20px' }}
                     />
                   }
+                  onClick={() => handleSelect(key)}
                   primaryText={
                     <div
                       style={{
@@ -67,7 +78,6 @@ const ProfilesList = (props, { muiTheme }) => {
                     </div>
                   }
                   secondaryTextLines={1}
-                  onTouchTap={() => handleSelect(profile.get('akashaId'))}
                   style={{ border: `1px solid ${palette.borderColor}`, marginBottom: 8 }}
                 />
               );
