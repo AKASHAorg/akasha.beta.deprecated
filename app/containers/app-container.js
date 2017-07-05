@@ -21,8 +21,7 @@ import { AuthDialog, LoginDialog } from '../components/dialogs';
 import { CommonTopBar, DashboardSecondarySidebar, DashboardTopBar, ErrorBar, ErrorReportingModal,
     FatalErrorModal, NotificationBar, PageContent, PanelLoader, SecondarySidebar, TermsPanel,
     TopBar } from '../components';
-import { selectActiveDashboard, selectEntryFlag, selectFullEntry,
-    selectLoggedProfileData } from '../local-flux/selectors';
+import { selectEntryFlag, selectFullEntry } from '../local-flux/selectors';
 import lightTheme from '../layouts/AkashaTheme/lightTheme';
 import darkTheme from '../layouts/AkashaTheme/darkTheme';
 
@@ -100,9 +99,7 @@ class AppContainer extends Component {
         const showIpfsDetailsModal = appState.get('showIpfsDetailsModal');
         const muiTheme = getMuiTheme(theme === 'light' ? lightTheme : darkTheme);
         const isOverlay = location.state && location.state.overlay && this.previousLocation !== location;
-        console.log('is overlay', isOverlay);
-        console.log('location state', location.state);
-        console.log('location pathname', location.pathname);
+
         return (
           <MuiThemeProvider muiTheme={muiTheme}>
             <DataLoader flag={!appState.get('appReady')} size={80} style={{ paddingTop: '100px' }}>
@@ -207,9 +204,6 @@ function mapStateToProps (state) {
         appState: state.appState,
         errorState: state.errorState,
         fullEntry: !!selectFullEntry(state) || !!selectEntryFlag(state, 'fetchingFullEntry'),
-        loggedProfile: state.profileState.get('loggedProfile'),
-        tempProfile: state.tempProfileState.get('tempProfile'),
-        loggedProfileData: selectLoggedProfileData(state),
         theme: state.settingsState.getIn(['general', 'theme']),
     };
 }

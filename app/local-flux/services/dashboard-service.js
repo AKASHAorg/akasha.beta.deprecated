@@ -27,7 +27,7 @@ export const addDashboard = payload =>
     new Promise((resolve, reject) => {
         dashboardDB.dashboardById.put({ ...payload })
             .then(id =>
-                dashboardDB.activeDashboard.put({ akashaId: payload.akashaId, name: payload.name })
+                dashboardDB.activeDashboard.put({ account: payload.account, name: payload.name })
                     .then(() => resolve(id))
             )
             .catch(err => reject(err));
@@ -63,21 +63,21 @@ export const deleteDashboard = id =>
             .catch(reject);
     });
 
-export const getActive = akashaId =>
+export const getActive = account =>
     new Promise((resolve, reject) => {
         dashboardDB.activeDashboard
-            .where('akashaId')
-            .equals(akashaId)
+            .where('account')
+            .equals(account)
             .first()
             .then(resolve)
             .catch(reject);
     });
 
-export const getAll = akashaId =>
+export const getAll = account =>
     new Promise((resolve, reject) => {
         dashboardDB.dashboardById
-            .where('akashaId')
-            .equals(akashaId)
+            .where('account')
+            .equals(account)
             .toArray()
             .then(resolve)
             .catch(reject);

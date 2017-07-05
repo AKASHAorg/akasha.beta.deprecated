@@ -1,5 +1,4 @@
-import { apply, call, fork, put, select, takeEvery } from 'redux-saga/effects';
-import * as reduxSaga from 'redux-saga';
+import { call, fork, put, select, takeEvery } from 'redux-saga/effects';
 import * as appActions from '../actions/app-actions';
 import * as eProcActions from '../actions/external-process-actions';
 import * as transactionActions from '../actions/transaction-actions';

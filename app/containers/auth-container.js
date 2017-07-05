@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import { resetHomeReady, showLoginDialog } from '../local-flux/actions/app-actions';
+import { showLoginDialog } from '../local-flux/actions/app-actions';
 import { profileClearLocal, profileDeleteLogged,
     profileGetLocal } from '../local-flux/actions/profile-actions';
 import { tempProfileGetRequest, tempProfileCreate } from '../local-flux/actions/temp-profile-actions';
@@ -29,7 +29,6 @@ export default connect(
         profileClearLocal,
         profileDeleteLogged,
         profileGetLocal,
-        resetHomeReady,
         showLoginDialog,
         tempProfileGetRequest,
         tempProfileCreate,
