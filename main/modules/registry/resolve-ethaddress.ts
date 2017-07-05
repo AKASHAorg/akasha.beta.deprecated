@@ -1,13 +1,17 @@
 import * as Promise from 'bluebird';
 import { constructed as contracts } from '../../contracts/index';
+import { unpad } from 'ethereumjs-util';
 
 /**
  * Resolve eth address to profile contract address
  * @type {Function}
  */
 const execute = Promise.coroutine(function*(data: ProfileByAddressRequest) {
-    const profileAddress = yield contracts.instance.registry.getByAddress(data.ethAddress);
-    const akashaId = yield contracts.instance.profile.getId(profileAddress);
+    let profileAddress = yield contracts.instance.registry.getByAddress(data.ethAddress);
+    if (!unpad(profileAddress)) {
+        profileAddress = null;
+    }
+    const akashaId = (profileAddress) ? yield contracts.instance.profile.getId(profileAddress) : null;
     return { profileAddress, akashaId };
 });
 
