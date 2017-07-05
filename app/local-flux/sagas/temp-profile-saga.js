@@ -142,7 +142,7 @@ function* tempProfilePublishRequest (tempProfile, isUpdate) {
         manager = Channel.client.registry.manager;
     }
     console.log(tempProfile, 'profile to js');
-    const {
+    let {
         akashaId,
         address,
         password,
@@ -150,13 +150,22 @@ function* tempProfilePublishRequest (tempProfile, isUpdate) {
         ethAddress,
         localId,
         baseUrl,
+        avatar,
         ...others } = tempProfile.toJS();
+
+    if (avatar && avatar.includes(baseUrl)) {
+        avatar = avatar.replace(`${baseUrl}/`, '');
+    }
+
     const tempProfileStatus = yield select(state => state.tempProfileState.get('status'));
     const loggedProfile = yield select(state => state.profileState.get('loggedProfile'));
     const profileToPublish = {
         akashaId,
         token: tempProfileStatus.token || loggedProfile.get('token'),
-        ipfs: others
+        ipfs: {
+            avatar,
+            ...others
+        }
     };
     console.log(profileToPublish, 'profileToPublish');
     // yield put(tempProfileActions.tempProfilePublish(tempProfile));
@@ -182,9 +191,11 @@ function* tempProfilePublishListener (tempProfile, isUpdate) {
             //     tempProfile, tempProfileStatus.toJS()
             // );
         } catch (error) {
+            console.log(response, 'errored response');
             yield put(tempProfileActions.tempProfilePublishError(error));
         }
     } else {
+        console.log(response, 'errored response');
         yield put(tempProfileActions.tempProfilePublishError(response.error));
     }
 }
@@ -231,7 +242,6 @@ function* tempProfileLogin ({ data }) {
 
 function* tempProfilePublish ({ data }) {
     const tempProfileStatus = yield select(state => state.tempProfileState.get('status'));
-    console.log(data, 'the data passed to publish');
     if (!tempProfileStatus.publishRequested || !tempProfileStatus.publishTx) {
         yield fork(tempProfilePublishListener, data.tempProfile, data.isUpdate);
         yield fork(tempProfilePublishRequest, data.tempProfile, data.isUpdate);

@@ -24,7 +24,6 @@ const filterPublishingActions = ({ type }) =>
  */
 function* pendingActionSave ({ akashaId, pendingAction, payload }) {
     const { entityType, entityId } = pendingAction;
-    // console.log(entityType, 'the entity that must be saved', payload);
     try {
         yield pendingActionService.savePendingAction(
             akashaId,
@@ -41,7 +40,6 @@ function* pendingActionPublish ({ type, data }) {
     const entityType = type.split('/')[0];
     switch (entityType) {
         case 'tempProfile':
-            // console.log('publish temp profile', data);
             yield put(tempProfileActions.tempProfilePublish({ tempProfile: data, isUpdate: true }));
             break;
         case 'comment':
@@ -55,10 +53,4 @@ function* pendingActionPublish ({ type, data }) {
 export function* watchPublishActions () {
     yield takeEvery(types.PENDING_ACTION_SAVE, pendingActionSave);
     yield takeEvery(filterPublishingActions, pendingActionPublish);
-    // yield fork(watchPublishingStartActions);
-    // yield fork(watchCommentPublishActions);
-    /** ***************** SIMULATIONS **************** */
-    // yield fork(watchConfirmActions);
-    // yield fork(watchAuthActions);
-    /** ***************** /SIMULATIONS **************** */
 }
