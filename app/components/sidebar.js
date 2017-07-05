@@ -53,10 +53,12 @@ class Sidebar extends Component {
                 </div>
               }
               <div {...this.getWrapperProps(generalMessages.search)}>
-                <SearchIcon
-                  onClick={this.handleSearch}
-                  isActive={false}
-                />
+                <Link to="/search/entries">
+                  <SearchIcon
+                    isActive={this._checkActiveIcon('search')}
+                    onClick={this.handleSearch}
+                  />
+                </Link>
               </div>
             </div>
             <div className="sidebar__stream-icon" >

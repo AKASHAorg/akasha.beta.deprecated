@@ -2,6 +2,7 @@ import { call, fork, put, select, takeEvery } from 'redux-saga/effects';
 import * as appActions from '../actions/app-actions';
 import * as eProcActions from '../actions/external-process-actions';
 import * as transactionActions from '../actions/transaction-actions';
+import { searchHandshake } from '../actions/search-actions';
 import { selectLoggedAkashaId } from '../selectors';
 import { createActionChannels } from './helpers';
 import * as commentsSaga from './comments-saga';
@@ -58,6 +59,7 @@ function* launchHomeActions () {
         yield put(transactionActions.transactionGetMined());
         yield put(transactionActions.transactionGetPending());
     }
+    yield put(searchHandshake());
 }
 
 function* bootstrapApp () {
