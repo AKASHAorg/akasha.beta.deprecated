@@ -8,7 +8,7 @@ import { Checkbox, Dialog, FlatButton, MenuItem, SelectField, TextField } from '
 import { Avatar } from '../../shared-components';
 import { getInitials } from '../../utils/dataModule';
 import { formMessages, generalMessages } from '../../locale-data/messages';
-import { selectEthAddress, selectGethStatus, selectIpfsStatus, selectProfile,
+import { selectGethStatus, selectIpfsStatus, selectProfileByKey,
     selectProfileFlag } from '../../local-flux/selectors';
 import { hideLoginDialog } from '../../local-flux/actions/app-actions';
 import { userSettingsClear, userSettingsRequest,
@@ -23,8 +23,8 @@ class LoginDialog extends Component {
     };
 
     componentDidMount () {
-        const { profile } = this.props;
-        this.props.userSettingsRequest(profile.get('akashaId'));
+        const { account } = this.props;
+        this.props.userSettingsRequest(account);
     }
 
     componentWillReceiveProps (nextProps) {
@@ -36,7 +36,7 @@ class LoginDialog extends Component {
                 unlockIsChecked: passwordPreference.remember || false
             });
         }
-        if (loggedProfile.get('akashaId')) {
+        if (loggedProfile.get('account')) {
             this.props.hideLoginDialog();
             this.props.userSettingsClear();
             this.props.profileClearLoginErrors();
@@ -45,7 +45,7 @@ class LoginDialog extends Component {
     }
 
     handleLogin = debounce(() => {
-        const { ethAddress, profile } = this.props;
+        const { account } = this.props;
         let unlockInterval = 1;
         if (this.state.unlockIsChecked) {
             unlockInterval = this.state.unlockTimer;
@@ -54,10 +54,9 @@ class LoginDialog extends Component {
             remember: this.state.unlockIsChecked,
             time: this.state.unlockTimer
         };
-        this.props.userSettingsSave(profile.get('akashaId'), { passwordPreference });
+        this.props.userSettingsSave(account, { passwordPreference });
         this.props.profileLogin({
-            account: ethAddress,
-            akashaId: profile.get('akashaId'),
+            account,
             password: this.state.password,
             rememberTime: unlockInterval
         });
@@ -100,7 +99,7 @@ class LoginDialog extends Component {
     };
 
     render () {
-        const { ethAddress, gethStatus, intl, ipfsStatus, loginErrors, loginPending,
+        const { account, gethStatus, intl, ipfsStatus, loginErrors, loginPending,
             profile } = this.props;
         const { palette } = this.context.muiTheme;
         const { password, unlockTimer, unlockIsChecked } = this.state;
@@ -161,7 +160,7 @@ class LoginDialog extends Component {
               disabled
               floatingLabelText={intl.formatMessage(formMessages.ethereumAddress)}
               fullWidth
-              value={ethAddress}
+              value={account}
             />
             <TextField
               autoFocus
@@ -221,7 +220,7 @@ LoginDialog.contextTypes = {
 };
 
 LoginDialog.propTypes = {
-    ethAddress: PropTypes.string.isRequired,
+    account: PropTypes.string.isRequired,
     gethStatus: PropTypes.shape().isRequired,
     hideLoginDialog: PropTypes.func.isRequired,
     history: PropTypes.shape().isRequired,
@@ -240,9 +239,10 @@ LoginDialog.propTypes = {
 };
 
 function mapStateToProps (state) {
-    const profile = selectProfile(state, state.appState.get('showLoginDialog'));
+    const account = state.appState.get('showLoginDialog');
+    const profile = selectProfileByKey(state, account);
     return {
-        ethAddress: selectEthAddress(state, profile.get('akashaId')),
+        account,
         gethStatus: selectGethStatus(state),
         ipfsStatus: selectIpfsStatus(state),
         loggedProfile: state.profileState.get('loggedProfile'),

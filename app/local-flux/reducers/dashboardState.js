@@ -206,6 +206,8 @@ const dashboardState = createReducer(initialState, {
     [types.ENTRY_TAG_ITERATOR_ERROR]: entryIteratorError,
 
     [types.ENTRY_TAG_ITERATOR_SUCCESS]: entryIteratorSuccess,
+
+    [types.PROFILE_LOGOUT_SUCCESS]: () => initialState
 });
 
 export default dashboardState;

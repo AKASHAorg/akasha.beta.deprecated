@@ -49,7 +49,7 @@ class AuthDialog extends Component {
         const akashaId = loggedProfile.get('akashaId');
         const rememberTime = unlockIsChecked ? unlockTimer : 1;
         const passwordPreference = { remember: unlockIsChecked, time: unlockTimer };
-        this.props.userSettingsSave(loggedProfile.get('akashaId'), { passwordPreference });
+        this.props.userSettingsSave(loggedProfile.get('account'), { passwordPreference });
         this.props.profileLogin({
             account, password: userPassword, rememberTime, akashaId, reauthenticate: true
         });
