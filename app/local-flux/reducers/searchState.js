@@ -73,6 +73,7 @@ const searchState = createReducer(initialState, {
             consecutiveQueryErrors: 0,
             currentPage: null,
             query: '',
+            entryIds: [],
             totalPages: null,
             resultsCount: null,
             showResults: false

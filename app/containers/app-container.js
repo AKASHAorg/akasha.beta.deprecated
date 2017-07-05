@@ -116,8 +116,10 @@ class AppContainer extends Component {
                       }
                       <SecondarySidebar>
                         <Route path="/dashboard/:dashboardName?" component={DashboardSecondarySidebar} />
+                        <Route path="/search/:topic/:query?" component={SearchSecondarySidebar} />
                       </SecondarySidebar>
                       <PageContent>
+                        <Route path="/search/:topic/:query?" component={SearchPage} />
                         <Switch location={isOverlay ? this.previousLocation : location}>
                           <Route path="/dashboard/:dashboardName?" component={DashboardPage} />
                           <Route path="/@:akashaId/:entryId(\d+)" component={EntryPageContainer} />
