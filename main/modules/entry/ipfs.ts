@@ -41,7 +41,7 @@ class IpfsEntry {
         if (content.featuredImage) {
             ipfsApiRequests.push(
                 IpfsConnector.getInstance().api
-                    .add(content.featuredImage, true)
+                    .add(content.featuredImage, true, is(String, content.featuredImage))
                     .then((obj) => {
                         this.entryLinks.push(Object.assign({}, obj, { name: FEATURED_IMAGE }));
                     }));
@@ -116,6 +116,13 @@ class IpfsEntry {
         return { blockIndex, imageEntities };
     }
 
+    private _normalizeImage(data) {
+        if (is(String, data) || Buffer.isBuffer(data)) {
+            return data;
+        }
+        return Buffer.from(values(data));
+    }
+
     private _uploadMediaDraft() {
         /**
          * filter draft object for images and upload them to ipfs
@@ -126,16 +133,13 @@ class IpfsEntry {
         imageEntities.forEach((element, index) => {
             const keys = Object.keys(element.data.files).sort();
             keys.forEach((imSize) => {
-                if (!element.data.files[imSize].src || is(String, element.data.files[imSize].src)) {
-                    return false;
+                if (!element.data.files[imSize].src) {
+                    return;
                 }
-                const mediaData = Buffer.isBuffer(element.data.files[imSize].src) ?
-                    element.data.files[imSize].src
-                    :
-                    Buffer.from(values(element.data.files[imSize].src));
+                const mediaData = this._normalizeImage(element.data.files[imSize].src);
                 uploads.push(
                     IpfsConnector.getInstance().api
-                        .add(mediaData, true)
+                        .add(mediaData, true, is(String, mediaData))
                         .then(
                             (obj) => {
                                 this.entryLinks.push(Object.assign({}, obj, { name: (imSize + index) }));
