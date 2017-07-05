@@ -1,6 +1,7 @@
 import { IpfsConnector } from '@akashaproject/ipfs-connector';
 import { profiles } from '../models/records';
 import { isEmpty } from 'ramda';
+import { is } from 'ramda';
 import * as Promise from 'bluebird';
 
 export const ProfileSchema = {
@@ -22,7 +23,13 @@ export const create = Promise.coroutine(function*(data: IpfsProfileCreateRequest
     targetHash = root.hash;
     while (i < simpleLinks.length) {
         if (!isEmpty(data[simpleLinks[i]]) && data[simpleLinks[i]]) {
-            tmp = yield IpfsConnector.getInstance().api.add(data[simpleLinks[i]], simpleLinks[i] === ProfileSchema.AVATAR);
+            tmp = yield IpfsConnector.getInstance()
+                .api
+                .add(
+                    data[simpleLinks[i]],
+                    simpleLinks[i] === ProfileSchema.AVATAR,
+                    (simpleLinks[i] === ProfileSchema.AVATAR) && is(String, data[simpleLinks[i]])
+                );
             saved = yield IpfsConnector.getInstance()
                 .api
                 .addLink({ name: simpleLinks[i], size: tmp.size, hash: tmp.hash }, targetHash);
@@ -37,7 +44,7 @@ export const create = Promise.coroutine(function*(data: IpfsProfileCreateRequest
         pool = keys.map((media: string) => {
             return IpfsConnector.getInstance()
                 .api
-                .addFile(data.backgroundImage[media].src);
+                .add(data.backgroundImage[media].src, true, is(String, data.backgroundImage[media].src));
         });
         tmp = yield Promise.all(pool).then(
             (returned) => {
