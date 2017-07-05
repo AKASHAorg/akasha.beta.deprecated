@@ -88,9 +88,7 @@ export default class Registry extends BaseContract {
             })
             .then((addrList: string[]) => {
                 addrList.forEach((val: string, index: number) => {
-                    if (val) {
-                        profileList.push({ key: keyList[index], profile: val });
-                    }
+                    profileList.push({ key: keyList[index], profile: val || null });
                 });
                 keyList = null;
                 return profileList;

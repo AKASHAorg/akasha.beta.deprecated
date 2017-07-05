@@ -4,7 +4,7 @@ import { constructed as contracts } from '../../contracts/index';
 const execute = Promise.coroutine(function*() {
     const profiles = yield contracts.instance.registry.getLocalProfiles();
     for (let profile of profiles) {
-        profile.akashaId = yield contracts.instance.profile.getId(profile.profile);
+        profile['akashaId'] = (profile.profile) ? yield contracts.instance.profile.getId(profile.profile) : null;
     }
     return profiles;
 });
