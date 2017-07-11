@@ -24,6 +24,11 @@ class UserProfileHeader extends PureComponent {
     }
     render () {
         const { muiTheme, onPanelNavigate, loggedProfileData } = this.props;
+        // this should be removed; this component (or it's parent) should be
+        // connected to the redux store in order to get its props
+        if (!loggedProfileData) {
+            return null;
+        }
         const { palette } = muiTheme;
         const avatarImage = null;
         const userInitials = 'SA';

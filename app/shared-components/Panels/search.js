@@ -73,7 +73,7 @@ class SearchPanel extends Component {
         if (!this.trigger) {
             return null;
         }
-        if (isInViewport(this.trigger)) {
+        if (isInViewport(this.trigger, 150)) {
             searchActions.moreQuery(this.state.query, offset);
         }
     };

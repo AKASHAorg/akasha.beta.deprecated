@@ -138,7 +138,7 @@ class Sidebar extends Component {
               </div>
               <div className={`${styles.streamIcon}`} >
                 <div {...this.getWrapperProps(generalMessages.stream)}>
-                  <Link to={`/dashboard/${activeDashboard}`}>
+                  <Link to={`/dashboard/${activeDashboard || ''}`}>
                     <StreamsIcon isActive={this._checkActiveIcon('dashboard')} />
                   </Link>
                 </div>
