@@ -1,4 +1,6 @@
 import React from 'react';
+import './styles/ant-icons/iconfont.css';
+import './styles/ant-vars/ant.less';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import { IntlProvider, addLocaleData } from 'react-intl';
