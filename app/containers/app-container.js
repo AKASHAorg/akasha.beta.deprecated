@@ -16,10 +16,11 @@ import { licenseGetAll } from '../local-flux/actions/license-actions';
 import { tempProfileUpdate, setTempProfile, tempProfileCreate,
     tempProfileDelete } from '../local-flux/actions/temp-profile-actions';
 import { errorDeleteFatal, errorDeleteNonFatal } from '../local-flux/actions/error-actions';
-import { DashboardPage, EntryPageContainer, LauncherContainer, SidebarContainer } from './';
+import { AuthContainer, ConfigurationContainer, DashboardPage, EntryPageContainer, NewIdentityContainer,
+    SidebarContainer, SynchronizationContainer } from './';
 import { AuthDialog, LoginDialog } from '../components/dialogs';
 import { CommonTopBar, DashboardSecondarySidebar, DashboardTopBar, ErrorBar, ErrorReportingModal,
-    FatalErrorModal, NotificationBar, PageContent, PanelLoader, SecondarySidebar, TermsPanel,
+    FatalErrorModal, NotificationBar, PageContent, PanelLoader, SecondarySidebar, SetupHeader, TermsPanel,
     TopBar } from '../components';
 import { selectEntryFlag, selectFullEntry } from '../local-flux/selectors';
 import lightTheme from '../layouts/AkashaTheme/lightTheme';
@@ -103,8 +104,8 @@ class AppContainer extends Component {
         return (
           <MuiThemeProvider muiTheme={muiTheme}>
             <DataLoader flag={!appState.get('appReady')} size={80} style={{ paddingTop: '100px' }}>
-              <div className="container fill-height" style={{ backgroundColor: muiTheme.palette.themeColor }}>
-                {location.pathname === '/' && <Redirect to="/setup" />}
+              <div className="container fill-height" style={{ backgroundColor: muiTheme.palette.canvasColor }}>
+                {location.pathname === '/' && <Redirect to="/setup/configuration" />}
                 {!location.pathname.startsWith('/setup') &&
                   <DataLoader flag={!appState.get('homeReady')} size={80} style={{ paddingTop: '100px' }}>
                     <div>
@@ -128,7 +129,11 @@ class AppContainer extends Component {
                     </div>
                   </DataLoader>
                 }
-                <Route path="/setup" component={LauncherContainer} />
+                <Route path="/setup" component={SetupHeader} />
+                <Route path="/setup/configuration" component={ConfigurationContainer} />
+                <Route path="/setup/synchronization" component={SynchronizationContainer} />
+                <Route path="/setup/authenticate" component={AuthContainer} />
+                <Route path="/setup/new-identity" component={NewIdentityContainer} />
                 <SidebarContainer {...this.props}>
                   <PanelLoader
                     intl={intl}

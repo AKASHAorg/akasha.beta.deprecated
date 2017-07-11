@@ -1,10 +1,20 @@
 import { defineMessages } from 'react-intl';
 
 const setupMessages = defineMessages({
+    backup: {
+        id: 'app.setup.backup',
+        description: 'backup button label',
+        defaultMessage: 'Backup keys'
+    },
     changeGethDataDir: {
         id: 'app.setup.changeGethDataDir',
         description: 'Label for changing geth data directory',
         defaultMessage: 'Change this if geth has different data directory'
+    },
+    createIdentity: {
+        id: 'app.setup.createIdentity',
+        description: 'Create identity button label',
+        defaultMessage: 'Create new identity'
     },
     gethDataDirPath: {
         id: 'app.setup.gethDataDirPath',
@@ -106,6 +116,11 @@ const setupMessages = defineMessages({
         description: 'panel header for synchronization page',
         defaultMessage: 'Synchronization'
     },
+    syncOptions: {
+        id: 'app.setup.syncOptions',
+        description: 'title for synchronization options',
+        defaultMessage: 'Sync options'
+    },
     logDetails: {
         id: 'app.setup.logDetails',
         description: 'panel header for log details page',
@@ -113,8 +128,13 @@ const setupMessages = defineMessages({
     },
     login: {
         id: 'app.setup.login',
-        description: 'panel header for login page',
+        description: 'title for login page',
         defaultMessage: 'Login'
+    },
+    chooseIdentity: {
+        id: 'app.setup.chooseIdentity',
+        description: 'subtitle for login page',
+        defaultMessage: 'Choose an identity'
     },
     newIdentity: {
         id: 'app.setup.newIdentity',

@@ -8,7 +8,7 @@ import { Checkbox, Dialog, FlatButton, MenuItem, SelectField, TextField } from '
 import { Avatar } from '../../shared-components';
 import { getInitials } from '../../utils/dataModule';
 import { formMessages, generalMessages } from '../../locale-data/messages';
-import { selectGethStatus, selectIpfsStatus, selectProfileByKey,
+import { selectGethStatus, selectIpfsStatus, selectProfileByAccount,
     selectProfileFlag } from '../../local-flux/selectors';
 import { hideLoginDialog } from '../../local-flux/actions/app-actions';
 import { userSettingsClear, userSettingsRequest,
@@ -240,7 +240,7 @@ LoginDialog.propTypes = {
 
 function mapStateToProps (state) {
     const account = state.appState.get('showLoginDialog');
-    const profile = selectProfileByKey(state, account);
+    const profile = selectProfileByAccount(state, account);
     return {
         account,
         gethStatus: selectGethStatus(state),

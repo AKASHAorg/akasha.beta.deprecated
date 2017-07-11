@@ -1,8 +1,9 @@
-import React, { PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import { withRouter } from 'react-router';
 import { Link } from 'react-router-dom';
 
-const Navigation = ({ location, match }, { muiTheme }) => {
+const Navigation = ({ location }, { muiTheme }) => {
     const { palette } = muiTheme;
     const withoutQuery = location.pathname.split('?')[0];
     const parts = withoutQuery.split('/').filter(p => !!p);
@@ -45,8 +46,7 @@ Navigation.contextTypes = {
 };
 
 Navigation.propTypes = {
-    location: PropTypes.shape(),
-    match: PropTypes.shape(),
+    location: PropTypes.shape()
 };
 
 export default withRouter(Navigation);

@@ -6,21 +6,21 @@ import chai from 'chai';
 import { shallow } from 'enzyme';
 import { List, ListItem } from 'material-ui';
 import muiTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
-import { ProfilesList } from '../../../app/components';
+import { ProfileList } from '../../../app/components';
 import { Avatar, DataLoader } from '../../../app/shared-components';
 import { GethStatus, IpfsStatus, ProfileRecord } from '../../../app/local-flux/reducers/records';
 import { setupMessages } from '../../../app/locale-data/messages';
 
 const { expect } = chai;
 
-describe('ProfilesList component tests', () => {
+describe('ProfileList component tests', () => {
     let props;
     let mountedComp;
     const intlProvider = new IntlProvider({ locale: 'en' }, {});
     const { intl } = intlProvider.getChildContext();
     const mountComp = () => {
         if (!mountedComp) {
-            mountedComp = shallow(<ProfilesList {...props} />, { context: { muiTheme } });
+            mountedComp = shallow(<ProfileList {...props} />, { context: { muiTheme } });
         }
         return mountedComp;
     };

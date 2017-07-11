@@ -1,4 +1,5 @@
-import React, { PropTypes } from 'react';
+import PropTypes from 'prop-types';
+import React from 'react';
 import { injectIntl } from 'react-intl';
 import { FlatButton, SvgIcon } from 'material-ui';
 import LeftArrow from 'material-ui/svg-icons/navigation/chevron-left';

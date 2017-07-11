@@ -3,9 +3,10 @@ import React, { PureComponent } from 'react';
 import { Redirect } from 'react-router-dom';
 import { injectIntl } from 'react-intl';
 import { FlatButton, RadioButton, RadioButtonGroup, RaisedButton } from 'material-ui';
-import { setupMessages, generalMessages } from '../locale-data/messages';
-import { GethCacheSelectField, PathInputField } from '../shared-components';
-import { PanelContainerFooter } from './';
+import { setupMessages, generalMessages } from '../../locale-data/messages';
+import { GethCacheSelectField, PathInputField } from '../../shared-components';
+import { PanelContainerFooter } from '../';
+import setupStyles from './setup.scss';
 
 const ADVANCED = 'advanced';
 const EXPRESS = 'express';
@@ -85,23 +86,30 @@ class Config extends PureComponent {
         const { cache, gethDataDir, ipfsPath, isAdvanced } = this.state;
         const radioStyle = { marginTop: '10px', marginBottom: '10px' };
         return (
-          <div>
+          <div className={`full-page ${setupStyles.root}`}>
             {configurationSaved && <Redirect to="/setup/synchronization" />}
-            <div>
-              <h1 style={{ fontWeight: '400' }}>
-                {intl.formatMessage(setupMessages.firstTimeSetupTitle)}
-              </h1>
+            <div className={setupStyles.column}>
               <div>
-                <p>
-                  {intl.formatMessage(setupMessages.akashaNextGenNetwork)}
-                </p>
-                <p>
-                  {intl.formatMessage(setupMessages.youHaveNotHeared)}
-                </p>
-                <p>
-                  {intl.formatMessage(setupMessages.ifYouHaveEth)}
-                </p>
+                <h1 style={{ fontWeight: '400', fontSize: '24px' }}>
+                  {intl.formatMessage(setupMessages.firstTimeSetupTitle)}
+                </h1>
+                <div>
+                  <p>
+                    {intl.formatMessage(setupMessages.akashaNextGenNetwork)}
+                  </p>
+                  <p>
+                    {intl.formatMessage(setupMessages.youHaveNotHeared)}
+                  </p>
+                  <p>
+                    {intl.formatMessage(setupMessages.ifYouHaveEth)}
+                  </p>
+                </div>
               </div>
+            </div>
+            <div className={setupStyles.column}>
+              <h1 style={{ fontWeight: '400', fontSize: '24px' }}>
+                {intl.formatMessage(setupMessages.syncOptions)}
+              </h1>
               <div style={{ paddingLeft: '12px', marginTop: '24px' }}>
                 <RadioButtonGroup
                   valueSelected={isAdvanced ? ADVANCED : EXPRESS}
@@ -146,10 +154,19 @@ class Config extends PureComponent {
                       />
                     </div>
                   </div>
-                  }
+                }
+                <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: '30px' }}>
+                  <RaisedButton
+                    key="next"
+                    label={intl.formatMessage(generalMessages.nextButtonLabel)}
+                    primary
+                    style={{ marginLeft: '12px' }}
+                    onClick={this.handleSubmit}
+                  />
+                </div>
               </div>
             </div>
-            <PanelContainerFooter intl={intl} muiTheme={muiTheme} >
+            {/*<PanelContainerFooter intl={intl} muiTheme={muiTheme} >
               <RaisedButton
                 key="next"
                 label={intl.formatMessage(generalMessages.nextButtonLabel)}
@@ -158,6 +175,7 @@ class Config extends PureComponent {
                 onClick={this.handleSubmit}
               />
             </PanelContainerFooter>
+            */}
           </div>
         );
     }

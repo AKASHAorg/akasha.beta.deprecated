@@ -95,7 +95,7 @@ class PanelContainer extends React.Component {
         return (
           <Paper
             rounded={false}
-            className={`col-xs-4 ${styles.root}`}
+            className={`col-xs-6 ${styles.root}`}
             style={{
                 maxWidth: this.props.width,
                 ...this.props.style

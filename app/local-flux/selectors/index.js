@@ -109,7 +109,7 @@ export const selectLastStreamBlock = state => state.entryState.get('lastStreamBl
 export const selectLocalProfiles = state =>
     state.profileState
         .get('localProfiles')
-        .map(key => ({ key, profile: selectProfileByKey(state, key) }));
+        .map(account => ({ account, profile: selectProfileByAccount(state, account) }));
 
 export const selectLoggedAccount = state =>
     state.profileState.getIn(['loggedProfile', 'account']);
@@ -138,8 +138,8 @@ export const selectPendingTx = (state, tx) => state.transactionState.getIn(['pen
 export const selectProfile = (state, akashaId) =>
     state.profileState.getIn(['byId', akashaId]) || new ProfileRecord();
 
-export const selectProfileByKey = (state, key) => {
-    const akashaId = state.profileState.getIn(['ethAddresses', key]);
+export const selectProfileByAccount = (state, account) => {
+    const akashaId = state.profileState.getIn(['ethAddresses', account]);
     return state.profileState.getIn(['byId', akashaId]) || new ProfileRecord();
 };
 
