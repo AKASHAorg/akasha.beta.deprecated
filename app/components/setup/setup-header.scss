@@ -1,0 +1,17 @@
+.root {
+    position: fixed;
+    top: 0;
+    height: 100px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 100px;
+}
+
+.title {
+    font-size: 28px;
+    font-weight: 500;
+    text-transform: lowercase;
+}

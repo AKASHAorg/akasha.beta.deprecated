@@ -61,4 +61,3 @@ export const tempProfilePublishTxMined = () => action(types.TEMP_PROFILE_PUBLISH
 export const tempProfilePublishTxMinedSuccess = data => action(
     types.TEMP_PROFILE_PUBLISH_TX_MINED_SUCCESS, { data }
 );
-

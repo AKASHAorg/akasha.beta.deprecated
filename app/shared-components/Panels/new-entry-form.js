@@ -70,7 +70,7 @@ class NewEntryFormPanel extends Component {
         if (!this.trigger) {
             return null;
         }
-        if (isInViewport(this.trigger)) {
+        if (isInViewport(this.trigger, 150)) {
             entryActions.moreEntryProfileIterator(loggedProfileData.get('akashaId'), this.lastListedEntryIndex, LIMIT);
         }
     }

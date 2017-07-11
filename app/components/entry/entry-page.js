@@ -105,7 +105,7 @@ class EntryPage extends Component {
         const { commentsMoreIterator, match, newComments } = this.props;
         const { params } = match;
         const scrollTop = ev.srcElement.scrollTop;
-        if (this.trigger && isInViewport(this.trigger)) {
+        if (this.trigger && isInViewport(this.trigger, 150)) {
             commentsMoreIterator(params.entryId);
         }
         if (newComments.size) {

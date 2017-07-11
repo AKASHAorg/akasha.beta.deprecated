@@ -13,6 +13,12 @@ const Channel = global.Channel;
 const FOLLOWERS_ITERATOR_LIMIT = 13;
 const FOLLOWINGS_ITERATOR_LIMIT = 13;
 
+function* profileCreateEthAddress ({ data }) {
+    const channel = Channel.server.auth.generateEthKey;
+    yield call(enableChannel, channel, Channel.client.auth.manager);
+    yield apply(channel, channel.send, [{ password: data }]);
+}
+
 function* profileDeleteLogged () {
     try {
         yield apply(profileService, profileService.profileDeleteLogged);
@@ -173,6 +179,10 @@ function* profileUpdateLogged (loggedProfile) {
 
 // Action watchers
 
+function* watchProfileCreateEthAddress () {
+    yield takeLatest(types.PROFILE_CREATE_ETH_ADDRESS, profileCreateEthAddress);
+}
+
 function* watchProfileDeleteLogged () {
     yield takeLatest(types.PROFILE_DELETE_LOGGED, profileDeleteLogged);
 }
@@ -246,6 +256,20 @@ function* watchProfileUnfollow () {
 }
 
 // Channel watchers
+
+function* watchProfileCreateEthAddressChannel () {
+    while (true) {
+        const resp = yield take(actionChannels.auth.generateEthKey);
+        if (resp.error) {
+            yield put(actions.profileCreateEthAddressError(resp.error));
+        } else {
+            yield put(actions.profileCreateEthAddressSuccess(resp.data));
+            const account = resp.data.address;
+            const { password } = resp.request;
+            yield put(actions.profileLogin({ account, password }));
+        }
+    }
+}
 
 function* watchProfileFollowChannel () {
     while (true) {
@@ -476,6 +500,7 @@ function* watchProfileUnfollowChannel () {
 }
 
 export function* registerProfileListeners () {
+    yield fork(watchProfileCreateEthAddressChannel);    
     yield fork(watchProfileFollowChannel);
     yield fork(watchProfileFollowersIteratorChannel);
     yield fork(watchProfileFollowingsIteratorChannel);
@@ -492,6 +517,7 @@ export function* registerProfileListeners () {
 }
 
 export function* watchProfileActions () {
+    yield fork(watchProfileCreateEthAddress);
     yield fork(watchProfileDeleteLogged);
     yield fork(watchProfileFollow);
     yield fork(watchProfileFollowersIterator);

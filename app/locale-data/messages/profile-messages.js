@@ -76,14 +76,6 @@ export const profileMessages = defineMessages({
         description: 'Label for "Keep Account Unlocked For" checkbox',
         defaultMessage: 'Keep account unlocked for'
     },
-    terms: {
-        id: 'app.profile.terms',
-        description: `Terms agreement for account creation.
-                        Do not translate {termsLink} and {privacyLink}!`,
-        defaultMessage: `By proceeding to create your account and use AKASHA, you are agreeing to
-                         our {termsLink}. If you do not agree, you cannot use
-                         AKASHA.`
-    },
     registeringIdentity: {
         id: 'app.profile.registeringIdentity',
         description: 'Registering identity status',

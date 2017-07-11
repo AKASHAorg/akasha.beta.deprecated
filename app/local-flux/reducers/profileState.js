@@ -479,6 +479,15 @@ const profileState = createReducer(initialState, {
     [types.PROFILE_CLEAR_LOGIN_ERRORS]: state =>
         state.set('loginErrors', new List()),
 
+    [types.PROFILE_CREATE_ETH_ADDRESS]: state =>
+        state.setIn(['flags', 'ethAddressPending'], true),
+
+    [types.PROFILE_CREATE_ETH_ADDRESS_ERROR]: state =>
+        state.setIn(['flags', 'ethAddressPending'], false),
+
+    [types.PROFILE_CREATE_ETH_ADDRESS_SUCCESS]: state =>
+        state.setIn(['flags', 'ethAddressPending'], false),
+
     [types.PROFILE_DELETE_LOGGED_SUCCESS]: state =>
         state.set('loggedProfile', new LoggedProfile()),
 

@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import { setupMessages } from '../locale-data/messages';
-import { SyncProgressLoader } from '../shared-components';
+import { setupMessages } from '../../locale-data/messages';
+import { SyncProgressLoader } from '../';
 
 const statusTextStyle = {
     fontWeight: 'bold',
@@ -104,9 +104,13 @@ class SyncStatusLoader extends Component {
         }
 
         return (
-          <div style={{ padding: '32px 0', textAlign: 'center' }} >
-            <SyncProgressLoader value={progress} />
-            {this.renderProgressBody()}
+          <div style={{ padding: '32px 0', display: 'flex' }} >
+            <div style={{ flex: '0 0 auto', width: '190px', height: '190px' }}>
+              <SyncProgressLoader value={progress} />
+            </div>
+            <div style={{ flex: '1 1 auto', display: 'flex', justifyContent: 'center' }}>
+              {this.renderProgressBody()}
+            </div>
           </div>
         );
     }

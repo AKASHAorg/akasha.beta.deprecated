@@ -6,6 +6,7 @@ export EntryPageContainer from './entry-page-container';
 export DashboardPage from './dashboard-page';
 export LauncherContainer from './launcher-container';
 export LogDetailsContainer from './log-details-container';
+export NewIdentityContainer from './new-identity-container';
 export NewProfileContainer from './new-profile-container';
 export NewProfileStatusContainer from './new-profile-status-container';
 export NewProfileCompleteContainer from './new-profile-complete-container';

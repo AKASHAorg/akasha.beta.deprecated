@@ -32,11 +32,6 @@ const generalMessages = defineMessages({
         description: 'navigate back',
         defaultMessage: 'Back'
     },
-    backup: {
-        id: 'app.general.backup',
-        description: 'backup button label',
-        defaultMessage: 'Backup'
-    },
     by: {
         id: 'app.general.by',
         description: 'entry is written `by`',
@@ -71,16 +66,6 @@ const generalMessages = defineMessages({
         id: 'app.general.connected',
         description: 'connected status',
         defaultMessage: 'connected'
-    },
-    createNewIdentityLabel: {
-        id: 'app.general.createIdentityLabel',
-        description: 'Create identity button label',
-        defaultMessage: 'Create identity'
-    },
-    resumeIdentityLabel: {
-        id: 'app.general.resumeIdentityLabel',
-        description: 'resume identity button label',
-        defaultMessage: 'Resume Identity'
     },
     close: {
         id: 'app.general.close',
@@ -279,6 +264,14 @@ const generalMessages = defineMessages({
         id: 'app.general.submit',
         description: 'submit button label',
         defaultMessage: 'Submit'
+    },
+    terms: {
+        id: 'app.general.terms',
+        description: `Terms agreement for account creation.
+                        Do not translate {termsLink} and {privacyLink}!`,
+        defaultMessage: `By proceeding to create your account and use AKASHA, you are agreeing to
+                         our {termsLink}. If you do not agree, you cannot use
+                         AKASHA.`
     },
     termsOfService: {
         id: 'app.general.termsOfService',
