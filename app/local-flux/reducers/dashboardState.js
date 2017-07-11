@@ -76,10 +76,10 @@ const entryMoreIteratorSuccess = (state, { data, req }) => {
 };
 
 const handleSuggestions = (state, { data, request }) => {
-    const { type, columnId } = request;
-    if (type === 'column' && state.hasIn(['columnById', columnId])) {
+    const { context, columnId } = request;
+    if (context === 'column') {
         const suggestions = new List(data);
-        if (columnId) {
+        if (columnId && state.hasIn(['columnById', columnId])) {
             return state.setIn(['columnById', columnId, 'suggestions'], suggestions);
         }
         return state.setIn(['newColumn', 'suggestions'], suggestions);
