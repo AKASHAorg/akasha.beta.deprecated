@@ -14,8 +14,9 @@ import subsCount from '../tags/subs-count';
  */
 const execute = Promise.coroutine(function*(data: ProfileDataRequest) {
     let profile;
-    const ipfsHash = yield contracts.instance.profile.getIpfs(data.profile);
-    const akashaId = yield contracts.instance.profile.getId(data.profile);
+    const akashaId = (data.akashaId) ? data.akashaId : yield contracts.instance.profile.getId(data.profile);
+    const profileAddress = (data.profile) ? data.profile : yield contracts.instance.registry.addressOf(data.akashaId);
+    const ipfsHash = yield contracts.instance.profile.getIpfs(profileAddress);
     const foCount = yield followingCount.execute({ akashaId });
     const fwCount = yield followersCount.execute({ akashaId });
     const entriesCount = yield entryCountProfile.execute({ akashaId });
@@ -42,7 +43,7 @@ const execute = Promise.coroutine(function*(data: ProfileDataRequest) {
             entriesCount: entriesCount.count,
             subscriptionsCount: subscriptionsCount.count,
             [BASE_URL]: generalSettings.get(BASE_URL),
-            profile: data.profile
+            profile: profileAddress
         },
         profile);
 

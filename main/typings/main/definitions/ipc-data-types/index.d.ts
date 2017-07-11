@@ -345,7 +345,8 @@ interface IpfsProfileCreateRequest {
 }
 
 interface ProfileDataRequest {
-    profile: string; // profile contract address
+    akashaId: string;
+    profile?: string; // profile contract address
     short?: boolean;
     full?: boolean; // resolve full profile from ipfs
     resolveImages?: boolean; // resolve media to buffer
