@@ -43,7 +43,7 @@ class Stream extends React.Component {
             return null;
         }
 
-        if (isInViewport(this.trigger)) {
+        if (isInViewport(this.trigger, 150)) {
             switch (this.props.params.filter) {
                 case 'tag':
                     return this.showMoreTagEntries();

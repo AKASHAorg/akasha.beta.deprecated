@@ -22,19 +22,29 @@ const formMessages = defineMessages({
         defaultMessage: 'Ethereum address'
     },
     passphrase: {
-        id: 'app.passphrase',
+        id: 'app.form.passphrase',
         description: 'Placeholder for passphrase input',
         defaultMessage: 'Passphrase'
     },
+    passphrasePlaceholder: {
+        id: 'app.form.passphrasePlaceholder',
+        description: 'placeholder for passphrase input',
+        defaultMessage: 'Type your passphrase'
+    },
     confirmPassphrase: {
         id: 'app.form.confirmPassphrase',
-        description: 'authenticate dialog title',
+        description: 'label for passphrase confirmation input',
         defaultMessage: 'Confirm passphrase'
     },
     confirmPassphraseToContinue: {
         id: 'app.form.confirmPassphraseToContinue',
         description: 'Label for confirming passphrase',
         defaultMessage: 'You need to confirm your passphrase to continue'
+    },
+    passphraseConfirmError: {
+        id: 'app.form.passphraseConfirmError',
+        description: 'Error message displayed when the given passphrases don\'t match',
+        defaultMessage: 'Passphrases don\'t match. Please type the passphrase again'
     },
     passphraseVerify: {
         id: 'app.passphraseVerify',

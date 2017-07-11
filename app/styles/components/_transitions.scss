@@ -1,0 +1,17 @@
+.loginForm-enter {
+    height: 0px;
+}
+
+.loginForm-enter.loginForm-enter-active {
+    height: 278px;
+    transition: height 200ms ease-in-out;
+}
+
+.loginForm-leave {
+    height: 278px;
+}
+
+.loginForm-leave.loginForm-leave-active {
+    height: 0px;
+    transition: height 200ms ease-in-out;    
+}

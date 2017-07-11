@@ -4,8 +4,8 @@ import { Redirect, Route } from 'react-router-dom';
 import { injectIntl } from 'react-intl';
 import { PanelContainer, Tutorials } from '../components';
 import { PanelHeader } from '../shared-components';
-import { ConfigurationContainer, SynchronizationContainer, AuthContainer,
-  LogDetailsContainer, NewProfileContainer, NewProfileStatusContainer, NewProfileCompleteContainer } from './';
+import { ConfigurationContainer, SynchronizationContainer, AuthContainer, LogDetailsContainer,
+    NewProfileContainer, NewProfileStatusContainer, NewProfileCompleteContainer } from './';
 import { setupMessages, generalMessages } from '../locale-data/messages';
 
 const LauncherContainer = ({ intl, location }) => {
@@ -46,6 +46,7 @@ const LauncherContainer = ({ intl, location }) => {
     const componentRoutes = routes.map(route => (
       <Route key={route.path} path={route.path} component={route.component} />
     ));
+
     return (
       <div className="row top-xs full-page">
         <PanelContainer showBorder>
@@ -53,7 +54,7 @@ const LauncherContainer = ({ intl, location }) => {
           {location.pathname === '/setup' && <Redirect to={'/setup/configuration'} />}
           {componentRoutes}
         </PanelContainer>
-        <div className="col-xs-8" style={{ height: '100%' }}>
+        <div className="col-xs-6" style={{ height: '100%' }}>
           <Tutorials />
         </div>
       </div>

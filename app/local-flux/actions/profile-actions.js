@@ -645,6 +645,16 @@ export const profileAddUnfollowAction = payload =>
 
 export const profileClearLocal = () => action(types.PROFILE_CLEAR_LOCAL);
 export const profileClearLoginErrors = () => action(types.PROFILE_CLEAR_LOGIN_ERRORS);
+export const profileCreateEthAddress = data => action(types.PROFILE_CREATE_ETH_ADDRESS, { data });
+
+export const profileCreateEthAddressError = (error) => {
+    error.code = 'PCEAE01';
+    error.messageId = 'profileCreateEthAddress';
+    return action(types.PROFILE_CREATE_ETH_ADDRESS_ERROR, { error });
+};
+
+export const profileCreateEthAddressSuccess = data =>
+    action(types.PROFILE_CREATE_ETH_ADDRESS_SUCCESS, { data });
 export const profileDeleteLogged = () => action(types.PROFILE_DELETE_LOGGED);
 
 export const profileDeleteLoggedError = (error) => {

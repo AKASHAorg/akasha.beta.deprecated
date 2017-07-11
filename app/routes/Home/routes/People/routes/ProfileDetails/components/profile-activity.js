@@ -113,7 +113,7 @@ class ProfileActivity extends Component {
             return null;
         }
 
-        if (isInViewport(this.trigger)) {
+        if (isInViewport(this.trigger, 150)) {
             switch (this.state.activeTab) {
                 case 'entries':
                     this.showMoreProfileEntries();
