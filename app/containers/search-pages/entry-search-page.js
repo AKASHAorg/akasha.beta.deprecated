@@ -4,9 +4,10 @@ import { connect } from 'react-redux';
 import { EntryListContainer } from '../../shared-components';
 import { searchMoreQuery } from '../../local-flux/actions/search-actions';
 import { selectSearchEntries } from '../../local-flux/selectors';
+import { SEARCH } from '../../constants/context-types';
 
 
-class SearchPage extends Component {
+class EntrySearchPage extends Component {
 
     queryMore = () => {
         const { query, entries } = this.props;
@@ -21,7 +22,7 @@ class SearchPage extends Component {
             <EntryListContainer
               style={{ height: '100%', flexFlow: 'row wrap' }}
               cardStyle={{ width: '400px' }}
-              contextId={'search'}
+              contextId={SEARCH}
               entries={entries}
               fetchingEntries={fetchingEntries}
               fetchingMoreEntries={fetchingMoreEntries}
@@ -34,13 +35,12 @@ class SearchPage extends Component {
     }
 }
 
-SearchPage.propTypes = {
+EntrySearchPage.propTypes = {
     entries: PropTypes.shape(),
     profiles: PropTypes.shape(),
     fetchingEntries: PropTypes.bool,
     fetchingMoreEntries: PropTypes.bool,
     searchMoreQuery: PropTypes.func,
-    searchService: PropTypes.bool,
     query: PropTypes.string,
     resultsCount: PropTypes.number,
 };
@@ -62,4 +62,4 @@ export default connect(
     {
         searchMoreQuery
     }
-)(SearchPage);
+)(EntrySearchPage);

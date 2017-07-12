@@ -111,7 +111,8 @@ function* dashboardGetTagSuggestions (request) {
     const START = 0;
     const LIMIT = 5;
     try {
-        const suggestions = yield apply(tagService, tagService.tagSearch, [tag, START, LIMIT]);
+        const tags = yield apply(tagService, tagService.tagSearch, [tag, START, LIMIT]);
+        const suggestions = tags.tags;
         yield put(actions.dashboardGetTagSuggestionsSuccess(suggestions, request));
         return { suggestions };
     } catch (error) {
@@ -146,7 +147,7 @@ function* dashboardUpdateColumn ({ id, changes }) {
 
 function* dashboardUpdateNewColumn ({ changes }) {
     if (changes && changes.value) {
-        const { suggestions } = yield call(dashboardGetTagSuggestions, { tag: changes.value });
+        const { suggestions } = yield call(dashboardGetTagSuggestions, { tag: changes.value, context: 'column' });
         if (suggestions) {
             const request = suggestions.map(tagName => ({ tagName }));
             yield call(delay, 200);
@@ -178,7 +179,7 @@ function* watchDashboardGetProfileSuggestions () {
 }
 
 function* watchDashboardGetTagSuggestions () {
-    yield takeLatest(types.TAG_GET_SUGGESTIONS, dashboardGetTagSuggestions);
+    yield takeLatest(types.DASHBOARD_GET_TAG_SUGGESTIONS, dashboardGetTagSuggestions);
 }
 
 function* watchDashboardSetActive () {
