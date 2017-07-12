@@ -19,7 +19,6 @@ class NewProfileForm extends Component {
     constructor (props) {
         super(props);
         this.state = {
-            optDetails: false,
             akashaIdIsValid: true,
             akashaIdExists: false
         };
@@ -27,20 +26,21 @@ class NewProfileForm extends Component {
         this.showErrorOnFields = [];
         this.isSubmitting = false;
     }
-
     getValidatorData = () => this.props.tempProfile.toJS();
+    componentWillReceiveProps (nextProps) {
+        const { isUpdate, tempProfile } = nextProps;
+        // we need to enable update temp profile button only if something has changed
+        // so we need to keep a ref to old temp profile.
+        if (isUpdate && tempProfile.akashaId !== this.props.tempProfile.akashaId) {
+            this.refTempProfile = tempProfile;
+        }
+    }
 
     _showTerms = (ev) => {
         ev.preventDefault();
         const { onTermsShow } = this.props;
         if (onTermsShow) return onTermsShow();
         return null;
-    }
-
-    _handleShowDetails = () => {
-        this.setState({
-            optDetails: !this.state.optDetails
-        });
     }
 
     _handleAddLink = linkType => () => {
@@ -201,6 +201,7 @@ class NewProfileForm extends Component {
 
     _handleAvatarClear = () => {
         const { isUpdate, tempProfile, onProfileUpdate } = this.props;
+        console.log('clearing avatar');
         if (isUpdate) {
             onProfileUpdate(
               tempProfile.set('avatar', null)
@@ -227,7 +228,8 @@ class NewProfileForm extends Component {
 
     _handleSubmit = (ev) => {
         ev.preventDefault();
-        const { expandOptionalDetails, tempProfile, onSubmit, onProfileUpdate } = this.props;
+        const { expandOptionalDetails, isUpdate, tempProfile, onSubmit,
+          onProfileUpdate } = this.props;
         const { optDetails } = this.state;
 
         this.props.validate((err) => {
@@ -246,9 +248,12 @@ class NewProfileForm extends Component {
                             avatar = uint8arr;
                         }
                         onProfileUpdate(
-                          tempProfile.withMutations(profile =>
-                              profile
-                                .set('avatar', avatar))
+                          tempProfile.withMutations((profile) => {
+                              profile.set('avatar', avatar);
+                              if (!isUpdate) {
+                                  profile.set('backgroundImage', this.imageUploader.getImage());
+                              }
+                          })
                         );
                         onSubmit();
                     });
@@ -261,10 +266,10 @@ class NewProfileForm extends Component {
     }
 
     render () {
-        const { intl, muiTheme, expandOptionalDetails, style, isUpdate } = this.props;
+        const { intl, muiTheme, expandOptionalDetails, style, isUpdate, tempProfile } = this.props;
         const { firstName, lastName, akashaId, password, password2,
           about, links, crypto, formHasErrors, avatar, backgroundImage,
-          baseUrl } = this.props.tempProfile;
+          baseUrl } = tempProfile;
         const { optDetails } = this.state;
         const { formatMessage } = intl;
         return (
@@ -278,6 +283,44 @@ class NewProfileForm extends Component {
               className={`row ${styles.form}`}
               ref={(profileForm) => { this.profileForm = profileForm; }}
             >
+              <div className="col-xs-12">
+                <div className="row">
+                  <div className="col-xs-3">
+                    <div className="row">
+                      <h3 className="col-xs-12" style={{ margin: '30px 0 10px 0' }} >
+                        {intl.formatMessage(profileMessages.avatarTitle)}
+                      </h3>
+                      <div className="col-xs-12 center-xs">
+                        <Avatar
+                          editable
+                          ref={(avtr) => { this.avatar = avtr; }}
+                          image={avatar}
+                          onImageClear={this._handleAvatarClear}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-xs-9">
+                    <div className="row">
+                      <h3 className="col-xs-12" style={{ margin: '20px 0 10px 0' }} >
+                        {intl.formatMessage(profileMessages.backgroundImageTitle)}
+                      </h3>
+                      <div className="col-xs-12">
+                        <ImageUploader
+                          ref={(imageUploader) => { this.imageUploader = imageUploader; }}
+                          minWidth={360}
+                          intl={intl}
+                          initialImage={backgroundImage}
+                          baseUrl={baseUrl}
+                          muiTheme={muiTheme}
+                          onImageClear={this._handleBackgroundClear}
+                          onChange={this._handleBackgroundChange}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
               <div className="col-xs-6 start-xs">
                 <TextField
                   fullWidth
@@ -337,42 +380,7 @@ class NewProfileForm extends Component {
                   </div>
                 </div>
               }
-              {!expandOptionalDetails &&
-                <Checkbox
-                  label={intl.formatMessage(profileMessages.optionalDetailsLabel)}
-                  style={{ marginTop: 18 }}
-                  checked={optDetails}
-                  onCheck={this._handleShowDetails}
-                />
-              }
-              {(optDetails || expandOptionalDetails) &&
                 <div className="row middle-xs" style={{ padding: '0 4px' }}>
-                  <h3 className="col-xs-12" style={{ margin: '30px 0 10px 0' }} >
-                    {intl.formatMessage(profileMessages.avatarTitle)}
-                  </h3>
-                  <div className="col-xs-12 center-xs">
-                    <Avatar
-                      editable
-                      ref={(avtr) => { this.avatar = avtr; }}
-                      image={avatar}
-                      onImageClear={this._handleAvatarClear}
-                    />
-                  </div>
-                  <h3 className="col-xs-12" style={{ margin: '20px 0 10px 0' }} >
-                    {intl.formatMessage(profileMessages.backgroundImageTitle)}
-                  </h3>
-                  <div className="col-xs-12">
-                    <ImageUploader
-                      ref={(imageUploader) => { this.imageUploader = imageUploader; }}
-                      minWidth={360}
-                      intl={intl}
-                      initialImage={backgroundImage}
-                      baseUrl={baseUrl}
-                      muiTheme={muiTheme}
-                      onImageClear={this._handleBackgroundClear}
-                      onChange={this._handleBackgroundChange}
-                    />
-                  </div>
                   <h3 className="col-xs-12" style={{ margin: '20px 0 0 0' }} >
                     {intl.formatMessage(profileMessages.aboutYouTitle)}
                   </h3>
@@ -406,10 +414,9 @@ class NewProfileForm extends Component {
                   </div>
                   <div className="col-xs-12">
                     {links.map((link, index) =>
-                      <div key={`${index + 1}`} className="row">
+                      (<div key={`${index + 1}`} className="row">
                         <div className="col-xs-10">
                           <TextField
-                            autoFocus={(links.size - 1) === index}
                             fullWidth
                             floatingLabelText={intl.formatMessage(formMessages.title)}
                             value={link.get('title')}
@@ -444,7 +451,7 @@ class NewProfileForm extends Component {
                             className="col-xs-12"
                           />
                         }
-                      </div>
+                      </div>)
                     )}
                   </div>
                   <h3 className="col-xs-10" style={{ margin: '20px 0 0 0' }}>
@@ -464,7 +471,7 @@ class NewProfileForm extends Component {
                   </div>
                   <div className="col-xs-12">
                     {crypto.map((cryptoLink, index) =>
-                      <div key={`${index + 1}`} className="row">
+                      (<div key={`${index + 1}`} className="row">
                         <div className="col-xs-10">
                           <TextField
                             autoFocus={(crypto.size - 1) === index}
@@ -501,19 +508,18 @@ class NewProfileForm extends Component {
                             className="col-xs-12"
                           />
                         }
-                      </div>
+                      </div>)
                     )}
                   </div>
                 </div>
-              }
               <small style={{ paddingBottom: '15px', marginTop: '15px' }}>
                 <FormattedMessage
                   {...profileMessages.terms}
                   values={{
                       termsLink: (
                         <a
-                          href="#"
-                          onClick={ev => this._showTerms(ev)}
+                          href="/terms"
+                          onClick={this._showTerms}
                           style={{ color: muiTheme.palette.primary1Color }}
                         >
                           {intl.formatMessage(generalMessages.termsOfService)}
@@ -528,7 +534,6 @@ class NewProfileForm extends Component {
               <RaisedButton
                 key="cancel"
                 label={intl.formatMessage(generalMessages.cancel)}
-                type="reset"
                 onClick={this._handleCancel}
               />
               <RaisedButton
@@ -537,6 +542,9 @@ class NewProfileForm extends Component {
                 type="submit"
                 onClick={formHasErrors ? () => {} : this._handleSubmit}
                 style={{ marginLeft: 8 }}
+                disabled={
+                  isUpdate && this.refTempProfile && tempProfile.equals(this.refTempProfile)
+                }
                 primary
               />
             </PanelContainerFooter>

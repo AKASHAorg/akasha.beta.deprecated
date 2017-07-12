@@ -9,13 +9,18 @@ const CommonTopBar = props => (
     <div style={{ flex: '1 1 auto', display: 'flex', justifyContent: 'flex-start' }}>
       <Navigation />
     </div>
-    <TopBarRightSide balance={props.balance} loggedProfileData={props.loggedProfileData} />
+    <TopBarRightSide
+      balance={props.balance}
+      onPanelNavigate={props.onPanelNavigate}
+      loggedProfileData={props.loggedProfileData}
+    />
   </div>
 );
 
 CommonTopBar.propTypes = {
     balance: PropTypes.string,
-    loggedProfileData: PropTypes.shape()
+    loggedProfileData: PropTypes.shape(),
+    onPanelNavigate: PropTypes.func
 };
 
 function mapStateToProps (state) {

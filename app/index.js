@@ -37,19 +37,6 @@ sagaMiddleware.run(rootSaga);
 
 window.Perf = ReactPerf;
 
-// function hashLinkScroll () {
-//     const { hash } = window.location;
-//     if (hash.split('#')[2]) {
-//         setTimeout(() => {
-//             const id = hash.split('#')[2];
-//             const element = document.getElementById(id);
-//             if (element) {
-//                 element.scrollIntoView();
-//             }
-//         }, 300);
-//     }
-// }
-
 injectTapEventPlugin();
 
 

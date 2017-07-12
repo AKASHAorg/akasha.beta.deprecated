@@ -23,12 +23,8 @@ const appState = createReducer(initialState, {
         });
     },
 
-    [appTypes.PUBLISH_ENTITY]: (state, { data }) => {
-        console.log(data, 'the data');
-        return state.merge({
-            pendingActions: state.get('pendingActions').push(new PendingActionRecord(data))
-        });
-    },
+    [types.PUBLISH_ENTITY]: (state, { data }) =>
+        state.setIn(['pendingActions', data.entityId], new PendingActionRecord(data)),
 
     [appTypes.SHOW_TERMS]: state =>
         state.merge({
@@ -104,23 +100,12 @@ const appState = createReducer(initialState, {
             status: 'needWeightConfirmation'
         }));
     },
-    [types.HIDE_AUTH_DIALOG]: state =>
-        state.set('showAuthDialog', null),
 
     [types.HIDE_LOGIN_DIALOG]: state =>
         state.set('showLoginDialog', null),
 
-    [types.HIDE_PUBLISH_CONFIRM_DIALOG]: state =>
-        state.set('publishConfirmDialog', null),
-
     [types.HIDE_REPORT_MODAL]: state =>
         state.set('showReportModal', false),
-
-    [types.HIDE_TRANSFER_CONFIRM_DIALOG]: state =>
-        state.set('transferConfirmDialog', null),
-
-    [types.HIDE_WEIGHT_CONFIRM_DIALOG]: state =>
-        state.set('weightConfirmDialog', null),
 
     [types.PROFILE_ADD_FOLLOW_ACTION]: (state, { payload }) => {
         id += 1;
@@ -184,35 +169,35 @@ const appState = createReducer(initialState, {
     [types.PROFILE_LOGOUT_SUCCESS]: state =>
         state.set('homeReady', false),
 
-    [types.SHOW_AUTH_DIALOG]: (state, { actionId }) =>
+    [types.AUTH_DIALOG_TOGGLE]: (state, { actionId }) =>
         state.set('showAuthDialog', actionId),
 
     [types.SHOW_LOGIN_DIALOG]: (state, { akashaId }) =>
         state.set('showLoginDialog', akashaId),
 
-    [types.SHOW_PUBLISH_CONFIRM_DIALOG]: (state, { actionId }) =>
+    [types.PUBLISH_CONFIRM_DIALOG_TOGGLE]: (state, { actionId }) =>
         state.set('publishConfirmDialog', actionId),
 
     [types.SHOW_REPORT_MODAL]: state =>
         state.set('showReportModal', true),
 
-    [types.SHOW_TRANSFER_CONFIRM_DIALOG]: (state, { actionId }) =>
+    [types.TRANSFER_CONFIRM_DIALOG_TOGGLE]: (state, { actionId }) =>
         state.set('transferConfirmDialog', actionId),
 
-    [types.SHOW_WEIGHT_CONFIRM_DIALOG]: (state, { actionId }) =>
+    [types.WEIGHT_CONFIRM_DIALOG_TOGGLE]: (state, { actionId }) =>
         state.set('weightConfirmDialog', actionId),
-    [types.SHOW_DIALOG]: (state, { dialogType, data }) => {
-        console.log(dialogType, data);
-        return state.set(dialogType, data);
-    },
 
     [types.SHOW_DIALOG]: (state, { dialogType, data }) =>
         state.set(dialogType, data),
 
-    [types.UPDATE_ACTION]: (state, { actionId, updates }) => {
-        const newAction = state.getIn(['pendingActions', actionId]).mergeDeep(updates);
-        return state.setIn(['pendingActions', actionId], newAction);
-    },
+    [types.PENDING_ACTION_DELETE]: (state, { actionId }) =>
+        state.deleteIn(['pendingActions', actionId]),
+        // state.merge({
+        //     pendingActions: state.get('pendingActions').delete(actionId),
+        // }),
+
+    [types.PENDING_ACTION_UPDATE]: (state, { data }) =>
+        state.setIn(['pendingActions', data.entityId], new PendingActionRecord(data)),
 });
 
 export default appState;

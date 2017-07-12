@@ -17,9 +17,6 @@ class Avatar extends React.Component {
             rotation: 0
         };
     }
-    componentWillUnmount () {
-        this._handleAvatarClear();
-    }
     onImageLoad = () => {
         this.setState({
             imageLoaded: true
@@ -31,18 +28,16 @@ class Avatar extends React.Component {
             if (this.props.image && typeof this.props.image === 'string') {
                 return resolve(this.props.image);
             }
-            // check if editor exists
-            // ie. image exists in state
-            if (this.editor) {
-                const imageCanvas = this.editor.getImageScaledToCanvas();
-                return imageCanvas.toBlob((blob) => {
-                    const reader = new FileReader();
-                    reader.onloadend = ev =>
-                        resolve(new Uint8Array(ev.target.result));
-                    reader.readAsArrayBuffer(blob);
-                }, 'image/jpg');
+            if (!this.props.image && !this.editor) {
+                return resolve(null);
             }
-            return resolve(null);
+            const imageCanvas = this.editor.getImageScaledToCanvas();
+            return imageCanvas.toBlob((blob) => {
+                const reader = new FileReader();
+                reader.onloadend = ev =>
+                    resolve(new Uint8Array(ev.target.result));
+                reader.readAsArrayBuffer(blob);
+            }, 'image/jpg');
         });
     _handleAvatarClear = () => {
         const { onImageClear } = this.props;
@@ -74,11 +69,19 @@ class Avatar extends React.Component {
         });
     }
     _handleImageAdd = () => {
+        console.log('adding image')
         const files = this.fileInput.files[0].path;
         this.setState({
             avatarImage: files,
             isNewAvatarLoaded: true
+        }, () => {
+            if (this.props.onImageAdd) {
+                this.props.onImageAdd();
+            }
         });
+    }
+    _handleImageChange = () => {
+
     }
     _handleAvatarClick = (ev) => {
         // only when not editable!!
@@ -146,6 +149,7 @@ class Avatar extends React.Component {
                     borderRadius={100}
                     scale={editable ? this.state.avatarScale : 1}
                     rotate={this.state.rotation}
+                    onDropFile={this._handleImageAdd}
                   /> :
                   <img
                     alt=""

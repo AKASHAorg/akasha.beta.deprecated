@@ -40,7 +40,7 @@ class LoginDialog extends Component {
             this.props.hideLoginDialog();
             this.props.userSettingsClear();
             this.props.profileClearLoginErrors();
-            history.push('/dashboard/');
+            history.push('/dashboard');
         }
     }
 

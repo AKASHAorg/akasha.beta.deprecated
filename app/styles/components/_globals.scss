@@ -60,7 +60,13 @@ html, body {
     border-bottom: 10px solid;
     border-bottom-color: #000;
 }
-
+.link-button {
+    cursor: pointer;
+    user-select: none;
+    &:hover {
+        opacity: 0.7;
+    }
+}
 .hand-icon {
     &:hover {
         cursor: pointer;

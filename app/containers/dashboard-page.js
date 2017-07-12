@@ -5,7 +5,6 @@ import { Dashboard } from '../components';
 import { Runners } from '../components/runners';
 import { DataLoader } from '../shared-components';
 import { dashboardSetActive, dashboardUpdateNewColumn } from '../local-flux/actions/dashboard-actions';
-import { profileLogout } from '../local-flux/actions/profile-actions';
 import { selectEntryFlag, selectFullEntry } from '../local-flux/selectors';
 
 class DashboardPage extends Component {
@@ -36,9 +35,6 @@ class DashboardPage extends Component {
           <div style={{ height: '100%', display: isHidden ? 'none' : 'initial' }}>
             <DataLoader flag={!homeReady} style={{ paddingTop: '200px' }}>
               <div style={{ height: '100%' }}>
-                <button style={{ position: 'absolute', right: 0, zIndex: 9999 }} onClick={this.props.profileLogout}>
-                  Logout
-                </button>
                 <Dashboard
                   columns={columns}
                   dashboards={dashboards}
@@ -65,7 +61,6 @@ DashboardPage.propTypes = {
     isHidden: PropTypes.bool,
     match: PropTypes.shape(),
     newColumn: PropTypes.shape(),
-    profileLogout: PropTypes.func.isRequired
 };
 
 function mapStateToProps (state) {
@@ -84,7 +79,6 @@ export default connect(
     mapStateToProps,
     {
         dashboardSetActive,
-        dashboardUpdateNewColumn,
-        profileLogout
+        dashboardUpdateNewColumn
     }
 )(DashboardPage);

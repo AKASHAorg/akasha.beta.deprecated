@@ -5,7 +5,7 @@ import { IconButton, SvgIcon } from 'material-ui';
 import { Avatar, Balance, ServiceStatusBar } from '../';
 import { getInitials } from '../../utils/dataModule';
 
-const TopBarRightSide = ({ balance, loggedProfileData }, { muiTheme }) => (
+const TopBarRightSide = ({ balance, loggedProfileData, history, location, onPanelNavigate, openNotificationPanel }, { muiTheme }) => (
   <div style={{ display: 'flex', flex: '0 0 auto' }}>
     <div style={{ flex: '0 0 auto' }}>
       <ServiceStatusBar />
@@ -15,6 +15,7 @@ const TopBarRightSide = ({ balance, loggedProfileData }, { muiTheme }) => (
       <IconButton
         iconStyle={{ width: '24px', height: '24px' }}
         style={{ width: '32px', height: '32px', padding: '0px' }}
+        onClick={openNotificationPanel}
       >
         <SvgIcon viewBox="0 0 18 18">
           <NotificationsIcon />
@@ -22,7 +23,10 @@ const TopBarRightSide = ({ balance, loggedProfileData }, { muiTheme }) => (
       </IconButton>
     </div>
     <div style={{ flex: '0 0 auto', marginRight: '10px', minWidth: '60px' }}>
-      <Balance balance={balance} />
+      <Balance
+        balance={balance}
+        onClick={onPanelNavigate('wallet')}
+      />
     </div>
     <div style={{ flex: '0 0 auto' }}>
       <Avatar
@@ -31,6 +35,7 @@ const TopBarRightSide = ({ balance, loggedProfileData }, { muiTheme }) => (
         style={{ cursor: 'pointer' }}
         userInitials={getInitials(loggedProfileData.firstName, loggedProfileData.lastName)}
         userInitialsStyle={{ fontSize: '20px' }}
+        onClick={onPanelNavigate('uprofile', history, location)}
       />
     </div>
   </div>
@@ -42,7 +47,11 @@ TopBarRightSide.contextTypes = {
 
 TopBarRightSide.propTypes = {
     balance: PropTypes.string,
-    loggedProfileData: PropTypes.shape()
+    history: PropTypes.shape(),
+    loggedProfileData: PropTypes.shape(),
+    location: PropTypes.shape(),
+    onPanelNavigate: PropTypes.func,
+    openNotificationPanel: PropTypes.func,
 };
 
 export default TopBarRightSide;

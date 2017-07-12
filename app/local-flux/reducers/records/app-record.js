@@ -11,7 +11,7 @@ export const PendingActionRecord = Record({
     // usefull if you want to filter a specific type of entity
     // eg: tempProfile, upvote, comment, downvote, etc
     entityType: null,
-    // one of [create, update, delete]
+    // eg. publish, register, update, delete etc..
     actionType: null,
     // usefull to create relations between pending action and resource
     entityId: null,
@@ -23,21 +23,15 @@ export const PendingActionRecord = Record({
     confirmed: false,
     // triggers when the entity sent to publish on main
     published: false,
-
-    // id: null,
-    // type: null,
-    // payload: new Map(),
-    // titleId: null,
-    // messageId: null,
-    // gas: null,
-    // status: null
+    // gas specified by user. if null apply default gas
+    gas: null
 });
 
 const AppRecord = Record({
     appReady: false,
     homeReady: false,
     notifications: new List(),
-    pendingActions: new List(),
+    pendingActions: new Map(),
     publishConfirmDialog: null,
     showAuthDialog: null,
     showGethDetailsModal: false,
