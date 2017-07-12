@@ -42,12 +42,13 @@ class SearchSecondarySidebar extends Component {
     componentWillReceiveProps (nextProps) {
         const { match } = this.props;
         const nextQuery = nextProps.match.params.query;
+        const nextTopic = nextProps.match.params.topic;
         if (!nextQuery) {
             this.props.searchResetResults();
             this.setState({ queryInput: '' });
-        } else if (nextQuery !== match.params.query) {
+        } else if (nextQuery !== match.params.query || nextTopic !== match.params.topic) {
             this.setState({ queryInput: nextQuery });
-            switch (match.params.topic) {
+            switch (nextTopic) {
                 case topics[0]:
                     this.props.searchQuery(nextQuery);
                     break;
@@ -92,22 +93,22 @@ class SearchSecondarySidebar extends Component {
                 <ListItem
                   value={0}
                   primaryText="Entries"
-                  containerElement={<Link to={`/search/${topics[0]}`} />}
+                  containerElement={<Link to={`/search/${topics[0]}/${this.state.queryInput}`} />}
                 />
                 <ListItem
                   value={1}
                   primaryText="People"
-                  containerElement={<Link to={`/search/${topics[1]}`} />}
+                  containerElement={<Link to={`/search/${topics[1]}/${this.state.queryInput}`} />}
                 />
                 <ListItem
                   value={2}
                   primaryText="Tags"
-                  containerElement={<Link to={`/search/${topics[2]}`} />}
+                  containerElement={<Link to={`/search/${topics[2]}/${this.state.queryInput}`} />}
                 />
                 <ListItem
                   value={3}
                   primaryText="Lists"
-                  containerElement={<Link to={`/search/${topics[3]}`} />}
+                  containerElement={<Link to={`/search/${topics[3]}/${this.state.queryInput}`} />}
                 />
               </SelectableList>
             </div>

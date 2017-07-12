@@ -14,20 +14,9 @@ export const tagSearch = (tag, start, limit) =>
             .filter(item => item.tagName.includes(tag))
             .toArray()
             .then((data) => {
-                const tags = ((start + limit) > data.length) ?
-                data.slice(start, data.length).map(item => item.tagName) :
-                data.slice(start, start + limit).map(item => item.tagName);
-                return resolve(tags);
+                const tags = data.slice(start, start + limit).map(item => item.tagName);
+                return resolve({ tags, count: data.length });
             })
-            .catch(err => reject(err))
-    );
-
-export const tagCount = tag =>
-    new Promise((resolve, reject) =>
-        tagsDB.allTags
-            .filter(item => item.tagName.includes(tag))
-            .count()
-            .then(data => resolve(data))
             .catch(err => reject(err))
     );
 

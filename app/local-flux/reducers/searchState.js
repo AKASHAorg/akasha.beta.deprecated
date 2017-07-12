@@ -45,7 +45,10 @@ const searchState = createReducer(initialState, {
         }),
 
     [types.SEARCH_MORE_QUERY_ERROR]: state =>
-        state.setIn(['flags', 'moreQueryPending'], false),
+        state.merge({
+            consecutiveQueryErrors: state.get('consecutiveQueryErrors') + 1,
+            flags: state.get('flags').merge({ moreQueryPending: false })
+        }),
 
 
     [types.SEARCH_QUERY]: (state, { text }) =>
@@ -60,7 +63,6 @@ const searchState = createReducer(initialState, {
             currentPage: 1,
             totalPages: Math.ceil(data.total / searchLimit),
             resultsCount: data.total,
-            showResults: true,
             flags: state.get('flags').merge({ queryPending: false }),
             entryIds: getEntryIds(data.collection)
         }),
@@ -76,7 +78,6 @@ const searchState = createReducer(initialState, {
             entryIds: [],
             totalPages: null,
             resultsCount: null,
-            showResults: false,
             tags: []
         }),
 
@@ -92,7 +93,6 @@ const searchState = createReducer(initialState, {
             currentPage: null,
             totalPages: null,
             resultsCount: tagCount,
-            showResults: true,
             flags: state.get('flags').merge({ queryPending: false }),
             entryIds: [],
             tags
@@ -113,7 +113,6 @@ const searchState = createReducer(initialState, {
             currentPage: null,
             totalPages: null,
             resultsCount: tagCount,
-            showResults: true,
             flags: state.get('flags').merge({ moreQueryPending: false }),
             entryIds: [],
             tags: state.get('tags').concat(tags)

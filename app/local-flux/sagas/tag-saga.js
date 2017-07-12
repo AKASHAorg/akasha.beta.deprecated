@@ -59,11 +59,10 @@ function* tagSave ({ data }) {
 function* tagSearch ({ tag, start = 0, limit = tagSearchLimit }) {
     try {
         const tags = yield apply(tagService, tagService.tagSearch, [tag, start, limit]);
-        const tagCount = yield apply(tagService, tagService.tagCount, [tag]);
         yield (start) ?
-        put(actions.tagSearchMoreSuccess(tags, tagCount)) :
-        put(actions.tagSearchSuccess(tags, tagCount));
-        yield put(actions.tagGetEntriesCount(tags.map(tagName => ({ tagName }))));
+        put(actions.tagSearchMoreSuccess(tags.tags, tags.count)) :
+        put(actions.tagSearchSuccess(tags.tags, tags.count));
+        yield put(actions.tagGetEntriesCount(tags.tags.map(tagName => ({ tagName }))));
     } catch (error) {
         yield (start) ?
         put(actions.tagSearchMoreError(error)) :

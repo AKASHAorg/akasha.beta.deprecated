@@ -2,6 +2,7 @@ import { List } from 'immutable';
 import * as types from '../constants';
 import { createReducer } from './create-reducer';
 import { ColumnRecord, DashboardRecord, DashboardState, NewColumnRecord } from './records';
+import { COLUMN } from '../../constants/context-types';
 
 const initialState = new DashboardState();
 
@@ -77,7 +78,7 @@ const entryMoreIteratorSuccess = (state, { data, req }) => {
 
 const handleSuggestions = (state, { data, request }) => {
     const { context, columnId } = request;
-    if (context === 'column') {
+    if (context === COLUMN) {
         const suggestions = new List(data);
         if (columnId && state.hasIn(['columnById', columnId])) {
             return state.setIn(['columnById', columnId, 'suggestions'], suggestions);
@@ -148,7 +149,7 @@ const dashboardState = createReducer(initialState, {
 
     [types.DASHBOARD_GET_PROFILE_SUGGESTIONS_SUCCESS]: handleSuggestions,
 
-    [types.TAG_GET_SUGGESTIONS_SUCCESS]: handleSuggestions,
+    [types.DASHBOARD_GET_TAG_SUGGESTIONS_SUCCESS]: handleSuggestions,
 
     [types.DASHBOARD_SET_ACTIVE_SUCCESS]: (state, { data }) =>
         state.merge({
