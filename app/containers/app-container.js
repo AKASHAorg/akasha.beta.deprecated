@@ -8,21 +8,17 @@ import { getMuiTheme } from 'material-ui/styles';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import { DataLoader, GethDetailsModal, IpfsDetailsModal, PublishConfirmDialog,
     TransferConfirmDialog, WeightConfirmDialog } from '../shared-components';
-import { hideNotification, hideTerms, hideReportModal, bootstrapHome, showLoginDialog,
-    publishEntity } from '../local-flux/actions/app-actions';
+import { hideNotification, hideTerms, hideReportModal, bootstrapHome,
+    showLoginDialog } from '../local-flux/actions/app-actions';
 import { entryVoteCost } from '../local-flux/actions/entry-actions';
 import { gethGetStatus } from '../local-flux/actions/external-process-actions';
 import { licenseGetAll } from '../local-flux/actions/license-actions';
-import { tempProfileUpdate, setTempProfile, tempProfileCreate,
-    tempProfileDelete } from '../local-flux/actions/temp-profile-actions';
 import { errorDeleteFatal, errorDeleteNonFatal } from '../local-flux/actions/error-actions';
 import { DashboardPage, EntryPageContainer, LauncherContainer, SidebarContainer } from './';
 import { AuthDialog, LoginDialog } from '../components/dialogs';
-import { CommonTopBar, DashboardSecondarySidebar, DashboardTopBar, ErrorBar, ErrorReportingModal,
-    FatalErrorModal, NotificationBar, PageContent, PanelLoader, SecondarySidebar, TermsPanel,
-    TopBar } from '../components';
-import { selectActiveDashboard, selectEntryFlag, selectFullEntry,
-    selectLoggedProfileData } from '../local-flux/selectors';
+import { DashboardSecondarySidebar, ErrorBar, ErrorReportingModal, FatalErrorModal, NotificationBar,
+    PageContent, SecondarySidebar, TermsPanel, TopBar } from '../components';
+import { selectEntryFlag, selectFullEntry } from '../local-flux/selectors';
 import lightTheme from '../layouts/AkashaTheme/lightTheme';
 import darkTheme from '../layouts/AkashaTheme/darkTheme';
 
@@ -89,7 +85,8 @@ class AppContainer extends Component {
     render () {
         /* eslint-disable no-shadow */
         const { activeDashboard, appState, errorDeleteFatal, errorDeleteNonFatal, errorState, fullEntry,
-            hideNotification, hideTerms, hideReportModal, intl, location, theme } = this.props;
+            hideNotification, hideTerms, hideReportModal, history, intl, location,
+            theme } = this.props;
         /* eslint-enable no-shadow */
         const isAuthDialogVisible = !!appState.get('showAuthDialog');
         const weightConfirmDialog = appState.get('weightConfirmDialog');
@@ -100,9 +97,9 @@ class AppContainer extends Component {
         const showIpfsDetailsModal = appState.get('showIpfsDetailsModal');
         const muiTheme = getMuiTheme(theme === 'light' ? lightTheme : darkTheme);
         const isOverlay = location.state && location.state.overlay && this.previousLocation !== location;
-        console.log('is overlay', isOverlay);
-        console.log('location state', location.state);
-        console.log('location pathname', location.pathname);
+        // console.log('is overlay', isOverlay);
+        // console.log('location state', location.state);
+        // console.log('location pathname', location.pathname);
         return (
           <MuiThemeProvider muiTheme={muiTheme}>
             <DataLoader flag={!appState.get('appReady')} size={80} style={{ paddingTop: '100px' }}>
@@ -111,7 +108,7 @@ class AppContainer extends Component {
                 {!location.pathname.startsWith('/setup') &&
                   <DataLoader flag={!appState.get('homeReady')} size={80} style={{ paddingTop: '100px' }}>
                     <div>
-                      {activeDashboard && location.pathname === '/dashboard/' &&
+                      {activeDashboard && location.pathname === '/dashboard' &&
                         <Redirect to={`/dashboard/${activeDashboard}`} />
                       }
                       <SecondarySidebar>
@@ -124,21 +121,16 @@ class AppContainer extends Component {
                         </Switch>
                         {isOverlay && <Route path="/@:akashaId/:entryId(\d+)" component={EntryPageContainer} />}
                       </PageContent>
-                      <TopBar fullEntryPage={!!fullEntry}>
-                        <Route path="/dashboard/:dashboardName?" component={DashboardTopBar} />
-                        <Route path="/@:akashaId/:entryId(\d+)" component={CommonTopBar} />
-                      </TopBar>
+                      <TopBar
+                        fullEntryPage={!!fullEntry}
+                        location={location}
+                        history={history}
+                      />
                     </div>
                   </DataLoader>
                 }
                 <Route path="/setup" component={LauncherContainer} />
-                <SidebarContainer {...this.props}>
-                  <PanelLoader
-                    intl={intl}
-                    muiTheme={muiTheme}
-                    {...this.props}
-                  />
-                </SidebarContainer>
+                <SidebarContainer {...this.props} />
                 {!!appState.get('notifications').size &&
                   <NotificationBar
                     hideNotification={hideNotification}
@@ -195,6 +187,7 @@ AppContainer.propTypes = {
     hideNotification: PropTypes.func.isRequired,
     hideReportModal: PropTypes.func.isRequired,
     hideTerms: PropTypes.func.isRequired,
+    history: PropTypes.shape(),
     intl: PropTypes.shape(),
     licenseGetAll: PropTypes.func,
     location: PropTypes.shape().isRequired,
@@ -208,8 +201,6 @@ function mapStateToProps (state) {
         errorState: state.errorState,
         fullEntry: !!selectFullEntry(state) || !!selectEntryFlag(state, 'fetchingFullEntry'),
         loggedProfile: state.profileState.get('loggedProfile'),
-        tempProfile: state.tempProfileState.get('tempProfile'),
-        loggedProfileData: selectLoggedProfileData(state),
         theme: state.settingsState.getIn(['general', 'theme']),
     };
 }
@@ -227,11 +218,6 @@ export default connect(
         hideTerms,
         hideReportModal,
         licenseGetAll,
-        publishEntity,
-        setTempProfile,
         showLoginDialog,
-        tempProfileCreate,
-        tempProfileDelete,
-        tempProfileUpdate,
     }
 )(injectIntl(AppContainer));

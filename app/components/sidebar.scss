@@ -23,28 +23,6 @@
     will-change: left;
 }
 
-.panelWrapper {
-    position: fixed;
-    top: 0;
-    right: -64px;
-    bottom: 0;
-    transition: right, width 150ms ease-in-out;
-    overflow: hidden;
-    max-width: 64% !important;
-    will-change: right, width;
-    z-index: 20;
-    width: 0;
-    &.open {
-        right: 0;
-        width: 100%;
-    }
-}
-
-.open {
-    transition: right, width 150ms ease-in-out;
-    will-change: right, width;
-}
-
 .profileIcon {
     flex-grow: 0;
     padding: 14px 14px 5px;
@@ -71,24 +49,4 @@
     flex-grow: 1;
     padding: 14px 8px;
     align-items: flex-end;
-}
-
-.panelWrapperOverlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(75, 91, 103, 0.89);
-    z-index: 1;
-    cursor: pointer;
-    visibility: hidden;
-    opacity: 0;
-    transition: opacity 0.218s ease-in-out;
-}
-
-.overlayVisible {
-    visibility: visible;
-    opacity: 1;
-    transition: opacity 0.218s ease-in-out;
 }

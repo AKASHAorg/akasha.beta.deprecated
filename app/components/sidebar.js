@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { LogoButton, PanelContainer } from './';
+import { LogoButton } from './';
 import { getInitials } from '../utils/dataModule';
 import { AddEntryIcon, ChatIcon, EntriesIcon, PeopleIcon, ProfileIcon,
     SearchIcon, StreamsIcon } from '../shared-components/svg';
@@ -10,45 +10,6 @@ import panels from '../constants/panels';
 import styles from './sidebar.scss';
 
 class Sidebar extends Component {
-    constructor (props) {
-        super(props);
-        this.state = {
-            panelContentVisible: this._checkIsPanel()
-        };
-    }
-
-    componentWillReceiveProps (nextProps) {
-        const { history, loggedProfile, location } = nextProps;
-
-        // the condition below is equivalent to a successful logout action
-        if (!loggedProfile.get('account') && this.props.loggedProfile.get('account') && this._isSidebarVisible(location)) {
-            history.push('/setup/authenticate');
-        }
-    }
-
-    _getRootPath = (rootPath) => {
-        const path = rootPath.split('/');
-        return path.slice(0, path.length - 2).join('/');
-    }
-    _navigateToPanel = (panelName) => {
-        const { history, location } = this.props;
-        return (ev) => {
-            if (!location.pathname.includes('/panel/')) {
-                history.push(`${location.pathname}/panel/${panelName}${location.search}`);
-            } else if (location.pathname.includes('/panel/') && !location.pathname.includes(panelName)) {
-                history.push(`${this._getRootPath(location.pathname)}/panel/${panelName}${location.search}`);
-            } else if (location.pathname.includes(panelName)) {
-                history.push(`${this._getRootPath(location.pathname)}${location.search}`);
-            }
-            if (ev) ev.preventDefault();
-        };
-    }
-    _closePanel = () => {
-        const { history, location } = this.props;
-        const rootPath = this._getRootPath(location.pathname);
-        return history.push(`${rootPath}${location.search}`);
-    }
-
     handleSearch = () => this.handlePanelShow(panels.search);
     _handleNewEntry = () => {
         console.log('new entry');
@@ -69,21 +30,13 @@ class Sidebar extends Component {
         const { location } = this.props;
         return location.pathname.includes(name);
     }
-    _checkIsPanel = () => {
-        const { location } = this.props;
-        return location.pathname.includes('/panel/');
-    }
-    _handlePanelVisible = () => {
-        this.setState({
-            panelContentVisible: !this.state.panelContentVisible
-        });
+    _navigateTo = path => (ev) => {
+        console.log('Please navigate to', path);
     }
     render () {
-        const { activeDashboard, balance, draftsCount, hasFeed, intl, loggedProfileData,
-          notificationsCount, location, children } = this.props;
+        const { activeDashboard, draftsCount, intl, loggedProfileData,
+          notificationsCount, location } = this.props;
         const { palette } = this.context.muiTheme;
-        const userInitials =
-            getInitials(loggedProfileData.get('firstName'), loggedProfileData.get('lastName'));
         const entriesCount = parseInt(loggedProfileData.get('entriesCount'), 10);
         const isLoggedIn = !!loggedProfileData.get('akashaId');
         return (
@@ -92,26 +45,6 @@ class Sidebar extends Component {
             style={{ backgroundColor: palette.sidebarColor }}
           >
             <div className={`${styles.sidebarInner}`}>
-              <div className={`${styles.profileIcon}`} >
-                <ProfileIcon
-                  isActive={this._checkActiveIcon('uprofile')}
-                  avatar={loggedProfileData.get('avatar')}
-                  userInitials={userInitials}
-                  hasFeed={hasFeed}
-                  notificationsCount={notificationsCount}
-                  onClick={this._navigateToPanel('uprofile')}
-                />
-              </div>
-              {isLoggedIn &&
-                <div className={`${styles.balanceInfo}`}>
-                  <div className={`${styles.balanceAmount} center-xs`}>
-                    {balance && balance.slice(0, 6)}
-                  </div>
-                  <div className={`${styles.balanceCurrency} center-xs`}>
-                    {intl.formatMessage(generalMessages.aeth)}
-                  </div>
-                </div>
-              }
               <div className={`${styles.entryIcon}`} >
                 {(entriesCount > 0 || draftsCount > 0) ?
                   <div {...this.getWrapperProps(generalMessages.myEntries)}>
@@ -158,23 +91,7 @@ class Sidebar extends Component {
               >
                 <LogoButton />
               </div>
-              <div
-                className={`col-xs-12 ${styles.panelWrapper} ${this._checkIsPanel() && styles.open}`}
-                style={{ paddingRight: 0 }}
-                onTransitionEnd={this._handlePanelVisible}
-              >
-                <PanelContainer
-                  maxWidth="100%"
-                  width="100%"
-                >
-                  {React.cloneElement(children, { onPanelNavigate: this._navigateToPanel })}
-                </PanelContainer>
-              </div>
             </div>
-            <div
-              className={`${styles.panelWrapperOverlay} ${this._checkIsPanel() && styles.overlayVisible}`}
-              onClick={this._closePanel}
-            />
           </div>
         );
     }
@@ -187,7 +104,6 @@ Sidebar.contextTypes = {
 Sidebar.propTypes = {
     activeDashboard: PropTypes.string,
     balance: PropTypes.string,
-    children: PropTypes.element,
     draftsCount: PropTypes.number,
     hasFeed: PropTypes.bool,
     history: PropTypes.shape(),
