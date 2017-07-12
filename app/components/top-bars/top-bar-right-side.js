@@ -5,7 +5,14 @@ import { IconButton, SvgIcon } from 'material-ui';
 import { Avatar, Balance, ServiceStatusBar } from '../';
 import { getInitials } from '../../utils/dataModule';
 
-const TopBarRightSide = ({ balance, loggedProfileData, history, location, onPanelNavigate, openNotificationPanel }, { muiTheme }) => (
+const TopBarRightSide = ({
+    balance,
+    loggedProfileData,
+    history,
+    location,
+    onPanelNavigate,
+    openNotificationPanel
+}, { muiTheme }) => (
   <div style={{ display: 'flex', flex: '0 0 auto' }}>
     <div style={{ flex: '0 0 auto' }}>
       <ServiceStatusBar />
