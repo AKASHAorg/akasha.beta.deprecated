@@ -1,45 +1,50 @@
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import { injectIntl } from 'react-intl';
+import { selectLoggedProfileData } from '../../local-flux/selectors';
+import { setTempProfile, tempProfileDelete, tempProfileUpdate,
+    publishEntity } from '../../local-flux/actions/temp-profile-actions';
 import ProfileForm from '../forms/new-profile-form';
-import { PanelContainerHeader } from '../';
 import styles from './profile-edit.scss';
 
-class EditProfile extends PureComponent {
+class EditProfile extends Component {
     componentWillMount () {
         this._createTempProfile(this.props);
     }
-    componentDidUpdate () {
-        this._createTempProfile(this.props);
+    componentWillReceiveProps (nextProps) {
+        this._createTempProfile(nextProps);
     }
-    componentWillUnmount = () => {
-        const { tempProfileDelete, tempProfile, appState } = this.props;
-        const pendingActions = appState.get('pendingActions');
+    componentWillUnmount () {
+        const { tempProfile, pendingActions } = this.props;
         // Delete temp profile if it`s not pending to publish
-        const isTempProfilePending = pendingActions.find(action => action.get('entityType') === 'tempProfile');
+        // debugger;
+        const isTempProfilePending = pendingActions.find(action =>
+            action.get('entityType') === 'tempProfile'
+        );
         if (!isTempProfilePending) {
-            tempProfileDelete({
+            this.props.tempProfileDelete({
                 akashaId: tempProfile.get('akashaId')
             });
         }
     }
     _createTempProfile = (props) => {
-        const { tempProfile, loggedProfileData, setTempProfile } = props;
+        const { tempProfile, loggedProfileData } = props;
         const tempAkashaId = tempProfile.get('akashaId');
         const akashaId = loggedProfileData.get('akashaId');
         if (tempAkashaId === '' && tempAkashaId !== akashaId) {
-            setTempProfile(loggedProfileData);
+            this.props.setTempProfile(loggedProfileData);
         }
     }
     _handleSubmit = () => {
-        const { publishEntity, tempProfile, appState } = this.props;
-        const pendingActions = appState.get('pendingActions');
+        const { tempProfile, pendingActions } = this.props;
         if (tempProfile.get('localId') && pendingActions.has(tempProfile.get('localId'))) {
             return console.warn('profile upgrade is in progress. Wait untill it`s finished!');
         }
         if (pendingActions.find(action => action.entityType === 'tempProfile')) {
             return console.warn('There is already a profile update in progress. Please wait until it`s finished.');
         }
-        return publishEntity({
+        return this.props.publishEntity({
             entityType: 'tempProfile',
             actionType: 'update',
             entityId: tempProfile.get('localId'),
@@ -54,41 +59,18 @@ class EditProfile extends PureComponent {
         history.goBack();
     }
     _updateTempProfile = (updatedProfile) => {
-        const { tempProfileUpdate } = this.props;
-        tempProfileUpdate(updatedProfile);
+        this.props.tempProfileUpdate(updatedProfile);
     }
     render () {
-        const { intl, muiTheme, tempProfile, loggedProfileData } = this.props;
+        const { intl, tempProfile } = this.props;
+        const { muiTheme } = this.context;
         return (
           <div className={`${styles.root} row`}>
-            <PanelContainerHeader
-              subTitle={`${loggedProfileData.firstName} ${loggedProfileData.lastName} > Edit Profile`}
-              intl={intl}
-              muiTheme={muiTheme}
-              showBorder
-              headerHeight={40}
-              headerActions={
-                <div className="col-xs-12">
-                  <div className="row end-xs">
-                    <div className="col-xs-4">
-                      <button type="button">Settings</button>
-                    </div>
-                    <div className="col-xs-5">
-                      <button type="button">Edit Profile</button>
-                    </div>
-                    <div className="col-xs-3">
-                      <button type="button">Logout</button>
-                    </div>
-                  </div>
-                </div>
-              }
-            />
             <ProfileForm
               intl={intl}
               muiTheme={muiTheme}
               isUpdate
               tempProfile={tempProfile}
-              expandOptionalDetails
               onSubmit={this._handleSubmit}
               onCancel={this._handleAbort}
               onProfileUpdate={this._updateTempProfile}
@@ -98,12 +80,15 @@ class EditProfile extends PureComponent {
     }
 }
 
+EditProfile.contextTypes = {
+    muiTheme: PropTypes.shape()
+};
+
 EditProfile.propTypes = {
-    appState: PropTypes.shape(),
     history: PropTypes.shape(),
     intl: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
-    muiTheme: PropTypes.shape(),
+    pendingActions: PropTypes.shape(),
     publishEntity: PropTypes.func,
     setTempProfile: PropTypes.func,
     tempProfileDelete: PropTypes.func,
@@ -111,4 +96,19 @@ EditProfile.propTypes = {
     tempProfileUpdate: PropTypes.func,
 };
 
-export default EditProfile;
+const mapStateToProps = state => ({
+    pendingActions: state.appState.get('pendingActions'),
+    loggedProfileData: selectLoggedProfileData(state),
+    tempProfile: state.tempProfileState.get('tempProfile')
+});
+
+
+export default connect(
+    mapStateToProps,
+    {
+        setTempProfile,
+        tempProfileDelete,
+        tempProfileUpdate,
+        publishEntity
+    }
+)(injectIntl(EditProfile));

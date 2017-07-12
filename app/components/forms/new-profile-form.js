@@ -19,7 +19,6 @@ class NewProfileForm extends Component {
     constructor (props) {
         super(props);
         this.state = {
-            optDetails: false,
             akashaIdIsValid: true,
             akashaIdExists: false
         };
@@ -27,11 +26,10 @@ class NewProfileForm extends Component {
         this.showErrorOnFields = [];
         this.isSubmitting = false;
     }
-
     getValidatorData = () => this.props.tempProfile.toJS();
     componentWillReceiveProps (nextProps) {
         const { isUpdate, tempProfile } = nextProps;
-        // we need to update temp profile only if something has changed
+        // we need to enable update temp profile button only if something has changed
         // so we need to keep a ref to old temp profile.
         if (isUpdate && tempProfile.akashaId !== this.props.tempProfile.akashaId) {
             this.refTempProfile = tempProfile;
@@ -43,12 +41,6 @@ class NewProfileForm extends Component {
         const { onTermsShow } = this.props;
         if (onTermsShow) return onTermsShow();
         return null;
-    }
-
-    _handleShowDetails = () => {
-        this.setState({
-            optDetails: !this.state.optDetails
-        });
     }
 
     _handleAddLink = linkType => () => {
@@ -388,15 +380,6 @@ class NewProfileForm extends Component {
                   </div>
                 </div>
               }
-              {!expandOptionalDetails &&
-                <Checkbox
-                  label={intl.formatMessage(profileMessages.optionalDetailsLabel)}
-                  style={{ marginTop: 18 }}
-                  checked={optDetails}
-                  onCheck={this._handleShowDetails}
-                />
-              }
-              {(optDetails || expandOptionalDetails) &&
                 <div className="row middle-xs" style={{ padding: '0 4px' }}>
                   <h3 className="col-xs-12" style={{ margin: '20px 0 0 0' }} >
                     {intl.formatMessage(profileMessages.aboutYouTitle)}
@@ -434,7 +417,6 @@ class NewProfileForm extends Component {
                       (<div key={`${index + 1}`} className="row">
                         <div className="col-xs-10">
                           <TextField
-                            autoFocus={(links.size - 1) === index}
                             fullWidth
                             floatingLabelText={intl.formatMessage(formMessages.title)}
                             value={link.get('title')}
@@ -530,7 +512,6 @@ class NewProfileForm extends Component {
                     )}
                   </div>
                 </div>
-              }
               <small style={{ paddingBottom: '15px', marginTop: '15px' }}>
                 <FormattedMessage
                   {...profileMessages.terms}

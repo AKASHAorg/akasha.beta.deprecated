@@ -20,14 +20,23 @@ const DashboardTopBar = props => (
         </SvgIcon>
       </IconButton>
     </div>
-    <TopBarRightSide balance={props.balance} loggedProfileData={props.loggedProfileData} />
+    <TopBarRightSide
+      balance={props.balance}
+      history={props.history}
+      onPanelNavigate={props.onPanelNavigate}
+      location={props.location}
+      loggedProfileData={props.loggedProfileData}
+    />
   </div>
 );
 
 DashboardTopBar.propTypes = {
     balance: PropTypes.string,
     dashboardAddNewColumn: PropTypes.func.isRequired,
-    loggedProfileData: PropTypes.shape()
+    loggedProfileData: PropTypes.shape(),
+    onPanelNavigate: PropTypes.func,
+    history: PropTypes.shape(),
+    location: PropTypes.shape()
 };
 
 function mapStateToProps (state) {
