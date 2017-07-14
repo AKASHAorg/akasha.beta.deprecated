@@ -58,6 +58,7 @@ export PathInputField from './common/path-input-field';
 export ProfileColumn from './columns/profile-column';
 export ProfileDetailsPanel from './panels/user-profile-details';
 export ProfileEditPanel from './panels/profile-edit';
+export ProfileDetails from './profile/profile-details';
 export ProfileHoverCard from './profile-hover-card/profile-hover-card';
 export ProfileList from './setup/profile-list';
 export ProfilePanelsHeader from './panels/profile-panels-header';
