@@ -14,7 +14,7 @@ import { entryVoteCost } from '../local-flux/actions/entry-actions';
 import { gethGetStatus } from '../local-flux/actions/external-process-actions';
 import { licenseGetAll } from '../local-flux/actions/license-actions';
 import { errorDeleteFatal, errorDeleteNonFatal } from '../local-flux/actions/error-actions';
-import { DashboardPage, EntryPageContainer, EntrySearchPage, SidebarContainer, TagSearchPage } from './';
+import { DashboardPage, EntryPageContainer, EntrySearchPage, TagSearchPage, SidebarContainer, ProfileContainer } from './';
 import { AuthDialog, LoginDialog } from '../components/dialogs';
 import { DashboardSecondarySidebar, DataLoader, ErrorBar, ErrorReportingModal,
     FatalErrorModal, GethDetailsModal, IpfsDetailsModal, NotificationBar, PageContent, SecondarySidebar,
@@ -126,9 +126,8 @@ class AppContainer extends Component {
                           <Route path="/dashboard/:dashboardName?" component={DashboardPage} />
                           <Route path="/@:akashaId/:entryId(\d+)" component={EntryPageContainer} />
                         </Switch>
-                        {isOverlay &&
-                          <Route path="/@:akashaId/:entryId(\d+)" component={EntryPageContainer} />
-                        }
+                        {isOverlay && <Route path="/@:akashaId/:entryId(\d+)" component={EntryPageContainer} />}
+                        {isOverlay && <Route path="/@:akashaId" component={ProfileContainer} />}
                       </PageContent>
                       <TopBar />
                     </div>
