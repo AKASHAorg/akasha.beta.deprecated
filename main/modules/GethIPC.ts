@@ -29,6 +29,7 @@ class GethIPC extends ModuleEmitter {
             ipcpath: join(GethConnector.getDefaultDatadir().replace(':', '\\'), 'akasha-alpha', 'geth.ipc'),
             networkid: 511337,
             shh: '',
+            syncmode: 'fast',
             // rpc: '',
             // rpccorsdomain: '*',
             // rpcapi: 'eth,net,web3,personal,admin,shh,txpool',
