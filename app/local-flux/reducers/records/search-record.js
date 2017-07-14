@@ -10,5 +10,6 @@ export const SearchRecord = Record({
     searchService: null,
     showResults: false,
     totalPages: null,
-    entryIds: new List()
+    entryIds: new List(),
+    tags: new List()
 });

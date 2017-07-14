@@ -1,10 +1,11 @@
-import { apply, call, cancel, fork, put, select, take, takeEvery } from 'redux-saga/effects';
+import { apply, call, cancel, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 import * as reduxSaga from 'redux-saga';
 import { actionChannels, enableChannel } from './helpers';
 import { selectTagMargins } from '../selectors';
 import * as actions from '../actions/tag-actions';
 import * as tagService from '../services/tag-service';
 import * as types from '../constants';
+import { tagSearchLimit } from '../../constants/iterator-limits';
 
 const Channel = global.Channel;
 const TAG_LIMIT = 30;
@@ -55,6 +56,21 @@ function* tagSave ({ data }) {
     }
 }
 
+function* tagSearch ({ tag, start = 0, limit = tagSearchLimit }) {
+    try {
+        const tags = yield apply(tagService, tagService.tagSearch, [tag, start, limit]);
+        const tagCount = yield apply(tagService, tagService.tagCount, [tag]);
+        yield (start) ?
+        put(actions.tagSearchMoreSuccess(tags, tagCount)) :
+        put(actions.tagSearchSuccess(tags, tagCount));
+        yield put(actions.tagGetEntriesCount(tags.map(tagName => ({ tagName }))));
+    } catch (error) {
+        yield (start) ?
+        put(actions.tagSearchMoreError(error)) :
+        put(actions.tagSearchError(error));
+    }
+}
+
 // Action watchers
 
 function* watchTagGetEntriesCount () {
@@ -68,6 +84,14 @@ function* watchTagIterator () {
 
 function* watchTagSave () {
     yield takeEvery(types.TAG_SAVE, tagSave);
+}
+
+function* watchTagSearch () {
+    yield takeLatest(types.TAG_SEARCH, tagSearch);
+}
+
+function* watchTagSearchMore () {
+    yield takeLatest(types.TAG_SEARCH_MORE, tagSearch);
 }
 
 // Channel watchers
@@ -104,6 +128,18 @@ function* watchTagIteratorChannel () {
     }
 }
 
+// function* watchTagSearchChannel () {
+//     while (true) {
+//         const resp = yield take(actionChannels.tags.searchTag);
+//         if (resp.error) {
+//             yield put(actions.tagSearchError(resp.error));
+//         } else {
+//             yield put(actions.tagSearchSuccess(resp.data));
+//             yield put(actions.tagGetEntriesCount(resp.data.collection.map(tagName => ({ tagName }))));
+//         }
+//     }
+// }
+
 export function* registerTagListeners () {
     yield fork(watchTagGetEntriesCountChannel);
     yield fork(watchTagIteratorChannel);
@@ -113,4 +149,6 @@ export function* watchTagActions () {
     yield fork(watchTagGetEntriesCount);
     yield fork(watchTagIterator);
     yield fork(watchTagSave);
+    yield fork(watchTagSearch);
+    yield fork(watchTagSearchMore);
 }

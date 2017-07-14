@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { EntryListContainer } from '../shared-components';
-import { searchMoreQuery } from '../local-flux/actions/search-actions';
-import { selectSearchEntries } from '../local-flux/selectors';
+import { EntryListContainer } from '../../shared-components';
+import { searchMoreQuery } from '../../local-flux/actions/search-actions';
+import { selectSearchEntries } from '../../local-flux/selectors';
 
 
 class SearchPage extends Component {

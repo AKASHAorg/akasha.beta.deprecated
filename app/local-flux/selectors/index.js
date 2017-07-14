@@ -171,6 +171,9 @@ export const selectSearchQuery = state => state.searchState.get('query');
 
 export const selectTagMargins = state => state.tagState.get('margins');
 
+export const selectTagGetEntriesCount = state =>
+    state.searchState.tags.map(tag => ({ count: state.tagState.getIn(['entriesCount', tag]), tagName: tag }));
+
 export const selectToken = state => state.profileState.getIn(['loggedProfile', 'token']);
 
 /* eslint-enable no-use-before-define */

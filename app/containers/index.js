@@ -12,5 +12,6 @@ export NewProfileStatusContainer from './new-profile-status-container';
 export NewProfileCompleteContainer from './new-profile-complete-container';
 export SidebarContainer from './sidebar-container';
 export SynchronizationContainer from './synchronization-container';
-export SearchPage from './search-page';
+export EntrySearchPage from './search-pages/entry-search-page';
+export TagSearchPage from './search-pages/tag-search-page';
 /* eslint-enable import/no-named-as-default */

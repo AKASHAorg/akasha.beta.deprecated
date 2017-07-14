@@ -76,12 +76,15 @@ const entryMoreIteratorSuccess = (state, { data, req }) => {
 };
 
 const handleSuggestions = (state, { data, request }) => {
-    const { columnId } = request;
-    const suggestions = new List(data);
-    if (columnId) {
-        return state.setIn(['columnById', columnId, 'suggestions'], suggestions);
+    const { type, columnId } = request;
+    if (type === 'column' && state.hasIn(['columnById', columnId])) {
+        const suggestions = new List(data);
+        if (columnId) {
+            return state.setIn(['columnById', columnId, 'suggestions'], suggestions);
+        }
+        return state.setIn(['newColumn', 'suggestions'], suggestions);
     }
-    return state.setIn(['newColumn', 'suggestions'], suggestions);
+    return state;
 };
 
 const dashboardState = createReducer(initialState, {
@@ -145,7 +148,7 @@ const dashboardState = createReducer(initialState, {
 
     [types.DASHBOARD_GET_PROFILE_SUGGESTIONS_SUCCESS]: handleSuggestions,
 
-    [types.DASHBOARD_GET_TAG_SUGGESTIONS_SUCCESS]: handleSuggestions,
+    [types.TAG_GET_SUGGESTIONS_SUCCESS]: handleSuggestions,
 
     [types.DASHBOARD_SET_ACTIVE_SUCCESS]: (state, { data }) =>
         state.merge({

@@ -300,3 +300,15 @@ export const tagSaveError = (error) => {
 };
 
 export const tagSaveSuccess = data => action(types.TAG_SAVE_SUCCESS, { data });
+
+export const tagSearch = tag => action(types.TAG_SEARCH, { tag });
+
+export const tagSearchError = error => action(types.TAG_SEARCH_ERROR, { error });
+
+export const tagSearchSuccess = (tags, tagCount) => action(types.TAG_SEARCH_SUCCESS, { tags, tagCount });
+
+export const tagSearchMore = (tag, start) => action(types.TAG_SEARCH_MORE, { tag, start });
+
+export const tagSearchMoreError = error => action(types.TAG_SEARCH_MORE_ERROR, { error });
+
+export const tagSearchMoreSuccess = (tags, tagCount) => action(types.TAG_SEARCH_MORE_SUCCESS, { tags, tagCount });

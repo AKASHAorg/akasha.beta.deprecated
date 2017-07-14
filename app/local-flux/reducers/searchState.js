@@ -76,8 +76,51 @@ const searchState = createReducer(initialState, {
             entryIds: [],
             totalPages: null,
             resultsCount: null,
-            showResults: false
+            showResults: false,
+            tags: []
         }),
+
+    [types.TAG_SEARCH]: (state, { tag }) =>
+        state.merge({
+            query: tag,
+            flags: state.get('flags').merge({ queryPending: true })
+        }),
+
+    [types.TAG_SEARCH_SUCCESS]: (state, { tags, tagCount }) =>
+        state.merge({
+            consecutiveQueryErrors: 0,
+            currentPage: null,
+            totalPages: null,
+            resultsCount: tagCount,
+            showResults: true,
+            flags: state.get('flags').merge({ queryPending: false }),
+            entryIds: [],
+            tags
+        }),
+
+    [types.TAG_SEARCH_ERROR]: state =>
+        state.setIn(['flags', 'queryPending'], false),
+
+    [types.TAG_SEARCH_MORE]: (state, { tag }) =>
+        state.merge({
+            query: tag,
+            flags: state.get('flags').merge({ moreQueryPending: true })
+        }),
+
+    [types.TAG_SEARCH_MORE_SUCCESS]: (state, { tags, tagCount }) =>
+        state.merge({
+            consecutiveQueryErrors: 0,
+            currentPage: null,
+            totalPages: null,
+            resultsCount: tagCount,
+            showResults: true,
+            flags: state.get('flags').merge({ moreQueryPending: false }),
+            entryIds: [],
+            tags: state.get('tags').concat(tags)
+        }),
+
+    [types.TAG_SEARCH_MORE_ERROR]: state =>
+        state.setIn(['flags', 'moreQueryPending'], false),
 });
 
 export default searchState;

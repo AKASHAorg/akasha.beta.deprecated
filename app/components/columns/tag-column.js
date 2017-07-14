@@ -41,7 +41,7 @@ class TagColumn extends Component {
           <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
             <ColumnHeader
               column={column}
-              onInputChange={val => this.props.dashboardGetTagSuggestions(val, column.get('id'))}
+              onInputChange={val => this.props.dashboardGetTagSuggestions(val, 'column', column.get('id'))}
               icon={<ColumnTag />}
               suggestions={suggestions}
             />
