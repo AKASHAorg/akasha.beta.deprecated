@@ -70,6 +70,8 @@ export const dashboardGetColumnsError = (error) => {
 
 export const dashboardGetColumnsSuccess = data =>
     action(types.DASHBOARD_GET_COLUMNS_SUCCESS, { data });
+
+
 export const dashboardGetProfileSuggestions = (akashaId, columnId) =>
     action(types.DASHBOARD_GET_PROFILE_SUGGESTIONS, { akashaId, columnId });
 
@@ -81,17 +83,19 @@ export const dashboardGetProfileSuggestionsError = (error, request) => {
 
 export const dashboardGetProfileSuggestionsSuccess = (data, request) =>
     action(types.DASHBOARD_GET_PROFILE_SUGGESTIONS_SUCCESS, { data, request });
-export const dashboardGetTagSuggestions = (tag, columnId) =>
-    action(types.DASHBOARD_GET_TAG_SUGGESTIONS, { tag, columnId });
+
+
+export const dashboardGetTagSuggestions = (tag, context, columnId) =>
+    action(types.TAG_GET_SUGGESTIONS, { tag, context, columnId });
 
 export const dashboardGetTagSuggestionsError = (error, request) => {
     error.code = 'DGTSE01';
     error.messageId = 'dashboardGetTagSuggestions';
-    return action(types.DASHBOARD_GET_TAG_SUGGESTIONS_ERROR, { error, request });
+    return action(types.TAG_GET_SUGGESTIONS_ERROR, { error, request });
 };
 
 export const dashboardGetTagSuggestionsSuccess = (data, request) =>
-    action(types.DASHBOARD_GET_TAG_SUGGESTIONS_SUCCESS, { data, request });
+    action(types.TAG_GET_SUGGESTIONS_SUCCESS, { data, request });
 export const dashboardSetActive = name => action(types.DASHBOARD_SET_ACTIVE, { name });
 
 export const dashboardSetActiveError = (error) => {

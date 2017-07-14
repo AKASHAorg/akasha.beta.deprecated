@@ -14,7 +14,7 @@ import { entryVoteCost } from '../local-flux/actions/entry-actions';
 import { gethGetStatus } from '../local-flux/actions/external-process-actions';
 import { licenseGetAll } from '../local-flux/actions/license-actions';
 import { errorDeleteFatal, errorDeleteNonFatal } from '../local-flux/actions/error-actions';
-import { DashboardPage, EntryPageContainer, SidebarContainer } from './';
+import { DashboardPage, EntryPageContainer, EntrySearchPage, SidebarContainer, TagSearchPage } from './';
 import { AuthDialog, LoginDialog } from '../components/dialogs';
 import { DashboardSecondarySidebar, DataLoader, ErrorBar, ErrorReportingModal,
     FatalErrorModal, GethDetailsModal, IpfsDetailsModal, NotificationBar, PageContent, SecondarySidebar,
@@ -108,6 +108,7 @@ class AppContainer extends Component {
                 }}
               >
                 {location.pathname === '/' && <Redirect to="/setup/configuration" />}
+                {location.pathname === '/search' && <Redirect to="/search/entries" />}
                 {!location.pathname.startsWith('/setup') &&
                   <DataLoader flag={!appState.get('homeReady')} size={80} style={{ paddingTop: '100px' }}>
                     <div>
@@ -119,7 +120,8 @@ class AppContainer extends Component {
                         <Route path="/search/:topic/:query?" component={SearchSecondarySidebar} />
                       </SecondarySidebar>
                       <PageContent>
-                        <Route path="/search/:topic/:query?" component={SearchPage} />
+                        <Route path="/search/entries/:query?" component={EntrySearchPage} />
+                        <Route path="/search/tags/:query?" component={TagSearchPage} />
                         <Switch location={isOverlay ? this.previousLocation : location}>
                           <Route path="/dashboard/:dashboardName?" component={DashboardPage} />
                           <Route path="/@:akashaId/:entryId(\d+)" component={EntryPageContainer} />

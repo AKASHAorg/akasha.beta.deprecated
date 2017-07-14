@@ -2,7 +2,7 @@ import { take, put, call, apply, fork, takeLatest, select } from 'redux-saga/eff
 import * as actions from '../actions/search-actions';
 import { actionChannels, enableChannel } from './helpers';
 import * as types from '../constants';
-import { searchLimit } from '../../constants/iterator-limits';
+import { entrySearchLimit } from '../../constants/iterator-limits';
 import { entryGetExtraOfList } from './entry-saga';
 import { selectSearchQuery } from '../selectors';
 
@@ -16,7 +16,7 @@ function* searchHandshake () {
     yield apply(channel, channel.send, [{}]);
 }
 
-function* searchQuery ({ text, pageSize = searchLimit, offset = 0 }) {
+function* searchQuery ({ text, pageSize = entrySearchLimit, offset = 0 }) {
     const channel = Channel.server.search.query;
     yield call(enableChannel, channel, Channel.client.search.manager);
     yield apply(channel, channel.send, [{ text, pageSize, offset }]);
@@ -57,7 +57,7 @@ function* watchSearchHandshakeChannel () {
 }
 
 function* watchSearchQueryChannel () {
-    const listLimit = searchLimit + 1;
+    const listLimit = entrySearchLimit + 1;
     while (true) {
         const resp = yield take(actionChannels.search.query);
         const query = yield select(selectSearchQuery);

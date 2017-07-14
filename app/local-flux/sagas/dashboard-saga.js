@@ -107,8 +107,11 @@ export function* dashboardGetProfileSuggestions (request) {
 }
 
 function* dashboardGetTagSuggestions (request) {
+    const { tag } = request;
+    const START = 0;
+    const LIMIT = 5;
     try {
-        const suggestions = yield apply(tagService, tagService.getTagSuggestions, [request.tag]);
+        const suggestions = yield apply(tagService, tagService.tagSearch, [tag, START, LIMIT]);
         yield put(actions.dashboardGetTagSuggestionsSuccess(suggestions, request));
         return { suggestions };
     } catch (error) {
@@ -175,7 +178,7 @@ function* watchDashboardGetProfileSuggestions () {
 }
 
 function* watchDashboardGetTagSuggestions () {
-    yield takeLatest(types.DASHBOARD_GET_TAG_SUGGESTIONS, dashboardGetTagSuggestions);
+    yield takeLatest(types.TAG_GET_SUGGESTIONS, dashboardGetTagSuggestions);
 }
 
 function* watchDashboardSetActive () {

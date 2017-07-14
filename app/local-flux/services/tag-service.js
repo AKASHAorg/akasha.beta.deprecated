@@ -8,12 +8,26 @@ export const getTagMargins = () =>
             .catch(err => reject(err))
     );
 
-export const getTagSuggestions = tag =>
+export const tagSearch = (tag, start, limit) =>
     new Promise((resolve, reject) =>
         tagsDB.allTags
             .filter(item => item.tagName.includes(tag))
             .toArray()
-            .then(data => resolve(data.slice(0, 5).map(item => item.tagName)))
+            .then((data) => {
+                const tags = ((start + limit) > data.length) ?
+                data.slice(start, data.length).map(item => item.tagName) :
+                data.slice(start, start + limit).map(item => item.tagName);
+                return resolve(tags);
+            })
+            .catch(err => reject(err))
+    );
+
+export const tagCount = tag =>
+    new Promise((resolve, reject) =>
+        tagsDB.allTags
+            .filter(item => item.tagName.includes(tag))
+            .count()
+            .then(data => resolve(data))
             .catch(err => reject(err))
     );
 
