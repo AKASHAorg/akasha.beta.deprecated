@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import { Component } from 'react';
 import { connect } from 'react-redux';
 import actionTypes from '../../constants/action-types';
-import { deletePendingAction, updateAction } from '../../local-flux/actions/app-actions';
+import { deletePendingAction, pendingActionUpdate } from '../../local-flux/actions/app-actions';
 import { commentsPublish, commentsPublishError,
     commentsPublishSuccess } from '../../local-flux/actions/comments-actions';
 import { transactionDeletePending } from '../../local-flux/actions/transaction-actions';
@@ -21,8 +21,7 @@ class CommentsPublisher extends Component {
             debugger;
             console.log('comm publisher - update action');
             const id = action.get('id');
-            this.props.updateAction(id, { status: 'publishing' });
-            console.log('comm publisher - publish');
+            this.props.pendingActionUpdate(id, { status: 'publishing' });
             this.props.commentsPublish(action.get('payload').set('actionId', id), action.get('gas'));
         });
     };
@@ -77,7 +76,7 @@ CommentsPublisher.propTypes = {
     pendingTx: PropTypes.shape(),
     pendingActions: PropTypes.shape(),
     transactionDeletePending: PropTypes.func.isRequired,
-    updateAction: PropTypes.func.isRequired
+    pendingActionUpdate: PropTypes.func.isRequired
 };
 
 function mapStateToProps (state) {
@@ -100,6 +99,6 @@ export default connect(
         commentsPublishSuccess,
         deletePendingAction,
         transactionDeletePending,
-        updateAction
+        pendingActionUpdate
     }
 )(CommentsPublisher);

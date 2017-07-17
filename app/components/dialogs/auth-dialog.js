@@ -2,8 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { TextField, Dialog, RaisedButton, Checkbox, SelectField, MenuItem } from 'material-ui';
-import debounce from 'lodash.debounce';
-import { deletePendingAction, hideAuthDialog } from '../../local-flux/actions/app-actions';
+import { pendingActionDelete, authDialogToggle } from '../../local-flux/actions/app-actions';
 import { profileClearLoginErrors, profileLogin } from '../../local-flux/actions/profile-actions';
 import { userSettingsSave } from '../../local-flux/actions/settings-actions';
 import { formMessages, generalMessages } from '../../locale-data/messages';
@@ -42,7 +41,7 @@ class AuthDialog extends Component {
         });
     }
 
-    onSubmit = debounce(() => {
+    onSubmit = () => {
         const { loggedProfile } = this.props;
         const { unlockIsChecked, unlockTimer, userPassword } = this.state;
         const account = loggedProfile.get('account');
@@ -53,13 +52,13 @@ class AuthDialog extends Component {
         this.props.profileLogin({
             account, password: userPassword, rememberTime, akashaId, reauthenticate: true
         });
-    }, 1000, { leading: true, trailing: false });
+    };
 
     onCancel = () => {
         const { showAuthDialog } = this.props;
         this.props.profileClearLoginErrors();
-        this.props.deletePendingAction(showAuthDialog);
-        this.props.hideAuthDialog();
+        this.props.pendingActionDelete(showAuthDialog);
+        this.props.authDialogToggle(null);
     };
 
     handleSubmit = (ev) => {
@@ -145,15 +144,15 @@ class AuthDialog extends Component {
 }
 
 AuthDialog.propTypes = {
-    deletePendingAction: PropTypes.func.isRequired,
-    hideAuthDialog: PropTypes.func.isRequired,
+    authDialogToggle: PropTypes.func.isRequired,
+    pendingActionDelete: PropTypes.func.isRequired,
     intl: PropTypes.shape(),
     loggedProfile: PropTypes.shape(),
     loginErrors: PropTypes.shape(),
     passwordPreference: PropTypes.shape(),
     profileClearLoginErrors: PropTypes.func.isRequired,
     profileLogin: PropTypes.func.isRequired,
-    showAuthDialog: PropTypes.number,
+    showAuthDialog: PropTypes.string,
     userSettingsSave: PropTypes.func.isRequired,
 };
 
@@ -169,8 +168,8 @@ function mapStateToProps (state) {
 export default connect(
     mapStateToProps,
     {
-        deletePendingAction,
-        hideAuthDialog,
+        pendingActionDelete,
+        authDialogToggle,
         profileClearLoginErrors,
         profileLogin,
         userSettingsSave

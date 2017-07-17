@@ -41,3 +41,8 @@
     width: 100%;
     display: inherit
 }
+.generatingPreview {
+    @extend .emptyContainer;
+    @extend .processingLoaderText;
+    padding: 100px 5px;
+}

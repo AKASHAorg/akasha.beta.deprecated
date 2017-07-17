@@ -21,20 +21,32 @@ const DashboardTopBar = props => (
         </SvgIcon>
       </IconButton>
     </div>
-    <TopBarRightSide balance={props.balance} loggedProfileData={props.loggedProfileData} />
+    <TopBarRightSide
+      balance={props.balance}
+      history={props.history}
+      onPanelNavigate={props.onPanelNavigate}
+      location={props.location}
+      canEditProfile={!!props.loggedProfile.get('akashaId')}
+      loggedProfileData={props.loggedProfileData}
+    />
   </div>
 );
 
 DashboardTopBar.propTypes = {
     balance: PropTypes.string,
     dashboardAddNewColumn: PropTypes.func.isRequired,
-    loggedProfileData: PropTypes.shape()
+    loggedProfile: PropTypes.shape(),
+    loggedProfileData: PropTypes.shape(),
+    onPanelNavigate: PropTypes.func,
+    history: PropTypes.shape(),
+    location: PropTypes.shape()
 };
 
 function mapStateToProps (state) {
     return {
         balance: selectBalance(state),
-        loggedProfileData: selectLoggedProfileData(state)
+        loggedProfileData: selectLoggedProfileData(state),
+        loggedProfile: state.profileState.get('loggedProfile'),
     };
 }
 

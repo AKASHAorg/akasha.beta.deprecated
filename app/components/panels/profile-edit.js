@@ -1,39 +1,58 @@
-import React, { PureComponent } from 'react';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import { injectIntl } from 'react-intl';
+import { Button } from 'antd';
+import { selectLoggedProfileData } from '../../local-flux/selectors';
+import { setTempProfile, tempProfileDelete, tempProfileUpdate,
+    publishEntity } from '../../local-flux/actions/temp-profile-actions';
 import ProfileForm from '../forms/new-profile-form';
-import { PanelContainerHeader } from '../';
+import { generalMessages } from '../../locale-data/messages';
+import { PanelContainerFooter } from '../';
 import styles from './profile-edit.scss';
 
-
-class EditProfile extends PureComponent {
+class EditProfile extends Component {
     componentWillMount () {
         this._createTempProfile(this.props);
     }
-    componentDidUpdate () {
-        this._createTempProfile(this.props);
+    componentWillReceiveProps (nextProps) {
+        this._createTempProfile(nextProps);
     }
-    componentWillUnmount = () => {
-        const { tempProfileDelete, tempProfile } = this.props;
-        tempProfileDelete({
-            akashaId: tempProfile.get('akashaId')
-        });
+    componentWillUnmount () {
+        const { tempProfile, pendingActions } = this.props;
+        // Delete temp profile if it`s not pending to publish
+        // debugger;
+        const isTempProfilePending = pendingActions.find(action =>
+            action.get('entityType') === 'tempProfile'
+        );
+        if (!isTempProfilePending) {
+            this.props.tempProfileDelete({
+                akashaId: tempProfile.get('akashaId')
+            });
+        }
     }
     _createTempProfile = (props) => {
-        const { tempProfile, loggedProfileData, setTempProfile } = props;
+        const { tempProfile, loggedProfileData } = props;
         const tempAkashaId = tempProfile.get('akashaId');
         const akashaId = loggedProfileData.get('akashaId');
         if (tempAkashaId === '' && tempAkashaId !== akashaId) {
-            setTempProfile(loggedProfileData);
+            this.props.setTempProfile(loggedProfileData);
         }
     }
     _handleSubmit = () => {
-        const { publishEntity, tempProfile } = this.props;
-        publishEntity({
+        const { tempProfile, pendingActions } = this.props;
+        if (tempProfile.get('localId') && pendingActions.has(tempProfile.get('localId'))) {
+            return console.warn('profile upgrade is in progress. Wait untill it`s finished!');
+        }
+        if (pendingActions.find(action => action.entityType === 'tempProfile')) {
+            return console.warn('There is already a profile update in progress. Please wait until it`s finished.');
+        }
+        return this.props.publishEntity({
             entityType: 'tempProfile',
             actionType: 'update',
             entityId: tempProfile.get('localId'),
-            currentAction: '',
-            publishTx: '',
+            currentAction: 'TEMP_PROFILE_PUBLISH_START',
+            publishTx: null,
             confirmed: false,
             published: false
         });
@@ -42,45 +61,76 @@ class EditProfile extends PureComponent {
         const { history } = this.props;
         history.goBack();
     }
+    _updateTempProfile = (updatedProfile) => {
+        this.props.tempProfileUpdate(updatedProfile);
+    }
     render () {
-        const { intl, muiTheme, tempProfile, tempProfileUpdate,
-            loggedProfileData } = this.props;
+        const { intl, tempProfile, loggedProfile } = this.props;
+        const { muiTheme } = this.context;
         return (
           <div className={`${styles.root} row`}>
-            <PanelContainerHeader
-              title={'Edit profile'}
-              subTitle={`@${loggedProfileData.akashaId}`}
-              intl={intl}
-              muiTheme={muiTheme}
-              showBorder
-              headerHeight={80}
-            />
             <ProfileForm
               intl={intl}
               muiTheme={muiTheme}
-              isUpdate
+              isUpdate={!!loggedProfile.get('akashaId')}
               tempProfile={tempProfile}
-              expandOptionalDetails
-              onSubmit={this._handleSubmit}
-              onCancel={this._handleAbort}
-              onProfileUpdate={tempProfileUpdate}
+              onProfileUpdate={this._updateTempProfile}
             />
+            <PanelContainerFooter
+              className="profile-panel-footer paper"
+            >
+              <Button
+                key="cancel"
+                onClick={this._handleCancel}
+                ghost
+              >
+                {intl.formatMessage(generalMessages.saveForLater)}
+              </Button>
+              <Button
+                key="submit"
+                type="primary"
+                onClick={this._handleSubmit}
+                style={{ marginLeft: 8 }}
+              >
+                {intl.formatMessage(generalMessages.nextButtonLabel)}
+              </Button>
+            </PanelContainerFooter>
           </div>
         );
     }
 }
 
+EditProfile.contextTypes = {
+    muiTheme: PropTypes.shape()
+};
+
 EditProfile.propTypes = {
-    setTempProfile: PropTypes.func,
     history: PropTypes.shape(),
     intl: PropTypes.shape(),
-    muiTheme: PropTypes.shape(),
+    loggedProfile: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
+    pendingActions: PropTypes.shape(),
     publishEntity: PropTypes.func,
+    setTempProfile: PropTypes.func,
     tempProfileDelete: PropTypes.func,
     tempProfile: PropTypes.shape(),
     tempProfileUpdate: PropTypes.func,
-
 };
 
-export default EditProfile;
+const mapStateToProps = state => ({
+    pendingActions: state.appState.get('pendingActions'),
+    loggedProfile: state.profileState.get('loggedProfile'),
+    loggedProfileData: selectLoggedProfileData(state),
+    tempProfile: state.tempProfileState.get('tempProfile')
+});
+
+
+export default connect(
+    mapStateToProps,
+    {
+        setTempProfile,
+        tempProfileDelete,
+        tempProfileUpdate,
+        publishEntity
+    }
+)(injectIntl(EditProfile));

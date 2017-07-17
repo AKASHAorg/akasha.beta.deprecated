@@ -21,15 +21,15 @@ export const profileMessages = defineMessages({
         description: 'Background image section title',
         defaultMessage: 'Background image'
     },
-    aboutYouTitle: {
-        id: 'app.profile.aboutYouTitle',
-        description: 'About You section title',
-        defaultMessage: 'About You'
+    aboutMeTitle: {
+        id: 'app.profile.aboutMeTitle',
+        description: 'About Me section title',
+        defaultMessage: 'About Me'
     },
     shortDescriptionLabel: {
         id: 'app.profile.shortDescriptionLabel',
         description: 'Label for Short description text field',
-        defaultMessage: 'Short description'
+        defaultMessage: 'Type something about you'
     },
     linksTitle: {
         id: 'app.profile.linksTitle',
@@ -226,7 +226,7 @@ export const profileMessages = defineMessages({
         description: 'number of followers',
         defaultMessage: `{followers, number} {followers, plural,
             one {follower}
-            other {followers} 
+            other {followers}
         }`
     },
     following: {
@@ -239,7 +239,7 @@ export const profileMessages = defineMessages({
         description: 'number of followings',
         defaultMessage: `{followings, number} {followings, plural,
             one {following}
-            other {followings} 
+            other {followings}
         }`
     },
     allEntries: {

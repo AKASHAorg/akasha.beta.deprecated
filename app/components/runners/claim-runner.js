@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import { Component } from 'react';
 import { connect } from 'react-redux';
-import { deletePendingAction, updateAction } from '../../local-flux/actions/app-actions';
+import { deletePendingAction, pendingActionUpdate } from '../../local-flux/actions/app-actions';
 import { entryCanClaim, entryClaim, entryClaimError, entryClaimSuccess,
     entryGetBalance } from '../../local-flux/actions/entry-actions';
 import { transactionDeletePending } from '../../local-flux/actions/transaction-actions';
@@ -18,7 +18,7 @@ class ClaimRunner extends Component {
         const actions = pendingActions.filter(action =>
             action.get('status') === 'readyToPublish' && action.get('type') === actionTypes.claim);
         actions.forEach((action) => {
-            this.props.updateAction(action.get('id'), { status: 'publishing' });
+            this.props.pendingActionUpdate(action.get('id'), { status: 'publishing' });
             this.props.entryClaim(
                 action.getIn(['payload', 'entryId']),
                 action.getIn(['payload', 'entryTitle']),
@@ -80,7 +80,7 @@ ClaimRunner.propTypes = {
     pendingActions: PropTypes.shape(),
     pendingTx: PropTypes.shape(),
     transactionDeletePending: PropTypes.func.isRequired,
-    updateAction: PropTypes.func.isRequired
+    pendingActionUpdate: PropTypes.func.isRequired
 };
 
 function mapStateToProps (state) {
@@ -105,6 +105,6 @@ export default connect(
         entryClaimSuccess,
         entryGetBalance,
         transactionDeletePending,
-        updateAction
+        pendingActionUpdate
     }
 )(ClaimRunner);

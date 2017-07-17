@@ -2,24 +2,27 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Map } from 'immutable';
 import { SvgIcon, IconButton, RaisedButton,
-    TextField, Checkbox, Divider } from 'material-ui';
+    TextField, Divider } from 'material-ui';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import ContentAddIcon from 'material-ui/svg-icons/content/add';
 import CancelIcon from 'material-ui/svg-icons/navigation/cancel';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import validation from 'react-validation-mixin';
 import strategy from 'joi-validation-strategy';
-import { Avatar, ImageUploader, PanelContainerFooter } from '../';
+import { Row, Col, Input, Button, Form, Icon, Select } from 'antd';
+import { Avatar, ImageUploader } from '../';
 import { profileMessages, formMessages,
   generalMessages, validationMessages } from '../../locale-data/messages';
 import { getProfileSchema } from '../../utils/validationSchema';
 import styles from './new-profile-form.scss';
 
+const FormItem = Form.Item;
+const { Option } = Select;
+
 class NewProfileForm extends Component {
     constructor (props) {
         super(props);
         this.state = {
-            optDetails: false,
             akashaIdIsValid: true,
             akashaIdExists: false
         };
@@ -27,8 +30,15 @@ class NewProfileForm extends Component {
         this.showErrorOnFields = [];
         this.isSubmitting = false;
     }
-
     getValidatorData = () => this.props.tempProfile.toJS();
+    componentWillReceiveProps (nextProps) {
+        const { isUpdate, tempProfile } = nextProps;
+        // we need to enable update temp profile button only if something has changed
+        // so we need to keep a ref to old temp profile.
+        if (isUpdate && tempProfile.akashaId !== this.props.tempProfile.akashaId) {
+            this.refTempProfile = tempProfile;
+        }
+    }
 
     _showTerms = (ev) => {
         ev.preventDefault();
@@ -37,22 +47,18 @@ class NewProfileForm extends Component {
         return null;
     }
 
-    _handleShowDetails = () => {
-        this.setState({
-            optDetails: !this.state.optDetails
-        });
-    }
-
     _handleAddLink = linkType => () => {
         const { tempProfile } = this.props;
         const links = tempProfile.get(linkType);
         let updatedTempProfile;
         const lastLink = links.last();
         if (lastLink) {
-            if (linkType === 'links' && (lastLink.get('title').length === 0 || lastLink.get('url').length === 0)) {
+            if (linkType === 'links' &&
+                (lastLink.get('title').length === 0 || lastLink.get('url').length === 0)) {
                 return null;
             }
-            if (linkType === 'crypto' && (lastLink.get('name').length === 0 || lastLink.get('address').length === 0)) {
+            if (linkType === 'crypto' &&
+                (lastLink.get('name').length === 0 || lastLink.get('address').length === 0)) {
                 return null;
             }
         }
@@ -201,6 +207,7 @@ class NewProfileForm extends Component {
 
     _handleAvatarClear = () => {
         const { isUpdate, tempProfile, onProfileUpdate } = this.props;
+        console.log('clearing avatar');
         if (isUpdate) {
             onProfileUpdate(
               tempProfile.set('avatar', null)
@@ -227,8 +234,8 @@ class NewProfileForm extends Component {
 
     _handleSubmit = (ev) => {
         ev.preventDefault();
-        const { expandOptionalDetails, tempProfile, onSubmit, onProfileUpdate } = this.props;
-        const { optDetails } = this.state;
+        const { isUpdate, tempProfile, onSubmit,
+          onProfileUpdate } = this.props;
 
         this.props.validate((err) => {
             if (err) {
@@ -239,281 +246,257 @@ class NewProfileForm extends Component {
             }
             this.isSubmitting = true;
             if (this.state.akashaIdIsValid && !this.state.akashaIdExists) {
-                if (optDetails || expandOptionalDetails) {
-                    this.avatar.getImage().then((uint8arr) => {
-                        let avatar = null;
-                        if (uint8arr) {
-                            avatar = uint8arr;
-                        }
-                        onProfileUpdate(
-                          tempProfile.withMutations(profile =>
-                              profile
-                                .set('avatar', avatar))
-                        );
-                        onSubmit();
-                    });
-                } else {
-                    onProfileUpdate(tempProfile);
+                this.avatar.getImage().then((uint8arr) => {
+                    let avatar = null;
+                    if (uint8arr) {
+                        avatar = uint8arr;
+                    }
+                    onProfileUpdate(
+                        tempProfile.withMutations((profile) => {
+                            profile.set('avatar', avatar);
+                            if (!isUpdate) {
+                                profile.set('backgroundImage', this.imageUploader.getImage());
+                            }
+                        })
+                    );
                     onSubmit();
-                }
+                });
             }
         });
     }
 
     render () {
-        const { intl, muiTheme, expandOptionalDetails, style, isUpdate } = this.props;
-        const { firstName, lastName, akashaId, password, password2,
-          about, links, crypto, formHasErrors, avatar, backgroundImage,
-          baseUrl } = this.props.tempProfile;
-        const { optDetails } = this.state;
+        const { intl, muiTheme, style, isUpdate, tempProfile, form } = this.props;
+        const { firstName, lastName, about, links, crypto, formHasErrors, avatar, backgroundImage,
+          baseUrl } = tempProfile;
         const { formatMessage } = intl;
+        const linkAddressPrefix = form.getFieldDecorator('linkAddressPrefix', {
+            initialValue: 'http://'
+        })(
+          <Select>
+            <Option value="http://">http://</Option>
+            <Option value="https://">https://</Option>
+          </Select>
+        );
         return (
-          <div
-            className={`${styles.root} col-xs-12`}
+          <Row
+            type="flex"
+            className={`${styles.root}`}
             style={style}
           >
-            <form
+            <Form
               action=""
+              style={{ width: '100%' }}
               onSubmit={this._handleSubmit}
-              className={`row ${styles.form}`}
-              ref={(profileForm) => { this.profileForm = profileForm; }}
             >
-              <div className="col-xs-6 start-xs">
-                <TextField
-                  fullWidth
-                  floatingLabelText={formatMessage(formMessages.firstName)}
-                  value={firstName}
-                  onChange={this._handleFieldChange('firstName')}
-                  onBlur={this._validateField('firstName')}
-                  errorText={this._getErrorMessages('firstName')}
-                />
-              </div>
-              <div className="col-xs-6 end-xs">
-                <TextField
-                  className="start-xs"
-                  fullWidth
-                  floatingLabelText={formatMessage(formMessages.lastName)}
-                  value={lastName}
-                  onChange={this._handleFieldChange('lastName')}
-                  onBlur={this._validateField('lastName')}
-                  errorText={this._getErrorMessages('lastName')}
-                />
-              </div>
               {!isUpdate &&
-                <div className="col-xs-12">
+                <div>
+                  <h1
+                    style={{ marginBottom: 0 }}
+                  >
+                    Complete Profile
+                  </h1>
+                  <h3>Step 1/2</h3>
+                </div>
+              }
+              <Col type="flex" md={24}>
+                <Col md={6}>
                   <div className="row">
-                    <div className="col-xs-12">
-                      <TextField
-                        fullWidth
-                        floatingLabelText={formatMessage(formMessages.akashaId)}
-                        value={akashaId}
-                        onChange={this._handleFieldChange('akashaId')}
-                        onBlur={this._validateField('akashaId')}
-                        errorText={this._getAkashaIdErrors()}
-                      />
-                    </div>
-                    <div className="col-xs-12">
-                      <TextField
-                        fullWidth
-                        type="password"
-                        floatingLabelText={formatMessage(formMessages.passphrase)}
-                        value={password}
-                        onChange={this._handleFieldChange('password')}
-                        onBlur={this._validateField('password')}
-                        errorText={this._getErrorMessages('password')}
-                      />
-                    </div>
-                    <div className="col-xs-12">
-                      <TextField
-                        fullWidth
-                        type="password"
-                        floatingLabelText={formatMessage(formMessages.passphraseVerify)}
-                        value={password2}
-                        onChange={this._handleFieldChange('password2')}
-                        onBlur={this._validateField('password2')}
-                        errorText={this._getErrorMessages('password2')}
+                    <h3 className="col-xs-12" style={{ margin: '30px 0 10px 0' }} >
+                      {intl.formatMessage(profileMessages.avatarTitle)}
+                    </h3>
+                    <div className="col-xs-12 center-xs">
+                      <Avatar
+                        editable
+                        ref={(avtr) => { this.avatar = avtr; }}
+                        image={avatar}
+                        onImageClear={this._handleAvatarClear}
                       />
                     </div>
                   </div>
+                </Col>
+                <Col md={18}>
+                  <div className="row">
+                    <h3 className="col-xs-12" style={{ margin: '20px 0 10px 0' }} >
+                      {intl.formatMessage(profileMessages.backgroundImageTitle)}
+                    </h3>
+                    <div className="col-xs-12">
+                      <ImageUploader
+                        ref={(imageUploader) => { this.imageUploader = imageUploader; }}
+                        minWidth={360}
+                        intl={intl}
+                        initialImage={backgroundImage}
+                        baseUrl={baseUrl}
+                        muiTheme={muiTheme}
+                        onImageClear={this._handleBackgroundClear}
+                        onChange={this._handleBackgroundChange}
+                      />
+                    </div>
+                  </div>
+                </Col>
+              </Col>
+              <Col md={12}>
+                <FormItem
+                  label={formatMessage(formMessages.firstName)}
+                  colon={false}
+                  hasFeedback
+                  validateStatus={this._getErrorMessages('firstName') ? 'error' : 'success'}
+                  help={this._getErrorMessages('firstName')}
+                  style={{ marginRight: 8 }}
+                >
+                  <Input
+                    value={firstName}
+                    onChange={this._handleFieldChange('firstName')}
+                    onBlur={this._validateField('firstName')}
+                  />
+                </FormItem>
+              </Col>
+              <Col md={12}>
+                <FormItem
+                  label={formatMessage(formMessages.lastName)}
+                  colon={false}
+                  hasFeedback
+                  validateStatus={this._getErrorMessages('lastName') ? 'error' : 'success'}
+                  help={this._getErrorMessages('lastName')}
+                  style={{ marginLeft: 8 }}
+                >
+                  <Input
+                    value={lastName}
+                    onChange={this._handleFieldChange('lastName')}
+                    onBlur={this._validateField('lastName')}
+                  />
+                </FormItem>
+              </Col>
+              <Col md={24}>
+                <FormItem
+                  label={intl.formatMessage(profileMessages.aboutMeTitle)}
+                  colon={false}
+                >
+                  <Input.TextArea
+                    rows={2}
+                    placeholder={intl.formatMessage(profileMessages.shortDescriptionLabel)}
+                    value={about}
+                    onChange={this._handleFieldChange('about')}
+                    autosize={{ minRows: 2 }}
+                  />
+                </FormItem>
+              </Col>
+              <h3 className="col-xs-10" style={{ margin: '20px 0 0 0' }}>
+                {intl.formatMessage(profileMessages.linksTitle)}
+              </h3>
+              {links.map((link, index) => (
+                <div key={`${index + 1}`}>
+                  <FormItem
+                    label={intl.formatMessage(formMessages.title)}
+                    colon={false}
+                    hasFeedback
+                    validateStatus={this._getErrorMessages('links', index, 'title') ? 'error' : 'success'}
+                    help={this._getErrorMessages('links', index, 'title')}
+                  >
+                    <Input
+                      value={link.get('title')}
+                      onChange={this._handleLinkChange('links', 'title', link.get('id'))}
+                      onBlur={this._validateField('links', index, 'title')}
+                    />
+                  </FormItem>
+                  <FormItem
+                    label={intl.formatMessage(formMessages.url)}
+                    colon={false}
+                    hasFeedback
+                    validateStatus={this._validateField('links', index, 'url') ? 'error' : 'success'}
+                    help={this._getErrorMessages('links', index, 'url')}
+                  >
+                    <Input
+                      addonBefore={linkAddressPrefix}
+                      value={link.get('url')}
+                      style={{ width: '100%' }}
+                      onChange={this._handleLinkChange('links', 'url', link.get('id'))}
+                      onBlur={this._validateField('links', index, 'url')}
+                    />
+                  </FormItem>
+                  <Button
+                    type="primary"
+                    icon="close-circle"
+                    ghost
+                    onClick={this._handleRemoveLink(link.get('id'), 'links')}
+                  >{intl.formatMessage(profileMessages.removeLinkButtonTitle)}</Button>
                 </div>
-              }
-              {!expandOptionalDetails &&
-                <Checkbox
-                  label={intl.formatMessage(profileMessages.optionalDetailsLabel)}
-                  style={{ marginTop: 18 }}
-                  checked={optDetails}
-                  onCheck={this._handleShowDetails}
-                />
-              }
-              {(optDetails || expandOptionalDetails) &&
-                <div className="row middle-xs" style={{ padding: '0 4px' }}>
-                  <h3 className="col-xs-12" style={{ margin: '30px 0 10px 0' }} >
-                    {intl.formatMessage(profileMessages.avatarTitle)}
-                  </h3>
-                  <div className="col-xs-12 center-xs">
-                    <Avatar
-                      editable
-                      ref={(avtr) => { this.avatar = avtr; }}
-                      image={avatar}
-                      onImageClear={this._handleAvatarClear}
+                ))}
+              <div className="col-xs-2 end-xs" style={{ margin: '16px 0 0 0' }}>
+                <Button
+                  icon="plus"
+                  type="primary"
+                  onClick={this._handleAddLink('links')}
+                  title={intl.formatMessage(profileMessages.addLinkButtonTitle)}
+                  ghost
+                  style={{ border: 'none' }}
+                >Add more links</Button>
+              </div>
+              <h3 className="col-xs-10" style={{ margin: '20px 0 0 0' }}>
+                {intl.formatMessage(profileMessages.cryptoAddresses)}
+              </h3>
+              <div className="col-xs-2 end-xs" style={{ margin: '16px 0 0 0' }}>
+                <IconButton
+                  title={intl.formatMessage(profileMessages.addCryptoAddress)}
+                  onClick={this._handleAddLink('crypto')}
+                >
+                  <SvgIcon>
+                    <ContentAddIcon
+                      color={muiTheme.palette.primary1Color}
                     />
-                  </div>
-                  <h3 className="col-xs-12" style={{ margin: '20px 0 10px 0' }} >
-                    {intl.formatMessage(profileMessages.backgroundImageTitle)}
-                  </h3>
-                  <div className="col-xs-12">
-                    <ImageUploader
-                      ref={(imageUploader) => { this.imageUploader = imageUploader; }}
-                      minWidth={360}
-                      intl={intl}
-                      initialImage={backgroundImage}
-                      baseUrl={baseUrl}
-                      muiTheme={muiTheme}
-                      onImageClear={this._handleBackgroundClear}
-                      onChange={this._handleBackgroundChange}
-                    />
-                  </div>
-                  <h3 className="col-xs-12" style={{ margin: '20px 0 0 0' }} >
-                    {intl.formatMessage(profileMessages.aboutYouTitle)}
-                  </h3>
-                  <div className="col-xs-12">
-                    <TextField
-                      fullWidth
-                      floatingLabelText={
-                        intl.formatMessage(profileMessages.shortDescriptionLabel)
-                      }
-                      multiLine
-                      value={about}
-                      onChange={this._handleFieldChange('about')}
-                      onBlur={this._validateField('about')}
-                      errorText={this._getErrorMessages('about')}
-                    />
-                  </div>
-                  <h3 className="col-xs-10" style={{ margin: '20px 0 0 0' }}>
-                    {intl.formatMessage(profileMessages.linksTitle)}
-                  </h3>
-                  <div className="col-xs-2 end-xs" style={{ margin: '16px 0 0 0' }}>
-                    <IconButton
-                      title={intl.formatMessage(profileMessages.addLinkButtonTitle)}
-                      onClick={this._handleAddLink('links')}
-                    >
-                      <SvgIcon>
-                        <ContentAddIcon
-                          color={muiTheme.palette.primary1Color}
-                        />
-                      </SvgIcon>
-                    </IconButton>
-                  </div>
-                  <div className="col-xs-12">
-                    {links.map((link, index) =>
-                      <div key={`${index + 1}`} className="row">
-                        <div className="col-xs-10">
-                          <TextField
-                            autoFocus={(links.size - 1) === index}
-                            fullWidth
-                            floatingLabelText={intl.formatMessage(formMessages.title)}
-                            value={link.get('title')}
-                            onChange={this._handleLinkChange('links', 'title', link.get('id'))}
-                            onBlur={this._validateField('links', index, 'title')}
-                            errorText={this._getErrorMessages('links', index, 'title')}
-                          />
-                          <TextField
-                            fullWidth
-                            floatingLabelText={intl.formatMessage(formMessages.url)}
-                            hintText="https://twitter.com"
-                            value={link.get('url')}
-                            onChange={this._handleLinkChange('links', 'url', link.get('id'))}
-                            onBlur={this._validateField('links', index, 'url')}
-                            errorText={this._getErrorMessages('links', index, 'url')}
-                          />
-                        </div>
-                        <div className="col-xs-2 center-xs">
-                          <IconButton
-                            title={intl.formatMessage(profileMessages.removeLinkButtonTitle)}
-                            style={{ marginTop: '24px' }}
-                            onClick={this._handleRemoveLink(link.get('id'), 'links')}
-                          >
-                            <SvgIcon>
-                              <CancelIcon color={muiTheme.palette.textColor} />
-                            </SvgIcon>
-                          </IconButton>
-                        </div>
-                        {links.size > 1 &&
-                          <Divider
-                            style={{ marginTop: '16px' }}
-                            className="col-xs-12"
-                          />
-                        }
-                      </div>
-                    )}
-                  </div>
-                  <h3 className="col-xs-10" style={{ margin: '20px 0 0 0' }}>
-                    {intl.formatMessage(profileMessages.cryptoAddresses)}
-                  </h3>
-                  <div className="col-xs-2 end-xs" style={{ margin: '16px 0 0 0' }}>
-                    <IconButton
-                      title={intl.formatMessage(profileMessages.addCryptoAddress)}
-                      onClick={this._handleAddLink('crypto')}
-                    >
-                      <SvgIcon>
-                        <ContentAddIcon
-                          color={muiTheme.palette.primary1Color}
-                        />
-                      </SvgIcon>
-                    </IconButton>
-                  </div>
-                  <div className="col-xs-12">
-                    {crypto.map((cryptoLink, index) =>
-                      <div key={`${index + 1}`} className="row">
-                        <div className="col-xs-10">
-                          <TextField
-                            autoFocus={(crypto.size - 1) === index}
-                            fullWidth
-                            floatingLabelText={intl.formatMessage(profileMessages.cryptoName)}
-                            value={cryptoLink.get('name')}
-                            onChange={this._handleLinkChange('crypto', 'name', cryptoLink.id)}
-                            onBlur={this._validateField('crypto', index, 'name')}
-                            errorText={this._getErrorMessages('crypto', index, 'name')}
-                          />
-                          <TextField
-                            fullWidth
-                            floatingLabelText={intl.formatMessage(profileMessages.cryptoAddress)}
-                            value={cryptoLink.get('address')}
-                            onChange={this._handleLinkChange('crypto', 'address', cryptoLink.get('id'))}
-                            onBlur={this._validateField('crypto', index, 'address')}
-                            errorText={this._getErrorMessages('crypto', index, 'address')}
-                          />
-                        </div>
-                        <div className="col-xs-2 center-xs">
-                          <IconButton
-                            title={intl.formatMessage(profileMessages.removeCryptoButtonTitle)}
-                            style={{ marginTop: '24px' }}
-                            onClick={this._handleRemoveLink(cryptoLink.get('id'), 'crypto')}
-                          >
-                            <SvgIcon>
-                              <CancelIcon color={muiTheme.palette.textColor} />
-                            </SvgIcon>
-                          </IconButton>
-                        </div>
-                        {crypto.size > 1 &&
-                          <Divider
-                            style={{ marginTop: '16px' }}
-                            className="col-xs-12"
-                          />
-                        }
-                      </div>
-                    )}
-                  </div>
-                </div>
-              }
+                  </SvgIcon>
+                </IconButton>
+              </div>
+              <div className="col-xs-12">
+                {crypto.map((cryptoLink, index) =>
+                  (<div key={`${index + 1}`} className="row">
+                    <div className="col-xs-10">
+                      <TextField
+                        autoFocus={(crypto.size - 1) === index}
+                        fullWidth
+                        floatingLabelText={intl.formatMessage(profileMessages.cryptoName)}
+                        value={cryptoLink.get('name')}
+                        onChange={this._handleLinkChange('crypto', 'name', cryptoLink.id)}
+                        onBlur={this._validateField('crypto', index, 'name')}
+                        errorText={this._getErrorMessages('crypto', index, 'name')}
+                      />
+                      <TextField
+                        fullWidth
+                        floatingLabelText={intl.formatMessage(profileMessages.cryptoAddress)}
+                        value={cryptoLink.get('address')}
+                        onChange={this._handleLinkChange('crypto', 'address', cryptoLink.get('id'))}
+                        onBlur={this._validateField('crypto', index, 'address')}
+                        errorText={this._getErrorMessages('crypto', index, 'address')}
+                      />
+                    </div>
+                    <div className="col-xs-2 center-xs">
+                      <IconButton
+                        title={intl.formatMessage(profileMessages.removeCryptoButtonTitle)}
+                        style={{ marginTop: '24px' }}
+                        onClick={this._handleRemoveLink(cryptoLink.get('id'), 'crypto')}
+                      >
+                        <SvgIcon>
+                          <CancelIcon color={muiTheme.palette.textColor} />
+                        </SvgIcon>
+                      </IconButton>
+                    </div>
+                    {crypto.size > 1 &&
+                      <Divider
+                        style={{ marginTop: '16px' }}
+                        className="col-xs-12"
+                      />
+                    }
+                  </div>)
+                )}
+              </div>
               <small style={{ paddingBottom: '15px', marginTop: '15px' }}>
                 <FormattedMessage
-                  {...profileMessages.terms}
+                  {...generalMessages.terms}
                   values={{
                       termsLink: (
                         <a
-                          href="#"
-                          onClick={ev => this._showTerms(ev)}
+                          href="/terms"
+                          onClick={this._showTerms}
                           style={{ color: muiTheme.palette.primary1Color }}
                         >
                           {intl.formatMessage(generalMessages.termsOfService)}
@@ -523,30 +506,14 @@ class NewProfileForm extends Component {
                 />
               </small>
               <input type="submit" className="hidden" />
-            </form>
-            <PanelContainerFooter>
-              <RaisedButton
-                key="cancel"
-                label={intl.formatMessage(generalMessages.cancel)}
-                type="reset"
-                onClick={this._handleCancel}
-              />
-              <RaisedButton
-                key="submit"
-                label={intl.formatMessage(generalMessages.submit)}
-                type="submit"
-                onClick={formHasErrors ? () => {} : this._handleSubmit}
-                style={{ marginLeft: 8 }}
-                primary
-              />
-            </PanelContainerFooter>
-          </div>
+            </Form>
+          </Row>
         );
     }
 }
 
 NewProfileForm.propTypes = {
-    expandOptionalDetails: PropTypes.bool,
+    form: PropTypes.shape(),
     getValidationMessages: PropTypes.func,
     intl: PropTypes.shape(),
     isUpdate: PropTypes.bool,
@@ -555,14 +522,14 @@ NewProfileForm.propTypes = {
     onSubmit: PropTypes.func,
     onProfileUpdate: PropTypes.func.isRequired,
     onTermsShow: PropTypes.func,
-    validate: PropTypes.func,
     style: PropTypes.shape(),
-    tempProfile: PropTypes.shape()
+    tempProfile: PropTypes.shape(),
+    validate: PropTypes.func,
 };
 
 const validationHOC = validation(strategy());
 
 export default injectIntl(
     muiThemeable()(
-      validationHOC(NewProfileForm)
+      Form.create()(validationHOC(NewProfileForm))
 ));

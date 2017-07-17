@@ -36,7 +36,7 @@ class LoginForm extends Component {
         if (loggedAccount) {
             this.props.userSettingsClear();
             this.props.profileClearLoginErrors();
-            history.push('/dashboard/');
+            history.push('/dashboard');
         }
     }
 

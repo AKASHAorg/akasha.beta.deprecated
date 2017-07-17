@@ -4,8 +4,13 @@ import { connect } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
 import { Dialog, FlatButton, RaisedButton, TextField, IconButton } from 'material-ui';
 import InfoIcon from 'material-ui/svg-icons/action/info-outline';
-import { AppActions } from '../../local-flux';
+import { pendingActionUpdate, publishConfirmDialogToggle, pendingActionDelete } from '../../local-flux/actions/app-actions';
 import { confirmMessages, formMessages, generalMessages } from '../../locale-data/messages';
+
+const DEFAULT_GAS = 2000000;
+const gasCosts = {
+    tempProfile: DEFAULT_GAS
+};
 
 class PublishConfirmDialog extends Component {
     constructor (props) {
@@ -17,9 +22,9 @@ class PublishConfirmDialog extends Component {
     }
 
     componentWillMount () {
-        const { resource } = this.props;
+        const gasAmount = this._getMinGas();
         this.setState({
-            gasAmount: resource.get('gas')
+            gasAmount
         });
     }
 
@@ -32,9 +37,16 @@ class PublishConfirmDialog extends Component {
         this._handleConfirm();
     };
 
+    _getMinGas = () => {
+        const { pendingAction } = this.props;
+        const { entityType } = pendingAction;
+        return gasCosts[entityType] || DEFAULT_GAS;
+    };
+
     _handleGasChange = (ev) => {
         const gasAmount = ev.target.value;
-        if (gasAmount < 2000000 || gasAmount > 4700000) {
+        const minGas = this._getMinGas();
+        if (gasAmount < minGas || gasAmount > 4700000) {
             this.setState({
                 gasAmountError: true,
                 gasAmount
@@ -48,26 +60,49 @@ class PublishConfirmDialog extends Component {
     };
 
     _handleConfirm = () => {
-        const { resource, appActions } = this.props;
-        const updatedResource = resource.toJS();
-        updatedResource.gas = this.state.gasAmount || resource.get('gas');
-        updatedResource.status = 'checkAuth';
-        appActions.hidePublishConfirmDialog();
-        appActions.updatePendingAction(updatedResource);
+        const { pendingAction } = this.props;
+        this.props.pendingActionUpdate(pendingAction.withMutations((action) => {
+            action.set('gas', this.state.gasAmount)
+                  .set('confirmed', true);
+        }));
+        this.props.publishConfirmDialogToggle(null);
+    };
+
+    _findResource = (entityType, id) => {
+        const { state } = this.props;
+        switch (entityType) {
+            case 'tempProfile':
+                return state.tempProfileState.get('tempProfile');
+            case 'comment':
+                return state.commentsState.getIn(['byId', id]);
+            default:
+                return null;
+        }
     };
 
     _handleAbort = () => {
-        const { resource, appActions } = this.props;
-        appActions.deletePendingAction(resource.get('id'));
-        appActions.hidePublishConfirmDialog();
+        const { pendingAction } = this.props;
+        this.props.pendingActionDelete(pendingAction.get('entityId'));
+        this.props.publishConfirmDialogToggle(null);
+    };
+
+    _getMessage = (resource, pendingAction, field) => {
+        const { actionType, entityType } = pendingAction;
+        if (field) {
+            return confirmMessages[`${entityType}_${actionType}_${field}`];
+        }
+        return confirmMessages[`${entityType}_${actionType}`];
     };
 
     render () {
-        const { resource, intl } = this.props;
+        const { pendingAction, intl } = this.props;
         const { gasAmount, gasAmountError } = this.state;
+        const resource = this._findResource(pendingAction.get('entityType'), pendingAction.get('entityId'));
+
         if (!resource) {
             return null;
         }
+
         const dialogActions = [
           <FlatButton // eslint-disable-line indent
             label={intl.formatMessage(generalMessages.abort)}
@@ -81,13 +116,14 @@ class PublishConfirmDialog extends Component {
             disabled={gasAmountError}
           />
         ];
+
         return (
           <Dialog
             contentStyle={{ width: 420, maxWidth: 'none' }}
             modal
             title={
               <div style={{ fontSize: 24 }}>
-                {intl.formatMessage(confirmMessages[resource.get('titleId')])}
+                {intl.formatMessage(this._getMessage(resource, pendingAction, 'title'))}
               </div>
             }
             open
@@ -95,7 +131,7 @@ class PublishConfirmDialog extends Component {
           >
             <p style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
               {intl.formatMessage(
-                  confirmMessages[resource.get('messageId')], resource.get('payload').toJS()
+                  this._getMessage(resource, pendingAction)
               )}
             </p>
             <form onSubmit={this.onSubmit}>
@@ -109,7 +145,10 @@ class PublishConfirmDialog extends Component {
                   value={gasAmount}
                   onChange={this._handleGasChange}
                   errorText={gasAmountError &&
-                      intl.formatMessage(formMessages.gasAmountError, { min: 2000000, max: 4700000 })
+                      intl.formatMessage(formMessages.gasAmountError, {
+                          min: 2000000,
+                          max: 4700000
+                      })
                   }
                   min={2000000}
                   max={4700000}
@@ -131,21 +170,26 @@ class PublishConfirmDialog extends Component {
 }
 
 PublishConfirmDialog.propTypes = {
-    resource: PropTypes.shape(),
-    appActions: PropTypes.shape(),
-    intl: PropTypes.shape()
+    pendingActionDelete: PropTypes.func,
+    intl: PropTypes.shape(),
+    pendingAction: PropTypes.shape().isRequired,
+    state: PropTypes.shape(),
+    publishConfirmDialogToggle: PropTypes.func,
+    pendingActionUpdate: PropTypes.func
 };
 
 function mapStateToProps (state) {
     return {
-        resource: state.appState.get('publishConfirmDialog')
+        pendingAction: state.appState.getIn(['pendingActions', state.appState.get('publishConfirmDialog')]),
+        state
     };
 }
 
-function mapDispatchToProps (dispatch) {
-    return {
-        appActions: new AppActions(dispatch)
-    };
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(PublishConfirmDialog);
+export default connect(
+    mapStateToProps,
+    {
+        pendingActionUpdate,
+        pendingActionDelete,
+        publishConfirmDialogToggle,
+    }
+)(PublishConfirmDialog);
