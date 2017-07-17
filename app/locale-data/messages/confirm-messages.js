@@ -11,87 +11,97 @@ const confirmMessages = defineMessages({
         description: 'disclaimer for gas amount input',
         defaultMessage: 'Gas to be used by this transaction. Unused gas will be returned.'
     },
+    generalConfirmationTitle: {
+        id: 'app.confirm.generalConfirmationTitle',
+        description: 'default message in case of missing confirmation title',
+        defaultMessage: 'Action requires confirmation'
+    },
+    generalConfirmation: {
+        id: 'app.confirm.generalConfirmation',
+        description: 'default message in case of missing confirmation description',
+        defaultMessage: 'An action you made needs your confirmation!'
+    },
     inactiveEntryError: {
         id: 'app.confirm.inactiveEntryError',
         description: 'error message to be displayed when an entry is no longer active',
         defaultMessage: 'The voting period for this entry has ended'
     },
-    registerTagTitle: {
+    tag_register_title: {
         id: 'app.confirm.publishTagTitle',
         description: 'confirm dialog title for publishing a tag',
         defaultMessage: 'Confirm tag publishing'
     },
-    registerTag: {
+    tag_register: {
         id: 'app.confirm.publishTag',
         description: 'confirm dialog message for publishing a tag',
         defaultMessage: 'Are you sure you want to publish tag "{tagName}"?'
     },
-    subscribeTagTitle: {
+    tag_subscribe_title: {
         id: 'app.confirm.subscribeTagTitle',
         description: 'confirm dialog title for subscribing to a tag',
         defaultMessage: 'Confirm tag subscription'
     },
-    subscribeTag: {
+    tag_subscribe: {
         id: 'app.confirm.subscribeTag',
         description: 'confirm dialog message for subscribing to a tag',
         defaultMessage: 'Are you sure you want to subscribe to tag "{tagName}"?'
     },
-    unsubscribeTagTitle: {
+    tag_unsubscribe_title: {
         id: 'app.confirm.unsubscribeTagTitle',
         description: 'confirm dialog title for unsubscribing from a tag',
         defaultMessage: 'Confirm tag unsubscription'
     },
-    unsubscribeTag: {
+    tag_unsubscribe: {
         id: 'app.confirm.unsubscribeTag',
         description: 'confirm dialog message for unsubscribing from a tag',
         defaultMessage: 'Are you sure you want to unsubscribe from tag "{tagName}"?'
     },
-    followProfileTitle: {
+    profile_follow_title: {
         id: 'app.confirm.followProfileTitle',
         description: 'confirm dialog title for following a profile',
         defaultMessage: 'Confirm follow profile'
     },
-    followProfile: {
+    profile_follow: {
         id: 'app.confirm.followProfile',
         description: 'confirm dialog message for following a profile',
         defaultMessage: 'Are you sure you want to follow "@{akashaId}"?'
     },
-    unfollowProfileTitle: {
+    profile_unfollow_title: {
         id: 'app.confirm.unfollowProfileTitle',
         description: 'confirm dialog title for unfollowing a profile',
         defaultMessage: 'Confirm unfollow profile'
     },
-    unfollowProfile: {
+    profile_unfollow: {
         id: 'app.confirm.unfollowProfile',
         description: 'confirm dialog message for unfollowing a profile',
         defaultMessage: 'Are you sure you want to unfollow "@{akashaId}"?'
     },
-    updateProfileTitle: {
+    tempProfile_update_title: {
         id: 'app.confirm.updateProfileTitle',
         description: 'confirm dialog title for updating your profile',
         defaultMessage: 'Confirm profile update'
     },
-    updateProfile: {
+    tempProfile_update: {
         id: 'app.confirm.updateProfile',
         description: 'confirm dialog message for updating your profile',
         defaultMessage: 'Are you sure you want to update your profile?'
     },
-    publishEntryTitle: {
+    entry_publish_title: {
         id: 'app.confirm.publishEntryTitle',
         description: 'confirm dialog title for entry publishing',
         defaultMessage: 'Publish entry'
     },
-    publishEntry: {
+    entry_publish: {
         id: 'app.confirm.publishEntry',
         description: 'confirm dialog message for entry publishing',
         defaultMessage: 'Are you sure you want to publish "{title}"?'
     },
-    publishNewEntryVersionTitle: {
+    entryVersion_publish_title: {
         id: 'app.confirm.publishNewEntryVersionTitle',
         description: 'confirm dialog title for publishing new entry version',
         defaultMessage: 'Update entry'
     },
-    publishNewEntryVersion: {
+    entryVersion_publish: {
         id: 'app.confirm.publishNewEntryVersion',
         description: 'confirm dialog message for publishing new entry version',
         defaultMessage: 'Are you sure you want to update "{title}"?'
@@ -118,22 +128,22 @@ const confirmMessages = defineMessages({
                 meaning a total of {total} AETH excluding gas cost
                 which will be deducted from your {balance} AETH balance.`
     },
-    upvoteTitle: {
+    upvote_title: {
         id: 'app.confirm.upvoteTitle',
         description: 'confirm dialog title for voting an entry',
         defaultMessage: 'Upvote'
     },
-    downvoteTitle: {
+    downvote_title: {
         id: 'app.confirm.downvoteTitle',
         description: 'confirm dialog title for voting an entry',
         defaultMessage: 'Downvote'
     },
-    publishCommentTitle: {
+    comment_publish_title: {
         id: 'app.confirm.publishCommentTitle',
         description: 'confirm dialog title for publishing new comment',
         defaultMessage: 'Comment'
     },
-    publishComment: {
+    comment_publish: {
         id: 'app.confirm.publishComment',
         description: 'confirm dialog message for new comment publishing',
         defaultMessage: 'Are you sure you want to comment?'

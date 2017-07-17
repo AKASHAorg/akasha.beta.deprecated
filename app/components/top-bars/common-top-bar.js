@@ -9,19 +9,28 @@ const CommonTopBar = props => (
     <div style={{ flex: '1 1 auto', display: 'flex', justifyContent: 'flex-start' }}>
       <Navigation />
     </div>
-    <TopBarRightSide balance={props.balance} loggedProfileData={props.loggedProfileData} />
+    <TopBarRightSide
+      balance={props.balance}
+      onPanelNavigate={props.onPanelNavigate}
+      loggedProfileData={props.loggedProfileData}
+      loggedProfile={props.loggedProfile}
+      canEditProfile={!!props.loggedProfile.get('akashaId')}
+    />
   </div>
 );
 
 CommonTopBar.propTypes = {
     balance: PropTypes.string,
-    loggedProfileData: PropTypes.shape()
+    loggedProfile: PropTypes.shape(),
+    loggedProfileData: PropTypes.shape(),
+    onPanelNavigate: PropTypes.func
 };
 
 function mapStateToProps (state) {
     return {
         balance: selectBalance(state),
-        loggedProfileData: selectLoggedProfileData(state)
+        loggedProfile: state.profileState.get('loggedProfile'),
+        loggedProfileData: selectLoggedProfileData(state),
     };
 }
 

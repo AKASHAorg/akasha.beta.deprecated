@@ -1,7 +1,7 @@
 import { List, Map, Record } from 'immutable';
 
 export const ProfileRecord = Record({
-    about: null,
+    about: '',
     akashaId: '',
     avatar: null,
     backgroundImage: [],

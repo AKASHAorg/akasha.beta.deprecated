@@ -19,47 +19,34 @@ class ImageUploader extends Component {
             imageFile: {},
             progress: INITIAL_PROGRESS_VALUE,
             error: null,
-            processingFinished: true
+            processingFinished: true,
+            imageLoaded: false
         };
     }
-    componentDidMount () {
-        const { initialImageLink, minHeight, minWidth } = this.props;
-        if (initialImageLink && initialImageLink.includes('/ipfs/')) {
-            const filePromises = getResizedImages([initialImageLink], {
-                minWidth,
-                minHeight,
-                ipfsFile: true
-            });
-            return Promise.all(filePromises)
-                .then((results) => {
-                    this.setState({
-                        imageFile: results,
-                        error: null
-                    }, () => {
-                        this.fileInput.value = '';
-                    });
-                }).catch((err) => {
-                    console.error(err);
-                    return this.setState({
-                        error: err
-                    });
-                });
-        }
-        return null;
-    }
+
     shouldComponentUpdate (nextProps, nextState) {
         return !R.equals(nextProps.initialImage, this.props.initialImage) ||
             !R.equals(nextProps.baseUrl, this.props.baseUrl) ||
             !R.equals(nextProps.containerSize, this.props.containerSize) ||
             !R.equals(nextState.imageFile, this.state.imageFile) ||
+            !R.equals(nextState.imageLoaded, this.state.imageLoaded) ||
             !R.equals(nextState.processingFinished, this.state.processingFinished) ||
             !R.equals(nextState.progress, this.state.progress) ||
             !R.equals(nextState.error, this.state.error);
     }
+    componentDidMount () {
+        const { initialImage } = this.props;
+        this._setIpfsImage(initialImage);
+    }
     componentWillReceiveProps (nextProps) {
         const { initialImage } = nextProps;
-        const hasBgImage = initialImage && R.is(Object, initialImage) && !R.isEmpty(initialImage);
-        if (hasBgImage) {
+        this._setIpfsImage(initialImage);
+    }
+    _setIpfsImage = (initialImage) => {
+        const hasIpfsBgImage = initialImage &&
+            R.is(Object, initialImage) &&
+            !R.isEmpty(initialImage);
+        if (hasIpfsBgImage) {
             this.setState({
                 imageFile: initialImage
             });
@@ -85,6 +72,7 @@ class ImageUploader extends Component {
                 imageFile: results,
                 processingFinished: true,
                 error: null,
+                imageLoaded: false
             }, () => {
                 if (typeof this.props.onChange === 'function') {
                     this.props.onChange(results);
@@ -107,7 +95,8 @@ class ImageUploader extends Component {
         return this.setState({
             imageFile: {},
             processingFinished: false,
-            progress: INITIAL_PROGRESS_VALUE
+            progress: INITIAL_PROGRESS_VALUE,
+            imageLoaded: false
         }, () => {
             this.forceUpdate();
             this._resizeImages(this.fileInput.files);
@@ -136,7 +125,13 @@ class ImageUploader extends Component {
             imageFile: {},
             processingFinished: true,
             progress: INITIAL_PROGRESS_VALUE,
-            error: null
+            error: null,
+            imageLoaded: false
+        });
+    }
+    _handleImageLoad = (ev) => {
+        this.setState({
+            imageLoaded: true
         });
     }
     render () {
@@ -147,24 +142,35 @@ class ImageUploader extends Component {
             intl,
             muiTheme
         } = this.props;
-        const { imageFile } = this.state;
+        const { imageFile, imageLoaded } = this.state;
         /* eslint-disable react/no-array-index-key, no-console */
         if (multiFiles) {
             return console.error('sorry multiple files is not implemented yet!');
         }
-        // console.log(this._getImageSrc(this.state.imageFile), 'le image file');
         return (
           <div
             ref={(container) => { this.container = container; }}
-            style={{ position: 'relative', border: `1px solid ${muiTheme.palette.textColor}` }}
+            style={{
+                position: 'relative',
+                backgroundColor: muiTheme.palette.avatarBackground,
+                border: `1px dashed ${muiTheme.palette.textColor}`
+            }}
           >
             <div>
               {this.state.processingFinished && !R.isEmpty(imageFile) &&
                 <img
                   src={this._getImageSrc(this.state.imageFile)}
-                  className={`${styles.image}`}
+                  className={`${styles.image} ${this.state.imageLoaded && styles.loaded}`}
+                  onLoad={this._handleImageLoad}
                   alt=""
                 />
+              }
+              {this.state.processingFinished && !R.isEmpty(imageFile) && !imageLoaded &&
+                <div
+                  className={`${styles.generatingPreview}`}
+                >
+                  Generating preview...
+                </div>
               }
               {!this.state.processingFinished && R.isEmpty(imageFile) &&
                 <div
@@ -240,20 +246,20 @@ ImageUploader.propTypes = {
     baseUrl: PropTypes.string,
     // pass the container width
     containerSize: PropTypes.number,
+    // pass an image object from ipfs
+    initialImage: PropTypes.shape(),
+    // internationalization
+    intl: PropTypes.shape().isRequired,
     // minimum accepted image width
     minWidth: PropTypes.number,
     // min accepted image height
     minHeight: PropTypes.number,
     // support multiple files
     multiFiles: PropTypes.bool,
-    // internationalization
-    intl: PropTypes.shape().isRequired,
     // theme
     muiTheme: PropTypes.shape().isRequired,
-    // pass an image object from ipfs
-    initialImage: PropTypes.shape(),
-    // @todo: investigate the usage of this prop
-    initialImageLink: PropTypes.string,
+    // change event for updates
+    onChange: PropTypes.func,
     // handler when remove image is pressed
     onImageClear: PropTypes.func,
     // styles..

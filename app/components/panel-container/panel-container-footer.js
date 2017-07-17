@@ -1,14 +1,13 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import Paper from 'material-ui/Paper';
+import { Card } from 'antd';
 import styles from './panel-container-footer.scss';
 
 const PanelContainerFooter = (props) => {
-    const { footerHeight, children, leftActions } = props;
+    const { footerHeight, children, leftActions, className } = props;
     return (
-      <Paper
-        rounded={false}
-        className={`row ${styles.root}`}
+      <div
+        className={`row ${styles.root} ${className}`}
       >
         <div className={`${styles.leftActions}`}>
           {leftActions}
@@ -16,14 +15,15 @@ const PanelContainerFooter = (props) => {
         <div className={`${styles.rightActions}`}>
           {children}
         </div>
-      </Paper>
+      </div>
     );
 };
 
 PanelContainerFooter.propTypes = {
     footerHeight: PropTypes.number,
     children: PropTypes.node,
-    leftActions: PropTypes.node
+    leftActions: PropTypes.node,
+    className: PropTypes.string,
 };
 PanelContainerFooter.defaultProps = {
     footerHeight: 60
