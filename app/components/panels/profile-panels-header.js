@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import Route from 'react-router-dom/Route';
 import Link from 'react-router-dom/Link';
 import ArrowRight from 'material-ui/svg-icons/hardware/keyboard-arrow-right';
+import { Row, Col } from 'antd';
+import { generalMessages } from '../../locale-data/messages';
 
 const beautifyName = (name) => {
     switch (name) {
@@ -17,109 +19,122 @@ const beautifyName = (name) => {
     }
 };
 
-const createLink = (href, text) => {
-    return <Link to={href}>{text}</Link>;
-};
+const createLink = (href, text) =>
+  <Link to={href}>{text}</Link>;
 
-const crumbifyPath = (match, location) => {
+const crumbifyPath = (match) => {
     const { params } = match;
-    console.log(match, location, 'the match');
     if (params.others.includes('/')) {
         return params.others
             .split('/')
             .map((part, index, arr) => {
                 if (index < arr.length - 1) {
                     return (
-                        <span key={part}>
-                            <ArrowRight style={{ height: 18, verticalAlign: 'middle' }} />
-                            {createLink('default', beautifyName(part))}
-                        </span>
+                      <span key={part}>
+                        <ArrowRight style={{ height: 18, verticalAlign: 'middle' }} />
+                        {createLink('default', beautifyName(part))}
+                      </span>
                     );
                 }
                 return (
-                    <span>
-                        <ArrowRight style={{ height: 18, verticalAlign: 'middle' }} />
-                        {beautifyName(part)}
-                    </span>
+                  <span>
+                    <ArrowRight style={{ height: 18, verticalAlign: 'middle' }} />
+                    {beautifyName(part)}
+                  </span>
                 );
             });
     }
     return (
-        <span>
-            <ArrowRight style={{ height: 18, verticalAlign: 'middle' }} />
-            {createLink(params.others, params.others)}
-        </span>
+      <span>
+        <ArrowRight style={{ height: 18, verticalAlign: 'middle' }} />
+        {createLink(params.others, params.others)}
+      </span>
     );
 };
-const createBreadCrumbs = ({ rootCrumb, match, location }) => {
+const createBreadCrumbs = ({ loginName, match, location }) => {
     const { params } = match;
-    let breadCrumb = <span>{createLink('uprofile', rootCrumb)}</span>;
+    let breadCrumb = <span>{createLink('uprofile', loginName)}</span>;
     if (params.panelName === 'uprofile') {
-        breadCrumb = <span>{rootCrumb}</span>;
+        breadCrumb = <span>{loginName}</span>;
     }
     if (params.panelName !== 'uprofile') {
         breadCrumb = (
-            <span>
-                {
-                    createLink('uprofile', rootCrumb)
-                } <ArrowRight style={{ height: 18, verticalAlign: 'middle' }} /> {
-                    params.others ?
-                    createLink(`${params.panelName}`, beautifyName(params.panelName)) :
-                    beautifyName(params.panelName)
-                } {params.others && crumbifyPath(match, location)}
-            </span>
+          <span>
+            {
+              createLink('uprofile', loginName)
+            } <ArrowRight style={{ height: 18, verticalAlign: 'middle' }} /> {
+              params.others ?
+                createLink(`${params.panelName}`, beautifyName(params.panelName)) :
+                beautifyName(params.panelName)
+            } {params.others && crumbifyPath(match, location)}
+          </span>
         );
     }
     return breadCrumb;
 };
 
 const ProfilePanelsHeader = (props) => {
-    const { firstName, lastName, onPanelNavigate, onLogout } = props;
+    const { loginName, onPanelNavigate,
+        onLogout, canEditProfile, intl } = props;
     return (
-      <div className="col-xs-12" style={{ height: 48, background: '#FAFAFA', padding: '0 24px' }}>
-        <div className="row middle-xs">
-            <div className="col-xs-8">
-                <div className="row">
-                    <div className="col-xs-12" style={{ lineHeight: '48px' }}>
-                        <Route
-                            path="/:rootPath+/panel/:panelName/:others*"
-                            render={({ match, location }) => createBreadCrumbs({ match, location, rootCrumb: `${firstName} ${lastName}` })}
-                        />
-                    </div>
-                </div>
+      <div style={{ height: 48, background: '#FAFAFA', padding: '0 24px' }}>
+        <Row type="flex" align="middle" justify="center">
+          <Col span={16}>
+            <div style={{ lineHeight: '48px' }}>
+              <Route
+                path="/:rootPath+/panel/:panelName/:others*"
+                render={
+                  ({ match, location }) => {
+                      if (!canEditProfile && match.params.panelName === 'editprofile') {
+                          return <span>{loginName} > <b>{intl.formatMessage(generalMessages.completeProfileCrumb)}</b></span>;
+                      }
+                      return createBreadCrumbs({ match, location, loginName });
+                  }
+                }
+              />
             </div>
-            <div className="col-xs-4">
-                <div className="row">
-                    <div
-                        className="col-xs-4 link-button"
-                        onClick={onPanelNavigate('settings')}
-                    >
-                        Settings
-                    </div>
-                    <div
-                        className="col-xs-4 link-button"
-                        onClick={onPanelNavigate('editProfile')}
-                    >
-                        Edit profile
-                    </div>
-                    <div
-                        className="col-xs-4 link-button"
-                        onClick={onLogout}
-                    >
-                        Logout
-                    </div>
-                </div>
-            </div>
-        </div>
+          </Col>
+          <Col span={8}>
+            <Row type="flex" justify="end">
+              <Col
+                span={8}
+                className="link-button"
+                style={{ textAlign: 'center' }}
+                onClick={onPanelNavigate('settings')}
+              >
+                Settings
+              </Col>
+              {canEditProfile &&
+                <Col
+                  span={8}
+                  className="link-button"
+                  style={{ textAlign: 'center' }}
+                  onClick={onPanelNavigate('editProfile')}
+                >
+                  Edit profile
+                </Col>
+              }
+              <Col
+                span={8}
+                className="link-button"
+                style={{
+                    textAlign: 'center'
+                }}
+                onClick={onLogout}
+              >
+                Logout
+              </Col>
+            </Row>
+          </Col>
+        </Row>
       </div>
     );
 };
 
 ProfilePanelsHeader.propTypes = {
-    firstName: PropTypes.string,
-    history: PropTypes.shape(),
-    lastName: PropTypes.string,
-    location: PropTypes.shape(),
+    canEditProfile: PropTypes.bool,
+    intl: PropTypes.shape(),
+    loginName: PropTypes.string,
     onLogout: PropTypes.func,
     onPanelNavigate: PropTypes.func,
 };

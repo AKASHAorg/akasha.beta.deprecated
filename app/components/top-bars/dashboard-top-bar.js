@@ -26,6 +26,7 @@ const DashboardTopBar = props => (
       history={props.history}
       onPanelNavigate={props.onPanelNavigate}
       location={props.location}
+      canEditProfile={!!props.loggedProfile.get('akashaId')}
       loggedProfileData={props.loggedProfileData}
     />
   </div>
@@ -34,6 +35,7 @@ const DashboardTopBar = props => (
 DashboardTopBar.propTypes = {
     balance: PropTypes.string,
     dashboardAddNewColumn: PropTypes.func.isRequired,
+    loggedProfile: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
     onPanelNavigate: PropTypes.func,
     history: PropTypes.shape(),
@@ -43,7 +45,8 @@ DashboardTopBar.propTypes = {
 function mapStateToProps (state) {
     return {
         balance: selectBalance(state),
-        loggedProfileData: selectLoggedProfileData(state)
+        loggedProfileData: selectLoggedProfileData(state),
+        loggedProfile: state.profileState.get('loggedProfile'),
     };
 }
 

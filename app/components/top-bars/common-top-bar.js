@@ -13,12 +13,15 @@ const CommonTopBar = props => (
       balance={props.balance}
       onPanelNavigate={props.onPanelNavigate}
       loggedProfileData={props.loggedProfileData}
+      loggedProfile={props.loggedProfile}
+      canEditProfile={!!props.loggedProfile.get('akashaId')}
     />
   </div>
 );
 
 CommonTopBar.propTypes = {
     balance: PropTypes.string,
+    loggedProfile: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
     onPanelNavigate: PropTypes.func
 };
@@ -26,7 +29,8 @@ CommonTopBar.propTypes = {
 function mapStateToProps (state) {
     return {
         balance: selectBalance(state),
-        loggedProfileData: selectLoggedProfileData(state)
+        loggedProfile: state.profileState.get('loggedProfile'),
+        loggedProfileData: selectLoggedProfileData(state),
     };
 }
 

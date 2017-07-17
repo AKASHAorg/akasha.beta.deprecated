@@ -2,10 +2,13 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { injectIntl } from 'react-intl';
+import { Button } from 'antd';
 import { selectLoggedProfileData } from '../../local-flux/selectors';
 import { setTempProfile, tempProfileDelete, tempProfileUpdate,
     publishEntity } from '../../local-flux/actions/temp-profile-actions';
 import ProfileForm from '../forms/new-profile-form';
+import { generalMessages } from '../../locale-data/messages';
+import { PanelContainerFooter } from '../';
 import styles from './profile-edit.scss';
 
 class EditProfile extends Component {
@@ -62,19 +65,36 @@ class EditProfile extends Component {
         this.props.tempProfileUpdate(updatedProfile);
     }
     render () {
-        const { intl, tempProfile } = this.props;
+        const { intl, tempProfile, loggedProfile } = this.props;
         const { muiTheme } = this.context;
         return (
           <div className={`${styles.root} row`}>
             <ProfileForm
               intl={intl}
               muiTheme={muiTheme}
-              isUpdate
+              isUpdate={!!loggedProfile.get('akashaId')}
               tempProfile={tempProfile}
-              onSubmit={this._handleSubmit}
-              onCancel={this._handleAbort}
               onProfileUpdate={this._updateTempProfile}
             />
+            <PanelContainerFooter
+              className="profile-panel-footer paper"
+            >
+              <Button
+                key="cancel"
+                onClick={this._handleCancel}
+                ghost
+              >
+                {intl.formatMessage(generalMessages.saveForLater)}
+              </Button>
+              <Button
+                key="submit"
+                type="primary"
+                onClick={this._handleSubmit}
+                style={{ marginLeft: 8 }}
+              >
+                {intl.formatMessage(generalMessages.nextButtonLabel)}
+              </Button>
+            </PanelContainerFooter>
           </div>
         );
     }
@@ -87,6 +107,7 @@ EditProfile.contextTypes = {
 EditProfile.propTypes = {
     history: PropTypes.shape(),
     intl: PropTypes.shape(),
+    loggedProfile: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
     pendingActions: PropTypes.shape(),
     publishEntity: PropTypes.func,
@@ -98,6 +119,7 @@ EditProfile.propTypes = {
 
 const mapStateToProps = state => ({
     pendingActions: state.appState.get('pendingActions'),
+    loggedProfile: state.profileState.get('loggedProfile'),
     loggedProfileData: selectLoggedProfileData(state),
     tempProfile: state.tempProfileState.get('tempProfile')
 });

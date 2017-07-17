@@ -150,7 +150,11 @@ class ImageUploader extends Component {
         return (
           <div
             ref={(container) => { this.container = container; }}
-            style={{ position: 'relative', border: `1px solid ${muiTheme.palette.textColor}` }}
+            style={{
+                position: 'relative',
+                backgroundColor: muiTheme.palette.avatarBackground,
+                border: `1px dashed ${muiTheme.palette.textColor}`
+            }}
           >
             <div>
               {this.state.processingFinished && !R.isEmpty(imageFile) &&

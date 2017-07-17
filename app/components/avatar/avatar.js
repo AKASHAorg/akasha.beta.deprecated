@@ -141,7 +141,7 @@ class Avatar extends React.Component {
                         backgroundColor,
                         width: radius,
                         height: radius,
-                        borderColor: palette.borderColor
+                        borderColor: palette.textColor
                     }}
                     border={1}
                     image={avatarImage}
@@ -202,7 +202,7 @@ class Avatar extends React.Component {
                     style={{
                         width: radius,
                         height: radius,
-                        border: `1px solid ${palette.borderColor}`,
+                        border: `1px solid ${palette.textColor}`,
                         backgroundColor: palette.avatarBackground
                     }}
                   >
@@ -219,7 +219,7 @@ class Avatar extends React.Component {
                 style={{
                     width: radius,
                     height: radius,
-                    border: `1px solid ${palette.borderColor}`,
+                    border: `1px dashed ${palette.textColor}`,
                     backgroundColor: palette.avatarBackground
                 }}
               >
