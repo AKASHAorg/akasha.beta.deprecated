@@ -8,13 +8,12 @@ const execute = Promise.coroutine(function*(data: GethStartRequest) {
     if (GethConnector.getInstance().serviceStatus.process) {
         throw new Error('Geth is already running');
     }
+    GethConnector.getInstance().setOptions(data);
     const dataDir = GethConnector.getInstance().spawnOptions.get('datadir');
     let requiresGenesis = false;
     if (dataDir) {
         requiresGenesis = yield statAsync(dataDir).then((stats) => {
-            if (stats.isDirectory()) {
-                return false;
-            }
+            return !stats.isDirectory();
         }).catch(() => {
             return true;
         });
@@ -26,7 +25,7 @@ const execute = Promise.coroutine(function*(data: GethStartRequest) {
         });
     }
     // start daemon
-    yield GethConnector.getInstance().start(data);
+    yield GethConnector.getInstance().start();
     return {};
 });
 

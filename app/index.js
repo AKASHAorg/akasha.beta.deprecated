@@ -1,6 +1,5 @@
 import React from 'react';
 import './styles/ant-icons/iconfont.css';
-import './styles/ant-vars/ant.less';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import { IntlProvider, addLocaleData } from 'react-intl';
@@ -22,7 +21,7 @@ import './styles/core.scss';
 import ruMessages from './locale-data/ru.json';
 import zhMessages from './locale-data/zh.json';
 import enMessages from './locale-data/en.json';
-
+import './styles/ant-vars/ant.less';
 const localeMessages = {
     en: enMessages,
     ru: ruMessages,
