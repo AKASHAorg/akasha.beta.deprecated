@@ -67,46 +67,58 @@ class TopBar extends PureComponent {
         props => <Component {...injectedProps} {...props} />;
 
     render () {
-        const { fullEntryPage, loggedProfileData, location, match } = this.props;
+        const { fullEntryPage, loggedProfile, loggedProfileData, location, match, intl } = this.props;
         const { muiTheme } = this.context;
+        let loginName = loggedProfile.get('account');
+        if (loggedProfileData) {
+            loginName = `${loggedProfileData.get('firstName')} ${loggedProfileData.get('lastName')}`;
+        }
         return (
-          <div
-            className={`${styles.root} ${fullEntryPage ? styles.full : styles.normal} flex-center-y`}
-            style={{ backgroundColor: muiTheme.palette.topBarBackgroundColor }}
-          >
-            <div className={styles.inner}>
-              <Route
-                path="/dashboard/:dashboardName?"
-                render={this._renderComponent(DashboardTopBar, {
-                    onPanelNavigate: this._navigateToPanel,
-                    onNotificationPanelOpen: this._handleNotificationOpen
-                })}
-              />
-              <Route
-                path="/@:akashaId/:entryId(\d+)"
-                render={this._renderComponent(CommonTopBar, {
-                    onPanelNavigate: this._navigateToPanel,
-                    onNotificationPanelOpen: this._handleNotificationOpen
-                })}
-              />
-              <div
-                id="panelWrapper"
-                className={`${styles.panelWrapper} ${this._checkIsPanel() && styles.open}`}
-                style={{ paddingRight: 0 }}
-              >
-                <ProfilePanelsHeader
-                  onPanelNavigate={this._navigateToPanel}
-                  onLogout={this._handleLogout}
-                  firstName={loggedProfileData.get('firstName')}
-                  lastName={loggedProfileData.get('lastName')}
+          <div>
+            <div
+              className={`${styles.root} ${fullEntryPage ? styles.full : styles.normal} flex-center-y`}
+              style={{ backgroundColor: muiTheme.palette.topBarBackgroundColor }}
+            >
+              <div className={styles.inner}>
+                <Route
+                  path="/dashboard/:dashboardName?"
+                  render={this._renderComponent(DashboardTopBar, {
+                      onPanelNavigate: this._navigateToPanel,
+                      onNotificationPanelOpen: this._handleNotificationOpen
+                  })}
                 />
-                <PanelContainer
-                  maxWidth="100%"
-                  width="100%"
-                  style={{ height: 'calc(100% - 48px)', background: '#EBEBEB' }}
+                <Route
+                  path="/@:akashaId/:entryId(\d+)"
+                  render={this._renderComponent(CommonTopBar, {
+                      onPanelNavigate: this._navigateToPanel,
+                      onNotificationPanelOpen: this._handleNotificationOpen
+                  })}
+                />
+                <div
+                  id="panelWrapper"
+                  className={`${styles.panelWrapper} ${this._checkIsPanel() && styles.open}`}
+                  style={{ paddingRight: 0 }}
                 >
-                  <Panels location={location} match={match} onPanelNavigate={this._navigateToPanel} />
-                </PanelContainer>
+                  <ProfilePanelsHeader
+                    account={loggedProfile.get('account')}
+                    loginName={loginName}
+                    intl={intl}
+                    onPanelNavigate={this._navigateToPanel}
+                    onLogout={this._handleLogout}
+                    canEditProfile={!!loggedProfile.get('akashaId')}
+                  />
+                  <PanelContainer
+                    maxWidth="100%"
+                    width="100%"
+                    style={{ height: 'calc(100% - 48px)', background: '#EBEBEB' }}
+                  >
+                    <Panels
+                      location={location}
+                      match={match}
+                      onPanelNavigate={this._navigateToPanel}
+                    />
+                  </PanelContainer>
+                </div>
               </div>
             </div>
             <div
@@ -127,14 +139,16 @@ TopBar.propTypes = {
     children: PropTypes.node,
     fullEntryPage: PropTypes.bool,
     history: PropTypes.shape(),
+    intl: PropTypes.shape(),
     location: PropTypes.shape(),
     loggedProfile: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
     match: PropTypes.shape(),
     profileLogout: PropTypes.func,
 };
+
 const mapStateToProps = state => ({
-    loggedProfileData: selectLoggedProfileData(state),
+    loggedProfileData: state.profileState.getIn(['byId', state.profileState.get(['loggedProfile', 'akashaId'])]),
     loggedProfile: state.profileState.get('loggedProfile')
 });
 

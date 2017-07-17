@@ -101,7 +101,12 @@ class AppContainer extends Component {
         return (
           <MuiThemeProvider muiTheme={muiTheme}>
             <DataLoader flag={!appState.get('appReady')} size={80} style={{ paddingTop: '100px' }}>
-              <div className="container fill-height" style={{ backgroundColor: muiTheme.palette.canvasColor }}>
+              <div
+                className="container fill-height"
+                style={{
+                    backgroundColor: muiTheme.palette.canvasColor
+                }}
+              >
                 {location.pathname === '/' && <Redirect to="/setup/configuration" />}
                 {!location.pathname.startsWith('/setup') &&
                   <DataLoader flag={!appState.get('homeReady')} size={80} style={{ paddingTop: '100px' }}>
@@ -117,12 +122,15 @@ class AppContainer extends Component {
                           <Route path="/dashboard/:dashboardName?" component={DashboardPage} />
                           <Route path="/@:akashaId/:entryId(\d+)" component={EntryPageContainer} />
                         </Switch>
-                        {isOverlay && <Route path="/@:akashaId/:entryId(\d+)" component={EntryPageContainer} />}
+                        {isOverlay &&
+                          <Route path="/@:akashaId/:entryId(\d+)" component={EntryPageContainer} />
+                        }
                       </PageContent>
                       <TopBar
                         fullEntryPage={!!fullEntry}
                         location={location}
                         history={history}
+                        intl={intl}
                       />
                     </div>
                   </DataLoader>

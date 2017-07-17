@@ -7,6 +7,7 @@ import { getInitials } from '../../utils/dataModule';
 
 const TopBarRightSide = ({
     balance,
+    canEditProfile,
     loggedProfileData,
     history,
     location,
@@ -42,7 +43,9 @@ const TopBarRightSide = ({
         style={{ cursor: 'pointer' }}
         userInitials={getInitials(loggedProfileData.firstName, loggedProfileData.lastName)}
         userInitialsStyle={{ fontSize: '20px' }}
-        onClick={onPanelNavigate('uprofile', history, location)}
+        onClick={
+            onPanelNavigate(canEditProfile ? 'uprofile' : 'editprofile', history, location)
+        }
       />
     </div>
   </div>
@@ -54,6 +57,7 @@ TopBarRightSide.contextTypes = {
 
 TopBarRightSide.propTypes = {
     balance: PropTypes.string,
+    canEditProfile: PropTypes.bool,
     history: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
     location: PropTypes.shape(),
