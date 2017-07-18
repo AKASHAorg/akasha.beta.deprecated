@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import CircularProgress from './circular-progress';
-import { MenuEthereum } from '../svg';
+import { MenuEthereum } from '../../components/svg';
 
 function SyncProgress ({ value, strokeWidth }, { muiTheme }) {
     return (

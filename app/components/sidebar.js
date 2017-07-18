@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { LogoButton } from './';
 import { getInitials } from '../utils/dataModule';
 import { AddEntryIcon, ChatIcon, EntriesIcon, PeopleIcon, ProfileIcon,
-    SearchIcon, StreamsIcon } from '../shared-components/svg';
+    SearchIcon, StreamsIcon } from './svg';
 import { generalMessages } from '../locale-data/messages';
 import panels from '../constants/panels';
 import styles from './sidebar.scss';

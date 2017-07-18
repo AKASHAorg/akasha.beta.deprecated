@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 import { FlatButton } from 'material-ui';
-import { LogoIcon } from '../shared-components/svg';
+import { LogoIcon } from './svg';
 import { saveGeneralSettings } from '../local-flux/actions/settings-actions';
 
 const buttonStyle = {
