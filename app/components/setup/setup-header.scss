@@ -1,17 +1,21 @@
 .root {
-    position: fixed;
-    top: 0;
-    height: 100px;
-    left: 0;
-    right: 0;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px 100px;
 }
 
 .title {
-    font-size: 28px;
+    width: 50%;
+    height: 100%;
+    font-size: 20px;
     font-weight: 500;
+    line-height: 40px;
     text-transform: lowercase;
+    padding: 20px;    
+}
+
+.services {
+    width: 50%;
+    height: 100%;
+    padding: 20px;        
 }

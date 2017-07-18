@@ -8,7 +8,7 @@ import WarningIcon from 'material-ui/svg-icons/alert/warning';
 import HubIcon from 'material-ui/svg-icons/hardware/device-hub';
 import EditIcon from 'material-ui/svg-icons/image/edit';
 import { EntryBookmarkOn, EntryBookmarkOff, EntryComment, EntryDownvote,
-    EntryUpvote, ToolbarEthereum } from '../svg';
+    EntryUpvote, ToolbarEthereum } from '../../components/svg';
 import { Avatar, EntryVersionsPanel, EntryVotesPanel, TagChip } from '../';
 import { calculateReadingTime, getInitials } from '../../utils/dataModule';
 import imageCreator from '../../utils/imageUtils';

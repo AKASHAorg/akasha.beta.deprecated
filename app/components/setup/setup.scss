@@ -1,14 +1,43 @@
 .root {
     display: flex;
+    height: 100%;
+    width: 100%;
+}
+
+.leftColumn {
+    background-color: #fafafa;
+    border-right: 1px solid #eee;
 }
 
 .column {
+    position: relative;
     width: 50%;
     height: 100%;
-    padding: 140px 100px 40px 100px;
 }
 
 .fullColumn {
     width: 100%;
-    padding: 100px 100px 0px;
+    padding: 20px 80px 0px;
+}
+
+.columnContent {
+    position: absolute;
+    top: 0px;
+    bottom: 60px;
+    left: 0px;
+    right: 0px;
+    padding: 20px 80px;
+}
+
+.columnFooter {
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    height: 60px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 0px 30px;
+    border-top: 1px solid #f6f6f6;
 }

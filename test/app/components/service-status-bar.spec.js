@@ -6,7 +6,7 @@ import { shallow } from 'enzyme';
 import { IconButton, SvgIcon } from 'material-ui';
 import muiTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
 import { ServiceStatusBar } from '../../../app/components/service-status-bar';
-import { StatusBarEthereum, StatusBarIpfs } from '../../../app/shared-components/svg';
+import { StatusBarEthereum, StatusBarIpfs } from '../../../app/components/svg';
 import { GethStatus, IpfsStatus } from '../../../app/local-flux/reducers/records';
 import ServiceState from '../../../app/constants/ServiceState';
 

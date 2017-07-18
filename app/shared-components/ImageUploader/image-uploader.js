@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { SvgIcon, RaisedButton } from 'material-ui';
 import { injectIntl } from 'react-intl';
 import DeleteIcon from 'material-ui/svg-icons/action/delete';
-import { AddImage } from '../svg';
+import { AddImage } from '../../components/svg';
 import { generalMessages } from '../../locale-data/messages';
 import imageCreator, { getResizedImages, findClosestMatch } from '../../utils/imageUtils';
 

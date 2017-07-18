@@ -5,6 +5,7 @@ const IpfsStatus = Record({
     baseUrl: '',
     downloading: null,
     process: false,
+    progress: null,
     started: null,
     starting: null,
     stopped: null,

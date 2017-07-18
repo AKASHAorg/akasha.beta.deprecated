@@ -4,20 +4,22 @@ import { injectIntl } from 'react-intl';
 import { generalMessages } from '../../locale-data/messages';
 import { ServiceStatusBar } from '../';
 import styles from './setup-header.scss';
+import setupStyles from './setup.scss';
 
-const SetupHeader = ({ intl }) => (
+const SetupHeader = ({ intl, split }) => (
   <div className={styles.root}>
-    <div className={styles.title}>
+    <div className={`${styles.title} ${split && setupStyles.leftColumn}`}>
       {intl.formatMessage(generalMessages.akasha)}
     </div>
-    <div>
+    <div className={styles.services}>
       <ServiceStatusBar />
     </div>
   </div>
 );
 
 SetupHeader.propTypes = {
-    intl: PropTypes.shape()
+    intl: PropTypes.shape(),
+    split: PropTypes.bool
 };
 
 export default injectIntl(SetupHeader);
