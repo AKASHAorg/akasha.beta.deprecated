@@ -8,6 +8,7 @@ const execute = Promise.coroutine(function*(data: IpfsStartRequest) {
     if (data.storagePath) {
         IpfsConnector.getInstance().setIpfsFolder(data.storagePath);
     }
+    IpfsConnector.getInstance().enableDownloadEvents();
     yield IpfsConnector.getInstance().start();
     return {};
 });
