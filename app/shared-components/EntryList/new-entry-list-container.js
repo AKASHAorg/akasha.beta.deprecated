@@ -6,7 +6,8 @@ import { injectIntl } from 'react-intl';
 import throttle from 'lodash.throttle';
 import { entryMessages } from '../../locale-data/messages';
 import { AppActions } from '../../local-flux';
-import { DataLoader, EntryCard } from '../';
+import { EntryCard } from '../';
+import { DataLoader } from '../../components';
 import { isInViewport } from '../../utils/domUtils';
 import { entryPageShow } from '../../local-flux/actions/entry-actions';
 

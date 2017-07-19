@@ -7,7 +7,7 @@ import {
     Tab } from 'material-ui';
 import throttle from 'lodash.throttle';
 import { injectIntl } from 'react-intl';
-import { DataLoader } from '../';
+import { DataLoader } from '../../components';
 import { isInViewport } from '../../utils/domUtils';
 import DraftCard from '../DraftCard/draft-card';
 import EntryListContainer from '../EntryList/new-entry-list-container';

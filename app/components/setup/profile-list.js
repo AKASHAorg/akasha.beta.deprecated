@@ -1,8 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
-import { DataLoader } from '../../shared-components';
-import { Avatar, LoginForm } from '../';
+import { Avatar, DataLoader, LoginForm } from '../';
 import { getInitials } from '../../utils/dataModule';
 import { isInViewport } from '../../utils/domUtils';
 import { setupMessages } from '../../locale-data/messages';
@@ -155,8 +154,8 @@ class ProfileList extends Component {
                   width: '100%',
                   height: '100%',
                   maxWidth: '450px'
-                }}
-              >
+              }}
+            >
               <div
                 style={{
                     position: 'absolute',

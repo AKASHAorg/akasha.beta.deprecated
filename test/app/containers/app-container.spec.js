@@ -4,9 +4,10 @@ import chai from 'chai';
 import { shallow } from 'enzyme';
 import ReactTooltip from 'react-tooltip';
 import { AppContainer } from '../../../app/containers/app-container';
-import { ErrorBar, FatalErrorModal, NotificationBar, TermsPanel } from '../../../app/components';
-import { AuthDialog, DataLoader, GethDetailsModal, IpfsDetailsModal, PublishConfirmDialog,
-    TransferConfirmDialog, WeightConfirmDialog } from '../../../app/shared-components';
+import { DataLoader, ErrorBar, FatalErrorModal, GethDetailsModal, IpfsDetailsModal,
+    NotificationBar, TermsPanel } from '../../../app/components';
+import { AuthDialog, PublishConfirmDialog, TransferConfirmDialog,
+    WeightConfirmDialog } from '../../../app/shared-components';
 import { AppRecord, ErrorRecord, ErrorState,
     NotificationRecord } from '../../../app/local-flux/reducers/records';
 

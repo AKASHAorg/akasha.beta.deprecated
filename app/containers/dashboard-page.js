@@ -1,9 +1,8 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Dashboard } from '../components';
+import { Dashboard, DataLoader } from '../components';
 import { Runners } from '../components/runners';
-import { DataLoader } from '../shared-components';
 import { dashboardSetActive, dashboardUpdateNewColumn } from '../local-flux/actions/dashboard-actions';
 import { selectEntryFlag, selectFullEntry } from '../local-flux/selectors';
 

@@ -2,9 +2,8 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
-import { DataLoader } from 'shared-components';
 import { entryMessages } from '../../locale-data/messages';
-import { CommentThread } from '../';
+import { CommentThread, DataLoader } from '../';
 import { commentsAddPublishAction } from '../../local-flux/actions/comments-actions';
 import { selectAllComments, selectCommentsFlag, selectLoggedProfileData,
     selectPendingComments } from '../../local-flux/selectors';

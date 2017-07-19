@@ -7,10 +7,9 @@ import { injectIntl } from 'react-intl';
 import { parse } from 'querystring';
 import throttle from 'lodash.throttle';
 import debounce from 'lodash.debounce'; // eslint-disable-line no-unused-vars
-import { CommentEditor, CommentsList, EntryPageActions, EntryPageContent,
+import { CommentEditor, CommentsList, DataLoader, EntryPageActions, EntryPageContent,
     EntryPageHeader } from '../';
 import { entryMessages } from '../../locale-data/messages';
-import { DataLoader } from '../../shared-components';
 import { isInViewport } from '../../utils/domUtils';
 import styles from './entry-page.scss';
 
