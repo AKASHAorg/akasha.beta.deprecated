@@ -2,7 +2,8 @@ import PropTypes from 'prop-types';
 import { Component } from 'react';
 import { connect } from 'react-redux';
 import actionTypes from '../../constants/action-types';
-import { deletePendingAction, pendingActionUpdate } from '../../local-flux/actions/app-actions';
+import { deletePendingAction, showNotification,
+    updateAction } from '../../local-flux/actions/app-actions';
 import { profileFollow, profileFollowError, profileFollowSuccess, profileUnfollow,
     profileUnfollowError, profileUnfollowSuccess } from '../../local-flux/actions/profile-actions';
 import { transactionDeletePending } from '../../local-flux/actions/transaction-actions';
@@ -24,11 +25,11 @@ class FollowRunner extends Component {
             const payload = action.get('payload') ? action.get('payload').toJS() : {};
             switch (actionType) {
                 case actionTypes.follow:
-                    this.props.pendingActionUpdate(action.get('id'), { status: 'publishing' });
+                    this.props.updateAction(action.get('id'), { status: 'publishing' });
                     this.props.profileFollow(payload.akashaId, action.gas, payload.profile);
                     break;
                 case actionTypes.unfollow:
-                    this.props.pendingActionUpdate(action.get('id'), { status: 'publishing' });
+                    this.props.updateAction(action.get('id'), { status: 'publishing' });
                     this.props.profileUnfollow(payload.akashaId, action.gas, payload.profile);
                     break;
                 default:
@@ -105,7 +106,7 @@ FollowRunner.propTypes = {
     profileUnfollowSuccess: PropTypes.func.isRequired,
     showNotification: PropTypes.func.isRequired,
     transactionDeletePending: PropTypes.func.isRequired,
-    pendingActionUpdate: PropTypes.func.isRequired,
+    updateAction: PropTypes.func.isRequired,
 };
 
 function mapStateToProps (state) {
@@ -130,7 +131,8 @@ export default connect(
         profileUnfollow,
         profileUnfollowError,
         profileUnfollowSuccess,
+        showNotification,
         transactionDeletePending,
-        pendingActionUpdate
+        updateAction
     }
 )(FollowRunner);
