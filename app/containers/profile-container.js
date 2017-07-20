@@ -1,54 +1,52 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import * as profileActions from '../local-flux/actions/profile-actions';
+import { profileGetData, profileIsFollower, profileFollow, profileUnfollow, profileSendTip } from '../local-flux/actions/profile-actions';
 import { DataLoader } from '../shared-components';
-import ProfileDetails from '../components';
+import { ProfileDetails } from '../components';
 import { selectProfile } from '../local-flux/selectors';
 
 class ProfileContainer extends Component {
     componentWillMount () {
-        const { akashaId } = this.props.params.akashaId;
-        profileActions.getProfileData([{ profile: akashaId }], true);
+        const akashaId = this.props.match.params.akashaId;
+        this.props.profileGetData(akashaId, true);
+        this.props.profileIsFollower([akashaId]);
     }
 
     componentWillReceiveProps (nextProps) {
-        const { profiles, params } = nextProps;
-        if (params.akashaId !== this.props.params.akashaId) {
-            profileActions.getProfileData([{ profile: params.akashaId }], true);
-            if (profiles.size > 1) {
-                profileActions.clearOtherProfiles();
-            }
+        if (nextProps.match.params.akashaId !== this.props.match.params.akashaId) {
+            this.props.profileGetData(nextProps.match.params.akashaId, true);
+            this.props.profileIsFollower([nextProps.match.params.akashaId]);
         }
     }
 
-    componentWillUnmount () {
-        profileActions.clearOtherProfiles();
+    // componentWillUnmount () {
+    //     profileActions.clearOtherProfiles();
+    // }
+
+    followProfile = (akashaId, gas) => {
+        this.props.profileFollow(akashaId, gas);
     }
 
-    followProfile = (akashaId, profile) => {
-        profileActions.addFollowProfileAction(akashaId, profile);
-    }
-
-    unfollowProfile = (akashaId, profile) => {
-        profileActions.addUnfollowProfileAction(akashaId, profile);
+    unfollowProfile = (akashaId, gas) => {
+        this.props.profileUnfollow(akashaId, gas);
     }
 
     selectProfile = (address) => {
         const { router } = this.context;
-        const loggedAkashaId = this.props.loggedProfileData.get('akashaId');
+        const loggedAkashaId = this.props.loggedProfile.get('akashaId');
         router.push(`/${loggedAkashaId}/profile/${address}`);
     }
 
     sendTip = (profileData) => {
         const { akashaId, firstName, lastName, profile } = profileData;
-        profileActions.addSendTipAction({ akashaId, firstName, lastName, profile });
+        this.props.profileSendTip({ akashaId, firstName, lastName, profile });
     };
 
     render () {
-        const { profileData, followingsList, followPending,
-            loggedProfileData, sendingTip } = this.props;
-        const isFollower = profileData && followingsList.includes(profileData.get('profile'));
+        const { profileData, followPending, followerList,
+            loggedProfile, sendingTip } = this.props;
+        const isFollower = followerList.get(profileData.akashaId);
 
         return (<DataLoader
           flag={!profileData}
@@ -61,7 +59,7 @@ class ProfileContainer extends Component {
               followPending={followPending}
               followProfile={this.followProfile}
               isFollower={isFollower}
-              loggedAddress={loggedProfileData.get('profile')}
+              loggedProfile={loggedProfile}
               profileData={profileData}
               sendingTip={sendingTip}
               sendTip={this.sendTip}
@@ -73,13 +71,18 @@ class ProfileContainer extends Component {
 }
 
 ProfileContainer.propTypes = {
-    followingsList: PropTypes.shape(),
     followPending: PropTypes.shape(),
-    loggedProfileData: PropTypes.shape(),
+    followerList: PropTypes.shape(),
     params: PropTypes.shape(),
     profileData: PropTypes.shape(),
-    profiles: PropTypes.shape(),
+    profileGetData: PropTypes.func,
+    profileIsFollower: PropTypes.func,
+    profileFollow: PropTypes.func,
+    profileUnfollow: PropTypes.func,
+    profileSendTip: PropTypes.func,
+    loggedProfile: PropTypes.shape(),
     sendingTip: PropTypes.shape(),
+    match: PropTypes.shape()
 };
 
 ProfileContainer.contextTypes = {
@@ -88,27 +91,28 @@ ProfileContainer.contextTypes = {
 };
 
 function mapStateToProps (state, ownProps) {
-    const { akashaId } = ownProps.params.akashaId;
+    const akashaId = ownProps.match.params.akashaId;
     return {
         fetchingFollowers: state.profileState.getIn(['flags', 'fetchingFollowers']),
         fetchingFollowing: state.profileState.getIn(['flags', 'fetchingFollowing']),
-        followingsList: state.profileState.get('followingsList'),
         followPending: state.profileState.getIn(['flags', 'followPending']),
+        followerList: state.profileState.get('isFollower'),
         isFollowerPending: state.profileState.getIn(['flags', 'isFollowerPending']),
         loggedProfile: state.profileState.get('loggedProfile'),
-        loggedProfileData: state.profileState.get('profiles').find(profile =>
-            profile.get('profile') === state.profileState.getIn(['loggedProfile', 'profile'])),
         loginRequested: state.profileState.getIn(['flags', 'loginRequested']),
         profileData: selectProfile(state, akashaId),
-        profiles: state.profileState.get('profiles'),
-        savedEntriesIds: state.entryState.get('savedEntries').map(entry => entry.get('entryId')),
         sendingTip: state.profileState.getIn(['flags', 'sendingTip']),
-        votePending: state.entryState.getIn(['flags', 'votePending']),
     };
 }
 
 
 export default connect(
     mapStateToProps,
-    {}
+    {
+        profileGetData,
+        profileIsFollower,
+        profileFollow,
+        profileUnfollow,
+        profileSendTip
+    }
 )(ProfileContainer);

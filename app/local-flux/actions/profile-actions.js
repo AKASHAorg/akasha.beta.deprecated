@@ -664,8 +664,8 @@ export const profileDeleteLoggedError = (error) => {
 };
 
 export const profileDeleteLoggedSuccess = () => action(types.PROFILE_DELETE_LOGGED_SUCCESS);
-export const profileFollow = (akashaId, gas, profile) =>
-    action(types.PROFILE_FOLLOW, { akashaId, gas, profile });
+export const profileFollow = (akashaId, gas) =>
+    action(types.PROFILE_FOLLOW, { akashaId, gas });
 
 export const profileFollowError = (error, request) => {
     error.code = 'PFE01';
@@ -715,7 +715,7 @@ export const profileGetCurrentError = (error) => {
 };
 
 export const profileGetCurrentSuccess = data => action(types.PROFILE_GET_CURRENT_SUCCESS, { data });
-export const profileGetData = (profile, full) => action(types.PROFILE_GET_DATA, { profile, full });
+export const profileGetData = (akashaId, full) => action(types.PROFILE_GET_DATA, { akashaId, full });
 
 export const profileGetDataError = (error) => {
     error.code = 'PGDE01';
@@ -836,8 +836,8 @@ export const profileSendTipError = (error, request) => {
 };
 
 export const profileSendTipSuccess = data => action(types.PROFILE_SEND_TIP_SUCCESS, { data });
-export const profileUnfollow = (akashaId, gas, profile) =>
-    action(types.PROFILE_UNFOLLOW, { akashaId, gas, profile });
+export const profileUnfollow = (akashaId, gas) =>
+    action(types.PROFILE_UNFOLLOW, { akashaId, gas });
 
 export const profileUnfollowError = (error, request) => {
     error.code = 'PUE01';
