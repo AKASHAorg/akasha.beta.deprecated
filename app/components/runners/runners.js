@@ -4,15 +4,15 @@ import { ClaimRunner, CommentsPublisher, CommonRunner, FollowRunner, ProfileUpda
 
 const Runners = () => (
   <div>
-    <ClaimRunner />
-    <CommentsPublisher />
+    {/* <ClaimRunner />
+    <CommentsPublisher /> */}
     <CommonRunner />
     <FollowRunner />
     <ProfileUpdater />
-    <PublishEntryRunner />
+    {/* <PublishEntryRunner />
     <TagRunner />
     <TipRunner />
-    <VoteRunner />
+    <VoteRunner /> */}
   </div>
 );
 

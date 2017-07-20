@@ -14,7 +14,7 @@ class ProfileActions {
         }
         this.appActions = new AppActions(dispatch);
         this.transactionActions = new TransactionActions(dispatch);
-        this.profileService = new ProfileService();
+        // this.profileService = new ProfileService();
         this.authService = new AuthService();
         // this.registryService = new RegistryService();
         this.dispatch = dispatch;
@@ -137,25 +137,25 @@ class ProfileActions {
             fetchingProfileData: true
         }));
         profiles.forEach((profileObject) => {
-            this.profileService.getProfileData({
-                options: {
-                    profile: profileObject.profile,
-                    full
-                },
-                onSuccess: (data) => {
-                    if (data.avatar) {
-                        data.avatar = imageCreator(data.avatar, data.baseUrl);
-                    }
-                    this.dispatch(profileActionCreators.getProfileDataSuccess(data, {
-                        fetchingProfileData: false
-                    }));
-                },
-                onError: (err) => {
-                    this.dispatch(profileActionCreators.getProfileDataError(err, {
-                        fetchingProfileData: false
-                    }));
-                }
-            });
+            // this.profileService.getProfileData({
+            //     options: {
+            //         profile: profileObject.profile,
+            //         full
+            //     },
+            //     onSuccess: (data) => {
+            //         if (data.avatar) {
+            //             data.avatar = imageCreator(data.avatar, data.baseUrl);
+            //         }
+            //         this.dispatch(profileActionCreators.getProfileDataSuccess(data, {
+            //             fetchingProfileData: false
+            //         }));
+            //     },
+            //     onError: (err) => {
+            //         this.dispatch(profileActionCreators.getProfileDataError(err, {
+            //             fetchingProfileData: false
+            //         }));
+            //     }
+            // });
         });
     };
 
@@ -176,27 +176,27 @@ class ProfileActions {
         }));
         this.dispatch((dispatch, getState) => {
             const loggedProfile = getState().profileState.get('loggedProfile');
-            this.profileService.updateProfileData({
-                token: loggedProfile.get('token'),
-                ipfs,
-                gas,
-                onSuccess: (data) => {
-                    this.transactionActions.listenForMinedTx();
-                    this.transactionActions.addToQueue([{
-                        tx: data.tx,
-                        type: 'updateProfile'
-                    }]);
-                    this.appActions.showNotification({
-                        id: 'updatingProfile',
-                        values: {},
-                        duration: 3000
-                    });
-                },
-                onError: error =>
-                    dispatch(profileActionCreators.updateProfileDataError(error, {
-                        updatingProfile: false
-                    }))
-            });
+            // this.profileService.updateProfileData({
+            //     token: loggedProfile.get('token'),
+            //     ipfs,
+            //     gas,
+            //     onSuccess: (data) => {
+            //         this.transactionActions.listenForMinedTx();
+            //         this.transactionActions.addToQueue([{
+            //             tx: data.tx,
+            //             type: 'updateProfile'
+            //         }]);
+            //         this.appActions.showNotification({
+            //             id: 'updatingProfile',
+            //             values: {},
+            //             duration: 3000
+            //         });
+            //     },
+            //     onError: error =>
+            //         dispatch(profileActionCreators.updateProfileDataError(error, {
+            //             updatingProfile: false
+            //         }))
+            // });
         });
     };
 
@@ -204,23 +204,23 @@ class ProfileActions {
         this.dispatch(profileActionCreators.getProfileList({
             fetchingProfileList: true
         }));
-        this.profileService.getProfileList({
-            profiles,
-            onSuccess: (data) => {
-                data.collection.forEach((item) => {
-                    if (item.avatar) {
-                        item.avatar = imageCreator(item.avatar, item.baseUrl);
-                    }
-                });
-                this.dispatch(profileActionCreators.getProfileListSuccess(data, {
-                    fetchingProfileList: false
-                }));
-            },
-            onError: error =>
-                this.dispatch(profileActionCreators.getProfileListError(error, {
-                    fetchingProfileList: false
-                }))
-        });
+        // this.profileService.getProfileList({
+        //     profiles,
+        //     onSuccess: (data) => {
+        //         data.collection.forEach((item) => {
+        //             if (item.avatar) {
+        //                 item.avatar = imageCreator(item.avatar, item.baseUrl);
+        //             }
+        //         });
+        //         this.dispatch(profileActionCreators.getProfileListSuccess(data, {
+        //             fetchingProfileList: false
+        //         }));
+        //     },
+        //     onError: error =>
+        //         this.dispatch(profileActionCreators.getProfileListError(error, {
+        //             fetchingProfileList: false
+        //         }))
+        // });
     }
 
     updateProfileDataSuccess = () => {
@@ -236,16 +236,16 @@ class ProfileActions {
     getProfileBalance = unit =>
         this.dispatch((dispatch, getState) => {
             const profileKey = getState().profileState.getIn(['loggedProfile', 'account']);
-            this.profileService.getProfileBalance({
-                options: {
-                    etherBase: profileKey,
-                    unit
-                },
-                onSuccess: data =>
-                    this.dispatch(profileActionCreators.getProfileBalanceSuccess(data)),
-                onError: error =>
-                    this.dispatch(profileActionCreators.getProfileBalanceError(error))
-            });
+            // this.profileService.getProfileBalance({
+            //     options: {
+            //         etherBase: profileKey,
+            //         unit
+            //     },
+            //     onSuccess: data =>
+            //         this.dispatch(profileActionCreators.getProfileBalanceSuccess(data)),
+            //     onError: error =>
+            //         this.dispatch(profileActionCreators.getProfileBalanceError(error))
+            // });
         });
 
     clearLoggedProfile = () => {
@@ -290,159 +290,159 @@ class ProfileActions {
 
     getFollowersCount = (akashaId) => {
         this.dispatch(profileActionCreators.getFollowersCount());
-        this.profileService.getFollowersCount({
-            akashaId,
-            onError: error =>
-                this.dispatch(profileActionCreators.getFollowersCountError(error)),
-            onSuccess: data =>
-                this.dispatch(
-                    profileActionCreators.getFollowersCountSuccess(data.akashaId, data.count)
-                )
-        });
+        // this.profileService.getFollowersCount({
+        //     akashaId,
+        //     onError: error =>
+        //         this.dispatch(profileActionCreators.getFollowersCountError(error)),
+        //     onSuccess: data =>
+        //         this.dispatch(
+        //             profileActionCreators.getFollowersCountSuccess(data.akashaId, data.count)
+        //         )
+        // });
     };
 
     getFollowingCount = (akashaId) => {
         this.dispatch(profileActionCreators.getFollowingCount());
-        this.profileService.getFollowingCount({
-            akashaId,
-            onError: error =>
-                this.dispatch(profileActionCreators.getFollowingCountError(error)),
-            onSuccess: data =>
-                this.dispatch(
-                    profileActionCreators.getFollowingCountSuccess(data.akashaId, data.count)
-                )
-        });
+        // this.profileService.getFollowingCount({
+        //     akashaId,
+        //     onError: error =>
+        //         this.dispatch(profileActionCreators.getFollowingCountError(error)),
+        //     onSuccess: data =>
+        //         this.dispatch(
+        //             profileActionCreators.getFollowingCountSuccess(data.akashaId, data.count)
+        //         )
+        // });
     };
 
     followersIterator = (akashaId, start, limit) => {
         this.dispatch(profileActionCreators.followersIterator({
             fetchingFollowers: true
         }));
-        this.profileService.followersIterator({
-            akashaId,
-            start,
-            limit,
-            onError: error =>
-                this.dispatch(profileActionCreators.followersIteratorError(error, {
-                    fetchingFollowers: false
-                })),
-            onSuccess: (data) => {
-                const akashaIds = [];
-                data.collection.forEach((item) => {
-                    if (item.profile) {
-                        akashaIds.push({ akashaId: item.profile.akashaId });
-                        if (item.profile.avatar) {
-                            item.profile.avatar =
-                                imageCreator(item.profile.avatar, item.profile.baseUrl);
-                        }
-                    }
-                });
-                this.profileService.saveAkashaIds(akashaIds);
-                this.dispatch(profileActionCreators.followersIteratorSuccess(data, {
-                    fetchingFollowers: false
-                }));
-            }
-        });
+        // this.profileService.followersIterator({
+        //     akashaId,
+        //     start,
+        //     limit,
+        //     onError: error =>
+        //         this.dispatch(profileActionCreators.followersIteratorError(error, {
+        //             fetchingFollowers: false
+        //         })),
+        //     onSuccess: (data) => {
+        //         const akashaIds = [];
+        //         data.collection.forEach((item) => {
+        //             if (item.profile) {
+        //                 akashaIds.push({ akashaId: item.profile.akashaId });
+        //                 if (item.profile.avatar) {
+        //                     item.profile.avatar =
+        //                         imageCreator(item.profile.avatar, item.profile.baseUrl);
+        //                 }
+        //             }
+        //         });
+        //         this.profileService.saveAkashaIds(akashaIds);
+        //         this.dispatch(profileActionCreators.followersIteratorSuccess(data, {
+        //             fetchingFollowers: false
+        //         }));
+        //     }
+        // });
     };
 
     moreFollowersIterator = (akashaId, start, limit) => {
         this.dispatch(profileActionCreators.moreFollowersIterator({
             fetchingMoreFollowers: true
         }));
-        this.profileService.moreFollowersIterator({
-            akashaId,
-            start,
-            limit,
-            onError: error =>
-                this.dispatch(profileActionCreators.moreFollowersIteratorError(error, {
-                    fetchingMoreFollowers: false
-                })),
-            onSuccess: (data) => {
-                const akashaIds = [];
-                data.collection.forEach((item) => {
-                    if (item.profile) {
-                        akashaIds.push({ akashaId: item.profile.akashaId });
-                        if (item.profile.avatar) {
-                            item.profile.avatar =
-                                imageCreator(item.profile.avatar, item.profile.baseUrl);
-                        }
-                    }
-                });
-                this.profileService.saveAkashaIds(akashaIds);
-                this.dispatch(profileActionCreators.moreFollowersIteratorSuccess(data, {
-                    fetchingMoreFollowers: false
-                }));
-            }
-        });
+        // this.profileService.moreFollowersIterator({
+        //     akashaId,
+        //     start,
+        //     limit,
+        //     onError: error =>
+        //         this.dispatch(profileActionCreators.moreFollowersIteratorError(error, {
+        //             fetchingMoreFollowers: false
+        //         })),
+        //     onSuccess: (data) => {
+        //         const akashaIds = [];
+        //         data.collection.forEach((item) => {
+        //             if (item.profile) {
+        //                 akashaIds.push({ akashaId: item.profile.akashaId });
+        //                 if (item.profile.avatar) {
+        //                     item.profile.avatar =
+        //                         imageCreator(item.profile.avatar, item.profile.baseUrl);
+        //                 }
+        //             }
+        //         });
+        //         this.profileService.saveAkashaIds(akashaIds);
+        //         this.dispatch(profileActionCreators.moreFollowersIteratorSuccess(data, {
+        //             fetchingMoreFollowers: false
+        //         }));
+        //     }
+        // });
     };
 
     followingIterator = (akashaId, start, limit) => {
         this.dispatch(profileActionCreators.followingIterator({
             fetchingFollowing: true
         }));
-        this.profileService.followingIterator({
-            akashaId,
-            start,
-            limit,
-            onError: error =>
-                this.dispatch(profileActionCreators.followingIteratorError(error, {
-                    fetchingFollowing: false
-                })),
-            onSuccess: (data) => {
-                const akashaIds = [];
-                data.collection.forEach((item) => {
-                    if (item.profile) {
-                        akashaIds.push({ akashaId: item.profile.akashaId });
-                        if (item.profile.avatar) {
-                            item.profile.avatar =
-                                imageCreator(item.profile.avatar, item.profile.baseUrl);
-                        }
-                    }
-                });
-                this.profileService.saveAkashaIds(akashaIds);
-                this.dispatch(profileActionCreators.followingIteratorSuccess(data, {
-                    fetchingFollowing: false
-                }));
-            }
-        });
+        // this.profileService.followingIterator({
+        //     akashaId,
+        //     start,
+        //     limit,
+        //     onError: error =>
+        //         this.dispatch(profileActionCreators.followingIteratorError(error, {
+        //             fetchingFollowing: false
+        //         })),
+        //     onSuccess: (data) => {
+        //         const akashaIds = [];
+        //         data.collection.forEach((item) => {
+        //             if (item.profile) {
+        //                 akashaIds.push({ akashaId: item.profile.akashaId });
+        //                 if (item.profile.avatar) {
+        //                     item.profile.avatar =
+        //                         imageCreator(item.profile.avatar, item.profile.baseUrl);
+        //                 }
+        //             }
+        //         });
+        //         this.profileService.saveAkashaIds(akashaIds);
+        //         this.dispatch(profileActionCreators.followingIteratorSuccess(data, {
+        //             fetchingFollowing: false
+        //         }));
+        //     }
+        // });
     };
 
     moreFollowingIterator = (akashaId, start, limit) => {
         this.dispatch(profileActionCreators.moreFollowingIterator({
             fetchingMoreFollowing: true
         }));
-        this.profileService.moreFollowingIterator({
-            akashaId,
-            start,
-            limit,
-            onError: error =>
-                this.dispatch(profileActionCreators.moreFollowingIteratorError(error, {
-                    fetchingMoreFollowing: false
-                })),
-            onSuccess: (data) => {
-                const akashaIds = [];
-                data.collection.forEach((item) => {
-                    if (item.profile) {
-                        akashaIds.push({ akashaId: item.profile.akashaId });
-                        if (item.profile.avatar) {
-                            item.profile.avatar =
-                                imageCreator(item.profile.avatar, item.profile.baseUrl);
-                        }
-                    }
-                });
-                this.profileService.saveAkashaIds(akashaIds);
-                this.dispatch(profileActionCreators.moreFollowingIteratorSuccess(data, {
-                    fetchingMoreFollowing: false
-                }));
-            }
-        });
+        // this.profileService.moreFollowingIterator({
+        //     akashaId,
+        //     start,
+        //     limit,
+        //     onError: error =>
+        //         this.dispatch(profileActionCreators.moreFollowingIteratorError(error, {
+        //             fetchingMoreFollowing: false
+        //         })),
+        //     onSuccess: (data) => {
+        //         const akashaIds = [];
+        //         data.collection.forEach((item) => {
+        //             if (item.profile) {
+        //                 akashaIds.push({ akashaId: item.profile.akashaId });
+        //                 if (item.profile.avatar) {
+        //                     item.profile.avatar =
+        //                         imageCreator(item.profile.avatar, item.profile.baseUrl);
+        //                 }
+        //             }
+        //         });
+        //         this.profileService.saveAkashaIds(akashaIds);
+        //         this.dispatch(profileActionCreators.moreFollowingIteratorSuccess(data, {
+        //             fetchingMoreFollowing: false
+        //         }));
+        //     }
+        // });
     };
     getFollowingsList = (akashaId) => {
-        this.profileService.getFollowingsList({
-            akashaId,
-            onSuccess: data => this.dispatch(profileActionCreators.getFollowingsListSuccess(data)),
-            onError: error => this.dispatch(profileActionCreators.getFollowingsListError(error))
-        });
+        // this.profileService.getFollowingsList({
+        //     akashaId,
+        //     onSuccess: data => this.dispatch(profileActionCreators.getFollowingsListSuccess(data)),
+        //     onError: error => this.dispatch(profileActionCreators.getFollowingsListError(error))
+        // });
     }
     addUpdateProfileDataAction = (profileData) => {
         this.appActions.addPendingAction({
@@ -494,29 +494,29 @@ class ProfileActions {
             const flagOn = { akashaId, value: true };
             const flagOff = { akashaId, value: false };
             this.dispatch(profileActionCreators.followProfile({ followPending: flagOn }));
-            this.profileService.follow({
-                token: loggedProfile.get('token'),
-                akashaId,
-                gas,
-                onSuccess: (data) => {
-                    this.transactionActions.listenForMinedTx();
-                    this.transactionActions.addToQueue([{
-                        tx: data.tx,
-                        type: 'followProfile',
-                        akashaId: data.akashaId,
-                        followedProfile: profile
-                    }]);
-                    this.appActions.showNotification({
-                        id: 'followingProfile',
-                        values: { akashaId: data.akashaId },
-                        duration: 3000
-                    });
-                },
-                onError: error =>
-                    dispatch(profileActionCreators.followProfileError(error, {
-                        followPending: flagOff
-                    }))
-            });
+            // this.profileService.follow({
+            //     token: loggedProfile.get('token'),
+            //     akashaId,
+            //     gas,
+            //     onSuccess: (data) => {
+            //         this.transactionActions.listenForMinedTx();
+            //         this.transactionActions.addToQueue([{
+            //             tx: data.tx,
+            //             type: 'followProfile',
+            //             akashaId: data.akashaId,
+            //             followedProfile: profile
+            //         }]);
+            //         this.appActions.showNotification({
+            //             id: 'followingProfile',
+            //             values: { akashaId: data.akashaId },
+            //             duration: 3000
+            //         });
+            //     },
+            //     onError: error =>
+            //         dispatch(profileActionCreators.followProfileError(error, {
+            //             followPending: flagOff
+            //         }))
+            // });
         });
 
     followProfileSuccess = (akashaId, profile) => {
@@ -535,27 +535,27 @@ class ProfileActions {
             const flagOn = { akashaId, value: true };
             const flagOff = { akashaId, value: false };
             this.dispatch(profileActionCreators.unfollowProfile({ followPending: flagOn }));
-            this.profileService.unfollow({
-                token: loggedProfile.get('token'),
-                akashaId,
-                gas,
-                onSuccess: (data) => {
-                    this.transactionActions.listenForMinedTx();
-                    this.transactionActions.addToQueue([{
-                        tx: data.tx,
-                        type: 'unfollowProfile',
-                        akashaId: data.akashaId,
-                        unfollowedProfile: profile
-                    }]);
-                    this.appActions.showNotification({
-                        id: 'unfollowingProfile',
-                        values: { akashaId: data.akashaId },
-                        duration: 3000
-                    });
-                },
-                onError: error =>
-                    dispatch(profileActionCreators.unfollowProfileError(error, flagOff))
-            });
+            // this.profileService.unfollow({
+            //     token: loggedProfile.get('token'),
+            //     akashaId,
+            //     gas,
+            //     onSuccess: (data) => {
+            //         this.transactionActions.listenForMinedTx();
+            //         this.transactionActions.addToQueue([{
+            //             tx: data.tx,
+            //             type: 'unfollowProfile',
+            //             akashaId: data.akashaId,
+            //             unfollowedProfile: profile
+            //         }]);
+            //         this.appActions.showNotification({
+            //             id: 'unfollowingProfile',
+            //             values: { akashaId: data.akashaId },
+            //             duration: 3000
+            //         });
+            //     },
+            //     onError: error =>
+            //         dispatch(profileActionCreators.unfollowProfileError(error, flagOff))
+            // });
         });
 
     unfollowProfileSuccess = (akashaId, profile) => {
@@ -572,18 +572,18 @@ class ProfileActions {
         this.dispatch(profileActionCreators.isFollower({
             isFollowerPending: true
         }));
-        this.profileService.isFollower({
-            akashaId,
-            following,
-            onSuccess: data =>
-                this.dispatch(profileActionCreators.isFollowerSuccess(data, {
-                    isFollowerPending: false
-                })),
-            onError: error =>
-                this.dispatch(profileActionCreators.isFollowerError(error, {
-                    isFollowerPending: false
-                }))
-        });
+        // this.profileService.isFollower({
+        //     akashaId,
+        //     following,
+        //     onSuccess: data =>
+        //         this.dispatch(profileActionCreators.isFollowerSuccess(data, {
+        //             isFollowerPending: false
+        //         })),
+        //     onError: error =>
+        //         this.dispatch(profileActionCreators.isFollowerError(error, {
+        //             isFollowerPending: false
+        //         }))
+        // });
     };
 
     sendTip = (akashaId, receiver, value, gas) =>
@@ -592,29 +592,29 @@ class ProfileActions {
             const flagOn = { akashaId, value: true };
             const flagOff = { akashaId, value: false };
             this.dispatch(profileActionCreators.sendTip({ sendingTip: flagOn }));
-            this.profileService.sendTip({
-                token: loggedProfile.get('token'),
-                akashaId,
-                receiver,
-                value,
-                gas,
-                onSuccess: (data) => {
-                    this.transactionActions.listenForMinedTx();
-                    this.transactionActions.addToQueue([{
-                        tx: data.tx,
-                        type: 'sendTip',
-                        akashaId: data.akashaId,
-                        gas
-                    }]);
-                    this.appActions.showNotification({
-                        id: 'sendingTip',
-                        values: { akashaId: data.akashaId },
-                        duration: 3000
-                    });
-                },
-                onError: error =>
-                    dispatch(profileActionCreators.sendTipError(error, flagOff))
-            });
+            // this.profileService.sendTip({
+            //     token: loggedProfile.get('token'),
+            //     akashaId,
+            //     receiver,
+            //     value,
+            //     gas,
+            //     onSuccess: (data) => {
+            //         this.transactionActions.listenForMinedTx();
+            //         this.transactionActions.addToQueue([{
+            //             tx: data.tx,
+            //             type: 'sendTip',
+            //             akashaId: data.akashaId,
+            //             gas
+            //         }]);
+            //         this.appActions.showNotification({
+            //             id: 'sendingTip',
+            //             values: { akashaId: data.akashaId },
+            //             duration: 3000
+            //         });
+            //     },
+            //     onError: error =>
+            //         dispatch(profileActionCreators.sendTipError(error, flagOff))
+            // });
         });
 
     sendTipSuccess = (akashaId, minedSuccessfully) => {
