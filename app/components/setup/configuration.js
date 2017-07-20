@@ -2,29 +2,39 @@ import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import { Redirect } from 'react-router-dom';
 import { injectIntl } from 'react-intl';
-import { FlatButton, RadioButton, RadioButtonGroup, RaisedButton } from 'material-ui';
-import { setupMessages, generalMessages } from '../../locale-data/messages';
-import { GethCacheSelectField, PathInputField } from '../../shared-components';
-import { PanelContainerFooter } from '../';
+import { Button, Radio, Select as AntdSelect } from 'antd';
+import { formMessages, generalMessages, setupMessages } from '../../locale-data/messages';
+import { GethCacheSelect, PathInputField, Select } from '../';
 import setupStyles from './setup.scss';
 
-const ADVANCED = 'advanced';
-const EXPRESS = 'express';
+const { Option } = AntdSelect;
+const RadioGroup = Radio.Group;
+
+const syncModes = {
+    light: 'light',
+    fast: 'fast'
+};
+const syncSettings = {
+    advanced: 'advanced',
+    express: 'express'
+};
 
 class Config extends PureComponent {
     state = {
-        cache: null,
+        cache: '512',
         gethDataDir: null,
         ipfsPath: null,
-        isAdvanced: false
+        isAdvanced: false,
+        syncmode: syncModes.fast
     };
 
     componentWillMount () {
         const { gethSettings, ipfsSettings } = this.props;
         this.setState({
-            cache: gethSettings.get('cache'),
+            cache: gethSettings.get('cache').toString(),
             gethDataDir: gethSettings.get('datadir'),
             ipfsPath: ipfsSettings.get('storagePath'),
+            syncmode: gethSettings.get('syncmode')
         });
     }
 
@@ -33,32 +43,27 @@ class Config extends PureComponent {
         if (gethSettings.equals(this.props.gethSettings)
                 || ipfsSettings.equals(this.props.ipfsSettings)) {
             this.setState({
-                cache: gethSettings.get('cache'),
+                cache: gethSettings.get('cache').toString(),
                 gethDataDir: gethSettings.get('datadir'),
                 ipfsPath: ipfsSettings.get('storagePath'),
+                syncmode: gethSettings.get('syncmode')
             });
         }
     }
 
-    handleChange = (ev, value) => {
-        this.setState({
-            isAdvanced: value === ADVANCED
-        });
-    };
-
-    handleGethDatadir = (gethDataDir) => {
+    onGethDatadirChange = (gethDataDir) => {
         this.setState({
             gethDataDir
         });
     };
 
-    handleGethCacheSize = (event, index, value) => {
+    onGethCacheChange = (value) => {
         this.setState({
             cache: value
         });
     };
 
-    handleIpfsPath = (ipfsPath) => {
+    onIpfsPathChange = (ipfsPath) => {
         this.setState({
             ipfsPath
         });
@@ -67,7 +72,7 @@ class Config extends PureComponent {
     handleReset = () => {
         const { defaultGethSettings, defaultIpfsSettings } = this.props;
         this.setState({
-            cache: defaultGethSettings.get('cache'),
+            cache: defaultGethSettings.get('cache').toString(),
             gethDataDir: defaultGethSettings.get('datadir'),
             ipfsPath: defaultIpfsSettings.get('storagePath')
         });
@@ -75,107 +80,123 @@ class Config extends PureComponent {
 
     handleSubmit = () => {
         const { defaultGethSettings, defaultIpfsSettings, saveConfiguration } = this.props;
-        const { cache, gethDataDir, ipfsPath, isAdvanced } = this.state;
-        const geth = isAdvanced ? { cache, datadir: gethDataDir } : defaultGethSettings.toJS();
+        const { cache, gethDataDir, ipfsPath, isAdvanced, syncmode } = this.state;
+        const geth = isAdvanced ?
+            { cache: Number(cache), datadir: gethDataDir } :
+            defaultGethSettings.toJS();
+        // Uncomment this when syncmode will be supported on main
+        geth.syncmode = syncmode;
         const ipfs = isAdvanced ? { storagePath: ipfsPath } : defaultIpfsSettings.toJS();
         saveConfiguration({ geth, ipfs });
     };
 
-    render () {
-        const { configurationSaved, intl, muiTheme } = this.props;
-        const { cache, gethDataDir, ipfsPath, isAdvanced } = this.state;
-        const radioStyle = { marginTop: '10px', marginBottom: '10px' };
+    onRadioChange = (ev) => {
+        this.setState({
+            isAdvanced: ev.target.value === syncSettings.advanced
+        });
+    };
+
+    onSyncModeChange = (val) => {
+        this.setState({
+            syncmode: val
+        });
+    };
+
+    renderAdvancedSettings = () => {
+        const { intl } = this.props;
+        const { cache, gethDataDir, ipfsPath } = this.state;
+
         return (
-          <div className={`full-page ${setupStyles.root}`}>
+          <div style={{ paddingBottom: '10px' }}>
+            <GethCacheSelect
+              onChange={this.onGethCacheChange}
+              style={{ width: '100%' }}
+              value={cache}
+            />
+            <PathInputField
+              label={intl.formatMessage(setupMessages.gethDataDirPath)}
+              onChange={this.onGethDatadirChange}
+              value={gethDataDir}
+              size="large"
+            />
+            <PathInputField
+              label={intl.formatMessage(setupMessages.ipfsStoragePath)}
+              onChange={this.onIpfsPathChange}
+              value={ipfsPath}
+              size="large"
+            />
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <Button onClick={this.handleReset}>
+                {intl.formatMessage(generalMessages.reset)}
+              </Button>
+            </div>
+          </div>
+        );
+    };
+
+    render () {
+        const { configurationSaved, intl } = this.props;
+        const { isAdvanced, syncmode } = this.state;
+
+        return (
+          <div className={setupStyles.root}>
             {configurationSaved && <Redirect to="/setup/synchronization" />}
-            <div className={setupStyles.column}>
-              <div>
-                <h1 style={{ fontWeight: '400', fontSize: '24px' }}>
-                  {intl.formatMessage(setupMessages.firstTimeSetupTitle)}
-                </h1>
-                <div>
-                  <p>
-                    {intl.formatMessage(setupMessages.akashaNextGenNetwork)}
-                  </p>
-                  <p>
-                    {intl.formatMessage(setupMessages.youHaveNotHeared)}
-                  </p>
-                  <p>
-                    {intl.formatMessage(setupMessages.ifYouHaveEth)}
-                  </p>
-                </div>
-              </div>
+            <div className={`${setupStyles.column} ${setupStyles.leftColumn}`}>
+              Placeholder
             </div>
             <div className={setupStyles.column}>
-              <h1 style={{ fontWeight: '400', fontSize: '24px' }}>
-                {intl.formatMessage(setupMessages.syncOptions)}
-              </h1>
-              <div style={{ paddingLeft: '12px', marginTop: '24px' }}>
-                <RadioButtonGroup
-                  valueSelected={isAdvanced ? ADVANCED : EXPRESS}
-                  name="installType"
-                  onChange={this.handleChange}
+              <div className={setupStyles.columnContent}>
+                <div style={{ fontWeight: '500', fontSize: '20px' }}>
+                  {intl.formatMessage(setupMessages.syncOptions)}
+                </div>
+                <div style={{ marginTop: '24px' }}>
+                  <Select
+                    label={intl.formatMessage(formMessages.selectOneOption)}
+                    onChange={this.onSyncModeChange}
+                    size="large"
+                    style={{ width: '100%' }}
+                    value={syncmode}
+                  >
+                    <Option value={syncModes.fast}>
+                      {intl.formatMessage(setupMessages.normalSync)}
+                    </Option>
+                    <Option value={syncModes.light}>
+                      {intl.formatMessage(setupMessages.lightSync)}
+                    </Option>
+                  </Select>
+                  <RadioGroup
+                    onChange={this.onRadioChange}
+                    size="large"
+                    value={isAdvanced ? syncSettings.advanced : syncSettings.express}
+                  >
+                    <Radio
+                      value={syncSettings.express}
+                      style={{ display: 'inline-flex', alignItems: 'center' }}
+                    >
+                      {intl.formatMessage(setupMessages.expressSetup)}
+                    </Radio>
+                    <Radio
+                      value={syncSettings.advanced}
+                      style={{ display: 'inline-flex', alignItems: 'center' }}
+                    >
+                      {intl.formatMessage(setupMessages.advancedSetup)}
+                    </Radio>
+                  </RadioGroup>
+                  {isAdvanced && this.renderAdvancedSettings()}
+                </div>
+              </div>
+              <div className={setupStyles.columnFooter}>
+                <Button
+                  type="primary"
+                  onClick={this.handleSubmit}
+                  size="large"
                 >
-                  <RadioButton
-                    label={intl.formatMessage(setupMessages.expressSetup)}
-                    style={radioStyle}
-                    value={EXPRESS}
-                  />
-                  <RadioButton
-                    label={intl.formatMessage(setupMessages.advancedSetup)}
-                    style={radioStyle}
-                    value={ADVANCED}
-                  />
-                </RadioButtonGroup>
-                {isAdvanced &&
-                  <div style={{ paddingBottom: '10px' }}>
-                    <GethCacheSelectField
-                      cache={cache}
-                      hasErrorText
-                      intl={intl}
-                      onChange={this.handleGethCacheSize}
-                    />
-                    <PathInputField
-                      errorText={intl.formatMessage(setupMessages.changeGethDataDir)}
-                      floatingLabelText={intl.formatMessage(setupMessages.gethDataDirPath)}
-                      onChange={this.handleGethDatadir}
-                      path={gethDataDir}
-                    />
-                    <PathInputField
-                      errorText={intl.formatMessage(setupMessages.changeIpfsStoragePath)}
-                      floatingLabelText={intl.formatMessage(setupMessages.ipfsStoragePath)}
-                      onChange={this.handleIpfsPath}
-                      path={ipfsPath}
-                    />
-                    <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                      <FlatButton
-                        label={intl.formatMessage(generalMessages.reset)}
-                        onClick={this.handleReset}
-                      />
-                    </div>
-                  </div>
-                }
-                <div style={{ display: 'flex', justifyContent: 'flex-end', paddingTop: '30px' }}>
-                  <RaisedButton
-                    key="next"
-                    label={intl.formatMessage(generalMessages.nextButtonLabel)}
-                    primary
-                    style={{ marginLeft: '12px' }}
-                    onClick={this.handleSubmit}
-                  />
-                </div>
+                  <span style={{ fontWeight: 400, fontSize: '15px' }}>
+                    {intl.formatMessage(generalMessages.nextButtonLabel)}
+                  </span>
+                </Button>
               </div>
             </div>
-            {/*<PanelContainerFooter intl={intl} muiTheme={muiTheme} >
-              <RaisedButton
-                key="next"
-                label={intl.formatMessage(generalMessages.nextButtonLabel)}
-                primary
-                style={{ marginLeft: '12px' }}
-                onClick={this.handleSubmit}
-              />
-            </PanelContainerFooter>
-            */}
           </div>
         );
     }
@@ -189,7 +210,6 @@ Config.propTypes = {
     intl: PropTypes.shape(),
     ipfsSettings: PropTypes.shape().isRequired,
     saveConfiguration: PropTypes.func.isRequired,
-    muiTheme: PropTypes.shape(),
 };
 
 export default injectIntl(Config);

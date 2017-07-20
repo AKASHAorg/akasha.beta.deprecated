@@ -6,7 +6,7 @@ import { FlatButton, IconButton, Paper, SvgIcon } from 'material-ui';
 import NotificationsActiveIcon from 'material-ui/svg-icons/social/notifications-active';
 import NotificationsDisabledIcon from 'material-ui/svg-icons/social/notifications-off';
 import { Avatar } from '../';
-import { UserDonate, UserMore } from '../svg';
+import { UserDonate, UserMore } from '../../components/svg';
 import { generalMessages, profileMessages } from '../../locale-data/messages';
 import { getInitials } from '../../utils/dataModule';
 

@@ -33,7 +33,7 @@ IconAddEntry.propTypes = {
     disabled: PropTypes.bool,
     iconStyle: PropTypes.shape(),
     isActive: PropTypes.bool,
-    onClick: PropTypes.func.isRequired,
+    onClick: PropTypes.func,
     tooltip: PropTypes.string,
 };
 

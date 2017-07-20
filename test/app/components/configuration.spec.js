@@ -4,9 +4,8 @@ import { spy } from 'sinon';
 import chai from 'chai';
 import { shallow } from 'enzyme';
 import { FlatButton, RadioButton, RadioButtonGroup, RaisedButton } from 'material-ui';
-import { Configuration, PanelContainerFooter } from '../../../app/components';
-import { GethCacheSelectField, PanelContainer, PanelHeader,
-    PathInputField } from '../../../app/shared-components';
+import { Configuration, PanelContainerFooter, PathInputField } from '../../../app/components';
+import { GethCacheSelectField, PanelContainer, PanelHeader } from '../../../app/shared-components';
 import { GethSettings, IpfsSettings } from '../../../app/local-flux/reducers/records';
 
 const { expect } = chai;

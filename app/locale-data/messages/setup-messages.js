@@ -111,6 +111,16 @@ const setupMessages = defineMessages({
         description: 'panel header for configuration page',
         defaultMessage: 'Configuration'
     },
+    lightSync: {
+        id: 'app.setup.lightSync',
+        description: 'light sync option',
+        defaultMessage: 'Light sync'
+    },
+    normalSync: {
+        id: 'app.setup.normalSync',
+        description: 'normal sync option',
+        defaultMessage: 'Normal sync'
+    },
     synchronization: {
         id: 'app.setup.synchronization',
         description: 'panel header for synchronization page',

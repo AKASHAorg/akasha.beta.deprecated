@@ -123,6 +123,10 @@ const settingsState = createReducer(initialState, {
             }
         });
 
+        if (!action.data.syncmode) {
+            gethSettings.syncmode = initialSettings.syncmode;
+        }
+
         return state.merge({
             geth: new GethSettings(gethSettings),
             defaultGethSettings: new GethSettings(action.data)

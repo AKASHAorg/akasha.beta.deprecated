@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
 import { Dialog, FlatButton, TextField, SvgIcon, IconButton } from 'material-ui';
 import InfoIcon from 'material-ui/svg-icons/action/info-outline';
-import { EntryUpvote, EntryDownvote } from '../svg';
+import { EntryUpvote, EntryDownvote } from '../../components/svg';
 import { deletePendingAction, hideWeightConfirmDialog,
     updateAction } from '../../local-flux/actions/app-actions';
 import { entryIsActive } from '../../local-flux/actions/entry-actions';

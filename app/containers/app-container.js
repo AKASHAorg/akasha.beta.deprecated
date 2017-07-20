@@ -6,19 +6,19 @@ import { injectIntl } from 'react-intl';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import { getMuiTheme } from 'material-ui/styles';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import { DataLoader, GethDetailsModal, IpfsDetailsModal, PublishConfirmDialog,
-    TransferConfirmDialog, WeightConfirmDialog } from '../shared-components';
+import { PublishConfirmDialog, TransferConfirmDialog,
+    WeightConfirmDialog } from '../shared-components';
 import { hideNotification, hideTerms, hideReportModal, bootstrapHome,
     showLoginDialog } from '../local-flux/actions/app-actions';
 import { entryVoteCost } from '../local-flux/actions/entry-actions';
 import { gethGetStatus } from '../local-flux/actions/external-process-actions';
 import { licenseGetAll } from '../local-flux/actions/license-actions';
 import { errorDeleteFatal, errorDeleteNonFatal } from '../local-flux/actions/error-actions';
-import { AuthContainer, ConfigurationContainer, DashboardPage, EntryPageContainer, NewIdentityContainer,
-    SidebarContainer, SynchronizationContainer } from './';
+import { DashboardPage, EntryPageContainer, SidebarContainer } from './';
 import { AuthDialog, LoginDialog } from '../components/dialogs';
-import { DashboardSecondarySidebar, ErrorBar, ErrorReportingModal, FatalErrorModal, NotificationBar,
-    PageContent, SecondarySidebar, SetupHeader, TermsPanel, TopBar } from '../components';
+import { DashboardSecondarySidebar, DataLoader, ErrorBar, ErrorReportingModal,
+    FatalErrorModal, GethDetailsModal, IpfsDetailsModal, NotificationBar, PageContent, SecondarySidebar,
+    SetupPages, TermsPanel, TopBar } from '../components';
 import { selectEntryFlag, selectFullEntry } from '../local-flux/selectors';
 import lightTheme from '../layouts/AkashaTheme/lightTheme';
 import darkTheme from '../layouts/AkashaTheme/darkTheme';
@@ -135,12 +135,8 @@ class AppContainer extends Component {
                     </div>
                   </DataLoader>
                 }
-                <Route path="/setup" component={SetupHeader} />
-                <Route path="/setup/configuration" component={ConfigurationContainer} />
-                <Route path="/setup/synchronization" component={SynchronizationContainer} />
-                <Route path="/setup/authenticate" component={AuthContainer} />
-                <Route path="/setup/new-identity" component={NewIdentityContainer} />
                 <SidebarContainer {...this.props} />
+                <Route path="/setup" component={SetupPages} />
                 {!!appState.get('notifications').size &&
                   <NotificationBar
                     hideNotification={hideNotification}

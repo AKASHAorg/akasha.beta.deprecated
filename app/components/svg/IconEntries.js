@@ -5,17 +5,15 @@ import { colors } from 'material-ui/styles';
 import CircleIcon from './CircleIcon';
 import { MenuEntries } from '../svg';
 
-
 class IconEntries extends Component {
-
     render () {
-        let { disabled, iconStyle, isActive, onClick } = this.props;
+        const { disabled, iconStyle, isActive, onClick } = this.props;
 
         return (
           <CircleIcon
             disabled={disabled}
             isActive={isActive}
-            onClick={onClick}
+            // onClick={onClick}
           >
             <SvgIcon
               color={colors.lightBlack}
@@ -34,7 +32,7 @@ IconEntries.propTypes = {
     disabled: PropTypes.bool,
     iconStyle: PropTypes.shape(),
     isActive: PropTypes.bool,
-    onClick: PropTypes.func.isRequired,
+    // onClick: PropTypes.func,
 };
 
 export default IconEntries;

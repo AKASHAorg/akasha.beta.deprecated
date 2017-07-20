@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { AutoComplete, SvgIcon } from 'material-ui';
 import { dashboardDeleteColumn,
     dashboardUpdateColumn } from '../../local-flux/actions/dashboard-actions';
-// import { UserMore } from '../../shared-components/svg';
+// import { UserMore } from '../svg';
 
 class ColumnHeader extends Component {
     constructor (props) {

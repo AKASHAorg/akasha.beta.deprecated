@@ -8,7 +8,7 @@ import AddIcon from 'material-ui/svg-icons/content/add-circle-outline';
 import RemoveIcon from 'material-ui/svg-icons/action/highlight-off';
 import ExpandIcon from 'material-ui/svg-icons/navigation/expand-more';
 import CollapseIcon from 'material-ui/svg-icons/navigation/expand-less';
-import { EntryBookmarkOn, EntryBookmarkOff } from 'shared-components/svg';
+import { EntryBookmarkOn, EntryBookmarkOff } from '../../../../../components/svg';
 import styles from './chat-sidebar.scss';
 
 const CHANNEL_CHAR_LIMIT = 32;

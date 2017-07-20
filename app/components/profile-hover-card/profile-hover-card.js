@@ -9,8 +9,7 @@ import { profileMessages } from '../../locale-data/messages';
 import { profileAddFollowAction, profileAddTipAction,
     profileAddUnfollowAction } from '../../local-flux/actions/profile-actions';
 import { selectLoggedAkashaId } from '../../local-flux/selectors';
-import { Avatar } from '../';
-import { DataLoader } from '../../shared-components';
+import { Avatar, DataLoader } from '../';
 import { getInitials } from '../../utils/dataModule';
 import { UserDonate } from '../svg';
 import styles from './profile-hover-card.scss';

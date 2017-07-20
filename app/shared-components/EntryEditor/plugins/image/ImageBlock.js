@@ -12,12 +12,12 @@ import {
 import withWidth from 'material-ui/utils/withWidth';
 import PlayIcon from 'material-ui/svg-icons/av/play-arrow';
 import {
-  ImageSizeXS,
-  ImageSizeLarge,
-  ImageSizeMedium,
-  ImageSizeSmall,
-  ImageSizeXL,
-  ImageSizeXXL } from '../../../svg';
+    ImageSizeXS,
+    ImageSizeLarge,
+    ImageSizeMedium,
+    ImageSizeSmall,
+    ImageSizeXL,
+    ImageSizeXXL } from '../../../../components/svg';
 import imageCreator, { findClosestMatch } from '../../../../utils/imageUtils';
 import clickAway from '../../../../utils/clickAway';
 import styles from './image-block.scss';

@@ -5,7 +5,7 @@ import { RaisedButton } from 'material-ui';
 import { injectIntl } from 'react-intl';
 import { generalMessages, setupMessages } from '../../locale-data/messages';
 import { SyncStatusLoader } from '../';
-import { LogDetailsContainer } from '../../containers/';
+import { LogsDetailsContainer } from '../../containers/';
 import setupStyles from './setup.scss';
 
 class Sync extends Component {
@@ -131,7 +131,6 @@ class Sync extends Component {
         const { configurationSaved, gethBusyState, gethStarting, gethStatus,
             gethSyncStatus, intl, ipfsBusyState, ipfsPortsRequested, ipfsStatus,
             syncActionId } = this.props;
-        const { palette } = this.context.muiTheme;
         const detailsButtonLabel = this.state.showDetails ?
             setupMessages.hideDetails :
             setupMessages.viewDetails;
@@ -143,20 +142,14 @@ class Sync extends Component {
         }
 
         return (
-          <div className={`full-page ${setupStyles.root}`}>
-            <div
-              className={setupStyles.column}
-              style={{
-                  position: this.state.showDetails && 'relative',
-                  backgroundColor: palette.alternateBackground
-              }}
-            >
+          <div className={setupStyles.root}>
+            <div className={`${setupStyles.column} ${setupStyles.leftColumn}`}>
               {!this.state.showDetails &&
                 <div>Placeholder</div>
               }
               {this.state.showDetails &&
                 <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, overflowY: 'auto', padding: '20px 100px' }}>
-                  <LogDetailsContainer />
+                  <LogsDetailsContainer />
                 </div>
               }
             </div>
@@ -212,10 +205,6 @@ class Sync extends Component {
         );
     }
 }
-
-Sync.contextTypes = {
-    muiTheme: PropTypes.shape()
-};
 
 Sync.propTypes = {
     clearSyncStatus: PropTypes.func.isRequired,

@@ -8,7 +8,8 @@ const GethSettings = Record({
     ipcpath: null,
     mine: null,
     minerthreads: null,
-    networkid: null
+    networkid: null,
+    syncmode: 'fast',
 });
 
 const PortsRecord = Record({

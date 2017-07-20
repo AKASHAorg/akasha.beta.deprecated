@@ -4,6 +4,7 @@ import { IpfsConnector, ipfsEvents } from '@akashaproject/ipfs-connector';
 import AppLogger from './Logger';
 import { IPFS_LOGGER, IPFS_PEER_ID } from '../config/settings';
 import { app } from 'electron';
+import { join } from 'path';
 import ipfsModule from './ipfs';
 import channels from '../channels';
 import { mainResponse } from '../event/responses';
@@ -21,7 +22,7 @@ class IpfsIPC extends ModuleEmitter {
         IpfsConnector.getInstance().setLogger(
             AppLogger.getInstance().registerLogger(IPFS_LOGGER)
         );
-        IpfsConnector.getInstance().setBinPath(app.getPath('userData'));
+        IpfsConnector.getInstance().setBinPath(join(app.getPath('userData'), 'go-ipfs'));
         this.webContents = webContents;
         this._initMethods(ipfsModule);
         this._manager();
@@ -43,6 +44,13 @@ class IpfsIPC extends ModuleEmitter {
             ipfsEvents.DOWNLOAD_STARTED,
             () => {
                 this.fireEvent(channels.client.ipfs.startService, mainResponse({ downloading: true }, {}));
+            }
+        );
+
+        IpfsConnector.getInstance().on(
+            ipfsEvents.DOWNLOAD_PROGRESS,
+            (stats) => {
+                this.fireEvent(channels.client.ipfs.startService, mainResponse({ downloading: true, progress: stats }, {}));
             }
         );
         return this;
