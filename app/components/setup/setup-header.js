@@ -3,15 +3,13 @@ import React from 'react';
 import { injectIntl } from 'react-intl';
 import { generalMessages } from '../../locale-data/messages';
 import { ServiceStatusBar } from '../';
-import styles from './setup-header.scss';
-import setupStyles from './setup.scss';
 
 const SetupHeader = ({ intl, split }) => (
-  <div className={styles.root}>
-    <div className={`${styles.title} ${split && setupStyles.leftColumn}`}>
+  <div className="setup-header">
+    <div className={`setup-header__title ${split && 'setup-pages_left'}`}>
       {intl.formatMessage(generalMessages.akasha)}
     </div>
-    <div className={styles.services}>
+    <div className="setup-header__services">
       <ServiceStatusBar />
     </div>
   </div>

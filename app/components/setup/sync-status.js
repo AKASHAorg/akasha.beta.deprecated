@@ -3,18 +3,12 @@ import React, { Component } from 'react';
 import { setupMessages } from '../../locale-data/messages';
 import { SyncProgressLoader } from '../';
 
-const statusTextStyle = {
-    fontWeight: 'bold',
-    padding: '5px',
-    fontSize: '18px'
-};
-
-class SyncStatusLoader extends Component {
+class SyncStatus extends Component {
 
     renderMessage (message) {
         const { intl } = this.props;
         return (
-          <div style={statusTextStyle}>
+          <div className="sync-status__title">
             {intl.formatMessage(message)}
           </div>
         );
@@ -25,13 +19,13 @@ class SyncStatusLoader extends Component {
             return null;
         }
         return (
-          <div style={{ fontSize: '16px' }} >
+          <div className="sync-status__counter">
             {message &&
-              <span style={{ marginRight: '10px' }}>
+              <span className="sync-status__counter-message">
                 {message}
               </span>
             }
-            <strong>{current}</strong>/{total}
+            {current} / {total}
           </div>
         );
     };
@@ -52,7 +46,7 @@ class SyncStatusLoader extends Component {
             );
             return (
               <div>
-                <div style={statusTextStyle}>
+                <div className="sync-status__title">
                   {peerInfo}
                 </div>
                 {this.renderCounter(gethSyncStatus.currentBlock, gethSyncStatus.highestBlock,
@@ -74,9 +68,13 @@ class SyncStatusLoader extends Component {
         } else if (ipfsStatus.get('upgrading')) {
             return this.renderMessage(setupMessages.upgradingIpfs);
         } else if (syncActionId === 2 || syncActionId === 3) {
+            const title = syncActionId === 2 ?
+                setupMessages.syncPaused :
+                setupMessages.syncStopped;
+
             return (
               <div>
-                {this.renderMessage(setupMessages.disconnected)}
+                {this.renderMessage(title)}
                 {this.renderCounter(gethSyncStatus.currentBlock, gethSyncStatus.highestBlock,
                       synchronizingMessage)}
                 {this.renderCounter(gethSyncStatus.pulledStates, gethSyncStatus.knownStates,
@@ -104,11 +102,11 @@ class SyncStatusLoader extends Component {
         }
 
         return (
-          <div style={{ padding: '32px 0', display: 'flex' }} >
-            <div style={{ flex: '0 0 auto', width: '190px', height: '190px' }}>
+          <div className="sync-status">
+            <div className="sync-status__progress-container">
               <SyncProgressLoader value={progress} />
             </div>
-            <div style={{ flex: '1 1 auto', display: 'flex', justifyContent: 'center' }}>
+            <div className="sync-status__details">
               {this.renderProgressBody()}
             </div>
           </div>
@@ -116,7 +114,7 @@ class SyncStatusLoader extends Component {
     }
 }
 
-SyncStatusLoader.propTypes = {
+SyncStatus.propTypes = {
     gethStarting: PropTypes.bool,
     gethStatus: PropTypes.shape().isRequired,
     gethSyncStatus: PropTypes.shape().isRequired,
@@ -125,4 +123,4 @@ SyncStatusLoader.propTypes = {
     syncActionId: PropTypes.number
 };
 
-export default SyncStatusLoader;
+export default SyncStatus;

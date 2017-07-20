@@ -313,15 +313,10 @@ const setupMessages = defineMessages({
         description: 'base plural form of peer',
         defaultMessage: 'peers'
     },
-    hideDetails: {
-        id: 'app.setup.hideDetails',
-        description: 'hide geth logs',
-        defaultMessage: 'Hide details'
-    },
-    viewDetails: {
-        id: 'app.setup.viewDetails',
-        description: 'show geth logs',
-        defaultMessage: 'View details'
+    details: {
+        id: 'app.setup.details',
+        description: 'details button label',
+        defaultMessage: 'details'
     },
     retry: {
         id: 'app.setup.retry',

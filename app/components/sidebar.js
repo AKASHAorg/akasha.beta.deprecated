@@ -2,12 +2,10 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { LogoButton } from './';
-import { getInitials } from '../utils/dataModule';
-import { AddEntryIcon, ChatIcon, EntriesIcon, PeopleIcon, ProfileIcon,
+import { AddEntryIcon, ChatIcon, EntriesIcon, PeopleIcon,
     SearchIcon, StreamsIcon } from './svg';
 import { generalMessages } from '../locale-data/messages';
 import panels from '../constants/panels';
-import styles from './sidebar.scss';
 
 class Sidebar extends Component {
     handleSearch = () => this.handlePanelShow(panels.search);
@@ -30,88 +28,68 @@ class Sidebar extends Component {
         const { location } = this.props;
         return location.pathname.includes(name);
     }
-    _navigateTo = path => (ev) => {
-        console.log('Please navigate to', path);
-    }
+
     render () {
-        const { activeDashboard, draftsCount, intl, loggedProfileData,
-          notificationsCount, location } = this.props;
-        const { palette } = this.context.muiTheme;
+        const { activeDashboard, draftsCount, loggedProfileData, location } = this.props;
         const entriesCount = parseInt(loggedProfileData.get('entriesCount'), 10);
         const isLoggedIn = !!loggedProfileData.get('akashaId');
         return (
-          <div
-            className={`${styles.root} ${this._isSidebarVisible(location) && styles.shown}`}
-            style={{ backgroundColor: palette.sidebarColor }}
-          >
-            <div className={`${styles.sidebarInner}`}>
-              <div className={`${styles.entryIcon}`} >
-                {(entriesCount > 0 || draftsCount > 0) ?
-                  <div {...this.getWrapperProps(generalMessages.myEntries)}>
-                    <EntriesIcon
-                      disabled={!isLoggedIn}
-                      isActive={false}
-                      onClick={this._handleNewEntry}
-                    />
-                  </div> :
-                  <div {...this.getWrapperProps(generalMessages.addNewEntry)}>
-                    <AddEntryIcon
-                      disabled={!isLoggedIn}
-                      isActive={this._checkActiveIcon('draft/new')}
-                      onClick={this._handleNewEntry}
-                    />
-                  </div>
-                }
-                <div {...this.getWrapperProps(generalMessages.search)}>
-                  <SearchIcon
-                    onClick={this.handleSearch}
+          <div className={`sidebar ${this._isSidebarVisible(location) && 'sidebar_shown'}`}>
+            <div className="sidebar__entry-icon" >
+              {(entriesCount > 0 || draftsCount > 0) ?
+                <div {...this.getWrapperProps(generalMessages.myEntries)}>
+                  <EntriesIcon
+                    disabled={!isLoggedIn}
                     isActive={false}
+                    onClick={this._handleNewEntry}
+                  />
+                </div> :
+                <div {...this.getWrapperProps(generalMessages.addNewEntry)}>
+                  <AddEntryIcon
+                    disabled={!isLoggedIn}
+                    isActive={this._checkActiveIcon('draft/new')}
+                    onClick={this._handleNewEntry}
                   />
                 </div>
+              }
+              <div {...this.getWrapperProps(generalMessages.search)}>
+                <SearchIcon
+                  onClick={this.handleSearch}
+                  isActive={false}
+                />
               </div>
-              <div className={`${styles.streamIcon}`} >
-                <div {...this.getWrapperProps(generalMessages.stream)}>
-                  <Link to={`/dashboard/${activeDashboard || ''}`}>
-                    <StreamsIcon isActive={this._checkActiveIcon('dashboard')} />
-                  </Link>
-                </div>
-                <div {...this.getWrapperProps(generalMessages.people)}>
-                  <Link to="/people">
-                    <PeopleIcon isActive={this._checkActiveIcon('people')} />
-                  </Link>
-                </div>
-                <div {...this.getWrapperProps(generalMessages.chat)}>
-                  <Link to="/chat">
-                    <ChatIcon isActive={this._checkActiveIcon('chat')} />
-                  </Link>
-                </div>
+            </div>
+            <div className="sidebar__stream-icon" >
+              <div {...this.getWrapperProps(generalMessages.stream)}>
+                <Link to={`/dashboard/${activeDashboard || ''}`}>
+                  <StreamsIcon isActive={this._checkActiveIcon('dashboard')} />
+                </Link>
               </div>
-              <div
-                className={`${styles.logo}`}
-              >
-                <LogoButton />
+              <div {...this.getWrapperProps(generalMessages.people)}>
+                <Link to="/people">
+                  <PeopleIcon isActive={this._checkActiveIcon('people')} />
+                </Link>
               </div>
+              <div {...this.getWrapperProps(generalMessages.chat)}>
+                <Link to="/chat">
+                  <ChatIcon isActive={this._checkActiveIcon('chat')} />
+                </Link>
+              </div>
+            </div>
+            <div className="sidebar__logo">
+              <LogoButton />
             </div>
           </div>
         );
     }
 }
 
-Sidebar.contextTypes = {
-    muiTheme: PropTypes.shape()
-};
-
 Sidebar.propTypes = {
     activeDashboard: PropTypes.string,
-    balance: PropTypes.string,
     draftsCount: PropTypes.number,
-    hasFeed: PropTypes.bool,
-    history: PropTypes.shape(),
     intl: PropTypes.shape(),
     location: PropTypes.shape(),
-    loggedProfile: PropTypes.shape(),
     loggedProfileData: PropTypes.shape(),
-    notificationsCount: PropTypes.number,
 };
 
 export default Sidebar;

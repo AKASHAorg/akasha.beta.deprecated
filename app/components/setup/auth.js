@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 import { RaisedButton } from 'material-ui';
 import { ProfileList } from '../';
 import { setupMessages } from '../../locale-data/messages';
-import setupStyles from './setup.scss';
 
 class Auth extends Component {
     state = {
@@ -54,7 +53,8 @@ class Auth extends Component {
             localProfiles, localProfilesFetched, showLoginDialog } = this.props;
         const { palette } = this.context.muiTheme;
         return (
-          <div className={`full-page ${setupStyles.fullColumn}`} style={{ display: 'flex', justifyContent: 'center' }}>
+          <div className="setup-content">
+          <div className="setup-content__column_full" style={{ display: 'flex', justifyContent: 'center' }}>
             <div style={{ flex: '1 1 auto', display: 'flex', justifyContent: 'center', alignItems: 'flex-end', padding: '24px' }}>
               <RaisedButton
                 disabled={backupPending}
@@ -85,32 +85,22 @@ class Auth extends Component {
                 </div>
               </div>
             </div>
-            <div style={{ flex: '1 1 auto', display: 'flex', justifyContent: 'center', alignItems: 'flex-end', padding: '24px' }}>
+            <div
+              style={{
+                  flex: '1 1 auto',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'flex-end',
+                  padding: '24px'
+              }}
+            >
               <Link to="/setup/new-identity">
                 <RaisedButton
                   label={intl.formatMessage(setupMessages.createIdentity)}
                 />
               </Link>
             </div>
-            {/*<PanelContainerFooter
-              leftActions={[
-                  <RaisedButton
-                    disabled={backupPending}
-                    key="backup"
-                    label={intl.formatMessage(generalMessages.backup)}
-                    onClick={backupKeysRequest}
-                  />
-              ]}
-            >
-              <RaisedButton
-                key="createNewIdentity"
-                label={this._getNewIdentityLabel()}
-                primary
-                onTouchTap={this._handleNewIdentity}
-                style={{ marginLeft: '10px' }}
-              />
-            </PanelContainerFooter>
-            */}
+          </div>
           </div>
         );
     }

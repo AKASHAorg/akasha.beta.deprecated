@@ -7,7 +7,6 @@ import { profileCreateEthAddress } from '../local-flux/actions/profile-actions';
 import { showTerms } from '../local-flux/actions/app-actions';
 import { selectLoggedAccount, selectProfileFlag } from '../local-flux/selectors';
 import { NewIdentityForm } from '../components';
-import setupStyles from '../components/setup/setup.scss';
 
 class NewIdentity extends Component {
     componentWillReceiveProps (nextProps) {
@@ -21,7 +20,7 @@ class NewIdentity extends Component {
         const { ethAddressPending, history, intl, loginPending } = this.props;
         const buttonsDisabled = loginPending || ethAddressPending;
         return (
-          <div className={`full-page ${setupStyles.fullColumn}`}>
+          <div className="setup-content setup-content__column_full">
             <div style={{ width: '60%', margin: '40px auto 0', maxWidth: '800px' }}>
               <div style={{ fontSize: '22px', fontWeight: '600' }}>
                 {intl.formatMessage(setupMessages.createIdentity)}

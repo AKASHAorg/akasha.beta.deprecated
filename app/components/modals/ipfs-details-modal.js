@@ -9,7 +9,6 @@ import { ipfsSetPorts, ipfsStart, ipfsStartLogger, ipfsStop,
 import { toggleIpfsDetailsModal } from '../../local-flux/actions/app-actions';
 import { ipfsSaveSettings } from '../../local-flux/actions/settings-actions';
 import { InputNumber, LogsList, PathInputField, ServiceDetailsModal } from '../';
-import styles from './service-details-modal.scss';
 
 const { TabPane } = Tabs;
 const SETTINGS = 'SETTINGS';
@@ -120,7 +119,7 @@ class IpfsDetailsModal extends Component {
         const ipfsApi = ipfsStatus.get('api');
 
         return (
-          <div className="service-details-modal" style={{ height: '400px' }}>
+          <div className="service-details-modal ipfs-details-modal">
             <Tabs
               activeKey={activeTab}
               onChange={this.selectTab}
@@ -128,13 +127,13 @@ class IpfsDetailsModal extends Component {
               type="card"
             >
               <TabPane key={SETTINGS} tab={intl.formatMessage(generalMessages.settings)}>
-                <div className={styles.tabPane}>
+                <div className="service-details-modal__tab-pane">
                   <PathInputField
                     label={intl.formatMessage(setupMessages.ipfsStoragePath)}
                     onChange={this.onStorageChange}
                     value={storagePath}
                   />
-                  <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', marginTop: '-12px' }}>
+                  <div className="ipfs-details-modal__ports">
                     {apiPort &&
                       <InputNumber
                         label={intl.formatMessage(setupMessages.ipfsApiPort)}
@@ -169,7 +168,7 @@ class IpfsDetailsModal extends Component {
                 </div>
               </TabPane>
               <TabPane key={LOGS} tab={intl.formatMessage(generalMessages.logs)}>
-                <div className={styles.tabPane} style={{ padding: '10px 8px 0px' }}>
+                <div className="service-details-modal__tab-pane service-details-modal__tab-pane_logs">
                   {activeTab === LOGS &&
                     <LogsList
                       logs={ipfsLogs}
