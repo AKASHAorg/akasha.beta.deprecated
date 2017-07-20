@@ -3,30 +3,29 @@ import React from 'react';
 import { injectIntl } from 'react-intl';
 import { Button, Modal, Switch } from 'antd';
 import { generalMessages } from '../../locale-data/messages';
-import styles from './service-details-modal.scss';
 
 const Footer = (props) => {
     const { intl, onCancel, onSave, onToggle, saveDisabled, toggleDisabled, toggleLabel,
         toggleOn } = props;
     return (
-      <div style={{ display: 'flex' }}>
-        <div style={{ flex: '0 0 auto', height: '36px', display: 'flex', alignItems: 'center' }}>
+      <div className="service-details-modal__footer">
+        <div className="service-details-modal__footer-left">
           <Switch
             checked={toggleOn}
             disabled={toggleDisabled}
             onChange={onToggle}
             style={{ marginRight: '10px' }}
           />
-          <div style={{ fontSize: '14px', fontWeight: '500' }}>
+          <div className="service-details-modal__toggle-label">
             {toggleLabel}
           </div>
         </div>
-        <div style={{ flex: '1 1 auto' }} >
+        <div className="service-details-modal__footer-right">
           <Button
             onClick={onCancel}
             size="large"
           >
-            <div className={styles.buttonLabel}>
+            <div className="service-details-modal__button-label">
               {intl.formatMessage(generalMessages.cancel)}
             </div>
           </Button>
@@ -36,7 +35,7 @@ const Footer = (props) => {
             size="large"
             type="primary"
           >
-            <div className={styles.buttonLabel}>
+            <div className="service-details-modal__button-label">
               {intl.formatMessage(generalMessages.save)}
             </div>
           </Button>
@@ -52,7 +51,7 @@ const ServiceDetailsModal = props => (
     onCancel={props.onCancel}
     visible
     width="600px"
-    wrapClassName={`${styles.root} service-details-modal`}
+    wrapClassName="service-details-modal"
   >
     {props.children}
   </Modal>

@@ -12,10 +12,10 @@ import { toggleGethDetailsModal,
 
 const containerStyle = {
     border: '1px solid',
-    borderRadius: '12px',
-    lineHeight: '24px',
-    height: '24px',
-    width: '24px',
+    borderRadius: '14px',
+    lineHeight: '28px',
+    height: '28px',
+    width: '28px',
     display: 'inline-flex',
     textAlign: 'center',
     margin: '0 4px',
@@ -23,10 +23,10 @@ const containerStyle = {
     alignItems: 'center'
 };
 const buttonStyle = {
-    width: '24px',
-    minWidth: '24px',
-    height: '24px',
-    borderRadius: '12px',
+    width: '28px',
+    minWidth: '28px',
+    height: '28px',
+    borderRadius: '14px',
     padding: '0px'
 };
 
@@ -112,11 +112,11 @@ class ServiceStatusBar extends Component {
         const { toggleGethDetails, toggleIpfsDetails } = this.props;
         const { palette } = this.context.muiTheme;
         const iconStyle = {
-            width: '18px',
-            height: '18px',
+            width: '20px',
+            height: '20px',
             color: palette.textColor,
             position: 'relative',
-            top: '3px'
+            top: '4px'
         };
         const gethState = this.getGethState();
         const ipfsState = this.getIpfsState();
@@ -126,7 +126,7 @@ class ServiceStatusBar extends Component {
             <div style={this.getContainerStyle(gethState)}>
               <div
                 data-tip={this.getTooltip(gethState)}
-                style={{ display: 'inline-block', height: '24px' }}
+                style={{ display: 'inline-block', height: '28px' }}
               >
                 <IconButton
                   style={buttonStyle}
@@ -142,7 +142,7 @@ class ServiceStatusBar extends Component {
             <div style={this.getContainerStyle(ipfsState)}>
               <div
                 data-tip={this.getTooltip(ipfsState)}
-                style={{ display: 'inline-block', height: '24px' }}
+                style={{ display: 'inline-block', height: '28px' }}
               >
                 <IconButton
                   style={buttonStyle}

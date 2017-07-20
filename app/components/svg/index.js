@@ -26,7 +26,6 @@ import AddEntryIcon from './IconAddEntry';
 import EntriesIcon from './IconEntries';
 import SearchIcon from './IconSearch';
 import StreamsIcon from './IconStreams';
-import PortalsIcon from './IconPortals';
 import ChatIcon from './IconChat';
 import CommunityIcon from './IconCommunity';
 import PeopleIcon from './IconPeople';
@@ -64,7 +63,7 @@ import UserMore from './user-more';
 
 export {
     AvatarPlaceholder, ColumnLatest, ColumnProfile, ColumnStream, ColumnTag, ProfileIcon,
-    AddEntryIcon, EntriesIcon, SearchIcon, StreamsIcon, PortalsIcon,
+    AddEntryIcon, EntriesIcon, SearchIcon, StreamsIcon,
     CommunityIcon, PeopleIcon, ChatIcon, LogoIcon, MenuAddEntry, MenuAkashaLogo, MenuChat,
     MenuCommunities, MenuEntries, MenuEthereum, MenuPeople, MenuPortals,
     MenuSearch, MenuStreams, MenuUser, ToolbarComments, ToolbarEthereum,

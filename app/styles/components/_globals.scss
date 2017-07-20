@@ -104,7 +104,7 @@ html, body {
 /* Custom scrollbar */
 ::-webkit-scrollbar {
     width: 6px;
-    background: rgba(0, 0, 0, 0.02);
+    background: transparent;
 }
 
 /* Track */
@@ -114,8 +114,8 @@ html, body {
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-    -webkit-border-radius: 1px;
-    border-radius: 1px;
+    -webkit-border-radius: 2px;
+    border-radius: 3px;
     background: rgba(0, 0, 0, 0.2);
 }
 
@@ -183,4 +183,12 @@ html, body {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.lowercase {
+    text-transform: lowercase;
+}
+
+.uppercase {
+    text-transform: uppercase;
 }

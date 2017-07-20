@@ -1,12 +1,11 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
-import { RaisedButton } from 'material-ui';
 import { injectIntl } from 'react-intl';
+import { Button, Icon } from 'antd';
 import { generalMessages, setupMessages } from '../../locale-data/messages';
-import { SyncStatusLoader } from '../';
+import { SyncStatus } from '../';
 import { LogsDetailsContainer } from '../../containers/';
-import setupStyles from './setup.scss';
 
 class Sync extends Component {
     interval = null;
@@ -66,8 +65,7 @@ class Sync extends Component {
     };
 
     handlePause = () => {
-        const { gethPauseSync, gethResumeSync, gethStart, gethStop, ipfsStart, ipfsStatus,
-            syncActionId } = this.props;
+        const { gethPauseSync, gethResumeSync, gethStart, gethStop, syncActionId } = this.props;
 
         switch (syncActionId) {
             case 1:
@@ -83,13 +81,15 @@ class Sync extends Component {
                 gethStart();
                 gethResumeSync();
                 break;
-            case 4:
-                if (!ipfsStatus.get('process')) {
-                    ipfsStart();
-                }
-                break;
             default:
                 break;
+        }
+    };
+
+    handleNext = () => {
+        const { ipfsStart, ipfsStatus } = this.props;
+        if (!ipfsStatus.get('process')) {
+            ipfsStart();
         }
     };
 
@@ -101,40 +101,31 @@ class Sync extends Component {
 
     getActionLabels = () => {
         const { syncActionId, intl } = this.props;
-        let title;
         let action;
+        let buttonIcon;
         switch (syncActionId) {
             case 1:
-                title = intl.formatMessage(setupMessages.synchronizing);
                 action = intl.formatMessage(generalMessages.pause);
+                buttonIcon = 'pause-circle-o';
                 break;
             case 2:
-                title = intl.formatMessage(setupMessages.syncPaused);
-                action = intl.formatMessage(generalMessages.resume);
-                break;
             case 3:
-                title = intl.formatMessage(setupMessages.syncStopped);
                 action = intl.formatMessage(generalMessages.resume);
-                break;
-            case 4:
-                title = intl.formatMessage(setupMessages.syncCompleted);
-                action = intl.formatMessage(generalMessages.nextButtonLabel);
+                buttonIcon = 'play-circle-o';
                 break;
             default:
-                title = intl.formatMessage(setupMessages.waitingForGeth);
                 action = intl.formatMessage(generalMessages.pause);
+                buttonIcon = 'pause-circle-o';
         }
-        return { title, action };
+        return { action, buttonIcon };
     };
 
     render () {
         const { configurationSaved, gethBusyState, gethStarting, gethStatus,
             gethSyncStatus, intl, ipfsBusyState, ipfsPortsRequested, ipfsStatus,
             syncActionId } = this.props;
-        const detailsButtonLabel = this.state.showDetails ?
-            setupMessages.hideDetails :
-            setupMessages.viewDetails;
 
+        const { action, buttonIcon } = this.getActionLabels();
         if (!configurationSaved) {
             return <Redirect to="/setup/configuration" />;
         } else if (gethSyncStatus.get('synced') && ipfsStatus.get('process') && !ipfsPortsRequested) {
@@ -142,20 +133,20 @@ class Sync extends Component {
         }
 
         return (
-          <div className={setupStyles.root}>
-            <div className={`${setupStyles.column} ${setupStyles.leftColumn}`}>
+          <div className="setup-content sync">
+            <div className="setup-content__column setup-pages_left">
               {!this.state.showDetails &&
                 <div>Placeholder</div>
               }
               {this.state.showDetails &&
-                <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, overflowY: 'auto', padding: '20px 100px' }}>
+                <div className="sync__logs-container">
                   <LogsDetailsContainer />
                 </div>
               }
             </div>
-            <div className={setupStyles.column} style={{ display: 'flex', flexDirection: 'column' }}>
-              <div style={{ flex: '1 1 auto', display: 'flex', alignItems: 'center' }}>
-                <SyncStatusLoader
+            <div className="setup-content__column sync__content">
+              <div className="sync__status-container">
+                <SyncStatus
                   gethStarting={gethStarting}
                   gethStatus={gethStatus}
                   gethSyncStatus={gethSyncStatus}
@@ -164,41 +155,63 @@ class Sync extends Component {
                   syncActionId={syncActionId}
                 />
               </div>
-              <div style={{ flex: '1 1 auto' }}>
-                <div style={{ fontSize: '18px', fontWeight: '500' }} >
-                  {this.getActionLabels().title}
-                </div>
-                <div>
-                  <p>
-                    {syncActionId === 4 ?
-                        intl.formatMessage(setupMessages.afterSyncFinish) :
-                        intl.formatMessage(setupMessages.onSyncStart)
-                    }
-                  </p>
-                </div>
+              <div className="flex-center sync__actions">
+                {syncActionId !== 4 &&
+                  <div className="flex-center-y">
+                    <Button onClick={this.toggleDetails}>
+                      <div className="flex-center-y">
+                        <Icon
+                          style={{ fontSize: '20px', marginRight: '5px', position: 'relative', top: '2px' }}
+                          type="eye-o"
+                        />
+                        <span>{intl.formatMessage(setupMessages.details)}</span>
+                      </div>
+                    </Button>
+                    <Button
+                      style={{ marginLeft: '12px' }}
+                      onClick={this.handlePause}
+                      disabled={gethBusyState}
+                    >
+                      <div className="flex-center-y lowercase">
+                        <Icon
+                          style={{ fontSize: '18px', marginRight: '5px', position: 'relative', top: '1px' }}
+                          type={buttonIcon}
+                        />
+                        <span>{action}</span>
+                      </div>
+                    </Button>
+                    <Button
+                      style={{ marginLeft: '12px' }}
+                      onClick={this.handleCancel}
+                      disabled={gethBusyState}
+                    >
+                      <div className="flex-center-y lowercase">
+                        <Icon
+                          style={{ fontSize: '20px', marginRight: '5px', position: 'relative', top: '2px' }}
+                          type="stop"
+                        />
+                        <span>{intl.formatMessage(generalMessages.cancel)}</span>
+                      </div>
+                    </Button>
+                  </div>
+                }
+                {syncActionId === 4 &&
+                  <Button
+                    disabled={ipfsBusyState || ipfsPortsRequested}
+                    onClick={this.handleNext}
+                    type="primary"
+                  >
+                    {intl.formatMessage(generalMessages.nextButtonLabel)}
+                  </Button>
+                }
               </div>
-              <div style={{ flex: '0 0 auto', alignSelf: 'flex-end' }}>
-                <RaisedButton
-                  key="viewDetails"
-                  label={intl.formatMessage(detailsButtonLabel)}
-                  onClick={this.toggleDetails}
-                />
-                <RaisedButton
-                  key="cancel"
-                  label={intl.formatMessage(generalMessages.cancel)}
-                  style={{ marginLeft: '12px' }}
-                  onClick={this.handleCancel}
-                  disabled={gethBusyState || (ipfsBusyState && syncActionId === 4)}
-                />
-                <RaisedButton
-                  key="pauseOrResume"
-                  label={this.getActionLabels().action}
-                  style={{ marginLeft: '12px' }}
-                  onClick={this.handlePause}
-                  disabled={gethBusyState
-                      || ((ipfsBusyState || ipfsPortsRequested) && syncActionId === 4)}
-                  primary={syncActionId === 4}
-                />
+              <div className="sync__message">
+                <small>
+                  {syncActionId === 4 ?
+                      intl.formatMessage(setupMessages.afterSyncFinish) :
+                      intl.formatMessage(setupMessages.onSyncStart)
+                  }
+                </small>
               </div>
             </div>
           </div>
