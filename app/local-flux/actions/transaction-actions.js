@@ -1,5 +1,5 @@
 import { profileActionCreators, transactionActionCreators } from './action-creators';
-import { ProfileService, TransactionService } from '../services';
+import { TransactionService } from '../services';
 import * as types from '../constants';
 import { action } from './helpers';
 
@@ -11,7 +11,7 @@ class TransactionActions {
             return transactionActions;
         }
         this.dispatch = dispatch;
-        this.profileService = new ProfileService();
+        // this.profileService = new ProfileService();
         this.transactionService = new TransactionService();
         transactionActions = this;
     }
@@ -28,15 +28,15 @@ class TransactionActions {
                     if (!profileKey) {
                         return;
                     }
-                    this.profileService.getProfileBalance({
-                        options: {
-                            etherBase: profileKey
-                        },
-                        onSuccess: balance =>
-                            this.dispatch(profileActionCreators.getProfileBalanceSuccess(balance)),
-                        onError: error =>
-                            this.dispatch(profileActionCreators.getProfileBalanceError(error))
-                    });
+                    // this.profileService.getProfileBalance({
+                    //     options: {
+                    //         etherBase: profileKey
+                    //     },
+                    //     onSuccess: balance =>
+                    //         this.dispatch(profileActionCreators.getProfileBalanceSuccess(balance)),
+                    //     onError: error =>
+                    //         this.dispatch(profileActionCreators.getProfileBalanceError(error))
+                    // });
                 },
                 onError: error =>
                     this.dispatch(transactionActionCreators.transactionMinedError(error))
