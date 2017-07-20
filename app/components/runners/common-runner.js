@@ -1,86 +1,43 @@
 import PropTypes from 'prop-types';
 import { Component } from 'react';
 import { connect } from 'react-redux';
-import {
-    authDialogToggle,
-    pendingActionSave,
-    publishConfirmDialogToggle,
-    transferConfirmDialogToggle,
-    weightConfirmDialogToggle,
-    otherConfirmDialogToggle,
-    updateAction } from '../../local-flux/actions/app-actions';
-
-const GAS_CONFIRMATION_ENTITIES = ['tempProfile'];
-const WEIGHT_CONFIRMATION_ENTITIES = ['upvote', 'downvote'];
-const TRANSFER_CONFIRMATION_ENTITIES = ['tip'];
+import actionStatus from '../../constants/action-status';
+import { showAuthDialog, showPublishConfirmDialog, showTransferConfirmDialog,
+    showWeightConfirmDialog, updateAction } from '../../local-flux/actions/app-actions';
 
 class CommonRunner extends Component {
-    shouldComponentUpdate (nextProps) {
-        return !nextProps.loggedProfile.equals(this.props.loggedProfile) ||
-            !nextProps.pendingActions.equals(this.props.pendingActions);
-    }
 
-    componentWillUpdate (nextProps) {
-        const { pendingActions, loggedProfile, state } = nextProps;
-        const { dispatch } = this.props;
-
-        // immutable map .forEach()
-        pendingActions.forEach((action) => {
-            const { currentAction, confirmed, entityType, entityId } = action;
+    componentWillReceiveProps (nextProps) {
+        const { pendingActions, publishConfirmDialog, authDialog, loggedProfile } = nextProps;
+        const unconfirmedTransferActions = pendingActions.filter(action =>
+            action.get('status') === actionStatus.needTransferConfirmation);
+        const unconfirmedWeightActions = pendingActions.filter(action =>
+            action.get('status') === actionStatus.needWeightConfirmation);
+        const unconfirmedActions = pendingActions.filter(action =>
+            action.get('status') === actionStatus.needConfirmation);
+        const confirmedActions = pendingActions.filter(action =>
+            action.get('status') === actionStatus.checkAuth);
+        if (!!publishConfirmDialog || !!authDialog) {
+            return;
+        }
+        if (unconfirmedTransferActions.size > 0) {
+            this.props.showTransferConfirmDialog(unconfirmedTransferActions.first().get('id'));
+        } else if (unconfirmedWeightActions.size > 0) {
+            this.props.showWeightConfirmDialog(unconfirmedWeightActions.first().get('id'));
+        } else if (unconfirmedActions.size > 0) {
+            this.props.showPublishConfirmDialog(unconfirmedActions.first().get('id'));
+        } else if (confirmedActions.size > 0) {
             const isLoggedIn = Date.parse(loggedProfile.get('expiration')) - 3000 > Date.now();
-
-            if (!confirmed) {
-                this._toggleDialog(entityType, entityId);
-                return false; // break the loop
+            if (isLoggedIn) {
+                confirmedActions.forEach(action =>
+                    this.props.updateAction(action.get('id'), {
+                        status: actionStatus.readyToPublish
+                    }));
+            } else {
+                this.props.showAuthDialog(confirmedActions.first().get('id'));
             }
-
-            if (!isLoggedIn) {
-                dispatch(authDialogToggle(entityId));
-                return false; // break the loop
-            }
-
-            const actionPayload = this._getActionPayload(action, state);
-            this._savePendingAction(loggedProfile.get('akashaId'), action, actionPayload);
-
-            return dispatch({ type: `${entityType}/${currentAction}`, data: actionPayload });
-        });
+        }
     }
-
-    _getActionPayload = (action, state) => {
-        const { entityType } = action;
-        let entityPayload;
-        switch (entityType) {
-            case 'tempProfile':
-                entityPayload = state.tempProfileState.get('tempProfile');
-                break;
-            default:
-                entityPayload = null;
-        }
-        return entityPayload;
-    };
-
-    _savePendingAction = (akashaId, action, entityPayload) => {
-        const { dispatch } = this.props;
-        dispatch(pendingActionSave(akashaId, action, entityPayload));
-    };
-
-    _toggleDialog = (entityType, entityId) => {
-        const { dispatch } = this.props;
-
-        switch (true) {
-            case GAS_CONFIRMATION_ENTITIES.includes(entityType):
-                return dispatch(publishConfirmDialogToggle(entityId));
-
-            case WEIGHT_CONFIRMATION_ENTITIES.includes(entityId):
-                return dispatch(weightConfirmDialogToggle(entityId));
-
-            case TRANSFER_CONFIRMATION_ENTITIES.includes(entityId):
-                return dispatch(transferConfirmDialogToggle(entityId));
-
-            default:
-                return dispatch(otherConfirmDialog(entityId));
-        }
-    };
 
     render () {
         return null;
@@ -88,17 +45,33 @@ class CommonRunner extends Component {
 }
 
 CommonRunner.propTypes = {
+    authDialog: PropTypes.number,
     loggedProfile: PropTypes.shape(),
     pendingActions: PropTypes.shape(),
-    dispatch: PropTypes.func.isRequired,
+    publishConfirmDialog: PropTypes.shape(),
+    showAuthDialog: PropTypes.func.isRequired,
+    showPublishConfirmDialog: PropTypes.func.isRequired,
+    showTransferConfirmDialog: PropTypes.func.isRequired,
+    showWeightConfirmDialog: PropTypes.func.isRequired,
+    updateAction: PropTypes.func.isRequired
 };
 
-export default connect(
-    state => ({
+function mapStateToProps (state) {
+    return {
         loggedProfile: state.profileState.get('loggedProfile'),
         pendingActions: state.appState.get('pendingActions'),
         publishConfirmDialog: state.appState.get('publishConfirmDialog'),
-        authDialog: state.appState.get('showAuthDialog'),
-        state
-    })
+        authDialog: state.appState.get('showAuthDialog')
+    };
+}
+
+export default connect(
+    mapStateToProps,
+    {
+        showAuthDialog,
+        showPublishConfirmDialog,
+        showTransferConfirmDialog,
+        showWeightConfirmDialog,
+        updateAction
+    }
 )(CommonRunner);

@@ -56,6 +56,7 @@ export Setup from './setup';
 export SetupHeader from './setup/setup-header';
 export Sidebar from './sidebar';
 export StreamColumn from './columns/stream-column';
+export SvgIcon from './svg-icon/svg-icon';
 export SyncProgressLoader from './setup/sync-progress';
 export SyncStatusLoader from './setup/sync-status-loader';
 export Sync from './setup/sync';

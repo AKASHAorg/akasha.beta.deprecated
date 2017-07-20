@@ -86,7 +86,12 @@ const ProfilePanelsHeader = (props) => {
                 render={
                   ({ match, location }) => {
                       if (!canEditProfile && match.params.panelName === 'editprofile') {
-                          return <span>{loginName} > <b>{intl.formatMessage(generalMessages.completeProfileCrumb)}</b></span>;
+                          return (
+                            <span>
+                              {loginName} &gt;
+                                <b>{intl.formatMessage(generalMessages.completeProfileCrumb)}</b>
+                            </span>
+                          );
                       }
                       return createBreadCrumbs({ match, location, loginName });
                   }

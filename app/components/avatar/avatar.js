@@ -1,5 +1,5 @@
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import React from 'react';
 import AvatarEditor from 'react-avatar-editor/dist';
 import ClearIcon from 'material-ui/svg-icons/content/clear';
 import RotateIcon from 'material-ui/svg-icons/image/rotate-right';
@@ -7,7 +7,7 @@ import { SvgIcon, Slider } from 'material-ui';
 import { AddImage, AvatarPlaceholder } from '../svg';
 import styles from './avatar.scss';
 
-class Avatar extends React.Component {
+class Avatar extends Component {
     constructor (props) {
         super(props);
         this.state = {
@@ -69,7 +69,6 @@ class Avatar extends React.Component {
         });
     }
     _handleImageAdd = () => {
-        console.log('adding image')
         const files = this.fileInput.files[0].path;
         this.setState({
             avatarImage: files,
@@ -270,23 +269,24 @@ class Avatar extends React.Component {
 }
 Avatar.propTypes = {
     avatarScale: PropTypes.number,
+    backgroundColor: PropTypes.string,
+    editable: PropTypes.bool,
     image: PropTypes.oneOfType([
         PropTypes.string,
         PropTypes.shape()
     ]),
-    editable: PropTypes.bool,
-    userInitials: PropTypes.string,
-    radius: PropTypes.number,
-    userInitialsStyle: PropTypes.shape(),
-    backgroundColor: PropTypes.string,
-    userInitialsAlignStyle: PropTypes.shape(),
-    userInitialsWrapperStyle: PropTypes.shape(),
-    offsetBorder: PropTypes.string,
-    onImageClear: PropTypes.func,
-    style: PropTypes.shape(),
     onClick: PropTypes.func,
+    offsetBorder: PropTypes.string,
+    onImageAdd: PropTypes.func,
+    onImageClear: PropTypes.func,
     onMouseEnter: PropTypes.func,
     onMouseLeave: PropTypes.func,
+    radius: PropTypes.number,
+    style: PropTypes.shape(),
+    userInitials: PropTypes.string,
+    userInitialsStyle: PropTypes.shape(),
+    userInitialsAlignStyle: PropTypes.shape(),
+    userInitialsWrapperStyle: PropTypes.shape(),
 };
 
 Avatar.contextTypes = {

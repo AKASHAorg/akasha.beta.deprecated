@@ -6,9 +6,9 @@ import styles from './user-settings-panel.scss';
 class UserSettingsPanel extends Component {
     _handleThemeChange = (checked) => {
         if (checked) {
-            document.body.className = 'dark';
+            document.documentElement.id = 'dark';
         } else {
-            document.body.className = '';
+            document.documentElement.id = '';
         }
     }
     render () {

@@ -78,10 +78,19 @@ class EditProfile extends Component {
             />
             <PanelContainerFooter
               className="profile-panel-footer paper"
+              leftActions={
+                <Button
+                  className="standard-button"
+                  ghost
+                >
+                    Skip this step
+                </Button>
+              }
             >
               <Button
                 key="cancel"
                 onClick={this._handleCancel}
+                className="standard-button"
                 ghost
               >
                 {intl.formatMessage(generalMessages.saveForLater)}
