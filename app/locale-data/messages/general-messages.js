@@ -9,8 +9,8 @@ const generalMessages = defineMessages({
     },
     addImage: {
         id: 'app.general.addImage',
-        description: 'Add image',
-        defaultMessage: 'Add image'
+        description: 'placeholder for image uploader component',
+        defaultMessage: 'Add photo by dropping here or click.'
     },
     addNewEntry: {
         id: 'app.general.addNewEntry',
@@ -96,6 +96,11 @@ const generalMessages = defineMessages({
         id: 'app.general.ethereumAddress',
         description: 'Placeholder for ethereum address field. Not sure if Ethereum should be translated',
         defaultMessage: 'Ethereum Address'
+    },
+    generatingPreview: {
+        id: 'app.general.generatingPreview',
+        description: 'placeholder to show while an image preview is being generated',
+        defaultMessage: 'Generating preview'
     },
     gethServiceOff: {
         id: 'app.general.gethServiceOff',
@@ -184,6 +189,11 @@ const generalMessages = defineMessages({
         id: 'app.general.people',
         description: 'tooltip for sidebar people button',
         defaultMessage: 'People'
+    },
+    processingImage: {
+        id: 'app.general.processingImage',
+        description: 'Message to show while images are being precessed',
+        defaultMessage: 'Processing image'
     },
     publish: {
         id: 'app.general.publish',

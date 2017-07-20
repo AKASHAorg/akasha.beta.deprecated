@@ -1,11 +1,9 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import SvgIcon from 'material-ui/SvgIcon';
-import RaisedButton from 'material-ui/RaisedButton';
-import LinearProgress from 'material-ui/LinearProgress';
-import DeleteIcon from 'material-ui/svg-icons/action/delete';
+import { Button, Progress } from 'antd';
 import R from 'ramda';
-import { AddImage } from '../svg';
+import { SvgIcon } from '../';
+import AddImage from '../svg/add-image';
 import { generalMessages } from '../../locale-data/messages';
 import imageCreator, { getResizedImages, findClosestMatch } from '../../utils/imageUtils';
 import styles from './image-uploader.scss';
@@ -129,7 +127,7 @@ class ImageUploader extends Component {
             imageLoaded: false
         });
     }
-    _handleImageLoad = (ev) => {
+    _handleImageLoad = () => {
         this.setState({
             imageLoaded: true
         });
@@ -169,30 +167,33 @@ class ImageUploader extends Component {
                 <div
                   className={`${styles.generatingPreview}`}
                 >
-                  Generating preview...
+                  {intl.formatMessage(generalMessages.generatingPreview)}...
                 </div>
               }
               {!this.state.processingFinished && R.isEmpty(imageFile) &&
                 <div
                   className={`${styles.emptyContainer} ${styles.processingLoader}`}
                 >
-                  <div className={`${styles.processingLoaderText}`}>Processing image...</div>
+                  <div
+                    className={`${styles.processingLoaderText}`}
+                  >
+                    {intl.formatMessage(generalMessages.processingImage)}...
+                  </div>
                   <div className={`${styles.loadingBar}`}>
-                    <LinearProgress
-                      mode="determinate"
+                    <Progress
                       style={{ display: 'inline-block' }}
-                      value={this.state.progress}
+                      strokeWidth={5}
+                      percent={this.state.progress}
+                      status="active"
                     />
                   </div>
                 </div>
               }
               {this.state.processingFinished && !R.isEmpty(imageFile) &&
                 <div className={`${styles.clearImageButton}`} style={clearImageButtonStyle}>
-                  <RaisedButton
-                    fullWidth
-                    secondary
-                    icon={<DeleteIcon />}
-                    style={{ width: '100%' }}
+                  <Button
+                    type="secondary"
+                    icon="delete"
                     onClick={this._handleClearImage}
                   />
                 </div>
@@ -202,11 +203,7 @@ class ImageUploader extends Component {
               <div
                 className={`${styles.emptyContainer}`}
               >
-                <SvgIcon
-                  style={{ height: '42px', width: '100%' }}
-                  viewBox="0 0 36 36"
-                  color={this.context.muiTheme.palette.textColor}
-                >
+                <SvgIcon style={{ height: 48, width: 48 }} >
                   <AddImage />
                 </SvgIcon>
                 <text style={{ display: 'block' }}>

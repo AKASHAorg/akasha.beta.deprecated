@@ -12,15 +12,15 @@ For example:
 */
 // Mixins
 @import "./components/prefixer";
-@import "./components/mixins";
+// @import "./components/mixins";
 // Variables;
-@import "./components/variables";
+// @import "./components/variables";
 // Reset
-@import "./components/normalize";
+// @import "./components/normalize";
 // components
-@import "./components/typography";
+// @import "./components/typography";
 @import "./components/globals";
-@import "./components/transitions";
+// @import "./components/transitions";
 @import "./tutorials/tutorials";
 // editor (megadraft)
 @import "./editor/editor";
