@@ -10,7 +10,7 @@ import {
 import { AllRightsReserved, CreativeCommonsBY, CreativeCommonsCC, CreativeCommonsNCEU,
     CreativeCommonsNCJP, CreativeCommonsNC, CreativeCommonsND, CreativeCommonsREMIX,
     CreativeCommonsSHARE, CreativeCommonsZERO, CreativeCommonsPD, CreativeCommonsSA
-} from 'shared-components/svg'; // eslint-disable-line import/no-unresolved, import/extensions
+} from '../../components/svg';
 
 class LicenceDialog extends React.Component {
     constructor (props) {

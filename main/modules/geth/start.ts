@@ -9,6 +9,7 @@ const execute = Promise.coroutine(function*(data: GethStartRequest) {
         throw new Error('Geth is already running');
     }
     GethConnector.getInstance().setOptions(data);
+    GethConnector.getInstance().enableDownloadEvents();
     const dataDir = GethConnector.getInstance().spawnOptions.get('datadir');
     let requiresGenesis = false;
     if (dataDir) {

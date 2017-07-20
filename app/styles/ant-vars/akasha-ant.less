@@ -1,2 +1,54 @@
 @svg-icon-height: 24px;
 @svg-icon-width: 24px;
+// overwrite here default antd vars
+// @primary-color: #000000;
+
+@font-size-base: 15px;
+
+.service-details-modal .ant-modal-body {
+    padding: 0px !important;
+}
+
+.service-details-modal .ant-tabs-nav {
+    width: 100%;
+}
+
+.service-details-modal .ant-tabs.ant-tabs-card > .ant-tabs-bar .ant-tabs-nav-container {
+    height: 60px;
+    font-size: @font-size-base;
+}
+
+.service-details-modal .ant-tabs-bar {
+    height: 60px;
+}
+
+.service-details-modal .ant-tabs-tab {
+    width: 50%;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.service-details-modal > .ant-tabs-card > .ant-tabs-content > .ant-tabs-tabpane {
+    background: #fff;
+}
+
+.service-details-modal > .ant-tabs-card > .ant-tabs-bar {
+    border-color: #fff;
+}
+
+.service-details-modal > .ant-tabs-card > .ant-tabs-bar .ant-tabs-tab {
+    background: #f8f8f8;
+    border-color: transparent;
+    height: 59px;
+}
+
+.service-details-modal > .ant-tabs-card > .ant-tabs-bar .ant-tabs-tab-active {
+    border-color: #fff;
+    background: #fff;
+    height: 60px;
+}
+
+.service-details-modal .ant-modal-footer {
+    padding: 10px 24px;
+}

@@ -22,7 +22,7 @@ class GethIPC extends ModuleEmitter {
 
     public initListeners(webContents) {
         // set default options
-        GethConnector.getInstance().setBinPath(app.getPath('userData'));
+        GethConnector.getInstance().setBinPath(join(app.getPath('userData'), 'go-ethereum'));
         GethConnector.getInstance().setOptions({
             bootnodes: BOOTNODE,
             datadir: join(GethConnector.getDefaultDatadir(), 'akasha-alpha'),
@@ -55,8 +55,13 @@ class GethIPC extends ModuleEmitter {
 
     private _download() {
         GethConnector.getInstance().on(
-            CONSTANTS.DOWNLOADING_BINARY, () => {
+            CONSTANTS.DOWNLOAD_STARTED, () => {
                 this.fireEvent(channels.client.geth.startService, mainResponse({ downloading: true }, {}));
+            }
+        );
+        GethConnector.getInstance().on(
+            CONSTANTS.DOWNLOAD_PROGRESS, (stats) => {
+                this.fireEvent(channels.client.geth.startService, mainResponse({ downloading: true, progress: stats }, {}));
             }
         );
         return this;

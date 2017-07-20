@@ -7,6 +7,7 @@ const GethStatus = Record({
     ipc: null,
     message: null,
     process: false,
+    progress: null,
     started: null,
     starting: null,
     stopped: null,

@@ -39,7 +39,6 @@ window.Perf = ReactPerf;
 
 injectTapEventPlugin();
 
-
 generalSettingsRequest().then(settings =>
     render(
       <IntlProvider

@@ -4,29 +4,29 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 import ReactTooltip from 'react-tooltip';
 import { SvgIcon, IconButton } from 'material-ui';
-import { StatusBarEthereum, StatusBarIpfs } from '../shared-components/svg';
+import { StatusBarEthereum, StatusBarIpfs } from './svg';
 import serviceState from '../constants/serviceState';
 import { generalMessages } from '../locale-data/messages';
 import { toggleGethDetailsModal,
     toggleIpfsDetailsModal } from '../local-flux/actions/app-actions';
 
 const containerStyle = {
-    border: '2px solid',
-    borderRadius: '16px',
-    lineHeight: '32px',
-    height: '32px',
-    width: '32px',
+    border: '1px solid',
+    borderRadius: '12px',
+    lineHeight: '24px',
+    height: '24px',
+    width: '24px',
     display: 'inline-flex',
     textAlign: 'center',
-    margin: '0 5px',
+    margin: '0 4px',
     justifyContent: 'center',
     alignItems: 'center'
 };
 const buttonStyle = {
-    width: '32px',
-    minWidth: '32px',
-    height: '32px',
-    borderRadius: '16px',
+    width: '24px',
+    minWidth: '24px',
+    height: '24px',
+    borderRadius: '12px',
     padding: '0px'
 };
 
@@ -112,11 +112,11 @@ class ServiceStatusBar extends Component {
         const { toggleGethDetails, toggleIpfsDetails } = this.props;
         const { palette } = this.context.muiTheme;
         const iconStyle = {
-            width: '24px',
-            height: '24px',
+            width: '18px',
+            height: '18px',
             color: palette.textColor,
             position: 'relative',
-            top: '4px'
+            top: '3px'
         };
         const gethState = this.getGethState();
         const ipfsState = this.getIpfsState();
@@ -126,7 +126,7 @@ class ServiceStatusBar extends Component {
             <div style={this.getContainerStyle(gethState)}>
               <div
                 data-tip={this.getTooltip(gethState)}
-                style={{ display: 'inline-block', height: '32px' }}
+                style={{ display: 'inline-block', height: '24px' }}
               >
                 <IconButton
                   style={buttonStyle}
@@ -142,7 +142,7 @@ class ServiceStatusBar extends Component {
             <div style={this.getContainerStyle(ipfsState)}>
               <div
                 data-tip={this.getTooltip(ipfsState)}
-                style={{ display: 'inline-block', height: '32px' }}
+                style={{ display: 'inline-block', height: '24px' }}
               >
                 <IconButton
                   style={buttonStyle}

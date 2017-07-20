@@ -8,7 +8,7 @@ import { generalMessages, profileMessages } from 'locale-data/messages';
 import { getInitials, getUrl } from 'utils/dataModule';
 import imageCreator, { findBestMatch } from 'utils/imageUtils';
 import { Avatar, PanelContainer } from 'shared-components';
-import { UserDonate } from 'shared-components/svg';
+import { UserDonate } from '../../../../../../../components/svg';
 import { injectIntl } from 'react-intl';
 
 // Remember to update height and width values inside getBackgroundImageStyle method

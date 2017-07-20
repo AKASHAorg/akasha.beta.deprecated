@@ -86,6 +86,11 @@ const formMessages = defineMessages({
         description: 'Error displayed when a tag contains invalid characters',
         defaultMessage: 'Tags can contain only letters, numbers, and one dash ( - ) or underscore ( _ ) between characters.'
     },
+    selectOneOption: {
+        id: 'app.form.selectOneOption',
+        description: 'Label for simple select field',
+        defaultMessage: 'Select one option'
+    },
     tooShortError: {
         id: 'app.form.tooShortError',
         description: 'Error displayed when a tag contains less than 4 characters',

@@ -7,7 +7,7 @@ import { shallow } from 'enzyme';
 import { List, ListItem } from 'material-ui';
 import muiTheme from 'material-ui/styles/baseThemes/lightBaseTheme';
 import { ProfileList } from '../../../app/components';
-import { Avatar, DataLoader } from '../../../app/shared-components';
+import { Avatar, DataLoader } from '../../../app/components';
 import { GethStatus, IpfsStatus, ProfileRecord } from '../../../app/local-flux/reducers/records';
 import { setupMessages } from '../../../app/locale-data/messages';
 

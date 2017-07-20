@@ -15,7 +15,7 @@ const TopBarRightSide = ({
     openNotificationPanel
 }, { muiTheme }) => (
   <div style={{ display: 'flex', flex: '0 0 auto' }}>
-    <div style={{ flex: '0 0 auto' }}>
+    <div style={{ flex: '0 0 auto', display: 'flex', alignItems: 'center' }}>
       <ServiceStatusBar />
     </div>
     <div style={{ margin: '0 10px', width: '2px', backgroundColor: muiTheme.palette.borderColor }} />
