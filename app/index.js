@@ -21,7 +21,8 @@ import './styles/core.scss';
 import ruMessages from './locale-data/ru.json';
 import zhMessages from './locale-data/zh.json';
 import enMessages from './locale-data/en.json';
-import './styles/ant-vars/ant.less';
+import './styles/ant-vars/akasha-ant-dark.less';
+import './styles/ant-vars/akasha-ant-default.less';
 
 const localeMessages = {
     en: enMessages,
