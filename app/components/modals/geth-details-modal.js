@@ -9,7 +9,6 @@ import { gethPauseSync, gethResumeSync, gethStart, gethStartLogger, gethStop,
     gethStopLogger } from '../../local-flux/actions/external-process-actions';
 import { gethSaveSettings } from '../../local-flux/actions/settings-actions';
 import { GethCacheSelect, Input, LogsList, PathInputField, ServiceDetailsModal } from '../';
-import styles from './service-details-modal.scss';
 
 const { TabPane } = Tabs;
 
@@ -78,7 +77,7 @@ class GethDetailsModal extends Component {
         const { activeTab, cache, datadir } = this.state;
 
         return (
-          <div className="service-details-modal" style={{ height: '400px' }}>
+          <div className="service-details-modal geth-details-modal">
             <Tabs
               activeKey={activeTab}
               onChange={this.selectTab}
@@ -86,8 +85,8 @@ class GethDetailsModal extends Component {
               type="card"
             >
               <TabPane key={SETTINGS} tab={intl.formatMessage(generalMessages.settings)}>
-                <div className={styles.tabPane}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '-20px' }}>
+                <div className="service-details-modal__tab-pane">
+                  <div className="geth-details-modal__split">
                     <GethCacheSelect
                       onChange={this.onCacheChange}
                       style={{ width: '100%' }}
@@ -119,7 +118,7 @@ class GethDetailsModal extends Component {
                 </div>
               </TabPane>
               <TabPane key={LOGS} tab={intl.formatMessage(generalMessages.logs)}>
-                <div className={styles.tabPane} style={{ padding: '10px 8px 0px' }}>
+                <div className="service-details-modal__tab-pane service-details-modal__tab-pane_logs">
                   {activeTab === LOGS &&
                     <LogsList
                       logs={gethLogs}

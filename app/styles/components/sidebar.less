@@ -1,0 +1,38 @@
+.sidebar {
+    width: 64px;
+    position: fixed;
+    left: -64px;
+    top: 0;
+    bottom: 0;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid #cccccc;
+    transition: left 0.175s ease-in-out;
+    will-change: left;
+    max-width: 64px;
+    background-color: #f3f3f3;
+
+    &_shown {
+        left: 0;
+        transition: left 0.175s ease-in-out;
+        will-change: left;
+    }
+
+    &__entry-icon {
+        flex-grow: 1;
+        padding: 14px;
+    }
+
+    &__stream-icon {
+        flex-grow: 4;
+        padding: 14px
+    }
+
+    &__logo {
+        flex-grow: 1;
+        padding: 14px 8px;
+        display: flex;
+        align-items: flex-end;
+    }
+}
