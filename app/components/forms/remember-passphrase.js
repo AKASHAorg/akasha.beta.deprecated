@@ -33,11 +33,7 @@ const RememberPassphrase = (props) => {
           style={{ flex: '2 2 120px' }}
           value={unlockTime}
         >
-          {renderMenuItem(5)}
-          {renderMenuItem(10)}
-          {renderMenuItem(15)}
-          {renderMenuItem(30)}
-          {renderMenuItem(60)}
+          {[5, 10, 15, 30, 60].map(mins => renderMenuItem(mins))}
         </SelectField>
       </div>
     );

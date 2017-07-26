@@ -9,7 +9,8 @@ import HubIcon from 'material-ui/svg-icons/hardware/device-hub';
 import EditIcon from 'material-ui/svg-icons/image/edit';
 import { EntryBookmarkOn, EntryBookmarkOff, EntryComment, EntryDownvote,
     EntryUpvote, ToolbarEthereum } from '../../components/svg';
-import { Avatar, EntryVersionsPanel, EntryVotesPanel, TagChip } from '../';
+import { EntryVotesPanel, TagChip } from '../';
+import { Avatar, EntryVersionsPanel } from '../../components';
 import { calculateReadingTime, getInitials } from '../../utils/dataModule';
 import imageCreator from '../../utils/imageUtils';
 import { entryMessages, generalMessages } from '../../locale-data/messages';
@@ -35,7 +36,7 @@ class EntryCard extends Component {
             entryResolvingIpfsHash !== this.props.entryResolvingIpfsHash ||
             fetchingEntryBalance !== this.props.fetchingEntryBalance ||
             isSaved !== this.props.isSaved ||
-            !publisher.equals(this.props.publisher) ||            
+            !publisher.equals(this.props.publisher) ||
             style.width !== this.props.style.width ||
             voteEntryPending !== this.props.voteEntryPending ||
             nextState.expanded !== this.state.expanded ||

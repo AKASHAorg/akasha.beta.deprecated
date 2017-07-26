@@ -5,7 +5,6 @@ import { injectIntl } from 'react-intl';
 import { Button, Radio, Select as AntdSelect } from 'antd';
 import { formMessages, generalMessages, setupMessages } from '../../locale-data/messages';
 import { GethCacheSelect, PathInputField, Select } from '../';
-import setupStyles from './setup.scss';
 
 const { Option } = AntdSelect;
 const RadioGroup = Radio.Group;
@@ -139,17 +138,17 @@ class Config extends PureComponent {
         const { isAdvanced, syncmode } = this.state;
 
         return (
-          <div className={setupStyles.root}>
+          <div className="setup-content configuration">
             {configurationSaved && <Redirect to="/setup/synchronization" />}
-            <div className={`${setupStyles.column} ${setupStyles.leftColumn}`}>
+            <div className="setup-content__column setup-pages_left">
               Placeholder
             </div>
-            <div className={setupStyles.column}>
-              <div className={setupStyles.columnContent}>
-                <div style={{ fontWeight: '500', fontSize: '20px' }}>
+            <div className="setup-content__column">
+              <div className="setup-content__column-content">
+                <div className="configuration__title">
                   {intl.formatMessage(setupMessages.syncOptions)}
                 </div>
-                <div style={{ marginTop: '24px' }}>
+                <div className="configuration__form">
                   <Select
                     label={intl.formatMessage(formMessages.selectOneOption)}
                     onChange={this.onSyncModeChange}
@@ -185,13 +184,13 @@ class Config extends PureComponent {
                   {isAdvanced && this.renderAdvancedSettings()}
                 </div>
               </div>
-              <div className={setupStyles.columnFooter}>
+              <div className="setup-content__column-footer">
                 <Button
                   type="primary"
                   onClick={this.handleSubmit}
                   size="large"
                 >
-                  <span style={{ fontWeight: 400, fontSize: '15px' }}>
+                  <span className="configuration__button-label">
                     {intl.formatMessage(generalMessages.nextButtonLabel)}
                   </span>
                 </Button>

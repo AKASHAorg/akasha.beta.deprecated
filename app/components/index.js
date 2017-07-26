@@ -2,7 +2,6 @@
 export Auth from './setup/auth';
 export Avatar from './avatar/avatar';
 export Balance from './balance';
-export CircularProgress from './setup/circular-progress';
 export Column from './columns/column';
 export ColumnHeader from './columns/column-header';
 export Comment from './comment/comment';
@@ -69,7 +68,7 @@ export Sidebar from './sidebar';
 export StreamColumn from './columns/stream-column';
 export SvgIcon from './svg-icon/svg-icon';
 export SyncProgressLoader from './setup/sync-progress';
-export SyncStatusLoader from './setup/sync-status-loader';
+export SyncStatus from './setup/sync-status';
 export Sync from './setup/sync';
 export TagColumn from './columns/tag-column';
 export TermsPanel from './terms-panel';

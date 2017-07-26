@@ -3,17 +3,16 @@ import { Route } from 'react-router-dom';
 import { AuthContainer, ConfigurationContainer, NewIdentityContainer,
     SynchronizationContainer } from '../../containers';
 import { SetupHeader, SetupHeaderSplit } from '../';
-import styles from './setup-pages.scss';
 
 const SetupPages = () => (
-  <div className={styles.root}>
-    <div className={styles.header}>
+  <div className="setup-pages">
+    <div className="setup-pages__header">
       <Route path="/setup/configuration" component={SetupHeaderSplit} />
       <Route path="/setup/synchronization" component={SetupHeaderSplit} />
       <Route path="/setup/authenticate" component={SetupHeader} />
       <Route path="/setup/new-identity" component={SetupHeader} />
     </div>
-    <div className={styles.content}>
+    <div className="setup-pages__content">
       <Route path="/setup/configuration" component={ConfigurationContainer} />
       <Route path="/setup/synchronization" component={SynchronizationContainer} />
       <Route path="/setup/authenticate" component={AuthContainer} />

@@ -10,7 +10,7 @@ function MenuEthereum ({ style }) {
     );
 }
 MenuEthereum.propTypes = {
-    style: PropTypes.object
+    style: PropTypes.shape()
 };
 
 export default MenuEthereum;

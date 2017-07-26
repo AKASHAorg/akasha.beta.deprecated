@@ -12,13 +12,13 @@ class CircleIcon extends Component {
         };
     }
 
-    handleMouseEnter = (ev) => {
+    handleMouseEnter = () => {
         this.setState({
             isHovered: true
         });
     };
 
-    handleMouseLeave = (ev) => {
+    handleMouseLeave = () => {
         this.setState({
             isHovered: false
         });
