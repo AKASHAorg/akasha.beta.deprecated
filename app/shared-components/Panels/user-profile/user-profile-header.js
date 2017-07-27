@@ -38,7 +38,7 @@ const UserProfileHeader = (props, { router, muiTheme }) => {
         <div className="row top-xs" >
           <div className="col-xs-4" >
             <Avatar
-              radius={130}
+              size={130}
               image={avatarImage}
               editable={false}
               offsetBorder="1px solid rgba(0, 0, 0, 0.41)"

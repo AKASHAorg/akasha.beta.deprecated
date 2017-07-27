@@ -254,7 +254,7 @@ class UserProfilePanel extends Component {
                 `${profileData.baseUrl}/${profileData.avatar}` :
                 ''
               }
-              radius={40}
+              size={40}
               userInitials={initials}
               userInitialsStyle={{
                   textTransform: 'uppercase',

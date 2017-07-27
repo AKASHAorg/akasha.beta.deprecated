@@ -1,4 +1,3 @@
-/* eslint new-cap: ["error", { "capIsNewExceptions": ["Record"] }]*/
 import { fromJS, List, Map } from 'immutable';
 import * as types from '../constants';
 import * as profileTypes from '../constants/ProfileConstants';
@@ -637,7 +636,7 @@ const profileState = createReducer(initialState, {
 
     [types.PROFILE_GET_LOCAL_SUCCESS]: (state, { data }) => {
         let ethAddresses = state.get('ethAddresses');
-        let localProfiles = state.get('localProfiles');
+        let localProfiles = new List();
         data.forEach((prf) => {
             ethAddresses = ethAddresses.set(prf.key, prf.akashaId);
             localProfiles = localProfiles.push(prf.key);

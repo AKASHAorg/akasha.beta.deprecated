@@ -175,7 +175,7 @@ class ProfileCard extends Component {
               >
                 <Avatar
                   image={avatar}
-                  radius={80}
+                  size={80}
                   userInitials={userInitials}
                   userInitialsStyle={{
                       textTransform: 'uppercase',

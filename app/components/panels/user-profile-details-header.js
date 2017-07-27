@@ -37,7 +37,7 @@ class UserProfileHeader extends PureComponent {
             <div className="row">
               <div className="col-xs-4">
                 <Avatar
-                  radius={100}
+                  size={100}
                   image={avatarImage}
                   editable={false}
                   offsetBorder="1px solid rgba(0, 0, 0, 0.41)"

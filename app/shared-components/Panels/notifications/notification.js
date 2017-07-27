@@ -42,7 +42,7 @@ class Notification extends Component {
             leftAvatar={
               <Avatar
                 image={profile.avatar ? `${profile.baseUrl}/${profile.avatar}` : ''}
-                radius={40}
+                size={40}
                 userInitials={initials}
                 userInitialsStyle={{
                     textTransform: 'uppercase',

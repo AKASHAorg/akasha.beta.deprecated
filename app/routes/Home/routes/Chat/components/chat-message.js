@@ -62,7 +62,7 @@ class ChatMessage extends Component {
               style={{ display: 'inline-block', cursor: 'pointer' }}
               userInitials={authorInitials}
               userInitialsStyle={{ fontSize: '20px' }}
-              radius={40}
+              size={40}
               onClick={() => { onAuthorClick(profileAddress); }}
               onMouseEnter={ev => showProfileHoverCard(ev.currentTarget, profile)}
               onMouseLeave={hideProfileHoverCard}

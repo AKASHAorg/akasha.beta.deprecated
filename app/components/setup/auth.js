@@ -1,133 +1,163 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { RaisedButton } from 'material-ui';
+import { Button, Icon } from 'antd';
+import throttle from 'lodash.throttle';
 import { ProfileList } from '../';
 import { setupMessages } from '../../locale-data/messages';
 
 class Auth extends Component {
     state = {
-        hasTempProfile: false
+        isScrolled: false
     }
 
     componentDidMount () {
-        const { gethStatus, profileDeleteLogged, profileGetLocal, tempProfileGetRequest } = this.props;
-        tempProfileGetRequest();
-        if (gethStatus.get('api')) {
+        const { gethStatus, profileDeleteLogged, profileGetLocal } = this.props;
+        if (gethStatus.get('process')) {
             profileGetLocal();
         }
         profileDeleteLogged();
     }
 
     componentWillReceiveProps (nextProps) {
-        const { tempProfile, loginErrors, gethStatus, ipfsStatus, profileGetLocal } = nextProps;
+        const { gethStatus, ipfsStatus, profileGetLocal } = nextProps;
         const oldIpfsStatus = this.props.ipfsStatus;
         const ipfsStatusChanged = (ipfsStatus.get('started') && !oldIpfsStatus.get('started'))
             || (ipfsStatus.get('process') && !oldIpfsStatus.get('process'));
-        const gethStatusChanged = gethStatus.get('api') && !this.props.gethStatus.get('api');
+        const gethStatusChanged = gethStatus.get('process') && !this.props.gethStatus.get('process');
 
         if (gethStatusChanged || ipfsStatusChanged) {
             profileGetLocal();
         }
-        this.setState({
-            hasTempProfile: (loginErrors.size === 0 && tempProfile.get('akashaId'))
-        });
     }
 
     componentWillUnmount () {
         this.props.profileClearLocal();
+        if (this.listContainer) {
+            this.listContainer.removeEventListener('scroll', this.throttledHandler);
+        }
     }
 
-    handleNewIdentity = () => {
-        const { hasTempProfile } = this.state;
-        const { history, tempProfileCreate, tempProfile } = this.props;
-        if (hasTempProfile) {
-            tempProfileCreate(tempProfile);
-            return history.push('/setup/new-identity-status');
+    getListContainerRef = (el) => {
+        this.listContainer = el;
+        if (!this.listenerRegistered && this.listContainer) {
+            this.listenerRegistered = true;
+            this.listContainer.addEventListener('scroll', this.throttledHandler);
         }
-        return this.props.history.push('/setup/new-identity');
+        if (!this.listContainer) {
+            this.listenerRegistered = false;
+        }
+    };
+
+    handleProfileListScroll = (ev) => {
+        const { isScrolled } = this.state;
+        if (ev.srcElement.scrollTop === 0 && isScrolled) {
+            this.setState({
+                isScrolled: false
+            });
+        } else if (ev.srcElement.scrollTop > 0 && !isScrolled) {
+            this.setState({
+                isScrolled: true
+            });
+        }
+    };
+
+    throttledHandler = throttle(this.handleProfileListScroll, 300);
+
+    handleNewIdentity = () => {
+        this.props.history.push('/setup/new-identity');
     };
 
     render () {
         const { backupKeysRequest, backupPending, fetchingProfileList, gethStatus, intl, ipfsStatus,
-            localProfiles, localProfilesFetched, showLoginDialog } = this.props;
-        const { palette } = this.context.muiTheme;
+            localProfiles, localProfilesFetched } = this.props;
+        const { isScrolled } = this.state;
+        const withShadow = this.listContainer && isScrolled && 'auth__title-wrapper_with-shadow';
         return (
-          <div className="setup-content">
-          <div className="setup-content__column_full" style={{ display: 'flex', justifyContent: 'center' }}>
-            <div style={{ flex: '1 1 auto', display: 'flex', justifyContent: 'center', alignItems: 'flex-end', padding: '24px' }}>
-              <RaisedButton
-                disabled={backupPending}
-                key="backup"
-                label={intl.formatMessage(setupMessages.backup)}
-                onClick={backupKeysRequest}
-              />
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '450px' }}>
-              <div style={{ flex: '0 0 auto', padding: '24px', width: '100%' }}>
-                <div style={{ fontSize: '22px' }}>
-                  <b>{intl.formatMessage(setupMessages.login)}</b>
-                </div>
-                <div style={{ color: palette.disabledColor }}>
-                  {intl.formatMessage(setupMessages.chooseIdentity)}
-                </div>
-              </div>
-              <div style={{ position: 'relative', flex: '1 1 auto' }}>
-                <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 }}>
-                  <ProfileList
-                    fetchingProfiles={!localProfilesFetched || fetchingProfileList}
-                    gethStatus={gethStatus}
-                    handleSelect={showLoginDialog}
-                    intl={intl}
-                    ipfsStatus={ipfsStatus}
-                    profiles={localProfiles}
-                  />
+          <div className="setup-content auth">
+            <div className="flex-center-x setup-content__column_full">
+              <div className="flex-center-x setup-content__column-content auth__content">
+                <div className="auth__content-inner">
+                  <div className={`auth__title-wrapper ${withShadow}`}>
+                    <div className="auth__title heading">
+                      {intl.formatMessage(setupMessages.welcomeBack)}
+                    </div>
+                    <div className="auth__subtitle">
+                      {intl.formatMessage(setupMessages.chooseIdentity)}
+                    </div>
+                  </div>
+                  <div className="auth__list-wrapper">
+                    <ProfileList
+                      displayShadow={this.displayShadow}
+                      fetchingProfiles={!localProfilesFetched || fetchingProfileList}
+                      gethStatus={gethStatus}
+                      getListContainerRef={this.getListContainerRef}
+                      intl={intl}
+                      ipfsStatus={ipfsStatus}
+                      profiles={localProfiles}
+                    />
+                  </div>
                 </div>
               </div>
+              <div className="setup-content__column-footer auth__footer">
+                <div className="flex-center-y auth__buttons-wrapper">
+                  <Button
+                    className="auth__button auth__button_no-border"
+                    size="large"
+                  >
+                    <div className="flex-center-y">
+                      <Icon
+                        className="auth__icon"
+                        type="download"
+                      />
+                      {intl.formatMessage(setupMessages.importKeys)}
+                    </div>
+                  </Button>
+                  <Button
+                    className="auth__button auth__button_no-border"
+                    disabled={backupPending}
+                    onClick={backupKeysRequest}
+                    size="large"
+                  >
+                    <div className="flex-center-y">
+                      <Icon
+                        className="auth__icon"
+                        type="copy"
+                      />
+                      {intl.formatMessage(setupMessages.backup)}
+                    </div>
+                  </Button>
+                </div>
+                <div id="button" className="auth__new-identity-button">
+                  <Link to="/setup/new-identity">
+                    <Button
+                      className="auth__button"
+                      size="large"
+                    >
+                      {intl.formatMessage(setupMessages.createIdentity)}
+                    </Button>
+                  </Link>
+                </div>
+              </div>
             </div>
-            <div
-              style={{
-                  flex: '1 1 auto',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'flex-end',
-                  padding: '24px'
-              }}
-            >
-              <Link to="/setup/new-identity">
-                <RaisedButton
-                  label={intl.formatMessage(setupMessages.createIdentity)}
-                />
-              </Link>
-            </div>
-          </div>
           </div>
         );
     }
 }
-
-Auth.contextTypes = {
-    muiTheme: PropTypes.shape()
-};
 
 Auth.propTypes = {
     backupKeysRequest: PropTypes.func.isRequired,
     backupPending: PropTypes.bool,
     fetchingProfileList: PropTypes.bool,
     gethStatus: PropTypes.shape().isRequired,
+    history: PropTypes.shape().isRequired,
     intl: PropTypes.shape(),
     ipfsStatus: PropTypes.shape().isRequired,
     localProfiles: PropTypes.shape().isRequired,
     localProfilesFetched: PropTypes.bool,
-    loginErrors: PropTypes.shape().isRequired,
     profileClearLocal: PropTypes.func.isRequired,
     profileDeleteLogged: PropTypes.func.isRequired,
     profileGetLocal: PropTypes.func.isRequired,
-    showLoginDialog: PropTypes.func.isRequired,
-    tempProfile: PropTypes.shape().isRequired,
-    tempProfileCreate: PropTypes.func,
-    tempProfileGetRequest: PropTypes.func.isRequired,
-    history: PropTypes.shape().isRequired,
 };
 
 export default Auth;

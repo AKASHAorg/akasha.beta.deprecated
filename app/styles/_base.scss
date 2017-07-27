@@ -11,7 +11,7 @@ For example:
 @import './themes/default'
 */
 // Mixins
-@import "./components/prefixer";
+@import "./prefixer";
 // @import "./components/mixins";
 // Variables;
 // @import "./components/variables";
@@ -19,8 +19,8 @@ For example:
 // @import "./components/normalize";
 // components
 // @import "./components/typography";
-@import "./components/globals";
-// @import "./components/transitions";
+@import "./globals";
+@import "./transitions";
 @import "./tutorials/tutorials";
 // editor (megadraft)
 @import "./editor/editor";

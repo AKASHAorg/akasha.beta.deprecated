@@ -2,61 +2,29 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
-import ReactTooltip from 'react-tooltip';
-import { SvgIcon, IconButton } from 'material-ui';
+import { Tooltip } from 'antd';
 import { StatusBarEthereum, StatusBarIpfs } from './svg';
 import serviceState from '../constants/serviceState';
 import { generalMessages } from '../locale-data/messages';
 import { toggleGethDetailsModal,
     toggleIpfsDetailsModal } from '../local-flux/actions/app-actions';
 
-const containerStyle = {
-    border: '1px solid',
-    borderRadius: '14px',
-    lineHeight: '28px',
-    height: '28px',
-    width: '28px',
-    display: 'inline-flex',
-    textAlign: 'center',
-    margin: '0 4px',
-    justifyContent: 'center',
-    alignItems: 'center'
-};
-const buttonStyle = {
-    width: '28px',
-    minWidth: '28px',
-    height: '28px',
-    borderRadius: '14px',
-    padding: '0px'
-};
-
 class ServiceStatusBar extends Component {
-    componentDidMount () {
-        ReactTooltip.rebuild();
-    }
-
-    getContainerStyle (state) {
-        const { palette } = this.context.muiTheme;
-        const style = Object.assign({}, containerStyle);
+    getContainerClass = (state) => {
+        const base = 'service-status-bar__container_';
         switch (state) {
             case serviceState.stopped:
-                style.borderColor = palette.accent1Color;
-                break;
+                return `${base}red`;
             case serviceState.downloading:
             case serviceState.starting:
             case serviceState.upgrading:
-                style.borderColor = palette.accent2Color;
-                break;
+                return `${base}orange`;
             case serviceState.started:
-                style.borderColor = palette.accent3Color;
-                break;
+                return `${base}green`;
             default:
-                style.borderColor = palette.textColor;
-                break;
+                return '';
         }
-
-        return style;
-    }
+    };
 
     getIpfsState () {
         const { ipfsStarting, ipfsStatus } = this.props;
@@ -110,59 +78,33 @@ class ServiceStatusBar extends Component {
 
     render () {
         const { toggleGethDetails, toggleIpfsDetails } = this.props;
-        const { palette } = this.context.muiTheme;
-        const iconStyle = {
-            width: '20px',
-            height: '20px',
-            color: palette.textColor,
-            position: 'relative',
-            top: '4px'
-        };
         const gethState = this.getGethState();
         const ipfsState = this.getIpfsState();
 
         return (
-          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <div style={this.getContainerStyle(gethState)}>
-              <div
-                data-tip={this.getTooltip(gethState)}
-                style={{ display: 'inline-block', height: '28px' }}
-              >
-                <IconButton
-                  style={buttonStyle}
-                  onClick={toggleGethDetails}
-                  iconStyle={iconStyle}
-                >
-                  <SvgIcon viewBox="0 0 16 16">
+          <div className="service-status-bar">
+            <div className={`service-status-bar__container ${this.getContainerClass(gethState)}`}>
+              <Tooltip title={this.getTooltip(gethState)}>
+                <div className="service-status-bar__button" onClick={toggleGethDetails}>
+                  <svg className="service-status-bar__icon" viewBox="0 0 16 16">
                     <StatusBarEthereum />
-                  </SvgIcon>
-                </IconButton>
-              </div>
+                  </svg>
+                </div>
+              </Tooltip>
             </div>
-            <div style={this.getContainerStyle(ipfsState)}>
-              <div
-                data-tip={this.getTooltip(ipfsState)}
-                style={{ display: 'inline-block', height: '28px' }}
-              >
-                <IconButton
-                  style={buttonStyle}
-                  onClick={toggleIpfsDetails}
-                  iconStyle={iconStyle}
-                >
-                  <SvgIcon viewBox="0 0 16 16">
+            <div className={`service-status-bar__container ${this.getContainerClass(ipfsState)}`}>
+              <Tooltip title={this.getTooltip(gethState)}>
+                <div className="service-status-bar__button" onClick={toggleIpfsDetails}>
+                  <svg className="service-status-bar__icon" viewBox="0 0 16 16">
                     <StatusBarIpfs />
-                  </SvgIcon>
-                </IconButton>
-              </div>
+                  </svg>
+                </div>
+              </Tooltip>
             </div>
           </div>
         );
     }
 }
-
-ServiceStatusBar.contextTypes = {
-    muiTheme: PropTypes.shape()
-};
 
 ServiceStatusBar.propTypes = {
     gethStarting: PropTypes.bool,

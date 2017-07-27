@@ -120,7 +120,7 @@ class OptimisticComment extends Component {
                       <Avatar
                         image={avatar}
                         onMouseEnter={this.handleMouseEnter}
-                        radius={40}
+                        size={40}
                         // onClick={ev => onAuthorNameClick(ev, profile.get('profile'))}
                         style={{ display: 'inline-block', cursor: 'pointer' }}
                         userInitials={initials}

@@ -143,7 +143,7 @@ class Config extends PureComponent {
             <div className="setup-content__column setup-pages_left">
               Placeholder
             </div>
-            <div className="setup-content__column">
+            <div className="setup-content__column setup-pages_right">
               <div className="setup-content__column-content">
                 <div className="configuration__title">
                   {intl.formatMessage(setupMessages.syncOptions)}
@@ -186,13 +186,11 @@ class Config extends PureComponent {
               </div>
               <div className="setup-content__column-footer">
                 <Button
-                  type="primary"
                   onClick={this.handleSubmit}
                   size="large"
+                  type="primary"
                 >
-                  <span className="configuration__button-label">
-                    {intl.formatMessage(generalMessages.nextButtonLabel)}
-                  </span>
+                  {intl.formatMessage(generalMessages.nextButtonLabel)}
                 </Button>
               </div>
             </div>
