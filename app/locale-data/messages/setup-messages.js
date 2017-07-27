@@ -61,6 +61,11 @@ const setupMessages = defineMessages({
         description: 'number of threads used for mining',
         defaultMessage: 'Miner threads'
     },
+    importKeys: {
+        id: 'app.setup.importKeys',
+        description: 'Label for import keys button',
+        defaultMessage: 'Import keys'
+    },
     changeIfIpfsRunning: {
         id: 'app.setup.changeIfIpfsRunning',
         description: 'ipfs input field placeholder',
@@ -141,10 +146,15 @@ const setupMessages = defineMessages({
         description: 'title for login page',
         defaultMessage: 'Login'
     },
+    welcomeBack: {
+        id: 'app.setup.welcomeBack',
+        description: 'auth page title',
+        defaultMessage: 'Welcome back!'
+    },
     chooseIdentity: {
         id: 'app.setup.chooseIdentity',
         description: 'subtitle for login page',
-        defaultMessage: 'Choose an identity'
+        defaultMessage: 'Please select one identity to login'
     },
     newIdentity: {
         id: 'app.setup.newIdentity',

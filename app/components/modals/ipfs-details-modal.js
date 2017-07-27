@@ -131,6 +131,7 @@ class IpfsDetailsModal extends Component {
                   <PathInputField
                     label={intl.formatMessage(setupMessages.ipfsStoragePath)}
                     onChange={this.onStorageChange}
+                    size="large"
                     value={storagePath}
                   />
                   <div className="ipfs-details-modal__ports">
@@ -140,6 +141,7 @@ class IpfsDetailsModal extends Component {
                         value={apiPort}
                         onChange={this.onApiPortChange}
                         disabled={!ipfsApi || ipfsPortsRequested}
+                        size="large"
                         style={{ width: '100%' }}
                         wrapperStyle={{ width: '48%', margin: '12px 0px' }}
                       />
@@ -150,6 +152,7 @@ class IpfsDetailsModal extends Component {
                         value={gatewayPort}
                         onChange={this.onGatewayPortChange}
                         disabled={!ipfsApi || ipfsPortsRequested}
+                        size="large"
                         style={{ width: '100%' }}
                         wrapperStyle={{ width: '48%', margin: '12px 0px' }}
                       />
@@ -160,6 +163,7 @@ class IpfsDetailsModal extends Component {
                         value={swarmPort}
                         onChange={this.onSwarmPortChange}
                         disabled={!ipfsApi || ipfsPortsRequested}
+                        size="large"
                         style={{ width: '100%' }}
                         wrapperStyle={{ width: '48%', margin: '12px 0px' }}
                       />

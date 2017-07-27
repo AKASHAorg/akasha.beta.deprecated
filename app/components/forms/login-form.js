@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { injectIntl } from 'react-intl';
-import { FlatButton } from 'material-ui';
+import { Button, Form } from 'antd';
 import { formMessages, generalMessages } from '../../locale-data/messages';
 import { profileClearLoginErrors, profileLogin } from '../../local-flux/actions/profile-actions';
 import { userSettingsClear, userSettingsRequest,
@@ -11,6 +11,8 @@ import { userSettingsClear, userSettingsRequest,
 import { selectGethStatus, selectIpfsStatus, selectLoggedAccount,
     selectProfileFlag } from '../../local-flux/selectors';
 import { Input, RememberPassphrase } from '../';
+
+const FormItem = Form.Item;
 
 class LoginForm extends Component {
     state = {
@@ -46,16 +48,16 @@ class LoginForm extends Component {
         }
     }
 
-    handleUnlockCheck = (ev, isUnlocked) => {
+    handleUnlockCheck = (ev) => {
         this.setState({
-            isChecked: isUnlocked
+            isChecked: ev.target.checked
         });
     };
 
-    handleUnlockTimeChange = (ev, key, payload) => {
+    handleUnlockTimeChange = (val) => {
         this.setState({
             isChecked: true,
-            unlockTime: payload,
+            unlockTime: Number(val),
         });
     };
 
@@ -96,61 +98,72 @@ class LoginForm extends Component {
     };
 
     render () {
-        const { account, gethStatus, intl, ipfsStatus, loginErrors, loginPending } = this.props;
-        const { palette } = this.context.muiTheme;
+        const { account, gethStatus, getInputRef, intl, ipfsStatus, loginErrors, loginPending } = this.props;
         const isServiceStopped = !gethStatus.get('api') || gethStatus.get('stopped')
             || (!ipfsStatus.get('started') && !ipfsStatus.get('process'));
 
         return (
-          <div style={{ marginTop: '16px', overflow: 'hidden' }}>
-            <form onSubmit={this.handleLogin}>
+          <div className="login-form">
+            <Form onSubmit={this.handleLogin}>
               <Input
-                disabled
                 label={intl.formatMessage(formMessages.ethereumAddress)}
+                readOnly
+                size="large"
                 value={account}
               />
-              <Input
-                autoFocus
-                errorText={loginErrors.size ? loginErrors.first().message : null}
-                label={intl.formatMessage(formMessages.passphrase)}
-                onChange={this.onChange}
-                placeholder={intl.formatMessage(formMessages.passphrasePlaceholder)}
-                type="password"
-                value={this.state.passphrase}
-              />
+              <FormItem
+                className="login-form__form-item"
+                validateStatus={loginErrors.size ? 'error' : ''}
+                help={loginErrors.size ?
+                  <span className="input-error">{loginErrors.first().message}</span> :
+                  null
+                }
+              >
+                <Input
+                  getInputRef={getInputRef}
+                  label={intl.formatMessage(formMessages.passphrase)}
+                  onChange={this.onChange}
+                  placeholder={intl.formatMessage(formMessages.passphrasePlaceholder)}
+                  size="large"
+                  type="password"
+                  value={this.state.passphrase}
+                />
+              </FormItem>
               <RememberPassphrase
                 handleCheck={this.handleUnlockCheck}
                 handleTimeChange={this.handleUnlockTimeChange}
                 isChecked={this.state.isChecked}
-                unlockTime={this.state.unlockTime}
+                unlockTime={this.state.unlockTime.toString()}
               />
-              <div
-                style={{ marginTop: '20px', display: 'flex', height: '36px', justifyContent: 'flex-end' }}
-              >
-                <FlatButton
-                  label={intl.formatMessage(generalMessages.cancel)}
-                  labelStyle={{ color: palette.disabledColor }}
+              <div className="login-form__buttons-wrapper">
+                <Button
+                  className="login-form__button"
                   onClick={this.handleCancel}
-                />
-                <FlatButton
+                  size="large"
+                >
+                  {intl.formatMessage(generalMessages.cancel)}
+                </Button>
+                <Button
+                  className="login-form__button"
                   disabled={isServiceStopped || loginPending}
-                  label={intl.formatMessage(generalMessages.submit)}
+                  htmlType="submit"
                   onClick={this.handleLogin}
-                />
+                  size="large"
+                  type="primary"
+                >
+                  {intl.formatMessage(generalMessages.submit)}
+                </Button>
               </div>
-            </form>
+            </Form>
           </div>
         );
     }
 }
 
-LoginForm.contextTypes = {
-    muiTheme: PropTypes.shape()
-};
-
 LoginForm.propTypes = {
     account: PropTypes.string.isRequired,
     gethStatus: PropTypes.shape().isRequired,
+    getInputRef: PropTypes.func.isRequired,
     history: PropTypes.shape().isRequired,
     intl: PropTypes.shape().isRequired,
     ipfsStatus: PropTypes.shape().isRequired,

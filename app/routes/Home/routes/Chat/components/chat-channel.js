@@ -343,7 +343,7 @@ class ChatChannel extends Component {
                     userInitials={loggedProfileInitials}
                     userInitialsStyle={{ fontSize: '20px' }}
                     style={{ cursor: 'pointer' }}
-                    radius={40}
+                    size={40}
                     onClick={() => { this.navigateToProfile(loggedProfileAddress); }}
                   />
                 </div>
