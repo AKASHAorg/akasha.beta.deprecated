@@ -1,8 +1,11 @@
-body.dark_theme {
-    @import "./akasha-ant-default";
-    @theme: "dark";
-    @primary-color: red;
+@import "akasha-ant";
+@import "akasha-vars";
+@import "dark-theme";
+
+& {
+    @import "../components/index";
 }
+
 
 
 
