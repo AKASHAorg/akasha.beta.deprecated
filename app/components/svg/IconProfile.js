@@ -66,7 +66,7 @@ class IconProfile extends Component {
                     iconStyle
                 }
                 image={avatar}
-                radius={32}
+                size={32}
                 userInitials={userInitials}
                 userInitialsStyle={{
                     textTransform: 'uppercase',

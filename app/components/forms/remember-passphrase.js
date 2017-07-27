@@ -1,40 +1,44 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { injectIntl } from 'react-intl';
-import { Checkbox, MenuItem, SelectField } from 'material-ui';
+import { Checkbox, Select as AntdSelect } from 'antd';
+import { Select } from '../';
 import { formMessages, generalMessages } from '../../locale-data/messages';
+
+const { Option } = AntdSelect;
 
 const RememberPassphrase = (props) => {
     const { handleCheck, handleTimeChange, intl, isChecked, unlockTime } = props;
 
-    const renderMenuItem = (value) => {
+    const renderOption = (value) => {
         const message = value < 60 ?
             intl.formatMessage(generalMessages.minCount, { minutes: value }) :
             intl.formatMessage(generalMessages.hoursCount, { hours: value / 60 });
         return (
-          <MenuItem
-            primaryText={message}
-            value={value}
-          />
+          <Option key={value} value={value}>
+            {message}
+          </Option>
         );
     };
 
     return (
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '12px 0' }}>
-        <div style={{ flex: '3 3 auto' }}>
+      <div className="remember-passphrase">
+        <div>
           <Checkbox
             checked={isChecked}
-            label={intl.formatMessage(formMessages.rememberPassFor)}
-            onCheck={handleCheck}
-          />
+            onChange={handleCheck}
+          >
+            {intl.formatMessage(formMessages.rememberPassFor)}
+          </Checkbox>
         </div>
-        <SelectField
+        <Select
+          getPopupContainer={() => document.getElementById('select-popup-container')}
           onChange={handleTimeChange}
-          style={{ flex: '2 2 120px' }}
           value={unlockTime}
+          wrapperStyle={{ margin: '0px 0px 0px 5px', width: '80px', position: 'relative' }}
         >
-          {[5, 10, 15, 30, 60].map(mins => renderMenuItem(mins))}
-        </SelectField>
+          {['5', '10', '15', '30', '60'].map(mins => renderOption(mins))}
+        </Select>
       </div>
     );
 };
@@ -44,7 +48,7 @@ RememberPassphrase.propTypes = {
     handleTimeChange: PropTypes.func.isRequired,
     intl: PropTypes.shape(),
     isChecked: PropTypes.bool,
-    unlockTime: PropTypes.number
+    unlockTime: PropTypes.string
 };
 
 export default injectIntl(RememberPassphrase);

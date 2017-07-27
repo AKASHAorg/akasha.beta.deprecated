@@ -90,7 +90,7 @@ class Avatar extends Component {
     }
     render () {
         const {
-            radius,
+            size,
             editable,
             image,
             userInitials,
@@ -117,7 +117,7 @@ class Avatar extends Component {
           <div
             className={`${styles.root}`}
             style={
-              Object.assign({ maxWidth: radius }, style)
+              Object.assign({ maxWidth: size }, style)
             }
             onMouseEnter={onMouseEnter}
             onMouseLeave={onMouseLeave}
@@ -135,17 +135,17 @@ class Avatar extends Component {
                 {editable ?
                   <AvatarEditor
                     style={{
-                        borderRadius: 150,
+                        borderRadius: 5,
                         border: offsetBorder || 0,
                         backgroundColor,
-                        width: radius,
-                        height: radius,
+                        width: size,
+                        height: size,
                         borderColor: palette.textColor
                     }}
                     border={1}
                     image={avatarImage}
                     ref={(editor) => { this.editor = editor; }}
-                    borderRadius={100}
+                    borderRadius={5}
                     scale={editable ? this.state.avatarScale : 1}
                     rotate={this.state.rotation}
                     onDropFile={this._handleImageAdd}
@@ -155,9 +155,9 @@ class Avatar extends Component {
                     src={avatarImage}
                     style={{
                         display: this.state.imageLoaded ? 'initial' : 'none',
-                        width: radius,
-                        height: radius,
-                        borderRadius: '50%',
+                        width: size,
+                        height: size,
+                        borderRadius: '5px',
                         imageRendering: 'auto'
                     }}
                     onLoad={this.onImageLoad}
@@ -199,13 +199,13 @@ class Avatar extends Component {
                   <div
                     className={`${styles.avatarEmpty}`}
                     style={{
-                        width: radius,
-                        height: radius,
+                        width: size,
+                        height: size,
                         border: `1px solid ${palette.textColor}`,
                         backgroundColor: palette.avatarBackground
                     }}
                   >
-                    <SvgIcon viewBox="0 0 32 32" style={{ width: radius, height: radius }} onClick={this._handleAvatarClick}>
+                    <SvgIcon viewBox="0 0 32 32" style={{ color: '#fff', width: size - 2, height: size - 2 }} onClick={this._handleAvatarClick}>
                       <AvatarPlaceholder />
                     </SvgIcon>
                   </div>
@@ -216,17 +216,20 @@ class Avatar extends Component {
               <div
                 className={`${styles.avatarEmpty}`}
                 style={{
-                    width: radius,
-                    height: radius,
-                    border: `1px dashed ${palette.textColor}`,
-                    backgroundColor: palette.avatarBackground
+                    width: size,
+                    height: size,
+                    border: '1px solid #fcfcfc',
+                    backgroundColor: '#788',
+                    fontWeight: '600',
+                    fontSize: '36px'
                 }}
               >
                 {userInitials &&
                   <div
                     style={{
                         height: '100%',
-                        backgroundColor: this.props.backgroundColor || palette.avatarBackground,
+                        backgroundColor: this.props.backgroundColor || '#788',
+                        color: '#fff',
                         display: 'flex',
                         justifyContent: 'center',
                         alignItems: 'center'
@@ -236,11 +239,7 @@ class Avatar extends Component {
                     <div style={userInitialsWrapperStyle} onClick={this._handleAvatarClick}>
                       <h3
                         className={styles.userInitials}
-                        style={Object.assign({}, {
-                            color: palette.textColor,
-                            fontSize: '36px',
-                            fontWeight: 600
-                        }, userInitialsStyle)}
+                        style={Object.assign({}, { color: '#fff' }, userInitialsStyle)}
                       >
                         {userInitials}
                       </h3>
@@ -257,7 +256,7 @@ class Avatar extends Component {
                   </SvgIcon>
                 }
                 {!userInitials && !editable &&
-                  <SvgIcon viewBox="0 0 32 32" style={{ width: radius, height: radius }} onClick={this._handleAvatarClick}>
+                  <SvgIcon viewBox="0 0 32 32" style={{ color: '#fff', width: size - 2, height: size - 2 }} onClick={this._handleAvatarClick}>
                     <AvatarPlaceholder />
                   </SvgIcon>
                 }
@@ -281,7 +280,7 @@ Avatar.propTypes = {
     onImageClear: PropTypes.func,
     onMouseEnter: PropTypes.func,
     onMouseLeave: PropTypes.func,
-    radius: PropTypes.number,
+    size: PropTypes.number,
     style: PropTypes.shape(),
     userInitials: PropTypes.string,
     userInitialsStyle: PropTypes.shape(),
@@ -294,7 +293,7 @@ Avatar.contextTypes = {
 };
 
 Avatar.defaultProps = {
-    radius: 150,
+    size: 150,
     userInitialsAlignStyle: {
         height: '100%',
         display: 'inline-block',
