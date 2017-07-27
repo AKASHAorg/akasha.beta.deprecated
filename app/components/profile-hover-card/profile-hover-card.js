@@ -111,7 +111,7 @@ class ProfileHoverCard extends Component {
                         <Avatar
                           userInitials={profileInitials}
                           image={profile.avatar}
-                          radius={60}
+                          size={60}
                           style={{ cursor: 'pointer' }}
                         />
                       </Link>

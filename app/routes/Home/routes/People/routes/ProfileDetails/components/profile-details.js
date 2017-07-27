@@ -115,7 +115,7 @@ class ProfileDetails extends Component {
           >
             <Avatar
               image={avatar}
-              radius={100}
+              size={100}
               userInitials={userInitials}
               userInitialsStyle={{
                   textTransform: 'uppercase',

@@ -1,0 +1,47 @@
+.service-status-bar {
+    @button-size: 28px;
+    @icon-size: 20px;
+
+    display: flex;
+    justify-content: flex-end;
+
+    &__container {
+        border: 1px solid;
+        border-radius: @button-size / 2;
+        line-height: @button-size;
+        height: @button-size;
+        width: @button-size;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        margin: 0px 4px;
+
+        &_red {
+            border-color: #c82506;
+        }
+
+        &_orange {
+            border-color: #de6a10;
+        }
+
+        &_green {
+            border-color: #70bf41;
+        }
+    }
+
+    &__button {
+        width: @button-size;
+        height: @button-size;
+        border-radius: @button-size / 2;
+        cursor: pointer;
+    }
+
+    &__icon {
+        width: @icon-size;
+        height: @icon-size;
+        position: relative;
+        top: 4px;
+        fill: @text-color;
+    }
+}

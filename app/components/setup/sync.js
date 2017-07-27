@@ -144,7 +144,7 @@ class Sync extends Component {
                 </div>
               }
             </div>
-            <div className="setup-content__column sync__content">
+            <div className="setup-content__column setup-pages_right sync__content">
               <div className="sync__status-container">
                 <SyncStatus
                   gethStarting={gethStarting}

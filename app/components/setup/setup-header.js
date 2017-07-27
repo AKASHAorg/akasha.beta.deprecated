@@ -6,10 +6,10 @@ import { ServiceStatusBar } from '../';
 
 const SetupHeader = ({ intl, split }) => (
   <div className="setup-header">
-    <div className={`setup-header__title ${split && 'setup-pages_left'}`}>
+    <div className={`setup-header__title heading ${split && 'setup-pages_left'}`}>
       {intl.formatMessage(generalMessages.akasha)}
     </div>
-    <div className="setup-header__services">
+    <div className={`setup-header__services ${split && 'setup-pages_right'}`}>
       <ServiceStatusBar />
     </div>
   </div>

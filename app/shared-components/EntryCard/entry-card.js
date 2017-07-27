@@ -321,7 +321,7 @@ class EntryCard extends Component {
                   <Avatar
                     image={avatar}
                     style={{ display: 'inline-block' }}
-                    radius={40}
+                    size={40}
                     userInitials={userInitials}
                     userInitialsStyle={{
                         textTransform: 'uppercase',

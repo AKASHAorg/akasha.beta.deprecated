@@ -3,7 +3,8 @@ import React, { Component } from 'react';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import { Avatar, DataLoader, LoginForm } from '../';
 import { getInitials } from '../../utils/dataModule';
-import { isInViewport } from '../../utils/domUtils';
+import clickAway from '../../utils/clickAway';
+import { isVisible } from '../../utils/domUtils';
 import { setupMessages } from '../../locale-data/messages';
 
 class ProfileList extends Component {
@@ -17,19 +18,53 @@ class ProfileList extends Component {
     componentDidUpdate (prevProps, prevState) {
         const { selectedAccount } = this.state;
         if (selectedAccount && selectedAccount !== prevState.selectedAccount) {
-            const el = document.getElementById(`account-${selectedAccount}`);
-            console.log('is in viewport', isInViewport(el));
-            if (el && this.container && !isInViewport(el)) {
-                console.log('scroll into view');
-                el.scrollIntoView({ block: 'end', behavior: 'smooth' });
-                // console.log('before', this.container.scrollTop);
-                // this.container.scrollTop -= 150;
-                // console.log('after', this.container.scrollTop);
-            }
+            this.clearTimeout();
+            // This check is delayed because the transitions must be finished first
+            this.timeout = setTimeout(this.checkIfVisible, 310, [selectedAccount]);
         }
     }
 
-    getContainerRef = el => (this.container = el);
+    componentWillUnmount () {
+        this.clearTimeout();
+    }
+
+    componentClickAway = () => {
+        this.setState({
+            selectedAccount: null
+        });
+    };
+
+    clearTimeout = () => {
+        if (this.timeout) {
+            clearTimeout(this.timeout);
+        }
+    }
+
+    checkIfVisible = (selectedAccount) => {
+        const el = document.getElementById(`account-${selectedAccount}`);
+        const { visible, scrollTop } = isVisible(el, this.container);
+        if (el && this.container && !visible) {
+            this.container.scrollTop -= scrollTop;
+        }
+        if (this.input) {
+            this.input.focus();
+        }
+        this.timeout = null;
+    }
+
+    getContainerRef = (el) => {
+        const { getListContainerRef } = this.props;
+        this.container = el;
+        if (getListContainerRef) {
+            getListContainerRef(el);
+        }
+    };
+
+    getInputRef = (el) => {
+        if (el) {
+            this.input = el;
+        }
+    };
 
     onCancelLogin = () => {
         this.setState({
@@ -59,7 +94,6 @@ class ProfileList extends Component {
 
     renderListItem = (account, profile) => {
         const { hoveredAccount, selectedAccount } = this.state;
-        const { palette } = this.context.muiTheme;
         const profileName = `${profile.get('firstName')} ${profile.get('lastName')}`;
         const userInitials = getInitials(profile.get('firstName'), profile.get('lastName'));
         const avatar = profile.get('avatar');
@@ -67,42 +101,39 @@ class ProfileList extends Component {
         const isSelected = account === selectedAccount;
         const isHovered = account === hoveredAccount && !isSelected;
         const onClick = isSelected ? undefined : () => this.onSelectAccount(account);
-        const header = akashaId ?
-            (
-              <div style={{ display: 'flex', height: '48px' }}>
-                <Avatar
-                  image={avatar}
-                  radius={48}
-                  style={{ flex: '0 0 auto', marginRight: '16px' }}
-                  userInitials={userInitials}
-                  userInitialsStyle={{ fontSize: '20px' }}
-                />
-                <div style={{ flex: '1 1 auto', display: 'flex', flexDirection: 'column', padding: '2px 0' }}>
-                  <div className="overflow-ellipsis" style={{ flex: '3 3 auto', width: '100%', fontSize: '16px' }}>
-                    <b>{profileName}</b>
-                  </div>
-                  <div style={{ flex: '1 1 auto' }}>
-                    <small>@{akashaId}</small>
-                  </div>
-                </div>
+        const header = (
+          <div className="profile-list__card-header">
+            <Avatar
+              image={avatar}
+              size={48}
+              style={{ flex: '0 0 auto', marginRight: '16px' }}
+              userInitials={userInitials}
+              userInitialsStyle={{ fontSize: '20px' }}
+            />
+            <div className="profile-list__header-text">
+              <div className="overflow-ellipsis heading profile-list__name">
+                {akashaId ? profileName : account}
               </div>
-            ) :
-            <div className="overflow-ellipsis">{account}</div>;
+              {akashaId &&
+                <div className="profile-list__akasha-id">
+                  <small>@{akashaId}</small>
+                </div>
+              }
+            </div>
+          </div>
+        );
 
         return (
           <div
+            className="profile-list__profile-card"
             id={`account-${account}`}
             key={account}
             onClick={onClick}
             onMouseEnter={() => this.onMouseEnter(account)}
             onMouseLeave={this.onMouseLeave}
             style={{
-                border: `2px solid ${palette.borderColor}`,
-                width: '100%',
-                padding: '16px',
-                marginBottom: '16px',
                 cursor: isHovered ? 'pointer' : 'auto',
-                backgroundColor: isHovered ? palette.entryPageBackground : palette.canvasColor,
+                backgroundColor: isHovered ? '#fcfcfc' : '#fff',
                 opacity: selectedAccount && !isSelected ? 0.3 : 1
             }}
           >
@@ -115,6 +146,7 @@ class ProfileList extends Component {
               {isSelected &&
                 <LoginForm
                   account={account}
+                  getInputRef={this.getInputRef}
                   onCancel={this.onCancelLogin}
                   onSubmit={this.onSubmitLogin}
                 />
@@ -128,7 +160,7 @@ class ProfileList extends Component {
         const { fetchingProfiles, profiles, gethStatus, intl, ipfsStatus } = this.props;
         let placeholderMessage;
 
-        if (!gethStatus.get('api')) {
+        if (!gethStatus.get('process')) {
             placeholderMessage = intl.formatMessage(setupMessages.gethStopped);
         } else if (!ipfsStatus.get('process') && !ipfsStatus.get('started')) {
             placeholderMessage = intl.formatMessage(setupMessages.ipfsStopped);
@@ -137,10 +169,9 @@ class ProfileList extends Component {
         }
 
         if (placeholderMessage) {
+            this.getContainerRef(null);
             return (
-              <div
-                style={{ display: 'flex', alignItems: 'center', height: '100%', textAlign: 'center' }}
-              >
+              <div className="profile-list__placeholder">
                 {placeholderMessage}
               </div>
             );
@@ -148,27 +179,10 @@ class ProfileList extends Component {
 
         return (
           <DataLoader flag={fetchingProfiles} style={{ paddingTop: '100px' }}>
-            <div
-              style={{
-                  position: 'relative',
-                  width: '100%',
-                  height: '100%',
-                  maxWidth: '450px'
-              }}
-            >
+            <div className="profile-list__root">
               <div
-                style={{
-                    position: 'absolute',
-                    top: 0,
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    overflowY: 'auto',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    padding: '5px 24px'
-                }}
+                id="select-popup-container"
+                className="profile-list__list-wrapper"
                 ref={this.getContainerRef}
               >
                 {profiles.map(({ account, profile }) => this.renderListItem(account, profile))}
@@ -182,13 +196,10 @@ class ProfileList extends Component {
 ProfileList.propTypes = {
     fetchingProfiles: PropTypes.bool,
     gethStatus: PropTypes.shape().isRequired,
+    getListContainerRef: PropTypes.func,
     intl: PropTypes.shape().isRequired,
     ipfsStatus: PropTypes.shape().isRequired,
     profiles: PropTypes.shape().isRequired,
 };
 
-ProfileList.contextTypes = {
-    muiTheme: PropTypes.shape()
-};
-
-export default ProfileList;
+export default clickAway(ProfileList);
