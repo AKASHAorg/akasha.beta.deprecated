@@ -1,9 +1,10 @@
-@theme: default;
-@import "~antd/dist/antd.less";
-@import "./@{theme}-theme";
+@import "akasha-ant";
+@import "akasha-vars";
+@import "default-theme";
 
-@import (multiple) "akasha-ant";
-&{@import (multiple) "../components/index";}
+& {
+    @import (multiple) "../components/index";
+}
 
 
 
