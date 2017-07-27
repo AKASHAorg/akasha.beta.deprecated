@@ -14,7 +14,7 @@
     "browser": "node server.js",
     "hot-server": "cross-env NODE_ENV=development node -r babel-register ./node_modules/webpack-dev-server/bin/webpack-dev-server --config ./webpack.config.development.js",
     "build-main": "cross-env NODE_ENV=production node -r babel-register ./node_modules/webpack/bin/webpack --config webpack.config.electron.js --progress --profile --colors",
-    "build-renderer": "cross-env NODE_ENV=production node --trace-warnings -r babel-register ./node_modules/webpack/bin/webpack --config webpack.config.production.js --progress --profile --colors",
+    "build-renderer": "cross-env NODE_ENV=production node --max-old-space-size=5096 --trace-warnings -r babel-register ./node_modules/webpack/bin/webpack --config webpack.config.production.js --progress --profile --colors",
     "build": "npm run build-renderer",
     "build-lang": "babel ./app/utils/build-translations.js | node",
     "start": "cross-env NODE_ENV=production electron ./main.js",

@@ -1,8 +1,9 @@
 import path from 'path';
 import webpack from 'webpack';
 import merge from 'webpack-merge';
-import { spawn } from 'child_process';
+import {spawn} from 'child_process';
 import baseConfig from './webpack.config.base';
+
 const port = process.env.PORT || 3000;
 const publicPath = `http://localhost:${port}/dist`;
 
@@ -18,10 +19,10 @@ export default merge(baseConfig, {
 
     output: {
         publicPath: `http://localhost:${port}/dist/`,
-        sourceMapFilename: "./bundle.js.map",
+        sourceMapFilename: './bundle.js.map',
         pathinfo: true,
         path: __dirname,
-        filename: "bundle.js"
+        filename: 'bundle.js'
     },
 
     module: {
@@ -29,7 +30,7 @@ export default merge(baseConfig, {
             {
                 test: /\.global\.css$/,
                 use: [
-                    { loader: 'style-loader' },
+                    {loader: 'style-loader'},
                     {
                         loader: 'css-loader',
                         options: {
@@ -41,7 +42,7 @@ export default merge(baseConfig, {
             {
                 test: /^((?!\.global).)*\.css$/,
                 use: [
-                    { loader: 'style-loader' },
+                    {loader: 'style-loader'},
                     {
                         loader: 'css-loader',
                         options: {
@@ -56,7 +57,7 @@ export default merge(baseConfig, {
             {
                 test: /^((?!\.global).)*\.scss$/,
                 use: [
-                    { loader: 'style-loader' },
+                    {loader: 'style-loader'},
                     {
                         loader: 'css-loader',
                         options: {
@@ -72,7 +73,7 @@ export default merge(baseConfig, {
             {
                 test: /^((?!\.global).)*\.less$/,
                 use: [
-                    { loader: 'style-loader' },
+                    {loader: 'style-loader'},
                     {
                         loader: 'css-loader',
                         options: {
@@ -170,7 +171,7 @@ export default merge(baseConfig, {
         publicPath,
         setup() {
             if (process.env.START_HOT) {
-                spawn('npm', ['run', 'start-hot'], { shell: true, env: process.env, stdio: 'inherit' })
+                spawn('npm', ['run', 'start-hot'], {shell: true, env: process.env, stdio: 'inherit'})
                     .on('close', code => process.exit(code))
                     .on('error', spawnError => console.error(spawnError));
             }
