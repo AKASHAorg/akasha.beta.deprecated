@@ -21,8 +21,11 @@ import './styles/core.scss';
 import ruMessages from './locale-data/ru.json';
 import zhMessages from './locale-data/zh.json';
 import enMessages from './locale-data/en.json';
-if (process.env.NODE_ENV !== 'production') {
-    require('./styles/ant-vars/index.less');
+
+if (process.env.DARK_THEME) {
+    require('./styles/ant-vars/extract-dark-theme.less');
+} else {
+    require('./styles/ant-vars/extract-default-theme.less');
 }
 
 

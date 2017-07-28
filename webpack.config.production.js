@@ -5,7 +5,7 @@ import merge from 'webpack-merge';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import BabiliPlugin from 'babili-webpack-plugin';
 import baseConfig from './webpack.config.base';
-
+const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 // @TODO extract akasha themes in separated files
 export default merge(baseConfig, {
     devtool: 'source-map',
@@ -64,7 +64,7 @@ export default merge(baseConfig, {
                 })
             },
             {
-                test: /\.woff(\?v=\d+\.\d+\.\d+)?$/,
+                test: /\.woff(\?[a-z0-9-=]+)?$/,
                 use: {
                     loader: 'url-loader',
                     options: {
@@ -75,7 +75,7 @@ export default merge(baseConfig, {
                 },
             },
             {
-                test: /\.woff2(\?v=\d+\.\d+\.\d+)?$/,
+                test: /\.woff2(\?[a-z0-9-=]+)?$/,
                 use: {
                     loader: 'url-loader',
                     options: {
@@ -86,7 +86,7 @@ export default merge(baseConfig, {
                 }
             },
             {
-                test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/,
+                test: /\.ttf(\?[a-z0-9-=]+)?$/,
                 use: {
                     loader: 'url-loader',
                     options: {
@@ -97,7 +97,7 @@ export default merge(baseConfig, {
                 }
             },
             {
-                test: /\.eot(\?v=\d+\.\d+\.\d+)?$/,
+                test: /\.eot(\?[a-z0-9-=]+)?$/,
                 use: {
                     loader: 'url-loader',
                     options: {
@@ -106,13 +106,13 @@ export default merge(baseConfig, {
                 }
             },
             {
-                test: /\.svg(\?v=\d+\.\d+\.\d+)?$/,
+                test: /\.svg(\?[a-z0-9-=]+)?$/,
                 use: {
                     loader: 'url-loader',
                     options: {
                         limit: 10000,
                         mimetype: 'image/svg+xml',
-                        name: 'resources/[name].[ext]'
+                        name: 'fonts/[name].[ext]'
                     }
                 }
             },
@@ -139,22 +139,29 @@ export default merge(baseConfig, {
          * development checks
          */
         new webpack.DefinePlugin({
-            'process.env.NODE_ENV': JSON.stringify('production')
+            'process.env.NODE_ENV': JSON.stringify('production'),
+            'process.env.DARK_THEME': JSON.stringify(process.env.DARK_THEME)
         }),
         /**
          * Babli is an ES6+ aware minifier based on the Babel toolchain (beta)
          */
         new BabiliPlugin(),
-
-        new ExtractTextPlugin({filename: 'style.css', allChunks: true, ignoreOrder: true}),
-
+        new ExtractTextPlugin({
+            filename: (process.env.DARK_THEME) ? 'dark-style.css' : 'style.css',
+            allChunks: true,
+            ignoreOrder: true
+        }),
+        new OptimizeCssAssetsPlugin({
+            cssProcessorOptions: { discardComments: {removeAll: true } },
+            canPrint: true
+        }),
         /**
          * Dynamically generate index.html page
          */
         new HtmlWebpackPlugin({
             filename: 'index.html',
             template: 'app/app.template.html',
-            inject: true
+            inject: false
         })
     ],
 
