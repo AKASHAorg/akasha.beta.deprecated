@@ -54,7 +54,7 @@ class ImageUploader extends Component {
 
     _handleResizeProgress = (totalProgress) => {
         this.setState({
-            progress: totalProgress + INITIAL_PROGRESS_VALUE
+            progress: Math.round(totalProgress + INITIAL_PROGRESS_VALUE)
         });
         this.forceUpdate();
     }
@@ -192,7 +192,7 @@ class ImageUploader extends Component {
               {this.state.processingFinished && !R.isEmpty(imageFile) &&
                 <div className={`${styles.clearImageButton}`} style={clearImageButtonStyle}>
                   <Button
-                    type="secondary"
+                    type="standard"
                     icon="delete"
                     onClick={this._handleClearImage}
                   />

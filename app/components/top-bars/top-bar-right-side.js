@@ -39,7 +39,6 @@ const TopBarRightSide = ({
     <div style={{ flex: '0 0 auto' }}>
       <Avatar
         image={loggedProfileData.avatar}
-        size={32}
         style={{ cursor: 'pointer' }}
         userInitials={getInitials(loggedProfileData.firstName, loggedProfileData.lastName)}
         userInitialsStyle={{ fontSize: '20px' }}

@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import { Avatar, DataLoader, LoginForm } from '../';
-import { getInitials } from '../../utils/dataModule';
 import clickAway from '../../utils/clickAway';
 import { isVisible } from '../../utils/domUtils';
 import { setupMessages } from '../../locale-data/messages';
@@ -95,7 +94,6 @@ class ProfileList extends Component {
     renderListItem = (account, profile) => {
         const { hoveredAccount, selectedAccount } = this.state;
         const profileName = `${profile.get('firstName')} ${profile.get('lastName')}`;
-        const userInitials = getInitials(profile.get('firstName'), profile.get('lastName'));
         const avatar = profile.get('avatar');
         const akashaId = profile.get('akashaId');
         const isSelected = account === selectedAccount;
@@ -105,10 +103,10 @@ class ProfileList extends Component {
           <div className="profile-list__card-header">
             <Avatar
               image={avatar}
-              size={48}
+              size="large"
               style={{ flex: '0 0 auto', marginRight: '16px' }}
-              userInitials={userInitials}
-              userInitialsStyle={{ fontSize: '20px' }}
+              firstName={profile.get('firstName')}
+              lastName={profile.get('lastName')}
             />
             <div className="profile-list__header-text">
               <div className="overflow-ellipsis heading profile-list__name">

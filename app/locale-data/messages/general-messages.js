@@ -92,6 +92,11 @@ const generalMessages = defineMessages({
         description: 'Edit something button label',
         defaultMessage: 'Edit'
     },
+    editProfile: {
+        id: 'app.general.editProfile',
+        description: 'Edit profile button label',
+        defaultMessage: 'Edit Profile'
+    },
     ethereumAddress: {
         id: 'app.general.ethereumAddress',
         description: 'Placeholder for ethereum address field. Not sure if Ethereum should be translated',
@@ -154,6 +159,11 @@ const generalMessages = defineMessages({
         id: 'app.general.logs',
         description: 'Services logs',
         defaultMessage: 'Logs'
+    },
+    logout: {
+        id: 'app.general.logout',
+        description: 'Logout button label',
+        defaultMessage: 'Logout'
     },
     minCount: {
         id: 'app.general.minutesCount',

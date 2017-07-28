@@ -15,31 +15,29 @@ const Panels = props => (
     <Route
       exact
       path="/:rootPath*/panel/uprofile"
-      render={renderComponent(ProfileDetailsPanel, { onPanelNavigate: props.onPanelNavigate })}
+      render={renderComponent(ProfileDetailsPanel, { onPanelNavigate: props.onPanelNavigate, ...props })}
     />
     <Route
       exact
       path="/:rootPath*/panel/editProfile"
-      component={renderComponent(ProfileEditPanel, { onPanelNavigate: props.onPanelNavigate })}
+      component={renderComponent(ProfileEditPanel, { onPanelNavigate: props.onPanelNavigate, ...props })}
     />
     <Route
       exact
       path="/:rootPath*/panel/settings"
-      render={renderComponent(UserSettingsPanel, { onPanelNavigate: props.onPanelNavigate })}
+      render={renderComponent(UserSettingsPanel, { onPanelNavigate: props.onPanelNavigate, ...props })}
     />
     <Route
       exact
       path="/:rootPath*/panel/wallet"
-      render={renderComponent(UserWalletPanel, { onPanelNavigate: props.onPanelNavigate })}
+      render={renderComponent(UserWalletPanel, { onPanelNavigate: props.onPanelNavigate, ...props })}
     />
     <Route
       path="/:rootPath*/panel/lists/:listName?"
       render={
-            (routeProps) => {
-                console.log('list', routeProps);
-                return <div>A list {routeProps.match.params.listName}</div>;
-            }
-        }
+        routeProps =>
+          <div>A list {routeProps.match.params.listName}</div>
+      }
     />
   </div>
 );

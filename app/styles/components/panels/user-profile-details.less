@@ -1,0 +1,38 @@
+.user-profile-details {
+    padding: 2em 0;
+    &_leftCol {
+        padding-right: 0.667em;
+    }
+    &_rightCol {
+        padding-left: 0.667em;
+    }
+    &_card {
+        margin-bottom: 1.333em;
+        &.followers-card {
+            .followers-label,
+            .followings-label {
+                text-transform: uppercase;
+                font-size: 0.6em;
+                opacity: 0.6;
+                padding-bottom: 1em;
+            }
+        }
+        .send-receive-buttons {
+            a {
+                text-align: center;
+                padding-right: 1.333em;
+            }
+        }
+    }
+    &_balance {
+        line-height: 12em;
+        text-align: center;
+        .balance-currency {
+            font-size: 0.75em;
+        }
+        .balance-value {
+            font-size: 3em;
+            font-style: bold;
+        }
+    }
+}

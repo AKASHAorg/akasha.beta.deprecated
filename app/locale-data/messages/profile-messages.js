@@ -26,6 +26,16 @@ export const profileMessages = defineMessages({
         description: 'About Me section title',
         defaultMessage: 'About Me'
     },
+    contacts: {
+        id: 'app.profile.contacts',
+        description: 'Contacts card title',
+        defaultMessage: 'Contacts'
+    },
+    darkTheme: {
+        id: 'app.profile.darkTheme',
+        description: 'dark theme switch label',
+        defaultMessage: 'Dark Theme'
+    },
     shortDescriptionLabel: {
         id: 'app.profile.shortDescriptionLabel',
         description: 'Label for Short description text field',
@@ -234,6 +244,11 @@ export const profileMessages = defineMessages({
         description: 'Label for following tab',
         defaultMessage: 'Following'
     },
+    followings: {
+        id: 'app.profile.followings',
+        description: 'Label for followings card',
+        defaultMessage: 'Followings'
+    },
     followingsCount: {
         id: 'app.profile.followingsCount',
         description: 'number of followings',
@@ -251,6 +266,26 @@ export const profileMessages = defineMessages({
         id: 'app.profile.interestingPeople',
         description: 'Label for interesting people tab',
         defaultMessage: 'Interesting people'
+    },
+    lists: {
+        id: 'app.profile.lists',
+        description: 'Title for lists card',
+        defaultMessage: 'Lists'
+    },
+    myBalance: {
+        id: 'app.profile.myBalance',
+        description: 'Title for my balance card',
+        defaultMessage: 'My Balance'
+    },
+    receive: {
+        id: 'app.profile.receive',
+        description: 'Receive button label',
+        defaultMessage: 'Receive'
+    },
+    send: {
+        id: 'app.profile.send',
+        description: 'send button label',
+        defaultMessage: 'Send'
     },
     sendTip: {
         id: 'app.profile.sendTip',
