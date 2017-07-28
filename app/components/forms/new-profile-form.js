@@ -10,7 +10,7 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import validation from 'react-validation-mixin';
 import strategy from 'joi-validation-strategy';
 import { Row, Col, Input, Button, Form, Icon, Select } from 'antd';
-import { Avatar, ImageUploader } from '../';
+import { AvatarEditor, ImageUploader } from '../';
 import { profileMessages, formMessages,
   generalMessages, validationMessages } from '../../locale-data/messages';
 import { getProfileSchema } from '../../utils/validationSchema';
@@ -300,13 +300,13 @@ class NewProfileForm extends Component {
                 </div>
               }
               <Col type="flex" md={24}>
-                <Col md={6}>
+                <Col md={8}>
                   <div className="row">
-                    <h3 className="col-xs-12" style={{ margin: '30px 0 10px 0' }} >
+                    <h3 className="col-xs-12">
                       {intl.formatMessage(profileMessages.avatarTitle)}
                     </h3>
                     <div className="col-xs-12 center-xs">
-                      <Avatar
+                      <AvatarEditor
                         editable
                         ref={(avtr) => { this.avatar = avtr; }}
                         image={avatar}
@@ -315,9 +315,9 @@ class NewProfileForm extends Component {
                     </div>
                   </div>
                 </Col>
-                <Col md={18}>
+                <Col md={16}>
                   <div className="row">
-                    <h3 className="col-xs-12" style={{ margin: '20px 0 10px 0' }} >
+                    <h3 className="col-xs-12" >
                       {intl.formatMessage(profileMessages.backgroundImageTitle)}
                     </h3>
                     <div className="col-xs-12">
@@ -425,60 +425,61 @@ class NewProfileForm extends Component {
               <div className="col-xs-2 end-xs" style={{ margin: '16px 0 0 0' }}>
                 <Button
                   icon="plus"
-                  type="primary"
+                  type="primary borderless"
                   onClick={this._handleAddLink('links')}
                   title={intl.formatMessage(profileMessages.addLinkButtonTitle)}
                   ghost
                   style={{ border: 'none' }}
-                >Add more links</Button>
+                >Add more</Button>
               </div>
               <h3 className="col-xs-10" style={{ margin: '20px 0 0 0' }}>
                 {intl.formatMessage(profileMessages.cryptoAddresses)}
               </h3>
               <div className="col-xs-2 end-xs" style={{ margin: '16px 0 0 0' }}>
-                <IconButton
-                  title={intl.formatMessage(profileMessages.addCryptoAddress)}
+                <Button
+                  icon="plus"
+                  type="primary borderless"
                   onClick={this._handleAddLink('crypto')}
-                >
-                  <SvgIcon>
-                    <ContentAddIcon
-                      color={muiTheme.palette.primary1Color}
-                    />
-                  </SvgIcon>
-                </IconButton>
+                  ghost
+                  title={intl.formatMessage(profileMessages.addCryptoAddress)}
+                >Add more</Button>
               </div>
               <div className="col-xs-12">
                 {crypto.map((cryptoLink, index) =>
                   (<div key={`${index + 1}`} className="row">
                     <div className="col-xs-10">
-                      <TextField
-                        autoFocus={(crypto.size - 1) === index}
-                        fullWidth
-                        floatingLabelText={intl.formatMessage(profileMessages.cryptoName)}
-                        value={cryptoLink.get('name')}
-                        onChange={this._handleLinkChange('crypto', 'name', cryptoLink.id)}
-                        onBlur={this._validateField('crypto', index, 'name')}
-                        errorText={this._getErrorMessages('crypto', index, 'name')}
-                      />
-                      <TextField
-                        fullWidth
-                        floatingLabelText={intl.formatMessage(profileMessages.cryptoAddress)}
-                        value={cryptoLink.get('address')}
-                        onChange={this._handleLinkChange('crypto', 'address', cryptoLink.get('id'))}
-                        onBlur={this._validateField('crypto', index, 'address')}
-                        errorText={this._getErrorMessages('crypto', index, 'address')}
-                      />
+                      <FormItem
+                        label={intl.formatMessage(profileMessages.cryptoName)}
+                        hasFeedback
+                        colon={false}
+                        validateStatus={this._validateField('crypto', index, 'name')}
+                      >
+                        <Input
+                          value={cryptoLink.get('name')}
+                          onChange={this._handleLinkChange('crypto', 'name', cryptoLink.id)}
+                          onBlur={this._validateField('crypto', index, 'name')}
+                        />
+                      </FormItem>
+                      <FormItem
+                        label={intl.formatMessage(profileMessages.cryptoAddress)}
+                        colon={false}
+                        hasFeedback
+                        validateStatus={this._validateField('crypto', index, 'address')}
+                      >
+                        <Input
+                          value={cryptoLink.get('address')}
+                          onChange={this._handleLinkChange('crypto', 'address', cryptoLink.get('id'))}
+                          onBlur={this._validateField('crypto', index, 'address')}
+                        />
+                      </FormItem>
                     </div>
                     <div className="col-xs-2 center-xs">
-                      <IconButton
-                        title={intl.formatMessage(profileMessages.removeCryptoButtonTitle)}
-                        style={{ marginTop: '24px' }}
+                      <Button
+                        icon="close-circle"
+                        type="primary"
+                        ghost
                         onClick={this._handleRemoveLink(cryptoLink.get('id'), 'crypto')}
-                      >
-                        <SvgIcon>
-                          <CancelIcon color={muiTheme.palette.textColor} />
-                        </SvgIcon>
-                      </IconButton>
+                      >{intl.formatMessage(profileMessages.removeCryptoButtonTitle)}</Button>
                     </div>
                     {crypto.size > 1 &&
                       <Divider

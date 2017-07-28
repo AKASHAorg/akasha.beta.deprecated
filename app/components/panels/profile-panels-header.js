@@ -107,7 +107,7 @@ const ProfilePanelsHeader = (props) => {
                 style={{ textAlign: 'center' }}
                 onClick={onPanelNavigate('settings')}
               >
-                Settings
+                {intl.formatMessage(generalMessages.settings)}
               </Col>
               {canEditProfile &&
                 <Col
@@ -116,7 +116,7 @@ const ProfilePanelsHeader = (props) => {
                   style={{ textAlign: 'center' }}
                   onClick={onPanelNavigate('editProfile')}
                 >
-                  Edit profile
+                  {intl.formatMessage(generalMessages.editProfile)}
                 </Col>
               }
               <Col
@@ -127,7 +127,7 @@ const ProfilePanelsHeader = (props) => {
                 }}
                 onClick={onLogout}
               >
-                Logout
+                {intl.formatMessage(generalMessages.logout)}
               </Col>
             </Row>
           </Col>

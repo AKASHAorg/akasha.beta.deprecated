@@ -98,6 +98,7 @@ class AppContainer extends Component {
         const showIpfsDetailsModal = appState.get('showIpfsDetailsModal');
         const muiTheme = getMuiTheme(theme === 'light' ? lightTheme : darkTheme);
         const isOverlay = location.state && location.state.overlay && this.previousLocation !== location;
+
         return (
           <MuiThemeProvider muiTheme={muiTheme}>
             <DataLoader flag={!appState.get('appReady')} size={80} style={{ paddingTop: '100px' }}>

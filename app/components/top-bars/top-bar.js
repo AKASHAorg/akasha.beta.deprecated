@@ -2,7 +2,6 @@ import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Route } from 'react-router-dom';
-import { selectLoggedProfileData } from '../../local-flux/selectors';
 import { PanelContainer, ProfilePanelsHeader, Panels, CommonTopBar, DashboardTopBar } from '../';
 import { profileLogout } from '../../local-flux/actions/profile-actions';
 import styles from './top-bar.scss';
@@ -16,9 +15,9 @@ class TopBar extends PureComponent {
     }
     componentWillReceiveProps (nextProps) {
         const { history, loggedProfile } = nextProps;
-        const oldLoggedProfile = this.props.loggedProfile;
+        const oldLoggedProfileAccount = this.props.loggedProfile.get('account');
         // the condition below is equivalent to a successful logout action
-        if (!loggedProfile.get('account') && oldLoggedProfile.get('account')) {
+        if ((!loggedProfile.get('account') && oldLoggedProfileAccount) || !oldLoggedProfileAccount) {
             history.push('/setup/authenticate');
         }
     }
@@ -67,12 +66,14 @@ class TopBar extends PureComponent {
         props => <Component {...injectedProps} {...props} />;
 
     render () {
-        const { fullEntryPage, loggedProfile, loggedProfileData, location, match, intl } = this.props;
+        const { fullEntryPage, loggedProfile, loggedProfileData, intl } = this.props;
         const { muiTheme } = this.context;
         let loginName = loggedProfile.get('account');
-        if (loggedProfileData) {
+
+        if (loggedProfileData && (loggedProfileData.get('firstName') || loggedProfileData.get('lastName'))) {
             loginName = `${loggedProfileData.get('firstName')} ${loggedProfileData.get('lastName')}`;
         }
+
         return (
           <div>
             <div
@@ -113,9 +114,8 @@ class TopBar extends PureComponent {
                     style={{ height: 'calc(100% - 48px)', background: '#EBEBEB' }}
                   >
                     <Panels
-                      location={location}
-                      match={match}
                       onPanelNavigate={this._navigateToPanel}
+                      {...this.props}
                     />
                   </PanelContainer>
                 </div>
@@ -148,8 +148,12 @@ TopBar.propTypes = {
 };
 
 const mapStateToProps = state => ({
-    loggedProfileData: state.profileState.getIn(['byId', state.profileState.get(['loggedProfile', 'akashaId'])]),
-    loggedProfile: state.profileState.get('loggedProfile')
+    loggedProfileData: state.profileState.getIn([
+        'byId',
+        state.profileState.getIn(['loggedProfile', 'akashaId'])
+    ]),
+    loggedProfile: state.profileState.get('loggedProfile'),
+    balance: state.profileState.get('balance')
 });
 
 export default connect(
