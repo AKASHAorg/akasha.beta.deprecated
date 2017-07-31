@@ -121,6 +121,11 @@ const setupMessages = defineMessages({
         description: 'light sync option',
         defaultMessage: 'Light sync'
     },
+    newIdentitySubtitle: {
+        id: 'app.setup.newIdentitySubtitle',
+        description: 'subtitle for new identity page',
+        defaultMessage: 'Please enter your passphrase below'
+    },
     normalSync: {
         id: 'app.setup.normalSync',
         description: 'normal sync option',

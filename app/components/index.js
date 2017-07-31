@@ -38,7 +38,6 @@ export LogoButton from './logo-button';
 export Navigation from './navigation';
 export NewColumn from './columns/new-column';
 export NewColumnFooter from './columns/new-column-footer';
-export NewIdentityForm from './forms/new-identity-form';
 export NewProfileForm from './forms/new-profile-form';
 export NewProfileStatus from './new-profile-status/new-profile-status';
 export NewProfileComplete from './new-profile-complete/new-profile-complete';
