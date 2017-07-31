@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { TextField, Dialog, RaisedButton, Checkbox, SelectField, MenuItem } from 'material-ui';
-import { pendingActionDelete, authDialogToggle } from '../../local-flux/actions/app-actions';
+import { deletePendingAction, authDialogToggle } from '../../local-flux/actions/app-actions';
 import { profileClearLoginErrors, profileLogin } from '../../local-flux/actions/profile-actions';
 import { userSettingsSave } from '../../local-flux/actions/settings-actions';
 import { formMessages, generalMessages } from '../../locale-data/messages';
@@ -57,7 +57,7 @@ class AuthDialog extends Component {
     onCancel = () => {
         const { showAuthDialog } = this.props;
         this.props.profileClearLoginErrors();
-        this.props.pendingActionDelete(showAuthDialog);
+        this.props.deletePendingAction(showAuthDialog);
         this.props.authDialogToggle(null);
     };
 
@@ -145,14 +145,14 @@ class AuthDialog extends Component {
 
 AuthDialog.propTypes = {
     authDialogToggle: PropTypes.func.isRequired,
-    pendingActionDelete: PropTypes.func.isRequired,
+    deletePendingAction: PropTypes.func.isRequired,
     intl: PropTypes.shape(),
     loggedProfile: PropTypes.shape(),
     loginErrors: PropTypes.shape(),
     passwordPreference: PropTypes.shape(),
     profileClearLoginErrors: PropTypes.func.isRequired,
     profileLogin: PropTypes.func.isRequired,
-    showAuthDialog: PropTypes.string,
+    showAuthDialog: PropTypes.number,
     userSettingsSave: PropTypes.func.isRequired,
 };
 
@@ -168,7 +168,7 @@ function mapStateToProps (state) {
 export default connect(
     mapStateToProps,
     {
-        pendingActionDelete,
+        deletePendingAction,
         authDialogToggle,
         profileClearLoginErrors,
         profileLogin,

@@ -65,6 +65,9 @@ class AppActions {
 }
 
 export const appReady = () => action(types.APP_READY);
+
+export const authDialogToggle = actionId => action(types.AUTH_DIALOG_TOGGLE, { actionId });
+
 export const bootstrapHome = () => action(types.BOOTSTRAP_HOME);
 export const bootstrapHomeSuccess = () => action(types.BOOTSTRAP_HOME_SUCCESS);
 export const deletePendingAction = actionId => action(types.DELETE_PENDING_ACTION, { actionId });
@@ -74,7 +77,7 @@ export const hideNotification = notification =>
     action(types.HIDE_NOTIFICATION, { notification });
 export const hideReportModal = () => action(types.HIDE_REPORT_MODAL);
 export const hideTerms = () => action(types.HIDE_TERMS);
-export const hideTransferConfirmDialog = () => action(types.HIDE_TRANSFER_CONFIRM_DIALOG);
+export const hideTransferConfirmDialog = () => action(types.TRANSFER_CONFIRM_DIALOG_TOGGLE, { actionId: null });
 export const hideWeightConfirmDialog = () => action(types.HIDE_WEIGHT_CONFIRM_DIALOG);
 export const panelShow = panel => action(types.PANEL_SHOW, { panel });
 export const panelHide = () => action(types.PANEL_HIDE);
@@ -85,7 +88,6 @@ export const publishEntity = data => action(types.PUBLISH_ENTITY, { data });
 // this should be removed once profile logout is implemented
 export const resetHomeReady = () => action(types.RESET_HOME_READY);
 
-export const showAuthDialog = actionId => action(types.SHOW_AUTH_DIALOG, { actionId });
 export const showLoginDialog = akashaId =>
     action(types.SHOW_LOGIN_DIALOG, { akashaId });
 export const showNotification = notification =>
@@ -95,11 +97,12 @@ export const showPublishConfirmDialog = actionId =>
 export const showReportModal = data => action(types.SHOW_REPORT_MODAL, { data });
 export const showTerms = () => action(types.SHOW_TERMS);
 export const showTransferConfirmDialog = actionId =>
-    action(types.SHOW_TRANSFER_CONFIRM_DIALOG, { actionId });
+    action(types.TRANSFER_CONFIRM_DIALOG_TOGGLE, { actionId });
 export const showWeightConfirmDialog = actionId =>
     action(types.SHOW_WEIGHT_CONFIRM_DIALOG, { actionId });
 export const toggleGethDetailsModal = () => action(types.TOGGLE_GETH_DETAILS_MODAL);
 export const toggleIpfsDetailsModal = () => action(types.TOGGLE_IPFS_DETAILS_MODAL);
 export const updateAction = (actionId, updates) =>
-    action(types.UPDATE_ACTION, { actionId, updates });
+    action(types.PENDING_ACTION_UPDATE, { actionId, updates });
+
 export { AppActions };

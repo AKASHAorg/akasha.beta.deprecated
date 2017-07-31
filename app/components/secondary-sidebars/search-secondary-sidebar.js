@@ -6,7 +6,6 @@ import { ListItem, SvgIcon } from 'material-ui';
 import { colors } from 'material-ui/styles';
 import { searchQuery, searchHandshake, searchResetResults } from '../../local-flux/actions/search-actions';
 import { tagSearch } from '../../local-flux/actions/tag-actions';
-import styles from './search-secondary-sidebar.scss';
 import { MenuSearch } from '../svg';
 import { SelectableList } from '../selectable-list';
 
@@ -75,7 +74,7 @@ class SearchSecondarySidebar extends Component {
             <div>
               Search
             </div>
-            <div className={styles.search}>
+            <div className="search-secondary-sidebar__search">
               <SvgIcon
                 color={colors.lightBlack}
                 hoverColor={colors.darkBlack}
@@ -83,7 +82,7 @@ class SearchSecondarySidebar extends Component {
               >
                 <MenuSearch />
               </SvgIcon>
-              <input type="text" className={styles.input} value={this.state.queryInput} onChange={this.handleChange} placeholder="Search something..." />
+              <input type="text" className="search-secondary-sidebar__input" value={this.state.queryInput} onChange={this.handleChange} placeholder="Search something..." />
             </div>
             { this.props.handshakePending || this.props.searchService ? null : <button onClick={() => this.props.searchHandshake()}>Handshake</button> }
             <button onClick={() => this.props.history.push(`/search/${this.props.match.params.topic}/${this.state.queryInput}`)}>Search</button>
